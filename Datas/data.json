@@ -1,16 +1,21 @@
 {
   "decks": [
     {
-      "Hero": [],
-      "cards": [
+      "Hero": [
         {
-          "id": "KAR_028",
-          "num": 1
+          "name": "name1"
         }
       ],
-      "class": "WARRIOR",
-      "name": "deck0"
+      "cards": [
+        {
+          "id": "test1",
+          "num": 1
+        },
+        {
+          "id": "test2",
+          "num": 1
+        }
+      ]
     }
-  ],
-  "nickname": "test1"
+  ]
 }
