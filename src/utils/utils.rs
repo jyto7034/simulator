@@ -1,4 +1,4 @@
-use crate::enums::CardType;
+use crate::enums::constant;
 use crate::exception::exception::Exception;
 use crate::utils::json;
 use crate::deck::{Card, Cards};
@@ -42,7 +42,9 @@ impl Utils {
         Ok(decks)
     }
 
-    fn load_card_data(cards: &json::Decks) -> Result<Cards, Exception>{
+    
+
+    fn load_card_data(player_cards: &json::Decks) -> Result<Vec<Cards>, Exception>{
         // 거대한 json 파일을 읽는 방법 따로 구현해야댐
         // json 을 쌩으로 로드하면 좆댐;
 
@@ -56,31 +58,35 @@ impl Utils {
         file.read_to_string(&mut json_data)
             .expect("Failed to read file");
 
-        let decks: json::Decks = match serde_json::from_str(&json_data[..]) {
+        let card_json: Vec<json::CardJson> = match serde_json::from_str(&json_data[..]) {
             Ok(data) => data,
             Err(_) => return Err(Exception::JsonParseFailed),
         };
 
-        let mut cards: Vec<Card> = vec![];
+        let mut p1_cards: Vec<Card> = vec![];
+        let mut p2_cards: Vec<Card> = vec![];
 
+        use constant::{PLAYER_1, PLAYER_2};
 
-        // data.json 에서 가져온 card 데이터를 Vec 으로 밀어넣음.
-        // 이 때 cards 에 담기는 데이터는 사용할 수 없는 데이터임.
-        for deck in &decks.decks {
-            // println!("Hero: {:?}", deck.Hero);
-            for card in &deck.cards {
-                cards.push(Card {   
-                    card_type: CardType::Agent,
-                    uuid: "asd".to_string(),
-                    name: card.num.to_string(),
-                    count: card.id.len(),
-                });
+        // player_cards 에는 플레이어의 덱 정보가 담겨있음.
+        // 카드의 종류, 갯수만 있을 뿐, 실질적인 정보는 없고 카드의 id 만 있기 때문에 이것을 사용하여 
+        // cards.json 에서 데이터를 가져와야함.
+        for card_data in card_json{
+            for player_card in &player_cards.decks[PLAYER_1].cards{
+                match card_data.id {
+                    Some(id) if player_card.id == id => {
+                        p1_cards.push()
+                    }
+                    _ => {}
+                }
             }
-        };
-
-        // cards 에 담긴 데이터를 사용하여 실질적인 카드 데이터를 cards.json 으로부터 가져옴.
-        for item in cards{
-            let target_id = item.name
+            for player_card in &player_cards.decks[PLAYER_2].cards{
+                match card_data.id {
+                    Some(id) if player_card.id == id => {
+                    }
+                    _ => {}
+                }
+            }
         }
 
         Ok()

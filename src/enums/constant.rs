@@ -80,3 +80,6 @@ pub const MAX_CARD_SIZE: u32 = 30;
 pub type TaskQueue = Vec<Task>;
 
 pub const COUNT_OF_CARDS: usize = 30;
+
+pub const PLAYER_1: usize = 0;
+pub const PLAYER_2: usize = 1;
