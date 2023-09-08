@@ -22,7 +22,6 @@ pub struct Decks {
     pub decks: Vec<Deck>,
 }
 
-
 /*
     "id": "AT_010",
     "attack": 3,
@@ -43,4 +42,18 @@ pub struct CardJson {
     pub attack: Option<i32>,
     pub health: Option<i32>,
     pub collectible: Option<bool>,
+}
+
+impl CardJson {
+    pub fn new() -> CardJson {
+        CardJson {
+            id: None,
+            cost: None,
+            name: None,
+            text: None,
+            attack: None,
+            health: None,
+            collectible: None,
+        }
+    }
 }

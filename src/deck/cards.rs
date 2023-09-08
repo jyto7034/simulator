@@ -98,6 +98,13 @@ impl Cards {
 }
 
 impl Cards {
+    pub fn new(cards: &Vec<Card>) -> Cards {
+        let temp = cards.clone();
+        Cards {
+            v_card: temp.clone(),
+        }
+    }
+    
     pub fn dummy() -> Cards {
         Cards { v_card: vec![] }
     }

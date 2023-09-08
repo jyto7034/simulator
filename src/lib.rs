@@ -1,3 +1,4 @@
+pub mod card_gen;
 pub mod deck;
 pub mod enums;
 pub mod exception;

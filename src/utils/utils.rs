@@ -1,7 +1,8 @@
+use crate::card_gen::card_gen::CardGenertor;
+use crate::deck::{Card, Cards};
 use crate::enums::constant;
 use crate::exception::exception::Exception;
 use crate::utils::json;
-use crate::deck::{Card, Cards};
 use std::fs::File;
 use std::io::Read;
 use std::process::{Command, Stdio};
@@ -42,9 +43,7 @@ impl Utils {
         Ok(decks)
     }
 
-    
-
-    fn load_card_data(player_cards: &json::Decks) -> Result<Vec<Cards>, Exception>{
+    pub fn load_card_data(player_cards: &json::Decks) -> Result<Vec<Cards>, Exception> {
         // 거대한 json 파일을 읽는 방법 따로 구현해야댐
         // json 을 쌩으로 로드하면 좆댐;
 
@@ -69,26 +68,27 @@ impl Utils {
         use constant::{PLAYER_1, PLAYER_2};
 
         // player_cards 에는 플레이어의 덱 정보가 담겨있음.
-        // 카드의 종류, 갯수만 있을 뿐, 실질적인 정보는 없고 카드의 id 만 있기 때문에 이것을 사용하여 
+        // 카드의 종류, 갯수만 있을 뿐, 실질적인 정보는 없고 카드의 id 만 있기 때문에 이것을 사용하여
         // cards.json 에서 데이터를 가져와야함.
-        for card_data in card_json{
-            for player_card in &player_cards.decks[PLAYER_1].cards{
+        for card_data in card_json {
+            for player_card in &player_cards.decks[PLAYER_1].cards {
                 match card_data.id {
                     Some(id) if player_card.id == id => {
-                        p1_cards.push()
+                        p1_cards.push(CardGenertor::gen_card_by_id(
+                            card_data.id.unwrap_or(0).to_string(),
+                        ));
                     }
                     _ => {}
                 }
             }
-            for player_card in &player_cards.decks[PLAYER_2].cards{
+            for player_card in &player_cards.decks[PLAYER_2].cards {
                 match card_data.id {
-                    Some(id) if player_card.id == id => {
-                    }
+                    Some(id) if player_card.id == id => {}
                     _ => {}
                 }
             }
         }
 
-        Ok()
+        Ok(vec![Cards::new(&p1_cards), Cards::new(&p2_cards)])
     }
 }

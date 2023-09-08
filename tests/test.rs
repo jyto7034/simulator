@@ -3,7 +3,8 @@ mod tests {
     use simulator::{
         deck::Deck,
         game::game::{Game, GameConfig},
-        utils::utils::Utils, task::Procedure,
+        task::Procedure,
+        utils::utils::Utils,
     };
 
     fn generate_game() -> Game {
@@ -120,17 +121,5 @@ mod tests {
 
     #[test]
     fn check_draw() {
-        // let game = generate_game();
-
-        // game.player_1
-        //     .as_ref()
-        //     .unwrap()
-        //     .borrow_mut()
-        //     .cards
-        //     .draw(constant::CardDrawType::Random, Some(3));
-        let game = generate_game();
-        for item in &game.player_1.as_ref().unwrap().borrow().cards.v_card{
-            println!("{} {} {}", item.count, item.name, item.uuid);
-        }
     }
 }
