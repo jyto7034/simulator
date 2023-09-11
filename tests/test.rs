@@ -4,7 +4,7 @@ mod tests {
         deck::Deck,
         game::game::{Game, GameConfig},
         task::Procedure,
-        utils::utils::Utils,
+        utils::utils,
     };
 
     fn generate_game() -> Game {
@@ -49,7 +49,7 @@ mod tests {
 
     #[test]
     fn check_generate_uuid() {
-        match Utils::generate_uuid() {
+        match utils::generate_uuid() {
             Ok(_) => {}
             Err(err) => {
                 assert!(false, "{err}");
@@ -120,6 +120,22 @@ mod tests {
     }
 
     #[test]
-    fn check_draw() {
+    fn test_load_card_data() {
+        match  utils::parse_json(){
+            Ok(json) => {
+                match utils::load_card_data(&json){
+                    Ok(data) =>{
+                        println!("{:#?}", data);
+                    }
+                    Err(err) =>{
+                        assert!(false, "{err}");
+                    }
+                } 
+            }
+            Err(err) => {
+                assert!(false, "{err}");
+            }
+        }
     }
+
 }

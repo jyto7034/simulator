@@ -1,23 +1,23 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Card {
+    pub id: String,
+    pub num: i32,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Hero {
     pub name: String,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct Card {
-    pub id: i32,
-    pub num: u32,
-}
-
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Deck {
-    pub hero: Vec<Hero>,
+    pub Hero: Vec<Hero>,
     pub cards: Vec<Card>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Decks {
     pub decks: Vec<Deck>,
 }
@@ -33,9 +33,9 @@ pub struct Decks {
     "text": "<b>Battlecry:</b> If you have a Beast, summon a\nrandom Beast.",
     "type": "Agent"
 */
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct CardJson {
-    pub id: Option<i32>,
+    pub id: Option<String>,
     pub cost: Option<i32>,
     pub name: Option<String>,
     pub text: Option<String>,

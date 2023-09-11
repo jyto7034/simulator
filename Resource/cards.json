@@ -1,11 +1,5 @@
 [
   {
-    "id": "test1"
-  },
-  {
-    "id": "test2"
-  },
-  {
     "id": "AT_010",
     "attack": 3,
     "health": 3,

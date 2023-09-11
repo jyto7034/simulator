@@ -1,8 +1,9 @@
 use crate::enums::SpellType;
 
+#[derive(Clone, Debug)]
 pub enum Behavior {
     /// caster 는 시전자 opponent 는 피시전자입니다.
-    ///
+
     /// 게임을 종료합니다.
     /// fn end_game( player ) -> Result
     /// 매개변수로 player 객체를 받으며, 해당 플레이어가 게임에서 승리합니다.

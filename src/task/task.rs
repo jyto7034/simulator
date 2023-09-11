@@ -1,6 +1,6 @@
 use crate::enums::constant::TaskType;
 use crate::exception::exception::Exception;
-use crate::utils::utils::Utils;
+use crate::utils::utils;
 
 pub struct Task {
     task_type: TaskType,
@@ -9,7 +9,7 @@ pub struct Task {
 
 impl Task {
     pub fn new(task_type: TaskType) -> Result<Task, Exception> {
-        let uuid = match Utils::generate_uuid() {
+        let uuid = match utils::generate_uuid() {
             Ok(ans) => ans,
             Err(_) => "".to_string(),
         };

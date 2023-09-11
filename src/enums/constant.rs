@@ -30,13 +30,13 @@ pub enum EntityType {
 
 pub enum PlayerType {}
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum SpellType {
     SlowSpell,
     FastSpell,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum CardType {
     Dummy,
     Agent,
