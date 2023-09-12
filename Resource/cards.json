@@ -9,5 +9,27 @@
     "name": "Ram Wrangler",
     "text": "<b>Battlecry:</b> If you have a Beast, summon a\nrandom Beast.",
     "type": "Agent"
+  },
+  {
+    "id": "test1",
+    "attack": 3,
+    "health": 3,
+    "cost": 5,
+    "rarity": "RARE",
+    "collectible": true,
+    "name": "Ram Wrangler",
+    "text": "<b>Battlecry:</b> If you have a Beast, summon a\nrandom Beast.",
+    "type": "Agent"
+  },
+  {
+    "id": "test2",
+    "attack": 3,
+    "health": 3,
+    "cost": 5,
+    "rarity": "RARE",
+    "collectible": true,
+    "name": "Ram Wrangler",
+    "text": "<b>Battlecry:</b> If you have a Beast, summon a\nrandom Beast.",
+    "type": "Agent"
   }
 ]

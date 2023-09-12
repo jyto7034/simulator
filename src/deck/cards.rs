@@ -104,7 +104,7 @@ impl Cards {
             v_card: cards.to_vec(),
         }
     }
-    
+
     pub fn dummy() -> Cards {
         Cards { v_card: vec![] }
     }

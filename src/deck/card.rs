@@ -14,7 +14,6 @@ pub struct Card {
     card_json: CardJson,
 }
 
-
 impl Card {
     pub fn dummy() -> Card {
         Card {

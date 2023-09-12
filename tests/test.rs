@@ -48,16 +48,6 @@ mod tests {
     }
 
     #[test]
-    fn check_generate_uuid() {
-        match utils::generate_uuid() {
-            Ok(_) => {}
-            Err(err) => {
-                assert!(false, "{err}");
-            }
-        }
-    }
-
-    #[test]
     fn check_set_opponent_player() {
         let config = GameConfig {
             player_1: Deck {
@@ -119,23 +109,72 @@ mod tests {
         assert_eq!(game.player_2.as_ref().unwrap().borrow().name, "player1");
     }
 
-    #[test]
-    fn test_load_card_data() {
-        match  utils::parse_json(){
-            Ok(json) => {
-                match utils::load_card_data(&json){
-                    Ok(data) =>{
+    mod utils_test {
+        use super::*;
+
+        #[test]
+        fn check_generate_uuid() {
+            match utils::generate_uuid() {
+                Ok(_) => {}
+                Err(err) => {
+                    assert!(false, "{err}");
+                }
+            }
+        }
+
+        #[test]
+        fn test_load_card_data() {
+            match utils::parse_json() {
+                Ok(json) => match utils::load_card_data(&json) {
+                    Ok(data) => {
                         println!("{:#?}", data);
                     }
-                    Err(err) =>{
+                    Err(err) => {
                         assert!(false, "{err}");
                     }
-                } 
-            }
-            Err(err) => {
-                assert!(false, "{err}");
+                },
+                Err(err) => {
+                    assert!(false, "{err}");
+                }
             }
         }
     }
 
+    mod task_test {
+        use super::*;
+        use simulator::{game::Behavior, task::Task, enums::*};
+
+        fn add_task(proc: &mut Procedure) -> Task{
+            let task = match Task::new(
+                Behavior::AddCardToDeck,
+                TaskPriority::Immediately,
+            ) {
+                Ok(task) => task,
+                Err(err) => {
+                    assert!(false, "{err}");
+                    Task::dummy()
+                }
+            };
+            proc.add_task(&task);
+            task
+        }
+            
+        #[test]
+        fn test_task_remove() {
+            let mut proc = Procedure::new();
+            let task = add_task(&mut proc);
+            proc.find_task(task.get_task_uuid());
+
+        }
+
+        #[test]
+        fn test_task_find() {
+            todo!()
+        }
+
+        #[test]
+        fn test_task_excution() {
+            todo!()
+        }
+    }
 }

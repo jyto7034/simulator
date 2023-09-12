@@ -1,4 +1,4 @@
-use crate::enums::SpellType;
+use crate::{enums::SpellType, exception::exception::Exception};
 
 #[derive(Clone, Debug)]
 pub enum Behavior {
@@ -53,9 +53,12 @@ pub enum Behavior {
     /// player 가 자신의 필드에 카드를 전개합니다.
     /// fn play_card_to_field( player, card )
     PlayCardToField,
+
+    /// 초기화용
+    None,
 }
 
-pub fn execution(behavior_type: Behavior) {
+pub fn execution(behavior_type: &Behavior) -> Result<Exception, Exception> {
     match behavior_type {
         Behavior::EndGame => todo!(),
         Behavior::CastingSpell(_) => todo!(),
@@ -69,5 +72,6 @@ pub fn execution(behavior_type: Behavior) {
         Behavior::AddCardToDeck => todo!(),
         Behavior::AddCardToField => todo!(),
         Behavior::PlayCardToField => todo!(),
+        Behavior::None => todo!(),
     }
 }
