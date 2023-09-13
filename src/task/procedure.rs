@@ -29,13 +29,19 @@ impl Procedure {
         self.find_task_by_uuid(task.get_task_uuid())
     }
 
-    /// todo
-    pub fn remove_task_by_uuid(&mut self, uuid: &UUID) {
-        self.task_queue.retain(|item| item.get_task_uuid() == uuid);
+    pub fn remove_task_by_uuid(&mut self, uuid: &UUID) ->Result<(),Exception>{
+        let prev_len = self.task_queue.len();
+        self.task_queue.retain(|item| item.get_task_uuid() != uuid);
+        if self.task_queue.len() != prev_len{
+            Ok(())
+        }
+        else{
+            Err(Exception::NothingToRemove)
+        }
     }
 
-    pub fn remove_task_by_ref(&mut self, task: &Task) {
-        self.remove_task_by_uuid(task.get_task_uuid());
+    pub fn remove_task_by_ref(&mut self, task: &Task) -> Result<(),Exception>{
+        self.remove_task_by_uuid(task.get_task_uuid())
     }
 
     /// 후입선출 방식으로 uuid 를 집계하여 리턴한다.
@@ -70,7 +76,11 @@ impl Procedure {
                 }
                 TaskPriority::None => {}
             }
-            self.remove_task_by_uuid(task.get_task_uuid());
+            if let Err(err) = self.remove_task_by_uuid(task.get_task_uuid()){
+                if err == Exception::NothingToRemove{
+                    todo!();
+                }
+            }
         }
         Ok(())
     }

@@ -141,6 +141,7 @@ mod tests {
     }
 
     mod task_test {
+
         use super::*;
         use simulator::{game::Behavior, task::Task, enums::*};
 
@@ -160,21 +161,55 @@ mod tests {
         }
             
         #[test]
-        fn test_task_remove() {
+        fn test_task_remove(){
+            // task 삭제하는 기능을 테스트 하는 함수입니다.
+            //
+            use simulator::exception::exception::Exception;
             let mut proc = Procedure::new();
+            
             let task = add_task(&mut proc);
-            proc.find_task(task.get_task_uuid());
 
+            match proc.remove_task_by_uuid(task.get_task_uuid()) {
+                Ok(_) => {},
+                Err(err) => {
+                    match err {
+                        Exception::NothingToRemove => {},
+                        _ => assert!(false, "{err}"),
+                    };
+                },
+            }
+
+            for item in &proc.task_queue{
+                if item.get_task_uuid() == task.get_task_uuid(){
+                    assert!(false, "Exist");
+                }
+            }
         }
+
+        // TODO: 일부로 오류내는 함수 작성해야함.
 
         #[test]
         fn test_task_find() {
-            todo!()
+            let mut proc = Procedure::new();
+            let tasks = vec![add_task(&mut proc), add_task(&mut proc), add_task(&mut proc), add_task(&mut proc)];
+            for item in &tasks{
+                if let Some(task) = proc.find_task_by_ref(item){
+                    if task.get_task_uuid() != item.get_task_uuid(){
+                        assert!(false, "Diff");
+                    }
+                }
+            }
+
+            if let Some(task) = proc.find_task_by_ref(&tasks[0]){
+                if task.get_task_uuid() == &"error".to_string(){
+                    assert!(false, "diff");
+                }
+            }
         }
 
         #[test]
         fn test_task_excution() {
-            todo!()
+            // todo!()
         }
     }
 }

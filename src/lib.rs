@@ -6,3 +6,4 @@ pub mod game;
 pub mod task;
 pub mod unit;
 pub mod utils;
+pub mod zone;
