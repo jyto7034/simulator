@@ -75,19 +75,19 @@ mod tests {
             }
         }
 
-        assert_eq!(game.player_1.as_ref().unwrap().borrow().name, "test1");
-        assert_eq!(game.player_2.as_ref().unwrap().borrow().name, "test2");
+        assert_eq!(game.player_1.as_ref().unwrap().borrow().get_name(), "test1");
+        assert_eq!(game.player_2.as_ref().unwrap().borrow().get_name(), "test2");
 
         assert_eq!(
             game.player_1
                 .as_ref()
                 .unwrap()
                 .borrow()
-                .opponent
+                .get_opponent()
                 .as_ref()
                 .unwrap()
                 .borrow()
-                .name,
+                .get_name(),
             "test2"
         );
         assert_eq!(
@@ -95,18 +95,18 @@ mod tests {
                 .as_ref()
                 .unwrap()
                 .borrow()
-                .opponent
+                .get_opponent()
                 .as_ref()
                 .unwrap()
                 .borrow()
-                .name,
+                .get_name(),
             "test1"
         );
 
-        game.player_1.as_ref().unwrap().borrow_mut().name = "player2".to_string();
-        assert_eq!(game.player_1.as_ref().unwrap().borrow().name, "player2");
-        game.player_2.as_ref().unwrap().borrow_mut().name = "player1".to_string();
-        assert_eq!(game.player_2.as_ref().unwrap().borrow().name, "player1");
+        game.player_1.as_ref().unwrap().borrow_mut().get_name() = &"player2".to_string();
+        assert_eq!(game.player_1.as_ref().unwrap().borrow().get_name(), "player2");
+        game.player_2.as_ref().unwrap().borrow_mut().get_name() = &"player1".to_string();
+        assert_eq!(game.player_2.as_ref().unwrap().borrow().get_name(), "player1");
     }
 
     mod utils_test {
@@ -163,7 +163,6 @@ mod tests {
         #[test]
         fn test_task_remove(){
             // task 삭제하는 기능을 테스트 하는 함수입니다.
-            //
             use simulator::exception::exception::Exception;
             let mut proc = Procedure::new();
             

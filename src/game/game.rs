@@ -48,39 +48,38 @@ impl Game {
         // 2개의 Player 객체 생성
         self.player_1 = match self.player_1 {
             Some(_) => None,
-            None => Some(Rc::new(RefCell::new(Player {
-                opponent: None,
-                hero: constant::HeroType::Name1,
-                cards: cards1,
-                name: String::clone(&config.name[ATTACKER]),
-                cost: Cost::new(0, 0),
-                mana: Mana::new(0, 0),
-            }))),
+            None => Some(Rc::new(RefCell::new(Player::new(
+                None,
+                constant::HeroType::Name1,
+                cards1,
+                String::clone(&config.name[ATTACKER]),
+                Cost::new(0, 0),
+                Mana::new(0, 0),
+            )
+        ))),
         };
 
         self.player_2 = match self.player_2 {
             Some(_) => None,
-            None => Some(Rc::new(RefCell::new(Player {
-                opponent: None,
-                hero: constant::HeroType::Name2,
-                cards: cards2,
-                name: String::clone(&config.name[DEFENDER]),
-                cost: Cost::new(0, 0),
-                mana: Mana::new(0, 0),
-            }))),
+            None => Some(Rc::new(RefCell::new(Player::new(
+                None,
+                constant::HeroType::Name1,
+                cards1,
+                String::clone(&config.name[DEFENDER]),
+                Cost::new(0, 0),
+                Mana::new(0, 0),
+            )))),
         };
 
         // opponent 설정
         if let Some(player_1) = &self.player_1 {
-            player_1.as_ref().borrow_mut().opponent =
-                Some(Rc::clone(self.player_2.as_ref().unwrap()));
+            player_1.as_ref().borrow_mut().set_opponent(&Some(Rc::clone(self.player_2.as_ref().unwrap())));
         } else {
             return Err(Exception::PlayerInitializeFailed);
         }
-
+        
         if let Some(player_2) = &self.player_2 {
-            player_2.as_ref().borrow_mut().opponent =
-                Some(Rc::clone(self.player_1.as_ref().unwrap()));
+            player_2.as_ref().borrow_mut().set_opponent(&Some(Rc::clone(self.player_1.as_ref().unwrap())));
         } else {
             return Err(Exception::PlayerInitializeFailed);
         }
@@ -90,7 +89,7 @@ impl Game {
 
     fn check_player_data_integrity(&self) -> Result<(), Exception> {
         if let Some(player1) = self.player_1.as_ref() {
-            if let Some(_) = player1.borrow().opponent.as_ref() {
+            if let Some(_) = player1.borrow().get_opponent().as_ref() {
                 Ok(())
             } else {
                 Err(Exception::PlayerDataNotIntegrity)
@@ -111,14 +110,14 @@ impl Game {
             .unwrap()
             .as_ref()
             .borrow_mut()
-            .cost
+            .get_cost()
             .set(1);
         self.player_1
             .as_ref()
             .unwrap()
             .as_ref()
             .borrow_mut()
-            .mana
+            .get_mana()
             .set(0);
 
         self.player_2
@@ -126,14 +125,14 @@ impl Game {
             .unwrap()
             .as_ref()
             .borrow_mut()
-            .cost
+            .get_cost()
             .set(1);
         self.player_2
             .as_ref()
             .unwrap()
             .as_ref()
             .borrow_mut()
-            .mana
+            .get_mana()
             .set(0);
         Ok(())
     }

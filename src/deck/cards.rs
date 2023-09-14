@@ -57,7 +57,7 @@ impl Cards {
         let ans: Vec<_> = self
             .v_card
             .iter()
-            .filter(|item| item.uuid.cmp(&uuid) == std::cmp::Ordering::Equal)
+            .filter(|item| item.get_uuid().cmp(&uuid) == std::cmp::Ordering::Equal)
             .take(cnt as usize)
             .collect();
 
@@ -68,7 +68,7 @@ impl Cards {
         let ans: Vec<_> = self
             .v_card
             .iter()
-            .filter(|item| item.name.cmp(&name) == std::cmp::Ordering::Equal)
+            .filter(|item| item.get_name().cmp(&name) == std::cmp::Ordering::Equal)
             .take(cnt as usize)
             .collect();
 
@@ -80,7 +80,7 @@ impl Cards {
             let filtered: Vec<_> = self
                 .v_card
                 .iter()
-                .filter(|item| item.card_type == cond)
+                .filter(|item| item.get_card_type() == &cond)
                 .take(cnt)
                 .collect();
             filtered
@@ -90,7 +90,7 @@ impl Cards {
             CardType::Dummy => {
                 vec![]
             }
-            CardType::Agent => filter(CardType::Agent),
+            CardType::Unit => filter(CardType::Unit),
             CardType::Field => filter(CardType::Field),
             CardType::Spell(SpellType::FastSpell) => filter(CardType::Spell(SpellType::FastSpell)),
             CardType::Spell(SpellType::SlowSpell) => filter(CardType::Spell(SpellType::SlowSpell)),
@@ -105,6 +105,14 @@ impl Cards {
         }
     }
 
+    pub fn len(&self) -> usize{
+        self.v_card.len()
+    }
+
+    pub fn push(&mut self, card: &Card){
+        self.v_card.push(card.clone());
+    }
+    
     pub fn dummy() -> Cards {
         Cards { v_card: vec![] }
     }
@@ -161,8 +169,8 @@ impl Cards {
             CardDrawType::CardType(CardType::Field) => {
                 self.draw_by_card_type(CardType::Field, cnt).unwrap()
             }
-            CardDrawType::CardType(CardType::Agent) => {
-                self.draw_by_card_type(CardType::Agent, cnt).unwrap()
+            CardDrawType::CardType(CardType::Unit) => {
+                self.draw_by_card_type(CardType::Unit, cnt).unwrap()
             }
             _ => {
                 vec![]

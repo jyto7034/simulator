@@ -42,7 +42,7 @@ pub enum SpellType {
 #[derive(Debug, PartialEq, Clone)]
 pub enum CardType {
     Dummy,
-    Agent,
+    Unit,
     Spell(SpellType),
     Field,
 }
@@ -87,3 +87,5 @@ pub const COUNT_OF_CARDS: usize = 30;
 
 pub const PLAYER_1: usize = 0;
 pub const PLAYER_2: usize = 1;
+
+pub const UNIT_ZONE_SIZE: usize = 12;
