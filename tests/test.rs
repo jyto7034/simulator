@@ -48,16 +48,6 @@ mod tests {
     }
 
     #[test]
-    fn check_generate_uuid() {
-        match utils::generate_uuid() {
-            Ok(_) => {}
-            Err(err) => {
-                assert!(false, "{err}");
-            }
-        }
-    }
-
-    #[test]
     fn check_set_opponent_player() {
         let config = GameConfig {
             player_1: Deck {
@@ -85,19 +75,19 @@ mod tests {
             }
         }
 
-        assert_eq!(game.player_1.as_ref().unwrap().borrow().name, "test1");
-        assert_eq!(game.player_2.as_ref().unwrap().borrow().name, "test2");
+        assert_eq!(game.player_1.as_ref().unwrap().borrow().get_name(), "test1");
+        assert_eq!(game.player_2.as_ref().unwrap().borrow().get_name(), "test2");
 
         assert_eq!(
             game.player_1
                 .as_ref()
                 .unwrap()
                 .borrow()
-                .opponent
+                .get_opponent()
                 .as_ref()
                 .unwrap()
                 .borrow()
-                .name,
+                .get_name(),
             "test2"
         );
         assert_eq!(
@@ -105,37 +95,120 @@ mod tests {
                 .as_ref()
                 .unwrap()
                 .borrow()
-                .opponent
+                .get_opponent()
                 .as_ref()
                 .unwrap()
                 .borrow()
-                .name,
+                .get_name(),
             "test1"
         );
 
-        game.player_1.as_ref().unwrap().borrow_mut().name = "player2".to_string();
-        assert_eq!(game.player_1.as_ref().unwrap().borrow().name, "player2");
-        game.player_2.as_ref().unwrap().borrow_mut().name = "player1".to_string();
-        assert_eq!(game.player_2.as_ref().unwrap().borrow().name, "player1");
+        game.player_1.as_ref().unwrap().borrow_mut().get_name() = &"player2".to_string();
+        assert_eq!(game.player_1.as_ref().unwrap().borrow().get_name(), "player2");
+        game.player_2.as_ref().unwrap().borrow_mut().get_name() = &"player1".to_string();
+        assert_eq!(game.player_2.as_ref().unwrap().borrow().get_name(), "player1");
     }
 
-    #[test]
-    fn test_load_card_data() {
-        match  utils::parse_json(){
-            Ok(json) => {
-                match utils::load_card_data(&json){
-                    Ok(data) =>{
+    mod utils_test {
+        use super::*;
+
+        #[test]
+        fn check_generate_uuid() {
+            match utils::generate_uuid() {
+                Ok(_) => {}
+                Err(err) => {
+                    assert!(false, "{err}");
+                }
+            }
+        }
+
+        #[test]
+        fn test_load_card_data() {
+            match utils::parse_json() {
+                Ok(json) => match utils::load_card_data(&json) {
+                    Ok(data) => {
                         println!("{:#?}", data);
                     }
-                    Err(err) =>{
+                    Err(err) => {
                         assert!(false, "{err}");
                     }
-                } 
-            }
-            Err(err) => {
-                assert!(false, "{err}");
+                },
+                Err(err) => {
+                    assert!(false, "{err}");
+                }
             }
         }
     }
 
+    mod task_test {
+
+        use super::*;
+        use simulator::{game::Behavior, task::Task, enums::*};
+
+        fn add_task(proc: &mut Procedure) -> Task{
+            let task = match Task::new(
+                Behavior::AddCardToDeck,
+                TaskPriority::Immediately,
+            ) {
+                Ok(task) => task,
+                Err(err) => {
+                    assert!(false, "{err}");
+                    Task::dummy()
+                }
+            };
+            proc.add_task(&task);
+            task
+        }
+            
+        #[test]
+        fn test_task_remove(){
+            // task 삭제하는 기능을 테스트 하는 함수입니다.
+            use simulator::exception::exception::Exception;
+            let mut proc = Procedure::new();
+            
+            let task = add_task(&mut proc);
+
+            match proc.remove_task_by_uuid(task.get_task_uuid()) {
+                Ok(_) => {},
+                Err(err) => {
+                    match err {
+                        Exception::NothingToRemove => {},
+                        _ => assert!(false, "{err}"),
+                    };
+                },
+            }
+
+            for item in &proc.task_queue{
+                if item.get_task_uuid() == task.get_task_uuid(){
+                    assert!(false, "Exist");
+                }
+            }
+        }
+
+        // TODO: 일부로 오류내는 함수 작성해야함.
+
+        #[test]
+        fn test_task_find() {
+            let mut proc = Procedure::new();
+            let tasks = vec![add_task(&mut proc), add_task(&mut proc), add_task(&mut proc), add_task(&mut proc)];
+            for item in &tasks{
+                if let Some(task) = proc.find_task_by_ref(item){
+                    if task.get_task_uuid() != item.get_task_uuid(){
+                        assert!(false, "Diff");
+                    }
+                }
+            }
+
+            if let Some(task) = proc.find_task_by_ref(&tasks[0]){
+                if task.get_task_uuid() == &"error".to_string(){
+                    assert!(false, "diff");
+                }
+            }
+        }
+
+        #[test]
+        fn test_task_excution() {
+            // todo!()
+        }
+    }
 }

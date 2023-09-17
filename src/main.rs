@@ -1,6 +1,6 @@
 use std::{fs::File, io::Read};
 
-use simulator::{utils::json, exception::exception::Exception};
+use simulator::{exception::exception::Exception, utils::json};
 
 fn main() {
     let file_path = "E:/work/simulator/Datas/data.json";
@@ -13,7 +13,6 @@ fn main() {
     file.read_to_string(&mut json_data)
         .expect("Failed to read file");
 
-
     println!("{:#?}", json_data);
 
     let decks: json::Decks = match serde_json::from_str(&json_data[..]) {
@@ -21,6 +20,6 @@ fn main() {
         Err(_) => {
             println!("error");
             return;
-        },
+        }
     };
 }

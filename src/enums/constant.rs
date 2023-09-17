@@ -1,5 +1,8 @@
 use crate::task::task::Task;
 
+pub const CARD_JSON_PATH: &str = "C:/WORK/simulator/Resource/cards.json";
+pub const DECK_JSON_PATH: &str = "C:/WORK/simulator/Datas/data.json";
+
 pub enum GameStep {
     GameStart,
     GameEnd,
@@ -39,7 +42,7 @@ pub enum SpellType {
 #[derive(Debug, PartialEq, Clone)]
 pub enum CardType {
     Dummy,
-    Agent,
+    Unit,
     Spell(SpellType),
     Field,
 }
@@ -49,15 +52,14 @@ pub enum HeroType {
     Name2,
 }
 
-pub enum TaskType {
-    DrawCardFromHand,
-    DrawCardFromDeck,
-}
-
-pub enum TaskPrioty {
-    High,
-    Medium,
-    Low,
+#[derive(Clone)]
+pub enum TaskPriority {
+    Immediately,
+    RoundEnd,
+    RoundStart,
+    AttackTurn,
+    DefenseTurn,
+    None,
 }
 
 /// 무슨 카드의 유형을 Draw 할 건지에 대한 enum 입니다.
@@ -79,7 +81,11 @@ pub const MAX_CARD_SIZE: u32 = 30;
 
 pub type TaskQueue = Vec<Task>;
 
+pub type UUID = String;
+
 pub const COUNT_OF_CARDS: usize = 30;
 
 pub const PLAYER_1: usize = 0;
 pub const PLAYER_2: usize = 1;
+
+pub const UNIT_ZONE_SIZE: usize = 12;

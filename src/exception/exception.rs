@@ -4,9 +4,12 @@ pub enum Exception {
     PlayerInitializeFailed,
     PlayerDataNotIntegrity,
     GenerateUUIDFaild,
-    DeckParseError,
+    ExceededCardLimit,
+    NothingToRemove,
     JsonParseFailed,
+    DeckParseError,
     ReadFileFailed,
+    DifferentCardTypes,
     NoCardsLeft,
     Ok,
 }
