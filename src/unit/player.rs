@@ -1,10 +1,10 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use crate::deck::Cards;
+use crate::deck::{Cards, Deck};
 use crate::enums::constant;
 use crate::unit::entity::Entity;
-use crate::zone::{HandZone, DeckZone, GraveyardZone};
+use crate::zone::{DeckZone, GraveyardZone, HandZone};
 
 pub trait IResource {
     fn increase(&mut self) -> &mut Self;
@@ -91,8 +91,14 @@ impl Entity for Player {
 }
 
 impl Player {
-    pub fn new(opponent : Option<Rc<RefCell<Player>>>, hero: constant::HeroType, 
-        cards: Cards, name: String, cost: Cost, mana: Mana) -> Player{
+    pub fn new(
+        opponent: Option<Rc<RefCell<Player>>>,
+        hero: constant::HeroType,
+        cards: Cards,
+        name: String,
+        cost: Cost,
+        mana: Mana,
+    ) -> Player {
         Player {
             opponent,
             hero,
@@ -100,6 +106,10 @@ impl Player {
             name,
             cost,
             mana,
+            hand_zone: HandZone::new(),
+            deck_zone: DeckZone::new(),
+            graveyard_zone: GraveyardZone::new(),
+            
         }
     }
 
@@ -141,7 +151,7 @@ impl Player {
 
     // Setter 함수들
     pub fn set_opponent(&mut self, new_opponent: &Option<Rc<RefCell<Player>>>) {
-        self.opponent = *new_opponent;
+        todo!()
     }
 
     pub fn set_hero(&mut self, new_hero: constant::HeroType) {
@@ -156,11 +166,11 @@ impl Player {
         self.name = new_name;
     }
 
-    pub fn set_cost(&mut self, new_cost: Cost) {
-        self.cost = new_cost;
+    pub fn set_cost(&mut self, cost: u32) {
+        self.cost.set(cost);
     }
 
-    pub fn set_mana(&mut self, new_mana: Mana) {
-        self.mana = new_mana;
+    pub fn set_mana(&mut self, cost: u32) {
+        self.mana.set(cost);
     }
 }

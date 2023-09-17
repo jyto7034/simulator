@@ -1,4 +1,4 @@
-use std::{cell::RefCell, rc::Rc};
+use std::{cell::RefCell, rc::Rc, borrow::BorrowMut};
 
 use crate::{
     deck::{deck::Deck, Cards},
@@ -55,8 +55,7 @@ impl Game {
                 String::clone(&config.name[ATTACKER]),
                 Cost::new(0, 0),
                 Mana::new(0, 0),
-            )
-        ))),
+            )))),
         };
 
         self.player_2 = match self.player_2 {
@@ -64,7 +63,7 @@ impl Game {
             None => Some(Rc::new(RefCell::new(Player::new(
                 None,
                 constant::HeroType::Name1,
-                cards1,
+                cards2,
                 String::clone(&config.name[DEFENDER]),
                 Cost::new(0, 0),
                 Mana::new(0, 0),
@@ -73,13 +72,19 @@ impl Game {
 
         // opponent 설정
         if let Some(player_1) = &self.player_1 {
-            player_1.as_ref().borrow_mut().set_opponent(&Some(Rc::clone(self.player_2.as_ref().unwrap())));
+            player_1
+                .as_ref()
+                .borrow_mut()
+                .set_opponent(&Some(Rc::clone(self.player_2.as_ref().unwrap())));
         } else {
             return Err(Exception::PlayerInitializeFailed);
         }
-        
+
         if let Some(player_2) = &self.player_2 {
-            player_2.as_ref().borrow_mut().set_opponent(&Some(Rc::clone(self.player_1.as_ref().unwrap())));
+            player_2
+                .as_ref()
+                .borrow_mut()
+                .set_opponent(&Some(Rc::clone(self.player_1.as_ref().unwrap())));
         } else {
             return Err(Exception::PlayerInitializeFailed);
         }
@@ -105,35 +110,16 @@ impl Game {
         self.check_player_data_integrity()?;
 
         // 코스트와 마나를 설정해줍니다.
-        self.player_1
-            .as_ref()
-            .unwrap()
-            .as_ref()
-            .borrow_mut()
-            .get_cost()
-            .set(1);
-        self.player_1
-            .as_ref()
-            .unwrap()
-            .as_ref()
-            .borrow_mut()
-            .get_mana()
-            .set(0);
+        if let Some(player) = &self.player_1{
+            player.as_ref().borrow_mut().set_mana(0);
+            player.as_ref().borrow_mut().set_cost(0);
 
-        self.player_2
-            .as_ref()
-            .unwrap()
-            .as_ref()
-            .borrow_mut()
-            .get_cost()
-            .set(1);
-        self.player_2
-            .as_ref()
-            .unwrap()
-            .as_ref()
-            .borrow_mut()
-            .get_mana()
-            .set(0);
+        }
+
+        if let Some(player) = &self.player_1{
+            player.as_ref().borrow_mut().set_mana(0);
+            player.as_ref().borrow_mut().set_cost(0);
+        }
         Ok(())
     }
 
@@ -153,4 +139,11 @@ impl Game {
     pub fn game_step_round_end(&mut self) {}
 
     pub fn next_step() {}
+}
+
+
+impl Game{
+    pub fn get_player1(&self) -> Result<&mut Player, Exception>{
+        let d = Rc::clone(&self.player_1.unwrap());
+    }
 }

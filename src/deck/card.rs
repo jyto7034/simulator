@@ -30,7 +30,7 @@ impl Card {
         true
     }
 
-    pub fn get_uuid(&self) -> &String{
+    pub fn get_uuid(&self) -> &String {
         &self.uuid
     }
 

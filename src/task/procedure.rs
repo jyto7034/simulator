@@ -24,23 +24,22 @@ impl Procedure {
 
         result.first().copied()
     }
-    
+
     pub fn find_task_by_ref(&self, task: &Task) -> Option<&Task> {
         self.find_task_by_uuid(task.get_task_uuid())
     }
 
-    pub fn remove_task_by_uuid(&mut self, uuid: &UUID) ->Result<(),Exception>{
+    pub fn remove_task_by_uuid(&mut self, uuid: &UUID) -> Result<(), Exception> {
         let prev_len = self.task_queue.len();
         self.task_queue.retain(|item| item.get_task_uuid() != uuid);
-        if self.task_queue.len() != prev_len{
+        if self.task_queue.len() != prev_len {
             Ok(())
-        }
-        else{
+        } else {
             Err(Exception::NothingToRemove)
         }
     }
 
-    pub fn remove_task_by_ref(&mut self, task: &Task) -> Result<(),Exception>{
+    pub fn remove_task_by_ref(&mut self, task: &Task) -> Result<(), Exception> {
         self.remove_task_by_uuid(task.get_task_uuid())
     }
 
@@ -76,8 +75,8 @@ impl Procedure {
                 }
                 TaskPriority::None => {}
             }
-            if let Err(err) = self.remove_task_by_uuid(task.get_task_uuid()){
-                if err == Exception::NothingToRemove{
+            if let Err(err) = self.remove_task_by_uuid(task.get_task_uuid()) {
+                if err == Exception::NothingToRemove {
                     todo!();
                 }
             }

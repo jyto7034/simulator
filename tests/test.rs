@@ -103,10 +103,16 @@ mod tests {
             "test1"
         );
 
-        game.player_1.as_ref().unwrap().borrow_mut().get_name() = &"player2".to_string();
-        assert_eq!(game.player_1.as_ref().unwrap().borrow().get_name(), "player2");
-        game.player_2.as_ref().unwrap().borrow_mut().get_name() = &"player1".to_string();
-        assert_eq!(game.player_2.as_ref().unwrap().borrow().get_name(), "player1");
+        game.player_1.as_ref().unwrap().borrow_mut().set_name("player2".to_string());
+        assert_eq!(
+            game.player_1.as_ref().unwrap().borrow().get_name(),
+            "player2"
+        );
+        game.player_2.as_ref().unwrap().borrow_mut().set_name("player2".to_string());
+        assert_eq!(
+            game.player_2.as_ref().unwrap().borrow().get_name(),
+            "player1"
+        );
     }
 
     mod utils_test {
@@ -143,13 +149,10 @@ mod tests {
     mod task_test {
 
         use super::*;
-        use simulator::{game::Behavior, task::Task, enums::*};
+        use simulator::{enums::*, game::Behavior, task::Task};
 
-        fn add_task(proc: &mut Procedure) -> Task{
-            let task = match Task::new(
-                Behavior::AddCardToDeck,
-                TaskPriority::Immediately,
-            ) {
+        fn add_task(proc: &mut Procedure) -> Task {
+            let task = match Task::new(Behavior::AddCardToDeck, TaskPriority::Immediately) {
                 Ok(task) => task,
                 Err(err) => {
                     assert!(false, "{err}");
@@ -159,27 +162,27 @@ mod tests {
             proc.add_task(&task);
             task
         }
-            
+
         #[test]
-        fn test_task_remove(){
+        fn test_task_remove() {
             // task 삭제하는 기능을 테스트 하는 함수입니다.
             use simulator::exception::exception::Exception;
             let mut proc = Procedure::new();
-            
+
             let task = add_task(&mut proc);
 
             match proc.remove_task_by_uuid(task.get_task_uuid()) {
-                Ok(_) => {},
+                Ok(_) => {}
                 Err(err) => {
                     match err {
-                        Exception::NothingToRemove => {},
+                        Exception::NothingToRemove => {}
                         _ => assert!(false, "{err}"),
                     };
-                },
+                }
             }
 
-            for item in &proc.task_queue{
-                if item.get_task_uuid() == task.get_task_uuid(){
+            for item in &proc.task_queue {
+                if item.get_task_uuid() == task.get_task_uuid() {
                     assert!(false, "Exist");
                 }
             }
@@ -190,17 +193,22 @@ mod tests {
         #[test]
         fn test_task_find() {
             let mut proc = Procedure::new();
-            let tasks = vec![add_task(&mut proc), add_task(&mut proc), add_task(&mut proc), add_task(&mut proc)];
-            for item in &tasks{
-                if let Some(task) = proc.find_task_by_ref(item){
-                    if task.get_task_uuid() != item.get_task_uuid(){
+            let tasks = vec![
+                add_task(&mut proc),
+                add_task(&mut proc),
+                add_task(&mut proc),
+                add_task(&mut proc),
+            ];
+            for item in &tasks {
+                if let Some(task) = proc.find_task_by_ref(item) {
+                    if task.get_task_uuid() != item.get_task_uuid() {
                         assert!(false, "Diff");
                     }
                 }
             }
 
-            if let Some(task) = proc.find_task_by_ref(&tasks[0]){
-                if task.get_task_uuid() == &"error".to_string(){
+            if let Some(task) = proc.find_task_by_ref(&tasks[0]) {
+                if task.get_task_uuid() == &"error".to_string() {
                     assert!(false, "diff");
                 }
             }
