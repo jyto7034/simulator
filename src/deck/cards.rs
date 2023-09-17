@@ -105,14 +105,14 @@ impl Cards {
         }
     }
 
-    pub fn len(&self) -> usize{
+    pub fn len(&self) -> usize {
         self.v_card.len()
     }
 
-    pub fn push(&mut self, card: &Card){
+    pub fn push(&mut self, card: &Card) {
         self.v_card.push(card.clone());
     }
-    
+
     pub fn dummy() -> Cards {
         Cards { v_card: vec![] }
     }

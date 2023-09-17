@@ -45,7 +45,10 @@ impl Zone for UnitZone{
 
 impl UnitZone{
     pub fn new() -> UnitZone{
-        UnitZone { zone_cards: Cards::new(&vec![]), zone_size: constant::UNIT_ZONE_SIZE }
+        UnitZone { 
+            zone_cards: Cards::new(&vec![]), 
+            zone_size: constant::UNIT_ZONE_SIZE 
+        }
     }
 
     /// 카드를 교체합니다.
