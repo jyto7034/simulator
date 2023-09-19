@@ -175,7 +175,6 @@ mod tests {
             let card_generator = CardGenertor::new();
             let card = card_generator.gen_card_by_id("test".to_string());
             println!("{:#?}", card);
-            
         }
     }
 

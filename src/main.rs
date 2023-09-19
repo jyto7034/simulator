@@ -11,7 +11,7 @@
 
 // fn main() {
 //     let s: String = "func_1".into();
-    
+
 //     dispatch(&s);
 // }
 
@@ -27,11 +27,11 @@
 //     println!("Function 2");
 // }
 
-fn  main(){
+fn main() {
     let v1 = [1, 2, 3].iter();
     let v2 = ["a", "b", "c"].iter();
-    
-    for (a, b) in v1.zip(v2){
+
+    for (a, b) in v1.zip(v2) {
         println!("{a}, {b}");
     }
 }

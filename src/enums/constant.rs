@@ -79,9 +79,10 @@ pub enum FindType {
     FindByName(String),
 }
 
-pub enum TimeType{
+pub enum TimeType {
     Day,
     Night,
+    None,
 }
 
 pub const MAX_CARD_SIZE: u32 = 30;

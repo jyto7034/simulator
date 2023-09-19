@@ -9,7 +9,6 @@ pub struct Card {
     card_type: constant::CardType,
     uuid: String,
     name: String,
-    count: usize,
     behavior_table: Vec<Behavior>,
     card_json: CardJson,
 }
@@ -20,7 +19,6 @@ impl Card {
             card_type: CardType::Dummy,
             uuid: "".to_string(),
             name: "dummy".to_string(),
-            count: 0,
             behavior_table: vec![],
             card_json: CardJson::new(),
         }
@@ -30,7 +28,6 @@ impl Card {
         card_type: CardType,
         uuid: UUID,
         name: String,
-        count: usize,
         behavior_table: Vec<Behavior>,
         card_json: CardJson,
     ) -> Card {
@@ -38,7 +35,6 @@ impl Card {
             card_type,
             uuid,
             name,
-            count,
             behavior_table,
             card_json,
         }
@@ -60,10 +56,6 @@ impl Card {
         &self.name
     }
 
-    pub fn get_count(&self) -> usize {
-        self.count
-    }
-
     pub fn get_behavior_table(&self) -> &Vec<Behavior> {
         &self.behavior_table
     }
@@ -83,10 +75,6 @@ impl Card {
 
     pub fn set_name(&mut self, new_name: String) {
         self.name = new_name;
-    }
-
-    pub fn set_count(&mut self, new_count: usize) {
-        self.count = new_count;
     }
 
     pub fn set_behavior_table(&mut self, new_behavior_table: Vec<Behavior>) {

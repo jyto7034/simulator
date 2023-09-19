@@ -1,24 +1,22 @@
+use crate::enums::CardType;
 use crate::{deck::Card, utils, utils::json::CardJson};
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
-use crate::enums::CardType;
 
-fn test() -> Card{
+fn test() -> Card {
     println!("test func");
-    let uuid = match utils::utils::generate_uuid(){
+    let uuid = match utils::utils::generate_uuid() {
         Ok(data) => data,
         Err(err) => {
             panic!("test func failed {err}");
-        },
+        }
     };
-    Card::new(CardType::Unit, uuid, "test".into(), 1, vec![], 
-    CardJson::new())
+    Card::new(CardType::Unit, uuid, "test".into(), vec![], CardJson::new())
 }
 
 type CardGeneratorFn = fn() -> Card;
 const FUNCTION_TABLE: [CardGeneratorFn; 27] = [
     test,
-    
     human::HM_001,
     human::HM_002,
     human::HM_003,
@@ -27,7 +25,6 @@ const FUNCTION_TABLE: [CardGeneratorFn; 27] = [
     human::HM_006,
     human::HM_007,
     human::HM_008,
-
     monster::MT_001,
     monster::MT_002,
     monster::MT_003,
@@ -38,7 +35,6 @@ const FUNCTION_TABLE: [CardGeneratorFn; 27] = [
     monster::MT_008,
     monster::MT_009,
     monster::MT_010,
-
     public::PB_001,
     public::PB_002,
     public::PB_003,
@@ -53,40 +49,43 @@ struct Species {
     pub species: Vec<String>,
 }
 
-impl Species{
-    pub fn new() -> Species{
+impl Species {
+    pub fn new() -> Species {
         Species { species: vec![] }
     }
 
-    pub fn initialize(&mut self){
-        self.species = match utils::utils::load_card_id(){
+    pub fn initialize(&mut self) {
+        self.species = match utils::utils::load_card_id() {
             Ok(data) => data,
             Err(_) => panic!("Unknown Err fun: species initialize"),
         };
     }
 }
-pub struct CardGenertor{
+pub struct CardGenertor {
     species: Species,
     pub card_generators: Lazy<HashMap<String, CardGeneratorFn>>,
 }
 
 impl CardGenertor {
-    pub fn new() -> CardGenertor{
+    pub fn new() -> CardGenertor {
         let mut species = Species::new();
         species.initialize();
 
-        CardGenertor { species, card_generators: Lazy::new(|| {
-            let mut map = HashMap::new();
-            let mut species = Species::new();
-            species.initialize();
-            let func_it = FUNCTION_TABLE.iter();
-            for (id, func) in species.species.iter().zip(func_it){
-                map.insert(id.to_string(), *func);
-            }
-            map
-        })}
+        CardGenertor {
+            species,
+            card_generators: Lazy::new(|| {
+                let mut map = HashMap::new();
+                let mut species = Species::new();
+                species.initialize();
+                let func_it = FUNCTION_TABLE.iter();
+                for (id, func) in species.species.iter().zip(func_it) {
+                    map.insert(id.to_string(), *func);
+                }
+                map
+            }),
+        }
     }
-    
+
     pub fn gen_card_by_id(&self, id: String) -> Card {
         if let Some(generator) = self.card_generators.get(&id[..]) {
             generator()
@@ -96,7 +95,7 @@ impl CardGenertor {
     }
 }
 
-mod monster{
+mod monster {
     use super::*;
 
     #[allow(non_snake_case)]
@@ -151,9 +150,9 @@ mod monster{
     }
 }
 
-mod public{
+mod public {
     use super::*;
-    
+
     #[allow(non_snake_case)]
     pub fn PB_001() -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
@@ -201,8 +200,13 @@ mod human {
 
     #[allow(non_snake_case)]
     pub fn HM_001() -> Card {
-        // Card::new(card_type, uuid, name, count, behavior_table, card_json)
-        todo!()
+        let uuid = match utils::utils::generate_uuid() {
+            Ok(data) => data,
+            Err(err) => {
+                panic!("test func failed {err}");
+            }
+        };
+        Card::new(CardType::Unit, uuid, "test".into(), vec![], CardJson::new())
     }
 
     #[allow(non_snake_case)]
