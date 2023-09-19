@@ -1,25 +1,37 @@
-use std::{fs::File, io::Read};
+// macro_rules! dispatch_to {
+//     ($val:expr => {$($func:ident),*}) => {
+//             match $val {
+//                 $(
+//                     stringify!($func) => $func(),
+//                 )*
+//                 _ => {},
+//             }
+//     }
+// }
 
-use simulator::{exception::exception::Exception, utils::json};
+// fn main() {
+//     let s: String = "func_1".into();
+    
+//     dispatch(&s);
+// }
 
-fn main() {
-    let file_path = "E:/work/simulator/Datas/data.json";
+// fn dispatch(s: &str) {
+//     dispatch_to!(s => {func_1, func_2});
+// }
 
-    // 파일 열기
-    let mut file = File::open(file_path).expect("Failed to open file");
+// fn func_1(){
+//     println!("Function 1");
+// }
 
-    // 파일 내용을 문자열로 읽기
-    let mut json_data = String::new();
-    file.read_to_string(&mut json_data)
-        .expect("Failed to read file");
+// fn func_2() {
+//     println!("Function 2");
+// }
 
-    println!("{:#?}", json_data);
-
-    let decks: json::Decks = match serde_json::from_str(&json_data[..]) {
-        Ok(data) => data,
-        Err(_) => {
-            println!("error");
-            return;
-        }
-    };
+fn  main(){
+    let v1 = [1, 2, 3].iter();
+    let v2 = ["a", "b", "c"].iter();
+    
+    for (a, b) in v1.zip(v2){
+        println!("{a}, {b}");
+    }
 }

@@ -1,8 +1,8 @@
 use crate::deck::{Card, Cards};
+use crate::enums::constant;
 use crate::enums::constant::CardType;
 use crate::exception::exception::Exception;
 use crate::zone::Zone;
-use crate::enums::constant;
 
 pub struct GraveyardZone {
     zone_cards: Cards,
@@ -41,11 +41,11 @@ impl Zone for GraveyardZone {
     }
 }
 
-impl GraveyardZone{
-    pub fn new() -> GraveyardZone{
-        GraveyardZone{
-            zone_cards: Cards::new(&vec![]), 
-            zone_size: constant::UNIT_ZONE_SIZE          
+impl GraveyardZone {
+    pub fn new() -> GraveyardZone {
+        GraveyardZone {
+            zone_cards: Cards::new(&vec![]),
+            zone_size: constant::UNIT_ZONE_SIZE,
         }
     }
 }

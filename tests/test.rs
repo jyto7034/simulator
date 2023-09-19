@@ -75,8 +75,14 @@ mod tests {
             }
         }
 
-        assert_eq!(game.player_1.as_ref().unwrap().borrow().get_name(), "test1");
-        assert_eq!(game.player_2.as_ref().unwrap().borrow().get_name(), "test2");
+        assert_eq!(
+            *game.player_1.as_ref().unwrap().borrow().get_name(),
+            "test1"
+        );
+        assert_eq!(
+            *game.player_2.as_ref().unwrap().borrow().get_name(),
+            "test2"
+        );
 
         assert_eq!(
             game.player_1
@@ -103,12 +109,20 @@ mod tests {
             "test1"
         );
 
-        game.player_1.as_ref().unwrap().borrow_mut().set_name("player2".to_string());
+        game.player_1
+            .as_ref()
+            .unwrap()
+            .borrow_mut()
+            .set_name("player2".to_string());
         assert_eq!(
             game.player_1.as_ref().unwrap().borrow().get_name(),
             "player2"
         );
-        game.player_2.as_ref().unwrap().borrow_mut().set_name("player2".to_string());
+        game.player_2
+            .as_ref()
+            .unwrap()
+            .borrow_mut()
+            .set_name("player2".to_string());
         assert_eq!(
             game.player_2.as_ref().unwrap().borrow().get_name(),
             "player1"
@@ -116,6 +130,8 @@ mod tests {
     }
 
     mod utils_test {
+        use simulator::card_gen::card_gen::CardGenertor;
+
         use super::*;
 
         #[test]
@@ -143,6 +159,23 @@ mod tests {
                     assert!(false, "{err}");
                 }
             }
+        }
+
+        // TODO: assert 문 넣어야함.
+        #[test]
+        fn test_load_card_id() {
+            match utils::load_card_id() {
+                Ok(data) => println!("{:#?}", data),
+                Err(_) => {}
+            }
+        }
+
+        #[test]
+        fn test_card_genertor() {
+            let card_generator = CardGenertor::new();
+            let card = card_generator.gen_card_by_id("test".to_string());
+            println!("{:#?}", card);
+            
         }
     }
 

@@ -1,5 +1,10 @@
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct Item {
+    pub id: String,
+}
+
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Card {
     pub id: String,

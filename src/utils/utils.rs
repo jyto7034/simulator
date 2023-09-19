@@ -1,6 +1,6 @@
 use crate::card_gen::card_gen::CardGenertor;
 use crate::deck::{Card, Cards};
-use crate::enums::constant;
+use crate::enums::constant::{self, UUID_GENERATOR_PATH};
 use crate::exception::exception::Exception;
 use crate::utils::json;
 use std::fs::File;
@@ -8,7 +8,7 @@ use std::io::Read;
 use std::process::{Command, Stdio};
 
 pub fn generate_uuid() -> Result<String, Exception> {
-    let output = if let Ok(ans) = Command::new("C:\\work\\rust\\simulator\\uuidgen")
+    let output = if let Ok(ans) = Command::new(UUID_GENERATOR_PATH)
         .stdout(Stdio::piped())
         .output()
     {
@@ -67,12 +67,14 @@ pub fn load_card_data(player_cards: &json::Decks) -> Result<Vec<Cards>, Exceptio
     use constant::{PLAYER_1, PLAYER_2};
     use json::CardJson;
 
+    let card_genertor = CardGenertor::new();
+
     let mut check_values_exist =
         |player_num: usize, card_data: &CardJson| -> Result<(), Exception> {
             for player_card in &player_cards.decks[0].cards {
                 if let Some(id) = &card_data.id {
                     if player_card.id == *id {
-                        ps_cards[player_num].push(CardGenertor::gen_card_by_id(id.to_string()));
+                        ps_cards[player_num].push(card_genertor.gen_card_by_id(id.to_string()));
                     }
                 } else {
                     return Err(Exception::DeckParseError);
@@ -90,4 +92,28 @@ pub fn load_card_data(player_cards: &json::Decks) -> Result<Vec<Cards>, Exceptio
     }
 
     Ok(vec![Cards::new(&p1_cards), Cards::new(&p2_cards)])
+}
+
+pub fn load_card_id() -> Result<Vec<String>, Exception> {
+    let file_path = constant::CARD_ID_JSON_PATH;
+
+    // 파일 열기
+    let mut file = File::open(file_path).expect("Failed to open file");
+
+    // 파일 내용을 문자열로 읽기
+    let mut json_data = String::new();
+    file.read_to_string(&mut json_data)
+        .expect("Failed to read file");
+
+    let card_json: Vec<json::Item> = match serde_json::from_str(&json_data[..]) {
+        Ok(data) => data,
+        Err(_) => return Err(Exception::JsonParseFailed),
+    };
+
+    let mut ids = vec![];
+
+    for item in &card_json {
+        ids.push(item.id.clone());
+    }
+    Ok(ids)
 }

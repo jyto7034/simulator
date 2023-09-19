@@ -1,8 +1,8 @@
 use crate::deck::{Card, Cards};
+use crate::enums::constant;
 use crate::enums::constant::CardType;
 use crate::exception::exception::Exception;
 use crate::zone::Zone;
-use crate::enums::constant;
 
 pub struct HandZone {
     zone_cards: Cards,
@@ -42,10 +42,10 @@ impl Zone for HandZone {
 }
 
 impl HandZone {
-    pub fn new() -> HandZone{
-        HandZone{
-            zone_cards: Cards::new(&vec![]), 
-            zone_size: constant::UNIT_ZONE_SIZE          
+    pub fn new() -> HandZone {
+        HandZone {
+            zone_cards: Cards::new(&vec![]),
+            zone_size: constant::UNIT_ZONE_SIZE,
         }
     }
 }

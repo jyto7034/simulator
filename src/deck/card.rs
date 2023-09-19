@@ -1,4 +1,4 @@
-use crate::enums::constant::{self, CardType};
+use crate::enums::constant::{self, CardType, UUID};
 use crate::game::Behavior;
 use crate::utils::json::CardJson;
 
@@ -23,6 +23,24 @@ impl Card {
             count: 0,
             behavior_table: vec![],
             card_json: CardJson::new(),
+        }
+    }
+
+    pub fn new(
+        card_type: CardType,
+        uuid: UUID,
+        name: String,
+        count: usize,
+        behavior_table: Vec<Behavior>,
+        card_json: CardJson,
+    ) -> Card {
+        Card {
+            card_type,
+            uuid,
+            name,
+            count,
+            behavior_table,
+            card_json,
         }
     }
 

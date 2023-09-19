@@ -1,7 +1,9 @@
 use crate::task::task::Task;
 
-pub const CARD_JSON_PATH: &str = "C:/WORK/simulator/Resource/cards.json";
-pub const DECK_JSON_PATH: &str = "C:/WORK/simulator/Datas/data.json";
+pub const CARD_ID_JSON_PATH: &str = "Resource/cards_id.json";
+pub const CARD_JSON_PATH: &str = "Resource/cards.json";
+pub const DECK_JSON_PATH: &str = "Datas/data.json";
+pub const UUID_GENERATOR_PATH: &str = "Resource/uuidgen";
 
 pub enum GameStep {
     GameStart,
@@ -75,6 +77,11 @@ pub enum FindType {
     FindByUUID(String),
     FindByCardType(CardType),
     FindByName(String),
+}
+
+pub enum TimeType{
+    Day,
+    Night,
 }
 
 pub const MAX_CARD_SIZE: u32 = 30;

@@ -1,11 +1,11 @@
-use std::{cell::RefCell, rc::Rc, borrow::BorrowMut};
+use std::{cell::RefCell, rc::Rc};
 
 use crate::{
     deck::{deck::Deck, Cards},
     enums::constant,
     exception::exception::Exception,
     task::procedure::Procedure,
-    unit::{player::Player, Cost, IResource, Mana},
+    unit::{player::Player, Cost, Mana},
 };
 pub struct GameConfig {
     pub player_1: Deck,
@@ -110,13 +110,12 @@ impl Game {
         self.check_player_data_integrity()?;
 
         // 코스트와 마나를 설정해줍니다.
-        if let Some(player) = &self.player_1{
+        if let Some(player) = &self.player_1 {
             player.as_ref().borrow_mut().set_mana(0);
             player.as_ref().borrow_mut().set_cost(0);
-
         }
 
-        if let Some(player) = &self.player_1{
+        if let Some(player) = &self.player_1 {
             player.as_ref().borrow_mut().set_mana(0);
             player.as_ref().borrow_mut().set_cost(0);
         }
@@ -139,11 +138,4 @@ impl Game {
     pub fn game_step_round_end(&mut self) {}
 
     pub fn next_step() {}
-}
-
-
-impl Game{
-    pub fn get_player1(&self) -> Result<&mut Player, Exception>{
-        let d = Rc::clone(&self.player_1.unwrap());
-    }
 }

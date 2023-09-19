@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use crate::deck::{Cards, Deck};
+use crate::deck::Cards;
 use crate::enums::constant;
 use crate::unit::entity::Entity;
 use crate::zone::{DeckZone, GraveyardZone, HandZone};
@@ -109,7 +109,6 @@ impl Player {
             hand_zone: HandZone::new(),
             deck_zone: DeckZone::new(),
             graveyard_zone: GraveyardZone::new(),
-            
         }
     }
 
