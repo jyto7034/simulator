@@ -3,6 +3,7 @@ use std::rc::Rc;
 
 use crate::deck::Cards;
 use crate::enums::constant;
+use crate::exception::exception::Exception;
 use crate::unit::entity::Entity;
 use crate::zone::{DeckZone, GraveyardZone, HandZone};
 
@@ -87,6 +88,9 @@ pub struct Player {
 impl Entity for Player {
     fn get_entity_type(&self) -> String {
         "Player".to_string()
+    }
+    fn run(&self) -> Result<(), Exception> {
+        Ok(())
     }
 }
 

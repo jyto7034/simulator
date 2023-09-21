@@ -1,16 +1,39 @@
+use std::fmt;
+use std::sync::Arc;
+
 use crate::enums::constant::{self, CardType, UUID};
+use crate::exception::exception::Exception;
 use crate::game::Behavior;
+use crate::unit::Entity;
 use crate::utils::json::CardJson;
 
 /// 카드의 행동, 정보를 정의하는 구조체 입니다.
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct Card {
     card_type: constant::CardType,
     uuid: String,
     name: String,
     behavior_table: Vec<Behavior>,
     card_json: CardJson,
+    runner: Option<Arc<dyn Fn(&mut Card) -> Result<(), Exception>>>,
+}
+
+impl fmt::Debug for Card {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // 원하는 형식으로 클로저를 출력
+        write!(f, "MyFn {{ /* 클로저 내용 출력 */ }}")
+    }
+}
+
+impl Entity for Card {
+    fn run(&self) -> Result<(), Exception> {
+        todo!()
+    }
+
+    fn get_entity_type(&self) -> String {
+        "Card".to_string()
+    }
 }
 
 impl Card {
@@ -21,6 +44,7 @@ impl Card {
             name: "dummy".to_string(),
             behavior_table: vec![],
             card_json: CardJson::new(),
+            runner: None,
         }
     }
 
@@ -30,6 +54,7 @@ impl Card {
         name: String,
         behavior_table: Vec<Behavior>,
         card_json: CardJson,
+        runner: Option<Arc<dyn Fn(&mut Card) -> Result<(), Exception>>>,
     ) -> Card {
         Card {
             card_type,
@@ -37,6 +62,7 @@ impl Card {
             name,
             behavior_table,
             card_json,
+            runner,
         }
     }
 
@@ -81,9 +107,5 @@ impl Card {
         self.behavior_table = new_behavior_table;
     }
 
-    pub fn set_card_json(&mut self, new_card_json: CardJson) {
-        self.card_json = new_card_json;
-    }
-
-    pub fn execution() {}
+    pub fn set_card_json(&mut self, new_card_json: CardJson) {}
 }

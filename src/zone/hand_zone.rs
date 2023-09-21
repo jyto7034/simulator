@@ -2,6 +2,7 @@ use crate::deck::{Card, Cards};
 use crate::enums::constant;
 use crate::enums::constant::CardType;
 use crate::exception::exception::Exception;
+use crate::unit::Entity;
 use crate::zone::Zone;
 
 pub struct HandZone {
@@ -47,5 +48,15 @@ impl HandZone {
             zone_cards: Cards::new(&vec![]),
             zone_size: constant::UNIT_ZONE_SIZE,
         }
+    }
+}
+
+impl Entity for HandZone {
+    fn run(&self) -> Result<(), Exception> {
+        todo!()
+    }
+
+    fn get_entity_type(&self) -> String {
+        "Entity".to_string()
     }
 }

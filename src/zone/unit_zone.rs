@@ -3,6 +3,7 @@ use std::vec;
 use crate::deck::{Card, Cards};
 use crate::enums::constant::{self, CardType};
 use crate::exception::exception::Exception;
+use crate::unit::Entity;
 use crate::zone::Zone;
 
 pub struct UnitZone {
@@ -50,10 +51,19 @@ impl UnitZone {
         }
     }
 
-    /// 카드를 교체합니다.
     pub fn replace_card(&mut self, src_card: &Card, dst_card: &Card) -> Result<(), Exception> {
         self.remove_card(dst_card)?;
         self.add_card(src_card)?;
         Ok(())
+    }
+}
+
+impl Entity for UnitZone {
+    fn run(&self) -> Result<(), Exception> {
+        todo!()
+    }
+
+    fn get_entity_type(&self) -> String {
+        "Entity".to_string()
     }
 }

@@ -3,7 +3,7 @@ use crate::{deck::Card, utils, utils::json::CardJson};
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 
-fn test() -> Card {
+fn test(card_json: &CardJson) -> Card {
     println!("test func");
     let uuid = match utils::utils::generate_uuid() {
         Ok(data) => data,
@@ -11,10 +11,17 @@ fn test() -> Card {
             panic!("test func failed {err}");
         }
     };
-    Card::new(CardType::Unit, uuid, "test".into(), vec![], CardJson::new())
+    Card::new(
+        CardType::Unit,
+        uuid,
+        "test".into(),
+        vec![],
+        CardJson::new(),
+        None,
+    )
 }
 
-type CardGeneratorFn = fn() -> Card;
+type CardGeneratorFn = fn(&CardJson) -> Card;
 const FUNCTION_TABLE: [CardGeneratorFn; 27] = [
     test,
     human::HM_001,
@@ -86,9 +93,9 @@ impl CardGenertor {
         }
     }
 
-    pub fn gen_card_by_id(&self, id: String) -> Card {
+    pub fn gen_card_by_id(&self, id: String, card_json: &CardJson) -> Card {
         if let Some(generator) = self.card_generators.get(&id[..]) {
-            generator()
+            generator(card_json)
         } else {
             panic!("Unknown ID: {}", id);
         }
@@ -99,52 +106,52 @@ mod monster {
     use super::*;
 
     #[allow(non_snake_case)]
-    pub fn MT_001() -> Card {
+    pub fn MT_001(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn MT_002() -> Card {
+    pub fn MT_002(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn MT_003() -> Card {
+    pub fn MT_003(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn MT_004() -> Card {
+    pub fn MT_004(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn MT_005() -> Card {
+    pub fn MT_005(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn MT_006() -> Card {
+    pub fn MT_006(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn MT_007() -> Card {
+    pub fn MT_007(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn MT_008() -> Card {
+    pub fn MT_008(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn MT_009() -> Card {
+    pub fn MT_009(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn MT_010() -> Card {
+    pub fn MT_010(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
@@ -154,94 +161,120 @@ mod public {
     use super::*;
 
     #[allow(non_snake_case)]
-    pub fn PB_001() -> Card {
+    pub fn PB_001(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn PB_002() -> Card {
+    pub fn PB_002(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn PB_003() -> Card {
+    pub fn PB_003(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn PB_004() -> Card {
+    pub fn PB_004(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn PB_005() -> Card {
+    pub fn PB_005(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn PB_006() -> Card {
+    pub fn PB_006(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn PB_007() -> Card {
+    pub fn PB_007(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn PB_008() -> Card {
+    pub fn PB_008(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
 }
 
 mod human {
+    use std::sync::Arc;
+
+    use crate::{exception::exception::Exception, game::Behavior};
+
     use super::*;
 
+    // -------------------------------------------------- FIELD
+    // [HM_001] Hieda no Akyuu - COST:?? [ATK:??/HP:?]
+    // - Set: Human, Rarity: C
+    // --------------------------------------------------------
+    // Text: 낮동안 인간 카드를 사용할 때 마다 서로 1장 드로우 한다.
+    // --------------------------------------------------------
+    // Behaviors:
+    // - DrawCardFromDeck
+    // --------------------------------------------------------
     #[allow(non_snake_case)]
-    pub fn HM_001() -> Card {
+    pub fn HM_001(card_json: &CardJson) -> Card {
         let uuid = match utils::utils::generate_uuid() {
             Ok(data) => data,
             Err(err) => {
                 panic!("test func failed {err}");
             }
         };
-        Card::new(CardType::Unit, uuid, "test".into(), vec![], CardJson::new())
+        let mut bvs = vec![];
+        bvs.push(Behavior::DrawCardFromDeck);
+        let run = Arc::new(|card: &mut Card| -> Result<(), Exception> { 
+            
+            Ok(())
+         });
+        Card::new(
+            CardType::Unit,
+            uuid,
+            "Hieda no Akyuu".into(),
+            bvs,
+            card_json.clone(),
+            Some(run),
+        )
     }
 
     #[allow(non_snake_case)]
-    pub fn HM_002() -> Card {
+    pub fn HM_002(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
 
     #[allow(non_snake_case)]
-    pub fn HM_003() -> Card {
+    pub fn HM_003(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn HM_004() -> Card {
+    pub fn HM_004(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn HM_005() -> Card {
+    pub fn HM_005(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn HM_006() -> Card {
+    pub fn HM_006(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn HM_007() -> Card {
+    pub fn HM_007(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
-    pub fn HM_008() -> Card {
+    pub fn HM_008(card_json: &CardJson) -> Card {
         // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }

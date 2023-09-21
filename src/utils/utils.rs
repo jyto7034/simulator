@@ -75,13 +75,14 @@ pub fn load_card_data(player_cards: &json::Decks) -> Result<Vec<Cards>, Exceptio
                 if let Some(id) = &card_data.id {
                     if player_card.id == *id {
                         for _ in 0..player_card.num {
-                            ps_cards[player_num].push(card_genertor.gen_card_by_id(id.to_string()));
+                            ps_cards[player_num]
+                                .push(card_genertor.gen_card_by_id(id.to_string(), card_data));
                         }
                     }
                 } else {
                     return Err(Exception::DeckParseError);
                 }
-            }       
+            }
             Ok(())
         };
 
