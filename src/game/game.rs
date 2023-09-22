@@ -2,7 +2,7 @@ use std::{cell::RefCell, rc::Rc};
 
 use crate::{
     deck::{deck::Deck, Cards},
-    enums::constant,
+    enums::constant::{self, PlayerType},
     exception::exception::Exception,
     task::procedure::Procedure,
     unit::{player::Player, Cost, Mana},
@@ -50,6 +50,7 @@ impl Game {
             Some(_) => None,
             None => Some(Rc::new(RefCell::new(Player::new(
                 None,
+                PlayerType::
                 constant::HeroType::Name1,
                 cards1,
                 String::clone(&config.name[ATTACKER]),

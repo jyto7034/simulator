@@ -1,4 +1,4 @@
-use crate::{enums::SpellType, exception::exception::Exception};
+use crate::{enums::SpellType, exception::exception::Exception, unit::{Entity, Player}, deck::Card};
 
 #[derive(Clone, Debug)]
 pub enum Behavior {
@@ -54,6 +54,11 @@ pub enum Behavior {
     /// fn play_card_to_field( player, card )
     PlayCardToField,
 
+    /// 해당 Player 가 다른 이벤트가 발생하는 것을 기다립니다.
+    /// fn listen_other_event( Player, target_behavior, result_behavior )
+    /// 조건이 충족되면, 정해진 이벤트를 발생시킵니다.
+    ListenOtherEvent,
+
     /// 초기화용
     None,
 }
@@ -72,6 +77,14 @@ pub fn execution(behavior_type: &Behavior) -> Result<Exception, Exception> {
         Behavior::AddCardToDeck => todo!(),
         Behavior::AddCardToField => todo!(),
         Behavior::PlayCardToField => todo!(),
+        Behavior::ListenOtherEvent => todo!(),
         Behavior::None => todo!(),
     }
 }
+
+// 감시를 하는 방법에는 여러가지가 있을테지만, 당장 떠오르는건, 
+fn listen_other_event(player: &Player, target_behavior: &Behavior, result_behavior: &Behavior) {
+    
+}
+
+// 물류아저씨한테 가방 하나 더 달라고 하기.

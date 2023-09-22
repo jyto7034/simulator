@@ -3,7 +3,7 @@ use std::sync::Arc;
 
 use crate::enums::constant::{self, CardType, UUID};
 use crate::exception::exception::Exception;
-use crate::game::Behavior;
+use crate::game::{Behavior, Game};
 use crate::unit::Entity;
 use crate::utils::json::CardJson;
 
@@ -16,7 +16,7 @@ pub struct Card {
     name: String,
     behavior_table: Vec<Behavior>,
     card_json: CardJson,
-    runner: Option<Arc<dyn Fn(&mut Card) -> Result<(), Exception>>>,
+    runner: Option<Arc<dyn Fn(&mut Card, &mut Game) -> Result<(), Exception>>>,
 }
 
 impl fmt::Debug for Card {
@@ -54,7 +54,7 @@ impl Card {
         name: String,
         behavior_table: Vec<Behavior>,
         card_json: CardJson,
-        runner: Option<Arc<dyn Fn(&mut Card) -> Result<(), Exception>>>,
+        runner: Option<Arc<dyn Fn(&mut Card, &mut Game) -> Result<(), Exception>>>,
     ) -> Card {
         Card {
             card_type,

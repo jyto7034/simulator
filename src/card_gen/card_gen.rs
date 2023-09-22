@@ -1,23 +1,40 @@
-use crate::enums::CardType;
+use crate::{exception::exception::Exception, game::{Behavior, Game}};
 use crate::{deck::Card, utils, utils::json::CardJson};
-use once_cell::sync::Lazy;
-use std::collections::HashMap;
+use crate::enums::CardType;
 
+use std::collections::HashMap;
+use once_cell::sync::Lazy;
+use std::sync::Arc;
+
+
+    // -------------------------------------------------- FIELD
+    // [HM_001] Hieda no Akyuu - COST:?? [ATK:??/HP:?]
+    // - Set: Human, Rarity: C
+    // --------------------------------------------------------
+    // Text: 낮동안 인간 카드를 사용할 때 마다 서로 1장 드로우 한다.
+    // --------------------------------------------------------
+    // Behaviors:
+    // - DrawCardFromDeck
+    // --------------------------------------------------------
 fn test(card_json: &CardJson) -> Card {
-    println!("test func");
     let uuid = match utils::utils::generate_uuid() {
         Ok(data) => data,
         Err(err) => {
             panic!("test func failed {err}");
         }
     };
+    let bvs = vec![Behavior::ListenOtherEvent, Behavior::DrawCardFromDeck];
+    let run = Arc::new(|card: &mut Card, game: &mut Game| -> Result<(), Exception> { 
+        
+        Ok(())
+    });
     Card::new(
         CardType::Unit,
         uuid,
-        "test".into(),
-        vec![],
-        CardJson::new(),
-        None,
+        "Hieda no Akyuu".into(),
+        bvs,
+        card_json.clone(),
+        Some(run),
     )
 }
 
@@ -203,10 +220,6 @@ mod public {
 }
 
 mod human {
-    use std::sync::Arc;
-
-    use crate::{exception::exception::Exception, game::Behavior};
-
     use super::*;
 
     // -------------------------------------------------- FIELD
@@ -228,10 +241,10 @@ mod human {
         };
         let mut bvs = vec![];
         bvs.push(Behavior::DrawCardFromDeck);
-        let run = Arc::new(|card: &mut Card| -> Result<(), Exception> { 
-            
+        let run = Arc::new(|card: &mut Card, game: &mut Game| -> Result<(), Exception> { 
+
             Ok(())
-         });
+        });
         Card::new(
             CardType::Unit,
             uuid,

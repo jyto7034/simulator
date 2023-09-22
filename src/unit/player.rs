@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use crate::deck::Cards;
-use crate::enums::constant;
+use crate::enums::constant::{self, PlayerType};
 use crate::exception::exception::Exception;
 use crate::unit::entity::Entity;
 use crate::zone::{DeckZone, GraveyardZone, HandZone};
@@ -74,6 +74,7 @@ impl IResource for Cost {
 /// 플레이어를 행동, 상태 등을 다루는 구조체 입니다.
 pub struct Player {
     opponent: Option<Rc<RefCell<Player>>>,
+    player_type: PlayerType,
     hero: constant::HeroType,
     cards: Cards,
     name: String,
@@ -97,6 +98,7 @@ impl Entity for Player {
 impl Player {
     pub fn new(
         opponent: Option<Rc<RefCell<Player>>>,
+        player_type: PlayerType,
         hero: constant::HeroType,
         cards: Cards,
         name: String,
@@ -105,6 +107,7 @@ impl Player {
     ) -> Player {
         Player {
             opponent,
+            player_type,
             hero,
             cards,
             name,

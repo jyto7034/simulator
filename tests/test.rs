@@ -130,7 +130,7 @@ mod tests {
     }
 
     mod utils_test {
-        use simulator::card_gen::card_gen::CardGenertor;
+        use simulator::{card_gen::card_gen::CardGenertor, utils::json::CardJson};
 
         use super::*;
 
