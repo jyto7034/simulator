@@ -5,14 +5,28 @@ use crate::task::task::Task;
 
 pub struct Procedure {
     pub task_queue: TaskQueue,
+    pub event_listen_queue: Vec<(Task, (Behavior, Behavior))>,
+    id: usize,
 }
 
 impl Procedure {
     pub fn new() -> Procedure {
-        Procedure { task_queue: vec![] }
+        Procedure {
+            task_queue: vec![],
+            event_listen_queue: vec![],
+            id: 0,
+        }
     }
+
+    fn generate_id(&mut self) -> usize {
+        self.id += 1;
+        self.id
+    }
+
     pub fn add_task(&mut self, task: &Task) {
-        self.task_queue.push(task.clone());
+        let mut task = task.clone();
+        task.set_task_id(self.generate_id());
+        self.task_queue.push(task);
     }
 
     pub fn find_task_by_uuid(&self, uuid: &UUID) -> Option<&Task> {
@@ -56,6 +70,19 @@ impl Procedure {
     /// 후입선출로 우선순위에 따라 순서대로 처리한다.
     pub fn execuiton(&mut self) -> Result<(), Exception> {
         let cloned_tasks: Vec<Task> = self.task_queue.iter().rev().cloned().collect();
+        let cloned_event_tasks: Vec<(Task, (Behavior, Behavior))> =
+            self.event_listen_queue.iter().rev().cloned().collect();
+
+        // event listen 가 등록된 시점의 이후에 발동된 카드에 대해서만 동작하도록 설계
+        // 현재 task_queue 의 len 을 기록하여 기준점을 나눈다.
+
+        // event listen 는 필드 카드 또는 특수 기능으로써, 정의된 규칙을 따른다.
+        // 일단은 후입선출 방식으로 해둠.
+        // TODO : 후입선출 방식 바꿔야함. 
+        for (task, (target, dst)) in cloned_event_tasks {
+            
+        }
+
         for task in cloned_tasks {
             match task.get_priority_type() {
                 TaskPriority::Immediately => {

@@ -50,7 +50,7 @@ impl Game {
             Some(_) => None,
             None => Some(Rc::new(RefCell::new(Player::new(
                 None,
-                PlayerType::
+                PlayerType::Player1,
                 constant::HeroType::Name1,
                 cards1,
                 String::clone(&config.name[ATTACKER]),
@@ -63,6 +63,7 @@ impl Game {
             Some(_) => None,
             None => Some(Rc::new(RefCell::new(Player::new(
                 None,
+                PlayerType::Player2,
                 constant::HeroType::Name1,
                 cards2,
                 String::clone(&config.name[DEFENDER]),

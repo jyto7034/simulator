@@ -19,7 +19,9 @@ mod tests {
             name: vec!["test1".to_string(), "test2".to_string()],
         };
 
-        let task_proc = Procedure { task_queue: vec![] };
+        // let task_proc = Procedure { task_queue: vec![] };
+        let task_proc = Procedure::new();
+        
 
         let mut game = Game {
             player_1: None,
@@ -60,7 +62,7 @@ mod tests {
             name: vec!["test1".to_string(), "test2".to_string()],
         };
 
-        let task_proc = Procedure { task_queue: vec![] };
+        let task_proc = Procedure::new();
 
         let mut game = Game {
             player_1: None,

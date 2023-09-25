@@ -1,4 +1,9 @@
-use crate::{enums::SpellType, exception::exception::Exception, unit::{Entity, Player}, deck::Card};
+use crate::{
+    enums::{PlayerType, SpellType},
+    exception::exception::Exception,
+};
+
+use super::Game;
 
 #[derive(Clone, Debug)]
 pub enum Behavior {
@@ -82,9 +87,11 @@ pub fn execution(behavior_type: &Behavior) -> Result<Exception, Exception> {
     }
 }
 
-// 감시를 하는 방법에는 여러가지가 있을테지만, 당장 떠오르는건, 
-fn listen_other_event(player: &Player, target_behavior: &Behavior, result_behavior: &Behavior) {
-    
+// 감시를 하는 방법에는 여러가지가 있을테지만, 당장 떠오르는건,
+fn listen_other_event(
+    game: &Game,
+    player_type: PlayerType,
+    target_behavior: &Behavior,
+    result_behavior: &Behavior,
+) {
 }
-
-// 물류아저씨한테 가방 하나 더 달라고 하기.

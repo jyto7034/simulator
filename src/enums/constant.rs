@@ -33,7 +33,12 @@ pub enum EntityType {
     Agent,
 }
 
-pub enum PlayerType {}
+#[derive(Clone)]
+pub enum PlayerType {
+    Player1,
+    Player2,
+    None,
+}
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum SpellType {
