@@ -5,7 +5,7 @@ use crate::{
 
 use super::Game;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Behavior {
     /// caster 는 시전자 opponent 는 피시전자입니다.
 

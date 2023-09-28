@@ -1,3 +1,4 @@
+use crate::deck::Card;
 use crate::enums::{TaskPriority, PlayerType};
 use crate::exception::exception::Exception;
 use crate::game::Behavior;
@@ -7,7 +8,7 @@ use crate::utils::utils;
 pub struct Task {
     player_type: PlayerType,
     task_uuid: String,
-    behavior: Behavior,
+    card: Card,
     priority: TaskPriority,
     id: Option<usize>,
 }
@@ -17,13 +18,13 @@ impl Task {
         Task {
             player_type: PlayerType::None,
             task_uuid: "0".to_string(),
-            behavior: Behavior::None,
+            card: Card::dummy(),
             priority: TaskPriority::None,
             id: Some(0 as usize),
         }
     }
 
-    pub fn new(player_type: PlayerType, behavior: Behavior, priority: TaskPriority) -> Result<Task, Exception> {
+    pub fn new(player_type: PlayerType, card: &Card, behavior: Behavior, priority: TaskPriority) -> Result<Task, Exception> {
         let uuid = match utils::generate_uuid() {
             Ok(ans) => ans,
             Err(_) => "".to_string(),
@@ -31,18 +32,10 @@ impl Task {
         Ok(Task {
             player_type,
             task_uuid: uuid,
-            behavior,
+            card: card.clone(),
             priority,
             id: Some(0 as usize),
         })
-    }
-
-    pub fn get_behavior_type(&self) -> &Behavior {
-        &self.behavior
-    }
-
-    pub fn set_behavior_type(&mut self, behavior_type: Behavior) {
-        self.behavior = behavior_type;
     }
 
     pub fn get_priority_type(&self) -> &TaskPriority {
@@ -64,4 +57,5 @@ impl Task {
     pub fn get_task_id(&self) -> Option<usize> {
         self.id
     }
+
 }

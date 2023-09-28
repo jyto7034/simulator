@@ -1,7 +1,7 @@
 use std::fmt;
-use std::sync::Arc;
+use std::rc::Rc;
 
-use crate::enums::constant::{self, CardType, UUID};
+use crate::enums::constant::{self, CardType, UUID, Runner};
 use crate::exception::exception::Exception;
 use crate::game::{Behavior, Game};
 use crate::unit::Entity;
@@ -9,6 +9,9 @@ use crate::utils::json::CardJson;
 
 /// 카드의 행동, 정보를 정의하는 구조체 입니다.
 
+// Card 는 자신의 효과를 실행하는 runner 함수를 가진다.
+// 이 runner 함수는 Card 의 필드 멤버인 behavior_table 의 요소를 하나씩 task 로 만들어 procedure 에 밀어넣는다.
+// 해당 task 를 취소하기 위해선, 연속적으로 있는 task 에서 일정 부분을 삭제해야 하는데, 이는 task 의 id 를 하나로 통일 시킴으로써 해결한다.
 #[derive(Clone)]
 pub struct Card {
     card_type: constant::CardType,
@@ -16,7 +19,7 @@ pub struct Card {
     name: String,
     behavior_table: Vec<Behavior>,
     card_json: CardJson,
-    runner: Option<Arc<dyn Fn(&mut Card, &mut Game) -> Result<(), Exception>>>,
+    runner: Option<Runner>,
 }
 
 impl fmt::Debug for Card {
@@ -54,7 +57,7 @@ impl Card {
         name: String,
         behavior_table: Vec<Behavior>,
         card_json: CardJson,
-        runner: Option<Arc<dyn Fn(&mut Card, &mut Game) -> Result<(), Exception>>>,
+        runner: Option<Runner>,
     ) -> Card {
         Card {
             card_type,
@@ -63,6 +66,15 @@ impl Card {
             behavior_table,
             card_json,
             runner,
+        }
+    }
+
+    pub fn run(&self, game: &mut Game){
+        if let Some(runner) = &self.runner{
+            match runner.as_ref().borrow_mut()(self, game){
+                Ok(_) => todo!(),
+                Err(_) => todo!(),
+            }
         }
     }
 

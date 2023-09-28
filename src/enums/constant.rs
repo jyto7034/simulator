@@ -1,4 +1,9 @@
+use crate::exception::exception::Exception;
 use crate::task::task::Task;
+use crate::deck::Card;
+use crate::game::*;
+use std::cell::RefCell;
+use std::rc::Rc;
 
 pub const CARD_ID_JSON_PATH: &str = "Resource/cards_id.json";
 pub const CARD_JSON_PATH: &str = "Resource/cards.json";
@@ -40,7 +45,7 @@ pub enum PlayerType {
     None,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Eq)]
 pub enum SpellType {
     SlowSpell,
     FastSpell,
@@ -93,8 +98,8 @@ pub enum TimeType {
 pub const MAX_CARD_SIZE: u32 = 30;
 
 pub type TaskQueue = Vec<Task>;
-
 pub type UUID = String;
+pub type Runner = Rc<RefCell<dyn FnMut(&Card, &mut Game) -> Result<(), Exception>>>;
 
 pub const COUNT_OF_CARDS: usize = 30;
 

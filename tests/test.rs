@@ -2,12 +2,12 @@
 mod tests {
     use simulator::{
         deck::Deck,
-        game::game::{Game, GameConfig},
+        game::{game::{Game, GameConfig}, self},
         task::Procedure,
         utils::utils,
     };
 
-    fn generate_game() -> Game {
+    fn generate_game<'a>() -> Game<'a> {
         let config = GameConfig {
             player_1: Deck {
                 raw_deck_code: "".to_string(),
@@ -20,14 +20,9 @@ mod tests {
         };
 
         // let task_proc = Procedure { task_queue: vec![] };
-        let task_proc = Procedure::new();
         
-
-        let mut game = Game {
-            player_1: None,
-            player_2: None,
-            task: task_proc,
-        };
+        let proc = Procedure::new(None);
+        let game = Game::new(proc);
 
         match game.initialize(config) {
             Ok(_) => {}

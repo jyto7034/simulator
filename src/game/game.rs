@@ -1,12 +1,14 @@
 use std::{cell::RefCell, rc::Rc};
 
 use crate::{
-    deck::{deck::Deck, Cards},
+    deck::{deck::Deck, Cards, Card},
     enums::constant::{self, PlayerType},
     exception::exception::Exception,
-    task::procedure::Procedure,
+    task::procedure::{Procedure, self},
     unit::{player::Player, Cost, Mana},
 };
+
+use super::TimeManager;
 pub struct GameConfig {
     pub player_1: Deck,
     pub player_2: Deck,
@@ -14,15 +16,28 @@ pub struct GameConfig {
     pub name: Vec<String>,
 }
 
-pub struct Game {
+pub struct Game<'a> {
     pub player_1: Option<Rc<RefCell<Player>>>,
     pub player_2: Option<Rc<RefCell<Player>>>,
 
-    pub task: Procedure,
+    pub procedure: Option<Procedure<'a>>,
+    pub time: TimeManager,
+    pub cards: Option<Vec<Card>>,
 }
 
-impl Game {
-    pub fn initialize(&mut self, config: GameConfig) -> Result<u32, Exception> {
+impl<'a> Game<'a> {
+    pub fn new(procedure: Procedure<'a>) -> Result<Game<'a>, Exception>{
+        let game = Game{
+            player_1: None,
+            player_2: None,
+            procedure: Some(procedure),
+            time: TimeManager::new(),
+            cards: None,
+        };
+        Ok(game)
+    }
+    
+    pub fn initialize(&mut self, config: GameConfig) -> Result<(), Exception> {
         // config 로부터 플레이어의 덱을 읽어와서 플레이어 데이터를 생성함.
         let cards1 = match config.player_1.to_cards() {
             Ok(data) => data,
@@ -42,6 +57,8 @@ impl Game {
             return Err(Exception::DeckParseError);
         }
 
+        // cards1, 2 를 game 의 cards 에 넣어야함.        
+        
         const ATTACKER: usize = 0;
         const DEFENDER: usize = 1;
 
@@ -91,7 +108,7 @@ impl Game {
             return Err(Exception::PlayerInitializeFailed);
         }
 
-        Ok(1)
+        Ok(())
     }
 
     fn check_player_data_integrity(&self) -> Result<(), Exception> {
@@ -125,16 +142,36 @@ impl Game {
     }
 
     /// 멀리건 단계를 수행합니다.
-    pub fn game_step_mulligun(&mut self) {}
+    pub fn game_step_mulligun(&mut self) {
+        // 각 player 의 덱에서 카드 4장을 뽑음.
+
+        // player 가 선택한 카드를 핸드에 넣고, 나머지는 덱에 무작위로 넣음.
+    }
 
     /// 라운드를 시작합니다.
-    pub fn game_step_round_start(&mut self) {}
+    pub fn game_step_round_start(&mut self) {
+        // 먼저, 시간대를 낮에서 밤으로, 밤에서 낮으로 변경함.
+
+        // 각 player 의 자원을 충전하고 각자의 덱에서 카드를 한 장 드로우 함.
+        
+        // 그런 뒤, 필드 카드의 효과를 발동함.
+
+        // 필드 카드의 효과가 끝나면, 필드에 전개 되어 있는 카드의 효과를 발동함.
+    }
 
     /// 공격 턴을 수행합니다.
-    pub fn game_step_round_attack_turn(&mut self) {}
+    pub fn game_step_round_attack_turn(&mut self) {
+        loop{
+            // 카드 전개
+            
+            // 공격 버튼
+        }
+    }
 
     /// 방어 턴을 수행합니다.
-    pub fn game_step_round_defense_turn(&mut self) {}
+    pub fn game_step_round_defense_turn(&mut self) {
+        
+    }
 
     /// 모든 턴을 끝내고, 모든 카드를 수행하고 라운드를 종료합니다.
     pub fn game_step_round_end(&mut self) {}

@@ -1,0 +1,1 @@
+std::rc::Rc<std::cell::RefCell<(dyn for<'a, 'b> FnMut(&'a card::Card, &'b mut game::game::Game) -> Result<(), exception::exception::Exception> + 'static)>>

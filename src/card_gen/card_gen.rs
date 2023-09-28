@@ -6,8 +6,9 @@ use crate::{
 };
 
 use once_cell::sync::Lazy;
+use std::cell::RefCell;
 use std::collections::HashMap;
-use std::sync::Arc;
+use std::rc::Rc;
 
 // -------------------------------------------------- FIELD
 // [HM_001] Hieda no Akyuu - COST:?? [ATK:??/HP:?]
@@ -26,7 +27,8 @@ fn test(card_json: &CardJson) -> Card {
         }
     };
     let bvs = vec![Behavior::ListenOtherEvent, Behavior::DrawCardFromDeck];
-    let run = Arc::new(|card: &mut Card, game: &mut Game| -> Result<(), Exception> { Ok(()) });
+    let run = 
+        Rc::new(RefCell::new(|card: &Card, game: &mut Game| -> Result<(), Exception> { Ok(()) }));
     Card::new(
         CardType::Unit,
         uuid,
@@ -84,6 +86,7 @@ impl Species {
         };
     }
 }
+
 pub struct CardGenertor {
     species: Species,
     pub card_generators: Lazy<HashMap<String, CardGeneratorFn>>,
@@ -219,6 +222,8 @@ mod public {
 }
 
 mod human {
+    use crate::game::TimeManager;
+
     use super::*;
 
     // -------------------------------------------------- FIELD
@@ -228,6 +233,7 @@ mod human {
     // Text: 낮동안 인간 카드를 사용할 때 마다 서로 1장 드로우 한다.
     // --------------------------------------------------------
     // Behaviors:
+    // - ListenOtherEvent
     // - DrawCardFromDeck
     // --------------------------------------------------------
     #[allow(non_snake_case)]
@@ -239,8 +245,18 @@ mod human {
             }
         };
         let mut bvs = vec![];
+        bvs.push(Behavior::ListenOtherEvent);
         bvs.push(Behavior::DrawCardFromDeck);
-        let run = Arc::new(|card: &mut Card, game: &mut Game| -> Result<(), Exception> { Ok(()) });
+        let run = 
+        Rc::new(RefCell::new(|card: &Card, game: &mut Game| -> Result<(), Exception> { 
+            match game.time.get_state(){
+                crate::enums::TimeType::Day => {
+
+                },
+                _ => {}
+            }
+            Ok(())
+        }));
         Card::new(
             CardType::Unit,
             uuid,
