@@ -1,7 +1,7 @@
 use std::fmt;
 use std::rc::Rc;
 
-use crate::enums::constant::{self, CardType, UUID, Runner};
+use crate::enums::constant::{self, CardType, Runner, UUID};
 use crate::exception::exception::Exception;
 use crate::game::{Behavior, Game};
 use crate::unit::Entity;
@@ -69,9 +69,9 @@ impl Card {
         }
     }
 
-    pub fn run(&self, game: &mut Game){
-        if let Some(runner) = &self.runner{
-            match runner.as_ref().borrow_mut()(self, game){
+    pub fn run(&self, game: &mut Game) {
+        if let Some(runner) = &self.runner {
+            match runner.as_ref().borrow_mut()(self, game) {
                 Ok(_) => todo!(),
                 Err(_) => todo!(),
             }

@@ -1,17 +1,20 @@
+use std::cell::RefCell;
+use std::rc::Weak;
+
 use crate::enums::constant::*;
 use crate::exception::exception::Exception;
 use crate::game::*;
 use crate::task::task::Task;
 
-pub struct Procedure<'a> {
+pub struct Procedure {
     pub task_queue: TaskQueue,
-    pub event_listen_queue: Vec<(Task, (Behavior, Behavior))>,
-    game: Option<&'a mut Game<'a>>,
+    pub event_listen_queue: Vec<(Task, Behavior)>,
+    game: Option<Weak<RefCell<Game>>>,
     id: usize,
 }
 
-impl<'a> Procedure<'a> {
-    pub fn new(game: Option<&'a mut Game<'a>>) -> Procedure<'a> {
+impl Procedure {
+    pub fn new(game: Option<Weak<RefCell<Game>>>) -> Procedure {
         Procedure {
             task_queue: vec![],
             event_listen_queue: vec![],
@@ -71,6 +74,16 @@ impl<'a> Procedure<'a> {
     /// queue 에 있는 task 를 처리하는 함수.
     /// 후입선출로 우선순위에 따라 순서대로 처리한다.
     pub fn execuiton(&mut self) -> Result<(), Exception> {
+        // Listen Event 들을 먼저 처리한다.
+        let event_listen_queue = self.event_listen_queue.clone();
+        let task_queue = self.task_queue.clone();
+
+        // 먼저 해당 listen event 를 발동시킨 card 의 정보를 담고 있는 task 를 가져온다.
+        // 그리고 to_find 이라는 변수로 무슨 행동을 감시할 것인지 설정하고 만약 detected 되면
+        // 카드의 run 함수를 실행함.
+        for item in event_listen_queue {}
+
+        // 그런 뒤 남은 task 들을 처리한다.
         Ok(())
     }
 }

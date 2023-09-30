@@ -1,10 +1,13 @@
-use std::{cell::RefCell, rc::Rc};
+use std::{
+    cell::RefCell,
+    rc::{Rc, Weak},
+};
 
 use crate::{
-    deck::{deck::Deck, Cards, Card},
-    enums::constant::{self, PlayerType},
+    deck::{deck::Deck, Card, Cards},
+    enums::constant::{self, CardDrawType, PlayerType},
     exception::exception::Exception,
-    task::procedure::{Procedure, self},
+    task::procedure::Procedure,
     unit::{player::Player, Cost, Mana},
 };
 
@@ -16,27 +19,25 @@ pub struct GameConfig {
     pub name: Vec<String>,
 }
 
-pub struct Game<'a> {
+pub struct Game {
     pub player_1: Option<Rc<RefCell<Player>>>,
     pub player_2: Option<Rc<RefCell<Player>>>,
 
-    pub procedure: Option<Procedure<'a>>,
+    pub procedure: Option<Option<Weak<RefCell<Procedure>>>>,
     pub time: TimeManager,
-    pub cards: Option<Vec<Card>>,
 }
 
-impl<'a> Game<'a> {
-    pub fn new(procedure: Procedure<'a>) -> Result<Game<'a>, Exception>{
-        let game = Game{
+impl Game {
+    pub fn new(procedure: Option<Weak<RefCell<Procedure>>>) -> Result<Game, Exception> {
+        let game = Game {
             player_1: None,
             player_2: None,
             procedure: Some(procedure),
             time: TimeManager::new(),
-            cards: None,
         };
         Ok(game)
     }
-    
+
     pub fn initialize(&mut self, config: GameConfig) -> Result<(), Exception> {
         // config 로부터 플레이어의 덱을 읽어와서 플레이어 데이터를 생성함.
         let cards1 = match config.player_1.to_cards() {
@@ -57,8 +58,8 @@ impl<'a> Game<'a> {
             return Err(Exception::DeckParseError);
         }
 
-        // cards1, 2 를 game 의 cards 에 넣어야함.        
-        
+        // cards1, 2 를 game 의 cards 에 넣어야함.
+
         const ATTACKER: usize = 0;
         const DEFENDER: usize = 1;
 
@@ -94,7 +95,7 @@ impl<'a> Game<'a> {
             player_1
                 .as_ref()
                 .borrow_mut()
-                .set_opponent(&Some(Rc::clone(self.player_2.as_ref().unwrap())));
+                .set_opponent(&Some(Rc::downgrade(self.player_2.as_ref().unwrap())));
         } else {
             return Err(Exception::PlayerInitializeFailed);
         }
@@ -103,7 +104,7 @@ impl<'a> Game<'a> {
             player_2
                 .as_ref()
                 .borrow_mut()
-                .set_opponent(&Some(Rc::clone(self.player_1.as_ref().unwrap())));
+                .set_opponent(&Some(Rc::downgrade(self.player_1.as_ref().unwrap())));
         } else {
             return Err(Exception::PlayerInitializeFailed);
         }
@@ -143,6 +144,13 @@ impl<'a> Game<'a> {
 
     /// 멀리건 단계를 수행합니다.
     pub fn game_step_mulligun(&mut self) {
+        if let Some(player) = &self.player_1 {
+            let card = player
+                .as_ref()
+                .borrow_mut()
+                .get_hand_zone()
+                .draw(CardDrawType::Top, Some(1 as usize));
+        }
         // 각 player 의 덱에서 카드 4장을 뽑음.
 
         // player 가 선택한 카드를 핸드에 넣고, 나머지는 덱에 무작위로 넣음.
@@ -153,7 +161,7 @@ impl<'a> Game<'a> {
         // 먼저, 시간대를 낮에서 밤으로, 밤에서 낮으로 변경함.
 
         // 각 player 의 자원을 충전하고 각자의 덱에서 카드를 한 장 드로우 함.
-        
+
         // 그런 뒤, 필드 카드의 효과를 발동함.
 
         // 필드 카드의 효과가 끝나면, 필드에 전개 되어 있는 카드의 효과를 발동함.
@@ -161,17 +169,15 @@ impl<'a> Game<'a> {
 
     /// 공격 턴을 수행합니다.
     pub fn game_step_round_attack_turn(&mut self) {
-        loop{
+        loop {
             // 카드 전개
-            
+
             // 공격 버튼
         }
     }
 
     /// 방어 턴을 수행합니다.
-    pub fn game_step_round_defense_turn(&mut self) {
-        
-    }
+    pub fn game_step_round_defense_turn(&mut self) {}
 
     /// 모든 턴을 끝내고, 모든 카드를 수행하고 라운드를 종료합니다.
     pub fn game_step_round_end(&mut self) {}

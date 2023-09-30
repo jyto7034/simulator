@@ -27,8 +27,9 @@ fn test(card_json: &CardJson) -> Card {
         }
     };
     let bvs = vec![Behavior::ListenOtherEvent, Behavior::DrawCardFromDeck];
-    let run = 
-        Rc::new(RefCell::new(|card: &Card, game: &mut Game| -> Result<(), Exception> { Ok(()) }));
+    let run = Rc::new(RefCell::new(
+        |card: &Card, game: &mut Game| -> Result<(), Exception> { Ok(()) },
+    ));
     Card::new(
         CardType::Unit,
         uuid,
@@ -247,16 +248,15 @@ mod human {
         let mut bvs = vec![];
         bvs.push(Behavior::ListenOtherEvent);
         bvs.push(Behavior::DrawCardFromDeck);
-        let run = 
-        Rc::new(RefCell::new(|card: &Card, game: &mut Game| -> Result<(), Exception> { 
-            match game.time.get_state(){
-                crate::enums::TimeType::Day => {
-
-                },
-                _ => {}
-            }
-            Ok(())
-        }));
+        let run = Rc::new(RefCell::new(
+            |card: &Card, game: &mut Game| -> Result<(), Exception> {
+                match game.time.get_state() {
+                    crate::enums::TimeType::Day => {}
+                    _ => {}
+                }
+                Ok(())
+            },
+        ));
         Card::new(
             CardType::Unit,
             uuid,

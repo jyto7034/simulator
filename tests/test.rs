@@ -1,13 +1,16 @@
 #[cfg(test)]
 mod tests {
+    use std::{cell::RefCell, rc::Rc};
+
     use simulator::{
         deck::Deck,
-        game::{game::{Game, GameConfig}, self},
+        exception::exception::Exception,
+        game::game::{Game, GameConfig},
         task::Procedure,
         utils::utils,
     };
 
-    fn generate_game<'a>() -> Game<'a> {
+    fn generate_game() -> Result<Game, Exception> {
         let config = GameConfig {
             player_1: Deck {
                 raw_deck_code: "".to_string(),
@@ -20,16 +23,17 @@ mod tests {
         };
 
         // let task_proc = Procedure { task_queue: vec![] };
-        
-        let proc = Procedure::new(None);
-        let game = Game::new(proc);
 
-        match game.initialize(config) {
-            Ok(_) => {}
-            Err(err) => {
-                println!("{err}");
+        let proc = Rc::new(RefCell::new(Procedure::new(None)));
+        let mut game = Game::new(Some(Rc::downgrade(&proc)));
+        if let Ok(mut game) = game {
+            match game.initialize(config) {
+                Ok(_) => {}
+                Err(err) => {
+                    println!("{err}");
+                }
             }
-        }
+        };
 
         game
     }
@@ -57,20 +61,7 @@ mod tests {
             name: vec!["test1".to_string(), "test2".to_string()],
         };
 
-        let task_proc = Procedure::new();
-
-        let mut game = Game {
-            player_1: None,
-            player_2: None,
-            task: task_proc,
-        };
-
-        match game.initialize(config) {
-            Ok(_) => {}
-            Err(err) => {
-                println!("{err}");
-            }
-        }
+        let game = generate_game().unwrap();
 
         assert_eq!(
             *game.player_1.as_ref().unwrap().borrow().get_name(),
@@ -81,30 +72,37 @@ mod tests {
             "test2"
         );
 
-        assert_eq!(
-            game.player_1
-                .as_ref()
-                .unwrap()
-                .borrow()
-                .get_opponent()
-                .as_ref()
-                .unwrap()
-                .borrow()
-                .get_name(),
-            "test2"
-        );
-        assert_eq!(
-            game.player_2
-                .as_ref()
-                .unwrap()
-                .borrow()
-                .get_opponent()
-                .as_ref()
-                .unwrap()
-                .borrow()
-                .get_name(),
-            "test1"
-        );
+        let name = if let Some(data) = game
+            .player_1
+            .as_ref()
+            .unwrap()
+            .borrow()
+            .get_opponent()
+            .as_ref()
+            .unwrap()
+            .upgrade()
+        {
+            data.borrow().get_name()
+        } else {
+            ""
+        };
+        assert_eq!(name, "test2");
+
+        let name = if let Some(data) = game
+            .player_2
+            .as_ref()
+            .unwrap()
+            .borrow()
+            .get_opponent()
+            .as_ref()
+            .unwrap()
+            .upgrade()
+        {
+            data.borrow().get_name()
+        } else {
+            ""
+        };
+        assert_eq!(name, "test1");
 
         game.player_1
             .as_ref()
@@ -181,7 +179,7 @@ mod tests {
         use simulator::{enums::*, game::Behavior, task::Task};
 
         fn add_task(proc: &mut Procedure) -> Task {
-            let task = match Task::new(Behavior::AddCardToDeck, TaskPriority::Immediately) {
+            let task = match Task::new(PlayerType::Player1, &"".to_string(), Behavior::AddCardToDeck, TaskPriority::Immediately) {
                 Ok(task) => task,
                 Err(err) => {
                     assert!(false, "{err}");
@@ -196,7 +194,7 @@ mod tests {
         fn test_task_remove() {
             // task 삭제하는 기능을 테스트 하는 함수입니다.
             use simulator::exception::exception::Exception;
-            let mut proc = Procedure::new();
+            let game = generate_game().unwrap();
 
             let task = add_task(&mut proc);
 

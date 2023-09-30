@@ -1,7 +1,7 @@
-use crate::exception::exception::Exception;
-use crate::task::task::Task;
 use crate::deck::Card;
+use crate::exception::exception::Exception;
 use crate::game::*;
+use crate::task::task::Task;
 use std::cell::RefCell;
 use std::rc::Rc;
 

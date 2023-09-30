@@ -3,13 +3,14 @@ use std::fmt;
 pub enum Exception {
     PlayerInitializeFailed,
     PlayerDataNotIntegrity,
+    DifferentCardTypes,
     GenerateUUIDFaild,
     ExceededCardLimit,
+    FailedToDrawCard,
     NothingToRemove,
     JsonParseFailed,
     DeckParseError,
     ReadFileFailed,
-    DifferentCardTypes,
     NoCardsLeft,
     Ok,
 }
