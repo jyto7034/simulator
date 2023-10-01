@@ -1,3 +1,6 @@
+use std::cell::RefCell;
+use std::rc::Weak;
+
 use crate::enums::constant::*;
 use crate::exception::exception::Exception;
 use crate::game::*;
@@ -5,15 +8,17 @@ use crate::task::task::Task;
 
 pub struct Procedure {
     pub task_queue: TaskQueue,
-    pub event_listen_queue: Vec<(Task, (Behavior, Behavior))>,
+    pub event_listen_queue: Vec<(Task, Behavior)>,
+    game: Option<Weak<RefCell<Game>>>,
     id: usize,
 }
 
 impl Procedure {
-    pub fn new() -> Procedure {
+    pub fn new(game: Option<Weak<RefCell<Game>>>) -> Procedure {
         Procedure {
             task_queue: vec![],
             event_listen_queue: vec![],
+            game,
             id: 0,
         }
     }
@@ -69,45 +74,16 @@ impl Procedure {
     /// queue 에 있는 task 를 처리하는 함수.
     /// 후입선출로 우선순위에 따라 순서대로 처리한다.
     pub fn execuiton(&mut self) -> Result<(), Exception> {
-        let cloned_tasks: Vec<Task> = self.task_queue.iter().rev().cloned().collect();
-        let cloned_event_tasks: Vec<(Task, (Behavior, Behavior))> =
-            self.event_listen_queue.iter().rev().cloned().collect();
+        // Listen Event 들을 먼저 처리한다.
+        let event_listen_queue = self.event_listen_queue.clone();
+        let task_queue = self.task_queue.clone();
 
-        // event listen 가 등록된 시점의 이후에 발동된 카드에 대해서만 동작하도록 설계
-        // 현재 task_queue 의 len 을 기록하여 기준점을 나눈다.
+        // 먼저 해당 listen event 를 발동시킨 card 의 정보를 담고 있는 task 를 가져온다.
+        // 그리고 to_find 이라는 변수로 무슨 행동을 감시할 것인지 설정하고 만약 detected 되면
+        // 카드의 run 함수를 실행함.
+        for item in event_listen_queue {}
 
-        // event listen 는 필드 카드 또는 특수 기능으로써, 정의된 규칙을 따른다.
-        // 일단은 후입선출 방식으로 해둠.
-        // TODO : 후입선출 방식 바꿔야함. 
-        for (task, (target, dst)) in cloned_event_tasks {
-            
-        }
-
-        for task in cloned_tasks {
-            match task.get_priority_type() {
-                TaskPriority::Immediately => {
-                    execution(task.get_behavior_type())?;
-                }
-                TaskPriority::RoundEnd => {
-                    execution(task.get_behavior_type())?;
-                }
-                TaskPriority::RoundStart => {
-                    execution(task.get_behavior_type())?;
-                }
-                TaskPriority::AttackTurn => {
-                    execution(task.get_behavior_type())?;
-                }
-                TaskPriority::DefenseTurn => {
-                    execution(task.get_behavior_type())?;
-                }
-                TaskPriority::None => {}
-            }
-            if let Err(err) = self.remove_task_by_uuid(task.get_task_uuid()) {
-                if err == Exception::NothingToRemove {
-                    todo!();
-                }
-            }
-        }
+        // 그런 뒤 남은 task 들을 처리한다.
         Ok(())
     }
 }

@@ -1,5 +1,5 @@
 use std::cell::RefCell;
-use std::rc::Rc;
+use std::rc::{Rc, Weak};
 
 use crate::deck::Cards;
 use crate::enums::constant::{self, PlayerType};
@@ -73,11 +73,11 @@ impl IResource for Cost {
 
 /// 플레이어를 행동, 상태 등을 다루는 구조체 입니다.
 pub struct Player {
-    opponent: Option<Rc<RefCell<Player>>>,
+    opponent: Option<Weak<RefCell<Player>>>,
     player_type: PlayerType,
     hero: constant::HeroType,
     cards: Cards,
-    name: String,
+    pub name: String,
     cost: Cost,
     mana: Mana,
 
@@ -97,7 +97,7 @@ impl Entity for Player {
 
 impl Player {
     pub fn new(
-        opponent: Option<Rc<RefCell<Player>>>,
+        opponent: Option<Weak<RefCell<Player>>>,
         player_type: PlayerType,
         hero: constant::HeroType,
         cards: Cards,
@@ -119,7 +119,7 @@ impl Player {
         }
     }
 
-    pub fn get_opponent(&self) -> &Option<Rc<RefCell<Player>>> {
+    pub fn get_opponent(&self) -> &Option<Weak<RefCell<Player>>> {
         &self.opponent
     }
 
@@ -143,20 +143,20 @@ impl Player {
         &self.mana
     }
 
-    pub fn get_hand_zone(&self) -> &HandZone {
-        &self.hand_zone
+    pub fn get_hand_zone(&mut self) -> &mut HandZone {
+        &mut self.hand_zone
     }
 
-    pub fn get_deck_zone(&self) -> &DeckZone {
-        &self.deck_zone
+    pub fn get_deck_zone(&mut self) -> &mut DeckZone {
+        &mut self.deck_zone
     }
 
-    pub fn get_graveyard_zone(&self) -> &GraveyardZone {
-        &self.graveyard_zone
+    pub fn get_graveyard_zone(&mut self) -> &mut GraveyardZone {
+        &mut self.graveyard_zone
     }
 
     // Setter 함수들
-    pub fn set_opponent(&mut self, new_opponent: &Option<Rc<RefCell<Player>>>) {
+    pub fn set_opponent(&mut self, new_opponent: &Option<Weak<RefCell<Player>>>) {
         todo!()
     }
 

@@ -142,6 +142,8 @@ impl Cards {
         }
     }
 
+    // 덱으로부터 카드 한 장을 draw 합니다.
+    //
     pub fn draw(
         &mut self,
         draw_type: constant::CardDrawType,
