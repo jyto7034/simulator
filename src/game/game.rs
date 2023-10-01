@@ -23,7 +23,7 @@ pub struct Game {
     pub player_1: Option<Rc<RefCell<Player>>>,
     pub player_2: Option<Rc<RefCell<Player>>>,
 
-    pub procedure: Option<Option<Weak<RefCell<Procedure>>>>,
+    pub procedure: Option<Weak<RefCell<Procedure>>>,
     pub time: TimeManager,
 }
 
@@ -32,7 +32,7 @@ impl Game {
         let game = Game {
             player_1: None,
             player_2: None,
-            procedure: Some(procedure),
+            procedure: procedure,
             time: TimeManager::new(),
         };
         Ok(game)
