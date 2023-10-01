@@ -175,10 +175,12 @@ mod tests {
 
     mod task_test {
 
+        use std::rc::Weak;
+
         use super::*;
         use simulator::{enums::*, game::Behavior, task::Task};
 
-        fn add_task(proc: &mut Procedure) -> Task {
+        fn add_task(proc: &mut Weak<RefCell<Procedure>>) -> Task {
             let task = match Task::new(PlayerType::Player1, &"".to_string(), Behavior::AddCardToDeck, TaskPriority::Immediately) {
                 Ok(task) => task,
                 Err(err) => {
@@ -186,7 +188,10 @@ mod tests {
                     Task::dummy()
                 }
             };
-            proc.add_task(&task);
+            match proc.upgrade() {
+                Some(proc) => proc.as_ref().borrow_mut().add_task(&task),
+                None => assert!(false),
+            }
             task
         }
 
@@ -195,17 +200,19 @@ mod tests {
             // task 삭제하는 기능을 테스트 하는 함수입니다.
             use simulator::exception::exception::Exception;
             let game = generate_game().unwrap();
+            let task = add_task(&mut game.procedure.unwrap());
 
-            let task = add_task(&mut proc);
-
-            match proc.remove_task_by_uuid(task.get_task_uuid()) {
-                Ok(_) => {}
-                Err(err) => {
-                    match err {
-                        Exception::NothingToRemove => {}
-                        _ => assert!(false, "{err}"),
-                    };
-                }
+            match game.procedure{
+                Some(proc) => proc.remove_task_by_uuid(task.get_task_uuid()) {
+                    Ok(_) => {}
+                    Err(err) => {
+                        match err {
+                            Exception::NothingToRemove => {}
+                            _ => assert!(false, "{err}"),
+                        };
+                    }
+                },
+                None => todo!(),
             }
 
             for item in &proc.task_queue {
