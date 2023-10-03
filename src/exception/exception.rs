@@ -3,6 +3,7 @@ use std::fmt;
 pub enum Exception {
     PlayerInitializeFailed,
     PlayerDataNotIntegrity,
+    GameInitializeFailed,
     DifferentCardTypes,
     GenerateUUIDFaild,
     ExceededCardLimit,

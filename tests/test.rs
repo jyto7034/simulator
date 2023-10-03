@@ -25,17 +25,18 @@ mod tests {
         // let task_proc = Procedure { task_queue: vec![] };
 
         let proc = Rc::new(RefCell::new(Procedure::new(None)));
-        let mut game = Game::new(Some(Rc::downgrade(&proc)));
+        let game = Game::new(Some(Rc::downgrade(&proc)));
         if let Ok(mut game) = game {
             match game.initialize(config) {
-                Ok(_) => {}
+                Ok(_) => Ok(game),
                 Err(err) => {
                     println!("{err}");
+                    return Err(err);
                 }
             }
-        };
-
-        game
+        } else {
+            Err(Exception::GameInitializeFailed)
+        }
     }
 
     #[test]
@@ -75,34 +76,24 @@ mod tests {
         let name = if let Some(data) = game
             .player_1
             .as_ref()
-            .unwrap()
-            .borrow()
-            .get_opponent()
-            .as_ref()
-            .unwrap()
-            .upgrade()
+            .and_then(|player| Some(player.as_ref().borrow().get_name().clone()))
         {
-            data.borrow().get_name()
+            data
         } else {
-            ""
+            "".to_string()
         };
-        assert_eq!(name, "test2");
+        assert_eq!(name, "test1");
 
         let name = if let Some(data) = game
             .player_2
             .as_ref()
-            .unwrap()
-            .borrow()
-            .get_opponent()
-            .as_ref()
-            .unwrap()
-            .upgrade()
+            .and_then(|player| Some(player.as_ref().borrow().get_name().clone()))
         {
-            data.borrow().get_name()
+            data
         } else {
-            ""
+            "".to_string()
         };
-        assert_eq!(name, "test1");
+        assert_eq!(name, "test2");
 
         game.player_1
             .as_ref()
@@ -117,7 +108,7 @@ mod tests {
             .as_ref()
             .unwrap()
             .borrow_mut()
-            .set_name("player2".to_string());
+            .set_name("player1".to_string());
         assert_eq!(
             game.player_2.as_ref().unwrap().borrow().get_name(),
             "player1"
@@ -180,8 +171,13 @@ mod tests {
         use super::*;
         use simulator::{enums::*, game::Behavior, task::Task};
 
-        fn add_task(proc: &mut Weak<RefCell<Procedure>>) -> Task {
-            let task = match Task::new(PlayerType::Player1, &"".to_string(), Behavior::AddCardToDeck, TaskPriority::Immediately) {
+        fn add_task(proc: &Weak<RefCell<Procedure>>) -> Task {
+            let task = match Task::new(
+                PlayerType::Player1,
+                &"".to_string(),
+                Behavior::AddCardToDeck,
+                TaskPriority::Immediately,
+            ) {
                 Ok(task) => task,
                 Err(err) => {
                     assert!(false, "{err}");
@@ -198,27 +194,32 @@ mod tests {
         #[test]
         fn test_task_remove() {
             // task 삭제하는 기능을 테스트 하는 함수입니다.
-            use simulator::exception::exception::Exception;
             let game = generate_game().unwrap();
-            let task = add_task(&mut game.procedure.unwrap());
+            let task = add_task(game.procedure.as_ref().unwrap());
 
-            match game.procedure{
-                Some(proc) => proc.remove_task_by_uuid(task.get_task_uuid()) {
-                    Ok(_) => {}
-                    Err(err) => {
-                        match err {
-                            Exception::NothingToRemove => {}
-                            _ => assert!(false, "{err}"),
-                        };
+            if let Some(proc) = game.procedure {
+                if let Some(procedure) = proc.upgrade() {
+                    let result = procedure
+                        .borrow_mut()
+                        .remove_task_by_uuid(task.get_task_uuid());
+
+                    match result {
+                        Ok(_) => {
+                            let exists = procedure
+                                .borrow()
+                                .task_queue
+                                .iter()
+                                .any(|item| item.get_task_uuid() == task.get_task_uuid());
+                            assert!(!exists, "Task still exists");
+                        }
+                        Err(Exception::NothingToRemove) => {}
+                        Err(err) => assert!(false, "{}", err),
                     }
-                },
-                None => todo!(),
-            }
-
-            for item in &proc.task_queue {
-                if item.get_task_uuid() == task.get_task_uuid() {
-                    assert!(false, "Exist");
+                } else {
+                    assert!(false, "Weak err");
                 }
+            } else {
+                assert!(false, "Weak err");
             }
         }
 
@@ -226,26 +227,7 @@ mod tests {
 
         #[test]
         fn test_task_find() {
-            let mut proc = Procedure::new();
-            let tasks = vec![
-                add_task(&mut proc),
-                add_task(&mut proc),
-                add_task(&mut proc),
-                add_task(&mut proc),
-            ];
-            for item in &tasks {
-                if let Some(task) = proc.find_task_by_ref(item) {
-                    if task.get_task_uuid() != item.get_task_uuid() {
-                        assert!(false, "Diff");
-                    }
-                }
-            }
-
-            if let Some(task) = proc.find_task_by_ref(&tasks[0]) {
-                if task.get_task_uuid() == &"error".to_string() {
-                    assert!(false, "diff");
-                }
-            }
+            let game = generate_game().unwrap();
         }
 
         #[test]

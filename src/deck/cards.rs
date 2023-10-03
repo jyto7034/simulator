@@ -126,13 +126,15 @@ impl Cards {
     }
 
     /// 주어진 검색 조건으로 카드를 찾습니다.
-    pub fn search(
-        &self,
-        find_type: constant::FindType,
-        count_of_card: Option<usize>,
-    ) -> Vec<&Card> {
+    pub fn search(&self, find_type: constant::FindType, count_of_card: usize) -> Vec<&Card> {
         // 100 대신 덱의 카드 갯수로 바꿔야함.
-        let cnt = count_of_card.unwrap_or(100);
+
+        // find 함수가 카드를 몇 개까지 찾게 할 지 정하는 변수.
+        let cnt = if count_of_card == 0 {
+            100
+        } else {
+            count_of_card
+        };
         use constant::*;
 
         match find_type {
@@ -144,13 +146,15 @@ impl Cards {
 
     // 덱으로부터 카드 한 장을 draw 합니다.
     //
-    pub fn draw(
-        &mut self,
-        draw_type: constant::CardDrawType,
-        count_of_card: Option<usize>,
-    ) -> Vec<&Card> {
+    pub fn draw(&mut self, draw_type: constant::CardDrawType, count_of_card: usize) -> Vec<&Card> {
         use constant::*;
-        let cnt = count_of_card.unwrap_or(100);
+
+        // find 함수가 카드를 몇 개까지 찾게 할 지 정하는 변수.
+        let cnt = if count_of_card == 0 {
+            100
+        } else {
+            count_of_card
+        };
 
         match draw_type {
             CardDrawType::Top => {

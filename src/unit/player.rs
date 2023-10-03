@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
 use crate::deck::Cards;
-use crate::enums::constant::{self, PlayerType};
+use crate::enums::constant::*;
 use crate::exception::exception::Exception;
 use crate::unit::entity::Entity;
 use crate::zone::{DeckZone, GraveyardZone, HandZone};
@@ -73,9 +73,9 @@ impl IResource for Cost {
 
 /// 플레이어를 행동, 상태 등을 다루는 구조체 입니다.
 pub struct Player {
-    opponent: Option<Weak<RefCell<Player>>>,
+    opponent: Option<Rc<RefCell<Player>>>,
     player_type: PlayerType,
-    hero: constant::HeroType,
+    hero: HeroType,
     cards: Cards,
     pub name: String,
     cost: Cost,
@@ -97,9 +97,9 @@ impl Entity for Player {
 
 impl Player {
     pub fn new(
-        opponent: Option<Weak<RefCell<Player>>>,
+        opponent: Option<Rc<RefCell<Player>>>,
         player_type: PlayerType,
-        hero: constant::HeroType,
+        hero: HeroType,
         cards: Cards,
         name: String,
         cost: Cost,
@@ -119,11 +119,43 @@ impl Player {
         }
     }
 
-    pub fn get_opponent(&self) -> &Option<Weak<RefCell<Player>>> {
+    pub fn draw(
+        &mut self,
+        zone_type: ZoneType,
+        draw_type: CardDrawType,
+        count_of_card: usize,
+    ) -> Result<Vec<&UUID>, Exception> {
+        match zone_type {
+            ZoneType::HandZone => {
+                let cards = self.hand_zone.zone_cards.draw(draw_type, count_of_card);
+                if !cards.is_empty() {
+                    let ans: Vec<&UUID> = cards.iter().map(|card| card.get_uuid()).collect();
+                    for card_uuid in ans {
+                        let card = self
+                            .cards
+                            .search(FindType::FindByUUID(card_uuid.clone()), 1)[0];
+                        let count = card.get_count();
+                        if count > 0 {
+                            card.set_count(count - 1);
+                        }
+                    }
+                    Ok(ans)
+                } else {
+                    Err(Exception::FailedToDrawCard)
+                }
+            }
+            ZoneType::DeckZone => todo!(),
+            ZoneType::GraveyardZone => todo!(),
+            ZoneType::FieldZone => todo!(),
+            ZoneType::None => todo!(),
+        }
+    }
+
+    pub fn get_opponent(&self) -> &Option<Rc<RefCell<Player>>> {
         &self.opponent
     }
 
-    pub fn get_hero(&self) -> &constant::HeroType {
+    pub fn get_hero(&self) -> &HeroType {
         &self.hero
     }
 
@@ -157,10 +189,12 @@ impl Player {
 
     // Setter 함수들
     pub fn set_opponent(&mut self, new_opponent: &Option<Weak<RefCell<Player>>>) {
-        todo!()
+        if let Some(data) = new_opponent.as_ref().unwrap().upgrade() {
+            self.opponent = Some(Rc::clone(&data));
+        }
     }
 
-    pub fn set_hero(&mut self, new_hero: constant::HeroType) {
+    pub fn set_hero(&mut self, new_hero: HeroType) {
         self.hero = new_hero;
     }
 

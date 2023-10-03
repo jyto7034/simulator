@@ -23,35 +23,43 @@
 //     println!("Function 1");
 // }
 
-use std::{
-    borrow::BorrowMut,
-    cell::RefCell,
-    rc::{Rc, Weak},
-    task::Waker,
-};
+use std::{cell::RefCell, rc::Rc, rc::Weak};
 
-// fn func_2() {
-//     println!("Function 2");
-// }
-#[derive(Debug)]
-struct Other {
-    id: usize,
-    base: Option<Weak<RefCell<Base>>>,
+struct Player {
+    opp: Option<Rc<RefCell<Player>>>,
+    data: i32,
 }
 
-#[derive(Debug)]
-struct Base {
-    other: Option<Weak<RefCell<Other>>>,
-    id: usize,
+impl Player {
+    pub fn set(&mut self, new_opponent: &Option<Weak<RefCell<Player>>>) {
+        if let Some(data) = new_opponent.as_ref().unwrap().upgrade() {
+            self.opp = Some(Rc::clone(&data));
+        }
+    }
 }
 
 fn main() {
-    let o = Rc::new(RefCell::new(Other { id: 0, base: None }));
-
-    let b = Rc::new(RefCell::new(Base {
-        id: 1,
-        other: Some(Rc::downgrade(&o)),
+    let p1 = Rc::new(RefCell::new(Player {
+        opp: None,
+        data: 10,
     }));
 
-    o.as_ref().borrow_mut().base = Some(Rc::downgrade(&b));
+    let p2 = Rc::new(RefCell::new(Player {
+        opp: None,
+        data: 12,
+    }));
+
+    p1.as_ref().borrow_mut().set(&Some(Rc::downgrade(&p2)));
+    p2.as_ref().borrow_mut().set(&Some(Rc::downgrade(&p1)));
+
+    let d = p1
+        .as_ref()
+        .borrow_mut()
+        .opp
+        .as_ref()
+        .unwrap()
+        .as_ref()
+        .borrow_mut()
+        .data;
+    println!("{}", d);
 }

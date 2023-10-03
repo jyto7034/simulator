@@ -19,6 +19,7 @@ pub struct Card {
     name: String,
     behavior_table: Vec<Behavior>,
     card_json: CardJson,
+    count: usize,
     runner: Option<Runner>,
 }
 
@@ -47,6 +48,7 @@ impl Card {
             name: "dummy".to_string(),
             behavior_table: vec![],
             card_json: CardJson::new(),
+            count: 0,
             runner: None,
         }
     }
@@ -57,6 +59,7 @@ impl Card {
         name: String,
         behavior_table: Vec<Behavior>,
         card_json: CardJson,
+        count: usize,
         runner: Option<Runner>,
     ) -> Card {
         Card {
@@ -65,6 +68,7 @@ impl Card {
             name,
             behavior_table,
             card_json,
+            count,
             runner,
         }
     }
@@ -102,6 +106,10 @@ impl Card {
         &self.card_json
     }
 
+    pub fn get_count(&self) -> usize {
+        self.count
+    }
+
     // Setter 함수들
     pub fn set_card_type(&mut self, new_card_type: constant::CardType) {
         self.card_type = new_card_type;
@@ -113,6 +121,10 @@ impl Card {
 
     pub fn set_name(&mut self, new_name: String) {
         self.name = new_name;
+    }
+
+    pub fn set_count(&mut self, count: usize) {
+        self.count = count;
     }
 
     pub fn set_behavior_table(&mut self, new_behavior_table: Vec<Behavior>) {

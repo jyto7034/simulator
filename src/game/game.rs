@@ -4,8 +4,8 @@ use std::{
 };
 
 use crate::{
-    deck::{deck::Deck, Card, Cards},
-    enums::constant::{self, CardDrawType, PlayerType},
+    deck::{deck::Deck, Cards},
+    enums::constant::*,
     exception::exception::Exception,
     task::procedure::Procedure,
     unit::{player::Player, Cost, Mana},
@@ -69,7 +69,7 @@ impl Game {
             None => Some(Rc::new(RefCell::new(Player::new(
                 None,
                 PlayerType::Player1,
-                constant::HeroType::Name1,
+                HeroType::Name1,
                 cards1,
                 String::clone(&config.name[ATTACKER]),
                 Cost::new(0, 0),
@@ -82,7 +82,7 @@ impl Game {
             None => Some(Rc::new(RefCell::new(Player::new(
                 None,
                 PlayerType::Player2,
-                constant::HeroType::Name1,
+                HeroType::Name1,
                 cards2,
                 String::clone(&config.name[DEFENDER]),
                 Cost::new(0, 0),
@@ -144,12 +144,18 @@ impl Game {
 
     /// 멀리건 단계를 수행합니다.
     pub fn game_step_mulligun(&mut self) {
-        if let Some(player) = &self.player_1 {
-            let card = player
-                .as_ref()
-                .borrow_mut()
-                .get_hand_zone()
-                .draw(CardDrawType::Top, Some(1 as usize));
+        if let (Some(player1), Some(player2)) = (&self.player_1, &self.player_2) {
+            let mullugun_cards_1 =
+                player1
+                    .as_ref()
+                    .borrow_mut()
+                    .draw(ZoneType::DeckZone, CardDrawType::Top, 4);
+                
+                let mullugun_cards_2 =
+                player2
+                    .as_ref()
+                    .borrow_mut()
+                    .draw(ZoneType::DeckZone, CardDrawType::Top, 4);
         }
         // 각 player 의 덱에서 카드 4장을 뽑음.
 

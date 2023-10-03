@@ -1,12 +1,12 @@
 use crate::deck::{Card, Cards};
 use crate::enums::constant::CardType;
-use crate::enums::constant::{self, UUID};
+use crate::enums::constant::*;
 use crate::exception::exception::Exception;
 use crate::unit::Entity;
 use crate::zone::Zone;
 
 pub struct HandZone {
-    zone_cards: Cards,
+    pub zone_cards: Cards,
     zone_size: usize,
 }
 impl Zone for HandZone {
@@ -46,26 +46,12 @@ impl HandZone {
     pub fn new() -> HandZone {
         HandZone {
             zone_cards: Cards::new(&vec![]),
-            zone_size: constant::UNIT_ZONE_SIZE,
+            zone_size: UNIT_ZONE_SIZE,
         }
     }
 
     pub fn test(&mut self) {
         self.zone_size = 1;
-    }
-
-    // game.player_1.get_hand_zone().draw();
-    pub fn draw(
-        &mut self,
-        draw_type: constant::CardDrawType,
-        count_of_card: Option<usize>,
-    ) -> Result<&UUID, Exception> {
-        let cards = self.zone_cards.draw(draw_type, Some(1));
-        if !cards.is_empty() {
-            Ok(&cards[0].get_uuid())
-        } else {
-            Err(Exception::FailedToDrawCard)
-        }
     }
 }
 

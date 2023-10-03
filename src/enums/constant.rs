@@ -89,6 +89,15 @@ pub enum FindType {
     FindByName(String),
 }
 
+#[derive(Clone)]
+pub enum ZoneType {
+    HandZone,
+    DeckZone,
+    GraveyardZone,
+    FieldZone,
+    None,
+}
+
 pub enum TimeType {
     Day,
     Night,
