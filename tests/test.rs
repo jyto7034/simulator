@@ -159,7 +159,7 @@ mod tests {
         #[test]
         fn test_card_genertor() {
             let card_generator = CardGenertor::new();
-            let card = card_generator.gen_card_by_id("test".to_string(), &CardJson::new());
+            let card = card_generator.gen_card_by_id("test".to_string(), &CardJson::new(), 1);
             println!("{:#?}", card);
         }
     }

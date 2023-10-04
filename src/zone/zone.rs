@@ -1,5 +1,5 @@
 use crate::{
-    deck::{card, Card, Cards},
+    deck::{Card, Cards},
     exception::exception::Exception,
 };
 
@@ -7,7 +7,7 @@ use crate::{
 /// 무덤, 유닛/효과 카드 필드, 핸드, 덱 등이 있습니다.
 pub trait Zone {
     /// 현재 Zone 에 존재하는 모든 카드를 반환합니다.
-    fn get_cards(&self) -> &Cards;
+    fn get_cards(&mut self) -> &mut Cards;
 
     /// 현재 Zone 에 카드를 추가 합니다.
     fn add_card(&mut self, card: &Card) -> Result<(), Exception>;

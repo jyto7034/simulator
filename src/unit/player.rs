@@ -1,11 +1,12 @@
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
-use crate::deck::Cards;
+use crate::deck::{Cards, Deck, self};
 use crate::enums::constant::*;
 use crate::exception::exception::Exception;
+use crate::game::Game;
 use crate::unit::entity::Entity;
-use crate::zone::{DeckZone, GraveyardZone, HandZone};
+use crate::zone::{DeckZone, GraveyardZone, HandZone, Zone, graveyard_zone};
 
 pub trait IResource {
     fn increase(&mut self) -> &mut Self;
@@ -81,16 +82,16 @@ pub struct Player {
     cost: Cost,
     mana: Mana,
 
-    hand_zone: HandZone,
-    deck_zone: DeckZone,
-    graveyard_zone: GraveyardZone,
+    hand_zone: Option<Rc<RefCell<HandZone>>>,
+    deck_zone: Option<Rc<RefCell<DeckZone>>>,
+    graveyard_zone: Option<Rc<RefCell<GraveyardZone>>>,
 }
 
 impl Entity for Player {
     fn get_entity_type(&self) -> String {
         "Player".to_string()
     }
-    fn run(&self) -> Result<(), Exception> {
+    fn run(&self, game: &mut Game) -> Result<(), Exception> {
         Ok(())
     }
 }
@@ -113,9 +114,9 @@ impl Player {
             name,
             cost,
             mana,
-            hand_zone: HandZone::new(),
-            deck_zone: DeckZone::new(),
-            graveyard_zone: GraveyardZone::new(),
+            hand_zone: Some(Rc::new(RefCell::new(HandZone::new()))),
+            deck_zone: Some(Rc::new(RefCell::new(DeckZone::new()))),
+            graveyard_zone: Some(Rc::new(RefCell::new(GraveyardZone::new()))),
         }
     }
 
@@ -123,32 +124,14 @@ impl Player {
         &mut self,
         zone_type: ZoneType,
         draw_type: CardDrawType,
-        count_of_card: usize,
-    ) -> Result<Vec<&UUID>, Exception> {
-        match zone_type {
-            ZoneType::HandZone => {
-                let cards = self.hand_zone.zone_cards.draw(draw_type, count_of_card);
-                if !cards.is_empty() {
-                    let ans: Vec<&UUID> = cards.iter().map(|card| card.get_uuid()).collect();
-                    for card_uuid in ans {
-                        let card = self
-                            .cards
-                            .search(FindType::FindByUUID(card_uuid.clone()), 1)[0];
-                        let count = card.get_count();
-                        if count > 0 {
-                            card.set_count(count - 1);
-                        }
-                    }
-                    Ok(ans)
-                } else {
-                    Err(Exception::FailedToDrawCard)
-                }
-            }
-            ZoneType::DeckZone => todo!(),
-            ZoneType::GraveyardZone => todo!(),
-            ZoneType::FieldZone => todo!(),
-            ZoneType::None => todo!(),
-        }
+        count: usize,
+    ) -> Result<Vec<UUID>, Exception> {
+        // Zone 에 존재하는 카드의 uuid 를 count 만큼 꺼내옵니다.
+
+        // zone_type 에 해당하는 Zone 의 카드를 가져옵니다
+        let d: Vec<UUID> = self.get_zone(zone_type).as_ref().unwrap().borrow_mut().get_cards().v_card.iter().map(|card| card.get_uuid().clone()).collect();
+        
+        Ok(d.clone())
     }
 
     pub fn get_opponent(&self) -> &Option<Rc<RefCell<Player>>> {
@@ -173,6 +156,17 @@ impl Player {
 
     pub fn get_mana(&self) -> &Mana {
         &self.mana
+    }
+
+    pub fn get_zone(&mut self, zone_type: ZoneType) -> Option<Rc<RefCell<dyn Zone>>>{
+        match zone_type{
+            ZoneType::HandZone => Some(Rc::clone(&self.hand_zone.unwrap())),
+            ZoneType::DeckZone => Some(Rc::new(RefCell::new(&self.deck_zone))),
+            ZoneType::GraveyardZone => Some(Rc::new(RefCell::new(self.graveyard_zone))),
+            _ => {
+                None
+            }
+        }
     }
 
     pub fn get_hand_zone(&mut self) -> &mut HandZone {

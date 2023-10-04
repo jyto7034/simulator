@@ -108,6 +108,7 @@ pub const MAX_CARD_SIZE: u32 = 30;
 
 pub type TaskQueue = Vec<Task>;
 pub type UUID = String;
+pub type CardsUuid = Vec<UUID>;
 pub type Runner = Rc<RefCell<dyn FnMut(&Card, &mut Game) -> Result<(), Exception>>>;
 
 pub const COUNT_OF_CARDS: usize = 30;

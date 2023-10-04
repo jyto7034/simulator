@@ -1,4 +1,5 @@
 use crate::exception::exception::Exception;
+use crate::game::Game;
 use crate::unit::entity::Entity;
 
 pub struct Agent {}
@@ -8,7 +9,7 @@ impl Entity for Agent {
         "Agent".to_string()
     }
 
-    fn run(&self) -> Result<(), Exception> {
+    fn run(&self, game: &mut Game) -> Result<(), Exception> {
         Ok(())
     }
 }

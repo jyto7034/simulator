@@ -3,6 +3,7 @@ use std::vec;
 use crate::deck::{Card, Cards};
 use crate::enums::constant::{self, CardType};
 use crate::exception::exception::Exception;
+use crate::game::Game;
 use crate::unit::Entity;
 use crate::zone::Zone;
 
@@ -12,8 +13,8 @@ pub struct UnitZone {
 }
 impl Zone for UnitZone {
     /// 현재 Zone 에 존재하는 모든 카드를 반환합니다.
-    fn get_cards(&self) -> &Cards {
-        &self.zone_cards
+    fn get_cards(&mut self) -> &mut Cards {
+        &mut self.zone_cards
     }
 
     /// 현재 Zone 에 카드를 추가 합니다.
@@ -59,7 +60,7 @@ impl UnitZone {
 }
 
 impl Entity for UnitZone {
-    fn run(&self) -> Result<(), Exception> {
+    fn run(&self, game: &mut Game) -> Result<(), Exception> {
         todo!()
     }
 

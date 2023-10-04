@@ -31,8 +31,16 @@ impl fmt::Debug for Card {
 }
 
 impl Entity for Card {
-    fn run(&self) -> Result<(), Exception> {
-        todo!()
+    fn run(&self, game: &mut Game) -> Result<(), Exception> {
+        if let Some(runner) = &self.runner {
+            match runner.as_ref().borrow_mut()(self, game) {
+                Ok(_) => todo!(),
+                Err(_) => todo!(),
+            }
+        }else{
+            // 임의로 리턴함.
+            Err(Exception::NothingToRemove)
+        }
     }
 
     fn get_entity_type(&self) -> String {
@@ -70,15 +78,6 @@ impl Card {
             card_json,
             count,
             runner,
-        }
-    }
-
-    pub fn run(&self, game: &mut Game) {
-        if let Some(runner) = &self.runner {
-            match runner.as_ref().borrow_mut()(self, game) {
-                Ok(_) => todo!(),
-                Err(_) => todo!(),
-            }
         }
     }
 

@@ -69,6 +69,8 @@ pub fn load_card_data(player_cards: &json::Decks) -> Result<Vec<Cards>, Exceptio
 
     let card_genertor = CardGenertor::new();
 
+
+    // gen_card_by_id 의 count 임의로 1로 해둠.
     let mut check_values_exist =
         |player_num: usize, card_data: &CardJson| -> Result<(), Exception> {
             for player_card in &player_cards.decks[0].cards {
@@ -76,7 +78,7 @@ pub fn load_card_data(player_cards: &json::Decks) -> Result<Vec<Cards>, Exceptio
                     if player_card.id == *id {
                         for _ in 0..player_card.num {
                             ps_cards[player_num]
-                                .push(card_genertor.gen_card_by_id(id.to_string(), card_data));
+                                .push(card_genertor.gen_card_by_id(id.to_string(), card_data, 1));
                         }
                     }
                 } else {
