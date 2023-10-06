@@ -17,6 +17,8 @@ impl Zone for DeckZone {
     }
 
     /// 현재 Zone 에 카드를 추가 합니다.
+    /// TODO: 무슨 방식으로(eg. 랜덤, 맨 위, 맨 아래) 넣을지 구현해야함.
+    /// TODO: vec 에 card 를 넣는 방식이 아닌, count 를 증가시키는 방식으로 해야함.
     fn add_card(&mut self, card: &Card) -> Result<(), Exception> {
         if card.get_card_type() != &CardType::Unit {
             return Err(Exception::DifferentCardTypes);
@@ -25,7 +27,12 @@ impl Zone for DeckZone {
         if self.zone_cards.len() < self.zone_size + 1 {
             return Err(Exception::ExceededCardLimit);
         }
-        self.zone_cards.push(card);
+
+        let card = self.zone_cards.search(constant::FindType::FindByUUID(card.get_uuid().clone()), 1);
+        if card.len() != 0{
+            let count = card.get(0).unwrap().get_count();
+            // card.get(0).unwrap().set_count(count + 1);
+        }
         Ok(())
     }
 

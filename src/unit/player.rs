@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
-use crate::deck::{Cards, Deck, self};
+use crate::deck::{Cards, Deck, self, Card};
 use crate::enums::constant::*;
 use crate::exception::exception::Exception;
 use crate::game::Game;
@@ -78,13 +78,13 @@ pub struct Player {
     player_type: PlayerType,
     hero: HeroType,
     cards: Cards,
-    pub name: String,
+    name: String,
     cost: Cost,
     mana: Mana,
 
-    hand_zone: Option<Rc<RefCell<HandZone>>>,
-    deck_zone: Option<Rc<RefCell<DeckZone>>>,
-    graveyard_zone: Option<Rc<RefCell<GraveyardZone>>>,
+    hand_zone: HandZone,
+    deck_zone: DeckZone,
+    graveyard_zone: GraveyardZone,
 }
 
 impl Entity for Player {
@@ -114,9 +114,9 @@ impl Player {
             name,
             cost,
             mana,
-            hand_zone: Some(Rc::new(RefCell::new(HandZone::new()))),
-            deck_zone: Some(Rc::new(RefCell::new(DeckZone::new()))),
-            graveyard_zone: Some(Rc::new(RefCell::new(GraveyardZone::new()))),
+            hand_zone: HandZone::new(),
+            deck_zone: DeckZone::new(),
+            graveyard_zone: GraveyardZone::new(),
         }
     }
 
@@ -129,9 +129,38 @@ impl Player {
         // Zone 에 존재하는 카드의 uuid 를 count 만큼 꺼내옵니다.
 
         // zone_type 에 해당하는 Zone 의 카드를 가져옵니다
-        let d: Vec<UUID> = self.get_zone(zone_type).as_ref().unwrap().borrow_mut().get_cards().v_card.iter().map(|card| card.get_uuid().clone()).collect();
+        let card_uuid: Vec<String> = self.get_zone(zone_type).as_mut().get_cards().v_card.iter().map(|card| card.get_uuid().clone()).collect();
         
-        Ok(d.clone())
+        if card_uuid.len() == 0{
+            return Err(Exception::NoCardsLeft);
+        }
+
+        let mut ans = vec![];
+        
+        // 덱에 있는 모든 카드를 순회 합니다.
+        for card in &mut self.cards.v_card{
+
+            // hand 에서 draw 한 카드들의 uuid 를 가져옵니다.
+            for hand_card_uuid in &card_uuid{
+
+                // hand 에서 가져온 카드의 uuid 를 현재 순회중인 덱 카드와 동일한지 확인합니다.
+                if hand_card_uuid == card.get_uuid(){
+
+                    // 또한 해당 카드의 count 가 0 이 아닌지 확인합니다.
+                    if card.get_count() != 0{
+                        // 기존의 count 를 저장하여 덱 카드의 count 를 수정합니다.
+                        let count = card.get_count();
+                        card.set_count(count - 1);
+
+                        // 최종적으로 반환될 vec 에 카드를 넣습니다.
+                        ans.push(card.get_uuid().clone());
+                        break;
+                    }
+                }
+            }
+        }
+        
+        Ok(ans)
     }
 
     pub fn get_opponent(&self) -> &Option<Rc<RefCell<Player>>> {
@@ -158,28 +187,16 @@ impl Player {
         &self.mana
     }
 
-    pub fn get_zone(&mut self, zone_type: ZoneType) -> Option<Rc<RefCell<dyn Zone>>>{
-        match zone_type{
-            ZoneType::HandZone => Some(Rc::clone(&self.hand_zone.unwrap())),
-            ZoneType::DeckZone => Some(Rc::new(RefCell::new(&self.deck_zone))),
-            ZoneType::GraveyardZone => Some(Rc::new(RefCell::new(self.graveyard_zone))),
-            _ => {
-                None
-            }
+    pub fn get_zone(&mut self, zone_type: ZoneType) -> Box<&mut dyn Zone> {
+        match zone_type {
+            ZoneType::HandZone => Box::new(&mut self.hand_zone),
+            ZoneType::DeckZone => todo!(),
+            ZoneType::GraveyardZone => todo!(),
+            ZoneType::FieldZone => todo!(),
+            ZoneType::None => todo!(),
         }
     }
-
-    pub fn get_hand_zone(&mut self) -> &mut HandZone {
-        &mut self.hand_zone
-    }
-
-    pub fn get_deck_zone(&mut self) -> &mut DeckZone {
-        &mut self.deck_zone
-    }
-
-    pub fn get_graveyard_zone(&mut self) -> &mut GraveyardZone {
-        &mut self.graveyard_zone
-    }
+    
 
     // Setter 함수들
     pub fn set_opponent(&mut self, new_opponent: &Option<Weak<RefCell<Player>>>) {

@@ -142,24 +142,49 @@ impl Game {
         Ok(())
     }
 
+    fn peak_card(&self, cards: Vec<UUID>) -> UUID{
+        cards.get(0).unwrap().clone()
+    }
+
     /// 멀리건 단계를 수행합니다.
     pub fn game_step_mulligun(&mut self) {
+        // 각 player 의 덱에서 카드 4장을 뽑습니다.
+        let mut mullugun_cards_1 = None;
+        let mut mullugun_cards_2 = None;
         if let (Some(player1), Some(player2)) = (&self.player_1, &self.player_2) {
-            let mullugun_cards_1 =
-                player1
+            mullugun_cards_1 =
+                Some(player1
                     .as_ref()
                     .borrow_mut()
-                    .draw(ZoneType::DeckZone, CardDrawType::Top, 4);
+                    .draw(ZoneType::DeckZone, CardDrawType::Top, 4));
                 
-                let mullugun_cards_2 =
-                player2
+             mullugun_cards_2 =
+                Some(player2
                     .as_ref()
                     .borrow_mut()
-                    .draw(ZoneType::DeckZone, CardDrawType::Top, 4);
+                    .draw(ZoneType::DeckZone, CardDrawType::Top, 4));
         }
-        // 각 player 의 덱에서 카드 4장을 뽑음.
+        // mullugun_cards 들을 클라이언트로 전송합니다.
 
-        // player 가 선택한 카드를 핸드에 넣고, 나머지는 덱에 무작위로 넣음.
+        // player 가 선택한 카드를 클라이언트로부터 받습니다.
+
+        let ans =  if let (Some(data1), Some(data2)) = (&mullugun_cards_1, &mullugun_cards_2){
+            if let (Ok(cards1), Ok(cards2)) = (data1, data2){
+                Some((self.peak_card(cards1.clone()), self.peak_card(cards2.clone())))
+            }else{
+                None
+            }
+        }else{
+            None
+        };
+        // 선택한 카드를 제외한 나머지는 다시 덱으로 넣습니다.
+        if let Some((peaked_card1, peaked_card2)) = ans{
+            if let (Some(mul_cards1), Some(mul_cards2)) = (&mullugun_cards_1, &mullugun_cards_2){
+                let remainder_cards1:Vec<_> = mul_cards1.as_ref().unwrap().into_iter().filter(|&card| card.clone() != peaked_card1).collect();
+                let remainder_cards2:Vec<_> = mul_cards2.as_ref().unwrap().into_iter().filter(|&card| card.clone() != peaked_card1).collect();
+            }
+        }
+            
     }
 
     /// 라운드를 시작합니다.
