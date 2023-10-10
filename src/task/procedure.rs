@@ -6,14 +6,14 @@ use crate::exception::exception::Exception;
 use crate::game::*;
 use crate::task::task::Task;
 
-pub struct Procedure{
+pub struct Procedure {
     pub task_queue: TaskQueue,
     pub event_listen_queue: Vec<(Task, Behavior)>,
     game: Option<Weak<RefCell<Game>>>,
     id: usize,
 }
 
-impl Procedure{
+impl Procedure {
     pub fn new(game: Option<Weak<RefCell<Game>>>) -> Procedure {
         Procedure {
             task_queue: vec![],
@@ -40,7 +40,7 @@ impl Procedure{
             .iter()
             .filter(|item| item.get_task_uuid() == uuid)
             .collect();
- 
+
         result.first().copied()
     }
 
@@ -79,14 +79,12 @@ impl Procedure{
         let task_queue = self.task_queue.clone();
 
         // 먼저 해당 listen event 를 발동시킨 card 의 정보를 담고 있는 task 를 가져온다.
-        // 그리고 to_find 이라는 변수로 무슨 행동을 감시할 것인지 설정하고 만약 detected 되면 
+        // 그리고 to_find 이라는 변수로 무슨 행동을 감시할 것인지 설정하고 만약 detected 되면
         // 카드의 run 함수를 실행함.
 
         // player 의 HandZone 에서 Draw 함수를 통해 카드를 전개합니다.
-        // 
-        for item in event_listen_queue{
-            
-        }
+        //
+        for item in event_listen_queue {}
 
         // 그런 뒤 남은 task 들을 처리한다.
         Ok(())

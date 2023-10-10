@@ -37,7 +37,7 @@ impl Entity for Card {
                 Ok(_) => todo!(),
                 Err(_) => todo!(),
             }
-        }else{
+        } else {
             // 임의로 리턴함.
             Err(Exception::NothingToRemove)
         }

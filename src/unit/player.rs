@@ -1,12 +1,12 @@
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
-use crate::deck::{Cards, Deck, self, Card};
+use crate::deck::{self, Card, Cards, Deck};
 use crate::enums::constant::*;
 use crate::exception::exception::Exception;
 use crate::game::Game;
 use crate::unit::entity::Entity;
-use crate::zone::{DeckZone, GraveyardZone, HandZone, Zone, graveyard_zone};
+use crate::zone::{graveyard_zone, DeckZone, GraveyardZone, HandZone, Zone};
 
 pub trait IResource {
     fn increase(&mut self) -> &mut Self;
@@ -120,6 +120,33 @@ impl Player {
         }
     }
 
+    fn _peak_card(&self, cards: Vec<UUID>) -> UUID {
+        cards.get(0).unwrap().clone()
+    }
+
+    // 파라미터로 넘어온 Vec<Card> 에서 카드 하나를 선택 후 나머지를 다시 패에 넣습니다.
+    pub fn peak_card(
+        &self,
+        mullugun_cards_1: Vec<String>,
+        mullugun_cards_2: Vec<String>,
+    ) -> Result<(), Exception> {
+        // 각 mullugun_cards 에서 카드 한 장을 뽑습니다.
+        let peaked_card_1 = self._peak_card(mullugun_cards_1.clone());
+        let peaked_card_2 = self._peak_card(mullugun_cards_2.clone());
+
+        let filtered: Vec<_> = mullugun_cards_1
+            .iter()
+            .filter(|card| card != &&peaked_card_1)
+            .collect();
+
+        let filtered: Vec<_> = mullugun_cards_2
+            .iter()
+            .filter(|card| card != &&peaked_card_2)
+            .collect();
+
+        Ok(())
+    }
+
     pub fn draw(
         &mut self,
         zone_type: ZoneType,
@@ -129,25 +156,29 @@ impl Player {
         // Zone 에 존재하는 카드의 uuid 를 count 만큼 꺼내옵니다.
 
         // zone_type 에 해당하는 Zone 의 카드를 가져옵니다
-        let card_uuid: Vec<String> = self.get_zone(zone_type).as_mut().get_cards().v_card.iter().map(|card| card.get_uuid().clone()).collect();
-        
-        if card_uuid.len() == 0{
+        let card_uuid: Vec<String> = self
+            .get_zone(zone_type)
+            .as_mut()
+            .get_cards()
+            .v_card
+            .iter()
+            .map(|card| card.get_uuid().clone())
+            .collect();
+
+        if card_uuid.len() == 0 {
             return Err(Exception::NoCardsLeft);
         }
 
         let mut ans = vec![];
-        
+
         // 덱에 있는 모든 카드를 순회 합니다.
-        for card in &mut self.cards.v_card{
-
+        for card in &mut self.cards.v_card {
             // hand 에서 draw 한 카드들의 uuid 를 가져옵니다.
-            for hand_card_uuid in &card_uuid{
-
+            for hand_card_uuid in &card_uuid {
                 // hand 에서 가져온 카드의 uuid 를 현재 순회중인 덱 카드와 동일한지 확인합니다.
-                if hand_card_uuid == card.get_uuid(){
-
+                if hand_card_uuid == card.get_uuid() {
                     // 또한 해당 카드의 count 가 0 이 아닌지 확인합니다.
-                    if card.get_count() != 0{
+                    if card.get_count() != 0 {
                         // 기존의 count 를 저장하여 덱 카드의 count 를 수정합니다.
                         let count = card.get_count();
                         card.set_count(count - 1);
@@ -159,7 +190,7 @@ impl Player {
                 }
             }
         }
-        
+
         Ok(ans)
     }
 
@@ -196,7 +227,6 @@ impl Player {
             ZoneType::None => todo!(),
         }
     }
-    
 
     // Setter 함수들
     pub fn set_opponent(&mut self, new_opponent: &Option<Weak<RefCell<Player>>>) {

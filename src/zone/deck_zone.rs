@@ -28,8 +28,10 @@ impl Zone for DeckZone {
             return Err(Exception::ExceededCardLimit);
         }
 
-        let card = self.zone_cards.search(constant::FindType::FindByUUID(card.get_uuid().clone()), 1);
-        if card.len() != 0{
+        let card = self
+            .zone_cards
+            .search(constant::FindType::FindByUUID(card.get_uuid().clone()), 1);
+        if card.len() != 0 {
             let count = card.get(0).unwrap().get_count();
             // card.get(0).unwrap().set_count(count + 1);
         }

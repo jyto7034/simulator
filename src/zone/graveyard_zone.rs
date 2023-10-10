@@ -53,7 +53,8 @@ impl GraveyardZone {
 }
 
 impl Entity for GraveyardZone {
-    fn run(&self, game: &mut Game) -> Result<(), Exception> {        todo!()
+    fn run(&self, game: &mut Game) -> Result<(), Exception> {
+        todo!()
     }
 
     fn get_entity_type(&self) -> String {
