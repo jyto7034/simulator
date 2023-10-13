@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
-use crate::deck::{self, Card, Cards, Deck};
+use crate::deck::{self, Card, Cards, Deck, card};
 use crate::enums::constant::*;
 use crate::exception::exception::Exception;
 use crate::game::Game;
@@ -121,30 +121,39 @@ impl Player {
     }
 
     fn _peak_card(&self, cards: Vec<UUID>) -> UUID {
+        // 수정해야됨.
         cards.get(0).unwrap().clone()
     }
 
+    // --------------------------------------------------------
     // 파라미터로 넘어온 Vec<Card> 에서 카드 하나를 선택 후 나머지를 다시 패에 넣습니다.
-    pub fn peak_card(
-        &self,
-        mullugun_cards_1: Vec<String>,
-        mullugun_cards_2: Vec<String>,
-    ) -> Result<(), Exception> {
+    // --------------------------------------------------------
+    // Exceptions:
+    // - 카드가 4장이 아닌, 3장 이하일 때, 혹은 아예 없을 때.
+    // - 카드가 게임에서 삭제 당했을때?
+    // --------------------------------------------------------
+    pub fn peak_card_put_back(
+        &mut self,
+        mullugun_cards: Vec<String>,
+    ) -> Result<UUID, Exception> {
         // 각 mullugun_cards 에서 카드 한 장을 뽑습니다.
-        let peaked_card_1 = self._peak_card(mullugun_cards_1.clone());
-        let peaked_card_2 = self._peak_card(mullugun_cards_2.clone());
+        let peaked_card = self._peak_card(mullugun_cards.clone());
 
-        let filtered: Vec<_> = mullugun_cards_1
+        // 나머지 카드를 추립니다.
+        let remainder_cards: Vec<_> = mullugun_cards
             .iter()
-            .filter(|card| card != &&peaked_card_1)
+            .filter(|card| card != &&peaked_card)
             .collect();
 
-        let filtered: Vec<_> = mullugun_cards_2
-            .iter()
-            .filter(|card| card != &&peaked_card_2)
-            .collect();
-
-        Ok(())
+        // 나머지 카드들의 uuid 로 player 의 DeckZone 에서 원본 카드를 찾아내어, count 를 증가시킵니다.
+        for item in remainder_cards{
+            if let Some(card) = self.deck_zone.get_cards().v_card.iter_mut().find(|card| card.get_uuid() == item){
+                let count = card.get_count();
+                card.set_count(count + 1);
+            }
+        }
+        
+        Ok(peaked_card)
     }
 
     pub fn draw(

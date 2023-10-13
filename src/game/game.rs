@@ -3,6 +3,8 @@ use std::{
     rc::{Rc, Weak},
 };
 
+use rand_core::le;
+
 use crate::{
     deck::{deck::Deck, Cards},
     enums::constant::*,
@@ -143,27 +145,42 @@ impl Game {
     }
 
     /// 멀리건 단계를 수행합니다.
-    pub fn game_step_mulligun(&mut self) {
-        // 각 player 의 덱에서 카드 4장을 뽑습니다.
-        let mut mullugun_cards_1 = None;
-        let mut mullugun_cards_2 = None;
-        if let (Some(player1), Some(player2)) = (&self.player_1, &self.player_2) {
-            mullugun_cards_1 = Some(player1.as_ref().borrow_mut().draw(
-                ZoneType::DeckZone,
-                CardDrawType::Top,
-                4,
-            ));
-
-            mullugun_cards_2 = Some(player2.as_ref().borrow_mut().draw(
-                ZoneType::DeckZone,
-                CardDrawType::Top,
-                4,
-            ));
+    pub fn game_step_mulligun(&mut self) -> Result<(), Exception> {
+        let cards = match (&self.player_1, &self.player_2) {
+            (Some(player1), Some(player2)) => {
+                let mullugun_cards_1 = player1
+                    .as_ref()
+                    .borrow_mut()
+                    .draw(ZoneType::DeckZone, CardDrawType::Top, 4)
+                    .ok();
+                
+                let mullugun_cards_2 = player2
+                    .as_ref()
+                    .borrow_mut()
+                    .draw(ZoneType::DeckZone, CardDrawType::Top, 4)
+                    .ok();
+    
+                match (mullugun_cards_1, mullugun_cards_2) {
+                    (Some(cards_1), Some(cards_2)) => {
+                        let card1 = player1.as_ref().borrow_mut().peak_card_put_back(cards_1.clone())?;
+                        let card2 = player2.as_ref().borrow_mut().peak_card_put_back(cards_2.clone())?;
+                        Some((card1, card2))
+                    }
+                    _ => None,
+                }
+            }
+            _ => None,
+        };
+    
+        if let Some((card1, card2)) = cards {
+            // mullugun_cards를 클라이언트로 전송합니다.
+            // player가 선택한 카드를 클라이언트로부터 받습니다.
+            // 이 부분에 대한 코드 추가
         }
-        // mullugun_cards 들을 클라이언트로 전송합니다.
-
-        // player 가 선택한 카드를 클라이언트로부터 받습니다.
+    
+        Ok(())
     }
+    
 
     /// 라운드를 시작합니다.
     pub fn game_step_round_start(&mut self) {
