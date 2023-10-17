@@ -23,7 +23,7 @@ impl Zone for DeckZone {
         if card.get_card_type() != &CardType::Unit {
             return Err(Exception::DifferentCardTypes);
         }
-        
+
         // Zone 에 존재할 수 있는 카드의 갯수를 넘어갈 때
         if self.zone_cards.len() < self.zone_size + 1 {
             return Err(Exception::ExceededCardLimit);

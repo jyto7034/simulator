@@ -1,39 +1,31 @@
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
-use crate::deck::{self, Card, Cards, Deck, card};
+use crate::deck::Cards;
 use crate::enums::constant::*;
 use crate::exception::exception::Exception;
-use crate::game::Game;
+use crate::game::{Game, IResource};
 use crate::unit::entity::Entity;
-use crate::zone::{graveyard_zone, DeckZone, GraveyardZone, HandZone, Zone};
-
-pub trait IResource {
-    fn increase(&mut self) -> &mut Self;
-
-    fn decrease(&mut self) -> &mut Self;
-
-    fn set(&mut self, cost: u32) -> &mut Self;
-}
+use crate::zone::{DeckZone, GraveyardZone, HandZone, Zone};
 
 pub struct Cost {
-    cost: u32,
-    limit: u32,
+    cost: usize,
+    limit: usize,
 }
 
 impl Cost {
-    pub fn new(cost: u32, limit: u32) -> Cost {
+    pub fn new(cost: usize, limit: usize) -> Cost {
         Cost { cost, limit }
     }
 }
 
 pub struct Mana {
-    cost: u32,
-    limit: u32,
+    cost: usize,
+    limit: usize,
 }
 
 impl Mana {
-    pub fn new(cost: u32, limit: u32) -> Mana {
+    pub fn new(cost: usize, limit: usize) -> Mana {
         Mana { cost, limit }
     }
 }
@@ -49,7 +41,7 @@ impl IResource for Mana {
         self
     }
 
-    fn set(&mut self, cost: u32) -> &mut Self {
+    fn set(&mut self, cost: usize) -> &mut Self {
         self.cost = cost;
         self
     }
@@ -66,7 +58,7 @@ impl IResource for Cost {
         self
     }
 
-    fn set(&mut self, cost: u32) -> &mut Self {
+    fn set(&mut self, cost: usize) -> &mut Self {
         self.cost = cost;
         self
     }
@@ -131,45 +123,65 @@ impl Player {
     // Exceptions:
     // - 카드가 4장이 아닌, 3장 이하일 때, 혹은 아예 없을 때.
     // - 카드가 게임에서 삭제 당했을때?
+    // - 한 벡터에 같은 카드 두 장이 존재할 때, eg. 나머지 카드 추릴 때.
     // --------------------------------------------------------
     pub fn peak_card_put_back(
         &mut self,
-        mullugun_cards: Vec<String>,
-    ) -> Result<UUID, Exception> {
-        // 각 mullugun_cards 에서 카드 한 장을 뽑습니다.
-        let peaked_card = self._peak_card(mullugun_cards.clone());
+        mullugun_cards: Vec<UUID>,
+    ) -> Result<Vec<UUID>, Exception> {
+        // 각 mullugun_cards 에서 카드 n장을 뽑습니다.
+        let peaked_card = vec![self._peak_card(mullugun_cards.clone())];
 
         // 나머지 카드를 추립니다.
-        let remainder_cards: Vec<_> = mullugun_cards
+        let remainder_cards: Vec<String> = peaked_card
             .iter()
-            .filter(|card| card != &&peaked_card)
+            .cloned()
+            .filter(|element| !mullugun_cards.contains(element))
+            .chain(
+                peaked_card
+                    .iter()
+                    .cloned()
+                    .filter(|element| !mullugun_cards.contains(element)),
+            )
             .collect();
 
         // 나머지 카드들의 uuid 로 player 의 DeckZone 에서 원본 카드를 찾아내어, count 를 증가시킵니다.
-        for item in remainder_cards{
-            if let Some(card) = self.deck_zone.get_cards().v_card.iter_mut().find(|card| card.get_uuid() == item){
-                let count = card.get_count();
-                card.set_count(count + 1);
+        for item in remainder_cards {
+            if let Some(card) = self
+                .deck_zone
+                .get_cards()
+                .v_card
+                .iter_mut()
+                .find(|card| card.get_uuid() == &item)
+            {
+                card.get_count().increase();
             }
         }
-        
+
         Ok(peaked_card)
     }
 
+    // --------------------------------------------------------
+    // Parameters:
+    // - zone_type  > 무슨 zone 에서 카드를 draw 할 지.
+    // - draw_tyoe  > 어떤 방식으로 draw 할 지.
+    // - count      > 몇 장을 뽑을건지.
+    // --------------------------------------------------------
+    // Exceptions:
+    // -
+    // --------------------------------------------------------
     pub fn draw(
         &mut self,
         zone_type: ZoneType,
         draw_type: CardDrawType,
         count: usize,
     ) -> Result<Vec<UUID>, Exception> {
-        // Zone 에 존재하는 카드의 uuid 를 count 만큼 꺼내옵니다.
-
         // zone_type 에 해당하는 Zone 의 카드를 가져옵니다
         let card_uuid: Vec<String> = self
             .get_zone(zone_type)
             .as_mut()
             .get_cards()
-            .v_card
+            .draw(draw_type, count)
             .iter()
             .map(|card| card.get_uuid().clone())
             .collect();
@@ -187,10 +199,10 @@ impl Player {
                 // hand 에서 가져온 카드의 uuid 를 현재 순회중인 덱 카드와 동일한지 확인합니다.
                 if hand_card_uuid == card.get_uuid() {
                     // 또한 해당 카드의 count 가 0 이 아닌지 확인합니다.
-                    if card.get_count() != 0 {
+                    if card.get_count().get() != 0 {
                         // 기존의 count 를 저장하여 덱 카드의 count 를 수정합니다.
                         let count = card.get_count();
-                        card.set_count(count - 1);
+                        card.get_count().decrease();
 
                         // 최종적으로 반환될 vec 에 카드를 넣습니다.
                         ans.push(card.get_uuid().clone());
@@ -201,6 +213,15 @@ impl Player {
         }
 
         Ok(ans)
+    }
+
+    pub fn add_card(&mut self, zone_type: ZoneType, count: Option<i32>, card: UUID) {
+        todo!()
+        // self
+        //     .get_zone(zone_type)
+        //     .as_mut()
+        //     .get_cards()
+        //     .push(card)
     }
 
     pub fn get_opponent(&self) -> &Option<Rc<RefCell<Player>>> {
@@ -256,11 +277,11 @@ impl Player {
         self.name = new_name;
     }
 
-    pub fn set_cost(&mut self, cost: u32) {
+    pub fn set_cost(&mut self, cost: usize) {
         self.cost.set(cost);
     }
 
-    pub fn set_mana(&mut self, cost: u32) {
+    pub fn set_mana(&mut self, cost: usize) {
         self.mana.set(cost);
     }
 }

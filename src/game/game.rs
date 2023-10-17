@@ -3,7 +3,46 @@ use std::{
     rc::{Rc, Weak},
 };
 
-use rand_core::le;
+pub trait IResource {
+    fn increase(&mut self) -> &mut Self;
+
+    fn decrease(&mut self) -> &mut Self;
+
+    fn set(&mut self, cost: usize) -> &mut Self;
+}
+
+#[derive(Clone)]
+pub struct Count {
+    cost: usize,
+    limit: usize,
+}
+
+impl Count {
+    pub fn new(cost: usize, limit: usize) -> Count {
+        Count { cost, limit }
+    }
+
+    pub fn get(&self) -> usize {
+        self.cost
+    }
+}
+
+impl IResource for Count {
+    fn increase(&mut self) -> &mut Self {
+        self.cost += 1;
+        self
+    }
+
+    fn decrease(&mut self) -> &mut Self {
+        self.cost -= 1;
+        self
+    }
+
+    fn set(&mut self, cost: usize) -> &mut Self {
+        self.cost = cost;
+        self
+    }
+}
 
 use crate::{
     deck::{deck::Deck, Cards},
@@ -17,7 +56,7 @@ use super::TimeManager;
 pub struct GameConfig {
     pub player_1: Deck,
     pub player_2: Deck,
-    pub attaker: u32,
+    pub attaker: usize,
     pub name: Vec<String>,
 }
 
@@ -146,41 +185,60 @@ impl Game {
 
     /// 멀리건 단계를 수행합니다.
     pub fn game_step_mulligun(&mut self) -> Result<(), Exception> {
-        let cards = match (&self.player_1, &self.player_2) {
+        // player 을 언래핑 합니다.
+        match (&self.player_1, &self.player_2) {
             (Some(player1), Some(player2)) => {
+                // player1 의 deck 에서 Top 에 위치한 카드 4장을 뽑습니다.
                 let mullugun_cards_1 = player1
                     .as_ref()
                     .borrow_mut()
-                    .draw(ZoneType::DeckZone, CardDrawType::Top, 4)
+                    .draw(ZoneType::DeckZone, CardDrawType::Random, 4)
                     .ok();
-                
+
+                // player2 의 deck 에서 Top 에 위치한 카드 4장을 뽑습니다.
                 let mullugun_cards_2 = player2
                     .as_ref()
                     .borrow_mut()
-                    .draw(ZoneType::DeckZone, CardDrawType::Top, 4)
+                    .draw(ZoneType::DeckZone, CardDrawType::Random, 4)
                     .ok();
-    
+
+                // mullugun_cards 들을 언래핑합니다.
                 match (mullugun_cards_1, mullugun_cards_2) {
                     (Some(cards_1), Some(cards_2)) => {
-                        let card1 = player1.as_ref().borrow_mut().peak_card_put_back(cards_1.clone())?;
-                        let card2 = player2.as_ref().borrow_mut().peak_card_put_back(cards_2.clone())?;
-                        Some((card1, card2))
+                        // mullugun_cards 들을 클라이언트들에게 보냅니다.
+
+                        // 클라이언트들로부터 peak_card 정보를 받습니다.
+                        // peak_card 는 멀리건에서 선택된 카드들의 집합입니다.
+                        // 받은 정보를 토대로, 선택된 카드를 제외한 나머지는 다시 deck 에 넣습니다.
+                        // 위 과정은 peak_card_put_back() 함수에서 처리합니다.
+                        // 그리고 함수로부터 peak_card 를 반환받아, cards1, cards2 라는 변수들을 만들어 반환합니다.
+                        let cards1 = player1
+                            .as_ref()
+                            .borrow_mut()
+                            .peak_card_put_back(cards_1.clone())
+                            .ok();
+                        let cards2 = player2
+                            .as_ref()
+                            .borrow_mut()
+                            .peak_card_put_back(cards_2.clone())
+                            .ok();
+
+                        // 선택된 카드들을 각 플레이어의 손패에 넣습니다.
+                        // match (cards1, cards2){
+                        //     (Some(cards1), Some(cards2)) => {
+                        //         player1.as_ref().borrow_mut().
+                        //     },
+                        //     _=> {}
+                        // }
                     }
-                    _ => None,
+                    _ => {}
                 }
             }
-            _ => None,
+            _ => {}
         };
-    
-        if let Some((card1, card2)) = cards {
-            // mullugun_cards를 클라이언트로 전송합니다.
-            // player가 선택한 카드를 클라이언트로부터 받습니다.
-            // 이 부분에 대한 코드 추가
-        }
-    
+
         Ok(())
     }
-    
 
     /// 라운드를 시작합니다.
     pub fn game_step_round_start(&mut self) {

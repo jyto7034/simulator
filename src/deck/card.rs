@@ -1,9 +1,8 @@
 use std::fmt;
-use std::rc::Rc;
 
 use crate::enums::constant::{self, CardType, Runner, UUID};
 use crate::exception::exception::Exception;
-use crate::game::{Behavior, Game};
+use crate::game::{Behavior, Count, Game};
 use crate::unit::Entity;
 use crate::utils::json::CardJson;
 
@@ -19,7 +18,7 @@ pub struct Card {
     name: String,
     behavior_table: Vec<Behavior>,
     card_json: CardJson,
-    count: usize,
+    count: Count,
     runner: Option<Runner>,
 }
 
@@ -56,7 +55,7 @@ impl Card {
             name: "dummy".to_string(),
             behavior_table: vec![],
             card_json: CardJson::new(),
-            count: 0,
+            count: Count::new(0, 3),
             runner: None,
         }
     }
@@ -76,7 +75,7 @@ impl Card {
             name,
             behavior_table,
             card_json,
-            count,
+            count: Count::new(count, 3),
             runner,
         }
     }
@@ -105,8 +104,8 @@ impl Card {
         &self.card_json
     }
 
-    pub fn get_count(&self) -> usize {
-        self.count
+    pub fn get_count(&mut self) -> &mut Count {
+        &mut self.count
     }
 
     // Setter 함수들
@@ -120,10 +119,6 @@ impl Card {
 
     pub fn set_name(&mut self, new_name: String) {
         self.name = new_name;
-    }
-
-    pub fn set_count(&mut self, count: usize) {
-        self.count = count;
     }
 
     pub fn set_behavior_table(&mut self, new_behavior_table: Vec<Behavior>) {

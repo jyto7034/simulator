@@ -1,6 +1,7 @@
 use crate::deck::Card;
 use crate::enums::constant::{self, CardType, SpellType};
 use crate::exception::exception::Exception;
+use crate::game::IResource;
 use rand::Rng;
 
 /// 다수의 카드를 보다 더 효율적으로 관리하기 위한 구조체입니다.
@@ -20,6 +21,7 @@ impl Cards {
     }
 
     fn draw_spell(&self, spell_type: SpellType, cnt: usize) -> Result<Vec<&Card>, Exception> {
+        // Deck 이 비어 있는지 확인합니다.
         self.is_deck_empty()?;
 
         Ok(self.find_by_card_type(CardType::Spell(spell_type), cnt))
@@ -34,9 +36,17 @@ impl Cards {
         Ok(&self.v_card[random_number])
     }
 
-    fn draw_bottom(&self) -> Result<&Card, Exception> {
-        match self.v_card.first() {
-            Some(card) => Ok(card),
+    fn draw_bottom(&mut self) -> Result<&Card, Exception> {
+        self.is_deck_empty()?;
+
+        match &mut self.v_card.first() {
+            Some(card) => {
+                if card.get_count().get() != 0 {
+                    Ok(card)
+                } else {
+                    Err(Exception::NoCardLeft)
+                }
+            }
             None => Err(Exception::NoCardsLeft),
         }
     }
@@ -44,7 +54,12 @@ impl Cards {
     fn draw_top(&self) -> Result<&Card, Exception> {
         self.is_deck_empty()?;
 
-        Ok(&self.v_card.last().unwrap())
+        let card = self.v_card.last().unwrap();
+        if card.get_count().get() != 0 {
+            Ok(card)
+        } else {
+            Err(Exception::NoCardLeft)
+        }
     }
 
     fn draw_by_card_type(&self, card_type: CardType, cnt: usize) -> Result<Vec<&Card>, Exception> {
@@ -54,10 +69,15 @@ impl Cards {
     }
 
     fn find_by_uuid(&self, uuid: String, cnt: usize) -> Vec<&Card> {
+        // uuid 에 해당하는 카드를 집계합니다.
+        // count 가 0 개인 경우, 스킵하고 다음 카드를 찾습니다.
         let ans: Vec<_> = self
             .v_card
             .iter()
-            .filter(|item| item.get_uuid().cmp(&uuid) == std::cmp::Ordering::Equal)
+            .filter(|item| {
+                item.get_uuid().cmp(&uuid) == std::cmp::Ordering::Equal
+                    && item.get_count().get() != 0
+            })
             .take(cnt as usize)
             .collect();
 
@@ -65,10 +85,15 @@ impl Cards {
     }
 
     fn find_by_name(&self, name: String, cnt: usize) -> Vec<&Card> {
+        // name 에 해당하는 카드를 집계합니다.
+        // count 가 0 개인 경우, 스킵하고 다음
         let ans: Vec<_> = self
             .v_card
             .iter()
-            .filter(|item| item.get_name().cmp(&name) == std::cmp::Ordering::Equal)
+            .filter(|item| {
+                item.get_name().cmp(&name) == std::cmp::Ordering::Equal
+                    && item.get_count().get() != 0
+            })
             .take(cnt as usize)
             .collect();
 
@@ -76,11 +101,13 @@ impl Cards {
     }
 
     fn find_by_card_type(&self, card_type: CardType, cnt: usize) -> Vec<&Card> {
+        // cond 에 해당하는 카드를 집계합니다.
+        // count 가 0 개인 경우, 스킵하고 다음 카드를 찾습니다.
         let filter = |cond: CardType| {
             let filtered: Vec<_> = self
                 .v_card
                 .iter()
-                .filter(|item| item.get_card_type() == &cond)
+                .filter(|item| item.get_card_type() == &cond && item.get_count().get() != 0)
                 .take(cnt)
                 .collect();
             filtered
@@ -156,7 +183,15 @@ impl Cards {
             count_of_card
         };
 
-        match draw_type {
+        let decrease = |cards: &mut Vec<Card>, card_uuid: UUID| {
+            cards.iter_mut().for_each(|item| {
+                if item.get_uuid() == &card_uuid {
+                    item.get_count().decrease();
+                }
+            });
+        };
+
+        let v_cards = match draw_type {
             CardDrawType::Top => {
                 vec![self.draw_top().unwrap()]
             }
@@ -181,6 +216,13 @@ impl Cards {
             _ => {
                 vec![]
             }
+        };
+
+        // Draw 된 카드들의 count 를 하나씩 감소시킵니다.
+        for item in v_cards {
+            decrease(&mut self.v_card, item.get_uuid().clone());
         }
+
+        v_cards
     }
 }

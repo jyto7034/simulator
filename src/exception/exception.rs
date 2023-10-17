@@ -13,6 +13,7 @@ pub enum Exception {
     DeckParseError,
     ReadFileFailed,
     NoCardsLeft,
+    NoCardLeft,
     Ok,
 }
 
