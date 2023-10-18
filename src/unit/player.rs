@@ -124,6 +124,7 @@ impl Player {
     // - 카드가 4장이 아닌, 3장 이하일 때, 혹은 아예 없을 때.
     // - 카드가 게임에서 삭제 당했을때?
     // - 한 벡터에 같은 카드 두 장이 존재할 때, eg. 나머지 카드 추릴 때.
+    // - 어떤 카드도 peak 하지 않았을때. _peak_card 에서 오류 나옴.
     // --------------------------------------------------------
     pub fn peak_card_put_back(
         &mut self,
@@ -154,7 +155,7 @@ impl Player {
                 .iter_mut()
                 .find(|card| card.get_uuid() == &item)
             {
-                card.get_count().increase();
+                card.get_count_mut().increase();
             }
         }
 
@@ -177,7 +178,7 @@ impl Player {
         count: usize,
     ) -> Result<Vec<UUID>, Exception> {
         // zone_type 에 해당하는 Zone 의 카드를 가져옵니다
-        let card_uuid: Vec<String> = self
+        let card_uuid: Vec<UUID> = self
             .get_zone(zone_type)
             .as_mut()
             .get_cards()
@@ -192,36 +193,27 @@ impl Player {
 
         let mut ans = vec![];
 
-        // 덱에 있는 모든 카드를 순회 합니다.
-        for card in &mut self.cards.v_card {
-            // hand 에서 draw 한 카드들의 uuid 를 가져옵니다.
-            for hand_card_uuid in &card_uuid {
-                // hand 에서 가져온 카드의 uuid 를 현재 순회중인 덱 카드와 동일한지 확인합니다.
-                if hand_card_uuid == card.get_uuid() {
-                    // 또한 해당 카드의 count 가 0 이 아닌지 확인합니다.
-                    if card.get_count().get() != 0 {
-                        // 기존의 count 를 저장하여 덱 카드의 count 를 수정합니다.
-                        let count = card.get_count();
-                        card.get_count().decrease();
+        // // 덱에 있는 모든 카드를 순회 합니다.
+        // for card in &mut self.cards.v_card {
+        //     // hand 에서 draw 한 카드들의 uuid 를 가져옵니다.
+        //     for hand_card_uuid in &card_uuid {
+        //         // hand 에서 가져온 카드의 uuid 를 현재 순회중인 덱 카드와 동일한지 확인합니다.
+        //         if hand_card_uuid == card.get_uuid() {
+        //             // 덱 카드의 count 를 수정합니다.
+        //             card.get_count_mut().decrease();
 
-                        // 최종적으로 반환될 vec 에 카드를 넣습니다.
-                        ans.push(card.get_uuid().clone());
-                        break;
-                    }
-                }
-            }
-        }
+        //             // 최종적으로 반환될 vec 에 카드를 넣습니다.
+        //             ans.push(card.get_uuid().clone());
+        //             break;
+        //         }
+        //     }
+        // }
 
         Ok(ans)
     }
 
     pub fn add_card(&mut self, zone_type: ZoneType, count: Option<i32>, card: UUID) {
-        todo!()
-        // self
-        //     .get_zone(zone_type)
-        //     .as_mut()
-        //     .get_cards()
-        //     .push(card)
+        self.get_zone(zone_type).as_mut().get_cards().add_card(card)
     }
 
     pub fn get_opponent(&self) -> &Option<Rc<RefCell<Player>>> {

@@ -14,11 +14,7 @@ fn main() {
         .iter()
         .cloned()
         .filter(|element| !vec2.contains(element))
-        .chain(
-            vec2.iter()
-                .cloned()
-                .filter(|element| !vec1.contains(element)),
-        )
+        .chain(vec2.iter().cloned().filter(|element| !vec1.contains(element)))
         .collect();
 
     // 결과 출력

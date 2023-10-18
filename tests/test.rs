@@ -22,10 +22,8 @@ mod tests {
             name: vec!["test1".to_string(), "test2".to_string()],
         };
 
-        // let task_proc = Procedure { task_queue: vec![] };
-
         let proc = Rc::new(RefCell::new(Procedure::new(None)));
-        let game = Game::new(Some(Rc::downgrade(&proc)));
+        let game = Game::new(Some(proc));
         if let Ok(mut game) = game {
             match game.initialize(config) {
                 Ok(_) => Ok(game),
@@ -171,7 +169,7 @@ mod tests {
         use super::*;
         use simulator::{enums::*, game::Behavior, task::Task};
 
-        fn add_task(proc: &Weak<RefCell<Procedure>>) -> Task {
+        fn create_task_and_push(proc: &Rc<RefCell<Procedure>>) -> Task {
             let task = match Task::new(
                 PlayerType::Player1,
                 &"".to_string(),
@@ -184,10 +182,7 @@ mod tests {
                     Task::dummy()
                 }
             };
-            match proc.upgrade() {
-                Some(proc) => proc.as_ref().borrow_mut().add_task(&task),
-                None => assert!(false),
-            }
+            proc.as_ref().borrow_mut().add_task(&task);
             task
         }
 
@@ -195,29 +190,27 @@ mod tests {
         fn test_task_remove() {
             // task 삭제하는 기능을 테스트 하는 함수입니다.
             let game = generate_game().unwrap();
-            let task = add_task(game.procedure.as_ref().unwrap());
-
-            if let Some(proc) = game.procedure {
-                if let Some(procedure) = proc.upgrade() {
-                    let result = procedure
+            let task = create_task_and_push(&game.procedure.as_ref().unwrap().clone());
+            let d = game.procedure.as_ref().unwrap().as_ref().borrow().get_task_list();
+            println!("{:#?}", d);
+            if let Some(proc) = &game.procedure {
+                    let result = proc
                         .borrow_mut()
                         .remove_task_by_uuid(task.get_task_uuid());
+                    println!("{:#?}", d);
 
                     match result {
                         Ok(_) => {
-                            let exists = procedure
+                            let exists = proc
                                 .borrow()
                                 .task_queue
                                 .iter()
-                                .any(|item| item.get_task_uuid() == task.get_task_uuid());
+                                .any(|item| item.get_task_uuid() == task.get_task_uuid());  
                             assert!(!exists, "Task still exists");
                         }
                         Err(Exception::NothingToRemove) => {}
                         Err(err) => assert!(false, "{}", err),
                     }
-                } else {
-                    assert!(false, "Weak err");
-                }
             } else {
                 assert!(false, "Weak err");
             }

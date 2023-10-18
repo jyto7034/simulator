@@ -14,6 +14,7 @@ pub enum Exception {
     ReadFileFailed,
     NoCardsLeft,
     NoCardLeft,
+    CardError,
     Ok,
 }
 

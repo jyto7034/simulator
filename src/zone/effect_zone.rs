@@ -24,7 +24,7 @@ impl Zone for EffectZone {
         if self.zone_cards.len() < self.zone_size + 1 {
             return Err(Exception::ExceededCardLimit);
         }
-        self.zone_cards.push(card);
+        self.zone_cards.push(card.clone());
         Ok(())
     }
 

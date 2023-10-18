@@ -64,16 +64,16 @@ pub struct Game {
     pub player_1: Option<Rc<RefCell<Player>>>,
     pub player_2: Option<Rc<RefCell<Player>>>,
 
-    pub procedure: Option<Weak<RefCell<Procedure>>>,
+    pub procedure: Option<Rc<RefCell<Procedure>>>,
     pub time: TimeManager,
 }
 
 impl Game {
-    pub fn new(procedure: Option<Weak<RefCell<Procedure>>>) -> Result<Game, Exception> {
+    pub fn new(procedure: Option<Rc<RefCell<Procedure>>>) -> Result<Game, Exception> {
         let game = Game {
             player_1: None,
             player_2: None,
-            procedure: procedure,
+            procedure,
             time: TimeManager::new(),
         };
         Ok(game)
@@ -188,14 +188,14 @@ impl Game {
         // player 을 언래핑 합니다.
         match (&self.player_1, &self.player_2) {
             (Some(player1), Some(player2)) => {
-                // player1 의 deck 에서 Top 에 위치한 카드 4장을 뽑습니다.
+                // player1 의 deck 에서 랜덤한 카드 4장을 뽑습니다.
                 let mullugun_cards_1 = player1
                     .as_ref()
                     .borrow_mut()
                     .draw(ZoneType::DeckZone, CardDrawType::Random, 4)
                     .ok();
 
-                // player2 의 deck 에서 Top 에 위치한 카드 4장을 뽑습니다.
+                // player2 의 deck 에서 랜덤한 카드 4장을 뽑습니다.
                 let mullugun_cards_2 = player2
                     .as_ref()
                     .borrow_mut()
@@ -224,18 +224,36 @@ impl Game {
                             .ok();
 
                         // 선택된 카드들을 각 플레이어의 손패에 넣습니다.
-                        // match (cards1, cards2){
-                        //     (Some(cards1), Some(cards2)) => {
-                        //         player1.as_ref().borrow_mut().
-                        //     },
-                        //     _=> {}
-                        // }
+                        match (cards1, cards2) {
+                            (Some(cards1), Some(cards2)) => {
+                                // cards1 를 순회하며 원본 카드를 가져와, clone 으로 손패에 넣습니다.
+                                let action = |player: &Rc<RefCell<Player>>, cards: Vec<UUID>| {
+                                    for card in cards {
+                                        let card_origin = player1
+                                            .as_ref()
+                                            .borrow_mut()
+                                            .get_cards()
+                                            .search(FindType::FindByUUID(card), 1);
+                                        player
+                                            .as_ref()
+                                            .borrow_mut()
+                                            .get_zone(ZoneType::HandZone)
+                                            .get_cards()
+                                            .push(card_origin.get(0).unwrap().clone());
+                                    }
+                                };
+
+                                action(player1, cards1);
+                                action(player2, cards2);
+                            }
+                            _ => return Err(Exception::CardError),
+                        } // end of (cards1, cards2)
                     }
-                    _ => {}
-                }
+                    _ => return Err(Exception::CardError),
+                } // end of (mullugun_cards_1, mullugun_cards_2)
             }
-            _ => {}
-        };
+            _ => return Err(Exception::PlayerDataNotIntegrity),
+        }; // end of (&self.player_1, &self.player_2)
 
         Ok(())
     }

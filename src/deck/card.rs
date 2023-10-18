@@ -104,7 +104,10 @@ impl Card {
         &self.card_json
     }
 
-    pub fn get_count(&mut self) -> &mut Count {
+    pub fn get_count(&self) -> &Count {
+        &self.count
+    }
+    pub fn get_count_mut(&mut self) -> &mut Count {
         &mut self.count
     }
 

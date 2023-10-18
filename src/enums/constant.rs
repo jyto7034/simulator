@@ -1,3 +1,5 @@
+use serde::de;
+
 use crate::deck::Card;
 use crate::exception::exception::Exception;
 use crate::game::*;
@@ -38,7 +40,7 @@ pub enum EntityType {
     Agent,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum PlayerType {
     Player1,
     Player2,
@@ -64,7 +66,7 @@ pub enum HeroType {
     Name2,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum TaskPriority {
     Immediately,
     RoundEnd,

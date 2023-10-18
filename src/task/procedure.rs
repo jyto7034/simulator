@@ -6,6 +6,7 @@ use crate::exception::exception::Exception;
 use crate::game::*;
 use crate::task::task::Task;
 
+#[derive(Debug)]
 pub struct Procedure {
     pub task_queue: TaskQueue,
     pub event_listen_queue: Vec<(Task, Behavior)>,
@@ -50,7 +51,9 @@ impl Procedure {
 
     pub fn remove_task_by_uuid(&mut self, uuid: &UUID) -> Result<(), Exception> {
         let prev_len = self.task_queue.len();
+        println!("{:#?}", self.task_queue);
         self.task_queue.retain(|item| item.get_task_uuid() != uuid);
+        println!("{:#?}", self.task_queue);
         if self.task_queue.len() != prev_len {
             Ok(())
         } else {
@@ -63,12 +66,8 @@ impl Procedure {
     }
 
     /// 후입선출 방식으로 uuid 를 집계하여 리턴한다.
-    pub fn get_task_list(&self) -> Vec<&String> {
-        let mut res = vec![];
-        for item in self.task_queue.iter().rev() {
-            res.push(item.get_task_uuid());
-        }
-        res
+    pub fn get_task_list(&self) -> Vec<String> {
+        self.task_queue.iter().map(|task| task.get_task_uuid().clone()).collect()
     }
 
     /// queue 에 있는 task 를 처리하는 함수.

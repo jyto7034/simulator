@@ -8,7 +8,7 @@ use crate::utils::utils;
 /// Card 구조체엔 run 이라는 함수가 존재하는데, 카드의 효과를 발동할 때,
 /// 이 run 함수를 실행시킨다. 실행된 run 함수는 자신 카드의 uuid 를 task 객체로 만들어 procedure 의 task_list 에 추가한다.
 /// 또한, procedure 의 execution 함수를 실행시켜, task 를 처리한다.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Task {
     player_type: PlayerType,
     task_uuid: String,
