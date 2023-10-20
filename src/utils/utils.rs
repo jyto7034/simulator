@@ -1,11 +1,14 @@
 use crate::card_gen::card_gen::CardGenertor;
-use crate::deck::{Card, Cards};
+use crate::deck::{Card, Cards, Deck};
 use crate::enums::constant::{self, UUID_GENERATOR_PATH};
 use crate::exception::exception::Exception;
 use crate::utils::json;
+use base64::{encode, decode};
 use std::fs::File;
 use std::io::Read;
 use std::process::{Command, Stdio};
+use std::io::{Cursor, Write};
+use byteorder::WriteBytesExt;
 
 pub fn generate_uuid() -> Result<String, Exception> {
     let output = if let Ok(ans) = Command::new(UUID_GENERATOR_PATH)
@@ -123,4 +126,160 @@ pub fn load_card_id() -> Result<Vec<String>, Exception> {
         ids.push(item.id.clone());
     }
     Ok(ids)
+}
+
+const DECK_CODE_VERSION: u32 = 1;
+fn deck_decode(deck_code: String) ->  Result<Deck, ()>{
+    let code = decode(deck_code).unwrap();
+    let mut pos = 0;
+
+    let read_varint = |pos: &mut usize|{
+        let mut shift = 0;
+        let mut result = 0;
+
+        loop{
+            if *pos >= code.len(){
+                return Err(());
+            }
+
+            let ch = code[*pos] as i32;
+
+            *pos += 1;
+
+            result |= (ch & 0x7f) << shift;
+            shift += 7;
+
+            if (ch & 0x80) == 0{
+                break;
+            }
+        }
+        return Ok(result)
+    };
+
+    if code[pos] as char != '\0'{
+        println!("{}", code[pos]);
+        println!("Invalid deck code");
+        return Err(());
+    }
+    pos += 1;
+
+    match read_varint(&mut pos) {
+        Ok(version) => {
+            if version as u32 != DECK_CODE_VERSION{
+                println!("Version mismatch");
+                return Err(());
+            }
+        },
+        Err(_) => {
+            println!("version err");
+            return Err(());
+        },
+    }
+
+    let format = read_varint(&mut pos);
+    match format {
+        Ok(data) => {
+            println!("{}", data);
+        },
+        Err(_) => {
+            println!("Invalid format type");
+            return Err(());
+        },
+    }
+
+    let num = read_varint(&mut pos);
+    match num{
+        Ok(data) => {
+            if data != 1{
+                println!("Hero count must be 1");
+                return Err(());
+            }
+        },
+        Err(_) => return Err(()),
+    }
+
+    let hero_type = read_varint(&mut pos);
+    let hero_type = match hero_type {
+        Ok(hero_id) => {
+            println!("{}",hero_id);
+            hero_id
+        },
+        Err(_) => {
+            return Err(());
+        },
+    };
+
+    //Deck deckInfo(format, hero->GetCardClass());
+
+    // Single-copy cards
+    let num = read_varint(&mut pos).unwrap();
+    for idx in 0..num{
+        let cardID = read_varint(&mut pos).unwrap();
+        println!("{}", cardID);
+        // deckInfo.AddCard(Cards::FindCardByDbfID(cardID)->id, 1);
+    }
+    
+    // 2-copy cards
+    let num = read_varint(&mut pos).unwrap();
+    for idx in 0..num{
+        let cardID = read_varint(&mut pos).unwrap();
+        println!("{}", cardID);
+        // deckInfo.AddCard(Cards::FindCardByDbfID(cardID)->id, 2);
+    }
+    
+    // n-copy cards
+    let num = read_varint(&mut pos).unwrap();
+    for idx in 0..num{
+        let cardID = read_varint(&mut pos).unwrap();
+        let count = read_varint(&mut pos).unwrap();
+        println!("{}, {}", cardID, count);
+        // deckInfo.AddCard(Cards::FindCardByDbfID(cardID)->id, count);
+    }
+
+    
+    Ok(Deck{ raw_deck_code: "".to_string() })
+}
+
+
+fn write_varint<W: Write>(writer: &mut W, mut value: i32) -> std::io::Result<()> {
+    loop {
+        let mut temp: u8 = (value & 0b01111111) as u8;
+        value >>= 7;
+        if value != 0 {
+            temp |= 0b10000000;
+        }
+        writer.write_u8(temp)?;
+        if value == 0 {
+            break;
+        }
+    }
+    Ok(())
+}
+
+fn deck_encode(deck1: Vec<i32>, deck2: Vec<i32>, dbf_hero: i32, format: i32) -> String {
+    let mut baos = Cursor::new(Vec::new());
+
+    write_varint(&mut baos, 0).unwrap(); // always zero
+    write_varint(&mut baos, 1).unwrap(); // encoding version number
+    write_varint(&mut baos, format).unwrap(); // standard = 2, wild = 1
+    write_varint(&mut baos, 1).unwrap(); // number of heroes in heroes array, always 1
+    write_varint(&mut baos, dbf_hero).unwrap(); // DBF ID of hero
+
+    write_varint(&mut baos, deck1.len() as i32).unwrap(); // number of 1-quantity cards
+    for dbf_id in &deck1 {
+        write_varint(&mut baos, *dbf_id).unwrap();
+    }
+
+    write_varint(&mut baos, deck2.len() as i32).unwrap(); // number of 2-quantity cards
+    for dbf_id in &deck2 {
+        write_varint(&mut baos, *dbf_id).unwrap();
+    }
+
+    write_varint(&mut baos, 0).unwrap(); // the number of cards that have quantity greater than 2. Always 0 for constructed
+
+    let deck_bytes = baos.into_inner();
+
+    let deck_string = encode(&deck_bytes);
+
+    deck_string
 }
