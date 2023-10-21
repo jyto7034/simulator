@@ -67,7 +67,10 @@ impl Procedure {
 
     /// 후입선출 방식으로 uuid 를 집계하여 리턴한다.
     pub fn get_task_list(&self) -> Vec<String> {
-        self.task_queue.iter().map(|task| task.get_task_uuid().clone()).collect()
+        self.task_queue
+            .iter()
+            .map(|task| task.get_task_uuid().clone())
+            .collect()
     }
 
     /// queue 에 있는 task 를 처리하는 함수.

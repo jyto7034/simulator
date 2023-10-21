@@ -7,7 +7,7 @@ pub struct Item {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Card {
-    pub id: String,
+    pub dbf_id: i32,
     pub num: i32,
 }
 

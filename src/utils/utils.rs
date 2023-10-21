@@ -1,14 +1,14 @@
 use crate::card_gen::card_gen::CardGenertor;
 use crate::deck::{Card, Cards, Deck};
-use crate::enums::constant::{self, UUID_GENERATOR_PATH};
+use crate::enums::constant::{self, DeckCode, UUID_GENERATOR_PATH};
 use crate::exception::exception::Exception;
 use crate::utils::json;
-use base64::{encode, decode};
+use base64::{decode, encode};
+use byteorder::WriteBytesExt;
 use std::fs::File;
 use std::io::Read;
-use std::process::{Command, Stdio};
 use std::io::{Cursor, Write};
-use byteorder::WriteBytesExt;
+use std::process::{Command, Stdio};
 
 pub fn generate_uuid() -> Result<String, Exception> {
     let output = if let Ok(ans) = Command::new(UUID_GENERATOR_PATH)
@@ -24,7 +24,7 @@ pub fn generate_uuid() -> Result<String, Exception> {
     Ok(uuid)
 }
 
-pub fn parse_json() -> Result<json::Decks, Exception> {
+pub fn parse_json_to_deck_code() -> Result<DeckCode, Exception> {
     let file_path = constant::DECK_JSON_PATH;
 
     // 파일 열기
@@ -38,14 +38,24 @@ pub fn parse_json() -> Result<json::Decks, Exception> {
     println!("{:#?}", json_data);
 
     let decks: json::Decks = match serde_json::from_str(&json_data[..]) {
-        Ok(data) => data,
+        Ok(data) => data,   
         Err(_) => return Err(Exception::JsonParseFailed),
     };
 
-    Ok(decks)
+    let mut card1 = vec![];
+    let mut card2 = vec![];
+    for card in &decks.decks[0].cards{
+        match card.num{
+            1 => card1.push(card.dbf_id),
+            2 => card2.push(card.dbf_id),
+            _ => {},
+        }
+    }
+
+    Ok("asd".to_string())
 }
 
-pub fn load_card_data(player_cards: &json::Decks) -> Result<Vec<Cards>, Exception> {
+pub fn load_card_data(player_cards: DeckCode) -> Result<Vec<Cards>, Exception> {
     // 거대한 json 파일을 읽는 방법 따로 구현해야댐
     // json 을 쌩으로 로드하면 좆댐;
 
@@ -75,21 +85,21 @@ pub fn load_card_data(player_cards: &json::Decks) -> Result<Vec<Cards>, Exceptio
     // gen_card_by_id 의 count 임의로 1로 해둠.
     let mut check_values_exist =
         |player_num: usize, card_data: &CardJson| -> Result<(), Exception> {
-            for player_card in &player_cards.decks[0].cards {
-                if let Some(id) = &card_data.id {
-                    if player_card.id == *id {
-                        for _ in 0..player_card.num {
-                            ps_cards[player_num].push(card_genertor.gen_card_by_id(
-                                id.to_string(),
-                                card_data,
-                                1,
-                            ));
-                        }
-                    }
-                } else {
-                    return Err(Exception::DeckParseError);
-                }
-            }
+            // for player_card in &player_cards.decks[0].cards {
+            //     if let Some(id) = &card_data.id {
+            //         if player_card.id == *id {
+            //             for _ in 0..player_card.num {
+            //                 ps_cards[player_num].push(card_genertor.gen_card_by_id(
+            //                     id.to_string(),
+            //                     card_data,
+            //                     1,
+            //                 ));
+            //             }
+            //         }
+            //     } else {
+            //         return Err(Exception::DeckParseError);
+            //     }
+            // }
             Ok(())
         };
 
@@ -129,16 +139,16 @@ pub fn load_card_id() -> Result<Vec<String>, Exception> {
 }
 
 const DECK_CODE_VERSION: u32 = 1;
-fn deck_decode(deck_code: String) ->  Result<Deck, ()>{
+fn deck_decode(deck_code: String) -> Result<Deck, ()> {
     let code = decode(deck_code).unwrap();
     let mut pos = 0;
 
-    let read_varint = |pos: &mut usize|{
+    let read_varint = |pos: &mut usize| {
         let mut shift = 0;
         let mut result = 0;
 
-        loop{
-            if *pos >= code.len(){
+        loop {
+            if *pos >= code.len() {
                 return Err(());
             }
 
@@ -149,14 +159,14 @@ fn deck_decode(deck_code: String) ->  Result<Deck, ()>{
             result |= (ch & 0x7f) << shift;
             shift += 7;
 
-            if (ch & 0x80) == 0{
+            if (ch & 0x80) == 0 {
                 break;
             }
         }
-        return Ok(result)
+        return Ok(result);
     };
 
-    if code[pos] as char != '\0'{
+    if code[pos] as char != '\0' {
         println!("{}", code[pos]);
         println!("Invalid deck code");
         return Err(());
@@ -165,81 +175,82 @@ fn deck_decode(deck_code: String) ->  Result<Deck, ()>{
 
     match read_varint(&mut pos) {
         Ok(version) => {
-            if version as u32 != DECK_CODE_VERSION{
+            if version as u32 != DECK_CODE_VERSION {
                 println!("Version mismatch");
                 return Err(());
             }
-        },
+        }
         Err(_) => {
             println!("version err");
             return Err(());
-        },
+        }
     }
 
     let format = read_varint(&mut pos);
     match format {
         Ok(data) => {
             println!("{}", data);
-        },
+        }
         Err(_) => {
             println!("Invalid format type");
             return Err(());
-        },
+        }
     }
 
     let num = read_varint(&mut pos);
-    match num{
+    match num {
         Ok(data) => {
-            if data != 1{
+            if data != 1 {
                 println!("Hero count must be 1");
                 return Err(());
             }
-        },
+        }
         Err(_) => return Err(()),
     }
 
     let hero_type = read_varint(&mut pos);
     let hero_type = match hero_type {
         Ok(hero_id) => {
-            println!("{}",hero_id);
+            println!("{}", hero_id);
             hero_id
-        },
+        }
         Err(_) => {
             return Err(());
-        },
+        }
     };
 
     //Deck deckInfo(format, hero->GetCardClass());
 
     // Single-copy cards
     let num = read_varint(&mut pos).unwrap();
-    for idx in 0..num{
+    for idx in 0..num {
         let cardID = read_varint(&mut pos).unwrap();
         println!("{}", cardID);
         // deckInfo.AddCard(Cards::FindCardByDbfID(cardID)->id, 1);
     }
-    
+
     // 2-copy cards
     let num = read_varint(&mut pos).unwrap();
-    for idx in 0..num{
+    for idx in 0..num {
         let cardID = read_varint(&mut pos).unwrap();
         println!("{}", cardID);
         // deckInfo.AddCard(Cards::FindCardByDbfID(cardID)->id, 2);
     }
-    
+
+    // 하스스톤은 덱에서 같은 카드를 세 개 이상 구성하지 못함. ( 최대 2개 ) 근데 왜 n-copy 코드가 있는지는 잘 모르겠음..
     // n-copy cards
     let num = read_varint(&mut pos).unwrap();
-    for idx in 0..num{
+    for idx in 0..num {
         let cardID = read_varint(&mut pos).unwrap();
         let count = read_varint(&mut pos).unwrap();
         println!("{}, {}", cardID, count);
         // deckInfo.AddCard(Cards::FindCardByDbfID(cardID)->id, count);
     }
 
-    
-    Ok(Deck{ raw_deck_code: "".to_string() })
+    Ok(Deck {
+        raw_deck_code: "".to_string(),
+    })
 }
-
 
 fn write_varint<W: Write>(writer: &mut W, mut value: i32) -> std::io::Result<()> {
     loop {
