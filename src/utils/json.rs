@@ -3,10 +3,12 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Item {
     pub id: String,
+    pub dbfid: i32,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Card {
+    pub id: String,
     pub dbf_id: i32,
     pub num: i32,
 }

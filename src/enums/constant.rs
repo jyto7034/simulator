@@ -1,5 +1,3 @@
-use serde::de;
-
 use crate::deck::Card;
 use crate::exception::exception::Exception;
 use crate::game::*;
@@ -9,7 +7,8 @@ use std::rc::Rc;
 
 pub const CARD_ID_JSON_PATH: &str = "Resource/cards_id.json";
 pub const CARD_JSON_PATH: &str = "Resource/cards.json";
-pub const DECK_JSON_PATH: &str = "Datas/data.json";
+pub const DECK_JSON_PATH_P1: &str = "Datas/data1.json";
+pub const DECK_JSON_PATH_P2: &str = "Datas/data2.json";
 pub const UUID_GENERATOR_PATH: &str = "Resource/uuidgen";
 
 pub enum GameStep {

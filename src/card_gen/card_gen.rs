@@ -71,9 +71,13 @@ const FUNCTION_TABLE: [CardGeneratorFn; 27] = [
     public::PB_007,
     public::PB_008,
 ];
+enum Key{
+    ID(String),
+    Dbfid(i32),
+}
 
 struct Species {
-    pub species: Vec<String>,
+    pub species: Vec<Key>,
 }
 
 impl Species {
@@ -89,9 +93,10 @@ impl Species {
     }
 }
 
+
 pub struct CardGenertor {
     species: Species,
-    pub card_generators: Lazy<HashMap<String, CardGeneratorFn>>,
+    pub card_generators: Lazy<HashMap<Key, CardGeneratorFn>>,
 }
 
 impl CardGenertor {
@@ -106,8 +111,8 @@ impl CardGenertor {
                 let mut species = Species::new();
                 species.initialize();
                 let func_it = FUNCTION_TABLE.iter();
-                for (id, func) in species.species.iter().zip(func_it) {
-                    map.insert(id.to_string(), *func);
+                for ((id, dbfid), func) in species.species.iter().zip(func_it) {
+                    map.insert((id.to_string(), dbfid.clone()), *func);
                 }
                 map
             }),

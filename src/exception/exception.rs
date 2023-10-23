@@ -3,6 +3,7 @@ use std::fmt;
 pub enum Exception {
     PlayerInitializeFailed,
     PlayerDataNotIntegrity,
+    PathNotExist,
     GameInitializeFailed,
     DifferentCardTypes,
     GenerateUUIDFaild,
@@ -10,6 +11,7 @@ pub enum Exception {
     FailedToDrawCard,
     NothingToRemove,
     JsonParseFailed,
+    DecodeError,
     DeckParseError,
     ReadFileFailed,
     NoCardsLeft,
@@ -24,7 +26,10 @@ impl fmt::Display for Exception {
             Self::PlayerInitializeFailed => write!(f, "PlayerInitializeFailed"),
             Self::PlayerDataNotIntegrity => write!(f, "PlayerDataNotIntegrity"),
             Self::GenerateUUIDFaild => write!(f, "GenerateUUIDFaild"),
+            Self::JsonParseFailed => write!(f, "Json Parse Failed"),
             Self::DeckParseError => write!(f, "Deck Parse Error"),
+            Self::PathNotExist => write!(f, "Path Not Exist"),
+            Self::CardError => write!(f, "Card Error"),
             Self::Ok => write!(f, "Ok"),
             _ => write!(f, ""),
         }

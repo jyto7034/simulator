@@ -58,7 +58,7 @@ mod tests {
         #[test]
         fn test_load_card_data() {
             match utils::parse_json_to_deck_code() {
-                Ok(json) => match utils::load_card_data(&json) {
+                Ok(json) => match utils::load_card_data(json) {
                     Ok(data) => {
                         println!("{:#?}", data);
                     }

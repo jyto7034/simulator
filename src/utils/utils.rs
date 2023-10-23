@@ -1,6 +1,6 @@
 use crate::card_gen::card_gen::CardGenertor;
-use crate::deck::{Card, Cards, Deck};
-use crate::enums::constant::{self, DeckCode, UUID_GENERATOR_PATH};
+use crate::deck::{card, Card, Cards, Deck};
+use crate::enums::constant::{self, DeckCode, UUID_GENERATOR_PATH, PLAYER_1, PLAYER_2};
 use crate::exception::exception::Exception;
 use crate::utils::json;
 use base64::{decode, encode};
@@ -9,6 +9,7 @@ use std::fs::File;
 use std::io::Read;
 use std::io::{Cursor, Write};
 use std::process::{Command, Stdio};
+use std::vec;
 
 pub fn generate_uuid() -> Result<String, Exception> {
     let output = if let Ok(ans) = Command::new(UUID_GENERATOR_PATH)
@@ -24,38 +25,61 @@ pub fn generate_uuid() -> Result<String, Exception> {
     Ok(uuid)
 }
 
-pub fn parse_json_to_deck_code() -> Result<DeckCode, Exception> {
-    let file_path = constant::DECK_JSON_PATH;
-
-    // 파일 열기
-    let mut file = File::open(file_path).expect("Failed to open file");
-
-    // 파일 내용을 문자열로 읽기
-    let mut json_data = String::new();
-    file.read_to_string(&mut json_data)
-        .expect("Failed to read file");
-
-    println!("{:#?}", json_data);
-
-    let decks: json::Decks = match serde_json::from_str(&json_data[..]) {
-        Ok(data) => data,   
-        Err(_) => return Err(Exception::JsonParseFailed),
-    };
-
-    let mut card1 = vec![];
-    let mut card2 = vec![];
-    for card in &decks.decks[0].cards{
-        match card.num{
-            1 => card1.push(card.dbf_id),
-            2 => card2.push(card.dbf_id),
-            _ => {},
+pub fn parse_json_to_deck_code() -> Result<(DeckCode, DeckCode), Exception> {
+    let json_to_deck_code = |player_num: usize|{
+        let file_path = match player_num {
+            PLAYER_1 => constant::DECK_JSON_PATH_P1,
+            PLAYER_2 => constant::DECK_JSON_PATH_P2,
+            _ => return Err(Exception::PathNotExist)
+        };
+    
+        // 파일 열기
+        let mut file = File::open(file_path).expect("Failed to open file");
+    
+        // 파일 내용을 문자열로 읽기
+        let mut json_data = String::new();
+        file.read_to_string(&mut json_data)
+            .expect("Failed to read file");
+    
+        let decks: json::Decks = match serde_json::from_str(&json_data[..]) {
+            Ok(data) => data,
+            Err(_) => return Err(Exception::JsonParseFailed),
+        };
+    
+        // 카드 갯수에 따라 분배
+        let mut card1 = vec![];
+        let mut card2 = vec![];
+        for card in &decks.decks[0].cards {
+            match card.num {
+                1 => card1.push(card.dbf_id),
+                2 => card2.push(card.dbf_id),
+                _ => {}
+            }
         }
-    }
+        // 사전 설정
+        let dbf_hero = 930; // Example hero DBF ID
+        let format = 2; // Example format (standard)
+    
+        let deck_code = deck_encode(card1, card2, dbf_hero, format);
 
-    Ok("asd".to_string())
+        Ok(deck_code)
+    };
+    let deck_code = (json_to_deck_code(PLAYER_1), json_to_deck_code(PLAYER_2));
+    match deck_code {
+        (Ok(code1), Ok(code2)) => return Ok((code1, code2)),
+        (Ok(_), Err(err)) =>{
+            println!("{err}");
+            return Err(Exception::DecodeError);
+        },
+        (Err(err), Ok(_)) => {
+            println!("{err}");
+            return Err(Exception::DecodeError);
+        },
+        (Err(_), Err(_)) => Err(Exception::PlayerDataNotIntegrity),
+    }
 }
 
-pub fn load_card_data(player_cards: DeckCode) -> Result<Vec<Cards>, Exception> {
+pub fn load_card_data(deck_code: (DeckCode, DeckCode)) -> Result<Vec<Cards>, Exception> {
     // 거대한 json 파일을 읽는 방법 따로 구현해야댐
     // json 을 쌩으로 로드하면 좆댐;
 
@@ -74,32 +98,23 @@ pub fn load_card_data(player_cards: DeckCode) -> Result<Vec<Cards>, Exception> {
         Err(_) => return Err(Exception::JsonParseFailed),
     };
 
-    let mut p1_cards: Vec<Card> = vec![];
-    let mut p2_cards: Vec<Card> = vec![];
-    let mut ps_cards: Vec<&mut Vec<Card>> = vec![&mut p1_cards, &mut p2_cards];
-    use constant::{PLAYER_1, PLAYER_2};
+    let decoded_deck1 = deck_decode(deck_code.0).unwrap();
+    let decoded_deck2 = deck_decode(deck_code.1).unwrap();
     use json::CardJson;
 
     let card_genertor = CardGenertor::new();
 
-    // gen_card_by_id 의 count 임의로 1로 해둠.
-    let mut check_values_exist =
-        |player_num: usize, card_data: &CardJson| -> Result<(), Exception> {
-            // for player_card in &player_cards.decks[0].cards {
-            //     if let Some(id) = &card_data.id {
-            //         if player_card.id == *id {
-            //             for _ in 0..player_card.num {
-            //                 ps_cards[player_num].push(card_genertor.gen_card_by_id(
-            //                     id.to_string(),
-            //                     card_data,
-            //                     1,
-            //                 ));
-            //             }
-            //         }
-            //     } else {
-            //         return Err(Exception::DeckParseError);
-            //     }
-            // }
+    let mut p1_cards = vec![];
+    let mut p2_cards = vec![];
+
+    let check_values_exist =
+        |card_data: &CardJson, decoded_deck: &(Vec<i32>, Vec<i32>), p_cards: &mut Vec<Card>| -> Result<(), Exception> {
+            for card_id in &decoded_deck.0 {
+                p_cards.push(card_genertor.gen_card_by_id(card_id.to_string(), card_data, 1));
+            }
+            for card_id in &decoded_deck.1 {
+                p_cards.push(card_genertor.gen_card_by_id(card_id.to_string(), card_data, 2));
+            }
             Ok(())
         };
 
@@ -107,14 +122,14 @@ pub fn load_card_data(player_cards: DeckCode) -> Result<Vec<Cards>, Exception> {
     // 카드의 종류, 갯수만 있을 뿐, 실질적인 정보는 없고 카드의 id 만 있기 때문에 이것을 사용하여
     // cards.json 에서 데이터를 가져와야함.
     for card_data in card_json {
-        check_values_exist(PLAYER_1, &card_data)?;
-        check_values_exist(PLAYER_2, &card_data)?;
+        check_values_exist(&card_data, &decoded_deck1, &mut p1_cards)?;
+        check_values_exist(&card_data, &decoded_deck2, &mut p2_cards)?;
     }
 
     Ok(vec![Cards::new(&p1_cards), Cards::new(&p2_cards)])
 }
 
-pub fn load_card_id() -> Result<Vec<String>, Exception> {
+pub fn load_card_id() -> Result<Vec<(String, i32)>, Exception> {
     let file_path = constant::CARD_ID_JSON_PATH;
 
     // 파일 열기
@@ -133,13 +148,13 @@ pub fn load_card_id() -> Result<Vec<String>, Exception> {
     let mut ids = vec![];
 
     for item in &card_json {
-        ids.push(item.id.clone());
+        ids.push((item.id.clone(), item.dbfid));
     }
     Ok(ids)
 }
 
 const DECK_CODE_VERSION: u32 = 1;
-fn deck_decode(deck_code: String) -> Result<Deck, ()> {
+fn deck_decode(deck_code: String) -> Result<(Vec<i32>, Vec<i32>), ()> {
     let code = decode(deck_code).unwrap();
     let mut pos = 0;
 
@@ -167,7 +182,6 @@ fn deck_decode(deck_code: String) -> Result<Deck, ()> {
     };
 
     if code[pos] as char != '\0' {
-        println!("{}", code[pos]);
         println!("Invalid deck code");
         return Err(());
     }
@@ -188,9 +202,7 @@ fn deck_decode(deck_code: String) -> Result<Deck, ()> {
 
     let format = read_varint(&mut pos);
     match format {
-        Ok(data) => {
-            println!("{}", data);
-        }
+        Ok(_) => {}
         Err(_) => {
             println!("Invalid format type");
             return Err(());
@@ -211,7 +223,6 @@ fn deck_decode(deck_code: String) -> Result<Deck, ()> {
     let hero_type = read_varint(&mut pos);
     let hero_type = match hero_type {
         Ok(hero_id) => {
-            println!("{}", hero_id);
             hero_id
         }
         Err(_) => {
@@ -220,20 +231,21 @@ fn deck_decode(deck_code: String) -> Result<Deck, ()> {
     };
 
     //Deck deckInfo(format, hero->GetCardClass());
+    let mut _1_cards = vec![];
+    let mut _2_cards = vec![];
 
     // Single-copy cards
     let num = read_varint(&mut pos).unwrap();
     for idx in 0..num {
         let cardID = read_varint(&mut pos).unwrap();
-        println!("{}", cardID);
-        // deckInfo.AddCard(Cards::FindCardByDbfID(cardID)->id, 1);
+        _1_cards.push(cardID);
     }
 
     // 2-copy cards
     let num = read_varint(&mut pos).unwrap();
     for idx in 0..num {
         let cardID = read_varint(&mut pos).unwrap();
-        println!("{}", cardID);
+        _2_cards.push(cardID);
         // deckInfo.AddCard(Cards::FindCardByDbfID(cardID)->id, 2);
     }
 
@@ -243,13 +255,10 @@ fn deck_decode(deck_code: String) -> Result<Deck, ()> {
     for idx in 0..num {
         let cardID = read_varint(&mut pos).unwrap();
         let count = read_varint(&mut pos).unwrap();
-        println!("{}, {}", cardID, count);
         // deckInfo.AddCard(Cards::FindCardByDbfID(cardID)->id, count);
     }
 
-    Ok(Deck {
-        raw_deck_code: "".to_string(),
-    })
+    Ok((_1_cards, _2_cards))
 }
 
 fn write_varint<W: Write>(writer: &mut W, mut value: i32) -> std::io::Result<()> {
