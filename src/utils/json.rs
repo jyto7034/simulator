@@ -9,7 +9,6 @@ pub struct Item {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Card {
     pub id: String,
-    pub dbf_id: i32,
     pub num: i32,
 }
 
@@ -43,6 +42,7 @@ pub struct Decks {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct CardJson {
     pub id: Option<String>,
+    pub dbfid: Option<i32>,
     pub cost: Option<i32>,
     pub name: Option<String>,
     pub text: Option<String>,
@@ -55,6 +55,7 @@ impl CardJson {
     pub fn new() -> CardJson {
         CardJson {
             id: None,
+            dbfid: None,
             cost: None,
             name: None,
             text: None,

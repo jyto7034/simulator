@@ -24,8 +24,19 @@ pub struct Card {
 
 impl fmt::Debug for Card {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        // 원하는 형식으로 클로저를 출력
-        write!(f, "MyFn {{ /* 클로저 내용 출력 */ }}")
+        write!(f, "Card {{\n")?;
+        write!(f, "    card_type: {:#?}\n", self.card_type)?;
+        write!(f, "    uuid: {}", self.uuid)?;
+        write!(f, "    name: {}\n", self.name)?;
+        write!(f, "    behavior_table: {:?}\n", self.behavior_table)?;
+        write!(f, "    card_json: {:#?}\n", self.card_json)?;
+        write!(f, "    count: {:?}\n", self.count)?;
+        if let Some(runner) = &self.runner {
+            write!(f, "    runner: Ok\n")?;
+        } else {
+            write!(f, "    runner: None\n")?;
+        }
+        write!(f, "}}")
     }
 }
 

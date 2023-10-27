@@ -78,9 +78,9 @@ pub enum TaskPriority {
 /// 무슨 카드의 유형을 Draw 할 건지에 대한 enum 입니다.
 pub enum CardDrawType {
     Top,
-    Random,
+    Random(usize),
     Bottom,
-    CardType(CardType),
+    CardType(CardType, usize),
 }
 
 /// 검색 조건에 대한 enum 입니다.

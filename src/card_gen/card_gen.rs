@@ -71,59 +71,72 @@ const FUNCTION_TABLE: [CardGeneratorFn; 27] = [
     public::PB_007,
     public::PB_008,
 ];
-enum Key{
-    ID(String),
-    Dbfid(i32),
+
+type Key = Vec<(String, i32)>;
+pub struct CardGenerator {
+    keys: Keys,
+    pub card_generators: Lazy<HashMap<i32, CardGeneratorFn>>,
 }
 
-struct Species {
-    pub species: Vec<Key>,
+pub struct Keys {
+    keys: Key,
 }
 
-impl Species {
-    pub fn new() -> Species {
-        Species { species: vec![] }
-    }
-
-    pub fn initialize(&mut self) {
-        self.species = match utils::utils::load_card_id() {
+impl Keys {
+    pub fn new() -> Keys {
+        let keys = match utils::utils::load_card_id() {
             Ok(data) => data,
-            Err(_) => panic!("Unknown Err fun: species initialize"),
+            Err(_) => panic!("Unknown Err fun: Keys initialize"),
         };
+        Keys { keys }
+    }
+
+    pub fn get_i32_by_string(&self, key: &str) -> Option<i32> {
+        self.keys
+            .iter()
+            .find(|&(item_key, _)| item_key == key)
+            .map(|&(_, value)| value)
+    }
+
+    pub fn get_string_by_i32(&self, key: i32) -> Option<String> {
+        self.keys
+            .iter()
+            .find(|&(_, item_key)| item_key == &key)
+            .map(|(value, _)| value.clone())
     }
 }
 
+impl CardGenerator {
+    pub fn new() -> CardGenerator {
+        let map: Lazy<HashMap<i32, CardGeneratorFn>> = Lazy::new(|| {
+            let keys = Keys::new().keys;
+            let mut map = HashMap::new();
+            let func_it = FUNCTION_TABLE.iter();
+            for (key, func) in keys.iter().zip(func_it) {
+                map.insert(key.1, *func);
+            }
+            map
+        });
 
-pub struct CardGenertor {
-    species: Species,
-    pub card_generators: Lazy<HashMap<Key, CardGeneratorFn>>,
-}
-
-impl CardGenertor {
-    pub fn new() -> CardGenertor {
-        let mut species = Species::new();
-        species.initialize();
-
-        CardGenertor {
-            species,
-            card_generators: Lazy::new(|| {
-                let mut map = HashMap::new();
-                let mut species = Species::new();
-                species.initialize();
-                let func_it = FUNCTION_TABLE.iter();
-                for ((id, dbfid), func) in species.species.iter().zip(func_it) {
-                    map.insert((id.to_string(), dbfid.clone()), *func);
-                }
-                map
-            }),
+        CardGenerator {
+            keys: Keys::new(),
+            card_generators: map,
         }
     }
 
-    pub fn gen_card_by_id(&self, id: String, card_json: &CardJson, count: usize) -> Card {
-        if let Some(generator) = self.card_generators.get(&id[..]) {
+    pub fn gen_card_by_id_i32(&self, id: i32, card_json: &CardJson, count: usize) -> Card {
+        if let Some(generator) = self.card_generators.get(&id) {
             generator(card_json, count)
         } else {
             panic!("Unknown ID: {}", id);
+        }
+    }
+
+    pub fn gen_card_by_id_string(&self, key: String, card_json: &CardJson, count: usize) -> Card {
+        println!("{key}");
+        match self.keys.get_i32_by_string(&key[..]) {
+            Some(_key) => self.gen_card_by_id_i32(_key, card_json, count),
+            None => panic!("Unknown ID: {}", key),
         }
     }
 }

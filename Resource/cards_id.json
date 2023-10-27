@@ -1,110 +1,28 @@
 [
-  {
-    "id": "test",
-    "dbfid": 1
-  },
-  {
-    "id": "HM_001",
-    "dbfid": 2
-  },
-  {
-    "id": "HM_002",
-    "dbfid": 3
-  },
-  {
-    "id": "HM_003",
-    "dbfid": 4
-  },
-  {
-    "id": "HM_004",
-    "dbfid": 5
-  },
-  {
-    "id": "HM_005",
-    "dbfid": 6
-  },
-  {
-    "id": "HM_006",
-    "dbfid": 7
-  },
-  {
-    "id": "HM_007",
-    "dbfid": 8
-  },
-  {
-    "id": "HM_008",
-    "dbfid": 9
-  },
-  {
-    "id": "MT_001",
-    "dbfid": 10
-  },
-  {
-    "id": "MT_002",
-    "dbfid": 11
-  },
-  {
-    "id": "MT_003",
-    "dbfid": 12
-  },
-  {
-    "id": "MT_004",
-    "dbfid": 13
-  },
-  {
-    "id": "MT_005",
-    "dbfid": 14
-  },
-  {
-    "id": "MT_006",
-    "dbfid": 15
-  },
-  {
-    "id": "MT_007",
-    "dbfid": 16
-  },
-  {
-    "id": "MT_008",
-    "dbfid": 17
-  },
-  {
-    "id": "MT_009",
-    "dbfid": 18
-  },
-  {
-    "id": "MT_010",
-    "dbfid": 19
-  },
-  {
-    "id": "PB_001",
-    "dbfid": 20
-  },
-  {
-    "id": "PB_002",
-    "dbfid": 21
-  },
-  {
-    "id": "PB_003",
-    "dbfid": 22
-  },
-  {
-    "id": "PB_004",
-    "dbfid": 23
-  },
-  {
-    "id": "PB_005",
-    "dbfid": 24
-  },
-  {
-    "id": "PB_006",
-    "dbfid": 25
-  },
-  {
-    "id": "PB_007",
-    "dbfid": 26
-  },
-  {
-    "id": "PB_008",
-    "dbfid": 27
-  }
+  { "id": "HM_001", "dbfid": 20 },
+  { "id": "HM_002", "dbfid": 21 },
+  { "id": "HM_003", "dbfid": 22 },
+  { "id": "HM_004", "dbfid": 23 },
+  { "id": "HM_005", "dbfid": 24 },
+  { "id": "HM_006", "dbfid": 25 },
+  { "id": "HM_007", "dbfid": 26 },
+  { "id": "HM_008", "dbfid": 27 },
+  { "id": "MT_001", "dbfid": 28 },
+  { "id": "MT_002", "dbfid": 29 },
+  { "id": "MT_003", "dbfid": 30 },
+  { "id": "MT_004", "dbfid": 31 },
+  { "id": "MT_005", "dbfid": 32 },
+  { "id": "MT_006", "dbfid": 33 },
+  { "id": "MT_007", "dbfid": 34 },
+  { "id": "MT_008", "dbfid": 35 },
+  { "id": "MT_009", "dbfid": 36 },
+  { "id": "MT_010", "dbfid": 37 },
+  { "id": "PB_001", "dbfid": 38 },
+  { "id": "PB_002", "dbfid": 39 },
+  { "id": "PB_003", "dbfid": 40 },
+  { "id": "PB_004", "dbfid": 41 },
+  { "id": "PB_005", "dbfid": 42 },
+  { "id": "PB_006", "dbfid": 43 },
+  { "id": "PB_007", "dbfid": 44 },
+  { "id": "PB_008", "dbfid": 45 }
 ]

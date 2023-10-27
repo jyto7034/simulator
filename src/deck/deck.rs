@@ -8,24 +8,6 @@ pub struct Deck {
 }
 impl Deck {
     /// Deck 의 멤버 변수. raw_deck_code 를 해석하여 card 객체의 집합인 cards 객체를 반환하는 함수입니다.
-    pub fn to_cards(&self) -> Result<Cards, Exception> {
-        match utils::parse_json_to_deck_code() {
-            Ok(json) => match utils::load_card_data(json) {
-                Ok(data) => {
-                    println!("{:#?}", data);
-                }
-                Err(err) => {
-                    assert!(false, "{err}");
-                }
-            },
-            Err(err) => {
-                assert!(false, "{err}");
-            }
-        }
-        let cards: Vec<Card> = vec![];
-
-        Ok(Cards { v_card: cards })
-    }
     pub fn get_hero() {}
 }
 

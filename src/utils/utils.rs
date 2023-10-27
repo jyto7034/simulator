@@ -1,6 +1,6 @@
-use crate::card_gen::card_gen::CardGenertor;
-use crate::deck::{card, Card, Cards, Deck};
-use crate::enums::constant::{self, DeckCode, UUID_GENERATOR_PATH, PLAYER_1, PLAYER_2};
+use crate::card_gen::card_gen::{CardGenerator, Keys};
+use crate::deck::{Card, Cards};
+use crate::enums::constant::{self, DeckCode, PLAYER_1, PLAYER_2, UUID_GENERATOR_PATH};
 use crate::exception::exception::Exception;
 use crate::utils::json;
 use base64::{decode, encode};
@@ -26,40 +26,44 @@ pub fn generate_uuid() -> Result<String, Exception> {
 }
 
 pub fn parse_json_to_deck_code() -> Result<(DeckCode, DeckCode), Exception> {
-    let json_to_deck_code = |player_num: usize|{
+    let json_to_deck_code = |player_num: usize| {
         let file_path = match player_num {
             PLAYER_1 => constant::DECK_JSON_PATH_P1,
             PLAYER_2 => constant::DECK_JSON_PATH_P2,
-            _ => return Err(Exception::PathNotExist)
+            _ => return Err(Exception::PathNotExist),
         };
-    
+
         // 파일 열기
         let mut file = File::open(file_path).expect("Failed to open file");
-    
+
         // 파일 내용을 문자열로 읽기
         let mut json_data = String::new();
         file.read_to_string(&mut json_data)
             .expect("Failed to read file");
-    
+
         let decks: json::Decks = match serde_json::from_str(&json_data[..]) {
             Ok(data) => data,
             Err(_) => return Err(Exception::JsonParseFailed),
         };
-    
-        // 카드 갯수에 따라 분배
-        let mut card1 = vec![];
-        let mut card2 = vec![];
-        for card in &decks.decks[0].cards {
-            match card.num {
-                1 => card1.push(card.dbf_id),
-                2 => card2.push(card.dbf_id),
-                _ => {}
-            }
-        }
+
+        let keys = Keys::new();
+
+        let create_card_vector = |decks: &json::Decks, keys: &Keys, num: i32| -> Vec<i32> {
+            decks.decks[0]
+                .cards
+                .iter()
+                .filter(|card| card.num == num)
+                .filter_map(|card| keys.get_i32_by_string(&card.id))
+                .collect()
+        };
+
+        let card1 = create_card_vector(&decks, &keys, 1);
+        let card2 = create_card_vector(&decks, &keys, 2);
+
         // 사전 설정
         let dbf_hero = 930; // Example hero DBF ID
         let format = 2; // Example format (standard)
-    
+
         let deck_code = deck_encode(card1, card2, dbf_hero, format);
 
         Ok(deck_code)
@@ -67,14 +71,14 @@ pub fn parse_json_to_deck_code() -> Result<(DeckCode, DeckCode), Exception> {
     let deck_code = (json_to_deck_code(PLAYER_1), json_to_deck_code(PLAYER_2));
     match deck_code {
         (Ok(code1), Ok(code2)) => return Ok((code1, code2)),
-        (Ok(_), Err(err)) =>{
+        (Ok(_), Err(err)) => {
             println!("{err}");
             return Err(Exception::DecodeError);
-        },
+        }
         (Err(err), Ok(_)) => {
             println!("{err}");
             return Err(Exception::DecodeError);
-        },
+        }
         (Err(_), Err(_)) => Err(Exception::PlayerDataNotIntegrity),
     }
 }
@@ -98,29 +102,57 @@ pub fn load_card_data(deck_code: (DeckCode, DeckCode)) -> Result<Vec<Cards>, Exc
         Err(_) => return Err(Exception::JsonParseFailed),
     };
 
-    let decoded_deck1 = deck_decode(deck_code.0).unwrap();
-    let decoded_deck2 = deck_decode(deck_code.1).unwrap();
+    let decoded_deck1 = match deck_decode(deck_code.0) {
+        Ok(data) => {
+            data
+        }
+        Err(err) => return Err(Exception::JsonParseFailed),
+    };
+    let decoded_deck2 = match deck_decode(deck_code.1) {
+        Ok(data) => {
+            data
+        }
+        Err(err) => return Err(Exception::JsonParseFailed),
+    };
+
     use json::CardJson;
 
-    let card_genertor = CardGenertor::new();
+    let card_genertor = CardGenerator::new();
 
     let mut p1_cards = vec![];
     let mut p2_cards = vec![];
 
-    let check_values_exist =
-        |card_data: &CardJson, decoded_deck: &(Vec<i32>, Vec<i32>), p_cards: &mut Vec<Card>| -> Result<(), Exception> {
-            for card_id in &decoded_deck.0 {
-                p_cards.push(card_genertor.gen_card_by_id(card_id.to_string(), card_data, 1));
+    let check_values_exist = |card_data: &CardJson,
+                              decoded_deck: &(Vec<i32>, Vec<i32>),
+                              p_cards: &mut Vec<Card>|
+     -> Result<(), Exception> {
+        for dbfid in &decoded_deck.0 {
+            match card_data.dbfid {
+                Some(_dbfid) => {
+                    if &_dbfid == dbfid {
+                        p_cards.push(card_genertor.gen_card_by_id_i32(*dbfid, card_data, 1));
+                    }
+                }
+                None => {}
             }
-            for card_id in &decoded_deck.1 {
-                p_cards.push(card_genertor.gen_card_by_id(card_id.to_string(), card_data, 2));
+        }
+        for dbfid in &decoded_deck.1 {
+            match card_data.dbfid {
+                Some(_dbfid) => {
+                    if &_dbfid == dbfid {
+                        p_cards.push(card_genertor.gen_card_by_id_i32(*dbfid, card_data, 2));
+                    }
+                }
+                None => {}
             }
-            Ok(())
-        };
+        }
+        Ok(())
+    };
 
     // player_cards 에는 플레이어의 덱 정보가 담겨있음.
     // 카드의 종류, 갯수만 있을 뿐, 실질적인 정보는 없고 카드의 id 만 있기 때문에 이것을 사용하여
     // cards.json 에서 데이터를 가져와야함.
+    // println!("card_json: {:#?}", card_json);
     for card_data in card_json {
         check_values_exist(&card_data, &decoded_deck1, &mut p1_cards)?;
         check_values_exist(&card_data, &decoded_deck2, &mut p2_cards)?;
@@ -222,9 +254,7 @@ fn deck_decode(deck_code: String) -> Result<(Vec<i32>, Vec<i32>), ()> {
 
     let hero_type = read_varint(&mut pos);
     let hero_type = match hero_type {
-        Ok(hero_id) => {
-            hero_id
-        }
+        Ok(hero_id) => hero_id,
         Err(_) => {
             return Err(());
         }
@@ -257,7 +287,7 @@ fn deck_decode(deck_code: String) -> Result<(Vec<i32>, Vec<i32>), ()> {
         let count = read_varint(&mut pos).unwrap();
         // deckInfo.AddCard(Cards::FindCardByDbfID(cardID)->id, count);
     }
-
+    // println!("{:#?} {:#?}", _1_cards, _2_cards);
     Ok((_1_cards, _2_cards))
 }
 

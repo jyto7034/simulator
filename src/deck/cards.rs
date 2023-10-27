@@ -6,7 +6,7 @@ use rand::Rng;
 
 /// 다수의 카드를 보다 더 효율적으로 관리하기 위한 구조체입니다.
 /// 예를 들어 카드 서치, 수정 등이 있습니다.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Cards {
     pub v_card: Vec<Card>,
 }
@@ -27,16 +27,44 @@ impl Cards {
         Ok(self.find_by_card_type(CardType::Spell(spell_type), cnt))
     }
 
-    fn draw_random(&self) -> Result<Card, Exception> {
+    // --------------------------------------------------------
+    // cnt 만큼의 갯수만큼 카드를 무작위로 뽑습니다.
+    // --------------------------------------------------------
+    // Exceptions:
+    // --------------------------------------------------------
+    fn draw_random(&mut self, cnt: usize) -> Result<Vec<Card>, Exception> {
         self.is_deck_empty()?;
-
+    
         let mut rng = rand::thread_rng();
-        let random_number = rng.gen_range(0..self.v_card.len());
+        let mut available_indices: Vec<usize> = (0..self.v_card.len()).collect();
+        let mut history: Vec<usize> = vec![];
+        let mut ans: Vec<Card> = vec![];
+        
+        while !available_indices.is_empty(){
+            let random_index = rng.gen_range(0..available_indices.len());
+            let random_number = available_indices[random_index];
+            let card = &mut self.v_card[random_number];
+            if !card.get_count().is_empty() {
+                if ans.len() == cnt{
+                    return Ok(ans);
+                } 
 
-        Ok(self.v_card[random_number].clone())
+                card.get_count_mut().decrease();
+                
+                ans.push(card.clone());
+            } else {
+                available_indices.remove(random_index);
+                history.push(random_number);
+            }
+        }
+    
+        // 모든 카드가 다 뽑혔을 경우 예외 처리 또는 결과 반환
+        Err(Exception::NoCardLeft)
     }
+    
 
     fn draw_bottom(&self) -> Result<Card, Exception> {
+        
         self.is_deck_empty()?;
 
         match self.v_card.first() {
@@ -53,7 +81,7 @@ impl Cards {
 
     fn draw_top(&self) -> Result<Card, Exception> {
         self.is_deck_empty()?;
-
+        println!("{:#?}", self.v_card);
         let card = self.v_card.last().unwrap().clone();
         if card.get_count().get() != 0 {
             Ok(card)
@@ -176,14 +204,14 @@ impl Cards {
     }
 
     /// 주어진 검색 조건으로 카드를 찾습니다.
-    pub fn search(&self, find_type: constant::FindType, count_of_card: usize) -> Vec<Card> {
+    pub fn search(&self, find_type: constant::FindType, count: usize) -> Vec<Card> {
         // 100 대신 덱의 카드 갯수로 바꿔야함.
 
         // find 함수가 카드를 몇 개까지 찾게 할 지 정하는 변수.
-        let cnt = if count_of_card == 0 {
+        let cnt = if count == 0 {
             100
         } else {
-            count_of_card
+            count
         };
         use constant::*;
 
@@ -195,14 +223,20 @@ impl Cards {
     }
 
     // 덱으로부터 카드 n장을 draw 합니다.
-    pub fn draw(&mut self, draw_type: constant::CardDrawType, count_of_card: usize) -> Vec<Card> {
+    pub fn draw(&mut self, draw_type: constant::CardDrawType) -> Vec<Card> {
         use constant::*;
 
+        let count = match draw_type {
+            CardDrawType::Random(count) => count,
+            CardDrawType::CardType(_, count) => count,
+            _ => 0
+        };
+        
         // find 함수가 카드를 몇 개까지 찾게 할 지 정하는 변수.
-        let cnt = if count_of_card == 0 {
+        let cnt = if count == 0 {
             100
         } else {
-            count_of_card
+            count
         };
 
         // 실제로 draw 하는 부분 입니다.
@@ -210,37 +244,28 @@ impl Cards {
             CardDrawType::Top => {
                 vec![self.draw_top().unwrap()]
             }
-            CardDrawType::Random => {
-                vec![self.draw_random().unwrap()]
+            CardDrawType::Random(_) => {
+                self.draw_random(cnt).unwrap()
             }
             CardDrawType::Bottom => {
                 vec![self.draw_bottom().unwrap()]
             }
-            CardDrawType::CardType(CardType::Spell(SpellType::FastSpell)) => {
+            CardDrawType::CardType(CardType::Spell(SpellType::FastSpell), _) => {
                 self.draw_spell(SpellType::FastSpell, cnt).unwrap()
             }
-            CardDrawType::CardType(CardType::Spell(SpellType::SlowSpell)) => {
+            CardDrawType::CardType(CardType::Spell(SpellType::SlowSpell), _) => {
                 self.draw_spell(SpellType::SlowSpell, cnt).unwrap()
             }
-            CardDrawType::CardType(CardType::Field) => {
+            CardDrawType::CardType(CardType::Field, _) => {
                 self.draw_by_card_type(CardType::Field, cnt).unwrap()
             }
-            CardDrawType::CardType(CardType::Unit) => {
+            CardDrawType::CardType(CardType::Unit, _) => {
                 self.draw_by_card_type(CardType::Unit, cnt).unwrap()
             }
             _ => {
                 vec![]
             }
         };
-
-        // Draw 된 카드들의 count 를 하나씩 감소시킵니다.
-        for draw_card in &draw_cards {
-            for card in &mut self.v_card {
-                if card.get_uuid() == draw_card.get_uuid() {
-                    card.get_count_mut().decrease();
-                }
-            }
-        }
 
         draw_cards
     }

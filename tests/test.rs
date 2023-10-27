@@ -41,7 +41,7 @@ mod tests {
     }
 
     mod utils_test {
-        use simulator::{card_gen::card_gen::CardGenertor, utils::json::CardJson};
+        use simulator::{card_gen::card_gen::CardGenerator, utils::json::CardJson};
 
         use super::*;
 
@@ -58,7 +58,7 @@ mod tests {
         #[test]
         fn test_load_card_data() {
             match utils::parse_json_to_deck_code() {
-                Ok(json) => match utils::load_card_data(json) {
+                Ok(deck_code) => match utils::load_card_data(deck_code) {
                     Ok(data) => {
                         println!("{:#?}", data);
                     }
@@ -77,14 +77,17 @@ mod tests {
         fn test_load_card_id() {
             match utils::load_card_id() {
                 Ok(data) => println!("{:#?}", data),
-                Err(_) => {}
+                Err(err) => {
+                    assert!(false, "{err}");
+                }
             }
         }
 
         #[test]
         fn test_card_genertor() {
-            let card_generator = CardGenertor::new();
-            let card = card_generator.gen_card_by_id("test".to_string(), &CardJson::new(), 1);
+            let card_generator = CardGenerator::new();
+            let card =
+                card_generator.gen_card_by_id_string("test".to_string(), &CardJson::new(), 1);
             println!("{:#?}", card);
         }
     }
@@ -179,6 +182,10 @@ mod tests {
     }
 
     mod game_test {
+        use std::borrow::BorrowMut;
+
+        use simulator::zone::DeckZone;
+
         use super::*;
         #[test]
         fn check_entity_type() {
@@ -268,6 +275,69 @@ mod tests {
                     }
                 }
             }
+        }
+
+        #[test]
+        fn test_player_exceed_draw(){
+            let mut game = generate_game();
+
+            if let Ok(game) = &mut game {
+                match game.game_step_initialize() {
+                    Ok(_) => {}
+                    Err(err) => {
+                        assert!(false, "{err}");
+                    }
+                }
+                
+                match (&game.player_1, &game.player_2) {
+                    (Some(player1), Some(player2)) => {
+                        match player1.as_ref().borrow_mut().draw(ZoneType::DeckZone, CardDrawType::Random(1)){
+                            Ok(card) => println!("{:#?}", card),
+                            Err(_) => panic!("Exceed Draw"),
+                        }
+                        match player2.as_ref().borrow_mut().draw(ZoneType::DeckZone, CardDrawType::Random(1)){
+                            Ok(card) => println!("{:#?}", card),
+                            Err(_) => panic!("Exceed Draw"),
+                        }
+                    }
+                    _ => {
+                        
+                    }
+                    
+                }        
+            }
+
+        }
+        #[test]
+        fn test_game_step_mulligun(){
+            let mut game = generate_game();
+
+            if let Ok(game) = &mut game {
+                match game.game_step_initialize() {
+                    Ok(_) => {}
+                    Err(err) => {
+                        assert!(false, "{err}");
+                    }
+                }
+                
+                match (&game.player_1, &game.player_2) {
+                    (Some(player1), Some(player2)) => {
+                        let before_player1_card_state = player1.as_ref().borrow_mut().get_cards().v_card.clone();
+                    },
+                    _ => {}
+                }        
+
+                match game.game_step_mulligun() {
+                    Ok(_) => {
+                        // 멀리건이 성공적으로 잘 되었는지 확인합니다.
+                                                
+                    }
+                    Err(err) => {
+                        assert!(false, "{err}");
+                    }
+                }
+            }
+
         }
     }
 }

@@ -163,26 +163,28 @@ impl Player {
     }
 
     // --------------------------------------------------------
+    // 주어진 파라미터에 따라 draw 합니다.
+    // 만약 count 가 해당 Zone 이 갖고 있는 카드의 갯수를 초과한다면
+    // Zone 이 갖고 있는 만큼만 return 합니다.
+    // --------------------------------------------------------
     // Parameters:
     // - zone_type  > 무슨 zone 에서 카드를 draw 할 지.
-    // - draw_tyoe  > 어떤 방식으로 draw 할 지.
-    // - count      > 몇 장을 뽑을건지.
+    // - draw_type(count)  > count개 의 카드를 어떤 방식으로 draw 할 지.
     // --------------------------------------------------------
     // Exceptions:
-    // -
     // --------------------------------------------------------
     pub fn draw(
         &mut self,
         zone_type: ZoneType,
         draw_type: CardDrawType,
-        count: usize,
     ) -> Result<Vec<UUID>, Exception> {
+        
         // zone_type 에 해당하는 Zone 의 카드를 가져옵니다
         let card_uuid: Vec<UUID> = self
             .get_zone(zone_type)
             .as_mut()
             .get_cards()
-            .draw(draw_type, count)
+            .draw(draw_type)
             .iter()
             .map(|card| card.get_uuid().clone())
             .collect();
@@ -191,25 +193,7 @@ impl Player {
             return Err(Exception::NoCardsLeft);
         }
 
-        let mut ans = vec![];
-
-        // // 덱에 있는 모든 카드를 순회 합니다.
-        // for card in &mut self.cards.v_card {
-        //     // hand 에서 draw 한 카드들의 uuid 를 가져옵니다.
-        //     for hand_card_uuid in &card_uuid {
-        //         // hand 에서 가져온 카드의 uuid 를 현재 순회중인 덱 카드와 동일한지 확인합니다.
-        //         if hand_card_uuid == card.get_uuid() {
-        //             // 덱 카드의 count 를 수정합니다.
-        //             card.get_count_mut().decrease();
-
-        //             // 최종적으로 반환될 vec 에 카드를 넣습니다.
-        //             ans.push(card.get_uuid().clone());
-        //             break;
-        //         }
-        //     }
-        // }
-
-        Ok(ans)
+        Ok(card_uuid)
     }
 
     pub fn add_card(&mut self, zone_type: ZoneType, count: Option<i32>, card: UUID) {
@@ -243,10 +227,9 @@ impl Player {
     pub fn get_zone(&mut self, zone_type: ZoneType) -> Box<&mut dyn Zone> {
         match zone_type {
             ZoneType::HandZone => Box::new(&mut self.hand_zone),
-            ZoneType::DeckZone => todo!(),
-            ZoneType::GraveyardZone => todo!(),
-            ZoneType::FieldZone => todo!(),
-            ZoneType::None => todo!(),
+            ZoneType::DeckZone => Box::new(&mut self.deck_zone),
+            ZoneType::GraveyardZone => Box::new(&mut self.graveyard_zone),
+            _ => panic!("Unknown Zone"),
         }
     }
 

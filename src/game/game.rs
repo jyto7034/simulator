@@ -11,7 +11,7 @@ pub trait IResource {
     fn set(&mut self, cost: usize) -> &mut Self;
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Count {
     cost: usize,
     limit: usize,
@@ -24,6 +24,10 @@ impl Count {
 
     pub fn get(&self) -> usize {
         self.cost
+    }
+
+    pub fn is_empty(&self) -> bool{
+        self.cost == 0
     }
 }
 
@@ -50,6 +54,7 @@ use crate::{
     exception::exception::Exception,
     task::procedure::Procedure,
     unit::{player::Player, Cost, Mana},
+    utils::*,
 };
 
 use super::TimeManager;
@@ -79,27 +84,36 @@ impl Game {
         Ok(game)
     }
 
+    // 구조적 문제 있긴함..
+    pub fn to_cards(
+        &self,
+        deck_code1: DeckCode,
+        deck_code2: DeckCode,
+    ) -> Result<Vec<Cards>, Exception> {
+        let v_cards = match utils::parse_json_to_deck_code() {
+            Ok(json) => match utils::load_card_data(json) {
+                Ok(data) => {
+                    // println!("{:#?}", data);
+                    data
+                }
+                Err(err) => {
+                    panic!("{err}")
+                }
+            },
+            Err(err) => {
+                panic!("{err}")
+            }
+        };
+
+        Ok(vec![v_cards[0].clone(), v_cards[1].clone()])
+    }
+
     pub fn initialize(&mut self, config: GameConfig) -> Result<(), Exception> {
         // config 로부터 플레이어의 덱을 읽어와서 플레이어 데이터를 생성함.
-        let cards1 = match config.player_1.to_cards() {
-            Ok(data) => data,
-            Err(_) => Cards::dummy(),
-        };
-
-        if cards1.empty() {
-            return Err(Exception::DeckParseError);
-        }
-
-        let cards2 = match config.player_2.to_cards() {
-            Ok(data) => data,
-            Err(_) => Cards::dummy(),
-        };
-
-        if cards2.empty() {
-            return Err(Exception::DeckParseError);
-        }
-
-        // cards1, 2 를 game 의 cards 에 넣어야함.
+        let v_cards =
+            self.to_cards(config.player_1.raw_deck_code, config.player_2.raw_deck_code)?;
+        let cards1 = v_cards[0].clone();
+        let cards2 = v_cards[1].clone();
 
         const ATTACKER: usize = 0;
         const DEFENDER: usize = 1;
@@ -130,7 +144,7 @@ impl Game {
                 Mana::new(0, 0),
             )))),
         };
-
+        
         // opponent 설정
         if let Some(player_1) = &self.player_1 {
             player_1
@@ -154,6 +168,16 @@ impl Game {
     }
 
     fn check_player_data_integrity(&self) -> Result<(), Exception> {
+        if let Some(player_1) = &self.player_1 {
+            } else {
+                return Err(Exception::PlayerInitializeFailed);
+            }
+            
+        if let Some(player_2) = &self.player_2 {
+        } else {
+            return Err(Exception::PlayerInitializeFailed);
+        }
+
         if let Some(player1) = self.player_1.as_ref() {
             if let Some(_) = player1.borrow().get_opponent().as_ref() {
                 Ok(())
@@ -174,11 +198,21 @@ impl Game {
         if let Some(player) = &self.player_1 {
             player.as_ref().borrow_mut().set_mana(0);
             player.as_ref().borrow_mut().set_cost(0);
-        }
 
-        if let Some(player) = &self.player_1 {
+            let cards = player.as_ref().borrow_mut().get_cards().v_card.clone();
+            for card in cards{
+                player.as_ref().borrow_mut().get_zone(ZoneType::DeckZone).get_cards().push(card.clone());
+            }
+        }
+        
+        if let Some(player) = &self.player_2 {
             player.as_ref().borrow_mut().set_mana(0);
             player.as_ref().borrow_mut().set_cost(0);
+
+            let cards = player.as_ref().borrow_mut().get_cards().v_card.clone();
+            for card in cards{
+                player.as_ref().borrow_mut().get_zone(ZoneType::DeckZone).get_cards().push(card.clone());
+            }
         }
         Ok(())
     }
@@ -192,15 +226,16 @@ impl Game {
                 let mullugun_cards_1 = player1
                     .as_ref()
                     .borrow_mut()
-                    .draw(ZoneType::DeckZone, CardDrawType::Random, 4)
+                    .draw(ZoneType::DeckZone, CardDrawType::Random(4))
                     .ok();
 
                 // player2 의 deck 에서 랜덤한 카드 4장을 뽑습니다.
                 let mullugun_cards_2 = player2
                     .as_ref()
                     .borrow_mut()
-                    .draw(ZoneType::DeckZone, CardDrawType::Random, 4)
+                    .draw(ZoneType::DeckZone, CardDrawType::Random(4))
                     .ok();
+
 
                 // mullugun_cards 들을 언래핑합니다.
                 match (mullugun_cards_1, mullugun_cards_2) {
@@ -229,7 +264,7 @@ impl Game {
                                 // cards1 를 순회하며 원본 카드를 가져와, clone 으로 손패에 넣습니다.
                                 let action = |player: &Rc<RefCell<Player>>, cards: Vec<UUID>| {
                                     for card in cards {
-                                        let card_origin = player1
+                                        let card_origin = player
                                             .as_ref()
                                             .borrow_mut()
                                             .get_cards()
