@@ -244,7 +244,7 @@ impl Game {
 
                         // 클라이언트들로부터 peak_card 정보를 받습니다.
                         // peak_card 는 멀리건에서 선택된 카드들의 집합입니다.
-                        // 받은 정보를 토대로, 선택된 카드를 제외한 나머지는 다시 deck 에 넣습니다.
+                        // 받은 정보를 토대로, 선택된 카드 i nj를 제외한 나머지는 다시 deck 에 넣습니다.
                         // 위 과정은 peak_card_put_back() 함수에서 처리합니다.
                         // 그리고 함수로부터 peak_card 를 반환받아, cards1, cards2 라는 변수들을 만들어 반환합니다.
                         let cards1 = player1

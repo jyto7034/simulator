@@ -243,20 +243,21 @@ mod tests {
             };
             assert_eq!(name, "test2");
 
-            game.player_1
-                .as_ref()
-                .unwrap()
-                .borrow_mut()
-                .set_name("player2".to_string());
+            if let Some(player) = &game.player_1{
+                player.as_ref().borrow_mut().set_name("player1".to_string());
+            }
+            // game.player_1
+            //     .as_ref()
+            //     .unwrap()
+            //     .borrow_mut()
+            //     .set_name("player2".to_string());
             assert_eq!(
                 game.player_1.as_ref().unwrap().borrow().get_name(),
                 "player2"
             );
-            game.player_2
-                .as_ref()
-                .unwrap()
-                .borrow_mut()
-                .set_name("player1".to_string());
+            if let Some(player) = &game.player_2{
+                player.as_ref().borrow_mut().set_name("player2".to_string());
+            }
             assert_eq!(
                 game.player_2.as_ref().unwrap().borrow().get_name(),
                 "player1"
@@ -320,12 +321,12 @@ mod tests {
                     }
                 }
                 
-                match (&game.player_1, &game.player_2) {
-                    (Some(player1), Some(player2)) => {
-                        let before_player1_card_state = player1.as_ref().borrow_mut().get_cards().v_card.clone();
-                    },
-                    _ => {}
-                }        
+                // match (&game.player_1, &game.player_2) {
+                //     (Some(player1), Some(player2)) => {
+                //         let before_player1_card_state = player1.as_ref().borrow_mut().get_cards().v_card.clone();
+                //     },
+                //     _ => {}
+                // }        
 
                 match game.game_step_mulligun() {
                     Ok(_) => {

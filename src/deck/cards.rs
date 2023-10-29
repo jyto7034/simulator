@@ -36,25 +36,30 @@ impl Cards {
         self.is_deck_empty()?;
     
         let mut rng = rand::thread_rng();
+
+        // 카드 index 정보를 vec 으로 만듭니다.
+        // 이 벡터는 v_card 를 참조하기 위하여 생성됩니다.
         let mut available_indices: Vec<usize> = (0..self.v_card.len()).collect();
-        let mut history: Vec<usize> = vec![];
         let mut ans: Vec<Card> = vec![];
         
+        // available_indices 가 비어있다면, 모든 카드를 참조한 것입니다.
         while !available_indices.is_empty(){
+            // 무작위 기능을 사용하여 임의의 card index 를 하나 가져옵니다.
             let random_index = rng.gen_range(0..available_indices.len());
             let random_number = available_indices[random_index];
-            let card = &mut self.v_card[random_number];
-            if !card.get_count().is_empty() {
-                if ans.len() == cnt{
-                    return Ok(ans);
-                } 
 
+            // card index 로 해당 카드의 참조를 생성합니다.
+            let card = &mut self.v_card[random_number];
+            // 해당 카드의 사용 가능 횟수가 남아있는지 확인합니다.
+            if !card.get_count().is_empty() {
+                // 사용가능한 카드면 해당 카드의 사용 가능 횟수를 차감합니다.
                 card.get_count_mut().decrease();
                 
+                // ans 에 밀어넣습니다.
                 ans.push(card.clone());
             } else {
+                // 사용 불가능한 카드의 index 이기 때문에, card index 벡터로부터 삭제합니다.
                 available_indices.remove(random_index);
-                history.push(random_number);
             }
         }
     
