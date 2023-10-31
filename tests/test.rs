@@ -14,15 +14,20 @@ mod tests {
     };
 
     fn generate_game() -> Result<Game, Exception> {
-        let config = GameConfig {
-            player_1: Deck {
-                raw_deck_code: "".to_string(),
+        let config = match utils::read_game_config_json(){
+            Ok(data) => {
+                GameConfig {
+                    player_1: Deck {
+                        raw_deck_code: data.DeckCodes[0].code1.clone(),
+                    },
+                    player_2: Deck {
+                        raw_deck_code: data.DeckCodes[0].code2.clone(),
+                    },
+                    attaker: data.Attacker as usize,
+                    name: vec![data.Names[0].name1.clone(), data.Names[0].name2.clone()],
+                }
             },
-            player_2: Deck {
-                raw_deck_code: "".to_string(),
-            },
-            attaker: 1,
-            name: vec!["test1".to_string(), "test2".to_string()],
+            Err(err) => return Err(err),
         };
 
         let proc = Rc::new(RefCell::new(Procedure::new(None)));
@@ -87,8 +92,8 @@ mod tests {
         fn test_card_genertor() {
             let card_generator = CardGenerator::new();
             let card =
-                card_generator.gen_card_by_id_string("test".to_string(), &CardJson::new(), 1);
-            println!("{:#?}", card);
+                card_generator.gen_card_by_id_string("HM_001".to_string(), &CardJson::new(), 1);
+            // println!("{:#?}", card);
         }
     }
 
@@ -199,26 +204,15 @@ mod tests {
 
         #[test]
         fn check_set_opponent_player() {
-            let config = GameConfig {
-                player_1: Deck {
-                    raw_deck_code: "".to_string(),
-                },
-                player_2: Deck {
-                    raw_deck_code: "".to_string(),
-                },
-                attaker: 1,
-                name: vec!["test1".to_string(), "test2".to_string()],
-            };
-
             let game = generate_game().unwrap();
 
             assert_eq!(
                 *game.player_1.as_ref().unwrap().borrow().get_name(),
-                "test1"
+                "player1"
             );
             assert_eq!(
                 *game.player_2.as_ref().unwrap().borrow().get_name(),
-                "test2"
+                "player2"
             );
 
             let name = if let Some(data) = game
@@ -230,7 +224,7 @@ mod tests {
             } else {
                 "".to_string()
             };
-            assert_eq!(name, "test1");
+            assert_eq!(name, "player1");
 
             let name = if let Some(data) = game
                 .player_2
@@ -241,7 +235,7 @@ mod tests {
             } else {
                 "".to_string()
             };
-            assert_eq!(name, "test2");
+            assert_eq!(name, "player2");
 
             if let Some(player) = &game.player_1{
                 player.as_ref().borrow_mut().set_name("player1".to_string());
@@ -252,7 +246,7 @@ mod tests {
             //     .borrow_mut()
             //     .set_name("player2".to_string());
             assert_eq!(
-                game.player_1.as_ref().unwrap().borrow().get_name(),
+                game.player_2.as_ref().unwrap().borrow().get_name(),
                 "player2"
             );
             if let Some(player) = &game.player_2{
@@ -260,7 +254,7 @@ mod tests {
             }
             assert_eq!(
                 game.player_2.as_ref().unwrap().borrow().get_name(),
-                "player1"
+                "player2"
             );
         }
 

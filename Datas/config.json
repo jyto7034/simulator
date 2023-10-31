@@ -1,0 +1,15 @@
+{
+  "DeckCodes": [
+    {
+      "code1": "",
+      "code2": ""
+    }
+  ],
+  "Attacker": 1,
+  "Names": [
+    {
+      "name1": "player1",
+      "name2": "player2"
+    }
+  ]
+}

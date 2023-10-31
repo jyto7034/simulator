@@ -28,6 +28,27 @@ pub struct Decks {
     pub decks: Vec<Deck>,
 }
 
+
+
+#[derive(Debug, Deserialize)]
+pub struct Names {
+    pub name1: String,
+    pub name2: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct DeckCodes {
+    pub code1: String,
+    pub code2: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct GameConfigJson {
+    pub DeckCodes: Vec<DeckCodes>,
+    pub Attacker: i32,
+    pub Names: Vec<Names>,
+}
+
 /*
     "id": "AT_010",
     "attack": 3,

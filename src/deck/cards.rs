@@ -32,6 +32,9 @@ impl Cards {
     // --------------------------------------------------------
     // Exceptions:
     // --------------------------------------------------------
+    // TODO:
+    // - cnt 만큼 뽑는거 구현
+    // --------------------------------------------------------
     fn draw_random(&mut self, cnt: usize) -> Result<Vec<Card>, Exception> {
         self.is_deck_empty()?;
     
@@ -57,14 +60,18 @@ impl Cards {
                 
                 // ans 에 밀어넣습니다.
                 ans.push(card.clone());
-            } else {
-                // 사용 불가능한 카드의 index 이기 때문에, card index 벡터로부터 삭제합니다.
-                available_indices.remove(random_index);
             }
+            
+            // draw 가 완료된 카드이거나 사용 불가능한 카드의 index 이기 때문에, card index 벡터로부터 삭제합니다.
+            available_indices.remove(random_index);
         }
     
-        // 모든 카드가 다 뽑혔을 경우 예외 처리 또는 결과 반환
+    if ans.is_empty(){
         Err(Exception::NoCardLeft)
+    }
+    else{
+        Ok(ans)
+    }
     }
     
 

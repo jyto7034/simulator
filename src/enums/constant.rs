@@ -10,6 +10,7 @@ pub const CARD_JSON_PATH: &str = "Resource/cards.json";
 pub const DECK_JSON_PATH_P1: &str = "Datas/data1.json";
 pub const DECK_JSON_PATH_P2: &str = "Datas/data2.json";
 pub const UUID_GENERATOR_PATH: &str = "Resource/uuidgen";
+pub const GAME_CONFIG_JSON_PATH: &str = "Datas/config.json";
 
 pub enum GameStep {
     GameStart,

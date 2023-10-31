@@ -25,6 +25,25 @@ pub fn generate_uuid() -> Result<String, Exception> {
     Ok(uuid)
 }
 
+pub fn read_game_config_json() -> Result<json::GameConfigJson, Exception>{
+    let file_path = constant::GAME_CONFIG_JSON_PATH;
+
+    // 파일 열기
+    let mut file = File::open(file_path).expect("Failed to open file");
+
+    // 파일 내용을 문자열로 읽기
+    let mut json_data = String::new();
+    file.read_to_string(&mut json_data)
+        .expect("Failed to read file");
+
+    let card_json: json::GameConfigJson = match serde_json::from_str(&json_data[..]) {
+        Ok(data) => data,
+        Err(_) => return Err(Exception::JsonParseFailed),
+    };
+
+    Ok(card_json)
+}
+
 pub fn parse_json_to_deck_code() -> Result<(DeckCode, DeckCode), Exception> {
     let json_to_deck_code = |player_num: usize| {
         let file_path = match player_num {

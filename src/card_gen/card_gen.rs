@@ -133,7 +133,7 @@ impl CardGenerator {
     }
 
     pub fn gen_card_by_id_string(&self, key: String, card_json: &CardJson, count: usize) -> Card {
-        println!("{key}");
+        println!("key {key}");
         match self.keys.get_i32_by_string(&key[..]) {
             Some(_key) => self.gen_card_by_id_i32(_key, card_json, count),
             None => panic!("Unknown ID: {}", key),
