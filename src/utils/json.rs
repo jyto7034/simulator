@@ -28,8 +28,6 @@ pub struct Decks {
     pub decks: Vec<Deck>,
 }
 
-
-
 #[derive(Debug, Deserialize)]
 pub struct Names {
     pub name1: String,

@@ -25,7 +25,7 @@ pub fn generate_uuid() -> Result<String, Exception> {
     Ok(uuid)
 }
 
-pub fn read_game_config_json() -> Result<json::GameConfigJson, Exception>{
+pub fn read_game_config_json() -> Result<json::GameConfigJson, Exception> {
     let file_path = constant::GAME_CONFIG_JSON_PATH;
 
     // 파일 열기
@@ -122,15 +122,11 @@ pub fn load_card_data(deck_code: (DeckCode, DeckCode)) -> Result<Vec<Cards>, Exc
     };
 
     let decoded_deck1 = match deck_decode(deck_code.0) {
-        Ok(data) => {
-            data
-        }
+        Ok(data) => data,
         Err(err) => return Err(Exception::JsonParseFailed),
     };
     let decoded_deck2 = match deck_decode(deck_code.1) {
-        Ok(data) => {
-            data
-        }
+        Ok(data) => data,
         Err(err) => return Err(Exception::JsonParseFailed),
     };
 
