@@ -131,7 +131,8 @@ impl Player {
         mullugun_cards: Vec<UUID>,
     ) -> Result<Vec<UUID>, Exception> {
         // 각 mullugun_cards 에서 카드 n장을 뽑습니다.
-        let peaked_card = vec![self._peak_card(mullugun_cards.clone())];
+        // !! 일단 모든 카드를 선택하도록 만듬.
+        let peaked_card = mullugun_cards.clone();
 
         // 나머지 카드를 추립니다.
         let remainder_cards: Vec<String> = peaked_card
@@ -178,7 +179,6 @@ impl Player {
         zone_type: ZoneType,
         draw_type: CardDrawType,
     ) -> Result<Vec<UUID>, Exception> {
-        
         // zone_type 에 해당하는 Zone 의 카드를 가져옵니다
         let card_uuid: Vec<UUID> = self
             .get_zone(zone_type)

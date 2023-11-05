@@ -26,7 +26,7 @@ impl Count {
         self.cost
     }
 
-    pub fn is_empty(&self) -> bool{
+    pub fn is_empty(&self) -> bool {
         self.cost == 0
     }
 }
@@ -144,7 +144,7 @@ impl Game {
                 Mana::new(0, 0),
             )))),
         };
-        
+
         // opponent 설정
         if let Some(player_1) = &self.player_1 {
             player_1
@@ -169,10 +169,10 @@ impl Game {
 
     fn check_player_data_integrity(&self) -> Result<(), Exception> {
         if let Some(player_1) = &self.player_1 {
-            } else {
-                return Err(Exception::PlayerInitializeFailed);
-            }
-            
+        } else {
+            return Err(Exception::PlayerInitializeFailed);
+        }
+
         if let Some(player_2) = &self.player_2 {
         } else {
             return Err(Exception::PlayerInitializeFailed);
@@ -200,18 +200,38 @@ impl Game {
             player.as_ref().borrow_mut().set_cost(0);
 
             let cards = player.as_ref().borrow_mut().get_cards().v_card.clone();
-            for card in cards{
-                player.as_ref().borrow_mut().get_zone(ZoneType::DeckZone).get_cards().push(card.clone());
+            for card in cards {
+                player
+                    .as_ref()
+                    .borrow_mut()
+                    .get_zone(ZoneType::DeckZone)
+                    .get_cards()
+                    .push(card.clone());
             }
-        }
+            // println!("player 1 decks : {:#?}", player
+            // .as_ref()
+            // .borrow_mut()
+            // .get_zone(ZoneType::DeckZone)
+            // .get_cards());
+    }
+    
+    if let Some(player) = &self.player_2 {
+        player.as_ref().borrow_mut().set_mana(0);
+        player.as_ref().borrow_mut().set_cost(0);
         
-        if let Some(player) = &self.player_2 {
-            player.as_ref().borrow_mut().set_mana(0);
-            player.as_ref().borrow_mut().set_cost(0);
-
-            let cards = player.as_ref().borrow_mut().get_cards().v_card.clone();
-            for card in cards{
-                player.as_ref().borrow_mut().get_zone(ZoneType::DeckZone).get_cards().push(card.clone());
+        let cards = player.as_ref().borrow_mut().get_cards().v_card.clone();
+            for card in cards {
+                player
+                    .as_ref()
+                    .borrow_mut()
+                    .get_zone(ZoneType::DeckZone)
+                    .get_cards()
+                    .push(card.clone());
+                // println!("player 2 decks : {:#?}", player
+                // .as_ref()
+                // .borrow_mut()
+                // .get_zone(ZoneType::DeckZone)
+                // .get_cards());
             }
         }
         Ok(())
@@ -235,7 +255,6 @@ impl Game {
                     .borrow_mut()
                     .draw(ZoneType::DeckZone, CardDrawType::Random(4))
                     .ok();
-
 
                 // mullugun_cards 들을 언래핑합니다.
                 match (mullugun_cards_1, mullugun_cards_2) {
@@ -275,9 +294,10 @@ impl Game {
                                             .get_zone(ZoneType::HandZone)
                                             .get_cards()
                                             .push(card_origin.get(0).unwrap().clone());
+                                        println!("{} {}", player.as_ref().borrow().get_name(), card_origin.get(0).unwrap().get_name());
                                     }
                                 };
-
+                                
                                 action(player1, cards1);
                                 action(player2, cards2);
                             }

@@ -276,10 +276,15 @@ mod human {
                 Ok(())
             },
         ));
+        let name = if let Some(name) = &card_json.name{
+            name
+        }else{
+            panic!("Card creating error");
+        };
         Card::new(
             CardType::Unit,
             uuid,
-            "Hieda no Akyuu".into(),
+            name.clone(),
             bvs,
             card_json.clone(),
             count,

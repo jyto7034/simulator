@@ -37,16 +37,16 @@ impl Cards {
     // --------------------------------------------------------
     fn draw_random(&mut self, cnt: usize) -> Result<Vec<Card>, Exception> {
         self.is_deck_empty()?;
-    
+
         let mut rng = rand::thread_rng();
 
         // 카드 index 정보를 vec 으로 만듭니다.
         // 이 벡터는 v_card 를 참조하기 위하여 생성됩니다.
         let mut available_indices: Vec<usize> = (0..self.v_card.len()).collect();
         let mut ans: Vec<Card> = vec![];
-        
+        let mut cnt = cnt as i32;
         // available_indices 가 비어있다면, 모든 카드를 참조한 것입니다.
-        while !available_indices.is_empty(){
+        while !available_indices.is_empty() && cnt != 0{
             // 무작위 기능을 사용하여 임의의 card index 를 하나 가져옵니다.
             let random_index = rng.gen_range(0..available_indices.len());
             let random_number = available_indices[random_index];
@@ -57,26 +57,25 @@ impl Cards {
             if !card.get_count().is_empty() {
                 // 사용가능한 카드면 해당 카드의 사용 가능 횟수를 차감합니다.
                 card.get_count_mut().decrease();
-                
+                cnt =- 1;
+
                 // ans 에 밀어넣습니다.
                 ans.push(card.clone());
+            }else{
+                // 사용 가능 횟수가 0 인 카드이기 때문에, card index 벡터로부터 삭제합니다.
+                available_indices.remove(random_index);
             }
-            
-            // draw 가 완료된 카드이거나 사용 불가능한 카드의 index 이기 때문에, card index 벡터로부터 삭제합니다.
-            available_indices.remove(random_index);
+
         }
-    
-    if ans.is_empty(){
-        Err(Exception::NoCardLeft)
+
+        if ans.is_empty() {
+            Err(Exception::NoCardLeft)
+        } else {
+            Ok(ans)
+        }
     }
-    else{
-        Ok(ans)
-    }
-    }
-    
 
     fn draw_bottom(&self) -> Result<Card, Exception> {
-        
         self.is_deck_empty()?;
 
         match self.v_card.first() {
@@ -220,11 +219,7 @@ impl Cards {
         // 100 대신 덱의 카드 갯수로 바꿔야함.
 
         // find 함수가 카드를 몇 개까지 찾게 할 지 정하는 변수.
-        let cnt = if count == 0 {
-            100
-        } else {
-            count
-        };
+        let cnt = if count == 0 { 100 } else { count };
         use constant::*;
 
         match find_type {
@@ -241,24 +236,18 @@ impl Cards {
         let count = match draw_type {
             CardDrawType::Random(count) => count,
             CardDrawType::CardType(_, count) => count,
-            _ => 0
+            _ => 0,
         };
-        
+
         // find 함수가 카드를 몇 개까지 찾게 할 지 정하는 변수.
-        let cnt = if count == 0 {
-            100
-        } else {
-            count
-        };
+        let cnt = if count == 0 { 100 } else { count };
 
         // 실제로 draw 하는 부분 입니다.
         let draw_cards = match draw_type {
             CardDrawType::Top => {
                 vec![self.draw_top().unwrap()]
             }
-            CardDrawType::Random(_) => {
-                self.draw_random(cnt).unwrap()
-            }
+            CardDrawType::Random(_) => self.draw_random(cnt).unwrap(),
             CardDrawType::Bottom => {
                 vec![self.draw_bottom().unwrap()]
             }
