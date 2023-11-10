@@ -392,7 +392,13 @@ mod tests {
                                         .map(|item| item.get_count().get())
                                         .collect(),
                                 );
-                                println!("{} {} \nbefore decks: {:#?} \nafter dekcs: {:#?}", file!(), line!(), deck_before, deck_after);
+                                println!(
+                                    "{} {} \nbefore decks: {:#?} \nafter dekcs: {:#?}",
+                                    file!(),
+                                    line!(),
+                                    deck_before,
+                                    deck_after
+                                );
                                 for (a, b) in deck_before.0.iter().zip(deck_after.0.iter()) {
                                     if a == b {
                                         panic!("Mulligun Failed");
@@ -425,17 +431,23 @@ mod tests {
                                         .map(|item| item.get_name().clone())
                                         .collect(),
                                 );
-                                println!("{} {} \nbefore hands: {:#?} \nafter hands: {:#?}", file!(), line!(), hand_before, hand_after);
-                                // for (a, b) in hand_before.0.iter().zip(deck_after.0.iter()) {
-                                //     if a == b {
-                                //         panic!("Mulligun Failed");
-                                //     }
-                                // }
-                                // for (a, b) in hand_before.1.iter().zip(deck_after.1.iter()) {
-                                //     if a == b {
-                                //         panic!("Mulligun Failed");
-                                //     }
-                                // }
+                                println!(
+                                    "{} {} \nbefore hands: {:#?} \nafter hands: {:#?}",
+                                    file!(),
+                                    line!(),
+                                    hand_before,
+                                    hand_after
+                                );
+                                for (a, b) in hand_before.0.iter().zip(deck_after.0.iter()) {
+                                    if a == b {
+                                        panic!("Mulligun Failed");
+                                    }
+                                }
+                                for (a, b) in hand_before.1.iter().zip(deck_after.1.iter()) {
+                                    if a == b {
+                                        panic!("Mulligun Failed");
+                                    }
+                                }
                             }
                             _ => {}
                         }

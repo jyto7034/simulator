@@ -194,44 +194,40 @@ impl Game {
         // 데이터 무결성을 확인합니다.
         self.check_player_data_integrity()?;
 
-        // 코스트와 마나를 설정해줍니다.
         if let Some(player) = &self.player_1 {
+            // 코스트와 마나를 설정해줍니다.
             player.as_ref().borrow_mut().set_mana(0);
             player.as_ref().borrow_mut().set_cost(0);
-
+            
             let cards = player.as_ref().borrow_mut().get_cards().v_card.clone();
             for card in cards {
                 player
-                    .as_ref()
-                    .borrow_mut()
-                    .get_zone(ZoneType::DeckZone)
-                    .get_cards()
-                    .push(card.clone());
-            }
-            // println!("player 1 decks : {:#?}", player
-            // .as_ref()
-            // .borrow_mut()
-            // .get_zone(ZoneType::DeckZone)
-            // .get_cards());
-    }
-    
-    if let Some(player) = &self.player_2 {
-        player.as_ref().borrow_mut().set_mana(0);
-        player.as_ref().borrow_mut().set_cost(0);
+                .as_ref()
+                .borrow_mut()
+                .get_zone(ZoneType::DeckZone)
+                .get_cards()
+                .push(card.clone());
+        }
+        }
         
-        let cards = player.as_ref().borrow_mut().get_cards().v_card.clone();
+        if let Some(player) = &self.player_2 {
+            // 코스트와 마나를 설정해줍니다.
+            player.as_ref().borrow_mut().set_mana(0);
+            player.as_ref().borrow_mut().set_cost(0);
+            
+            // v_card 을 참조하여 Deck 에 카드를 push 합니다.
+            // 아래 for 에서 임시 생성된 card 변수에 기록되어 있는 count 의 값만큼 해당 카드를 Deck 에 push 한다.
+            let cards = player.as_ref().borrow_mut().get_cards().v_card.clone();
             for card in cards {
-                player
-                    .as_ref()
-                    .borrow_mut()
-                    .get_zone(ZoneType::DeckZone)
-                    .get_cards()
-                    .push(card.clone());
-                // println!("player 2 decks : {:#?}", player
-                // .as_ref()
-                // .borrow_mut()
-                // .get_zone(ZoneType::DeckZone)
-                // .get_cards());
+                // Deck 과 Hand 의 카드 갯수 관리 방법이 서로 상이해서, Hand 방법 즉, 카드 갯수로 관리 하는 방법으로 통일함.
+                for _ in 0..card.get_count().get(){
+                    player
+                        .as_ref()
+                        .borrow_mut()
+                        .get_zone(ZoneType::DeckZone)
+                        .get_cards()
+                        .push(card.clone());
+                }
             }
         }
         Ok(())
@@ -242,6 +238,35 @@ impl Game {
         // player 을 언래핑 합니다.
         match (&self.player_1, &self.player_2) {
             (Some(player1), Some(player2)) => {
+                // 카드를 Zone 에 저장하는 방식이 Zone 마다 다름.
+                // Deck 의 경우 Count 로 카드 갯수를 관리하고
+                // Hand 의 경우 카드 객체의 갯수로 관리함.
+                // Hand 처럼 객체의 갯수로 관리하는 방법으로 통합해야됨.
+                // 다만, player 의 v_cards 는 count 로 관리함.
+                // 이에 따라, count 기능을 card 구조체로부터 분리해야할지 고민해야함.
+                
+                // 멀리건 단계 이전의 덱 카드 갯수를 기록합니다.
+                let deck_before: (Vec<_>, Vec<_>) = (
+                    player1
+                        .as_ref()
+                        .borrow_mut()
+                        .get_zone(ZoneType::DeckZone)
+                        .get_cards()
+                        .v_card
+                        .iter()
+                        .map(|item| item.get_count().get())
+                        .collect(),
+                    player2
+                        .as_ref()
+                        .borrow_mut()
+                        .get_zone(ZoneType::DeckZone)
+                        .get_cards()
+                        .v_card
+                        .iter()
+                        .map(|item| item.get_count().get())
+                        .collect(),
+                );
+
                 // player1 의 deck 에서 랜덤한 카드 4장을 뽑습니다.
                 let mullugun_cards_1 = player1
                     .as_ref()
@@ -294,12 +319,14 @@ impl Game {
                                             .get_zone(ZoneType::HandZone)
                                             .get_cards()
                                             .push(card_origin.get(0).unwrap().clone());
-                                        println!("{} {}", player.as_ref().borrow().get_name(), card_origin.get(0).unwrap().get_name());
+                                        println!(
+                                            "{} {}",
+                                            player.as_ref().borrow().get_name(),
+                                            card_origin.get(0).unwrap().get_name()
+                                        );
                                     }
                                 };
-                                // 여기까지 실행했을 때, cards1, cards2 에는 peak_card_put_back 함수의 작동으로,
-                                // 카드 하나만 넣어지는것을 확인함.
-                                // 근데 peak_card_put_back 함수에서 mulligun_cards 의 변수 상태가 이상함.
+
                                 action(player1, cards1);
                                 action(player2, cards2);
                             }

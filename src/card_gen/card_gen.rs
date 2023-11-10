@@ -276,9 +276,9 @@ mod human {
                 Ok(())
             },
         ));
-        let name = if let Some(name) = &card_json.name{
+        let name = if let Some(name) = &card_json.name {
             name
-        }else{
+        } else {
             panic!("Card creating error");
         };
         Card::new(

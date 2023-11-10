@@ -46,7 +46,7 @@ impl Cards {
         let mut ans: Vec<Card> = vec![];
         let mut cnt = cnt as i32;
         // available_indices 가 비어있다면, 모든 카드를 참조한 것입니다.
-        while !available_indices.is_empty() && cnt != 0{
+        while !available_indices.is_empty() && cnt != 0 {
             // 무작위 기능을 사용하여 임의의 card index 를 하나 가져옵니다.
             let random_index = rng.gen_range(0..available_indices.len());
             let random_number = available_indices[random_index];
@@ -57,15 +57,14 @@ impl Cards {
             if !card.get_count().is_empty() {
                 // 사용가능한 카드면 해당 카드의 사용 가능 횟수를 차감합니다.
                 card.get_count_mut().decrease();
-                cnt =- 1;
+                cnt = -1;
 
                 // ans 에 밀어넣습니다.
                 ans.push(card.clone());
-            }else{
+            } else {
                 // 사용 가능 횟수가 0 인 카드이기 때문에, card index 벡터로부터 삭제합니다.
                 available_indices.remove(random_index);
             }
-
         }
 
         if ans.is_empty() {
