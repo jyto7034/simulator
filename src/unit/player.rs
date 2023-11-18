@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
-use crate::deck::Cards;
+use crate::deck::{Cards, cards};
 use crate::enums::constant::*;
 use crate::exception::exception::Exception;
 use crate::game::{Game, IResource};
@@ -118,52 +118,6 @@ impl Player {
     }
 
     // --------------------------------------------------------
-    // 파라미터로 넘어온 Vec<Card> 에서 카드 하나를 선택 후 나머지를 다시 패에 넣습니다.
-    // --------------------------------------------------------
-    // Exceptions:
-    // - 카드가 4장이 아닌, 3장 이하일 때, 혹은 아예 없을 때.
-    // - 카드가 게임에서 삭제 당했을때?
-    // - 한 벡터에 같은 카드 두 장이 존재할 때, eg. 나머지 카드 추릴 때.
-    // - 어떤 카드도 peak 하지 않았을때. _peak_card 에서 오류 나옴.
-    // --------------------------------------------------------
-    pub fn peak_card_put_back(
-        &mut self,
-        mullugun_cards: Vec<UUID>,
-    ) -> Result<Vec<UUID>, Exception> {
-        // 각 mullugun_cards 에서 카드 n장을 뽑습니다.
-        // !! 일단 모든 카드를 선택하도록 만듬.
-        let peaked_card = mullugun_cards.clone();
-
-        // 나머지 카드를 추립니다.
-        let remainder_cards: Vec<String> = peaked_card
-            .iter()
-            .cloned()
-            .filter(|element| !mullugun_cards.contains(element))
-            .chain(
-                peaked_card
-                    .iter()
-                    .cloned()
-                    .filter(|element| !mullugun_cards.contains(element)),
-            )
-            .collect();
-
-        // 나머지 카드들의 uuid 로 player 의 DeckZone 에서 원본 카드를 찾아내어, count 를 증가시킵니다.
-        for item in remainder_cards {
-            if let Some(card) = self
-                .deck_zone
-                .get_cards()
-                .v_card
-                .iter_mut()
-                .find(|card| card.get_uuid() == &item)
-            {
-                card.get_count_mut().increase();
-            }
-        }
-
-        Ok(peaked_card)
-    }
-
-    // --------------------------------------------------------
     // 주어진 파라미터에 따라 draw 합니다.
     // 만약 count 가 해당 Zone 이 갖고 있는 카드의 갯수를 초과한다면
     // Zone 이 갖고 있는 만큼만 return 합니다.
@@ -179,6 +133,9 @@ impl Player {
         zone_type: ZoneType,
         draw_type: CardDrawType,
     ) -> Result<Vec<UUID>, Exception> {
+        // TODO !!
+        // Zone 의 상태 즉, full 인지, empty 인지 확인하고 그에 따른 예외 처리를 해야함.
+        
         // zone_type 에 해당하는 Zone 의 카드를 가져옵니다
         let card_uuid: Vec<UUID> = self
             .get_zone(zone_type)
@@ -196,6 +153,50 @@ impl Player {
         Ok(card_uuid)
     }
 
+    // --------------------------------------------------------
+    // ChoiceType 에 따라 처리합니다.
+    // --------------------------------------------------------
+    // Parameters:
+    // --------------------------------------------------------
+    // Exceptions:
+    // --------------------------------------------------------
+    pub fn choice_card(&mut self, choice_type: ChoiceType) -> Vec<UUID>{
+        match choice_type {
+            ChoiceType::Mulligun => {
+                match self.draw(ZoneType::DeckZone, CardDrawType::Random(4)){
+                    Ok(mut mulligun_cards) => {
+                        // 먼저 뽑혀진 카드를 클라이언트에게 전송합니다.
+
+                        // TODO !!
+                        // 클라이언트로부터 선택된 카드들의 uuid 정보를 받습니다. 임의로 0 설정.
+                        let selected_cards = vec![mulligun_cards.get(0).unwrap().clone()];
+
+                        // contains 의 명세 잘 봐야됨.
+                        mulligun_cards.retain(|item| !selected_cards.contains(&item));
+
+                        // 선택된 카드들을 다시 랜덤으로 넣습니다.
+                        for card_to_put in selected_cards.iter(){
+                            if let Some(card) = self.cards.search(FindType::FindByUUID(card_to_put.clone()), 1){
+                                self.get_zone(ZoneType::DeckZone).add_card(card.get(0).unwrap()).expect("add_card error");
+                            }
+                        }
+
+                        match self.draw(ZoneType::DeckZone, CardDrawType::Random(selected_cards.len())){
+                            Ok(mut new_mulligun_cards) => {
+                                new_mulligun_cards.append(&mut mulligun_cards);
+                                return new_mulligun_cards;
+                            },
+                            Err(_) => todo!(),
+                        }
+                    },
+                    Err(_) => todo!(),
+                }
+            },
+            ChoiceType::Target => todo!(),
+        }
+        vec![]
+    }
+    
     pub fn add_card(&mut self, zone_type: ZoneType, count: Option<i32>, card: UUID) {
         self.get_zone(zone_type).as_mut().get_cards().add_card(card)
     }

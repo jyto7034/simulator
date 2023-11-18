@@ -301,6 +301,7 @@ mod tests {
                 }
             }
         }
+        
         #[test]
         fn test_game_step_mulligun() {
             let mut game = generate_game();
@@ -313,141 +314,12 @@ mod tests {
                     }
                 }
 
-                // 멀리건 단계 이전의 덱 카드 갯수를 기록합니다.
-                let deck_before: (Vec<_>, Vec<_>) = match (&game.player_1, &game.player_2) {
-                    (Some(player1), Some(player2)) => (
-                        player1
-                            .as_ref()
-                            .borrow_mut()
-                            .get_zone(ZoneType::DeckZone)
-                            .get_cards()
-                            .v_card
-                            .iter()
-                            .map(|item| item.get_count().get())
-                            .collect(),
-                        player2
-                            .as_ref()
-                            .borrow_mut()
-                            .get_zone(ZoneType::DeckZone)
-                            .get_cards()
-                            .v_card
-                            .iter()
-                            .map(|item| item.get_count().get())
-                            .collect(),
-                    ),
-                    _ => {
-                        panic!("Card Draw Error")
-                    }
-                };
-
-                // 멀리건 단계 이전의 손 패 카드 갯수를 기록합니다.
-                let hand_before: (Vec<_>, Vec<_>) = match (&game.player_1, &game.player_2) {
-                    (Some(player1), Some(player2)) => (
-                        player1
-                            .as_ref()
-                            .borrow_mut()
-                            .get_zone(ZoneType::HandZone)
-                            .get_cards()
-                            .v_card
-                            .iter()
-                            .map(|item| item.get_count().get())
-                            .collect(),
-                        player2
-                            .as_ref()
-                            .borrow_mut()
-                            .get_zone(ZoneType::HandZone)
-                            .get_cards()
-                            .v_card
-                            .iter()
-                            .map(|item| item.get_count().get())
-                            .collect(),
-                    ),
-                    _ => {
-                        panic!("Card Draw Error")
-                    }
-                };
-
                 match game.game_step_mulligun() {
                     Ok(_) => {
                         match (&game.player_1, &game.player_2) {
                             (Some(player1), Some(player2)) => {
-                                // 멀리건 이전 단계에 기록된 덱 카드의 갯수를 멀리건 이후의 상태와 비교합니다.
-                                let deck_after: (Vec<_>, Vec<_>) = (
-                                    player1
-                                        .as_ref()
-                                        .borrow_mut()
-                                        .get_zone(ZoneType::DeckZone)
-                                        .get_cards()
-                                        .v_card
-                                        .iter()
-                                        .map(|item| item.get_count().get())
-                                        .collect(),
-                                    player2
-                                        .as_ref()
-                                        .borrow_mut()
-                                        .get_zone(ZoneType::DeckZone)
-                                        .get_cards()
-                                        .v_card
-                                        .iter()
-                                        .map(|item| item.get_count().get())
-                                        .collect(),
-                                );
-                                println!(
-                                    "{} {} \nbefore decks: {:#?} \nafter dekcs: {:#?}",
-                                    file!(),
-                                    line!(),
-                                    deck_before,
-                                    deck_after
-                                );
-                                for (a, b) in deck_before.0.iter().zip(deck_after.0.iter()) {
-                                    if a == b {
-                                        panic!("Mulligun Failed");
-                                    }
-                                }
-                                for (a, b) in deck_before.1.iter().zip(deck_after.1.iter()) {
-                                    if a == b {
-                                        panic!("Mulligun Failed");
-                                    }
-                                }
-                                // 갯수를 통한 비교 끝
-
-                                let hand_after: (Vec<_>, Vec<_>) = (
-                                    player1
-                                        .as_ref()
-                                        .borrow_mut()
-                                        .get_zone(ZoneType::HandZone)
-                                        .get_cards()
-                                        .v_card
-                                        .iter()
-                                        .map(|item| item.get_name().clone())
-                                        .collect(),
-                                    player2
-                                        .as_ref()
-                                        .borrow_mut()
-                                        .get_zone(ZoneType::HandZone)
-                                        .get_cards()
-                                        .v_card
-                                        .iter()
-                                        .map(|item| item.get_name().clone())
-                                        .collect(),
-                                );
-                                println!(
-                                    "{} {} \nbefore hands: {:#?} \nafter hands: {:#?}",
-                                    file!(),
-                                    line!(),
-                                    hand_before,
-                                    hand_after
-                                );
-                                for (a, b) in hand_before.0.iter().zip(deck_after.0.iter()) {
-                                    if a == b {
-                                        panic!("Mulligun Failed");
-                                    }
-                                }
-                                for (a, b) in hand_before.1.iter().zip(deck_after.1.iter()) {
-                                    if a == b {
-                                        panic!("Mulligun Failed");
-                                    }
-                                }
+                                // 멀리건 상태를 확인하는 코드 작성해야함.
+                                player1.as_ref().borrow_mut().
                             }
                             _ => {}
                         }

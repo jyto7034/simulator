@@ -33,45 +33,33 @@ impl Cards {
     // Exceptions:
     // --------------------------------------------------------
     // TODO:
-    // - cnt 만큼 뽑는거 구현
     // --------------------------------------------------------
     fn draw_random(&mut self, cnt: usize) -> Result<Vec<Card>, Exception> {
-        self.is_deck_empty()?;
-
-        let mut rng = rand::thread_rng();
-
-        // 카드 index 정보를 vec 으로 만듭니다.
-        // 이 벡터는 v_card 를 참조하기 위하여 생성됩니다.
-        let mut available_indices: Vec<usize> = (0..self.v_card.len()).collect();
+        // 최종적으로 담길 카드들의 벡터
         let mut ans: Vec<Card> = vec![];
-        let mut cnt = cnt as i32;
-        // available_indices 가 비어있다면, 모든 카드를 참조한 것입니다.
-        while !available_indices.is_empty() && cnt != 0 {
-            // 무작위 기능을 사용하여 임의의 card index 를 하나 가져옵니다.
-            let random_index = rng.gen_range(0..available_indices.len());
-            let random_number = available_indices[random_index];
-
-            // card index 로 해당 카드의 참조를 생성합니다.
-            let card = &mut self.v_card[random_number];
-            // 해당 카드의 사용 가능 횟수가 남아있는지 확인합니다.
-            if !card.get_count().is_empty() {
-                // 사용가능한 카드면 해당 카드의 사용 가능 횟수를 차감합니다.
-                card.get_count_mut().decrease();
-                cnt = -1;
-
-                // ans 에 밀어넣습니다.
-                ans.push(card.clone());
-            } else {
-                // 사용 가능 횟수가 0 인 카드이기 때문에, card index 벡터로부터 삭제합니다.
-                available_indices.remove(random_index);
+        
+        // 난수 생성기
+        let mut rng = rand::thread_rng();
+        
+        // cnt 만큼 카드를 뽑음.
+        // 만약 4장을 뽑아야하는데, 덱에 3장밖에 없는 경우.
+        // 뽑을 수 있는 만큼 뽑고 반환함.
+        while ans.len() != cnt{
+            // 덱이 비었는지 확인.
+            if let Err(_) = self.is_deck_empty() {
+                if ans.is_empty() {
+                    panic!();
+                } else {
+                    return Ok(ans);
+                }
             }
+
+            let random_index = rng.gen_range(0..self.v_card.len());
+            ans.push(self.v_card[random_index].clone());
+            self.v_card.remove(random_index);
         }
 
-        if ans.is_empty() {
-            Err(Exception::NoCardLeft)
-        } else {
-            Ok(ans)
-        }
+        Ok(ans)
     }
 
     fn draw_bottom(&self) -> Result<Card, Exception> {
@@ -141,28 +129,29 @@ impl Cards {
     }
 
     fn find_by_card_type(&self, card_type: CardType, cnt: usize) -> Vec<Card> {
+        todo!();
         // cond 에 해당하는 카드를 집계합니다.
         // count 가 0 개인 경우, 스킵하고 다음 카드를 찾습니다.
-        let filter = |cond: CardType| {
-            let filtered: Vec<Card> = self
-                .v_card
-                .iter()
-                .filter(|item| item.get_card_type() == &cond && item.get_count().get() != 0)
-                .take(cnt)
-                .map(|item| item.clone())
-                .collect();
-            filtered
-        };
+        // let filter = |cond: CardType| {
+        //     let filtered: Vec<Card> = self
+        //         .v_card
+        //         .iter()
+        //         .filter(|item| item.get_card_type() == &cond && item.get_count().get() != 0)
+        //         .take(cnt)
+        //         .map(|item| item.clone())
+        //         .collect();
+        //     filtered
+        // };
 
-        match card_type {
-            CardType::Dummy => {
-                vec![]
-            }
-            CardType::Unit => filter(CardType::Unit),
-            CardType::Field => filter(CardType::Field),
-            CardType::Spell(SpellType::FastSpell) => filter(CardType::Spell(SpellType::FastSpell)),
-            CardType::Spell(SpellType::SlowSpell) => filter(CardType::Spell(SpellType::SlowSpell)),
-        }
+        // match card_type {
+        //     CardType::Dummy => {
+        //         vec![]
+        //     }
+        //     CardType::Unit => filter(CardType::Unit),
+        //     CardType::Field => filter(CardType::Field),
+        //     CardType::Spell(SpellType::FastSpell) => filter(CardType::Spell(SpellType::FastSpell)),
+        //     CardType::Spell(SpellType::SlowSpell) => filter(CardType::Spell(SpellType::SlowSpell)),
+        // }
     }
 }
 
@@ -214,18 +203,21 @@ impl Cards {
     }
 
     /// 주어진 검색 조건으로 카드를 찾습니다.
-    pub fn search(&self, find_type: constant::FindType, count: usize) -> Vec<Card> {
+    pub fn search(&self, find_type: constant::FindType, count: usize) -> Option<Vec<Card>> {
+        // 카드 관리 방법이 변경됨에 따라, 재작성해야함.
+        // 카드를 하나라도 찾으면 Some 를, 에러 혹은 하나도 못찾으면 None 을.  
+        todo!();
         // 100 대신 덱의 카드 갯수로 바꿔야함.
 
         // find 함수가 카드를 몇 개까지 찾게 할 지 정하는 변수.
-        let cnt = if count == 0 { 100 } else { count };
-        use constant::*;
+        // let cnt = if count == 0 { 100 } else { count };
+        // use constant::*;
 
-        match find_type {
-            FindType::FindByUUID(uuid) => self.find_by_uuid(uuid, cnt),
-            FindType::FindByName(name) => self.find_by_name(name, cnt),
-            FindType::FindByCardType(card_type) => self.find_by_card_type(card_type, cnt),
-        }
+        // match find_type {
+        //     FindType::FindByUUID(uuid) => self.find_by_uuid(uuid, cnt),
+        //     FindType::FindByName(name) => self.find_by_name(name, cnt),
+        //     FindType::FindByCardType(card_type) => self.find_by_card_type(card_type, cnt),
+        // }
     }
 
     // 덱으로부터 카드 n장을 draw 합니다.

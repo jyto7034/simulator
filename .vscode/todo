@@ -1,0 +1,2 @@
+cards 에 구현된 draw 방식이 구현하고자 하는 방식이랑 어긋남.
+count 를 기준으로 draw 하는데, Hand 혹은 Deck 존은 count 가 아닌, 객체의 갯수로 관리해야함.

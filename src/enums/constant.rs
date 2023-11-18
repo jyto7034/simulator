@@ -100,6 +100,13 @@ pub enum ZoneType {
     None,
 }
 
+// Mulligun !< 자신의 덱에서 카드를 4장을 꺼내서 선택한 카드들을 덱에 섞어넣고. 넣은 만큼 다시 꺼냅니다.
+// Target   !< 미정
+pub enum ChoiceType{
+    Mulligun,
+    Target,
+}
+
 pub enum TimeType {
     Day,
     Night,
