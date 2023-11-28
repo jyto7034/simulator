@@ -273,7 +273,7 @@ mod human {
                     crate::enums::TimeType::Day => {}
                     _ => {}
                 }
-                Ok(())
+                Ok(())  
             },
         ));
         let name = if let Some(name) = &card_json.name {

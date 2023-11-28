@@ -165,13 +165,14 @@ impl Player {
             ChoiceType::Mulligun => {
                 match self.draw(ZoneType::DeckZone, CardDrawType::Random(4)){
                     Ok(mut mulligun_cards) => {
+                        // TODO !!
                         // 먼저 뽑혀진 카드를 클라이언트에게 전송합니다.
-
+                        
                         // TODO !!
                         // 클라이언트로부터 선택된 카드들의 uuid 정보를 받습니다. 임의로 0 설정.
                         let selected_cards = vec![mulligun_cards.get(0).unwrap().clone()];
 
-                        // contains 의 명세 잘 봐야됨.
+                        // 
                         mulligun_cards.retain(|item| !selected_cards.contains(&item));
 
                         // 선택된 카드들을 다시 랜덤으로 넣습니다.
@@ -186,7 +187,7 @@ impl Player {
                                 new_mulligun_cards.append(&mut mulligun_cards);
                                 return new_mulligun_cards;
                             },
-                            Err(_) => todo!(),
+                            Err(_) => panic!("choice_card draw error"),
                         }
                     },
                     Err(_) => todo!(),
@@ -194,7 +195,6 @@ impl Player {
             },
             ChoiceType::Target => todo!(),
         }
-        vec![]
     }
     
     pub fn add_card(&mut self, zone_type: ZoneType, count: Option<i32>, card: UUID) {
