@@ -212,7 +212,7 @@ impl Game {
                         .borrow_mut()
                         .get_zone(ZoneType::DeckZone)
                         .get_cards()
-                        .push(card.clone());
+                        .add_card(card.clone());
                 }
             }
         }
@@ -233,7 +233,7 @@ impl Game {
                         .borrow_mut()
                         .get_zone(ZoneType::DeckZone)
                         .get_cards()
-                        .push(card.clone());
+                        .add_card(card.clone());
                 }
             }
         }
@@ -242,6 +242,10 @@ impl Game {
 
     /// 멀리건 단계를 수행합니다.
     pub fn game_step_mulligun(&mut self) -> Result<(), Exception> {
+        if let (Some(player1), Some(player2))= (&self.player_1, &self.player_2){
+            player1.as_ref().borrow_mut().choice_card(ChoiceType::Mulligun);
+            player2.as_ref().borrow_mut().choice_card(ChoiceType::Mulligun);
+        }
         Ok(())
     }
 

@@ -10,8 +10,8 @@ pub trait Zone {
     fn get_cards(&mut self) -> &mut Cards;
 
     /// 현재 Zone 에 카드를 추가 합니다.
-    fn add_card(&mut self, card: &Card) -> Result<(), Exception>;
+    fn add_card(&mut self, card: Card) -> Result<(), Exception>;
 
     /// 특정 카드를 현재 Zone 으로부터 삭제합니다.
-    fn remove_card(&mut self, card: &Card) -> Result<(), Exception>;
+    fn remove_card(&mut self, card: Card) -> Result<(), Exception>;
 }

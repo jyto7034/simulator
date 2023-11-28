@@ -113,6 +113,11 @@ pub enum TimeType {
     None,
 }
 
+pub enum CardParam{
+    Uuid(UUID),
+    Card(Card),
+}
+
 pub const MAX_CARD_SIZE: u32 = 30;
 
 pub type TaskQueue = Vec<Task>;

@@ -316,11 +316,39 @@ mod tests {
 
                 match game.game_step_mulligun() {
                     Ok(_) => {
+                        let after = match (&game.player_1, &game.player_2) {
+                            (Some(player1), Some(player2)) => {
+                                let p1_after_deck: Vec<UUID> = player1.as_ref().borrow_mut().get_zone(ZoneType::DeckZone).get_cards().v_card.iter().map(|item| item.get_uuid().clone()).collect();
+                                let p2_after_deck: Vec<UUID> = player2.as_ref().borrow_mut().get_zone(ZoneType::DeckZone).get_cards().v_card.iter().map(|item| item.get_uuid().clone()).collect();
+        
+                                let p1_after_hand: Vec<UUID> = player1.as_ref().borrow_mut().get_zone(ZoneType::HandZone).get_cards().v_card.iter().map(|item| item.get_uuid().clone()).collect();
+                                let p2_after_hand: Vec<UUID> = player2.as_ref().borrow_mut().get_zone(ZoneType::HandZone).get_cards().v_card.iter().map(|item| item.get_uuid().clone()).collect();
+                                (p1_after_deck, p2_after_deck, p1_after_hand, p2_after_hand)
+                            },
+                            _ => panic!(),
+                        };
+
+                        let p1_after_deck = after.0;
+                        let p1_after_hand = after.2;
+                        let p2_after_deck = after.1;
+                        let p2_after_hand = after.3;
+
                         match (&game.player_1, &game.player_2) {
                             (Some(player1), Some(player2)) => {
                                 // 멀리건 상태를 확인하는 코드 작성해야함.
-                                player1.as_ref().borrow_mut().
-                            }
+                                // 상태를 확인하는 방법으로써, 
+                                // 멀리건 전과 후의 덱, 핸드의 상태를 저장하고 서로 비교한다.
+                                // after_hand 의 요소들이 after_deck 에는 없어야한다.
+
+                                let check_for_mulligan_error = |deck: &Vec<UUID>, hand: &Vec<UUID>| {
+                                    if hand.iter().any(|item| deck.contains(&item)) {
+                                        panic!("Mulligan error");
+                                    }
+                                };
+
+                                check_for_mulligan_error(&p1_after_deck, &p1_after_hand);
+                                check_for_mulligan_error(&p2_after_deck, &p2_after_hand);
+                            },
                             _ => {}
                         }
                         // 멀리건이 성공적으로 잘 되었는지 확인합니다.
@@ -331,5 +359,10 @@ mod tests {
                 }
             }
         }
+    }
+
+    mod player_test{
+        use super::*;
+
     }
 }

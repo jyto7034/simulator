@@ -18,7 +18,7 @@ impl Zone for DeckZone {
 
     /// 현재 Zone 에 카드를 추가 합니다.
     /// TODO: 무슨 방식으로(eg. 랜덤, 맨 위, 맨 아래) 넣을지 구현해야함.
-    fn add_card(&mut self, card: &Card) -> Result<(), Exception> {
+    fn add_card(&mut self, card: Card) -> Result<(), Exception> {
         if card.get_card_type() != &CardType::Unit {
             panic!("DifferentCardTypes");
         }
@@ -28,12 +28,12 @@ impl Zone for DeckZone {
             return Err(Exception::ExceededCardLimit);
         }
 
-        self.zone_cards.push(card.clone());
+        self.zone_cards.add_card(card.clone());
         Ok(())
     }
 
     /// 특정 카드를 현재 Zone 으로부터 삭제합니다.
-    fn remove_card(&mut self, card: &Card) -> Result<(), Exception> {
+    fn remove_card(&mut self, card: Card) -> Result<(), Exception> {
         // 카드 관리 방법 변경에 따라, 재작성해야함.
         todo!();
     }

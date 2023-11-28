@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
-use crate::deck::{Cards, cards};
+use crate::deck::{Cards, cards, Card};
 use crate::enums::constant::*;
 use crate::exception::exception::Exception;
 use crate::game::{Game, IResource};
@@ -176,8 +176,8 @@ impl Player {
 
                         // 선택된 카드들을 다시 랜덤으로 넣습니다.
                         for card_to_put in selected_cards.iter(){
-                            if let Some(card) = self.cards.search(FindType::FindByUUID(card_to_put.clone()), 1){
-                                self.get_zone(ZoneType::DeckZone).add_card(card.get(0).unwrap()).expect("add_card error");
+                            if let Ok(card) = self.cards.search(FindType::FindByUUID(card_to_put.clone())){
+                                self.get_zone(ZoneType::DeckZone).add_card(card).expect("add_card error");
                             }
                         }
 
@@ -197,7 +197,7 @@ impl Player {
         vec![]
     }
     
-    pub fn add_card(&mut self, zone_type: ZoneType, count: Option<i32>, card: UUID) {
+    pub fn add_card(&mut self, zone_type: ZoneType, count: Option<i32>, card: Card) {
         self.get_zone(zone_type).as_mut().get_cards().add_card(card)
     }
 

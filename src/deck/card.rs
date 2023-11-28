@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::enums::constant::{self, CardType, Runner, UUID};
+use crate::enums::constant::{self, CardType, Runner, UUID, CmpType};
 use crate::exception::exception::Exception;
 use crate::game::{Behavior, Count, Game};
 use crate::unit::Entity;
@@ -140,4 +140,16 @@ impl Card {
     }
 
     pub fn set_card_json(&mut self, new_card_json: CardJson) {}
+
+    // uuid 를 대조합니다.
+    // 동일하다면, true 를.
+    // 그렇지않다면, false 를 반환합니다.
+    pub fn cmp(&self, cmp_type: CmpType) -> bool{
+        match cmp_type {
+            CmpType::Uuid(uuid) => self.get_uuid().cmp(&uuid) == std::cmp::Ordering::Equal,
+            CmpType::Name(name) => self.get_name().cmp(&name) == std::cmp::Ordering::Equal,
+            CmpType::None => panic!(),
+        }
+    }
+    
 }
