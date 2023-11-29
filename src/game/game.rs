@@ -1,6 +1,6 @@
 use std::{
     cell::RefCell,
-    rc::{Rc, Weak},
+    rc::Rc,
 };
 
 pub trait IResource {
@@ -212,7 +212,7 @@ impl Game {
                         .borrow_mut()
                         .get_zone(ZoneType::DeckZone)
                         .get_cards()
-                        .push(card.clone());
+                        .add_card(card.clone()).expect("add_card error");
                 }
             }
         }
@@ -233,7 +233,7 @@ impl Game {
                         .borrow_mut()
                         .get_zone(ZoneType::DeckZone)
                         .get_cards()
-                        .push(card.clone());
+                        .add_card(card.clone()).expect("add_card error");
                 }
             }
         }
@@ -242,18 +242,42 @@ impl Game {
 
     /// 멀리건 단계를 수행합니다.
     pub fn game_step_mulligun(&mut self) -> Result<(), Exception> {
+        if let (Some(player1), Some(player2))= (&self.player_1, &self.player_2){
+            let cards_1 = player1.as_ref().borrow_mut().choice_card(ChoiceType::Mulligun);
+            let cards_2 = player2.as_ref().borrow_mut().choice_card(ChoiceType::Mulligun);
+
+            for item in cards_1{
+                player1.as_ref().borrow_mut().get_zone(ZoneType::HandZone).add_card(item.clone()).unwrap()
+            }
+
+            for item in cards_2{
+                player1.as_ref().borrow_mut().get_zone(ZoneType::HandZone).add_card(item.clone()).unwrap()
+            }
+        }
         Ok(())
     }
 
     /// 라운드를 시작합니다.
-    pub fn game_step_round_start(&mut self) {
+    pub fn game_step_round_start(&mut self) -> Result<(), Exception>{
         // 먼저, 시간대를 낮에서 밤으로, 밤에서 낮으로 변경함.
+        self.time.change_time();
 
+        
+        
         // 각 player 의 자원을 충전하고 각자의 덱에서 카드를 한 장 드로우 함.
+        if let (Some(player1), Some(player2))= (&self.player_1, &self.player_2){
+            player1.as_ref().borrow_mut().get_cost().set(5);
+            player2.as_ref().borrow_mut().get_cost().set(5);
+
+            player1.as_ref().borrow_mut().draw(ZoneType::DeckZone, CardDrawType::Top)?;
+            player1.as_ref().borrow_mut().draw(ZoneType::DeckZone, CardDrawType::Top)?;
+        }
 
         // 그런 뒤, 필드 카드의 효과를 발동함.
 
         // 필드 카드의 효과가 끝나면, 필드에 전개 되어 있는 카드의 효과를 발동함.
+        todo!()
+        
     }
 
     /// 공격 턴을 수행합니다.

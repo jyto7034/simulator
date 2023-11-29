@@ -16,7 +16,7 @@ impl Zone for EffectZone {
     }
 
     /// 현재 Zone 에 카드를 추가 합니다.
-    fn add_card(&mut self, card: &Card) -> Result<(), Exception> {
+    fn add_card(&mut self, card: Card) -> Result<(), Exception> {
         if card.get_card_type() != &CardType::Unit {
             return Err(Exception::DifferentCardTypes);
         }
@@ -24,12 +24,12 @@ impl Zone for EffectZone {
         if self.zone_cards.len() < self.zone_size + 1 {
             return Err(Exception::ExceededCardLimit);
         }
-        self.zone_cards.push(card.clone());
+        self.zone_cards.add_card(card.clone());
         Ok(())
     }
 
     /// 특정 카드를 현재 Zone 으로부터 삭제합니다.
-    fn remove_card(&mut self, card: &Card) -> Result<(), Exception> {
+    fn remove_card(&mut self, card: Card) -> Result<(), Exception> {
         let prev_len = self.zone_cards.len();
         self.zone_cards
             .v_card

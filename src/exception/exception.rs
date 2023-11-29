@@ -4,6 +4,7 @@ pub enum Exception {
     PlayerInitializeFailed,
     PlayerDataNotIntegrity,
     PathNotExist,
+    CardsNotFound,
     GameInitializeFailed,
     DifferentCardTypes,
     GenerateUUIDFaild,

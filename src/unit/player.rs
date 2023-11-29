@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
-use crate::deck::{Cards, cards};
+use crate::deck::{Cards, cards, Card};
 use crate::enums::constant::*;
 use crate::exception::exception::Exception;
 use crate::game::{Game, IResource};
@@ -122,35 +122,18 @@ impl Player {
     // 만약 count 가 해당 Zone 이 갖고 있는 카드의 갯수를 초과한다면
     // Zone 이 갖고 있는 만큼만 return 합니다.
     // --------------------------------------------------------
-    // Parameters:
-    // - zone_type  > 무슨 zone 에서 카드를 draw 할 지.
-    // - draw_type(count)  > count개 의 카드를 어떤 방식으로 draw 할 지.
-    // --------------------------------------------------------
-    // Exceptions:
+    // TODO:
+    //  - [?] 객체 단위 관리로 변경해야함.
+    //  - draw 의 Result 제대로 처리해야함.
     // --------------------------------------------------------
     pub fn draw(
         &mut self,
         zone_type: ZoneType,
         draw_type: CardDrawType,
-    ) -> Result<Vec<UUID>, Exception> {
-        // TODO !!
-        // Zone 의 상태 즉, full 인지, empty 인지 확인하고 그에 따른 예외 처리를 해야함.
-        
-        // zone_type 에 해당하는 Zone 의 카드를 가져옵니다
-        let card_uuid: Vec<UUID> = self
-            .get_zone(zone_type)
-            .as_mut()
-            .get_cards()
-            .draw(draw_type)
-            .iter()
-            .map(|card| card.get_uuid().clone())
-            .collect();
+    ) -> Result<Vec<Card>, Exception> {
+        // 전처리 해야됨. 아마도
 
-        if card_uuid.len() == 0 {
-            return Err(Exception::NoCardsLeft);
-        }
-
-        Ok(card_uuid)
+        self.get_zone(zone_type).get_cards().draw(draw_type)
     }
 
     // --------------------------------------------------------
@@ -160,7 +143,7 @@ impl Player {
     // --------------------------------------------------------
     // Exceptions:
     // --------------------------------------------------------
-    pub fn choice_card(&mut self, choice_type: ChoiceType) -> Vec<UUID>{
+    pub fn choice_card(&mut self, choice_type: ChoiceType) -> Vec<Card>{
         match choice_type {
             ChoiceType::Mulligun => {
                 match self.draw(ZoneType::DeckZone, CardDrawType::Random(4)){
@@ -173,12 +156,12 @@ impl Player {
                         let selected_cards = vec![mulligun_cards.get(0).unwrap().clone()];
 
                         // 
-                        mulligun_cards.retain(|item| !selected_cards.contains(&item));
+                        mulligun_cards.retain(|item| selected_cards.contains(&item));
 
                         // 선택된 카드들을 다시 랜덤으로 넣습니다.
                         for card_to_put in selected_cards.iter(){
-                            if let Some(card) = self.cards.search(FindType::FindByUUID(card_to_put.clone()), 1){
-                                self.get_zone(ZoneType::DeckZone).add_card(card.get(0).unwrap()).expect("add_card error");
+                            if let Ok(card) = self.cards.search(FindType::FindByUUID(card_to_put.get_uuid().clone())){
+                                self.get_zone(ZoneType::DeckZone).add_card(card).expect("add_card error");
                             }
                         }
 
@@ -197,8 +180,8 @@ impl Player {
         }
     }
     
-    pub fn add_card(&mut self, zone_type: ZoneType, count: Option<i32>, card: UUID) {
-        self.get_zone(zone_type).as_mut().get_cards().add_card(card)
+    pub fn add_card(&mut self, zone_type: ZoneType, count: Option<i32>, card: Card) {
+        self.get_zone(zone_type).as_mut().get_cards().add_card(card).expect("add_card error");
     }
 
     pub fn get_opponent(&self) -> &Option<Rc<RefCell<Player>>> {
@@ -217,12 +200,12 @@ impl Player {
         &self.name
     }
 
-    pub fn get_cost(&self) -> &Cost {
-        &self.cost
+    pub fn get_cost(&mut self) -> &mut Cost {
+        &mut self.cost
     }
 
     pub fn get_mana(&self) -> &Mana {
-        &self.mana
+        &self.mana 
     }
 
     pub fn get_zone(&mut self, zone_type: ZoneType) -> Box<&mut dyn Zone> {

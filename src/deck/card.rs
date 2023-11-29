@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::enums::constant::{self, CardType, Runner, UUID};
+use crate::enums::constant::{self, CardType, Runner, UUID, CardParam};
 use crate::exception::exception::Exception;
 use crate::game::{Behavior, Count, Game};
 use crate::unit::Entity;
@@ -20,6 +20,13 @@ pub struct Card {
     card_json: CardJson,
     count: Count,
     runner: Option<Runner>,
+}
+
+
+impl PartialEq for Card {
+    fn eq(&self, other: &Self) -> bool {
+        self.cmp(CardParam::Card(other.clone()))
+    }
 }
 
 impl fmt::Debug for Card {
@@ -140,4 +147,15 @@ impl Card {
     }
 
     pub fn set_card_json(&mut self, new_card_json: CardJson) {}
+
+    // uuid 를 대조합니다.
+    // 동일하다면, true 를.
+    // 그렇지않다면, false 를 반환합니다.
+    pub fn cmp(&self, cmp_type: CardParam) -> bool{
+        match cmp_type {
+            CardParam::Uuid(uuid) => self.get_uuid().cmp(&uuid) == std::cmp::Ordering::Equal,
+            CardParam::Card(card) => self.get_name().cmp(card.get_name()) == std::cmp::Ordering::Equal,
+        }
+    }
+    
 }
