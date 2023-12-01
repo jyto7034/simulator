@@ -23,8 +23,8 @@ impl TimeManager {
         self.time_state = time_state;
     }
 
-    pub fn change_time(&mut self){
-        match self.get_state(){
+    pub fn change_time(&mut self) {
+        match self.get_state() {
             TimeType::Day => self.set_to_night(),
             TimeType::Night => self.set_to_day(),
             TimeType::None => todo!(),

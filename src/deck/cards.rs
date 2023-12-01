@@ -1,5 +1,5 @@
 use crate::deck::Card;
-use crate::enums::constant::{self, CardType, SpellType, UUID, CardParam};
+use crate::enums::constant::{self, CardParam, CardType, SpellType, UUID};
 use crate::exception::exception::Exception;
 use rand::Rng;
 
@@ -26,7 +26,7 @@ impl Cards {
     // 스펠 카드를 타입에 따라 뽑습니다.
     // 카드를 소모합니다.
     // --------------------------------------------------------
-    // TODO: 
+    // TODO:
     //  - 카드 소모
     // --------------------------------------------------------
 
@@ -50,10 +50,10 @@ impl Cards {
     // --------------------------------------------------------
     fn draw_random(&mut self) -> Result<Card, Exception> {
         self.is_deck_empty()?;
-        
+
         // 난수 생성기
         let mut rng = rand::thread_rng();
-        
+
         let random_index = rng.gen_range(0..self.v_card.len());
         let ans = self.v_card[random_index].clone();
         self.v_card.remove(random_index);
@@ -64,7 +64,7 @@ impl Cards {
     // --------------------------------------------------------
     // 카드 뭉치 하단에 있는 카드를 뽑습니다.
     // --------------------------------------------------------
-    // TODO: 
+    // TODO:
     //  - 카드 소모
     // --------------------------------------------------------
     // Returns:
@@ -76,7 +76,7 @@ impl Cards {
     // --------------------------------------------------------
     fn draw_bottom(&mut self) -> Result<Card, Exception> {
         self.is_deck_empty()?;
-        
+
         let ans = self.v_card.first().unwrap().clone();
         self.v_card.remove(0);
 
@@ -98,7 +98,7 @@ impl Cards {
 
         let ans = self.v_card.last().unwrap().clone();
         self.v_card.remove(self.v_card.len() - 1);
-        
+
         Ok(ans)
     }
 
@@ -117,7 +117,8 @@ impl Cards {
         self.is_deck_empty()?;
 
         let ans = self.find_by_card_type(card_type)?;
-        self.v_card.retain(|item| item.cmp(CardParam::Card(item.clone())));
+        self.v_card
+            .retain(|item| item.cmp(CardParam::Card(item.clone())));
 
         Ok(ans)
     }
@@ -136,12 +137,17 @@ impl Cards {
     fn find_by_uuid(&mut self, uuid: String) -> Result<Card, Exception> {
         // uuid 에 해당하는 카드를 집계합니다.
         // count 가 0 개인 경우, 스킵하고 다음 카드를 찾습니다.
-        match self.v_card.iter().find(|item| item.cmp(CardParam::Uuid(uuid.clone()))).cloned(){
+        match self
+            .v_card
+            .iter()
+            .find(|item| item.cmp(CardParam::Uuid(uuid.clone())))
+            .cloned()
+        {
             Some(card) => Ok(card),
             None => Err(Exception::CardsNotFound),
         }
     }
-    
+
     // --------------------------------------------------------
     // name 에 해당하는 카드를 찾아내서 복사-반환합니다.
     // 카드를 소모하지 않습니다.
@@ -149,7 +155,12 @@ impl Cards {
     fn find_by_name(&mut self, name: String) -> Result<Card, Exception> {
         // name 에 해당하는 카드를 집계합니다.
         // count 가 0 개인 경우, 스킵하고 다음
-        match self.v_card.iter().find(|item| item.cmp(CardParam::Card((*item).clone()))).cloned(){
+        match self
+            .v_card
+            .iter()
+            .find(|item| item.cmp(CardParam::Card((*item).clone())))
+            .cloned()
+        {
             Some(card) => Ok(card),
             None => Err(Exception::CardsNotFound),
         }
@@ -162,11 +173,14 @@ impl Cards {
     fn find_by_card_type(&self, card_type: CardType) -> Result<Card, Exception> {
         // cond 에 해당하는 카드를 집계합니다.
         // count 가 0 개인 경우, 스킵하고 다음 카드를 찾습니다.
-        let filter = |cond: CardType| {
-            match self.v_card.iter().find(|item| item.get_card_type() == &cond).cloned(){
-                Some(card) => Ok(card),
-                None => Err(Exception::CardsNotFound),
-            }
+        let filter = |cond: CardType| match self
+            .v_card
+            .iter()
+            .find(|item| item.get_card_type() == &cond)
+            .cloned()
+        {
+            Some(card) => Ok(card),
+            None => Err(Exception::CardsNotFound),
         };
 
         match card_type {
@@ -180,7 +194,6 @@ impl Cards {
 }
 
 impl Cards {
-    
     // --------------------------------------------------------
     // 카드 뭉치를 새로 만듭니다.
     // --------------------------------------------------------
@@ -200,11 +213,11 @@ impl Cards {
     // --------------------------------------------------------
     // 카드 뭉치에 카드를 새롭게 추가합니다.
     // --------------------------------------------------------
-    pub fn add_card(&mut self, card: Card) -> Result<(), Exception>{
-        if self.is_exceed() == false{
+    pub fn add_card(&mut self, card: Card) -> Result<(), Exception> {
+        if self.is_exceed() == false {
             self.v_card.push(card);
             Ok(())
-        }else {
+        } else {
             Err(Exception::ExceededCardLimit)
         }
     }
@@ -229,19 +242,21 @@ impl Cards {
     // --------------------------------------------------------
     // 카드 뭉치가 포화상태인지 확인합니다.
     // --------------------------------------------------------
-    pub fn is_exceed(&self) -> bool{
+    pub fn is_exceed(&self) -> bool {
         self.v_card.len() >= constant::MAX_CARD_SIZE as usize
     }
 
     // --------------------------------------------------------
     // 카드를 카드 뭉치로부터 제거합니다.
     // --------------------------------------------------------
-    pub fn remove(&mut self, card: CardParam){
+    pub fn remove(&mut self, card: CardParam) {
         match card {
-            CardParam::Uuid(uuid) => 
-            self.v_card.retain(|item| item.cmp(CardParam::Uuid(uuid.clone()))),
-            CardParam::Card(card) => 
-            self.v_card.retain(|item| item.cmp(CardParam::Uuid(card.get_uuid().clone()))),
+            CardParam::Uuid(uuid) => self
+                .v_card
+                .retain(|item| item.cmp(CardParam::Uuid(uuid.clone()))),
+            CardParam::Card(card) => self
+                .v_card
+                .retain(|item| item.cmp(CardParam::Uuid(card.get_uuid().clone()))),
         }
     }
 
@@ -279,24 +294,25 @@ impl Cards {
                 vec![self.draw_top()?]
             }
             CardDrawType::Random(_) => {
-                let draw_cards: Vec<Card> = (0..count).map(|_| self.draw_random().unwrap()).collect();
+                let draw_cards: Vec<Card> =
+                    (0..count).map(|_| self.draw_random().unwrap()).collect();
                 draw_cards
-            },
+            }
             CardDrawType::Bottom => {
                 vec![self.draw_top()?]
-            },
+            }
             CardDrawType::CardType(CardType::Spell(SpellType::FastSpell), _) => {
                 vec![self.draw_spell(SpellType::FastSpell)?]
-            },
+            }
             CardDrawType::CardType(CardType::Spell(SpellType::SlowSpell), _) => {
                 vec![self.draw_spell(SpellType::SlowSpell)?]
-            },
+            }
             CardDrawType::CardType(CardType::Field, _) => {
                 vec![self.draw_by_card_type(CardType::Field)?]
-            },
+            }
             CardDrawType::CardType(CardType::Unit, _) => {
                 vec![self.draw_by_card_type(CardType::Unit)?]
-            },
+            }
             _ => {
                 panic!()
             }

@@ -20,30 +20,30 @@ use std::rc::Rc;
 // - DrawCardFromDeck
 // --------------------------------------------------------
 fn test(card_json: &CardJson, count: usize) -> Card {
-    let uuid = match utils::utils::generate_uuid() {
-        Ok(data) => data,
-        Err(err) => {
-            panic!("test func failed {err}");
-        }
-    };
-    let bvs = vec![Behavior::ListenOtherEvent, Behavior::DrawCardFromDeck];
-    let run = Rc::new(RefCell::new(
-        |card: &Card, game: &mut Game| -> Result<(), Exception> { Ok(()) },
-    ));
-    Card::new(
-        CardType::Unit,
-        uuid,
-        "Hieda no Akyuu".into(),
-        bvs,
-        card_json.clone(),
-        count,
-        Some(run),
-    )
+    todo!()
+    // let uuid = match utils::utils::generate_uuid() {
+    //     Ok(data) => data,
+    //     Err(err) => {
+    //         panic!("test func failed {err}");
+    //     }
+    // };
+    // let bvs = vec![Behavior::ListenOtherEvent, Behavior::DrawCardFromDeck];
+    // let run = Rc::new(RefCell::new(
+    //     |card: &Card, game: &mut Game| -> Result<(), Exception> { Ok(()) },
+    // ));
+    // Card::new(
+    //     CardType::Unit,
+    //     uuid,
+    //     "Hieda no Akyuu".into(),
+    //     bvs,
+    //     card_json.clone(),
+    //     count,
+    //     Some(run),
+    // )
 }
 
 type CardGeneratorFn = fn(&CardJson, usize) -> Card;
 const FUNCTION_TABLE: [CardGeneratorFn; 27] = [
-    test,
     human::HM_001,
     human::HM_002,
     human::HM_003,
@@ -70,6 +70,7 @@ const FUNCTION_TABLE: [CardGeneratorFn; 27] = [
     public::PB_006,
     public::PB_007,
     public::PB_008,
+    test,
 ];
 
 type Key = Vec<(String, i32)>;
@@ -273,7 +274,7 @@ mod human {
                     crate::enums::TimeType::Day => {}
                     _ => {}
                 }
-                Ok(())  
+                Ok(())
             },
         ));
         let name = if let Some(name) = &card_json.name {
@@ -294,19 +295,16 @@ mod human {
 
     #[allow(non_snake_case)]
     pub fn HM_002(card_json: &CardJson, count: usize) -> Card {
-        // Card::new(card_type, uuid, name, count, behavior_table, card_json)
-        todo!()
+        HM_001(card_json, count)
     }
 
     #[allow(non_snake_case)]
     pub fn HM_003(card_json: &CardJson, count: usize) -> Card {
-        // Card::new(card_type, uuid, name, count, behavior_table, card_json)
-        todo!()
+        HM_001(card_json, count)
     }
     #[allow(non_snake_case)]
     pub fn HM_004(card_json: &CardJson, count: usize) -> Card {
-        // Card::new(card_type, uuid, name, count, behavior_table, card_json)
-        todo!()
+        HM_001(card_json, count)
     }
     #[allow(non_snake_case)]
     pub fn HM_005(card_json: &CardJson, count: usize) -> Card {

@@ -1,7 +1,5 @@
-use std::{
-    cell::RefCell,
-    rc::Rc,
-};
+use rayon::prelude::*;
+use std::{cell::RefCell, rc::Rc};
 
 pub trait IResource {
     fn increase(&mut self) -> &mut Self;
@@ -9,6 +7,10 @@ pub trait IResource {
     fn decrease(&mut self) -> &mut Self;
 
     fn set(&mut self, cost: usize) -> &mut Self;
+
+    fn get(&self) -> usize;
+
+    fn add(&mut self, cost: usize);
 }
 
 #[derive(Clone, Debug)]
@@ -45,6 +47,16 @@ impl IResource for Count {
     fn set(&mut self, cost: usize) -> &mut Self {
         self.cost = cost;
         self
+    }
+
+    fn get(&self) -> usize {
+        self.cost
+    }
+
+    fn add(&mut self, cost: usize) {
+        // TODO!!
+        // 추가하고자 하는 리소스가 limit 을 넘어가는지 확인하고 제한해야됨.
+        self.cost += cost;
     }
 }
 
@@ -109,11 +121,18 @@ impl Game {
     }
 
     pub fn initialize(&mut self, config: GameConfig) -> Result<(), Exception> {
+        use rand::seq::SliceRandom;
+
         // config 로부터 플레이어의 덱을 읽어와서 플레이어 데이터를 생성함.
         let v_cards =
             self.to_cards(config.player_1.raw_deck_code, config.player_2.raw_deck_code)?;
-        let cards1 = v_cards[0].clone();
-        let cards2 = v_cards[1].clone();
+        let mut rng = rand::thread_rng();
+
+        let mut cards1 = v_cards[0].clone();
+        let mut cards2 = v_cards[1].clone();
+
+        cards1.v_card.shuffle(&mut rng);
+        cards2.v_card.shuffle(&mut rng);
 
         const ATTACKER: usize = 0;
         const DEFENDER: usize = 1;
@@ -200,40 +219,42 @@ impl Game {
             // 코스트와 마나를 설정해줍니다.
             player.as_ref().borrow_mut().set_mana(0);
             player.as_ref().borrow_mut().set_cost(0);
-            
+
             // v_card 을 참조하여 Deck 에 카드를 push 합니다.
             // 아래 for 에서 임시 생성된 card 변수에 기록되어 있는 count 의 값만큼 해당 카드를 Deck 에 push 한다.
             let cards = player.as_ref().borrow_mut().get_cards().v_card.clone();
             for card in cards {
                 // Deck 과 Hand 의 카드 갯수 관리 방법이 서로 상이해서, Hand 방법 즉, 카드 갯수로 관리 하는 방법으로 통일함.
-                for _ in 0..card.get_count().get(){
+                for _ in 0..card.get_count().get() {
                     player
                         .as_ref()
                         .borrow_mut()
                         .get_zone(ZoneType::DeckZone)
                         .get_cards()
-                        .add_card(card.clone()).expect("add_card error");
+                        .add_card(card.clone())
+                        .expect("add_card error");
                 }
             }
         }
-        
+
         if let Some(player) = &self.player_2 {
             // 코스트와 마나를 설정해줍니다.
             player.as_ref().borrow_mut().set_mana(0);
             player.as_ref().borrow_mut().set_cost(0);
-            
+
             // v_card 을 참조하여 Deck 에 카드를 push 합니다.
             // 아래 for 에서 임시 생성된 card 변수에 기록되어 있는 count 의 값만큼 해당 카드를 Deck 에 push 한다.
             let cards = player.as_ref().borrow_mut().get_cards().v_card.clone();
             for card in cards {
                 // Deck 과 Hand 의 카드 갯수 관리 방법이 서로 상이해서, Hand 방법 즉, 카드 갯수로 관리 하는 방법으로 통일함.
-                for _ in 0..card.get_count().get(){
+                for _ in 0..card.get_count().get() {
                     player
                         .as_ref()
                         .borrow_mut()
                         .get_zone(ZoneType::DeckZone)
                         .get_cards()
-                        .add_card(card.clone()).expect("add_card error");
+                        .add_card(card.clone())
+                        .expect("add_card error");
                 }
             }
         }
@@ -242,42 +263,68 @@ impl Game {
 
     /// 멀리건 단계를 수행합니다.
     pub fn game_step_mulligun(&mut self) -> Result<(), Exception> {
-        if let (Some(player1), Some(player2))= (&self.player_1, &self.player_2){
-            let cards_1 = player1.as_ref().borrow_mut().choice_card(ChoiceType::Mulligun);
-            let cards_2 = player2.as_ref().borrow_mut().choice_card(ChoiceType::Mulligun);
+        if let (Some(player1), Some(player2)) = (&self.player_1, &self.player_2) {
+            // 4개를 드로우 했을 때, 같은 카드가 3장이 들어가는 문제가 존재함.
+            let cards_1 = player1
+                .as_ref()
+                .borrow_mut()
+                .choice_card(ChoiceType::Mulligun);
+            let cards_2 = player2
+                .as_ref()
+                .borrow_mut()
+                .choice_card(ChoiceType::Mulligun);
 
-            for item in cards_1{
-                player1.as_ref().borrow_mut().get_zone(ZoneType::HandZone).add_card(item.clone()).unwrap()
+            for item in cards_1 {
+                player1
+                    .as_ref()
+                    .borrow_mut()
+                    .get_zone(ZoneType::HandZone)
+                    .add_card(item.clone())
+                    .unwrap()
             }
-
-            for item in cards_2{
-                player1.as_ref().borrow_mut().get_zone(ZoneType::HandZone).add_card(item.clone()).unwrap()
+            for item in cards_2 {
+                player2
+                    .as_ref()
+                    .borrow_mut()
+                    .get_zone(ZoneType::HandZone)
+                    .add_card(item.clone())
+                    .unwrap()
             }
         }
         Ok(())
     }
 
     /// 라운드를 시작합니다.
-    pub fn game_step_round_start(&mut self) -> Result<(), Exception>{
+    pub fn game_step_round_start(&mut self) -> Result<(), Exception> {
         // 먼저, 시간대를 낮에서 밤으로, 밤에서 낮으로 변경함.
         self.time.change_time();
 
-        
-        
         // 각 player 의 자원을 충전하고 각자의 덱에서 카드를 한 장 드로우 함.
-        if let (Some(player1), Some(player2))= (&self.player_1, &self.player_2){
+        if let (Some(player1), Some(player2)) = (&self.player_1, &self.player_2) {
+            // 이전에 남은 코스트들을 집계하여, mana 로 전환 뒤, cost 를 5로 set 합니다.
+            let remainder1 = player1.as_ref().borrow_mut().get_cost().get();
+            let remainder2 = player2.as_ref().borrow_mut().get_cost().get();
+            player1.as_ref().borrow_mut().get_mana().add(remainder1);
+            player2.as_ref().borrow_mut().get_mana().add(remainder2);
+
             player1.as_ref().borrow_mut().get_cost().set(5);
             player2.as_ref().borrow_mut().get_cost().set(5);
 
-            player1.as_ref().borrow_mut().draw(ZoneType::DeckZone, CardDrawType::Top)?;
-            player1.as_ref().borrow_mut().draw(ZoneType::DeckZone, CardDrawType::Top)?;
+            player1
+                .as_ref()
+                .borrow_mut()
+                .draw(ZoneType::DeckZone, CardDrawType::Top)?;
+            player2
+                .as_ref()
+                .borrow_mut()
+                .draw(ZoneType::DeckZone, CardDrawType::Top)?;
+            // 병렬로 각 플레이어의 동작을 처리
         }
 
         // 그런 뒤, 필드 카드의 효과를 발동함.
 
         // 필드 카드의 효과가 끝나면, 필드에 전개 되어 있는 카드의 효과를 발동함.
         todo!()
-        
     }
 
     /// 공격 턴을 수행합니다.

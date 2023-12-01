@@ -185,6 +185,8 @@ mod tests {
     }
 
     mod game_test {
+        use std::collections::HashMap;
+
         use super::*;
         #[test]
         fn check_entity_type() {
@@ -301,7 +303,39 @@ mod tests {
                 }
             }
         }
-        
+
+        macro_rules! get_state {
+            ($param:expr, $game:expr) => {{
+                let map = if let (Some(player1), Some(player2)) = (&$game.player_1, &$game.player_2)
+                {
+                    let mut map = HashMap::new();
+
+                    for item in player1
+                        .as_ref()
+                        .borrow_mut()
+                        .get_zone($param)
+                        .get_cards()
+                        .v_card
+                        .iter()
+                    {
+                        if map.contains_key(item.get_uuid()) {
+                            if let Some(value) = map.get_mut(item.get_uuid()) {
+                                *value += 1;
+                            } else {
+                                panic!();
+                            }
+                        } else {
+                            map.insert(item.get_uuid().clone(), 1);
+                        }
+                    }
+                    map.clone()
+                } else {
+                    panic!()
+                };
+
+                map
+            }};
+        }
         #[test]
         fn test_game_step_mulligun() {
             let mut game = generate_game();
@@ -313,54 +347,21 @@ mod tests {
                         assert!(false, "{err}");
                     }
                 }
+                let before_deck = get_state!(ZoneType::DeckZone, &game);
 
                 match game.game_step_mulligun() {
                     Ok(_) => {
-                        let after = match (&game.player_1, &game.player_2) {
-                            (Some(player1), Some(player2)) => {
-                                let p1_before_deck: Vec<UUID> = player1.as_ref().borrow_mut().get_zone(ZoneType::DeckZone).get_cards().v_card.iter().map(|item| item.get_uuid().clone()).collect();
-                                let p2_before_deck: Vec<UUID> = player2.as_ref().borrow_mut().get_zone(ZoneType::DeckZone).get_cards().v_card.iter().map(|item| item.get_uuid().clone()).collect();
-        
-                                let p1_before_hand: Vec<UUID> = player1.as_ref().borrow_mut().get_zone(ZoneType::HandZone).get_cards().v_card.iter().map(|item| item.get_uuid().clone()).collect();
-                                let p2_before_hand: Vec<UUID> = player2.as_ref().borrow_mut().get_zone(ZoneType::HandZone).get_cards().v_card.iter().map(|item| item.get_uuid().clone()).collect();
-                                (p1_before_deck, p2_before_deck, p1_before_hand, p2_before_hand)
-                            },
-                            _ => panic!(),
-                        };
+                        let after_hand = get_state!(ZoneType::HandZone, &game);
+                        let mut after_deck = get_state!(ZoneType::DeckZone, &game);
 
-                        let after = match (&game.player_1, &game.player_2) {
-                            (Some(player1), Some(player2)) => {
-                                let p1_after_deck: Vec<UUID> = player1.as_ref().borrow_mut().get_zone(ZoneType::DeckZone).get_cards().v_card.iter().map(|item| item.get_uuid().clone()).collect();
-                                let p2_after_deck: Vec<UUID> = player2.as_ref().borrow_mut().get_zone(ZoneType::DeckZone).get_cards().v_card.iter().map(|item| item.get_uuid().clone()).collect();
-        
-                                let p1_after_hand: Vec<UUID> = player1.as_ref().borrow_mut().get_zone(ZoneType::HandZone).get_cards().v_card.iter().map(|item| item.get_uuid().clone()).collect();
-                                let p2_after_hand: Vec<UUID> = player2.as_ref().borrow_mut().get_zone(ZoneType::HandZone).get_cards().v_card.iter().map(|item| item.get_uuid().clone()).collect();
-                                (p1_after_deck, p2_after_deck, p1_after_hand, p2_after_hand)
-                            },
-                            _ => panic!(),
-                        };
-
-                        let p1_after_deck = after.0;
-                        let p1_after_hand = after.2;
-                        let p2_after_deck = after.1;
-                        let p2_after_hand = after.3;
-
+                        for (key, value) in after_hand.iter(){
+                            after_deck.entry(key.clone())
+                            .and_modify(|exit| *exit += value);
+                        }
                         match (&game.player_1, &game.player_2) {
                             (Some(player1), Some(player2)) => {
                                 // 멀리건 상태를 확인하는 코드 작성해야함.
-                                // 상태를 확인하는 방법으로써, 
-                                // 멀리건 전과 후의 덱, 핸드의 상태를 저장하고 서로 비교한다.
-                                // after_hand 의 요소들이 after_deck 에는 없어야한다.
-
-                                let check_for_mulligan_error = |deck: &Vec<UUID>, hand: &Vec<UUID>| {
-                                    if hand.iter().any(|item| deck.contains(&item)) {
-                                        panic!("Mulligan error");
-                                    }
-                                };
-
-                                check_for_mulligan_error(&p1_after_deck, &p1_after_hand);
-                                check_for_mulligan_error(&p2_after_deck, &p2_after_hand);
-                            },
+                            }
                             _ => {}
                         }
                         // 멀리건이 성공적으로 잘 되었는지 확인합니다.
@@ -373,8 +374,7 @@ mod tests {
         }
     }
 
-    mod player_test{
+    mod player_test {
         use super::*;
-
     }
 }

@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
-use crate::deck::{Cards, cards, Card};
+use crate::deck::{cards, Card, Cards};
 use crate::enums::constant::*;
 use crate::exception::exception::Exception;
 use crate::game::{Game, IResource};
@@ -45,6 +45,14 @@ impl IResource for Mana {
         self.cost = cost;
         self
     }
+
+    fn add(&mut self, cost: usize) {
+        self.cost += cost;
+    }
+
+    fn get(&self) -> usize {
+        self.cost
+    }
 }
 
 impl IResource for Cost {
@@ -61,6 +69,14 @@ impl IResource for Cost {
     fn set(&mut self, cost: usize) -> &mut Self {
         self.cost = cost;
         self
+    }
+
+    fn add(&mut self, cost: usize) {
+        self.cost += cost;
+    }
+
+    fn get(&self) -> usize {
+        self.cost
     }
 }
 
@@ -143,45 +159,59 @@ impl Player {
     // --------------------------------------------------------
     // Exceptions:
     // --------------------------------------------------------
-    pub fn choice_card(&mut self, choice_type: ChoiceType) -> Vec<Card>{
+    pub fn choice_card(&mut self, choice_type: ChoiceType) -> Vec<Card> {
         match choice_type {
             ChoiceType::Mulligun => {
-                match self.draw(ZoneType::DeckZone, CardDrawType::Random(4)){
+                match self.draw(ZoneType::DeckZone, CardDrawType::Random(4)) {
                     Ok(mut mulligun_cards) => {
                         // TODO !!
                         // 먼저 뽑혀진 카드를 클라이언트에게 전송합니다.
-                        
+
                         // TODO !!
                         // 클라이언트로부터 선택된 카드들의 uuid 정보를 받습니다. 임의로 0 설정.
                         let selected_cards = vec![mulligun_cards.get(0).unwrap().clone()];
 
-                        // 
-                        mulligun_cards.retain(|item| selected_cards.contains(&item));
-
-                        // 선택된 카드들을 다시 랜덤으로 넣습니다.
-                        for card_to_put in selected_cards.iter(){
-                            if let Ok(card) = self.cards.search(FindType::FindByUUID(card_to_put.get_uuid().clone())){
-                                self.get_zone(ZoneType::DeckZone).add_card(card).expect("add_card error");
+                        // mulligun_cards.retain(|item| selected_cards.contains(&item));
+                        //
+                        for selected_card in &selected_cards {
+                            for (idx, item) in mulligun_cards.clone().iter().enumerate() {
+                                if item.cmp(CardParam::Card(selected_card.clone())) {
+                                    mulligun_cards.remove(idx);
+                                    break;
+                                }
                             }
                         }
+                        // 선택된 카드들을 다시 랜덤으로 넣습니다.
+                        for card_to_put in selected_cards.iter() {
+                            self.get_zone(ZoneType::DeckZone)
+                                .add_card(card_to_put.clone())
+                                .expect("add_card error");
+                        }
 
-                        match self.draw(ZoneType::DeckZone, CardDrawType::Random(selected_cards.len())){
+                        match self.draw(
+                            ZoneType::DeckZone,
+                            CardDrawType::Random(selected_cards.len()),
+                        ) {
                             Ok(mut new_mulligun_cards) => {
                                 new_mulligun_cards.append(&mut mulligun_cards);
                                 return new_mulligun_cards;
-                            },
+                            }
                             Err(_) => panic!("choice_card draw error"),
                         }
-                    },
+                    }
                     Err(_) => todo!(),
                 }
-            },
+            }
             ChoiceType::Target => todo!(),
         }
     }
-    
+
     pub fn add_card(&mut self, zone_type: ZoneType, count: Option<i32>, card: Card) {
-        self.get_zone(zone_type).as_mut().get_cards().add_card(card).expect("add_card error");
+        self.get_zone(zone_type)
+            .as_mut()
+            .get_cards()
+            .add_card(card)
+            .expect("add_card error");
     }
 
     pub fn get_opponent(&self) -> &Option<Rc<RefCell<Player>>> {
@@ -204,8 +234,8 @@ impl Player {
         &mut self.cost
     }
 
-    pub fn get_mana(&self) -> &Mana {
-        &self.mana 
+    pub fn get_mana(&mut self) -> &mut Mana {
+        &mut self.mana
     }
 
     pub fn get_zone(&mut self, zone_type: ZoneType) -> Box<&mut dyn Zone> {
