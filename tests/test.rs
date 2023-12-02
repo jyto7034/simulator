@@ -305,37 +305,32 @@ mod tests {
         }
 
         macro_rules! get_state {
-            ($param:expr, $game:expr) => {{
-                let map = if let (Some(player1), Some(player2)) = (&$game.player_1, &$game.player_2)
+            ($game:expr, $player:expr, $zone_type:expr) => {{
+                // zone 에 있는 카드의 uuid 와 count 를 map 으로 집계하여 반환합니다.
+                
+                let mut map = HashMap::new();
+                for item in $player
+                    .as_ref()
+                    .borrow_mut()
+                    .get_zone($zone_type)
+                    .get_cards()
+                    .v_card
+                    .iter()
                 {
-                    let mut map = HashMap::new();
-
-                    for item in player1
-                        .as_ref()
-                        .borrow_mut()
-                        .get_zone($param)
-                        .get_cards()
-                        .v_card
-                        .iter()
-                    {
-                        if map.contains_key(item.get_uuid()) {
-                            if let Some(value) = map.get_mut(item.get_uuid()) {
-                                *value += 1;
-                            } else {
-                                panic!();
-                            }
+                    if map.contains_key(item.get_uuid()) {
+                        if let Some(value) = map.get_mut(item.get_uuid()) {
+                            *value += 1;
                         } else {
-                            map.insert(item.get_uuid().clone(), 1);
+                            panic!();
                         }
+                    } else {
+                        map.insert(item.get_uuid().clone(), 1);
                     }
-                    map.clone()
-                } else {
-                    panic!()
-                };
-
+                }
                 map
             }};
         }
+
         #[test]
         fn test_game_step_mulligun() {
             let mut game = generate_game();
@@ -347,24 +342,57 @@ mod tests {
                         assert!(false, "{err}");
                     }
                 }
-                let before_deck = get_state!(ZoneType::DeckZone, &game);
+                
+                let before1 =
+                    get_state!(&game, &game.player_1.as_ref().unwrap(), ZoneType::DeckZone);
+
+                let before2 =
+                    get_state!(&game, &game.player_2.as_ref().unwrap(), ZoneType::DeckZone);
 
                 match game.game_step_mulligun() {
                     Ok(_) => {
-                        let after_hand = get_state!(ZoneType::HandZone, &game);
-                        let mut after_deck = get_state!(ZoneType::DeckZone, &game);
+                        // 멀리건 이전의 상태를 저장 후( before ), 멀리건을 수행하고 멀리건 이후의 hand 와 deck 의 상태를 저장한다.
+                        // 이후의 hand 와 deck 을 합쳤을때, before 상태와 같아야한다.
+                        let after_hand =
+                            get_state!(&game, &game.player_1.as_ref().unwrap(), ZoneType::HandZone);
+                        let mut after_deck =
+                            get_state!(&game, &game.player_1.as_ref().unwrap(), ZoneType::DeckZone);
 
-                        for (key, value) in after_hand.iter(){
-                            after_deck.entry(key.clone())
-                            .and_modify(|exit| *exit += value);
+                        // hand, deck 의 hashmap 을 합칩니다.
+                        for (key, value) in after_hand.iter() {
+                            after_deck
+                                .entry(key.clone())
+                                .and_modify(|exit| *exit += value)
+                                .or_insert(*value);
                         }
-                        match (&game.player_1, &game.player_2) {
-                            (Some(player1), Some(player2)) => {
-                                // 멀리건 상태를 확인하는 코드 작성해야함.
-                            }
-                            _ => {}
-                        }
+
                         // 멀리건이 성공적으로 잘 되었는지 확인합니다.
+                        for (key, value) in before1 {
+                            if after_deck[&key] != value {
+                                assert!(false);
+                            }
+                        }
+                        // player2 checker
+                        {
+
+                            let after_hand =
+                            get_state!(&game, &game.player_2.as_ref().unwrap(), ZoneType::HandZone);
+                        let mut after_deck =
+                            get_state!(&game, &game.player_2.as_ref().unwrap(), ZoneType::DeckZone);
+
+                        for (key, value) in after_hand.iter() {
+                            after_deck
+                                .entry(key.clone())
+                                .and_modify(|exit| *exit += value)
+                                .or_insert(*value);
+                        }
+
+                        for (key, value) in before2 {
+                            if after_deck[&key] != value {
+                                assert!(false);
+                            }
+                        }
+                        }
                     }
                     Err(err) => {
                         assert!(false, "{err}");
@@ -375,6 +403,5 @@ mod tests {
     }
 
     mod player_test {
-        use super::*;
     }
 }

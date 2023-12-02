@@ -10,9 +10,8 @@ use crate::utils::utils;
 /// 또한, procedure 의 execution 함수를 실행시켜, task 를 처리한다.
 #[derive(Clone, Debug)]
 pub struct Task {
-    player_type: PlayerType,
+    card: Card,
     task_uuid: String,
-    card_uuid: UUID,
     priority: TaskPriority,
     id: Option<usize>,
 }
@@ -20,18 +19,15 @@ pub struct Task {
 impl Task {
     pub fn dummy() -> Task {
         Task {
-            player_type: PlayerType::None,
-            task_uuid: "0".to_string(),
-            card_uuid: Card::dummy().get_uuid().clone(),
+            card: Card::dummy(),
+            task_uuid: "".to_string(),
             priority: TaskPriority::None,
-            id: Some(0 as usize),
+            id: Some(0),
         }
     }
 
     pub fn new(
-        player_type: PlayerType,
-        card_uuid: &UUID,
-        behavior: Behavior,
+        card: Card,
         priority: TaskPriority,
     ) -> Result<Task, Exception> {
         let uuid = match utils::generate_uuid() {
@@ -39,9 +35,8 @@ impl Task {
             Err(_) => "".to_string(),
         };
         Ok(Task {
-            player_type,
+            card,
             task_uuid: uuid,
-            card_uuid: card_uuid.clone(),
             priority,
             id: Some(0 as usize),
         })

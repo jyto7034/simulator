@@ -263,27 +263,14 @@ impl Game {
 
     /// 멀리건 단계를 수행합니다.
     pub fn game_step_mulligun(&mut self) -> Result<(), Exception> {
-        if let (Some(player1), Some(player2)) = (&self.player_1, &self.player_2) {
-            // 4개를 드로우 했을 때, 같은 카드가 3장이 들어가는 문제가 존재함.
-            let cards_1 = player1
+        for player in [self.player_1.as_ref().unwrap(), self.player_2.as_ref().unwrap()]{
+            let cards = player
                 .as_ref()
                 .borrow_mut()
                 .choice_card(ChoiceType::Mulligun);
-            let cards_2 = player2
-                .as_ref()
-                .borrow_mut()
-                .choice_card(ChoiceType::Mulligun);
-
-            for item in cards_1 {
-                player1
-                    .as_ref()
-                    .borrow_mut()
-                    .get_zone(ZoneType::HandZone)
-                    .add_card(item.clone())
-                    .unwrap()
-            }
-            for item in cards_2 {
-                player2
+    
+            for item in cards {
+                player
                     .as_ref()
                     .borrow_mut()
                     .get_zone(ZoneType::HandZone)
@@ -299,31 +286,22 @@ impl Game {
         // 먼저, 시간대를 낮에서 밤으로, 밤에서 낮으로 변경함.
         self.time.change_time();
 
-        // 각 player 의 자원을 충전하고 각자의 덱에서 카드를 한 장 드로우 함.
-        if let (Some(player1), Some(player2)) = (&self.player_1, &self.player_2) {
-            // 이전에 남은 코스트들을 집계하여, mana 로 전환 뒤, cost 를 5로 set 합니다.
-            let remainder1 = player1.as_ref().borrow_mut().get_cost().get();
-            let remainder2 = player2.as_ref().borrow_mut().get_cost().get();
-            player1.as_ref().borrow_mut().get_mana().add(remainder1);
-            player2.as_ref().borrow_mut().get_mana().add(remainder2);
-
-            player1.as_ref().borrow_mut().get_cost().set(5);
-            player2.as_ref().borrow_mut().get_cost().set(5);
-
-            player1
+        for player in [self.player_1.as_ref().unwrap(), self.player_2.as_ref().unwrap()]{
+            // 각 player 의 자원을 충전하고 각자의 덱에서 카드를 한 장 드로우 함.
+            let remainder = player.as_ref().borrow_mut().get_cost().get();
+            player.as_ref().borrow_mut().get_mana().add(remainder);
+            player.as_ref().borrow_mut().get_cost().set(5);
+            
+            player
                 .as_ref()
                 .borrow_mut()
                 .draw(ZoneType::DeckZone, CardDrawType::Top)?;
-            player2
-                .as_ref()
-                .borrow_mut()
-                .draw(ZoneType::DeckZone, CardDrawType::Top)?;
-            // 병렬로 각 플레이어의 동작을 처리
+            
+            // 그런 뒤, 필드 카드의 효과를 발동함.
+            player.as_ref().borrow_mut().get_zone(ZoneType::FieldZone).
+            
+            // 필드 카드의 효과가 끝나면, 필드에 전개 되어 있는 카드의 효과를 발동함.
         }
-
-        // 그런 뒤, 필드 카드의 효과를 발동함.
-
-        // 필드 카드의 효과가 끝나면, 필드에 전개 되어 있는 카드의 효과를 발동함.
         todo!()
     }
 

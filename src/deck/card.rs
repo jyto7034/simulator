@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::enums::constant::{self, CardParam, CardType, Runner, UUID};
+use crate::enums::constant::{self, CardParam, CardType, Runner, UUID, PlayerType};
 use crate::exception::exception::Exception;
 use crate::game::{Behavior, Count, Game};
 use crate::unit::Entity;
@@ -20,6 +20,7 @@ pub struct Card {
     card_json: CardJson,
     count: Count,
     runner: Option<Runner>,
+    player_type: PlayerType,
 }
 
 impl PartialEq for Card {
@@ -37,6 +38,7 @@ impl fmt::Debug for Card {
         write!(f, "    behavior_table: {:?}\n", self.behavior_table)?;
         write!(f, "    card_json: {:#?}\n", self.card_json)?;
         write!(f, "    count: {:?}\n", self.count)?;
+        write!(f, "    player_type: {:?}\n", self.player_type)?;
         if let Some(runner) = &self.runner {
             write!(f, "    runner: Ok\n")?;
         } else {
@@ -74,6 +76,7 @@ impl Card {
             card_json: CardJson::new(),
             count: Count::new(0, 3),
             runner: None,
+            player_type: PlayerType::None,
         }
     }
 
@@ -85,6 +88,7 @@ impl Card {
         card_json: CardJson,
         count: usize,
         runner: Option<Runner>,
+        player_type: PlayerType,
     ) -> Card {
         Card {
             card_type,
@@ -94,6 +98,7 @@ impl Card {
             card_json,
             count: Count::new(count, 3),
             runner,
+            player_type,
         }
     }
 
@@ -124,8 +129,13 @@ impl Card {
     pub fn get_count(&self) -> &Count {
         &self.count
     }
+    // 제거해야함.
     pub fn get_count_mut(&mut self) -> &mut Count {
         &mut self.count
+    }
+
+    pub fn get_player_type(&self) -> PlayerType{
+        self.player_type.clone()
     }
 
     // Setter 함수들
