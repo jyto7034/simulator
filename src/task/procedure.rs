@@ -9,7 +9,6 @@ use crate::task::task::Task;
 #[derive(Debug)]
 pub struct Procedure {
     pub task_queue: TaskQueue,
-    pub event_listen_queue: Vec<(Task, Behavior)>,
     game: Option<Weak<RefCell<Game>>>,
     id: usize,
 }
@@ -18,7 +17,6 @@ impl Procedure {
     pub fn new(game: Option<Weak<RefCell<Game>>>) -> Procedure {
         Procedure {
             task_queue: vec![],
-            event_listen_queue: vec![],
             game,
             id: 0,
         }
@@ -29,7 +27,7 @@ impl Procedure {
         self.id
     }
 
-    pub fn add_task(&mut self, task: &Task) {
+    pub fn add_task(&mut self, task: Task) {
         let mut task = task.clone();
         task.set_task_id(self.generate_id());
         self.task_queue.push(task);
@@ -73,11 +71,9 @@ impl Procedure {
             .collect()
     }
 
-    /// queue 에 있는 task 를 처리하는 함수.
-    /// 후입선출로 우선순위에 따라 순서대로 처리한다.
+    /// 유닛 카드, 스펠 카드, 효과 카드가 존재한다.
+    /// 
     pub fn execuiton(&mut self) -> Result<(), Exception> {
-        // Listen Event 들을 먼저 처리한다.
-        let event_listen_queue = self.event_listen_queue.clone();
         let task_queue = self.task_queue.clone();
 
         // 먼저 해당 listen event 를 발동시킨 card 의 정보를 담고 있는 task 를 가져온다.
@@ -85,8 +81,7 @@ impl Procedure {
         // 카드의 run 함수를 실행함.
 
         // player 의 HandZone 에서 Draw 함수를 통해 카드를 전개합니다.
-        //
-        for item in event_listen_queue {}
+        // 
 
         // 그런 뒤 남은 task 들을 처리한다.
         Ok(())

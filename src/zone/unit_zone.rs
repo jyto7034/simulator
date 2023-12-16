@@ -42,6 +42,10 @@ impl Zone for UnitZone {
             Err(Exception::NothingToRemove)
         }
     }
+
+    fn run(&self, game: &mut Game) {
+        
+    }
 }
 
 impl UnitZone {
@@ -56,15 +60,5 @@ impl UnitZone {
         self.remove_card(dst_card.clone())?;
         self.add_card(src_card.clone())?;
         Ok(())
-    }
-}
-
-impl Entity for UnitZone {
-    fn run(&self, game: &mut Game) -> Result<(), Exception> {
-        todo!()
-    }
-
-    fn get_entity_type(&self) -> String {
-        "Entity".to_string()
     }
 }

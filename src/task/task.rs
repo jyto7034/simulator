@@ -1,8 +1,5 @@
 use crate::deck::Card;
-use crate::enums::constant::*;
-use crate::enums::{PlayerType, TaskPriority};
 use crate::exception::exception::Exception;
-use crate::game::Behavior;
 use crate::utils::utils;
 
 /// Card 구조체엔 run 이라는 함수가 존재하는데, 카드의 효과를 발동할 때,
@@ -12,7 +9,6 @@ use crate::utils::utils;
 pub struct Task {
     card: Card,
     task_uuid: String,
-    priority: TaskPriority,
     id: Option<usize>,
 }
 
@@ -21,34 +17,22 @@ impl Task {
         Task {
             card: Card::dummy(),
             task_uuid: "".to_string(),
-            priority: TaskPriority::None,
             id: Some(0),
         }
     }
 
-    pub fn new(
-        card: Card,
-        priority: TaskPriority,
-    ) -> Result<Task, Exception> {
+    pub fn new(card: Card) -> Task {
         let uuid = match utils::generate_uuid() {
             Ok(ans) => ans,
-            Err(_) => "".to_string(),
+            Err(_) => panic!()
         };
-        Ok(Task {
+        Task {
             card,
             task_uuid: uuid,
-            priority,
             id: Some(0 as usize),
-        })
+        }
     }
 
-    pub fn get_priority_type(&self) -> &TaskPriority {
-        &self.priority
-    }
-
-    pub fn set_priority_type(&mut self, priority_type: TaskPriority) {
-        self.priority = priority_type;
-    }
 
     pub fn get_task_uuid(&self) -> &String {
         &self.task_uuid

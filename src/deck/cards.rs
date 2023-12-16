@@ -134,7 +134,7 @@ impl Cards {
     // Exceptions:
     //  - 카드 삭제 부분
     // --------------------------------------------------------
-    fn find_by_uuid(&mut self, uuid: String) -> Result<Card, Exception> {
+    fn find_by_uuid(&mut self, uuid: UUID) -> Result<Card, Exception> {
         // uuid 에 해당하는 카드를 집계합니다.
         // count 가 0 개인 경우, 스킵하고 다음 카드를 찾습니다.
         match self

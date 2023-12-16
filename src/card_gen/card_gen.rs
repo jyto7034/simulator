@@ -243,7 +243,7 @@ mod public {
 }
 
 mod human {
-    use crate::game::TimeManager;
+    use crate::enums::PlayerType;
 
     use super::*;
 
@@ -290,6 +290,7 @@ mod human {
             card_json.clone(),
             count,
             Some(run),
+            PlayerType::None,
         )
     }
 

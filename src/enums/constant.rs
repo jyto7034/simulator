@@ -96,7 +96,7 @@ pub enum ZoneType {
     HandZone,
     DeckZone,
     GraveyardZone,
-    FieldZone,
+    EffectZone,
     None,
 }
 

@@ -37,6 +37,10 @@ impl Zone for DeckZone {
         // 카드 관리 방법 변경에 따라, 재작성해야함.
         todo!();
     }
+
+    fn run(&self, game: &mut Game) {
+        
+    }
 }
 
 impl DeckZone {

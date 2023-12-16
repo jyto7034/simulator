@@ -282,15 +282,15 @@ fn deck_decode(deck_code: String) -> Result<(Vec<i32>, Vec<i32>), ()> {
     // Single-copy cards
     let num = read_varint(&mut pos).unwrap();
     for idx in 0..num {
-        let cardID = read_varint(&mut pos).unwrap();
-        _1_cards.push(cardID);
+        let card_id = read_varint(&mut pos).unwrap();
+        _1_cards.push(card_id);
     }
 
     // 2-copy cards
     let num = read_varint(&mut pos).unwrap();
     for idx in 0..num {
-        let cardID = read_varint(&mut pos).unwrap();
-        _2_cards.push(cardID);
+        let card_id = read_varint(&mut pos).unwrap();
+        _2_cards.push(card_id);
         // deckInfo.AddCard(Cards::FindCardByDbfID(cardID)->id, 2);
     }
 
@@ -298,7 +298,7 @@ fn deck_decode(deck_code: String) -> Result<(Vec<i32>, Vec<i32>), ()> {
     // n-copy cards
     let num = read_varint(&mut pos).unwrap();
     for idx in 0..num {
-        let cardID = read_varint(&mut pos).unwrap();
+        let card_id = read_varint(&mut pos).unwrap();
         let count = read_varint(&mut pos).unwrap();
         // deckInfo.AddCard(Cards::FindCardByDbfID(cardID)->id, count);
     }

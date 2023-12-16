@@ -17,6 +17,7 @@ pub struct Hero {
     pub name: String,
 }
 
+#[allow(non_snake_case)]
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Deck {
     pub Hero: Vec<Hero>,
@@ -40,6 +41,7 @@ pub struct DeckCodes {
     pub code2: String,
 }
 
+#[allow(non_snake_case)]
 #[derive(Debug, Deserialize)]
 pub struct GameConfigJson {
     pub DeckCodes: Vec<DeckCodes>,

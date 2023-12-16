@@ -1,4 +1,3 @@
-use rayon::prelude::*;
 use std::{cell::RefCell, rc::Rc};
 
 pub trait IResource {
@@ -298,8 +297,8 @@ impl Game {
                 .draw(ZoneType::DeckZone, CardDrawType::Top)?;
             
             // 그런 뒤, 필드 카드의 효과를 발동함.
-            player.as_ref().borrow_mut().get_zone(ZoneType::FieldZone).
-            
+            if let zone = player.as_ref().borrow_mut().get_zone(ZoneType::HandZone){
+            }
             // 필드 카드의 효과가 끝나면, 필드에 전개 되어 있는 카드의 효과를 발동함.
         }
         todo!()

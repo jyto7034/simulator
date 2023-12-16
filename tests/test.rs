@@ -7,7 +7,7 @@ mod tests {
         enums::*,
         exception::exception::Exception,
         game::game::{Game, GameConfig},
-        game::Behavior,
+        deck::Card,
         task::Procedure,
         task::Task,
         utils::utils,
@@ -100,19 +100,8 @@ mod tests {
         use super::*;
 
         fn create_task_and_push(proc: &Rc<RefCell<Procedure>>) -> Task {
-            let task = match Task::new(
-                PlayerType::Player1,
-                &"".to_string(),
-                Behavior::AddCardToDeck,
-                TaskPriority::Immediately,
-            ) {
-                Ok(task) => task,
-                Err(err) => {
-                    assert!(false, "{err}");
-                    Task::dummy()
-                }
-            };
-            proc.as_ref().borrow_mut().add_task(&task);
+            let task = Task::new(Card::dummy());
+            proc.as_ref().borrow_mut().add_task(task.clone());
             task
         }
 

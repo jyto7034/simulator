@@ -1,5 +1,4 @@
 use crate::deck::{Card, Cards};
-use crate::enums::constant::CardType;
 use crate::enums::constant::*;
 use crate::exception::exception::Exception;
 use crate::game::Game;
@@ -33,6 +32,9 @@ impl Zone for HandZone {
         // } else {
         //     Err(Exception::NothingToRemove)
         // }
+    }
+    fn run(&self, game: &mut Game) {
+        
     }
 }
 

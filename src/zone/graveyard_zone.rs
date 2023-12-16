@@ -41,6 +41,10 @@ impl Zone for GraveyardZone {
             Err(Exception::NothingToRemove)
         }
     }
+
+    fn run(&self, game: &mut Game) {
+        
+    }
 }
 
 impl GraveyardZone {

@@ -1,12 +1,12 @@
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
-use crate::deck::{cards, Card, Cards};
+use crate::deck::{Card, Cards};
 use crate::enums::constant::*;
 use crate::exception::exception::Exception;
 use crate::game::{Game, IResource};
 use crate::unit::entity::Entity;
-use crate::zone::{DeckZone, GraveyardZone, HandZone, Zone};
+use crate::zone::{DeckZone, GraveyardZone, HandZone, Zone, EffectZone};
 
 pub struct Cost {
     cost: usize,
@@ -93,6 +93,7 @@ pub struct Player {
     hand_zone: HandZone,
     deck_zone: DeckZone,
     graveyard_zone: GraveyardZone,
+    effect_zone: EffectZone,
 }
 
 impl Entity for Player {
@@ -125,6 +126,7 @@ impl Player {
             hand_zone: HandZone::new(),
             deck_zone: DeckZone::new(),
             graveyard_zone: GraveyardZone::new(),
+            effect_zone: EffectZone::new(),
         }
     }
 
@@ -243,6 +245,7 @@ impl Player {
             ZoneType::HandZone => Box::new(&mut self.hand_zone),
             ZoneType::DeckZone => Box::new(&mut self.deck_zone),
             ZoneType::GraveyardZone => Box::new(&mut self.graveyard_zone),
+            ZoneType::EffectZone => Box::new(&mut self.effect_zone),
             _ => panic!("Unknown Zone"),
         }
     }

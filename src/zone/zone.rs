@@ -1,6 +1,6 @@
 use crate::{
     deck::{Card, Cards},
-    exception::exception::Exception,
+    exception::exception::Exception, game::Game,
 };
 
 /// 게임의 필드를 구현하는 구조체입니다
@@ -14,4 +14,6 @@ pub trait Zone {
 
     /// 특정 카드를 현재 Zone 으로부터 삭제합니다.
     fn remove_card(&mut self, card: Card) -> Result<(), Exception>;
+
+    fn run(&self, game: &mut Game);
 }
