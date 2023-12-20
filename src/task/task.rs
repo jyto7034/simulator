@@ -1,5 +1,5 @@
 use crate::deck::Card;
-use crate::exception::exception::Exception;
+
 use crate::utils::utils;
 
 /// Card 구조체엔 run 이라는 함수가 존재하는데, 카드의 효과를 발동할 때,

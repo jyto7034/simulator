@@ -39,7 +39,7 @@ impl fmt::Debug for Card {
         write!(f, "    card_json: {:#?}\n", self.card_json)?;
         write!(f, "    count: {:?}\n", self.count)?;
         write!(f, "    player_type: {:?}\n", self.player_type)?;
-        if let Some(runner) = &self.runner {
+        if let Some(_runner) = &self.runner {
             write!(f, "    runner: Ok\n")?;
         } else {
             write!(f, "    runner: None\n")?;
@@ -155,7 +155,7 @@ impl Card {
         self.behavior_table = new_behavior_table;
     }
 
-    pub fn set_card_json(&mut self, new_card_json: CardJson) {}
+    pub fn set_card_json(&mut self, _new_card_json: CardJson) {}
 
     // uuid 를 대조합니다.
     // 동일하다면, true 를.

@@ -21,7 +21,7 @@ impl Zone for HandZone {
     }
 
     /// 특정 카드를 현재 Zone 으로부터 삭제합니다.
-    fn remove_card(&mut self, card: Card) -> Result<(), Exception> {
+    fn remove_card(&mut self, _card: Card) -> Result<(), Exception> {
         todo!()
         // let prev_len = self.zone_cards.len();
         // self.zone_cards
@@ -33,7 +33,7 @@ impl Zone for HandZone {
         //     Err(Exception::NothingToRemove)
         // }
     }
-    fn run(&self, game: &mut Game) {
+    fn run(&self, _game: &mut Game) {
         
     }
 }
@@ -52,7 +52,7 @@ impl HandZone {
 }
 
 impl Entity for HandZone {
-    fn run(&self, game: &mut Game) -> Result<(), Exception> {
+    fn run(&self, _game: &mut Game) -> Result<(), Exception> {
         todo!()
     }
 

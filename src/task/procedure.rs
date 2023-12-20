@@ -49,9 +49,7 @@ impl Procedure {
 
     pub fn remove_task_by_uuid(&mut self, uuid: &UUID) -> Result<(), Exception> {
         let prev_len = self.task_queue.len();
-        println!("{:#?}", self.task_queue);
         self.task_queue.retain(|item| item.get_task_uuid() != uuid);
-        println!("{:#?}", self.task_queue);
         if self.task_queue.len() != prev_len {
             Ok(())
         } else {
@@ -73,8 +71,9 @@ impl Procedure {
 
     /// 유닛 카드, 스펠 카드, 효과 카드가 존재한다.
     /// 
-    pub fn execuiton(&mut self) -> Result<(), Exception> {
-        let task_queue = self.task_queue.clone();
+    pub fn process_task(&mut self) -> Result<(), Exception> {
+        let _task_queue = self.task_queue.clone();
+
 
         // 먼저 해당 listen event 를 발동시킨 card 의 정보를 담고 있는 task 를 가져온다.
         // 그리고 to_find 이라는 변수로 무슨 행동을 감시할 것인지 설정하고 만약 detected 되면

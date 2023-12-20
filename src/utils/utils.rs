@@ -123,11 +123,11 @@ pub fn load_card_data(deck_code: (DeckCode, DeckCode)) -> Result<Vec<Cards>, Exc
 
     let decoded_deck1 = match deck_decode(deck_code.0) {
         Ok(data) => data,
-        Err(err) => return Err(Exception::JsonParseFailed),
+        Err(_err) => return Err(Exception::JsonParseFailed),
     };
     let decoded_deck2 = match deck_decode(deck_code.1) {
         Ok(data) => data,
-        Err(err) => return Err(Exception::JsonParseFailed),
+        Err(_err) => return Err(Exception::JsonParseFailed),
     };
 
     use json::CardJson;
@@ -268,7 +268,7 @@ fn deck_decode(deck_code: String) -> Result<(Vec<i32>, Vec<i32>), ()> {
     }
 
     let hero_type = read_varint(&mut pos);
-    let hero_type = match hero_type {
+    let _hero_type = match hero_type {
         Ok(hero_id) => hero_id,
         Err(_) => {
             return Err(());
@@ -281,14 +281,14 @@ fn deck_decode(deck_code: String) -> Result<(Vec<i32>, Vec<i32>), ()> {
 
     // Single-copy cards
     let num = read_varint(&mut pos).unwrap();
-    for idx in 0..num {
+    for _idx in 0..num {
         let card_id = read_varint(&mut pos).unwrap();
         _1_cards.push(card_id);
     }
 
     // 2-copy cards
     let num = read_varint(&mut pos).unwrap();
-    for idx in 0..num {
+    for _idx in 0..num {
         let card_id = read_varint(&mut pos).unwrap();
         _2_cards.push(card_id);
         // deckInfo.AddCard(Cards::FindCardByDbfID(cardID)->id, 2);
@@ -297,9 +297,9 @@ fn deck_decode(deck_code: String) -> Result<(Vec<i32>, Vec<i32>), ()> {
     // 하스스톤은 덱에서 같은 카드를 세 개 이상 구성하지 못함. ( 최대 2개 ) 근데 왜 n-copy 코드가 있는지는 잘 모르겠음..
     // n-copy cards
     let num = read_varint(&mut pos).unwrap();
-    for idx in 0..num {
-        let card_id = read_varint(&mut pos).unwrap();
-        let count = read_varint(&mut pos).unwrap();
+    for _idx in 0..num {
+        let _card_id = read_varint(&mut pos).unwrap();
+        let _count = read_varint(&mut pos).unwrap();
         // deckInfo.AddCard(Cards::FindCardByDbfID(cardID)->id, count);
     }
     // println!("{:#?} {:#?}", _1_cards, _2_cards);

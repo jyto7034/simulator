@@ -4,7 +4,7 @@ use crate::deck::{Card, Cards};
 use crate::enums::constant::{self, CardType};
 use crate::exception::exception::Exception;
 use crate::game::Game;
-use crate::unit::Entity;
+
 use crate::zone::Zone;
 
 pub struct UnitZone {
@@ -43,7 +43,7 @@ impl Zone for UnitZone {
         }
     }
 
-    fn run(&self, game: &mut Game) {
+    fn run(&self, _game: &mut Game) {
         
     }
 }

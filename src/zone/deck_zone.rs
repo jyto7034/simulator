@@ -33,12 +33,12 @@ impl Zone for DeckZone {
     }
 
     /// 특정 카드를 현재 Zone 으로부터 삭제합니다.
-    fn remove_card(&mut self, card: Card) -> Result<(), Exception> {
+    fn remove_card(&mut self, _card: Card) -> Result<(), Exception> {
         // 카드 관리 방법 변경에 따라, 재작성해야함.
         todo!();
     }
 
-    fn run(&self, game: &mut Game) {
+    fn run(&self, _game: &mut Game) {
         
     }
 }
@@ -53,7 +53,7 @@ impl DeckZone {
 }
 
 impl Entity for DeckZone {
-    fn run(&self, game: &mut Game) -> Result<(), Exception> {
+    fn run(&self, _game: &mut Game) -> Result<(), Exception> {
         todo!()
     }
 

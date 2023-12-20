@@ -100,7 +100,7 @@ impl Entity for Player {
     fn get_entity_type(&self) -> String {
         "Player".to_string()
     }
-    fn run(&self, game: &mut Game) -> Result<(), Exception> {
+    fn run(&self, _game: &mut Game) -> Result<(), Exception> {
         Ok(())
     }
 }
@@ -208,7 +208,7 @@ impl Player {
         }
     }
 
-    pub fn add_card(&mut self, zone_type: ZoneType, count: Option<i32>, card: Card) {
+    pub fn add_card(&mut self, zone_type: ZoneType, _count: Option<i32>, card: Card) {
         self.get_zone(zone_type)
             .as_mut()
             .get_cards()

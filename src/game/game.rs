@@ -98,8 +98,8 @@ impl Game {
     // 구조적 문제 있긴함..
     pub fn to_cards(
         &self,
-        deck_code1: DeckCode,
-        deck_code2: DeckCode,
+        _deck_code1: DeckCode,
+        _deck_code2: DeckCode,
     ) -> Result<Vec<Cards>, Exception> {
         let v_cards = match utils::parse_json_to_deck_code() {
             Ok(json) => match utils::load_card_data(json) {
@@ -186,12 +186,12 @@ impl Game {
     }
 
     fn check_player_data_integrity(&self) -> Result<(), Exception> {
-        if let Some(player_1) = &self.player_1 {
+        if let Some(_player_1) = &self.player_1 {
         } else {
             return Err(Exception::PlayerInitializeFailed);
         }
 
-        if let Some(player_2) = &self.player_2 {
+        if let Some(_player_2) = &self.player_2 {
         } else {
             return Err(Exception::PlayerInitializeFailed);
         }
@@ -297,7 +297,7 @@ impl Game {
                 .draw(ZoneType::DeckZone, CardDrawType::Top)?;
             
             // 그런 뒤, 필드 카드의 효과를 발동함.
-            if let zone = player.as_ref().borrow_mut().get_zone(ZoneType::HandZone){
+            if let _zone = player.as_ref().borrow_mut().get_zone(ZoneType::HandZone){
             }
             // 필드 카드의 효과가 끝나면, 필드에 전개 되어 있는 카드의 효과를 발동함.
         }

@@ -42,7 +42,7 @@ impl Zone for GraveyardZone {
         }
     }
 
-    fn run(&self, game: &mut Game) {
+    fn run(&self, _game: &mut Game) {
         
     }
 }
@@ -57,7 +57,7 @@ impl GraveyardZone {
 }
 
 impl Entity for GraveyardZone {
-    fn run(&self, game: &mut Game) -> Result<(), Exception> {
+    fn run(&self, _game: &mut Game) -> Result<(), Exception> {
         todo!()
     }
 

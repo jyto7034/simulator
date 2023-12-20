@@ -152,7 +152,7 @@ impl Cards {
     // name 에 해당하는 카드를 찾아내서 복사-반환합니다.
     // 카드를 소모하지 않습니다.
     // --------------------------------------------------------
-    fn find_by_name(&mut self, name: String) -> Result<Card, Exception> {
+    fn find_by_name(&mut self, _name: String) -> Result<Card, Exception> {
         // name 에 해당하는 카드를 집계합니다.
         // count 가 0 개인 경우, 스킵하고 다음
         match self

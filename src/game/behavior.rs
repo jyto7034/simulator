@@ -89,9 +89,9 @@ pub fn execution(behavior_type: &Behavior) -> Result<Exception, Exception> {
 
 // 감시를 하는 방법에는 여러가지가 있을테지만, 당장 떠오르는건,
 fn listen_other_event(
-    game: &Game,
-    player_type: PlayerType,
-    target_behavior: &Behavior,
-    result_behavior: &Behavior,
+    _game: &Game,
+    _player_type: PlayerType,
+    _target_behavior: &Behavior,
+    _result_behavior: &Behavior,
 ) {
 }

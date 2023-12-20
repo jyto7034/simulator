@@ -8,7 +8,7 @@ impl Entity for Hero {
         "Hero".to_string()
     }
 
-    fn run(&self, game: &mut Game) -> Result<(), Exception> {
+    fn run(&self, _game: &mut Game) -> Result<(), Exception> {
         Ok(())
     }
 }
