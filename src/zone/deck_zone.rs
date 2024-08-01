@@ -1,4 +1,8 @@
-use crate::{card::{card::Card, cards::Cards}, enums::{CardParam, CardType, InsertType, UNIT_ZONE_SIZE, UUID}, exception::exception::Exception};
+use crate::{
+    card::{card::Card, cards::Cards},
+    enums::{CardParam, CardType, InsertType, UNIT_ZONE_SIZE, UUID},
+    exception::exception::Exception,
+};
 
 use super::zone::Zone;
 
@@ -23,10 +27,9 @@ impl DeckZone {
         // 카드 관리 방법 변경에 따라, 재작성해야함.
         todo!();
     }
-
 }
 
-impl Zone for DeckZone{
+impl Zone for DeckZone {
     fn as_any(&mut self) -> &mut dyn std::any::Any {
         self
     }
@@ -46,13 +49,12 @@ impl Zone for DeckZone{
         self.zone_cards.add_card(card, insert_type)?;
         Ok(())
     }
-    
+
     fn get_cards(&mut self) -> &mut Cards {
         todo!()
     }
-    
+
     fn remove_card(&mut self, uuid: UUID) {
         self.zone_cards.remove(CardParam::Uuid(uuid));
     }
-    
 }

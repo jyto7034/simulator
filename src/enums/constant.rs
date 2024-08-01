@@ -83,21 +83,21 @@ pub enum CardDrawType {
 }
 
 #[derive(Clone)]
-pub enum TaskType{
+pub enum TaskType {
     Card(Card),
     Behavior(Behavior),
     None,
 }
 
 impl TaskType {
-    pub fn get_data_as_behavior(&self) -> Vec<Behavior>{
+    pub fn get_data_as_behavior(&self) -> Vec<Behavior> {
         match self {
             TaskType::Card(card) => card.get_behavior_table().clone(),
             TaskType::Behavior(bv) => vec![bv.clone()],
             TaskType::None => todo!(),
         }
     }
-    pub fn get_data_as_card(&self) -> Card{
+    pub fn get_data_as_card(&self) -> Card {
         match self {
             TaskType::Card(card) => card.clone(),
             TaskType::Behavior(bv) => {
@@ -105,7 +105,7 @@ impl TaskType {
                 card.set_card_type(CardType::Game);
                 card.set_behavior_table(vec![bv.clone()]);
                 card.clone()
-            },
+            }
             TaskType::None => todo!(),
         }
     }
@@ -135,23 +135,21 @@ pub enum ChoiceType {
 }
 
 #[derive(Debug, PartialEq, Clone, Eq, Hash)]
-pub struct CardSpec{
+pub struct CardAttribute {
     pub hp: i32,
     pub atk: i32,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub enum TargetCard{
+pub enum TargetCard {
     // 아군 카드에게 적용 ( 덱에 있든, 손패에 있든, 필드에 있든 상관 없이 )
     All,
-    
+
     // 특정 Zone 에 있는 카드에 대해서 적용
     Zone(ZoneType),
 
     // 특정 카드에 대해서 적용
-    Uuid(UUID)
-
-    // 추후 추가 예정
+    Uuid(UUID), // 추후 추가 예정
 }
 
 pub enum TimeType {
@@ -165,7 +163,7 @@ pub enum CardParam {
     Card(Card),
 }
 
-pub enum InsertType{
+pub enum InsertType {
     Random,
     Top,
     Bottom,

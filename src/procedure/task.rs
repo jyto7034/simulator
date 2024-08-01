@@ -5,14 +5,13 @@ use crate::{enums::TaskType, server::schema::MessageInfo, utils::utils};
 /// Trigger Card, 혹은 Trap Card 에 의해서 Task 의 내용이 수정되거나 사라지는 경우 존재함.
 /// Tasks 의 Add 함수 호출 시 들어오는 Task 를 수정함.
 
-
 /// Card, task id 등의 정보를 담는 구조체
 #[derive(Clone)]
-pub struct Task{
+pub struct Task {
     task: TaskType,
     task_uuid: String,
     id: Option<i32>,
-    info: Option<MessageInfo>
+    info: Option<MessageInfo>,
 }
 
 impl Task {
@@ -28,7 +27,7 @@ impl Task {
     pub fn new(task_type: TaskType, info: MessageInfo) -> Task {
         let uuid = match utils::generate_uuid() {
             Ok(ans) => ans,
-            Err(_) => panic!()
+            Err(_) => panic!(),
         };
         Task {
             task: task_type,
@@ -50,11 +49,11 @@ impl Task {
         self.id
     }
 
-    pub fn get_task(&self) -> &TaskType{
+    pub fn get_task(&self) -> &TaskType {
         &self.task
     }
 
-    pub fn get_info(&self) -> &MessageInfo{
-       self.info.as_ref().unwrap()
+    pub fn get_info(&self) -> &MessageInfo {
+        self.info.as_ref().unwrap()
     }
 }

@@ -1,5 +1,10 @@
 use crate::{
-    enums::DeckCode, exception::exception::Exception, game::game::{Game, GameConfig}, procedure::procedure::Procedure, server::schema::{Message, MessageInfo, Respones}, utils::utils
+    enums::DeckCode,
+    exception::exception::Exception,
+    game::game::{Game, GameConfig},
+    procedure::procedure::Procedure,
+    server::schema::{Message, MessageInfo, Respones},
+    utils::utils,
 };
 
 /// client 로부터 msg 를 받으면 그것을 해석 후
@@ -13,8 +18,14 @@ pub struct App {
 impl App {
     pub fn instantiate() -> App {
         App {
-            game: Game{ player1: None, player2: None },
-            procedure: Procedure{ tasks: vec![], trigger_tasks: vec![] },
+            game: Game {
+                player1: None,
+                player2: None,
+            },
+            procedure: Procedure {
+                tasks: vec![],
+                trigger_tasks: vec![],
+            },
             debug_flag: true,
         }
     }
@@ -46,7 +57,7 @@ impl App {
         Ok(())
     }
 
-    pub fn execute_msg(&mut self, info: MessageInfo) -> Result<(), Exception>{
+    pub fn execute_msg(&mut self, info: MessageInfo) -> Result<(), Exception> {
         match info.msg {
             Message::CreateGame => todo!(),
             Message::EntryGame => todo!(),
@@ -62,6 +73,4 @@ impl App {
     }
 }
 
-impl App{
-
-}
+impl App {}

@@ -47,34 +47,41 @@ impl Game {
         ))));
 
         // 순환 참조이긴 한데, 딱히 문제 없음. 정리만 수동적으로 잘 정리해주면 됨
-        if let Some(player) = &self.player1{
-            player.as_ref().borrow_mut().opponent = Some(Rc::clone(&self.player2.as_ref().unwrap()));
+        if let Some(player) = &self.player1 {
+            player.as_ref().borrow_mut().opponent =
+                Some(Rc::clone(&self.player2.as_ref().unwrap()));
         }
-        if let Some(player) = &self.player2{
-            player.as_ref().borrow_mut().opponent = Some(Rc::clone(&self.player1.as_ref().unwrap()));
+        if let Some(player) = &self.player2 {
+            player.as_ref().borrow_mut().opponent =
+                Some(Rc::clone(&self.player1.as_ref().unwrap()));
         }
 
         // DeckZone 에 카드를 clone 으로 채워넣는다.
-        if let Some(player) = &self.player1{
+        if let Some(player) = &self.player1 {
             let cards = player.as_ref().borrow_mut().get_cards().clone();
-            for card in cards.v_card{
-                player.as_ref().borrow_mut().add_card(ZoneType::DeckZone, card, InsertType::Top)?;
+            for card in cards.v_card {
+                player
+                    .as_ref()
+                    .borrow_mut()
+                    .add_card(ZoneType::DeckZone, card, InsertType::Top)?;
             }
         }
-        if let Some(player) = &self.player2{
+        if let Some(player) = &self.player2 {
             let cards = player.as_ref().borrow_mut().get_cards().clone();
-            for card in cards.v_card{
-                player.as_ref().borrow_mut().add_card(ZoneType::DeckZone, card, InsertType::Top)?;
+            for card in cards.v_card {
+                player
+                    .as_ref()
+                    .borrow_mut()
+                    .add_card(ZoneType::DeckZone, card, InsertType::Top)?;
             }
         }
-
 
         // cost, mana 설정
-        if let Some(player) = &self.player1{
+        if let Some(player) = &self.player1 {
             player.as_ref().borrow_mut().set_cost(0);
             player.as_ref().borrow_mut().set_mana(0);
         }
-        if let Some(player) = &self.player2{
+        if let Some(player) = &self.player2 {
             player.as_ref().borrow_mut().set_cost(0);
             player.as_ref().borrow_mut().set_mana(0);
         }
@@ -82,7 +89,7 @@ impl Game {
         Ok(())
     }
 
-    pub fn get_player(&self, player_type: PlayerType) -> Rc<RefCell<Player>>{
+    pub fn get_player(&self, player_type: PlayerType) -> Rc<RefCell<Player>> {
         match player_type {
             PlayerType::Player1 => Rc::clone(&self.player1.as_ref().unwrap()),
             PlayerType::Player2 => Rc::clone(&self.player2.as_ref().unwrap()),

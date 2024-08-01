@@ -237,7 +237,10 @@ mod public {
 }
 
 mod human {
-    use crate::{enums::{CardType, PlayerType}, procedure::behavior::Behavior};
+    use crate::{
+        enums::{CardType, PlayerType},
+        procedure::behavior::Behavior,
+    };
 
     use super::*;
 
@@ -266,7 +269,14 @@ mod human {
         } else {
             panic!("Card creating error");
         };
-        Card::new(CardType::Unit, uuid, name.clone(), bvs, card_json.clone(), PlayerType::None)
+        Card::new(
+            CardType::Unit,
+            uuid,
+            name.clone(),
+            bvs,
+            card_json.clone(),
+            PlayerType::None,
+        )
     }
 
     #[allow(non_snake_case)]

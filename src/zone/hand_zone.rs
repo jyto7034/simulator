@@ -1,4 +1,8 @@
-use crate::{card::{card::Card, cards::Cards}, enums::{CardParam, CardType, InsertType, UNIT_ZONE_SIZE, UUID}, exception::exception::Exception};
+use crate::{
+    card::{card::Card, cards::Cards},
+    enums::{CardParam, CardType, InsertType, UNIT_ZONE_SIZE, UUID},
+    exception::exception::Exception,
+};
 
 use super::zone::Zone;
 
@@ -15,20 +19,18 @@ impl HandZone {
         }
     }
 
-
     /// 특정 카드를 현재 Zone 으로부터 삭제합니다.
     pub fn remove_card(&mut self, _card: Card) -> Result<(), Exception> {
         // 카드 관리 방법 변경에 따라, 재작성해야함.
         todo!();
     }
-
 }
 
-impl Zone for HandZone{
+impl Zone for HandZone {
     fn as_any(&mut self) -> &mut dyn std::any::Any {
         self
     }
-    
+
     /// 현재 Zone 에 카드를 추가 합니다.
     /// TODO: 무슨 방식으로(eg. 랜덤, 맨 위, 맨 아래) 넣을지 구현해야함.
     fn add_card(&mut self, card: Card, insert_type: InsertType) -> Result<(), Exception> {
@@ -44,11 +46,11 @@ impl Zone for HandZone{
         self.zone_cards.add_card(card, insert_type)?;
         Ok(())
     }
-    
+
     fn get_cards(&mut self) -> &mut Cards {
         todo!()
     }
-    
+
     fn remove_card(&mut self, uuid: UUID) {
         self.zone_cards.remove(CardParam::Uuid(uuid));
     }

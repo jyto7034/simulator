@@ -1,7 +1,9 @@
-use std::fmt;
 use crate::{
-    enums::{constant, CardParam, CardType, PlayerType, UUID}, procedure::behavior::Behavior, utils::json::CardJson
+    enums::{constant, CardParam, CardType, PlayerType, UUID},
+    procedure::behavior::Behavior,
+    utils::json::CardJson,
 };
+use std::fmt;
 
 /// 단일 카드 정보를 담은 구조체 입니다.
 #[derive(Clone, Eq, Hash)]
@@ -92,7 +94,7 @@ impl Card {
         &self.card_json
     }
 
-    pub fn get_player_type(&self) -> PlayerType{
+    pub fn get_player_type(&self) -> PlayerType {
         self.player_type.clone()
     }
 

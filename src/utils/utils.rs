@@ -13,15 +13,18 @@ use std::process::{Command, Stdio};
 use std::vec;
 
 trait VecExtensions<T> {
-    // id 순으로 
+    // id 순으로
     fn next_task(&mut self) -> Option<T>;
 }
 
-impl<T> VecExtensions<T> for Vec<T> where T: Default + Copy {
+impl<T> VecExtensions<T> for Vec<T>
+where
+    T: Default + Copy,
+{
     fn next_task(&mut self) -> Option<T> {
-        if self.len() == 0{
+        if self.len() == 0 {
             None
-        }else{
+        } else {
             let data = self.remove(0);
             Some(data)
         }

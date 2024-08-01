@@ -1,7 +1,13 @@
 use std::{cell::RefCell, rc::Rc};
 
 use crate::{
-    card::{card::Card, cards::Cards}, enums::{CardDrawType, ChoiceType, InsertType, PlayerType, ZoneType}, exception::exception::Exception, zone::{deck_zone::DeckZone, effect_zone::EffectZone, graveyard_zone::GraveyardZone, hand_zone::HandZone, zone::Zone}
+    card::{card::Card, cards::Cards},
+    enums::{CardDrawType, ChoiceType, InsertType, PlayerType, ZoneType},
+    exception::exception::Exception,
+    zone::{
+        deck_zone::DeckZone, effect_zone::EffectZone, graveyard_zone::GraveyardZone,
+        hand_zone::HandZone, zone::Zone,
+    },
 };
 
 #[derive(Clone, Debug)]
@@ -114,7 +120,12 @@ impl Player {
         }
     }
 
-    pub fn add_card(&mut self, zone_type: ZoneType, card: Card, insert_type: InsertType) -> Result<(), Exception>{
+    pub fn add_card(
+        &mut self,
+        zone_type: ZoneType,
+        card: Card,
+        insert_type: InsertType,
+    ) -> Result<(), Exception> {
         self.get_zone(zone_type).add_card(card, insert_type)
     }
 

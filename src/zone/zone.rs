@@ -1,6 +1,10 @@
 use std::any::Any;
 
-use crate::{card::{card::Card, cards::Cards}, enums::{InsertType, UUID}, exception::exception::Exception};
+use crate::{
+    card::{card::Card, cards::Cards},
+    enums::{InsertType, UUID},
+    exception::exception::Exception,
+};
 
 pub trait Zone: Any {
     fn as_any(&mut self) -> &mut dyn Any;

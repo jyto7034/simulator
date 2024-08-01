@@ -12,7 +12,7 @@ pub enum Message {
     /// client 가 server 에게 멀리건 카드를 요청함
     GetMulligunCards(i32),
 
-    /// client 가 선택한 멀리건 카드를 server 로 전송 
+    /// client 가 선택한 멀리건 카드를 server 로 전송
     SelectMulligunCard,
 
     /// 플레이어가 손패에서 카드를 사용함 ( 유닛, 스펠 상관 없음. )
@@ -34,7 +34,7 @@ pub enum Message {
     None,
 }
 
-pub enum Respones{
+pub enum Respones {
     /// 게임 생성. 멀리건 카드 및 Player ID 등 반환함.
     CreateGame,
 
@@ -44,7 +44,7 @@ pub enum Respones{
     /// client 가 server 에게 멀리건 카드를 요청함
     GetMulligunCards(i32),
 
-    /// client 가 선택한 멀리건 카드를 server 로 전송 
+    /// client 가 선택한 멀리건 카드를 server 로 전송
     SelectMulligunCard,
 
     /// 플레이어가 손패에서 카드를 사용함 ( 유닛, 스펠 상관 없음. )
@@ -66,14 +66,14 @@ pub enum Respones{
 }
 
 #[derive(Clone)]
-pub struct MessageInfo{
+pub struct MessageInfo {
     pub sender: PlayerType,
     pub msg: Message,
 }
 
 /// Msg 로 넘어온 json 을 분석하여 어떤 Behavior 인지 파악함.
 pub fn analyze_message() -> MessageInfo {
-    MessageInfo{
+    MessageInfo {
         sender: PlayerType::Player1,
         msg: Message::None,
     }

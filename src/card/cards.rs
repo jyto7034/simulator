@@ -217,7 +217,7 @@ impl Cards {
     // --------------------------------------------------------
     pub fn add_card(&mut self, card: Card, insert_type: InsertType) -> Result<(), Exception> {
         // insertType 구현
-        match insert_type{
+        match insert_type {
             InsertType::Random => todo!(),
             InsertType::Top => {
                 if self.is_exceed() == false {
@@ -226,7 +226,7 @@ impl Cards {
                 } else {
                     Err(Exception::ExceededCardLimit)
                 }
-            },
+            }
             InsertType::Bottom => todo!(),
             InsertType::Card(_) => todo!(),
             InsertType::Under(_) => todo!(),
