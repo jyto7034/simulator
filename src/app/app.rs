@@ -48,6 +48,7 @@ impl App {
                 player_1: _code1.unwrap(),
                 player_2: _code2.unwrap(),
                 attaker: 1, // to random
+                // player_name 도 변경해야함.
                 player_name: vec!["player1".to_string(), "player2".to_string()],
             }
         };

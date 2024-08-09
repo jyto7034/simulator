@@ -5,19 +5,28 @@ pub mod mock {
     // App 객체가 config 를 받고, 생성되는 함수를 이 mock mod 에서 활용하여 mock app 을 생성하여 리턴함.
     // config 파일은 tests 에서 작성하여 App 생성 함수로 넘김.
 
-    // mock server
-    pub struct Server{
-
-    }
-
     use card_game::app::app::App;
 
-    // mock app
-    pub struct App {
-        app: App,
+    // mock server
+    pub struct Server{
+        
     }
-    impl App {
-        pub fn instantiate() {
+
+    // mock app
+    pub struct Mock {
+        app: App,
+        // MockServer
+    }
+    impl Mock {
+        pub fn instantiate() -> Mock{
+            Mock{
+                app: App::instantiate(),
+            }
+        }
+
+        pub fn initialize(&mut self){
+            self.app.initialize(None, None).expect("initialize Error");
+
 
         }
     }
