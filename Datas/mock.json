@@ -1,0 +1,8 @@
+{
+  "p1_name": "player 1",
+  "p2_name": "player 2",
+  "p1_deckcode": "test code 1",
+  "p2_deckcode": "test code 2",
+  "attacker": 0,
+  "game_behaviors": ["", ""]
+}

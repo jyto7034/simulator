@@ -4,7 +4,7 @@ use crate::enums::{PlayerType, UUID};
 #[derive(Clone)]
 pub enum Message {
     /// 게임 생성. 멀리건 카드 및 Player ID 등 반환함.
-    CreateGame(),
+    CreateGame,
 
     /// 게임 시작
     EntryGame,

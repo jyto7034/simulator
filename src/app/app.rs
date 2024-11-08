@@ -38,18 +38,20 @@ impl App {
         let config = if self.debug_flag {
             let deckcodes = utils::parse_json_to_deck_code().unwrap();
             GameConfig {
-                player_1: deckcodes.0,
-                player_2: deckcodes.1,
+                player_1_deckcode: deckcodes.0,
+                player_2_deckcode: deckcodes.1,
                 attaker: 1, // to random
-                player_name: vec!["player1".to_string(), "player2".to_string()],
+                player_1_name: "Player 1".to_string(),
+                player_2_name: "Player 2".to_string(),
             }
         } else {
             GameConfig {
-                player_1: _code1.unwrap(),
-                player_2: _code2.unwrap(),
+                player_1_deckcode: _code1.unwrap(),
+                player_2_deckcode: _code2.unwrap(),
                 attaker: 1, // to random
                 // player_name 도 변경해야함.
-                player_name: vec!["player1".to_string(), "player2".to_string()],
+                player_1_name: "Player 1".to_string(),
+                player_2_name: "Player 2".to_string(),
             }
         };
 

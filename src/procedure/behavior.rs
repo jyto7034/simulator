@@ -72,6 +72,7 @@ pub fn check_trigger(current_task_card: Card, app: &mut Procedure) -> Result<(),
         // trigger task 가 존재할 때,
         if has_intersection(&trigger_beheviors, &current_task_card.get_behavior_table()) {
             // tasks 에서 card 의 위치를 찾은 뒤, 해당 card 앞에 trigger card 를 삽입함.
+            
             let pos = app
                 .tasks
                 .iter()

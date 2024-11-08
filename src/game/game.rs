@@ -8,10 +8,17 @@ use crate::{
 };
 
 pub struct GameConfig {
-    pub player_1: DeckCode,
-    pub player_2: DeckCode,
+    /// Player's Deckcode
+    pub player_1_deckcode: DeckCode,
+    pub player_2_deckcode: DeckCode,
+
+    /// 1 : Player 1,
+    /// 2 : Player 2
     pub attaker: usize,
-    pub player_name: Vec<String>,
+
+    //
+    pub player_1_name: String,
+    pub player_2_name: String,
 }
 
 /// 게임의 상태를 관리/저장 하는 구조체
@@ -26,14 +33,14 @@ pub struct Game {
 /// initialize 함수에 GameConfig 을 넣음으로써 두 플레이어의 Cards 을 설정한다.
 impl Game {
     pub fn initialize(&mut self, _config: GameConfig) -> Result<(), Exception> {
-        let cards = deckcode_to_cards(_config.player_1, _config.player_2)?;
+        let cards = deckcode_to_cards(_config.player_1_deckcode, _config.player_2_deckcode)?;
 
         // Player 설정
         self.player1 = Some(Rc::new(RefCell::new(Player::new(
             None,
             PlayerType::Player1,
             cards[PLAYER_1].clone(),
-            _config.player_name[PLAYER_1].clone(),
+            _config.player_1_name.clone(),
             Resoruce::new(0, 3),
             Resoruce::new(0, 3),
         ))));
@@ -41,7 +48,7 @@ impl Game {
             None,
             PlayerType::Player2,
             cards[PLAYER_2].clone(),
-            _config.player_name[PLAYER_2].clone(),
+            _config.player_2_name.clone(),
             Resoruce::new(0, 3),
             Resoruce::new(0, 3),
         ))));
