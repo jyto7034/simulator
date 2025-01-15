@@ -1,3 +1,5 @@
+use std::sync::Mutex;
+
 use crate::{card::card::Card, procedure::behavior::Behavior};
 
 pub const CARD_ID_JSON_PATH: &str = "Resource/cards_id.json";

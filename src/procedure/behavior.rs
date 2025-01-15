@@ -72,7 +72,7 @@ pub fn check_trigger(current_task_card: Card, app: &mut Procedure) -> Result<(),
         // trigger task 가 존재할 때,
         if has_intersection(&trigger_beheviors, &current_task_card.get_behavior_table()) {
             // tasks 에서 card 의 위치를 찾은 뒤, 해당 card 앞에 trigger card 를 삽입함.
-            
+
             let pos = app
                 .tasks
                 .iter()
@@ -105,8 +105,7 @@ fn remove_card_from_zone(
 ) {
     let player = game.get_player(player_type.clone());
     player
-        .as_ref()
-        .borrow_mut()
+        .get_mut()
         .get_zone(zone_type.clone())
         .remove_card(card.get_uuid().clone());
 }
@@ -121,8 +120,7 @@ fn add_card_to_zone(
 ) {
     let player = game.get_player(player_type.clone());
     player
-        .as_ref()
-        .borrow_mut()
+        .get_mut()
         .get_zone(zone_type.clone())
         .add_card(card.clone(), InsertType::Slot(slot_id.clone()));
 }

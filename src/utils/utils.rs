@@ -6,6 +6,7 @@ use crate::exception::exception::Exception;
 use crate::utils::json;
 use base64::{decode, encode};
 use byteorder::WriteBytesExt;
+use serde_json::Value;
 use std::fs::File;
 use std::io::Read;
 use std::io::{Cursor, Write};
@@ -64,61 +65,81 @@ pub fn read_game_config_json() -> Result<json::GameConfigJson, Exception> {
     Ok(card_json)
 }
 
-pub fn parse_json_to_deck_code() -> Result<(DeckCode, DeckCode), Exception> {
+pub fn parse_json_to_deck_code(
+    p1_card_json: Option<&str>,
+    p2_card_json: Option<&str>,
+) -> Result<(DeckCode, DeckCode), Exception> {
+    match (p1_card_json, p2_card_json) {
+        (Some(_), None) => return Err(Exception::DeckCodeIsMissing(constant::PlayerType::Player2)),
+        (None, Some(_)) => return Err(Exception::DeckCodeIsMissing(constant::PlayerType::Player1)),
+        (None, None) => return Err(Exception::DecodeError),
+        _ => {}
+    };
+
     let json_to_deck_code = |player_num: usize| {
-        let file_path = match player_num {
-            PLAYER_1 => constant::DECK_JSON_PATH_P1,
-            PLAYER_2 => constant::DECK_JSON_PATH_P2,
-            _ => return Err(Exception::PathNotExist),
-        };
+        let decks: json::Decks = if p1_card_json != None {
+            let deck_json = if player_num == PLAYER_1 {
+                p1_card_json.unwrap()
+            } else {
+                p2_card_json.unwrap()
+            };
+            match serde_json::from_str(deck_json) {
+                Ok(data) => data,
+                Err(_) => return Err(Exception::JsonParseFailed),
+            }
+        } else {
+            let file_path = match player_num {
+                PLAYER_1 => constant::DECK_JSON_PATH_P1,
+                PLAYER_2 => constant::DECK_JSON_PATH_P2,
+                _ => return Err(Exception::PathNotExist),
+            };
 
-        // 파일 열기
-        let mut file = File::open(file_path).expect("Failed to open file");
+            // 파일 열기
+            let mut file = File::open(file_path).expect("Failed to open file");
 
-        // 파일 내용을 문자열로 읽기
-        let mut json_data = String::new();
-        file.read_to_string(&mut json_data)
-            .expect("Failed to read file");
-
-        let decks: json::Decks = match serde_json::from_str(&json_data[..]) {
-            Ok(data) => data,
-            Err(_) => return Err(Exception::JsonParseFailed),
+            // 파일 내용을 문자열로 읽기
+            let mut json_data = String::new();
+            file.read_to_string(&mut json_data)
+                .expect("Failed to read file");
+            match serde_json::from_str(&json_data[..]) {
+                Ok(data) => data,
+                Err(_) => return Err(Exception::JsonParseFailed),
+            }
         };
 
         let keys = Keys::new();
 
-        let create_card_vector = |decks: &json::Decks, keys: &Keys, num: i32| -> Vec<i32> {
+        let create_card_vector = |decks: &json::Decks, keys: &Keys, num: usize| -> Vec<usize> {
             decks.decks[0]
                 .cards
                 .iter()
                 .filter(|card| card.num == num)
-                .filter_map(|card| keys.get_i32_by_string(&card.id))
+                .filter_map(|card| keys.get_usize_by_string(&card.id))
                 .collect()
         };
 
-        let card1 = create_card_vector(&decks, &keys, 1);
-        let card2 = create_card_vector(&decks, &keys, 2);
+        let card1 = create_card_vector(&decks, &keys, PLAYER_1);
+        let card2 = create_card_vector(&decks, &keys, PLAYER_1);
 
         // 사전 설정
-        let dbf_hero = 930; // Example hero DBF ID
-        let format = 2; // Example format (standard)
+        let dbf_hero = 930;
+        let format = 2;
 
         let deck_code = deck_encode(card1, card2, dbf_hero, format);
 
         Ok(deck_code)
     };
+
     let deck_code = (json_to_deck_code(PLAYER_1), json_to_deck_code(PLAYER_2));
     match deck_code {
         (Ok(code1), Ok(code2)) => return Ok((code1, code2)),
         (Ok(_), Err(err)) => {
-            println!("{err}");
-            return Err(Exception::DecodeError);
+            return Err(err);
         }
         (Err(err), Ok(_)) => {
-            println!("{err}");
-            return Err(Exception::DecodeError);
+            return Err(err);
         }
-        (Err(_), Err(_)) => Err(Exception::PlayerDataNotIntegrity),
+        (Err(_), Err(err)) => Err(err),
     }
 }
 
@@ -158,14 +179,14 @@ pub fn load_card_data(deck_code: (DeckCode, DeckCode)) -> Result<Vec<Cards>, Exc
     let mut p2_cards = vec![];
 
     let check_values_exist = |card_data: &CardJson,
-                              decoded_deck: &(Vec<i32>, Vec<i32>),
+                              decoded_deck: &(Vec<usize>, Vec<usize>),
                               p_cards: &mut Vec<Card>|
      -> Result<(), Exception> {
         for dbfid in &decoded_deck.0 {
             match card_data.dbfid {
                 Some(_dbfid) => {
                     if &_dbfid == dbfid {
-                        p_cards.push(card_genertor.gen_card_by_id_i32(*dbfid, card_data, 1));
+                        p_cards.push(card_genertor.gen_card_by_id_usize(*dbfid, card_data, 1));
                     }
                 }
                 None => {}
@@ -175,7 +196,7 @@ pub fn load_card_data(deck_code: (DeckCode, DeckCode)) -> Result<Vec<Cards>, Exc
             match card_data.dbfid {
                 Some(_dbfid) => {
                     if &_dbfid == dbfid {
-                        p_cards.push(card_genertor.gen_card_by_id_i32(*dbfid, card_data, 2));
+                        p_cards.push(card_genertor.gen_card_by_id_usize(*dbfid, card_data, 2));
                     }
                 }
                 None => {}
@@ -196,7 +217,7 @@ pub fn load_card_data(deck_code: (DeckCode, DeckCode)) -> Result<Vec<Cards>, Exc
     Ok(vec![Cards::new(&p1_cards), Cards::new(&p2_cards)])
 }
 
-pub fn load_card_id() -> Result<Vec<(String, i32)>, Exception> {
+pub fn load_card_id() -> Result<Vec<(String, usize)>, Exception> {
     let file_path = constant::CARD_ID_JSON_PATH;
 
     // 파일 열기
@@ -221,7 +242,7 @@ pub fn load_card_id() -> Result<Vec<(String, i32)>, Exception> {
 }
 
 const DECK_CODE_VERSION: u32 = 1;
-fn deck_decode(deck_code: String) -> Result<(Vec<i32>, Vec<i32>), ()> {
+fn deck_decode(deck_code: String) -> Result<(Vec<usize>, Vec<usize>), ()> {
     let code = decode(deck_code).unwrap();
     let mut pos = 0;
 
@@ -234,7 +255,7 @@ fn deck_decode(deck_code: String) -> Result<(Vec<i32>, Vec<i32>), ()> {
                 return Err(());
             }
 
-            let ch = code[*pos] as i32;
+            let ch = code[*pos] as usize;
 
             *pos += 1;
 
@@ -326,7 +347,7 @@ fn deck_decode(deck_code: String) -> Result<(Vec<i32>, Vec<i32>), ()> {
     Ok((_1_cards, _2_cards))
 }
 
-fn write_varint<W: Write>(writer: &mut W, mut value: i32) -> std::io::Result<()> {
+fn write_varint<W: Write>(writer: &mut W, mut value: usize) -> std::io::Result<()> {
     loop {
         let mut temp: u8 = (value & 0b01111111) as u8;
         value >>= 7;
@@ -341,7 +362,7 @@ fn write_varint<W: Write>(writer: &mut W, mut value: i32) -> std::io::Result<()>
     Ok(())
 }
 
-fn deck_encode(deck1: Vec<i32>, deck2: Vec<i32>, dbf_hero: i32, format: i32) -> String {
+fn deck_encode(deck1: Vec<usize>, deck2: Vec<usize>, dbf_hero: usize, format: usize) -> String {
     let mut baos = Cursor::new(Vec::new());
 
     write_varint(&mut baos, 0).unwrap(); // always zero
@@ -350,12 +371,12 @@ fn deck_encode(deck1: Vec<i32>, deck2: Vec<i32>, dbf_hero: i32, format: i32) -> 
     write_varint(&mut baos, 1).unwrap(); // number of heroes in heroes array, always 1
     write_varint(&mut baos, dbf_hero).unwrap(); // DBF ID of hero
 
-    write_varint(&mut baos, deck1.len() as i32).unwrap(); // number of 1-quantity cards
+    write_varint(&mut baos, deck1.len() as usize).unwrap(); // number of 1-quantity cards
     for dbf_id in &deck1 {
         write_varint(&mut baos, *dbf_id).unwrap();
     }
 
-    write_varint(&mut baos, deck2.len() as i32).unwrap(); // number of 2-quantity cards
+    write_varint(&mut baos, deck2.len() as usize).unwrap(); // number of 2-quantity cards
     for dbf_id in &deck2 {
         write_varint(&mut baos, *dbf_id).unwrap();
     }

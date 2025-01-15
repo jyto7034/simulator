@@ -10,8 +10,29 @@ use super::card::Card;
 pub struct Cards {
     pub v_card: Vec<Card>,
 }
+impl<'a> IntoIterator for &'a Cards {
+    type Item = &'a Card;
+    type IntoIter = std::slice::Iter<'a, Card>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.v_card.iter()
+    }
+}
+
+impl<'a> IntoIterator for &'a mut Cards {
+    type Item = &'a mut Card;
+    type IntoIter = std::slice::IterMut<'a, Card>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.v_card.iter_mut()
+    }
+}
 
 impl Cards {
+    pub fn empty() -> Cards {
+        Cards { v_card: vec![] }
+    }
+
     // --------------------------------------------------------
     // 카드 뭉치에 카드가 존재하는지 확인합니다.
     // --------------------------------------------------------

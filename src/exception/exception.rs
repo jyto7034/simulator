@@ -1,6 +1,9 @@
 use std::fmt;
+
+use crate::enums::PlayerType;
 #[derive(Debug, PartialEq)]
 pub enum Exception {
+    DeckCodeIsMissing(PlayerType),
     PlayerInitializeFailed,
     PlayerDataNotIntegrity,
     PathNotExist,

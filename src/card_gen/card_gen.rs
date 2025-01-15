@@ -67,10 +67,10 @@ const FUNCTION_TABLE: [CardGeneratorFn; 27] = [
     test,
 ];
 
-type Key = Vec<(String, i32)>;
+type Key = Vec<(String, usize)>;
 pub struct CardGenerator {
     keys: Keys,
-    pub card_generators: Lazy<HashMap<i32, CardGeneratorFn>>,
+    pub card_generators: Lazy<HashMap<usize, CardGeneratorFn>>,
 }
 
 pub struct Keys {
@@ -86,14 +86,14 @@ impl Keys {
         Keys { keys }
     }
 
-    pub fn get_i32_by_string(&self, key: &str) -> Option<i32> {
+    pub fn get_usize_by_string(&self, key: &str) -> Option<usize> {
         self.keys
             .iter()
             .find(|&(item_key, _)| item_key == key)
             .map(|&(_, value)| value)
     }
 
-    pub fn get_string_by_i32(&self, key: i32) -> Option<String> {
+    pub fn get_string_by_usize(&self, key: usize) -> Option<String> {
         self.keys
             .iter()
             .find(|&(_, item_key)| item_key == &key)
@@ -103,7 +103,7 @@ impl Keys {
 
 impl CardGenerator {
     pub fn new() -> CardGenerator {
-        let map: Lazy<HashMap<i32, CardGeneratorFn>> = Lazy::new(|| {
+        let map: Lazy<HashMap<usize, CardGeneratorFn>> = Lazy::new(|| {
             let keys = Keys::new().keys;
             let mut map = HashMap::new();
             let func_it = FUNCTION_TABLE.iter();
@@ -119,7 +119,7 @@ impl CardGenerator {
         }
     }
 
-    pub fn gen_card_by_id_i32(&self, id: i32, card_json: &CardJson, count: usize) -> Card {
+    pub fn gen_card_by_id_usize(&self, id: usize, card_json: &CardJson, count: usize) -> Card {
         if let Some(generator) = self.card_generators.get(&id) {
             generator(card_json, count)
         } else {
@@ -129,8 +129,8 @@ impl CardGenerator {
 
     pub fn gen_card_by_id_string(&self, key: String, card_json: &CardJson, count: usize) -> Card {
         println!("key {key}");
-        match self.keys.get_i32_by_string(&key[..]) {
-            Some(_key) => self.gen_card_by_id_i32(_key, card_json, count),
+        match self.keys.get_usize_by_string(&key[..]) {
+            Some(_key) => self.gen_card_by_id_usize(_key, card_json, count),
             None => panic!("Unknown ID: {}", key),
         }
     }

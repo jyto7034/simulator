@@ -4,7 +4,7 @@ use crate::{
     game::game::{Game, GameConfig},
     procedure::procedure::Procedure,
     server::schema::{Message, MessageInfo, Respones},
-    utils::utils,
+    OptRcRef,
 };
 
 /// client 로부터 msg 를 받으면 그것을 해석 후
@@ -12,47 +12,32 @@ use crate::{
 pub struct App {
     pub game: Game,
     pub procedure: Procedure,
-    pub debug_flag: bool,
 }
 
 impl App {
     pub fn instantiate() -> App {
         App {
             game: Game {
-                player1: None,
-                player2: None,
+                player1: OptRcRef::none(),
+                player2: OptRcRef::none(),
             },
             procedure: Procedure {
                 tasks: vec![],
                 trigger_tasks: vec![],
             },
-            debug_flag: true,
         }
     }
 
-    pub fn initialize(
+    pub fn initialize_game(
         &mut self,
-        _code1: Option<DeckCode>,
-        _code2: Option<DeckCode>,
+        _code1: DeckCode,
+        _code2: DeckCode,
+        attacker: usize,
     ) -> Result<(), Exception> {
-        let config = if self.debug_flag {
-            let deckcodes = utils::parse_json_to_deck_code().unwrap();
-            GameConfig {
-                player_1_deckcode: deckcodes.0,
-                player_2_deckcode: deckcodes.1,
-                attaker: 1, // to random
-                player_1_name: "Player 1".to_string(),
-                player_2_name: "Player 2".to_string(),
-            }
-        } else {
-            GameConfig {
-                player_1_deckcode: _code1.unwrap(),
-                player_2_deckcode: _code2.unwrap(),
-                attaker: 1, // to random
-                // player_name 도 변경해야함.
-                player_1_name: "Player 1".to_string(),
-                player_2_name: "Player 2".to_string(),
-            }
+        let config = GameConfig {
+            player_1_deckcode: _code1,
+            player_2_deckcode: _code2,
+            attacker,
         };
 
         self.game.initialize(config)?;
@@ -64,10 +49,10 @@ impl App {
         match info.msg {
             Message::CreateGame => todo!(),
             Message::EntryGame => todo!(),
-            Message::PlayCardWithTarget(played_card, target_cards) => todo!(),
+            Message::PlayCardWithTarget(_played_card, _target_cards) => todo!(),
             Message::SelectMulligunCard => todo!(),
             Message::GetMulligunCards(data) => Respones::get_mulligun_cards(self, info, data),
-            Message::PlayCard(played_card) => todo!(),
+            Message::PlayCard(_played_card) => todo!(),
             Message::DrawCard => todo!(),
             Message::AttackTo => todo!(),
             Message::TurnEnd => todo!(),

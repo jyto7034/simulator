@@ -8,6 +8,7 @@ use crate::{
         deck_zone::DeckZone, effect_zone::EffectZone, graveyard_zone::GraveyardZone,
         hand_zone::HandZone, zone::Zone,
     },
+    OptRcRef, RcRef,
 };
 
 #[derive(Clone, Debug)]
@@ -50,11 +51,11 @@ impl Resoruce {
 }
 
 /// 플레이어를 행동, 상태 등을 다루는 구조체 입니다.
+#[derive(Clone)]
 pub struct Player {
-    pub opponent: Option<Rc<RefCell<Player>>>,
+    pub opponent: OptRcRef<Player>,
     player_type: PlayerType,
     cards: Cards,
-    name: String,
     cost: Resoruce,
     mana: Resoruce,
 
@@ -66,10 +67,9 @@ pub struct Player {
 
 impl Player {
     pub fn new(
-        opponent: Option<Rc<RefCell<Player>>>,
+        opponent: OptRcRef<Player>,
         player_type: PlayerType,
         cards: Cards,
-        name: String,
         cost: Resoruce,
         mana: Resoruce,
     ) -> Player {
@@ -77,7 +77,6 @@ impl Player {
             opponent,
             player_type,
             cards,
-            name,
             hand_zone: HandZone::new(),
             deck_zone: DeckZone::new(),
             graveyard_zone: GraveyardZone::new(),
@@ -129,16 +128,12 @@ impl Player {
         self.get_zone(zone_type).add_card(card, insert_type)
     }
 
-    pub fn get_opponent(&self) -> &Option<Rc<RefCell<Player>>> {
+    pub fn get_opponent(&self) -> &OptRcRef<Player> {
         &self.opponent
     }
 
     pub fn get_cards(&self) -> &Cards {
         &self.cards
-    }
-
-    pub fn get_name(&self) -> &String {
-        &self.name
     }
 
     pub fn get_cost(&mut self) -> &mut Resoruce {
@@ -161,10 +156,6 @@ impl Player {
 
     pub fn set_cards(&mut self, new_cards: Cards) {
         self.cards = new_cards;
-    }
-
-    pub fn set_name(&mut self, new_name: String) {
-        self.name = new_name;
     }
 
     pub fn set_cost(&mut self, cost: usize) {
