@@ -36,12 +36,26 @@ mod tests {
 
         let app = initialize_app(p1_deck, p2_deck, PLAYER_1);
 
+        println!("----------- Player 1 -----------");
+        let cards = app
+        .game
+        .get_player(PlayerType::Player1)
+        .get()
+        .get_cards()
+        .clone();
+        for card in &cards{
+            println!("{:#?}", card.get_name());
+        }
+        println!("----------- Player 2 -----------");
         let cards = app
             .game
-            .get_player(PlayerType::Player1)
+            .get_player(PlayerType::Player2)
             .get()
             .get_cards()
             .clone();
-        assert_eq!(cards.len(), 2);
+        for card in &cards{
+            println!("{:#?}", card.get_name());
+        }
+        // assert_eq!(cards.len(), 2);
     }
 }

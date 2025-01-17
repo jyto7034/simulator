@@ -6,7 +6,6 @@ use crate::exception::exception::Exception;
 use crate::utils::json;
 use base64::{decode, encode};
 use byteorder::WriteBytesExt;
-use serde_json::Value;
 use std::fs::File;
 use std::io::Read;
 use std::io::{Cursor, Write};
@@ -109,17 +108,16 @@ pub fn parse_json_to_deck_code(
 
         let keys = Keys::new();
 
-        let create_card_vector = |decks: &json::Decks, keys: &Keys, num: usize| -> Vec<usize> {
+        let create_card_vector = |decks: &json::Decks, keys: &Keys| -> Vec<usize> {
             decks.decks[0]
                 .cards
                 .iter()
-                .filter(|card| card.num == num)
                 .filter_map(|card| keys.get_usize_by_string(&card.id))
                 .collect()
         };
 
-        let card1 = create_card_vector(&decks, &keys, PLAYER_1);
-        let card2 = create_card_vector(&decks, &keys, PLAYER_1);
+        let card1 = create_card_vector(&decks, &keys);
+        let card2 = create_card_vector(&decks, &keys);
 
         // 사전 설정
         let dbf_hero = 930;
@@ -178,9 +176,12 @@ pub fn load_card_data(deck_code: (DeckCode, DeckCode)) -> Result<Vec<Cards>, Exc
     let mut p1_cards = vec![];
     let mut p2_cards = vec![];
 
-    let check_values_exist = |card_data: &CardJson,
-                              decoded_deck: &(Vec<usize>, Vec<usize>),
-                              p_cards: &mut Vec<Card>|
+    let check_values_exist = 
+                            |
+                                card_data: &CardJson,
+                                decoded_deck: &(Vec<usize>, Vec<usize>),
+                                p_cards: &mut Vec<Card>
+                            |
      -> Result<(), Exception> {
         for dbfid in &decoded_deck.0 {
             match card_data.dbfid {

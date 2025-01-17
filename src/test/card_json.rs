@@ -14,6 +14,10 @@ pub fn init_cards_json() -> (String, String) {
         {
           "id": "HM_001",
           "num": 2
+        },
+        {
+          "id": "HM_002",
+          "num": 2
         }
       ]
     }

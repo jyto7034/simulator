@@ -74,7 +74,7 @@ pub struct CardGenerator {
 }
 
 pub struct Keys {
-    keys: Key,
+    pub keys: Key,
 }
 
 impl Keys {
@@ -294,22 +294,18 @@ mod human {
     }
     #[allow(non_snake_case)]
     pub fn HM_005(_card_json: &CardJson, _count: usize) -> Card {
-        // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
     pub fn HM_006(_card_json: &CardJson, _count: usize) -> Card {
-        // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
     pub fn HM_007(_card_json: &CardJson, _count: usize) -> Card {
-        // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
     #[allow(non_snake_case)]
     pub fn HM_008(_card_json: &CardJson, _count: usize) -> Card {
-        // Card::new(card_type, uuid, name, count, behavior_table, card_json)
         todo!()
     }
 }
