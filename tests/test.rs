@@ -31,31 +31,19 @@ mod tests {
     fn init_cards() {
         let (p1_deck, p2_deck) = init_cards_json();
 
-        let (p1_deck, p2_deck) = parse_json_to_deck_code(Some(&p1_deck[..]), Some(&p2_deck[..]))
+        let (p1_deck, p2_deck) = parse_json_to_deck_code(Some(p1_deck), Some(p2_deck))
             .expect("parse_json_to_deck_code failed");
 
         let app = initialize_app(p1_deck, p2_deck, PLAYER_1);
 
-        println!("----------- Player 1 -----------");
-        let cards = app
-        .game
-        .get_player(PlayerType::Player1)
-        .get()
-        .get_cards()
-        .clone();
-        for card in &cards{
-            println!("{:#?}", card.get_name());
-        }
-        println!("----------- Player 2 -----------");
         let cards = app
             .game
             .get_player(PlayerType::Player2)
             .get()
             .get_cards()
             .clone();
-        for card in &cards{
+        for card in &cards {
             println!("{:#?}", card.get_name());
         }
-        // assert_eq!(cards.len(), 2);
     }
 }

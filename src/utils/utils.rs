@@ -6,6 +6,7 @@ use crate::exception::exception::Exception;
 use crate::utils::json;
 use base64::{decode, encode};
 use byteorder::WriteBytesExt;
+use serde_json::Value;
 use std::fs::File;
 use std::io::Read;
 use std::io::{Cursor, Write};
@@ -65,10 +66,10 @@ pub fn read_game_config_json() -> Result<json::GameConfigJson, Exception> {
 }
 
 pub fn parse_json_to_deck_code(
-    p1_card_json: Option<&str>,
-    p2_card_json: Option<&str>,
+    p1_card_json: Option<Value>,
+    p2_card_json: Option<Value>,
 ) -> Result<(DeckCode, DeckCode), Exception> {
-    match (p1_card_json, p2_card_json) {
+    match (&p1_card_json, &p2_card_json) {
         (Some(_), None) => return Err(Exception::DeckCodeIsMissing(constant::PlayerType::Player2)),
         (None, Some(_)) => return Err(Exception::DeckCodeIsMissing(constant::PlayerType::Player1)),
         (None, None) => return Err(Exception::DecodeError),
@@ -78,11 +79,12 @@ pub fn parse_json_to_deck_code(
     let json_to_deck_code = |player_num: usize| {
         let decks: json::Decks = if p1_card_json != None {
             let deck_json = if player_num == PLAYER_1 {
-                p1_card_json.unwrap()
+                p1_card_json.clone()
             } else {
-                p2_card_json.unwrap()
+                p2_card_json.clone()
             };
-            match serde_json::from_str(deck_json) {
+
+            match serde_json::from_value(deck_json.unwrap()) {
                 Ok(data) => data,
                 Err(_) => return Err(Exception::JsonParseFailed),
             }
@@ -176,12 +178,9 @@ pub fn load_card_data(deck_code: (DeckCode, DeckCode)) -> Result<Vec<Cards>, Exc
     let mut p1_cards = vec![];
     let mut p2_cards = vec![];
 
-    let check_values_exist = 
-                            |
-                                card_data: &CardJson,
-                                decoded_deck: &(Vec<usize>, Vec<usize>),
-                                p_cards: &mut Vec<Card>
-                            |
+    let check_values_exist = |card_data: &CardJson,
+                              decoded_deck: &(Vec<usize>, Vec<usize>),
+                              p_cards: &mut Vec<Card>|
      -> Result<(), Exception> {
         for dbfid in &decoded_deck.0 {
             match card_data.dbfid {
