@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use crate::{card::Card, procedure::behavior::Behavior};
 
 pub const CARD_ID_JSON_PATH: &str = "Resource/cards_id.json";
@@ -48,13 +50,37 @@ pub enum SpellType {
     FastSpell,
 }
 
-#[derive(Debug, Eq, PartialEq, Hash, Clone)]
+#[derive(Eq, PartialEq, Hash, Clone)]
 pub enum CardType {
     Dummy,
     Unit,
     Spell(SpellType),
     Field,
     Game,
+}
+
+impl Display for CardType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Dummy => write!(f, "Dummy"),
+            Self::Unit => write!(f, "Unit"),
+            Self::Spell(arg0) => f.debug_tuple("Spell").field(arg0).finish(),
+            Self::Field => write!(f, "Field"),
+            Self::Game => write!(f, "Game"),
+        }
+    }
+}
+
+impl std::fmt::Debug for CardType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Dummy => write!(f, "Dummy"),
+            Self::Unit => write!(f, "Unit"),
+            Self::Spell(arg0) => f.debug_tuple("Spell").field(arg0).finish(),
+            Self::Field => write!(f, "Field"),
+            Self::Game => write!(f, "Game"),
+        }
+    }
 }
 
 impl Copy for CardType {}

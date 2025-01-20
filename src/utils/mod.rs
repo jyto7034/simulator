@@ -96,10 +96,11 @@ pub fn parse_json_to_deck_code(
         }
     }
 
-    fn create_card_vector(decks: &json::Decks, keys: &Keys) -> Vec<usize> {
+    fn create_card_vector(decks: &json::Decks, keys: &Keys, num: usize) -> Vec<usize> {
         decks.decks[0]
             .cards
             .iter()
+            .filter(|card| card.num == num)
             .filter_map(|card| keys.get_usize_by_string(&card.id))
             .collect()
     }
@@ -108,8 +109,9 @@ pub fn parse_json_to_deck_code(
         let decks = parse_deck_json(json_value, player_num)?;
         let keys = Keys::new();
         
-        let card1 = create_card_vector(&decks, &keys);
-        let card2 = create_card_vector(&decks, &keys);
+        // deckcode 에서 카드 1장 인 것과 2장 인 것을 따로 생성함.
+        let card1 = create_card_vector(&decks, &keys, 1);
+        let card2 = create_card_vector(&decks, &keys, 2);
 
         let dbf_hero = 930;
         let format = 2;
@@ -194,7 +196,7 @@ pub fn load_card_data(deck_code: (DeckCode, DeckCode)) -> Result<Vec<Cards>, Exc
         check_values_exist(&card_data, &decoded_deck1, &mut p1_cards)?;
         check_values_exist(&card_data, &decoded_deck2, &mut p2_cards)?;
     }
-
+    println!("len {}", p1_cards.len());
     Ok(vec![Cards::new(&p1_cards), Cards::new(&p2_cards)])
 }
 
@@ -356,7 +358,7 @@ fn deck_encode(deck1: Vec<usize>, deck2: Vec<usize>, dbf_hero: usize, format: us
     for dbf_id in &deck1 {
         write_varint(&mut baos, *dbf_id).unwrap();
     }
-
+    
     write_varint(&mut baos, deck2.len() as usize).unwrap(); // number of 2-quantity cards
     for dbf_id in &deck2 {
         write_varint(&mut baos, *dbf_id).unwrap();
