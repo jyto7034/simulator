@@ -1,4 +1,4 @@
-use crate::{enums::DeckCode, exception::exception::Exception, utils::utils};
+use crate::{enums::DeckCode, exception::Exception, utils};
 
 use super::cards::Cards;
 

@@ -1,14 +1,12 @@
-use std::{cell::RefCell, rc::Rc};
-
 use crate::{
-    card::{card::Card, cards::Cards},
+    card::{Card, cards::Cards},
     enums::{CardDrawType, ChoiceType, InsertType, PlayerType, ZoneType},
-    exception::exception::Exception,
+    exception::Exception,
     zone::{
         deck_zone::DeckZone, effect_zone::EffectZone, graveyard_zone::GraveyardZone,
         hand_zone::HandZone, zone::Zone,
     },
-    OptRcRef, RcRef,
+    OptRcRef,
 };
 
 #[derive(Clone, Debug)]

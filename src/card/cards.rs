@@ -1,8 +1,8 @@
-use crate::enums::constant::{self, CardParam, CardType, InsertType, SpellType, UUID};
-use crate::exception::exception::Exception;
+use crate::enums::*;
+use crate::exception::Exception;
 use rand::Rng;
 
-use super::card::Card;
+use super::Card;
 
 /// 다수의 카드를 보다 더 효율적으로 관리하기 위한 구조체입니다.
 /// 예를 들어 카드 서치, 수정 등이 있습니다.
@@ -269,14 +269,14 @@ impl Cards {
     //  - 굳이 있어야 하나?
     // --------------------------------------------------------
     pub fn get_card_count(&self) -> u32 {
-        constant::MAX_CARD_SIZE
+        MAX_CARD_SIZE
     }
 
     // --------------------------------------------------------
     // 카드 뭉치가 포화상태인지 확인합니다.
     // --------------------------------------------------------
     pub fn is_exceed(&self) -> bool {
-        self.v_card.len() >= constant::MAX_CARD_SIZE as usize
+        self.v_card.len() >= MAX_CARD_SIZE as usize
     }
 
     // --------------------------------------------------------
@@ -297,8 +297,7 @@ impl Cards {
     // 카드를 찾습니다
     // 카드를 소모하지 않습니다.
     // --------------------------------------------------------
-    pub fn search(&mut self, find_type: constant::FindType) -> Result<Card, Exception> {
-        use constant::*;
+    pub fn search(&mut self, find_type: FindType) -> Result<Card, Exception> {
 
         match find_type {
             FindType::FindByUUID(uuid) => self.find_by_uuid(uuid),
@@ -312,8 +311,7 @@ impl Cards {
     // 뽑을 카드가 존재하지 않을 경우.(=덱사) 해당 에러를 외부로
     // 전파하여 처리합니다.
     // --------------------------------------------------------
-    pub fn draw(&mut self, draw_type: constant::CardDrawType) -> Result<Vec<Card>, Exception> {
-        use constant::*;
+    pub fn draw(&mut self, draw_type: CardDrawType) -> Result<Vec<Card>, Exception> {
 
         let count = match draw_type {
             CardDrawType::Random(count) => count,

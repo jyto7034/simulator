@@ -1,7 +1,7 @@
 use crate::{
-    card::{card::Card, cards::Cards},
-    enums::{CardParam, CardType, InsertType, UNIT_ZONE_SIZE, UUID},
-    exception::exception::Exception,
+    card::{Card, cards::Cards},
+    enums::{CardParam, CardType, InsertType, DECK_ZONE_SIZE, UUID},
+    exception::Exception,
 };
 
 use super::zone::Zone;
@@ -16,7 +16,7 @@ impl DeckZone {
     pub fn new() -> DeckZone {
         DeckZone {
             zone_cards: Cards::new(&vec![]),
-            zone_size: UNIT_ZONE_SIZE,
+            zone_size: DECK_ZONE_SIZE,
         }
     }
 

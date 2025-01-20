@@ -1,7 +1,7 @@
 use crate::{
-    card::{card::Card, cards::Cards},
+    card::{Card, cards::Cards},
     enums::{CardParam, InsertType, UUID},
-    exception::exception::Exception,
+    exception::Exception,
 };
 
 use super::zone::Zone;

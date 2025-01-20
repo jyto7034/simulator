@@ -1,8 +1,8 @@
 use super::schema::MessageInfo;
 use crate::{
-    app::app::App,
+    app::App,
     enums::TaskType,
-    exception::exception::Exception,
+    exception::Exception,
     procedure::{behavior::Behavior, task::Task},
     server::schema::Respones,
 };

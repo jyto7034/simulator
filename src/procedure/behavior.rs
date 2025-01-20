@@ -1,12 +1,12 @@
 use crate::{
-    card::card::Card,
+    card::Card,
     enums::{CardAttribute, InsertType, PlayerType, SpellType, TargetCard, ZoneType},
-    exception::exception::Exception,
-    game::game::Game,
+    exception::Exception,
+    game::Game,
     server::{respone::RESPONE_QUEUE, schema::Respones},
 };
 
-use super::procedure::Procedure;
+use super::Procedure;
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub enum Behavior {

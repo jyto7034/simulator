@@ -1,9 +1,9 @@
 use std::any::Any;
 
 use crate::{
-    card::{card::Card, cards::Cards},
+    card::{Card, cards::Cards},
     enums::{InsertType, UUID},
-    exception::exception::Exception,
+    exception::Exception,
 };
 
 pub trait Zone: Any {
