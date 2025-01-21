@@ -1,4 +1,3 @@
-mod card_registry;
 mod monster;
 mod human;
 mod public;

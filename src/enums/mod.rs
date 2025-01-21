@@ -1,3 +1,5 @@
+pub mod phase;
+
 use std::fmt::Display;
 
 use crate::{card::Card, procedure::behavior::Behavior};
@@ -9,27 +11,7 @@ pub const DECK_JSON_PATH_P2: &str = "Datas/player2_test.json";
 pub const UUID_GENERATOR_PATH: &str = "Resource/uuidgen";
 pub const GAME_CONFIG_JSON_PATH: &str = "Datas/config.json";
 
-pub enum GameStep {
-    GameStart,
-    GameEnd,
-    RoundStart,
-    RoundEnd,
-    AttackTurn,
-    DefenseTurn,
-    Execution,
-    Mulligun,
-}
 
-pub enum GameState {
-    GameStart,
-    GameEnd,
-    RoundStart,
-    RoundEnd,
-    AttackTurn,
-    DefenseTurn,
-    Execution,
-    Mulligun,
-}
 
 pub enum EntityType {
     Player,

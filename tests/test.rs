@@ -101,4 +101,9 @@ mod tests {
         assert_eq!(p1_cards.len(), CARD_NUM, "Deck should have {CARD_NUM} cards");
         assert_eq!(original_cards.len(), CARD_NUM, "Original deck should have {CARD_NUM} cards");
     }
+
+    #[test]
+    fn test_muligun(){
+        
+    }
 }
