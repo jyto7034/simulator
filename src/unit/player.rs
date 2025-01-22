@@ -1,12 +1,7 @@
 use crate::{
-    card::{Card, cards::Cards},
-    enums::{CardDrawType, ChoiceType, InsertType, PlayerType, ZoneType},
-    exception::Exception,
-    zone::{
-        deck_zone::DeckZone, effect_zone::EffectZone, graveyard_zone::GraveyardZone,
-        hand_zone::HandZone, zone::Zone,
-    },
-    OptRcRef,
+    card::cards::Cards, enums::PlayerType, zone::{
+        deck::Deck, effect::Effect, field::Field, hand::Hand, graveyard::Graveyard
+    }, OptRcRef
 };
 
 #[derive(Clone, Debug)]
@@ -49,7 +44,6 @@ impl Resoruce {
 }
 
 /// 플레이어를 행동, 상태 등을 다루는 구조체 입니다.
-#[derive(Clone)]
 pub struct Player {
     pub opponent: OptRcRef<Player>,
     player_type: PlayerType,
@@ -57,10 +51,11 @@ pub struct Player {
     cost: Resoruce,
     mana: Resoruce,
 
-    hand_zone: HandZone,
-    deck_zone: DeckZone,
-    graveyard_zone: GraveyardZone,
-    effect_zone: EffectZone,
+    hand: Hand,
+    deck: Deck,
+    graveyard: Graveyard,
+    effect: Effect,
+    field: Field,
 }
 
 impl Player {
@@ -75,57 +70,16 @@ impl Player {
             opponent,
             player_type,
             cards,
-            hand_zone: HandZone::new(),
-            deck_zone: DeckZone::new(),
-            graveyard_zone: GraveyardZone::new(),
-            effect_zone: EffectZone::new(),
+            hand: Hand::new(),
+            deck: Deck::new(),
+            graveyard: Graveyard::new(),
+            effect: Effect::new(),
+            field: Field::new(),
             cost,
             mana,
         }
     }
-
-    // --------------------------------------------------------
-    // 주어진 파라미터에 따라 draw 합니다.
-    // 만약 count 가 해당 Zone 이 갖고 있는 카드의 갯수를 초과한다면
-    // Zone 이 갖고 있는 만큼만 return 합니다.
-    // --------------------------------------------------------
-    // TODO:
-    //  - [?] 객체 단위 관리로 변경해야함.
-    //  - draw 의 Result 제대로 처리해야함.
-    // --------------------------------------------------------
-    pub fn draw(
-        &mut self,
-        zone_type: ZoneType,
-        draw_type: CardDrawType,
-    ) -> Result<Vec<Card>, Exception> {
-        // 전처리 해야됨. 아마도
-
-        self.get_zone(zone_type).get_cards().draw(draw_type)
-    }
-
-    // --------------------------------------------------------
-    // ChoiceType 에 따라 처리합니다.
-    // --------------------------------------------------------
-    // Parameters:
-    // --------------------------------------------------------
-    // Exceptions:
-    // --------------------------------------------------------
-    pub fn choice_card(&mut self, choice_type: ChoiceType) -> Vec<Card> {
-        match choice_type {
-            ChoiceType::Mulligun => todo!(),
-            ChoiceType::Target => todo!(),
-        }
-    }
-
-    pub fn add_card(
-        &mut self,
-        zone_type: ZoneType,
-        card: Card,
-        insert_type: InsertType,
-    ) -> Result<(), Exception> {
-        self.get_zone(zone_type).add_card(card, insert_type)
-    }
-
+    
     pub fn get_opponent(&self) -> &OptRcRef<Player> {
         &self.opponent
     }
@@ -142,16 +96,6 @@ impl Player {
         &mut self.mana
     }
 
-    pub fn get_zone(&mut self, zone_type: ZoneType) -> Box<&mut dyn Zone> {
-        match zone_type {
-            ZoneType::HandZone => Box::new(&mut self.hand_zone),
-            ZoneType::DeckZone => Box::new(&mut self.deck_zone),
-            ZoneType::GraveyardZone => Box::new(&mut self.graveyard_zone),
-            ZoneType::EffectZone => Box::new(&mut self.effect_zone),
-            ZoneType::None => todo!(),
-        }
-    }
-
     pub fn set_cards(&mut self, new_cards: Cards) {
         self.cards = new_cards;
     }
@@ -162,5 +106,48 @@ impl Player {
 
     pub fn set_mana(&mut self, cost: usize) {
         self.mana.set(cost);
+    }
+}
+
+
+impl Player {
+    pub fn get_hand_zone_as_mut(&mut self) -> &mut Hand {
+        &mut self.hand
+    }
+
+    pub fn get_deck_zone_as_mut(&mut self) -> &mut Deck {
+        &mut self.deck
+    }
+
+    pub fn get_graveyard_zone_as_mut(&mut self) -> &mut Graveyard {
+        &mut self.graveyard
+    }
+
+    pub fn get_effect_zone_as_mut(&mut self) -> &mut Effect {
+        &mut self.effect
+    }
+
+    pub fn get_field_zone_as_mut(&mut self) -> &mut Field {
+        &mut self.field
+    }
+
+    pub fn get_hand_zone(&self) -> &Hand {
+        &self.hand
+    }
+
+    pub fn get_deck_zone(&self) -> &Deck {
+        &self.deck
+    }
+
+    pub fn get_graveyard_zone(&self) -> &Graveyard {
+        &self.graveyard
+    }
+
+    pub fn get_effect_zone(&self) -> &Effect {
+        &self.effect
+    }
+
+    pub fn get_field_zone(&self) -> &Field {
+        &self.field
     }
 }

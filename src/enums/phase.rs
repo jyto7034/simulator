@@ -1,5 +1,7 @@
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Eq)]
 pub enum Phase {
+    GameStart,
+
     // 가장 먼저 시작되는 드로우 페이즈 ( 기타 자원 등 증가함. )
     DrawPhase,
 
@@ -35,7 +37,39 @@ pub enum Phase {
     EndPhase,
 }
 
+impl PartialOrd for Phase {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Phase {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.order().cmp(&other.order())
+    }
+}
+
 impl Phase {
+    fn order(&self) -> u8 {
+        match self {
+            Phase::GameStart => 0,
+            Phase::DrawPhase => 1,
+            Phase::StandbyPhase => 2,
+            Phase::MainPhaseStart => 3,
+            Phase::MainPhase1 => 4,
+            Phase::BattlePhaseStart => 5,
+            Phase::BattleStep => 6,
+            Phase::BattleDamageStepStart => 7,
+            Phase::BattleDamageStepCalculationBefore => 8,
+            Phase::BattleDamageStepCalculationStart => 9,
+            Phase::BattleDamageStepCalculationEnd => 10,
+            Phase::BattleDamageStepEnd => 11,
+            Phase::BattlePhaseEnd => 12,
+            Phase::MainPhase2 => 13,
+            Phase::EndPhase => 14,
+        }
+    }
+
     /// 현재 페이즈가 드로우 페이즈인지 확인
     pub fn is_draw_phase(&self) -> bool {
         matches!(self, Phase::DrawPhase)
@@ -139,6 +173,7 @@ impl Phase {
     /// 다음 페이즈 반환
     pub fn next_phase(&self) -> Phase {
         match self {
+            Phase::GameStart => Phase::DrawPhase,
             Phase::DrawPhase => Phase::StandbyPhase,
             Phase::StandbyPhase => Phase::MainPhaseStart,
             Phase::MainPhaseStart => Phase::MainPhase1,

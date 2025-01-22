@@ -1,28 +1,22 @@
-use crate::{card::Card, enums::{CardType, PlayerType}, procedure::behavior::Behavior, utils::{self, json::CardJson}};
+
+use crate::{card::{effect::{DrawEffect, ModifyStatEffect}, target_selector::SingleCardSelector, types::{OwnerType, StatType}, Card}, enums::{CardLocation, ZoneType}, utils::json::CardJson};
+
+use super::builder::CardBuilder;
 
 #[allow(non_snake_case)]
 pub fn PB_001(card_json: &CardJson, count: usize) -> Card {
-    let uuid = match utils::generate_uuid() {
-        Ok(data) => data,
-        Err(err) => {
-            panic!("test func failed {err}");
-        }
-    };
-    let mut bvs = vec![];
-    bvs.push(Behavior::DrawCardFromDeck);
-    let name = if let Some(name) = &card_json.name {
-        name
-    } else {
-        panic!("Card creating error");
-    };
-    Card::new(
-        CardType::Unit,
-        uuid,
-        name.clone(),
-        bvs,
-        card_json.clone(),
-        PlayerType::None,
-    )
+    CardBuilder::new(card_json)
+        .unwrap()
+        .add_effect(DrawEffect { count: 2 })
+        .add_effect(ModifyStatEffect {
+            stat_type: StatType::Attack,
+            amount: 2,
+            target_selector: Box::new(SingleCardSelector::new(
+                CardLocation(ZoneType::None),
+                OwnerType::Any,
+            )),
+        })
+        .build()
 }
 #[allow(non_snake_case)]
 pub fn PB_002(card_json: &CardJson, count: usize) -> Card {

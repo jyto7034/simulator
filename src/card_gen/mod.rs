@@ -1,6 +1,7 @@
 mod monster;
 mod human;
 mod public;
+mod builder;
 
 use crate::card::Card;
 use crate::{utils, utils::json::CardJson};

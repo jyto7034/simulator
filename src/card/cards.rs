@@ -1,354 +1,145 @@
-use crate::enums::*;
-use crate::exception::Exception;
-use rand::Rng;
-
 use super::Card;
 
 /// 다수의 카드를 보다 더 효율적으로 관리하기 위한 구조체입니다.
-/// 예를 들어 카드 서치, 수정 등이 있습니다.
-#[derive(Debug, Clone)]
 pub struct Cards {
     pub v_card: Vec<Card>,
 }
-impl<'a> IntoIterator for &'a Cards {
-    type Item = &'a Card;
-    type IntoIter = std::slice::Iter<'a, Card>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.v_card.iter()
-    }
-}
-
-impl<'a> IntoIterator for &'a mut Cards {
-    type Item = &'a mut Card;
-    type IntoIter = std::slice::IterMut<'a, Card>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.v_card.iter_mut()
-    }
-}
 
 impl Cards {
-    pub fn empty() -> Cards {
-        Cards { v_card: vec![] }
+    pub fn new_with(cards: Vec<Card>) -> Self{
+        Self { v_card: cards }
     }
 
-    // --------------------------------------------------------
-    // 카드 뭉치에 카드가 존재하는지 확인합니다.
-    // --------------------------------------------------------
-    fn is_deck_empty(&self) -> Result<(), Exception> {
-        if self.v_card.is_empty() {
-            return Err(Exception::NoCardsLeft);
+    /// 새로운 Cards 인스턴스를 생성합니다.
+    pub fn new() -> Self {
+        Self { v_card: Vec::new() }
+    }
+
+    /// 특정 용량으로 Cards 인스턴스를 생성합니다.
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self { v_card: Vec::with_capacity(capacity) }
+    }
+
+    /// 카드를 추가합니다.
+    pub fn add(&mut self, card: Card) {
+        self.v_card.push(card);
+    }
+
+    /// 여러 카드를 한번에 추가합니다.
+    pub fn add_multiple(&mut self, cards: Vec<Card>) {
+        self.v_card.extend(cards);
+    }
+
+    /// 특정 인덱스의 카드를 제거하고 반환합니다.
+    pub fn remove(&mut self, index: usize) -> Option<Card> {
+        if index < self.v_card.len() {
+            Some(self.v_card.remove(index))
         } else {
-            return Ok(());
+            None
         }
     }
 
-    // --------------------------------------------------------
-    // 스펠 카드를 타입에 따라 뽑습니다.
-    // 카드를 소모합니다.
-    // --------------------------------------------------------
-    // TODO:
-    //  - 카드 소모
-    // --------------------------------------------------------
-
-    fn draw_spell(&self, spell_type: SpellType) -> Result<Card, Exception> {
-        // Deck 이 비어 있는지 확인합니다.
-        self.is_deck_empty()?;
-
-        self.find_by_card_type(CardType::Spell(spell_type))
+    /// UUID로 카드를 찾습니다.
+    pub fn find_by_uuid(&self, uuid: &str) -> Option<&Card> {
+        self.v_card.iter().find(|card| card.get_uuid() == uuid)
     }
 
-    // --------------------------------------------------------
-    // 카드를 무작위로 뽑습니다.
-    // 카드를 소모합니다.
-    // --------------------------------------------------------
-    // Returns:
-    //  - Ok  : 문제없이 카드를 뽑았을 때, Card 를 반환합니다.
-    //  - Err : 카드 뭉치에 카드가 없을 때, NoCardsLeft 를 반환합니다.
-    //
-    // Exceptions:
-    //  - ThreadRng 참고, 카드 삭제 부분
-    // --------------------------------------------------------
-    fn draw_random(&mut self) -> Result<Card, Exception> {
-        self.is_deck_empty()?;
-
-        // 난수 생성기
-        let mut rng = rand::thread_rng();
-
-        let random_index = rng.gen_range(0..self.v_card.len());
-        let ans = self.v_card[random_index].clone();
-        self.v_card.remove(random_index);
-
-        Ok(ans)
+    /// UUID로 카드를 찾아 수정 가능한 참조를 반환합니다.
+    pub fn find_by_uuid_mut(&mut self, uuid: &str) -> Option<&mut Card> {
+        self.v_card.iter_mut().find(|card| card.get_uuid() == uuid)
     }
 
-    // --------------------------------------------------------
-    // 카드 뭉치 하단에 있는 카드를 뽑습니다.
-    // --------------------------------------------------------
-    // TODO:
-    //  - 카드 소모
-    // --------------------------------------------------------
-    // Returns:
-    //  - Ok  : 문제없이 카드를 뽑았을 때, Card 를 반환합니다.
-    //  - Err : 카드 뭉치에 카드가 없을 때, NoCardsLeft 를 반환합니다.
-    //
-    // Exceptions:
-    //  - 카드 삭제 부분
-    // --------------------------------------------------------
-    fn draw_bottom(&mut self) -> Result<Card, Exception> {
-        self.is_deck_empty()?;
-
-        let ans = self.v_card.first().unwrap().clone();
-        self.v_card.remove(0);
-
-        Ok(ans)
+    /// 조건에 맞는 모든 카드를 찾습니다.
+    pub fn find_all<F>(&self, predicate: F) -> Vec<&Card>
+    where
+        F: Fn(&Card) -> bool,
+    {
+        self.v_card.iter().filter(|card| predicate(card)).collect()
     }
 
-    // --------------------------------------------------------
-    // 카드 뭉치 하단에 있는 카드를 뽑습니다.
-    // --------------------------------------------------------
-    // Returns:
-    //  - Ok  : 문제없이 카드를 뽑았을 때, Card 를 반환합니다.
-    //  - Err : 카드 뭉치에 카드가 없을 때, NoCardsLeft 를 반환합니다.
-    //
-    // Exceptions:
-    //  - 카드 삭제 부분
-    // --------------------------------------------------------
-    fn draw_top(&mut self) -> Result<Card, Exception> {
-        self.is_deck_empty()?;
-
-        let ans = self.v_card.last().unwrap().clone();
-        self.v_card.remove(self.v_card.len() - 1);
-
-        Ok(ans)
+    /// 조건에 맞는 모든 카드의 수정 가능한 참조를 반환합니다.
+    pub fn find_all_mut<F>(&mut self, predicate: F) -> Vec<&mut Card>
+    where
+        F: Fn(&Card) -> bool,
+    {
+        self.v_card.iter_mut().filter(|card| predicate(card)).collect()
     }
 
-    // --------------------------------------------------------
-    // 카드 타입에 따라 뽑습니다.
-    // 카드를 소모합니다.
-    // --------------------------------------------------------
-    // Returns:
-    //  - Ok  : 문제없이 카드를 뽑았을 때, Card 를 반환합니다.
-    //  - Err : 카드 뭉치에 카드가 없을 때, NoCardsLeft 를 반환합니다.
-    //
-    // Exceptions:
-    //  - 카드 삭제 부분
-    // --------------------------------------------------------
-    fn draw_by_card_type(&mut self, card_type: CardType) -> Result<Card, Exception> {
-        self.is_deck_empty()?;
-
-        let ans = self.find_by_card_type(card_type)?;
-        self.v_card
-            .retain(|item| item.cmp(CardParam::Card(item.clone())));
-
-        Ok(ans)
-    }
-
-    // --------------------------------------------------------
-    // uuid 에 해당하는 카드를 찾아내서 복사-반환합니다.
-    // 카드를 소모하지 않습니다.
-    // --------------------------------------------------------
-    // Returns:
-    //  - Ok  : 문제없이 카드를 뽑았을 때, Card 를 반환합니다.
-    //  - Err : 카드 뭉치에 카드가 없을 때, NoCardsLeft 를 반환합니다.
-    //
-    // Exceptions:
-    //  - 카드 삭제 부분
-    // --------------------------------------------------------
-    fn find_by_uuid(&mut self, uuid: UUID) -> Result<Card, Exception> {
-        // uuid 에 해당하는 카드를 집계합니다.
-        // count 가 0 개인 경우, 스킵하고 다음 카드를 찾습니다.
-        match self
-            .v_card
-            .iter()
-            .find(|item| item.cmp(CardParam::Uuid(uuid.clone())))
-            .cloned()
-        {
-            Some(card) => Ok(card),
-            None => Err(Exception::CardsNotFound),
-        }
-    }
-
-    // --------------------------------------------------------
-    // name 에 해당하는 카드를 찾아내서 복사-반환합니다.
-    // 카드를 소모하지 않습니다.
-    // --------------------------------------------------------
-    fn find_by_name(&mut self, _name: String) -> Result<Card, Exception> {
-        // name 에 해당하는 카드를 집계합니다.
-        // count 가 0 개인 경우, 스킵하고 다음
-        match self
-            .v_card
-            .iter()
-            .find(|item| item.cmp(CardParam::Card((*item).clone())))
-            .cloned()
-        {
-            Some(card) => Ok(card),
-            None => Err(Exception::CardsNotFound),
-        }
-    }
-
-    // --------------------------------------------------------
-    // 타입에 해당하는 카드를 찾아내서 복사-반환합니다.
-    // 카드를 소모하지 않습니다.
-    // --------------------------------------------------------
-    fn find_by_card_type(&self, card_type: CardType) -> Result<Card, Exception> {
-        // cond 에 해당하는 카드를 집계합니다.
-        // count 가 0 개인 경우, 스킵하고 다음 카드를 찾습니다.
-        let filter = |cond: CardType| match self
-            .v_card
-            .iter()
-            .find(|item| item.get_card_type() == &cond)
-            .cloned()
-        {
-            Some(card) => Ok(card),
-            None => Err(Exception::CardsNotFound),
-        };
-
-        match card_type {
-            CardType::Dummy => panic!(),
-            CardType::Unit => filter(CardType::Unit),
-            CardType::Field => filter(CardType::Field),
-            CardType::Spell(SpellType::FastSpell) => filter(CardType::Spell(SpellType::FastSpell)),
-            CardType::Spell(SpellType::SlowSpell) => filter(CardType::Spell(SpellType::SlowSpell)),
-            CardType::Game => panic!(),
-        }
-    }
-}
-
-impl Cards {
-    // --------------------------------------------------------
-    // 카드 뭉치를 새로 만듭니다.
-    // --------------------------------------------------------
-    pub fn new(cards: &Vec<Card>) -> Cards {
-        Cards {
-            v_card: cards.to_vec(),
-        }
-    }
-
-    // --------------------------------------------------------
-    // 카드 뭉치에 존재하는 카드들의 갯수를 반환합니다.
-    // --------------------------------------------------------
+    /// 카드의 개수를 반환합니다.
     pub fn len(&self) -> usize {
         self.v_card.len()
     }
 
-    // --------------------------------------------------------
-    // 카드 뭉치에 카드를 새롭게 추가합니다.
-    // --------------------------------------------------------
-    pub fn add_card(&mut self, card: Card, insert_type: InsertType) -> Result<(), Exception> {
-        // insertType 구현
-        match insert_type {
-            InsertType::Random => todo!(),
-            InsertType::Top => {
-                if self.is_exceed() == false {
-                    self.v_card.push(card);
-                    Ok(())
-                } else {
-                    Err(Exception::ExceededCardLimit)
-                }
-            }
-            InsertType::Bottom => todo!(),
-            InsertType::Card(_) => todo!(),
-            InsertType::Under(_) => todo!(),
-            InsertType::Slot(_) => todo!(),
+    /// 카드가 비어있는지 확인합니다.
+    pub fn is_empty(&self) -> bool {
+        self.v_card.is_empty()
+    }
+
+    /// 모든 카드를 제거합니다.
+    pub fn clear(&mut self) {
+        self.v_card.clear();
+    }
+
+    /// 카드들을 섞습니다.
+    pub fn shuffle(&mut self) {
+        use rand::seq::SliceRandom;
+        let mut rng = rand::thread_rng();
+        self.v_card.shuffle(&mut rng);
+    }
+
+    /// 카드들을 정렬합니다.
+    pub fn sort_by<F>(&mut self, compare: F)
+    where
+        F: FnMut(&Card, &Card) -> std::cmp::Ordering,
+    {
+        self.v_card.sort_by(compare);
+    }
+
+    /// 특정 조건을 만족하는 카드의 개수를 반환합니다.
+    pub fn count<F>(&self, predicate: F) -> usize
+    where
+        F: Fn(&Card) -> bool,
+    {
+        self.v_card.iter().filter(|card| predicate(card)).count()
+    }
+
+    /// 첫 번째 카드를 가져옵니다.
+    pub fn first(&self) -> Option<&Card> {
+        self.v_card.first()
+    }
+
+    /// 마지막 카드를 가져옵니다.
+    pub fn last(&self) -> Option<&Card> {
+        self.v_card.last()
+    }
+
+    /// 특정 범위의 카드들을 가져옵니다.
+    pub fn get_range(&self, range: std::ops::Range<usize>) -> Option<&[Card]> {
+        self.v_card.get(range)
+    }
+}
+
+// FromIterator 구현
+impl FromIterator<Card> for Cards {
+    fn from_iter<I: IntoIterator<Item = Card>>(iter: I) -> Self {
+        Self {
+            v_card: iter.into_iter().collect(),
         }
     }
+}
 
-    // --------------------------------------------------------
-    // 빈 카드를 하나 만들어 반환합니다.
-    // --------------------------------------------------------
-    pub fn dummy() -> Cards {
-        Cards { v_card: vec![] }
-    }
-
-    // --------------------------------------------------------
-    // 카드 뭉치가 가질 수 있는 최대 갯수를 반환합니다.
-    // --------------------------------------------------------
-    // TODO:
-    //  - 굳이 있어야 하나?
-    // --------------------------------------------------------
-    pub fn get_card_count(&self) -> u32 {
-        MAX_CARD_SIZE
-    }
-
-    // --------------------------------------------------------
-    // 카드 뭉치가 포화상태인지 확인합니다.
-    // --------------------------------------------------------
-    pub fn is_exceed(&self) -> bool {
-        self.v_card.len() >= MAX_CARD_SIZE as usize
-    }
-
-    // --------------------------------------------------------
-    // 카드를 카드 뭉치로부터 제거합니다.
-    // --------------------------------------------------------
-    pub fn remove(&mut self, card: CardParam) {
-        match card {
-            CardParam::Uuid(uuid) => self
-                .v_card
-                .retain(|item| item.cmp(CardParam::Uuid(uuid.clone()))),
-            CardParam::Card(card) => self
-                .v_card
-                .retain(|item| item.cmp(CardParam::Uuid(card.get_uuid().clone()))),
+// Clone 구현 (Card가 Clone을 구현한다고 가정)
+impl Clone for Cards {
+    fn clone(&self) -> Self {
+        Self {
+            v_card: self.v_card.clone(),
         }
     }
+}
 
-    // --------------------------------------------------------
-    // 카드를 찾습니다
-    // 카드를 소모하지 않습니다.
-    // --------------------------------------------------------
-    pub fn search(&mut self, find_type: FindType) -> Result<Card, Exception> {
-
-        match find_type {
-            FindType::FindByUUID(uuid) => self.find_by_uuid(uuid),
-            FindType::FindByName(name) => self.find_by_name(name),
-            FindType::FindByCardType(card_type) => self.find_by_card_type(card_type),
-        }
-    }
-
-    // --------------------------------------------------------
-    // 카드 뭉치에서 한 장을 뽑습니다.
-    // 뽑을 카드가 존재하지 않을 경우.(=덱사) 해당 에러를 외부로
-    // 전파하여 처리합니다.
-    // --------------------------------------------------------
-    pub fn draw(&mut self, draw_type: CardDrawType) -> Result<Vec<Card>, Exception> {
-
-        let count = match draw_type {
-            CardDrawType::Random(count) => count,
-            CardDrawType::CardType(_, count) => count,
-            _ => 0,
-        };
-
-        // 실제로 draw 하는 부분 입니다.
-        let draw_cards = match draw_type {
-            CardDrawType::Top => {
-                vec![self.draw_top()?]
-            }
-            CardDrawType::Random(_) => {
-                let draw_cards: Vec<Card> =
-                    (0..count).map(|_| self.draw_random().unwrap()).collect();
-                draw_cards
-            }
-            CardDrawType::Bottom => {
-                vec![self.draw_top()?]
-            }
-            CardDrawType::CardType(CardType::Spell(SpellType::FastSpell), _) => {
-                vec![self.draw_spell(SpellType::FastSpell)?]
-            }
-            CardDrawType::CardType(CardType::Spell(SpellType::SlowSpell), _) => {
-                vec![self.draw_spell(SpellType::SlowSpell)?]
-            }
-            CardDrawType::CardType(CardType::Field, _) => {
-                vec![self.draw_by_card_type(CardType::Field)?]
-            }
-            CardDrawType::CardType(CardType::Unit, _) => {
-                vec![self.draw_by_card_type(CardType::Unit)?]
-            }
-            _ => {
-                panic!()
-            }
-        };
-
-        Ok(draw_cards)
+// Default 구현
+impl Default for Cards {
+    fn default() -> Self {
+        Self::new()
     }
 }

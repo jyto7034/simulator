@@ -7,7 +7,6 @@ pub mod card_gen;
 pub mod enums;
 pub mod exception;
 pub mod game;
-pub mod procedure;
 pub mod server;
 pub mod test;
 pub mod unit;

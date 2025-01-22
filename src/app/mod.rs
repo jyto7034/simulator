@@ -1,9 +1,7 @@
 use crate::{
-    enums::DeckCode,
+    enums::{phase::Phase, DeckCode},
     exception::Exception,
-    game::{Game, GameConfig},
-    procedure::Procedure,
-    server::schema::{Message, MessageInfo, Respones},
+    game::{turn_manager::TurnManager, Game, GameConfig},
     OptRcRef,
 };
 
@@ -11,7 +9,6 @@ use crate::{
 /// Procedure 의 함수를 통해 Game 의 상태를 수정/관리함.
 pub struct App {
     pub game: Game,
-    pub procedure: Procedure,
 }
 
 impl App {
@@ -20,10 +17,8 @@ impl App {
             game: Game {
                 player1: OptRcRef::none(),
                 player2: OptRcRef::none(),
-            },
-            procedure: Procedure {
-                tasks: vec![],
-                trigger_tasks: vec![],
+                current_phase: Phase::GameStart,
+                turn: TurnManager::new(),
             },
         }
     }
@@ -43,21 +38,6 @@ impl App {
         self.game.initialize(config)?;
 
         Ok(())
-    }
-
-    pub fn execute_msg(&mut self, info: MessageInfo) -> Result<(), Exception> {
-        match info.msg {
-            Message::CreateGame => todo!(),
-            Message::EntryGame => todo!(),
-            Message::PlayCardWithTarget(_played_card, _target_cards) => todo!(),
-            Message::SelectMulligunCard => todo!(),
-            Message::GetMulligunCards(data) => Respones::get_mulligun_cards(self, info, data),
-            Message::PlayCard(_played_card) => todo!(),
-            Message::DrawCard => todo!(),
-            Message::AttackTo => todo!(),
-            Message::TurnEnd => todo!(),
-            Message::None => todo!(),
-        }
     }
 }
 

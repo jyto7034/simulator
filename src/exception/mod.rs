@@ -3,6 +3,8 @@ use std::fmt;
 use crate::enums::PlayerType;
 #[derive(Debug, PartialEq)]
 pub enum Exception {
+    NoValidTargets,
+    CannotActivate,
     DeckCodeIsMissing(PlayerType),
     PlayerInitializeFailed,
     PlayerDataNotIntegrity,
@@ -11,6 +13,7 @@ pub enum Exception {
     GameInitializeFailed,
     DifferentCardTypes,
     GenerateUUIDFaild,
+    CardNotFound,
     ExceededCardLimit,
     FailedToDrawCard,
     NothingToRemove,

@@ -126,7 +126,7 @@ pub fn parse_json_to_deck_code(
     Ok((p1_code, p2_code))
 }
 
-pub fn load_card_data(deck_code: (DeckCode, DeckCode)) -> Result<Vec<Cards>, Exception> {
+pub fn deckcode_to_cards(p1_deckcode: DeckCode, p2_deckcode: DeckCode) -> Result<Vec<Cards>, Exception> {
     // 거대한 json 파일을 읽는 방법 따로 구현해야댐
     // json 을 쌩으로 로드하면 좆댐;
 
@@ -145,11 +145,11 @@ pub fn load_card_data(deck_code: (DeckCode, DeckCode)) -> Result<Vec<Cards>, Exc
         Err(_) => return Err(Exception::JsonParseFailed),
     };
 
-    let decoded_deck1 = match deck_decode(deck_code.0) {
+    let decoded_deck1 = match deck_decode(p1_deckcode) {
         Ok(data) => data,
         Err(_err) => return Err(Exception::JsonParseFailed),
     };
-    let decoded_deck2 = match deck_decode(deck_code.1) {
+    let decoded_deck2 = match deck_decode(p2_deckcode) {
         Ok(data) => data,
         Err(_err) => return Err(Exception::JsonParseFailed),
     };
@@ -197,7 +197,7 @@ pub fn load_card_data(deck_code: (DeckCode, DeckCode)) -> Result<Vec<Cards>, Exc
         check_values_exist(&card_data, &decoded_deck2, &mut p2_cards)?;
     }
     println!("len {}", p1_cards.len());
-    Ok(vec![Cards::new(&p1_cards), Cards::new(&p2_cards)])
+    Ok(vec![Cards::new_with(p1_cards), Cards::new_with(p2_cards)])
 }
 
 pub fn load_card_id() -> Result<Vec<(String, usize)>, Exception> {

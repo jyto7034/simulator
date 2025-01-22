@@ -1,11 +1,11 @@
-pub mod hand_zone;
+pub mod hand;
 
-pub mod deck_zone;
+pub mod deck;
 
-pub mod graveyard_zone;
+pub mod graveyard;
 
-pub mod effect_zone;
+pub mod effect;
 
-pub mod unit_zone;
+pub mod field;
 
 pub mod zone;

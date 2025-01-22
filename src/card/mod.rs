@@ -1,134 +1,151 @@
+use effect::Effect;
+pub mod insert;
+use types::{CardSpecs, CardStatus, StatType};
+
+use crate::{enums::PlayerType, card::types::CardType, exception::Exception, game::Game, utils::{self, json::CardJson}};
 pub mod cards;
-pub mod deck;
+pub mod effect;
+pub mod types;
+pub mod target_selector;
 
-use crate::{
-    enums::*,
-    procedure::behavior::Behavior,
-    utils::json::CardJson,
-};
-use std::fmt;
-
-/// 단일 카드 정보를 담은 구조체 입니다.
-#[derive(Clone, Eq, Hash)]
+#[derive(Clone)]
 pub struct Card {
-    card_type: CardType,
     uuid: String,
     name: String,
-    behavior_table: Vec<Behavior>,
-    card_json: CardJson,
-    player_type: PlayerType,
+    card_type: CardType,
+    effects: Vec<Box<dyn Effect>>,
+    specs: CardSpecs,
+    status: CardStatus,
+    owner: PlayerType,
+    json_data: CardJson,
 }
 
-impl PartialEq for Card {
-    fn eq(&self, other: &Self) -> bool {
-        self.cmp(CardParam::Card(other.clone()))
-    }
-}
-
-impl fmt::Debug for Card {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Card {{\n")?;
-        write!(f, "    card_type: {:#?}\n", self.card_type)?;
-        write!(f, "    uuid: {}", self.uuid)?;
-        write!(f, "    name: {}\n", self.name)?;
-        write!(f, "    behavior_table: {:?}\n", self.behavior_table)?;
-        write!(f, "    card_json: {:#?}\n", self.card_json)?;
-        write!(f, "    player_type: {:?}\n", self.player_type)?;
-        // if let Some(_runner) = &self.runner {
-        //     write!(f, "    runner: Ok\n")?;
-        // } else {
-        //     write!(f, "    runner: None\n")?;
-        // }
-        write!(f, "}}")
+impl Clone for Box<dyn Effect> {
+    fn clone(&self) -> Self {
+        self.clone_effect().unwrap()
     }
 }
 
 impl Card {
+    // 새로운 생성자
     pub fn new(
         card_type: CardType,
-        uuid: UUID,
+        uuid: String,
         name: String,
-        behavior_table: Vec<Behavior>,
-        card_json: CardJson,
-        player_type: PlayerType,
-    ) -> Card {
+        effects: Vec<Box<dyn Effect>>,
+        json_data: CardJson,
+        owner: PlayerType,
+    ) -> Self {
         Card {
-            card_type,
             uuid,
             name,
-            behavior_table,
-            card_json,
-            player_type,
+            card_type,
+            effects,
+            specs: CardSpecs::new(),
+            status: CardStatus::default(),
+            owner,
+            json_data,
         }
     }
 
-    pub fn dummy() -> Card {
-        Card {
-            card_type: CardType::Dummy,
-            uuid: "".to_string(),
-            name: "dummy".to_string(),
-            behavior_table: vec![],
-            card_json: CardJson::new(),
-            player_type: PlayerType::None,
+    // 효과 활성화
+    pub fn activate(&self, game: &mut Game) -> Result<(), Exception> {
+        // 카드가 효과를 발동할 수 있는 상태인지 확인
+        if !self.can_activate(game) {
+            return Err(Exception::CannotActivate);
+        }
+
+        // 새 시스템의 효과들 처리
+        for effect in &self.effects {
+            if effect.can_activate(game, self) {
+                effect.apply(game, self)?;
+            }
+        }
+
+        Ok(())
+    }
+
+    // 카드가 효과를 발동할 수 있는 상태인지 확인
+    pub fn can_activate(&self, game: &Game) -> bool {
+        !self.status.is_negated() && 
+        !self.status.is_disabled() && 
+        self.meets_activation_conditions(game)
+    }
+
+    // effect 효과로 처리
+    pub fn can_be_targeted(&self) -> bool{
+        todo!()
+    }
+
+    // 발동 조건 확인
+    fn meets_activation_conditions(&self, game: &Game) -> bool {
+        // 카드 타입별, 상황별 발동 조건 체크
+        match self.card_type {
+            CardType::Dummy => todo!(),
+            CardType::Unit => todo!(),
+            CardType::Spell(spell_type) => todo!(),
+            CardType::Field => todo!(),
+            CardType::Game => todo!(),
+            // CardType::Unit => self.can_activate_as_unit(game),
+            // CardType::Spell => self.can_activate_as_spell(game),
         }
     }
 
-    pub fn is_dummy(&self) -> bool {
-        true
-    }
-
-    pub fn get_uuid(&self) -> &String {
+    // Getter/Setter 메서드들
+    pub fn get_uuid(&self) -> &str {
         &self.uuid
     }
 
-    pub fn get_card_type(&self) -> &CardType {
-        &self.card_type
-    }
-
-    pub fn get_name(&self) -> &String {
+    pub fn get_name(&self) -> &str {
         &self.name
     }
 
-    pub fn get_behavior_table(&self) -> &Vec<Behavior> {
-        &self.behavior_table
+    pub fn get_type(&self) -> &CardType {
+        &self.card_type
     }
 
-    pub fn get_card_json(&self) -> &CardJson {
-        &self.card_json
+    pub fn get_owner(&self) -> &PlayerType {
+        &self.owner
     }
 
-    pub fn get_player_type(&self) -> PlayerType {
-        self.player_type.clone()
+    pub fn set_owner(&mut self, player: PlayerType) {
+        self.owner = player;
     }
 
-    // Setter 함수들
-    pub fn set_card_type(&mut self, new_card_type: CardType) {
-        self.card_type = new_card_type;
+    pub fn get_specs(&self) -> &CardSpecs {
+        &self.specs
     }
 
-    pub fn set_uuid(&mut self, new_uuid: String) {
-        self.uuid = new_uuid;
+    pub fn get_status(&self) -> &CardStatus {
+        &self.status
     }
 
-    pub fn set_name(&mut self, new_name: String) {
-        self.name = new_name;
+    pub fn get_status_mut(&mut self) -> &mut CardStatus {
+        &mut self.status
     }
 
-    pub fn set_behavior_table(&mut self, new_behavior_table: Vec<Behavior>) {
-        self.behavior_table = new_behavior_table;
+    // 효과 추가
+    pub fn add_effect<E: Effect + 'static>(&mut self, effect: E) {
+        self.effects.push(Box::new(effect));
     }
 
-    pub fn set_card_json(&mut self, _new_card_json: CardJson) {}
+    pub fn modify_stat(&mut self, stat_type: StatType, amount: i32) -> Result<(), Exception>{
+        Ok(())
+    }
 
-    // uuid 를 대조합니다.
-    // 동일하다면, true 를.
-    // 그렇지않다면, false 를 반환합니다.
-    pub fn cmp(&self, cmp_type: CardParam) -> bool {
-        match cmp_type {
-            CardParam::Uuid(uuid) => self.get_uuid().cmp(&uuid) == std::cmp::Ordering::Equal,
-            CardParam::Card(card) => {
-                self.get_name().cmp(card.get_name()) == std::cmp::Ordering::Equal
-            }
-        }
+    // 카드 복사 (새로운 UUID 생성)
+    pub fn clone_with_new_uuid(&self) -> Result<Self, Exception> {
+        Ok(Card {
+            uuid: utils::generate_uuid()?,
+            name: self.name.clone(),
+            card_type: self.card_type.clone(),
+            effects: self.effects.iter()
+                .map(|e| e.clone_effect())
+                .collect::<Result<Vec<_>, _>>()?,
+            specs: self.specs.clone(),
+            status: CardStatus::default(),
+            owner: self.owner.clone(),
+            json_data: self.json_data.clone(),
+        })
     }
 }
