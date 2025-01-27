@@ -9,7 +9,7 @@ use std::io::Read;
 
 const CARD_NUM: usize = 25;
 
-pub fn initialize_app(p1_deck: String, p2_deck: String, attacker: usize) -> App {
+pub fn initialize_app(p1_deck: DeckCode, p2_deck: DeckCode, attacker: usize) -> App {
     let mut app = App::instantiate();
 
     app.initialize_game(p1_deck, p2_deck, attacker)
@@ -93,8 +93,8 @@ mod tests {
         assert_eq!(original_cards.len(), CARD_NUM, "Original deck should have {CARD_NUM} cards");
     }
 
-    #[test]
-    fn test_muligun(){
+    // #[test]
+    // fn test_muligun(){
         
-    }
+    // }
 }

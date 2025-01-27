@@ -1,3 +1,5 @@
+use crate::enums::UUID;
+
 use super::Card;
 
 /// 다수의 카드를 보다 더 효율적으로 관리하기 위한 구조체입니다.
@@ -40,12 +42,12 @@ impl Cards {
     }
 
     /// UUID로 카드를 찾습니다.
-    pub fn find_by_uuid(&self, uuid: &str) -> Option<&Card> {
+    pub fn find_by_uuid(&self, uuid: UUID) -> Option<&Card> {
         self.v_card.iter().find(|card| card.get_uuid() == uuid)
     }
 
     /// UUID로 카드를 찾아 수정 가능한 참조를 반환합니다.
-    pub fn find_by_uuid_mut(&mut self, uuid: &str) -> Option<&mut Card> {
+    pub fn find_by_uuid_mut(&mut self, uuid: UUID) -> Option<&mut Card> {
         self.v_card.iter_mut().find(|card| card.get_uuid() == uuid)
     }
 

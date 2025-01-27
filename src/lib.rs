@@ -12,6 +12,7 @@ pub mod test;
 pub mod unit;
 pub mod utils;
 pub mod zone;
+pub mod resource;
 
 #[macro_use]
 extern crate lazy_static;

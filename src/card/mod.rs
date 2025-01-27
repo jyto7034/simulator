@@ -1,8 +1,8 @@
 use effect::Effect;
 pub mod insert;
-use types::{CardSpecs, CardStatus, StatType};
+use types::{CardSpecs, CardStatus, OwnerType, StatType};
 
-use crate::{enums::PlayerType, card::types::CardType, exception::Exception, game::Game, utils::{self, json::CardJson}};
+use crate::{card::types::CardType, enums::UUID, exception::Exception, game::Game, utils::{self, json::CardJson}};
 pub mod cards;
 pub mod effect;
 pub mod types;
@@ -10,13 +10,13 @@ pub mod target_selector;
 
 #[derive(Clone)]
 pub struct Card {
-    uuid: String,
+    uuid: UUID,
     name: String,
-    card_type: CardType,
+    r#type: CardType,
     effects: Vec<Box<dyn Effect>>,
     specs: CardSpecs,
     status: CardStatus,
-    owner: PlayerType,
+    owner: OwnerType,
     json_data: CardJson,
 }
 
@@ -27,28 +27,18 @@ impl Clone for Box<dyn Effect> {
 }
 
 impl Card {
-    // 새로운 생성자
     pub fn new(
-        card_type: CardType,
-        uuid: String,
-        name: String,
-        effects: Vec<Box<dyn Effect>>,
-        json_data: CardJson,
-        owner: PlayerType,
-    ) -> Self {
-        Card {
-            uuid,
-            name,
-            card_type,
-            effects,
-            specs: CardSpecs::new(),
-            status: CardStatus::default(),
-            owner,
-            json_data,
-        }
+        owner: OwnerType, 
+        uuid: UUID, 
+        name: String, 
+        effects: Vec<Box<dyn Effect>>, 
+        r#type: CardType, 
+        specs: CardSpecs, 
+        status: CardStatus, 
+        json_data: CardJson) -> Self{
+        Self { uuid, name, r#type, effects, specs, status, owner, json_data}
     }
 
-    // 효과 활성화
     pub fn activate(&self, game: &mut Game) -> Result<(), Exception> {
         // 카드가 효과를 발동할 수 있는 상태인지 확인
         if !self.can_activate(game) {
@@ -80,20 +70,20 @@ impl Card {
     // 발동 조건 확인
     fn meets_activation_conditions(&self, game: &Game) -> bool {
         // 카드 타입별, 상황별 발동 조건 체크
-        match self.card_type {
+        match self.r#type {
             CardType::Dummy => todo!(),
             CardType::Unit => todo!(),
-            CardType::Spell(spell_type) => todo!(),
             CardType::Field => todo!(),
             CardType::Game => todo!(),
-            // CardType::Unit => self.can_activate_as_unit(game),
-            // CardType::Spell => self.can_activate_as_spell(game),
+            CardType::Spell => todo!(),
+            CardType::Trap => todo!(),
+            CardType::Ace => todo!(),
         }
     }
 
     // Getter/Setter 메서드들
-    pub fn get_uuid(&self) -> &str {
-        &self.uuid
+    pub fn get_uuid(&self) -> UUID {
+        self.uuid.clone()
     }
 
     pub fn get_name(&self) -> &str {
@@ -101,14 +91,14 @@ impl Card {
     }
 
     pub fn get_type(&self) -> &CardType {
-        &self.card_type
+        &self.r#type
     }
 
-    pub fn get_owner(&self) -> &PlayerType {
-        &self.owner
+    pub fn get_owner(&self) -> OwnerType {
+        self.owner
     }
 
-    pub fn set_owner(&mut self, player: PlayerType) {
+    pub fn set_owner(&mut self, player: OwnerType) {
         self.owner = player;
     }
 
@@ -138,7 +128,7 @@ impl Card {
         Ok(Card {
             uuid: utils::generate_uuid()?,
             name: self.name.clone(),
-            card_type: self.card_type.clone(),
+            r#type: self.r#type.clone(),
             effects: self.effects.iter()
                 .map(|e| e.clone_effect())
                 .collect::<Result<Vec<_>, _>>()?,

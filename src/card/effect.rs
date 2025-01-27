@@ -15,13 +15,13 @@ pub struct DrawEffect {
 impl Effect for DrawEffect {
     fn apply(&self, game: &mut Game, source: &Card) -> Result<(), Exception> {
         for _ in 0..self.count {
-            game.draw_card(source.get_owner())?;
+            game.draw_card(source.get_owner().into())?;
         }
         Ok(())
     }
 
     fn can_activate(&self, game: &Game, source: &Card) -> bool {
-        game.get_player(source.get_owner()).get().get_deck_zone().len() >= self.count
+        game.get_player(source.get_owner().into()).get().get_deck_zone().len() >= self.count
     }
     
     fn clone_effect(&self) -> Result<Box<dyn Effect>, Exception> {

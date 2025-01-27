@@ -8,13 +8,6 @@ pub const UUID_GENERATOR_PATH: &str = "Resource/uuidgen";
 pub const GAME_CONFIG_JSON_PATH: &str = "Datas/config.json";
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub enum PlayerType {
-    Player1,
-    Player2,
-    None,
-}
-
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum ZoneType {
     Hand,
     Deck,
@@ -29,11 +22,14 @@ pub struct CardLocation(pub ZoneType);
 
 pub const MAX_CARD_SIZE: u32 = 30;
 
-// pub type TaskQueue = Vec<Task>;
-pub type DeckCode = String;
-pub type UUID = String;
+pub struct DeckCode(pub String);
+
+
+#[derive(Clone, PartialEq, Eq)]
+pub struct UUID(pub String);
+
 pub type CardsUuid = Vec<UUID>;
-// pub type Runner = Rc<RefCell<dyn FnMut(&Card, &mut Game) -> Result<(), Exception>>>;
+
 pub const COUNT_OF_CARDS: usize = 30;
 
 pub const PLAYER_1: usize = 0;

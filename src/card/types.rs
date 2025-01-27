@@ -1,17 +1,21 @@
 use std::fmt::Display;
 
-use crate::{enums::{phase::Phase, PlayerType}, game::Game};
+use crate::{enums::phase::Phase, exception::Exception, game::Game, resource::CardSpecsResource, utils::json::CardJson};
 
 #[derive(Clone)]
 pub struct CardSpecs {
-    attack: i32,
-    defense: i32,
+    attack: CardSpecsResource,
+    defense: CardSpecsResource,
     cost: i32,
 }
 
 impl CardSpecs{
-    pub fn new() -> CardSpecs{
-        todo!()
+    pub fn new(json: &CardJson) -> Self {
+        Self {
+            attack: CardSpecsResource::new(json.attack.unwrap()),
+            defense: CardSpecsResource::new(json.health.unwrap()),
+            cost: json.cost.unwrap(),
+        }
     }
 }
 
@@ -24,6 +28,10 @@ pub struct CardStatus {
 }
 
 impl CardStatus {
+    pub fn new() -> Self{
+        Self { is_negated: false, is_disabled: false, modifiers: vec![] }
+    }
+
     pub fn is_negated(&self) -> bool {
         self.is_negated
     }
@@ -124,23 +132,95 @@ pub enum SpellType {
     FastSpell,
 }
 
-#[derive(Eq, PartialEq, Hash, Clone)]
+#[derive(Eq, PartialEq, Hash, Clone, Copy)]
 pub enum CardType {
     Dummy,
     Unit,
-    Spell(SpellType),
+    Spell,
     Field,
+    Ace,
+    Trap,
     Game,
+}
+
+impl CardType {
+    pub fn from_json(json: &CardJson) -> Result<Self, Exception> {
+        match &json.r#type {
+            Some(type_str) => match type_str.as_str() {
+                "Dummy" => Ok(CardType::Dummy),
+                "Unit" => Ok(CardType::Unit),
+                "Spell" => Ok(CardType::Spell),
+                "Field" => Ok(CardType::Field),
+                "Ace" => Ok(CardType::Ace),
+                "Trap" => Ok(CardType::Trap),
+                "Game" => Ok(CardType::Game),
+                _ => Err(Exception::InvalidCardType),
+            },
+            None => Err(Exception::InvalidCardType)
+        }
+    }
+
+    // 추가 유틸리티 메서드들
+    pub fn to_string(&self) -> &'static str {
+        match self {
+            CardType::Dummy => "Dummy",
+            CardType::Unit => "Unit",
+            CardType::Spell => "Spell",
+            CardType::Field => "Field",
+            CardType::Ace => "Ace",
+            CardType::Trap => "Trap",
+            CardType::Game => "Game",
+        }
+    }
+
+    pub fn is_unit(&self) -> bool {
+        matches!(self, CardType::Unit)
+    }
+
+    pub fn is_spell(&self) -> bool {
+        matches!(self, CardType::Spell)
+    }
+
+    pub fn is_field(&self) -> bool {
+        matches!(self, CardType::Field)
+    }
+
+    pub fn is_trap(&self) -> bool {
+        matches!(self, CardType::Trap)
+    }
+    // 카드 타입별 특성 확인
+    pub fn can_be_played_as_action(&self) -> bool {
+        matches!(self, CardType::Spell | CardType::Trap)
+    }
+
+    pub fn stays_on_field(&self) -> bool {
+        matches!(self, CardType::Unit | CardType::Field)
+    }
+
+    pub fn is_permanent(&self) -> bool {
+        matches!(self, CardType::Field | CardType::Game)
+    }
+
+    // 카드 타입별 제한사항
+    pub fn max_copies_allowed(&self) -> i32 {
+        match self {
+            CardType::Ace => 1,
+            CardType::Game => 1,
+            _ => 3,
+        }
+    }
 }
 
 impl Display for CardType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::Dummy => write!(f, "Dummy"),
-            Self::Unit => write!(f, "Unit"),
-            Self::Spell(arg0) => f.debug_tuple("Spell").field(arg0).finish(),
-            Self::Field => write!(f, "Field"),
-            Self::Game => write!(f, "Game"),
+            CardType::Dummy => todo!(),
+            CardType::Unit => todo!(),
+            CardType::Spell => todo!(),
+            CardType::Field => todo!(),
+            CardType::Ace => todo!(),
+            CardType::Trap => todo!(),
+            CardType::Game => todo!(),
         }
     }
 }
@@ -148,16 +228,16 @@ impl Display for CardType {
 impl std::fmt::Debug for CardType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::Dummy => write!(f, "Dummy"),
-            Self::Unit => write!(f, "Unit"),
-            Self::Spell(arg0) => f.debug_tuple("Spell").field(arg0).finish(),
-            Self::Field => write!(f, "Field"),
-            Self::Game => write!(f, "Game"),
+            CardType::Dummy => todo!(),
+            CardType::Unit => todo!(),
+            CardType::Spell => todo!(),
+            CardType::Field => todo!(),
+            CardType::Ace => todo!(),
+            CardType::Trap => todo!(),
+            CardType::Game => todo!(),
         }
     }
 }
-
-impl Copy for CardType {}
 
 #[derive(Copy, Clone)]
 pub enum StatType{
@@ -165,7 +245,14 @@ pub enum StatType{
     Defense,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+
+///
+/// 백엔드을 실행하는건 Host 역할을 부여 받은 플레이어쪽임.
+/// 백엔드에서 Host 는 Player1 혹은 Self_ 로 취급되고
+/// Client 는 Player2 혹은 Opponent 로 취급함. 
+/// 
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum OwnerType {
     Self_,      // 자신 (현재 턴 플레이어)
     Opponent,   // 상대방
@@ -173,34 +260,47 @@ pub enum OwnerType {
     None,       // 소유자 없음
 }
 
-impl OwnerType {
-    // 현재 게임 상태에서 실제 PlayerType으로 변환
-    pub fn to_player_type(&self, current_player: PlayerType) -> Option<PlayerType> {
-        match self {
-            OwnerType::Self_ => Some(current_player),
-            OwnerType::Opponent => Some(match current_player {
-                PlayerType::Player1 => PlayerType::Player2,
-                PlayerType::Player2 => PlayerType::Player1,
-                PlayerType::None => return None,
-            }),
-            OwnerType::Any => None,  // 선택 필요
-            OwnerType::None => None,
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PlayerType {
+    Player1,
+    Player2,
+    None,
+}
+
+impl From<PlayerType> for OwnerType{
+    fn from(value: PlayerType) -> Self {
+        match value {
+            PlayerType::Player1 => Self::Self_,
+            PlayerType::Player2 => Self::Opponent,
+            PlayerType::None => Self::None,
+        }
+        
+    }
+}
+
+impl From<OwnerType> for PlayerType{
+    fn from(value: OwnerType) -> Self {
+        match value {
+            OwnerType::Self_ => PlayerType::Player1,
+            OwnerType::Opponent => PlayerType::Player2,
+            OwnerType::Any => PlayerType::None,
+            OwnerType::None => PlayerType::None,
         }
     }
+}
 
-    // 특정 플레이어가 이 OwnerType에 해당하는지 확인
-    pub fn matches(&self, current_player: PlayerType, target_player: PlayerType) -> bool {
-        match self {
-            OwnerType::Self_ => current_player == target_player,
-            OwnerType::Opponent => {
-                match (current_player, target_player) {
-                    (PlayerType::Player1, PlayerType::Player2) |
-                    (PlayerType::Player2, PlayerType::Player1) => true,
-                    _ => false,
-                }
-            },
-            OwnerType::Any => true,
-            OwnerType::None => target_player == PlayerType::None,
-        }
+pub trait OwnershipComparable {
+    fn matches_owner(&self, owner: &OwnerType) -> bool;
+}
+
+impl OwnershipComparable for PlayerType {
+    fn matches_owner(&self, owner: &OwnerType) -> bool {
+        matches!(
+            (self, owner),
+            (PlayerType::Player1, OwnerType::Self_) |
+            (PlayerType::Player2, OwnerType::Opponent) |
+            (PlayerType::None, OwnerType::None) |
+            (_, OwnerType::Any)
+        )
     }
 }

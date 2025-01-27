@@ -9,7 +9,7 @@ use crate::{utils, utils::json::CardJson};
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 
-type CardGeneratorFn = fn(&CardJson, usize) -> Card;
+type CardGeneratorFn = fn(&CardJson, i32) -> Card;
 
 macro_rules! generate_card_map {
     ($($module:ident :: $func:ident),* $(,)?) => {
@@ -25,10 +25,10 @@ macro_rules! generate_card_map {
 
 include!(concat!(env!("OUT_DIR"), "/card_registry.rs"));
 
-type Key = Vec<(String, usize)>;
+type Key = Vec<(String, i32)>;
 pub struct CardGenerator {
     keys: Keys,
-    card_generators: HashMap<usize, CardGeneratorFn>,
+    card_generators: HashMap<i32, CardGeneratorFn>,
 }
 
 pub struct Keys {
@@ -44,14 +44,14 @@ impl Keys {
         Keys { keys }
     }
 
-    pub fn get_usize_by_string(&self, key: &str) -> Option<usize> {
+    pub fn get_usize_by_string(&self, key: &str) -> Option<i32> {
         self.keys
             .iter()
             .find(|&(item_key, _)| item_key == key)
             .map(|&(_, value)| value)
     }
 
-    pub fn get_string_by_usize(&self, key: usize) -> Option<String> {
+    pub fn get_string_by_usize(&self, key: i32) -> Option<String> {
         self.keys
             .iter()
             .find(|&(_, item_key)| item_key == &key)
@@ -76,7 +76,7 @@ impl CardGenerator {
         }
     }
 
-    pub fn gen_card_by_id_usize(&self, id: usize, card_json: &CardJson, count: usize) -> Card {
+    pub fn gen_card_by_id_i32(&self, id: i32, card_json: &CardJson, count: i32) -> Card {
         if let Some(generator) = self.card_generators.get(&id) {
             generator(card_json, count)
         } else {
@@ -84,9 +84,9 @@ impl CardGenerator {
         }
     }
 
-    pub fn gen_card_by_id_string(&self, key: String, card_json: &CardJson, count: usize) -> Card {
+    pub fn gen_card_by_id_string(&self, key: String, card_json: &CardJson, count: i32) -> Card {
         match self.keys.get_usize_by_string(&key[..]) {
-            Some(id) => self.gen_card_by_id_usize(id, card_json, count),
+            Some(id) => self.gen_card_by_id_i32(id, card_json, count),
             None => panic!("Unknown ID: {}", key),
         }
     }

@@ -1,5 +1,5 @@
-use crate::{enums::{CardLocation, PlayerType, ZoneType}, exception::Exception, game::Game};
-use super::{types::{CardType, OwnerType}, Card};
+use crate::{enums::{CardLocation, ZoneType}, exception::Exception, game::Game};
+use super::{types::{CardType, OwnerType, PlayerType}, Card};
 use std::sync::Arc;
 
 pub trait TargetSelector : Send + Sync{
@@ -56,6 +56,7 @@ impl SingleCardSelector {
     fn get_valid_targets(&self, game: &Game, source: &Card) -> Vec<Card> {
         let mut valid_targets = Vec::new();
 
+        
         // 위치별로 카드 수집
         for location in &self.condition.location {
             let cards = match location.0 {
@@ -79,56 +80,17 @@ impl SingleCardSelector {
     }
 
     fn is_valid_target(&self, card: &Card, game: &Game, source: &Card) -> bool {
-        // 1. 소유자 조건 체크
-        let owner_valid = match self.condition.owner {
-            OwnerType::Self_ => card.get_owner() == source.get_owner(),
-            OwnerType::Opponent => {
-                let source_owner = source.get_owner();
-                let card_owner = card.get_owner();
-                match (source_owner, card_owner) {
-                    (PlayerType::Player1, PlayerType::Player2) |
-                    (PlayerType::Player2, PlayerType::Player1) => true,
-                    _ => false,
-                }
-            },
-            OwnerType::Any => true,
-            OwnerType::None => card.get_owner() == &PlayerType::None,
-        };
-
-        if !owner_valid {
-            return false;
-        }
-
-        // 2. 카드 타입 체크
-        if let Some(required_type) = &self.condition.card_type {
-            if card.get_type() != required_type {
-                return false;
-            }
-        }
-
-        // 3. 커스텀 필터 체크
-        if let Some(filter) = &self.condition.custom_filter {
-            if !filter(card) {
-                return false;
-            }
-        }
-
-        // 4. 카드가 유효한 대상인지 체크 (무효화되지 않았는지 등)
-        if !card.can_be_targeted() {
-            return false;
-        }
-
-        true
+        todo!()
     }
 
     // 각 위치별 카드 가져오기 함수들
     fn get_field_cards(&self, game: &Game, source: &Card) -> Vec<Card> {
         match self.condition.owner {
-            OwnerType::Self_ => game.get_player_field_cards(source.get_owner()),
-            OwnerType::Opponent => game.get_opponent_field_cards(source.get_owner()),
+            OwnerType::Self_ => game.get_player_field_cards(source.get_owner().into()),
+            OwnerType::Opponent => game.get_opponent_field_cards(source.get_owner().into()),
             OwnerType::Any => {
-                let mut cards = game.get_player_field_cards(source.get_owner());
-                cards.extend(game.get_opponent_field_cards(source.get_owner()));
+                let mut cards = game.get_player_field_cards(source.get_owner().into());
+                cards.extend(game.get_opponent_field_cards(source.get_owner().into()));
                 cards
             },
             OwnerType::None => Vec::new(),
@@ -137,11 +99,11 @@ impl SingleCardSelector {
 
     fn get_hand_cards(&self, game: &Game, source: &Card) -> Vec<Card> {
         match self.condition.owner {
-            OwnerType::Self_ => game.get_player_hand_cards(source.get_owner()),
-            OwnerType::Opponent => game.get_opponent_hand_cards(source.get_owner()),
+            OwnerType::Self_ => game.get_player_hand_cards(source.get_owner().into()),
+            OwnerType::Opponent => game.get_opponent_hand_cards(source.get_owner().into()),
             OwnerType::Any => {
-                let mut cards = game.get_player_hand_cards(source.get_owner());
-                cards.extend(game.get_opponent_hand_cards(source.get_owner()));
+                let mut cards = game.get_player_hand_cards(source.get_owner().into());
+                cards.extend(game.get_opponent_hand_cards(source.get_owner().into()));
                 cards
             },
             OwnerType::None => Vec::new(),

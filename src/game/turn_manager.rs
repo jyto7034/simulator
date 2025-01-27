@@ -1,4 +1,4 @@
-use crate::enums::PlayerType;
+use crate::card::types::PlayerType;
 
 #[derive(Clone)]
 pub struct TurnManager{

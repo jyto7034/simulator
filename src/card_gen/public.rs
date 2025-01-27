@@ -4,7 +4,7 @@ use crate::{card::{effect::{DrawEffect, ModifyStatEffect}, target_selector::Sing
 use super::builder::CardBuilder;
 
 #[allow(non_snake_case)]
-pub fn PB_001(card_json: &CardJson, count: usize) -> Card {
+pub fn PB_001(card_json: &CardJson, count: i32) -> Card {
     CardBuilder::new(card_json)
         .unwrap()
         .add_effect(DrawEffect { count: 2 })
@@ -19,30 +19,30 @@ pub fn PB_001(card_json: &CardJson, count: usize) -> Card {
         .build()
 }
 #[allow(non_snake_case)]
-pub fn PB_002(card_json: &CardJson, count: usize) -> Card {
+pub fn PB_002(card_json: &CardJson, count: i32) -> Card {
     PB_001(card_json, count)
 }
 #[allow(non_snake_case)]
-pub fn PB_003(card_json: &CardJson, count: usize) -> Card {
+pub fn PB_003(card_json: &CardJson, count: i32) -> Card {
     PB_001(card_json, count)
 }
 #[allow(non_snake_case)]
-pub fn PB_004(card_json: &CardJson, count: usize) -> Card {
+pub fn PB_004(card_json: &CardJson, count: i32) -> Card {
     PB_001(card_json, count)
 }
 #[allow(non_snake_case)]
-pub fn PB_005(card_json: &CardJson, count: usize) -> Card {
+pub fn PB_005(card_json: &CardJson, count: i32) -> Card {
     PB_001(card_json, count)
 }
 #[allow(non_snake_case)]
-pub fn PB_006(card_json: &CardJson, count: usize) -> Card {
+pub fn PB_006(card_json: &CardJson, count: i32) -> Card {
     PB_001(card_json, count)
 }
 #[allow(non_snake_case)]
-pub fn PB_007(card_json: &CardJson, count: usize) -> Card {
+pub fn PB_007(card_json: &CardJson, count: i32) -> Card {
     PB_001(card_json, count)
 }
 #[allow(non_snake_case)]
-pub fn PB_008(card_json: &CardJson, count: usize) -> Card {
+pub fn PB_008(card_json: &CardJson, count: i32) -> Card {
     PB_001(card_json, count)
 }

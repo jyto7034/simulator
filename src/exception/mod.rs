@@ -1,6 +1,7 @@
 use std::fmt;
 
-use crate::enums::PlayerType;
+use crate::card::types::PlayerType;
+
 #[derive(Debug, PartialEq)]
 pub enum Exception {
     NoValidTargets,
@@ -17,6 +18,8 @@ pub enum Exception {
     ExceededCardLimit,
     FailedToDrawCard,
     NothingToRemove,
+    InvalidCardData,
+    InvalidCardType,
     JsonParseFailed,
     DecodeError,
     DeckParseError,

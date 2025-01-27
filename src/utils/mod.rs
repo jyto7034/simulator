@@ -1,6 +1,7 @@
 pub mod json;
 
 
+use crate::card::types::{OwnerType, PlayerType};
 use crate::card::Card;
 use crate::card::cards::Cards;
 use crate::card_gen::{CardGenerator, Keys};
@@ -15,26 +16,7 @@ use std::io::{Cursor, Write};
 use std::process::{Command, Stdio};
 use std::vec;
 
-trait VecExtensions<T> {
-    // id 순으로
-    fn next_task(&mut self) -> Option<T>;
-}
-
-impl<T> VecExtensions<T> for Vec<T>
-where
-    T: Default + Copy,
-{
-    fn next_task(&mut self) -> Option<T> {
-        if self.len() == 0 {
-            None
-        } else {
-            let data = self.remove(0);
-            Some(data)
-        }
-    }
-}
-
-pub fn generate_uuid() -> Result<String, Exception> {
+pub fn generate_uuid() -> Result<UUID, Exception> {
     let output = if let Ok(ans) = Command::new(UUID_GENERATOR_PATH)
         .stdout(Stdio::piped())
         .output()
@@ -44,7 +26,7 @@ pub fn generate_uuid() -> Result<String, Exception> {
         return Err(Exception::GenerateUUIDFaild);
     };
 
-    let uuid = String::from_utf8_lossy(&output.stdout).into_owned();
+    let uuid = UUID(String::from_utf8_lossy(&output.stdout).into_owned());
     Ok(uuid)
 }
 
@@ -96,7 +78,7 @@ pub fn parse_json_to_deck_code(
         }
     }
 
-    fn create_card_vector(decks: &json::Decks, keys: &Keys, num: usize) -> Vec<usize> {
+    fn create_card_vector(decks: &json::Decks, keys: &Keys, num: i32) -> Vec<i32> {
         decks.decks[0]
             .cards
             .iter()
@@ -162,14 +144,14 @@ pub fn deckcode_to_cards(p1_deckcode: DeckCode, p2_deckcode: DeckCode) -> Result
     let mut p2_cards = vec![];
 
     let check_values_exist = |card_data: &CardJson,
-                              decoded_deck: &(Vec<usize>, Vec<usize>),
+                              decoded_deck: &(Vec<i32>, Vec<i32>),
                               p_cards: &mut Vec<Card>|
      -> Result<(), Exception> {
         for dbfid in &decoded_deck.0 {
             match card_data.dbfid {
                 Some(_dbfid) => {
                     if &_dbfid == dbfid {
-                        p_cards.push(card_genertor.gen_card_by_id_usize(*dbfid, card_data, 1));
+                        p_cards.push(card_genertor.gen_card_by_id_i32(*dbfid, card_data, 1));
                     }
                 }
                 None => {}
@@ -179,7 +161,7 @@ pub fn deckcode_to_cards(p1_deckcode: DeckCode, p2_deckcode: DeckCode) -> Result
             match card_data.dbfid {
                 Some(_dbfid) => {
                     if &_dbfid == dbfid {
-                        p_cards.push(card_genertor.gen_card_by_id_usize(*dbfid, card_data, 2));
+                        p_cards.push(card_genertor.gen_card_by_id_i32(*dbfid, card_data, 2));
                     }
                 }
                 None => {}
@@ -200,7 +182,7 @@ pub fn deckcode_to_cards(p1_deckcode: DeckCode, p2_deckcode: DeckCode) -> Result
     Ok(vec![Cards::new_with(p1_cards), Cards::new_with(p2_cards)])
 }
 
-pub fn load_card_id() -> Result<Vec<(String, usize)>, Exception> {
+pub fn load_card_id() -> Result<Vec<(String, i32)>, Exception> {
     let file_path = CARD_ID_JSON_PATH;
 
     // 파일 열기
@@ -225,8 +207,8 @@ pub fn load_card_id() -> Result<Vec<(String, usize)>, Exception> {
 }
 
 const DECK_CODE_VERSION: u32 = 1;
-pub fn deck_decode(deck_code: String) -> Result<(Vec<usize>, Vec<usize>), ()> {
-    let code = decode(deck_code).unwrap();
+pub fn deck_decode(deck_code: DeckCode) -> Result<(Vec<i32>, Vec<i32>), ()> {
+    let code = decode(deck_code.0).unwrap();
     let mut pos = 0;
 
     let read_varint = |pos: &mut usize| {
@@ -307,14 +289,14 @@ pub fn deck_decode(deck_code: String) -> Result<(Vec<usize>, Vec<usize>), ()> {
     let num = read_varint(&mut pos).unwrap();
     for _idx in 0..num {
         let card_id = read_varint(&mut pos).unwrap();
-        _1_cards.push(card_id);
+        _1_cards.push(card_id as i32);
     }
 
     // 2-copy cards
     let num = read_varint(&mut pos).unwrap();
     for _idx in 0..num {
         let card_id = read_varint(&mut pos).unwrap();
-        _2_cards.push(card_id);
+        _2_cards.push(card_id as i32);
         // deckInfo.AddCard(Cards::FindCardByDbfID(cardID)->id, 2);
     }
 
@@ -345,7 +327,7 @@ fn write_varint<W: Write>(writer: &mut W, mut value: usize) -> std::io::Result<(
     Ok(())
 }
 
-fn deck_encode(deck1: Vec<usize>, deck2: Vec<usize>, dbf_hero: usize, format: usize) -> String {
+fn deck_encode(deck1: Vec<i32>, deck2: Vec<i32>, dbf_hero: usize, format: usize) -> DeckCode {
     let mut baos = Cursor::new(Vec::new());
 
     write_varint(&mut baos, 0).unwrap(); // always zero
@@ -356,12 +338,12 @@ fn deck_encode(deck1: Vec<usize>, deck2: Vec<usize>, dbf_hero: usize, format: us
 
     write_varint(&mut baos, deck1.len() as usize).unwrap(); // number of 1-quantity cards
     for dbf_id in &deck1 {
-        write_varint(&mut baos, *dbf_id).unwrap();
+        write_varint(&mut baos, *dbf_id as usize).unwrap();
     }
     
     write_varint(&mut baos, deck2.len() as usize).unwrap(); // number of 2-quantity cards
     for dbf_id in &deck2 {
-        write_varint(&mut baos, *dbf_id).unwrap();
+        write_varint(&mut baos, *dbf_id as usize).unwrap();
     }
 
     write_varint(&mut baos, 0).unwrap(); // the number of cards that have quantity greater than 2. Always 0 for constructed
@@ -370,5 +352,5 @@ fn deck_encode(deck1: Vec<usize>, deck2: Vec<usize>, dbf_hero: usize, format: us
 
     let deck_string = encode(&deck_bytes);
 
-    deck_string
+    DeckCode(deck_string)
 }

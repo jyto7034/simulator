@@ -3,13 +3,13 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Item {
     pub id: String,
-    pub dbfid: usize,
+    pub dbfid: i32,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Card {
     pub id: String,
-    pub num: usize,
+    pub num: i32,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -45,7 +45,7 @@ pub struct DeckCodes {
 #[derive(Debug, Deserialize)]
 pub struct GameConfigJson {
     pub DeckCodes: Vec<DeckCodes>,
-    pub Attacker: usize,
+    pub Attacker: i32,
     pub Names: Vec<Names>,
 }
 
@@ -63,14 +63,16 @@ pub struct GameConfigJson {
 #[derive(Debug, Deserialize, Serialize, Clone, Eq, PartialEq, Hash)]
 pub struct CardJson {
     pub id: Option<String>,
-    pub dbfid: Option<usize>,
-    pub cost: Option<usize>,
+    pub dbfid: Option<i32>,
+    pub cost: Option<i32>,
     pub name: Option<String>,
     pub text: Option<String>,
-    pub attack: Option<usize>,
-    pub health: Option<usize>,
+    pub attack: Option<i32>,
+    pub health: Option<i32>,
     pub collectible: Option<bool>,
+    pub r#type: Option<String>,
 }
+
 
 impl CardJson {
     pub fn new() -> CardJson {
@@ -83,6 +85,7 @@ impl CardJson {
             attack: None,
             health: None,
             collectible: None,
+            r#type: None,
         }
     }
 }
