@@ -1,10 +1,9 @@
-
 use card_game::card::Card;
 use card_game::card_gen::CardGenerator;
-use card_game::{app::App, utils::*, enums::*};
-use serde_json::{json, Value};
+use card_game::{app::App, enums::*, utils::*};
 use rand::seq::SliceRandom;
 use rand::thread_rng;
+use serde_json::{json, Value};
 use std::io::Read;
 
 const CARD_NUM: usize = 25;
@@ -22,20 +21,21 @@ fn generate_random_deck_json() -> (Value, Vec<Card>) {
     let file_path = CARD_JSON_PATH;
     let mut file = std::fs::File::open(file_path).expect("Failed to open cards.json");
     let mut json_data = String::new();
-    file.read_to_string(&mut json_data).expect("Failed to read file");
-    
-    let cards: Vec<json::CardJson> = serde_json::from_str(&json_data).expect("Failed to parse JSON");
-    
+    file.read_to_string(&mut json_data)
+        .expect("Failed to read file");
+
+    let cards: Vec<json::CardJson> =
+        serde_json::from_str(&json_data).expect("Failed to parse JSON");
+
     let mut rng = thread_rng();
     let selected_cards: Vec<json::CardJson> = cards
-        .into_iter() 
+        .into_iter()
         .filter(|card| card.collectible == Some(true))
         .collect::<Vec<_>>()
         .choose_multiple(&mut rng, CARD_NUM)
         .cloned()
         .collect();
 
-    
     // 선택된 카드로 덱 JSON 생성
     let deck_json = json!({
         "decks": [{
@@ -60,9 +60,8 @@ fn generate_random_deck_json() -> (Value, Vec<Card>) {
     (deck_json, original_cards)
 }
 
-
 #[cfg(test)]
-mod tests {
+mod utils_test {
     use super::*;
 
     #[test]
@@ -75,26 +74,36 @@ mod tests {
         let deck_codes = parse_json_to_deck_code(Some(deck_json), Some(deck_json2))
             .expect("Failed to parse deck code");
 
-        
         // 3. 덱 코드를 Cards로 변환
-        let cards_vec = deckcode_to_cards(deck_codes.0, deck_codes.1)
-            .expect("Failed to load card data");
+        let cards_vec =
+            deckcode_to_cards(deck_codes.0, deck_codes.1).expect("Failed to load card data");
 
         // 4. 결과 검증
         let p1_cards = &cards_vec[0];
-        // for item in p1_cards{
-        //     if !original_cards.contains(item) {
-        //         panic!("deck encode/dedcode error");
-        //     }
-        // }
+        for item in &p1_cards.v_card {
+            if !original_cards.contains(item) {
+                panic!("deck encode/dedcode error");
+            }
+        }
 
         // 카드 수 검증
-        assert_eq!(p1_cards.len(), CARD_NUM, "Deck should have {CARD_NUM} cards");
-        assert_eq!(original_cards.len(), CARD_NUM, "Original deck should have {CARD_NUM} cards");
+        assert_eq!(
+            p1_cards.len(),
+            CARD_NUM,
+            "Deck should have {CARD_NUM} cards"
+        );
+        assert_eq!(
+            original_cards.len(),
+            CARD_NUM,
+            "Original deck should have {CARD_NUM} cards"
+        );
     }
+}
 
-    // #[test]
-    // fn test_muligun(){
-        
-    // }
+#[cfg(test)]
+mod game_test {
+    use super::*;
+
+    #[test]
+    fn asd() {}
 }

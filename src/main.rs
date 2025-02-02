@@ -1,6 +1,6 @@
 use std::fs;
-use std::path::Path;
 use std::io::Write;
+use std::path::Path;
 
 use clap::Parser;
 // main
@@ -37,26 +37,28 @@ fn main() {
     for module in modules {
         let path = format!("src/card_gen/{}.rs", module);
         let content = fs::read_to_string(&path).unwrap();
-        
+
         // 함수 이름 찾기
         for line in content.lines() {
-            if line.contains("pub fn") && (line.contains("HM_") || line.contains("MT_") || line.contains("PB_")) {
-                let func_name = line.split("fn ")
-                    .nth(1)
-                    .unwrap()
-                    .split("(")
-                    .next()
-                    .unwrap();
+            if line.contains("pub fn")
+                && (line.contains("HM_") || line.contains("MT_") || line.contains("PB_"))
+            {
+                let func_name = line.split("fn ").nth(1).unwrap().split("(").next().unwrap();
                 card_registrations.push(format!("    {}::{}", module, func_name));
             }
         }
     }
 
     // 매크로 호출 생성
-    write!(f, r#"
+    write!(
+        f,
+        r#"
 // 자동 생성된 카드 레지스트리
 generate_card_map! {{
 {}
 }}
-"#, card_registrations.join(",\n")).unwrap();
+"#,
+        card_registrations.join(",\n")
+    )
+    .unwrap();
 }

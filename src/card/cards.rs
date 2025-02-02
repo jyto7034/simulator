@@ -8,7 +8,7 @@ pub struct Cards {
 }
 
 impl Cards {
-    pub fn new_with(cards: Vec<Card>) -> Self{
+    pub fn new_with(cards: Vec<Card>) -> Self {
         Self { v_card: cards }
     }
 
@@ -19,7 +19,9 @@ impl Cards {
 
     /// 특정 용량으로 Cards 인스턴스를 생성합니다.
     pub fn with_capacity(capacity: usize) -> Self {
-        Self { v_card: Vec::with_capacity(capacity) }
+        Self {
+            v_card: Vec::with_capacity(capacity),
+        }
     }
 
     /// 카드를 추가합니다.
@@ -64,7 +66,10 @@ impl Cards {
     where
         F: Fn(&Card) -> bool,
     {
-        self.v_card.iter_mut().filter(|card| predicate(card)).collect()
+        self.v_card
+            .iter_mut()
+            .filter(|card| predicate(card))
+            .collect()
     }
 
     /// 카드의 개수를 반환합니다.

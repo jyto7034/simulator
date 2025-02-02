@@ -1,9 +1,17 @@
-pub mod turn_manager;
 pub mod game_step;
+mod getter;
+pub mod turn_manager;
 
 use turn_manager::TurnManager;
 
-use crate::{card::{types::PlayerType, Card}, enums::{phase::Phase, DeckCode}, exception::Exception, unit::player::Player, utils::deckcode_to_cards, zone::field::Field, OptRcRef};
+use crate::{
+    card::types::PlayerType,
+    enums::{phase::Phase, DeckCode},
+    exception::Exception,
+    unit::player::Player,
+    utils::deckcode_to_cards,
+    OptRcRef,
+};
 
 pub struct GameConfig {
     /// Player's Deckcode
@@ -34,7 +42,7 @@ impl Game {
 }
 
 impl Game {
-    pub fn get_player(&self, player_type: PlayerType) -> &OptRcRef<Player> {
+    pub fn get_player_by_type(&self, player_type: PlayerType) -> &OptRcRef<Player> {
         match player_type {
             PlayerType::Player1 => &self.player1,
             PlayerType::Player2 => &self.player2,
@@ -42,49 +50,15 @@ impl Game {
         }
     }
 
-    pub fn draw_card(&self, player_type: PlayerType) -> Result<(), Exception>{
+    pub fn get_player(&self) -> &OptRcRef<Player> {
+        &self.player1
+    }
+
+    pub fn get_opponent(&self) -> &OptRcRef<Player> {
+        &self.player2
+    }
+
+    pub fn draw_card(&self, player_type: PlayerType) -> Result<(), Exception> {
         todo!()
-    }
-}
-
-impl Game {    
-    pub fn get_player_field_cards(&self, player_type: PlayerType) -> Vec<Card> {
-        todo!("Implement get_player_field_cards")
-    }
-
-    pub fn get_opponent_field_cards(&self, player_type: PlayerType) -> Vec<Card> {
-        todo!("Implement get_opponent_field_cards")
-    }
-
-    pub fn get_player_hand_cards(&self, player_type: PlayerType) -> Vec<Card> {
-        todo!("Implement get_player_hand_cards")
-    }
-
-    pub fn get_opponent_hand_cards(&self, player_type: PlayerType) -> Vec<Card> {
-        todo!("Implement get_opponent_hand_cards")
-    }
-
-    pub fn get_player_graveyard_cards(&self, player_type: PlayerType) -> Vec<Card> {
-        todo!("Implement get_player_graveyard_cards")
-    }
-
-    pub fn get_opponent_graveyard_cards(&self, player_type: PlayerType) -> Vec<Card> {
-        todo!("Implement get_opponent_graveyard_cards")
-    }
-
-    pub fn get_player_deck_cards(&self, player_type: PlayerType) -> Vec<Card> {
-        todo!("Implement get_player_deck_cards")
-    }
-
-    pub fn get_opponent_deck_cards(&self, player_type: PlayerType) -> Vec<Card> {
-        todo!("Implement get_opponent_deck_cards")
-    }
-
-    pub fn get_player_removed_cards(&self, player_type: PlayerType) -> Vec<Card> {
-        todo!("Implement get_player_removed_cards")
-    }
-
-    pub fn get_opponent_removed_cards(&self, player_type: PlayerType) -> Vec<Card> {
-        todo!("Implement get_opponent_removed_cards")
     }
 }

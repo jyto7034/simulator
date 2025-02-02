@@ -7,7 +7,7 @@ pub const DECK_JSON_PATH_P2: &str = "Datas/player2_test.json";
 pub const UUID_GENERATOR_PATH: &str = "Resource/uuidgen";
 pub const GAME_CONFIG_JSON_PATH: &str = "Datas/config.json";
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Copy)]
 pub enum ZoneType {
     Hand,
     Deck,
@@ -17,13 +17,12 @@ pub enum ZoneType {
     None,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct CardLocation(pub ZoneType);
 
 pub const MAX_CARD_SIZE: u32 = 30;
 
 pub struct DeckCode(pub String);
-
 
 #[derive(Clone, PartialEq, Eq)]
 pub struct UUID(pub String);

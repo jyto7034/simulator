@@ -1,9 +1,8 @@
 pub mod json;
 
-
+use crate::card::cards::Cards;
 use crate::card::types::{OwnerType, PlayerType};
 use crate::card::Card;
-use crate::card::cards::Cards;
 use crate::card_gen::{CardGenerator, Keys};
 use crate::enums::*;
 use crate::exception::Exception;
@@ -60,7 +59,10 @@ pub fn parse_json_to_deck_code(
         _ => {}
     }
 
-    fn parse_deck_json(json_value: Option<Value>, player_num: usize) -> Result<json::Decks, Exception> {
+    fn parse_deck_json(
+        json_value: Option<Value>,
+        player_num: usize,
+    ) -> Result<json::Decks, Exception> {
         if let Some(value) = json_value {
             serde_json::from_value(value).map_err(|_| Exception::JsonParseFailed)
         } else {
@@ -69,11 +71,12 @@ pub fn parse_json_to_deck_code(
                 PLAYER_2 => DECK_JSON_PATH_P2,
                 _ => return Err(Exception::PathNotExist),
             };
-            
+
             let mut file = File::open(file_path).map_err(|_| Exception::PathNotExist)?;
             let mut json_data = String::new();
-            file.read_to_string(&mut json_data).map_err(|_| Exception::JsonParseFailed)?;
-            
+            file.read_to_string(&mut json_data)
+                .map_err(|_| Exception::JsonParseFailed)?;
+
             serde_json::from_str(&json_data).map_err(|_| Exception::JsonParseFailed)
         }
     }
@@ -87,10 +90,13 @@ pub fn parse_json_to_deck_code(
             .collect()
     }
 
-    fn generate_deck_code(player_num: usize, json_value: Option<Value>) -> Result<DeckCode, Exception> {
+    fn generate_deck_code(
+        player_num: usize,
+        json_value: Option<Value>,
+    ) -> Result<DeckCode, Exception> {
         let decks = parse_deck_json(json_value, player_num)?;
         let keys = Keys::new();
-        
+
         // deckcode 에서 카드 1장 인 것과 2장 인 것을 따로 생성함.
         let card1 = create_card_vector(&decks, &keys, 1);
         let card2 = create_card_vector(&decks, &keys, 2);
@@ -108,7 +114,10 @@ pub fn parse_json_to_deck_code(
     Ok((p1_code, p2_code))
 }
 
-pub fn deckcode_to_cards(p1_deckcode: DeckCode, p2_deckcode: DeckCode) -> Result<Vec<Cards>, Exception> {
+pub fn deckcode_to_cards(
+    p1_deckcode: DeckCode,
+    p2_deckcode: DeckCode,
+) -> Result<Vec<Cards>, Exception> {
     // 거대한 json 파일을 읽는 방법 따로 구현해야댐
     // json 을 쌩으로 로드하면 좆댐;
 
@@ -340,7 +349,7 @@ fn deck_encode(deck1: Vec<i32>, deck2: Vec<i32>, dbf_hero: usize, format: usize)
     for dbf_id in &deck1 {
         write_varint(&mut baos, *dbf_id as usize).unwrap();
     }
-    
+
     write_varint(&mut baos, deck2.len() as usize).unwrap(); // number of 2-quantity cards
     for dbf_id in &deck2 {
         write_varint(&mut baos, *dbf_id as usize).unwrap();

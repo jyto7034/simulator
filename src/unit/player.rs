@@ -1,7 +1,7 @@
 use crate::{
-    card::{cards::Cards, types::PlayerType}, zone::{
-        deck::Deck, effect::Effect, field::Field, graveyard::Graveyard, hand::Hand
-    }, OptRcRef
+    card::{cards::Cards, types::PlayerType},
+    zone::{deck::Deck, effect::Effect, field::Field, graveyard::Graveyard, hand::Hand},
+    OptRcRef,
 };
 
 #[derive(Clone, Debug)]
@@ -79,7 +79,7 @@ impl Player {
             mana,
         }
     }
-    
+
     pub fn get_opponent(&self) -> &OptRcRef<Player> {
         &self.opponent
     }
@@ -109,45 +109,44 @@ impl Player {
     }
 }
 
-
 impl Player {
-    pub fn get_hand_zone_as_mut(&mut self) -> &mut Hand {
+    pub fn get_hand_mut(&mut self) -> &mut Hand {
         &mut self.hand
     }
 
-    pub fn get_deck_zone_as_mut(&mut self) -> &mut Deck {
+    pub fn get_deck_mut(&mut self) -> &mut Deck {
         &mut self.deck
     }
 
-    pub fn get_graveyard_zone_as_mut(&mut self) -> &mut Graveyard {
+    pub fn get_graveyard_mut(&mut self) -> &mut Graveyard {
         &mut self.graveyard
     }
 
-    pub fn get_effect_zone_as_mut(&mut self) -> &mut Effect {
+    pub fn get_effect_mut(&mut self) -> &mut Effect {
         &mut self.effect
     }
 
-    pub fn get_field_zone_as_mut(&mut self) -> &mut Field {
+    pub fn get_field_mut(&mut self) -> &mut Field {
         &mut self.field
     }
 
-    pub fn get_hand_zone(&self) -> &Hand {
+    pub fn get_hand(&self) -> &Hand {
         &self.hand
     }
 
-    pub fn get_deck_zone(&self) -> &Deck {
+    pub fn get_deck(&self) -> &Deck {
         &self.deck
     }
 
-    pub fn get_graveyard_zone(&self) -> &Graveyard {
+    pub fn get_graveyard(&self) -> &Graveyard {
         &self.graveyard
     }
 
-    pub fn get_effect_zone(&self) -> &Effect {
+    pub fn get_effect(&self) -> &Effect {
         &self.effect
     }
 
-    pub fn get_field_zone(&self) -> &Field {
+    pub fn get_field(&self) -> &Field {
         &self.field
     }
 }

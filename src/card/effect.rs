@@ -1,8 +1,8 @@
-use crate::{exception::Exception, game::Game, zone::zone::Zone};
+use crate::{exception::Exception, game::Game, selector::TargetSelector, zone::zone::Zone};
 
-use super::{target_selector::TargetSelector, types::StatType, Card};
+use super::{types::StatType, Card};
 
-pub trait Effect: Send + Sync  {
+pub trait Effect: Send + Sync {
     fn apply(&self, game: &mut Game, source: &Card) -> Result<(), Exception>;
     fn can_activate(&self, game: &Game, source: &Card) -> bool;
     fn clone_effect(&self) -> Result<Box<dyn Effect>, Exception>;
@@ -21,9 +21,13 @@ impl Effect for DrawEffect {
     }
 
     fn can_activate(&self, game: &Game, source: &Card) -> bool {
-        game.get_player(source.get_owner().into()).get().get_deck_zone().len() >= self.count
+        game.get_player_by_type(source.get_owner().into())
+            .get()
+            .get_deck()
+            .len()
+            >= self.count
     }
-    
+
     fn clone_effect(&self) -> Result<Box<dyn Effect>, Exception> {
         todo!()
     }
@@ -47,7 +51,7 @@ impl Effect for ModifyStatEffect {
     fn can_activate(&self, game: &Game, source: &Card) -> bool {
         self.target_selector.has_valid_targets(game, source)
     }
-    
+
     fn clone_effect(&self) -> Result<Box<dyn Effect>, Exception> {
         todo!()
     }

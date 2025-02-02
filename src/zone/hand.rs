@@ -1,5 +1,7 @@
 use crate::{
-    card::{cards::Cards, Card}, enums::{UNIT_ZONE_SIZE, UUID}, exception::Exception
+    card::{cards::Cards, take::Take, Card},
+    enums::{UNIT_ZONE_SIZE, UUID},
+    exception::Exception,
 };
 
 use super::zone::Zone;
@@ -25,23 +27,31 @@ impl Hand {
 }
 
 impl Zone for Hand {
-    fn as_any(&mut self) -> &mut dyn std::any::Any {
-        self
+    fn get_cards(&self) -> &Cards {
+        todo!()
     }
 
-    fn get_cards(&mut self) -> &mut Cards {
+    fn get_cards_mut(&mut self) -> &mut Cards {
         todo!()
     }
 
     fn remove_card(&mut self, uuid: UUID) {
         todo!()
     }
-    
+
     fn len(&self) -> usize {
         todo!()
     }
+
+    fn add_card(
+        &mut self,
+        card: Card,
+        insert_type: Box<dyn crate::card::insert::Insert>,
+    ) -> Result<(), Exception> {
+        todo!()
+    }
     
-    fn add_card(&mut self, card: Card, insert_type: Box<dyn crate::card::insert::Insert>) -> Result<(), Exception> {
+    fn take_card(&mut self, take_type: Box<dyn Take>) -> Card {
         todo!()
     }
 }

@@ -1,7 +1,7 @@
 use crate::card::types::PlayerType;
 
 #[derive(Clone)]
-pub struct TurnManager{
+pub struct TurnManager {
     current_turn: PlayerType,
     turn_count: usize,
 }
@@ -10,15 +10,15 @@ impl TurnManager {
     pub fn new() -> Self {
         TurnManager {
             current_turn: PlayerType::Player1,
-            turn_count: 0
+            turn_count: 0,
         }
     }
 
-    pub fn get_turn_count(&self) -> usize{
+    pub fn get_turn_count(&self) -> usize {
         self.turn_count
     }
 
-    pub fn increase_turn_count(&mut self) -> usize{
+    pub fn increase_turn_count(&mut self) -> usize {
         self.turn_count += 1;
         self.turn_count
     }

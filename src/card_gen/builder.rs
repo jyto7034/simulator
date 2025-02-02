@@ -1,4 +1,13 @@
-use crate::{card::{effect::Effect, types::{CardSpecs, CardStatus, CardType, OwnerType}, Card}, enums::UUID, exception::Exception, utils::{self, json::CardJson}};
+use crate::{
+    card::{
+        effect::Effect,
+        types::{CardSpecs, CardStatus, CardType, OwnerType},
+        Card,
+    },
+    enums::UUID,
+    exception::Exception,
+    utils::{self, json::CardJson},
+};
 
 pub struct CardBuilder {
     uuid: UUID,
@@ -13,7 +22,6 @@ pub struct CardBuilder {
 
 impl CardBuilder {
     pub fn new(card_json: &CardJson) -> Result<Self, Exception> {
-        println!("{:#?}", card_json);
         Ok(Self {
             uuid: utils::generate_uuid().unwrap(),
             name: card_json.name.clone().ok_or(Exception::InvalidCardData)?,
@@ -22,11 +30,9 @@ impl CardBuilder {
             json_data: card_json.clone(),
             owner: OwnerType::None,
             specs: CardSpecs::new(card_json),
-            status: CardStatus::new()
+            status: CardStatus::new(),
         })
     }
-
-    
 
     pub fn add_effect<E: Effect + 'static>(mut self, effect: E) -> Self {
         self.effects.push(Box::new(effect));
@@ -75,20 +81,19 @@ impl CardBuilder {
         self
     }
 
-    pub fn status(mut self, status: CardStatus) -> Self{
+    pub fn status(mut self, status: CardStatus) -> Self {
         self.status = status;
         self
     }
 
-
     pub fn build(self) -> Card {
-        // owner: OwnerType, 
-        // uuid: UUID, 
-        // name: String, 
-        // effects: Vec<Box<dyn Effect>>, 
-        // r#type: CardType, 
-        // specs: CardSpecs, 
-        // status: CardStatus, 
+        // owner: OwnerType,
+        // uuid: UUID,
+        // name: String,
+        // effects: Vec<Box<dyn Effect>>,
+        // r#type: CardType,
+        // specs: CardSpecs,
+        // status: CardStatus,
         // json_data: CardJson)
         Card::new(
             self.owner,

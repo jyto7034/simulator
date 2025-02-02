@@ -1,4 +1,4 @@
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq, Copy)]
 pub enum Phase {
     GameStart,
 
@@ -7,14 +7,14 @@ pub enum Phase {
 
     // 메인 페이즈 진입 전 시작되는 페이즈
     StandbyPhase,
-    
+
     // 메인 페이즈 개시시
-    MainPhaseStart,     
+    MainPhaseStart,
     // 메인 페이즈 개시중
-    MainPhase1,         
-    
+    MainPhase1,
+
     // 배틀 페이즈 진입
-    BattlePhaseStart,   
+    BattlePhaseStart,
     // 배틀 페이즈 중
     BattleStep,
     // 데미지 스텝 개시시
@@ -29,9 +29,9 @@ pub enum Phase {
     BattleDamageStepEnd,
     // 데미지 페이즈 종료
     BattlePhaseEnd,
-    
+
     // 메인 페이즈2 시작
-    MainPhase2,         
+    MainPhase2,
 
     // 턴 종료
     EndPhase,
@@ -91,15 +91,16 @@ impl Phase {
 
     /// 배틀 페이즈 관련 체크
     pub fn is_battle_phase(&self) -> bool {
-        matches!(self, 
-            Phase::BattlePhaseStart | 
-            Phase::BattleStep |
-            Phase::BattleDamageStepStart |
-            Phase::BattleDamageStepCalculationBefore |
-            Phase::BattleDamageStepCalculationStart |
-            Phase::BattleDamageStepCalculationEnd |
-            Phase::BattleDamageStepEnd |
-            Phase::BattlePhaseEnd
+        matches!(
+            self,
+            Phase::BattlePhaseStart
+                | Phase::BattleStep
+                | Phase::BattleDamageStepStart
+                | Phase::BattleDamageStepCalculationBefore
+                | Phase::BattleDamageStepCalculationStart
+                | Phase::BattleDamageStepCalculationEnd
+                | Phase::BattleDamageStepEnd
+                | Phase::BattlePhaseEnd
         )
     }
 
@@ -108,12 +109,13 @@ impl Phase {
     }
 
     pub fn is_damage_step(&self) -> bool {
-        matches!(self,
-            Phase::BattleDamageStepStart |
-            Phase::BattleDamageStepCalculationBefore |
-            Phase::BattleDamageStepCalculationStart |
-            Phase::BattleDamageStepCalculationEnd |
-            Phase::BattleDamageStepEnd
+        matches!(
+            self,
+            Phase::BattleDamageStepStart
+                | Phase::BattleDamageStepCalculationBefore
+                | Phase::BattleDamageStepCalculationStart
+                | Phase::BattleDamageStepCalculationEnd
+                | Phase::BattleDamageStepEnd
         )
     }
 
@@ -141,19 +143,15 @@ impl Phase {
 
     /// 메인 페이즈 체크 (1과 2 모두)
     pub fn is_main_phase(&self) -> bool {
-        matches!(self, 
-            Phase::MainPhaseStart | 
-            Phase::MainPhase1 | 
-            Phase::MainPhase2
+        matches!(
+            self,
+            Phase::MainPhaseStart | Phase::MainPhase1 | Phase::MainPhase2
         )
     }
 
     /// 일반 소환이 가능한 페이즈인지 체크
     pub fn can_normal_summon(&self) -> bool {
-        matches!(self, 
-            Phase::MainPhase1 | 
-            Phase::MainPhase2
-        )
+        matches!(self, Phase::MainPhase1 | Phase::MainPhase2)
     }
 
     /// 공격이 가능한 페이즈인지 체크
@@ -163,10 +161,9 @@ impl Phase {
 
     /// 현재 페이즈가 개시시인지 체크
     pub fn is_phase_start(&self) -> bool {
-        matches!(self,
-            Phase::MainPhaseStart |
-            Phase::BattlePhaseStart |
-            Phase::BattleDamageStepStart
+        matches!(
+            self,
+            Phase::MainPhaseStart | Phase::BattlePhaseStart | Phase::BattleDamageStepStart
         )
     }
 

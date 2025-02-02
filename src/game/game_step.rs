@@ -1,4 +1,4 @@
-use crate::{enums::phase::Phase, exception::Exception};
+use crate::{card::types::PlayerType, enums::{phase::Phase, PLAYER_1}, exception::Exception, selector::mulligan::MulliganState};
 
 use super::Game;
 
@@ -12,12 +12,12 @@ impl Game {
     fn handle_phase_transition(&mut self, next_phase: Phase) -> Result<(), Exception> {
         // 페이즈 전환 전 현재 페이즈의 종료 처리
         self.handle_phase_end()?;
-        
+
         self.current_phase = next_phase;
-        
+
         // 새로운 페이즈의 시작 처리
         self.handle_phase_start()?;
-        
+
         Ok(())
     }
 
@@ -45,11 +45,17 @@ impl Game {
 
     // 게임 시작 시 처리
     fn handle_game_start(&mut self) -> Result<(), Exception> {
+        // 멀리건
+        let p1_mul = MulliganState::new(PlayerType::Player1, 5);
+        let p2_mul = MulliganState::new(PlayerType::Player2, 5);
         Ok(())
     }
 
     // 각 페이즈별 구체적인 처리
     fn handle_draw_phase(&mut self) -> Result<(), Exception> {
+        self.trigger_draw_phase_effects()?;
+
+        // 카드 드로우
         Ok(())
     }
 
@@ -135,6 +141,12 @@ impl Game {
         Ok(())
     }
 
+    //
+    fn trigger_draw_phase_effects(&mut self) -> Result<(), Exception> {
+        // 스탠바이 페이즈 효과 발동
+        Ok(())
+    }
+
     // 유틸리티 메서드들
     fn trigger_standby_effects(&mut self) -> Result<(), Exception> {
         // 스탠바이 페이즈 효과 발동
@@ -165,6 +177,4 @@ impl Game {
         // 손 카드 제한(10장) 체크
         Ok(())
     }
-
-
 }

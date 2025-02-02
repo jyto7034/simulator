@@ -7,12 +7,13 @@ pub mod card_gen;
 pub mod enums;
 pub mod exception;
 pub mod game;
+pub mod resource;
+pub mod selector;
 pub mod server;
 pub mod test;
 pub mod unit;
 pub mod utils;
 pub mod zone;
-pub mod resource;
 
 #[macro_use]
 extern crate lazy_static;

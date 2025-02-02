@@ -73,7 +73,6 @@ pub struct CardJson {
     pub r#type: Option<String>,
 }
 
-
 impl CardJson {
     pub fn new() -> CardJson {
         CardJson {

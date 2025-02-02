@@ -66,7 +66,10 @@ impl SpecificPositionInsert {
 
 impl Insert for SpecificPositionInsert {
     fn insert(&self, cards: &mut Vec<Card>, card: Card) -> Result<(), Exception> {
-        if let Some(pos) = cards.iter().position(|c| c.get_uuid() == self.target_card_uuid) {
+        if let Some(pos) = cards
+            .iter()
+            .position(|c| c.get_uuid() == self.target_card_uuid)
+        {
             let insert_pos = if self.is_above { pos } else { pos + 1 };
             cards.insert(insert_pos, card);
             Ok(())

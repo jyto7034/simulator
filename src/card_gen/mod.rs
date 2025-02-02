@@ -1,7 +1,7 @@
-mod monster;
-mod human;
-mod public;
 mod builder;
+mod human;
+mod monster;
+mod public;
 
 use crate::card::Card;
 use crate::{utils, utils::json::CardJson};
@@ -63,7 +63,7 @@ impl CardGenerator {
     pub fn new() -> CardGenerator {
         let keys = Keys::new();
         let mut card_generators = HashMap::new();
-        
+
         for (str_id, func) in CARD_GENERATORS.iter() {
             if let Some(id) = keys.get_usize_by_string(str_id) {
                 card_generators.insert(id, *func);

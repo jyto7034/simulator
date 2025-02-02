@@ -4,6 +4,7 @@ use crate::card::types::PlayerType;
 
 #[derive(Debug, PartialEq)]
 pub enum Exception {
+    InvalidTargetCount,
     NoValidTargets,
     CannotActivate,
     DeckCodeIsMissing(PlayerType),
@@ -20,6 +21,7 @@ pub enum Exception {
     NothingToRemove,
     InvalidCardData,
     InvalidCardType,
+    InvalidOperation,
     JsonParseFailed,
     DecodeError,
     DeckParseError,

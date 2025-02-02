@@ -1,6 +1,8 @@
 use std::fmt::Display;
 
-use crate::{enums::phase::Phase, exception::Exception, game::Game, resource::CardSpecsResource, utils::json::CardJson};
+use crate::{exception::Exception, game::Game, resource::CardSpecsResource, utils::json::CardJson};
+
+use super::modifier::Modifier;
 
 #[derive(Clone)]
 pub struct CardSpecs {
@@ -9,7 +11,7 @@ pub struct CardSpecs {
     cost: i32,
 }
 
-impl CardSpecs{
+impl CardSpecs {
     pub fn new(json: &CardJson) -> Self {
         Self {
             attack: CardSpecsResource::new(json.attack.unwrap()),
@@ -28,8 +30,12 @@ pub struct CardStatus {
 }
 
 impl CardStatus {
-    pub fn new() -> Self{
-        Self { is_negated: false, is_disabled: false, modifiers: vec![] }
+    pub fn new() -> Self {
+        Self {
+            is_negated: false,
+            is_disabled: false,
+            modifiers: vec![],
+        }
     }
 
     pub fn is_negated(&self) -> bool {
@@ -41,42 +47,7 @@ impl CardStatus {
     }
 }
 
-#[derive(Clone)]
-pub struct Modifier {
-    modifier_type: ModifierType,
-    value: i32,
-    duration: Duration,
-    source_card: Option<String>,
-    applied_turn: usize,     // 효과가 적용된 턴
-    applied_phase: Phase,    // 효과가 적용된 페이즈
-}
-
-impl Modifier {
-    pub fn is_expired(&self, game: &Game) -> bool {
-        match &self.duration {
-            Duration::Permanent => false,  // 영구 지속
-            
-            Duration::UntilEndOfTurn => {
-                // 효과가 적용된 턴이 지났는지 확인
-                game.turn.get_turn_count() > self.applied_turn
-            },
-            
-            Duration::UntilEndOfPhase => {
-                // 효과가 적용된 페이즈가 지났는지 확인
-                game.turn.get_turn_count() > self.applied_turn || 
-                (game.turn.get_turn_count() == self.applied_turn && 
-                 game.current_phase > self.applied_phase)
-            },
-            
-            Duration::ForXTurns(turns) => {
-                // 지정된 턴 수가 지났는지 확인
-                game.turn.get_turn_count() >= self.applied_turn + turns
-            },
-        }
-    }
-}
-
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq, Copy)]
 pub enum ModifierType {
     AttackBoost,
     DefenseBoost,
@@ -85,7 +56,7 @@ pub enum ModifierType {
     AttributeChange,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub enum Duration {
     Permanent,
     UntilEndOfTurn,
@@ -106,22 +77,23 @@ impl CardStatus {
 
     // 특정 타입의 수정자 모두 제거
     pub fn remove_modifiers_of_type(&mut self, modifier_type: ModifierType) {
-        self.modifiers.retain(|m| m.modifier_type != modifier_type);
+        self.modifiers
+            .retain(|m| m.get_modifier_type() != modifier_type);
     }
 
     // 만료된 수정자 제거
     pub fn cleanup_expired_modifiers(&mut self, game: &Game) {
-        self.modifiers.retain(|modifier| !modifier.is_expired(game));
+        self.modifiers.retain(|modifier| {
+            !modifier.is_expired(game.turn.get_turn_count(), game.current_phase)
+        });
     }
-
-    
 
     // 특정 타입의 수정자 총합 계산
     pub fn get_total_modifier(&self, modifier_type: ModifierType) -> i32 {
         self.modifiers
             .iter()
-            .filter(|m| m.modifier_type == modifier_type)
-            .map(|m| m.value)
+            .filter(|m| m.get_modifier_type() == modifier_type)
+            .map(|m| m.get_value())
             .sum()
     }
 }
@@ -141,6 +113,7 @@ pub enum CardType {
     Ace,
     Trap,
     Game,
+    Any,
 }
 
 impl CardType {
@@ -156,7 +129,7 @@ impl CardType {
                 "Game" => Ok(CardType::Game),
                 _ => Err(Exception::InvalidCardType),
             },
-            None => Err(Exception::InvalidCardType)
+            None => Err(Exception::InvalidCardType),
         }
     }
 
@@ -170,6 +143,7 @@ impl CardType {
             CardType::Ace => "Ace",
             CardType::Trap => "Trap",
             CardType::Game => "Game",
+            CardType::Any => "Any",
         }
     }
 
@@ -221,6 +195,7 @@ impl Display for CardType {
             CardType::Ace => todo!(),
             CardType::Trap => todo!(),
             CardType::Game => todo!(),
+            CardType::Any => todo!(),
         }
     }
 }
@@ -235,29 +210,29 @@ impl std::fmt::Debug for CardType {
             CardType::Ace => todo!(),
             CardType::Trap => todo!(),
             CardType::Game => todo!(),
+            CardType::Any => todo!(),
         }
     }
 }
 
 #[derive(Copy, Clone)]
-pub enum StatType{
+pub enum StatType {
     Attack,
     Defense,
 }
 
-
 ///
 /// 백엔드을 실행하는건 Host 역할을 부여 받은 플레이어쪽임.
 /// 백엔드에서 Host 는 Player1 혹은 Self_ 로 취급되고
-/// Client 는 Player2 혹은 Opponent 로 취급함. 
-/// 
+/// Client 는 Player2 혹은 Opponent 로 취급함.
+///
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum OwnerType {
-    Self_,      // 자신 (현재 턴 플레이어)
-    Opponent,   // 상대방
-    Any,        // 아무나 (자신 또는 상대)
-    None,       // 소유자 없음
+    Self_,    // 자신 (현재 턴 플레이어)
+    Opponent, // 상대방
+    Any,      // 아무나 (자신 또는 상대)
+    None,     // 소유자 없음
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -267,18 +242,17 @@ pub enum PlayerType {
     None,
 }
 
-impl From<PlayerType> for OwnerType{
+impl From<PlayerType> for OwnerType {
     fn from(value: PlayerType) -> Self {
         match value {
             PlayerType::Player1 => Self::Self_,
             PlayerType::Player2 => Self::Opponent,
             PlayerType::None => Self::None,
         }
-        
     }
 }
 
-impl From<OwnerType> for PlayerType{
+impl From<OwnerType> for PlayerType {
     fn from(value: OwnerType) -> Self {
         match value {
             OwnerType::Self_ => PlayerType::Player1,
@@ -297,10 +271,10 @@ impl OwnershipComparable for PlayerType {
     fn matches_owner(&self, owner: &OwnerType) -> bool {
         matches!(
             (self, owner),
-            (PlayerType::Player1, OwnerType::Self_) |
-            (PlayerType::Player2, OwnerType::Opponent) |
-            (PlayerType::None, OwnerType::None) |
-            (_, OwnerType::Any)
+            (PlayerType::Player1, OwnerType::Self_)
+                | (PlayerType::Player2, OwnerType::Opponent)
+                | (PlayerType::None, OwnerType::None)
+                | (_, OwnerType::Any)
         )
     }
 }
