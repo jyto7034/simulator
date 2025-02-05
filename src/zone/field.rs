@@ -1,7 +1,7 @@
 use crate::{
     card::{cards::Cards, take::Take, Card},
     enums::{UNIT_ZONE_SIZE, UUID},
-    exception::Exception,
+    exception::GameError,
 };
 
 use super::zone::Zone;
@@ -28,7 +28,7 @@ impl Zone for Field {
         &mut self,
         card: Card,
         insert_type: Box<dyn crate::card::insert::Insert>,
-    ) -> Result<(), Exception> {
+    ) -> Result<(), GameError> {
         todo!()
     }
 
@@ -36,7 +36,7 @@ impl Zone for Field {
         todo!()
     }
 
-    fn take_card(&mut self, take_type: Box<dyn Take>) -> Card {
+    fn take_card(&mut self, take_type: Box<dyn Take>) -> Vec<Card> {
         todo!()
     }
 }

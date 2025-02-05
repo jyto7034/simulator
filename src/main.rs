@@ -1,8 +1,18 @@
 use std::fs;
 use std::io::Write;
 use std::path::Path;
+use std::sync::Arc;
 
+use tracing::{info, warn, error, Level};
+use tracing_subscriber::EnvFilter;
+use tracing_appender::rolling::{RollingFileAppender, Rotation};
+
+use card_game::server::types::ServerState;
+use card_game::test::{generate_random_deck_json, initialize_app};
+use card_game::utils::parse_json_to_deck_code;
 use clap::Parser;
+use rocket::routes;
+use tokio::sync::Mutex;
 // main
 #[derive(Parser)]
 #[command(
@@ -25,7 +35,40 @@ struct Args {
     attacker: usize,
 }
 
-fn main() {
+use std::sync::Once;
+static INIT: Once = Once::new();
+static mut GUARD: Option<tracing_appender::non_blocking::WorkerGuard> = None;
+fn setup_logger() {
+    INIT.call_once(|| {
+        let file_appender = RollingFileAppender::new(
+            Rotation::DAILY,
+            "logs",
+            "app.log",
+        );
+    
+        let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
+
+        tracing_subscriber::fmt()
+            .with_env_filter(EnvFilter::from_default_env()
+            .add_directive(Level::INFO.into()))
+            .with_thread_ids(true)
+            .with_ansi(false)
+            .with_thread_names(true)
+            .with_file(true)
+            .with_line_number(true)
+            .with_target(false)
+            .with_writer(non_blocking)
+            .pretty()
+            .init();
+
+        unsafe {
+            GUARD = Some(_guard);
+        }
+    });
+}
+
+#[tokio::main]
+async fn main() {
     let out_dir = std::env::var("OUT_DIR").unwrap();
     let dest_path = Path::new(&out_dir).join("card_registry.rs");
     let mut f = fs::File::create(&dest_path).unwrap();
@@ -53,12 +96,41 @@ fn main() {
     write!(
         f,
         r#"
-// 자동 생성된 카드 레지스트리
-generate_card_map! {{
-{}
-}}
-"#,
+        // 자동 생성된 카드 레지스트리
+        generate_card_map! {{
+            {}
+        }}
+        "#,
         card_registrations.join(",\n")
     )
     .unwrap();
+
+    // let (deck_json, original_cards) = generate_random_deck_json();
+    // let (deck_json2, _) = generate_random_deck_json();
+
+    // // 2. JSON을 덱 코드로 변환
+    // let deck_codes = parse_json_to_deck_code(Some(deck_json), Some(deck_json2))
+    //     .expect("Failed to parse deck code");
+
+    // let app = initialize_app(deck_codes.0, deck_codes.1, 0);
+    // let state = Arc::new(Mutex::new(ServerState{
+    //     game: Arc::new(Mutex::new(app.game))
+    // }));
+
+    setup_logger();
+    info!("asd");
+    
+    // tokio::spawn(async move {
+    //     let rocket = rocket::build()
+    //         .mount(
+    //             "/",
+    //             routes![
+    //             ],
+    //         )
+    //         .manage(state)
+    //         .ignite()
+    //         .await?;
+
+    //     rocket.launch().await
+    // });
 }

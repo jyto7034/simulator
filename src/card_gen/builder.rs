@@ -5,7 +5,7 @@ use crate::{
         Card,
     },
     enums::UUID,
-    exception::Exception,
+    exception::GameError,
     utils::{self, json::CardJson},
 };
 
@@ -21,10 +21,10 @@ pub struct CardBuilder {
 }
 
 impl CardBuilder {
-    pub fn new(card_json: &CardJson) -> Result<Self, Exception> {
+    pub fn new(card_json: &CardJson) -> Result<Self, GameError> {
         Ok(Self {
             uuid: utils::generate_uuid().unwrap(),
-            name: card_json.name.clone().ok_or(Exception::InvalidCardData)?,
+            name: card_json.name.clone().ok_or(GameError::InvalidCardData)?,
             card_type: CardType::from_json(card_json)?,
             effects: vec![],
             json_data: card_json.clone(),

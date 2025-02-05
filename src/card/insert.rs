@@ -1,9 +1,9 @@
-use crate::{enums::UUID, exception::Exception};
+use crate::{enums::UUID, exception::GameError};
 
 use super::Card;
 
 pub trait Insert {
-    fn insert(&self, cards: &mut Vec<Card>, card: Card) -> Result<(), Exception>;
+    fn insert(&self, cards: &mut Vec<Card>, card: Card) -> Result<(), GameError>;
     fn clone_box(&self) -> Box<dyn Insert>;
 }
 
@@ -17,7 +17,7 @@ pub struct SpecificPositionInsert {
 
 // Top 구현
 impl Insert for TopInsert {
-    fn insert(&self, cards: &mut Vec<Card>, card: Card) -> Result<(), Exception> {
+    fn insert(&self, cards: &mut Vec<Card>, card: Card) -> Result<(), GameError> {
         cards.push(card);
         Ok(())
     }
@@ -29,7 +29,7 @@ impl Insert for TopInsert {
 
 // Bottom 구현
 impl Insert for BottomInsert {
-    fn insert(&self, cards: &mut Vec<Card>, card: Card) -> Result<(), Exception> {
+    fn insert(&self, cards: &mut Vec<Card>, card: Card) -> Result<(), GameError> {
         cards.insert(0, card);
         Ok(())
     }
@@ -41,7 +41,7 @@ impl Insert for BottomInsert {
 
 // Random 구현
 impl Insert for RandomInsert {
-    fn insert(&self, cards: &mut Vec<Card>, card: Card) -> Result<(), Exception> {
+    fn insert(&self, cards: &mut Vec<Card>, card: Card) -> Result<(), GameError> {
         use rand::Rng;
         let mut rng = rand::thread_rng();
         let position = rng.gen_range(0..=cards.len());
@@ -65,7 +65,7 @@ impl SpecificPositionInsert {
 }
 
 impl Insert for SpecificPositionInsert {
-    fn insert(&self, cards: &mut Vec<Card>, card: Card) -> Result<(), Exception> {
+    fn insert(&self, cards: &mut Vec<Card>, card: Card) -> Result<(), GameError> {
         if let Some(pos) = cards
             .iter()
             .position(|c| c.get_uuid() == self.target_card_uuid)
@@ -74,7 +74,7 @@ impl Insert for SpecificPositionInsert {
             cards.insert(insert_pos, card);
             Ok(())
         } else {
-            Err(Exception::CardNotFound)
+            Err(GameError::CardNotFound)
         }
     }
 

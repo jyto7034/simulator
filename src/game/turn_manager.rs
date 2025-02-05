@@ -23,24 +23,24 @@ impl TurnManager {
         self.turn_count
     }
 
-    pub fn current_turn(&self) -> &PlayerType {
-        &self.current_turn
+    pub fn current_turn(&self) -> PlayerType {
+        self.current_turn
     }
 
-    pub fn change_turn(&mut self) -> &PlayerType {
+    pub fn change_turn(&mut self) -> PlayerType {
         self.current_turn = match self.current_turn {
             PlayerType::Player1 => PlayerType::Player2,
             PlayerType::Player2 => PlayerType::Player1,
             PlayerType::None => panic!("PlayerType is None"),
         };
-        &self.current_turn
+        self.current_turn
     }
 
-    pub fn is_player1_turn(&self) -> bool {
+    pub fn is_player_turn(&self) -> bool {
         self.current_turn == PlayerType::Player1
     }
 
-    pub fn is_player2_turn(&self) -> bool {
+    pub fn is_opponent_turn(&self) -> bool {
         self.current_turn == PlayerType::Player2
     }
 

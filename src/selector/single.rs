@@ -6,7 +6,7 @@ use crate::{
         Card,
     },
     enums::CardLocation,
-    exception::Exception,
+    exception::GameError,
     game::Game,
 };
 
@@ -43,11 +43,11 @@ impl SingleCardSelector {
 }
 
 impl TargetSelector for SingleCardSelector {
-    fn select_targets(&self, game: &Game, source: &Card) -> Result<Vec<Card>, Exception> {
+    fn select_targets(&self, game: &Game, source: &Card) -> Result<Vec<Card>, GameError> {
         let valid_targets = self.get_valid_targets(game, source);
 
         if valid_targets.is_empty() {
-            return Err(Exception::NoValidTargets);
+            return Err(GameError::NoValidTargets);
         }
 
         // 실제 게임에서는 플레이어가 선택

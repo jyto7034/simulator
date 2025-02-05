@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 pub mod phase;
 
 pub const CARD_ID_JSON_PATH: &str = "Resource/cards_id.json";
@@ -24,7 +26,7 @@ pub const MAX_CARD_SIZE: u32 = 30;
 
 pub struct DeckCode(pub String);
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct UUID(pub String);
 
 pub type CardsUuid = Vec<UUID>;

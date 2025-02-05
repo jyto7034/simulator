@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use crate::{exception::Exception, game::Game, resource::CardSpecsResource, utils::json::CardJson};
+use crate::{exception::GameError, game::Game, resource::CardSpecsResource, utils::json::CardJson};
 
 use super::modifier::Modifier;
 
@@ -84,7 +84,7 @@ impl CardStatus {
     // 만료된 수정자 제거
     pub fn cleanup_expired_modifiers(&mut self, game: &Game) {
         self.modifiers.retain(|modifier| {
-            !modifier.is_expired(game.turn.get_turn_count(), game.current_phase)
+            !modifier.is_expired(game.turn.get_turn_count(), game.phase)
         });
     }
 
@@ -117,7 +117,7 @@ pub enum CardType {
 }
 
 impl CardType {
-    pub fn from_json(json: &CardJson) -> Result<Self, Exception> {
+    pub fn from_json(json: &CardJson) -> Result<Self, GameError> {
         match &json.r#type {
             Some(type_str) => match type_str.as_str() {
                 "Dummy" => Ok(CardType::Dummy),
@@ -127,9 +127,9 @@ impl CardType {
                 "Ace" => Ok(CardType::Ace),
                 "Trap" => Ok(CardType::Trap),
                 "Game" => Ok(CardType::Game),
-                _ => Err(Exception::InvalidCardType),
+                _ => Err(GameError::InvalidCardType),
             },
-            None => Err(Exception::InvalidCardType),
+            None => Err(GameError::InvalidCardType),
         }
     }
 

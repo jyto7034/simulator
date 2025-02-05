@@ -2,13 +2,13 @@
 use crate::{
     card::{cards::Cards, insert::Insert, take::Take, Card},
     enums::UUID,
-    exception::Exception,
+    exception::GameError,
 };
 
 pub trait Zone {
-    fn add_card(&mut self, card: Card, insert_type: Box<dyn Insert>) -> Result<(), Exception>;
+    fn add_card(&mut self, card: Card, insert_type: Box<dyn Insert>) -> Result<(), GameError>;
 
-    fn take_card(&mut self, take_type: Box<dyn Take>) -> Card;
+    fn take_card(&mut self, take_type: Box<dyn Take>) -> Vec<Card>;
 
     fn remove_card(&mut self, uuid: UUID);
 

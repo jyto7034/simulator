@@ -7,7 +7,7 @@ use turn_manager::TurnManager;
 use crate::{
     card::types::PlayerType,
     enums::{phase::Phase, DeckCode},
-    exception::Exception,
+    exception::GameError,
     unit::player::Player,
     utils::deckcode_to_cards,
     OptRcRef,
@@ -29,13 +29,13 @@ pub struct GameConfig {
 pub struct Game {
     pub player1: OptRcRef<Player>,
     pub player2: OptRcRef<Player>,
-    pub current_phase: Phase,
+    pub phase: Phase,
     pub turn: TurnManager,
 }
 
 /// initialize 함수에 GameConfig 을 넣음으로써 두 플레이어의 Cards 을 설정한다.
 impl Game {
-    pub fn initialize(&mut self, _config: GameConfig) -> Result<(), Exception> {
+    pub fn initialize(&mut self, _config: GameConfig) -> Result<(), GameError> {
         let cards = deckcode_to_cards(_config.player_1_deckcode, _config.player_2_deckcode)?;
         todo!()
     }
@@ -50,6 +50,27 @@ impl Game {
         }
     }
 
+    pub fn get_turn(&self) -> &TurnManager{
+        &self.turn
+    }
+
+    pub fn get_phase(&self) -> Phase{
+        self.phase
+    }
+
+    pub fn get_turn_mut(&mut self) -> &mut TurnManager{
+        &mut self.turn
+    }
+    
+    pub fn get_phase_mut(&mut self) -> &mut Phase{
+        &mut self.phase
+    }
+    
+    pub fn move_phase(&mut self) -> Phase{
+        self.phase = self.phase.next_phase();
+        self.phase
+    }
+
     pub fn get_player(&self) -> &OptRcRef<Player> {
         &self.player1
     }
@@ -58,7 +79,7 @@ impl Game {
         &self.player2
     }
 
-    pub fn draw_card(&self, player_type: PlayerType) -> Result<(), Exception> {
+    pub fn draw_card(&self, player_type: PlayerType) -> Result<(), GameError> {
         todo!()
     }
 }

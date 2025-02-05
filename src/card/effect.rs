@@ -1,11 +1,11 @@
-use crate::{exception::Exception, game::Game, selector::TargetSelector, zone::zone::Zone};
+use crate::{exception::GameError, game::Game, selector::TargetSelector, zone::zone::Zone};
 
 use super::{types::StatType, Card};
 
 pub trait Effect: Send + Sync {
-    fn apply(&self, game: &mut Game, source: &Card) -> Result<(), Exception>;
+    fn apply(&self, game: &mut Game, source: &Card) -> Result<(), GameError>;
     fn can_activate(&self, game: &Game, source: &Card) -> bool;
-    fn clone_effect(&self) -> Result<Box<dyn Effect>, Exception>;
+    fn clone_effect(&self) -> Result<Box<dyn Effect>, GameError>;
 }
 
 pub struct DrawEffect {
@@ -13,7 +13,7 @@ pub struct DrawEffect {
 }
 
 impl Effect for DrawEffect {
-    fn apply(&self, game: &mut Game, source: &Card) -> Result<(), Exception> {
+    fn apply(&self, game: &mut Game, source: &Card) -> Result<(), GameError> {
         for _ in 0..self.count {
             game.draw_card(source.get_owner().into())?;
         }
@@ -28,7 +28,7 @@ impl Effect for DrawEffect {
             >= self.count
     }
 
-    fn clone_effect(&self) -> Result<Box<dyn Effect>, Exception> {
+    fn clone_effect(&self) -> Result<Box<dyn Effect>, GameError> {
         todo!()
     }
 }
@@ -40,7 +40,7 @@ pub struct ModifyStatEffect {
 }
 
 impl Effect for ModifyStatEffect {
-    fn apply(&self, game: &mut Game, source: &Card) -> Result<(), Exception> {
+    fn apply(&self, game: &mut Game, source: &Card) -> Result<(), GameError> {
         let targets = self.target_selector.select_targets(game, source)?;
         for mut target in targets {
             target.modify_stat(self.stat_type, self.amount)?;
@@ -52,7 +52,7 @@ impl Effect for ModifyStatEffect {
         self.target_selector.has_valid_targets(game, source)
     }
 
-    fn clone_effect(&self) -> Result<Box<dyn Effect>, Exception> {
+    fn clone_effect(&self) -> Result<Box<dyn Effect>, GameError> {
         todo!()
     }
 }

@@ -1,7 +1,7 @@
 use crate::{
     card::{cards::Cards, take::Take, Card},
     enums::{UNIT_ZONE_SIZE, UUID},
-    exception::Exception,
+    exception::GameError,
 };
 
 use super::zone::Zone;
@@ -20,7 +20,7 @@ impl Hand {
     }
 
     /// 특정 카드를 현재 Zone 으로부터 삭제합니다.
-    pub fn remove_card(&mut self, _card: Card) -> Result<(), Exception> {
+    pub fn remove_card(&mut self, _card: Card) -> Result<(), GameError> {
         // 카드 관리 방법 변경에 따라, 재작성해야함.
         todo!();
     }
@@ -47,11 +47,11 @@ impl Zone for Hand {
         &mut self,
         card: Card,
         insert_type: Box<dyn crate::card::insert::Insert>,
-    ) -> Result<(), Exception> {
+    ) -> Result<(), GameError> {
         todo!()
     }
     
-    fn take_card(&mut self, take_type: Box<dyn Take>) -> Card {
+    fn take_card(&mut self, take_type: Box<dyn Take>) -> Vec<Card> {
         todo!()
     }
 }

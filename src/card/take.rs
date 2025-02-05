@@ -1,4 +1,4 @@
-use crate::{enums::UUID, zone::zone::Zone};
+use crate::{enums::UUID, selector::TargetCount, zone::zone::Zone};
 
 use super::Card;
 
@@ -7,9 +7,9 @@ pub trait Take{
     fn clone_box(&self) -> Box<dyn Take>;
 }
 
-pub struct TopTake;
-pub struct BottomTake;
-pub struct RandomTake;
+pub struct TopTake(pub TargetCount);
+pub struct BottomTake(pub TargetCount);
+pub struct RandomTake(pub TargetCount);
 pub struct SpecificTake(UUID);
 
 impl Take for TopTake{

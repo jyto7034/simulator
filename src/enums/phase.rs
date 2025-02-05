@@ -1,7 +1,7 @@
-#[derive(Clone, PartialEq, Eq, Copy)]
+#[derive(Clone, PartialEq, Eq, Copy, Debug)]
 pub enum Phase {
     GameStart,
-
+    
     // 가장 먼저 시작되는 드로우 페이즈 ( 기타 자원 등 증가함. )
     DrawPhase,
 

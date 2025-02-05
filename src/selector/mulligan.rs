@@ -1,11 +1,11 @@
 use crate::{
-    card::{types::{CardType, OwnerType, PlayerType}, Card},
+    card::{take::TopTake, types::{CardType, PlayerType}, Card},
     enums::{CardLocation, ZoneType},
-    exception::Exception,
+    exception::GameError,
     game::Game, zone::zone::Zone,
 };
 
-use super::{TargetCondition, TargetCount, TargetSelector};
+use super::{TargetCondition, TargetCount};
 
 pub struct MulliganSelector {
     condition: TargetCondition,
@@ -18,53 +18,6 @@ impl MulliganSelector {
             condition,
             count,
         }
-    }
-}
-
-impl TargetSelector for MulliganSelector {
-    fn select_targets(&self, game: &Game, source: &Card) -> Result<Vec<Card>, Exception> {
-        let valid_targets = self.get_valid_targets(game, source);
-
-        if valid_targets.is_empty() {
-            return Ok(vec![]); // 교체할 카드가 없어도 됨
-        }
-
-        // 실제 게임에서는 플레이어가 선택
-        Ok(valid_targets)
-    }
-
-    fn has_valid_targets(&self, game: &Game, source: &Card) -> bool {
-        !self.get_valid_targets(game, source).is_empty()
-    }
-
-    fn get_target_count(&self) -> TargetCount {
-        self.count.clone()
-    }
-
-    fn clone_selector(&self) -> Box<dyn TargetSelector> {
-        Box::new(Self {
-            condition: self.condition.clone(),
-            count: self.count.clone(),
-        })
-    }
-
-    fn get_owner(&self) -> OwnerType {
-        self.condition.owner
-    }
-
-    fn get_locations(&self) -> Vec<CardLocation> {
-        self.condition.location.clone()
-    }
-
-    fn is_valid_target(&self, card: &Card, game: &Game, _source: &Card) -> bool {
-        let location = self.condition.location.get(0).unwrap().0;
-        assert_eq!(location, ZoneType::Deck);
-
-        game.get_cards_by_player_and_zone_type(
-            self.condition.owner.into(),
-            location,
-        )
-        .contains(card)
     }
 }
 
@@ -91,27 +44,27 @@ impl MulliganState {
     }
 
     pub fn draw_cards(&self, game: &mut Game) -> Vec<Card>{
-        if PlayerType::Player1 == self.selector.condition.owner {
-            game.get_player().get_mut().get_deck().take_card(uuid)
+        if PlayerType::Player1 == self.selector.condition.owner.into() {
+            game.get_player().get_mut().get_deck_mut().take_card(Box::new(TopTake(self.selector.count)))
         }
-        else if PlayerType::Player2 ==self.selector.condition.owner{
-
+        else {
+            game.get_opponent().get_mut().get_deck_mut().take_card(Box::new(TopTake(self.selector.count)))
         }
     }
 
-    pub fn select_cards(&mut self, _game: &Game, cards: Vec<Card>) -> Result<(), Exception> {
+    pub fn select_cards(&mut self, _game: &Game, cards: Vec<Card>) -> Result<(), GameError> {
         if self.player_ready {
-            return Err(Exception::InvalidOperation);
+            return Err(GameError::InvalidOperation);
         }
 
         // 카드 선택 검증
         if let TargetCount::Exact(count) = self.selector.count{
             if cards.len() > count {
                 // 예시: 최대 5장까지
-                return Err(Exception::InvalidTargetCount);
+                return Err(GameError::InvalidTargetCount);
             }
         }else{
-            return Err(Exception::InvalidOperation);
+            return Err(GameError::InvalidOperation);
         }
 
         self.selected_cards = cards;

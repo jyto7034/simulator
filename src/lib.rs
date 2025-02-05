@@ -1,5 +1,4 @@
-use std::cell::{Ref, RefCell, RefMut};
-use std::rc::Rc;
+use std::sync::{Arc, Mutex, MutexGuard, RwLock, RwLockReadGuard, RwLockWriteGuard};
 
 pub mod app;
 pub mod card;
@@ -36,11 +35,11 @@ impl<T> OptRcRef<T> {
     }
 
     // 가져오기 메서드들
-    pub fn get_mut(&self) -> RefMut<T> {
+    pub fn get_mut(&self) -> MutexGuard<T> {
         self.0.as_ref().unwrap().get_mut()
     }
 
-    pub fn get(&self) -> Ref<T> {
+    pub fn get(&self) -> MutexGuard<T> {
         self.0.as_ref().unwrap().get()
     }
 
@@ -84,20 +83,20 @@ impl<T> From<T> for OptRcRef<T> {
     }
 }
 
-// RcRef 구현 (이전과 동일)
+// RcRef 구현 (스레드 안전 버전)
 #[derive(Clone)]
-pub struct RcRef<T>(Rc<RefCell<T>>);
+pub struct RcRef<T>(Arc<Mutex<T>>);
 
 impl<T> RcRef<T> {
     pub fn new(value: T) -> Self {
-        Self(Rc::new(RefCell::new(value)))
+        Self(Arc::new(Mutex::new(value)))
     }
 
-    pub fn get_mut(&self) -> RefMut<T> {
-        self.0.as_ref().borrow_mut()
+    pub fn get_mut(&self) -> MutexGuard<T> {
+        self.0.lock().unwrap()
     }
 
-    pub fn get(&self) -> Ref<T> {
-        self.0.as_ref().borrow()
+    pub fn get(&self) -> MutexGuard<T> {
+        self.0.lock().unwrap()
     }
 }

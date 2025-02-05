@@ -11,7 +11,7 @@ use types::{CardSpecs, CardStatus, OwnerType, StatType};
 use crate::{
     card::types::CardType,
     enums::UUID,
-    exception::Exception,
+    exception::GameError,
     game::Game,
     utils::{self, json::CardJson},
 };
@@ -65,10 +65,10 @@ impl Card {
         }
     }
 
-    pub fn activate(&self, game: &mut Game) -> Result<(), Exception> {
+    pub fn activate(&self, game: &mut Game) -> Result<(), GameError> {
         // 카드가 효과를 발동할 수 있는 상태인지 확인
         if !self.can_activate(game) {
-            return Err(Exception::CannotActivate);
+            return Err(GameError::CannotActivate);
         }
 
         // 새 시스템의 효과들 처리
@@ -146,12 +146,12 @@ impl Card {
         self.effects.push(Box::new(effect));
     }
 
-    pub fn modify_stat(&mut self, stat_type: StatType, amount: i32) -> Result<(), Exception> {
+    pub fn modify_stat(&mut self, stat_type: StatType, amount: i32) -> Result<(), GameError> {
         Ok(())
     }
 
     // 카드 복사 (새로운 UUID 생성)
-    pub fn clone_with_new_uuid(&self) -> Result<Self, Exception> {
+    pub fn clone_with_new_uuid(&self) -> Result<Self, GameError> {
         Ok(Card {
             uuid: utils::generate_uuid()?,
             name: self.name.clone(),

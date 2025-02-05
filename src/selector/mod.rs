@@ -12,12 +12,12 @@ use crate::{
         Card,
     },
     enums::CardLocation,
-    exception::Exception,
+    exception::GameError,
     game::Game,
 };
 
 pub trait TargetSelector: Send + Sync {
-    fn select_targets(&self, game: &Game, source: &Card) -> Result<Vec<Card>, Exception>;
+    fn select_targets(&self, game: &Game, source: &Card) -> Result<Vec<Card>, GameError>;
     fn has_valid_targets(&self, game: &Game, source: &Card) -> bool;
     fn get_target_count(&self) -> TargetCount;
     fn clone_selector(&self) -> Box<dyn TargetSelector>;
@@ -45,7 +45,7 @@ pub trait TargetSelector: Send + Sync {
     fn is_valid_target(&self, card: &Card, game: &Game, source: &Card) -> bool;
 }
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub enum TargetCount {
     Exact(usize),
     Range(usize, usize),
