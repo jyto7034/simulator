@@ -1,8 +1,4 @@
 {
-  "p1_name": "player 1",
-  "p2_name": "player 2",
-  "p1_deckcode": "test code 1",
-  "p2_deckcode": "test code 2",
-  "attacker": 0,
-  "game_behaviors": ["", ""]
+  "player_type": "player",
+  "cards": ["CARD_UUID_1", "CARD_UUID_2", "CARD_UUID_3", "CARD_UUID_4"]
 }

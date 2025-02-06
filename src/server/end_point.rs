@@ -1,70 +1,116 @@
-use std::sync::Arc;
+use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer, Responder, FromRequest};
+use actix_ws::{handle, Message};
+use futures_util::StreamExt;
+use futures_util::future::{ready, Ready};
 
-use rocket::{get, http::Status, put, request::{FromRequest, Outcome}, serde::json::Json, State};
-use tokio::sync::Mutex;
+use crate::{card::types::PlayerType, exception::ServerError};
 
-use crate::{card::types::PlayerType, enums::phase::Phase, exception::ServerError};
+use super::types::ServerState;
 
-use super::types::{MulliganCards, Player, SelectedCard, ServerState};
+#[derive(Debug)]
+pub struct AuthPlayer(PlayerType);
 
-#[rocket::async_trait]
-impl<'r> FromRequest<'r> for Player{
+impl FromRequest for AuthPlayer{
     type Error = ServerError;
-
-    async fn from_request(request: &'r rocket::Request<'_>) -> Outcome<Self, Self::Error>{
-        let state = request.rocket().state::<ServerState>().expect("error");
-        let current_turn = state.game.lock().await.get_turn().current_turn();
-        
-        let cookies = request.cookies();
-        match cookies.get_private("type") {
-            Some(cookie) => {
-                let player_type = match cookie.value(){
-                    "p1" => PlayerType::Player1,
-                    "p2" => PlayerType::Player2,
-                    _ => return Outcome::Error((
-                        Status::BadRequest,
-                        ServerError::system_error_default()
-                    )),
-                };
-
-                if current_turn != player_type{
-                    return Outcome::Error((
-                        Status::BadRequest,
-                        ServerError::bad_request_default()
-                    ))
-                }
-                Outcome::Success(Player { player_type })
-            }
-            None => Outcome::Error((
-                Status::Unauthorized,
-                ServerError::not_authenticated_default()
-            ))
-        }
-    }
-}
-
-async fn check_phase(phase: Phase, state: &State<Arc<Mutex<ServerState>>>) -> Result<(), ServerError> {
-    let current_phase = state.lock().await.get_game().await.get_phase();
-    match current_phase == phase {
-        true => Ok(()),
-        false => Err(ServerError::WrongPhase { current: current_phase, expected: phase })
-    }
-}
-
-#[get("/get_mulligan_cards")]
-pub async fn get_mulligan_cards(state: &State<Arc<Mutex<ServerState>>>) -> Result<Json<MulliganCards>, ServerError>{
-    check_phase(Phase::GameStart, state).await?;
-    let state = state.lock().await;
-    let mut game = state.get_game_mut().await;
+    type Future = Ready<Result<Self, Self::Error>>;
     
-    Ok(Json(
-        MulliganCards{
-            uuids: vec![]
-        }
-    ))
+    fn from_request(req: &HttpRequest, _payload: &mut actix_web::dev::Payload) -> Self::Future {
+        
+        ready(Err(ServerError::NotFound))
+    }
 }
 
-#[put("/", data = "<selected_card>")]
-pub fn select_mulligan_card(selected_card: Json<SelectedCard>){
+/// mulligan 단계를 처리하는 end point 입니다.
+/// 
+/// AuthPlayer Request Guard 을 통해 접근을 제한합니다.
+/// 
+/// 각 플레이어는 게임 시작 시 해당 end point 에 접속하여 WebSocket 연결을 수립하게 됩니다.
+/// WebSocket 연결이 성공적으로 수립되면 서버측에서 get_mulligan_cards 함수를 통해 플레이어에게 멀리건 카드를 전송합니다.
+/// 이 때 서버측에서 플레이어에게 전송하는 json 규격은 아래와 같습니다
+/// 
+/// ```
+///     json!
+///     ({
+///         "player_type": "player",
+///         "operation": "get_mulligan_cards",    
+///         "cards": ["CARD_UUID_1", "CARD_UUID_2", "CARD_UUID_3", "CARD_UUID_4"]
+///     });
+/// ```
+/// 
+/// 멀리건 카드를 받은 플레이어는 다시 뽑을 카드를 선택하여 서버로 전송합니다.
+/// 이 때 플레이어가 서버로 전송하는 json 규격은 아래와 같습니다.
+/// 
+/// ```
+///     json!
+///     ({
+///         "player_type": "player",
+///         "operation": "reroll_mulligan_cards",    
+///         "cards": ["CARD_UUID_1", "CARD_UUID_3"]
+///     });
+/// ```
+/// 
+/// TODO: operation 수정 해야함.
+/// 다시 뽑을 카드의 갯수만큼 덱에서 뽑고 플레이어에게 전송합니다. 이 때 전송되는 json 규격은 아래와 같습니다.
+/// ```
+///     json!
+///     ({
+///         "player_type": "player",
+///         "operation": "rerolled_mulligan_cards",    
+///         "cards": ["CARD_UUID_6" "CARD_UUID_7"]
+///     });
+/// ```
+/// 재추첨 카드들은 덱의 맨 아래에 위치하게 됩니다.
+/// 위 일련의 과정이 모두 완료 되면 MulliganState 의 confirm_selection() 함수를 호출하여 선택을 확정합니다.
+/// 해당 함수 호출 후, 다른 플레이어의 MulliganState 의 is_ready() 함수를 통해 준비 상태를 확인합니다.
+/// 두 플레이어가 모두 준비되면 다음 단계로 넘어갑니다.
+  
+pub async fn handle_mulligan_cards(player: AuthPlayer, req: HttpRequest, payload: web::Payload, state: web::Data<ServerState>) -> Result<HttpResponse, ServerError> {
+    let mut game = state.game.lock().await;
+    let cards_uuid = game.get_mulligan_cards();
+    
+    // Http 업그레이드
+    let (resp, mut session, mut stream) = handle(&req, payload).map_err(|_| return ServerError::HandleFailed).unwrap();
 
+    // Http 스레드 생성
+    actix_web::rt::spawn(async move{
+        while let Some(data) = stream.next().await {
+            match data {
+                Ok(Message::Text(json)) => {
+                    /*
+                        // json_result 는 enum 형태로써, mulligan 의 상세 단계 정보를 표현한다.
+                        let json_result = parsing(json);
+                        match json_result{
+                            ReRoll(player_type, cards: Vec<UUID>) => {
+                                // 기존 카드를 넣고 새로운 카드를 뽑습니다
+                                let cards: Vec<UUID> = game.reroll_mulligan_cards(player_type, cards);
+                                let cards_json = cards_to_json(cards);
+
+                                // 새로운 카드를 플레이어에게 전송합니다
+                                if let Err(e) = session.text(cards_json).await {
+                                    eprintln!("Failed to send text message: {:?}", e);
+                                    break;
+                                }
+                                
+                                // 그런 뒤, 해당 Player 의 mulligan 단계를 확정짓고 다른 플레이어의 확정을 확인 후 대기 합니다.
+                                game.get_player().get_mulligan_state().confirm_selection();
+                                if game.get_oppoent().get_mulligan_state().is_ready() {
+                                    // Mulligan 단계 종료
+                                }
+                            }
+                        }
+                    */
+                    if let Err(e) = session.text(json).await {
+                        eprintln!("Failed to send text message: {:?}", e);
+                        break;
+                    }
+                }
+                Ok(Message::Close(reason)) => {
+                    session.close(reason).await.ok();
+                    break;
+                },
+                _ => {}
+            }
+        }
+    });
+    Ok(resp)
 }

@@ -1,18 +1,18 @@
 use std::fs;
 use std::io::Write;
 use std::path::Path;
-use std::sync::Arc;
 
+use actix_web::{web, App, HttpServer};
+use tokio::sync::Mutex;
 use tracing::{info, warn, error, Level};
 use tracing_subscriber::EnvFilter;
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
 
-use card_game::server::types::ServerState;
+use card_game::server::types::{GameKey, ServerState};
 use card_game::test::{generate_random_deck_json, initialize_app};
 use card_game::utils::parse_json_to_deck_code;
 use clap::Parser;
-use rocket::routes;
-use tokio::sync::Mutex;
+
 // main
 #[derive(Parser)]
 #[command(
@@ -67,8 +67,8 @@ fn setup_logger() {
     });
 }
 
-#[tokio::main]
-async fn main() {
+#[actix_web::main]
+async fn main() -> std::io::Result<()>{
     let out_dir = std::env::var("OUT_DIR").unwrap();
     let dest_path = Path::new(&out_dir).join("card_registry.rs");
     let mut f = fs::File::create(&dest_path).unwrap();
@@ -105,32 +105,31 @@ async fn main() {
     )
     .unwrap();
 
-    // let (deck_json, original_cards) = generate_random_deck_json();
-    // let (deck_json2, _) = generate_random_deck_json();
+    let (deck_json, original_cards) = generate_random_deck_json();
+    let (deck_json2, _) = generate_random_deck_json();
 
-    // // 2. JSON을 덱 코드로 변환
-    // let deck_codes = parse_json_to_deck_code(Some(deck_json), Some(deck_json2))
-    //     .expect("Failed to parse deck code");
+    // 2. JSON을 덱 코드로 변환
+    let deck_codes = parse_json_to_deck_code(Some(deck_json), Some(deck_json2))
+        .expect("Failed to parse deck code");
 
-    // let app = initialize_app(deck_codes.0, deck_codes.1, 0);
-    // let state = Arc::new(Mutex::new(ServerState{
-    //     game: Arc::new(Mutex::new(app.game))
-    // }));
+    let app = initialize_app(deck_codes.0, deck_codes.1, 0);
+
+    // TODO: GameKey Getter 메소드 만들어야함.
+    let state = web::Data::new(ServerState{
+        game: Mutex::new(app.game),
+        player_cookie: Mutex::new(GameKey::new("".to_string())),
+        opponent_cookie: Mutex::new(GameKey::new("".to_string()))
+    });
 
     setup_logger();
-    info!("asd");
-    
-    // tokio::spawn(async move {
-    //     let rocket = rocket::build()
-    //         .mount(
-    //             "/",
-    //             routes![
-    //             ],
-    //         )
-    //         .manage(state)
-    //         .ignite()
-    //         .await?;
 
-    //     rocket.launch().await
-    // });
+    HttpServer::new(move || {
+        App::new()
+            .app_data(state.clone())
+            .route("/mulligan_step", web::get().to(mulligan_step))
+    })
+    .bind("127.0.0.1:8080")?
+    .run()
+    .await
+    
 }

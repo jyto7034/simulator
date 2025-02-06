@@ -6,17 +6,11 @@ use tokio::sync::Mutex;
 use crate::{card::types::PlayerType, enums::UUID, game::Game};
 
 pub struct ServerState{
-    pub game: Arc<Mutex<Game>>,
+    pub game: Mutex<Game>,
+    pub player_cookie: Mutex<GameKey>,
+    pub opponent_cookie: Mutex<GameKey>,
 }
 
-impl ServerState {
-    pub async fn get_game(&self) -> impl std::ops::Deref<Target = Game> + '_ {
-        self.game.lock().await
-    }
-    pub async fn get_game_mut(&self) -> impl std::ops::DerefMut<Target = Game> + '_ {
-        self.game.lock().await
-    }
-}
 #[derive(Serialize, Deserialize)]
 pub struct SelectedCard{
     pub uuids: Vec<UUID>
@@ -31,4 +25,14 @@ pub struct MulliganCards{
 /// FromRequest 를 구현함.
 pub struct Player{
     pub player_type: PlayerType
+}
+
+pub struct GameKey{
+    value: String
+}
+
+impl GameKey{
+    pub fn new(value: String) -> Self{
+        Self { value }
+    }
 }

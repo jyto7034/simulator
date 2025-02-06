@@ -1,55 +1,61 @@
-use crate::{card::types::PlayerType, enums::phase::Phase, exception::GameError, selector::mulligan::MulliganState};
+use actix::sync;
+
+use crate::{card::{types::PlayerType, Card}, enums::{phase::Phase, UUID}, exception::GameError, selector::mulligan::MulliganState};
 
 use super::Game;
 
 impl Game {
-    pub async fn proceed_phase(&mut self) -> Result<(), GameError> {
-        let next_phase = self.phase.next_phase();
-        self.handle_phase_transition(next_phase).await
-    }
+    // pub async fn proceed_phase(&mut self) -> Result<(), GameError> {
+    //     let next_phase = self.phase.next_phase();
+    //     self.handle_phase_transition(next_phase).await
+    // }
 
-    /// 페이즈 전환 처리
-    pub async fn handle_phase_transition(&mut self, next_phase: Phase) -> Result<(), GameError> {
-        // 페이즈 전환 전 현재 페이즈의 종료 처리
-        self.handle_phase_end()?;
+    // /// 페이즈 전환 처리
+    // pub async fn handle_phase_transition(&mut self, next_phase: Phase) -> Result<(), GameError> {
+    //     // 페이즈 전환 전 현재 페이즈의 종료 처리
+    //     self.handle_phase_end()?;
 
-        self.phase = next_phase;
+    //     self.phase = next_phase;
 
-        // 새로운 페이즈의 시작 처리
-        self.handle_phase_start().await?;
+    //     // 새로운 페이즈의 시작 처리
+    //     self.handle_phase_start().await?;
 
-        Ok(())
-    }
+    //     Ok(())
+    // }
 
-    /// 페이즈 시작 시 처리
-    pub async fn handle_phase_start(&mut self) -> Result<(), GameError> {
-        match self.phase {
-            Phase::GameStart => self.handle_game_start().await?,
-            Phase::DrawPhase => self.handle_draw_phase()?,
-            Phase::StandbyPhase => self.handle_standby_phase()?,
-            Phase::MainPhaseStart => self.handle_main_phase_start()?,
-            Phase::MainPhase1 => self.handle_main_phase_1()?,
-            Phase::BattlePhaseStart => self.handle_battle_phase_start()?,
-            Phase::BattleStep => self.handle_battle_step()?,
-            Phase::BattleDamageStepStart => self.handle_damage_step_start()?,
-            Phase::BattleDamageStepCalculationBefore => self.handle_before_damage_calculation()?,
-            Phase::BattleDamageStepCalculationStart => self.handle_damage_calculation()?,
-            Phase::BattleDamageStepCalculationEnd => self.handle_after_damage_calculation()?,
-            Phase::BattleDamageStepEnd => self.handle_damage_step_end()?,
-            Phase::BattlePhaseEnd => self.handle_battle_phase_end()?,
-            Phase::MainPhase2 => self.handle_main_phase_2()?,
-            Phase::EndPhase => self.handle_end_phase()?,
-        }
-        Ok(())
-    }
+    // /// 페이즈 시작 시 처리
+    // pub async fn handle_phase_start(&mut self) -> Result<(), GameError> {
+    //     match self.phase {
+    //         Phase::GameStart => self.handle_game_start().await?,
+    //         Phase::DrawPhase => self.handle_draw_phase()?,
+    //         Phase::StandbyPhase => self.handle_standby_phase()?,
+    //         Phase::MainPhaseStart => self.handle_main_phase_start()?,
+    //         Phase::MainPhase1 => self.handle_main_phase_1()?,
+    //         Phase::BattlePhaseStart => self.handle_battle_phase_start()?,
+    //         Phase::BattleStep => self.handle_battle_step()?,
+    //         Phase::BattleDamageStepStart => self.handle_damage_step_start()?,
+    //         Phase::BattleDamageStepCalculationBefore => self.handle_before_damage_calculation()?,
+    //         Phase::BattleDamageStepCalculationStart => self.handle_damage_calculation()?,
+    //         Phase::BattleDamageStepCalculationEnd => self.handle_after_damage_calculation()?,
+    //         Phase::BattleDamageStepEnd => self.handle_damage_step_end()?,
+    //         Phase::BattlePhaseEnd => self.handle_battle_phase_end()?,
+    //         Phase::MainPhase2 => self.handle_main_phase_2()?,
+    //         Phase::EndPhase => self.handle_end_phase()?,
+    //     }
+    //     Ok(())
+    // }
 
-    // 게임 시작 시 처리
-    pub async fn handle_game_start(&mut self) -> Result<(), GameError> {
+    pub async fn get_mulligan_cards(&mut self) -> Result<(Vec<UUID>, Vec<UUID>), GameError> {
         // 멀리건
         let p1_mul = MulliganState::new(PlayerType::Player1, 5);
         let p2_mul = MulliganState::new(PlayerType::Player2, 5);
-        let p1_mulligan_cards = p1_mul.draw_cards(self);
-        let p2_mulligan_cards = p2_mul.draw_cards(self);
+        let p1_mulligan_cards = p1_mul.draw_cards(self).iter().map(|card| return card.get_uuid()).collect();
+        let p2_mulligan_cards = p2_mul.draw_cards(self).iter().map(|card| return card.get_uuid()).collect();
+        Ok((p1_mulligan_cards, p2_mulligan_cards))
+    }
+    
+    pub async fn reroll_mulligan_cards(&mut self, player_type: PlayerType, exclude_cards: Vec<UUID>) -> Result<(Vec<UUID>, Vec<UUID>), GameError>{
+        self.restore_card(player_type, src_cards)
         Ok(())
     }
 

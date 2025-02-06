@@ -187,4 +187,24 @@ impl Phase {
             Phase::EndPhase => Phase::DrawPhase,
         }
     }
+
+    pub fn to_string(&self) -> &'static str {
+        match self {
+            Phase::GameStart => "GameStart",
+            Phase::DrawPhase => "DrawPhase",
+            Phase::StandbyPhase => "StandbyPhase",
+            Phase::MainPhaseStart => "MainPhaseStart",
+            Phase::MainPhase1 => "MainPhase1",
+            Phase::BattlePhaseStart => "BattlePhaseStart",
+            Phase::BattleStep => "BattleStep",
+            Phase::BattleDamageStepStart => "BattleDamageStepStart",
+            Phase::BattleDamageStepCalculationBefore => "BattleDamageStepCalculationBefore",
+            Phase::BattleDamageStepCalculationStart => "BattleDamageStepCalculationStart",
+            Phase::BattleDamageStepCalculationEnd => "BattleDamageStepCalculationEnd",
+            Phase::BattleDamageStepEnd => "BattleDamageStepEnd",
+            Phase::BattlePhaseEnd => "BattlePhaseEnd",
+            Phase::MainPhase2 => "MainPhase2",
+            Phase::EndPhase => "EndPhase",
+        }
+    }
 }

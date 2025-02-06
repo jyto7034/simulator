@@ -6,7 +6,7 @@ use turn_manager::TurnManager;
 
 use crate::{
     card::types::PlayerType,
-    enums::{phase::Phase, DeckCode},
+    enums::{phase::Phase, DeckCode, UUID},
     exception::GameError,
     unit::player::Player,
     utils::deckcode_to_cards,
@@ -81,5 +81,9 @@ impl Game {
 
     pub fn draw_card(&self, player_type: PlayerType) -> Result<(), GameError> {
         todo!()
+    }
+
+    pub fn restore_card(&mut self, player_type: PlayerType, src_cards: Vec<UUID>) -> Result<(), GameError>{
+        Ok(())
     }
 }
