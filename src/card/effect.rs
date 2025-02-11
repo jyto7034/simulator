@@ -21,7 +21,7 @@ impl Effect for DrawEffect {
     }
 
     fn can_activate(&self, game: &Game, source: &Card) -> bool {
-        game.get_player_by_type(source.get_owner().into())
+        game.get_player_by_type(source.get_owner())
             .get()
             .get_deck()
             .len()

@@ -1,9 +1,15 @@
 use std::io::Read;
 
 use rand::{seq::SliceRandom, thread_rng};
-use serde_json::{Value, json};
+use serde_json::{json, Value};
 
-use crate::{app::App, card::Card, card_gen::CardGenerator, enums::{DeckCode, CARD_JSON_PATH}, utils::json};
+use crate::{
+    app::App,
+    card::Card,
+    card_gen::CardGenerator,
+    enums::{DeckCode, CARD_JSON_PATH},
+    utils::json,
+};
 
 const CARD_NUM: usize = 25;
 

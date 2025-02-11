@@ -1,6 +1,16 @@
+use std::str::from_utf8;
+
 use actix::sync;
 
-use crate::{card::{types::PlayerType, Card}, enums::{phase::Phase, UUID}, exception::GameError, selector::mulligan::MulliganState};
+use crate::{
+    card::{take::TopTake, types::PlayerType, Card},
+    enums::{phase::Phase, COUNT_OF_MULLIGAN_CARDS, UUID},
+    exception::{GameError, ServerError},
+    selector::{mulligan::MulliganState, TargetCount},
+    server::server_utils::serialize_cards_to_mulligan_json,
+    unit::player,
+    zone::zone::Zone,
+};
 
 use super::Game;
 
@@ -45,18 +55,29 @@ impl Game {
     //     Ok(())
     // }
 
-    pub async fn get_mulligan_cards(&mut self) -> Result<(Vec<UUID>, Vec<UUID>), GameError> {
-        // 멀리건
-        let p1_mul = MulliganState::new(PlayerType::Player1, 5);
-        let p2_mul = MulliganState::new(PlayerType::Player2, 5);
-        let p1_mulligan_cards = p1_mul.draw_cards(self).iter().map(|card| return card.get_uuid()).collect();
-        let p2_mulligan_cards = p2_mul.draw_cards(self).iter().map(|card| return card.get_uuid()).collect();
-        Ok((p1_mulligan_cards, p2_mulligan_cards))
+    pub fn get_mulligan_cards<T: Into<PlayerType>>(
+        &mut self,
+        player_type: T,
+        count: usize,
+    ) -> Result<Vec<UUID>, GameError> {
+        Ok(self
+            .get_player_by_type(player_type.into())
+            .get_mut()
+            .get_deck_mut()
+            .take_card(Box::new(TopTake(TargetCount::Exact(count))))
+            .iter()
+            .map(|card| return card.get_uuid())
+            .collect())
     }
-    
-    pub async fn reroll_mulligan_cards(&mut self, player_type: PlayerType, exclude_cards: Vec<UUID>) -> Result<(Vec<UUID>, Vec<UUID>), GameError>{
-        self.restore_card(player_type, src_cards)
-        Ok(())
+
+    pub fn restore_then_reroll_mulligan_cards(
+        &mut self,
+        player_type: PlayerType,
+        exclude_cards: Vec<UUID>,
+    ) -> Result<Vec<UUID>, GameError> {
+        self.restore_card(player_type, &exclude_cards)?;
+        let new_cards = self.get_mulligan_cards(player_type, exclude_cards.len())?;
+        Ok(new_cards)
     }
 
     // 각 페이즈별 구체적인 처리

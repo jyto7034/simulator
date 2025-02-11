@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use serde::Deserialize;
+
 use crate::{exception::GameError, game::Game, resource::CardSpecsResource, utils::json::CardJson};
 
 use super::modifier::Modifier;
@@ -84,7 +86,7 @@ impl CardStatus {
     // 만료된 수정자 제거
     pub fn cleanup_expired_modifiers(&mut self, game: &Game) {
         self.modifiers.retain(|modifier| {
-            !modifier.is_expired(game.turn.get_turn_count(), game.phase)
+            !modifier.is_expired(game.get_turn().get_turn_count(), game.get_phase())
         });
     }
 
@@ -235,11 +237,21 @@ pub enum OwnerType {
     None,     // 소유자 없음
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
 pub enum PlayerType {
     Player1,
     Player2,
     None,
+}
+
+impl PlayerType{
+    pub fn reverse(&self) -> Self{
+        match self {
+            Self::Player1 => Self::Player2,
+            Self::Player2 => Self::Player1,
+            Self::None => Self::None,
+        }
+    }
 }
 
 impl From<PlayerType> for OwnerType {

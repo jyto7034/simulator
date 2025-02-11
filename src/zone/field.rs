@@ -26,8 +26,8 @@ impl Zone for Field {
 
     fn add_card(
         &mut self,
-        card: Card,
-        insert_type: Box<dyn crate::card::insert::Insert>,
+        cards: Vec<Card>,
+        insert: Box<dyn crate::card::insert::Insert>,
     ) -> Result<(), GameError> {
         todo!()
     }

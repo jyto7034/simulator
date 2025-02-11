@@ -1,5 +1,5 @@
 use crate::{
-    card::{cards::Cards, take::Take, Card},
+    card::{cards::Cards, insert::Insert, take::Take, Card},
     enums::{DECK_ZONE_SIZE, UUID},
     exception::GameError,
 };
@@ -44,10 +44,13 @@ impl Zone for Deck {
 
     fn add_card(
         &mut self,
-        card: Card,
-        insert_type: Box<dyn crate::card::insert::Insert>,
+        cards: Vec<Card>,
+        insert: Box<dyn Insert>,
     ) -> Result<(), GameError> {
-        todo!()
+        for card in cards{
+            insert.insert(&mut self.zone_cards.v_card, card)?;
+        }
+        Ok(())
     }
 
     fn len(&self) -> usize {

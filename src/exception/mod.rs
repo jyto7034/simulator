@@ -1,9 +1,8 @@
-use std::fmt;
 use crate::{card::types::PlayerType, enums::phase::Phase};
 use actix_web::{
-    get, web, App, HttpResponse, HttpServer, Responder,
-    http::StatusCode, ResponseError,
+    get, http::StatusCode, web, App, HttpResponse, HttpServer, Responder, ResponseError,
 };
+use std::fmt;
 
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub enum GameError {
@@ -60,6 +59,15 @@ pub enum ServerError {
     NotFound,
     WrongPhase(String, String),
     HandleFailed,
+    InternalServerError,
+}
+
+impl From<GameError> for ServerError {
+    fn from(value: GameError) -> Self {
+        match value {
+            _ => ServerError::InternalServerError,
+        }
+    }
 }
 
 impl fmt::Display for ServerError {
@@ -68,7 +76,8 @@ impl fmt::Display for ServerError {
             Self::Unknown => write!(f, "An unknown error occurred"),
             Self::WrongPhase(_, _) => write!(f, "Wrong Phase!"),
             Self::NotFound => todo!(),
-            Self::HandleFailed => todo!()
+            Self::HandleFailed => todo!(),
+            Self::InternalServerError => todo!(),
         }
     }
 }
@@ -77,18 +86,16 @@ impl fmt::Display for ServerError {
 impl ResponseError for ServerError {
     fn error_response(&self) -> HttpResponse {
         match self {
-            Self::Unknown => {
-                HttpResponse::build(StatusCode::INTERNAL_SERVER_ERROR).body("An unknown error occurred")
-            },
+            Self::Unknown => HttpResponse::build(StatusCode::INTERNAL_SERVER_ERROR)
+                .body("An unknown error occurred"),
             Self::WrongPhase(value, _value) => {
-                HttpResponse::build(StatusCode::INTERNAL_SERVER_ERROR).body(format!("Wrong Phase! expected: {}, Got: {}", value, _value))
+                HttpResponse::build(StatusCode::INTERNAL_SERVER_ERROR)
+                    .body(format!("Wrong Phase! expected: {}, Got: {}", value, _value))
             }
-            Self::NotFound => {
-                HttpResponse::build(StatusCode::NOT_FOUND).body("Not Found")
-            },
-            Self::HandleFailed => {
-                HttpResponse::build(StatusCode::INTERNAL_SERVER_ERROR).body("An unknown error occurred")
-            }
+            Self::NotFound => HttpResponse::build(StatusCode::NOT_FOUND).body("Not Found"),
+            Self::HandleFailed => HttpResponse::build(StatusCode::INTERNAL_SERVER_ERROR)
+                .body("An unknown error occurred"),
+            Self::InternalServerError => todo!(),
         }
     }
 
@@ -98,6 +105,7 @@ impl ResponseError for ServerError {
             Self::WrongPhase(_, _) => StatusCode::INTERNAL_SERVER_ERROR,
             Self::NotFound => StatusCode::NOT_FOUND,
             Self::HandleFailed => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::InternalServerError => todo!(),
         }
     }
 }

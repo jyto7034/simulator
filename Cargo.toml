@@ -22,7 +22,7 @@ clap = {version="4.5.26", features = ["derive"]}
 actix-web = "4.9.0"
 actix = "=0.13.5"
 actix-ws = "0.3.0"
-futures-util = "0.3"
+futures-util = {version = "0.3", features = ["sink"]}
 argon2 = "0.5.3"
 dotenv = "0.15.0"
 tokio = { version = "1.39.3", features = ["full"] }

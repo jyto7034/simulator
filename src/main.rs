@@ -3,10 +3,11 @@ use std::io::Write;
 use std::path::Path;
 
 use actix_web::{web, App, HttpServer};
+use card_game::server::end_point::handle_mulligan_cards;
 use tokio::sync::Mutex;
-use tracing::{info, warn, error, Level};
-use tracing_subscriber::EnvFilter;
+use tracing::{error, info, warn, Level};
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
+use tracing_subscriber::EnvFilter;
 
 use card_game::server::types::{GameKey, ServerState};
 use card_game::test::{generate_random_deck_json, initialize_app};
@@ -40,17 +41,12 @@ static INIT: Once = Once::new();
 static mut GUARD: Option<tracing_appender::non_blocking::WorkerGuard> = None;
 fn setup_logger() {
     INIT.call_once(|| {
-        let file_appender = RollingFileAppender::new(
-            Rotation::DAILY,
-            "logs",
-            "app.log",
-        );
-    
+        let file_appender = RollingFileAppender::new(Rotation::DAILY, "logs", "app.log");
+
         let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
 
         tracing_subscriber::fmt()
-            .with_env_filter(EnvFilter::from_default_env()
-            .add_directive(Level::INFO.into()))
+            .with_env_filter(EnvFilter::from_default_env().add_directive(Level::INFO.into()))
             .with_thread_ids(true)
             .with_ansi(false)
             .with_thread_names(true)
@@ -68,7 +64,7 @@ fn setup_logger() {
 }
 
 #[actix_web::main]
-async fn main() -> std::io::Result<()>{
+async fn main() -> std::io::Result<()> {
     let out_dir = std::env::var("OUT_DIR").unwrap();
     let dest_path = Path::new(&out_dir).join("card_registry.rs");
     let mut f = fs::File::create(&dest_path).unwrap();
@@ -105,6 +101,7 @@ async fn main() -> std::io::Result<()>{
     )
     .unwrap();
 
+    println!("{}", format!("{}", "asd"));
     let (deck_json, original_cards) = generate_random_deck_json();
     let (deck_json2, _) = generate_random_deck_json();
 
@@ -115,21 +112,19 @@ async fn main() -> std::io::Result<()>{
     let app = initialize_app(deck_codes.0, deck_codes.1, 0);
 
     // TODO: GameKey Getter 메소드 만들어야함.
-    let state = web::Data::new(ServerState{
+    let state = web::Data::new(ServerState {
         game: Mutex::new(app.game),
         player_cookie: Mutex::new(GameKey::new("".to_string())),
-        opponent_cookie: Mutex::new(GameKey::new("".to_string()))
+        opponent_cookie: Mutex::new(GameKey::new("".to_string())),
     });
 
     setup_logger();
-
     HttpServer::new(move || {
         App::new()
             .app_data(state.clone())
-            .route("/mulligan_step", web::get().to(mulligan_step))
+            .route("/mulligan_step", web::get().to(handle_mulligan_cards))
     })
     .bind("127.0.0.1:8080")?
     .run()
     .await
-    
 }

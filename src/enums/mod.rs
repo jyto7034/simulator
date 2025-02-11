@@ -26,13 +26,13 @@ pub const MAX_CARD_SIZE: u32 = 30;
 
 pub struct DeckCode(pub String);
 
-#[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
 pub struct UUID(pub String);
 
 pub type CardsUuid = Vec<UUID>;
 
 pub const COUNT_OF_CARDS: usize = 30;
-
+pub const COUNT_OF_MULLIGAN_CARDS: usize = 5;
 pub const PLAYER_1: usize = 0;
 pub const PLAYER_2: usize = 1;
 

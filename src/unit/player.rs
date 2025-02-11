@@ -1,5 +1,7 @@
 use crate::{
     card::{cards::Cards, types::PlayerType},
+    enums::COUNT_OF_MULLIGAN_CARDS,
+    selector::mulligan::MulliganState,
     zone::{deck::Deck, effect::Effect, field::Field, graveyard::Graveyard, hand::Hand},
     OptRcRef,
 };
@@ -47,6 +49,7 @@ impl Resoruce {
 pub struct Player {
     pub opponent: OptRcRef<Player>,
     player_type: PlayerType,
+    mulligan_state: MulliganState,
     cards: Cards,
     cost: Resoruce,
     mana: Resoruce,
@@ -69,6 +72,7 @@ impl Player {
         Player {
             opponent,
             player_type,
+            mulligan_state: MulliganState::new(),
             cards,
             hand: Hand::new(),
             deck: Deck::new(),
@@ -78,6 +82,10 @@ impl Player {
             cost,
             mana,
         }
+    }
+
+    pub fn get_mulligan_state_mut(&mut self) -> &mut MulliganState {
+        &mut self.mulligan_state
     }
 
     pub fn get_opponent(&self) -> &OptRcRef<Player> {

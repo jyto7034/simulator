@@ -45,12 +45,12 @@ impl Zone for Hand {
 
     fn add_card(
         &mut self,
-        card: Card,
-        insert_type: Box<dyn crate::card::insert::Insert>,
+        cards: Vec<Card>,
+        insert: Box<dyn crate::card::insert::Insert>,
     ) -> Result<(), GameError> {
         todo!()
     }
-    
+
     fn take_card(&mut self, take_type: Box<dyn Take>) -> Vec<Card> {
         todo!()
     }

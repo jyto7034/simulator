@@ -5,12 +5,7 @@ pub mod turn_manager;
 use turn_manager::TurnManager;
 
 use crate::{
-    card::types::PlayerType,
-    enums::{phase::Phase, DeckCode, UUID},
-    exception::GameError,
-    unit::player::Player,
-    utils::deckcode_to_cards,
-    OptRcRef,
+    card::{insert::BottomInsert, types::PlayerType}, enums::{phase::Phase, DeckCode, UUID}, exception::GameError, server::end_point::AuthPlayer, unit::player::Player, utils::deckcode_to_cards, zone::zone::Zone, OptRcRef
 };
 
 pub struct GameConfig {
@@ -42,31 +37,31 @@ impl Game {
 }
 
 impl Game {
-    pub fn get_player_by_type(&self, player_type: PlayerType) -> &OptRcRef<Player> {
-        match player_type {
+    pub fn get_player_by_type<T: Into<PlayerType>>(&self, player_type: T) -> &OptRcRef<Player> {
+        match player_type.into() {
             PlayerType::Player1 => &self.player1,
             PlayerType::Player2 => &self.player2,
             PlayerType::None => todo!(),
         }
     }
 
-    pub fn get_turn(&self) -> &TurnManager{
+    pub fn get_turn(&self) -> &TurnManager {
         &self.turn
     }
 
-    pub fn get_phase(&self) -> Phase{
+    pub fn get_phase(&self) -> Phase {
         self.phase
     }
 
-    pub fn get_turn_mut(&mut self) -> &mut TurnManager{
+    pub fn get_turn_mut(&mut self) -> &mut TurnManager {
         &mut self.turn
     }
-    
-    pub fn get_phase_mut(&mut self) -> &mut Phase{
+
+    pub fn get_phase_mut(&mut self) -> &mut Phase {
         &mut self.phase
     }
-    
-    pub fn move_phase(&mut self) -> Phase{
+
+    pub fn move_phase(&mut self) -> Phase {
         self.phase = self.phase.next_phase();
         self.phase
     }
@@ -83,7 +78,19 @@ impl Game {
         todo!()
     }
 
-    pub fn restore_card(&mut self, player_type: PlayerType, src_cards: Vec<UUID>) -> Result<(), GameError>{
+    pub fn restore_card(
+        &mut self,
+        player_type: PlayerType,
+        src_cards: &Vec<UUID>,
+    ) -> Result<(), GameError> {
+        for card_uuid in src_cards{
+            let player = self.get_player_by_type(player_type).get();
+            let card = match player.get_cards().find_by_uuid(card_uuid.clone()){
+                Some(card) => card,
+                None => return Err(GameError::CardNotFound),
+            };
+            self.get_player_by_type(player_type).get_mut().get_deck_mut().add_card(vec!(card.clone()), Box::new(BottomInsert))?;
+        }
         Ok(())
     }
 }
