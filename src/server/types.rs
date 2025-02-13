@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use serde::{Deserialize, Serialize};
 use tokio::sync::Mutex;
 
@@ -7,8 +5,8 @@ use crate::{card::types::PlayerType, enums::UUID, game::Game};
 
 pub struct ServerState {
     pub game: Mutex<Game>,
-    pub player_cookie: Mutex<GameKey>,
-    pub opponent_cookie: Mutex<GameKey>,
+    pub player_cookie: SessionKey,
+    pub opponent_cookie: SessionKey,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -27,16 +25,9 @@ pub struct Player {
     pub player_type: PlayerType,
 }
 
-pub struct GameKey {
-    value: String,
-}
+pub struct SessionKey(pub String);
 
-impl GameKey {
-    pub fn new(value: String) -> Self {
-        Self { value }
-    }
-}
 #[derive(Debug, Deserialize)]
-pub enum ServerGameStep{
+pub enum ServerGameStep {
     Mulligan,
 }

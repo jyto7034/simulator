@@ -3,7 +3,7 @@ use crate::{enums::UUID, selector::TargetCount, zone::zone::Zone};
 use super::Card;
 
 pub trait Take {
-    fn take(&self, zone: Box<dyn Zone>) -> Vec<Card>;
+    fn take(&mut self, zone: &mut dyn Zone) -> Vec<Card>;
     fn clone_box(&self) -> Box<dyn Take>;
 }
 
@@ -12,9 +12,29 @@ pub struct BottomTake(pub TargetCount);
 pub struct RandomTake(pub TargetCount);
 pub struct SpecificTake(UUID);
 
+use std::cmp::min;
 impl Take for TopTake {
-    fn take(&self, zone: Box<dyn Zone>) -> Vec<Card> {
-        todo!()
+    fn take(&mut self, zone: &mut dyn Zone) -> Vec<Card> {
+        let cards = zone.get_cards_mut();
+        let available = cards.len();
+        
+        // TargetCount variant에 따라 실제로 가져올 카드의 수를 결정합니다.
+        let count = match self.0 {
+            TargetCount::Exact(n) => min(n, available),
+            TargetCount::Range(low, high) => {
+                if available < low {
+                    // 만약 최소 필요한 카드 수보다 적으면 아무것도 가져오지 않음
+                    0
+                } else {
+                    min(high, available)
+                }
+            },
+            TargetCount::Any => available,
+            TargetCount::None => 0,
+        };
+        
+        // 카드 집합의 앞부분에서 결정된 개수만큼 카드들을 drainage하여 소유권을 가져옵니다.
+        cards.v_card.drain(0..count).collect()
     }
 
     fn clone_box(&self) -> Box<dyn Take> {
@@ -23,7 +43,7 @@ impl Take for TopTake {
 }
 
 impl Take for BottomTake {
-    fn take(&self, zone: Box<dyn Zone>) -> Vec<Card> {
+    fn take(&mut self, zone: &mut dyn Zone) -> Vec<Card> {
         todo!()
     }
 
@@ -33,7 +53,7 @@ impl Take for BottomTake {
 }
 
 impl Take for RandomTake {
-    fn take(&self, zone: Box<dyn Zone>) -> Vec<Card> {
+    fn take(&mut self, zone: &mut dyn Zone) -> Vec<Card> {
         todo!()
     }
 
@@ -43,7 +63,7 @@ impl Take for RandomTake {
 }
 
 impl Take for SpecificTake {
-    fn take(&self, zone: Box<dyn Zone>) -> Vec<Card> {
+    fn take(&mut self, zone: &mut dyn Zone) -> Vec<Card> {
         todo!()
     }
 

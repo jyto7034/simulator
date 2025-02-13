@@ -1,38 +1,54 @@
-use std::str::from_utf8;
+use serde::{Deserialize, Serialize};
 
-use actix_web::web::Bytes;
-use serde_json::{json, Value};
-use serde::Deserialize;
+use crate::{enums::UUID, exception::ServerError};
 
-use crate::{card::types::PlayerType, enums::UUID, exception::ServerError};
-
-use super::types::ServerGameStep;
-
-pub fn serialize_mulligan_complete_json() -> Result<String, ServerError> {
-    let value: Value = json!("");
-    let bytes = serde_json::to_string(&value)
-        .map(Bytes::from)
-        .map_err(|_| return ServerError::InternalServerError)?;
-    let result = from_utf8(&bytes).map_err(|_| return ServerError::InternalServerError)?;
-    Ok(result.to_string())
-}
-
-#[derive(Debug, Deserialize)]
+/// 공통 메시지 envelope를 정의합니다.
+/// serde의 내부 태그 기능을 이용해, action에 따라 다른 payload를 선택합니다.
+#[derive(Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
-pub enum Action {
-    Reroll,
+pub enum MulliganMessage {
+    Deal { payload: MulliganPayload },
+    Reroll { payload: MulliganPayload },
     Complete,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct Payload {
-    pub player: PlayerType,
+/// 각 단계에서 공통으로 사용되는 payload 구조체입니다.
+#[derive(Serialize, Deserialize)]
+pub struct MulliganPayload {
+    pub player: String,
     pub cards: Vec<UUID>,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct MulliganMessage {
-    pub step: ServerGameStep,
-    pub action: Action,
-    pub payload: Payload,
+/// 각 단계별 JSON 직렬화 함수입니다.
+/// 이 함수를 통해 endpoint 내에서 단계에 맞는 JSON 문자열을 깔끔하게 생성할 수 있습니다.
+
+pub fn serialize_deal_message<T: Into<String>>(
+    player: T,
+    cards: Vec<UUID>,
+) -> Result<String, ServerError> {
+    let message = MulliganMessage::Deal {
+        payload: MulliganPayload {
+            player: player.into(),
+            cards,
+        },
+    };
+    serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
+}
+
+pub fn serialize_reroll_message<T: Into<String>>(
+    player: T,
+    cards: Vec<UUID>,
+) -> Result<String, ServerError> {
+    let message = MulliganMessage::Reroll {
+        payload: MulliganPayload {
+            player: player.into(),
+            cards,
+        },
+    };
+    serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
+}
+
+pub fn serialize_complete_message() -> Result<String, ServerError> {
+    let message = MulliganMessage::Complete {};
+    serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
 }

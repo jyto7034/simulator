@@ -1,14 +1,8 @@
-use std::str::from_utf8;
-
-use actix::sync;
-
 use crate::{
-    card::{take::TopTake, types::PlayerType, Card},
-    enums::{phase::Phase, COUNT_OF_MULLIGAN_CARDS, UUID},
-    exception::{GameError, ServerError},
-    selector::{mulligan::MulliganState, TargetCount},
-    server::server_utils::serialize_cards_to_mulligan_json,
-    unit::player,
+    card::{take::TopTake, types::PlayerType},
+    enums::UUID,
+    exception::GameError,
+    selector::TargetCount,
     zone::zone::Zone,
 };
 
@@ -55,13 +49,13 @@ impl Game {
     //     Ok(())
     // }
 
-    pub fn get_mulligan_cards<T: Into<PlayerType>>(
+    pub fn get_mulligan_cards<T: Into<PlayerType> + Clone>(
         &mut self,
         player_type: T,
         count: usize,
     ) -> Result<Vec<UUID>, GameError> {
         Ok(self
-            .get_player_by_type(player_type.into())
+            .get_player_by_type(player_type)
             .get_mut()
             .get_deck_mut()
             .take_card(Box::new(TopTake(TargetCount::Exact(count))))
@@ -70,11 +64,12 @@ impl Game {
             .collect())
     }
 
-    pub fn restore_then_reroll_mulligan_cards(
+    pub fn restore_then_reroll_mulligan_cards<T: Into<PlayerType>>(
         &mut self,
-        player_type: PlayerType,
+        player_type: T,
         exclude_cards: Vec<UUID>,
     ) -> Result<Vec<UUID>, GameError> {
+        let player_type = player_type.into();
         self.restore_card(player_type, &exclude_cards)?;
         let new_cards = self.get_mulligan_cards(player_type, exclude_cards.len())?;
         Ok(new_cards)

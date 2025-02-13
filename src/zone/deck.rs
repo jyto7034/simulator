@@ -31,23 +31,19 @@ impl Deck {
 
 impl Zone for Deck {
     fn get_cards(&self) -> &Cards {
-        todo!()
+        &self.zone_cards
     }
 
     fn get_cards_mut(&mut self) -> &mut Cards {
-        todo!()
+        &mut self.zone_cards
     }
 
     fn remove_card(&mut self, uuid: UUID) {
         todo!()
     }
 
-    fn add_card(
-        &mut self,
-        cards: Vec<Card>,
-        insert: Box<dyn Insert>,
-    ) -> Result<(), GameError> {
-        for card in cards{
+    fn add_card(&mut self, cards: Vec<Card>, insert: Box<dyn Insert>) -> Result<(), GameError> {
+        for card in cards {
             insert.insert(&mut self.zone_cards.v_card, card)?;
         }
         Ok(())
@@ -57,7 +53,7 @@ impl Zone for Deck {
         todo!()
     }
 
-    fn take_card(&mut self, take_type: Box<dyn Take>) -> Vec<Card> {
-        todo!()
+    fn take_card(&mut self, mut take_type: Box<dyn Take>) -> Vec<Card> {
+        take_type.as_mut().take(self)
     }
 }

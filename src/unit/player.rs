@@ -1,9 +1,8 @@
 use crate::{
     card::{cards::Cards, types::PlayerType},
-    enums::COUNT_OF_MULLIGAN_CARDS,
     selector::mulligan::MulliganState,
     zone::{deck::Deck, effect::Effect, field::Field, graveyard::Graveyard, hand::Hand},
-    OptRcRef,
+    OptArc,
 };
 
 #[derive(Clone, Debug)]
@@ -47,7 +46,7 @@ impl Resoruce {
 
 /// 플레이어를 행동, 상태 등을 다루는 구조체 입니다.
 pub struct Player {
-    pub opponent: OptRcRef<Player>,
+    pub opponent: OptArc<Player>,
     player_type: PlayerType,
     mulligan_state: MulliganState,
     cards: Cards,
@@ -63,7 +62,7 @@ pub struct Player {
 
 impl Player {
     pub fn new(
-        opponent: OptRcRef<Player>,
+        opponent: OptArc<Player>,
         player_type: PlayerType,
         cards: Cards,
         cost: Resoruce,
@@ -88,7 +87,11 @@ impl Player {
         &mut self.mulligan_state
     }
 
-    pub fn get_opponent(&self) -> &OptRcRef<Player> {
+    pub fn get_player_type(&self) -> PlayerType {
+        self.player_type
+    }
+
+    pub fn get_opponent(&self) -> &OptArc<Player> {
         &self.opponent
     }
 

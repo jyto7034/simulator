@@ -9,7 +9,7 @@ use tracing::{error, info, warn, Level};
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::EnvFilter;
 
-use card_game::server::types::{GameKey, ServerState};
+use card_game::server::types::{SessionKey, ServerState};
 use card_game::test::{generate_random_deck_json, initialize_app};
 use card_game::utils::parse_json_to_deck_code;
 use clap::Parser;
@@ -63,6 +63,16 @@ fn setup_logger() {
     });
 }
 
+// 매칭으로 만난 두 플레이어의 닉네임을 받은 뒤, 게임 공용 서버인 valid server 에 전송하여 실제 플레이어가 맞는지 확인 후, key 값을 리턴 받음.
+pub fn check_session(_nick1: String, _nick2: String) -> (SessionKey, SessionKey){
+    (SessionKey("".to_string()), SessionKey("".to_string()))
+}
+
+fn foo(mut x: &mut String) {
+    x.pop();
+}
+
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let out_dir = std::env::var("OUT_DIR").unwrap();
@@ -111,18 +121,20 @@ async fn main() -> std::io::Result<()> {
 
     let app = initialize_app(deck_codes.0, deck_codes.1, 0);
 
+    let session_keys = check_session("".to_string(), "".to_string());
+
     // TODO: GameKey Getter 메소드 만들어야함.
     let state = web::Data::new(ServerState {
         game: Mutex::new(app.game),
-        player_cookie: Mutex::new(GameKey::new("".to_string())),
-        opponent_cookie: Mutex::new(GameKey::new("".to_string())),
+        player_cookie: session_keys.0,
+        opponent_cookie: session_keys.1,
     });
 
     setup_logger();
     HttpServer::new(move || {
         App::new()
             .app_data(state.clone())
-            .route("/mulligan_step", web::get().to(handle_mulligan_cards))
+            .service(handle_mulligan_cards)
     })
     .bind("127.0.0.1:8080")?
     .run()

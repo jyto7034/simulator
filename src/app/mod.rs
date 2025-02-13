@@ -2,7 +2,7 @@ use crate::{
     enums::{phase::Phase, DeckCode},
     exception::GameError,
     game::{turn_manager::TurnManager, Game, GameConfig},
-    OptRcRef,
+    OptArc,
 };
 
 /// client 로부터 msg 를 받으면 그것을 해석 후
@@ -15,8 +15,8 @@ impl App {
     pub fn instantiate() -> App {
         App {
             game: Game {
-                player1: OptRcRef::none(),
-                player2: OptRcRef::none(),
+                player1: OptArc::none(),
+                player2: OptArc::none(),
                 phase: Phase::GameStart,
                 turn: TurnManager::new(),
             },

@@ -5,6 +5,8 @@ pub mod modifier;
 pub mod take;
 pub mod types;
 
+use std::fmt;
+
 use effect::Effect;
 use types::{CardSpecs, CardStatus, OwnerType, StatType};
 
@@ -26,6 +28,21 @@ pub struct Card {
     status: CardStatus,
     owner: OwnerType,
     json_data: CardJson,
+}
+
+impl fmt::Debug for Card {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Card")
+            .field("uuid", &self.uuid)
+            .field("name", &self.name)
+            .field("card_type", &self.card_type)
+            .field("owner", &self.owner)
+            // .field("effects", &self.effects)
+            // .field("specs", &self.specs)
+            // .field("status", &self.status)
+            // .field("json_data", &self.json_data)
+            .finish()
+    }
 }
 
 impl PartialEq for Card {

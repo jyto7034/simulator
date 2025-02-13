@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::fmt::{self, Display};
 
 use serde::Deserialize;
 
@@ -187,33 +187,26 @@ impl CardType {
     }
 }
 
-impl Display for CardType {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            CardType::Dummy => todo!(),
-            CardType::Unit => todo!(),
-            CardType::Spell => todo!(),
-            CardType::Field => todo!(),
-            CardType::Ace => todo!(),
-            CardType::Trap => todo!(),
-            CardType::Game => todo!(),
-            CardType::Any => todo!(),
-        }
+impl fmt::Display for CardType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match self {
+            CardType::Dummy => "Dummy",
+            CardType::Unit => "Unit",
+            CardType::Spell => "Spell",
+            CardType::Field => "Field",
+            CardType::Ace => "Ace",
+            CardType::Trap => "Trap",
+            CardType::Game => "Game",
+            CardType::Any => "Any",
+        };
+        write!(f, "{}", s)
     }
 }
 
-impl std::fmt::Debug for CardType {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            CardType::Dummy => todo!(),
-            CardType::Unit => todo!(),
-            CardType::Spell => todo!(),
-            CardType::Field => todo!(),
-            CardType::Ace => todo!(),
-            CardType::Trap => todo!(),
-            CardType::Game => todo!(),
-            CardType::Any => todo!(),
-        }
+impl fmt::Debug for CardType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // Debug 구현 시 Display 구현을 재사용합니다.
+        write!(f, "{}", self)
     }
 }
 
@@ -244,8 +237,8 @@ pub enum PlayerType {
     None,
 }
 
-impl PlayerType{
-    pub fn reverse(&self) -> Self{
+impl PlayerType {
+    pub fn reverse(&self) -> Self {
         match self {
             Self::Player1 => Self::Player2,
             Self::Player2 => Self::Player1,
@@ -271,6 +264,26 @@ impl From<OwnerType> for PlayerType {
             OwnerType::Opponent => PlayerType::Player2,
             OwnerType::Any => PlayerType::None,
             OwnerType::None => PlayerType::None,
+        }
+    }
+}
+
+impl From<PlayerType> for String {
+    fn from(value: PlayerType) -> Self {
+        match value {
+            PlayerType::Player1 => "player1".to_string(),
+            PlayerType::Player2 => "player2".to_string(),
+            PlayerType::None => todo!(),
+        }
+    }
+}
+
+impl From<String> for PlayerType {
+    fn from(value: String) -> Self {
+        match &value[..] {
+            "player1" => PlayerType::Player1,
+            "player2" => PlayerType::Player1,
+            _ => PlayerType::None,
         }
     }
 }

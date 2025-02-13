@@ -2,7 +2,7 @@ use crate::{card::types::PlayerType, enums::UUID};
 
 pub struct MulliganState {
     player_ready: bool,
-    select_cards: Vec<UUID>
+    select_cards: Vec<UUID>,
 }
 
 impl MulliganState {
@@ -17,7 +17,7 @@ impl MulliganState {
         self.player_ready = true;
     }
 
-    pub fn get_select_cards(&mut self) -> &mut Vec<UUID>{
+    pub fn get_select_cards(&mut self) -> &mut Vec<UUID> {
         &mut self.select_cards
     }
 

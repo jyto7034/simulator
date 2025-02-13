@@ -19,9 +19,12 @@ base64 = "0.13.1"
 byteorder = "1.5.0"
 rayon = "1.8.0"
 clap = {version="4.5.26", features = ["derive"]}
+
 actix-web = "4.9.0"
 actix = "=0.13.5"
 actix-ws = "0.3.0"
+async-tungstenite = {version="0.28.2", features = ["tokio-runtime"]}
+
 futures-util = {version = "0.3", features = ["sink"]}
 argon2 = "0.5.3"
 dotenv = "0.15.0"

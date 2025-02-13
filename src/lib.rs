@@ -18,12 +18,12 @@ pub mod zone;
 extern crate lazy_static;
 
 #[derive(Clone)]
-pub struct OptRcRef<T>(Option<RcRef<T>>);
+pub struct OptArc<T>(Option<ArcMutex<T>>);
 
-impl<T> OptRcRef<T> {
+impl<T> OptArc<T> {
     // 생성자들
     pub fn new(value: T) -> Self {
-        Self(Some(RcRef::new(value)))
+        Self(Some(ArcMutex::new(value)))
     }
 
     pub fn none() -> Self {
@@ -31,7 +31,7 @@ impl<T> OptRcRef<T> {
     }
 
     pub fn from_option(opt: Option<T>) -> Self {
-        opt.map(RcRef::new).into()
+        opt.map(ArcMutex::new).into()
     }
 
     // 가져오기 메서드들
@@ -52,32 +52,32 @@ impl<T> OptRcRef<T> {
         self.0.is_none()
     }
 
-    pub fn as_ref(&self) -> Option<&RcRef<T>> {
+    pub fn as_ref(&self) -> Option<&ArcMutex<T>> {
         self.0.as_ref()
     }
 
-    pub fn take(&mut self) -> Option<RcRef<T>> {
+    pub fn take(&mut self) -> Option<ArcMutex<T>> {
         self.0.take()
     }
 
-    pub fn replace(&mut self, value: T) -> Option<RcRef<T>> {
-        self.0.replace(RcRef::new(value))
+    pub fn replace(&mut self, value: T) -> Option<ArcMutex<T>> {
+        self.0.replace(ArcMutex::new(value))
     }
 }
 
-impl<T> From<Option<RcRef<T>>> for OptRcRef<T> {
-    fn from(opt: Option<RcRef<T>>) -> Self {
+impl<T> From<Option<ArcMutex<T>>> for OptArc<T> {
+    fn from(opt: Option<ArcMutex<T>>) -> Self {
         Self(opt)
     }
 }
 
-impl<T> From<Option<T>> for OptRcRef<T> {
+impl<T> From<Option<T>> for OptArc<T> {
     fn from(opt: Option<T>) -> Self {
-        Self(opt.map(RcRef::new))
+        Self(opt.map(ArcMutex::new))
     }
 }
 
-impl<T> From<T> for OptRcRef<T> {
+impl<T> From<T> for OptArc<T> {
     fn from(value: T) -> Self {
         Self::new(value)
     }
@@ -85,9 +85,9 @@ impl<T> From<T> for OptRcRef<T> {
 
 // RcRef 구현 (스레드 안전 버전)
 #[derive(Clone)]
-pub struct RcRef<T>(Arc<Mutex<T>>);
+pub struct ArcMutex<T>(Arc<Mutex<T>>);
 
-impl<T> RcRef<T> {
+impl<T> ArcMutex<T> {
     pub fn new(value: T) -> Self {
         Self(Arc::new(Mutex::new(value)))
     }

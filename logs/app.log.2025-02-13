@@ -1,0 +1,537 @@
+  2025-02-13T10:06:07.255610Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\builder.rs:272 on main ThreadId(1)
+
+  2025-02-13T10:06:07.255712Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\server.rs:191 on main ThreadId(1)
+
+  2025-02-13T10:06:07.255731Z  INFO  starting service: "actix-web-service-127.0.0.1:8080", workers: 32, listening on: 127.0.0.1:8080
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\server.rs:197 on main ThreadId(1)
+
+  2025-02-13T10:06:37.606123Z  INFO  SIGINT received; starting forced shutdown
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\server.rs:319 on main ThreadId(1)
+
+  2025-02-13T10:06:37.606198Z  INFO  accept thread stopped
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\accept.rs:143 on actix-server acceptor ThreadId(35)
+
+  2025-02-13T10:06:37.606226Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2025-02-13T10:06:37.606219Z  INFO  force shutdown worker, closing 1 connections
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:608 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2025-02-13T10:06:37.606229Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:5 ThreadId(8)
+
+  2025-02-13T10:06:37.606232Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2025-02-13T10:06:37.606238Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:9 ThreadId(12)
+
+  2025-02-13T10:06:37.606235Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:4 ThreadId(7)
+
+  2025-02-13T10:06:37.606240Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:7 ThreadId(10)
+
+  2025-02-13T10:06:37.606240Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:6 ThreadId(9)
+
+  2025-02-13T10:06:37.606242Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:3 ThreadId(6)
+
+  2025-02-13T10:06:37.606245Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:8 ThreadId(11)
+
+  2025-02-13T10:06:37.606256Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:11 ThreadId(14)
+
+  2025-02-13T10:06:37.606256Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:10 ThreadId(13)
+
+  2025-02-13T10:06:37.606304Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:20 ThreadId(23)
+
+  2025-02-13T10:06:37.606308Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:19 ThreadId(22)
+
+  2025-02-13T10:06:37.606353Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:27 ThreadId(30)
+
+  2025-02-13T10:06:37.606284Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:13 ThreadId(16)
+
+  2025-02-13T10:06:37.606281Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:15 ThreadId(18)
+
+  2025-02-13T10:06:37.606433Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:28 ThreadId(31)
+
+  2025-02-13T10:06:37.606363Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:24 ThreadId(27)
+
+  2025-02-13T10:06:37.606324Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:18 ThreadId(21)
+
+  2025-02-13T10:06:37.606363Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:30 ThreadId(33)
+
+  2025-02-13T10:06:37.606281Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:14 ThreadId(17)
+
+  2025-02-13T10:06:37.606695Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:21 ThreadId(24)
+
+  2025-02-13T10:06:37.606451Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:17 ThreadId(20)
+
+  2025-02-13T10:06:37.606813Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:16 ThreadId(19)
+
+  2025-02-13T10:06:37.606727Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:25 ThreadId(28)
+
+  2025-02-13T10:06:37.606374Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:29 ThreadId(32)
+
+  2025-02-13T10:06:37.606745Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:23 ThreadId(26)
+
+  2025-02-13T10:06:37.606283Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:12 ThreadId(15)
+
+  2025-02-13T10:06:37.606495Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:26 ThreadId(29)
+
+  2025-02-13T10:06:37.606785Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:31 ThreadId(34)
+
+  2025-02-13T10:06:37.607394Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:22 ThreadId(25)
+
+  2025-02-13T10:07:04.266250Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\builder.rs:272 on main ThreadId(1)
+
+  2025-02-13T10:07:04.266357Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\server.rs:191 on main ThreadId(1)
+
+  2025-02-13T10:07:04.266377Z  INFO  starting service: "actix-web-service-127.0.0.1:8080", workers: 32, listening on: 127.0.0.1:8080
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\server.rs:197 on main ThreadId(1)
+
+  2025-02-13T10:08:25.381471Z  INFO  SIGINT received; starting forced shutdown
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\server.rs:319 on main ThreadId(1)
+
+  2025-02-13T10:08:25.381556Z  INFO  accept thread stopped
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\accept.rs:143 on actix-server acceptor ThreadId(35)
+
+  2025-02-13T10:08:25.381573Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2025-02-13T10:08:25.381578Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:4 ThreadId(7)
+
+  2025-02-13T10:08:25.381585Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:3 ThreadId(6)
+
+  2025-02-13T10:08:25.381582Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2025-02-13T10:08:25.381594Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:8 ThreadId(11)
+
+  2025-02-13T10:08:25.381592Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:5 ThreadId(8)
+
+  2025-02-13T10:08:25.381589Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2025-02-13T10:08:25.381593Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:6 ThreadId(9)
+
+  2025-02-13T10:08:25.381592Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:7 ThreadId(10)
+
+  2025-02-13T10:08:25.381607Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:9 ThreadId(12)
+
+  2025-02-13T10:08:25.381607Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:10 ThreadId(13)
+
+  2025-02-13T10:08:25.381653Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:18 ThreadId(21)
+
+  2025-02-13T10:08:25.381645Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:11 ThreadId(14)
+
+  2025-02-13T10:08:25.381647Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:17 ThreadId(20)
+
+  2025-02-13T10:08:25.381673Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:16 ThreadId(19)
+
+  2025-02-13T10:08:25.381859Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:20 ThreadId(23)
+
+  2025-02-13T10:08:25.381777Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:28 ThreadId(31)
+
+  2025-02-13T10:08:25.381672Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:15 ThreadId(18)
+
+  2025-02-13T10:08:25.381645Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:12 ThreadId(15)
+
+  2025-02-13T10:08:25.381800Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:27 ThreadId(30)
+
+  2025-02-13T10:08:25.381794Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:19 ThreadId(22)
+
+  2025-02-13T10:08:25.381861Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:30 ThreadId(33)
+
+  2025-02-13T10:08:25.381729Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:29 ThreadId(32)
+
+  2025-02-13T10:08:25.381703Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:25 ThreadId(28)
+
+  2025-02-13T10:08:25.381799Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:14 ThreadId(17)
+
+  2025-02-13T10:08:25.381694Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:22 ThreadId(25)
+
+  2025-02-13T10:08:25.381894Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:13 ThreadId(16)
+
+  2025-02-13T10:08:25.381895Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:23 ThreadId(26)
+
+  2025-02-13T10:08:25.381945Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:31 ThreadId(34)
+
+  2025-02-13T10:08:25.381694Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:21 ThreadId(24)
+
+  2025-02-13T10:08:25.381926Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:26 ThreadId(29)
+
+  2025-02-13T10:08:25.381923Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:24 ThreadId(27)
+
+  2025-02-13T10:09:02.451128Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\builder.rs:272 on main ThreadId(1)
+
+  2025-02-13T10:09:02.451231Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\server.rs:191 on main ThreadId(1)
+
+  2025-02-13T10:09:02.451249Z  INFO  starting service: "actix-web-service-127.0.0.1:8080", workers: 32, listening on: 127.0.0.1:8080
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\server.rs:197 on main ThreadId(1)
+
+  2025-02-13T10:09:13.750526Z  INFO  SIGINT received; starting forced shutdown
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\server.rs:319 on main ThreadId(1)
+
+  2025-02-13T10:09:13.750598Z  INFO  accept thread stopped
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\accept.rs:143 on actix-server acceptor ThreadId(35)
+
+  2025-02-13T10:09:13.750664Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2025-02-13T10:09:13.750686Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2025-02-13T10:09:13.750679Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:9 ThreadId(12)
+
+  2025-02-13T10:09:13.750664Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:7 ThreadId(10)
+
+  2025-02-13T10:09:13.750683Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:10 ThreadId(13)
+
+  2025-02-13T10:09:13.750705Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:17 ThreadId(20)
+
+  2025-02-13T10:09:13.750711Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:5 ThreadId(8)
+
+  2025-02-13T10:09:13.750707Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:18 ThreadId(21)
+
+  2025-02-13T10:09:13.750733Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:14 ThreadId(17)
+
+  2025-02-13T10:09:13.750759Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:30 ThreadId(33)
+
+  2025-02-13T10:09:13.750719Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:21 ThreadId(24)
+
+  2025-02-13T10:09:13.750663Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:4 ThreadId(7)
+
+  2025-02-13T10:09:13.750665Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:6 ThreadId(9)
+
+  2025-02-13T10:09:13.750733Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:15 ThreadId(18)
+
+  2025-02-13T10:09:13.750675Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:13 ThreadId(16)
+
+  2025-02-13T10:09:13.750771Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:31 ThreadId(34)
+
+  2025-02-13T10:09:13.750797Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:29 ThreadId(32)
+
+  2025-02-13T10:09:13.750845Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:19 ThreadId(22)
+
+  2025-02-13T10:09:13.751066Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:20 ThreadId(23)
+
+  2025-02-13T10:09:13.750670Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2025-02-13T10:09:13.750684Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:12 ThreadId(15)
+
+  2025-02-13T10:09:13.750820Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:8 ThreadId(11)
+
+  2025-02-13T10:09:13.750663Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:3 ThreadId(6)
+
+  2025-02-13T10:09:13.750786Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:27 ThreadId(30)
+
+  2025-02-13T10:09:13.750729Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:16 ThreadId(19)
+
+  2025-02-13T10:09:13.750686Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:11 ThreadId(14)
+
+  2025-02-13T10:09:18.297539Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\builder.rs:272 on main ThreadId(1)
+
+  2025-02-13T10:09:18.297653Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\server.rs:191 on main ThreadId(1)
+
+  2025-02-13T10:09:18.297671Z  INFO  starting service: "actix-web-service-127.0.0.1:8080", workers: 32, listening on: 127.0.0.1:8080
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\server.rs:197 on main ThreadId(1)
+
+  2025-02-13T10:36:17.950746Z  INFO  SIGINT received; starting forced shutdown
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\server.rs:319 on main ThreadId(1)
+
+  2025-02-13T10:36:17.950835Z  INFO  accept thread stopped
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\accept.rs:143 on actix-server acceptor ThreadId(35)
+
+  2025-02-13T10:36:17.950867Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2025-02-13T10:36:17.950869Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:7 ThreadId(10)
+
+  2025-02-13T10:36:17.950872Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2025-02-13T10:36:17.950873Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:9 ThreadId(12)
+
+  2025-02-13T10:36:17.950885Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:3 ThreadId(6)
+
+  2025-02-13T10:36:17.950870Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2025-02-13T10:36:17.950929Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:12 ThreadId(15)
+
+  2025-02-13T10:36:17.950916Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:18 ThreadId(21)
+
+  2025-02-13T10:36:17.950893Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:6 ThreadId(9)
+
+  2025-02-13T10:36:17.950916Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:14 ThreadId(17)
+
+  2025-02-13T10:36:17.950908Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:13 ThreadId(16)
+
+  2025-02-13T10:36:17.951022Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:25 ThreadId(28)
+
+  2025-02-13T10:36:17.951007Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:22 ThreadId(25)
+
+  2025-02-13T10:36:17.950929Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:17 ThreadId(20)
+
+  2025-02-13T10:36:17.951060Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:30 ThreadId(33)
+
+  2025-02-13T10:36:17.951033Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:10 ThreadId(13)
+
+  2025-02-13T10:36:17.951044Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:26 ThreadId(29)
+
+  2025-02-13T10:36:17.951085Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:19 ThreadId(22)
+
+  2025-02-13T10:36:17.950889Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:8 ThreadId(11)
+
+  2025-02-13T10:36:17.950878Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:4 ThreadId(7)
+
+  2025-02-13T10:36:17.950895Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:11 ThreadId(14)
+
+  2025-02-13T10:36:17.951083Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:28 ThreadId(31)
+
+  2025-02-13T10:36:17.951000Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:16 ThreadId(19)
+
+  2025-02-13T10:36:17.951022Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:23 ThreadId(26)
+
+  2025-02-13T10:36:17.950878Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:5 ThreadId(8)
+
+  2025-02-13T10:36:17.950959Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:15 ThreadId(18)
+
+  2025-02-13T10:36:17.951065Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:31 ThreadId(34)
+
+  2025-02-13T10:36:17.951474Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:20 ThreadId(23)
+
+  2025-02-13T10:36:17.951560Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:27 ThreadId(30)
+
+  2025-02-13T10:36:17.951046Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:29 ThreadId(32)
+
+  2025-02-13T10:36:17.951026Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:24 ThreadId(27)
+
+  2025-02-13T10:36:17.951078Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:21 ThreadId(24)
+
+  2025-02-13T14:41:03.175579Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\builder.rs:272 on main ThreadId(1)
+
+  2025-02-13T14:41:03.175696Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\server.rs:191 on main ThreadId(1)
+
+  2025-02-13T14:41:03.175713Z  INFO  starting service: "actix-web-service-127.0.0.1:8080", workers: 32, listening on: 127.0.0.1:8080
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\server.rs:197 on main ThreadId(1)
+
+  2025-02-13T14:41:06.489405Z  INFO  SIGINT received; starting forced shutdown
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\server.rs:319 on main ThreadId(1)
+
+  2025-02-13T14:41:06.489490Z  INFO  accept thread stopped
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\accept.rs:143 on actix-server acceptor ThreadId(35)
+
+  2025-02-13T14:41:06.489512Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2025-02-13T14:41:06.489514Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2025-02-13T14:41:06.489514Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:3 ThreadId(6)
+
+  2025-02-13T14:41:06.489514Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:5 ThreadId(8)
+
+  2025-02-13T14:41:06.489522Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:4 ThreadId(7)
+
+  2025-02-13T14:41:06.489553Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:16 ThreadId(19)
+
+  2025-02-13T14:41:06.489560Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:17 ThreadId(20)
+
+  2025-02-13T14:41:06.489548Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:14 ThreadId(17)
+
+  2025-02-13T14:41:06.489553Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:9 ThreadId(12)
+
+  2025-02-13T14:41:06.489543Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:6 ThreadId(9)
+
+  2025-02-13T14:41:06.489555Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:8 ThreadId(11)
+
+  2025-02-13T14:41:06.489560Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:10 ThreadId(13)
+
+  2025-02-13T14:41:06.489574Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:21 ThreadId(24)
+
+  2025-02-13T14:41:06.489547Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:7 ThreadId(10)
+
+  2025-02-13T14:41:06.489594Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:23 ThreadId(26)
+
+  2025-02-13T14:41:06.489598Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:25 ThreadId(28)
+
+  2025-02-13T14:41:06.489576Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:20 ThreadId(23)
+
+  2025-02-13T14:41:06.489622Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:28 ThreadId(31)
+
+  2025-02-13T14:41:06.489572Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:18 ThreadId(21)
+
+  2025-02-13T14:41:06.489626Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:30 ThreadId(33)
+
+  2025-02-13T14:41:06.489624Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:31 ThreadId(34)
+
+  2025-02-13T14:41:06.489599Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:22 ThreadId(25)
+
+  2025-02-13T14:41:06.489547Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:13 ThreadId(16)
+
+  2025-02-13T14:41:06.489541Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:12 ThreadId(15)
+
+  2025-02-13T14:41:06.489629Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:27 ThreadId(30)
+
+  2025-02-13T14:41:06.489656Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:24 ThreadId(27)
+
+  2025-02-13T14:41:06.489660Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:11 ThreadId(14)
+
+  2025-02-13T14:41:06.489559Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:15 ThreadId(18)
+
+  2025-02-13T14:41:06.489569Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:19 ThreadId(22)
+
+  2025-02-13T14:41:06.489621Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:29 ThreadId(32)
+
+  2025-02-13T14:41:06.489681Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:26 ThreadId(29)
+
+  2025-02-13T14:41:06.489544Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-6f17d22bba15001f\actix-server-2.5.0\src\worker.rs:595 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
