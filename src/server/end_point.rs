@@ -1,3 +1,6 @@
+use std::future::Future;
+use std::pin::Pin;
+
 use actix_web::{get, web, FromRequest, HttpRequest, HttpResponse};
 use actix_ws::{handle, Message};
 use futures_util::future::{ready, Ready};
@@ -7,19 +10,57 @@ use crate::enums::COUNT_OF_MULLIGAN_CARDS;
 use crate::{card::types::PlayerType, exception::ServerError};
 
 use super::jsons::{
-    serialize_complete_message, serialize_deal_message, serialize_reroll_anwser_message, MulliganMessage,
+    serialize_complete_message, serialize_deal_message, serialize_reroll_anwser_message,
+    MulliganMessage,
 };
 use super::types::ServerState;
 
 #[derive(Debug, Clone, Copy)]
 pub struct AuthPlayer(PlayerType);
 
+// impl FromRequest for AuthPlayer {
+//     type Error = ServerError;
+//     type Future = Pin<Box<dyn Future<Output = Result<Self, Self::Error>>>>;
+
+//     fn from_request(req: &HttpRequest, _payload: &mut actix_web::dev::Payload) -> Self::Future {
+//         let Some(cookie) = req.cookie("user_id")else {
+//             return Box::pin(async { Err(ServerError::InternalServerError) });
+//         };
+//         if let Some(state) = req.app_data::<web::Data<ServerState>>() {
+//             Box::pin(async move {
+//                 let game = state.opponent_cookie;
+
+//                 Ok::<AuthPlayer, ServerError>(AuthPlayer(PlayerType::Player1))
+//             });
+//             Box::pin(async { Err(ServerError::InternalServerError) })
+//         } else {
+//             Box::pin(async { Err(ServerError::InternalServerError) })
+//         }
+//     }
+// }
+
 impl FromRequest for AuthPlayer {
     type Error = ServerError;
     type Future = Ready<Result<Self, Self::Error>>;
 
-    fn from_request(_req: &HttpRequest, _payload: &mut actix_web::dev::Payload) -> Self::Future {
-        ready(Ok(AuthPlayer(PlayerType::Player1)))
+    fn from_request(req: &HttpRequest, _payload: &mut actix_web::dev::Payload) -> Self::Future {
+        let Some(cookie) = req.cookie("user_id") else {
+            return ready(Err(ServerError::CookieNotFound));
+        };
+        let cookie = cookie.to_string().replace("user_id=", "");
+        if let Some(state) = req.app_data::<web::Data<ServerState>>() {
+            let cookie_str = cookie.to_string();
+            let p1_key = state.player_cookie.0.as_str();
+            let p2_key = state.opponent_cookie.0.as_str();
+
+            match cookie_str.as_str() {
+                key if key == p1_key => ready(Ok(AuthPlayer(PlayerType::Player1))),
+                key if key == p2_key => ready(Ok(AuthPlayer(PlayerType::Player2))),
+                _ => ready(Err(ServerError::InternalServerError)),
+            }
+        } else {
+            ready(Err(ServerError::ServerStateNotFound))
+        }
     }
 }
 
@@ -87,7 +128,7 @@ impl From<AuthPlayer> for String {
 ///
 /// 재추첨 카드들은 덱의 맨 아래에 위치하게 됩니다.
 /// 위 일련의 과정이 모두 완료 되면 MulliganState 의 confirm_selection() 함수를 호출하여 선택을 확정합니다.
-/// 해당 함수 호출 후, 다른 플레이어의 MulliganState 의 is_ready() 함수를 통해 준비 상태를 확인합니다.
+/// 해당 함수 호출 후, 다른 플레이어의 MulliganState 의 is_) 함수를 통해 준비 상태를 확인합니다.
 /// 두 플레이어가 모두 준비되면 다음 단계로 넘어갑니다.
 
 // TODO: 각 에러 처리 분명히 해야함.
@@ -150,21 +191,22 @@ pub async fn handle_mulligan_cards(
                                 .get_mulligan_state_mut()
                                 .get_select_cards()
                                 .extend(rerolled_card.iter().cloned());
-                            let Ok(rerolled_cards_json) =
-                                serialize_reroll_anwser_message(player.get_player_type(), rerolled_card)
-                            else {
+                            let Ok(rerolled_cards_json) = serialize_reroll_anwser_message(
+                                player.get_player_type(),
+                                rerolled_card,
+                            ) else {
                                 break;
                             };
                             let Err(_) = session.text(rerolled_cards_json).await else {
                                 break;
                             };
                         }
-                        MulliganMessage::Complete => {
+                        MulliganMessage::Complete(payload) => {
                             let game = state_clone.game.lock().await;
 
                             // player 의 mulligan 상태를 완료 상태로 변경 후 상대의 mulligan 상태를 확인합니다.
                             // 만약 상대도 완료 상태이라면, mulligan step 을 종료하고 다음 step 으로 진행합니다.
-                            game.get_player_by_type(player)
+                            game.get_player_by_type(payload.player.clone())
                                 .get_mut()
                                 .get_mulligan_state_mut()
                                 .confirm_selection();
@@ -174,7 +216,7 @@ pub async fn handle_mulligan_cards(
                                 .get_mulligan_state_mut()
                                 .is_ready()
                             {
-                                let Ok(json) = serialize_complete_message() else {
+                                let Ok(json) = serialize_complete_message(payload.player) else {
                                     break;
                                 };
                                 let Err(_) = session.text(json).await else {

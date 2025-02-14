@@ -60,6 +60,8 @@ pub enum ServerError {
     WrongPhase(String, String),
     HandleFailed,
     InternalServerError,
+    CookieNotFound,
+    ServerStateNotFound,
 }
 
 impl From<GameError> for ServerError {
@@ -78,6 +80,8 @@ impl fmt::Display for ServerError {
             Self::NotFound => todo!(),
             Self::HandleFailed => todo!(),
             Self::InternalServerError => todo!(),
+            Self::CookieNotFound => todo!(),
+            Self::ServerStateNotFound => todo!(),
         }
     }
 }
@@ -96,6 +100,8 @@ impl ResponseError for ServerError {
             Self::HandleFailed => HttpResponse::build(StatusCode::INTERNAL_SERVER_ERROR)
                 .body("An unknown error occurred"),
             Self::InternalServerError => todo!(),
+            Self::CookieNotFound => todo!(),
+            Self::ServerStateNotFound => todo!(),
         }
     }
 
@@ -106,6 +112,8 @@ impl ResponseError for ServerError {
             Self::NotFound => StatusCode::NOT_FOUND,
             Self::HandleFailed => StatusCode::INTERNAL_SERVER_ERROR,
             Self::InternalServerError => todo!(),
+            Self::CookieNotFound => todo!(),
+            Self::ServerStateNotFound => todo!(),
         }
     }
 }

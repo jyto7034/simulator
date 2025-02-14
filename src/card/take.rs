@@ -17,7 +17,7 @@ impl Take for TopTake {
     fn take(&mut self, zone: &mut dyn Zone) -> Vec<Card> {
         let cards = zone.get_cards_mut();
         let available = cards.len();
-        
+
         // TargetCount variant에 따라 실제로 가져올 카드의 수를 결정합니다.
         let count = match self.0 {
             TargetCount::Exact(n) => min(n, available),
@@ -28,11 +28,11 @@ impl Take for TopTake {
                 } else {
                     min(high, available)
                 }
-            },
+            }
             TargetCount::Any => available,
             TargetCount::None => 0,
         };
-        
+
         // 카드 집합의 앞부분에서 결정된 개수만큼 카드들을 drainage 하여 소유권을 가져옵니다.
         cards.v_card.drain(available - count..).collect()
     }

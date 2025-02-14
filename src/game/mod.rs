@@ -5,7 +5,10 @@ pub mod turn_manager;
 use turn_manager::TurnManager;
 
 use crate::{
-    card::{insert::{BottomInsert, TopInsert}, types::PlayerType},
+    card::{
+        insert::{BottomInsert, TopInsert},
+        types::PlayerType,
+    },
     enums::{phase::Phase, DeckCode, UUID},
     exception::GameError,
     server::end_point::AuthPlayer,
@@ -39,15 +42,37 @@ pub struct Game {
 impl Game {
     pub fn initialize(&mut self, _config: GameConfig) -> Result<(), GameError> {
         let cards = deckcode_to_cards(_config.player_1_deckcode, _config.player_2_deckcode)?;
-        
+
         // TODO: Limit 을 const 로 빼야함.
         let cost = Resoruce::new(0, 10);
         let mana = Resoruce::new(0, 3);
-        self.player1 = OptArc::new(Player::new(OptArc::none(), PlayerType::Player1, cards[0].clone(), cost.clone(), mana.clone()));
-        self.player2 = OptArc::new(Player::new(OptArc::none(), PlayerType::Player2, cards[1].clone(), cost, mana));
+        self.player1 = OptArc::new(Player::new(
+            OptArc::none(),
+            PlayerType::Player1,
+            cards[0].clone(),
+            cost.clone(),
+            mana.clone(),
+        ));
+        self.player2 = OptArc::new(Player::new(
+            OptArc::none(),
+            PlayerType::Player2,
+            cards[1].clone(),
+            cost,
+            mana,
+        ));
 
-        self.player1.get_mut().get_deck_mut().get_cards_mut().v_card.extend(cards[0].clone().v_card);
-        self.player2.get_mut().get_deck_mut().get_cards_mut().v_card.extend(cards[1].clone().v_card);
+        self.player1
+            .get_mut()
+            .get_deck_mut()
+            .get_cards_mut()
+            .v_card
+            .extend(cards[0].clone().v_card);
+        self.player2
+            .get_mut()
+            .get_deck_mut()
+            .get_cards_mut()
+            .v_card
+            .extend(cards[1].clone().v_card);
         Ok(())
     }
 }

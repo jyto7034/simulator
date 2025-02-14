@@ -14,7 +14,7 @@ pub enum MulliganMessage {
     #[serde(rename = "reroll-answer")]
     RerollAnswer(MulliganPayload),
     #[serde(rename = "complete")]
-    Complete,
+    Complete(MulliganPayload),
 }
 
 /// 각 단계에서 공통으로 사용되는 payload 구조체입니다.
@@ -31,12 +31,10 @@ pub fn serialize_deal_message<T: Into<String>>(
     player: T,
     cards: Vec<UUID>,
 ) -> Result<String, ServerError> {
-    let message = MulliganMessage::Deal (
-        MulliganPayload {
-            player: player.into(),
-            cards,
-        }
-    );
+    let message = MulliganMessage::Deal(MulliganPayload {
+        player: player.into(),
+        cards,
+    });
     serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
 }
 
@@ -44,16 +42,17 @@ pub fn serialize_reroll_anwser_message<T: Into<String>>(
     player: T,
     cards: Vec<UUID>,
 ) -> Result<String, ServerError> {
-    let message = MulliganMessage::RerollAnswer (
-        MulliganPayload {
-            player: player.into(),
-            cards,
-        }
-    );
+    let message = MulliganMessage::RerollAnswer(MulliganPayload {
+        player: player.into(),
+        cards,
+    });
     serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
 }
 
-pub fn serialize_complete_message() -> Result<String, ServerError> {
-    let message = MulliganMessage::Complete {};
+pub fn serialize_complete_message<T: Into<String>>(player: T) -> Result<String, ServerError> {
+    let message = MulliganMessage::Complete(MulliganPayload {
+        player: player.into(),
+        cards: vec![],
+    });
     serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
 }

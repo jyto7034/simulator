@@ -29,9 +29,7 @@ impl Effect for DrawEffect {
     }
 
     fn clone_effect(&self) -> Result<Box<dyn Effect>, GameError> {
-        Ok(Box::new(Self{
-            count: self.count
-        }))
+        Ok(Box::new(Self { count: self.count }))
     }
 }
 
@@ -55,7 +53,7 @@ impl Effect for ModifyStatEffect {
     }
 
     fn clone_effect(&self) -> Result<Box<dyn Effect>, GameError> {
-        Ok(Box::new(Self{
+        Ok(Box::new(Self {
             stat_type: self.stat_type,
             amount: self.amount,
             target_selector: self.target_selector.clone_selector(),
