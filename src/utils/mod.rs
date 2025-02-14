@@ -1,7 +1,7 @@
 pub mod json;
 
 use crate::card::cards::Cards;
-use crate::card::types::{OwnerType, PlayerType};
+use crate::card::types::PlayerType;
 use crate::card::Card;
 use crate::card_gen::{CardGenerator, Keys};
 use crate::enums::*;

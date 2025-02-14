@@ -7,7 +7,7 @@ use crate::enums::COUNT_OF_MULLIGAN_CARDS;
 use crate::{card::types::PlayerType, exception::ServerError};
 
 use super::jsons::{
-    serialize_complete_message, serialize_deal_message, serialize_reroll_message, MulliganMessage,
+    serialize_complete_message, serialize_deal_message, serialize_reroll_anwser_message, MulliganMessage,
 };
 use super::types::ServerState;
 
@@ -63,7 +63,7 @@ impl From<AuthPlayer> for String {
 ///     use serde_json::json;
 ///     json!
 ///     ({
-///         "action": "reroll",
+///         "action": "reroll-request",
 ///         "payload": {
 ///             "player": "player",
 ///             "cards": ["CARD_UUID_1", "CARD_UUID_2"]
@@ -77,7 +77,7 @@ impl From<AuthPlayer> for String {
 ///     use serde_json::json;
 ///     json!
 ///     ({
-///         "action": "rerolled",
+///         "action": "reroll-answer",
 ///         "payload": {
 ///             "player": "player",
 ///             "cards": ["CARD_UUID_3", "CARD_UUID_4"]
@@ -130,15 +130,14 @@ pub async fn handle_mulligan_cards(
                     let msg = match serde_json::from_str::<MulliganMessage>(&json) {
                         Ok(data) => data,
                         Err(e) => {
-                            //
+                            // 정해진 타입이 오기 전까지 대기함.
                             eprintln!("{}", e);
                             break;
                         }
                     };
                     match msg {
-                        MulliganMessage::Reroll { payload } => {
+                        MulliganMessage::RerollRequest(payload) => {
                             let mut game = state_clone.game.lock().await;
-
                             // 기존 카드를 덱의 최하단에 위치 시킨 뒤, 새로운 카드를 뽑아서 player 의 mulligan cards 에 저장하고 json 으로 변환하여 전송합니다.
                             let Ok(rerolled_card) = game.restore_then_reroll_mulligan_cards(
                                 payload.player.clone(),
@@ -152,7 +151,7 @@ pub async fn handle_mulligan_cards(
                                 .get_select_cards()
                                 .extend(rerolled_card.iter().cloned());
                             let Ok(rerolled_cards_json) =
-                                serialize_reroll_message(player.get_player_type(), rerolled_card)
+                                serialize_reroll_anwser_message(player.get_player_type(), rerolled_card)
                             else {
                                 break;
                             };

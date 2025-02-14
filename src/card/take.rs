@@ -10,7 +10,7 @@ pub trait Take {
 pub struct TopTake(pub TargetCount);
 pub struct BottomTake(pub TargetCount);
 pub struct RandomTake(pub TargetCount);
-pub struct SpecificTake(UUID);
+pub struct SpecificTake(pub UUID);
 
 use std::cmp::min;
 impl Take for TopTake {
@@ -33,8 +33,8 @@ impl Take for TopTake {
             TargetCount::None => 0,
         };
         
-        // 카드 집합의 앞부분에서 결정된 개수만큼 카드들을 drainage하여 소유권을 가져옵니다.
-        cards.v_card.drain(0..count).collect()
+        // 카드 집합의 앞부분에서 결정된 개수만큼 카드들을 drainage 하여 소유권을 가져옵니다.
+        cards.v_card.drain(available - count..).collect()
     }
 
     fn clone_box(&self) -> Box<dyn Take> {

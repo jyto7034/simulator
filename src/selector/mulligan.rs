@@ -1,4 +1,4 @@
-use crate::{card::types::PlayerType, enums::UUID};
+use crate::enums::UUID;
 
 pub struct MulliganState {
     player_ready: bool,

@@ -5,7 +5,7 @@ use std::path::Path;
 use actix_web::{web, App, HttpServer};
 use card_game::server::end_point::handle_mulligan_cards;
 use tokio::sync::Mutex;
-use tracing::{error, info, warn, Level};
+use tracing::Level;
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::EnvFilter;
 
@@ -68,11 +68,6 @@ pub fn check_session(_nick1: String, _nick2: String) -> (SessionKey, SessionKey)
     (SessionKey("".to_string()), SessionKey("".to_string()))
 }
 
-fn foo(mut x: &mut String) {
-    x.pop();
-}
-
-
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let out_dir = std::env::var("OUT_DIR").unwrap();
@@ -112,7 +107,7 @@ async fn main() -> std::io::Result<()> {
     .unwrap();
 
     println!("{}", format!("{}", "asd"));
-    let (deck_json, original_cards) = generate_random_deck_json();
+    let (deck_json, _) = generate_random_deck_json();
     let (deck_json2, _) = generate_random_deck_json();
 
     // 2. JSON을 덱 코드로 변환

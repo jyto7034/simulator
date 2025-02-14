@@ -5,7 +5,7 @@ pub mod turn_manager;
 use turn_manager::TurnManager;
 
 use crate::{
-    card::{insert::BottomInsert, types::PlayerType},
+    card::{insert::{BottomInsert, TopInsert}, types::PlayerType},
     enums::{phase::Phase, DeckCode, UUID},
     exception::GameError,
     server::end_point::AuthPlayer,
@@ -100,10 +100,12 @@ impl Game {
         src_cards: &Vec<UUID>,
     ) -> Result<(), GameError> {
         for card_uuid in src_cards {
-            let player = self.get_player_by_type(player_type).get();
-            let card = match player.get_cards().find_by_uuid(card_uuid.clone()) {
-                Some(card) => card,
-                None => return Err(GameError::CardNotFound),
+            let card = {
+                let player = self.get_player_by_type(player_type).get();
+                match player.get_cards().find_by_uuid(card_uuid.clone()) {
+                    Some(card) => card.clone(),
+                    None => return Err(GameError::CardNotFound),
+                }
             };
             self.get_player_by_type(player_type)
                 .get_mut()

@@ -39,52 +39,52 @@ impl CardBuilder {
         self
     }
 
-    // UUID 설정
-    pub fn uuid(mut self, uuid: UUID) -> Self {
-        self.uuid = uuid;
-        self
-    }
+    // // UUID 설정
+    // pub fn uuid(mut self, uuid: UUID) -> Self {
+    //     self.uuid = uuid;
+    //     self
+    // }
 
-    // 이름 설정
-    pub fn name(mut self, name: String) -> Self {
-        self.name = name;
-        self
-    }
+    // // 이름 설정
+    // pub fn name(mut self, name: String) -> Self {
+    //     self.name = name;
+    //     self
+    // }
 
-    // 카드 타입 설정
-    pub fn card_type(mut self, card_type: CardType) -> Self {
-        self.card_type = card_type;
-        self
-    }
+    // // 카드 타입 설정
+    // pub fn card_type(mut self, card_type: CardType) -> Self {
+    //     self.card_type = card_type;
+    //     self
+    // }
 
-    // 효과 목록 한번에 설정
-    pub fn effects(mut self, effects: Vec<Box<dyn Effect>>) -> Self {
-        self.effects = effects;
-        self
-    }
+    // // 효과 목록 한번에 설정
+    // pub fn effects(mut self, effects: Vec<Box<dyn Effect>>) -> Self {
+    //     self.effects = effects;
+    //     self
+    // }
 
-    // JSON 데이터 설정
-    pub fn json_data(mut self, json_data: CardJson) -> Self {
-        self.json_data = json_data;
-        self
-    }
+    // // JSON 데이터 설정
+    // pub fn json_data(mut self, json_data: CardJson) -> Self {
+    //     self.json_data = json_data;
+    //     self
+    // }
 
-    // 소유자 설정
-    pub fn owner(mut self, owner: OwnerType) -> Self {
-        self.owner = owner;
-        self
-    }
+    // // 소유자 설정
+    // pub fn owner(mut self, owner: OwnerType) -> Self {
+    //     self.owner = owner;
+    //     self
+    // }
 
-    // 스펙 설정
-    pub fn specs(mut self, specs: CardSpecs) -> Self {
-        self.specs = specs;
-        self
-    }
+    // // 스펙 설정
+    // pub fn specs(mut self, specs: CardSpecs) -> Self {
+    //     self.specs = specs;
+    //     self
+    // }
 
-    pub fn status(mut self, status: CardStatus) -> Self {
-        self.status = status;
-        self
-    }
+    // pub fn status(mut self, status: CardStatus) -> Self {
+    //     self.status = status;
+    //     self
+    // }
 
     pub fn build(self) -> Card {
         // owner: OwnerType,

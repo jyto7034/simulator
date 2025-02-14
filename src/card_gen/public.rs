@@ -54,3 +54,39 @@ pub fn PB_007(card_json: &CardJson, count: i32) -> Card {
 pub fn PB_008(card_json: &CardJson, count: i32) -> Card {
     PB_001(card_json, count)
 }
+#[allow(non_snake_case)]
+pub fn PB_009(card_json: &CardJson, count: i32) -> Card {
+    PB_001(card_json, count)
+}
+#[allow(non_snake_case)]
+pub fn PB_010(card_json: &CardJson, count: i32) -> Card {
+    PB_001(card_json, count)
+}
+#[allow(non_snake_case)]
+pub fn PB_011(card_json: &CardJson, count: i32) -> Card {
+    PB_001(card_json, count)
+}
+#[allow(non_snake_case)]
+pub fn PB_012(card_json: &CardJson, count: i32) -> Card {
+    PB_001(card_json, count)
+}
+#[allow(non_snake_case)]
+pub fn PB_013(card_json: &CardJson, count: i32) -> Card {
+    PB_001(card_json, count)
+}
+#[allow(non_snake_case)]
+pub fn PB_014(card_json: &CardJson, count: i32) -> Card {
+    PB_001(card_json, count)
+}
+#[allow(non_snake_case)]
+pub fn PB_015(card_json: &CardJson, count: i32) -> Card {
+    PB_001(card_json, count)
+}
+#[allow(non_snake_case)]
+pub fn PB_016(card_json: &CardJson, count: i32) -> Card {
+    PB_001(card_json, count)
+}
+#[allow(non_snake_case)]
+pub fn PB_017(card_json: &CardJson, count: i32) -> Card {
+    PB_001(card_json, count)
+}

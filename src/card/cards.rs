@@ -24,6 +24,10 @@ impl Cards {
         }
     }
 
+    pub fn contains(&self, uuid: UUID) -> bool {
+        self.v_card.iter().any(|card| card.uuid == uuid)
+    }
+
     /// 카드를 추가합니다.
     pub fn add(&mut self, card: Card) {
         self.v_card.push(card);

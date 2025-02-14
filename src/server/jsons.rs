@@ -4,16 +4,21 @@ use crate::{enums::UUID, exception::ServerError};
 
 /// 공통 메시지 envelope를 정의합니다.
 /// serde의 내부 태그 기능을 이용해, action에 따라 다른 payload를 선택합니다.
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(tag = "action", content = "payload")]
 pub enum MulliganMessage {
-    Deal { payload: MulliganPayload },
-    Reroll { payload: MulliganPayload },
+    #[serde(rename = "deal")]
+    Deal(MulliganPayload),
+    #[serde(rename = "reroll-request")]
+    RerollRequest(MulliganPayload),
+    #[serde(rename = "reroll-answer")]
+    RerollAnswer(MulliganPayload),
+    #[serde(rename = "complete")]
     Complete,
 }
 
 /// 각 단계에서 공통으로 사용되는 payload 구조체입니다.
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct MulliganPayload {
     pub player: String,
     pub cards: Vec<UUID>,
@@ -26,25 +31,25 @@ pub fn serialize_deal_message<T: Into<String>>(
     player: T,
     cards: Vec<UUID>,
 ) -> Result<String, ServerError> {
-    let message = MulliganMessage::Deal {
-        payload: MulliganPayload {
+    let message = MulliganMessage::Deal (
+        MulliganPayload {
             player: player.into(),
             cards,
-        },
-    };
+        }
+    );
     serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
 }
 
-pub fn serialize_reroll_message<T: Into<String>>(
+pub fn serialize_reroll_anwser_message<T: Into<String>>(
     player: T,
     cards: Vec<UUID>,
 ) -> Result<String, ServerError> {
-    let message = MulliganMessage::Reroll {
-        payload: MulliganPayload {
+    let message = MulliganMessage::RerollAnswer (
+        MulliganPayload {
             player: player.into(),
             cards,
-        },
-    };
+        }
+    );
     serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
 }
 

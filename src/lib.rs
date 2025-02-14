@@ -1,4 +1,4 @@
-use std::sync::{Arc, Mutex, MutexGuard, RwLock, RwLockReadGuard, RwLockWriteGuard};
+use std::sync::{Arc, Mutex, MutexGuard};
 
 pub mod app;
 pub mod card;
@@ -14,7 +14,6 @@ pub mod unit;
 pub mod utils;
 pub mod zone;
 
-#[macro_use]
 extern crate lazy_static;
 
 #[derive(Clone)]

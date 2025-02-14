@@ -22,7 +22,7 @@ pub enum ZoneType {
 #[derive(Clone, Copy)]
 pub struct CardLocation(pub ZoneType);
 
-pub const MAX_CARD_SIZE: u32 = 30;
+pub const MAX_CARD_SIZE: usize = 30;
 
 pub struct DeckCode(pub String);
 

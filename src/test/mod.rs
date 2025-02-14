@@ -7,11 +7,9 @@ use crate::{
     app::App,
     card::Card,
     card_gen::CardGenerator,
-    enums::{DeckCode, CARD_JSON_PATH},
+    enums::{DeckCode, CARD_JSON_PATH, MAX_CARD_SIZE},
     utils::json,
 };
-
-const CARD_NUM: usize = 25;
 
 pub fn initialize_app(p1_deck: DeckCode, p2_deck: DeckCode, attacker: usize) -> App {
     let mut app = App::instantiate();
@@ -37,7 +35,7 @@ pub fn generate_random_deck_json() -> (Value, Vec<Card>) {
         .into_iter()
         .filter(|card| card.collectible == Some(true))
         .collect::<Vec<_>>()
-        .choose_multiple(&mut rng, CARD_NUM)
+        .choose_multiple(&mut rng, MAX_CARD_SIZE)
         .cloned()
         .collect();
 
