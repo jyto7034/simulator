@@ -70,8 +70,8 @@ mod game_test {
 
         web::Data::new(ServerState {
             game: Mutex::new(app.game),
-            player_cookie: SessionKey("".to_string()),
-            opponent_cookie: SessionKey("".to_string()),
+            player_cookie: SessionKey("player1".to_string()),
+            opponent_cookie: SessionKey("player2".to_string()),
         })
     }
 
@@ -114,144 +114,148 @@ mod game_test {
             let (addr, server_state) = spawn_server();
 
             sleep(Duration::from_millis(100)).await;
+            async fn run_mulligan_case_inner(reroll_count: usize, player_type: &str, addr: SocketAddr, server_state: Data<ServerState>) -> std::io::Result<()>{
+                // WebSocket 서버의 URL 생성 (예: "ws://127.0.0.1:{포트}/mulligan_step")
+                let url = format!("ws://{}{}", addr, "/mulligan_step");
 
-            // WebSocket 서버의 URL 생성 (예: "ws://127.0.0.1:{포트}/mulligan_step")
-            let url = format!("ws://{}{}", addr, "/mulligan_step");
+                // 테스트용 쿠키 값 지정 (Request Guard 내부에서 state.player_cookie 또는 state.opponent_cookie와 비교)
+                let cookie_value = "user_id=player1";
 
-            // 테스트용 쿠키 값 지정 (Request Guard 내부에서 state.player_cookie 또는 state.opponent_cookie와 비교)
-            let cookie_value = "user_id="; // 예: "my_p1_cookie" 가 state.player_cookie.0와 일치하는 값
+                // http::Request 빌더를 사용하여 요청을 생성하면서 쿠키 헤더 추가
+                let request = Request::builder()
+                    .uri(&url)
+                    .header("Cookie", cookie_value)
+                    .header("Host", addr.to_string())
+                    .header("Sec-WebSocket-Key", "dGhlIHNhbXBsZSBub25jZQ==")
+                    .header("Upgrade", "websocket")
+                    .header("Connection", "Upgrade")
+                    .header("Sec-WebSocket-Version", "13")
+                    .body(())
+                    .expect("요청 생성 실패");
 
-            // http::Request 빌더를 사용하여 요청을 생성하면서 쿠키 헤더 추가
-            let request = Request::builder()
-                .uri(&url)
-                .header("Cookie", cookie_value)
-                .header("Host", addr.to_string())
-                .header("Sec-WebSocket-Key", "dGhlIHNhbXBsZSBub25jZQ==")
-                .header("Upgrade", "websocket")
-                .header("Connection", "Upgrade")
-                .header("Sec-WebSocket-Version", "13")
-                .body(())
-                .expect("요청 생성 실패");
+                // async-tungstenite를 통해 WebSocket 연결 시도
+                let (mut ws_stream, response) = connect_async(request).await.expect("연결 실패");
 
-            // async-tungstenite를 통해 WebSocket 연결 시도
-            let (mut ws_stream, response) = connect_async(request).await.expect("연결 실패");
+                // HTTP 핸드쉐이크가 성공하면 응답 상태는 101 Switching Protocols여야 합니다.
+                assert_eq!(
+                    response.status(),
+                    async_tungstenite::tungstenite::http::StatusCode::SWITCHING_PROTOCOLS
+                );
 
-            // HTTP 핸드쉐이크가 성공하면 응답 상태는 101 Switching Protocols여야 합니다.
-            assert_eq!(
-                response.status(),
-                async_tungstenite::tungstenite::http::StatusCode::SWITCHING_PROTOCOLS
-            );
-
-            // 엔드포인트 코드에서는 업그레이드 후 deal 메시지(new_cards_json)를 즉시 클라이언트로 전송하도록 구성되어 있습니다.
-            // 첫 번째로 서버에서 오는 메시지를 확인합니다.
-            let deal_cards = if let Some(Ok(Message::Text(text))) = ws_stream.next().await {
-                if let MulliganMessage::Deal(data) = serde_json::from_str::<MulliganMessage>(&text)
-                    .expect("Failed to parse the deal message JSON")
-                {
-                    data.cards
+                // 엔드포인트 코드에서는 업그레이드 후 deal 메시지(new_cards_json)를 즉시 클라이언트로 전송하도록 구성되어 있습니다.
+                // 첫 번째로 서버에서 오는 메시지를 확인합니다.
+                let deal_cards = if let Some(Ok(Message::Text(text))) = ws_stream.next().await {
+                    if let MulliganMessage::Deal(data) =
+                        serde_json::from_str::<MulliganMessage>(&text)
+                            .expect("Failed to parse the deal message JSON")
+                    {
+                        data.cards
+                    } else {
+                        panic!("Expected a MulliganMessage::Deal message, but received a different message variant.");
+                    }
                 } else {
-                    panic!("Expected a MulliganMessage::Deal message, but received a different message variant.");
-                }
-            } else {
-                panic!("Did not receive any message from the server while expecting MulliganMessage::Deal.");
-            };
+                    panic!("Did not receive any message from the server while expecting MulliganMessage::Deal.");
+                };
 
-            // mulligan 을 통해 뽑혀진 카드가 Deck 에서 제대로 제거가 됐는지 확인합니다.
-            {
-                let game = server_state.game.lock().await;
-                if deal_cards.iter().any(|uuid| {
-                    game.get_player()
-                        .get()
-                        .get_deck()
-                        .get_cards()
-                        .contains(uuid.clone())
-                }) {
-                    panic!("Mulligan error: Cards that were dealt in the mulligan phase should have been removed from the deck, but some remain.");
-                }
-            }
-
-            // 테스트로 클라이언트에서 서버로 메시지를 전송하여 후속 처리가 되는지 확인합니다.
-            let json = json!({
-                "action": "reroll-request",
-                "payload": {
-                    "player": "player1",
-                    "cards": deal_cards
-                }
-            });
-
-            ws_stream
-                .send(Message::Text(json.to_string()))
-                .await
-                .expect("Failed to send message");
-
-            let rerolled_cards = if let Some(Ok(Message::Text(text))) = ws_stream.next().await {
-                if let MulliganMessage::RerollAnswer(data) =
-                    serde_json::from_str::<MulliganMessage>(&text)
-                        .expect("Failed to parse the reroll answer JSON")
+                // mulligan 을 통해 뽑혀진 카드가 Deck 에서 제대로 제거가 됐는지 확인합니다.
                 {
-                    data.cards
-                } else {
-                    panic!("Expected a MulliganMessage::RerollAnswer message, but received a different message variant.");
+                    let game = server_state.game.lock().await;
+                    if deal_cards.iter().any(|uuid| {
+                        game.get_player()
+                            .get()
+                            .get_deck()
+                            .get_cards()
+                            .contains(uuid.clone())
+                    }) {
+                        panic!("Mulligan error: Cards that were dealt in the mulligan phase should have been removed from the deck, but some remain.");
+                    }
                 }
-            } else {
-                panic!("Did not receive any message from the server while expecting MulliganMessage::RerollAnswer.");
-            };
 
-            {
-                let game = server_state.game.lock().await;
-                let player = game.get_player().get();
-                let deck_cards = player.get_deck().get_cards();
-                if deck_cards.len() != 25 {
-                    panic!(
-                        "Mulligan error: Wrong deck size. expected: {}, Got: {}",
-                        25,
-                        deck_cards.len()
-                    );
-                }
-                for card in &deal_cards[reroll_count..] {
-                    if !deck_cards.contains(card.clone()) {
+                // 테스트로 클라이언트에서 서버로 메시지를 전송하여 후속 처리가 되는지 확인합니다.
+                let json = json!({
+                    "action": "reroll-request",
+                    "payload": {
+                        "player": "player1",
+                        "cards": deal_cards
+                    }
+                });
+
+                ws_stream
+                    .send(Message::Text(json.to_string()))
+                    .await
+                    .expect("Failed to send message");
+
+                let rerolled_cards = if let Some(Ok(Message::Text(text))) = ws_stream.next().await {
+                    if let MulliganMessage::RerollAnswer(data) =
+                        serde_json::from_str::<MulliganMessage>(&text)
+                            .expect("Failed to parse the reroll answer JSON")
+                    {
+                        data.cards
+                    } else {
+                        panic!("Expected a MulliganMessage::RerollAnswer message, but received a different message variant.");
+                    }
+                } else {
+                    panic!("Did not receive any message from the server while expecting MulliganMessage::RerollAnswer.");
+                };
+
+                {
+                    let game = server_state.game.lock().await;
+                    let player = game.get_player().get();
+                    let deck_cards = player.get_deck().get_cards();
+                    if deck_cards.len() != 25 {
                         panic!(
+                            "Mulligan error: Wrong deck size. expected: {}, Got: {}",
+                            25,
+                            deck_cards.len()
+                        );
+                    }
+                    for card in &deal_cards[reroll_count..] {
+                        if !deck_cards.contains(card.clone()) {
+                            panic!(
                             "Mulligan restore error (reroll_count = {}): Restored card {:?} not found in deck",
                             reroll_count, card
                         );
+                        }
                     }
                 }
-            }
 
-            {
-                let game = server_state.game.lock().await;
-                let player = game.get_player().get();
-                let deck_cards = player.get_deck().get_cards();
-                if deck_cards.len() != 25 {
-                    panic!(
-                        "Mulligan error: Wrong deck size. expected: {}, Got: {}",
-                        25,
-                        deck_cards.len()
-                    );
-                }
-                for card in &rerolled_cards {
-                    if deck_cards.contains(card.clone()) {
+                {
+                    let game = server_state.game.lock().await;
+                    let player = game.get_player().get();
+                    let deck_cards = player.get_deck().get_cards();
+                    if deck_cards.len() != 25 {
                         panic!(
+                            "Mulligan error: Wrong deck size. expected: {}, Got: {}",
+                            25,
+                            deck_cards.len()
+                        );
+                    }
+                    for card in &rerolled_cards {
+                        if deck_cards.contains(card.clone()) {
+                            panic!(
                             "Mulligan error (reroll_count = {}): Rerolled card {:?} should not be present in deck",
                             reroll_count, card
                         );
+                        }
                     }
                 }
+
+                let json = json!({
+                    "action": "complete",
+                    "payload": {
+                        "player": "player1",
+                    }
+                });
+
+                ws_stream
+                    .send(Message::Text(json.to_string()))
+                    .await
+                    .expect("Failed to send message");
+                Ok(())
             }
 
-            let json = json!({
-                "action": "complete",
-                "payload": {
-                    "player": "player1",
-                }
-            });
-
-            ws_stream
-                .send(Message::Text(json.to_string()))
-                .await
-                .expect("Failed to send message");
-
-            {}
+            let game = server_state.game.lock().await;
+            let player_mulligan_state = game.get_player().get().get_mulligan_state_mut().is_ready();
             Ok(())
         }
 
@@ -262,7 +266,6 @@ mod game_test {
             );
             run_mulligan_case(reroll_count).await?;
         }
-
         Ok(())
     }
 }
