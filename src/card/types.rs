@@ -290,7 +290,7 @@ impl From<String> for PlayerType {
     fn from(value: String) -> Self {
         match &value[..] {
             "player1" => PlayerType::Player1,
-            "player2" => PlayerType::Player1,
+            "player2" => PlayerType::Player2,
             _ => PlayerType::None,
         }
     }
@@ -298,9 +298,9 @@ impl From<String> for PlayerType {
 
 impl From<&str> for PlayerType {
     fn from(value: &str) -> Self {
-        match &value[..] {
+        match value {
             "player1" => PlayerType::Player1,
-            "player2" => PlayerType::Player1,
+            "player2" => PlayerType::Player2,
             _ => PlayerType::None,
         }
     }

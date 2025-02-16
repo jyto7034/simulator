@@ -33,11 +33,6 @@ impl<T> OptArc<T> {
         opt.map(ArcMutex::new).into()
     }
 
-    // 가져오기 메서드들
-    pub fn get_mut(&self) -> MutexGuard<T> {
-        self.0.as_ref().unwrap().get_mut()
-    }
-
     pub fn get(&self) -> MutexGuard<T> {
         self.0.as_ref().unwrap().get()
     }
@@ -89,10 +84,6 @@ pub struct ArcMutex<T>(Arc<Mutex<T>>);
 impl<T> ArcMutex<T> {
     pub fn new(value: T) -> Self {
         Self(Arc::new(Mutex::new(value)))
-    }
-
-    pub fn get_mut(&self) -> MutexGuard<T> {
-        self.0.lock().unwrap()
     }
 
     pub fn get(&self) -> MutexGuard<T> {

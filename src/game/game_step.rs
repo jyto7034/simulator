@@ -49,14 +49,14 @@ impl Game {
     //     Ok(())
     // }
 
-    pub fn get_mulligan_cards<T: Into<PlayerType> + Clone>(
+    pub fn get_mulligan_cards<T: Into<PlayerType> + Copy>(
         &mut self,
         player_type: T,
         count: usize,
     ) -> Result<Vec<UUID>, GameError> {
         Ok(self
             .get_player_by_type(player_type)
-            .get_mut()
+            .get()
             .get_deck_mut()
             .take_card(Box::new(TopTake(TargetCount::Exact(count))))
             .iter()

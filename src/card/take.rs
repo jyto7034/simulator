@@ -34,7 +34,7 @@ impl Take for TopTake {
         };
 
         // 카드 집합의 앞부분에서 결정된 개수만큼 카드들을 drainage 하여 소유권을 가져옵니다.
-        cards.v_card.drain(available - count..).collect()
+        cards.drain(available - count..).collect()
     }
 
     fn clone_box(&self) -> Box<dyn Take> {

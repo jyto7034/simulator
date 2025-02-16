@@ -187,7 +187,7 @@ pub fn deckcode_to_cards(
         check_values_exist(&card_data, &decoded_deck1, &mut p1_cards)?;
         check_values_exist(&card_data, &decoded_deck2, &mut p2_cards)?;
     }
-    Ok(vec![Cards::new_with(p1_cards), Cards::new_with(p2_cards)])
+    Ok(vec![p1_cards, p2_cards])
 }
 
 pub fn load_card_id() -> Result<Vec<(String, i32)>, GameError> {

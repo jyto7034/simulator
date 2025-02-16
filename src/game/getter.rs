@@ -34,7 +34,6 @@ impl Game {
             .get()
             .get_field()
             .get_cards()
-            .v_card
             .clone()
     }
 
@@ -44,10 +43,9 @@ impl Game {
         F: FnMut(&mut Card),
     {
         self.get_player()
-            .get_mut()
+            .get()
             .get_field_mut()
             .get_cards_mut()
-            .v_card
             .iter_mut()
             .filter(|card| condition(card))
             .for_each(modifier);
@@ -58,7 +56,6 @@ impl Game {
             .get()
             .get_field()
             .get_cards()
-            .v_card
             .clone()
     }
 
@@ -68,10 +65,9 @@ impl Game {
         F: FnMut(&mut Card),
     {
         self.get_opponent()
-            .get_mut()
+            .get()
             .get_field_mut()
             .get_cards_mut()
-            .v_card
             .iter_mut()
             .filter(|card| condition(card))
             .for_each(modifier);
@@ -83,7 +79,6 @@ impl Game {
             .get()
             .get_hand()
             .get_cards()
-            .v_card
             .clone()
     }
 
@@ -93,10 +88,9 @@ impl Game {
         F: FnMut(&mut Card),
     {
         self.get_player()
-            .get_mut()
+            .get()
             .get_hand_mut()
             .get_cards_mut()
-            .v_card
             .iter_mut()
             .filter(|card| condition(card))
             .for_each(modifier);
@@ -107,7 +101,6 @@ impl Game {
             .get()
             .get_hand()
             .get_cards()
-            .v_card
             .clone()
     }
 
@@ -117,10 +110,9 @@ impl Game {
         F: FnMut(&mut Card),
     {
         self.get_opponent()
-            .get_mut()
+            .get()
             .get_hand_mut()
             .get_cards_mut()
-            .v_card
             .iter_mut()
             .filter(|card| condition(card))
             .for_each(modifier);
@@ -132,7 +124,6 @@ impl Game {
             .get()
             .get_graveyard()
             .get_cards()
-            .v_card
             .clone()
     }
 
@@ -142,10 +133,9 @@ impl Game {
         F: FnMut(&mut Card),
     {
         self.get_player()
-            .get_mut()
+            .get()
             .get_graveyard_mut()
             .get_cards_mut()
-            .v_card
             .iter_mut()
             .filter(|card| condition(card))
             .for_each(modifier);
@@ -156,7 +146,6 @@ impl Game {
             .get()
             .get_graveyard()
             .get_cards()
-            .v_card
             .clone()
     }
 
@@ -166,10 +155,9 @@ impl Game {
         F: FnMut(&mut Card),
     {
         self.get_opponent()
-            .get_mut()
+            .get()
             .get_graveyard_mut()
             .get_cards_mut()
-            .v_card
             .iter_mut()
             .filter(|card| condition(card))
             .for_each(modifier);
@@ -181,7 +169,6 @@ impl Game {
             .get()
             .get_deck()
             .get_cards()
-            .v_card
             .clone()
     }
 
@@ -191,10 +178,9 @@ impl Game {
         F: FnMut(&mut Card),
     {
         self.get_player()
-            .get_mut()
+            .get()
             .get_deck_mut()
             .get_cards_mut()
-            .v_card
             .iter_mut()
             .filter(|card| condition(card))
             .for_each(modifier);
@@ -205,7 +191,6 @@ impl Game {
             .get()
             .get_deck()
             .get_cards()
-            .v_card
             .clone()
     }
 
@@ -215,10 +200,9 @@ impl Game {
         F: FnMut(&mut Card),
     {
         self.get_opponent()
-            .get_mut()
+            .get()
             .get_deck_mut()
             .get_cards_mut()
-            .v_card
             .iter_mut()
             .filter(|card| condition(card))
             .for_each(modifier);

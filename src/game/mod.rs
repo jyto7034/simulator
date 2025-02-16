@@ -6,12 +6,10 @@ use turn_manager::TurnManager;
 
 use crate::{
     card::{
-        insert::{BottomInsert, TopInsert},
-        types::PlayerType,
+        cards::CardVecExt, insert::BottomInsert, types::PlayerType, Card
     },
     enums::{phase::Phase, DeckCode, UUID},
     exception::GameError,
-    server::end_point::AuthPlayer,
     unit::player::{Player, Resoruce},
     utils::deckcode_to_cards,
     zone::zone::Zone,
@@ -62,23 +60,21 @@ impl Game {
         ));
 
         self.player1
-            .get_mut()
+            .get()
             .get_deck_mut()
             .get_cards_mut()
-            .v_card
-            .extend(cards[0].clone().v_card);
+            .extend(cards[0].clone());
         self.player2
-            .get_mut()
+            .get()
             .get_deck_mut()
             .get_cards_mut()
-            .v_card
-            .extend(cards[1].clone().v_card);
+            .extend(cards[1].clone());
         Ok(())
     }
 }
 
 impl Game {
-    pub fn get_player_by_type<T: Into<PlayerType>>(&self, player_type: T) -> &OptArc<Player> {
+    pub fn get_player_by_type<T: Into<PlayerType> + Copy>(&self, player_type: T) -> &OptArc<Player> {
         match player_type.into() {
             PlayerType::Player1 => &self.player1,
             PlayerType::Player2 => &self.player2,
@@ -124,7 +120,6 @@ impl Game {
         player_type: PlayerType,
         src_cards: &Vec<UUID>,
     ) -> Result<(), GameError> {
-        println!("restore: {}", player_type.as_str());
         for card_uuid in src_cards {
             let card = {
                 let player = self.get_player_by_type(player_type).get();
@@ -134,10 +129,19 @@ impl Game {
                 }
             };
             self.get_player_by_type(player_type)
-                .get_mut()
+                .get()
                 .get_deck_mut()
                 .add_card(vec![card.clone()], Box::new(BottomInsert))?;
         }
         Ok(())
+    }
+
+    pub fn get_cards_by_uuid(&self, uuids: Vec<UUID>) -> Vec<Card>{
+        let player = self.get_player().get();
+        let opponent = self.get_opponent().get();
+        let player_cards: Vec<Card> = player.get_cards().iter().filter(|&card| uuids.contains(&card.get_uuid())).cloned().collect();
+        let opponent_cards: Vec<Card> = opponent.get_cards().iter().filter(|&card| uuids.contains(&card.get_uuid())).cloned().collect();
+
+        if player_cards.is_empty() {player_cards} else {opponent_cards}
     }
 }

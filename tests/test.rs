@@ -22,7 +22,7 @@ mod utils_test {
 
         // 4. 결과 검증
         let p1_cards = &cards_vec[0];
-        for item in &p1_cards.v_card {
+        for item in p1_cards {
             if !original_cards.contains(item) {
                 panic!("deck encode/dedcode error");
             }
@@ -44,9 +44,9 @@ mod utils_test {
 
 #[cfg(test)]
 mod game_test {
-    use actix_web::web::{self, Data};
+    use actix_web::{dev::ServerHandle, web::{self, Data}};
     use card_game::{
-        card::types::PlayerType, server::{
+        card::{cards::CardVecExt, types::PlayerType}, server::{
             end_point::handle_mulligan_cards,
             jsons::MulliganMessage,
             types::{ServerState, SessionKey},
@@ -81,7 +81,7 @@ mod game_test {
     use std::net::{SocketAddr, TcpListener};
     use tokio::time::{sleep, Duration};
 
-    fn spawn_server() -> (SocketAddr, Data<ServerState>) {
+    fn spawn_server() -> (SocketAddr, Data<ServerState>, ServerHandle) {
         let server_state = create_server_state();
         let server_state_clone = server_state.clone();
 
@@ -99,10 +99,12 @@ mod game_test {
         .unwrap()
         .run();
 
+        let handle = server.handle();
+        
         // actix_web::rt::spawn 대신 tokio::spawn 또는 actix_web::rt::spawn 사용 (현재 예제에서는 tokio::spawn 사용)
         tokio::spawn(server);
 
-        (addr, server_state_clone)
+        (addr, server_state_clone, handle)
     }
 
     #[actix_web::test]
@@ -160,7 +162,7 @@ mod game_test {
                             .get()
                             .get_deck()
                             .get_cards()
-                            .contains(uuid.clone())
+                            .contains_uuid(uuid.clone())
                     }) {
                         panic!("Mulligan error: Cards that were dealt in the mulligan phase should have been removed from the deck, but some remain.");
                     }
@@ -206,7 +208,7 @@ mod game_test {
                         );
                     }
                     for card in &deal_cards[reroll_count..] {
-                        if !deck_cards.contains(card.clone()) {
+                        if !deck_cards.contains_uuid(card.clone()) {
                             panic!(
                             "Mulligan restore error (reroll_count = {}): Restored card {:?} not found in deck",
                             reroll_count, card
@@ -227,7 +229,7 @@ mod game_test {
                         );
                     }
                     for card in &rerolled_cards {
-                        if deck_cards.contains(card.clone()) {
+                        if deck_cards.contains_uuid(card.clone()) {
                             panic!(
                             "Mulligan error (reroll_count = {}): Rerolled card {:?} should not be present in deck",
                             reroll_count, card
@@ -248,19 +250,40 @@ mod game_test {
                     .send(Message::Text(json.to_string()))
                     .await
                     .expect("Failed to send message");
+
                 Ok(())
             }
             
-            let (addr, server_state) = spawn_server();
+            let (addr, server_state, handle) = spawn_server();
 
             sleep(Duration::from_millis(100)).await;
             for player_type_str in [PlayerType::Player1, PlayerType::Player2] {
-                println!(
-                    "Testing mulligan with {} player.",
-                    player_type_str.as_str(),
-                );
                 run_mulligan_case_each_player(reroll_count, player_type_str.as_str(), addr, server_state.clone()).await?;
             }
+            
+            {
+                let game = server_state.game.lock().await;
+                
+                let mut player = game.get_player().get();
+                let mut opponent = game.get_opponent().get();
+                if !player.get_mulligan_state_mut().is_ready() && !opponent.get_mulligan_state_mut().is_ready(){
+                    panic!("Each players are not ready - FAILED");
+                }else{
+                    println!(
+                        "Testing mulligan with each players. - PASSED",
+                    );
+                }
+            }
+
+            {
+                let game = server_state.game.lock().await;
+                let player = game.get_player().get();
+                let opponent = game.get_opponent().get();
+
+                player.get_hand().get_cards();
+                opponent.get_hand().get_cards();
+            }
+            handle.stop(true).await;
             Ok(())
         }
         
