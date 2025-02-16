@@ -46,14 +46,11 @@ mod utils_test {
 mod game_test {
     use actix_web::web::{self, Data};
     use card_game::{
-        server::{
+        card::types::PlayerType, server::{
             end_point::handle_mulligan_cards,
             jsons::MulliganMessage,
             types::{ServerState, SessionKey},
-        },
-        test::{generate_random_deck_json, initialize_app},
-        utils::parse_json_to_deck_code,
-        zone::zone::Zone,
+        }, test::{generate_random_deck_json, initialize_app}, utils::parse_json_to_deck_code, zone::zone::Zone
     };
     use serde_json::json;
     use tokio::sync::Mutex;
@@ -110,16 +107,14 @@ mod game_test {
 
     #[actix_web::test]
     async fn test_mulligan_reroll_restore_variants() -> std::io::Result<()> {
-        async fn run_mulligan_case(reroll_count: usize) -> std::io::Result<()> {
-            let (addr, server_state) = spawn_server();
-
-            sleep(Duration::from_millis(100)).await;
-            async fn run_mulligan_case_inner(reroll_count: usize, player_type: &str, addr: SocketAddr, server_state: Data<ServerState>) -> std::io::Result<()>{
+        async fn run_mulligan_case(reroll_count: usize, ) -> std::io::Result<()> {
+            async fn run_mulligan_case_each_player(reroll_count: usize, player_type: &str, addr: SocketAddr, server_state: Data<ServerState>) -> std::io::Result<()>{
                 // WebSocket 서버의 URL 생성 (예: "ws://127.0.0.1:{포트}/mulligan_step")
                 let url = format!("ws://{}{}", addr, "/mulligan_step");
 
                 // 테스트용 쿠키 값 지정 (Request Guard 내부에서 state.player_cookie 또는 state.opponent_cookie와 비교)
-                let cookie_value = "user_id=player1";
+                let cookie_value = format!("user_id={}", player_type);
+                // println!("input cookie: {}", cookie_value);
 
                 // http::Request 빌더를 사용하여 요청을 생성하면서 쿠키 헤더 추가
                 let request = Request::builder()
@@ -159,9 +154,9 @@ mod game_test {
 
                 // mulligan 을 통해 뽑혀진 카드가 Deck 에서 제대로 제거가 됐는지 확인합니다.
                 {
-                    let game = server_state.game.lock().await;
+                    let game = server_state.game.try_lock().unwrap();
                     if deal_cards.iter().any(|uuid| {
-                        game.get_player()
+                        game.get_player_by_type(player_type)
                             .get()
                             .get_deck()
                             .get_cards()
@@ -175,7 +170,7 @@ mod game_test {
                 let json = json!({
                     "action": "reroll-request",
                     "payload": {
-                        "player": "player1",
+                        "player": player_type,
                         "cards": deal_cards
                     }
                 });
@@ -184,6 +179,7 @@ mod game_test {
                     .send(Message::Text(json.to_string()))
                     .await
                     .expect("Failed to send message");
+
 
                 let rerolled_cards = if let Some(Ok(Message::Text(text))) = ws_stream.next().await {
                     if let MulliganMessage::RerollAnswer(data) =
@@ -199,8 +195,8 @@ mod game_test {
                 };
 
                 {
-                    let game = server_state.game.lock().await;
-                    let player = game.get_player().get();
+                    let game = server_state.game.try_lock().unwrap();
+                    let player = game.get_player_by_type(player_type).get();
                     let deck_cards = player.get_deck().get_cards();
                     if deck_cards.len() != 25 {
                         panic!(
@@ -220,8 +216,8 @@ mod game_test {
                 }
 
                 {
-                    let game = server_state.game.lock().await;
-                    let player = game.get_player().get();
+                    let game = server_state.game.try_lock().unwrap();
+                    let player = game.get_player_by_type(player_type).get();
                     let deck_cards = player.get_deck().get_cards();
                     if deck_cards.len() != 25 {
                         panic!(
@@ -243,7 +239,8 @@ mod game_test {
                 let json = json!({
                     "action": "complete",
                     "payload": {
-                        "player": "player1",
+                        "player": player_type,
+                        "cards": []
                     }
                 });
 
@@ -253,19 +250,24 @@ mod game_test {
                     .expect("Failed to send message");
                 Ok(())
             }
+            
+            let (addr, server_state) = spawn_server();
 
-            let game = server_state.game.lock().await;
-            let player_mulligan_state = game.get_player().get().get_mulligan_state_mut().is_ready();
+            sleep(Duration::from_millis(100)).await;
+            for player_type_str in [PlayerType::Player1, PlayerType::Player2] {
+                println!(
+                    "Testing mulligan with {} player.",
+                    player_type_str.as_str(),
+                );
+                run_mulligan_case_each_player(reroll_count, player_type_str.as_str(), addr, server_state.clone()).await?;
+            }
             Ok(())
         }
-
+        
         for reroll_count in (1..=5).rev() {
-            println!(
-                "Testing mulligan with {} card(s) being rerolled.",
-                reroll_count
-            );
             run_mulligan_case(reroll_count).await?;
         }
         Ok(())
     }
 }
+//  {} card(s) being rerolled.

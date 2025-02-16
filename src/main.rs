@@ -65,7 +65,10 @@ fn setup_logger() {
 
 // 매칭으로 만난 두 플레이어의 닉네임을 받은 뒤, 게임 공용 서버인 valid server 에 전송하여 실제 플레이어가 맞는지 확인 후, key 값을 리턴 받음.
 pub fn check_session(_nick1: String, _nick2: String) -> (SessionKey, SessionKey) {
-    (SessionKey("".to_string()), SessionKey("".to_string()))
+    (
+        SessionKey("player1".to_string()),
+        SessionKey("player2".to_string()),
+    )
 }
 
 #[actix_web::main]

@@ -240,9 +240,17 @@ pub enum PlayerType {
 impl PlayerType {
     pub fn reverse(&self) -> Self {
         match self {
-            Self::Player1 => Self::Player2,
-            Self::Player2 => Self::Player1,
+            Self::Player1 => Self::Player1,
+            Self::Player2 => Self::Player2,
             Self::None => Self::None,
+        }
+    }
+
+    pub fn as_str(&self) -> &str {
+        match self {
+            PlayerType::Player1 => "player1",
+            PlayerType::Player2 => "player2",
+            PlayerType::None => "None",
         }
     }
 }
@@ -280,6 +288,16 @@ impl From<PlayerType> for String {
 
 impl From<String> for PlayerType {
     fn from(value: String) -> Self {
+        match &value[..] {
+            "player1" => PlayerType::Player1,
+            "player2" => PlayerType::Player1,
+            _ => PlayerType::None,
+        }
+    }
+}
+
+impl From<&str> for PlayerType {
+    fn from(value: &str) -> Self {
         match &value[..] {
             "player1" => PlayerType::Player1,
             "player2" => PlayerType::Player1,

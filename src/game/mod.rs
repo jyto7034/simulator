@@ -124,6 +124,7 @@ impl Game {
         player_type: PlayerType,
         src_cards: &Vec<UUID>,
     ) -> Result<(), GameError> {
+        println!("restore: {}", player_type.as_str());
         for card_uuid in src_cards {
             let card = {
                 let player = self.get_player_by_type(player_type).get();

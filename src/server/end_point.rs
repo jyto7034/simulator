@@ -1,6 +1,3 @@
-use std::future::Future;
-use std::pin::Pin;
-
 use actix_web::{get, web, FromRequest, HttpRequest, HttpResponse};
 use actix_ws::{handle, Message};
 use futures_util::future::{ready, Ready};
@@ -52,6 +49,10 @@ impl FromRequest for AuthPlayer {
             let cookie_str = cookie.to_string();
             let p1_key = state.player_cookie.0.as_str();
             let p2_key = state.opponent_cookie.0.as_str();
+
+            // println!("cookie: {}", cookie_str.as_str());
+            // println!("p1: {}", p1_key);
+            // println!("p2: {}\n", p2_key);
 
             match cookie_str.as_str() {
                 key if key == p1_key => ready(Ok(AuthPlayer(PlayerType::Player1))),
@@ -143,7 +144,7 @@ pub async fn handle_mulligan_cards(
     let (resp, mut session, mut stream) =
         handle(&req, payload).map_err(|_| ServerError::HandleFailed)?;
 
-    let mut game = state.game.lock().await;
+    let mut game = state.game.try_lock().unwrap();
 
     // Mulligan deal 단계 수행 코드입니다.
     // 새로운 카드를 뽑아서 player 의 mulligan cards 에 저장 한 뒤, json 형태로 변환하여 전송합니다.
@@ -172,20 +173,24 @@ pub async fn handle_mulligan_cards(
                         Ok(data) => data,
                         Err(e) => {
                             // 정해진 타입이 오기 전까지 대기함.
-                            eprintln!("{}", e);
+                            eprintln!("error {}", e);
                             break;
                         }
                     };
+
                     match msg {
                         MulliganMessage::RerollRequest(payload) => {
-                            let mut game = state_clone.game.lock().await;
+                            println!("{:#?}", payload);
+                            let mut game = state_clone.game.try_lock().unwrap();
                             // 기존 카드를 덱의 최하단에 위치 시킨 뒤, 새로운 카드를 뽑아서 player 의 mulligan cards 에 저장하고 json 으로 변환하여 전송합니다.
+                            println!("{}", payload.player);
                             let Ok(rerolled_card) = game.restore_then_reroll_mulligan_cards(
                                 payload.player.clone(),
                                 payload.cards,
                             ) else {
                                 break;
                             };
+
                             let mut player = game.get_player_by_type(payload.player).get_mut();
                             player
                                 .get_mulligan_state_mut()
@@ -197,12 +202,13 @@ pub async fn handle_mulligan_cards(
                             ) else {
                                 break;
                             };
-                            let Err(_) = session.text(rerolled_cards_json).await else {
+
+                            let Ok(_) = session.text(rerolled_cards_json).await else {
                                 break;
                             };
                         }
                         MulliganMessage::Complete(payload) => {
-                            let game = state_clone.game.lock().await;
+                            let game = state_clone.game.try_lock().unwrap();
 
                             // player 의 mulligan 상태를 완료 상태로 변경 후 상대의 mulligan 상태를 확인합니다.
                             // 만약 상대도 완료 상태이라면, mulligan step 을 종료하고 다음 step 으로 진행합니다.
@@ -216,13 +222,12 @@ pub async fn handle_mulligan_cards(
                                 .get_mulligan_state_mut()
                                 .is_ready()
                             {
-                                let Ok(json) = serialize_complete_message(payload.player) else {
+                                let Ok(_) = serialize_complete_message(payload.player) else {
                                     break;
                                 };
-                                let Err(_) = session.text(json).await else {
+                                let Ok(_) = session.text(json).await else {
                                     break;
                                 };
-                                break;
                             }
                         }
                         _ => todo!(),
