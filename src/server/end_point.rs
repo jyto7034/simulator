@@ -154,8 +154,7 @@ pub async fn handle_mulligan_cards(
         let mut _player = game.get_player_by_type(player).get();
         _player
             .get_mulligan_state_mut()
-            .get_select_cards()
-            .extend(new_cards.iter().cloned());
+            .add_select_cards(new_cards.clone());
         let new_cards_json = serialize_deal_message(player, new_cards)?;
         session
             .text(new_cards_json)
@@ -164,7 +163,6 @@ pub async fn handle_mulligan_cards(
     }
 
     // 이후, 스레드 내에서 클라이언트와의 상호작용을 계속하기 위해 필요한 state를 클론합니다.
-
     // WebSocket 메시지 수신 등 후속 처리는 별도 spawn된 작업에서 진행합니다.
     actix_web::rt::spawn(async move {
         while let Some(data) = stream.next().await {
@@ -189,17 +187,23 @@ pub async fn handle_mulligan_cards(
                             // 기존 카드를 덱의 최하단에 위치 시킨 뒤, 새로운 카드를 뽑아서 player 의 mulligan cards 에 저장하고 json 으로 변환하여 전송합니다.
                             let Ok(rerolled_card) = game.restore_then_reroll_mulligan_cards(
                                 player_type,
-                                payload.cards,
+                                payload.cards.clone(),
                             ) else {
                                 // TODO 재시도 혹은 기타 처리
                                 break;
                             };
 
                             let mut player = game.get_player_by_type(player_type).get();
+
+                            // 플레이어가 선택한 카드를 select_cards 에서 삭제하고 Reroll 된 카드를 추가합니다.
                             player
                                 .get_mulligan_state_mut()
-                                .get_select_cards()
-                                .extend(rerolled_card.iter().cloned());
+                                .remove_select_cards(payload.cards);
+
+                            player
+                                .get_mulligan_state_mut()
+                                .add_select_cards(rerolled_card.clone());
+
                             let Ok(rerolled_cards_json) = serialize_reroll_anwser_message(
                                 player.get_player_type(),
                                 rerolled_card,
@@ -212,6 +216,8 @@ pub async fn handle_mulligan_cards(
                                 // TODO 재시도 혹은 기타 처리
                                 break;
                             };
+
+                            // TODO: 리롤이 완료되면 자동으로 Complete 해야함.
                         }
                         MulliganMessage::Complete(payload) => {
                             let game = state.game.lock().await;
@@ -220,21 +226,31 @@ pub async fn handle_mulligan_cards(
                             // 만약 상대도 완료 상태이라면, mulligan step 을 종료하고 다음 step 으로 진행합니다.
                             let player_type = AuthPlayer(payload.player.into());
 
+                            let selected_cards = game
+                                .get_player_by_type(player_type)
+                                .get()
+                                .get_mulligan_state_mut()
+                                .get_select_cards();
+                            
+                            let cards = game.get_cards_by_uuid(selected_cards);
+                            
+                            game.get_player_by_type(player_type)
+                                .get()
+                                .get_hand_mut()
+                                .add_card(cards.clone(), Box::new(TopInsert))
+                                .unwrap();
+
                             game.get_player_by_type(player_type)
                                 .get()
                                 .get_mulligan_state_mut()
                                 .confirm_selection();
-                            
+
                             if game
                                 .get_player_by_type(player.0.reverse())
                                 .get()
                                 .get_mulligan_state_mut()
                                 .is_ready()
                             {
-                                let selected_cards = game.get_player_by_type(player_type).get().get_mulligan_state_mut().get_select_cards();
-                                let cards = game.get_cards_by_uuid(selected_cards);
-                                game.get_player_by_type(player_type).get().get_hand_mut().add_card(cards, Box::new(TopInsert)).unwrap();
-                                
                                 let Ok(_) = serialize_complete_message(player) else {
                                     // TODO 재시도 혹은 기타 처리
                                     break;

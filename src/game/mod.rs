@@ -2,12 +2,12 @@ pub mod game_step;
 mod getter;
 pub mod turn_manager;
 
+use std::collections::HashMap;
+
 use turn_manager::TurnManager;
 
 use crate::{
-    card::{
-        cards::CardVecExt, insert::BottomInsert, types::PlayerType, Card
-    },
+    card::{cards::CardVecExt, insert::BottomInsert, types::PlayerType, Card},
     enums::{phase::Phase, DeckCode, UUID},
     exception::GameError,
     unit::player::{Player, Resoruce},
@@ -74,7 +74,10 @@ impl Game {
 }
 
 impl Game {
-    pub fn get_player_by_type<T: Into<PlayerType> + Copy>(&self, player_type: T) -> &OptArc<Player> {
+    pub fn get_player_by_type<T: Into<PlayerType> + Copy>(
+        &self,
+        player_type: T,
+    ) -> &OptArc<Player> {
         match player_type.into() {
             PlayerType::Player1 => &self.player1,
             PlayerType::Player2 => &self.player2,
@@ -136,12 +139,46 @@ impl Game {
         Ok(())
     }
 
-    pub fn get_cards_by_uuid(&self, uuids: Vec<UUID>) -> Vec<Card>{
+    /// 두 플레이어의 카드 목록에서 입력받은 UUID에 해당하는 카드를 순서대로 찾아 반환합니다.
+    ///
+    /// # 설명
+    /// - 플레이어와 상대방의 모든 카드 목록을 합쳐서, 각 카드의 고유한 UUID를 key로 하는 HashMap을 생성합니다.
+    /// - 입력받은 UUID 리스트의 순서대로 해당 카드들을 찾아 Vec<Card>로 반환합니다.
+    ///
+    /// # 파라미터
+    /// - `uuids`: 찾고자 하는 카드의 고유 식별자(UUID)들이 담긴 벡터입니다.
+    ///             각 UUID는 고유하다고 가정합니다.
+    ///
+    /// # 반환값
+    /// - 입력받은 순서대로 찾은 카드들을 담은 Vec<Card>를 반환합니다.
+    ///
+    /// # 패닉
+    /// - 만약 입력받은 UUID 중 하나라도 플레이어와 상대방의 카드 목록에서 찾지 못하면,
+    ///   해당 UUID와 함께 panic!이 발생합니다.
+    ///
+    pub fn get_cards_by_uuid(&self, uuids: Vec<UUID>) -> Vec<Card> {
         let player = self.get_player().get();
         let opponent = self.get_opponent().get();
-        let player_cards: Vec<Card> = player.get_cards().iter().filter(|&card| uuids.contains(&card.get_uuid())).cloned().collect();
-        let opponent_cards: Vec<Card> = opponent.get_cards().iter().filter(|&card| uuids.contains(&card.get_uuid())).cloned().collect();
-
-        if player_cards.is_empty() {player_cards} else {opponent_cards}
+        
+        // 두 카드 리스트를 하나의 iterator로 합칩니다.
+        // UUID가 고유하다고 가정하므로, (uuid, card) 쌍을 HashMap에 저장할 수 있습니다.
+        let card_map: HashMap<UUID, Card> = player
+            .get_cards()
+            .iter()
+            .chain(opponent.get_cards().iter())
+            .map(|card| (card.get_uuid(), card.clone()))
+            .collect();
+        
+        // 입력한 uuid 순서대로 카드들을 찾아서 반환합니다.
+        // 입력 uuid 중 하나라도 매칭되는 카드가 없으면 panic! 합니다.
+        let mut results = Vec::with_capacity(uuids.len());
+        for uuid in uuids {
+            if let Some(card) = card_map.get(&uuid) {
+                results.push(card.clone());
+            } else {
+                panic!("No card found with uuid: {:?}", uuid);
+            }
+        }
+        results
     }
 }

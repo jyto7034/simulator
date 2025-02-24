@@ -1,5 +1,5 @@
 use crate::{
-    card::{cards::Cards, take::Take, Card},
+    card::{cards::Cards, insert::Insert, take::Take, Card},
     enums::{UNIT_ZONE_SIZE, UUID},
     exception::GameError,
 };
@@ -28,7 +28,7 @@ impl Hand {
 
 impl Zone for Hand {
     fn get_cards(&self) -> &Cards {
-        todo!()
+        &self.zone_cards
     }
 
     fn get_cards_mut(&mut self) -> &mut Cards {
@@ -43,12 +43,11 @@ impl Zone for Hand {
         todo!()
     }
 
-    fn add_card(
-        &mut self,
-        cards: Vec<Card>,
-        insert: Box<dyn crate::card::insert::Insert>,
-    ) -> Result<(), GameError> {
-        todo!()
+    fn add_card(&mut self, cards: Vec<Card>, insert: Box<dyn Insert>) -> Result<(), GameError> {
+        for card in cards {
+            insert.insert(&mut self.zone_cards, card)?;
+        }
+        Ok(())
     }
 
     fn take_card(&mut self, take_type: Box<dyn Take>) -> Vec<Card> {

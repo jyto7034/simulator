@@ -43,74 +43,26 @@ mod utils_test {
 }
 
 #[cfg(test)]
-mod game_test {
-    use actix_web::{dev::ServerHandle, web::{self, Data}};
-    use card_game::{
-        card::{cards::CardVecExt, types::PlayerType}, server::{
-            end_point::handle_mulligan_cards,
-            jsons::MulliganMessage,
-            types::{ServerState, SessionKey},
-        }, test::{generate_random_deck_json, initialize_app}, utils::parse_json_to_deck_code, zone::zone::Zone
-    };
+pub mod game_test {
+    use std::{net::SocketAddr, time::Duration};
+
+    use actix_web::web::Data;
+    use async_tungstenite::{tokio::connect_async, tungstenite::{http::Request, Message}};
+    use card_game::{card::{cards::CardVecExt, types::PlayerType}, enums::COUNT_OF_MULLIGAN_CARDS, server::{jsons::MulliganMessage, types::ServerState}, test::spawn_server, zone::zone::Zone};
+    use futures_util::StreamExt;
     use serde_json::json;
-    use tokio::sync::Mutex;
-
-    fn create_server_state() -> web::Data<ServerState> {
-        let (deck_json, _original_cards) = generate_random_deck_json();
-        let (deck_json2, _) = generate_random_deck_json();
-
-        // 2. JSON을 덱 코드로 변환
-        let deck_codes = parse_json_to_deck_code(Some(deck_json), Some(deck_json2))
-            .expect("Failed to parse deck code");
-
-        let app = initialize_app(deck_codes.0, deck_codes.1, 0);
-
-        web::Data::new(ServerState {
-            game: Mutex::new(app.game),
-            player_cookie: SessionKey("player1".to_string()),
-            opponent_cookie: SessionKey("player2".to_string()),
-        })
-    }
-
-    use actix_web::{App, HttpServer};
-    use async_tungstenite::{
-        tokio::connect_async,
-        tungstenite::{http::Request, Message},
-    };
-    use futures_util::stream::StreamExt;
-    use std::net::{SocketAddr, TcpListener};
-    use tokio::time::{sleep, Duration};
-
-    fn spawn_server() -> (SocketAddr, Data<ServerState>, ServerHandle) {
-        let server_state = create_server_state();
-        let server_state_clone = server_state.clone();
-
-        // 사용 가능한 포트에 바인딩합니다.
-        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
-        let addr = listener.local_addr().unwrap();
-
-        // App 생성 및 필요한 data/서비스 등록
-        let server = HttpServer::new(move || {
-            App::new()
-                .app_data(server_state.clone())
-                .service(handle_mulligan_cards)
-        })
-        .listen(listener)
-        .unwrap()
-        .run();
-
-        let handle = server.handle();
-        
-        // actix_web::rt::spawn 대신 tokio::spawn 또는 actix_web::rt::spawn 사용 (현재 예제에서는 tokio::spawn 사용)
-        tokio::spawn(server);
-
-        (addr, server_state_clone, handle)
-    }
+    use tokio::time::sleep;
 
     #[actix_web::test]
     async fn test_mulligan_reroll_restore_variants() -> std::io::Result<()> {
-        async fn run_mulligan_case(reroll_count: usize, ) -> std::io::Result<()> {
-            async fn run_mulligan_case_each_player(reroll_count: usize, player_type: &str, addr: SocketAddr, server_state: Data<ServerState>) -> std::io::Result<()>{
+        // console_subscriber::init();
+        async fn run_mulligan_case(reroll_count: usize) -> std::io::Result<()> {
+            async fn run_mulligan_case_each_player(
+                reroll_count: usize,
+                player_type: &str,
+                addr: SocketAddr,
+                server_state: Data<ServerState>,
+            ) -> std::io::Result<()> {
                 // WebSocket 서버의 URL 생성 (예: "ws://127.0.0.1:{포트}/mulligan_step")
                 let url = format!("ws://{}{}", addr, "/mulligan_step");
 
@@ -182,7 +134,6 @@ mod game_test {
                     .await
                     .expect("Failed to send message");
 
-
                 let rerolled_cards = if let Some(Ok(Message::Text(text))) = ws_stream.next().await {
                     if let MulliganMessage::RerollAnswer(data) =
                         serde_json::from_str::<MulliganMessage>(&text)
@@ -253,25 +204,32 @@ mod game_test {
 
                 Ok(())
             }
-            
+
             let (addr, server_state, handle) = spawn_server();
 
             sleep(Duration::from_millis(100)).await;
+
             for player_type_str in [PlayerType::Player1, PlayerType::Player2] {
-                run_mulligan_case_each_player(reroll_count, player_type_str.as_str(), addr, server_state.clone()).await?;
+                run_mulligan_case_each_player(
+                    reroll_count,
+                    player_type_str.as_str(),
+                    addr,
+                    server_state.clone(),
+                )
+                .await?;
             }
-            
+
             {
                 let game = server_state.game.lock().await;
-                
+
                 let mut player = game.get_player().get();
                 let mut opponent = game.get_opponent().get();
-                if !player.get_mulligan_state_mut().is_ready() && !opponent.get_mulligan_state_mut().is_ready(){
+                if !player.get_mulligan_state_mut().is_ready()
+                    && !opponent.get_mulligan_state_mut().is_ready()
+                {
                     panic!("Each players are not ready - FAILED");
-                }else{
-                    println!(
-                        "Testing mulligan with each players. - PASSED",
-                    );
+                } else {
+                    println!("Testing mulligan with each players. - PASSED",);
                 }
             }
 
@@ -280,13 +238,18 @@ mod game_test {
                 let player = game.get_player().get();
                 let opponent = game.get_opponent().get();
 
-                player.get_hand().get_cards();
-                opponent.get_hand().get_cards();
+                let p_cards = player.get_hand().get_cards();
+                let o_cards = opponent.get_hand().get_cards();
+
+                if p_cards.len() + o_cards.len() != COUNT_OF_MULLIGAN_CARDS * 2 {
+                    panic!("There are not enough mulligan cards")
+                }
             }
             handle.stop(true).await;
+
             Ok(())
         }
-        
+
         for reroll_count in (1..=5).rev() {
             run_mulligan_case(reroll_count).await?;
         }

@@ -21,6 +21,14 @@ impl MulliganState {
         self.select_cards.clone()
     }
 
+    pub fn add_select_cards(&mut self, cards: Vec<UUID>) {
+        self.select_cards.extend(cards);
+    }
+
+    pub fn remove_select_cards(&mut self, cards: Vec<UUID>) {
+        self.select_cards.retain(|x| !cards.contains(x));
+    }
+
     pub fn is_ready(&self) -> bool {
         self.player_ready
     }

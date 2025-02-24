@@ -26,7 +26,7 @@ pub const MAX_CARD_SIZE: usize = 30;
 
 pub struct DeckCode(pub String);
 
-#[derive(Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
+#[derive(Clone, PartialEq, Eq, Serialize, Deserialize, Debug, Hash)]
 pub struct UUID(pub String);
 
 pub type CardsUuid = Vec<UUID>;
