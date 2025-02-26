@@ -6,6 +6,7 @@ use crate::{
 
 use super::zone::Zone;
 
+#[derive(Clone)]
 pub struct Field {
     zone_cards: Cards,
     zone_size: usize,

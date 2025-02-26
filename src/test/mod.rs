@@ -5,7 +5,14 @@ use serde_json::{json, Value};
 use tokio::sync::Mutex;
 
 use crate::{
-    card::Card, card_gen::CardGenerator, enums::{DeckCode, CARD_JSON_PATH, MAX_CARD_SIZE}, server::{end_point::handle_mulligan_cards, types::{ServerState, SessionKey}}, utils::{json, parse_json_to_deck_code}
+    card::Card,
+    card_gen::CardGenerator,
+    enums::{DeckCode, CARD_JSON_PATH, MAX_CARD_SIZE},
+    server::{
+        end_point::handle_mulligan_cards,
+        types::{ServerState, SessionKey},
+    },
+    utils::{generate_uuid, json, parse_json_to_deck_code},
 };
 
 pub fn initialize_app(p1_deck: DeckCode, p2_deck: DeckCode, attacker: usize) -> crate::app::App {
@@ -60,17 +67,16 @@ pub fn generate_random_deck_json() -> (Value, Vec<Card>) {
     (deck_json, original_cards)
 }
 
-
 use actix_web::{
     dev::ServerHandle,
-    web::{self, Data}, App,
+    web::{self, Data},
+    App,
 };
 
-fn create_server_state() -> web::Data<ServerState> {
+pub fn create_server_state() -> web::Data<ServerState> {
     let (deck_json, _original_cards) = generate_random_deck_json();
     let (deck_json2, _) = generate_random_deck_json();
 
-    // 2. JSON을 덱 코드로 변환
     let deck_codes = parse_json_to_deck_code(Some(deck_json), Some(deck_json2))
         .expect("Failed to parse deck code");
 
@@ -80,21 +86,19 @@ fn create_server_state() -> web::Data<ServerState> {
         game: Mutex::new(app.game),
         player_cookie: SessionKey("player1".to_string()),
         opponent_cookie: SessionKey("player2".to_string()),
+        uuid: generate_uuid().unwrap(),
     })
 }
 
 use actix_web::HttpServer;
 use std::net::{SocketAddr, TcpListener};
 
-pub fn spawn_server() -> (SocketAddr, Data<ServerState>, ServerHandle) {
+pub async fn spawn_server() -> (SocketAddr, Data<ServerState>, ServerHandle) {
     let server_state = create_server_state();
     let server_state_clone = server_state.clone();
-
-    // 사용 가능한 포트에 바인딩합니다.
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let addr = listener.local_addr().unwrap();
 
-    // App 생성 및 필요한 data/서비스 등록
     let server = HttpServer::new(move || {
         App::new()
             .app_data(server_state.clone())
@@ -104,9 +108,9 @@ pub fn spawn_server() -> (SocketAddr, Data<ServerState>, ServerHandle) {
     .unwrap()
     .run();
 
+    
     let handle = server.handle();
-
     tokio::spawn(server);
-
+    
     (addr, server_state_clone, handle)
 }

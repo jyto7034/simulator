@@ -1,5 +1,6 @@
 use crate::enums::UUID;
 
+#[derive(Clone)]
 pub struct MulliganState {
     player_ready: bool,
     select_cards: Vec<UUID>,

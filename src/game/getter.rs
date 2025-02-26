@@ -1,7 +1,7 @@
 use crate::{
     card::{types::PlayerType, Card},
     enums::ZoneType,
-    zone::{deck::Deck, hand::Hand, zone::Zone},
+    zone::zone::Zone,
 };
 
 use super::Game;
@@ -30,11 +30,7 @@ impl Game {
     }
 
     pub fn get_player_field_cards(&self) -> Vec<Card> {
-        self.get_player()
-            .get()
-            .get_field()
-            .get_cards()
-            .clone()
+        self.get_player().get().get_field().get_cards().clone()
     }
 
     pub fn with_player_field_cards<F, C>(&mut self, mut condition: C, modifier: F)
@@ -52,11 +48,7 @@ impl Game {
     }
 
     pub fn get_opponent_field_cards(&self) -> Vec<Card> {
-        self.get_opponent()
-            .get()
-            .get_field()
-            .get_cards()
-            .clone()
+        self.get_opponent().get().get_field().get_cards().clone()
     }
 
     pub fn with_opponent_field_cards<F, C>(&mut self, mut condition: C, modifier: F)
@@ -75,11 +67,7 @@ impl Game {
 
     // 핸드 카드
     pub fn get_player_hand_cards(&self) -> Vec<Card> {
-        self.get_player()
-            .get()
-            .get_hand()
-            .get_cards()
-            .clone()
+        self.get_player().get().get_hand().get_cards().clone()
     }
 
     pub fn with_player_hand_cards<F, C>(&mut self, mut condition: C, modifier: F)
@@ -97,11 +85,7 @@ impl Game {
     }
 
     pub fn get_opponent_hand_cards(&self) -> Vec<Card> {
-        self.get_opponent()
-            .get()
-            .get_hand()
-            .get_cards()
-            .clone()
+        self.get_opponent().get().get_hand().get_cards().clone()
     }
 
     pub fn with_opponent_hand_cards<F, C>(&mut self, mut condition: C, modifier: F)
@@ -120,11 +104,7 @@ impl Game {
 
     // 묘지 카드
     pub fn get_player_graveyard_cards(&self) -> Vec<Card> {
-        self.get_player()
-            .get()
-            .get_graveyard()
-            .get_cards()
-            .clone()
+        self.get_player().get().get_graveyard().get_cards().clone()
     }
 
     pub fn with_player_graveyard_cards<F, C>(&mut self, mut condition: C, modifier: F)
@@ -165,11 +145,7 @@ impl Game {
 
     // 덱 카드
     pub fn get_player_deck_cards(&self) -> Vec<Card> {
-        self.get_player()
-            .get()
-            .get_deck()
-            .get_cards()
-            .clone()
+        self.get_player().get().get_deck().get_cards().clone()
     }
 
     pub fn with_player_deck_cards<F, C>(&mut self, mut condition: C, modifier: F)
@@ -187,11 +163,7 @@ impl Game {
     }
 
     pub fn get_opponent_deck_cards(&self) -> Vec<Card> {
-        self.get_opponent()
-            .get()
-            .get_deck()
-            .get_cards()
-            .clone()
+        self.get_opponent().get().get_deck().get_cards().clone()
     }
 
     pub fn with_opponent_deck_cards<F, C>(&mut self, mut condition: C, modifier: F)

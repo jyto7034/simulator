@@ -15,6 +15,8 @@ pub enum MulliganMessage {
     RerollAnswer(MulliganPayload),
     #[serde(rename = "complete")]
     Complete(MulliganPayload),
+    #[serde(rename = "invalid-approach")]
+    InvalidApproach(ErrorPayload),
 }
 
 /// 각 단계에서 공통으로 사용되는 payload 구조체입니다.
@@ -22,6 +24,11 @@ pub enum MulliganMessage {
 pub struct MulliganPayload {
     pub player: String,
     pub cards: Vec<UUID>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ErrorPayload {
+    pub message: String,
 }
 
 /// 각 단계별 JSON 직렬화 함수입니다.
@@ -38,21 +45,20 @@ pub fn serialize_deal_message<T: Into<String>>(
     serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
 }
 
-pub fn serialize_reroll_anwser_message<T: Into<String>>(
+pub fn serialize_complete_message<T: Into<String>>(
     player: T,
     cards: Vec<UUID>,
 ) -> Result<String, ServerError> {
-    let message = MulliganMessage::RerollAnswer(MulliganPayload {
+    let message = MulliganMessage::Complete(MulliganPayload {
         player: player.into(),
         cards,
     });
     serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
 }
 
-pub fn serialize_complete_message<T: Into<String>>(player: T) -> Result<String, ServerError> {
-    let message = MulliganMessage::Complete(MulliganPayload {
-        player: player.into(),
-        cards: vec![],
+pub fn serialize_invalid_approach() -> Result<String, ServerError> {
+    let message = MulliganMessage::InvalidApproach(ErrorPayload {
+        message: "Invalid approach".to_string(),
     });
     serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
 }

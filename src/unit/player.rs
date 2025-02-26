@@ -45,6 +45,7 @@ impl Resoruce {
 }
 
 /// 플레이어를 행동, 상태 등을 다루는 구조체 입니다.
+#[derive(Clone)]
 pub struct Player {
     pub opponent: OptArc<Player>,
     player_type: PlayerType,

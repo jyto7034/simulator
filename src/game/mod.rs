@@ -29,6 +29,7 @@ pub struct GameConfig {
 /// 게임의 상태를 관리/저장 하는 구조체
 /// Card 로 인한 모든 변경 사항은 Task 로써 저장되며,
 /// 그것을 담은 Tasks 를 Procedure 에게 전달하여 게임 결과를 계산한다.
+#[derive(Clone)]
 pub struct Game {
     pub player1: OptArc<Player>,
     pub player2: OptArc<Player>,
@@ -159,7 +160,7 @@ impl Game {
     pub fn get_cards_by_uuid(&self, uuids: Vec<UUID>) -> Vec<Card> {
         let player = self.get_player().get();
         let opponent = self.get_opponent().get();
-        
+
         // 두 카드 리스트를 하나의 iterator로 합칩니다.
         // UUID가 고유하다고 가정하므로, (uuid, card) 쌍을 HashMap에 저장할 수 있습니다.
         let card_map: HashMap<UUID, Card> = player
@@ -168,7 +169,7 @@ impl Game {
             .chain(opponent.get_cards().iter())
             .map(|card| (card.get_uuid(), card.clone()))
             .collect();
-        
+
         // 입력한 uuid 순서대로 카드들을 찾아서 반환합니다.
         // 입력 uuid 중 하나라도 매칭되는 카드가 없으면 panic! 합니다.
         let mut results = Vec::with_capacity(uuids.len());

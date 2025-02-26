@@ -1,3 +1,5 @@
+#![allow(unused_variables, unused_labels, dead_code)]
+
 use std::sync::{Arc, Mutex, MutexGuard};
 
 pub mod app;

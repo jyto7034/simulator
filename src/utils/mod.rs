@@ -12,21 +12,12 @@ use serde_json::Value;
 use std::fs::File;
 use std::io::Read;
 use std::io::{Cursor, Write};
-use std::process::{Command, Stdio};
 use std::vec;
+use uuid::Uuid;
 
 pub fn generate_uuid() -> Result<UUID, GameError> {
-    let output = if let Ok(ans) = Command::new(UUID_GENERATOR_PATH)
-        .stdout(Stdio::piped())
-        .output()
-    {
-        ans
-    } else {
-        return Err(GameError::GenerateUUIDFaild);
-    };
-
-    let uuid = UUID(String::from_utf8_lossy(&output.stdout).into_owned());
-    Ok(uuid)
+    let uuid = Uuid::new_v4();
+    Ok(UUID(uuid.to_string()))
 }
 
 pub fn read_game_config_json() -> Result<json::GameConfigJson, GameError> {

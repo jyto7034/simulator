@@ -46,16 +46,41 @@ mod utils_test {
 pub mod game_test {
     use std::{net::SocketAddr, time::Duration};
 
-    use actix_web::web::Data;
-    use async_tungstenite::{tokio::connect_async, tungstenite::{http::Request, Message}};
-    use card_game::{card::{cards::CardVecExt, types::PlayerType}, enums::COUNT_OF_MULLIGAN_CARDS, server::{jsons::MulliganMessage, types::ServerState}, test::spawn_server, zone::zone::Zone};
+    use actix_web::{dev::ServerHandle, web::Data};
+    use async_tungstenite::{
+        tokio::connect_async,
+        tungstenite::{http::Request, Message},
+    };
+    use card_game::{
+        card::{cards::CardVecExt, types::PlayerType},
+        enums::COUNT_OF_MULLIGAN_CARDS,
+        server::{jsons::MulliganMessage, types::ServerState},
+        test::spawn_server,
+        zone::zone::Zone,
+    };
     use futures_util::StreamExt;
+    use once_cell::sync::Lazy;
     use serde_json::json;
-    use tokio::time::sleep;
+    use tokio::{sync::Mutex, time::sleep};
+
+    static GLOBAL_SERVER: Lazy<Mutex<Option<(SocketAddr, Data<ServerState>, ServerHandle)>>> =
+        Lazy::new(|| Mutex::new(None));
+
+    async fn setup_shared_server() -> (SocketAddr, Data<ServerState>, ServerHandle) {
+        let mut global = GLOBAL_SERVER.lock().await;
+        if let Some((addr, ref mut server_state, ref handle)) = *global {
+            server_state.reset().await;
+            (addr, server_state.clone(), handle.clone())
+        } else {
+            let server = spawn_server().await;
+            *global = Some(server.clone());
+            server
+        }
+    }
 
     #[actix_web::test]
     async fn test_mulligan_reroll_restore_variants() -> std::io::Result<()> {
-        // console_subscriber::init();
+        console_subscriber::init();
         async fn run_mulligan_case(reroll_count: usize) -> std::io::Result<()> {
             async fn run_mulligan_case_each_player(
                 reroll_count: usize,
@@ -90,7 +115,6 @@ pub mod game_test {
                     response.status(),
                     async_tungstenite::tungstenite::http::StatusCode::SWITCHING_PROTOCOLS
                 );
-
                 // 엔드포인트 코드에서는 업그레이드 후 deal 메시지(new_cards_json)를 즉시 클라이언트로 전송하도록 구성되어 있습니다.
                 // 첫 번째로 서버에서 오는 메시지를 확인합니다.
                 let deal_cards = if let Some(Ok(Message::Text(text))) = ws_stream.next().await {
@@ -133,18 +157,17 @@ pub mod game_test {
                     .send(Message::Text(json.to_string()))
                     .await
                     .expect("Failed to send message");
-
                 let rerolled_cards = if let Some(Ok(Message::Text(text))) = ws_stream.next().await {
-                    if let MulliganMessage::RerollAnswer(data) =
+                    if let MulliganMessage::Complete(data) =
                         serde_json::from_str::<MulliganMessage>(&text)
                             .expect("Failed to parse the reroll answer JSON")
                     {
                         data.cards
                     } else {
-                        panic!("Expected a MulliganMessage::RerollAnswer message, but received a different message variant.");
+                        panic!("Expected a MulliganMessage::Complete message, but received a different message variant. Got: {:?}", text);
                     }
                 } else {
-                    panic!("Did not receive any message from the server while expecting MulliganMessage::RerollAnswer.");
+                    panic!("Did not receive any message from the server while expecting MulliganMessage::Complete.");
                 };
 
                 {
@@ -188,24 +211,10 @@ pub mod game_test {
                         }
                     }
                 }
-
-                let json = json!({
-                    "action": "complete",
-                    "payload": {
-                        "player": player_type,
-                        "cards": []
-                    }
-                });
-
-                ws_stream
-                    .send(Message::Text(json.to_string()))
-                    .await
-                    .expect("Failed to send message");
-
                 Ok(())
             }
 
-            let (addr, server_state, handle) = spawn_server();
+            let (addr, server_state, _handle) = setup_shared_server().await;
 
             sleep(Duration::from_millis(100)).await;
 
@@ -221,6 +230,19 @@ pub mod game_test {
 
             {
                 let game = server_state.game.lock().await;
+                let player = game.get_player().get();
+                let opponent = game.get_opponent().get();
+
+                let p_cards = player.get_hand().get_cards();
+                let o_cards = opponent.get_hand().get_cards();
+
+                if p_cards.len() + o_cards.len() != COUNT_OF_MULLIGAN_CARDS * 2 {
+                    panic!("There are not enough mulligan cards")
+                }
+            }
+
+            {
+                let game = server_state.game.lock().await;
 
                 let mut player = game.get_player().get();
                 let mut opponent = game.get_opponent().get();
@@ -232,20 +254,6 @@ pub mod game_test {
                     println!("Testing mulligan with each players. - PASSED",);
                 }
             }
-
-            {
-                let game = server_state.game.lock().await;
-                let player = game.get_player().get();
-                let opponent = game.get_opponent().get();
-
-                let p_cards = player.get_hand().get_cards();
-                let o_cards = opponent.get_hand().get_cards();
-
-                if p_cards.len() + o_cards.len() != COUNT_OF_MULLIGAN_CARDS * 2 {
-                    panic!("There are not enough mulligan cards")
-                }
-            }
-            handle.stop(true).await;
 
             Ok(())
         }

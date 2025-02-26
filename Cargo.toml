@@ -10,6 +10,9 @@ build = "build.rs"
 
 [build-dependencies]
 
+[profile.dev]
+debug = true
+
 [[bench]]
 name = "bench"
 harness = false
@@ -33,14 +36,15 @@ futures-util = {version = "0.3", features = ["sink"]}
 argon2 = "0.5.3"
 dotenv = "0.15.0"
 
+gnuplot = "0.0.45"
 criterion = "0.5.1"
 
-tokio = { version = "1.15", features = ["full"] }
 
-# tokio = { version = "1.15", features = ["full", "tracing"] }
-# tokio-console = { version = "0.1.13", optional = true }
-# console-subscriber = { version = "0.4.1", optional = true }
+tokio = { version = "1.15", features = ["full", "tracing"] }
+tokio-console = "0.1.13"
+console-subscriber = "0.4.1"
 
+uuid = { version = "1.14.0", features = ["v4"] }
 lazy_static = "1.5.0"
 structopt = "=0.3.26"
 rand = "0.8.5"
