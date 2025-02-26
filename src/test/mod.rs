@@ -12,7 +12,7 @@ use crate::{
         end_point::handle_mulligan_cards,
         types::{ServerState, SessionKey},
     },
-    utils::{generate_uuid, json, parse_json_to_deck_code},
+    utils::{json, parse_json_to_deck_code},
 };
 
 pub fn initialize_app(p1_deck: DeckCode, p2_deck: DeckCode, attacker: usize) -> crate::app::App {
@@ -86,7 +86,6 @@ pub fn create_server_state() -> web::Data<ServerState> {
         game: Mutex::new(app.game),
         player_cookie: SessionKey("player1".to_string()),
         opponent_cookie: SessionKey("player2".to_string()),
-        uuid: generate_uuid().unwrap(),
     })
 }
 
@@ -108,9 +107,8 @@ pub async fn spawn_server() -> (SocketAddr, Data<ServerState>, ServerHandle) {
     .unwrap()
     .run();
 
-    
     let handle = server.handle();
     tokio::spawn(server);
-    
+
     (addr, server_state_clone, handle)
 }

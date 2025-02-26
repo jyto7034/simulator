@@ -11,7 +11,7 @@ use tracing_subscriber::EnvFilter;
 
 use card_game::server::types::{ServerState, SessionKey};
 use card_game::test::{generate_random_deck_json, initialize_app};
-use card_game::utils::{generate_uuid, parse_json_to_deck_code};
+use card_game::utils::parse_json_to_deck_code;
 use clap::Parser;
 
 // main
@@ -126,7 +126,6 @@ async fn main() -> std::io::Result<()> {
         game: Mutex::new(app.game),
         player_cookie: session_keys.0,
         opponent_cookie: session_keys.1,
-        uuid: generate_uuid().unwrap(),
     });
 
     setup_logger();

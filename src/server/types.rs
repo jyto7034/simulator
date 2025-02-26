@@ -4,7 +4,6 @@ use tokio::sync::Mutex;
 use crate::{card::types::PlayerType, enums::UUID, game::Game, test::create_server_state};
 
 pub struct ServerState {
-    pub uuid: UUID,
     pub game: Mutex<Game>,
     pub player_cookie: SessionKey,
     pub opponent_cookie: SessionKey,
@@ -15,7 +14,7 @@ impl ServerState {
         let state = create_server_state();
         let new_game = {
             let lock = state.game.lock().await;
-            lock.clone() 
+            lock.clone()
         };
         let mut current_game = self.game.lock().await;
         *current_game = new_game;

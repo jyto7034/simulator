@@ -1,7 +1,5 @@
 use crate::card::types::PlayerType;
-use actix_web::{
-    http::StatusCode, HttpResponse, ResponseError,
-};
+use actix_web::{http::StatusCode, HttpResponse, ResponseError};
 use std::fmt;
 
 #[derive(Debug, PartialEq, Copy, Clone)]

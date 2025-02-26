@@ -1,14 +1,14 @@
 use crate::card::types::PlayerType;
 
 #[derive(Clone)]
-pub struct TurnManager {
+pub struct Turn {
     current_turn: PlayerType,
     turn_count: usize,
 }
 
-impl TurnManager {
+impl Turn {
     pub fn new() -> Self {
-        TurnManager {
+        Turn {
             current_turn: PlayerType::Player1,
             turn_count: 0,
         }

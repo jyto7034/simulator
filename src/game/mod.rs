@@ -4,7 +4,7 @@ pub mod turn_manager;
 
 use std::collections::HashMap;
 
-use turn_manager::TurnManager;
+use turn_manager::Turn;
 
 use crate::{
     card::{cards::CardVecExt, insert::BottomInsert, types::PlayerType, Card},
@@ -34,7 +34,7 @@ pub struct Game {
     pub player1: OptArc<Player>,
     pub player2: OptArc<Player>,
     pub phase: Phase,
-    pub turn: TurnManager,
+    pub turn: Turn,
 }
 
 /// initialize 함수에 GameConfig 을 넣음으로써 두 플레이어의 Cards 을 설정한다.
@@ -86,7 +86,7 @@ impl Game {
         }
     }
 
-    pub fn get_turn(&self) -> &TurnManager {
+    pub fn get_turn(&self) -> &Turn {
         &self.turn
     }
 
@@ -94,7 +94,7 @@ impl Game {
         self.phase
     }
 
-    pub fn get_turn_mut(&mut self) -> &mut TurnManager {
+    pub fn get_turn_mut(&mut self) -> &mut Turn {
         &mut self.turn
     }
 

@@ -5,6 +5,7 @@ use futures_util::StreamExt;
 
 use crate::card::insert::TopInsert;
 use crate::enums::COUNT_OF_MULLIGAN_CARDS;
+use crate::server::helper::process_mulligan_completion;
 use crate::server::jsons::serialize_invalid_approach;
 use crate::zone::zone::Zone;
 use crate::{card::types::PlayerType, exception::ServerError};
@@ -157,7 +158,7 @@ impl From<AuthPlayer> for String {
 ///
 /// 재추첨 카드들은 덱의 맨 아래에 위치하게 됩니다.
 /// 위 일련의 과정이 모두 완료 되면 MulliganState 의 confirm_selection() 함수를 호출하여 선택을 확정합니다.
-/// 해당 함수 호출 후, 다른 플레이어의 MulliganState 의 is_) 함수를 통해 준비 상태를 확인합니다.
+/// 해당 함수 호출 후, 다른 플레이어의 MulliganState 의 is_ready 함수를 통해 준비 상태를 확인합니다.
 /// 두 플레이어가 모두 준비되면 다음 단계로 넘어갑니다.
 
 // TODO: 각 에러 처리 분명히 해야함.
@@ -252,24 +253,10 @@ pub async fn handle_mulligan_cards(
                                 .get_mulligan_state_mut()
                                 .add_select_cards(rerolled_card.clone());
 
-                            let selected_cards = game
-                                .get_player_by_type(player_type)
-                                .get()
-                                .get_mulligan_state_mut()
-                                .get_select_cards();
-
-                            let cards = game.get_cards_by_uuid(selected_cards.clone());
-
-                            game.get_player_by_type(player_type)
-                                .get()
-                                .get_hand_mut()
-                                .add_card(cards.clone(), Box::new(TopInsert))
-                                .unwrap();
-
-                            game.get_player_by_type(player_type)
-                                .get()
-                                .get_mulligan_state_mut()
-                                .confirm_selection();
+                            let _ = match process_mulligan_completion(&mut game, player_type) {
+                                Ok(selected_cards) => selected_cards,
+                                Err(_) => break,
+                            };
 
                             if game
                                 .get_player_by_type(player_type.reverse())
@@ -291,11 +278,9 @@ pub async fn handle_mulligan_cards(
                                 // TODO 재시도 혹은 기타 처리
                                 break;
                             };
-
-                            // TODO: 리롤이 완료되면 자동으로 Complete 해야함.
                         }
                         MulliganMessage::Complete(payload) => {
-                            let game = state.game.lock().await;
+                            let mut game = state.game.lock().await;
                             let player_type = AuthPlayer(payload.player.into());
 
                             if game
@@ -318,24 +303,10 @@ pub async fn handle_mulligan_cards(
                             // player 의 mulligan 상태를 완료 상태로 변경 후 상대의 mulligan 상태를 확인합니다.
                             // 만약 상대도 완료 상태이라면, mulligan step 을 종료하고 다음 step 으로 진행합니다.
 
-                            let selected_cards = game
-                                .get_player_by_type(player_type)
-                                .get()
-                                .get_mulligan_state_mut()
-                                .get_select_cards();
-
-                            let cards = game.get_cards_by_uuid(selected_cards.clone());
-
-                            game.get_player_by_type(player_type)
-                                .get()
-                                .get_hand_mut()
-                                .add_card(cards.clone(), Box::new(TopInsert))
-                                .unwrap();
-
-                            game.get_player_by_type(player_type)
-                                .get()
-                                .get_mulligan_state_mut()
-                                .confirm_selection();
+                            let selected_cards = match process_mulligan_completion(&mut game, player_type) {
+                                Ok(selected_cards) => selected_cards,
+                                Err(_) => break,
+                            };
 
                             if game
                                 .get_player_by_type(player.reverse())
