@@ -60,6 +60,7 @@ pub enum ServerError {
     InternalServerError,
     CookieNotFound,
     ServerStateNotFound,
+    InvalidPayload
 }
 
 impl From<GameError> for ServerError {
@@ -80,6 +81,7 @@ impl fmt::Display for ServerError {
             Self::InternalServerError => todo!(),
             Self::CookieNotFound => todo!(),
             Self::ServerStateNotFound => todo!(),
+            Self::InvalidPayload => todo!(),
         }
     }
 }
@@ -100,6 +102,7 @@ impl ResponseError for ServerError {
             Self::InternalServerError => todo!(),
             Self::CookieNotFound => todo!(),
             Self::ServerStateNotFound => todo!(),
+            Self::InvalidPayload => todo!(),
         }
     }
 
@@ -112,6 +115,7 @@ impl ResponseError for ServerError {
             Self::InternalServerError => todo!(),
             Self::CookieNotFound => todo!(),
             Self::ServerStateNotFound => todo!(),
+            Self::InvalidPayload => todo!(),
         }
     }
 }

@@ -55,7 +55,7 @@ pub mod game_test {
         card::{cards::CardVecExt, types::PlayerType},
         enums::COUNT_OF_MULLIGAN_CARDS,
         server::{jsons::MulliganMessage, types::ServerState},
-        test::spawn_server,
+        test::{expect_mulligan_complete_message, expect_mulligan_deal_message, spawn_server},
         zone::zone::Zone,
     };
     use futures_util::StreamExt;
@@ -117,18 +117,7 @@ pub mod game_test {
                 );
                 // 엔드포인트 코드에서는 업그레이드 후 deal 메시지(new_cards_json)를 즉시 클라이언트로 전송하도록 구성되어 있습니다.
                 // 첫 번째로 서버에서 오는 메시지를 확인합니다.
-                let deal_cards = if let Some(Ok(Message::Text(text))) = ws_stream.next().await {
-                    if let MulliganMessage::Deal(data) =
-                        serde_json::from_str::<MulliganMessage>(&text)
-                            .expect("Failed to parse the deal message JSON")
-                    {
-                        data.cards
-                    } else {
-                        panic!("Expected a MulliganMessage::Deal message, but received a different message variant.");
-                    }
-                } else {
-                    panic!("Did not receive any message from the server while expecting MulliganMessage::Deal.");
-                };
+                let mut deal_cards = expect_mulligan_deal_message(&mut ws_stream).await;
 
                 // mulligan 을 통해 뽑혀진 카드가 Deck 에서 제대로 제거가 됐는지 확인합니다.
                 {
@@ -144,6 +133,8 @@ pub mod game_test {
                     }
                 }
 
+                deal_cards.truncate(reroll_count);
+
                 // 테스트로 클라이언트에서 서버로 메시지를 전송하여 후속 처리가 되는지 확인합니다.
                 let json = json!({
                     "action": "reroll-request",
@@ -157,18 +148,8 @@ pub mod game_test {
                     .send(Message::Text(json.to_string()))
                     .await
                     .expect("Failed to send message");
-                let rerolled_cards = if let Some(Ok(Message::Text(text))) = ws_stream.next().await {
-                    if let MulliganMessage::Complete(data) =
-                        serde_json::from_str::<MulliganMessage>(&text)
-                            .expect("Failed to parse the reroll answer JSON")
-                    {
-                        data.cards
-                    } else {
-                        panic!("Expected a MulliganMessage::Complete message, but received a different message variant. Got: {:?}", text);
-                    }
-                } else {
-                    panic!("Did not receive any message from the server while expecting MulliganMessage::Complete.");
-                };
+
+                let rerolled_cards = expect_mulligan_complete_message(&mut ws_stream).await;
 
                 {
                     let game = server_state.game.try_lock().unwrap();
@@ -181,7 +162,7 @@ pub mod game_test {
                             deck_cards.len()
                         );
                     }
-                    for card in &deal_cards[reroll_count..] {
+                    for card in &deal_cards {
                         if !deck_cards.contains_uuid(card.clone()) {
                             panic!(
                             "Mulligan restore error (reroll_count = {}): Restored card {:?} not found in deck",
@@ -263,5 +244,211 @@ pub mod game_test {
         }
         Ok(())
     }
+
+    #[actix_web::test]
+    #[should_panic(expected = "invalid player")]
+    async fn test_mulligan_invalid_player() {
+        let (addr, _server_state, _handle) = spawn_server().await;
+
+        // WebSocket 서버의 URL 생성 (예: "ws://127.0.0.1:{포트}/mulligan_step")
+        let url = format!("ws://{}{}", addr, "/mulligan_step");
+
+        let player_type = PlayerType::Player1;
+
+        // 테스트용 쿠키 값 지정 (Request Guard 내부에서 state.player_cookie 또는 state.opponent_cookie와 비교)
+        let cookie_value = format!("user_id={}", player_type.as_str());
+        // println!("input cookie: {}", cookie_value);
+
+        // http::Request 빌더를 사용하여 요청을 생성하면서 쿠키 헤더 추가
+        let request = Request::builder()
+            .uri(&url)
+            .header("Cookie", cookie_value)
+            .header("Host", addr.to_string())
+            .header("Sec-WebSocket-Key", "dGhlIHNhbXBsZSBub25jZQ==")
+            .header("Upgrade", "websocket")
+            .header("Connection", "Upgrade")
+            .header("Sec-WebSocket-Version", "13")
+            .body(())
+            .expect("요청 생성 실패");
+
+        // async-tungstenite를 통해 WebSocket 연결 시도
+        let (mut ws_stream, response) = connect_async(request).await.expect("연결 실패");
+
+        // HTTP 핸드쉐이크가 성공하면 응답 상태는 101 Switching Protocols여야 합니다.
+        assert_eq!(
+            response.status(),
+            async_tungstenite::tungstenite::http::StatusCode::SWITCHING_PROTOCOLS
+        );
+        // 엔드포인트 코드에서는 업그레이드 후 deal 메시지(new_cards_json)를 즉시 클라이언트로 전송하도록 구성되어 있습니다.
+        // 첫 번째로 서버에서 오는 메시지를 확인합니다.
+        let deal_cards = expect_mulligan_deal_message(&mut ws_stream).await;
+
+        // TODO: 그러고 보니 payload 필드 검증을 제대로 하는지 확인해야함.
+
+        // 테스트로 클라이언트에서 서버로 메시지를 전송하여 후속 처리가 되는지 확인합니다.
+        let json = json!({
+            "action": "reroll-request",
+            "payload": {
+                "player": "ㅁㄴㅇ",
+                "cards": deal_cards
+            }
+        });
+
+        ws_stream
+            .send(Message::Text(json.to_string()))
+            .await
+            .expect("Failed to send message");
+
+        let _ = if let Some(Ok(Message::Text(text))) = ws_stream.next().await {
+            match serde_json::from_str::<MulliganMessage>(&text) {
+                    Ok(MulliganMessage::Complete(data)) => data.cards,
+                    Ok(MulliganMessage::Error(data)) => panic!("{}", data.message),
+                    Ok(other) => panic!(
+                        "Expected a MulliganMessage::Complete message, but received a different variant: {:?}",
+                        other
+                    ),
+                    Err(e) => panic!("Failed to parse the reroll answer JSON: {:?}", e),
+                }
+        } else {
+            panic!("Did not receive any message from the server while expecting MulliganMessage::Complete.")
+        };
+    }
+
+    #[actix_web::test]
+    #[should_panic(expected = "invalid approach")]
+    async fn test_mulligan_invalid_approach() {
+        let (addr, _server_state, _handle) = spawn_server().await;
+
+        // WebSocket 서버의 URL 생성 (예: "ws://127.0.0.1:{포트}/mulligan_step")
+        let url = format!("ws://{}{}", addr, "/mulligan_step");
+
+        let player_type = PlayerType::Player1;
+
+        // 테스트용 쿠키 값 지정 (Request Guard 내부에서 state.player_cookie 또는 state.opponent_cookie와 비교)
+        let cookie_value = format!("user_id={}", player_type.as_str());
+        // println!("input cookie: {}", cookie_value);
+
+        // http::Request 빌더를 사용하여 요청을 생성하면서 쿠키 헤더 추가
+        let request = Request::builder()
+            .uri(&url)
+            .header("Cookie", cookie_value)
+            .header("Host", addr.to_string())
+            .header("Sec-WebSocket-Key", "dGhlIHNhbXBsZSBub25jZQ==")
+            .header("Upgrade", "websocket")
+            .header("Connection", "Upgrade")
+            .header("Sec-WebSocket-Version", "13")
+            .body(())
+            .expect("요청 생성 실패");
+
+        // async-tungstenite를 통해 WebSocket 연결 시도
+        let (mut ws_stream, response) = connect_async(request).await.expect("연결 실패");
+
+        // HTTP 핸드쉐이크가 성공하면 응답 상태는 101 Switching Protocols여야 합니다.
+        assert_eq!(
+            response.status(),
+            async_tungstenite::tungstenite::http::StatusCode::SWITCHING_PROTOCOLS
+        );
+        // 엔드포인트 코드에서는 업그레이드 후 deal 메시지(new_cards_json)를 즉시 클라이언트로 전송하도록 구성되어 있습니다.
+        // 첫 번째로 서버에서 오는 메시지를 확인합니다.
+        let deal_cards = expect_mulligan_deal_message(&mut ws_stream).await;
+
+        // TODO: 그러고 보니 payload 필드 검증을 제대로 하는지 확인해야함.
+
+        // 테스트로 클라이언트에서 서버로 메시지를 전송하여 후속 처리가 되는지 확인합니다.
+        let json = json!({
+            "action": "reroll-wrong",
+            "payload": {
+                "player": "player1",
+                "cards": deal_cards
+            }
+        });
+
+        ws_stream
+            .send(Message::Text(json.to_string()))
+            .await
+            .expect("Failed to send message");
+
+        let _ = if let Some(Ok(Message::Text(text))) = ws_stream.next().await {
+            match serde_json::from_str::<MulliganMessage>(&text) {
+                    Ok(MulliganMessage::Complete(data)) => data.cards,
+                    Ok(MulliganMessage::Error(data)) => panic!("{}", data.message),
+                    Ok(other) => panic!(
+                        "Expected a MulliganMessage::Complete message, but received a different variant: {:?}",
+                        other
+                    ),
+                    Err(e) => panic!("Failed to parse the reroll answer JSON: {:?}", e),
+                }
+        } else {
+            panic!("Did not receive any message from the server while expecting MulliganMessage::Complete.")
+        };
+    }
+
+    #[actix_web::test]
+    #[should_panic(expected = "invalid cards")]
+    async fn test_mulligan_invalid_cards() {
+        let (addr, _server_state, _handle) = spawn_server().await;
+
+        // WebSocket 서버의 URL 생성 (예: "ws://127.0.0.1:{포트}/mulligan_step")
+        let url = format!("ws://{}{}", addr, "/mulligan_step");
+
+        let player_type = PlayerType::Player1;
+
+        // 테스트용 쿠키 값 지정 (Request Guard 내부에서 state.player_cookie 또는 state.opponent_cookie와 비교)
+        let cookie_value = format!("user_id={}", player_type.as_str());
+        // println!("input cookie: {}", cookie_value);
+
+        // http::Request 빌더를 사용하여 요청을 생성하면서 쿠키 헤더 추가
+        let request = Request::builder()
+            .uri(&url)
+            .header("Cookie", cookie_value)
+            .header("Host", addr.to_string())
+            .header("Sec-WebSocket-Key", "dGhlIHNhbXBsZSBub25jZQ==")
+            .header("Upgrade", "websocket")
+            .header("Connection", "Upgrade")
+            .header("Sec-WebSocket-Version", "13")
+            .body(())
+            .expect("요청 생성 실패");
+
+        // async-tungstenite를 통해 WebSocket 연결 시도
+        let (mut ws_stream, response) = connect_async(request).await.expect("연결 실패");
+
+        // HTTP 핸드쉐이크가 성공하면 응답 상태는 101 Switching Protocols여야 합니다.
+        assert_eq!(
+            response.status(),
+            async_tungstenite::tungstenite::http::StatusCode::SWITCHING_PROTOCOLS
+        );
+        // 엔드포인트 코드에서는 업그레이드 후 deal 메시지(new_cards_json)를 즉시 클라이언트로 전송하도록 구성되어 있습니다.
+        // 첫 번째로 서버에서 오는 메시지를 확인합니다.
+        let _ = expect_mulligan_deal_message(&mut ws_stream).await;
+
+        // TODO: 그러고 보니 payload 필드 검증을 제대로 하는지 확인해야함.
+
+        // 테스트로 클라이언트에서 서버로 메시지를 전송하여 후속 처리가 되는지 확인합니다.
+        let json = json!({
+            "action": "reroll-request",
+            "payload": {
+                "player": "player1",
+                "cards": ["wrong", "cards"]
+            }
+        });
+
+        ws_stream
+            .send(Message::Text(json.to_string()))
+            .await
+            .expect("Failed to send message");
+
+        let _ = if let Some(Ok(Message::Text(text))) = ws_stream.next().await {
+            match serde_json::from_str::<MulliganMessage>(&text) {
+                    Ok(MulliganMessage::Complete(data)) => data.cards,
+                    Ok(MulliganMessage::Error(data)) => panic!("{}", data.message),
+                    Ok(other) => panic!(
+                        "Expected a MulliganMessage::Complete message, but received a different variant: {:?}",
+                        other
+                    ),
+                    Err(e) => panic!("Failed to parse the reroll answer JSON: {:?}", e),
+                }
+        } else {
+            panic!("Did not receive any message from the server while expecting MulliganMessage::Complete.")
+        };
+    }
 }
-//  {} card(s) being rerolled.

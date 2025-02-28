@@ -1,9 +1,7 @@
+use actix_ws::Session;
+
 use crate::{
-    card::{insert::TopInsert, types::PlayerType},
-    enums::UUID,
-    exception::ServerError,
-    game::Game,
-    zone::zone::Zone,
+    card::{insert::TopInsert, types::PlayerType}, enums::UUID, exception::ServerError, game::Game, serialize_error, zone::zone::Zone
 };
 
 pub fn process_mulligan_completion<T: Into<PlayerType> + Copy>(
@@ -26,4 +24,21 @@ pub fn process_mulligan_completion<T: Into<PlayerType> + Copy>(
         .get_mulligan_state_mut()
         .confirm_selection();
     Ok(selected_cards)
+}
+
+/// 에러 메시지를 전송하고, 전송 성공 여부를 반환합니다.
+/// # return 
+/// - 성공 시 Some(())
+/// - 실패 시 None
+pub async fn send_error_and_check(session: &mut Session, error_msg: &str) -> Option<()> {
+    // 에러 메시지 직렬화
+    let Ok(error_json) = serialize_error!(error_msg) else {
+        return None; // 직렬화 실패
+    };
+    
+    // 메시지 전송
+    match session.text(error_json).await {
+        Ok(_) => Some(()),
+        Err(_) => None,
+    }
 }

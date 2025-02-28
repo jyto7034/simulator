@@ -1,7 +1,6 @@
-use serde::{Deserialize, Serialize};
 use tokio::sync::Mutex;
 
-use crate::{card::types::PlayerType, enums::UUID, game::Game, test::create_server_state};
+use crate::{card::cards::Cards, game::Game, test::create_server_state};
 
 pub struct ServerState {
     pub game: Mutex<Game>,
@@ -21,25 +20,8 @@ impl ServerState {
     }
 }
 
-#[derive(Serialize, Deserialize)]
-pub struct SelectedCard {
-    pub uuids: Vec<UUID>,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct MulliganCards {
-    pub uuids: Vec<UUID>,
-}
-
-/// end point 접근 제어를 위한 struct
-/// FromRequest 를 구현함.
-pub struct Player {
-    pub player_type: PlayerType,
-}
+pub trait ValidationPayload {
+    fn validate(&self, cards: &Cards) -> Option<()>;
+}   
 
 pub struct SessionKey(pub String);
-
-#[derive(Debug, Deserialize)]
-pub enum ServerGameStep {
-    Mulligan,
-}

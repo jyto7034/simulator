@@ -55,3 +55,5 @@ tracing-appender = "0.2.3"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 paste = "1.0.15"
 cargo-llvm-cov = "0.6.16"
+
+serial_test = "3.2.0"

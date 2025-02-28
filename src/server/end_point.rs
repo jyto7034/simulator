@@ -3,11 +3,10 @@ use actix_ws::{handle, Message};
 use futures_util::future::{ready, Ready};
 use futures_util::StreamExt;
 
-use crate::card::insert::TopInsert;
 use crate::enums::COUNT_OF_MULLIGAN_CARDS;
-use crate::server::helper::process_mulligan_completion;
-use crate::server::jsons::serialize_invalid_approach;
-use crate::zone::zone::Zone;
+use crate::serialize_error;
+use crate::server::helper::{process_mulligan_completion, send_error_and_check};
+use crate::server::types::ValidationPayload;
 use crate::{card::types::PlayerType, exception::ServerError};
 
 use super::jsons::{serialize_complete_message, serialize_deal_message, MulliganMessage};
@@ -15,27 +14,6 @@ use super::types::ServerState;
 
 #[derive(Debug, Clone, Copy)]
 pub struct AuthPlayer(PlayerType);
-
-// impl FromRequest for AuthPlayer {
-//     type Error = ServerError;
-//     type Future = Pin<Box<dyn Future<Output = Result<Self, Self::Error>>>>;
-
-//     fn from_request(req: &HttpRequest, _payload: &mut actix_web::dev::Payload) -> Self::Future {
-//         let Some(cookie) = req.cookie("user_id")else {
-//             return Box::pin(async { Err(ServerError::InternalServerError) });
-//         };
-//         if let Some(state) = req.app_data::<web::Data<ServerState>>() {
-//             Box::pin(async move {
-//                 let game = state.opponent_cookie;
-
-//                 Ok::<AuthPlayer, ServerError>(AuthPlayer(PlayerType::Player1))
-//             });
-//             Box::pin(async { Err(ServerError::InternalServerError) })
-//         } else {
-//             Box::pin(async { Err(ServerError::InternalServerError) })
-//         }
-//     }
-// }
 
 impl AuthPlayer {
     fn reverse(&self) -> PlayerType {
@@ -60,10 +38,6 @@ impl FromRequest for AuthPlayer {
             let cookie_str = cookie.to_string();
             let p1_key = state.player_cookie.0.as_str();
             let p2_key = state.opponent_cookie.0.as_str();
-
-            // println!("cookie: {}", cookie_str.as_str());
-            // println!("p1: {}", p1_key);
-            // println!("p2: {}\n", p2_key);
 
             match cookie_str.as_str() {
                 key if key == p1_key => ready(Ok(AuthPlayer(PlayerType::Player1))),
@@ -173,7 +147,6 @@ pub async fn handle_mulligan_cards(
     // Http 업그레이드: 이때 session과 stream이 반환됩니다.
     let (resp, mut session, mut stream) =
         handle(&req, payload).map_err(|_| ServerError::HandleFailed)?;
-        
     {
         let mut game = state.game.lock().await;
         let player_type = player.0;
@@ -185,7 +158,6 @@ pub async fn handle_mulligan_cards(
         player
             .get_mulligan_state_mut()
             .add_select_cards(new_cards.clone());
-
 
         let new_cards_json = serialize_deal_message(player_type, new_cards)?;
         session
@@ -206,31 +178,42 @@ pub async fn handle_mulligan_cards(
                         Err(e) => {
                             // TODO 재시도 혹은 기타 처리
                             // 받은 json 이 MulliganMessage 타입이 아닌 경우.
-                            eprintln!("error {}", e);
+                            let Ok(rerolled_cards_json) = serialize_error!("invalid approach")
+                            else {
+                                // TODO 재시도 혹은 기타 처리
+                                break;
+                            };
+
+                            let Ok(_) = session.text(rerolled_cards_json).await else {
+                                // TODO 재시도 혹은 기타 처리
+                                break;
+                            };
                             break;
                         }
                     };
 
                     match msg {
                         MulliganMessage::RerollRequest(payload) => {
+                            if !matches!(payload.player.as_str(), "player1" | "player2") {
+                                if send_error_and_check(&mut session, "invalid player").await == Some(()){
+                                    break;
+                                }else{
+                                    // TODO send 재시도
+                                }
+                            }
                             let mut game = state.game.lock().await;
-                            let player_type = AuthPlayer(payload.player.into());
+                            let player_type = AuthPlayer(payload.player.clone().into());
 
-                            if game
-                                .get_player_by_type(player_type)
-                                .get()
-                                .get_mulligan_state_mut()
-                                .is_ready()
-                            {
-                                let Ok(rerolled_cards_json) = serialize_invalid_approach() else {
-                                    // TODO 재시도 혹은 기타 처리
+                            if game.get_player_by_type(player_type).get().get_mulligan_state_mut().is_ready() {
+                                if send_error_and_check(&mut session, "invalid approach").await == Some(()){
                                     break;
-                                };
-
-                                let Ok(_) = session.text(rerolled_cards_json).await else {
-                                    // TODO 재시도 혹은 기타 처리
+                                }
+                            }
+                            
+                            if payload.validate(game.get_player_by_type(player_type).get().get_cards()) == None {
+                                if send_error_and_check(&mut session, "invalid cards").await == Some(()){
                                     break;
-                                };
+                                }
                             }
 
                             // 기존 카드를 덱의 최하단에 위치 시킨 뒤, 새로운 카드를 뽑아서 player 의 mulligan cards 에 저장하고 json 으로 변환하여 전송합니다.
@@ -289,7 +272,8 @@ pub async fn handle_mulligan_cards(
                                 .get_mulligan_state_mut()
                                 .is_ready()
                             {
-                                let Ok(rerolled_cards_json) = serialize_invalid_approach() else {
+                                let Ok(rerolled_cards_json) = serialize_error!("invalid approach")
+                                else {
                                     // TODO 재시도 혹은 기타 처리
                                     break;
                                 };
@@ -303,10 +287,11 @@ pub async fn handle_mulligan_cards(
                             // player 의 mulligan 상태를 완료 상태로 변경 후 상대의 mulligan 상태를 확인합니다.
                             // 만약 상대도 완료 상태이라면, mulligan step 을 종료하고 다음 step 으로 진행합니다.
 
-                            let selected_cards = match process_mulligan_completion(&mut game, player_type) {
-                                Ok(selected_cards) => selected_cards,
-                                Err(_) => break,
-                            };
+                            let selected_cards =
+                                match process_mulligan_completion(&mut game, player_type) {
+                                    Ok(selected_cards) => selected_cards,
+                                    Err(_) => break,
+                                };
 
                             if game
                                 .get_player_by_type(player.reverse())

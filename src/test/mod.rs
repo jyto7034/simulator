@@ -1,5 +1,7 @@
 use std::io::Read;
 
+use async_tungstenite::tungstenite::Message;
+use futures_util::StreamExt;
 use rand::{seq::SliceRandom, thread_rng};
 use serde_json::{json, Value};
 use tokio::sync::Mutex;
@@ -7,9 +9,10 @@ use tokio::sync::Mutex;
 use crate::{
     card::Card,
     card_gen::CardGenerator,
-    enums::{DeckCode, CARD_JSON_PATH, MAX_CARD_SIZE},
+    enums::{DeckCode, CARD_JSON_PATH, MAX_CARD_SIZE, UUID},
     server::{
         end_point::handle_mulligan_cards,
+        jsons::MulliganMessage,
         types::{ServerState, SessionKey},
     },
     utils::{json, parse_json_to_deck_code},
@@ -111,4 +114,44 @@ pub async fn spawn_server() -> (SocketAddr, Data<ServerState>, ServerHandle) {
     tokio::spawn(server);
 
     (addr, server_state_clone, handle)
+}
+
+/// ws_stream 에서 Deal 메시지를 기다리고 파싱하여 카드 리스트를 반환합니다.
+pub async fn expect_mulligan_deal_message(
+    ws_stream: &mut async_tungstenite::WebSocketStream<
+        async_tungstenite::tokio::TokioAdapter<tokio::net::TcpStream>,
+    >,
+) -> Vec<UUID> {
+    if let Some(Ok(Message::Text(text))) = ws_stream.next().await {
+        match serde_json::from_str::<MulliganMessage>(&text) {
+            Ok(MulliganMessage::Deal(data)) => data.cards,
+            Ok(other) => panic!(
+                "Expected a MulliganMessage::Deal message, but received a different variant: {:?}",
+                other
+            ),
+            Err(e) => panic!("Failed to parse the deal message JSON: {:?}", e),
+        }
+    } else {
+        panic!("Did not receive any message from the server while expecting MulliganMessage::Deal.")
+    }
+}
+
+/// ws_stream 에서 Complete 메시지를 기다리고 파싱하여 카드 리스트를 반환합니다.
+pub async fn expect_mulligan_complete_message(
+    ws_stream: &mut async_tungstenite::WebSocketStream<
+        async_tungstenite::tokio::TokioAdapter<tokio::net::TcpStream>,
+    >,
+) -> Vec<UUID> {
+    if let Some(Ok(Message::Text(text))) = ws_stream.next().await {
+        match serde_json::from_str::<MulliganMessage>(&text) {
+            Ok(MulliganMessage::Complete(data)) => data.cards,
+            Ok(other) => panic!(
+                "Expected a MulliganMessage::Complete message, but received a different variant: {:?}",
+                other
+            ),
+            Err(e) => panic!("Failed to parse the reroll answer JSON: {:?}", e),
+        }
+    } else {
+        panic!("Did not receive any message from the server while expecting MulliganMessage::Complete.")
+    }
 }
