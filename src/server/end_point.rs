@@ -35,12 +35,10 @@ impl FromRequest for AuthPlayer {
         };
         let cookie = cookie.to_string().replace("user_id=", "");
         if let Some(state) = req.app_data::<web::Data<ServerState>>() {
-            let Some(game_state) = req.cookie("game_state") else {
-                // TODO: 게임 상태가 없을 때 처리
-                return ready(Err(ServerError::CookieNotFound));
-            };
-            
-            
+            // let Some(game_state) = req.cookie("game_state") else {
+            //     // TODO: 게임 상태가 없을 때 처리
+            //     return ready(Err(ServerError::CookieNotFound));
+            // };
 
             let cookie_str = cookie.to_string();
             let p1_key = state.player_cookie.0.as_str();
