@@ -17,7 +17,7 @@ impl App {
             game: Game {
                 player1: OptArc::none(),
                 player2: OptArc::none(),
-                phase: Phase::GameStart,
+                phase: Phase::Mulligan,
                 turn: Turn::new(),
             },
         }

@@ -31,6 +31,7 @@ actix-web = "4.9.0"
 actix = "=0.13.5"
 actix-ws = "0.3.0"
 async-tungstenite = {version="0.28.2", features = ["tokio-runtime"]}
+reqwest = "0.12.12"
 
 futures-util = {version = "0.3", features = ["sink"]}
 argon2 = "0.5.3"

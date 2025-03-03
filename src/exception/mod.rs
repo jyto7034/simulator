@@ -60,13 +60,40 @@ pub enum ServerError {
     InternalServerError,
     CookieNotFound,
     ServerStateNotFound,
-    InvalidPayload
+    InvalidPayload,
 }
 
 impl From<GameError> for ServerError {
     fn from(value: GameError) -> Self {
         match value {
-            _ => ServerError::InternalServerError,
+            GameError::InvalidTargetCount => todo!(),
+            GameError::NoValidTargets => todo!(),
+            GameError::CannotActivate => todo!(),
+            GameError::DeckCodeIsMissing(player_type) => todo!(),
+            GameError::PlayerInitializeFailed => todo!(),
+            GameError::PlayerDataNotIntegrity => todo!(),
+            GameError::PathNotExist => todo!(),
+            GameError::CardsNotFound => todo!(),
+            GameError::GameInitializeFailed => todo!(),
+            GameError::DifferentCardTypes => todo!(),
+            GameError::GenerateUUIDFaild => todo!(),
+            GameError::CardNotFound => todo!(),
+            GameError::ExceededCardLimit => todo!(),
+            GameError::FailedToDrawCard => todo!(),
+            GameError::NothingToRemove => todo!(),
+            GameError::InvalidCardData => todo!(),
+            GameError::NotAuthenticated => todo!(),
+            GameError::InvalidCardType => todo!(),
+            GameError::InvalidPlayerType => todo!(),
+            GameError::InvalidOperation => todo!(),
+            GameError::JsonParseFailed => todo!(),
+            GameError::DecodeError => todo!(),
+            GameError::DeckParseError => todo!(),
+            GameError::ReadFileFailed => todo!(),
+            GameError::NoCardsLeft => todo!(),
+            GameError::NoCardLeft => todo!(),
+            GameError::CardError => todo!(),
+            GameError::Ok => todo!(),
         }
     }
 }
@@ -99,10 +126,17 @@ impl ResponseError for ServerError {
             Self::NotFound => HttpResponse::build(StatusCode::NOT_FOUND).body("Not Found"),
             Self::HandleFailed => HttpResponse::build(StatusCode::INTERNAL_SERVER_ERROR)
                 .body("An unknown error occurred"),
-            Self::InternalServerError => todo!(),
-            Self::CookieNotFound => todo!(),
-            Self::ServerStateNotFound => todo!(),
-            Self::InvalidPayload => todo!(),
+            Self::InternalServerError => {
+                HttpResponse::build(StatusCode::INTERNAL_SERVER_ERROR).body("Internal Server Error")
+            }
+            Self::CookieNotFound => {
+                HttpResponse::build(StatusCode::NOT_FOUND).body("Cookie Not Found")
+            }
+            Self::ServerStateNotFound => HttpResponse::build(StatusCode::INTERNAL_SERVER_ERROR)
+                .body("Server State Not Found"),
+            Self::InvalidPayload => {
+                HttpResponse::build(StatusCode::BAD_REQUEST).body("Invalid Payload")
+            }
         }
     }
 
@@ -112,10 +146,30 @@ impl ResponseError for ServerError {
             Self::WrongPhase(_, _) => StatusCode::INTERNAL_SERVER_ERROR,
             Self::NotFound => StatusCode::NOT_FOUND,
             Self::HandleFailed => StatusCode::INTERNAL_SERVER_ERROR,
-            Self::InternalServerError => todo!(),
-            Self::CookieNotFound => todo!(),
-            Self::ServerStateNotFound => todo!(),
-            Self::InvalidPayload => todo!(),
+            Self::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::CookieNotFound => StatusCode::NOT_FOUND,
+            Self::ServerStateNotFound => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::InvalidPayload => StatusCode::BAD_REQUEST,
+        }
+    }
+}
+
+
+#[derive(Debug, PartialEq)]
+pub enum MulliganError {
+    InvalidApproach,
+    InvalidCards,
+    WrongPhase,
+    InvalidPlayer,
+}
+
+impl fmt::Display for MulliganError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            MulliganError::InvalidApproach => write!(f, "INVALID_APPROACH"),
+            MulliganError::InvalidCards => write!(f, "INVALID_CARDS"),
+            MulliganError::WrongPhase => write!(f, "WRONG_PHASE"),
+            MulliganError::InvalidPlayer => write!(f, "INVALID_PLAYER"),
         }
     }
 }

@@ -16,44 +16,6 @@ use crate::{
     OptArc,
 };
 
-pub enum GameState{
-    Mulligan,
-    
-    // 가장 먼저 시작되는 드로우 페이즈 ( 기타 자원 등 증가함. )
-    DrawPhase,
-
-    // 메인 페이즈 진입 전 시작되는 페이즈
-    StandbyPhase,
-
-    // 메인 페이즈 개시시
-    MainPhaseStart,
-    // 메인 페이즈 개시중
-    MainPhase1,
-
-    // 배틀 페이즈 진입
-    BattlePhaseStart,
-    // 배틀 페이즈 중
-    BattleStep,
-    // 데미지 스텝 개시시
-    BattleDamageStepStart,
-    // 데미지 계산 전
-    BattleDamageStepCalculationBefore,
-    // 데미지 계산 중
-    BattleDamageStepCalculationStart,
-    // 데미지 계산 후
-    BattleDamageStepCalculationEnd,
-    // 데미지 스텝 종료시
-    BattleDamageStepEnd,
-    // 데미지 페이즈 종료
-    BattlePhaseEnd,
-
-    // 메인 페이즈2 시작
-    MainPhase2,
-
-    // 턴 종료
-    EndPhase,
-}
-
 pub struct GameConfig {
     /// Player's Deckcode
     pub player_1_deckcode: DeckCode,

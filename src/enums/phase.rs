@@ -1,6 +1,6 @@
 #[derive(Clone, PartialEq, Eq, Copy, Debug)]
 pub enum Phase {
-    GameStart,
+    Mulligan,
 
     // 가장 먼저 시작되는 드로우 페이즈 ( 기타 자원 등 증가함. )
     DrawPhase,
@@ -52,7 +52,7 @@ impl Ord for Phase {
 impl Phase {
     fn order(&self) -> u8 {
         match self {
-            Phase::GameStart => 0,
+            Phase::Mulligan => 0,
             Phase::DrawPhase => 1,
             Phase::StandbyPhase => 2,
             Phase::MainPhaseStart => 3,
@@ -170,7 +170,7 @@ impl Phase {
     /// 다음 페이즈 반환
     pub fn next_phase(&self) -> Phase {
         match self {
-            Phase::GameStart => Phase::DrawPhase,
+            Phase::Mulligan => Phase::DrawPhase,
             Phase::DrawPhase => Phase::StandbyPhase,
             Phase::StandbyPhase => Phase::MainPhaseStart,
             Phase::MainPhaseStart => Phase::MainPhase1,
@@ -188,9 +188,9 @@ impl Phase {
         }
     }
 
-    pub fn to_string(&self) -> &'static str {
+    pub fn as_str(&self) -> &'static str {
         match self {
-            Phase::GameStart => "GameStart",
+            Phase::Mulligan => "Mulligan",
             Phase::DrawPhase => "DrawPhase",
             Phase::StandbyPhase => "StandbyPhase",
             Phase::MainPhaseStart => "MainPhaseStart",

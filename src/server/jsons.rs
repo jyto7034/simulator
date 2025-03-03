@@ -1,6 +1,10 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{card::cards::{CardVecExt, Cards}, enums::UUID, exception::ServerError};
+use crate::{
+    card::cards::{CardVecExt, Cards},
+    enums::UUID,
+    exception::ServerError,
+};
 
 use super::types::ValidationPayload;
 
@@ -21,7 +25,6 @@ pub enum MulliganMessage {
     Error(ErrorPayload),
 }
 
-
 /// 각 단계에서 공통으로 사용되는 payload 구조체입니다.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct MulliganPayload {
@@ -29,14 +32,18 @@ pub struct MulliganPayload {
     pub cards: Vec<UUID>,
 }
 
-impl ValidationPayload for MulliganPayload{
+impl ValidationPayload for MulliganPayload {
     fn validate(&self, player_cards: &Cards) -> Option<()> {
         // self.cards 가 빈 경우에는 무조건 true 를 반환함.
-        if !self.cards.iter().all(|uuid| player_cards.contains_uuid(uuid.clone())){
+        if !self
+            .cards
+            .iter()
+            .all(|uuid| player_cards.contains_uuid(uuid.clone()))
+        {
             return None;
         }
 
-        if !matches!(self.player.as_str(), "player1" | "player2"){
+        if !matches!(self.player.as_str(), "player1" | "player2") {
             return None;
         }
         Some(())

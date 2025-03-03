@@ -22,6 +22,6 @@ impl ServerState {
 
 pub trait ValidationPayload {
     fn validate(&self, cards: &Cards) -> Option<()>;
-}   
+}
 
 pub struct SessionKey(pub String);
