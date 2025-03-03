@@ -29,12 +29,19 @@ impl FromRequest for AuthPlayer {
     type Error = ServerError;
     type Future = Ready<Result<Self, Self::Error>>;
 
-    fn from_request(req: &HttpRequest, _payload: &mut actix_web::dev::Payload) -> Self::Future {
+    fn from_request(req: &HttpRequest, payload: &mut actix_web::dev::Payload) -> Self::Future {
         let Some(cookie) = req.cookie("user_id") else {
             return ready(Err(ServerError::CookieNotFound));
         };
         let cookie = cookie.to_string().replace("user_id=", "");
         if let Some(state) = req.app_data::<web::Data<ServerState>>() {
+            let Some(game_state) = req.cookie("game_state") else {
+                // TODO: 게임 상태가 없을 때 처리
+                return ready(Err(ServerError::CookieNotFound));
+            };
+            
+            
+
             let cookie_str = cookie.to_string();
             let p1_key = state.player_cookie.0.as_str();
             let p2_key = state.opponent_cookie.0.as_str();
@@ -144,11 +151,13 @@ pub async fn handle_mulligan_cards(
     payload: web::Payload,
     state: web::Data<ServerState>,
 ) -> Result<HttpResponse, ServerError> {
+    // TODO: 만약 멀리건을 이미 수행한 혹은 수행 중인 플레이어가 또 다시 해당 엔드포인트에 접근하려 했을 때 에러 처리 해야함.
+
     // Http 업그레이드: 이때 session과 stream이 반환됩니다.
     let (resp, mut session, mut stream) =
         handle(&req, payload).map_err(|_| ServerError::HandleFailed)?;
     {
-        let mut game = state.game.lock().await;
+        let mut game = state.game.lock().await; 
         let player_type = player.0;
 
         // Mulligan deal 단계 수행 코드입니다.
@@ -263,8 +272,27 @@ pub async fn handle_mulligan_cards(
                             };
                         }
                         MulliganMessage::Complete(payload) => {
+                            if !matches!(payload.player.as_str(), "player1" | "player2") {
+                                if send_error_and_check(&mut session, "invalid player").await == Some(()){
+                                    break;
+                                }else{
+                                    // TODO send 재시도
+                                }
+                            }
                             let mut game = state.game.lock().await;
-                            let player_type = AuthPlayer(payload.player.into());
+                            let player_type = AuthPlayer(payload.player.clone().into());
+
+                            if game.get_player_by_type(player_type).get().get_mulligan_state_mut().is_ready() {
+                                if send_error_and_check(&mut session, "invalid approach").await == Some(()){
+                                    break;
+                                }
+                            }
+                            
+                            if payload.validate(game.get_player_by_type(player_type).get().get_cards()) == None {
+                                if send_error_and_check(&mut session, "invalid cards").await == Some(()){
+                                    break;
+                                }
+                            }
 
                             if game
                                 .get_player_by_type(player_type)
