@@ -1,10 +1,12 @@
 use std::pin::Pin;
+use std::time::Duration;
 
 use actix_web::{get, web, FromRequest, HttpRequest, HttpResponse};
 use actix_ws::{handle, Message};
 use futures_util::StreamExt;
 use std::future::Future;
 
+use crate::enums::phase::Phase;
 use crate::enums::COUNT_OF_MULLIGAN_CARDS;
 use crate::exception::MulliganError;
 use crate::serialize_error;
@@ -166,13 +168,32 @@ pub async fn handle_mulligan_cards(
     state: web::Data<ServerState>,
 ) -> Result<HttpResponse, ServerError> {
     // TODO: 만약 멀리건을 이미 수행한 혹은 수행 중인 플레이어가 또 다시 해당 엔드포인트에 접근하려 했을 때 에러 처리 해야함.
-
+    // 멀리건 수행 중 연결이 끊힌 경우, 재진입을 허용해야 하는데, 아직 뚜렷한 방법이 떠오르진 않음.
     // Http 업그레이드: 이때 session과 stream이 반환됩니다.
+
+    let player_type = player.0;
+
+    // 세션 등록 (새 세션 또는 기존 세션 ID 반환)
+    let session_id = state
+        .session_manager
+        .register_session(player_type, Phase::Mulligan)
+        .await;
+
+    // 다른 엔드포인트에 이미 유효한 세션이 있는지 확인
+    if !state
+        .session_manager
+        .is_valid_session(player_type, session_id, Phase::Mulligan)
+        .await
+    {
+        return Err(ServerError::ActiveSessionExists(
+            "Active session exists in another phase".into(),
+        ));
+    }
+
     let (resp, mut session, mut stream) =
         handle(&req, payload).map_err(|_| ServerError::HandleFailed)?;
     {
         let mut game = state.game.lock().await;
-        let player_type = player.0;
 
         // Mulligan deal 단계 수행 코드입니다.
         // 새로운 카드를 뽑아서 player 의 mulligan cards 에 저장 한 뒤, json 형태로 변환하여 전송합니다.
@@ -189,6 +210,39 @@ pub async fn handle_mulligan_cards(
             .map_err(|_| return ServerError::InternalServerError)?;
     }
 
+    {
+        let mut session_clone = session.clone();
+        let player_clone = player_type;
+        let session_id_clone = session_id;
+        let session_manager = state.session_manager.clone();
+
+        actix_web::rt::spawn(async move {
+            let mut interval = tokio::time::interval(Duration::from_secs(30));
+
+            loop {
+                interval.tick().await;
+
+                // 세션이 유효한지 확인
+                if !session_manager
+                    .is_valid_session(player_clone, session_id_clone, Phase::Mulligan)
+                    .await
+                {
+                    break;
+                }
+
+                // 하트비트 전송
+                if let Err(_) = session_clone.ping(b"heartbeat").await {
+                    break;
+                }
+            }
+
+            // 하트비트 태스크 종료시 세션 정리
+            session_manager
+                .end_session(player_clone, session_id_clone)
+                .await;
+        });
+    }
+
     // 이후, 스레드 내에서 클라이언트와의 상호작용을 계속하기 위해 필요한 state를 클론합니다.
     // WebSocket 메시지 수신 등 후속 처리는 별도 spawn된 작업에서 진행합니다.
     actix_web::rt::spawn(async move {
@@ -201,7 +255,8 @@ pub async fn handle_mulligan_cards(
                         Err(e) => {
                             // TODO 재시도 혹은 기타 처리
                             // 받은 json 이 MulliganMessage 타입이 아닌 경우.
-                            let Ok(rerolled_cards_json) = serialize_error!(MulliganError::InvalidApproach)
+                            let Ok(rerolled_cards_json) =
+                                serialize_error!(MulliganError::InvalidApproach)
                             else {
                                 // TODO 재시도 혹은 기타 처리
                                 break;
@@ -218,7 +273,8 @@ pub async fn handle_mulligan_cards(
                     match msg {
                         MulliganMessage::RerollRequest(payload) => {
                             if !matches!(payload.player.as_str(), "player1" | "player2") {
-                                if send_error_and_check(&mut session, MulliganError::InvalidPlayer).await
+                                if send_error_and_check(&mut session, MulliganError::InvalidPlayer)
+                                    .await
                                     == Some(())
                                 {
                                     break;
@@ -235,7 +291,11 @@ pub async fn handle_mulligan_cards(
                                 .get_mulligan_state_mut()
                                 .is_ready()
                             {
-                                if send_error_and_check(&mut session, MulliganError::InvalidApproach).await
+                                if send_error_and_check(
+                                    &mut session,
+                                    MulliganError::InvalidApproach,
+                                )
+                                .await
                                     == Some(())
                                 {
                                     break;
@@ -246,7 +306,8 @@ pub async fn handle_mulligan_cards(
                                 .validate(game.get_player_by_type(player_type).get().get_cards())
                                 == None
                             {
-                                if send_error_and_check(&mut session, MulliganError::InvalidCards).await
+                                if send_error_and_check(&mut session, MulliganError::InvalidCards)
+                                    .await
                                     == Some(())
                                 {
                                     break;
@@ -301,7 +362,8 @@ pub async fn handle_mulligan_cards(
                         }
                         MulliganMessage::Complete(payload) => {
                             if !matches!(payload.player.as_str(), "player1" | "player2") {
-                                if send_error_and_check(&mut session, MulliganError::InvalidPlayer).await
+                                if send_error_and_check(&mut session, MulliganError::InvalidPlayer)
+                                    .await
                                     == Some(())
                                 {
                                     break;
@@ -318,7 +380,11 @@ pub async fn handle_mulligan_cards(
                                 .get_mulligan_state_mut()
                                 .is_ready()
                             {
-                                if send_error_and_check(&mut session, MulliganError::InvalidApproach).await
+                                if send_error_and_check(
+                                    &mut session,
+                                    MulliganError::InvalidApproach,
+                                )
+                                .await
                                     == Some(())
                                 {
                                     break;
@@ -329,7 +395,8 @@ pub async fn handle_mulligan_cards(
                                 .validate(game.get_player_by_type(player_type).get().get_cards())
                                 == None
                             {
-                                if send_error_and_check(&mut session, MulliganError::InvalidCards).await
+                                if send_error_and_check(&mut session, MulliganError::InvalidCards)
+                                    .await
                                     == Some(())
                                 {
                                     break;
@@ -342,7 +409,8 @@ pub async fn handle_mulligan_cards(
                                 .get_mulligan_state_mut()
                                 .is_ready()
                             {
-                                let Ok(rerolled_cards_json) = serialize_error!(MulliganError::InvalidApproach)
+                                let Ok(rerolled_cards_json) =
+                                    serialize_error!(MulliganError::InvalidApproach)
                                 else {
                                     // TODO 재시도 혹은 기타 처리
                                     break;

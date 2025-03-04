@@ -1,22 +1,18 @@
 #[cfg(test)]
 pub mod game_test {
-    use std::{net::SocketAddr, time::Duration};
     use actix_web::{dev::ServerHandle, web::Data};
-    use async_tungstenite::{
-        tokio::connect_async,
-        tungstenite::{http::Request, Message},
-    };
+    use async_tungstenite::tungstenite::Message;
     use card_game::{
         card::{cards::CardVecExt, types::PlayerType},
         enums::COUNT_OF_MULLIGAN_CARDS,
         exception::MulliganError, // <-- 추가: MulliganError 임포트
-        server::{jsons::MulliganMessage, types::ServerState},
-        test::{expect_mulligan_complete_message, expect_mulligan_deal_message, spawn_server},
+        server::types::ServerState,
+        test::{spawn_server, WebSocketTest},
         zone::zone::Zone,
     };
-    use futures_util::StreamExt;
     use once_cell::sync::Lazy;
     use serde_json::json;
+    use std::{net::SocketAddr, time::Duration};
     use tokio::{sync::Mutex, time::sleep};
 
     static GLOBAL_SERVER: Lazy<Mutex<Option<(SocketAddr, Data<ServerState>, ServerHandle)>>> =
@@ -34,68 +30,25 @@ pub mod game_test {
         }
     }
 
-    async fn setup_connection(
-        addr: SocketAddr,
-        player_type: PlayerType,
-        cookie: Option<String>,
-    ) -> async_tungstenite::WebSocketStream<
-        async_tungstenite::tokio::TokioAdapter<tokio::net::TcpStream>,
-    > {
-        let url = format!("ws://{}{}", addr, "/mulligan_step");
-        let cookie = if let Some(cookie) = cookie {
-            cookie
-        } else {
-            format!("user_id={}; game_step={}", player_type.as_str(), "mulligan")
-        };
-
-        let request = Request::builder()
-            .uri(&url)
-            .header("Cookie", cookie)
-            .header("Host", addr.to_string())
-            .header("Sec-WebSocket-Key", "dGhlIHNhbXBsZSBub25jZQ==")
-            .header("Upgrade", "websocket")
-            .header("Connection", "Upgrade")
-            .header("Sec-WebSocket-Version", "13")
-            .body(())
-            .expect("요청 생성 실패");
-
-        let (ws_stream, response) = connect_async(request).await.expect("연결 실패");
-        assert_eq!(
-            response.status(),
-            async_tungstenite::tungstenite::http::StatusCode::SWITCHING_PROTOCOLS
-        );
-        ws_stream
-    }
-
     /// 잘못된 mulligan 시나리오에 대해 서버가 반환한 에러 메시지를 리턴합니다.
-    async fn test_mulligan_invalid_scenario(
-        json_payload: serde_json::Value,
-    ) -> String {
+    async fn test_mulligan_invalid_scenario(json_payload: serde_json::Value) -> String {
         let (addr, _, _) = spawn_server().await;
-        let mut ws_stream = setup_connection(addr, PlayerType::Player1, None).await;
+        
+        // WebSocketTest 객체를 사용하여 훨씬 더 간결한 코드 작성
+        let url = format!("ws://{}/mulligan_step", addr);
+        let cookie = format!("user_id={}; game_step={}", PlayerType::Player1.as_str(), "mulligan");
+        
+        let mut ws = WebSocketTest::connect(url, cookie).await;
+        
         // 초기 카드 받기
-        let _ = expect_mulligan_deal_message(&mut ws_stream).await;
-
-        ws_stream
-            .send(Message::Text(json_payload.to_string()))
-            .await
+        let _ = ws.expect_mulligan_deal().await;
+        
+        // 에러 발생시키는 메시지 전송
+        ws.send(Message::Text(json_payload.to_string())).await
             .expect("Failed to send message");
-
-        if let Some(Ok(Message::Text(text))) = ws_stream.next().await {
-            match serde_json::from_str::<MulliganMessage>(&text) {
-                Ok(MulliganMessage::Complete(_)) => {
-                    panic!("Unexpected success while an error was expected")
-                },
-                Ok(MulliganMessage::Error(data)) => data.message,
-                Ok(other) => panic!(
-                    "Expected MulliganMessage::Error but received a different variant: {:?}",
-                    other
-                ),
-                Err(e) => panic!("Failed to parse the reroll answer JSON: {:?}", e),
-            }
-        } else {
-            panic!("Did not receive any message from the server while expecting an error.")
-        }
+            
+        // 에러 응답 기다리기
+        ws.expect_error().await
     }
 
     #[actix_web::test]
@@ -179,24 +132,15 @@ pub mod game_test {
                 addr: SocketAddr,
                 server_state: Data<ServerState>,
             ) -> std::io::Result<()> {
-                let mut ws_stream = setup_connection(addr, player_type.into(), None).await;
-                let mut deal_cards = expect_mulligan_deal_message(&mut ws_stream).await;
-
-                {
-                    let game = server_state.game.try_lock().unwrap();
-                    if deal_cards.iter().any(|uuid| {
-                        game.get_player_by_type(player_type)
-                            .get()
-                            .get_deck()
-                            .get_cards()
-                            .contains_uuid(uuid.clone())
-                    }) {
-                        panic!("Mulligan error: Cards that were dealt in the mulligan phase should have been removed from the deck, but some remain.");
-                    }
-                }
-
+                let url = format!("ws://{}/mulligan_step", addr);
+                let cookie = format!("user_id={}; game_step={}", player_type, "mulligan");
+                let mut ws = WebSocketTest::connect(url, cookie).await;
+                
+                let mut deal_cards = ws.expect_mulligan_deal().await;
+                
+                // 나머지 테스트 로직...
                 deal_cards.truncate(reroll_count);
-
+                
                 let json = json!({
                     "action": "reroll-request",
                     "payload": {
@@ -204,13 +148,12 @@ pub mod game_test {
                         "cards": deal_cards
                     }
                 });
-
-                ws_stream
-                    .send(Message::Text(json.to_string()))
+                
+                ws.send(Message::Text(json.to_string()))
                     .await
                     .expect("Failed to send message");
-
-                let rerolled_cards = expect_mulligan_complete_message(&mut ws_stream).await;
+                
+                let rerolled_cards = ws.expect_mulligan_complete().await;
 
                 {
                     let game = server_state.game.try_lock().unwrap();

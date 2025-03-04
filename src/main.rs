@@ -3,7 +3,9 @@ use std::io::Write;
 use std::path::Path;
 
 use actix_web::{web, App, HttpServer};
+use card_game::enums::TIMEOUT;
 use card_game::server::end_point::handle_mulligan_cards;
+use card_game::server::session::PlayerSessionManager;
 use tokio::sync::Mutex;
 use tracing::Level;
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
@@ -126,6 +128,7 @@ async fn main() -> std::io::Result<()> {
         game: Mutex::new(app.game),
         player_cookie: session_keys.0,
         opponent_cookie: session_keys.1,
+        session_manager: PlayerSessionManager::new(TIMEOUT),
     });
 
     setup_logger();

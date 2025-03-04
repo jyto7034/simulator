@@ -230,7 +230,7 @@ pub enum OwnerType {
     None,     // 소유자 없음
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Hash)]
 pub enum PlayerType {
     Player1,
     Player2,

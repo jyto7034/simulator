@@ -2,10 +2,13 @@ use tokio::sync::Mutex;
 
 use crate::{card::cards::Cards, game::Game, test::create_server_state};
 
+use super::session::PlayerSessionManager;
+
 pub struct ServerState {
     pub game: Mutex<Game>,
     pub player_cookie: SessionKey,
     pub opponent_cookie: SessionKey,
+    pub session_manager: PlayerSessionManager,
 }
 
 impl ServerState {

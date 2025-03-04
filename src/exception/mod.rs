@@ -61,6 +61,7 @@ pub enum ServerError {
     CookieNotFound,
     ServerStateNotFound,
     InvalidPayload,
+    ActiveSessionExists(String),
 }
 
 impl From<GameError> for ServerError {
@@ -109,6 +110,7 @@ impl fmt::Display for ServerError {
             Self::CookieNotFound => todo!(),
             Self::ServerStateNotFound => todo!(),
             Self::InvalidPayload => todo!(),
+            Self::ActiveSessionExists(_) => todo!(),
         }
     }
 }
@@ -137,6 +139,7 @@ impl ResponseError for ServerError {
             Self::InvalidPayload => {
                 HttpResponse::build(StatusCode::BAD_REQUEST).body("Invalid Payload")
             }
+            Self::ActiveSessionExists(_) => todo!(),
         }
     }
 
@@ -150,10 +153,10 @@ impl ResponseError for ServerError {
             Self::CookieNotFound => StatusCode::NOT_FOUND,
             Self::ServerStateNotFound => StatusCode::INTERNAL_SERVER_ERROR,
             Self::InvalidPayload => StatusCode::BAD_REQUEST,
+            Self::ActiveSessionExists(_) => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 }
-
 
 #[derive(Debug, PartialEq)]
 pub enum MulliganError {

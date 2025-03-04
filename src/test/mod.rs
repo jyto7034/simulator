@@ -1,18 +1,20 @@
-use std::io::Read;
+use std::{io::Read, time::Duration};
 
-use async_tungstenite::tungstenite::Message;
+use async_tungstenite::{tokio::{connect_async, TokioAdapter}, tungstenite::{self, http::Request, Message}, WebSocketStream};
 use futures_util::StreamExt;
 use rand::{seq::SliceRandom, thread_rng};
+use serde::de::DeserializeOwned;
 use serde_json::{json, Value};
-use tokio::sync::Mutex;
+use tokio::{net::TcpStream, sync::Mutex};
 
 use crate::{
     card::Card,
     card_gen::CardGenerator,
-    enums::{DeckCode, CARD_JSON_PATH, MAX_CARD_SIZE, UUID},
+    enums::{DeckCode, CARD_JSON_PATH, MAX_CARD_SIZE, TIMEOUT, UUID},
     server::{
         end_point::handle_mulligan_cards,
         jsons::MulliganMessage,
+        session::PlayerSessionManager,
         types::{ServerState, SessionKey},
     },
     utils::{json, parse_json_to_deck_code},
@@ -89,6 +91,7 @@ pub fn create_server_state() -> web::Data<ServerState> {
         game: Mutex::new(app.game),
         player_cookie: SessionKey("player1".to_string()),
         opponent_cookie: SessionKey("player2".to_string()),
+        session_manager: PlayerSessionManager::new(TIMEOUT),
     })
 }
 
@@ -122,17 +125,38 @@ pub async fn expect_mulligan_deal_message(
         async_tungstenite::tokio::TokioAdapter<tokio::net::TcpStream>,
     >,
 ) -> Vec<UUID> {
-    if let Some(Ok(Message::Text(text))) = ws_stream.next().await {
-        match serde_json::from_str::<MulliganMessage>(&text) {
-            Ok(MulliganMessage::Deal(data)) => data.cards,
-            Ok(other) => panic!(
-                "Expected a MulliganMessage::Deal message, but received a different variant: {:?}",
-                other
-            ),
-            Err(e) => panic!("Failed to parse the deal message JSON: {:?}", e),
+    let timeout = tokio::time::timeout(Duration::from_secs(5), 
+async{
+    loop{
+        if let Some(msg) = ws_stream.next().await{
+            match msg{
+                Ok(Message::Text(text)) => {
+                    match serde_json::from_str::<MulliganMessage>(&text) {
+                        Ok(MulliganMessage::Deal(data)) => {
+                            return data.cards
+                        }
+                        Ok(other) => panic!(
+                            "Expected a MulliganMessage::Deal message, but received a different variant: {:?}",
+                            other
+                        ),
+                        Err(e) => panic!("Failed to parse the deal message JSON: {:?}", e),
+                    }
+                },
+                Ok(Message::Ping(_)) => {
+                    ws_stream.send(Message::Pong(vec![])).await.ok();
+                    continue;
+                },
+                Ok(_) => continue,
+                Err(_) => panic!("WebSocket error"),
+            }
         }
-    } else {
-        panic!("Did not receive any message from the server while expecting MulliganMessage::Deal.")
+    }
+}).await;
+    match timeout {
+        Ok(cards) => cards,
+        Err(_) => panic!(
+            "Did not receive any message from the server while expecting MulliganMessage::Deal."
+        ),
     }
 }
 
@@ -142,16 +166,141 @@ pub async fn expect_mulligan_complete_message(
         async_tungstenite::tokio::TokioAdapter<tokio::net::TcpStream>,
     >,
 ) -> Vec<UUID> {
-    if let Some(Ok(Message::Text(text))) = ws_stream.next().await {
-        match serde_json::from_str::<MulliganMessage>(&text) {
-            Ok(MulliganMessage::Complete(data)) => data.cards,
-            Ok(other) => panic!(
-                "Expected a MulliganMessage::Complete message, but received a different variant: {:?}",
-                other
-            ),
-            Err(e) => panic!("Failed to parse the reroll answer JSON: {:?}", e),
+    // 타임아웃 설정
+    let timeout = tokio::time::timeout(
+        std::time::Duration::from_secs(5),
+        async {
+            // 원하는 메시지가 올 때까지 계속 메시지를 받습니다
+            loop {
+                if let Some(msg) = ws_stream.next().await {
+                    match msg {
+                        Ok(Message::Text(text)) => {
+                            match serde_json::from_str::<MulliganMessage>(&text) {
+                                Ok(MulliganMessage::Complete(data)) => {
+                                    return data.cards
+                                }
+                                Ok(other) => panic!(
+                                    "Expected a MulliganMessage::Complete message, but received a different variant: {:?}",
+                                    other
+                                ),
+                                Err(e) => panic!("Failed to parse the reroll answer JSON: {:?}", e),
+                            }
+                        }
+                        // ping, pong, binary 등 다른 메시지 타입은 무시
+                        Ok(Message::Ping(_)) => {
+                            // ping 메시지에 자동으로 pong 응답
+                            ws_stream.send(Message::Pong(vec![])).await.ok();
+                            continue;
+                        }
+                        Ok(_) => continue,
+                        Err(_) => panic!("WebSocket error"),
+                    }
+                }
+            }
         }
-    } else {
-        panic!("Did not receive any message from the server while expecting MulliganMessage::Complete.")
+    ).await;
+
+    match timeout {
+        Ok(cards) => cards,
+        Err(_) => panic!("Did not receive any message from the server while expecting MulliganMessage::Complete."),
+    }
+}
+
+
+pub struct WebSocketTest {
+    stream: WebSocketStream<TokioAdapter<TcpStream>>,
+}
+
+impl WebSocketTest {
+    /// 웹소켓 연결을 생성하고 래퍼 객체를 반환합니다
+    pub async fn connect(url: String, cookie: String) -> Self {
+        let request = Request::builder()
+            .uri(&url)
+            .header("Cookie", cookie)
+            .header("Host", url.split('/').nth(2).unwrap_or("localhost"))
+            .header("Sec-WebSocket-Key", "dGhlIHNhbXBsZSBub25jZQ==")
+            .header("Upgrade", "websocket")
+            .header("Connection", "Upgrade")
+            .header("Sec-WebSocket-Version", "13")
+            .body(())
+            .expect("요청 생성 실패");
+
+        let (stream, response) = connect_async(request).await.expect("연결 실패");
+        assert_eq!(
+            response.status(),
+            tungstenite::http::StatusCode::SWITCHING_PROTOCOLS
+        );
+
+        Self { stream }
+    }
+    
+    /// 메시지를 전송합니다
+    pub async fn send(&mut self, msg: impl Into<Message>) -> Result<(), tungstenite::Error> {
+        self.stream.send(msg.into()).await
+    }
+    
+    /// 특정 타입의 메시지가 도착할 때까지 대기하고, 다른 메시지(ping 포함)는 적절히 처리합니다
+    pub async fn expect_message<T, F, R>(&mut self, extractor: F) -> R
+    where
+        T: DeserializeOwned,
+        F: Fn(T) -> R,
+    {
+        match tokio::time::timeout(
+            Duration::from_secs(TIMEOUT),
+            async {
+                loop {
+                    match self.stream.next().await {
+                        Some(Ok(Message::Text(text))) => {
+                            if let Ok(parsed) = serde_json::from_str::<T>(&text) {
+                                return extractor(parsed);
+                            }
+                        }
+                        Some(Ok(Message::Ping(data))) => {
+                            self.stream.send(Message::Pong(data)).await.ok();
+                        }
+                        Some(Ok(_)) => {}
+                        Some(Err(e)) => panic!("WebSocket error: {:?}", e),
+                        None => panic!("WebSocket closed unexpectedly"),
+                    }
+                }
+            }
+        ).await {
+            Ok(result) => result,
+            Err(_) => panic!("Expected message timeout after 5 seconds"),
+        }
+    }
+
+    /// 멀리건 딜 메시지를 기다리고 카드 ID 리스트를 반환합니다
+    pub async fn expect_mulligan_deal(&mut self) -> Vec<UUID> {
+        self.expect_message(|message: MulliganMessage| {
+            match message {
+                MulliganMessage::Deal(data) => {
+                    data.cards
+                }
+                other => panic!("Expected MulliganMessage::Deal but got: {:?}", other),
+            }
+        }).await
+    }
+
+    /// 멀리건 완료 메시지를 기다리고 카드 ID 리스트를 반환합니다
+    pub async fn expect_mulligan_complete(&mut self) -> Vec<UUID> {
+        self.expect_message(|message: MulliganMessage| {
+            match message {
+                MulliganMessage::Complete(data) => {
+                    data.cards
+                }
+                other => panic!("Expected MulliganMessage::Complete but got: {:?}", other),
+            }
+        }).await
+    }
+
+    /// 에러 메시지를 기다리고 에러 문자열을 반환합니다
+    pub async fn expect_error(&mut self) -> String {
+        self.expect_message(|message: MulliganMessage| {
+            match message {
+                MulliganMessage::Error(data) => data.message,
+                other => panic!("Expected MulliganMessage::Error but got: {:?}", other),
+            }
+        }).await
     }
 }
