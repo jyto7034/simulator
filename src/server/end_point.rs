@@ -7,7 +7,7 @@ use futures_util::StreamExt;
 use std::future::Future;
 
 use crate::enums::phase::Phase;
-use crate::enums::COUNT_OF_MULLIGAN_CARDS;
+use crate::enums::{COUNT_OF_MULLIGAN_CARDS, TIMEOUT};
 use crate::exception::{MessageProcessResult, MulliganError};
 use crate::serialize_error;
 use crate::server::helper::{process_mulligan_completion, send_error_and_check, MessageHandler};
@@ -161,7 +161,7 @@ impl From<AuthPlayer> for String {
 // TODO: 각 에러 처리 분명히 해야함.
 // TODO: 네트워크 이슈가 발생하여 재연결이 필요한 경우 처리가 필요함.
 #[get("/mulligan_step")]
-pub async fn handle_mulligan_cards(
+pub async fn handle_mulligan(
     player: AuthPlayer,
     req: HttpRequest,
     payload: web::Payload,
@@ -217,8 +217,9 @@ pub async fn handle_mulligan_cards(
     let heartbeat_session_manager = state.session_manager.clone();
 
     // TODO: 멀리건의 경우 플레이어가 생각하는 시간이 N초 존재하므로, 하트비트의 타임아웃 부분을 수정해야할 듯 함
+    // TODO: Heartbeat 타임아웃 시, session 객체를 연결을 종료해야함.
     actix_web::rt::spawn(async move {
-        let mut interval = tokio::time::interval(Duration::from_secs(5));
+        let mut interval = tokio::time::interval(Duration::from_secs(TIMEOUT));
 
         loop {
             interval.tick().await;
@@ -241,6 +242,9 @@ pub async fn handle_mulligan_cards(
         heartbeat_session_manager
             .end_session(player_type, heartbeat_session_id)
             .await;
+
+        // TODO: 우아하게 종료해야함.
+        session_clone.close(None).await.ok();
     });
 
     let mulligan_session_manager = state.session_manager.clone();
@@ -254,7 +258,8 @@ pub async fn handle_mulligan_cards(
             match data {
                 // 클라이언트에서 받은 메시지를 분석합니다.
                 Ok(Message::Text(json)) => {
-                    let result = handler.process_message::<mulligan::ClientMessage>(
+                    let result = handler
+                        .process_message::<mulligan::ClientMessage>(
                             &mut session,
                             &json,
                             mulligan_session_id,
@@ -265,7 +270,6 @@ pub async fn handle_mulligan_cards(
                     match result {
                         MessageProcessResult::Success(msg) => {
                             match msg {
-                                
                                 mulligan::ClientMessage::RerollRequest(payload) => {
                                     if !matches!(payload.player.as_str(), "player1" | "player2") {
                                         if send_error_and_check(
@@ -317,7 +321,6 @@ pub async fn handle_mulligan_cards(
                                             break;
                                         }
                                     }
-                                    
 
                                     // 기존 카드를 덱의 최하단에 위치 시킨 뒤, 새로운 카드를 뽑아서 player 의 mulligan cards 에 저장하고 json 으로 변환하여 전송합니다.
                                     let Ok(rerolled_card) = game
@@ -358,7 +361,8 @@ pub async fn handle_mulligan_cards(
 
                                     // ?? complete -> deal 로 변경되어 있음.
                                     // git 내역 확인해서 어디서부터 변경되어 있는지, 어떤 이유로 되어있었는지 확인해야함.
-                                    let Ok(rerolled_cards_json) = serialize_complete_message(player_type, rerolled_card)
+                                    let Ok(rerolled_cards_json) =
+                                        serialize_complete_message(player_type, rerolled_card)
                                     else {
                                         // TODO 재시도 혹은 기타 처리
                                         break;
@@ -477,11 +481,8 @@ pub async fn handle_mulligan_cards(
                         }
                         MessageProcessResult::NeedRetry => {
                             // TODO: 코드가 좀 장황함 매크로 작성해야할듯
-                            if send_error_and_check(
-                                &mut session,
-                                MulliganError::InvalidApproach,
-                            )
-                            .await
+                            if send_error_and_check(&mut session, MulliganError::InvalidApproach)
+                                .await
                                 == Some(())
                             {
                                 break;
@@ -489,7 +490,7 @@ pub async fn handle_mulligan_cards(
                                 // TODO send 재시도
                             }
                             continue;
-                        },
+                        }
                         MessageProcessResult::TerminateSession(server_error) => {
                             mulligan_session_manager
                                 .end_session(player_type, heartbeat_session_id)
@@ -506,6 +507,39 @@ pub async fn handle_mulligan_cards(
             }
         }
     });
+
+    Ok(resp)
+}
+
+#[get("/draw_step")]
+pub async fn handle_draw(
+    player: AuthPlayer,
+    req: HttpRequest,
+    payload: web::Payload,
+    state: web::Data<ServerState>,
+) -> Result<HttpResponse, ServerError> {
+    let player_type = player.0;
+
+    // 세션 등록 (새 세션 또는 기존 세션 ID 반환)
+    let session_id = state
+        .session_manager
+        .register_session(player_type, Phase::Mulligan)
+        .await;
+
+    // 다른 엔드포인트에 이미 유효한 세션이 있는지 확인
+    if !state
+        .session_manager
+        .is_valid_session(player_type, session_id, Phase::Mulligan)
+        .await
+    {
+        return Err(ServerError::ActiveSessionExists(
+            "Active session exists in another phase".into(),
+        ));
+    }
+
+    // Http 업그레이드: 이때 session과 stream이 반환됩니다.
+    let (resp, mut session, mut stream) =
+        handle(&req, payload).map_err(|_| ServerError::HandleFailed)?;
 
     Ok(resp)
 }

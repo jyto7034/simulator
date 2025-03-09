@@ -16,7 +16,7 @@ use crate::{
     card_gen::CardGenerator,
     enums::{DeckCode, CARD_JSON_PATH, MAX_CARD_SIZE, TIMEOUT, UUID},
     server::{
-        end_point::handle_mulligan_cards,
+        end_point::handle_mulligan,
         jsons::mulligan,
         session::PlayerSessionManager,
         types::{ServerState, SessionKey},
@@ -111,7 +111,7 @@ pub async fn spawn_server() -> (SocketAddr, Data<ServerState>, ServerHandle) {
     let server = HttpServer::new(move || {
         App::new()
             .app_data(server_state.clone())
-            .service(handle_mulligan_cards)
+            .service(handle_mulligan)
     })
     .listen(listener)
     .unwrap()
@@ -286,7 +286,8 @@ impl WebSocketTest {
     /// 멀리건 완료 메시지를 기다리고 카드 ID 리스트를 반환합니다
     pub async fn expect_mulligan_complete(&mut self) -> Vec<UUID> {
         // TODO: 다른 expect 함수들도 가독성 수정해야함.
-        let extractor = |message: mulligan::ClientMessage| match message {
+        let extractor = |message: mulligan::ClientMessage| 
+        match message {
             mulligan::ClientMessage::Complete(data) => data.cards,
             other => panic!("Expected MulliganMessage::Complete but got: {:?}", other),
         };

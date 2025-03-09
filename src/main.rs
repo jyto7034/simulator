@@ -4,7 +4,7 @@ use std::path::Path;
 
 use actix_web::{web, App, HttpServer};
 use card_game::enums::TIMEOUT;
-use card_game::server::end_point::handle_mulligan_cards;
+use card_game::server::end_point::{handle_draw, handle_mulligan};
 use card_game::server::session::PlayerSessionManager;
 use tokio::sync::Mutex;
 use tracing::Level;
@@ -135,7 +135,8 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(state.clone())
-            .service(handle_mulligan_cards)
+            .service(handle_mulligan)
+            .service(handle_draw)
     })
     .bind("127.0.0.1:8080")?
     .run()

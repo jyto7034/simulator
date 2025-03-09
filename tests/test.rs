@@ -4,8 +4,8 @@ pub mod game_test {
     use async_tungstenite::tungstenite::Message;
     use card_game::{
         card::{cards::CardVecExt, types::PlayerType},
-        enums::COUNT_OF_MULLIGAN_CARDS,
-        exception::MulliganError, // <-- 추가: MulliganError 임포트
+        enums::{COUNT_OF_MULLIGAN_CARDS, TIMEOUT},
+        exception::MulliganError,
         server::types::ServerState,
         test::{spawn_server, WebSocketTest},
         zone::zone::Zone,
@@ -127,12 +127,44 @@ pub mod game_test {
         assert_eq!(error_message, MulliganError::WrongPhase.to_string());
     }
 
-    // TODO: Heartbeat 테스트 추가
+    /// timeout 을 임의로 발생시켜서 잘 처리가 되는지 확인합니다
     #[actix_web::test]
     #[should_panic]
-    async fn test_mulligan_heartbeat_timeout(){
+    async fn test_mulligan_heartbeat_timeout() {
+        let (addr, _, _) = spawn_server().await;
+        let player_type = PlayerType::Player1.as_str();
 
-    } 
+        // WebSocketTest 객체를 사용하여 훨씬 더 간결한 코드 작성
+        let url = format!("ws://{}/mulligan_step", addr);
+        let cookie = format!(
+            "user_id={}; game_step={}",
+            PlayerType::Player1.as_str(),
+            "mulligan"
+        );
+
+        let mut ws = WebSocketTest::connect(url, cookie).await;
+
+        // 초기 카드 받기
+        let deal_cards = ws.expect_mulligan_deal().await;
+
+        // Heartbeat timeout 대기
+        println!("Waiting for heartbeat timeout...");
+        tokio::time::sleep(Duration::from_secs(TIMEOUT + 1)).await;
+
+        let json = json!({
+            "action": "reroll-request",
+            "payload": {
+            "player": player_type,
+            "cards": deal_cards
+            }
+        });
+
+        ws.send(Message::Text(json.to_string()))
+            .await
+            .expect("Failed to send message");
+
+        let _ = ws.expect_mulligan_complete().await;
+    }
 
     #[actix_web::test]
     async fn test_mulligan_reroll_restore_variants() -> std::io::Result<()> {
@@ -163,7 +195,7 @@ pub mod game_test {
                 ws.send(Message::Text(json.to_string()))
                     .await
                     .expect("Failed to send message");
-                
+
                 let rerolled_cards = ws.expect_mulligan_complete().await;
 
                 {
