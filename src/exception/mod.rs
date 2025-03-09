@@ -58,10 +58,12 @@ pub enum ServerError {
     WrongPhase(String, String),
     HandleFailed,
     InternalServerError,
+    UnexpectedMessage,
     CookieNotFound,
     ServerStateNotFound,
     InvalidPayload,
     ActiveSessionExists(String),
+    ParseError(String),
 }
 
 impl From<GameError> for ServerError {
@@ -111,6 +113,8 @@ impl fmt::Display for ServerError {
             Self::ServerStateNotFound => todo!(),
             Self::InvalidPayload => todo!(),
             Self::ActiveSessionExists(_) => todo!(),
+            Self::ParseError(_) => todo!(),
+            Self::UnexpectedMessage => todo!(),
         }
     }
 }
@@ -140,6 +144,8 @@ impl ResponseError for ServerError {
                 HttpResponse::build(StatusCode::BAD_REQUEST).body("Invalid Payload")
             }
             Self::ActiveSessionExists(_) => todo!(),
+            Self::ParseError(_) => todo!(),
+            Self::UnexpectedMessage => todo!(),
         }
     }
 
@@ -154,16 +160,20 @@ impl ResponseError for ServerError {
             Self::ServerStateNotFound => StatusCode::INTERNAL_SERVER_ERROR,
             Self::InvalidPayload => StatusCode::BAD_REQUEST,
             Self::ActiveSessionExists(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::ParseError(_) => todo!(),
+            Self::UnexpectedMessage => todo!(),
         }
     }
 }
 
-#[derive(Debug, PartialEq)]
+// TODO: Server 에러에다가 편입시켜야함.
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum MulliganError {
     InvalidApproach,
     InvalidCards,
     WrongPhase,
     InvalidPlayer,
+    ParseError,
 }
 
 impl fmt::Display for MulliganError {
@@ -173,6 +183,13 @@ impl fmt::Display for MulliganError {
             MulliganError::InvalidCards => write!(f, "INVALID_CARDS"),
             MulliganError::WrongPhase => write!(f, "WRONG_PHASE"),
             MulliganError::InvalidPlayer => write!(f, "INVALID_PLAYER"),
+            MulliganError::ParseError => write!(f, "PARSE_ERROR"),
         }
     }
+}
+
+pub enum MessageProcessResult<T> {
+    Success(T),                    // 성공적으로 메시지 처리
+    NeedRetry,                     // 에러가 발생했지만 재시도 가능
+    TerminateSession(ServerError), // 세션 종료 필요
 }

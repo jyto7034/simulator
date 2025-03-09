@@ -1,92 +1,159 @@
-use serde::{Deserialize, Serialize};
+use std::any::Any;
 
 use crate::{
     card::cards::{CardVecExt, Cards},
     enums::UUID,
     exception::ServerError,
 };
+use serde::{Deserialize, Serialize};
 
-use super::types::ValidationPayload;
+/// 모든 메시지 페이로드가 구현해야 하는 기본 트레이트
+pub trait MessagePayload: Serialize + for<'de> Deserialize<'de> + Clone + std::fmt::Debug {}
 
-/// 공통 메시지 envelope를 정의합니다.
-/// serde의 내부 태그 기능을 이용해, action에 따라 다른 payload를 선택합니다.
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(tag = "action", content = "payload")]
-pub enum MulliganMessage {
-    #[serde(rename = "deal")]
-    Deal(MulliganPayload),
-    #[serde(rename = "reroll-request")]
-    RerollRequest(MulliganPayload),
-    #[serde(rename = "reroll-answer")]
-    RerollAnswer(MulliganPayload),
-    #[serde(rename = "complete")]
-    Complete(MulliganPayload),
-    #[serde(rename = "error")]
-    Error(ErrorPayload),
+/// 모든 검증 가능한 페이로드가 구현해야 하는 트레이트
+pub trait ValidationPayload {
+    fn validate(&self, context: &dyn Any) -> Option<()>;
 }
 
-/// 각 단계에서 공통으로 사용되는 payload 구조체입니다.
-#[derive(Serialize, Deserialize, Debug)]
-pub struct MulliganPayload {
-    pub player: String,
-    pub cards: Vec<UUID>,
-}
+/// 모든 메시지가 구현해야 하는 마커 트레이트
+// 서버와 클라이언트의 json 구조체가 분리된 시점에서 불필요할 수 도 있음.
+pub trait Message: Serialize + for<'de> Deserialize<'de> + std::fmt::Debug {}
 
-impl ValidationPayload for MulliganPayload {
-    fn validate(&self, player_cards: &Cards) -> Option<()> {
-        // self.cards 가 빈 경우에는 무조건 true 를 반환함.
-        if !self
-            .cards
-            .iter()
-            .all(|uuid| player_cards.contains_uuid(uuid.clone()))
-        {
-            return None;
-        }
+//------------------------------------------------------------------------------
+// 멀리건 관련 메시지 정의
+//------------------------------------------------------------------------------
+pub mod mulligan {
+    use super::*;
 
-        if !matches!(self.player.as_str(), "player1" | "player2") {
-            return None;
+    /// 멀리건 관련 페이로드
+    #[derive(Serialize, Deserialize, Debug, Clone)]
+    pub struct MulliganPayload {
+        pub player: String,
+        pub cards: Vec<UUID>,
+    }
+
+    impl MessagePayload for MulliganPayload {}
+
+    impl ValidationPayload for MulliganPayload {
+        fn validate(&self, context: &dyn Any) -> Option<()> {
+            if let Some(player_cards) = context.downcast_ref::<Cards>() {
+                // self.cards가 비어 있으면 무조건 유효함
+                if self.cards.is_empty() {
+                    return Some(());
+                }
+
+                // 카드 UUID 유효성 검사
+                if !self
+                    .cards
+                    .iter()
+                    .all(|uuid| player_cards.contains_uuid(uuid.clone()))
+                {
+                    return None;
+                }
+
+                // 플레이어 ID 유효성 검사
+                if !matches!(self.player.as_str(), "player1" | "player2") {
+                    return None;
+                }
+
+                Some(())
+            } else {
+                None // 잘못된 컨텍스트 타입
+            }
         }
-        Some(())
+    }
+
+    #[derive(Serialize, Deserialize, Debug, Clone)]
+    pub struct ErrorPayload {
+        pub message: String,
+    }
+
+    impl MessagePayload for ErrorPayload {}
+
+    /// 클라이언트에서 서버로 전송되는 멀리건 메시지
+    #[derive(Serialize, Deserialize, Debug)]
+    #[serde(tag = "action", content = "payload")]
+    pub enum ClientMessage {
+        #[serde(rename = "reroll-request")]
+        RerollRequest(MulliganPayload),
+        #[serde(rename = "complete")]
+        Complete(MulliganPayload),
+    }
+
+    impl Message for ClientMessage {}
+
+    /// 서버에서 클라이언트로 전송되는 멀리건 메시지
+    #[derive(Serialize, Deserialize, Debug)]
+    #[serde(tag = "action", content = "payload")]
+    pub enum ServerMessage {
+        #[serde(rename = "deal")]
+        Deal(MulliganPayload),
+        #[serde(rename = "reroll-answer")]
+        RerollAnswer(MulliganPayload),
+        #[serde(rename = "error")]
+        Error(ErrorPayload),
+    }
+
+    impl Message for ServerMessage {}
+
+    /// 서버에서 클라이언트로 특정 카드들을 제공하는 메시지를 직렬화합니다.
+    pub fn serialize_deal_message<T: Into<String>>(
+        player: T,
+        cards: Vec<UUID>,
+    ) -> Result<String, ServerError> {
+        let message = ServerMessage::Deal(MulliganPayload {
+            player: player.into(),
+            cards,
+        });
+        serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
+    }
+
+    /// 리리롤 응답 메시지를 직렬화합니다.
+    pub fn serialize_reroll_answer<T: Into<String>>(
+        player: T,
+        cards: Vec<UUID>,
+    ) -> Result<String, ServerError> {
+        let message = ServerMessage::RerollAnswer(MulliganPayload {
+            player: player.into(),
+            cards,
+        });
+        serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
+    }
+
+    /// 완료 응답 메시지를 직렬화합니다.
+    pub fn serialize_complete_message<T: Into<String>>(
+        player: T,
+        cards: Vec<UUID>,
+    ) -> Result<String, ServerError> {
+        let message = ClientMessage::Complete(MulliganPayload {
+            player: player.into(),
+            cards,
+        });
+        serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct ErrorPayload {
-    pub message: String,
-}
+//------------------------------------------------------------------------------
+// 메시지 매크로 및 유틸리티 함수
+//------------------------------------------------------------------------------
 
-/// 각 단계별 에러 JSON 직렬화 함수입니다.
-/// 이 함수를 통해 endpoint 내에서 단계에 맞는 JSON 에러 문자열을 깔끔하게 생성할 수 있습니다.
+/// 에러 메시지 직렬화를 위한 매크로
 #[macro_export]
 macro_rules! serialize_error {
     ($error_msg:expr) => {{
-        let message =
-            $crate::server::jsons::MulliganMessage::Error($crate::server::jsons::ErrorPayload {
+        let message = $crate::server::jsons::mulligan::ServerMessage::Error(
+            $crate::server::jsons::mulligan::ErrorPayload {
                 message: $error_msg.to_string(),
-            });
+            },
+        );
         serde_json::to_string(&message)
             .map_err(|_| $crate::exception::ServerError::InternalServerError)
     }};
-}
-
-pub fn serialize_deal_message<T: Into<String>>(
-    player: T,
-    cards: Vec<UUID>,
-) -> Result<String, ServerError> {
-    let message = MulliganMessage::Deal(MulliganPayload {
-        player: player.into(),
-        cards,
-    });
-    serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
-}
-
-pub fn serialize_complete_message<T: Into<String>>(
-    player: T,
-    cards: Vec<UUID>,
-) -> Result<String, ServerError> {
-    let message = MulliganMessage::Complete(MulliganPayload {
-        player: player.into(),
-        cards,
-    });
-    serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
+    ($module:ident, $error_msg:expr) => {{
+        let message = $crate::server::jsons::$module::ServerMessage::Error {
+            message: $error_msg.to_string(),
+        };
+        serde_json::to_string(&message)
+            .map_err(|_| $crate::exception::ServerError::InternalServerError)
+    }};
 }

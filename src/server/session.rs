@@ -94,12 +94,12 @@ impl PlayerSessionManager {
     }
 
     // 세션 종료
-    pub async fn end_session(&self, player: PlayerType, session_id: Uuid) {
+    pub async fn end_session<T: Into<PlayerType> + Copy>(&self, player: T, session_id: Uuid) {
         let mut sessions = self.inner.sessions.write().await;
 
-        if let Some(session) = sessions.get(&player) {
+        if let Some(session) = sessions.get(&player.into()) {
             if session.session_id == session_id {
-                sessions.remove(&player);
+                sessions.remove(&player.into());
             }
         }
     }

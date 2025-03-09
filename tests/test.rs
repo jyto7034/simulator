@@ -33,20 +33,25 @@ pub mod game_test {
     /// 잘못된 mulligan 시나리오에 대해 서버가 반환한 에러 메시지를 리턴합니다.
     async fn test_mulligan_invalid_scenario(json_payload: serde_json::Value) -> String {
         let (addr, _, _) = spawn_server().await;
-        
+
         // WebSocketTest 객체를 사용하여 훨씬 더 간결한 코드 작성
         let url = format!("ws://{}/mulligan_step", addr);
-        let cookie = format!("user_id={}; game_step={}", PlayerType::Player1.as_str(), "mulligan");
-        
+        let cookie = format!(
+            "user_id={}; game_step={}",
+            PlayerType::Player1.as_str(),
+            "mulligan"
+        );
+
         let mut ws = WebSocketTest::connect(url, cookie).await;
-        
+
         // 초기 카드 받기
         let _ = ws.expect_mulligan_deal().await;
-        
+
         // 에러 발생시키는 메시지 전송
-        ws.send(Message::Text(json_payload.to_string())).await
+        ws.send(Message::Text(json_payload.to_string()))
+            .await
             .expect("Failed to send message");
-            
+
         // 에러 응답 기다리기
         ws.expect_error().await
     }
@@ -56,7 +61,7 @@ pub mod game_test {
         let json = json!({
             "action": "reroll-request",
             "payload": {
-                "player": "ㅁㄴㅇ",
+                "player": "wrong-player",
                 "cards": []
             }
         });
@@ -122,9 +127,15 @@ pub mod game_test {
         assert_eq!(error_message, MulliganError::WrongPhase.to_string());
     }
 
+    // TODO: Heartbeat 테스트 추가
+    #[actix_web::test]
+    #[should_panic]
+    async fn test_mulligan_heartbeat_timeout(){
+
+    } 
+
     #[actix_web::test]
     async fn test_mulligan_reroll_restore_variants() -> std::io::Result<()> {
-        console_subscriber::init();
         async fn run_mulligan_case(reroll_count: usize) -> std::io::Result<()> {
             async fn run_mulligan_case_each_player(
                 reroll_count: usize,
@@ -135,12 +146,12 @@ pub mod game_test {
                 let url = format!("ws://{}/mulligan_step", addr);
                 let cookie = format!("user_id={}; game_step={}", player_type, "mulligan");
                 let mut ws = WebSocketTest::connect(url, cookie).await;
-                
+
                 let mut deal_cards = ws.expect_mulligan_deal().await;
-                
+
                 // 나머지 테스트 로직...
                 deal_cards.truncate(reroll_count);
-                
+
                 let json = json!({
                     "action": "reroll-request",
                     "payload": {
@@ -148,7 +159,7 @@ pub mod game_test {
                         "cards": deal_cards
                     }
                 });
-                
+
                 ws.send(Message::Text(json.to_string()))
                     .await
                     .expect("Failed to send message");

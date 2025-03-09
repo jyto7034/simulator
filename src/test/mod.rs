@@ -1,6 +1,10 @@
 use std::{io::Read, time::Duration};
 
-use async_tungstenite::{tokio::{connect_async, TokioAdapter}, tungstenite::{self, http::Request, Message}, WebSocketStream};
+use async_tungstenite::{
+    tokio::{connect_async, TokioAdapter},
+    tungstenite::{self, http::Request, Message},
+    WebSocketStream,
+};
 use futures_util::StreamExt;
 use rand::{seq::SliceRandom, thread_rng};
 use serde::de::DeserializeOwned;
@@ -13,7 +17,7 @@ use crate::{
     enums::{DeckCode, CARD_JSON_PATH, MAX_CARD_SIZE, TIMEOUT, UUID},
     server::{
         end_point::handle_mulligan_cards,
-        jsons::MulliganMessage,
+        jsons::mulligan,
         session::PlayerSessionManager,
         types::{ServerState, SessionKey},
     },
@@ -125,14 +129,14 @@ pub async fn expect_mulligan_deal_message(
         async_tungstenite::tokio::TokioAdapter<tokio::net::TcpStream>,
     >,
 ) -> Vec<UUID> {
-    let timeout = tokio::time::timeout(Duration::from_secs(5), 
+    let timeout = tokio::time::timeout(Duration::from_secs(5),
 async{
     loop{
         if let Some(msg) = ws_stream.next().await{
             match msg{
                 Ok(Message::Text(text)) => {
-                    match serde_json::from_str::<MulliganMessage>(&text) {
-                        Ok(MulliganMessage::Deal(data)) => {
+                    match serde_json::from_str::<mulligan::ServerMessage>(&text) {
+                        Ok(mulligan::ServerMessage::Deal(data)) => {
                             return data.cards
                         }
                         Ok(other) => panic!(
@@ -175,8 +179,8 @@ pub async fn expect_mulligan_complete_message(
                 if let Some(msg) = ws_stream.next().await {
                     match msg {
                         Ok(Message::Text(text)) => {
-                            match serde_json::from_str::<MulliganMessage>(&text) {
-                                Ok(MulliganMessage::Complete(data)) => {
+                            match serde_json::from_str::<mulligan::ClientMessage>(&text) {
+                                Ok(mulligan::ClientMessage::Complete(data)) => {
                                     return data.cards
                                 }
                                 Ok(other) => panic!(
@@ -206,7 +210,6 @@ pub async fn expect_mulligan_complete_message(
     }
 }
 
-
 pub struct WebSocketTest {
     stream: WebSocketStream<TokioAdapter<TcpStream>>,
 }
@@ -233,38 +236,39 @@ impl WebSocketTest {
 
         Self { stream }
     }
-    
+
     /// 메시지를 전송합니다
     pub async fn send(&mut self, msg: impl Into<Message>) -> Result<(), tungstenite::Error> {
         self.stream.send(msg.into()).await
     }
-    
+
     /// 특정 타입의 메시지가 도착할 때까지 대기하고, 다른 메시지(ping 포함)는 적절히 처리합니다
     pub async fn expect_message<T, F, R>(&mut self, extractor: F) -> R
     where
         T: DeserializeOwned,
         F: Fn(T) -> R,
     {
-        match tokio::time::timeout(
-            Duration::from_secs(TIMEOUT),
-            async {
-                loop {
-                    match self.stream.next().await {
-                        Some(Ok(Message::Text(text))) => {
-                            if let Ok(parsed) = serde_json::from_str::<T>(&text) {
-                                return extractor(parsed);
-                            }
+        let callback = async {
+            loop {
+                match self.stream.next().await {
+                    Some(Ok(Message::Text(text))) => {
+                        if let Ok(parsed) = serde_json::from_str::<T>(&text) {
+                            return extractor(parsed);
+                        }else{
+                            println!("Failed to parse: {}", text);
                         }
-                        Some(Ok(Message::Ping(data))) => {
-                            self.stream.send(Message::Pong(data)).await.ok();
-                        }
-                        Some(Ok(_)) => {}
-                        Some(Err(e)) => panic!("WebSocket error: {:?}", e),
-                        None => panic!("WebSocket closed unexpectedly"),
                     }
+                    Some(Ok(Message::Ping(data))) => {
+                        self.stream.send(Message::Pong(data)).await.ok();
+                    }
+                    Some(Ok(_)) => continue,
+                    Some(Err(e)) => panic!("WebSocket error: {:?}", e),
+                    None => panic!("WebSocket closed unexpectedly"),
                 }
             }
-        ).await {
+        };
+        match tokio::time::timeout(Duration::from_secs(TIMEOUT), callback).await
+        {
             Ok(result) => result,
             Err(_) => panic!("Expected message timeout after 5 seconds"),
         }
@@ -272,35 +276,29 @@ impl WebSocketTest {
 
     /// 멀리건 딜 메시지를 기다리고 카드 ID 리스트를 반환합니다
     pub async fn expect_mulligan_deal(&mut self) -> Vec<UUID> {
-        self.expect_message(|message: MulliganMessage| {
-            match message {
-                MulliganMessage::Deal(data) => {
-                    data.cards
-                }
-                other => panic!("Expected MulliganMessage::Deal but got: {:?}", other),
-            }
-        }).await
+        self.expect_message(|message: mulligan::ServerMessage| match message {
+            mulligan::ServerMessage::Deal(data) => data.cards,
+            other => panic!("Expected MulliganMessage::Deal but got: {:?}", other),
+        })
+        .await
     }
 
     /// 멀리건 완료 메시지를 기다리고 카드 ID 리스트를 반환합니다
     pub async fn expect_mulligan_complete(&mut self) -> Vec<UUID> {
-        self.expect_message(|message: MulliganMessage| {
-            match message {
-                MulliganMessage::Complete(data) => {
-                    data.cards
-                }
-                other => panic!("Expected MulliganMessage::Complete but got: {:?}", other),
-            }
-        }).await
+        // TODO: 다른 expect 함수들도 가독성 수정해야함.
+        let extractor = |message: mulligan::ClientMessage| match message {
+            mulligan::ClientMessage::Complete(data) => data.cards,
+            other => panic!("Expected MulliganMessage::Complete but got: {:?}", other),
+        };
+        self.expect_message(extractor).await
     }
 
     /// 에러 메시지를 기다리고 에러 문자열을 반환합니다
     pub async fn expect_error(&mut self) -> String {
-        self.expect_message(|message: MulliganMessage| {
-            match message {
-                MulliganMessage::Error(data) => data.message,
-                other => panic!("Expected MulliganMessage::Error but got: {:?}", other),
-            }
-        }).await
+        self.expect_message(|message: mulligan::ServerMessage| match message {
+            mulligan::ServerMessage::Error(data) => data.message,
+            other => panic!("Expected MulliganMessage::Error but got: {:?}", other),
+        })
+        .await
     }
 }

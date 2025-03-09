@@ -8,13 +8,13 @@ use std::future::Future;
 
 use crate::enums::phase::Phase;
 use crate::enums::COUNT_OF_MULLIGAN_CARDS;
-use crate::exception::MulliganError;
+use crate::exception::{MessageProcessResult, MulliganError};
 use crate::serialize_error;
-use crate::server::helper::{process_mulligan_completion, send_error_and_check};
-use crate::server::types::ValidationPayload;
+use crate::server::helper::{process_mulligan_completion, send_error_and_check, MessageHandler};
+use crate::server::jsons::mulligan::{self, serialize_complete_message, serialize_deal_message};
+use crate::server::jsons::ValidationPayload;
 use crate::{card::types::PlayerType, exception::ServerError};
 
-use super::jsons::{serialize_complete_message, serialize_deal_message, MulliganMessage};
 use super::types::ServerState;
 
 #[derive(Debug, Clone, Copy)]
@@ -169,7 +169,6 @@ pub async fn handle_mulligan_cards(
 ) -> Result<HttpResponse, ServerError> {
     // TODO: 만약 멀리건을 이미 수행한 혹은 수행 중인 플레이어가 또 다시 해당 엔드포인트에 접근하려 했을 때 에러 처리 해야함.
     // 멀리건 수행 중 연결이 끊힌 경우, 재진입을 허용해야 하는데, 아직 뚜렷한 방법이 떠오르진 않음.
-    // Http 업그레이드: 이때 session과 stream이 반환됩니다.
 
     let player_type = player.0;
 
@@ -190,266 +189,312 @@ pub async fn handle_mulligan_cards(
         ));
     }
 
+    // Http 업그레이드: 이때 session과 stream이 반환됩니다.
     let (resp, mut session, mut stream) =
         handle(&req, payload).map_err(|_| ServerError::HandleFailed)?;
-    {
-        let mut game = state.game.lock().await;
 
-        // Mulligan deal 단계 수행 코드입니다.
-        // 새로운 카드를 뽑아서 player 의 mulligan cards 에 저장 한 뒤, json 형태로 변환하여 전송합니다.
-        let new_cards = game.get_mulligan_cards(player_type, COUNT_OF_MULLIGAN_CARDS)?;
+    // Mulligan deal 단계 수행 코드입니다.
+    // 새로운 카드를 뽑아서 player 의 mulligan cards 에 저장 한 뒤, json 형태로 변환하여 전송합니다.
+    let new_cards = {
+        let mut game = state.game.lock().await;
+        let cards = game.get_mulligan_cards(player_type, COUNT_OF_MULLIGAN_CARDS)?;
         let mut player = game.get_player_by_type(player_type).get();
         player
             .get_mulligan_state_mut()
-            .add_select_cards(new_cards.clone());
+            .add_select_cards(cards.clone());
 
-        let new_cards_json = serialize_deal_message(player_type, new_cards)?;
-        session
-            .text(new_cards_json)
-            .await
-            .map_err(|_| return ServerError::InternalServerError)?;
-    }
+        cards
+    };
 
-    {
-        let mut session_clone = session.clone();
-        let player_clone = player_type;
-        let session_id_clone = session_id;
-        let session_manager = state.session_manager.clone();
+    let new_cards_json = serialize_deal_message(player_type, new_cards)?;
+    session
+        .text(new_cards_json)
+        .await
+        .map_err(|_| return ServerError::InternalServerError)?;
 
-        actix_web::rt::spawn(async move {
-            let mut interval = tokio::time::interval(Duration::from_secs(30));
+    let mut session_clone = session.clone();
+    let heartbeat_session_id = session_id;
+    let heartbeat_session_manager = state.session_manager.clone();
 
-            loop {
-                interval.tick().await;
+    // TODO: 멀리건의 경우 플레이어가 생각하는 시간이 N초 존재하므로, 하트비트의 타임아웃 부분을 수정해야할 듯 함
+    actix_web::rt::spawn(async move {
+        let mut interval = tokio::time::interval(Duration::from_secs(5));
 
-                // 세션이 유효한지 확인
-                if !session_manager
-                    .is_valid_session(player_clone, session_id_clone, Phase::Mulligan)
-                    .await
-                {
-                    break;
-                }
+        loop {
+            interval.tick().await;
 
-                // 하트비트 전송
-                if let Err(_) = session_clone.ping(b"heartbeat").await {
-                    break;
-                }
+            // 세션이 유효한지 확인
+            if !heartbeat_session_manager
+                .is_valid_session(player_type, heartbeat_session_id, Phase::Mulligan)
+                .await
+            {
+                break;
             }
 
-            // 하트비트 태스크 종료시 세션 정리
-            session_manager
-                .end_session(player_clone, session_id_clone)
-                .await;
-        });
-    }
+            // 하트비트 전송
+            if let Err(_) = session_clone.ping(b"heartbeat").await {
+                break;
+            }
+        }
+
+        // 하트비트 태스크 종료시 세션 정리
+        heartbeat_session_manager
+            .end_session(player_type, heartbeat_session_id)
+            .await;
+    });
+
+    let mulligan_session_manager = state.session_manager.clone();
+    let mulligan_session_id = session_id;
 
     // 이후, 스레드 내에서 클라이언트와의 상호작용을 계속하기 위해 필요한 state를 클론합니다.
     // WebSocket 메시지 수신 등 후속 처리는 별도 spawn된 작업에서 진행합니다.
     actix_web::rt::spawn(async move {
+        let mut handler = MessageHandler::new();
         while let Some(data) = stream.next().await {
             match data {
+                // 클라이언트에서 받은 메시지를 분석합니다.
                 Ok(Message::Text(json)) => {
-                    // 클라이언트에서 받은 메시지를 분석합니다.
-                    let msg = match serde_json::from_str::<MulliganMessage>(&json) {
-                        Ok(data) => data,
-                        Err(e) => {
-                            // TODO 재시도 혹은 기타 처리
-                            // 받은 json 이 MulliganMessage 타입이 아닌 경우.
-                            let Ok(rerolled_cards_json) =
-                                serialize_error!(MulliganError::InvalidApproach)
-                            else {
-                                // TODO 재시도 혹은 기타 처리
-                                break;
-                            };
+                    let result = handler.process_message::<mulligan::ClientMessage>(
+                            &mut session,
+                            &json,
+                            mulligan_session_id,
+                            player_type,
+                        )
+                        .await;
 
-                            let Ok(_) = session.text(rerolled_cards_json).await else {
-                                // TODO 재시도 혹은 기타 처리
-                                break;
-                            };
-                            break;
+                    match result {
+                        MessageProcessResult::Success(msg) => {
+                            match msg {
+                                
+                                mulligan::ClientMessage::RerollRequest(payload) => {
+                                    if !matches!(payload.player.as_str(), "player1" | "player2") {
+                                        if send_error_and_check(
+                                            &mut session,
+                                            MulliganError::InvalidPlayer,
+                                        )
+                                        .await
+                                            == Some(())
+                                        {
+                                            break;
+                                        } else {
+                                            // TODO send 재시도
+                                        }
+                                    }
+
+                                    let mut game = state.game.lock().await;
+                                    let player_type = AuthPlayer(payload.player.clone().into());
+
+                                    // 플레이어가 이미 준비 상태인 경우
+                                    if game
+                                        .get_player_by_type(player_type)
+                                        .get()
+                                        .get_mulligan_state_mut()
+                                        .is_ready()
+                                    {
+                                        if send_error_and_check(
+                                            &mut session,
+                                            MulliganError::InvalidApproach,
+                                        )
+                                        .await
+                                            == Some(())
+                                        {
+                                            break;
+                                        }
+                                    }
+
+                                    // 플레이어가 선택한 카드가 유효한지 확인합니다.
+                                    if payload.validate(
+                                        game.get_player_by_type(player_type).get().get_cards(),
+                                    ) == None
+                                    {
+                                        if send_error_and_check(
+                                            &mut session,
+                                            MulliganError::InvalidCards,
+                                        )
+                                        .await
+                                            == Some(())
+                                        {
+                                            break;
+                                        }
+                                    }
+                                    
+
+                                    // 기존 카드를 덱의 최하단에 위치 시킨 뒤, 새로운 카드를 뽑아서 player 의 mulligan cards 에 저장하고 json 으로 변환하여 전송합니다.
+                                    let Ok(rerolled_card) = game
+                                        .restore_then_reroll_mulligan_cards(
+                                            player_type,
+                                            payload.cards.clone(),
+                                        )
+                                    else {
+                                        // TODO 재시도 혹은 기타 처리
+                                        break;
+                                    };
+
+                                    // 플레이어가 선택한 카드를 select_cards 에서 삭제하고 Reroll 된 카드를 추가합니다.
+                                    game.get_player_by_type(player_type)
+                                        .get()
+                                        .get_mulligan_state_mut()
+                                        .remove_select_cards(payload.cards);
+
+                                    game.get_player_by_type(player_type)
+                                        .get()
+                                        .get_mulligan_state_mut()
+                                        .add_select_cards(rerolled_card.clone());
+
+                                    let _ =
+                                        match process_mulligan_completion(&mut game, player_type) {
+                                            Ok(selected_cards) => selected_cards,
+                                            Err(_) => break,
+                                        };
+
+                                    if game
+                                        .get_player_by_type(player_type.reverse())
+                                        .get()
+                                        .get_mulligan_state_mut()
+                                        .is_ready()
+                                    {
+                                        // TODO: 다음 단계로 넘어가는 코드 작성
+                                    }
+
+                                    // ?? complete -> deal 로 변경되어 있음.
+                                    // git 내역 확인해서 어디서부터 변경되어 있는지, 어떤 이유로 되어있었는지 확인해야함.
+                                    let Ok(rerolled_cards_json) = serialize_complete_message(player_type, rerolled_card)
+                                    else {
+                                        // TODO 재시도 혹은 기타 처리
+                                        break;
+                                    };
+
+                                    let Ok(_) = session.text(rerolled_cards_json).await else {
+                                        // TODO 재시도 혹은 기타 처리
+                                        break;
+                                    };
+
+                                    mulligan_session_manager
+                                        .end_session(player_type, mulligan_session_id)
+                                        .await;
+                                }
+                                mulligan::ClientMessage::Complete(payload) => {
+                                    if !matches!(payload.player.as_str(), "player1" | "player2") {
+                                        if send_error_and_check(
+                                            &mut session,
+                                            MulliganError::InvalidPlayer,
+                                        )
+                                        .await
+                                            == Some(())
+                                        {
+                                            break;
+                                        } else {
+                                            // TODO send 재시도
+                                        }
+                                    }
+                                    let mut game = state.game.lock().await;
+                                    let player_type = AuthPlayer(payload.player.clone().into());
+
+                                    if game
+                                        .get_player_by_type(player_type)
+                                        .get()
+                                        .get_mulligan_state_mut()
+                                        .is_ready()
+                                    {
+                                        if send_error_and_check(
+                                            &mut session,
+                                            MulliganError::InvalidApproach,
+                                        )
+                                        .await
+                                            == Some(())
+                                        {
+                                            break;
+                                        }
+                                    }
+
+                                    if payload.validate(
+                                        game.get_player_by_type(player_type).get().get_cards(),
+                                    ) == None
+                                    {
+                                        if send_error_and_check(
+                                            &mut session,
+                                            MulliganError::InvalidCards,
+                                        )
+                                        .await
+                                            == Some(())
+                                        {
+                                            break;
+                                        }
+                                    }
+
+                                    if game
+                                        .get_player_by_type(player_type)
+                                        .get()
+                                        .get_mulligan_state_mut()
+                                        .is_ready()
+                                    {
+                                        let Ok(rerolled_cards_json) =
+                                            serialize_error!(MulliganError::InvalidApproach)
+                                        else {
+                                            // TODO 재시도 혹은 기타 처리
+                                            break;
+                                        };
+
+                                        let Ok(_) = session.text(rerolled_cards_json).await else {
+                                            // TODO 재시도 혹은 기타 처리
+                                            break;
+                                        };
+                                    }
+
+                                    // player 의 mulligan 상태를 완료 상태로 변경 후 상대의 mulligan 상태를 확인합니다.
+                                    // 만약 상대도 완료 상태이라면, mulligan step 을 종료하고 다음 step 으로 진행합니다.
+
+                                    let selected_cards =
+                                        match process_mulligan_completion(&mut game, player_type) {
+                                            Ok(selected_cards) => selected_cards,
+                                            Err(_) => break,
+                                        };
+
+                                    if game
+                                        .get_player_by_type(player.reverse())
+                                        .get()
+                                        .get_mulligan_state_mut()
+                                        .is_ready()
+                                    {
+                                        // TODO: 다음 단계로 넘어가는 코드 작성
+                                    }
+
+                                    let Ok(_) = serialize_complete_message(player, selected_cards)
+                                    else {
+                                        // TODO 재시도 혹은 기타 처리
+                                        break;
+                                    };
+                                    let Ok(_) = session.text(json).await else {
+                                        // TODO 재시도 혹은 기타 처리
+                                        break;
+                                    };
+
+                                    mulligan_session_manager
+                                        .end_session(player_type, mulligan_session_id)
+                                        .await;
+                                }
+                            }
                         }
-                    };
-
-                    match msg {
-                        MulliganMessage::RerollRequest(payload) => {
-                            if !matches!(payload.player.as_str(), "player1" | "player2") {
-                                if send_error_and_check(&mut session, MulliganError::InvalidPlayer)
-                                    .await
-                                    == Some(())
-                                {
-                                    break;
-                                } else {
-                                    // TODO send 재시도
-                                }
-                            }
-                            let mut game = state.game.lock().await;
-                            let player_type = AuthPlayer(payload.player.clone().into());
-
-                            if game
-                                .get_player_by_type(player_type)
-                                .get()
-                                .get_mulligan_state_mut()
-                                .is_ready()
+                        MessageProcessResult::NeedRetry => {
+                            // TODO: 코드가 좀 장황함 매크로 작성해야할듯
+                            if send_error_and_check(
+                                &mut session,
+                                MulliganError::InvalidApproach,
+                            )
+                            .await
+                                == Some(())
                             {
-                                if send_error_and_check(
-                                    &mut session,
-                                    MulliganError::InvalidApproach,
-                                )
-                                .await
-                                    == Some(())
-                                {
-                                    break;
-                                }
-                            }
-
-                            if payload
-                                .validate(game.get_player_by_type(player_type).get().get_cards())
-                                == None
-                            {
-                                if send_error_and_check(&mut session, MulliganError::InvalidCards)
-                                    .await
-                                    == Some(())
-                                {
-                                    break;
-                                }
-                            }
-
-                            // 기존 카드를 덱의 최하단에 위치 시킨 뒤, 새로운 카드를 뽑아서 player 의 mulligan cards 에 저장하고 json 으로 변환하여 전송합니다.
-                            let Ok(rerolled_card) = game.restore_then_reroll_mulligan_cards(
-                                player_type,
-                                payload.cards.clone(),
-                            ) else {
-                                // TODO 재시도 혹은 기타 처리
                                 break;
-                            };
-
-                            // 플레이어가 선택한 카드를 select_cards 에서 삭제하고 Reroll 된 카드를 추가합니다.
-                            game.get_player_by_type(player_type)
-                                .get()
-                                .get_mulligan_state_mut()
-                                .remove_select_cards(payload.cards);
-
-                            game.get_player_by_type(player_type)
-                                .get()
-                                .get_mulligan_state_mut()
-                                .add_select_cards(rerolled_card.clone());
-
-                            let _ = match process_mulligan_completion(&mut game, player_type) {
-                                Ok(selected_cards) => selected_cards,
-                                Err(_) => break,
-                            };
-
-                            if game
-                                .get_player_by_type(player_type.reverse())
-                                .get()
-                                .get_mulligan_state_mut()
-                                .is_ready()
-                            {
-                                // TODO: 다음 단계로 넘어가는 코드 작성
+                            } else {
+                                // TODO send 재시도
                             }
-
-                            let Ok(rerolled_cards_json) =
-                                serialize_complete_message(player_type, rerolled_card)
-                            else {
-                                // TODO 재시도 혹은 기타 처리
-                                break;
-                            };
-
-                            let Ok(_) = session.text(rerolled_cards_json).await else {
-                                // TODO 재시도 혹은 기타 처리
-                                break;
-                            };
+                            continue;
+                        },
+                        MessageProcessResult::TerminateSession(server_error) => {
+                            mulligan_session_manager
+                                .end_session(player_type, heartbeat_session_id)
+                                .await;
                         }
-                        MulliganMessage::Complete(payload) => {
-                            if !matches!(payload.player.as_str(), "player1" | "player2") {
-                                if send_error_and_check(&mut session, MulliganError::InvalidPlayer)
-                                    .await
-                                    == Some(())
-                                {
-                                    break;
-                                } else {
-                                    // TODO send 재시도
-                                }
-                            }
-                            let mut game = state.game.lock().await;
-                            let player_type = AuthPlayer(payload.player.clone().into());
-
-                            if game
-                                .get_player_by_type(player_type)
-                                .get()
-                                .get_mulligan_state_mut()
-                                .is_ready()
-                            {
-                                if send_error_and_check(
-                                    &mut session,
-                                    MulliganError::InvalidApproach,
-                                )
-                                .await
-                                    == Some(())
-                                {
-                                    break;
-                                }
-                            }
-
-                            if payload
-                                .validate(game.get_player_by_type(player_type).get().get_cards())
-                                == None
-                            {
-                                if send_error_and_check(&mut session, MulliganError::InvalidCards)
-                                    .await
-                                    == Some(())
-                                {
-                                    break;
-                                }
-                            }
-
-                            if game
-                                .get_player_by_type(player_type)
-                                .get()
-                                .get_mulligan_state_mut()
-                                .is_ready()
-                            {
-                                let Ok(rerolled_cards_json) =
-                                    serialize_error!(MulliganError::InvalidApproach)
-                                else {
-                                    // TODO 재시도 혹은 기타 처리
-                                    break;
-                                };
-
-                                let Ok(_) = session.text(rerolled_cards_json).await else {
-                                    // TODO 재시도 혹은 기타 처리
-                                    break;
-                                };
-                            }
-
-                            // player 의 mulligan 상태를 완료 상태로 변경 후 상대의 mulligan 상태를 확인합니다.
-                            // 만약 상대도 완료 상태이라면, mulligan step 을 종료하고 다음 step 으로 진행합니다.
-
-                            let selected_cards =
-                                match process_mulligan_completion(&mut game, player_type) {
-                                    Ok(selected_cards) => selected_cards,
-                                    Err(_) => break,
-                                };
-
-                            if game
-                                .get_player_by_type(player.reverse())
-                                .get()
-                                .get_mulligan_state_mut()
-                                .is_ready()
-                            {
-                                // TODO: 다음 단계로 넘어가는 코드 작성
-                            }
-
-                            let Ok(_) = serialize_complete_message(player, selected_cards) else {
-                                // TODO 재시도 혹은 기타 처리
-                                break;
-                            };
-                            let Ok(_) = session.text(json).await else {
-                                // TODO 재시도 혹은 기타 처리
-                                break;
-                            };
-                        }
-                        _ => todo!(),
                     }
                 }
                 Ok(Message::Close(reason)) => {

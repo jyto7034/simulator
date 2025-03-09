@@ -8,6 +8,7 @@ pub mod card_gen;
 pub mod enums;
 pub mod exception;
 pub mod game;
+pub mod helper;
 pub mod resource;
 pub mod selector;
 pub mod server;

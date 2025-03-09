@@ -39,4 +39,4 @@ pub const PLAYER_2: usize = 1;
 pub const UNIT_ZONE_SIZE: usize = 12;
 pub const DECK_ZONE_SIZE: usize = 30;
 
-pub const TIMEOUT: u64 = 1000;
+pub const TIMEOUT: u64 = 3;
