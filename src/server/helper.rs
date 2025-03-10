@@ -7,7 +7,7 @@ use uuid::Uuid;
 use crate::{
     card::{insert::TopInsert, types::PlayerType},
     enums::UUID,
-    exception::{MessageProcessResult, MulliganError, ServerError},
+    exception::{MessageProcessResult, ServerError},
     game::Game,
     serialize_error,
     zone::zone::Zone,
@@ -37,11 +37,56 @@ pub fn process_mulligan_completion<T: Into<PlayerType> + Copy>(
     Ok(selected_cards)
 }
 
+/// 에러 메시지 전송 매크로
+/// - 세션을 통해 에러 메시지를 전송하고, 전송 성공 여부를 반환합니다.
+/// - retry 키워드를 사용하면 최대 재시도 횟수를 지정할 수 있습니다.
+#[macro_export]
+macro_rules! try_send_error {
+    ($session:expr, $error:expr) => {
+        if send_error_and_check(&mut $session, $error).await == Some(()) {
+            break;
+        }
+    };
+    
+    ($session:expr, $error:expr, retry) => {
+        match send_error_and_check(&mut $session, $error).await {
+            Some(()) => break,
+            None => {
+                // 재시도 로직
+                let retry_result = send_error_and_check(&mut $session, $error).await;
+                if retry_result == Some(()) {
+                    break;
+                }
+            }
+        }
+    };
+    
+    ($session:expr, $error:expr, retry $max_retries:expr) => {
+        {
+            let mut retries = 0;
+            loop {
+                match send_error_and_check(&mut $session, $error).await {
+                    Some(()) => break,
+                    None => {
+                        retries += 1;
+                        if retries >= $max_retries {
+                            // 로깅 또는 다른 실패 처리
+                            // log::warn!("Failed to send error after {} retries", $max_retries);
+                            break;
+                        }
+                        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+                    }
+                }
+            }
+        }
+    };
+}
+
 /// 에러 메시지를 전송하고, 전송 성공 여부를 반환합니다.
 /// # return
 /// - 성공 시 Some(())
 /// - 실패 시 None
-pub async fn send_error_and_check(session: &mut Session, error_msg: MulliganError) -> Option<()> {
+pub async fn send_error_and_check(session: &mut Session, error_msg: ServerError) -> Option<()> {
     // 에러 메시지 직렬화
     let Ok(error_json) = serialize_error!(error_msg) else {
         return None; // 직렬화 실패
@@ -115,7 +160,7 @@ impl MessageHandler {
         // );
 
         if self.parsing_error_count >= 3 {
-            self.terminate_session(session, MulliganError::ParseError, session_id, player_type)
+            self.terminate_session(session, ServerError::ParseError("JSON parsing error".to_string()), session_id, player_type)
                 .await;
             return MessageProcessResult::TerminateSession(ServerError::ParseError(
                 "JSON parsing error".to_string(),
@@ -137,7 +182,7 @@ impl MessageHandler {
         if self.unexpected_msg_count >= 3 {
             self.terminate_session(
                 session,
-                MulliganError::InvalidApproach,
+                ServerError::InvalidApproach,
                 session_id,
                 player_type,
             )
@@ -152,7 +197,7 @@ impl MessageHandler {
     async fn terminate_session(
         &self,
         session: &mut Session,
-        error: MulliganError,
+        error: ServerError,
         session_id: Uuid,
         player_type: PlayerType,
     ) {
@@ -161,7 +206,7 @@ impl MessageHandler {
     }
 
     /// 에러 메시지 전송 (재시도 로직 포함)
-    async fn send_error_with_retry(&self, session: &mut Session, error: MulliganError) -> bool {
+    async fn send_error_with_retry(&self, session: &mut Session, error: ServerError) -> bool {
         if let Ok(error_json) = serialize_error!(error) {
             for attempt in 0..3 {
                 match session.text(error_json.clone()).await {

@@ -37,6 +37,29 @@ pub enum Phase {
     EndPhase,
 }
 
+impl From<String> for Phase {
+    fn from(value: String) -> Self {
+        match value.to_lowercase().as_str() {
+            "mulligan" => Phase::Mulligan,
+            "drawphase" => Phase::DrawPhase,
+            "standbyphase" => Phase::StandbyPhase,
+            "mainphasestart" => Phase::MainPhaseStart,
+            "mainphase1" => Phase::MainPhase1,
+            "battlephasestart" => Phase::BattlePhaseStart,
+            "battlestep" => Phase::BattleStep,
+            "battledamagestepstart" => Phase::BattleDamageStepStart,
+            "battledamagestepcalculationbefore" => Phase::BattleDamageStepCalculationBefore,
+            "battledamagestepcalculationstart" => Phase::BattleDamageStepCalculationStart,
+            "battledamagestepcalculationend" => Phase::BattleDamageStepCalculationEnd,
+            "battledamagestepend" => Phase::BattleDamageStepEnd,
+            "battlephaseend" => Phase::BattlePhaseEnd,
+            "mainphase2" => Phase::MainPhase2,
+            "endphase" => Phase::EndPhase,
+            _ => panic!("Invalid Phase string: {}", value),
+        }
+    }
+}
+
 impl PartialOrd for Phase {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         Some(self.cmp(other))

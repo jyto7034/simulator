@@ -61,9 +61,12 @@ pub enum ServerError {
     UnexpectedMessage,
     CookieNotFound,
     ServerStateNotFound,
-    InvalidPayload,
     ActiveSessionExists(String),
     ParseError(String),
+    InvalidPayload,
+    InvalidApproach,
+    InvalidCards,
+    InvalidPlayer,
 }
 
 impl From<GameError> for ServerError {
@@ -104,8 +107,8 @@ impl From<GameError> for ServerError {
 impl fmt::Display for ServerError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Unknown => write!(f, "An unknown error occurred"),
-            Self::WrongPhase(_, _) => write!(f, "Wrong Phase!"),
+            Self::Unknown => write!(f, "UNKNOWN"),
+            Self::WrongPhase(_, _) => write!(f, "WRONG_PHASE"),
             Self::NotFound => todo!(),
             Self::HandleFailed => todo!(),
             Self::InternalServerError => todo!(),
@@ -113,8 +116,11 @@ impl fmt::Display for ServerError {
             Self::ServerStateNotFound => todo!(),
             Self::InvalidPayload => todo!(),
             Self::ActiveSessionExists(_) => todo!(),
-            Self::ParseError(_) => todo!(),
             Self::UnexpectedMessage => todo!(),
+            Self::InvalidApproach => write!(f, "INVALID_APPROACH"),
+            Self::InvalidCards => write!(f, "INVALID_CARDS"),
+            Self::ParseError(_) => write!(f, "PARSE_ERROR"),
+            Self::InvalidPlayer => write!(f, "INVALID_PLAYER"),
         }
     }
 }
@@ -146,6 +152,9 @@ impl ResponseError for ServerError {
             Self::ActiveSessionExists(_) => todo!(),
             Self::ParseError(_) => todo!(),
             Self::UnexpectedMessage => todo!(),
+            Self::InvalidCards => todo!(),
+            Self::InvalidPlayer => todo!(),
+            Self::InvalidApproach => todo!(),
         }
     }
 
@@ -162,28 +171,9 @@ impl ResponseError for ServerError {
             Self::ActiveSessionExists(_) => StatusCode::INTERNAL_SERVER_ERROR,
             Self::ParseError(_) => todo!(),
             Self::UnexpectedMessage => todo!(),
-        }
-    }
-}
-
-// TODO: Server 에러에다가 편입시켜야함.
-#[derive(Debug, PartialEq, Clone, Copy)]
-pub enum MulliganError {
-    InvalidApproach,
-    InvalidCards,
-    WrongPhase,
-    InvalidPlayer,
-    ParseError,
-}
-
-impl fmt::Display for MulliganError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            MulliganError::InvalidApproach => write!(f, "INVALID_APPROACH"),
-            MulliganError::InvalidCards => write!(f, "INVALID_CARDS"),
-            MulliganError::WrongPhase => write!(f, "WRONG_PHASE"),
-            MulliganError::InvalidPlayer => write!(f, "INVALID_PLAYER"),
-            MulliganError::ParseError => write!(f, "PARSE_ERROR"),
+            Self::InvalidCards => todo!(),
+            Self::InvalidPlayer => todo!(),
+            Self::InvalidApproach => todo!(),
         }
     }
 }

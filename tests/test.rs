@@ -3,12 +3,7 @@ pub mod game_test {
     use actix_web::{dev::ServerHandle, web::Data};
     use async_tungstenite::tungstenite::Message;
     use card_game::{
-        card::{cards::CardVecExt, types::PlayerType},
-        enums::{COUNT_OF_MULLIGAN_CARDS, TIMEOUT},
-        exception::MulliganError,
-        server::types::ServerState,
-        test::{spawn_server, WebSocketTest},
-        zone::zone::Zone,
+        card::{cards::CardVecExt, types::PlayerType}, enums::{COUNT_OF_MULLIGAN_CARDS, TIMEOUT}, exception::ServerError, server::types::ServerState, test::{spawn_server, WebSocketTest}, zone::zone::Zone
     };
     use once_cell::sync::Lazy;
     use serde_json::json;
@@ -66,7 +61,7 @@ pub mod game_test {
             }
         });
         let error = test_mulligan_invalid_scenario(json).await;
-        assert_eq!(error, MulliganError::InvalidPlayer.to_string());
+        assert_eq!(error, ServerError::InvalidPlayer.to_string());
     }
 
     #[actix_web::test]
@@ -79,7 +74,7 @@ pub mod game_test {
             }
         });
         let error = test_mulligan_invalid_scenario(json).await;
-        assert_eq!(error, MulliganError::InvalidApproach.to_string());
+        assert_eq!(error, ServerError::InvalidApproach.to_string());
     }
 
     #[actix_web::test]
@@ -92,7 +87,7 @@ pub mod game_test {
             }
         });
         let error = test_mulligan_invalid_scenario(json).await;
-        assert_eq!(error, MulliganError::InvalidCards.to_string());
+        assert_eq!(error, ServerError::InvalidCards.to_string());
     }
 
     #[actix_web::test]
@@ -106,7 +101,7 @@ pub mod game_test {
             .get(format!("http://{}/mulligan_step", addr))
             .header(
                 "Cookie",
-                format!("user_id={}; game_step=notmulligan", player_type),
+                format!("user_id={}; game_step=draw", player_type),
             )
             .send()
             .await
@@ -118,16 +113,109 @@ pub mod game_test {
         assert_eq!(status.as_u16(), 500);
 
         // 대신 panic하는 대신 반환된 에러 문자열을 비교합니다.
-        let error_message = if body.contains("notmulligan") {
+        let error_message = if body.contains("draw") {
             "WRONG_PHASE".to_string()
         } else {
             panic!("Unexpected error response")
         };
 
-        assert_eq!(error_message, MulliganError::WrongPhase.to_string());
+        assert_eq!(error_message, ServerError::WrongPhase("".to_string(), "".to_string()).to_string());
     }
 
-    /// timeout 을 임의로 발생시켜서 잘 처리가 되는지 확인합니다
+    #[actix_web::test]
+    async fn test_mulligan_already_ready() {
+        let (addr, _, _) = spawn_server().await;
+        let player_type = PlayerType::Player1.as_str();
+
+        // WebSocketTest 객체를 사용하여 훨씬 더 간결한 코드 작성
+        let url = format!("ws://{}/mulligan_step", addr);
+        let cookie = format!(
+            "user_id={}; game_step={}",
+            PlayerType::Player1.as_str(),
+            "mulligan"
+        );
+
+        let mut ws = WebSocketTest::connect(url, cookie).await;
+
+        // 초기 카드 받기
+        let _ = ws.expect_mulligan_deal().await;
+
+        // 이미 준비된 상태로 변경
+        let json = json!({
+            "action": "reroll-request",
+            "payload": {
+                "player": player_type,
+                "cards": []
+            }
+        });
+
+        ws.send(Message::Text(json.to_string()))
+            .await
+            .expect("Failed to send message");
+
+        let json = json!({
+            "action": "reroll-request",
+            "payload": {
+                "player": player_type,
+                "cards": []
+            }
+        });
+
+        ws.send(Message::Text(json.to_string()))
+            .await
+            .expect("Failed to send message");
+
+        assert_eq!("INVALID_APPROACH", ws.expect_error().await);
+
+    }
+    
+    #[actix_web::test]
+    async fn test_mulligan_re_entry() {
+        let (addr, _, _) = spawn_server().await;
+        let player_type = PlayerType::Player1.as_str();
+
+        // WebSocketTest 객체를 사용하여 훨씬 더 간결한 코드 작성
+        let url = format!("ws://{}/mulligan_step", addr);
+        let cookie = format!(
+            "user_id={}; game_step={}",
+            PlayerType::Player1.as_str(),
+            "mulligan"
+        );
+
+        let mut ws = WebSocketTest::connect(url, cookie).await;
+
+        // 초기 카드 받기
+        let _ = ws.expect_mulligan_deal().await;
+
+        // 이미 준비된 상태로 변경
+        let json = json!({
+            "action": "reroll-request",
+            "payload": {
+                "player": player_type,
+                "cards": []
+            }
+        });
+
+        ws.send(Message::Text(json.to_string()))
+            .await
+            .expect("Failed to send message");
+
+        let json = json!({
+            "action": "reroll-request",
+            "payload": {
+                "player": player_type,
+                "cards": []
+            }
+        });
+
+        ws.send(Message::Text(json.to_string()))
+            .await
+            .expect("Failed to send message");
+
+        ws.expect_error().await.contains("ALREADY_READY");
+    }
+
+    // timeout 을 임의로 발생시켜서 잘 처리가 되는지 확인합니다
     #[actix_web::test]
     #[should_panic]
     async fn test_mulligan_heartbeat_timeout() {
