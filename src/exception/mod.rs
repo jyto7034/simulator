@@ -57,6 +57,7 @@ pub enum ServerError {
     NotFound,
     WrongPhase(String, String),
     HandleFailed,
+    NotAllowedReEntry,
     InternalServerError,
     UnexpectedMessage,
     CookieNotFound,
@@ -109,18 +110,19 @@ impl fmt::Display for ServerError {
         match self {
             Self::Unknown => write!(f, "UNKNOWN"),
             Self::WrongPhase(_, _) => write!(f, "WRONG_PHASE"),
-            Self::NotFound => todo!(),
-            Self::HandleFailed => todo!(),
-            Self::InternalServerError => todo!(),
-            Self::CookieNotFound => todo!(),
-            Self::ServerStateNotFound => todo!(),
-            Self::InvalidPayload => todo!(),
-            Self::ActiveSessionExists(_) => todo!(),
-            Self::UnexpectedMessage => todo!(),
+            Self::NotFound => write!(f, "NOT_FOUND"),
+            Self::HandleFailed => write!(f, "HANDLE_FAILED"),
+            Self::InternalServerError => write!(f, "INTERNAL_SERVER_ERROR"),
+            Self::CookieNotFound => write!(f, "COOKIE_NOT_FOUND"),
+            Self::ServerStateNotFound => write!(f, "SERVER_STATE_NOT_FOUND"),
+            Self::InvalidPayload => write!(f, "INVALID_PAYLOAD"),
+            Self::ActiveSessionExists(_) => write!(f, "ACTIVE_SESSION_EXISTS"),
+            Self::UnexpectedMessage => write!(f, "UNEXPECTED_MESSAGE"),
             Self::InvalidApproach => write!(f, "INVALID_APPROACH"),
             Self::InvalidCards => write!(f, "INVALID_CARDS"),
             Self::ParseError(_) => write!(f, "PARSE_ERROR"),
             Self::InvalidPlayer => write!(f, "INVALID_PLAYER"),
+            Self::NotAllowedReEntry => write!(f, "NOT_ALLOWED_RE_ENTRY"),
         }
     }
 }
@@ -149,12 +151,29 @@ impl ResponseError for ServerError {
             Self::InvalidPayload => {
                 HttpResponse::build(StatusCode::BAD_REQUEST).body("Invalid Payload")
             }
-            Self::ActiveSessionExists(_) => todo!(),
-            Self::ParseError(_) => todo!(),
-            Self::UnexpectedMessage => todo!(),
-            Self::InvalidCards => todo!(),
-            Self::InvalidPlayer => todo!(),
-            Self::InvalidApproach => todo!(),
+            Self::ActiveSessionExists(msg) => {
+                HttpResponse::build(StatusCode::CONFLICT)
+                    .body(format!("Active session exists: {}", msg))
+            }
+            Self::ParseError(msg) => {
+                HttpResponse::build(StatusCode::BAD_REQUEST)
+                    .body(format!("Parse error: {}", msg))
+            }
+            Self::UnexpectedMessage => {
+                HttpResponse::build(StatusCode::BAD_REQUEST).body("Unexpected message")
+            }
+            Self::InvalidCards => {
+                HttpResponse::build(StatusCode::BAD_REQUEST).body("Invalid cards")
+            }
+            Self::InvalidPlayer => {
+                HttpResponse::build(StatusCode::UNAUTHORIZED).body("Invalid player")
+            }
+            Self::InvalidApproach => {
+                HttpResponse::build(StatusCode::BAD_REQUEST).body("Invalid approach")
+            },
+            Self::NotAllowedReEntry => {
+                HttpResponse::build(StatusCode::CONFLICT).body("Not allowed re-entry")
+            }
         }
     }
 
@@ -168,12 +187,13 @@ impl ResponseError for ServerError {
             Self::CookieNotFound => StatusCode::NOT_FOUND,
             Self::ServerStateNotFound => StatusCode::INTERNAL_SERVER_ERROR,
             Self::InvalidPayload => StatusCode::BAD_REQUEST,
-            Self::ActiveSessionExists(_) => StatusCode::INTERNAL_SERVER_ERROR,
-            Self::ParseError(_) => todo!(),
-            Self::UnexpectedMessage => todo!(),
-            Self::InvalidCards => todo!(),
-            Self::InvalidPlayer => todo!(),
-            Self::InvalidApproach => todo!(),
+            Self::ActiveSessionExists(_) => StatusCode::CONFLICT,
+            Self::ParseError(_) => StatusCode::BAD_REQUEST,
+            Self::UnexpectedMessage => StatusCode::BAD_REQUEST,
+            Self::InvalidCards => StatusCode::BAD_REQUEST,
+            Self::InvalidPlayer => StatusCode::UNAUTHORIZED,
+            Self::InvalidApproach => StatusCode::BAD_REQUEST,
+            Self::NotAllowedReEntry => StatusCode::CONFLICT,
         }
     }
 }

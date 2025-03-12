@@ -216,7 +216,7 @@ pub struct WebSocketTest {
 
 impl WebSocketTest {
     /// 웹소켓 연결을 생성하고 래퍼 객체를 반환합니다
-    pub async fn connect(url: String, cookie: String) -> Self {
+    pub async fn connect(url: String, cookie: String) -> Result<Self, tungstenite::Error> {
         let request = Request::builder()
             .uri(&url)
             .header("Cookie", cookie)
@@ -225,16 +225,16 @@ impl WebSocketTest {
             .header("Upgrade", "websocket")
             .header("Connection", "Upgrade")
             .header("Sec-WebSocket-Version", "13")
-            .body(())
-            .expect("요청 생성 실패");
+            .body(())?;
 
-        let (stream, response) = connect_async(request).await.expect("연결 실패");
+        let (stream, response) = connect_async(request).await?;
+        
         assert_eq!(
             response.status(),
             tungstenite::http::StatusCode::SWITCHING_PROTOCOLS
         );
 
-        Self { stream }
+        Ok(Self { stream })
     }
 
     /// 메시지를 전송합니다

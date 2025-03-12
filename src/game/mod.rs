@@ -9,7 +9,7 @@ use turn_manager::Turn;
 
 use crate::{
     card::{cards::CardVecExt, insert::BottomInsert, types::PlayerType, Card},
-    enums::{phase::Phase, DeckCode, UUID},
+    enums::{phase::{Phase, PhaseState}, DeckCode, UUID},
     exception::GameError,
     unit::player::{Player, Resoruce},
     utils::deckcode_to_cards,
@@ -34,7 +34,7 @@ pub struct GameConfig {
 pub struct Game {
     pub player1: OptArc<Player>,
     pub player2: OptArc<Player>,
-    pub phase: Phase,
+    pub phase_state: PhaseState,
     pub turn: Turn,
 }
 
@@ -83,7 +83,6 @@ impl Game {
         match player_type.into() {
             PlayerType::Player1 => &self.player1,
             PlayerType::Player2 => &self.player2,
-            PlayerType::None => todo!(),
         }
     }
 
@@ -92,7 +91,7 @@ impl Game {
     }
 
     pub fn get_phase(&self) -> Phase {
-        self.phase
+        self.phase_state.get_phase()
     }
 
     pub fn get_turn_mut(&mut self) -> &mut Turn {
@@ -100,12 +99,11 @@ impl Game {
     }
 
     pub fn get_phase_mut(&mut self) -> &mut Phase {
-        &mut self.phase
+        self.phase_state.get_phase_mut()
     }
 
     pub fn move_phase(&mut self) -> Phase {
-        self.phase = self.phase.next_phase();
-        self.phase
+        self.phase_state.get_phase().next_phase()
     }
 
     pub fn get_player(&self) -> &OptArc<Player> {

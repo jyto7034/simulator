@@ -10,7 +10,7 @@ use std::future::Future;
 use crate::enums::phase::Phase;
 use crate::enums::{COUNT_OF_MULLIGAN_CARDS, TIMEOUT};
 use crate::exception::MessageProcessResult;
-use crate::{serialize_error, try_send_error};
+use crate::try_send_error;
 use crate::server::helper::{process_mulligan_completion, send_error_and_check, MessageHandler};
 use crate::server::jsons::mulligan::{self, serialize_complete_message, serialize_deal_message};
 use crate::server::jsons::ValidationPayload;
@@ -38,7 +38,6 @@ impl AuthPlayer {
         match self.ptype {
             PlayerType::Player1 => PlayerType::Player2,
             PlayerType::Player2 => PlayerType::Player1,
-            PlayerType::None => PlayerType::None,
         }
     }
 }
@@ -200,8 +199,15 @@ pub async fn handle_mulligan(
     payload: web::Payload,
     state: web::Data<ServerState>,
 ) -> Result<HttpResponse, ServerError> {
-    // TODO: 만약 멀리건을 이미 수행한 혹은 수행 중인 플레이어가 또 다시 해당 엔드포인트에 접근하려 했을 때 에러 처리 해야함.
     // 멀리건 수행 중 연결이 끊힌 경우, 재진입을 허용해야 하는데, 아직 뚜렷한 방법이 떠오르진 않음.
+
+    // 플레이어가 재진입을 시도하는 경우
+    {
+        let game = state.game.lock().await;
+        if !game.get_player_by_type(player.ptype).get().get_mulligan_state_mut().get_select_cards().is_empty(){
+            return Err(ServerError::InvalidApproach);
+        }
+    }
 
     let player_type = player.ptype;
 
@@ -449,6 +455,14 @@ pub async fn handle_mulligan(
     Ok(resp)
 }
 
+// draw 페이즈
+// WebSocket 연결이 필요한가?
+// 서버 -> 클라이언트로 카드 UUID 만을 전송하고 연결을 종료하기 때문에 WebSocket 연결 수립까지는 필요 없을듯?
+// 반대로
+// 클라이언트 -> 서버측으로 전송해야 할 정보가 있는가?
+// trigger 카드 혹은 spell 카드 효과 처리는 StandBy 페이즈에서 처리하는가? 에 따라서 달라질 수 있을 것 같음.
+// 일단 StandBy 페이즈에서 처리하는 것으로 가정하고 구현함.
+// 따라서, draw 페이즈에서는 카드를 뽑는 것만 처리하면 됨.
 #[get("/draw_step")]
 pub async fn handle_draw(
     player: AuthPlayer,
@@ -457,9 +471,11 @@ pub async fn handle_draw(
     state: web::Data<ServerState>,
 ) -> Result<HttpResponse, ServerError> {
     let player_type = player.ptype;
-
-    let (resp, session, stream) =
-        handle(&req, payload).map_err(|_| ServerError::HandleFailed)?;
-
+    // mulligan 때는, player 의 selected_cards 의 갯수를 확인해서 Re-Entry 를 방지했는데
+    // Draw 페이즈때는 그런 방법이 없음.
+    // 
+    
+    let (resp, _, _) = handle(&req, payload).map_err(|_| ServerError::HandleFailed)?;
+    
     Ok(resp)
 }

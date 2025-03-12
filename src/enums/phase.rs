@@ -1,3 +1,42 @@
+use std::collections::HashSet;
+
+use crate::card::types::PlayerType;
+
+#[derive(Clone)]
+pub struct PhaseState {
+    phase_type: Phase,
+    completed_players: HashSet<PlayerType>,
+}
+
+impl PhaseState {
+    pub fn new(phase: Phase) -> Self {
+        Self {
+            phase_type: phase,
+            completed_players: HashSet::new(),
+        }
+    }
+    
+    pub fn has_player_completed(&self, player_type: PlayerType) -> bool {
+        self.completed_players.contains(&player_type)
+    }
+    
+    pub fn mark_player_completed(&mut self, player_type: PlayerType) {
+        self.completed_players.insert(player_type);
+    }
+    
+    pub fn reset(&mut self) {
+        self.completed_players.clear();
+    }
+
+    pub fn get_phase(&self) -> Phase {
+        self.phase_type
+    }
+
+    pub fn get_phase_mut(&mut self) -> &mut Phase {
+        &mut self.phase_type
+    }
+}
+
 #[derive(Clone, PartialEq, Eq, Copy, Debug)]
 pub enum Phase {
     Mulligan,

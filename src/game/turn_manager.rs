@@ -31,7 +31,6 @@ impl Turn {
         self.current_turn = match self.current_turn {
             PlayerType::Player1 => PlayerType::Player2,
             PlayerType::Player2 => PlayerType::Player1,
-            PlayerType::None => panic!("PlayerType is None"),
         };
         self.current_turn
     }
@@ -48,7 +47,6 @@ impl Turn {
         match self.current_turn {
             PlayerType::Player1 => PlayerType::Player2,
             PlayerType::Player2 => PlayerType::Player1,
-            PlayerType::None => panic!("PlayerType is None"),
         }
     }
 
