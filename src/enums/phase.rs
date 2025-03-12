@@ -4,18 +4,18 @@ use crate::card::types::PlayerType;
 
 #[derive(Clone)]
 pub struct PhaseState {
-    phase_type: Phase,
+    current_phase: Phase,
     completed_players: HashSet<PlayerType>,
 }
 
 impl PhaseState {
     pub fn new(phase: Phase) -> Self {
         Self {
-            phase_type: phase,
+            current_phase: phase,
             completed_players: HashSet::new(),
         }
     }
-    
+
     pub fn has_player_completed(&self, player_type: PlayerType) -> bool {
         self.completed_players.contains(&player_type)
     }
@@ -29,11 +29,11 @@ impl PhaseState {
     }
 
     pub fn get_phase(&self) -> Phase {
-        self.phase_type
+        self.current_phase
     }
 
-    pub fn get_phase_mut(&mut self) -> &mut Phase {
-        &mut self.phase_type
+    pub fn set_phase(&mut self, phase: Phase) {
+        self.current_phase = phase;
     }
 }
 
@@ -248,6 +248,10 @@ impl Phase {
             Phase::MainPhase2 => Phase::EndPhase,
             Phase::EndPhase => Phase::DrawPhase,
         }
+    }
+
+    pub fn move_to_next_phase(&mut self) {
+        *self = self.next_phase();
     }
 
     pub fn as_str(&self) -> &'static str {

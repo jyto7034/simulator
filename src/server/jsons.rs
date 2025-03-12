@@ -133,6 +133,73 @@ pub mod mulligan {
     }
 }
 
+pub mod draw{
+    use super::*;
+
+    #[derive(Serialize, Deserialize, Debug, Clone)]
+    pub struct DrawPayload {
+        pub player: String,
+        pub cards: Vec<UUID>,
+    }
+
+    impl MessagePayload for DrawPayload{}
+
+    impl ValidationPayload for DrawPayload {
+        fn validate(&self, context: &dyn Any) -> Option<()> {
+            if let Some(player_cards) = context.downcast_ref::<Cards>() {
+                // self.cards가 비어 있으면 무조건 유효함
+                if self.cards.is_empty() {
+                    return Some(());
+                }
+
+                // 카드 UUID 유효성 검사
+                if !self
+                    .cards
+                    .iter()
+                    .all(|uuid| player_cards.contains_uuid(uuid.clone()))
+                {
+                    return None;
+                }
+
+                // 플레이어 ID 유효성 검사
+                if !matches!(self.player.as_str(), "player1" | "player2") {
+                    return None;
+                }
+
+                Some(())
+            } else {
+                None // 잘못된 컨텍스트 타입
+            }
+        }
+    }
+
+    #[derive(Serialize, Deserialize, Debug, Clone)]
+    struct ErrorPayload {
+        pub message: String,
+    }
+
+    impl MessagePayload for ErrorPayload {}
+
+    #[derive(Serialize, Deserialize, Debug)]
+    #[serde(tag = "action", content = "payload")]
+    pub enum ClientMessage {
+        #[serde(rename = "draw")]
+        Draw(DrawPayload),
+    }
+
+    impl Message for ClientMessage {}
+
+    #[derive(Serialize, Deserialize, Debug)]
+    #[serde(tag = "action", content = "payload")]
+    pub enum ServerMessage {
+        #[serde(rename = "draw")]
+        Draw(DrawPayload),
+        #[serde(rename = "error")]
+        Error(ErrorPayload),
+    }
+
+    impl Message for ServerMessage {}
+}
 //------------------------------------------------------------------------------
 // 메시지 매크로 및 유틸리티 함수
 //------------------------------------------------------------------------------

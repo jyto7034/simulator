@@ -466,16 +466,41 @@ pub async fn handle_mulligan(
 #[get("/draw_step")]
 pub async fn handle_draw(
     player: AuthPlayer,
-    req: HttpRequest,
-    payload: web::Payload,
     state: web::Data<ServerState>,
 ) -> Result<HttpResponse, ServerError> {
     let player_type = player.ptype;
-    // mulligan 때는, player 의 selected_cards 의 갯수를 확인해서 Re-Entry 를 방지했는데
-    // Draw 페이즈때는 그런 방법이 없음.
-    // 
     
-    let (resp, _, _) = handle(&req, payload).map_err(|_| ServerError::HandleFailed)?;
+    // 드로우 카드와 기타 필요한 정보를 얻음
+    let drawn_card = {
+        let mut game = state.game.lock().await;
+        
+        // 플레이어가 이미 카드를 뽑은 경우를 확인함
+        if game.phase_state.has_player_completed(player_type) {
+            return Err(ServerError::InvalidApproach);
+        }
+        // 플레이어의 드로우 완료 표시
+        game.phase_state.mark_player_completed(player_type);
+        
+        game.draw_card(player_type)?;
+    };
     
-    Ok(resp)
+    // 원하는 정보를 JSON 형태로 구성
+    let response_data = serde_json::json!({
+        "status": "success",
+        "phase": "draw",
+        "player": player_type.to_string(),
+        "drawn_card": {
+            "id": drawn_card.id,
+            "name": drawn_card.name,
+            "card_type": drawn_card.card_type,
+            // 카드의 기타 필요한 정보...
+        },
+        "remaining_cards": deck_count,
+        // 기타 필요한 게임 상태 정보...
+    });
+    
+    // JSON 응답 반환
+    Ok(HttpResponse::Ok()
+        .content_type("application/json")
+        .body(response_data.to_string()))
 }
