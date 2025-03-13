@@ -1,5 +1,8 @@
 use crate::{
-    enums::{phase::{Phase, PhaseState}, DeckCode},
+    enums::{
+        phase::{Phase, PhaseState},
+        DeckCode,
+    },
     exception::GameError,
     game::{turn_manager::Turn, Game, GameConfig},
     OptArc,

@@ -12,7 +12,7 @@ use serde_json::{json, Value};
 use tokio::{net::TcpStream, sync::Mutex};
 
 use crate::{
-    card::Card,
+    card::{cards::CardVecExt, types::PlayerType, Card},
     card_gen::CardGenerator,
     enums::{DeckCode, CARD_JSON_PATH, MAX_CARD_SIZE, TIMEOUT, UUID},
     server::{
@@ -22,6 +22,7 @@ use crate::{
         types::{ServerState, SessionKey},
     },
     utils::{json, parse_json_to_deck_code},
+    zone::zone::Zone,
 };
 
 pub fn initialize_app(p1_deck: DeckCode, p2_deck: DeckCode, attacker: usize) -> crate::app::App {
@@ -210,6 +211,49 @@ pub async fn expect_mulligan_complete_message(
     }
 }
 
+pub fn verify_mulligan_cards(
+    server_state: &ServerState,
+    player_type: PlayerType,
+    rerolled_cards: &[UUID],
+    deal_cards: Option<&[UUID]>,
+    reroll_count: usize,
+) {
+    let game = server_state.game.try_lock().unwrap();
+    let player = game.get_player_by_type(player_type).get();
+    let deck_cards = player.get_deck().get_cards();
+
+    // 덱 크기 검증
+    if deck_cards.len() != 25 {
+        panic!(
+            "Mulligan error: Wrong deck size. expected: {}, Got: {}",
+            25,
+            deck_cards.len()
+        );
+    }
+
+    // 뽑은 카드가 덱에 없는지 확인
+    for card in rerolled_cards {
+        if deck_cards.contains_uuid(card.clone()) {
+            panic!(
+                "Mulligan error (reroll_count = {}): Rerolled card {:?} should not be present in deck",
+                reroll_count, card
+            );
+        }
+    }
+
+    // RerollRequest 경우 이전 카드가 덱에 복원되었는지 확인
+    if let Some(cards) = deal_cards {
+        for card in cards {
+            if !deck_cards.contains_uuid(card.clone()) {
+                panic!(
+                    "Mulligan restore error (reroll_count = {}): Restored card {:?} not found in deck",
+                    reroll_count, card
+                );
+            }
+        }
+    }
+}
+
 pub struct WebSocketTest {
     stream: WebSocketStream<TokioAdapter<TcpStream>>,
 }
@@ -228,7 +272,7 @@ impl WebSocketTest {
             .body(())?;
 
         let (stream, response) = connect_async(request).await?;
-        
+
         assert_eq!(
             response.status(),
             tungstenite::http::StatusCode::SWITCHING_PROTOCOLS
@@ -254,7 +298,7 @@ impl WebSocketTest {
                     Some(Ok(Message::Text(text))) => {
                         if let Ok(parsed) = serde_json::from_str::<T>(&text) {
                             return extractor(parsed);
-                        }else{
+                        } else {
                             println!("Failed to parse: {}", text);
                         }
                     }
@@ -267,8 +311,7 @@ impl WebSocketTest {
                 }
             }
         };
-        match tokio::time::timeout(Duration::from_secs(TIMEOUT), callback).await
-        {
+        match tokio::time::timeout(Duration::from_secs(TIMEOUT), callback).await {
             Ok(result) => result,
             Err(_) => panic!("Expected message timeout after 5 seconds"),
         }
@@ -286,9 +329,18 @@ impl WebSocketTest {
     /// 멀리건 완료 메시지를 기다리고 카드 ID 리스트를 반환합니다
     pub async fn expect_mulligan_complete(&mut self) -> Vec<UUID> {
         // TODO: 다른 expect 함수들도 가독성 수정해야함.
-        let extractor = |message: mulligan::ClientMessage| 
-        match message {
+        let extractor = |message: mulligan::ClientMessage| match message {
             mulligan::ClientMessage::Complete(data) => data.cards,
+            other => panic!("Expected MulliganMessage::Complete but got: {:?}", other),
+        };
+        self.expect_message(extractor).await
+    }
+
+    /// Reroll-Answer 메시지를 기다리고 카드 ID 리스트를 반환합니다
+    pub async fn expect_mulligan_answer(&mut self) -> Vec<UUID> {
+        // TODO: 다른 expect 함수들도 가독성 수정해야함.
+        let extractor = |message: mulligan::ServerMessage| match message {
+            mulligan::ServerMessage::RerollAnswer(data) => data.cards,
             other => panic!("Expected MulliganMessage::Complete but got: {:?}", other),
         };
         self.expect_message(extractor).await

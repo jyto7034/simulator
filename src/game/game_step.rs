@@ -58,7 +58,7 @@ impl Game {
             .get_player_by_type(player_type)
             .get()
             .get_deck_mut()
-            .take_card(Box::new(TopTake(TargetCount::Exact(count))))
+            .take_card(Box::new(TopTake(TargetCount::Exact(count))))?
             .iter()
             .map(|card| return card.get_uuid())
             .collect())

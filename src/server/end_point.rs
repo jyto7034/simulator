@@ -4,32 +4,31 @@ use std::time::Duration;
 use actix_web::{get, web, FromRequest, HttpRequest, HttpResponse};
 use actix_ws::{handle, Message};
 use futures_util::StreamExt;
-use uuid::Uuid;
 use std::future::Future;
+use uuid::Uuid;
 
 use crate::enums::phase::Phase;
 use crate::enums::{COUNT_OF_MULLIGAN_CARDS, TIMEOUT};
 use crate::exception::MessageProcessResult;
-use crate::try_send_error;
 use crate::server::helper::{process_mulligan_completion, send_error_and_check, MessageHandler};
-use crate::server::jsons::mulligan::{self, serialize_complete_message, serialize_deal_message};
+use crate::server::jsons::mulligan::{
+    self, serialize_complete_message, serialize_deal_message, serialize_reroll_answer,
+};
 use crate::server::jsons::ValidationPayload;
+use crate::try_send_error;
 use crate::{card::types::PlayerType, exception::ServerError};
 
 use super::types::ServerState;
 
 #[derive(Debug, Clone, Copy)]
-pub struct AuthPlayer{
+pub struct AuthPlayer {
     ptype: PlayerType,
     session_id: Uuid,
 }
 
 impl AuthPlayer {
     fn new(ptype: PlayerType, session_id: Uuid) -> Self {
-        Self {
-            ptype,
-            session_id,
-        }
+        Self { ptype, session_id }
     }
 }
 
@@ -56,7 +55,6 @@ impl FromRequest for AuthPlayer {
             let Some(game_step) = req.cookie("game_step") else {
                 return Err(ServerError::CookieNotFound);
             };
-            
 
             let cookie = cookie.to_string().replace("user_id=", "");
             let game_step = game_step.to_string().replace("game_step=", "");
@@ -204,7 +202,13 @@ pub async fn handle_mulligan(
     // 플레이어가 재진입을 시도하는 경우
     {
         let game = state.game.lock().await;
-        if !game.get_player_by_type(player.ptype).get().get_mulligan_state_mut().get_select_cards().is_empty(){
+        if !game
+            .get_player_by_type(player.ptype)
+            .get()
+            .get_mulligan_state_mut()
+            .get_select_cards()
+            .is_empty()
+        {
             return Err(ServerError::InvalidApproach);
         }
     }
@@ -298,7 +302,10 @@ pub async fn handle_mulligan(
                                     }
 
                                     let mut game = state.game.lock().await;
-                                    let player_type = AuthPlayer::new(payload.player.clone().into(), mulligan_session_id);
+                                    let player_type = AuthPlayer::new(
+                                        payload.player.clone().into(),
+                                        mulligan_session_id,
+                                    );
 
                                     // 플레이어가 이미 준비 상태인 경우
                                     if game
@@ -340,11 +347,11 @@ pub async fn handle_mulligan(
                                         .get_mulligan_state_mut()
                                         .add_select_cards(rerolled_card.clone());
 
-                                    let _ =
-                                        match process_mulligan_completion(&mut game, player_type) {
-                                            Ok(selected_cards) => selected_cards,
-                                            Err(_) => break,
-                                        };
+                                    // 멀리건 완료 단계를 수행합니다.
+                                    match process_mulligan_completion(&mut game, player_type) {
+                                        Ok(selected_cards) => selected_cards,
+                                        Err(_) => break,
+                                    };
 
                                     if game
                                         .get_player_by_type(player_type.reverse())
@@ -355,14 +362,20 @@ pub async fn handle_mulligan(
                                         // TODO: 다음 단계로 넘어가는 코드 작성
                                     }
 
-                                    let Ok(rerolled_cards_json) =
-                                        serialize_complete_message(player_type, rerolled_card)
+                                    let selected_cards = game
+                                        .get_player_by_type(player_type)
+                                        .get()
+                                        .get_mulligan_state_mut()
+                                        .get_select_cards();
+
+                                    let Ok(selected_cards_json) =
+                                        serialize_reroll_answer(player_type, selected_cards)
                                     else {
                                         // TODO 재시도 혹은 기타 처리
                                         break;
                                     };
 
-                                    let Ok(_) = session.text(rerolled_cards_json).await else {
+                                    let Ok(_) = session.text(selected_cards_json).await else {
                                         // TODO 재시도 혹은 기타 처리
                                         break;
                                     };
@@ -376,7 +389,10 @@ pub async fn handle_mulligan(
                                         try_send_error!(session, ServerError::InvalidPlayer, retry 3);
                                     }
                                     let mut game = state.game.lock().await;
-                                    let player_type = AuthPlayer::new(payload.player.clone().into(), mulligan_session_id);
+                                    let player_type = AuthPlayer::new(
+                                        payload.player.clone().into(),
+                                        mulligan_session_id,
+                                    );
 
                                     // 이미 준비가 되어있다면 send_error_and_check 함수를 통해 에러 메시지를 전송하고 종료합니다.
                                     if game
@@ -418,7 +434,7 @@ pub async fn handle_mulligan(
                                         // TODO 재시도 혹은 기타 처리
                                         break;
                                     };
-                                    
+
                                     let Ok(_) = session.text(json).await else {
                                         // TODO 재시도 혹은 기타 처리
                                         break;
@@ -455,50 +471,33 @@ pub async fn handle_mulligan(
     Ok(resp)
 }
 
-// draw 페이즈
-// WebSocket 연결이 필요한가?
-// 서버 -> 클라이언트로 카드 UUID 만을 전송하고 연결을 종료하기 때문에 WebSocket 연결 수립까지는 필요 없을듯?
-// 반대로
-// 클라이언트 -> 서버측으로 전송해야 할 정보가 있는가?
-// trigger 카드 혹은 spell 카드 효과 처리는 StandBy 페이즈에서 처리하는가? 에 따라서 달라질 수 있을 것 같음.
-// 일단 StandBy 페이즈에서 처리하는 것으로 가정하고 구현함.
-// 따라서, draw 페이즈에서는 카드를 뽑는 것만 처리하면 됨.
 #[get("/draw_step")]
 pub async fn handle_draw(
     player: AuthPlayer,
     state: web::Data<ServerState>,
 ) -> Result<HttpResponse, ServerError> {
     let player_type = player.ptype;
-    
+
     // 드로우 카드와 기타 필요한 정보를 얻음
     let drawn_card = {
         let mut game = state.game.lock().await;
-        
+
         // 플레이어가 이미 카드를 뽑은 경우를 확인함
         if game.phase_state.has_player_completed(player_type) {
             return Err(ServerError::InvalidApproach);
         }
         // 플레이어의 드로우 완료 표시
         game.phase_state.mark_player_completed(player_type);
-        
-        game.draw_card(player_type)?;
+
+        // 만약 draw_card 함수가 모종의 이유로 실패한다면 completed mark 를 제거하고 에러를 반환함
+        game.draw_card(player_type).inspect_err(|_| {
+            game.phase_state.reset_player_completed(player_type);
+        })?
     };
-    
+
     // 원하는 정보를 JSON 형태로 구성
-    let response_data = serde_json::json!({
-        "status": "success",
-        "phase": "draw",
-        "player": player_type.to_string(),
-        "drawn_card": {
-            "id": drawn_card.id,
-            "name": drawn_card.name,
-            "card_type": drawn_card.card_type,
-            // 카드의 기타 필요한 정보...
-        },
-        "remaining_cards": deck_count,
-        // 기타 필요한 게임 상태 정보...
-    });
-    
+    let response_data = serde_json::json!({});
+
     // JSON 응답 반환
     Ok(HttpResponse::Ok()
         .content_type("application/json")

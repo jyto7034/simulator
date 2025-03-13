@@ -256,7 +256,6 @@ impl PlayerType {
             PlayerType::Player1 => "player1".to_string(),
             PlayerType::Player2 => "player2".to_string(),
         }
-
     }
 }
 

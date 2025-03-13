@@ -133,7 +133,7 @@ pub mod mulligan {
     }
 }
 
-pub mod draw{
+pub mod draw {
     use super::*;
 
     #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -142,7 +142,7 @@ pub mod draw{
         pub cards: Vec<UUID>,
     }
 
-    impl MessagePayload for DrawPayload{}
+    impl MessagePayload for DrawPayload {}
 
     impl ValidationPayload for DrawPayload {
         fn validate(&self, context: &dyn Any) -> Option<()> {
@@ -183,8 +183,8 @@ pub mod draw{
     #[derive(Serialize, Deserialize, Debug)]
     #[serde(tag = "action", content = "payload")]
     pub enum ClientMessage {
-        #[serde(rename = "draw")]
-        Draw(DrawPayload),
+        #[serde(rename = "draw-request")]
+        DrawRequest(DrawPayload),
     }
 
     impl Message for ClientMessage {}
@@ -192,13 +192,25 @@ pub mod draw{
     #[derive(Serialize, Deserialize, Debug)]
     #[serde(tag = "action", content = "payload")]
     pub enum ServerMessage {
-        #[serde(rename = "draw")]
-        Draw(DrawPayload),
+        #[serde(rename = "draw-answer")]
+        DrawAnswer(DrawPayload),
         #[serde(rename = "error")]
         Error(ErrorPayload),
     }
 
     impl Message for ServerMessage {}
+
+    /// 클라이언트로 전송할 Draw 카드의 정보가 담긴 메세지를 직렬화합니다.
+    pub fn serialize_draw_answer_message<T: Into<String>>(
+        player: T,
+        cards: Vec<UUID>,
+    ) -> Result<String, ServerError> {
+        let message = ServerMessage::DrawAnswer(DrawPayload {
+            player: player.into(),
+            cards,
+        });
+        serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
+    }
 }
 //------------------------------------------------------------------------------
 // 메시지 매크로 및 유틸리티 함수

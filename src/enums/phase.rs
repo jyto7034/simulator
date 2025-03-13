@@ -19,11 +19,15 @@ impl PhaseState {
     pub fn has_player_completed(&self, player_type: PlayerType) -> bool {
         self.completed_players.contains(&player_type)
     }
-    
+
     pub fn mark_player_completed(&mut self, player_type: PlayerType) {
         self.completed_players.insert(player_type);
     }
-    
+
+    pub fn reset_player_completed(&mut self, player_type: PlayerType) {
+        self.completed_players.remove(&player_type);
+    }
+
     pub fn reset(&mut self) {
         self.completed_players.clear();
     }

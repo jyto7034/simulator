@@ -7,7 +7,7 @@ use crate::{
 pub trait Zone {
     fn add_card(&mut self, cards: Vec<Card>, insert: Box<dyn Insert>) -> Result<(), GameError>;
 
-    fn take_card(&mut self, take_type: Box<dyn Take>) -> Vec<Card>;
+    fn take_card(&mut self, take_type: Box<dyn Take>) -> Result<Vec<Card>, GameError>;
 
     fn remove_card(&mut self, uuid: UUID);
 

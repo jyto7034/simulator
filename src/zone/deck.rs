@@ -54,7 +54,7 @@ impl Zone for Deck {
         todo!()
     }
 
-    fn take_card(&mut self, mut take_type: Box<dyn Take>) -> Vec<Card> {
+    fn take_card(&mut self, mut take_type: Box<dyn Take>) -> Result<Vec<Card>, GameError> {
         take_type.as_mut().take(self)
     }
 }

@@ -52,7 +52,7 @@ impl Zone for Effect {
         todo!()
     }
 
-    fn take_card(&mut self, take_type: Box<dyn Take>) -> Vec<Card> {
+    fn take_card(&mut self, take_type: Box<dyn Take>) -> Result<Vec<Card>, GameError> {
         todo!()
     }
 }

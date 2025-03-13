@@ -151,13 +151,10 @@ impl ResponseError for ServerError {
             Self::InvalidPayload => {
                 HttpResponse::build(StatusCode::BAD_REQUEST).body("Invalid Payload")
             }
-            Self::ActiveSessionExists(msg) => {
-                HttpResponse::build(StatusCode::CONFLICT)
-                    .body(format!("Active session exists: {}", msg))
-            }
+            Self::ActiveSessionExists(msg) => HttpResponse::build(StatusCode::CONFLICT)
+                .body(format!("Active session exists: {}", msg)),
             Self::ParseError(msg) => {
-                HttpResponse::build(StatusCode::BAD_REQUEST)
-                    .body(format!("Parse error: {}", msg))
+                HttpResponse::build(StatusCode::BAD_REQUEST).body(format!("Parse error: {}", msg))
             }
             Self::UnexpectedMessage => {
                 HttpResponse::build(StatusCode::BAD_REQUEST).body("Unexpected message")
@@ -170,7 +167,7 @@ impl ResponseError for ServerError {
             }
             Self::InvalidApproach => {
                 HttpResponse::build(StatusCode::BAD_REQUEST).body("Invalid approach")
-            },
+            }
             Self::NotAllowedReEntry => {
                 HttpResponse::build(StatusCode::CONFLICT).body("Not allowed re-entry")
             }

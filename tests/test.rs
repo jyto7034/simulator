@@ -3,9 +3,15 @@ pub mod game_test {
     use actix_web::{dev::ServerHandle, web::Data};
     use async_tungstenite::tungstenite::Message;
     use card_game::{
-        card::{cards::CardVecExt, types::PlayerType}, enums::{COUNT_OF_MULLIGAN_CARDS, TIMEOUT}, exception::ServerError, server::types::ServerState, test::{spawn_server, WebSocketTest}, zone::zone::Zone
+        card::types::PlayerType,
+        enums::{COUNT_OF_MULLIGAN_CARDS, TIMEOUT},
+        exception::ServerError,
+        server::types::ServerState,
+        test::{spawn_server, verify_mulligan_cards, WebSocketTest},
+        zone::zone::Zone,
     };
     use once_cell::sync::Lazy;
+    use rand::Rng;
     use serde_json::json;
     use std::{net::SocketAddr, time::Duration};
     use tokio::{sync::Mutex, time::sleep};
@@ -99,10 +105,7 @@ pub mod game_test {
         let client = reqwest::Client::new();
         let response = client
             .get(format!("http://{}/mulligan_step", addr))
-            .header(
-                "Cookie",
-                format!("user_id={}; game_step=draw", player_type),
-            )
+            .header("Cookie", format!("user_id={}; game_step=draw", player_type))
             .send()
             .await
             .expect("request failed");
@@ -119,7 +122,10 @@ pub mod game_test {
             panic!("Unexpected error response")
         };
 
-        assert_eq!(error_message, ServerError::WrongPhase("".to_string(), "".to_string()).to_string());
+        assert_eq!(
+            error_message,
+            ServerError::WrongPhase("".to_string(), "".to_string()).to_string()
+        );
     }
 
     // 이 테스트 뭔가 문제가 많음
@@ -169,7 +175,7 @@ pub mod game_test {
     //     assert_eq!("INVALID_APPROACH", ws.expect_error().await);
 
     // }
-    
+
     #[actix_web::test]
     async fn test_mulligan_re_entry() {
         let (addr, _, _) = spawn_server().await;
@@ -182,16 +188,18 @@ pub mod game_test {
             "mulligan"
         );
 
-        let mut ws = WebSocketTest::connect(url.clone(), cookie.clone()).await.unwrap();
+        let mut ws = WebSocketTest::connect(url.clone(), cookie.clone())
+            .await
+            .unwrap();
 
         // 초기 카드 받기
         let _ = ws.expect_mulligan_deal().await;
 
         // 엔드포인트 재진입
-        if let Err(e) = WebSocketTest::connect(url, cookie).await{
+        if let Err(e) = WebSocketTest::connect(url, cookie).await {
             println!("{}", e.to_string());
             assert_eq!(e.to_string(), "HTTP error: 400 Bad Request");
-        }else{
+        } else {
             panic!("Re-entry is not allowed");
         }
     }
@@ -237,6 +245,20 @@ pub mod game_test {
 
     #[actix_web::test]
     async fn test_mulligan_reroll_restore_variants() -> std::io::Result<()> {
+        enum MulliganAction {
+            RerollRequest,
+            Complete,
+        }
+
+        impl MulliganAction {
+            pub fn as_str(&self) -> &str {
+                match self {
+                    MulliganAction::RerollRequest => "reroll-request",
+                    MulliganAction::Complete => "complete",
+                }
+            }
+        }
+
         async fn run_mulligan_case(reroll_count: usize) -> std::io::Result<()> {
             async fn run_mulligan_case_each_player(
                 reroll_count: usize,
@@ -253,8 +275,16 @@ pub mod game_test {
                 // 나머지 테스트 로직...
                 deal_cards.truncate(reroll_count);
 
+                let action = if rand::thread_rng().gen_bool(0.5) {
+                    MulliganAction::RerollRequest
+                } else {
+                    MulliganAction::Complete
+                };
+
+                println!("Player: {}, Action: {}", player_type, action.as_str());
+
                 let json = json!({
-                    "action": "reroll-request",
+                    "action": action.as_str(),
                     "payload": {
                         "player": player_type,
                         "cards": deal_cards
@@ -265,49 +295,27 @@ pub mod game_test {
                     .await
                     .expect("Failed to send message");
 
-                let rerolled_cards = ws.expect_mulligan_complete().await;
-
-                {
-                    let game = server_state.game.try_lock().unwrap();
-                    let player = game.get_player_by_type(player_type).get();
-                    let deck_cards = player.get_deck().get_cards();
-                    if deck_cards.len() != 25 {
-                        panic!(
-                            "Mulligan error: Wrong deck size. expected: {}, Got: {}",
-                            25,
-                            deck_cards.len()
-                        );
-                    }
-                    for card in &deal_cards {
-                        if !deck_cards.contains_uuid(card.clone()) {
-                            panic!(
-                            "Mulligan restore error (reroll_count = {}): Restored card {:?} not found in deck",
-                            reroll_count, card
-                        );
-                        }
-                    }
-                }
-
-                {
-                    let game = server_state.game.try_lock().unwrap();
-                    let player = game.get_player_by_type(player_type).get();
-                    let deck_cards = player.get_deck().get_cards();
-                    if deck_cards.len() != 25 {
-                        panic!(
-                            "Mulligan error: Wrong deck size. expected: {}, Got: {}",
-                            25,
-                            deck_cards.len()
-                        );
-                    }
-                    for card in &rerolled_cards {
-                        if deck_cards.contains_uuid(card.clone()) {
-                            panic!(
-                            "Mulligan error (reroll_count = {}): Rerolled card {:?} should not be present in deck",
-                            reroll_count, card
-                        );
-                        }
-                    }
-                }
+                if let MulliganAction::RerollRequest = action {
+                    let cards = ws.expect_mulligan_answer().await;
+                    // RerollRequest일 때는 이전 카드들이 덱에 복원되었는지 검증
+                    verify_mulligan_cards(
+                        &server_state,
+                        player_type.into(),
+                        &cards,
+                        Some(&deal_cards),
+                        reroll_count,
+                    );
+                } else {
+                    let cards = ws.expect_mulligan_complete().await;
+                    // Complete일 때는 복원 검증 없이 뽑은 카드만 검증
+                    verify_mulligan_cards(
+                        &server_state,
+                        player_type.into(),
+                        &cards,
+                        None,
+                        reroll_count,
+                    );
+                };
                 Ok(())
             }
 

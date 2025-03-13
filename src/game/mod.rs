@@ -8,7 +8,17 @@ use std::collections::HashMap;
 use turn_manager::Turn;
 
 use crate::{
-    card::{cards::CardVecExt, insert::BottomInsert, take::BottomTake, types::PlayerType, Card}, enums::{phase::{Phase, PhaseState}, DeckCode, UUID}, exception::GameError, selector::TargetCount, unit::player::{Player, Resoruce}, utils::deckcode_to_cards, zone::zone::Zone, OptArc
+    card::{cards::CardVecExt, insert::BottomInsert, take::BottomTake, types::PlayerType, Card},
+    enums::{
+        phase::{Phase, PhaseState},
+        DeckCode, UUID,
+    },
+    exception::GameError,
+    selector::TargetCount,
+    unit::player::{Player, Resoruce},
+    utils::deckcode_to_cards,
+    zone::zone::Zone,
+    OptArc,
 };
 
 pub struct GameConfig {
@@ -92,7 +102,7 @@ impl Game {
         &mut self.turn
     }
 
-    pub fn move_phase(&mut self){
+    pub fn move_phase(&mut self) {
         self.phase_state.get_phase().move_to_next_phase();
     }
 
@@ -105,13 +115,19 @@ impl Game {
     }
 
     /// 플레이어의 덱에서 카드를 뽑아 손에 추가합니다.
-    pub fn draw_card(&mut self, player_type: PlayerType) -> Result<(), GameError> {
-        self.get_player_by_type(player_type)
+    pub fn draw_card(&mut self, player_type: PlayerType) -> Result<UUID, GameError> {
+        let result = self
+            .get_player_by_type(player_type)
             .get()
             .get_deck_mut()
-            .take_card(Box::new(BottomTake(TargetCount::Exact(1))));
+            .take_card(Box::new(BottomTake(TargetCount::Exact(1))))?;
 
-        todo!();
+        // TODO: 이 확인이 필요한가?
+        if result.is_empty() {
+            return Err(GameError::NoCardsLeft);
+        }
+
+        Ok(result[0].get_uuid())
     }
 
     pub fn restore_card(
