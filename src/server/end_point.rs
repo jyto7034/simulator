@@ -7,9 +7,9 @@ use futures_util::StreamExt;
 use std::future::Future;
 use uuid::Uuid;
 
-use crate::enums::phase::Phase;
 use crate::enums::{COUNT_OF_MULLIGAN_CARDS, TIMEOUT};
 use crate::exception::MessageProcessResult;
+use crate::game::phase::Phase;
 use crate::server::helper::{process_mulligan_completion, send_error_and_check, MessageHandler};
 use crate::server::jsons::draw::serialize_draw_answer_message;
 use crate::server::jsons::mulligan::{
@@ -82,7 +82,7 @@ impl FromRequest for AuthPlayer {
                 // 세션 등록 (새 세션 또는 기존 세션 ID 반환)
                 let session_id = state
                     .session_manager
-                    .register_session(player_type, Phase::Mulligan)
+                    .register_session(player_type, game_step.clone().into())
                     .await;
 
                 // 다른 엔드포인트에 이미 유효한 세션이 있는지 확인
@@ -194,9 +194,9 @@ impl From<AuthPlayer> for String {
 #[get("/mulligan_step")]
 pub async fn handle_mulligan(
     player: AuthPlayer,
+    state: web::Data<ServerState>,
     req: HttpRequest,
     payload: web::Payload,
-    state: web::Data<ServerState>,
 ) -> Result<HttpResponse, ServerError> {
     // 멀리건 수행 중 연결이 끊힌 경우, 재진입을 허용해야 하는데, 아직 뚜렷한 방법이 떠오르진 않음.
 

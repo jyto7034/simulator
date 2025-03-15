@@ -1,7 +1,4 @@
-use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-
-pub mod phase;
 
 pub const CARD_ID_JSON_PATH: &str = "Resource/cards_id.json";
 pub const CARD_JSON_PATH: &str = "Resource/cards.json";

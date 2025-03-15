@@ -1,19 +1,18 @@
 pub mod game_step;
 mod getter;
 mod helper;
+pub mod phase;
 pub mod turn_manager;
 
 use std::collections::HashMap;
 
+use phase::{Phase, PhaseState};
 use turn_manager::Turn;
 use uuid::Uuid;
 
 use crate::{
     card::{cards::CardVecExt, insert::BottomInsert, take::BottomTake, types::PlayerType, Card},
-    enums::{
-        phase::{Phase, PhaseState},
-        DeckCode,
-    },
+    enums::DeckCode,
     exception::GameError,
     selector::TargetCount,
     unit::player::{Player, Resoruce},
@@ -97,6 +96,14 @@ impl Game {
 
     pub fn get_phase(&self) -> Phase {
         self.phase_state.get_phase()
+    }
+
+    pub fn get_phase_state_mut(&mut self) -> &mut PhaseState {
+        &mut self.phase_state
+    }
+
+    pub fn get_phase_state(&mut self) -> &PhaseState {
+        &self.phase_state
     }
 
     pub fn get_turn_mut(&mut self) -> &mut Turn {

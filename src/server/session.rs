@@ -1,7 +1,7 @@
 use std::{collections::HashMap, sync::Arc, time::Instant};
 use uuid::Uuid;
 
-use crate::{card::types::PlayerType, enums::phase::Phase};
+use crate::{card::types::PlayerType, game::phase::Phase};
 
 #[derive(Clone)]
 struct SessionInfo {

@@ -22,6 +22,10 @@ pub trait CardVecExt {
 }
 
 impl CardVecExt for Vec<Card> {
+    /// Vec<Card> 에서 특정 Uuid 를 가진 Card 가 존재하는지 확인합니다.
+    /// # RETURNS
+    /// * `true` - 존재하는 경우
+    /// * `false` - 존재하지 않는 경우
     fn contains_uuid<U: Into<Uuid>>(&self, uuid: U) -> bool {
         let uuid = uuid.into();
         self.iter().any(|card| card.uuid == uuid)

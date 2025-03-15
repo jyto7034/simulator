@@ -1,10 +1,11 @@
 use crate::{
-    enums::{
-        phase::{Phase, PhaseState},
-        DeckCode,
-    },
+    enums::DeckCode,
     exception::GameError,
-    game::{turn_manager::Turn, Game, GameConfig},
+    game::{
+        phase::{Phase, PhaseState},
+        turn_manager::Turn,
+        Game, GameConfig,
+    },
     OptArc,
 };
 

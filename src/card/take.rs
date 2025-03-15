@@ -46,7 +46,23 @@ impl Take for TopTake {
 
 impl Take for BottomTake {
     fn take(&mut self, zone: &mut dyn Zone) -> Result<Vec<Card>, GameError> {
-        todo!()
+        let cards = zone.get_cards_mut();
+        let available = cards.len();
+
+        let count = match self.0 {
+            TargetCount::Exact(n) => min(n, available),
+            TargetCount::Range(low, high) => {
+                if available < low {
+                    0
+                } else {
+                    min(high, available)
+                }
+            }
+            TargetCount::Any => available,
+            TargetCount::None => 0,
+        };
+
+        Ok(cards.drain(0..count).collect())
     }
 
     fn clone_box(&self) -> Box<dyn Take> {

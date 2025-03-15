@@ -1,38 +1,59 @@
-// #[cfg(test)]
-// pub mod draw {
-//     use actix_web::{dev::ServerHandle, web::Data};
-//     use async_tungstenite::tungstenite::Message;
-//     use card_game::{
-//         card::types::PlayerType,
-//         enums::{COUNT_OF_MULLIGAN_CARDS, TIMEOUT},
-//         exception::ServerError,
-//         server::types::ServerState,
-//         test::{spawn_server, verify_mulligan_cards, WebSocketTest},
-//         zone::zone::Zone,
-//     };
-//     use once_cell::sync::Lazy;
-//     use rand::Rng;
-//     use serde_json::json;
-//     use std::{net::SocketAddr, time::Duration};
-//     use tokio::{sync::Mutex, time::sleep};
+#[cfg(test)]
+pub mod draw {
+    use card_game::{
+        card::{cards::CardVecExt, types::PlayerType},
+        game::phase::Phase,
+        test::{spawn_server, RequestTest},
+        zone::zone::Zone,
+    };
 
-//     #[actix_web::test]
-//     async fn test_draw() {
-//         let (addr, _, _) = spawn_server().await;
-//         let player_type = PlayerType::Player1.as_str();
+    #[actix_web::test]
+    async fn test_draw_card() {
+        let (addr, state, _) = spawn_server().await;
+        let player_type = PlayerType::Player1.as_str();
+        let cookie = format!("user_id={}; game_step=drawphase", player_type);
+        {
+            state
+                .game
+                .lock()
+                .await
+                .get_phase_state_mut()
+                .set_phase(Phase::DrawPhase);
+        }
 
-//         // WebSocketTest 객체를 사용하여 훨씬 더 간결한 코드 작성
-//         let url = format!("ws://{}/draw", addr);
-//         let cookie = format!("user_id={}; game_step={}", player_type, "draw");
+        let mut response = RequestTest::connect("darwphase", addr, cookie)
+            .await
+            .expect("Failed to connect");
 
-//         let mut ws = WebSocketTest::connect(url, cookie).await.unwrap();
+        let card_uuid = response.expect_draw_card();
 
-//         // 초기 카드 받기
-//         let card = ws.expect_draw_card().await;
+        println!("Card UUID: {}", card_uuid);
 
-//         // TODO: card 가 유효한지. 실제 Deck 에서 삭제가 되었는지
-//     }
-// }
+        // TODO: card 가 유효한지. 실제 Deck 에서 삭제가 되었는지
+        {
+            let game = state.game.lock().await;
+            let player = game.get_player_by_type(player_type).get();
+            let deck = player.get_deck();
+            if deck.get_cards().contains_uuid(card_uuid) {
+                panic!("Card is not removed from deck");
+            }
+        }
+    }
+
+    #[actix_web::test]
+    #[should_panic]
+    async fn test_draw_wrong_phase() {
+        let (addr, _, _) = spawn_server().await;
+        let player_type = PlayerType::Player1.as_str();
+        let cookie = format!("user_id={}; game_step=drawphase", player_type);
+
+        let mut response = RequestTest::connect("darwphase", addr, cookie)
+            .await
+            .expect("Failed to connect");
+
+        let _ = response.expect_draw_card();
+    }
+}
 
 #[cfg(test)]
 pub mod mulligan {

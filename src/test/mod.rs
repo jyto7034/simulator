@@ -7,6 +7,7 @@ use async_tungstenite::{
 };
 use futures_util::StreamExt;
 use rand::{seq::SliceRandom, thread_rng};
+use reqwest::Response;
 use serde::de::DeserializeOwned;
 use serde_json::{json, Value};
 use tokio::{net::TcpStream, sync::Mutex};
@@ -17,7 +18,7 @@ use crate::{
     card_gen::CardGenerator,
     enums::{DeckCode, CARD_JSON_PATH, MAX_CARD_SIZE, TIMEOUT},
     server::{
-        end_point::handle_mulligan,
+        end_point::{handle_draw, handle_mulligan},
         jsons::{draw, mulligan, ErrorMessage},
         session::PlayerSessionManager,
         types::{ServerState, SessionKey},
@@ -115,6 +116,7 @@ pub async fn spawn_server() -> (SocketAddr, Data<ServerState>, ServerHandle) {
         App::new()
             .app_data(server_state.clone())
             .service(handle_mulligan)
+            .service(handle_draw)
     })
     .listen(listener)
     .unwrap()
@@ -256,6 +258,57 @@ pub fn verify_mulligan_cards(
     }
 }
 
+pub struct RequestTest {
+    pub response: String,
+}
+
+impl RequestTest {
+    pub async fn connect(
+        step: &str,
+        addr: SocketAddr,
+        cookie: String,
+    ) -> Result<Self, reqwest::Error> {
+        let client = reqwest::Client::new();
+        let response = client
+            .get(format!("http://{}/draw_step", addr))
+            .header("Cookie", cookie)
+            .send()
+            .await?;
+
+        Ok(RequestTest {
+            response: response.text().await.expect("Failed to get response"),
+        })
+    }
+
+    /// 특정 타입의 메세지를 예상합니다. 예상한 메세지가 아닌 경우, panic! 합니다.
+    pub fn expect_message<T, F, R>(&mut self, extractor: F) -> R
+    where
+        T: DeserializeOwned,
+        F: Fn(T) -> R,
+    {
+        let msg = serde_json::from_str::<T>(self.response.as_str()).expect("Failed to parse JSON");
+        extractor(msg)
+    }
+}
+
+//-------------------------------
+// Draw 관련 함수
+//-------------------------------
+impl RequestTest {
+    /// Reroll-Answer 메시지를 기다리고 카드 ID 리스트를 반환합니다
+    pub fn expect_draw_card(&mut self) -> Uuid {
+        let extractor = |message: draw::ServerMessage| match message {
+            draw::ServerMessage::DrawAnswer(data) => {
+                data.cards.parse().unwrap_or_else(|e| {
+                    // TODO: Log 함수 사용
+                    panic!("Failed to parse card ID: {:?}", e);
+                })
+            }
+        };
+        self.expect_message(extractor)
+    }
+}
+
 pub struct WebSocketTest {
     stream: WebSocketStream<TokioAdapter<TcpStream>>,
 }
@@ -357,24 +410,6 @@ impl WebSocketTest {
         let extractor = |message: mulligan::ServerMessage| match message {
             mulligan::ServerMessage::RerollAnswer(data) => data.cards.to_vec_uuid(),
             other => panic!("Expected MulliganMessage::Answer but got: {:?}", other),
-        };
-        self.expect_message(extractor).await
-    }
-}
-
-//-------------------------------
-// Draw 관련 함수
-//-------------------------------
-impl WebSocketTest {
-    /// Reroll-Answer 메시지를 기다리고 카드 ID 리스트를 반환합니다
-    pub async fn expect_draw_card(&mut self) -> Uuid {
-        let extractor = |message: draw::ServerMessage| match message {
-            draw::ServerMessage::DrawAnswer(data) => {
-                data.cards.parse().unwrap_or_else(|e| {
-                    // TODO: Log 함수 사용
-                    panic!("Failed to parse card ID: {:?}", e);
-                })
-            }
         };
         self.expect_message(extractor).await
     }

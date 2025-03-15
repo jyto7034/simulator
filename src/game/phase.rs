@@ -258,6 +258,10 @@ impl Phase {
         *self = self.next_phase();
     }
 
+    pub fn set_phase(&mut self, phase: Phase) {
+        *self = phase;
+    }
+
     pub fn as_str(&self) -> &'static str {
         match self {
             Phase::Mulligan => "Mulligan",
