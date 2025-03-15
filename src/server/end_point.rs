@@ -11,6 +11,7 @@ use crate::enums::phase::Phase;
 use crate::enums::{COUNT_OF_MULLIGAN_CARDS, TIMEOUT};
 use crate::exception::MessageProcessResult;
 use crate::server::helper::{process_mulligan_completion, send_error_and_check, MessageHandler};
+use crate::server::jsons::draw::serialize_draw_answer_message;
 use crate::server::jsons::mulligan::{
     self, serialize_complete_message, serialize_deal_message, serialize_reroll_answer,
 };
@@ -314,7 +315,8 @@ pub async fn handle_mulligan(
                                         .get_mulligan_state_mut()
                                         .is_ready()
                                     {
-                                        try_send_error!(session, ServerError::InvalidApproach, retry 3);
+                                        // TODO: 구체적인 에러로 변경
+                                        try_send_error!(session, ServerError::AlreadyReady, retry 3);
                                     }
 
                                     // 플레이어가 선택한 카드가 유효한지 확인합니다.
@@ -496,7 +498,7 @@ pub async fn handle_draw(
     };
 
     // 원하는 정보를 JSON 형태로 구성
-    let response_data = serde_json::json!({});
+    let response_data = serialize_draw_answer_message(player_type, drawn_card)?;
 
     // JSON 응답 반환
     Ok(HttpResponse::Ok()

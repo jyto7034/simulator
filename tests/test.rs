@@ -129,52 +129,52 @@ pub mod game_test {
     }
 
     // 이 테스트 뭔가 문제가 많음
-    // #[actix_web::test]
-    // async fn test_mulligan_already_ready() {
-    //     let (addr, _, _) = spawn_server().await;
-    //     let player_type = PlayerType::Player1.as_str();
+    #[actix_web::test]
+    async fn test_mulligan_already_ready() {
+        let (addr, _, _) = spawn_server().await;
+        let player_type = PlayerType::Player1.as_str();
 
-    //     // WebSocketTest 객체를 사용하여 훨씬 더 간결한 코드 작성
-    //     let url = format!("ws://{}/mulligan_step", addr);
-    //     let cookie = format!(
-    //         "user_id={}; game_step={}",
-    //         PlayerType::Player1.as_str(),
-    //         "mulligan"
-    //     );
+        // WebSocketTest 객체를 사용하여 훨씬 더 간결한 코드 작성
+        let url = format!("ws://{}/mulligan_step", addr);
+        let cookie = format!(
+            "user_id={}; game_step={}",
+            PlayerType::Player1.as_str(),
+            "mulligan"
+        );
 
-    //     let mut ws = WebSocketTest::connect(url, cookie).await.unwrap();
+        let mut ws = WebSocketTest::connect(url, cookie).await.unwrap();
 
-    //     // 초기 카드 받기
-    //     let _ = ws.expect_mulligan_deal().await;
+        // 초기 카드 받기
+        let _ = ws.expect_mulligan_deal().await;
 
-    //     // 이미 준비된 상태로 변경
-    //     let json = json!({
-    //         "action": "reroll-request",
-    //         "payload": {
-    //             "player": player_type,
-    //             "cards": []
-    //         }
-    //     });
+        // 이미 준비된 상태로 변경
+        let json = json!({
+            "action": "reroll-request",
+            "payload": {
+                "player": player_type,
+                "cards": []
+            }
+        });
 
-    //     ws.send(Message::Text(json.to_string()))
-    //         .await
-    //         .expect("Failed to send message");
+        ws.send(Message::Text(json.to_string()))
+            .await
+            .expect("Failed to send message");
 
-    //     let json = json!({
-    //         "action": "reroll-request",
-    //         "payload": {
-    //             "player": player_type,
-    //             "cards": []
-    //         }
-    //     });
+        let json = json!({
+            "action": "reroll-request",
+            "payload": {
+                "player": player_type,
+                "cards": []
+            }
+        });
 
-    //     ws.send(Message::Text(json.to_string()))
-    //         .await
-    //         .expect("Failed to send message");
+        ws.send(Message::Text(json.to_string()))
+            .await
+            .expect("Failed to send message");
 
-    //     assert_eq!("INVALID_APPROACH", ws.expect_error().await);
+        assert_eq!("ALREADY_READY", ws.expect_error().await);
 
-    // }
+    }
 
     #[actix_web::test]
     async fn test_mulligan_re_entry() {
@@ -275,6 +275,8 @@ pub mod game_test {
                 // 나머지 테스트 로직...
                 deal_cards.truncate(reroll_count);
 
+                // TODO: 모든 가능한 수에 대해서 static 하게 테스트 하는게 맞는데
+                // 일단 킵
                 let action = if rand::thread_rng().gen_bool(0.5) {
                     MulliganAction::RerollRequest
                 } else {
@@ -332,6 +334,8 @@ pub mod game_test {
                 .await?;
             }
 
+            // 각 플레이어의 손패 갯수를 검증합니다.
+            // 각 플레이어의 손패 갯수는 5개씩이어야 합니다.
             {
                 let game = server_state.game.lock().await;
                 let player = game.get_player().get();
@@ -343,6 +347,9 @@ pub mod game_test {
                 }
             }
 
+
+            // 각 플레이어가 준비 상태인지 검증합니다.
+            // 각 플레이어가 준비 상태가 되었다면 테스트를 통과합니다.
             {
                 let game = server_state.game.lock().await;
                 let mut player = game.get_player().get();

@@ -17,7 +17,7 @@ use crate::{
     enums::{DeckCode, CARD_JSON_PATH, MAX_CARD_SIZE, TIMEOUT, UUID},
     server::{
         end_point::handle_mulligan,
-        jsons::mulligan,
+        jsons::{mulligan, ErrorMessage},
         session::PlayerSessionManager,
         types::{ServerState, SessionKey},
     },
@@ -341,16 +341,15 @@ impl WebSocketTest {
         // TODO: 다른 expect 함수들도 가독성 수정해야함.
         let extractor = |message: mulligan::ServerMessage| match message {
             mulligan::ServerMessage::RerollAnswer(data) => data.cards,
-            other => panic!("Expected MulliganMessage::Complete but got: {:?}", other),
+            other => panic!("Expected MulliganMessage::Answer but got: {:?}", other),
         };
         self.expect_message(extractor).await
     }
 
     /// 에러 메시지를 기다리고 에러 문자열을 반환합니다
     pub async fn expect_error(&mut self) -> String {
-        let extractor = |message: mulligan::ServerMessage| match message {
-            mulligan::ServerMessage::Error(data) => data.message,
-            other => panic!("Expected MulliganMessage::Error but got: {:?}", other),
+        let extractor = |message: ErrorMessage| match message {
+            ErrorMessage::Error(data) => data.message,
         };
         self.expect_message(extractor).await
     }

@@ -56,6 +56,7 @@ pub enum ServerError {
     Unknown,
     NotFound,
     WrongPhase(String, String),
+    AlreadyReady,
     HandleFailed,
     NotAllowedReEntry,
     InternalServerError,
@@ -123,6 +124,7 @@ impl fmt::Display for ServerError {
             Self::ParseError(_) => write!(f, "PARSE_ERROR"),
             Self::InvalidPlayer => write!(f, "INVALID_PLAYER"),
             Self::NotAllowedReEntry => write!(f, "NOT_ALLOWED_RE_ENTRY"),
+            Self::AlreadyReady => write!(f, "ALREADY_READY"),
         }
     }
 }
@@ -171,6 +173,9 @@ impl ResponseError for ServerError {
             Self::NotAllowedReEntry => {
                 HttpResponse::build(StatusCode::CONFLICT).body("Not allowed re-entry")
             }
+            Self::AlreadyReady => {
+                HttpResponse::build(StatusCode::CONFLICT).body("Already ready")
+            }
         }
     }
 
@@ -191,6 +196,7 @@ impl ResponseError for ServerError {
             Self::InvalidPlayer => StatusCode::UNAUTHORIZED,
             Self::InvalidApproach => StatusCode::BAD_REQUEST,
             Self::NotAllowedReEntry => StatusCode::CONFLICT,
+            Self::AlreadyReady => StatusCode::CONFLICT,
         }
     }
 }
