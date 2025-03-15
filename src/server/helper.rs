@@ -6,7 +6,6 @@ use uuid::Uuid;
 
 use crate::{
     card::{insert::TopInsert, types::PlayerType},
-    enums::UUID,
     exception::{MessageProcessResult, ServerError},
     game::Game,
     serialize_error,
@@ -22,11 +21,11 @@ use super::jsons::Message;
 /// * `game` - 게임 객체
 /// * `player_type` - 플레이어 타입
 /// # Returns
-/// * `Vec<UUID>` - 선택한 카드들의 UUID
+/// * `Vec<Uuid>` - 선택한 카드들의 UUID
 pub fn process_mulligan_completion<T: Into<PlayerType> + Copy>(
     game: &mut Game,
     player_type: T,
-) -> Result<Vec<UUID>, ServerError> {
+) -> Result<Vec<Uuid>, ServerError> {
     // 선택된 멀리건 카드들의 UUID 를 얻습니다.
     let selected_cards = game
         .get_player_by_type(player_type.into())

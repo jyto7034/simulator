@@ -1,15 +1,14 @@
 use super::Card;
-use crate::enums::UUID;
-use rand::seq::SliceRandom;
+use uuid::Uuid;
 
 /// Vec<Card> 타입의 별칭
 pub type Cards = Vec<Card>;
 
 /// Vec<Card> 확장 트레이트
 pub trait CardVecExt {
-    fn contains_uuid(&self, uuid: UUID) -> bool;
-    fn find_by_uuid(&self, uuid: UUID) -> Option<&Card>;
-    fn find_by_uuid_mut(&mut self, uuid: UUID) -> Option<&mut Card>;
+    fn contains_uuid<U: Into<Uuid>>(&self, uuid: U) -> bool;
+    fn find_by_uuid<U: Into<Uuid>>(&self, uuid: U) -> Option<&Card>;
+    fn find_by_uuid_mut<U: Into<Uuid>>(&mut self, uuid: U) -> Option<&mut Card>;
     fn find_all<F>(&self, predicate: F) -> Vec<&Card>
     where
         F: Fn(&Card) -> bool;
@@ -23,16 +22,19 @@ pub trait CardVecExt {
 }
 
 impl CardVecExt for Vec<Card> {
-    fn contains_uuid(&self, uuid: UUID) -> bool {
+    fn contains_uuid<U: Into<Uuid>>(&self, uuid: U) -> bool {
+        let uuid = uuid.into();
         self.iter().any(|card| card.uuid == uuid)
     }
 
-    fn find_by_uuid(&self, uuid: UUID) -> Option<&Card> {
-        self.iter().find(|card| card.get_uuid() == uuid)
+    fn find_by_uuid<U: Into<Uuid>>(&self, uuid: U) -> Option<&Card> {
+        let uuid = uuid.into();
+        self.iter().find(|card| card.uuid == uuid)
     }
 
-    fn find_by_uuid_mut(&mut self, uuid: UUID) -> Option<&mut Card> {
-        self.iter_mut().find(|card| card.get_uuid() == uuid)
+    fn find_by_uuid_mut<U: Into<Uuid>>(&mut self, uuid: U) -> Option<&mut Card> {
+        let uuid = uuid.into();
+        self.iter_mut().find(|card| card.uuid == uuid)
     }
 
     fn find_all<F>(&self, predicate: F) -> Vec<&Card>
@@ -50,6 +52,7 @@ impl CardVecExt for Vec<Card> {
     }
 
     fn shuffle(&mut self) {
+        use rand::seq::SliceRandom;
         let mut rng = rand::thread_rng();
         self.as_mut_slice().shuffle(&mut rng);
     }

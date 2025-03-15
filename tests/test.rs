@@ -1,5 +1,41 @@
+// #[cfg(test)]
+// pub mod draw {
+//     use actix_web::{dev::ServerHandle, web::Data};
+//     use async_tungstenite::tungstenite::Message;
+//     use card_game::{
+//         card::types::PlayerType,
+//         enums::{COUNT_OF_MULLIGAN_CARDS, TIMEOUT},
+//         exception::ServerError,
+//         server::types::ServerState,
+//         test::{spawn_server, verify_mulligan_cards, WebSocketTest},
+//         zone::zone::Zone,
+//     };
+//     use once_cell::sync::Lazy;
+//     use rand::Rng;
+//     use serde_json::json;
+//     use std::{net::SocketAddr, time::Duration};
+//     use tokio::{sync::Mutex, time::sleep};
+
+//     #[actix_web::test]
+//     async fn test_draw() {
+//         let (addr, _, _) = spawn_server().await;
+//         let player_type = PlayerType::Player1.as_str();
+
+//         // WebSocketTest 객체를 사용하여 훨씬 더 간결한 코드 작성
+//         let url = format!("ws://{}/draw", addr);
+//         let cookie = format!("user_id={}; game_step={}", player_type, "draw");
+
+//         let mut ws = WebSocketTest::connect(url, cookie).await.unwrap();
+
+//         // 초기 카드 받기
+//         let card = ws.expect_draw_card().await;
+
+//         // TODO: card 가 유효한지. 실제 Deck 에서 삭제가 되었는지
+//     }
+// }
+
 #[cfg(test)]
-pub mod game_test {
+pub mod mulligan {
     use actix_web::{dev::ServerHandle, web::Data};
     use async_tungstenite::tungstenite::Message;
     use card_game::{
@@ -9,6 +45,7 @@ pub mod game_test {
         server::types::ServerState,
         test::{spawn_server, verify_mulligan_cards, WebSocketTest},
         zone::zone::Zone,
+        VecUuidExt,
     };
     use once_cell::sync::Lazy;
     use rand::Rng;
@@ -173,7 +210,6 @@ pub mod game_test {
             .expect("Failed to send message");
 
         assert_eq!("ALREADY_READY", ws.expect_error().await);
-
     }
 
     #[actix_web::test]
@@ -232,7 +268,7 @@ pub mod game_test {
             "action": "reroll-request",
             "payload": {
             "player": player_type,
-            "cards": deal_cards
+            "cards": deal_cards.to_vec_string()
             }
         });
 
@@ -289,7 +325,7 @@ pub mod game_test {
                     "action": action.as_str(),
                     "payload": {
                         "player": player_type,
-                        "cards": deal_cards
+                        "cards": deal_cards.to_vec_string()
                     }
                 });
 
@@ -346,7 +382,6 @@ pub mod game_test {
                     panic!("There are not enough mulligan cards")
                 }
             }
-
 
             // 각 플레이어가 준비 상태인지 검증합니다.
             // 각 플레이어가 준비 상태가 되었다면 테스트를 통과합니다.

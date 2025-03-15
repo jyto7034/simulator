@@ -16,8 +16,8 @@ use crate::server::jsons::mulligan::{
     self, serialize_complete_message, serialize_deal_message, serialize_reroll_answer,
 };
 use crate::server::jsons::ValidationPayload;
-use crate::try_send_error;
 use crate::{card::types::PlayerType, exception::ServerError};
+use crate::{try_send_error, VecStringExt};
 
 use super::types::ServerState;
 
@@ -331,7 +331,7 @@ pub async fn handle_mulligan(
                                     let Ok(rerolled_card) = game
                                         .restore_then_reroll_mulligan_cards(
                                             player_type,
-                                            payload.cards.clone(),
+                                            payload.cards.to_vec_uuid(),
                                         )
                                     else {
                                         // TODO 재시도 혹은 기타 처리
@@ -342,7 +342,7 @@ pub async fn handle_mulligan(
                                     game.get_player_by_type(player_type)
                                         .get()
                                         .get_mulligan_state_mut()
-                                        .remove_select_cards(payload.cards);
+                                        .remove_select_cards(payload.cards.to_vec_uuid());
 
                                     game.get_player_by_type(player_type)
                                         .get()

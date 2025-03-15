@@ -2,7 +2,6 @@ use std::any::Any;
 
 use crate::{
     card::cards::{CardVecExt, Cards},
-    enums::UUID,
     exception::ServerError,
 };
 
@@ -38,13 +37,24 @@ pub enum ErrorMessage {
 // Mulligan 관련 메시지 정의
 //------------------------------------------------------------------------------
 pub mod mulligan {
+    use uuid::Uuid;
+
     use super::*;
 
     /// 멀리건 관련 페이로드
     #[derive(Serialize, Deserialize, Debug, Clone)]
     pub struct MulliganPayload {
         pub player: String,
-        pub cards: Vec<UUID>,
+        pub cards: Vec<String>,
+    }
+
+    impl MulliganPayload {
+        fn new(player: String, cards: Vec<Uuid>) -> Self {
+            MulliganPayload {
+                player,
+                cards: cards.iter().map(|uuid| uuid.to_string()).collect(),
+            }
+        }
     }
 
     impl MessagePayload for MulliganPayload {}
@@ -58,11 +68,13 @@ pub mod mulligan {
                 }
 
                 // 카드 UUID 유효성 검사
-                if !self
-                    .cards
-                    .iter()
-                    .all(|uuid| player_cards.contains_uuid(uuid.clone()))
-                {
+                // TODO: Unwrap 대신 match를 사용하여 안전하게 처리할 수 있도록 수정
+                if !self.cards.iter().all(|uuid| {
+                    player_cards.contains_uuid(Uuid::parse_str(uuid).unwrap_or_else(|e| {
+                        // TODO: Log 함수 사용
+                        Uuid::nil()
+                    }))
+                }) {
                     return None;
                 }
 
@@ -107,36 +119,27 @@ pub mod mulligan {
     /// 서버에서 클라이언트로 특정 카드들을 제공하는 메시지를 직렬화합니다.
     pub fn serialize_deal_message<T: Into<String>>(
         player: T,
-        cards: Vec<UUID>,
+        cards: Vec<Uuid>,
     ) -> Result<String, ServerError> {
-        let message = ServerMessage::Deal(MulliganPayload {
-            player: player.into(),
-            cards,
-        });
+        let message = ServerMessage::Deal(MulliganPayload::new(player.into(), cards));
         serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
     }
 
     /// 리리롤 응답 메시지를 직렬화합니다.
     pub fn serialize_reroll_answer<T: Into<String>>(
         player: T,
-        cards: Vec<UUID>,
+        cards: Vec<Uuid>,
     ) -> Result<String, ServerError> {
-        let message = ServerMessage::RerollAnswer(MulliganPayload {
-            player: player.into(),
-            cards,
-        });
+        let message = ServerMessage::RerollAnswer(MulliganPayload::new(player.into(), cards));
         serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
     }
 
     /// 완료 응답 메시지를 직렬화합니다.
     pub fn serialize_complete_message<T: Into<String>>(
         player: T,
-        cards: Vec<UUID>,
+        cards: Vec<Uuid>,
     ) -> Result<String, ServerError> {
-        let message = ClientMessage::Complete(MulliganPayload {
-            player: player.into(),
-            cards,
-        });
+        let message = ClientMessage::Complete(MulliganPayload::new(player.into(), cards));
         serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
     }
 }
@@ -145,12 +148,14 @@ pub mod mulligan {
 // Draw 관련 메시지 정의
 //------------------------------------------------------------------------------
 pub mod draw {
+    use uuid::Uuid;
+
     use super::*;
 
     #[derive(Serialize, Deserialize, Debug, Clone)]
     pub struct DrawPayload {
         pub player: String,
-        pub cards: UUID,
+        pub cards: String,
     }
 
     impl MessagePayload for DrawPayload {}
@@ -159,8 +164,7 @@ pub mod draw {
         fn validate(&self, context: &dyn Any) -> Option<()> {
             if let Some(player_cards) = context.downcast_ref::<Cards>() {
                 // 카드 UUID 유효성 검사
-                if player_cards.contains_uuid(self.cards.clone())
-                {
+                if player_cards.contains_uuid(Uuid::parse_str(&self.cards).ok()?) {
                     return None;
                 }
 
@@ -204,11 +208,11 @@ pub mod draw {
     /// 클라이언트로 전송할 Draw 카드의 정보가 담긴 메세지를 직렬화합니다.
     pub fn serialize_draw_answer_message<T: Into<String>>(
         player: T,
-        cards: UUID,
+        cards: Uuid,
     ) -> Result<String, ServerError> {
         let message = ServerMessage::DrawAnswer(DrawPayload {
             player: player.into(),
-            cards,
+            cards: cards.to_string(),
         });
         serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
     }
@@ -216,17 +220,15 @@ pub mod draw {
     /// 클라이언트로 전송할 Draw 카드의 정보가 담긴 메세지를 직렬화합니다.
     pub fn serialize_draw_request_message<T: Into<String>>(
         player: T,
-        cards: UUID,
+        cards: Uuid,
     ) -> Result<String, ServerError> {
         let message = ClientMessage::DrawRequest(DrawPayload {
             player: player.into(),
-            cards,
+            cards: cards.to_string(),
         });
         serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
     }
-
 }
-
 
 //------------------------------------------------------------------------------
 // 메시지 매크로 및 유틸리티 함수
@@ -236,11 +238,10 @@ pub mod draw {
 #[macro_export]
 macro_rules! serialize_error {
     ($error_msg:expr) => {{
-        let message = $crate::server::jsons::ErrorMessage::Error(
-            $crate::server::jsons::ErrorPayload {
+        let message =
+            $crate::server::jsons::ErrorMessage::Error($crate::server::jsons::ErrorPayload {
                 message: $error_msg.to_string(),
-            },
-        );
+            });
         serde_json::to_string(&message)
             .map_err(|_| $crate::exception::ServerError::InternalServerError)
     }};

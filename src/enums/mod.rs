@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 pub mod phase;
 
@@ -26,10 +27,7 @@ pub const MAX_CARD_SIZE: usize = 30;
 
 pub struct DeckCode(pub String);
 
-#[derive(Clone, PartialEq, Eq, Serialize, Deserialize, Debug, Hash)]
-pub struct UUID(pub String);
-
-pub type CardsUuid = Vec<UUID>;
+pub type CardsUuid = Vec<Uuid>;
 
 pub const COUNT_OF_CARDS: usize = 30;
 pub const COUNT_OF_MULLIGAN_CARDS: usize = 5;

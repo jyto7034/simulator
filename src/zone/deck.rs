@@ -1,6 +1,8 @@
+use uuid::Uuid;
+
 use crate::{
     card::{cards::Cards, insert::Insert, take::Take, Card},
-    enums::{DECK_ZONE_SIZE, UUID},
+    enums::DECK_ZONE_SIZE,
     exception::GameError,
 };
 
@@ -39,7 +41,7 @@ impl Zone for Deck {
         &mut self.zone_cards
     }
 
-    fn remove_card(&mut self, uuid: UUID) {
+    fn remove_card(&mut self, uuid: Uuid) {
         todo!()
     }
 

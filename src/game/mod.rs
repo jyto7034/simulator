@@ -6,12 +6,13 @@ pub mod turn_manager;
 use std::collections::HashMap;
 
 use turn_manager::Turn;
+use uuid::Uuid;
 
 use crate::{
     card::{cards::CardVecExt, insert::BottomInsert, take::BottomTake, types::PlayerType, Card},
     enums::{
         phase::{Phase, PhaseState},
-        DeckCode, UUID,
+        DeckCode,
     },
     exception::GameError,
     selector::TargetCount,
@@ -115,7 +116,7 @@ impl Game {
     }
 
     /// 플레이어의 덱에서 카드를 뽑아 손에 추가합니다.
-    pub fn draw_card(&mut self, player_type: PlayerType) -> Result<UUID, GameError> {
+    pub fn draw_card(&mut self, player_type: PlayerType) -> Result<Uuid, GameError> {
         let result = self
             .get_player_by_type(player_type)
             .get()
@@ -133,7 +134,7 @@ impl Game {
     pub fn restore_card(
         &mut self,
         player_type: PlayerType,
-        src_cards: &Vec<UUID>,
+        src_cards: &Vec<Uuid>,
     ) -> Result<(), GameError> {
         for card_uuid in src_cards {
             let card = {
@@ -168,13 +169,13 @@ impl Game {
     /// - 만약 입력받은 UUID 중 하나라도 플레이어와 상대방의 카드 목록에서 찾지 못하면,
     ///   해당 UUID와 함께 panic!이 발생합니다.
     ///
-    pub fn get_cards_by_uuid(&self, uuids: Vec<UUID>) -> Vec<Card> {
+    pub fn get_cards_by_uuid(&self, uuids: Vec<Uuid>) -> Vec<Card> {
         let player = self.get_player().get();
         let opponent = self.get_opponent().get();
 
         // 두 카드 리스트를 하나의 iterator로 합칩니다.
         // UUID가 고유하다고 가정하므로, (uuid, card) 쌍을 HashMap에 저장할 수 있습니다.
-        let card_map: HashMap<UUID, Card> = player
+        let card_map: HashMap<Uuid, Card> = player
             .get_cards()
             .iter()
             .chain(opponent.get_cards().iter())

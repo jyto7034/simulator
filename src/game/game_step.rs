@@ -1,6 +1,7 @@
+use uuid::Uuid;
+
 use crate::{
     card::{take::TopTake, types::PlayerType},
-    enums::UUID,
     exception::GameError,
     selector::TargetCount,
     zone::zone::Zone,
@@ -53,7 +54,7 @@ impl Game {
         &mut self,
         player_type: T,
         count: usize,
-    ) -> Result<Vec<UUID>, GameError> {
+    ) -> Result<Vec<Uuid>, GameError> {
         Ok(self
             .get_player_by_type(player_type)
             .get()

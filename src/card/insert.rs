@@ -1,4 +1,6 @@
-use crate::{enums::UUID, exception::GameError};
+use uuid::Uuid;
+
+use crate::exception::GameError;
 
 use super::Card;
 
@@ -11,7 +13,7 @@ pub struct TopInsert;
 pub struct BottomInsert;
 pub struct RandomInsert;
 pub struct SpecificPositionInsert {
-    target_card_uuid: UUID,
+    target_card_uuid: Uuid,
     is_above: bool,
 }
 
@@ -56,7 +58,7 @@ impl Insert for RandomInsert {
 
 // 특정 위치 구현
 impl SpecificPositionInsert {
-    pub fn new(target_card_uuid: UUID, is_above: bool) -> Self {
+    pub fn new(target_card_uuid: Uuid, is_above: bool) -> Self {
         Self {
             target_card_uuid,
             is_above,

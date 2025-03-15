@@ -1,4 +1,6 @@
-use crate::{enums::UUID, exception::GameError, selector::TargetCount, zone::zone::Zone};
+use uuid::Uuid;
+
+use crate::{exception::GameError, selector::TargetCount, zone::zone::Zone};
 
 use super::Card;
 
@@ -10,7 +12,7 @@ pub trait Take {
 pub struct TopTake(pub TargetCount);
 pub struct BottomTake(pub TargetCount);
 pub struct RandomTake(pub TargetCount);
-pub struct SpecificTake(pub UUID);
+pub struct SpecificTake(pub Uuid);
 
 use std::cmp::min;
 impl Take for TopTake {
