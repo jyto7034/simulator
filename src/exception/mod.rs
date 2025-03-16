@@ -2,7 +2,7 @@ use crate::card::types::PlayerType;
 use actix_web::{http::StatusCode, HttpResponse, ResponseError};
 use std::fmt;
 
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum GameError {
     InvalidTargetCount,
     NoValidTargets,
@@ -24,34 +24,14 @@ pub enum GameError {
     InvalidCardType,
     InvalidPlayerType,
     InvalidOperation,
+    InvalidCards,
     JsonParseFailed,
+    InvalidPlayer,
     DecodeError,
     DeckParseError,
     ReadFileFailed,
     NoCardsLeft,
     CardError,
-    Ok,
-}
-
-impl fmt::Display for GameError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::PlayerInitializeFailed => write!(f, "PlayerInitializeFailed"),
-            Self::PlayerDataNotIntegrity => write!(f, "PlayerDataNotIntegrity"),
-            Self::GenerateUUIDFaild => write!(f, "GenerateUUIDFaild"),
-            Self::JsonParseFailed => write!(f, "Json Parse Failed"),
-            Self::DeckParseError => write!(f, "Deck Parse Error"),
-            Self::PathNotExist => write!(f, "Path Not Exist"),
-            Self::CardError => write!(f, "Card Error"),
-            Self::Ok => write!(f, "Ok"),
-            _ => write!(f, ""),
-        }
-    }
-}
-
-/// 사용자 정의 에러 타입
-#[derive(Debug)]
-pub enum ServerError {
     Unknown,
     NotFound,
     WrongPhase(String, String),
@@ -66,48 +46,18 @@ pub enum ServerError {
     ParseError(String),
     InvalidPayload,
     InvalidApproach,
-    InvalidCards,
-    InvalidPlayer,
-    InvalidOperation,
 }
 
-impl From<GameError> for ServerError {
-    fn from(value: GameError) -> Self {
-        match value {
-            GameError::InvalidTargetCount => ServerError::InvalidCards,
-            GameError::NoValidTargets => ServerError::InvalidCards,
-            GameError::CannotActivate => ServerError::InvalidOperation,
-            GameError::DeckCodeIsMissing(_) => ServerError::InvalidPayload,
-            GameError::PlayerInitializeFailed => ServerError::InternalServerError,
-            GameError::PlayerDataNotIntegrity => ServerError::InternalServerError,
-            GameError::PathNotExist => ServerError::NotFound,
-            GameError::CardsNotFound => ServerError::NotFound,
-            GameError::GameInitializeFailed => ServerError::InternalServerError,
-            GameError::DifferentCardTypes => ServerError::InvalidCards,
-            GameError::GenerateUUIDFaild => ServerError::InternalServerError,
-            GameError::CardNotFound => ServerError::NotFound,
-            GameError::ExceededCardLimit => ServerError::InvalidOperation,
-            GameError::FailedToDrawCard => ServerError::InvalidOperation,
-            GameError::NothingToRemove => ServerError::InvalidOperation,
-            GameError::InvalidCardData => ServerError::InvalidCards,
-            GameError::NotAuthenticated => ServerError::InvalidPlayer,
-            GameError::InvalidCardType => ServerError::InvalidCards,
-            GameError::InvalidPlayerType => ServerError::InvalidPlayer,
-            GameError::InvalidOperation => ServerError::InvalidOperation,
-            GameError::JsonParseFailed => ServerError::ParseError("Json Parse Failed".to_string()),
-            GameError::DecodeError => ServerError::ParseError("Decode Error".to_string()),
-            GameError::DeckParseError => ServerError::ParseError("Deck Parse Error".to_string()),
-            GameError::ReadFileFailed => ServerError::InternalServerError,
-            GameError::NoCardsLeft => ServerError::InvalidOperation,
-            GameError::CardError => ServerError::InvalidCards,
-            GameError::Ok => ServerError::Unknown,
-        }
-    }
-}
-
-impl fmt::Display for ServerError {
+impl fmt::Display for GameError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::PlayerInitializeFailed => write!(f, "PLAYER_INITIALIZE_FAILED"),
+            Self::PlayerDataNotIntegrity => write!(f, "PLAYER_DATA_NOT_INTEGRITY"),
+            Self::GenerateUUIDFaild => write!(f, "GENERATE_UUID_FAILED"),
+            Self::JsonParseFailed => write!(f, "JSON_PARSE_FAILED"),
+            Self::DeckParseError => write!(f, "DECK_PARSE_ERROR"),
+            Self::PathNotExist => write!(f, "PATH_NOT_EXIST"),
+            Self::CardError => write!(f, "CARD_ERROR"),
             Self::Unknown => write!(f, "UNKNOWN"),
             Self::WrongPhase(_, _) => write!(f, "WRONG_PHASE"),
             Self::NotFound => write!(f, "NOT_FOUND"),
@@ -125,12 +75,12 @@ impl fmt::Display for ServerError {
             Self::NotAllowedReEntry => write!(f, "NOT_ALLOWED_RE_ENTRY"),
             Self::AlreadyReady => write!(f, "ALREADY_READY"),
             Self::InvalidOperation => write!(f, "INVALID_OPERATION"),
+            _ => write!(f, ""),
         }
     }
 }
 
-/// MyCustomError 에 대해 ResponseError 트레이트 구현으로 HTTP 응답을 커스터마이징
-impl ResponseError for ServerError {
+impl ResponseError for GameError {
     fn error_response(&self) -> HttpResponse {
         match self {
             Self::Unknown => HttpResponse::build(StatusCode::INTERNAL_SERVER_ERROR)
@@ -177,6 +127,9 @@ impl ResponseError for ServerError {
             Self::InvalidOperation => {
                 HttpResponse::build(StatusCode::BAD_REQUEST).body("Invalid operation")
             }
+            Self::NoCardsLeft => HttpResponse::build(StatusCode::BAD_REQUEST).body("No cards left"),
+            _ => HttpResponse::build(StatusCode::INTERNAL_SERVER_ERROR)
+                .body("An unknown error occurred"),
         }
     }
 
@@ -199,12 +152,13 @@ impl ResponseError for ServerError {
             Self::NotAllowedReEntry => StatusCode::CONFLICT,
             Self::AlreadyReady => StatusCode::CONFLICT,
             Self::InvalidOperation => StatusCode::BAD_REQUEST,
+            _ => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 }
 
 pub enum MessageProcessResult<T> {
-    Success(T),                    // 성공적으로 메시지 처리
-    NeedRetry,                     // 에러가 발생했지만 재시도 가능
-    TerminateSession(ServerError), // 세션 종료 필요
+    Success(T),                  // 성공적으로 메시지 처리
+    NeedRetry,                   // 에러가 발생했지만 재시도 가능
+    TerminateSession(GameError), // 세션 종료 필요
 }

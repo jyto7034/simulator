@@ -128,7 +128,7 @@ pub mod mulligan {
     use card_game::{
         card::types::PlayerType,
         enums::{COUNT_OF_MULLIGAN_CARDS, TIMEOUT},
-        exception::ServerError,
+        exception::GameError,
         server::types::ServerState,
         test::{spawn_server, verify_mulligan_cards, WebSocketTest},
         zone::zone::Zone,
@@ -191,7 +191,7 @@ pub mod mulligan {
             }
         });
         let error = test_mulligan_invalid_scenario(json).await;
-        assert_eq!(error, ServerError::InvalidPlayer.to_string());
+        assert_eq!(error, GameError::InvalidPlayer.to_string());
     }
 
     #[actix_web::test]
@@ -204,7 +204,7 @@ pub mod mulligan {
             }
         });
         let error = test_mulligan_invalid_scenario(json).await;
-        assert_eq!(error, ServerError::InvalidApproach.to_string());
+        assert_eq!(error, GameError::InvalidApproach.to_string());
     }
 
     #[actix_web::test]
@@ -217,7 +217,7 @@ pub mod mulligan {
             }
         });
         let error = test_mulligan_invalid_scenario(json).await;
-        assert_eq!(error, ServerError::InvalidCards.to_string());
+        assert_eq!(error, GameError::InvalidCards.to_string());
     }
 
     #[actix_web::test]
@@ -248,7 +248,7 @@ pub mod mulligan {
 
         assert_eq!(
             error_message,
-            ServerError::WrongPhase("".to_string(), "".to_string()).to_string()
+            GameError::WrongPhase("".to_string(), "".to_string()).to_string()
         );
     }
 

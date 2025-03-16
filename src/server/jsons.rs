@@ -2,7 +2,7 @@ use std::any::Any;
 
 use crate::{
     card::cards::{CardVecExt, Cards},
-    exception::ServerError,
+    exception::GameError,
 };
 
 use serde::{Deserialize, Serialize};
@@ -120,27 +120,27 @@ pub mod mulligan {
     pub fn serialize_deal_message<T: Into<String>>(
         player: T,
         cards: Vec<Uuid>,
-    ) -> Result<String, ServerError> {
+    ) -> Result<String, GameError> {
         let message = ServerMessage::Deal(MulliganPayload::new(player.into(), cards));
-        serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
+        serde_json::to_string(&message).map_err(|_| GameError::InternalServerError)
     }
 
     /// 리리롤 응답 메시지를 직렬화합니다.
     pub fn serialize_reroll_answer<T: Into<String>>(
         player: T,
         cards: Vec<Uuid>,
-    ) -> Result<String, ServerError> {
+    ) -> Result<String, GameError> {
         let message = ServerMessage::RerollAnswer(MulliganPayload::new(player.into(), cards));
-        serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
+        serde_json::to_string(&message).map_err(|_| GameError::InternalServerError)
     }
 
     /// 완료 응답 메시지를 직렬화합니다.
     pub fn serialize_complete_message<T: Into<String>>(
         player: T,
         cards: Vec<Uuid>,
-    ) -> Result<String, ServerError> {
+    ) -> Result<String, GameError> {
         let message = ClientMessage::Complete(MulliganPayload::new(player.into(), cards));
-        serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
+        serde_json::to_string(&message).map_err(|_| GameError::InternalServerError)
     }
 }
 
@@ -209,24 +209,24 @@ pub mod draw {
     pub fn serialize_draw_answer_message<T: Into<String>>(
         player: T,
         cards: Uuid,
-    ) -> Result<String, ServerError> {
+    ) -> Result<String, GameError> {
         let message = ServerMessage::DrawAnswer(DrawPayload {
             player: player.into(),
             cards: cards.to_string(),
         });
-        serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
+        serde_json::to_string(&message).map_err(|_| GameError::InternalServerError)
     }
 
     /// 클라이언트로 전송할 Draw 카드의 정보가 담긴 메세지를 직렬화합니다.
     pub fn serialize_draw_request_message<T: Into<String>>(
         player: T,
         cards: Uuid,
-    ) -> Result<String, ServerError> {
+    ) -> Result<String, GameError> {
         let message = ClientMessage::DrawRequest(DrawPayload {
             player: player.into(),
             cards: cards.to_string(),
         });
-        serde_json::to_string(&message).map_err(|_| ServerError::InternalServerError)
+        serde_json::to_string(&message).map_err(|_| GameError::InternalServerError)
     }
 }
 
@@ -243,13 +243,13 @@ macro_rules! serialize_error {
                 message: $error_msg.to_string(),
             });
         serde_json::to_string(&message)
-            .map_err(|_| $crate::exception::ServerError::InternalServerError)
+            .map_err(|_| $crate::exception::GameError::InternalServerError)
     }};
     ($module:ident, $error_msg:expr) => {{
         let message = $crate::server::jsons::$module::ServerMessage::Error {
             message: $error_msg.to_string(),
         };
         serde_json::to_string(&message)
-            .map_err(|_| $crate::exception::ServerError::InternalServerError)
+            .map_err(|_| $crate::exception::GameError::InternalServerError)
     }};
 }

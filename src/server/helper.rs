@@ -6,7 +6,7 @@ use uuid::Uuid;
 
 use crate::{
     card::{insert::TopInsert, types::PlayerType},
-    exception::{MessageProcessResult, ServerError},
+    exception::{GameError, MessageProcessResult},
     game::Game,
     serialize_error,
     zone::zone::Zone,
@@ -25,7 +25,7 @@ use super::jsons::Message;
 pub fn process_mulligan_completion<T: Into<PlayerType> + Copy>(
     game: &mut Game,
     player_type: T,
-) -> Result<Vec<Uuid>, ServerError> {
+) -> Result<Vec<Uuid>, GameError> {
     // 선택된 멀리건 카드들의 UUID 를 얻습니다.
     let selected_cards = game
         .get_player_by_type(player_type.into())
@@ -40,7 +40,7 @@ pub fn process_mulligan_completion<T: Into<PlayerType> + Copy>(
         .get()
         .get_hand_mut()
         .add_card(cards, Box::new(TopInsert))
-        .map_err(|_| ServerError::InternalServerError)?;
+        .map_err(|_| GameError::InternalServerError)?;
 
     // 멀리건 상태를 "완료" 상태로 변경합니다.
     game.get_player_by_type(player_type.into())
@@ -99,7 +99,7 @@ macro_rules! try_send_error {
 /// # return
 /// - 성공 시 Some(())
 /// - 실패 시 None
-pub async fn send_error_and_check(session: &mut Session, error_msg: ServerError) -> Option<()> {
+pub async fn send_error_and_check(session: &mut Session, error_msg: GameError) -> Option<()> {
     // 에러 메시지 직렬화
     let Ok(error_json) = serialize_error!(error_msg) else {
         return None; // 직렬화 실패
@@ -175,12 +175,12 @@ impl MessageHandler {
         if self.parsing_error_count >= 3 {
             self.terminate_session(
                 session,
-                ServerError::ParseError("JSON parsing error".to_string()),
+                GameError::ParseError("JSON parsing error".to_string()),
                 session_id,
                 player_type,
             )
             .await;
-            return MessageProcessResult::TerminateSession(ServerError::ParseError(
+            return MessageProcessResult::TerminateSession(GameError::ParseError(
                 "JSON parsing error".to_string(),
             ));
         }
@@ -198,14 +198,9 @@ impl MessageHandler {
         self.unexpected_msg_count += 1;
 
         if self.unexpected_msg_count >= 3 {
-            self.terminate_session(
-                session,
-                ServerError::InvalidApproach,
-                session_id,
-                player_type,
-            )
-            .await;
-            return MessageProcessResult::TerminateSession(ServerError::UnexpectedMessage);
+            self.terminate_session(session, GameError::InvalidApproach, session_id, player_type)
+                .await;
+            return MessageProcessResult::TerminateSession(GameError::UnexpectedMessage);
         }
 
         MessageProcessResult::NeedRetry
@@ -215,7 +210,7 @@ impl MessageHandler {
     async fn terminate_session(
         &self,
         session: &mut Session,
-        error: ServerError,
+        error: GameError,
         session_id: Uuid,
         player_type: PlayerType,
     ) {
@@ -224,7 +219,7 @@ impl MessageHandler {
     }
 
     /// 에러 메시지 전송 (재시도 로직 포함)
-    async fn send_error_with_retry(&self, session: &mut Session, error: ServerError) -> bool {
+    async fn send_error_with_retry(&self, session: &mut Session, error: GameError) -> bool {
         if let Ok(error_json) = serialize_error!(error) {
             for attempt in 0..3 {
                 match session.text(error_json.clone()).await {
