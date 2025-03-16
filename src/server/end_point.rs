@@ -7,6 +7,7 @@ use futures_util::StreamExt;
 use std::future::Future;
 use uuid::Uuid;
 
+use crate::card::insert::TopInsert;
 use crate::enums::{COUNT_OF_MULLIGAN_CARDS, TIMEOUT};
 use crate::exception::MessageProcessResult;
 use crate::game::phase::Phase;
@@ -16,6 +17,7 @@ use crate::server::jsons::mulligan::{
     self, serialize_complete_message, serialize_deal_message, serialize_reroll_answer,
 };
 use crate::server::jsons::ValidationPayload;
+use crate::zone::zone::Zone;
 use crate::{card::types::PlayerType, exception::ServerError};
 use crate::{try_send_error, VecStringExt};
 
@@ -191,7 +193,7 @@ impl From<AuthPlayer> for String {
 
 // TODO: 각 에러 처리 분명히 해야함.
 // TODO: 네트워크 이슈가 발생하여 재연결이 필요한 경우 처리가 필요함.
-#[get("/mulligan_step")]
+#[get("/mulligan_phase")]
 pub async fn handle_mulligan(
     player: AuthPlayer,
     state: web::Data<ServerState>,
@@ -473,7 +475,7 @@ pub async fn handle_mulligan(
     Ok(resp)
 }
 
-#[get("/draw_step")]
+#[get("/draw_phase")]
 pub async fn handle_draw(
     player: AuthPlayer,
     state: web::Data<ServerState>,
@@ -486,15 +488,22 @@ pub async fn handle_draw(
 
         // 플레이어가 이미 카드를 뽑은 경우를 확인함
         if game.phase_state.has_player_completed(player_type) {
-            return Err(ServerError::InvalidApproach);
+            return Err(ServerError::NotAllowedReEntry);
         }
         // 플레이어의 드로우 완료 표시
         game.phase_state.mark_player_completed(player_type);
 
         // 만약 draw_card 함수가 모종의 이유로 실패한다면 completed mark 를 제거하고 에러를 반환함
-        game.draw_card(player_type).inspect_err(|_| {
+        let card = game.draw_card(player_type).inspect_err(|_| {
             game.phase_state.reset_player_completed(player_type);
-        })?
+        })?;
+
+        let mut player = game.get_player_by_type(player_type).get();
+        player
+            .get_hand_mut()
+            .add_card(vec![card.clone()], Box::new(TopInsert))?;
+
+        card.get_uuid()
     };
 
     // 원하는 정보를 JSON 형태로 구성

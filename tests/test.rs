@@ -3,9 +3,71 @@ pub mod draw {
     use card_game::{
         card::{cards::CardVecExt, types::PlayerType},
         game::phase::Phase,
+        server::jsons::draw,
         test::{spawn_server, RequestTest},
         zone::zone::Zone,
     };
+    use uuid::Uuid;
+
+    // TODO: 마지막 남은 카드 혹은 없는 경우 draw 테스트
+
+    #[actix_web::test]
+    async fn test_draw_card_no_card_left() {
+        let (addr, state, _) = spawn_server().await;
+        let player_type = PlayerType::Player1.as_str();
+        let cookie = format!("user_id={}; game_step=drawphase", player_type);
+        {
+            state
+                .game
+                .lock()
+                .await
+                .get_phase_state_mut()
+                .set_phase(Phase::DrawPhase);
+        }
+
+        for _ in 0..31 {
+            let mut response = RequestTest::connect("draw_phase", addr, cookie.clone())
+                .await
+                .expect("Failed to connect");
+
+            println!("Response: {}", response.response);
+
+            // 카드를 예상하되, 만약 parse error 발생 시, body.contains 을 통해 No Card Left ( 혹은 다른 오류 ) 오류인지 확인함.
+            let extractor: Box<dyn Fn(draw::ServerMessage) -> Result<Uuid, uuid::Error>> =
+                Box::new(|message| match message {
+                    draw::ServerMessage::DrawAnswer(data) => data.cards.parse(),
+                });
+
+            if let Ok(card_uuid) = response.expect_message(extractor) {
+                println!("Card UUID: {}", card_uuid);
+
+                // 검증 단계
+                {
+                    let game = state.game.lock().await;
+                    let player = game.get_player_by_type(player_type).get();
+                    let deck = player.get_deck();
+                    if deck.get_cards().contains_uuid(card_uuid) {
+                        panic!("Card is not removed from deck");
+                    }
+
+                    let hand = player.get_hand();
+                    if !hand.get_cards().contains_uuid(card_uuid) {
+                        panic!("Card is not added to hand");
+                    }
+                }
+                {
+                    state
+                        .game
+                        .lock()
+                        .await
+                        .get_phase_state_mut()
+                        .reset_player_completed(player_type.into());
+                }
+            } else {
+                assert!(response.response.contains("No Card Left"));
+            }
+        }
+    }
 
     #[actix_web::test]
     async fn test_draw_card() {
@@ -21,7 +83,7 @@ pub mod draw {
                 .set_phase(Phase::DrawPhase);
         }
 
-        let mut response = RequestTest::connect("darwphase", addr, cookie)
+        let mut response = RequestTest::connect("draw_phase", addr, cookie)
             .await
             .expect("Failed to connect");
 
@@ -29,7 +91,7 @@ pub mod draw {
 
         println!("Card UUID: {}", card_uuid);
 
-        // TODO: card 가 유효한지. 실제 Deck 에서 삭제가 되었는지
+        // 검증 단계
         {
             let game = state.game.lock().await;
             let player = game.get_player_by_type(player_type).get();
@@ -37,21 +99,25 @@ pub mod draw {
             if deck.get_cards().contains_uuid(card_uuid) {
                 panic!("Card is not removed from deck");
             }
+
+            let hand = player.get_hand();
+            if !hand.get_cards().contains_uuid(card_uuid) {
+                panic!("Card is not added to hand");
+            }
         }
     }
 
     #[actix_web::test]
-    #[should_panic]
     async fn test_draw_wrong_phase() {
         let (addr, _, _) = spawn_server().await;
         let player_type = PlayerType::Player1.as_str();
         let cookie = format!("user_id={}; game_step=drawphase", player_type);
 
-        let mut response = RequestTest::connect("darwphase", addr, cookie)
+        let response = RequestTest::connect("draw_phase", addr, cookie)
             .await
             .expect("Failed to connect");
 
-        let _ = response.expect_draw_card();
+        assert!(response.response.contains("Wrong Phase"));
     }
 }
 

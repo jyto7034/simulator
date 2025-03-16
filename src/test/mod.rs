@@ -270,7 +270,7 @@ impl RequestTest {
     ) -> Result<Self, reqwest::Error> {
         let client = reqwest::Client::new();
         let response = client
-            .get(format!("http://{}/draw_step", addr))
+            .get(format!("http://{}/{}", addr, step))
             .header("Cookie", cookie)
             .send()
             .await?;
@@ -295,7 +295,7 @@ impl RequestTest {
 // Draw 관련 함수
 //-------------------------------
 impl RequestTest {
-    /// Reroll-Answer 메시지를 기다리고 카드 ID 리스트를 반환합니다
+    /// Draw-Answer 메시지를 예상하고 카드 Uuid 를 반환합니다
     pub fn expect_draw_card(&mut self) -> Uuid {
         let extractor = |message: draw::ServerMessage| match message {
             draw::ServerMessage::DrawAnswer(data) => {
@@ -304,6 +304,14 @@ impl RequestTest {
                     panic!("Failed to parse card ID: {:?}", e);
                 })
             }
+        };
+        self.expect_message(extractor)
+    }
+
+    /// Error 메시지를 예상합니다.
+    pub fn expect_error(&mut self) -> String {
+        let extractor = |message: ErrorMessage| match message {
+            ErrorMessage::Error(data) => data.message,
         };
         self.expect_message(extractor)
     }

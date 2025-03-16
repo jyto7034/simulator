@@ -123,7 +123,13 @@ impl Game {
     }
 
     /// 플레이어의 덱에서 카드를 뽑아 손에 추가합니다.
-    pub fn draw_card(&mut self, player_type: PlayerType) -> Result<Uuid, GameError> {
+    /// # Arguments
+    /// * `player_type` - 덱에서 카드를 뽑을 플레이어의 종류입니다.
+    /// # Returns
+    /// * 뽑은 카드를 반환합니다.
+    /// # Errors
+    /// * 덱에 카드가 없을 경우 NoCardsLeft 에러를 반환합니다.
+    pub fn draw_card(&mut self, player_type: PlayerType) -> Result<Card, GameError> {
         let result = self
             .get_player_by_type(player_type)
             .get()
@@ -135,7 +141,7 @@ impl Game {
             return Err(GameError::NoCardsLeft);
         }
 
-        Ok(result[0].get_uuid())
+        Ok(result[0].clone())
     }
 
     pub fn restore_card(

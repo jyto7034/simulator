@@ -29,7 +29,6 @@ pub enum GameError {
     DeckParseError,
     ReadFileFailed,
     NoCardsLeft,
-    NoCardLeft,
     CardError,
     Ok,
 }
@@ -69,39 +68,39 @@ pub enum ServerError {
     InvalidApproach,
     InvalidCards,
     InvalidPlayer,
+    InvalidOperation,
 }
 
 impl From<GameError> for ServerError {
     fn from(value: GameError) -> Self {
         match value {
-            GameError::InvalidTargetCount => todo!(),
-            GameError::NoValidTargets => todo!(),
-            GameError::CannotActivate => todo!(),
-            GameError::DeckCodeIsMissing(player_type) => todo!(),
-            GameError::PlayerInitializeFailed => todo!(),
-            GameError::PlayerDataNotIntegrity => todo!(),
-            GameError::PathNotExist => todo!(),
-            GameError::CardsNotFound => todo!(),
-            GameError::GameInitializeFailed => todo!(),
-            GameError::DifferentCardTypes => todo!(),
-            GameError::GenerateUUIDFaild => todo!(),
-            GameError::CardNotFound => todo!(),
-            GameError::ExceededCardLimit => todo!(),
-            GameError::FailedToDrawCard => todo!(),
-            GameError::NothingToRemove => todo!(),
-            GameError::InvalidCardData => todo!(),
-            GameError::NotAuthenticated => todo!(),
-            GameError::InvalidCardType => todo!(),
-            GameError::InvalidPlayerType => todo!(),
-            GameError::InvalidOperation => todo!(),
-            GameError::JsonParseFailed => todo!(),
-            GameError::DecodeError => todo!(),
-            GameError::DeckParseError => todo!(),
-            GameError::ReadFileFailed => todo!(),
-            GameError::NoCardsLeft => todo!(),
-            GameError::NoCardLeft => todo!(),
-            GameError::CardError => todo!(),
-            GameError::Ok => todo!(),
+            GameError::InvalidTargetCount => ServerError::InvalidCards,
+            GameError::NoValidTargets => ServerError::InvalidCards,
+            GameError::CannotActivate => ServerError::InvalidOperation,
+            GameError::DeckCodeIsMissing(_) => ServerError::InvalidPayload,
+            GameError::PlayerInitializeFailed => ServerError::InternalServerError,
+            GameError::PlayerDataNotIntegrity => ServerError::InternalServerError,
+            GameError::PathNotExist => ServerError::NotFound,
+            GameError::CardsNotFound => ServerError::NotFound,
+            GameError::GameInitializeFailed => ServerError::InternalServerError,
+            GameError::DifferentCardTypes => ServerError::InvalidCards,
+            GameError::GenerateUUIDFaild => ServerError::InternalServerError,
+            GameError::CardNotFound => ServerError::NotFound,
+            GameError::ExceededCardLimit => ServerError::InvalidOperation,
+            GameError::FailedToDrawCard => ServerError::InvalidOperation,
+            GameError::NothingToRemove => ServerError::InvalidOperation,
+            GameError::InvalidCardData => ServerError::InvalidCards,
+            GameError::NotAuthenticated => ServerError::InvalidPlayer,
+            GameError::InvalidCardType => ServerError::InvalidCards,
+            GameError::InvalidPlayerType => ServerError::InvalidPlayer,
+            GameError::InvalidOperation => ServerError::InvalidOperation,
+            GameError::JsonParseFailed => ServerError::ParseError("Json Parse Failed".to_string()),
+            GameError::DecodeError => ServerError::ParseError("Decode Error".to_string()),
+            GameError::DeckParseError => ServerError::ParseError("Deck Parse Error".to_string()),
+            GameError::ReadFileFailed => ServerError::InternalServerError,
+            GameError::NoCardsLeft => ServerError::InvalidOperation,
+            GameError::CardError => ServerError::InvalidCards,
+            GameError::Ok => ServerError::Unknown,
         }
     }
 }
@@ -125,6 +124,7 @@ impl fmt::Display for ServerError {
             Self::InvalidPlayer => write!(f, "INVALID_PLAYER"),
             Self::NotAllowedReEntry => write!(f, "NOT_ALLOWED_RE_ENTRY"),
             Self::AlreadyReady => write!(f, "ALREADY_READY"),
+            Self::InvalidOperation => write!(f, "INVALID_OPERATION"),
         }
     }
 }
@@ -173,8 +173,9 @@ impl ResponseError for ServerError {
             Self::NotAllowedReEntry => {
                 HttpResponse::build(StatusCode::CONFLICT).body("Not allowed re-entry")
             }
-            Self::AlreadyReady => {
-                HttpResponse::build(StatusCode::CONFLICT).body("Already ready")
+            Self::AlreadyReady => HttpResponse::build(StatusCode::CONFLICT).body("Already ready"),
+            Self::InvalidOperation => {
+                HttpResponse::build(StatusCode::BAD_REQUEST).body("Invalid operation")
             }
         }
     }
@@ -197,6 +198,7 @@ impl ResponseError for ServerError {
             Self::InvalidApproach => StatusCode::BAD_REQUEST,
             Self::NotAllowedReEntry => StatusCode::CONFLICT,
             Self::AlreadyReady => StatusCode::CONFLICT,
+            Self::InvalidOperation => StatusCode::BAD_REQUEST,
         }
     }
 }
