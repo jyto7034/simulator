@@ -65,10 +65,7 @@ impl FromRequest for AuthPlayer {
             if let Some(state) = req.app_data::<web::Data<ServerState>>() {
                 let game = state.game.lock().await;
                 if game.get_phase().as_str().to_lowercase() != game_step {
-                    return Err(GameError::WrongPhase(
-                        game.get_phase().as_str().to_string(),
-                        game_step,
-                    ));
+                    return Err(GameError::WrongPhase);
                 }
 
                 let cookie_str = cookie.to_string();
@@ -93,9 +90,7 @@ impl FromRequest for AuthPlayer {
                     .is_valid_session(player_type, session_id, game_step.into())
                     .await
                 {
-                    return Err(GameError::ActiveSessionExists(
-                        "Active session exists in another phase".into(),
-                    ));
+                    return Err(GameError::ActiveSessionExists);
                 }
 
                 Ok(AuthPlayer::new(player_type, session_id))

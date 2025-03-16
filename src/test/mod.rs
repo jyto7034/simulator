@@ -7,7 +7,6 @@ use async_tungstenite::{
 };
 use futures_util::StreamExt;
 use rand::{seq::SliceRandom, thread_rng};
-use reqwest::Response;
 use serde::de::DeserializeOwned;
 use serde_json::{json, Value};
 use tokio::{net::TcpStream, sync::Mutex};

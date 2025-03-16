@@ -2,6 +2,7 @@
 pub mod draw {
     use card_game::{
         card::{cards::CardVecExt, types::PlayerType},
+        exception::*,
         game::phase::Phase,
         server::jsons::draw,
         test::{spawn_server, RequestTest},
@@ -9,10 +10,8 @@ pub mod draw {
     };
     use uuid::Uuid;
 
-    // TODO: 마지막 남은 카드 혹은 없는 경우 draw 테스트
-
     #[actix_web::test]
-    async fn test_draw_card_no_card_left() {
+    async fn test_draw_re_entry() {
         let (addr, state, _) = spawn_server().await;
         let player_type = PlayerType::Player1.as_str();
         let cookie = format!("user_id={}; game_step=drawphase", player_type);
@@ -25,22 +24,48 @@ pub mod draw {
                 .set_phase(Phase::DrawPhase);
         }
 
+        let _ = RequestTest::connect("draw_phase", addr, cookie.clone())
+            .await
+            .expect("Failed to connect");
+
+        let rt = RequestTest::connect("draw_phase", addr, cookie.clone())
+            .await
+            .expect("Failed to connect");
+
+        println!("{}", rt.response);
+        assert!(rt.response.contains(NOT_ALLOWED_RE_ENTRY));
+    }
+
+    #[actix_web::test]
+    async fn test_draw_no_card_left() {
+        let (addr, state, _) = spawn_server().await;
+        let player_type = PlayerType::Player1.as_str();
+        let cookie = format!("user_id={}; game_step=drawphase", player_type);
+        {
+            state
+                .game
+                .lock()
+                .await
+                .get_phase_state_mut()
+                .set_phase(Phase::DrawPhase);
+        }
+
+        // 31회 반복하여 카드를 뽑는다.
         for _ in 0..31 {
-            let mut response = RequestTest::connect("draw_phase", addr, cookie.clone())
+            let response = RequestTest::connect("draw_phase", addr, cookie.clone())
                 .await
                 .expect("Failed to connect");
 
-            println!("Response: {}", response.response);
+            // 카드를 예상하되, 만약 parse error 발생 시, body.contains 을 통해 No Card Left ( 혹은 다른 오류 ) 오류 인지 확인함.
+            let result = serde_json::from_str::<draw::ServerMessage>(&response.response.as_str());
 
-            // 카드를 예상하되, 만약 parse error 발생 시, body.contains 을 통해 No Card Left ( 혹은 다른 오류 ) 오류인지 확인함.
-            let extractor: Box<dyn Fn(draw::ServerMessage) -> Result<Uuid, uuid::Error>> =
-                Box::new(|message| match message {
-                    draw::ServerMessage::DrawAnswer(data) => data.cards.parse(),
-                });
-
-            if let Ok(card_uuid) = response.expect_message(extractor) {
-                println!("Card UUID: {}", card_uuid);
-
+            // Draw 메시지가 아닌 경우.
+            // No Card Left 메시지가 포함되어 있는지 확인한다.
+            if result.is_err() {
+                assert!(response.response.contains(NO_CARDS_LEFT));
+            } else {
+                let draw::ServerMessage::DrawAnswer(payload) = result.unwrap();
+                let card_uuid = payload.cards.parse::<Uuid>().unwrap();
                 // 검증 단계
                 {
                     let game = state.game.lock().await;
@@ -55,6 +80,8 @@ pub mod draw {
                         panic!("Card is not added to hand");
                     }
                 }
+
+                // draw 상태 초기화
                 {
                     state
                         .game
@@ -63,8 +90,6 @@ pub mod draw {
                         .get_phase_state_mut()
                         .reset_player_completed(player_type.into());
                 }
-            } else {
-                assert!(response.response.contains("No Card Left"));
             }
         }
     }
@@ -117,7 +142,7 @@ pub mod draw {
             .await
             .expect("Failed to connect");
 
-        assert!(response.response.contains("Wrong Phase"));
+        assert!(response.response.contains(WRONG_PHASE));
     }
 }
 
@@ -128,7 +153,7 @@ pub mod mulligan {
     use card_game::{
         card::types::PlayerType,
         enums::{COUNT_OF_MULLIGAN_CARDS, TIMEOUT},
-        exception::GameError,
+        exception::*,
         server::types::ServerState,
         test::{spawn_server, verify_mulligan_cards, WebSocketTest},
         zone::zone::Zone,
@@ -160,7 +185,7 @@ pub mod mulligan {
         let (addr, _, _) = spawn_server().await;
 
         // WebSocketTest 객체를 사용하여 훨씬 더 간결한 코드 작성
-        let url = format!("ws://{}/mulligan_step", addr);
+        let url = format!("ws://{}/mulligan_phase", addr);
         let cookie = format!(
             "user_id={}; game_step={}",
             PlayerType::Player1.as_str(),
@@ -191,7 +216,7 @@ pub mod mulligan {
             }
         });
         let error = test_mulligan_invalid_scenario(json).await;
-        assert_eq!(error, GameError::InvalidPlayer.to_string());
+        assert_eq!(error, INVALID_PLAYER);
     }
 
     #[actix_web::test]
@@ -204,7 +229,7 @@ pub mod mulligan {
             }
         });
         let error = test_mulligan_invalid_scenario(json).await;
-        assert_eq!(error, GameError::InvalidApproach.to_string());
+        assert_eq!(error, INVALID_APPROACH);
     }
 
     #[actix_web::test]
@@ -217,7 +242,7 @@ pub mod mulligan {
             }
         });
         let error = test_mulligan_invalid_scenario(json).await;
-        assert_eq!(error, GameError::InvalidCards.to_string());
+        assert_eq!(error, INVALID_CARDS);
     }
 
     #[actix_web::test]
@@ -228,7 +253,7 @@ pub mod mulligan {
 
         let client = reqwest::Client::new();
         let response = client
-            .get(format!("http://{}/mulligan_step", addr))
+            .get(format!("http://{}/mulligan_phase", addr))
             .header("Cookie", format!("user_id={}; game_step=draw", player_type))
             .send()
             .await
@@ -240,16 +265,19 @@ pub mod mulligan {
         assert_eq!(status.as_u16(), 500);
 
         // 대신 panic하는 대신 반환된 에러 문자열을 비교합니다.
-        let error_message = if body.contains("draw") {
-            "WRONG_PHASE".to_string()
-        } else {
-            panic!("Unexpected error response")
-        };
 
-        assert_eq!(
-            error_message,
-            GameError::WrongPhase("".to_string(), "".to_string()).to_string()
-        );
+        assert!(body.contains(WRONG_PHASE));
+
+        // let error_message = if body.contains("draw") {
+        //     "WRONG_PHASE".to_string()
+        // } else {
+        //     panic!("Unexpected error response")
+        // };
+
+        // assert_eq!(
+        //     error_message,
+        //     GameError::WrongPhase("".to_string(), "".to_string()).to_string()
+        // );
     }
 
     // 이 테스트 뭔가 문제가 많음
@@ -259,7 +287,7 @@ pub mod mulligan {
         let player_type = PlayerType::Player1.as_str();
 
         // WebSocketTest 객체를 사용하여 훨씬 더 간결한 코드 작성
-        let url = format!("ws://{}/mulligan_step", addr);
+        let url = format!("ws://{}/mulligan_phase", addr);
         let cookie = format!(
             "user_id={}; game_step={}",
             PlayerType::Player1.as_str(),
@@ -296,7 +324,7 @@ pub mod mulligan {
             .await
             .expect("Failed to send message");
 
-        assert_eq!("ALREADY_READY", ws.expect_error().await);
+        assert!(ws.expect_error().await.contains(ALREADY_READY));
     }
 
     #[actix_web::test]
@@ -304,7 +332,7 @@ pub mod mulligan {
         let (addr, _, _) = spawn_server().await;
 
         // WebSocketTest 객체를 사용하여 훨씬 더 간결한 코드 작성
-        let url = format!("ws://{}/mulligan_step", addr);
+        let url = format!("ws://{}/mulligan_phase", addr);
         let cookie = format!(
             "user_id={}; game_step={}",
             PlayerType::Player1.as_str(),
@@ -335,7 +363,7 @@ pub mod mulligan {
         let player_type = PlayerType::Player1.as_str();
 
         // WebSocketTest 객체를 사용하여 훨씬 더 간결한 코드 작성
-        let url = format!("ws://{}/mulligan_step", addr);
+        let url = format!("ws://{}/mulligan_phase", addr);
         let cookie = format!(
             "user_id={}; game_step={}",
             PlayerType::Player1.as_str(),
@@ -389,7 +417,7 @@ pub mod mulligan {
                 addr: SocketAddr,
                 server_state: Data<ServerState>,
             ) -> std::io::Result<()> {
-                let url = format!("ws://{}/mulligan_step", addr);
+                let url = format!("ws://{}/mulligan_phase", addr);
                 let cookie = format!("user_id={}; game_step={}", player_type, "mulligan");
                 let mut ws = WebSocketTest::connect(url, cookie).await.unwrap();
 

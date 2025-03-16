@@ -173,16 +173,9 @@ impl MessageHandler {
         // );
 
         if self.parsing_error_count >= 3 {
-            self.terminate_session(
-                session,
-                GameError::ParseError("JSON parsing error".to_string()),
-                session_id,
-                player_type,
-            )
-            .await;
-            return MessageProcessResult::TerminateSession(GameError::ParseError(
-                "JSON parsing error".to_string(),
-            ));
+            self.terminate_session(session, GameError::ParseError, session_id, player_type)
+                .await;
+            return MessageProcessResult::TerminateSession(GameError::ParseError);
         }
 
         MessageProcessResult::NeedRetry
