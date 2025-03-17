@@ -1,6 +1,6 @@
 use uuid::Uuid;
 
-use crate::exception::GameError;
+use crate::{enums::HAND_ZONE_SIZE, exception::GameError};
 
 use super::Card;
 
@@ -20,6 +20,12 @@ pub struct SpecificPositionInsert {
 // Top 구현
 impl Insert for TopInsert {
     fn insert(&self, cards: &mut Vec<Card>, card: Card) -> Result<(), GameError> {
+        // TODO: Hand 에 자리가 없거나 등 오류 처리해야함.
+        let zone_card_size = cards.len();
+        if HAND_ZONE_SIZE <= zone_card_size {
+            return Err(GameError::ExceededCardLimit);
+        }
+
         cards.push(card);
         Ok(())
     }

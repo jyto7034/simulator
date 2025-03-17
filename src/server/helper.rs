@@ -34,7 +34,7 @@ pub fn process_mulligan_completion<T: Into<PlayerType> + Copy>(
         .get_select_cards();
 
     // UUID -> Card 객체로 변환하는 과정입니다.
-    let cards = game.get_cards_by_uuid(selected_cards.clone());
+    let cards = game.get_cards_by_uuids(selected_cards.clone())?;
     // add_card 함수를 통해 선택된 카드들을 손으로 이동시킵니다.
     game.get_player_by_type(player_type.into())
         .get()

@@ -285,7 +285,9 @@ impl RequestTest {
         T: DeserializeOwned,
         F: Fn(T) -> R,
     {
-        let msg = serde_json::from_str::<T>(self.response.as_str()).expect("Failed to parse JSON");
+        println!("Response: {}", self.response);
+        let msg = serde_json::from_str::<T>(self.response.as_str())
+            .expect("Failed to parse JSON (expect_message)");
         extractor(msg)
     }
 }

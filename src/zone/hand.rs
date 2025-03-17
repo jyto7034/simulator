@@ -1,7 +1,12 @@
 use uuid::Uuid;
 
 use crate::{
-    card::{cards::Cards, insert::Insert, take::Take, Card},
+    card::{
+        cards::{CardVecExt, Cards},
+        insert::Insert,
+        take::Take,
+        Card,
+    },
     enums::UNIT_ZONE_SIZE,
     exception::GameError,
 };
@@ -23,9 +28,11 @@ impl Hand {
     }
 
     /// 특정 카드를 현재 Zone 으로부터 삭제합니다.
-    pub fn remove_card(&mut self, _card: Card) -> Result<(), GameError> {
-        // 카드 관리 방법 변경에 따라, 재작성해야함.
-        todo!();
+    pub fn remove_card(&mut self, card: Card) -> Result<(), GameError> {
+        self.zone_cards
+            .remove_by_uuid(card.get_uuid())
+            .map(|_| ())
+            .ok_or(GameError::CardNotFound)
     }
 }
 

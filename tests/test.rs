@@ -1,7 +1,10 @@
 #[cfg(test)]
 pub mod draw {
+    use std::{collections::HashSet, net::SocketAddr};
+
     use card_game::{
         card::{cards::CardVecExt, types::PlayerType},
+        enums::HAND_ZONE_SIZE,
         exception::*,
         game::phase::Phase,
         server::jsons::draw,
@@ -9,6 +12,170 @@ pub mod draw {
         zone::zone::Zone,
     };
     use uuid::Uuid;
+
+    #[actix_web::test]
+    async fn test_draw_concurrency() {
+        // 서버 설정
+        let (addr, state, _) = spawn_server().await;
+
+        {
+            state
+                .game
+                .lock()
+                .await
+                .get_phase_state_mut()
+                .set_phase(Phase::DrawPhase);
+        }
+
+        // 플레이어별 쿠키 설정
+        let player1_cookie = format!(
+            "user_id={}; game_step=drawphase",
+            PlayerType::Player1.as_str()
+        );
+        let player2_cookie = format!(
+            "user_id={}; game_step=drawphase",
+            PlayerType::Player2.as_str()
+        );
+
+        // 두 플레이어가 동시에 드로우하는 테스트 함수
+        async fn draw_card(addr: SocketAddr, cookie: String) -> (PlayerType, Uuid) {
+            let mut response = RequestTest::connect("draw_phase", addr, cookie.clone())
+                .await
+                .expect("Failed to connect");
+
+            // 플레이어 타입 확인
+            let player_type = if cookie.contains("player1") {
+                PlayerType::Player1
+            } else {
+                PlayerType::Player2
+            };
+
+            // 드로우된 카드 UUID 반환
+            (player_type, response.expect_draw_card())
+        }
+
+        // 두 요청을 동시에 실행
+        let mut tasks = Vec::new();
+
+        // 각 플레이어가 5번씩 요청을 보냄
+        let addr_clone = addr.clone();
+        let p1_cookie = player1_cookie.clone();
+        let p2_cookie = player2_cookie.clone();
+
+        // Player1 태스크
+        let task1 = tokio::spawn(async move { draw_card(addr_clone.clone(), p1_cookie).await });
+        tasks.push(task1);
+
+        // Player2 태스크
+        let task2 = tokio::spawn(async move { draw_card(addr_clone, p2_cookie).await });
+        tasks.push(task2);
+
+        // 모든 태스크가 완료될 때까지 기다림
+        let results = futures::future::join_all(tasks).await;
+
+        // 결과 검증
+        let mut player1_cards = Vec::new();
+        let mut player2_cards = Vec::new();
+
+        for result in results {
+            // 각 태스크의 결과 확인
+            match result {
+                Ok((player_type, card_uuid)) => {
+                    if player_type == PlayerType::Player1 {
+                        player1_cards.push(card_uuid);
+                    } else {
+                        player2_cards.push(card_uuid);
+                    }
+                }
+                Err(e) => panic!("Task failed: {:?}", e),
+            }
+        }
+
+        // 두 플레이어가 모두 카드를 받았는지 확인
+        assert_eq!(player1_cards.len(), 1);
+        assert_eq!(player2_cards.len(), 1);
+
+        // 각 플레이어가 받은 카드가 중복되지 않는지 확인
+        let all_cards: HashSet<_> = player1_cards.iter().chain(player2_cards.iter()).collect();
+        assert_eq!(all_cards.len(), player1_cards.len() + player2_cards.len());
+
+        // 게임 상태 검증
+        {
+            let game = state.game.lock().await;
+
+            // Player1의 모든 카드가 핸드에 있는지 확인
+            let player1 = game.get_player_by_type(PlayerType::Player1).get();
+            for &uuid in &player1_cards {
+                assert!(player1.get_hand().get_cards().contains_uuid(uuid));
+                assert!(!player1.get_deck().get_cards().contains_uuid(uuid));
+            }
+
+            // Player2의 모든 카드가 핸드에 있는지 확인
+            let player2 = game.get_player_by_type(PlayerType::Player2).get();
+            for &uuid in &player2_cards {
+                assert!(player2.get_hand().get_cards().contains_uuid(uuid));
+                assert!(!player2.get_deck().get_cards().contains_uuid(uuid));
+            }
+        }
+
+        println!("플레이어1 드로우 카드: {:?}", player1_cards);
+        println!("플레이어2 드로우 카드: {:?}", player2_cards);
+    }
+    #[actix_web::test]
+    async fn test_draw_hand_is_full() {
+        let (addr, state, _) = spawn_server().await;
+        let player_type = PlayerType::Player1.as_str();
+        let cookie = format!("user_id={}; game_step=drawphase", player_type);
+        {
+            state
+                .game
+                .lock()
+                .await
+                .get_phase_state_mut()
+                .set_phase(Phase::DrawPhase);
+        }
+
+        // HAND_ZONE_SIZE + 1 회 반복하여 카드를 뽑는다.
+        for _ in 0..HAND_ZONE_SIZE + 1 {
+            let response = RequestTest::connect("draw_phase", addr, cookie.clone())
+                .await
+                .expect("Failed to connect");
+
+            // 카드를 예상하되, 만약 parse error 발생 시, body.contains 을 통해 No Card Left ( 혹은 다른 오류 ) 오류 인지 확인함.
+            let result = serde_json::from_str::<draw::ServerMessage>(&response.response.as_str());
+
+            // Draw 메시지가 아닌 경우.
+            // EXCEEDED_CARD_LIMIT 메시지가 포함되어 있는지 확인한다.
+            if result.is_err() {
+                assert!(response.response.contains(EXCEEDED_CARD_LIMIT));
+            } else {
+                let draw::ServerMessage::DrawAnswer(payload) = result.unwrap();
+                let card_uuid = payload.cards.parse::<Uuid>().unwrap();
+                // 검증 단계
+                {
+                    let game = state.game.lock().await;
+                    let player = game.get_player_by_type(player_type).get();
+                    let deck = player.get_deck();
+                    if deck.get_cards().contains_uuid(card_uuid) {
+                        panic!("Card is not removed from deck");
+                    }
+
+                    let hand = player.get_hand();
+                    if !hand.get_cards().contains_uuid(card_uuid) {
+                        panic!("Card is not added to hand");
+                    }
+                }
+
+                // draw 상태 초기화
+                {
+                    let mut game = state.game.lock().await;
+
+                    game.get_phase_state_mut()
+                        .reset_player_completed(player_type.into());
+                }
+            }
+        }
+    }
 
     #[actix_web::test]
     async fn test_draw_re_entry() {
@@ -32,7 +199,6 @@ pub mod draw {
             .await
             .expect("Failed to connect");
 
-        println!("{}", rt.response);
         assert!(rt.response.contains(NOT_ALLOWED_RE_ENTRY));
     }
 
@@ -81,14 +247,25 @@ pub mod draw {
                     }
                 }
 
-                // draw 상태 초기화
+                // draw 상태 초기화 및 Hand 카드 삭제
                 {
-                    state
-                        .game
-                        .lock()
-                        .await
-                        .get_phase_state_mut()
+                    let mut game = state.game.lock().await;
+
+                    game.get_phase_state_mut()
                         .reset_player_completed(player_type.into());
+
+                    // HAND_ZONE_SIZE 를 임의로 수정할 수 없으므로
+                    // Hand 카드를 삭제하는 방법으로
+                    let card = game
+                        .get_cards_by_uuid(card_uuid)
+                        .clone()
+                        .expect("Card not found");
+
+                    game.get_player_by_type(player_type)
+                        .get()
+                        .get_hand_mut()
+                        .remove_card(card)
+                        .expect("Failed to remove card");
                 }
             }
         }
@@ -113,8 +290,6 @@ pub mod draw {
             .expect("Failed to connect");
 
         let card_uuid = response.expect_draw_card();
-
-        println!("Card UUID: {}", card_uuid);
 
         // 검증 단계
         {
@@ -331,7 +506,6 @@ pub mod mulligan {
     async fn test_mulligan_re_entry() {
         let (addr, _, _) = spawn_server().await;
 
-        // WebSocketTest 객체를 사용하여 훨씬 더 간결한 코드 작성
         let url = format!("ws://{}/mulligan_phase", addr);
         let cookie = format!(
             "user_id={}; game_step={}",
@@ -348,7 +522,6 @@ pub mod mulligan {
 
         // 엔드포인트 재진입
         if let Err(e) = WebSocketTest::connect(url, cookie).await {
-            println!("{}", e.to_string());
             assert_eq!(e.to_string(), "HTTP error: 400 Bad Request");
         } else {
             panic!("Re-entry is not allowed");

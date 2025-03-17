@@ -29,8 +29,9 @@ pub const ALREADY_READY: &str = "ALREADY_READY";
 pub const INVALID_OPERATION: &str = "INVALID_OPERATION";
 pub const NO_CARDS_LEFT: &str = "NO_CARDS_LEFT";
 pub const UNKNOWN_OCCURRED: &str = "AN_UNKNOWN_OCCURRED";
-pub const INTERNAL_SERVER_MSG: &str = "Internal Server Error";
+pub const INTERNAL_SERVER_MSG: &str = "INTERNAL_SERVER_MSG";
 pub const PARSE_MSG: &str = "PARSE_MSG";
+pub const EXCEEDED_CARD_LIMIT: &str = "EXCCED_CARD_LIMIT";
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum GameError {
@@ -104,6 +105,7 @@ impl fmt::Display for GameError {
             Self::AlreadyReady => write!(f, "{}", ALREADY_READY),
             Self::InvalidOperation => write!(f, "{}", INVALID_OPERATION),
             Self::NoCardsLeft => write!(f, "{}", NO_CARDS_LEFT),
+            Self::ExceededCardLimit => write!(f, "{}", EXCEEDED_CARD_LIMIT),
             _ => write!(f, ""),
         }
     }
@@ -155,6 +157,10 @@ impl ResponseError for GameError {
                 HttpResponse::build(StatusCode::BAD_REQUEST).body(INVALID_OPERATION)
             }
             Self::NoCardsLeft => HttpResponse::build(StatusCode::BAD_REQUEST).body(NO_CARDS_LEFT),
+            // TODO: draw_no_cards_left 테스트 작성중이었음.
+            Self::ExceededCardLimit => {
+                HttpResponse::build(StatusCode::BAD_REQUEST).body(EXCEEDED_CARD_LIMIT)
+            }
             _ => HttpResponse::build(StatusCode::INTERNAL_SERVER_ERROR).body(UNKNOWN_OCCURRED),
         }
     }

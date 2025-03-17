@@ -651,6 +651,7 @@ dependencies = [
  "console-subscriber",
  "criterion",
  "dotenv",
+ "futures",
  "futures-util",
  "gnuplot",
  "hex",

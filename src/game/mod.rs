@@ -181,8 +181,7 @@ impl Game {
     /// # 패닉
     /// - 만약 입력받은 UUID 중 하나라도 플레이어와 상대방의 카드 목록에서 찾지 못하면,
     ///   해당 UUID와 함께 panic!이 발생합니다.
-    ///
-    pub fn get_cards_by_uuid(&self, uuids: Vec<Uuid>) -> Vec<Card> {
+    pub fn get_cards_by_uuids(&self, uuids: Vec<Uuid>) -> Result<Vec<Card>, GameError> {
         let player = self.get_player().get();
         let opponent = self.get_opponent().get();
 
@@ -202,9 +201,27 @@ impl Game {
             if let Some(card) = card_map.get(&uuid) {
                 results.push(card.clone());
             } else {
-                panic!("No card found with uuid: {:?}", uuid);
+                return Err(GameError::CardNotFound);
             }
         }
-        results
+        Ok(results)
+    }
+
+    pub fn get_cards_by_uuid(&self, uuid: Uuid) -> Result<Card, GameError> {
+        let player = self.get_player().get();
+        let opponent = self.get_opponent().get();
+
+        // 두 카드 리스트를 하나의 iterator로 합칩니다.
+        // UUID가 고유하다고 가정하므로, (uuid, card) 쌍을 HashMap에 저장할 수 있습니다.
+        let card_map: HashMap<Uuid, Card> = player
+            .get_cards()
+            .iter()
+            .chain(opponent.get_cards().iter())
+            .map(|card| (card.get_uuid(), card.clone()))
+            .collect();
+
+        // 입력한 uuid 순서대로 카드들을 찾아서 반환합니다.
+        // 입력 uuid 중 하나라도 매칭되는 카드가 없으면 panic! 합니다.
+        card_map.get(&uuid).cloned().ok_or(GameError::CardNotFound)
     }
 }
