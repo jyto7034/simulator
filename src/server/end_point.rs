@@ -742,6 +742,8 @@ pub async fn handle_draw(
         }
     };
 
+    // TODO: 다음 단계로 넘어가는 코드 작성해야함.
+
     // JSON 응답 반환
     info!(
         "드로우 단계 처리 완료: player={:?}, card_uuid={}",
