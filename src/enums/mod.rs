@@ -1,6 +1,4 @@
-use serde::{Deserialize, Serialize};
-
-pub mod phase;
+use uuid::Uuid;
 
 pub const CARD_ID_JSON_PATH: &str = "Resource/cards_id.json";
 pub const CARD_JSON_PATH: &str = "Resource/cards.json";
@@ -26,10 +24,7 @@ pub const MAX_CARD_SIZE: usize = 30;
 
 pub struct DeckCode(pub String);
 
-#[derive(Clone, PartialEq, Eq, Serialize, Deserialize, Debug, Hash)]
-pub struct UUID(pub String);
-
-pub type CardsUuid = Vec<UUID>;
+pub type CardsUuid = Vec<Uuid>;
 
 pub const COUNT_OF_CARDS: usize = 30;
 pub const COUNT_OF_MULLIGAN_CARDS: usize = 5;
@@ -38,5 +33,6 @@ pub const PLAYER_2: usize = 1;
 
 pub const UNIT_ZONE_SIZE: usize = 12;
 pub const DECK_ZONE_SIZE: usize = 30;
+pub const HAND_ZONE_SIZE: usize = 10;
 
-pub const TIMEOUT: u64 = 3;
+pub const TIMEOUT: u64 = 5;

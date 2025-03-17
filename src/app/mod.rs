@@ -1,7 +1,11 @@
 use crate::{
-    enums::{phase::Phase, DeckCode},
+    enums::DeckCode,
     exception::GameError,
-    game::{turn_manager::Turn, Game, GameConfig},
+    game::{
+        phase::{Phase, PhaseState},
+        turn_manager::Turn,
+        Game, GameConfig,
+    },
     OptArc,
 };
 
@@ -17,7 +21,7 @@ impl App {
             game: Game {
                 player1: OptArc::none(),
                 player2: OptArc::none(),
-                phase: Phase::Mulligan,
+                phase_state: PhaseState::new(Phase::Mulligan),
                 turn: Turn::new(),
             },
         }

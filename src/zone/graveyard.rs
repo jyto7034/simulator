@@ -1,6 +1,8 @@
+use uuid::Uuid;
+
 use crate::{
     card::{cards::Cards, take::Take, Card},
-    enums::{UNIT_ZONE_SIZE, UUID},
+    enums::UNIT_ZONE_SIZE,
     exception::GameError,
 };
 
@@ -36,7 +38,7 @@ impl Zone for Graveyard {
         todo!()
     }
 
-    fn remove_card(&mut self, uuid: UUID) {
+    fn remove_card(&mut self, uuid: Uuid) {
         todo!()
     }
 
@@ -52,7 +54,7 @@ impl Zone for Graveyard {
         todo!()
     }
 
-    fn take_card(&mut self, take_type: Box<dyn Take>) -> Vec<Card> {
+    fn take_card(&mut self, take_type: Box<dyn Take>) -> Result<Vec<Card>, GameError> {
         todo!()
     }
 }

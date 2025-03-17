@@ -34,6 +34,7 @@ async-tungstenite = {version="0.28.2", features = ["tokio-runtime"]}
 reqwest = "0.12.12"
 
 futures-util = {version = "0.3", features = ["sink"]}
+futures = "0.3.31"
 argon2 = "0.5.3"
 dotenv = "0.15.0"
 

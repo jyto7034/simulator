@@ -1,16 +1,17 @@
+use uuid::Uuid;
+
 use crate::{
     card::{
         effect::Effect,
         types::{CardSpecs, CardStatus, CardType, OwnerType},
         Card,
     },
-    enums::UUID,
     exception::GameError,
     utils::{self, json::CardJson},
 };
 
 pub struct CardBuilder {
-    uuid: UUID,
+    uuid: Uuid,
     name: String,
     card_type: CardType,
     effects: Vec<Box<dyn Effect>>,

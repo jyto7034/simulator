@@ -1,16 +1,20 @@
 pub mod game_step;
 mod getter;
 mod helper;
+pub mod phase;
 pub mod turn_manager;
 
 use std::collections::HashMap;
 
+use phase::{Phase, PhaseState};
 use turn_manager::Turn;
+use uuid::Uuid;
 
 use crate::{
-    card::{cards::CardVecExt, insert::BottomInsert, types::PlayerType, Card},
-    enums::{phase::Phase, DeckCode, UUID},
+    card::{cards::CardVecExt, insert::BottomInsert, take::BottomTake, types::PlayerType, Card},
+    enums::DeckCode,
     exception::GameError,
+    selector::TargetCount,
     unit::player::{Player, Resoruce},
     utils::deckcode_to_cards,
     zone::zone::Zone,
@@ -34,7 +38,7 @@ pub struct GameConfig {
 pub struct Game {
     pub player1: OptArc<Player>,
     pub player2: OptArc<Player>,
-    pub phase: Phase,
+    pub phase_state: PhaseState,
     pub turn: Turn,
 }
 
@@ -83,7 +87,6 @@ impl Game {
         match player_type.into() {
             PlayerType::Player1 => &self.player1,
             PlayerType::Player2 => &self.player2,
-            PlayerType::None => todo!(),
         }
     }
 
@@ -92,20 +95,23 @@ impl Game {
     }
 
     pub fn get_phase(&self) -> Phase {
-        self.phase
+        self.phase_state.get_phase()
+    }
+
+    pub fn get_phase_state_mut(&mut self) -> &mut PhaseState {
+        &mut self.phase_state
+    }
+
+    pub fn get_phase_state(&mut self) -> &PhaseState {
+        &self.phase_state
     }
 
     pub fn get_turn_mut(&mut self) -> &mut Turn {
         &mut self.turn
     }
 
-    pub fn get_phase_mut(&mut self) -> &mut Phase {
-        &mut self.phase
-    }
-
-    pub fn move_phase(&mut self) -> Phase {
-        self.phase = self.phase.next_phase();
-        self.phase
+    pub fn move_phase(&mut self) {
+        self.phase_state.get_phase().move_to_next_phase();
     }
 
     pub fn get_player(&self) -> &OptArc<Player> {
@@ -116,14 +122,32 @@ impl Game {
         &self.player2
     }
 
-    pub fn draw_card(&self, player_type: PlayerType) -> Result<(), GameError> {
-        todo!()
+    /// 플레이어의 덱에서 카드를 뽑아 손에 추가합니다.
+    /// # Arguments
+    /// * `player_type` - 덱에서 카드를 뽑을 플레이어의 종류입니다.
+    /// # Returns
+    /// * 뽑은 카드를 반환합니다.
+    /// # Errors
+    /// * 덱에 카드가 없을 경우 NoCardsLeft 에러를 반환합니다.
+    pub fn draw_card(&mut self, player_type: PlayerType) -> Result<Card, GameError> {
+        let result = self
+            .get_player_by_type(player_type)
+            .get()
+            .get_deck_mut()
+            .take_card(Box::new(BottomTake(TargetCount::Exact(1))))?;
+
+        // TODO: 이 확인이 필요한가?
+        if result.is_empty() {
+            return Err(GameError::NoCardsLeft);
+        }
+
+        Ok(result[0].clone())
     }
 
     pub fn restore_card(
         &mut self,
         player_type: PlayerType,
-        src_cards: &Vec<UUID>,
+        src_cards: &Vec<Uuid>,
     ) -> Result<(), GameError> {
         for card_uuid in src_cards {
             let card = {
@@ -157,14 +181,13 @@ impl Game {
     /// # 패닉
     /// - 만약 입력받은 UUID 중 하나라도 플레이어와 상대방의 카드 목록에서 찾지 못하면,
     ///   해당 UUID와 함께 panic!이 발생합니다.
-    ///
-    pub fn get_cards_by_uuid(&self, uuids: Vec<UUID>) -> Vec<Card> {
+    pub fn get_cards_by_uuids(&self, uuids: Vec<Uuid>) -> Result<Vec<Card>, GameError> {
         let player = self.get_player().get();
         let opponent = self.get_opponent().get();
 
         // 두 카드 리스트를 하나의 iterator로 합칩니다.
         // UUID가 고유하다고 가정하므로, (uuid, card) 쌍을 HashMap에 저장할 수 있습니다.
-        let card_map: HashMap<UUID, Card> = player
+        let card_map: HashMap<Uuid, Card> = player
             .get_cards()
             .iter()
             .chain(opponent.get_cards().iter())
@@ -178,9 +201,27 @@ impl Game {
             if let Some(card) = card_map.get(&uuid) {
                 results.push(card.clone());
             } else {
-                panic!("No card found with uuid: {:?}", uuid);
+                return Err(GameError::CardNotFound);
             }
         }
-        results
+        Ok(results)
+    }
+
+    pub fn get_cards_by_uuid(&self, uuid: Uuid) -> Result<Card, GameError> {
+        let player = self.get_player().get();
+        let opponent = self.get_opponent().get();
+
+        // 두 카드 리스트를 하나의 iterator로 합칩니다.
+        // UUID가 고유하다고 가정하므로, (uuid, card) 쌍을 HashMap에 저장할 수 있습니다.
+        let card_map: HashMap<Uuid, Card> = player
+            .get_cards()
+            .iter()
+            .chain(opponent.get_cards().iter())
+            .map(|card| (card.get_uuid(), card.clone()))
+            .collect();
+
+        // 입력한 uuid 순서대로 카드들을 찾아서 반환합니다.
+        // 입력 uuid 중 하나라도 매칭되는 카드가 없으면 panic! 합니다.
+        card_map.get(&uuid).cloned().ok_or(GameError::CardNotFound)
     }
 }

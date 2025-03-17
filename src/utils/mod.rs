@@ -15,9 +15,9 @@ use std::io::{Cursor, Write};
 use std::vec;
 use uuid::Uuid;
 
-pub fn generate_uuid() -> Result<UUID, GameError> {
+pub fn generate_uuid() -> Result<Uuid, GameError> {
     let uuid = Uuid::new_v4();
-    Ok(UUID(uuid.to_string()))
+    Ok(uuid)
 }
 
 pub fn read_game_config_json() -> Result<json::GameConfigJson, GameError> {

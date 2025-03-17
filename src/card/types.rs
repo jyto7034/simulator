@@ -234,7 +234,6 @@ pub enum OwnerType {
 pub enum PlayerType {
     Player1,
     Player2,
-    None,
 }
 
 impl PlayerType {
@@ -242,7 +241,6 @@ impl PlayerType {
         match self {
             Self::Player1 => Self::Player1,
             Self::Player2 => Self::Player2,
-            Self::None => Self::None,
         }
     }
 
@@ -250,7 +248,13 @@ impl PlayerType {
         match self {
             PlayerType::Player1 => "player1",
             PlayerType::Player2 => "player2",
-            PlayerType::None => "None",
+        }
+    }
+
+    pub fn to_string(&self) -> String {
+        match self {
+            PlayerType::Player1 => "player1".to_string(),
+            PlayerType::Player2 => "player2".to_string(),
         }
     }
 }
@@ -260,7 +264,6 @@ impl From<PlayerType> for OwnerType {
         match value {
             PlayerType::Player1 => Self::Self_,
             PlayerType::Player2 => Self::Opponent,
-            PlayerType::None => Self::None,
         }
     }
 }
@@ -270,8 +273,7 @@ impl From<OwnerType> for PlayerType {
         match value {
             OwnerType::Self_ => PlayerType::Player1,
             OwnerType::Opponent => PlayerType::Player2,
-            OwnerType::Any => PlayerType::None,
-            OwnerType::None => PlayerType::None,
+            _ => panic!("Invalid OwnerType to convert to PlayerType"),
         }
     }
 }
@@ -281,7 +283,6 @@ impl From<PlayerType> for String {
         match value {
             PlayerType::Player1 => "player1".to_string(),
             PlayerType::Player2 => "player2".to_string(),
-            PlayerType::None => todo!(),
         }
     }
 }
@@ -291,7 +292,7 @@ impl From<String> for PlayerType {
         match &value[..] {
             "player1" => PlayerType::Player1,
             "player2" => PlayerType::Player2,
-            _ => PlayerType::None,
+            _ => panic!("Invalid string to convert to PlayerType. Got: {}", value),
         }
     }
 }
@@ -301,7 +302,7 @@ impl From<&str> for PlayerType {
         match value {
             "player1" => PlayerType::Player1,
             "player2" => PlayerType::Player2,
-            _ => PlayerType::None,
+            _ => panic!("Invalid string to convert to PlayerType. Got: {}", value),
         }
     }
 }
@@ -316,7 +317,6 @@ impl OwnershipComparable for PlayerType {
             (self, owner),
             (PlayerType::Player1, OwnerType::Self_)
                 | (PlayerType::Player2, OwnerType::Opponent)
-                | (PlayerType::None, OwnerType::None)
                 | (_, OwnerType::Any)
         )
     }

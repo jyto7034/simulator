@@ -6,8 +6,7 @@ use uuid::Uuid;
 
 use crate::{
     card::{insert::TopInsert, types::PlayerType},
-    enums::UUID,
-    exception::{MessageProcessResult, MulliganError, ServerError},
+    exception::{GameError, MessageProcessResult},
     game::Game,
     serialize_error,
     zone::zone::Zone,
@@ -15,33 +14,92 @@ use crate::{
 
 use super::jsons::Message;
 
+/// 멀리건 완료 처리 함수
+/// - 게임 객체를 받아서, 플레이어의 멀리건 상태를 완료로 변경하고, 선택한 카드들을 손으로 이동시킵니다.
+/// - 선택한 카드들의 UUID를 반환합니다.
+/// # Arguments
+/// * `game` - 게임 객체
+/// * `player_type` - 플레이어 타입
+/// # Returns
+/// * `Vec<Uuid>` - 선택한 카드들의 UUID
 pub fn process_mulligan_completion<T: Into<PlayerType> + Copy>(
     game: &mut Game,
     player_type: T,
-) -> Result<Vec<UUID>, ServerError> {
+) -> Result<Vec<Uuid>, GameError> {
+    // 선택된 멀리건 카드들의 UUID 를 얻습니다.
     let selected_cards = game
         .get_player_by_type(player_type.into())
         .get()
         .get_mulligan_state_mut()
         .get_select_cards();
-    let cards = game.get_cards_by_uuid(selected_cards.clone());
+
+    // UUID -> Card 객체로 변환하는 과정입니다.
+    let cards = game.get_cards_by_uuids(selected_cards.clone())?;
+    // add_card 함수를 통해 선택된 카드들을 손으로 이동시킵니다.
     game.get_player_by_type(player_type.into())
         .get()
         .get_hand_mut()
         .add_card(cards, Box::new(TopInsert))
-        .map_err(|_| ServerError::InternalServerError)?;
+        .map_err(|_| GameError::InternalServerError)?;
+
+    // 멀리건 상태를 "완료" 상태로 변경합니다.
     game.get_player_by_type(player_type.into())
         .get()
         .get_mulligan_state_mut()
         .confirm_selection();
+
+    // 그런 뒤, 선택한 카드들을 반환합니다.
     Ok(selected_cards)
+}
+
+/// 에러 메시지 전송 매크로
+/// - 세션을 통해 에러 메시지를 전송하고, 전송 성공 여부를 반환합니다.
+/// - retry 키워드를 사용하면 최대 재시도 횟수를 지정할 수 있습니다.
+#[macro_export]
+macro_rules! try_send_error {
+    ($session:expr, $error:expr) => {
+        if send_error_and_check(&mut $session, $error).await == Some(()) {
+            break;
+        }
+    };
+
+    ($session:expr, $error:expr, retry) => {
+        match send_error_and_check(&mut $session, $error).await {
+            Some(()) => break,
+            None => {
+                // 재시도 로직
+                let retry_result = send_error_and_check(&mut $session, $error).await;
+                if retry_result == Some(()) {
+                    break;
+                }
+            }
+        }
+    };
+
+    ($session:expr, $error:expr, retry $max_retries:expr) => {{
+        let mut retries = 0;
+        loop {
+            match send_error_and_check(&mut $session, $error).await {
+                Some(()) => break,
+                None => {
+                    retries += 1;
+                    if retries >= $max_retries {
+                        // 로깅 또는 다른 실패 처리
+                        // log::warn!("Failed to send error after {} retries", $max_retries);
+                        break;
+                    }
+                    tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+                }
+            }
+        }
+    }};
 }
 
 /// 에러 메시지를 전송하고, 전송 성공 여부를 반환합니다.
 /// # return
 /// - 성공 시 Some(())
 /// - 실패 시 None
-pub async fn send_error_and_check(session: &mut Session, error_msg: MulliganError) -> Option<()> {
+pub async fn send_error_and_check(session: &mut Session, error_msg: GameError) -> Option<()> {
     // 에러 메시지 직렬화
     let Ok(error_json) = serialize_error!(error_msg) else {
         return None; // 직렬화 실패
@@ -115,11 +173,9 @@ impl MessageHandler {
         // );
 
         if self.parsing_error_count >= 3 {
-            self.terminate_session(session, MulliganError::ParseError, session_id, player_type)
+            self.terminate_session(session, GameError::ParseError, session_id, player_type)
                 .await;
-            return MessageProcessResult::TerminateSession(ServerError::ParseError(
-                "JSON parsing error".to_string(),
-            ));
+            return MessageProcessResult::TerminateSession(GameError::ParseError);
         }
 
         MessageProcessResult::NeedRetry
@@ -135,14 +191,9 @@ impl MessageHandler {
         self.unexpected_msg_count += 1;
 
         if self.unexpected_msg_count >= 3 {
-            self.terminate_session(
-                session,
-                MulliganError::InvalidApproach,
-                session_id,
-                player_type,
-            )
-            .await;
-            return MessageProcessResult::TerminateSession(ServerError::UnexpectedMessage);
+            self.terminate_session(session, GameError::InvalidApproach, session_id, player_type)
+                .await;
+            return MessageProcessResult::TerminateSession(GameError::UnexpectedMessage);
         }
 
         MessageProcessResult::NeedRetry
@@ -152,7 +203,7 @@ impl MessageHandler {
     async fn terminate_session(
         &self,
         session: &mut Session,
-        error: MulliganError,
+        error: GameError,
         session_id: Uuid,
         player_type: PlayerType,
     ) {
@@ -161,7 +212,7 @@ impl MessageHandler {
     }
 
     /// 에러 메시지 전송 (재시도 로직 포함)
-    async fn send_error_with_retry(&self, session: &mut Session, error: MulliganError) -> bool {
+    async fn send_error_with_retry(&self, session: &mut Session, error: GameError) -> bool {
         if let Ok(error_json) = serialize_error!(error) {
             for attempt in 0..3 {
                 match session.text(error_json.clone()).await {

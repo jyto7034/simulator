@@ -9,10 +9,10 @@ use std::fmt;
 
 use effect::Effect;
 use types::{CardSpecs, CardStatus, OwnerType, StatType};
+use uuid::Uuid;
 
 use crate::{
     card::types::CardType,
-    enums::UUID,
     exception::GameError,
     game::Game,
     utils::{self, json::CardJson},
@@ -20,7 +20,7 @@ use crate::{
 
 #[derive(Clone)]
 pub struct Card {
-    uuid: UUID,
+    uuid: Uuid,
     name: String,
     card_type: CardType,
     effects: Vec<Box<dyn Effect>>,
@@ -62,7 +62,7 @@ impl Clone for Box<dyn Effect> {
 impl Card {
     pub fn new(
         owner: OwnerType,
-        uuid: UUID,
+        uuid: Uuid,
         name: String,
         effects: Vec<Box<dyn Effect>>,
         r#type: CardType,
@@ -126,8 +126,8 @@ impl Card {
     }
 
     // Getter/Setter 메서드들
-    pub fn get_uuid(&self) -> UUID {
-        self.uuid.clone()
+    pub fn get_uuid(&self) -> Uuid {
+        self.uuid
     }
 
     pub fn get_name(&self) -> &str {

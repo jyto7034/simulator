@@ -1,3 +1,46 @@
+use std::collections::HashSet;
+
+use crate::card::types::PlayerType;
+
+#[derive(Clone)]
+pub struct PhaseState {
+    current_phase: Phase,
+    completed_players: HashSet<PlayerType>,
+}
+
+impl PhaseState {
+    pub fn new(phase: Phase) -> Self {
+        Self {
+            current_phase: phase,
+            completed_players: HashSet::new(),
+        }
+    }
+
+    pub fn has_player_completed(&self, player_type: PlayerType) -> bool {
+        self.completed_players.contains(&player_type)
+    }
+
+    pub fn mark_player_completed(&mut self, player_type: PlayerType) {
+        self.completed_players.insert(player_type);
+    }
+
+    pub fn reset_player_completed(&mut self, player_type: PlayerType) {
+        self.completed_players.remove(&player_type);
+    }
+
+    pub fn reset(&mut self) {
+        self.completed_players.clear();
+    }
+
+    pub fn get_phase(&self) -> Phase {
+        self.current_phase
+    }
+
+    pub fn set_phase(&mut self, phase: Phase) {
+        self.current_phase = phase;
+    }
+}
+
 #[derive(Clone, PartialEq, Eq, Copy, Debug)]
 pub enum Phase {
     Mulligan,
@@ -35,6 +78,29 @@ pub enum Phase {
 
     // 턴 종료
     EndPhase,
+}
+
+impl From<String> for Phase {
+    fn from(value: String) -> Self {
+        match value.to_lowercase().as_str() {
+            "mulligan" => Phase::Mulligan,
+            "drawphase" => Phase::DrawPhase,
+            "standbyphase" => Phase::StandbyPhase,
+            "mainphasestart" => Phase::MainPhaseStart,
+            "mainphase1" => Phase::MainPhase1,
+            "battlephasestart" => Phase::BattlePhaseStart,
+            "battlestep" => Phase::BattleStep,
+            "battledamagestepstart" => Phase::BattleDamageStepStart,
+            "battledamagestepcalculationbefore" => Phase::BattleDamageStepCalculationBefore,
+            "battledamagestepcalculationstart" => Phase::BattleDamageStepCalculationStart,
+            "battledamagestepcalculationend" => Phase::BattleDamageStepCalculationEnd,
+            "battledamagestepend" => Phase::BattleDamageStepEnd,
+            "battlephaseend" => Phase::BattlePhaseEnd,
+            "mainphase2" => Phase::MainPhase2,
+            "endphase" => Phase::EndPhase,
+            _ => panic!("Invalid Phase string: {}", value),
+        }
+    }
 }
 
 impl PartialOrd for Phase {
@@ -186,6 +252,14 @@ impl Phase {
             Phase::MainPhase2 => Phase::EndPhase,
             Phase::EndPhase => Phase::DrawPhase,
         }
+    }
+
+    pub fn move_to_next_phase(&mut self) {
+        *self = self.next_phase();
+    }
+
+    pub fn set_phase(&mut self, phase: Phase) {
+        *self = phase;
     }
 
     pub fn as_str(&self) -> &'static str {

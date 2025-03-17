@@ -1,20 +1,22 @@
-use crate::{enums::UUID, selector::TargetCount, zone::zone::Zone};
+use uuid::Uuid;
+
+use crate::{exception::GameError, selector::TargetCount, zone::zone::Zone};
 
 use super::Card;
 
 pub trait Take {
-    fn take(&mut self, zone: &mut dyn Zone) -> Vec<Card>;
+    fn take(&mut self, zone: &mut dyn Zone) -> Result<Vec<Card>, GameError>;
     fn clone_box(&self) -> Box<dyn Take>;
 }
 
 pub struct TopTake(pub TargetCount);
 pub struct BottomTake(pub TargetCount);
 pub struct RandomTake(pub TargetCount);
-pub struct SpecificTake(pub UUID);
+pub struct SpecificTake(pub Uuid);
 
 use std::cmp::min;
 impl Take for TopTake {
-    fn take(&mut self, zone: &mut dyn Zone) -> Vec<Card> {
+    fn take(&mut self, zone: &mut dyn Zone) -> Result<Vec<Card>, GameError> {
         let cards = zone.get_cards_mut();
         let available = cards.len();
 
@@ -34,7 +36,7 @@ impl Take for TopTake {
         };
 
         // 카드 집합의 앞부분에서 결정된 개수만큼 카드들을 drainage 하여 소유권을 가져옵니다.
-        cards.drain(available - count..).collect()
+        Ok(cards.drain(available - count..).collect())
     }
 
     fn clone_box(&self) -> Box<dyn Take> {
@@ -43,8 +45,24 @@ impl Take for TopTake {
 }
 
 impl Take for BottomTake {
-    fn take(&mut self, zone: &mut dyn Zone) -> Vec<Card> {
-        todo!()
+    fn take(&mut self, zone: &mut dyn Zone) -> Result<Vec<Card>, GameError> {
+        let cards = zone.get_cards_mut();
+        let available = cards.len();
+
+        let count = match self.0 {
+            TargetCount::Exact(n) => min(n, available),
+            TargetCount::Range(low, high) => {
+                if available < low {
+                    0
+                } else {
+                    min(high, available)
+                }
+            }
+            TargetCount::Any => available,
+            TargetCount::None => 0,
+        };
+
+        Ok(cards.drain(0..count).collect())
     }
 
     fn clone_box(&self) -> Box<dyn Take> {
@@ -53,7 +71,7 @@ impl Take for BottomTake {
 }
 
 impl Take for RandomTake {
-    fn take(&mut self, zone: &mut dyn Zone) -> Vec<Card> {
+    fn take(&mut self, zone: &mut dyn Zone) -> Result<Vec<Card>, GameError> {
         todo!()
     }
 
@@ -63,7 +81,7 @@ impl Take for RandomTake {
 }
 
 impl Take for SpecificTake {
-    fn take(&mut self, zone: &mut dyn Zone) -> Vec<Card> {
+    fn take(&mut self, zone: &mut dyn Zone) -> Result<Vec<Card>, GameError> {
         todo!()
     }
 

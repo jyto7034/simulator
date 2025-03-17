@@ -2,6 +2,8 @@
 
 use std::sync::{Arc, Mutex, MutexGuard};
 
+use uuid::Uuid;
+
 pub mod app;
 pub mod card;
 pub mod card_gen;
@@ -91,5 +93,34 @@ impl<T> ArcMutex<T> {
 
     pub fn get(&self) -> MutexGuard<T> {
         self.0.lock().unwrap()
+    }
+}
+
+pub trait VecUuidExt {
+    fn to_vec_string(&self) -> Vec<String>;
+}
+
+impl VecUuidExt for Vec<Uuid> {
+    fn to_vec_string(&self) -> Vec<String> {
+        self.iter()
+            .map(|uuid| uuid.to_string())
+            .collect::<Vec<String>>()
+    }
+}
+
+pub trait VecStringExt {
+    fn to_vec_uuid(&self) -> Vec<Uuid>;
+}
+
+impl VecStringExt for Vec<String> {
+    fn to_vec_uuid(&self) -> Vec<Uuid> {
+        self.iter()
+            .map(|uuid| {
+                Uuid::parse_str(uuid).unwrap_or_else(|e| {
+                    // TODO: Log 함수 사용
+                    panic!("uuid parse error: {}", e)
+                })
+            })
+            .collect::<Vec<Uuid>>()
     }
 }

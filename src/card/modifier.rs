@@ -1,4 +1,4 @@
-use crate::enums::phase::Phase;
+use crate::game::phase::Phase;
 
 use super::types::{Duration, ModifierType};
 

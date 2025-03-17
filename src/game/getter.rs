@@ -23,7 +23,6 @@ impl Game {
             (PlayerType::Player2, ZoneType::Deck) => self.get_opponent_deck_cards(),
             (PlayerType::Player2, ZoneType::Graveyard) => self.get_opponent_graveyard_cards(),
 
-            (PlayerType::None, _) => panic!("Player type is not allowed to be None"),
             (_, ZoneType::Effect) => todo!(),
             (_, ZoneType::None) => panic!("Zone type is not allowed to be None"),
         }

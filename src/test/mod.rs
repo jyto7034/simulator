@@ -10,18 +10,21 @@ use rand::{seq::SliceRandom, thread_rng};
 use serde::de::DeserializeOwned;
 use serde_json::{json, Value};
 use tokio::{net::TcpStream, sync::Mutex};
+use uuid::Uuid;
 
 use crate::{
-    card::Card,
+    card::{cards::CardVecExt, types::PlayerType, Card},
     card_gen::CardGenerator,
-    enums::{DeckCode, CARD_JSON_PATH, MAX_CARD_SIZE, TIMEOUT, UUID},
+    enums::{DeckCode, CARD_JSON_PATH, MAX_CARD_SIZE, TIMEOUT},
     server::{
-        end_point::handle_mulligan,
-        jsons::mulligan,
+        end_point::{handle_draw, handle_mulligan},
+        jsons::{draw, mulligan, ErrorMessage},
         session::PlayerSessionManager,
         types::{ServerState, SessionKey},
     },
     utils::{json, parse_json_to_deck_code},
+    zone::zone::Zone,
+    VecStringExt,
 };
 
 pub fn initialize_app(p1_deck: DeckCode, p2_deck: DeckCode, attacker: usize) -> crate::app::App {
@@ -112,6 +115,7 @@ pub async fn spawn_server() -> (SocketAddr, Data<ServerState>, ServerHandle) {
         App::new()
             .app_data(server_state.clone())
             .service(handle_mulligan)
+            .service(handle_draw)
     })
     .listen(listener)
     .unwrap()
@@ -128,7 +132,7 @@ pub async fn expect_mulligan_deal_message(
     ws_stream: &mut async_tungstenite::WebSocketStream<
         async_tungstenite::tokio::TokioAdapter<tokio::net::TcpStream>,
     >,
-) -> Vec<UUID> {
+) -> Vec<Uuid> {
     let timeout = tokio::time::timeout(Duration::from_secs(5),
 async{
     loop{
@@ -157,7 +161,7 @@ async{
     }
 }).await;
     match timeout {
-        Ok(cards) => cards,
+        Ok(cards) => cards.to_vec_uuid(),
         Err(_) => panic!(
             "Did not receive any message from the server while expecting MulliganMessage::Deal."
         ),
@@ -169,7 +173,7 @@ pub async fn expect_mulligan_complete_message(
     ws_stream: &mut async_tungstenite::WebSocketStream<
         async_tungstenite::tokio::TokioAdapter<tokio::net::TcpStream>,
     >,
-) -> Vec<UUID> {
+) -> Vec<Uuid> {
     // 타임아웃 설정
     let timeout = tokio::time::timeout(
         std::time::Duration::from_secs(5),
@@ -205,18 +209,124 @@ pub async fn expect_mulligan_complete_message(
     ).await;
 
     match timeout {
-        Ok(cards) => cards,
+        Ok(cards) => cards.to_vec_uuid(),
         Err(_) => panic!("Did not receive any message from the server while expecting MulliganMessage::Complete."),
+    }
+}
+
+pub fn verify_mulligan_cards(
+    server_state: &ServerState,
+    player_type: PlayerType,
+    rerolled_cards: &[Uuid],
+    deal_cards: Option<&[Uuid]>,
+    reroll_count: usize,
+) {
+    let game = server_state.game.try_lock().unwrap();
+    let player = game.get_player_by_type(player_type).get();
+    let deck_cards = player.get_deck().get_cards();
+
+    // 덱 크기 검증
+    if deck_cards.len() != 25 {
+        panic!(
+            "Mulligan error: Wrong deck size. expected: {}, Got: {}",
+            25,
+            deck_cards.len()
+        );
+    }
+
+    // 뽑은 카드가 덱에 없는지 확인
+    for card in rerolled_cards {
+        if deck_cards.contains_uuid(card.clone()) {
+            panic!(
+                "Mulligan error (reroll_count = {}): Rerolled card {:?} should not be present in deck",
+                reroll_count, card
+            );
+        }
+    }
+
+    // RerollRequest 경우 이전 카드가 덱에 복원되었는지 확인
+    if let Some(cards) = deal_cards {
+        for card in cards {
+            if !deck_cards.contains_uuid(card.clone()) {
+                panic!(
+                    "Mulligan restore error (reroll_count = {}): Restored card {:?} not found in deck",
+                    reroll_count, card
+                );
+            }
+        }
+    }
+}
+
+pub struct RequestTest {
+    pub response: String,
+}
+
+impl RequestTest {
+    pub async fn connect(
+        step: &str,
+        addr: SocketAddr,
+        cookie: String,
+    ) -> Result<Self, reqwest::Error> {
+        let client = reqwest::Client::new();
+        let response = client
+            .get(format!("http://{}/{}", addr, step))
+            .header("Cookie", cookie)
+            .send()
+            .await?;
+
+        Ok(RequestTest {
+            response: response.text().await.expect("Failed to get response"),
+        })
+    }
+
+    /// 특정 타입의 메세지를 예상합니다. 예상한 메세지가 아닌 경우, panic! 합니다.
+    pub fn expect_message<T, F, R>(&mut self, extractor: F) -> R
+    where
+        T: DeserializeOwned,
+        F: Fn(T) -> R,
+    {
+        println!("Response: {}", self.response);
+        let msg = serde_json::from_str::<T>(self.response.as_str())
+            .expect("Failed to parse JSON (expect_message)");
+        extractor(msg)
+    }
+}
+
+//-------------------------------
+// Draw 관련 함수
+//-------------------------------
+impl RequestTest {
+    /// Draw-Answer 메시지를 예상하고 카드 Uuid 를 반환합니다
+    pub fn expect_draw_card(&mut self) -> Uuid {
+        let extractor = |message: draw::ServerMessage| match message {
+            draw::ServerMessage::DrawAnswer(data) => {
+                data.cards.parse().unwrap_or_else(|e| {
+                    // TODO: Log 함수 사용
+                    panic!("Failed to parse card ID: {:?}", e);
+                })
+            }
+        };
+        self.expect_message(extractor)
+    }
+
+    /// Error 메시지를 예상합니다.
+    pub fn expect_error(&mut self) -> String {
+        let extractor = |message: ErrorMessage| match message {
+            ErrorMessage::Error(data) => data.message,
+        };
+        self.expect_message(extractor)
     }
 }
 
 pub struct WebSocketTest {
     stream: WebSocketStream<TokioAdapter<TcpStream>>,
 }
-
+//-------------------------------
+// WebSocketTest 구현
+//-------------------------------
 impl WebSocketTest {
     /// 웹소켓 연결을 생성하고 래퍼 객체를 반환합니다
-    pub async fn connect(url: String, cookie: String) -> Self {
+    pub async fn connect(url: String, cookie: String) -> Result<Self, tungstenite::Error> {
         let request = Request::builder()
             .uri(&url)
             .header("Cookie", cookie)
@@ -225,16 +335,16 @@ impl WebSocketTest {
             .header("Upgrade", "websocket")
             .header("Connection", "Upgrade")
             .header("Sec-WebSocket-Version", "13")
-            .body(())
-            .expect("요청 생성 실패");
+            .body(())?;
 
-        let (stream, response) = connect_async(request).await.expect("연결 실패");
+        let (stream, response) = connect_async(request).await?;
+
         assert_eq!(
             response.status(),
             tungstenite::http::StatusCode::SWITCHING_PROTOCOLS
         );
 
-        Self { stream }
+        Ok(Self { stream })
     }
 
     /// 메시지를 전송합니다
@@ -254,7 +364,7 @@ impl WebSocketTest {
                     Some(Ok(Message::Text(text))) => {
                         if let Ok(parsed) = serde_json::from_str::<T>(&text) {
                             return extractor(parsed);
-                        }else{
+                        } else {
                             println!("Failed to parse: {}", text);
                         }
                     }
@@ -267,39 +377,64 @@ impl WebSocketTest {
                 }
             }
         };
-        match tokio::time::timeout(Duration::from_secs(TIMEOUT), callback).await
-        {
+        match tokio::time::timeout(Duration::from_secs(TIMEOUT), callback).await {
             Ok(result) => result,
             Err(_) => panic!("Expected message timeout after 5 seconds"),
         }
     }
 
+    /// 에러 메시지를 기다리고 에러 문자열을 반환합니다
+    pub async fn expect_error(&mut self) -> String {
+        let extractor = |message: ErrorMessage| match message {
+            ErrorMessage::Error(data) => data.message,
+        };
+        self.expect_message(extractor).await
+    }
+}
+
+//-------------------------------
+// Mulligan 관련 함수
+//-------------------------------
+impl WebSocketTest {
     /// 멀리건 딜 메시지를 기다리고 카드 ID 리스트를 반환합니다
-    pub async fn expect_mulligan_deal(&mut self) -> Vec<UUID> {
+    pub async fn expect_mulligan_deal(&mut self) -> Vec<Uuid> {
         self.expect_message(|message: mulligan::ServerMessage| match message {
-            mulligan::ServerMessage::Deal(data) => data.cards,
+            mulligan::ServerMessage::Deal(data) => data.cards.to_vec_uuid(),
             other => panic!("Expected MulliganMessage::Deal but got: {:?}", other),
         })
         .await
     }
 
     /// 멀리건 완료 메시지를 기다리고 카드 ID 리스트를 반환합니다
-    pub async fn expect_mulligan_complete(&mut self) -> Vec<UUID> {
-        // TODO: 다른 expect 함수들도 가독성 수정해야함.
-        let extractor = |message: mulligan::ClientMessage| 
-        match message {
-            mulligan::ClientMessage::Complete(data) => data.cards,
+    pub async fn expect_mulligan_complete(&mut self) -> Vec<Uuid> {
+        let extractor = |message: mulligan::ClientMessage| match message {
+            mulligan::ClientMessage::Complete(data) => data.cards.to_vec_uuid(),
             other => panic!("Expected MulliganMessage::Complete but got: {:?}", other),
         };
         self.expect_message(extractor).await
     }
 
-    /// 에러 메시지를 기다리고 에러 문자열을 반환합니다
-    pub async fn expect_error(&mut self) -> String {
-        self.expect_message(|message: mulligan::ServerMessage| match message {
-            mulligan::ServerMessage::Error(data) => data.message,
-            other => panic!("Expected MulliganMessage::Error but got: {:?}", other),
-        })
-        .await
+    /// Reroll-Answer 메시지를 기다리고 카드 ID 리스트를 반환합니다
+    pub async fn expect_mulligan_answer(&mut self) -> Vec<Uuid> {
+        let extractor = |message: mulligan::ServerMessage| match message {
+            mulligan::ServerMessage::RerollAnswer(data) => data.cards.to_vec_uuid(),
+            other => panic!("Expected MulliganMessage::Answer but got: {:?}", other),
+        };
+        self.expect_message(extractor).await
     }
+}
+
+async fn verify_card_removed_from_deck(
+    server_state: &Data<ServerState>,
+    player_type: &str,
+    card: Uuid,
+) {
+    let game = server_state.game.lock().await;
+    let player = game.get_player_by_type(player_type).get();
+    let deck = player.get_deck();
+    assert!(
+        !deck.get_cards().contains_uuid(card),
+        "Card {} was not removed from the deck",
+        card
+    );
 }
