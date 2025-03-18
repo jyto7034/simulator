@@ -33,25 +33,25 @@ pub enum PhaseResult {
 type PhaseResultType = Result<PhaseResult, GameError>;
 
 impl Game {
-    pub fn handle_phase_start(&mut self) -> PhaseResultType {
-        match self.get_phase() {
-            Phase::Mulligan => Ok(PhaseResult::Mulligan),
-            Phase::DrawPhase => Ok(PhaseResult::DrawPhase),
-            Phase::StandbyPhase => self.handle_standby_phase(),
-            Phase::MainPhaseStart => self.handle_main_phase_start(),
-            Phase::MainPhase1 => self.handle_main_phase_1(),
-            Phase::BattlePhaseStart => self.handle_battle_phase_start(),
-            Phase::BattleStep => self.handle_battle_step(),
-            Phase::BattleDamageStepStart => self.handle_damage_step_start(),
-            Phase::BattleDamageStepCalculationBefore => self.handle_before_damage_calculation(),
-            Phase::BattleDamageStepCalculationStart => self.handle_damage_calculation(),
-            Phase::BattleDamageStepCalculationEnd => self.handle_after_damage_calculation(),
-            Phase::BattleDamageStepEnd => self.handle_damage_step_end(),
-            Phase::BattlePhaseEnd => self.handle_battle_phase_end(),
-            Phase::MainPhase2 => self.handle_main_phase_2(),
-            Phase::EndPhase => self.handle_end_phase(),
-        }
-    }
+    // pub fn handle_phase_start(&mut self) -> PhaseResultType {
+    //     match self.get_phase() {
+    //         Phase::Mulligan => Ok(PhaseResult::Mulligan),
+    //         Phase::DrawPhase => Ok(PhaseResult::DrawPhase),
+    //         Phase::StandbyPhase => self.handle_standby_phase(),
+    //         Phase::MainPhaseStart => self.handle_main_phase_start(),
+    //         Phase::MainPhase1 => self.handle_main_phase_1(),
+    //         Phase::BattlePhaseStart => self.handle_battle_phase_start(),
+    //         Phase::BattleStep => self.handle_battle_step(),
+    //         Phase::BattleDamageStepStart => self.handle_damage_step_start(),
+    //         Phase::BattleDamageStepCalculationBefore => self.handle_before_damage_calculation(),
+    //         Phase::BattleDamageStepCalculationStart => self.handle_damage_calculation(),
+    //         Phase::BattleDamageStepCalculationEnd => self.handle_after_damage_calculation(),
+    //         Phase::BattleDamageStepEnd => self.handle_damage_step_end(),
+    //         Phase::BattlePhaseEnd => self.handle_battle_phase_end(),
+    //         Phase::MainPhase2 => self.handle_main_phase_2(),
+    //         Phase::EndPhase => self.handle_end_phase(),
+    //     }
+    // }
 
     pub fn get_mulligan_cards<T: Into<PlayerType> + Copy>(
         &mut self,
