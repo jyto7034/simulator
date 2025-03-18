@@ -88,7 +88,7 @@ impl Game {
         debug!("플레이어 드로우 완료 표시: player={:?}", player_type);
 
         trace!("드로우 페이즈 효과 발동 중...");
-        self.trigger_draw_phase_effects()?;
+        // self.trigger_draw_phase_effects()?;
         debug!("드로우 페이즈 효과 발동 완료");
 
         let card = self
