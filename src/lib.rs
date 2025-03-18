@@ -2,6 +2,9 @@
 
 use std::sync::{Arc, Mutex, MutexGuard};
 
+use tracing::Level;
+use tracing_appender::rolling::{RollingFileAppender, Rotation};
+use tracing_subscriber::EnvFilter;
 use uuid::Uuid;
 
 pub mod app;
@@ -20,6 +23,33 @@ pub mod utils;
 pub mod zone;
 
 extern crate lazy_static;
+
+use std::sync::Once;
+static INIT: Once = Once::new();
+static mut GUARD: Option<tracing_appender::non_blocking::WorkerGuard> = None;
+pub fn setup_logger() {
+    INIT.call_once(|| {
+        let file_appender = RollingFileAppender::new(Rotation::MINUTELY, "logs", "app.log");
+
+        let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
+
+        tracing_subscriber::fmt()
+            .with_env_filter(EnvFilter::from_default_env().add_directive(Level::INFO.into()))
+            .with_thread_ids(true)
+            .with_ansi(false)
+            .with_thread_names(true)
+            .with_file(true)
+            .with_line_number(true)
+            .with_target(false)
+            .with_writer(non_blocking)
+            .pretty()
+            .init();
+
+        unsafe {
+            GUARD = Some(_guard);
+        }
+    });
+}
 
 #[derive(Clone)]
 pub struct OptArc<T>(Option<ArcMutex<T>>);
@@ -122,5 +152,26 @@ impl VecStringExt for Vec<String> {
                 })
             })
             .collect::<Vec<Uuid>>()
+    }
+}
+
+pub trait LogExt<T, E> {
+    fn log_ok(self, f: impl FnOnce()) -> Self;
+    fn log_err(self, f: impl FnOnce(&E)) -> Self;
+}
+
+impl<T, E> LogExt<T, E> for Result<T, E> {
+    fn log_ok(self, f: impl FnOnce()) -> Self {
+        if self.is_ok() {
+            f()
+        }
+        self
+    }
+
+    fn log_err(self, f: impl FnOnce(&E)) -> Self {
+        if let Err(ref e) = self {
+            f(e);
+        }
+        self
     }
 }

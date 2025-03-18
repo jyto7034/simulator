@@ -6,10 +6,8 @@ use actix_web::{web, App, HttpServer};
 use card_game::enums::TIMEOUT;
 use card_game::server::end_point::{handle_draw, handle_mulligan};
 use card_game::server::session::PlayerSessionManager;
+use card_game::setup_logger;
 use tokio::sync::Mutex;
-use tracing::Level;
-use tracing_appender::rolling::{RollingFileAppender, Rotation};
-use tracing_subscriber::EnvFilter;
 
 use card_game::server::types::{ServerState, SessionKey};
 use card_game::test::{generate_random_deck_json, initialize_app};
@@ -36,33 +34,6 @@ struct Args {
 
     #[arg(required = true)]
     attacker: usize,
-}
-
-use std::sync::Once;
-static INIT: Once = Once::new();
-static mut GUARD: Option<tracing_appender::non_blocking::WorkerGuard> = None;
-fn setup_logger() {
-    INIT.call_once(|| {
-        let file_appender = RollingFileAppender::new(Rotation::DAILY, "logs", "app.log");
-
-        let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
-
-        tracing_subscriber::fmt()
-            .with_env_filter(EnvFilter::from_default_env().add_directive(Level::INFO.into()))
-            .with_thread_ids(true)
-            .with_ansi(false)
-            .with_thread_names(true)
-            .with_file(true)
-            .with_line_number(true)
-            .with_target(false)
-            .with_writer(non_blocking)
-            .pretty()
-            .init();
-
-        unsafe {
-            GUARD = Some(_guard);
-        }
-    });
 }
 
 // 매칭으로 만난 두 플레이어의 닉네임을 받은 뒤, 게임 공용 서버인 valid server 에 전송하여 실제 플레이어가 맞는지 확인 후, key 값을 리턴 받음.

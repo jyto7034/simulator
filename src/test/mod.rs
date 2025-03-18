@@ -5,6 +5,7 @@ use async_tungstenite::{
     tungstenite::{self, http::Request, Message},
     WebSocketStream,
 };
+use ctor::ctor;
 use futures_util::StreamExt;
 use rand::{seq::SliceRandom, thread_rng};
 use serde::de::DeserializeOwned;
@@ -22,6 +23,7 @@ use crate::{
         session::PlayerSessionManager,
         types::{ServerState, SessionKey},
     },
+    setup_logger,
     utils::{json, parse_json_to_deck_code},
     zone::zone::Zone,
     VecStringExt,
@@ -437,4 +439,9 @@ async fn verify_card_removed_from_deck(
         "Card {} was not removed from the deck",
         card
     );
+}
+
+#[ctor]
+fn init() {
+    setup_logger();
 }
