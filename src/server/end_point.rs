@@ -687,10 +687,6 @@ pub async fn handle_draw(
 
         let result = game.handle_draw_phase(player_type)?;
 
-        // 다음 페이즈로 이동하는 코드
-        // move_phase 는 단순 페이즈 이동만을 수행하는 함수
-        // 각 페이즈 트랜지션마다 수행해야하는 작업은 수행하지 않음.
-        // 하나의 함수로 통합을 하고 싶은데, end point 랑 병합하기가 쉽지가 않네
         game.move_phase();
 
         result

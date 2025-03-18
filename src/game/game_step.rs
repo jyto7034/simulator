@@ -13,8 +13,8 @@ use crate::{
 use super::{phase::Phase, Game};
 
 pub enum PhaseResult {
-    Mulligan(Vec<Uuid>),
-    DrawPhase(Uuid),
+    Mulligan,
+    DrawPhase,
     StandbyPhase,
     MainPhaseStart,
     MainPhase1,
@@ -30,62 +30,27 @@ pub enum PhaseResult {
     EndPhase,
 }
 
+type PhaseResultType = Result<PhaseResult, GameError>;
+
 impl Game {
-    pub fn proceed_phase(&mut self) -> Result<PhaseResult, GameError> {
-        self.handle_phase_transition()
-    }
-
-    /// 페이즈 전환 처리
-    pub fn handle_phase_transition(&mut self) -> Result<PhaseResult, GameError> {
-        // 페이즈 전환 전 현재 페이즈의 종료 처리
-        self.handle_phase_end()?;
-
-        self.move_phase();
-
-        // 새로운 페이즈의 시작 처리
-        self.handle_phase_start()?;
-
-        Ok(())
-    }
-
-    /// 페이즈 시작 시 처리
-    pub fn handle_phase_start(&mut self) -> Result<PhaseResult, GameError> {
+    pub fn handle_phase_start(&mut self) -> PhaseResultType {
         match self.get_phase() {
-            Phase::Mulligan => todo!(),
-            Phase::DrawPhase => todo!(),
-            Phase::StandbyPhase => todo!(),
-            Phase::MainPhaseStart => todo!(),
-            Phase::MainPhase1 => todo!(),
-            Phase::BattlePhaseStart => todo!(),
-            Phase::BattleStep => todo!(),
-            Phase::BattleDamageStepStart => todo!(),
-            Phase::BattleDamageStepCalculationBefore => todo!(),
-            Phase::BattleDamageStepCalculationStart => todo!(),
-            Phase::BattleDamageStepCalculationEnd => todo!(),
-            Phase::BattleDamageStepEnd => todo!(),
-            Phase::BattlePhaseEnd => todo!(),
-            Phase::MainPhase2 => todo!(),
-            Phase::EndPhase => todo!(),
+            Phase::Mulligan => Ok(PhaseResult::Mulligan),
+            Phase::DrawPhase => Ok(PhaseResult::DrawPhase),
+            Phase::StandbyPhase => self.handle_standby_phase(),
+            Phase::MainPhaseStart => self.handle_main_phase_start(),
+            Phase::MainPhase1 => self.handle_main_phase_1(),
+            Phase::BattlePhaseStart => self.handle_battle_phase_start(),
+            Phase::BattleStep => self.handle_battle_step(),
+            Phase::BattleDamageStepStart => self.handle_damage_step_start(),
+            Phase::BattleDamageStepCalculationBefore => self.handle_before_damage_calculation(),
+            Phase::BattleDamageStepCalculationStart => self.handle_damage_calculation(),
+            Phase::BattleDamageStepCalculationEnd => self.handle_after_damage_calculation(),
+            Phase::BattleDamageStepEnd => self.handle_damage_step_end(),
+            Phase::BattlePhaseEnd => self.handle_battle_phase_end(),
+            Phase::MainPhase2 => self.handle_main_phase_2(),
+            Phase::EndPhase => self.handle_end_phase(),
         }
-
-        // match self.phase {
-        //     Phase::GameStart => self.handle_game_start()?,
-        //     Phase::DrawPhase => self.handle_draw_phase()?,
-        //     Phase::StandbyPhase => self.handle_standby_phase()?,
-        //     Phase::MainPhaseStart => self.handle_main_phase_start()?,
-        //     Phase::MainPhase1 => self.handle_main_phase_1()?,
-        //     Phase::BattlePhaseStart => self.handle_battle_phase_start()?,
-        //     Phase::BattleStep => self.handle_battle_step()?,
-        //     Phase::BattleDamageStepStart => self.handle_damage_step_start()?,
-        //     Phase::BattleDamageStepCalculationBefore => self.handle_before_damage_calculation()?,
-        //     Phase::BattleDamageStepCalculationStart => self.handle_damage_calculation()?,
-        //     Phase::BattleDamageStepCalculationEnd => self.handle_after_damage_calculation()?,
-        //     Phase::BattleDamageStepEnd => self.handle_damage_step_end()?,
-        //     Phase::BattlePhaseEnd => self.handle_battle_phase_end()?,
-        //     Phase::MainPhase2 => self.handle_main_phase_2()?,
-        //     Phase::EndPhase => self.handle_end_phase()?,
-        // }
-        Ok(())
     }
 
     pub fn get_mulligan_cards<T: Into<PlayerType> + Copy>(
@@ -163,122 +128,122 @@ impl Game {
         Ok(card.get_uuid())
     }
 
-    pub fn handle_standby_phase(&mut self) -> Result<(), GameError> {
+    pub fn handle_standby_phase(&mut self) -> PhaseResultType {
         // 스탠바이 페이즈에서 발동하는 효과들 처리
         self.trigger_standby_effects()?;
-        Ok(())
+        todo!()
     }
 
-    pub fn handle_main_phase_start(&mut self) -> Result<(), GameError> {
+    pub fn handle_main_phase_start(&mut self) -> PhaseResultType {
         // 메인 페이즈 1 개시시 효과 처리
         self.trigger_main_phase_start_effects()?;
-        Ok(())
+        todo!()
     }
 
-    fn handle_main_phase_1(&mut self) -> Result<(), GameError> {
+    fn handle_main_phase_1(&mut self) -> PhaseResultType {
         // 메인 페이즈 1 진입 처리
-        Ok(())
+        todo!()
     }
 
-    fn handle_battle_phase_start(&mut self) -> Result<(), GameError> {
+    fn handle_battle_phase_start(&mut self) -> PhaseResultType {
         // 배틀 페이즈 개시시 효과 처리
-        self.trigger_battle_phase_start_effects()?;
-        Ok(())
+        self.trigger_battle_phase_start_effects();
+        todo!()
     }
 
-    fn handle_battle_step(&mut self) -> Result<(), GameError> {
+    fn handle_battle_step(&mut self) -> PhaseResultType {
         // 배틀 스텝 처리
-        Ok(())
+        todo!()
     }
 
-    fn handle_damage_step_start(&mut self) -> Result<(), GameError> {
+    fn handle_damage_step_start(&mut self) -> PhaseResultType {
         // 데미지 스텝 시작 처리
         self.trigger_damage_step_start_effects()?;
-        Ok(())
+        todo!()
     }
 
-    fn handle_before_damage_calculation(&mut self) -> Result<(), GameError> {
+    fn handle_before_damage_calculation(&mut self) -> PhaseResultType {
         // 데미지 계산 전 효과 처리
-        Ok(())
+        todo!()
     }
 
-    fn handle_damage_calculation(&mut self) -> Result<(), GameError> {
+    fn handle_damage_calculation(&mut self) -> PhaseResultType {
         // 실제 데미지 계산 처리
         self.calculate_battle_damage()?;
-        Ok(())
+        todo!()
     }
 
-    fn handle_after_damage_calculation(&mut self) -> Result<(), GameError> {
+    fn handle_after_damage_calculation(&mut self) -> PhaseResultType {
         // 데미지 계산 후 효과 처리
-        Ok(())
+        todo!()
     }
 
-    fn handle_damage_step_end(&mut self) -> Result<(), GameError> {
+    fn handle_damage_step_end(&mut self) -> PhaseResultType {
         // 데미지 스텝 종료 처리
-        Ok(())
+        todo!()
     }
 
-    fn handle_battle_phase_end(&mut self) -> Result<(), GameError> {
+    fn handle_battle_phase_end(&mut self) -> PhaseResultType {
         // 배틀 페이즈 종료 처리
-        Ok(())
+        todo!()
     }
 
-    fn handle_main_phase_2(&mut self) -> Result<(), GameError> {
+    fn handle_main_phase_2(&mut self) -> PhaseResultType {
         // 메인 페이즈 2 처리
-        Ok(())
+        todo!()
     }
 
-    fn handle_end_phase(&mut self) -> Result<(), GameError> {
+    fn handle_end_phase(&mut self) -> PhaseResultType {
         // 턴 종료 처리
         self.handle_turn_end()?;
-        Ok(())
+        todo!()
     }
 
     /// 페이즈 종료 시 처리
-    fn handle_phase_end(&mut self) -> Result<(), GameError> {
+    fn handle_phase_end(&mut self) -> PhaseResultType {
         // 현재 페이즈 종료 시 필요한 처리
-        Ok(())
+        todo!()
     }
 
     /// 턴 종료 처리
-    fn handle_turn_end(&mut self) -> Result<(), GameError> {
-        Ok(())
+    fn handle_turn_end(&mut self) -> PhaseResultType {
+        todo!()
     }
 
     //
-    fn trigger_draw_phase_effects(&mut self) -> Result<(), GameError> {
+    fn trigger_draw_phase_effects(&mut self) -> PhaseResultType {
         // 스탠바이 페이즈 효과 발동
-        Ok(())
+        todo!()
     }
 
     // 유틸리티 메서드들
-    fn trigger_standby_effects(&mut self) -> Result<(), GameError> {
+    fn trigger_standby_effects(&mut self) -> PhaseResultType {
         // 스탠바이 페이즈 효과 발동
-        Ok(())
+        todo!()
     }
 
-    fn trigger_main_phase_start_effects(&mut self) -> Result<(), GameError> {
+    fn trigger_main_phase_start_effects(&mut self) -> PhaseResultType {
         // 메인 페이즈 개시시 효과 발동
-        Ok(())
+        todo!()
     }
 
-    fn trigger_battle_phase_start_effects(&mut self) -> Result<(), GameError> {
+    fn trigger_battle_phase_start_effects(&mut self) -> PhaseResultType {
         // 배틀 페이즈 개시시 효과 발동
-        Ok(())
+        todo!()
     }
 
-    fn trigger_damage_step_start_effects(&mut self) -> Result<(), GameError> {
+    fn trigger_damage_step_start_effects(&mut self) -> PhaseResultType {
         // 데미지 스텝 개시시 효과 발동
-        Ok(())
+        todo!()
     }
 
-    fn calculate_battle_damage(&mut self) -> Result<(), GameError> {
+    fn calculate_battle_damage(&mut self) -> PhaseResultType {
         // 전투 데미지 계산
-        Ok(())
+        todo!()
     }
 
-    fn check_hand_limit(&mut self) -> Result<(), GameError> {
+    fn check_hand_limit(&mut self) -> PhaseResultType {
         // 손 카드 제한(10장) 체크
-        Ok(())
+        todo!()
     }
 }
