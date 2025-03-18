@@ -1,54 +1,92 @@
 use uuid::Uuid;
 
+use tracing::{debug, error, info, instrument, trace, warn};
+
 use crate::{
-    card::{take::TopTake, types::PlayerType},
+    card::{insert::TopInsert, take::TopTake, types::PlayerType},
     exception::GameError,
     selector::TargetCount,
     zone::zone::Zone,
+    LogExt,
 };
 
-use super::Game;
+use super::{phase::Phase, Game};
+
+pub enum PhaseResult {
+    Mulligan(Vec<Uuid>),
+    DrawPhase(Uuid),
+    StandbyPhase,
+    MainPhaseStart,
+    MainPhase1,
+    BattlePhaseStart,
+    BattleStep,
+    BattleDamageStepStart,
+    BattleDamageStepCalculationBefore,
+    BattleDamageStepCalculationStart,
+    BattleDamageStepCalculationEnd,
+    BattleDamageStepEnd,
+    BattlePhaseEnd,
+    MainPhase2,
+    EndPhase,
+}
 
 impl Game {
-    // pub async fn proceed_phase(&mut self) -> Result<(), GameError> {
-    //     let next_phase = self.phase.next_phase();
-    //     self.handle_phase_transition(next_phase).await
-    // }
+    pub fn proceed_phase(&mut self) -> Result<PhaseResult, GameError> {
+        self.handle_phase_transition()
+    }
 
-    // /// 페이즈 전환 처리
-    // pub async fn handle_phase_transition(&mut self, next_phase: Phase) -> Result<(), GameError> {
-    //     // 페이즈 전환 전 현재 페이즈의 종료 처리
-    //     self.handle_phase_end()?;
+    /// 페이즈 전환 처리
+    pub fn handle_phase_transition(&mut self) -> Result<PhaseResult, GameError> {
+        // 페이즈 전환 전 현재 페이즈의 종료 처리
+        self.handle_phase_end()?;
 
-    //     self.phase = next_phase;
+        self.move_phase();
 
-    //     // 새로운 페이즈의 시작 처리
-    //     self.handle_phase_start().await?;
+        // 새로운 페이즈의 시작 처리
+        self.handle_phase_start()?;
 
-    //     Ok(())
-    // }
+        Ok(())
+    }
 
-    // /// 페이즈 시작 시 처리
-    // pub async fn handle_phase_start(&mut self) -> Result<(), GameError> {
-    //     match self.phase {
-    //         Phase::GameStart => self.handle_game_start().await?,
-    //         Phase::DrawPhase => self.handle_draw_phase()?,
-    //         Phase::StandbyPhase => self.handle_standby_phase()?,
-    //         Phase::MainPhaseStart => self.handle_main_phase_start()?,
-    //         Phase::MainPhase1 => self.handle_main_phase_1()?,
-    //         Phase::BattlePhaseStart => self.handle_battle_phase_start()?,
-    //         Phase::BattleStep => self.handle_battle_step()?,
-    //         Phase::BattleDamageStepStart => self.handle_damage_step_start()?,
-    //         Phase::BattleDamageStepCalculationBefore => self.handle_before_damage_calculation()?,
-    //         Phase::BattleDamageStepCalculationStart => self.handle_damage_calculation()?,
-    //         Phase::BattleDamageStepCalculationEnd => self.handle_after_damage_calculation()?,
-    //         Phase::BattleDamageStepEnd => self.handle_damage_step_end()?,
-    //         Phase::BattlePhaseEnd => self.handle_battle_phase_end()?,
-    //         Phase::MainPhase2 => self.handle_main_phase_2()?,
-    //         Phase::EndPhase => self.handle_end_phase()?,
-    //     }
-    //     Ok(())
-    // }
+    /// 페이즈 시작 시 처리
+    pub fn handle_phase_start(&mut self) -> Result<PhaseResult, GameError> {
+        match self.get_phase() {
+            Phase::Mulligan => todo!(),
+            Phase::DrawPhase => todo!(),
+            Phase::StandbyPhase => todo!(),
+            Phase::MainPhaseStart => todo!(),
+            Phase::MainPhase1 => todo!(),
+            Phase::BattlePhaseStart => todo!(),
+            Phase::BattleStep => todo!(),
+            Phase::BattleDamageStepStart => todo!(),
+            Phase::BattleDamageStepCalculationBefore => todo!(),
+            Phase::BattleDamageStepCalculationStart => todo!(),
+            Phase::BattleDamageStepCalculationEnd => todo!(),
+            Phase::BattleDamageStepEnd => todo!(),
+            Phase::BattlePhaseEnd => todo!(),
+            Phase::MainPhase2 => todo!(),
+            Phase::EndPhase => todo!(),
+        }
+
+        // match self.phase {
+        //     Phase::GameStart => self.handle_game_start()?,
+        //     Phase::DrawPhase => self.handle_draw_phase()?,
+        //     Phase::StandbyPhase => self.handle_standby_phase()?,
+        //     Phase::MainPhaseStart => self.handle_main_phase_start()?,
+        //     Phase::MainPhase1 => self.handle_main_phase_1()?,
+        //     Phase::BattlePhaseStart => self.handle_battle_phase_start()?,
+        //     Phase::BattleStep => self.handle_battle_step()?,
+        //     Phase::BattleDamageStepStart => self.handle_damage_step_start()?,
+        //     Phase::BattleDamageStepCalculationBefore => self.handle_before_damage_calculation()?,
+        //     Phase::BattleDamageStepCalculationStart => self.handle_damage_calculation()?,
+        //     Phase::BattleDamageStepCalculationEnd => self.handle_after_damage_calculation()?,
+        //     Phase::BattleDamageStepEnd => self.handle_damage_step_end()?,
+        //     Phase::BattlePhaseEnd => self.handle_battle_phase_end()?,
+        //     Phase::MainPhase2 => self.handle_main_phase_2()?,
+        //     Phase::EndPhase => self.handle_end_phase()?,
+        // }
+        Ok(())
+    }
 
     pub fn get_mulligan_cards<T: Into<PlayerType> + Copy>(
         &mut self,
@@ -65,12 +103,64 @@ impl Game {
             .collect())
     }
 
-    // 각 페이즈별 구체적인 처리
-    pub fn handle_draw_phase(&mut self) -> Result<(), GameError> {
-        self.trigger_draw_phase_effects()?;
+    pub fn handle_muliigan_phase(&mut self) {
+        // 멀리건 페이즈 시작
+        info!("멀리건 페이즈 시작");
 
-        // 카드 드로우
-        Ok(())
+        // 멀리건 페이즈 종료
+        info!("멀리건 페이즈 종료");
+    }
+
+    #[instrument(skip(self), fields(player_type = ?player_type.into()))]
+    pub fn handle_draw_phase<T: Into<PlayerType> + Copy>(
+        &mut self,
+        player_type: T,
+    ) -> Result<Uuid, GameError> {
+        let player_type = player_type.into();
+        info!("드로우 페이즈 시작: player={:?}", player_type);
+
+        self.phase_state.mark_player_completed(player_type);
+        debug!("플레이어 드로우 완료 표시: player={:?}", player_type);
+
+        trace!("드로우 페이즈 효과 발동 중...");
+        self.trigger_draw_phase_effects()?;
+        debug!("드로우 페이즈 효과 발동 완료");
+
+        let card = self
+            .draw_card(player_type)
+            .log_ok(|| debug!("카드 드로우 성공: player={:?}", player_type,))
+            .map_err(|e| {
+                error!("카드 드로우 실패: player={:?}, error={:?}", player_type, e);
+                self.phase_state.reset_player_completed(player_type);
+                e
+            })?;
+
+        debug!(
+            "카드 드로우 성공: player={:?}, card_uuid={}",
+            player_type,
+            card.get_uuid()
+        );
+
+        trace!("핸드에 카드 추가 시작: player={:?}", player_type);
+        let mut player = self.get_player_by_type(player_type).get();
+
+        player
+            .get_hand_mut()
+            .add_card(vec![card.clone()], Box::new(TopInsert))
+            .log_ok(|| debug!("핸드에 카드 추가 성공: player={:?}", player_type))
+            .log_err(|e| {
+                warn!(
+                    "핸드에 카드 추가 중 문제 발생: player={:?}, error={:?}",
+                    player_type, e
+                )
+            })?;
+
+        info!(
+            "드로우 페이즈 완료: player={:?}, card_uuid={}",
+            player_type,
+            card.get_uuid()
+        );
+        Ok(card.get_uuid())
     }
 
     pub fn handle_standby_phase(&mut self) -> Result<(), GameError> {

@@ -8,7 +8,6 @@ use std::future::Future;
 use tracing::{debug, error, info, instrument, warn};
 use uuid::Uuid;
 
-use crate::card::insert::TopInsert;
 use crate::enums::{COUNT_OF_MULLIGAN_CARDS, TIMEOUT};
 use crate::exception::MessageProcessResult;
 use crate::game::phase::Phase;
@@ -18,7 +17,6 @@ use crate::server::jsons::mulligan::{
     self, serialize_complete_message, serialize_deal_message, serialize_reroll_answer,
 };
 use crate::server::jsons::ValidationPayload;
-use crate::zone::zone::Zone;
 use crate::{card::types::PlayerType, exception::GameError};
 use crate::{try_send_error, VecStringExt};
 
@@ -512,6 +510,9 @@ pub async fn handle_mulligan(
                                     }
                                     info!("리롤 응답 메시지 전송 완료");
 
+                                    // 다음 페이즈로 이동하는 코드
+                                    game.move_phase();
+
                                     info!(
                                         "멀리건 세션 종료: player={:?}, session_id={}",
                                         player_type, mulligan_session_id
@@ -587,7 +588,8 @@ pub async fn handle_mulligan(
 
                                     if opponent_ready {
                                         info!("양 플레이어 모두 준비 완료: 다음 단계 전환 예정");
-                                        // TODO: 다음 단계로 넘어가는 코드 작성
+                                        // 다음 페이즈로 이동하는 코드
+                                        game.move_phase();
                                     }
 
                                     debug!("완료 메시지 직렬화 시작");
@@ -673,7 +675,6 @@ pub async fn handle_draw(
     let player_type = player.ptype;
     info!("드로우 단계 처리 시작: player={:?}", player_type);
 
-    // 드로우 카드와 기타 필요한 정보를 얻음
     let drawn_card = {
         let mut game = state.game.lock().await;
         debug!("게임 상태 잠금 획득");
@@ -684,52 +685,17 @@ pub async fn handle_draw(
             return Err(GameError::NotAllowedReEntry);
         }
 
-        // 플레이어의 드로우 완료 표시
-        game.phase_state.mark_player_completed(player_type);
-        debug!("플레이어 드로우 완료 표시: player={:?}", player_type);
+        let result = game.handle_draw_phase(player_type)?;
 
-        // 만약 draw_card 함수가 모종의 이유로 실패한다면 completed mark 를 제거하고 에러를 반환함
-        let card = match game.draw_card(player_type) {
-            Ok(card) => {
-                debug!("카드 드로우 성공: card_uuid={}", card.get_uuid());
-                card
-            }
-            Err(e) => {
-                error!("카드 드로우 실패: player={:?}, error={:?}", player_type, e);
-                game.phase_state.reset_player_completed(player_type);
-                return Err(e);
-            }
-        };
+        // 다음 페이즈로 이동하는 코드
+        // move_phase 는 단순 페이즈 이동만을 수행하는 함수
+        // 각 페이즈 트랜지션마다 수행해야하는 작업은 수행하지 않음.
+        // 하나의 함수로 통합을 하고 싶은데, end point 랑 병합하기가 쉽지가 않네
+        game.move_phase();
 
-        let result = {
-            let mut player = game.get_player_by_type(player_type).get();
-            player
-                .get_hand_mut()
-                .add_card(vec![card.clone()], Box::new(TopInsert))
-        };
-
-        match result {
-            Ok(_) => {
-                debug!(
-                    "카드를 핸드에 추가 완료: player={:?}, card_uuid={}",
-                    player_type,
-                    card.get_uuid()
-                );
-            }
-            Err(e) => {
-                error!(
-                    "카드를 핸드에 추가 실패: player={:?}, error={:?}",
-                    player_type, e
-                );
-                game.phase_state.reset_player_completed(player_type);
-                return Err(e);
-            }
-        }
-
-        card.get_uuid()
+        result
     };
 
-    // 원하는 정보를 JSON 형태로 구성
     debug!(
         "응답 JSON 구성 중: player={:?}, card_uuid={}",
         player_type, drawn_card
@@ -741,8 +707,6 @@ pub async fn handle_draw(
             return Err(e);
         }
     };
-
-    // TODO: 다음 단계로 넘어가는 코드 작성해야함.
 
     // JSON 응답 반환
     info!(
