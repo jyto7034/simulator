@@ -43,6 +43,8 @@ impl PhaseState {
 
 #[derive(Clone, PartialEq, Eq, Copy, Debug)]
 pub enum Phase {
+    Heartbeat,
+
     Mulligan,
 
     // 가장 먼저 시작되는 드로우 페이즈 ( 기타 자원 등 증가함. )
@@ -98,6 +100,7 @@ impl From<String> for Phase {
             "battlephaseend" => Phase::BattlePhaseEnd,
             "mainphase2" => Phase::MainPhase2,
             "endphase" => Phase::EndPhase,
+            "heartbeat" => Phase::Heartbeat,
             _ => panic!("Invalid Phase string: {}", value),
         }
     }
@@ -133,6 +136,7 @@ impl Phase {
             Phase::BattlePhaseEnd => 12,
             Phase::MainPhase2 => 13,
             Phase::EndPhase => 14,
+            Phase::Heartbeat => 15,
         }
     }
 
@@ -251,6 +255,7 @@ impl Phase {
             Phase::BattlePhaseEnd => Phase::MainPhase2,
             Phase::MainPhase2 => Phase::EndPhase,
             Phase::EndPhase => Phase::DrawPhase,
+            Phase::Heartbeat => Phase::Mulligan,
         }
     }
 
@@ -279,6 +284,7 @@ impl Phase {
             Phase::BattlePhaseEnd => "BattlePhaseEnd",
             Phase::MainPhase2 => "MainPhase2",
             Phase::EndPhase => "EndPhase",
+            Phase::Heartbeat => "Heartbeat",
         }
     }
 }

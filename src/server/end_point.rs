@@ -1,16 +1,16 @@
 use std::pin::Pin;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use actix_web::{get, web, FromRequest, HttpRequest, HttpResponse};
-use actix_ws::{handle, Message};
+use actix_ws::{handle, CloseCode, CloseReason, Message};
 use futures_util::StreamExt;
+use serde_json::json;
 use std::future::Future;
 use tracing::{debug, error, info, instrument, warn};
 use uuid::Uuid;
 
-use crate::enums::{COUNT_OF_MULLIGAN_CARDS, TIMEOUT};
+use crate::enums::{CLIENT_TIMEOUT, COUNT_OF_MULLIGAN_CARDS, HEARTBEAT_INTERVAL};
 use crate::exception::MessageProcessResult;
-use crate::game::phase::Phase;
 use crate::server::helper::{process_mulligan_completion, send_error_and_check, MessageHandler};
 use crate::server::jsons::draw::serialize_draw_answer_message;
 use crate::server::jsons::mulligan::{
@@ -49,39 +49,66 @@ impl FromRequest for AuthPlayer {
 
     fn from_request(req: &HttpRequest, payload: &mut actix_web::dev::Payload) -> Self::Future {
         let req = req.clone();
-
         Box::pin(async move {
-            let Some(cookie) = req.cookie("user_id") else {
+            debug!("AuthPlayer::from_request 시작: 인증 처리 중...");
+
+            let Some(player_name) = req.cookie("user_id") else {
+                error!("쿠키 누락: 'user_id' 쿠키를 찾을 수 없음");
                 return Err(GameError::CookieNotFound);
             };
             let Some(game_step) = req.cookie("game_step") else {
+                error!("쿠키 누락: 'game_step' 쿠키를 찾을 수 없음");
                 return Err(GameError::CookieNotFound);
             };
 
-            let cookie = cookie.to_string().replace("user_id=", "");
+            let player_name = player_name.to_string().replace("user_id=", "");
             let game_step = game_step.to_string().replace("game_step=", "");
+            debug!(
+                "쿠키 파싱 완료: player_name={}, game_step={}",
+                player_name, game_step
+            );
 
             if let Some(state) = req.app_data::<web::Data<ServerState>>() {
                 let game = state.game.lock().await;
-                if game.get_phase().as_str().to_lowercase() != game_step {
+                let current_phase = game.get_phase().as_str().to_lowercase();
+
+                if current_phase != game_step {
+                    warn!(
+                        "페이즈 불일치: 요청된 페이즈={}, 현재 게임 페이즈={}",
+                        game_step, current_phase
+                    );
                     return Err(GameError::WrongPhase);
                 }
+                debug!("페이즈 검증 성공: {}", current_phase);
 
-                let cookie_str = cookie.to_string();
+                let player_name_str = player_name.to_string();
                 let p1_key = state.player_cookie.0.as_str();
                 let p2_key = state.opponent_cookie.0.as_str();
 
-                let player_type = match cookie_str.as_str() {
-                    key if key == p1_key => PlayerType::Player1,
-                    key if key == p2_key => PlayerType::Player2,
-                    _ => return Err(GameError::InternalServerError),
+                let player_type = match player_name_str.as_str() {
+                    key if key == p1_key => {
+                        debug!("플레이어1로 인증됨");
+                        PlayerType::Player1
+                    }
+                    key if key == p2_key => {
+                        debug!("플레이어2로 인증됨");
+                        PlayerType::Player2
+                    }
+                    _ => {
+                        error!("잘못된 플레이어 키: {}", player_name_str);
+                        return Err(GameError::InternalServerError);
+                    }
                 };
 
-                // 세션 등록 (새 세션 또는 기존 세션 ID 반환)
+                debug!(
+                    "세션 등록 시작: player_type={:?}, game_step={}",
+                    player_type, game_step
+                );
                 let session_id = state
                     .session_manager
                     .register_session(player_type, game_step.clone().into())
                     .await;
+                debug!("세션 등록 완료: session_id={}", session_id);
 
                 // 다른 엔드포인트에 이미 유효한 세션이 있는지 확인
                 if !state
@@ -89,11 +116,20 @@ impl FromRequest for AuthPlayer {
                     .is_valid_session(player_type, session_id, game_step.into())
                     .await
                 {
+                    warn!(
+                        "중복 세션 감지: player_type={:?}, session_id={}",
+                        player_type, session_id
+                    );
                     return Err(GameError::ActiveSessionExists);
                 }
 
+                info!(
+                    "인증 성공: player_type={:?}, session_id={}",
+                    player_type, session_id
+                );
                 Ok(AuthPlayer::new(player_type, session_id))
             } else {
+                error!("서버 상태 객체를 찾을 수 없음");
                 Err(GameError::ServerStateNotFound)
             }
         })
@@ -110,6 +146,147 @@ impl From<AuthPlayer> for String {
     fn from(value: AuthPlayer) -> Self {
         value.ptype.into()
     }
+}
+
+// 최초로 연결되어야하는 엔드포인트.
+#[get("/heartbeat")]
+#[instrument(skip(state, req, payload), fields(player_type = ?player.ptype, session_id = ?player.session_id))]
+pub async fn heartbeat(
+    player: AuthPlayer,
+    state: web::Data<ServerState>,
+    req: HttpRequest,
+    payload: web::Payload,
+) -> Result<HttpResponse, GameError> {
+    let player_type = player.ptype;
+    let session_id = player.session_id;
+
+    debug!("WebSocket 연결 업그레이드 시작");
+
+    // WebSocket 연결 설정
+    let (response, session, mut stream) = match handle(&req, payload) {
+        Ok(result) => {
+            info!("WebSocket 연결 성공: player={:?}", player_type);
+            result
+        }
+        Err(e) => {
+            error!(
+                "WebSocket 핸들링 실패: player={:?}, error={:?}",
+                player_type, e
+            );
+            return Err(GameError::HandleFailed);
+        }
+    };
+
+    let mut session_clone = session.clone();
+    let heartbeat_session_manager = state.session_manager.clone();
+
+    // 하트비트 처리를 위한 별도 태스크 생성
+    info!(
+        "하트비트 태스크 시작: player={:?}, session_id={}",
+        player_type, session_id
+    );
+
+    actix_web::rt::spawn(async move {
+        debug!("하트비트 인터벌 설정: {}초", HEARTBEAT_INTERVAL);
+        let mut interval = tokio::time::interval(Duration::from_secs(HEARTBEAT_INTERVAL));
+        let mut last_pong = Instant::now();
+
+        // 클라이언트에게 초기 메시지 전송 (선택사항)
+        if let Err(e) = session_clone
+            .text(
+                json!({
+                    "type": "connection_established",
+                    "player": format!("{:?}", player_type),
+                    "session_id": session_id.to_string(),
+                })
+                .to_string(),
+            )
+            .await
+        {
+            error!(
+                "초기 메시지 전송 실패: player={:?}, error={:?}",
+                player_type, e
+            );
+            return;
+        }
+
+        loop {
+            tokio::select! {
+                // 주기적인 핑 전송
+                _ = interval.tick() => {
+                    // 마지막 pong 으로부터 너무 오랜 시간이 지났으면 연결 종료
+                    if last_pong.elapsed() > Duration::from_secs(CLIENT_TIMEOUT) {
+                        error!(
+                            "클라이언트 타임아웃: player={:?}, 마지막 응답으로부터 {:?}초 경과",
+                            player_type, last_pong.elapsed().as_secs()
+                        );
+                        break;
+                    }
+
+                    // 핑 메시지 전송
+                    debug!("하트비트 ping 전송: player={:?}", player_type);
+                    if let Err(e) = session_clone.ping(b"heartbeat").await {
+                        error!("하트비트 ping 실패: player={:?}, error={:?}", player_type, e);
+                        break;
+                    }
+                },
+
+                // 클라이언트로부터 메시지 수신
+                Some(msg) = stream.next() => {
+                    match msg {
+                        Ok(Message::Pong(_)) => {
+                            debug!("하트비트 pong 응답 수신: player={:?}", player_type);
+                            last_pong = Instant::now();
+                        },
+                        Ok(Message::Close(reason)) => {
+                            info!("클라이언트가 연결 종료 요청: player={:?}, reason={:?}", player_type, reason);
+                            break;
+                        },
+                        Err(e) => {
+                            error!("WebSocket 메시지 에러: player={:?}, error={:?}", player_type, e);
+                            break;
+                        }
+                        _ => {
+                            info!("클라이언트로부터 다른 메시지 수신: player={:?}", player_type);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 하트비트 태스크 종료시 세션 정리
+        info!(
+            "하트비트 태스크 종료, 세션 정리: player={:?}, session_id={}",
+            player_type, session_id
+        );
+
+        // 세션 종료 처리
+        heartbeat_session_manager
+            .end_session(player_type, session_id)
+            .await;
+
+        info!("세션 정리 성공");
+
+        // 웹소켓 연결 종료
+        if let Err(e) = session_clone
+            .close(Some(CloseReason {
+                code: CloseCode::Normal,
+                description: Some("세션 종료".to_string()),
+            }))
+            .await
+        {
+            error!("세션 종료 실패: player={:?}, error={:?}", player_type, e);
+        } else {
+            debug!("세션 종료 성공: player={:?}", player_type);
+        }
+
+        info!(
+            "하트비트 태스크 종료: player={:?}, session_id={}",
+            player_type, session_id
+        );
+    });
+
+    Ok(response)
 }
 
 /// mulligan 단계를 처리하는 end point 입니다.
@@ -185,7 +362,6 @@ impl From<AuthPlayer> for String {
 /// 해당 함수 호출 후, 다른 플레이어의 MulliganState 의 is_ready 함수를 통해 준비 상태를 확인합니다.
 /// 두 플레이어가 모두 준비되면 다음 단계로 넘어갑니다.
 
-// TODO: 각 에러 처리 분명히 해야함.
 // TODO: 네트워크 이슈가 발생하여 재연결이 필요한 경우 처리가 필요함.
 #[get("/mulligan_phase")]
 #[instrument(skip(state, req, payload), fields(player_type = ?player.ptype, session_id = ?player.session_id))]
@@ -211,7 +387,7 @@ pub async fn handle_mulligan(
             .is_empty()
         {
             error!("플레이어가 이미 멀리건을 시작함: player={:?}", player.ptype);
-            return Err(GameError::InvalidApproach);
+            return Err(GameError::NotAllowedReEntry);
         }
     }
 
@@ -286,62 +462,8 @@ pub async fn handle_mulligan(
     }
     info!("멀리건 딜 메시지 전송 완료");
 
-    let mut session_clone = session.clone();
     let heartbeat_session_id = player.session_id;
     let heartbeat_session_manager = state.session_manager.clone();
-
-    // TODO: 멀리건의 경우 플레이어가 생각하는 시간이 N초 존재하므로, 하트비트의 타임아웃 부분을 수정해야할 듯 함
-    // TODO: Heartbeat 타임아웃 시, session 객체를 연결을 종료해야함.
-    info!(
-        "하트비트 태스크 시작: player={:?}, session_id={}",
-        player_type, heartbeat_session_id
-    );
-    actix_web::rt::spawn(async move {
-        debug!("하트비트 인터벌 설정: {}초", TIMEOUT);
-        let mut interval = tokio::time::interval(Duration::from_secs(TIMEOUT));
-
-        loop {
-            interval.tick().await;
-
-            // 세션이 유효한지 확인
-            if !heartbeat_session_manager
-                .is_valid_session(player_type, heartbeat_session_id, Phase::Mulligan)
-                .await
-            {
-                warn!(
-                    "세션이 더 이상 유효하지 않음: player={:?}, session_id={}",
-                    player_type, heartbeat_session_id
-                );
-                break;
-            }
-
-            // 하트비트 전송
-            debug!("하트비트 ping 전송: player={:?}", player_type);
-            // TODO: Heartbeat 메시지 전송 실패 시, 무슨 이유로 실패했는지 분석하고 처리해야함.
-            // ex) 세션 종료, 재연결, 등
-            if let Err(e) = session_clone.ping(b"heartbeat").await {
-                error!(
-                    "하트비트 ping 실패: player={:?}, error={:?}",
-                    player_type, e
-                );
-                break;
-            }
-        }
-
-        // 하트비트 태스크 종료시 세션 정리
-        info!(
-            "하트비트 태스크 종료, 세션 정리: player={:?}, session_id={}",
-            player_type, heartbeat_session_id
-        );
-        heartbeat_session_manager
-            .end_session(player_type, heartbeat_session_id)
-            .await;
-
-        // TODO: 우아하게 종료해야함.
-        if let Err(e) = session_clone.close(None).await {
-            error!("세션 종료 실패: player={:?}, error={:?}", player_type, e);
-        }
-    });
 
     let mulligan_session_manager = state.session_manager.clone();
     let mulligan_session_id = player.session_id;
@@ -712,4 +834,83 @@ pub async fn handle_draw(
     Ok(HttpResponse::Ok()
         .content_type("application/json")
         .body(response_data.to_string()))
+}
+
+#[get("/standby_phase")]
+#[instrument(skip(state), fields(player_type = ?player.ptype))]
+pub async fn standby_phase(
+    player: AuthPlayer,
+    state: web::Data<ServerState>,
+) -> Result<HttpResponse, GameError> {
+    /*
+        Standby 페이즈.
+        유희왕 룰에 따르면 플레이어가 반드시 실시해야하는 행위는 없음
+
+        해당 페이즈를 구현하기 위해서는 제대로 된 덱이 하나 있어야함.
+        때문에 그 전까지는 미구현 상태로 둠.
+    */
+    todo!()
+}
+
+#[get("/main_phase_start_phase")]
+#[instrument(skip(state, req, payload), fields(player_type = ?player.ptype))]
+pub async fn main_phase_start_phase(
+    player: AuthPlayer,
+    state: web::Data<ServerState>,
+    req: HttpRequest,
+    payload: web::Payload,
+) -> Result<HttpResponse, GameError> {
+    info!(
+        "메인 페이즈1 개시시 단계 핸들러 시작: player={:?}",
+        player.ptype
+    );
+
+    let player_type = player.ptype;
+
+    // 플레이어가 재진입을 시도하는 경우
+    {
+        let game = state.game.lock().await;
+        debug!("게임 상태 잠금 획득: 재진입 확인");
+
+        if !game
+            .get_player_by_type(player.ptype)
+            .get()
+            .get_mulligan_state_mut()
+            .get_select_cards()
+            .is_empty()
+        {
+            error!(
+                "플레이어가 이미 메인 페이즈1 개시시 단계 진입함.: player={:?}",
+                player.ptype
+            );
+            return Err(GameError::NotAllowedReEntry);
+        }
+    }
+
+    // Http 업그레이드: 이때 session과 stream이 반환됩니다.
+    debug!("WebSocket 연결 업그레이드 시작");
+    let (resp, session, stream) = match handle(&req, payload) {
+        Ok(result) => {
+            info!("WebSocket 연결 성공: player={:?}", player_type);
+            result
+        }
+        Err(e) => {
+            error!(
+                "WebSocket 핸들링 실패: player={:?}, error={:?}",
+                player_type, e
+            );
+            return Err(GameError::HandleFailed);
+        }
+    };
+    /*
+        MainPhaseStart 페이즈.
+        메인 페이즈에서 플레이어가 아무 행동도 하지 않은 상태를 의미함.
+
+        이 페이즈에서만 수행 가능한 카드들이 있음.
+        [ 메인 페이즈1 개시시 ] 이라는 키워드를 가진 카드들은 해당 페이즈에서 발동 가능함.
+        현재 턴의 플레이어의 카드들을 순회해서 해당 효과를 발동시킬건지 플레이어에게 물어보고 입력을 대기해야함.
+
+        이 때문에 WebSocket 연결을 수립해야함.
+    */
+    todo!()
 }

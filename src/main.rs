@@ -3,8 +3,8 @@ use std::io::Write;
 use std::path::Path;
 
 use actix_web::{web, App, HttpServer};
-use card_game::enums::TIMEOUT;
-use card_game::server::end_point::{handle_draw, handle_mulligan};
+use card_game::enums::CLIENT_TIMEOUT;
+use card_game::server::end_point::{handle_draw, handle_mulligan, heartbeat};
 use card_game::server::session::PlayerSessionManager;
 use card_game::setup_logger;
 use tokio::sync::Mutex;
@@ -99,7 +99,7 @@ async fn main() -> std::io::Result<()> {
         game: Mutex::new(app.game),
         player_cookie: session_keys.0,
         opponent_cookie: session_keys.1,
-        session_manager: PlayerSessionManager::new(TIMEOUT),
+        session_manager: PlayerSessionManager::new(CLIENT_TIMEOUT),
     });
 
     setup_logger();
@@ -108,6 +108,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(state.clone())
             .service(handle_mulligan)
             .service(handle_draw)
+            .service(heartbeat)
     })
     .bind("127.0.0.1:8080")?
     .run()

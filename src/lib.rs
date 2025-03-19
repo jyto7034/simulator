@@ -29,7 +29,7 @@ static INIT: Once = Once::new();
 static mut GUARD: Option<tracing_appender::non_blocking::WorkerGuard> = None;
 pub fn setup_logger() {
     INIT.call_once(|| {
-        let file_appender = RollingFileAppender::new(Rotation::MINUTELY, "logs", "app.log");
+        let file_appender = RollingFileAppender::new(Rotation::HOURLY, "logs", "app.log");
 
         let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
 

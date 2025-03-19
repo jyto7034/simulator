@@ -16,9 +16,10 @@ use uuid::Uuid;
 use crate::{
     card::{cards::CardVecExt, types::PlayerType, Card},
     card_gen::CardGenerator,
-    enums::{DeckCode, CARD_JSON_PATH, MAX_CARD_SIZE, TIMEOUT},
+    enums::{DeckCode, CARD_JSON_PATH, HEARTBEAT_INTERVAL, MAX_CARD_SIZE},
+    game::phase::Phase,
     server::{
-        end_point::{handle_draw, handle_mulligan},
+        end_point::{handle_draw, handle_mulligan, heartbeat},
         jsons::{draw, mulligan, ErrorMessage},
         session::PlayerSessionManager,
         types::{ServerState, SessionKey},
@@ -100,7 +101,7 @@ pub fn create_server_state() -> web::Data<ServerState> {
         game: Mutex::new(app.game),
         player_cookie: SessionKey("player1".to_string()),
         opponent_cookie: SessionKey("player2".to_string()),
-        session_manager: PlayerSessionManager::new(TIMEOUT),
+        session_manager: PlayerSessionManager::new(HEARTBEAT_INTERVAL),
     })
 }
 
@@ -118,10 +119,16 @@ pub async fn spawn_server() -> (SocketAddr, Data<ServerState>, ServerHandle) {
             .app_data(server_state.clone())
             .service(handle_mulligan)
             .service(handle_draw)
+            .service(heartbeat)
     })
     .listen(listener)
     .unwrap()
     .run();
+
+    {
+        let mut game = server_state_clone.game.lock().await;
+        game.get_phase_state_mut().set_phase(Phase::Mulligan);
+    }
 
     let handle = server.handle();
     tokio::spawn(server);
@@ -379,7 +386,7 @@ impl WebSocketTest {
                 }
             }
         };
-        match tokio::time::timeout(Duration::from_secs(TIMEOUT), callback).await {
+        match tokio::time::timeout(Duration::from_secs(HEARTBEAT_INTERVAL), callback).await {
             Ok(result) => result,
             Err(_) => panic!("Expected message timeout after 5 seconds"),
         }

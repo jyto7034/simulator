@@ -1,4 +1,5 @@
 use std::{collections::HashMap, sync::Arc, time::Instant};
+use tracing::{debug, info};
 use uuid::Uuid;
 
 use crate::{card::types::PlayerType, game::phase::Phase};
@@ -85,9 +86,7 @@ impl PlayerSessionManager {
         let sessions = self.inner.sessions.read().await;
 
         if let Some(session) = sessions.get(&player) {
-            return session.session_id == session_id
-                && session.endpoint == endpoint
-                && session.last_heartbeat.elapsed().as_secs() < self.inner.heartbeat_timeout;
+            return session.session_id == session_id && session.endpoint == endpoint;
         }
 
         false
@@ -95,12 +94,29 @@ impl PlayerSessionManager {
 
     // 세션 종료
     pub async fn end_session<T: Into<PlayerType> + Copy>(&self, player: T, session_id: Uuid) {
-        let mut sessions = self.inner.sessions.write().await;
+        info!("세션 종료 시도: player={:?}", player.into());
+        let player_type = player.into();
 
-        if let Some(session) = sessions.get(&player.into()) {
-            if session.session_id == session_id {
-                sessions.remove(&player.into());
+        let should_remove = {
+            debug!("세션 읽기 락 획득 시도");
+            let sessions = self.inner.sessions.write().await;
+            if let Some(session) = sessions.get(&player_type) {
+                debug!(
+                    "세션 발견: player={:?}, session_id={}",
+                    player_type, session.session_id
+                );
+                session.session_id == session_id
+            } else {
+                debug!("세션 없음: player={:?}", player_type);
+                false
             }
+        };
+
+        if should_remove {
+            let mut sessions = self.inner.sessions.write().await;
+            debug!("세션 삭제 시도: player={:?}", player.into());
+            sessions.remove(&player_type);
         }
+        info!("세션 종료 완료: player={:?}", player.into());
     }
 }

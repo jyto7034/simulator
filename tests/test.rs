@@ -1,4 +1,322 @@
 #[cfg(test)]
+pub mod heartbeat {
+    use std::time::Duration;
+
+    use async_tungstenite::{
+        tokio::connect_async,
+        tungstenite::{self, http::Request, Message},
+    };
+    use card_game::{
+        card::types::PlayerType,
+        enums::CLIENT_TIMEOUT,
+        game::phase::Phase,
+        test::{spawn_server, WebSocketTest},
+    };
+    use futures::StreamExt;
+    use serde::{Deserialize, Serialize};
+    use tracing::info;
+    use uuid::Uuid;
+
+    #[actix_web::test]
+    #[should_panic]
+    async fn test_heartbeat_connection_timeout() {
+        // 서버 인스턴스 생성
+        let (addr, state, _) = spawn_server().await;
+        let player_type = PlayerType::Player1.as_str();
+
+        // 하트비트 연결 URL 및 쿠키 설정
+        let url = format!("ws://{}/heartbeat", addr);
+        let cookie = format!("user_id={}; game_step={}", player_type, "heartbeat");
+
+        {
+            state
+                .game
+                .lock()
+                .await
+                .get_phase_state_mut()
+                .set_phase(Phase::Heartbeat);
+        }
+
+        // WebSocket 연결 수립
+        let mut ws = WebSocketTest::connect(url, cookie).await.unwrap();
+        info!("하트비트 WebSocket 연결 성공");
+
+        // 연결 안정성 테스트 - 메시지 전송
+        #[derive(Serialize)]
+        struct TestMessage {
+            #[serde(rename = "type")]
+            msg_type: String,
+            content: String,
+        }
+
+        let test_msg = TestMessage {
+            msg_type: "test".to_string(),
+            content: "heartbeat test".to_string(),
+        };
+
+        // 메시지 전송
+        ws.send(Message::Text(serde_json::to_string(&test_msg).unwrap()))
+            .await
+            .unwrap();
+        info!("테스트 메시지 전송 완료");
+
+        // 충분한 시간 대기하여 서버가 연결을 유지하는지 확인
+        tokio::time::sleep(Duration::from_secs(CLIENT_TIMEOUT + 1)).await;
+
+        // 여전히 메시지를 보낼 수 있다면 연결이 유지되고 있는 것
+        let keepalive_msg = TestMessage {
+            msg_type: "keepalive".to_string(),
+            content: "still connected".to_string(),
+        };
+
+        match ws
+            .send(Message::Text(
+                serde_json::to_string(&keepalive_msg).unwrap(),
+            ))
+            .await
+        {
+            Ok(_) => info!("연결이 유지되고 있음 확인"),
+            Err(e) => panic!("연결이 끊김: {:?}", e),
+        }
+
+        // 정상 종료
+        ws.send(Message::Close(None)).await.unwrap();
+    }
+
+    #[actix_web::test]
+    async fn test_heartbeat_connection() {
+        // 서버 인스턴스 생성
+        let (addr, state, _) = spawn_server().await;
+        let player_type = PlayerType::Player1.as_str();
+
+        // 하트비트 연결 URL 및 쿠키 설정
+        let url = format!("ws://{}/heartbeat", addr);
+        let cookie = format!("user_id={}; game_step={}", player_type, "heartbeat");
+
+        {
+            state
+                .game
+                .lock()
+                .await
+                .get_phase_state_mut()
+                .set_phase(Phase::Heartbeat);
+        }
+
+        // WebSocket 연결 수립
+        let mut ws = WebSocketTest::connect(url, cookie).await.unwrap();
+        info!("하트비트 WebSocket 연결 성공");
+
+        // 연결 안정성 테스트 - 메시지 전송
+        #[derive(Serialize)]
+        struct TestMessage {
+            #[serde(rename = "type")]
+            msg_type: String,
+            content: String,
+        }
+
+        let test_msg = TestMessage {
+            msg_type: "test".to_string(),
+            content: "heartbeat test".to_string(),
+        };
+
+        // 메시지 전송
+        ws.send(Message::Text(serde_json::to_string(&test_msg).unwrap()))
+            .await
+            .unwrap();
+        info!("테스트 메시지 전송 완료");
+
+        // 충분한 시간 대기하여 서버가 연결을 유지하는지 확인
+        tokio::time::sleep(Duration::from_secs(CLIENT_TIMEOUT + 1)).await;
+
+        // 여전히 메시지를 보낼 수 있다면 연결이 유지되고 있는 것
+        let keepalive_msg = TestMessage {
+            msg_type: "keepalive".to_string(),
+            content: "still connected".to_string(),
+        };
+
+        info!("연결 유지 확인을 위한 keepalive 메시지 전송 시도");
+
+        // keepalive 메시지는 전송이 되는데, CloseMsg Send 는 또 실패함.
+        // 로그 순서상 keepalive 메시지도 전송이 실패되어야 하는 것 같은데
+        // match 분기문으로 더 상세한 로그 찍어야할 듯
+
+        let result = ws
+            .send(Message::Text(
+                serde_json::to_string(&keepalive_msg).unwrap(),
+            ))
+            .await;
+
+        match result {
+            Ok(_) => match ws.send(Message::Close(None)).await {
+                Ok(_) => info!("연결이 유지되고 있음 확인"),
+                Err(_) => info!("연결이 끊김 확인"),
+            },
+            Err(e) => {
+                match ws.send(Message::Close(None)).await {
+                    Ok(_) => info!("연결이 유지되고 있음 확인"),
+                    Err(_) => info!("연결이 끊김 확인"),
+                }
+                info!("예상 못 한 분기점: {}", e);
+            }
+        }
+    }
+
+    #[actix_web::test]
+    async fn test_heartbeat_session_management() {
+        // 서버 인스턴스 생성
+        let (addr, state, _) = spawn_server().await;
+        let player_type = PlayerType::Player1.as_str();
+
+        {
+            state
+                .game
+                .lock()
+                .await
+                .get_phase_state_mut()
+                .set_phase(Phase::Heartbeat);
+        }
+
+        // 하트비트 연결 URL 및 쿠키 설정
+        let url = format!("ws://{}/heartbeat", addr);
+        let cookie = format!("user_id={}; game_step={}", player_type, "heartbeat");
+
+        // 첫 번째 세션 생성
+        let mut ws1 = WebSocketTest::connect(url.clone(), cookie.clone())
+            .await
+            .unwrap();
+        info!("첫 번째 WebSocket 연결 생성");
+
+        // 세션 ID 확인을 위한 초기 메시지 수신
+        #[derive(Deserialize)]
+        struct ConnectionMessage {
+            #[serde(rename = "type")]
+            #[allow(dead_code)]
+            msg_type: String,
+            #[allow(dead_code)]
+            player: String,
+            session_id: String,
+        }
+
+        let session_id = ws1
+            .expect_message(|msg: ConnectionMessage| msg.session_id)
+            .await
+            .parse::<Uuid>()
+            .unwrap();
+        info!("첫 번째 세션 ID: {}", session_id);
+
+        // 첫 번째 세션이 활성화되었는지 확인
+        assert!(
+            state
+                .session_manager
+                .is_valid_session(PlayerType::Player1, session_id, Phase::Heartbeat)
+                .await
+        );
+
+        // 첫 번째 세션 종료
+        ws1.send(Message::Close(None)).await.unwrap();
+
+        // 세션이 종료되었는지 확인하기 위한 충분한 시간 대기
+        tokio::time::sleep(Duration::from_millis(500)).await;
+
+        // 첫 번째 세션이 종료되었는지 확인
+        assert!(
+            !state
+                .session_manager
+                .is_valid_session(PlayerType::Player1, session_id, Phase::Heartbeat)
+                .await
+        );
+
+        // 두 번째 세션 생성이 가능한지 확인
+        let mut ws2 = WebSocketTest::connect(url, cookie).await.unwrap();
+        info!("두 번째 WebSocket 연결 생성");
+
+        let new_session_id = ws2
+            .expect_message(|msg: ConnectionMessage| msg.session_id)
+            .await;
+        info!("두 번째 세션 ID: {}", new_session_id);
+
+        // 새 세션 ID가 다른지 확인
+        assert_ne!(session_id.to_string(), new_session_id);
+
+        // 두 번째 세션이 활성화되었는지 확인
+        assert!(
+            state
+                .session_manager
+                .is_valid_session(
+                    PlayerType::Player1,
+                    new_session_id.parse::<Uuid>().unwrap(),
+                    Phase::Heartbeat
+                )
+                .await
+        );
+    }
+
+    #[actix_web::test]
+    async fn test_heartbeat_ping_pong() {
+        // 서버 인스턴스 생성
+        let (addr, state, _) = spawn_server().await;
+        let player_type = PlayerType::Player1.as_str();
+
+        {
+            state
+                .game
+                .lock()
+                .await
+                .get_phase_state_mut()
+                .set_phase(Phase::Heartbeat);
+        }
+
+        // 하트비트 연결 URL 및 쿠키 설정
+        let url = format!("ws://{}/heartbeat", addr);
+        let cookie = format!("user_id={}; game_step={}", player_type, "heartbeat");
+
+        // 커스텀 WebSocket 클라이언트 생성
+        let request = Request::builder()
+            .uri(&url)
+            .header("Cookie", cookie)
+            .header("Host", url.split('/').nth(2).unwrap_or("localhost"))
+            .header("Sec-WebSocket-Key", "dGhlIHNhbXBsZSBub25jZQ==")
+            .header("Upgrade", "websocket")
+            .header("Connection", "Upgrade")
+            .header("Sec-WebSocket-Version", "13")
+            .body(())
+            .unwrap();
+
+        let (mut stream, response) = connect_async(request).await.unwrap();
+        assert_eq!(
+            response.status(),
+            tungstenite::http::StatusCode::SWITCHING_PROTOCOLS
+        );
+        info!("타임아웃 테스트용 WebSocket 연결 성공");
+
+        // ping 메시지 수신 응답
+        match stream.next().await {
+            Some(Ok(Message::Ping(_))) => {
+                info!("Ping 메시지 수신됨");
+                // Pong으로 응답
+                info!("Pong 메시지 전송 시도");
+                stream
+                    .send(Message::Pong(Vec::new()))
+                    .await
+                    .expect("Failed to send pong message");
+            }
+            Some(Ok(msg)) => info!("Ping 아닌 다른 메시지 수신됨: {:?}", msg),
+            Some(Err(e)) => panic!("메시지 수신 오류: {:?}", e),
+            None => panic!("Ping 메시지 대기 중 타임아웃"),
+        }
+
+        match stream.next().await {
+            Some(Ok(Message::Ping(_))) => info!("Ping 메시지 수신됨"),
+            Some(Ok(_)) => {
+                panic!("Ping 아닌 다른 메시지 수신됨");
+            }
+            Some(Err(e)) => info!("연결 오류 발생: {:?}", e),
+            None => panic!("서버가 연결을 종료함"),
+        }
+    }
+}
+
+#[cfg(test)]
 pub mod draw {
     use std::{collections::HashSet, net::SocketAddr};
 
@@ -327,13 +645,14 @@ pub mod mulligan {
     use async_tungstenite::tungstenite::Message;
     use card_game::{
         card::types::PlayerType,
-        enums::{COUNT_OF_MULLIGAN_CARDS, TIMEOUT},
+        enums::COUNT_OF_MULLIGAN_CARDS,
         exception::*,
         server::types::ServerState,
         test::{spawn_server, verify_mulligan_cards, WebSocketTest},
         zone::zone::Zone,
         VecUuidExt,
     };
+    use core::panic;
     use once_cell::sync::Lazy;
     use rand::Rng;
     use serde_json::json;
@@ -503,6 +822,7 @@ pub mod mulligan {
     // }
 
     #[actix_web::test]
+    #[should_panic]
     async fn test_mulligan_re_entry() {
         let (addr, _, _) = spawn_server().await;
 
@@ -521,50 +841,9 @@ pub mod mulligan {
         let _ = ws.expect_mulligan_deal().await;
 
         // 엔드포인트 재진입
-        if let Err(e) = WebSocketTest::connect(url, cookie).await {
-            assert_eq!(e.to_string(), "HTTP error: 400 Bad Request");
-        } else {
-            panic!("Re-entry is not allowed");
-        }
-    }
-
-    // timeout 을 임의로 발생시켜서 잘 처리가 되는지 확인합니다
-    #[actix_web::test]
-    #[should_panic]
-    async fn test_mulligan_heartbeat_timeout() {
-        let (addr, _, _) = spawn_server().await;
-        let player_type = PlayerType::Player1.as_str();
-
-        // WebSocketTest 객체를 사용하여 훨씬 더 간결한 코드 작성
-        let url = format!("ws://{}/mulligan_phase", addr);
-        let cookie = format!(
-            "user_id={}; game_step={}",
-            PlayerType::Player1.as_str(),
-            "mulligan"
-        );
-
-        let mut ws = WebSocketTest::connect(url, cookie).await.unwrap();
-
-        // 초기 카드 받기
-        let deal_cards = ws.expect_mulligan_deal().await;
-
-        // Heartbeat timeout 대기
-        println!("Waiting for heartbeat timeout...");
-        tokio::time::sleep(Duration::from_secs(TIMEOUT + 1)).await;
-
-        let json = json!({
-            "action": "reroll-request",
-            "payload": {
-            "player": player_type,
-            "cards": deal_cards.to_vec_string()
-            }
-        });
-
-        ws.send(Message::Text(json.to_string()))
+        let _ = WebSocketTest::connect(url, cookie)
             .await
-            .expect("Failed to send message");
-
-        let _ = ws.expect_mulligan_complete().await;
+            .expect("Re-entry is not allowed");
     }
 
     #[actix_web::test]

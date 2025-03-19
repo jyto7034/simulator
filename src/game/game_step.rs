@@ -10,7 +10,7 @@ use crate::{
     LogExt,
 };
 
-use super::{phase::Phase, Game};
+use super::Game;
 
 pub enum PhaseResult {
     Mulligan,
@@ -147,7 +147,7 @@ impl Game {
 
     fn handle_battle_phase_start(&mut self) -> PhaseResultType {
         // 배틀 페이즈 개시시 효과 처리
-        self.trigger_battle_phase_start_effects();
+        self.trigger_battle_phase_start_effects()?;
         todo!()
     }
 
