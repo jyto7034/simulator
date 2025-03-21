@@ -19,7 +19,7 @@ use crate::{
     enums::{DeckCode, CARD_JSON_PATH, HEARTBEAT_INTERVAL, MAX_CARD_SIZE},
     game::phase::Phase,
     server::{
-        end_point::{handle_draw, handle_mulligan, heartbeat},
+        end_point::{draw_phase, heartbeat, main_phase_start_phase, mulligan_phase, standby_phase},
         jsons::{draw, mulligan, ErrorMessage},
         session::PlayerSessionManager,
         types::{ServerState, SessionKey},
@@ -107,7 +107,6 @@ pub fn create_server_state() -> web::Data<ServerState> {
 
 use actix_web::HttpServer;
 use std::net::{SocketAddr, TcpListener};
-
 pub async fn spawn_server() -> (SocketAddr, Data<ServerState>, ServerHandle) {
     let server_state = create_server_state();
     let server_state_clone = server_state.clone();
@@ -117,8 +116,10 @@ pub async fn spawn_server() -> (SocketAddr, Data<ServerState>, ServerHandle) {
     let server = HttpServer::new(move || {
         App::new()
             .app_data(server_state.clone())
-            .service(handle_mulligan)
-            .service(handle_draw)
+            .service(mulligan_phase)
+            .service(draw_phase)
+            .service(standby_phase)
+            .service(main_phase_start_phase)
             .service(heartbeat)
     })
     .listen(listener)
@@ -170,7 +171,7 @@ async{
     }
 }).await;
     match timeout {
-        Ok(cards) => cards.to_vec_uuid(),
+        Ok(cards) => cards.to_vec_uuid().expect("Failed to parse card UUID"),
         Err(_) => panic!(
             "Did not receive any message from the server while expecting MulliganMessage::Deal."
         ),
@@ -218,7 +219,7 @@ pub async fn expect_mulligan_complete_message(
     ).await;
 
     match timeout {
-        Ok(cards) => cards.to_vec_uuid(),
+        Ok(cards) => cards.to_vec_uuid().expect("Failed to parse card UUID"),
         Err(_) => panic!("Did not receive any message from the server while expecting MulliganMessage::Complete."),
     }
 }
@@ -408,7 +409,9 @@ impl WebSocketTest {
     /// 멀리건 딜 메시지를 기다리고 카드 ID 리스트를 반환합니다
     pub async fn expect_mulligan_deal(&mut self) -> Vec<Uuid> {
         self.expect_message(|message: mulligan::ServerMessage| match message {
-            mulligan::ServerMessage::Deal(data) => data.cards.to_vec_uuid(),
+            mulligan::ServerMessage::Deal(data) => {
+                data.cards.to_vec_uuid().expect("Failed to parse card UUID")
+            }
             other => panic!("Expected MulliganMessage::Deal but got: {:?}", other),
         })
         .await
@@ -417,7 +420,9 @@ impl WebSocketTest {
     /// 멀리건 완료 메시지를 기다리고 카드 ID 리스트를 반환합니다
     pub async fn expect_mulligan_complete(&mut self) -> Vec<Uuid> {
         let extractor = |message: mulligan::ClientMessage| match message {
-            mulligan::ClientMessage::Complete(data) => data.cards.to_vec_uuid(),
+            mulligan::ClientMessage::Complete(data) => {
+                data.cards.to_vec_uuid().expect("Failed to parse card UUID")
+            }
             other => panic!("Expected MulliganMessage::Complete but got: {:?}", other),
         };
         self.expect_message(extractor).await
@@ -426,7 +431,9 @@ impl WebSocketTest {
     /// Reroll-Answer 메시지를 기다리고 카드 ID 리스트를 반환합니다
     pub async fn expect_mulligan_answer(&mut self) -> Vec<Uuid> {
         let extractor = |message: mulligan::ServerMessage| match message {
-            mulligan::ServerMessage::RerollAnswer(data) => data.cards.to_vec_uuid(),
+            mulligan::ServerMessage::RerollAnswer(data) => {
+                data.cards.to_vec_uuid().expect("Failed to parse card UUID")
+            }
             other => panic!("Expected MulliganMessage::Answer but got: {:?}", other),
         };
         self.expect_message(extractor).await

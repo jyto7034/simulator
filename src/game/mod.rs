@@ -144,6 +144,20 @@ impl Game {
         Ok(result[0].clone())
     }
 
+    /// 파라미터로 들어오는 카드들을 덱의 맨 밑으로 복원합니다.
+    ///
+    /// # Parameters
+    /// * `player_type` - 카드를 복원할 플레이어 타입
+    /// * `src_cards` - 복원할 카드들의 UUID 목록
+    ///
+    /// # Returns
+    /// * `Ok(())` - 모든 카드가 성공적으로 덱의 맨 밑에 추가됨
+    /// * `Err(GameError)` - 카드 복원 중 오류 발생
+    ///
+    /// # Errors
+    /// * `GameError::CardNotFound` - 지정된 UUID를 가진 카드를 플레이어가 소유하지 않은 경우
+    /// * `GameError::ExceededCardLimit` - 덱에 자리가 없어 카드를 추가할 수 없는 경우
+    ///
     pub fn restore_card(
         &mut self,
         player_type: PlayerType,

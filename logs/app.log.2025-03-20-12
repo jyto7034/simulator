@@ -1,0 +1,39 @@
+  2025-03-20T12:28:51.634233Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on mulligan::test_mulligan_invalid_cards ThreadId(3)
+
+  2025-03-20T12:28:51.635092Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on mulligan::test_mulligan_invalid_cards ThreadId(3)
+
+  2025-03-20T12:28:51.635133Z  INFO  starting service: "actix-web-service-127.0.0.1:4770", workers: 32, listening on: 127.0.0.1:4770
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on mulligan::test_mulligan_invalid_cards ThreadId(3)
+
+  2025-03-20T12:28:51.643503Z  INFO  인증 성공: player_type=Player1, session_id=7a91b33f-a2d1-4322-a844-b1ac85c5d80e
+    at src\server\end_point.rs:126 on actix-rt|system:0|arbiter:0 ThreadId(4)
+
+  2025-03-20T12:28:51.643628Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at src\server\end_point.rs:375 on actix-rt|system:0|arbiter:0 ThreadId(4)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 7a91b33f-a2d1-4322-a844-b1ac85c5d80e }, player_type: Player1, session_id: 7a91b33f-a2d1-4322-a844-b1ac85c5d80e
+
+  2025-03-20T12:28:51.643738Z  INFO  WebSocket 연결 성공: player=Player1
+    at src\server\end_point.rs:403 on actix-rt|system:0|arbiter:0 ThreadId(4)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 7a91b33f-a2d1-4322-a844-b1ac85c5d80e }, player_type: Player1, session_id: 7a91b33f-a2d1-4322-a844-b1ac85c5d80e
+
+  2025-03-20T12:28:51.643754Z  INFO  멀리건 카드 뽑기 시작: player=Player1, count=5
+    at src\server\end_point.rs:421 on actix-rt|system:0|arbiter:0 ThreadId(4)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 7a91b33f-a2d1-4322-a844-b1ac85c5d80e }, player_type: Player1, session_id: 7a91b33f-a2d1-4322-a844-b1ac85c5d80e
+
+  2025-03-20T12:28:51.643879Z  INFO  멀리건 딜 메시지 전송 완료
+    at src\server\end_point.rs:462 on actix-rt|system:0|arbiter:0 ThreadId(4)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 7a91b33f-a2d1-4322-a844-b1ac85c5d80e }, player_type: Player1, session_id: 7a91b33f-a2d1-4322-a844-b1ac85c5d80e
+
+  2025-03-20T12:28:51.643892Z  INFO  멀리건 메시지 처리 태스크 시작: player=Player1, session_id=7a91b33f-a2d1-4322-a844-b1ac85c5d80e
+    at src\server\end_point.rs:469 on actix-rt|system:0|arbiter:0 ThreadId(4)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 7a91b33f-a2d1-4322-a844-b1ac85c5d80e }, player_type: Player1, session_id: 7a91b33f-a2d1-4322-a844-b1ac85c5d80e
+
+  2025-03-20T12:28:51.643918Z  INFO  멀리건 핸들러 완료: player=Player1
+    at src\server\end_point.rs:749 on actix-rt|system:0|arbiter:0 ThreadId(4)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 7a91b33f-a2d1-4322-a844-b1ac85c5d80e }, player_type: Player1, session_id: 7a91b33f-a2d1-4322-a844-b1ac85c5d80e
+
+  2025-03-20T12:28:51.644270Z  INFO  메시지 처리 성공: player=Player1, message_type=card_game::server::jsons::mulligan::ClientMessage
+    at src\server\end_point.rs:494 on actix-rt|system:0|arbiter:0 ThreadId(4)
+

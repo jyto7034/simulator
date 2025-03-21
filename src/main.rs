@@ -4,7 +4,9 @@ use std::path::Path;
 
 use actix_web::{web, App, HttpServer};
 use card_game::enums::CLIENT_TIMEOUT;
-use card_game::server::end_point::{handle_draw, handle_mulligan, heartbeat};
+use card_game::server::end_point::{
+    draw_phase, heartbeat, main_phase_start_phase, mulligan_phase, standby_phase,
+};
 use card_game::server::session::PlayerSessionManager;
 use card_game::setup_logger;
 use tokio::sync::Mutex;
@@ -36,7 +38,7 @@ struct Args {
     attacker: usize,
 }
 
-// 매칭으로 만난 두 플레이어의 닉네임을 받은 뒤, 게임 공용 서버인 valid server 에 전송하여 실제 플레이어가 맞는지 확인 후, key 값을 리턴 받음.
+// TODO: 매칭으로 만난 두 플레이어의 닉네임을 받은 뒤, 게임 공용 서버인 valid server 에 전송하여 실제 플레이어가 맞는지 확인 후, key 값을 리턴 받음.
 pub fn check_session(_nick1: String, _nick2: String) -> (SessionKey, SessionKey) {
     (
         SessionKey("player1".to_string()),
@@ -94,7 +96,6 @@ async fn main() -> std::io::Result<()> {
 
     let session_keys = check_session("".to_string(), "".to_string());
 
-    // TODO: GameKey Getter 메소드 만들어야함.
     let state = web::Data::new(ServerState {
         game: Mutex::new(app.game),
         player_cookie: session_keys.0,
@@ -106,8 +107,10 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(state.clone())
-            .service(handle_mulligan)
-            .service(handle_draw)
+            .service(mulligan_phase)
+            .service(draw_phase)
+            .service(standby_phase)
+            .service(main_phase_start_phase)
             .service(heartbeat)
     })
     .bind("127.0.0.1:8080")?

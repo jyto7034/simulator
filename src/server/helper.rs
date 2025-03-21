@@ -14,44 +14,6 @@ use crate::{
 
 use super::jsons::Message;
 
-/// 멀리건 완료 처리 함수
-/// - 게임 객체를 받아서, 플레이어의 멀리건 상태를 완료로 변경하고, 선택한 카드들을 손으로 이동시킵니다.
-/// - 선택한 카드들의 UUID를 반환합니다.
-/// # Arguments
-/// * `game` - 게임 객체
-/// * `player_type` - 플레이어 타입
-/// # Returns
-/// * `Vec<Uuid>` - 선택한 카드들의 UUID
-pub fn process_mulligan_completion<T: Into<PlayerType> + Copy>(
-    game: &mut Game,
-    player_type: T,
-) -> Result<Vec<Uuid>, GameError> {
-    // 선택된 멀리건 카드들의 UUID 를 얻습니다.
-    let selected_cards = game
-        .get_player_by_type(player_type.into())
-        .get()
-        .get_mulligan_state_mut()
-        .get_select_cards();
-
-    // UUID -> Card 객체로 변환하는 과정입니다.
-    let cards = game.get_cards_by_uuids(selected_cards.clone())?;
-    // add_card 함수를 통해 선택된 카드들을 손으로 이동시킵니다.
-    game.get_player_by_type(player_type.into())
-        .get()
-        .get_hand_mut()
-        .add_card(cards, Box::new(TopInsert))
-        .map_err(|_| GameError::InternalServerError)?;
-
-    // 멀리건 상태를 "완료" 상태로 변경합니다.
-    game.get_player_by_type(player_type.into())
-        .get()
-        .get_mulligan_state_mut()
-        .confirm_selection();
-
-    // 그런 뒤, 선택한 카드들을 반환합니다.
-    Ok(selected_cards)
-}
-
 /// 에러 메시지 전송 매크로
 /// - 세션을 통해 에러 메시지를 전송하고, 전송 성공 여부를 반환합니다.
 /// - retry 키워드를 사용하면 최대 재시도 횟수를 지정할 수 있습니다.

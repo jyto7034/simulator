@@ -11,7 +11,7 @@ use uuid::Uuid;
 
 use crate::enums::{CLIENT_TIMEOUT, COUNT_OF_MULLIGAN_CARDS, HEARTBEAT_INTERVAL};
 use crate::exception::MessageProcessResult;
-use crate::server::helper::{process_mulligan_completion, send_error_and_check, MessageHandler};
+use crate::server::helper::{send_error_and_check, MessageHandler};
 use crate::server::jsons::draw::serialize_draw_answer_message;
 use crate::server::jsons::mulligan::{
     self, serialize_complete_message, serialize_deal_message, serialize_reroll_answer,
@@ -363,9 +363,10 @@ pub async fn heartbeat(
 /// 두 플레이어가 모두 준비되면 다음 단계로 넘어갑니다.
 
 // TODO: 네트워크 이슈가 발생하여 재연결이 필요한 경우 처리가 필요함.
+// TODO: 게임 로직을 end point 가 아니라 Game 내부에다가 구현 해야함.
 #[get("/mulligan_phase")]
 #[instrument(skip(state, req, payload), fields(player_type = ?player.ptype, session_id = ?player.session_id))]
-pub async fn handle_mulligan(
+pub async fn mulligan_phase(
     player: AuthPlayer,
     state: web::Data<ServerState>,
     req: HttpRequest,
@@ -379,6 +380,7 @@ pub async fn handle_mulligan(
         let game = state.game.lock().await;
         debug!("게임 상태 잠금 획득: 재진입 확인");
 
+        // TODO: 일관성 있게, PhaseState 를 사용하여 처리하는 것이 좋을 것 같음.
         if !game
             .get_player_by_type(player.ptype)
             .get()
@@ -434,10 +436,7 @@ pub async fn handle_mulligan(
             }
         };
 
-        let mut player = game.get_player_by_type(player_type).get();
-        player
-            .get_mulligan_state_mut()
-            .add_select_cards(cards.clone());
+        game.add_select_cards(cards.clone(), player_type);
         debug!("플레이어 멀리건 상태에 선택 카드 추가 완료");
 
         cards
@@ -462,11 +461,8 @@ pub async fn handle_mulligan(
     }
     info!("멀리건 딜 메시지 전송 완료");
 
-    let heartbeat_session_id = player.session_id;
-    let heartbeat_session_manager = state.session_manager.clone();
-
-    let mulligan_session_manager = state.session_manager.clone();
     let mulligan_session_id = player.session_id;
+    let mulligan_session_manager = state.session_manager.clone();
 
     // 이후, 스레드 내에서 클라이언트와의 상호작용을 계속하기 위해 필요한 state를 클론합니다.
     // WebSocket 메시지 수신 등 후속 처리는 별도 spawn된 작업에서 진행합니다.
@@ -518,67 +514,41 @@ pub async fn handle_mulligan(
                                         mulligan_session_id,
                                     );
 
-                                    // 플레이어가 이미 준비 상태인 경우
-                                    if game
-                                        .get_player_by_type(player_type)
-                                        .get()
-                                        .get_mulligan_state_mut()
-                                        .is_ready()
-                                    {
-                                        warn!(
-                                            "플레이어가 이미 준비 상태: player={:?}",
-                                            player_type
-                                        );
-                                        try_send_error!(session, GameError::AlreadyReady, retry 3);
-                                    }
-
-                                    // 플레이어가 선택한 카드가 유효한지 확인합니다.
-                                    debug!("선택한 카드 유효성 검사: player={:?}", player_type);
-                                    if payload.validate(
-                                        game.get_player_by_type(player_type).get().get_cards(),
-                                    ) == None
-                                    {
-                                        error!("유효하지 않은 카드 선택: player={:?}", player_type);
+                                    if let Err(e) = payload.cards.to_vec_uuid() {
+                                        error!("카드 UUID 변환 실패: error={:?}", e);
                                         try_send_error!(session, GameError::InvalidCards, retry 3);
                                     }
+                                    let payload_cards = payload.cards.to_vec_uuid().unwrap();
 
-                                    // 기존 카드를 덱의 최하단에 위치 시킨 뒤, 새로운 카드를 뽑아서 player 의 mulligan cards 에 저장하고 json 으로 변환하여 전송합니다.
-                                    info!("카드 리롤 시작: player={:?}", player_type);
-                                    let rerolled_card = match game
-                                        .restore_then_reroll_mulligan_cards(
-                                            player_type,
-                                            payload.cards.to_vec_uuid(),
-                                        ) {
-                                        Ok(cards) => {
-                                            debug!("카드 리롤 성공: card_count={}", cards.len());
-                                            cards
-                                        }
-                                        Err(e) => {
-                                            error!(
-                                                "카드 리롤 실패: player={:?}, error={:?}",
-                                                player_type, e
-                                            );
-                                            break;
-                                        }
-                                    };
+                                    debug!(
+                                        "리롤 요청 처리: player={:?}, cards={:?}",
+                                        player_type, payload_cards
+                                    );
+
+                                    let result =
+                                        game.reroll_request(player_type, payload_cards.clone());
+
+                                    if let Err(e) = &result {
+                                        error!(
+                                            "리롤 요청 처리 실패: player={:?}, error={:?}",
+                                            player_type, e
+                                        );
+                                        try_send_error!(session, e.clone(), retry 3);
+                                    }
+
+                                    let rerolled_cards = result.unwrap();
 
                                     // 플레이어가 선택한 카드를 select_cards 에서 삭제하고 Reroll 된 카드를 추가합니다.
-                                    debug!("선택 카드 제거: player={:?}", player_type);
-                                    game.get_player_by_type(player_type)
-                                        .get()
-                                        .get_mulligan_state_mut()
-                                        .remove_select_cards(payload.cards.to_vec_uuid());
-
-                                    debug!("리롤된 카드 추가: player={:?}", player_type);
-                                    game.get_player_by_type(player_type)
-                                        .get()
-                                        .get_mulligan_state_mut()
-                                        .add_select_cards(rerolled_card.clone());
+                                    game.add_reroll_cards(
+                                        player_type,
+                                        payload_cards.clone(),
+                                        rerolled_cards,
+                                    );
 
                                     // 멀리건 완료 단계를 수행합니다.
                                     info!("멀리건 완료 처리: player={:?}", player_type);
                                     let selected_cards =
-                                        match process_mulligan_completion(&mut game, player_type) {
+                                        match game.process_mulligan_completion(player_type) {
                                             Ok(selected_cards) => {
                                                 debug!("멀리건 완료 처리 성공");
                                                 selected_cards
@@ -593,22 +563,13 @@ pub async fn handle_mulligan(
                                         };
 
                                     // 상대 플레이어의 준비 상태 확인
-                                    let opponent_ready = game
-                                        .get_player_by_type(player_type.reverse())
-                                        .get()
-                                        .get_mulligan_state_mut()
-                                        .is_ready();
 
-                                    if opponent_ready {
+                                    if game.check_player_ready_state(player_type.reverse()) {
                                         info!("양 플레이어 모두 준비 완료: 다음 단계 전환 예정");
-                                        // TODO: 다음 단계로 넘어가는 코드 작성
-                                    }
 
-                                    let selected_cards = game
-                                        .get_player_by_type(player_type)
-                                        .get()
-                                        .get_mulligan_state_mut()
-                                        .get_select_cards();
+                                        // TODO: 다음 단계로 넘어가는 코드 작성
+                                        game.move_phase();
+                                    }
 
                                     debug!("리롤 응답 메시지 직렬화 시작");
                                     let selected_cards_json = match serialize_reroll_answer(
@@ -631,9 +592,6 @@ pub async fn handle_mulligan(
                                         break;
                                     }
                                     info!("리롤 응답 메시지 전송 완료");
-
-                                    // 다음 페이즈로 이동하는 코드
-                                    game.move_phase();
 
                                     info!(
                                         "멀리건 세션 종료: player={:?}, session_id={}",
@@ -687,7 +645,7 @@ pub async fn handle_mulligan(
                                     // 만약 상대도 완료 상태이라면, mulligan step 을 종료하고 다음 step 으로 진행합니다.
                                     info!("멀리건 완료 처리: player={:?}", player_type);
                                     let selected_cards =
-                                        match process_mulligan_completion(&mut game, player_type) {
+                                        match game.process_mulligan_completion(player_type) {
                                             Ok(selected_cards) => {
                                                 debug!("멀리건 완료 처리 성공");
                                                 selected_cards
@@ -702,13 +660,7 @@ pub async fn handle_mulligan(
                                         };
 
                                     // 상대 플레이어의 준비 상태 확인
-                                    let opponent_ready = game
-                                        .get_player_by_type(player.reverse())
-                                        .get()
-                                        .get_mulligan_state_mut()
-                                        .is_ready();
-
-                                    if opponent_ready {
+                                    if game.check_player_ready_state(player_type.reverse()) {
                                         info!("양 플레이어 모두 준비 완료: 다음 단계 전환 예정");
                                         // 다음 페이즈로 이동하는 코드
                                         game.move_phase();
@@ -751,7 +703,7 @@ pub async fn handle_mulligan(
                                 player_type, server_error
                             );
                             mulligan_session_manager
-                                .end_session(player_type, heartbeat_session_id)
+                                .end_session(player_type, mulligan_session_id)
                                 .await;
                         }
                     }
@@ -790,7 +742,7 @@ pub async fn handle_mulligan(
 
 #[get("/draw_phase")]
 #[instrument(skip(state), fields(player_type = ?player.ptype))]
-pub async fn handle_draw(
+pub async fn draw_phase(
     player: AuthPlayer,
     state: web::Data<ServerState>,
 ) -> Result<HttpResponse, GameError> {
@@ -807,8 +759,15 @@ pub async fn handle_draw(
             return Err(GameError::NotAllowedReEntry);
         }
 
-        let result = game.handle_draw_phase(player_type)?;
+        game.phase_state.mark_player_completed(player_type);
+        debug!("플레이어 드로우 완료 표시: player={:?}", player_type);
 
+        // 에러가 발생할 경우 mark 를 reset 함.
+        let result = game.handle_draw_phase(player_type).inspect_err(|e| {
+            game.phase_state.reset_player_completed(player_type);
+        })?;
+
+        // 다음 페이즈로 이동
         game.move_phase();
 
         result
@@ -868,24 +827,8 @@ pub async fn main_phase_start_phase(
     let player_type = player.ptype;
 
     // 플레이어가 재진입을 시도하는 경우
-    {
-        let game = state.game.lock().await;
-        debug!("게임 상태 잠금 획득: 재진입 확인");
-
-        if !game
-            .get_player_by_type(player.ptype)
-            .get()
-            .get_mulligan_state_mut()
-            .get_select_cards()
-            .is_empty()
-        {
-            error!(
-                "플레이어가 이미 메인 페이즈1 개시시 단계 진입함.: player={:?}",
-                player.ptype
-            );
-            return Err(GameError::NotAllowedReEntry);
-        }
-    }
+    debug!("게임 상태 잠금 획득: 재진입 확인");
+    // TODO: 플레이어가 이미 메인 페이즈1 개시시 단계 진입한 경우 처리가 필요함.
 
     // Http 업그레이드: 이때 session과 stream이 반환됩니다.
     debug!("WebSocket 연결 업그레이드 시작");
@@ -912,5 +855,60 @@ pub async fn main_phase_start_phase(
 
         이 때문에 WebSocket 연결을 수립해야함.
     */
+    todo!()
+}
+
+#[get("/main_phase_1_phase")]
+#[instrument(skip(state, req, payload), fields(player_type = ?player.ptype))]
+pub async fn main_phase_1_phase(
+    player: AuthPlayer,
+    state: web::Data<ServerState>,
+    req: HttpRequest,
+    payload: web::Payload,
+) -> Result<HttpResponse, GameError> {
+    /*
+        MainPhase1 페이즈.
+    */
+    info!("메인 페이즈1 페이즈 시작: player={:?}", player.ptype);
+
+    let player_type = player.ptype;
+    {
+        let mut game = state.game.lock().await;
+        debug!("게임 상태 잠금 획득: 재진입 확인");
+
+        if game.phase_state.has_player_completed(player_type) {
+            error!(
+                "플레이어가 해당 페이즈를 이미 진행중임.: player={:?}",
+                player_type
+            );
+            return Err(GameError::NotAllowedReEntry);
+        }
+
+        game.phase_state.mark_player_completed(player_type);
+        debug!("플레이어 페이즈 진입 표시: player={:?}", player_type);
+
+        // 에러가 발생할 경우 mark 를 reset 함.
+        let result = game.handle_draw_phase(player_type).inspect_err(|e| {})?;
+
+        game.move_phase();
+
+        result
+    };
+
+    // Http 업그레이드: 이때 session과 stream이 반환됩니다.
+    debug!("WebSocket 연결 업그레이드 시작");
+    let (resp, session, stream) = match handle(&req, payload) {
+        Ok(result) => {
+            info!("WebSocket 연결 성공: player={:?}", player_type);
+            result
+        }
+        Err(e) => {
+            error!(
+                "WebSocket 핸들링 실패: player={:?}, error={:?}",
+                player_type, e
+            );
+            return Err(GameError::HandleFailed);
+        }
+    };
     todo!()
 }

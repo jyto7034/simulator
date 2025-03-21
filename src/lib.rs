@@ -2,7 +2,8 @@
 
 use std::sync::{Arc, Mutex, MutexGuard};
 
-use tracing::Level;
+use exception::GameError;
+use tracing::{warn, Level};
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::EnvFilter;
 use uuid::Uuid;
@@ -139,19 +140,14 @@ impl VecUuidExt for Vec<Uuid> {
 }
 
 pub trait VecStringExt {
-    fn to_vec_uuid(&self) -> Vec<Uuid>;
+    fn to_vec_uuid(&self) -> Result<Vec<Uuid>, GameError>;
 }
 
 impl VecStringExt for Vec<String> {
-    fn to_vec_uuid(&self) -> Vec<Uuid> {
+    fn to_vec_uuid(&self) -> Result<Vec<Uuid>, GameError> {
         self.iter()
-            .map(|uuid| {
-                Uuid::parse_str(uuid).unwrap_or_else(|e| {
-                    // TODO: Log 함수 사용
-                    panic!("uuid parse error: {}", e)
-                })
-            })
-            .collect::<Vec<Uuid>>()
+            .map(|uuid| Uuid::parse_str(uuid).map_err(|_| return GameError::ParseError))
+            .collect::<Result<Vec<Uuid>, GameError>>()
     }
 }
 
