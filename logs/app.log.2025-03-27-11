@@ -1,0 +1,1947 @@
+  2025-03-27T11:33:54.517302Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on mulligan::test_mulligan_invalid_player ThreadId(16)
+
+  2025-03-27T11:33:54.517297Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on draw::test_draw_card ThreadId(3)
+
+  2025-03-27T11:33:54.517295Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on mulligan::test_mulligan_reroll_restore_variants ThreadId(18)
+
+  2025-03-27T11:33:54.517295Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on mulligan::test_mulligan_wrong_phase ThreadId(19)
+
+  2025-03-27T11:33:54.517308Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on heartbeat::test_heartbeat_connection ThreadId(9)
+
+  2025-03-27T11:33:54.517300Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on heartbeat::test_heartbeat_ping_pong ThreadId(11)
+
+  2025-03-27T11:33:54.517297Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on draw::test_draw_concurrency ThreadId(4)
+
+  2025-03-27T11:33:54.517300Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on heartbeat::test_heartbeat_session_management ThreadId(12)
+
+  2025-03-27T11:33:54.517307Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on heartbeat::test_heartbeat_connection_timeout ThreadId(10)
+
+  2025-03-27T11:33:54.517309Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on mulligan::test_mulligan_already_ready ThreadId(13)
+
+  2025-03-27T11:33:54.517302Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on draw::test_draw_wrong_phase ThreadId(8)
+
+  2025-03-27T11:33:54.517295Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on draw::test_draw_re_entry ThreadId(7)
+
+  2025-03-27T11:33:54.517301Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on mulligan::test_mulligan_re_entry ThreadId(17)
+
+  2025-03-27T11:33:54.517300Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on mulligan::test_mulligan_invalid_cards ThreadId(15)
+
+  2025-03-27T11:33:54.517295Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on draw::test_draw_hand_is_full ThreadId(5)
+
+  2025-03-27T11:33:54.517295Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on mulligan::test_mulligan_invalid_approach ThreadId(14)
+
+  2025-03-27T11:33:54.517298Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on draw::test_draw_no_card_left ThreadId(6)
+
+  2025-03-27T11:33:54.518469Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on mulligan::test_mulligan_reroll_restore_variants ThreadId(18)
+
+  2025-03-27T11:33:54.518462Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on draw::test_draw_concurrency ThreadId(4)
+
+  2025-03-27T11:33:54.518522Z  INFO  starting service: "actix-web-service-127.0.0.1:6175", workers: 32, listening on: 127.0.0.1:6175
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on mulligan::test_mulligan_reroll_restore_variants ThreadId(18)
+
+  2025-03-27T11:33:54.518528Z  INFO  starting service: "actix-web-service-127.0.0.1:6190", workers: 32, listening on: 127.0.0.1:6190
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on draw::test_draw_concurrency ThreadId(4)
+
+  2025-03-27T11:33:54.519682Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on mulligan::test_mulligan_invalid_player ThreadId(16)
+
+  2025-03-27T11:33:54.519685Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on mulligan::test_mulligan_re_entry ThreadId(17)
+
+  2025-03-27T11:33:54.519692Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on heartbeat::test_heartbeat_connection ThreadId(9)
+
+  2025-03-27T11:33:54.519700Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on mulligan::test_mulligan_invalid_approach ThreadId(14)
+
+  2025-03-27T11:33:54.519702Z  INFO  starting service: "actix-web-service-127.0.0.1:6180", workers: 32, listening on: 127.0.0.1:6180
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on mulligan::test_mulligan_invalid_player ThreadId(16)
+
+  2025-03-27T11:33:54.519707Z  INFO  starting service: "actix-web-service-127.0.0.1:6185", workers: 32, listening on: 127.0.0.1:6185
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on heartbeat::test_heartbeat_connection ThreadId(9)
+
+  2025-03-27T11:33:54.519704Z  INFO  starting service: "actix-web-service-127.0.0.1:6179", workers: 32, listening on: 127.0.0.1:6179
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on mulligan::test_mulligan_re_entry ThreadId(17)
+
+  2025-03-27T11:33:54.519715Z  INFO  starting service: "actix-web-service-127.0.0.1:6181", workers: 32, listening on: 127.0.0.1:6181
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on mulligan::test_mulligan_invalid_approach ThreadId(14)
+
+  2025-03-27T11:33:54.519711Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on heartbeat::test_heartbeat_session_management ThreadId(12)
+
+  2025-03-27T11:33:54.519719Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on mulligan::test_mulligan_invalid_cards ThreadId(15)
+
+  2025-03-27T11:33:54.519727Z  INFO  starting service: "actix-web-service-127.0.0.1:6183", workers: 32, listening on: 127.0.0.1:6183
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on heartbeat::test_heartbeat_session_management ThreadId(12)
+
+  2025-03-27T11:33:54.519725Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on heartbeat::test_heartbeat_ping_pong ThreadId(11)
+
+  2025-03-27T11:33:54.519733Z  INFO  starting service: "actix-web-service-127.0.0.1:6189", workers: 32, listening on: 127.0.0.1:6189
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on mulligan::test_mulligan_invalid_cards ThreadId(15)
+
+  2025-03-27T11:33:54.519732Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on heartbeat::test_heartbeat_connection_timeout ThreadId(10)
+
+  2025-03-27T11:33:54.519740Z  INFO  starting service: "actix-web-service-127.0.0.1:6184", workers: 32, listening on: 127.0.0.1:6184
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on heartbeat::test_heartbeat_ping_pong ThreadId(11)
+
+  2025-03-27T11:33:54.519747Z  INFO  starting service: "actix-web-service-127.0.0.1:6182", workers: 32, listening on: 127.0.0.1:6182
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on heartbeat::test_heartbeat_connection_timeout ThreadId(10)
+
+  2025-03-27T11:33:54.522273Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on draw::test_draw_card ThreadId(3)
+
+  2025-03-27T11:33:54.522278Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on draw::test_draw_wrong_phase ThreadId(8)
+
+  2025-03-27T11:33:54.522282Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on draw::test_draw_hand_is_full ThreadId(5)
+
+  2025-03-27T11:33:54.522293Z  INFO  starting service: "actix-web-service-127.0.0.1:6188", workers: 32, listening on: 127.0.0.1:6188
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on draw::test_draw_wrong_phase ThreadId(8)
+
+  2025-03-27T11:33:54.522297Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on draw::test_draw_re_entry ThreadId(7)
+
+  2025-03-27T11:33:54.522315Z  INFO  starting service: "actix-web-service-127.0.0.1:6178", workers: 32, listening on: 127.0.0.1:6178
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on draw::test_draw_re_entry ThreadId(7)
+
+  2025-03-27T11:33:54.522270Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on mulligan::test_mulligan_wrong_phase ThreadId(19)
+
+  2025-03-27T11:33:54.522331Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on draw::test_draw_no_card_left ThreadId(6)
+
+  2025-03-27T11:33:54.522346Z  INFO  starting service: "actix-web-service-127.0.0.1:6177", workers: 32, listening on: 127.0.0.1:6177
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on mulligan::test_mulligan_wrong_phase ThreadId(19)
+
+  2025-03-27T11:33:54.522344Z  INFO  starting service: "actix-web-service-127.0.0.1:6187", workers: 32, listening on: 127.0.0.1:6187
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on draw::test_draw_no_card_left ThreadId(6)
+
+  2025-03-27T11:33:54.522324Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on mulligan::test_mulligan_already_ready ThreadId(13)
+
+  2025-03-27T11:33:54.522291Z  INFO  starting service: "actix-web-service-127.0.0.1:6186", workers: 32, listening on: 127.0.0.1:6186
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on draw::test_draw_card ThreadId(3)
+
+  2025-03-27T11:33:54.522296Z  INFO  starting service: "actix-web-service-127.0.0.1:6174", workers: 32, listening on: 127.0.0.1:6174
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on draw::test_draw_hand_is_full ThreadId(5)
+
+  2025-03-27T11:33:54.522449Z  INFO  starting service: "actix-web-service-127.0.0.1:6176", workers: 32, listening on: 127.0.0.1:6176
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on mulligan::test_mulligan_already_ready ThreadId(13)
+
+  2025-03-27T11:33:54.545398Z  INFO  인증 성공: player_type=Player1, session_id=dbf37abc-d7e8-448f-8549-bb1558dcc551
+    at src\server\end_point.rs:127 on actix-rt|system:12|arbiter:9 ThreadId(29)
+
+  2025-03-27T11:33:54.545396Z  INFO  인증 성공: player_type=Player1, session_id=763f96b4-a165-44c2-a60c-9734919622ca
+    at src\server\end_point.rs:127 on actix-rt|system:14|arbiter:7 ThreadId(27)
+
+  2025-03-27T11:33:54.545691Z  INFO  인증 성공: player_type=Player1, session_id=267d6b61-5c5a-4568-bf3b-dab64f8954d0
+    at src\server\end_point.rs:127 on actix-rt|system:13|arbiter:8 ThreadId(28)
+
+  2025-03-27T11:33:54.545657Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at src\server\end_point.rs:376 on actix-rt|system:14|arbiter:7 ThreadId(27)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 763f96b4-a165-44c2-a60c-9734919622ca }, player_type: Player1, session_id: 763f96b4-a165-44c2-a60c-9734919622ca
+
+  2025-03-27T11:33:54.545783Z  INFO  WebSocket 연결 성공: player=Player1
+    at src\server\end_point.rs:169 on actix-rt|system:12|arbiter:9 ThreadId(29)
+    in heartbeat with player: AuthPlayer { ptype: Player1, session_id: dbf37abc-d7e8-448f-8549-bb1558dcc551 }, player_type: Player1, session_id: dbf37abc-d7e8-448f-8549-bb1558dcc551
+
+  2025-03-27T11:33:54.545807Z  INFO  하트비트 태스크 시작: player=Player1, session_id=dbf37abc-d7e8-448f-8549-bb1558dcc551
+    at src\server\end_point.rs:185 on actix-rt|system:12|arbiter:9 ThreadId(29)
+    in heartbeat with player: AuthPlayer { ptype: Player1, session_id: dbf37abc-d7e8-448f-8549-bb1558dcc551 }, player_type: Player1, session_id: dbf37abc-d7e8-448f-8549-bb1558dcc551
+
+  2025-03-27T11:33:54.545863Z  INFO  WebSocket 연결 성공: player=Player1
+    at src\server\end_point.rs:404 on actix-rt|system:14|arbiter:7 ThreadId(27)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 763f96b4-a165-44c2-a60c-9734919622ca }, player_type: Player1, session_id: 763f96b4-a165-44c2-a60c-9734919622ca
+
+  2025-03-27T11:33:54.545896Z  INFO  인증 성공: player_type=Player1, session_id=3b0256f5-165f-4f66-a473-7f2dca94f7d2
+    at src\server\end_point.rs:127 on actix-rt|system:9|arbiter:2 ThreadId(22)
+
+  2025-03-27T11:33:54.545907Z  INFO  멀리건 카드 뽑기 시작: player=Player1, count=5
+    at src\server\end_point.rs:422 on actix-rt|system:14|arbiter:7 ThreadId(27)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 763f96b4-a165-44c2-a60c-9734919622ca }, player_type: Player1, session_id: 763f96b4-a165-44c2-a60c-9734919622ca
+
+  2025-03-27T11:33:54.545916Z  INFO  WebSocket 연결 성공: player=Player1
+    at src\server\end_point.rs:169 on actix-rt|system:13|arbiter:8 ThreadId(28)
+    in heartbeat with player: AuthPlayer { ptype: Player1, session_id: 267d6b61-5c5a-4568-bf3b-dab64f8954d0 }, player_type: Player1, session_id: 267d6b61-5c5a-4568-bf3b-dab64f8954d0
+
+  2025-03-27T11:33:54.545945Z  INFO  하트비트 태스크 시작: player=Player1, session_id=267d6b61-5c5a-4568-bf3b-dab64f8954d0
+    at src\server\end_point.rs:185 on actix-rt|system:13|arbiter:8 ThreadId(28)
+    in heartbeat with player: AuthPlayer { ptype: Player1, session_id: 267d6b61-5c5a-4568-bf3b-dab64f8954d0 }, player_type: Player1, session_id: 267d6b61-5c5a-4568-bf3b-dab64f8954d0
+
+  2025-03-27T11:33:54.545955Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at src\server\end_point.rs:376 on actix-rt|system:9|arbiter:2 ThreadId(22)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 3b0256f5-165f-4f66-a473-7f2dca94f7d2 }, player_type: Player1, session_id: 3b0256f5-165f-4f66-a473-7f2dca94f7d2
+
+  2025-03-27T11:33:54.546001Z  INFO  WebSocket 연결 성공: player=Player1
+    at src\server\end_point.rs:404 on actix-rt|system:9|arbiter:2 ThreadId(22)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 3b0256f5-165f-4f66-a473-7f2dca94f7d2 }, player_type: Player1, session_id: 3b0256f5-165f-4f66-a473-7f2dca94f7d2
+
+  2025-03-27T11:33:54.546009Z  INFO  멀리건 카드 뽑기 시작: player=Player1, count=5
+    at src\server\end_point.rs:422 on actix-rt|system:9|arbiter:2 ThreadId(22)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 3b0256f5-165f-4f66-a473-7f2dca94f7d2 }, player_type: Player1, session_id: 3b0256f5-165f-4f66-a473-7f2dca94f7d2
+
+  2025-03-27T11:33:54.546048Z  INFO  하트비트 WebSocket 연결 성공
+    at tests\test.rs:42 on heartbeat::test_heartbeat_connection_timeout ThreadId(10)
+
+  2025-03-27T11:33:54.546119Z  INFO  멀리건 딜 메시지 전송 완료
+    at src\server\end_point.rs:463 on actix-rt|system:14|arbiter:7 ThreadId(27)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 763f96b4-a165-44c2-a60c-9734919622ca }, player_type: Player1, session_id: 763f96b4-a165-44c2-a60c-9734919622ca
+
+  2025-03-27T11:33:54.546121Z  INFO  멀리건 딜 메시지 전송 완료
+    at src\server\end_point.rs:463 on actix-rt|system:9|arbiter:2 ThreadId(22)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 3b0256f5-165f-4f66-a473-7f2dca94f7d2 }, player_type: Player1, session_id: 3b0256f5-165f-4f66-a473-7f2dca94f7d2
+
+  2025-03-27T11:33:54.546121Z  INFO  타임아웃 테스트용 WebSocket 연결 성공
+    at tests\test.rs:290 on heartbeat::test_heartbeat_ping_pong ThreadId(11)
+
+  2025-03-27T11:33:54.546131Z  INFO  테스트 메시지 전송 완료
+    at tests\test.rs:61 on heartbeat::test_heartbeat_connection_timeout ThreadId(10)
+
+  2025-03-27T11:33:54.546144Z  INFO  멀리건 메시지 처리 태스크 시작: player=Player1, session_id=763f96b4-a165-44c2-a60c-9734919622ca
+    at src\server\end_point.rs:470 on actix-rt|system:14|arbiter:7 ThreadId(27)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 763f96b4-a165-44c2-a60c-9734919622ca }, player_type: Player1, session_id: 763f96b4-a165-44c2-a60c-9734919622ca
+
+  2025-03-27T11:33:54.546154Z  INFO  멀리건 메시지 처리 태스크 시작: player=Player1, session_id=3b0256f5-165f-4f66-a473-7f2dca94f7d2
+    at src\server\end_point.rs:470 on actix-rt|system:9|arbiter:2 ThreadId(22)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 3b0256f5-165f-4f66-a473-7f2dca94f7d2 }, player_type: Player1, session_id: 3b0256f5-165f-4f66-a473-7f2dca94f7d2
+
+  2025-03-27T11:33:54.546175Z  INFO  인증 성공: player_type=Player1, session_id=b39df15a-1cf9-49bf-b0ce-b6a463dd790d
+    at src\server\end_point.rs:127 on actix-rt|system:16|arbiter:4 ThreadId(24)
+
+  2025-03-27T11:33:54.546206Z  INFO  Ping 아닌 다른 메시지 수신됨: Text("{\"player\":\"Player1\",\"session_id\":\"267d6b61-5c5a-4568-bf3b-dab64f8954d0\",\"type\":\"connection_established\"}")
+    at tests\test.rs:303 on heartbeat::test_heartbeat_ping_pong ThreadId(11)
+
+  2025-03-27T11:33:54.546225Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at src\server\end_point.rs:376 on actix-rt|system:16|arbiter:4 ThreadId(24)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: b39df15a-1cf9-49bf-b0ce-b6a463dd790d }, player_type: Player1, session_id: b39df15a-1cf9-49bf-b0ce-b6a463dd790d
+
+  2025-03-27T11:33:54.546267Z  INFO  Ping 메시지 수신됨
+    at tests\test.rs:309 on heartbeat::test_heartbeat_ping_pong ThreadId(11)
+
+  2025-03-27T11:33:54.546263Z  INFO  멀리건 핸들러 완료: player=Player1
+    at src\server\end_point.rs:755 on actix-rt|system:9|arbiter:2 ThreadId(22)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 3b0256f5-165f-4f66-a473-7f2dca94f7d2 }, player_type: Player1, session_id: 3b0256f5-165f-4f66-a473-7f2dca94f7d2
+
+  2025-03-27T11:33:54.546272Z  INFO  WebSocket 연결 성공: player=Player1
+    at src\server\end_point.rs:404 on actix-rt|system:16|arbiter:4 ThreadId(24)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: b39df15a-1cf9-49bf-b0ce-b6a463dd790d }, player_type: Player1, session_id: b39df15a-1cf9-49bf-b0ce-b6a463dd790d
+
+  2025-03-27T11:33:54.546268Z  INFO  멀리건 핸들러 완료: player=Player1
+    at src\server\end_point.rs:755 on actix-rt|system:14|arbiter:7 ThreadId(27)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 763f96b4-a165-44c2-a60c-9734919622ca }, player_type: Player1, session_id: 763f96b4-a165-44c2-a60c-9734919622ca
+
+  2025-03-27T11:33:54.546280Z  INFO  멀리건 카드 뽑기 시작: player=Player1, count=5
+    at src\server\end_point.rs:422 on actix-rt|system:16|arbiter:4 ThreadId(24)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: b39df15a-1cf9-49bf-b0ce-b6a463dd790d }, player_type: Player1, session_id: b39df15a-1cf9-49bf-b0ce-b6a463dd790d
+
+  2025-03-27T11:33:54.546318Z  INFO  클라이언트로부터 다른 메시지 수신: player=Player1
+    at src\server\end_point.rs:251 on actix-rt|system:12|arbiter:9 ThreadId(29)
+
+  2025-03-27T11:33:54.546404Z  INFO  멀리건 딜 메시지 전송 완료
+    at src\server\end_point.rs:463 on actix-rt|system:16|arbiter:4 ThreadId(24)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: b39df15a-1cf9-49bf-b0ce-b6a463dd790d }, player_type: Player1, session_id: b39df15a-1cf9-49bf-b0ce-b6a463dd790d
+
+  2025-03-27T11:33:54.546423Z  INFO  멀리건 메시지 처리 태스크 시작: player=Player1, session_id=b39df15a-1cf9-49bf-b0ce-b6a463dd790d
+    at src\server\end_point.rs:470 on actix-rt|system:16|arbiter:4 ThreadId(24)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: b39df15a-1cf9-49bf-b0ce-b6a463dd790d }, player_type: Player1, session_id: b39df15a-1cf9-49bf-b0ce-b6a463dd790d
+
+  2025-03-27T11:33:54.546527Z  INFO  멀리건 핸들러 완료: player=Player1
+    at src\server\end_point.rs:755 on actix-rt|system:16|arbiter:4 ThreadId(24)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: b39df15a-1cf9-49bf-b0ce-b6a463dd790d }, player_type: Player1, session_id: b39df15a-1cf9-49bf-b0ce-b6a463dd790d
+
+  2025-03-27T11:33:54.546612Z  INFO  메시지 처리 성공: player=Player1, message_type=card_game::server::jsons::mulligan::ClientMessage
+    at src\server\end_point.rs:499 on actix-rt|system:9|arbiter:2 ThreadId(22)
+
+  2025-03-27T11:33:54.546636Z ERROR  유효하지 않은 플레이어: wrong-player
+    at src\server\end_point.rs:510 on actix-rt|system:9|arbiter:2 ThreadId(22)
+
+  2025-03-27T11:33:54.546631Z  INFO  메시지 처리 성공: player=Player1, message_type=card_game::server::jsons::mulligan::ClientMessage
+    at src\server\end_point.rs:499 on actix-rt|system:14|arbiter:7 ThreadId(27)
+
+  2025-03-27T11:33:54.546645Z ERROR  카드 UUID 변환 실패: error=ParseError
+    at src\server\end_point.rs:520 on actix-rt|system:14|arbiter:7 ThreadId(27)
+
+  2025-03-27T11:33:54.546794Z  WARN  메시지 처리 재시도 필요: player=Player1
+    at src\server\end_point.rs:701 on actix-rt|system:16|arbiter:4 ThreadId(24)
+
+  2025-03-27T11:33:54.547307Z  INFO  인증 성공: player_type=Player1, session_id=32460f0d-4dd7-4371-b338-086e67e7f1e0
+    at src\server\end_point.rs:127 on actix-rt|system:1|arbiter:3 ThreadId(23)
+
+  2025-03-27T11:33:54.547324Z  INFO  인증 성공: player_type=Player1, session_id=0a04d49c-460d-45c5-848d-ce7bf30e6026
+    at src\server\end_point.rs:127 on actix-rt|system:10|arbiter:6 ThreadId(26)
+
+  2025-03-27T11:33:54.547380Z  INFO  WebSocket 연결 성공: player=Player1
+    at src\server\end_point.rs:169 on actix-rt|system:1|arbiter:3 ThreadId(23)
+    in heartbeat with player: AuthPlayer { ptype: Player1, session_id: 32460f0d-4dd7-4371-b338-086e67e7f1e0 }, player_type: Player1, session_id: 32460f0d-4dd7-4371-b338-086e67e7f1e0
+
+  2025-03-27T11:33:54.547400Z  INFO  하트비트 태스크 시작: player=Player1, session_id=32460f0d-4dd7-4371-b338-086e67e7f1e0
+    at src\server\end_point.rs:185 on actix-rt|system:1|arbiter:3 ThreadId(23)
+    in heartbeat with player: AuthPlayer { ptype: Player1, session_id: 32460f0d-4dd7-4371-b338-086e67e7f1e0 }, player_type: Player1, session_id: 32460f0d-4dd7-4371-b338-086e67e7f1e0
+
+  2025-03-27T11:33:54.547396Z  INFO  WebSocket 연결 성공: player=Player1
+    at src\server\end_point.rs:169 on actix-rt|system:10|arbiter:6 ThreadId(26)
+    in heartbeat with player: AuthPlayer { ptype: Player1, session_id: 0a04d49c-460d-45c5-848d-ce7bf30e6026 }, player_type: Player1, session_id: 0a04d49c-460d-45c5-848d-ce7bf30e6026
+
+  2025-03-27T11:33:54.547411Z  INFO  하트비트 태스크 시작: player=Player1, session_id=0a04d49c-460d-45c5-848d-ce7bf30e6026
+    at src\server\end_point.rs:185 on actix-rt|system:10|arbiter:6 ThreadId(26)
+    in heartbeat with player: AuthPlayer { ptype: Player1, session_id: 0a04d49c-460d-45c5-848d-ce7bf30e6026 }, player_type: Player1, session_id: 0a04d49c-460d-45c5-848d-ce7bf30e6026
+
+  2025-03-27T11:33:54.547527Z  INFO  하트비트 WebSocket 연결 성공
+    at tests\test.rs:107 on heartbeat::test_heartbeat_connection ThreadId(9)
+
+  2025-03-27T11:33:54.547587Z  INFO  테스트 메시지 전송 완료
+    at tests\test.rs:126 on heartbeat::test_heartbeat_connection ThreadId(9)
+
+  2025-03-27T11:33:54.547602Z  INFO  첫 번째 WebSocket 연결 생성
+    at tests\test.rs:187 on heartbeat::test_heartbeat_session_management ThreadId(12)
+
+  2025-03-27T11:33:54.547619Z  INFO  클라이언트로부터 다른 메시지 수신: player=Player1
+    at src\server\end_point.rs:251 on actix-rt|system:1|arbiter:3 ThreadId(23)
+
+  2025-03-27T11:33:54.547636Z  INFO  첫 번째 세션 ID: 0a04d49c-460d-45c5-848d-ce7bf30e6026
+    at tests\test.rs:205 on heartbeat::test_heartbeat_session_management ThreadId(12)
+
+  2025-03-27T11:33:54.547659Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:33 ThreadId(53)
+
+  2025-03-27T11:33:54.547704Z  INFO  클라이언트가 연결 종료 요청: player=Player1, reason=None
+    at src\server\end_point.rs:243 on actix-rt|system:10|arbiter:6 ThreadId(26)
+
+  2025-03-27T11:33:54.547728Z  INFO  하트비트 태스크 종료, 세션 정리: player=Player1, session_id=0a04d49c-460d-45c5-848d-ce7bf30e6026
+    at src\server\end_point.rs:259 on actix-rt|system:10|arbiter:6 ThreadId(26)
+
+  2025-03-27T11:33:54.547739Z  INFO  세션 종료 시도: player=Player1
+    at src\server\session.rs:97 on actix-rt|system:10|arbiter:6 ThreadId(26)
+
+  2025-03-27T11:33:54.547730Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:33 ThreadId(53)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.547761Z  INFO  세션 종료 완료: player=Player1
+    at src\server\session.rs:120 on actix-rt|system:10|arbiter:6 ThreadId(26)
+
+  2025-03-27T11:33:54.547765Z  INFO  세션 정리 성공
+    at src\server\end_point.rs:269 on actix-rt|system:10|arbiter:6 ThreadId(26)
+
+  2025-03-27T11:33:54.547775Z  INFO  인증 성공: player_type=Player1, session_id=01afa63f-bb89-42e6-ae3e-793a5251646d
+    at src\server\end_point.rs:127 on actix-rt|system:4|arbiter:35 ThreadId(55)
+
+  2025-03-27T11:33:54.547792Z  INFO  하트비트 태스크 종료: player=Player1, session_id=0a04d49c-460d-45c5-848d-ce7bf30e6026
+    at src\server\end_point.rs:284 on actix-rt|system:10|arbiter:6 ThreadId(26)
+
+  2025-03-27T11:33:54.547808Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:4|arbiter:35 ThreadId(55)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 01afa63f-bb89-42e6-ae3e-793a5251646d }, player_type: Player1
+
+  2025-03-27T11:33:54.547812Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:33 ThreadId(53)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.547824Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:4|arbiter:35 ThreadId(55)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 01afa63f-bb89-42e6-ae3e-793a5251646d }, player_type: Player1
+
+  2025-03-27T11:33:54.547852Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=f7113eee-d09a-4f36-bc35-b7c62fd02bcb
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:33 ThreadId(53)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.547859Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=95e6dd8e-3157-48af-81bd-414035a7d7e4
+    at src\game\game_step.rs:382 on actix-rt|system:4|arbiter:35 ThreadId(55)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 01afa63f-bb89-42e6-ae3e-793a5251646d }, player_type: Player1
+
+  2025-03-27T11:33:54.547878Z  WARN  페이즈 불일치: 요청된 페이즈=draw, 현재 게임 페이즈=mulligan
+    at src\server\end_point.rs:77 on actix-rt|system:3|arbiter:30 ThreadId(50)
+
+  2025-03-27T11:33:54.547886Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=f7113eee-d09a-4f36-bc35-b7c62fd02bcb
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:33 ThreadId(53)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.547887Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=95e6dd8e-3157-48af-81bd-414035a7d7e4
+    at src\server\end_point.rs:805 on actix-rt|system:4|arbiter:35 ThreadId(55)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 01afa63f-bb89-42e6-ae3e-793a5251646d }, player_type: Player1
+
+  2025-03-27T11:33:54.548486Z  INFO  인증 성공: player_type=Player1, session_id=6a345e54-eda8-4877-975c-114b9de8f08a
+    at src\server\end_point.rs:127 on actix-rt|system:6|arbiter:5 ThreadId(25)
+
+  2025-03-27T11:33:54.548536Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at src\server\end_point.rs:376 on actix-rt|system:6|arbiter:5 ThreadId(25)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 6a345e54-eda8-4877-975c-114b9de8f08a }, player_type: Player1, session_id: 6a345e54-eda8-4877-975c-114b9de8f08a
+
+  2025-03-27T11:33:54.548604Z  INFO  WebSocket 연결 성공: player=Player1
+    at src\server\end_point.rs:404 on actix-rt|system:6|arbiter:5 ThreadId(25)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 6a345e54-eda8-4877-975c-114b9de8f08a }, player_type: Player1, session_id: 6a345e54-eda8-4877-975c-114b9de8f08a
+
+  2025-03-27T11:33:54.548617Z  INFO  멀리건 카드 뽑기 시작: player=Player1, count=5
+    at src\server\end_point.rs:422 on actix-rt|system:6|arbiter:5 ThreadId(25)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 6a345e54-eda8-4877-975c-114b9de8f08a }, player_type: Player1, session_id: 6a345e54-eda8-4877-975c-114b9de8f08a
+
+  2025-03-27T11:33:54.548683Z  INFO  멀리건 딜 메시지 전송 완료
+    at src\server\end_point.rs:463 on actix-rt|system:6|arbiter:5 ThreadId(25)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 6a345e54-eda8-4877-975c-114b9de8f08a }, player_type: Player1, session_id: 6a345e54-eda8-4877-975c-114b9de8f08a
+
+  2025-03-27T11:33:54.548699Z  INFO  멀리건 메시지 처리 태스크 시작: player=Player1, session_id=6a345e54-eda8-4877-975c-114b9de8f08a
+    at src\server\end_point.rs:470 on actix-rt|system:6|arbiter:5 ThreadId(25)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 6a345e54-eda8-4877-975c-114b9de8f08a }, player_type: Player1, session_id: 6a345e54-eda8-4877-975c-114b9de8f08a
+
+  2025-03-27T11:33:54.548727Z  INFO  멀리건 핸들러 완료: player=Player1
+    at src\server\end_point.rs:755 on actix-rt|system:6|arbiter:5 ThreadId(25)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 6a345e54-eda8-4877-975c-114b9de8f08a }, player_type: Player1, session_id: 6a345e54-eda8-4877-975c-114b9de8f08a
+
+  2025-03-27T11:33:54.548866Z  WARN  페이즈 불일치: 요청된 페이즈=drawphase, 현재 게임 페이즈=mulligan
+    at src\server\end_point.rs:77 on actix-rt|system:7|arbiter:31 ThreadId(51)
+
+  2025-03-27T11:33:54.549071Z  INFO  인증 성공: player_type=Player1, session_id=9b072259-8052-4ea1-8bec-b23875e0df6c
+    at src\server\end_point.rs:127 on actix-rt|system:8|arbiter:1 ThreadId(21)
+
+  2025-03-27T11:33:54.549085Z  INFO  인증 성공: player_type=Player1, session_id=22b0cdd4-b68a-462b-aebd-2e5888ad34b4
+    at src\server\end_point.rs:127 on actix-rt|system:5|arbiter:36 ThreadId(57)
+
+  2025-03-27T11:33:54.549112Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:8|arbiter:1 ThreadId(21)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 9b072259-8052-4ea1-8bec-b23875e0df6c }, player_type: Player1
+
+  2025-03-27T11:33:54.549122Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:5|arbiter:36 ThreadId(57)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.549134Z  INFO  인증 성공: player_type=Player2, session_id=1ef96a9c-360b-4af8-b344-3d3c3b6e987f
+    at src\server\end_point.rs:127 on actix-rt|system:8|arbiter:19 ThreadId(39)
+
+  2025-03-27T11:33:54.549143Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:5|arbiter:36 ThreadId(57)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.549166Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=9cb3c172-8d49-419d-8773-2ffb279c73ef
+    at src\game\game_step.rs:382 on actix-rt|system:5|arbiter:36 ThreadId(57)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.549175Z  INFO  드로우 단계 처리 시작: player=Player2
+    at src\server\end_point.rs:766 on actix-rt|system:8|arbiter:19 ThreadId(39)
+    in draw_phase with player: AuthPlayer { ptype: Player2, session_id: 1ef96a9c-360b-4af8-b344-3d3c3b6e987f }, player_type: Player2
+
+  2025-03-27T11:33:54.549198Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=9cb3c172-8d49-419d-8773-2ffb279c73ef
+    at src\server\end_point.rs:805 on actix-rt|system:5|arbiter:36 ThreadId(57)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.549228Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:8|arbiter:1 ThreadId(21)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 9b072259-8052-4ea1-8bec-b23875e0df6c }, player_type: Player1
+
+  2025-03-27T11:33:54.549261Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=d65051ea-d972-416c-a105-1f7822d237d9
+    at src\game\game_step.rs:382 on actix-rt|system:8|arbiter:1 ThreadId(21)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 9b072259-8052-4ea1-8bec-b23875e0df6c }, player_type: Player1
+
+  2025-03-27T11:33:54.549281Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:51 ThreadId(72)
+
+  2025-03-27T11:33:54.549299Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=d65051ea-d972-416c-a105-1f7822d237d9
+    at src\server\end_point.rs:805 on actix-rt|system:8|arbiter:1 ThreadId(21)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 9b072259-8052-4ea1-8bec-b23875e0df6c }, player_type: Player1
+
+  2025-03-27T11:33:54.549315Z  INFO  인증 성공: player_type=Player1, session_id=6835e0b4-050a-4c64-a538-bd8e76635b2e
+    at src\server\end_point.rs:127 on actix-rt|system:2|arbiter:29 ThreadId(49)
+
+  2025-03-27T11:33:54.549333Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:51 ThreadId(72)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.549340Z  INFO  드로우 페이즈 시작: player=Player2
+    at src\game\game_step.rs:348 on actix-rt|system:8|arbiter:19 ThreadId(39)
+    in handle_draw_phase with player_type: Player2
+    in draw_phase with player: AuthPlayer { ptype: Player2, session_id: 1ef96a9c-360b-4af8-b344-3d3c3b6e987f }, player_type: Player2
+
+  2025-03-27T11:33:54.549350Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:51 ThreadId(72)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.549352Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:2|arbiter:29 ThreadId(49)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 6835e0b4-050a-4c64-a538-bd8e76635b2e }, player_type: Player1
+
+  2025-03-27T11:33:54.549365Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=5c690ffa-555c-4840-9d73-6bc5fb241a3b
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:51 ThreadId(72)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.549366Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:2|arbiter:29 ThreadId(49)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 6835e0b4-050a-4c64-a538-bd8e76635b2e }, player_type: Player1
+
+  2025-03-27T11:33:54.549368Z  INFO  드로우 페이즈 완료: player=Player2, card_uuid=c52596f7-131e-444d-b77d-765c1a99b772
+    at src\game\game_step.rs:382 on actix-rt|system:8|arbiter:19 ThreadId(39)
+    in handle_draw_phase with player_type: Player2
+    in draw_phase with player: AuthPlayer { ptype: Player2, session_id: 1ef96a9c-360b-4af8-b344-3d3c3b6e987f }, player_type: Player2
+
+  2025-03-27T11:33:54.549385Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=5c690ffa-555c-4840-9d73-6bc5fb241a3b
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:51 ThreadId(72)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.549384Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=0108179f-ff13-454a-a00e-341fdf10f7ca
+    at src\game\game_step.rs:382 on actix-rt|system:2|arbiter:29 ThreadId(49)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 6835e0b4-050a-4c64-a538-bd8e76635b2e }, player_type: Player1
+
+  2025-03-27T11:33:54.549386Z  INFO  드로우 단계 처리 완료: player=Player2, card_uuid=c52596f7-131e-444d-b77d-765c1a99b772
+    at src\server\end_point.rs:805 on actix-rt|system:8|arbiter:19 ThreadId(39)
+    in draw_phase with player: AuthPlayer { ptype: Player2, session_id: 1ef96a9c-360b-4af8-b344-3d3c3b6e987f }, player_type: Player2
+
+  2025-03-27T11:33:54.549400Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=0108179f-ff13-454a-a00e-341fdf10f7ca
+    at src\server\end_point.rs:805 on actix-rt|system:2|arbiter:29 ThreadId(49)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 6835e0b4-050a-4c64-a538-bd8e76635b2e }, player_type: Player1
+
+  2025-03-27T11:33:54.549410Z  WARN  페이즈 불일치: 요청된 페이즈=draw, 현재 게임 페이즈=mulligan
+    at src\server\end_point.rs:77 on actix-rt|system:11|arbiter:37 ThreadId(56)
+
+  2025-03-27T11:33:54.549425Z  INFO  인증 성공: player_type=Player1, session_id=6a345e54-eda8-4877-975c-114b9de8f08a
+    at src\server\end_point.rs:127 on actix-rt|system:6|arbiter:18 ThreadId(38)
+
+  2025-03-27T11:33:54.549462Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at src\server\end_point.rs:376 on actix-rt|system:6|arbiter:18 ThreadId(38)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 6a345e54-eda8-4877-975c-114b9de8f08a }, player_type: Player1, session_id: 6a345e54-eda8-4877-975c-114b9de8f08a
+
+  2025-03-27T11:33:54.549488Z ERROR  플레이어가 이미 멀리건을 시작함: player=Player1
+    at src\server\end_point.rs:392 on actix-rt|system:6|arbiter:18 ThreadId(38)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 6a345e54-eda8-4877-975c-114b9de8f08a }, player_type: Player1, session_id: 6a345e54-eda8-4877-975c-114b9de8f08a
+
+  2025-03-27T11:33:54.550216Z  INFO  인증 성공: player_type=Player1, session_id=22b0cdd4-b68a-462b-aebd-2e5888ad34b4
+    at src\server\end_point.rs:127 on actix-rt|system:5|arbiter:55 ThreadId(75)
+
+  2025-03-27T11:33:54.550255Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:5|arbiter:55 ThreadId(75)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.550271Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:5|arbiter:55 ThreadId(75)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.550284Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=2622f1cf-04cc-4702-bdb6-6fbebf58e751
+    at src\game\game_step.rs:382 on actix-rt|system:5|arbiter:55 ThreadId(75)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.550301Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=2622f1cf-04cc-4702-bdb6-6fbebf58e751
+    at src\server\end_point.rs:805 on actix-rt|system:5|arbiter:55 ThreadId(75)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.550308Z  INFO  인증 성공: player_type=Player1, session_id=6835e0b4-050a-4c64-a538-bd8e76635b2e
+    at src\server\end_point.rs:127 on actix-rt|system:2|arbiter:50 ThreadId(70)
+
+  2025-03-27T11:33:54.550345Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:2|arbiter:50 ThreadId(70)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 6835e0b4-050a-4c64-a538-bd8e76635b2e }, player_type: Player1
+
+  2025-03-27T11:33:54.550365Z ERROR  플레이어가 이미 드로우를 완료함: player=Player1
+    at src\server\end_point.rs:774 on actix-rt|system:2|arbiter:50 ThreadId(70)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 6835e0b4-050a-4c64-a538-bd8e76635b2e }, player_type: Player1
+
+  2025-03-27T11:33:54.550416Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:67 ThreadId(87)
+
+  2025-03-27T11:33:54.550453Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:67 ThreadId(87)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.550466Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:67 ThreadId(87)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.550480Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=c3cf5fcd-f66b-4494-8c94-63e59b9820df
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:67 ThreadId(87)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.550500Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=c3cf5fcd-f66b-4494-8c94-63e59b9820df
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:67 ThreadId(87)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.551027Z  INFO  인증 성공: player_type=Player1, session_id=22b0cdd4-b68a-462b-aebd-2e5888ad34b4
+    at src\server\end_point.rs:127 on actix-rt|system:5|arbiter:81 ThreadId(101)
+
+  2025-03-27T11:33:54.551064Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:5|arbiter:81 ThreadId(101)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.551079Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:5|arbiter:81 ThreadId(101)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.551093Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=612d7c24-3e39-4e52-a7a6-86d127f3a767
+    at src\game\game_step.rs:382 on actix-rt|system:5|arbiter:81 ThreadId(101)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.551110Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=612d7c24-3e39-4e52-a7a6-86d127f3a767
+    at src\server\end_point.rs:805 on actix-rt|system:5|arbiter:81 ThreadId(101)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.551272Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:84 ThreadId(104)
+
+  2025-03-27T11:33:54.551307Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:84 ThreadId(104)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.551322Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:84 ThreadId(104)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.551336Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=dc7e8cf6-41f5-45e0-b3e9-083adaa5e9b1
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:84 ThreadId(104)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.551353Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=dc7e8cf6-41f5-45e0-b3e9-083adaa5e9b1
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:84 ThreadId(104)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.551712Z  INFO  인증 성공: player_type=Player1, session_id=22b0cdd4-b68a-462b-aebd-2e5888ad34b4
+    at src\server\end_point.rs:127 on actix-rt|system:5|arbiter:103 ThreadId(123)
+
+  2025-03-27T11:33:54.551747Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:5|arbiter:103 ThreadId(123)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.551762Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:5|arbiter:103 ThreadId(123)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.551775Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=3bf90dc6-5050-404f-a3d6-7618d7c9ff17
+    at src\game\game_step.rs:382 on actix-rt|system:5|arbiter:103 ThreadId(123)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.551792Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=3bf90dc6-5050-404f-a3d6-7618d7c9ff17
+    at src\server\end_point.rs:805 on actix-rt|system:5|arbiter:103 ThreadId(123)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.552059Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:100 ThreadId(120)
+
+  2025-03-27T11:33:54.552096Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:100 ThreadId(120)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.552111Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:100 ThreadId(120)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.552124Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=e38fa690-8c78-4273-a3b1-915f7d473166
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:100 ThreadId(120)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.552141Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=e38fa690-8c78-4273-a3b1-915f7d473166
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:100 ThreadId(120)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.552398Z  INFO  인증 성공: player_type=Player1, session_id=22b0cdd4-b68a-462b-aebd-2e5888ad34b4
+    at src\server\end_point.rs:127 on actix-rt|system:5|arbiter:117 ThreadId(137)
+
+  2025-03-27T11:33:54.552435Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:5|arbiter:117 ThreadId(137)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.552451Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:5|arbiter:117 ThreadId(137)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.552464Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=9083c47f-a9f7-451a-b076-f8b79c35afac
+    at src\game\game_step.rs:382 on actix-rt|system:5|arbiter:117 ThreadId(137)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.552481Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=9083c47f-a9f7-451a-b076-f8b79c35afac
+    at src\server\end_point.rs:805 on actix-rt|system:5|arbiter:117 ThreadId(137)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.552795Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:108 ThreadId(128)
+
+  2025-03-27T11:33:54.552833Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:108 ThreadId(128)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.552848Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:108 ThreadId(128)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.552860Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=398e4780-22cc-4963-a2b9-0cde386a92fe
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:108 ThreadId(128)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.552877Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=398e4780-22cc-4963-a2b9-0cde386a92fe
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:108 ThreadId(128)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.553083Z  INFO  인증 성공: player_type=Player1, session_id=22b0cdd4-b68a-462b-aebd-2e5888ad34b4
+    at src\server\end_point.rs:127 on actix-rt|system:5|arbiter:135 ThreadId(155)
+
+  2025-03-27T11:33:54.553118Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:5|arbiter:135 ThreadId(155)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.553133Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:5|arbiter:135 ThreadId(155)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.553147Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=34f03264-6815-4263-9618-30ac38a8aace
+    at src\game\game_step.rs:382 on actix-rt|system:5|arbiter:135 ThreadId(155)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.553163Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=34f03264-6815-4263-9618-30ac38a8aace
+    at src\server\end_point.rs:805 on actix-rt|system:5|arbiter:135 ThreadId(155)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.553551Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:123 ThreadId(142)
+
+  2025-03-27T11:33:54.553585Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:123 ThreadId(142)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.553599Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:123 ThreadId(142)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.553611Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=29457fd1-1fbf-4071-965d-f43a372cbaf2
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:123 ThreadId(142)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.553625Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=29457fd1-1fbf-4071-965d-f43a372cbaf2
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:123 ThreadId(142)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.553759Z  INFO  인증 성공: player_type=Player1, session_id=22b0cdd4-b68a-462b-aebd-2e5888ad34b4
+    at src\server\end_point.rs:127 on actix-rt|system:5|arbiter:151 ThreadId(171)
+
+  2025-03-27T11:33:54.553794Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:5|arbiter:151 ThreadId(171)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.553809Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:5|arbiter:151 ThreadId(171)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.553822Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=cb254848-3f61-4ab2-a00f-c78a3dd9cedb
+    at src\game\game_step.rs:382 on actix-rt|system:5|arbiter:151 ThreadId(171)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.553838Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=cb254848-3f61-4ab2-a00f-c78a3dd9cedb
+    at src\server\end_point.rs:805 on actix-rt|system:5|arbiter:151 ThreadId(171)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.554329Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:139 ThreadId(159)
+
+  2025-03-27T11:33:54.554364Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:139 ThreadId(159)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.554377Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:139 ThreadId(159)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.554389Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=3bd15d14-13d8-4460-ad45-71773e85601f
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:139 ThreadId(159)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.554404Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=3bd15d14-13d8-4460-ad45-71773e85601f
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:139 ThreadId(159)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.554439Z  INFO  인증 성공: player_type=Player1, session_id=22b0cdd4-b68a-462b-aebd-2e5888ad34b4
+    at src\server\end_point.rs:127 on actix-rt|system:5|arbiter:170 ThreadId(190)
+
+  2025-03-27T11:33:54.554475Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:5|arbiter:170 ThreadId(190)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.554491Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:5|arbiter:170 ThreadId(190)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.554504Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=2bfa9c26-2b77-4c6c-bdae-5f65a5ea4a1e
+    at src\game\game_step.rs:382 on actix-rt|system:5|arbiter:170 ThreadId(190)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.554521Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=2bfa9c26-2b77-4c6c-bdae-5f65a5ea4a1e
+    at src\server\end_point.rs:805 on actix-rt|system:5|arbiter:170 ThreadId(190)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.555133Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:166 ThreadId(186)
+
+  2025-03-27T11:33:54.555177Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:166 ThreadId(186)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.555198Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:166 ThreadId(186)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.555215Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=3bfea701-d078-47c3-b981-3ed0066b29d5
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:166 ThreadId(186)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.555236Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=3bfea701-d078-47c3-b981-3ed0066b29d5
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:166 ThreadId(186)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.555227Z  INFO  인증 성공: player_type=Player1, session_id=22b0cdd4-b68a-462b-aebd-2e5888ad34b4
+    at src\server\end_point.rs:127 on actix-rt|system:5|arbiter:192 ThreadId(213)
+
+  2025-03-27T11:33:54.555292Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:5|arbiter:192 ThreadId(213)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.555315Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:5|arbiter:192 ThreadId(213)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.555340Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=6a04ccd5-064d-4cc7-a1d5-791275d69bc6
+    at src\game\game_step.rs:382 on actix-rt|system:5|arbiter:192 ThreadId(213)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.555366Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=6a04ccd5-064d-4cc7-a1d5-791275d69bc6
+    at src\server\end_point.rs:805 on actix-rt|system:5|arbiter:192 ThreadId(213)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.555974Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:175 ThreadId(195)
+
+  2025-03-27T11:33:54.556012Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:175 ThreadId(195)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.556029Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:175 ThreadId(195)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.556041Z  INFO  인증 성공: player_type=Player1, session_id=22b0cdd4-b68a-462b-aebd-2e5888ad34b4
+    at src\server\end_point.rs:127 on actix-rt|system:5|arbiter:210 ThreadId(230)
+
+  2025-03-27T11:33:54.556046Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=c2a474ea-705f-4aa5-a511-fbf51185cb4f
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:175 ThreadId(195)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.556090Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=c2a474ea-705f-4aa5-a511-fbf51185cb4f
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:175 ThreadId(195)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.556101Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:5|arbiter:210 ThreadId(230)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.556114Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:5|arbiter:210 ThreadId(230)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.556130Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=9cf04061-62a2-4b44-83e5-91347290e9aa
+    at src\game\game_step.rs:382 on actix-rt|system:5|arbiter:210 ThreadId(230)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.556146Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=9cf04061-62a2-4b44-83e5-91347290e9aa
+    at src\server\end_point.rs:805 on actix-rt|system:5|arbiter:210 ThreadId(230)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.556757Z  INFO  인증 성공: player_type=Player1, session_id=22b0cdd4-b68a-462b-aebd-2e5888ad34b4
+    at src\server\end_point.rs:127 on actix-rt|system:5|arbiter:228 ThreadId(248)
+
+  2025-03-27T11:33:54.556792Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:5|arbiter:228 ThreadId(248)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.556807Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:5|arbiter:228 ThreadId(248)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.556822Z  WARN  핸드에 카드 추가 중 문제 발생: player=Player1, error=ExceededCardLimit
+    at src\game\game_step.rs:376 on actix-rt|system:5|arbiter:228 ThreadId(248)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: 22b0cdd4-b68a-462b-aebd-2e5888ad34b4 }, player_type: Player1
+
+  2025-03-27T11:33:54.556829Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:194 ThreadId(214)
+
+  2025-03-27T11:33:54.556860Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:194 ThreadId(214)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.556879Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:194 ThreadId(214)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.556894Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=ee0cc6ad-b3b4-42da-aee8-c04b77b5cc58
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:194 ThreadId(214)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.556911Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=ee0cc6ad-b3b4-42da-aee8-c04b77b5cc58
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:194 ThreadId(214)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.557642Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:211 ThreadId(231)
+
+  2025-03-27T11:33:54.557677Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:211 ThreadId(231)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.557693Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:211 ThreadId(231)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.557706Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=07c46e3e-d270-43fb-8f58-4a83e5b335b1
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:211 ThreadId(231)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.557723Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=07c46e3e-d270-43fb-8f58-4a83e5b335b1
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:211 ThreadId(231)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.558393Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:222 ThreadId(242)
+
+  2025-03-27T11:33:54.558428Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:222 ThreadId(242)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.558443Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:222 ThreadId(242)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.558455Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=1f1acec9-4e0d-40f5-a572-5c6da38dd8b7
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:222 ThreadId(242)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.558472Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=1f1acec9-4e0d-40f5-a572-5c6da38dd8b7
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:222 ThreadId(242)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.559166Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:238 ThreadId(258)
+
+  2025-03-27T11:33:54.559201Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:238 ThreadId(258)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.559217Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:238 ThreadId(258)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.559230Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=dae04525-fe89-47d9-9179-f7c430226de6
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:238 ThreadId(258)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.559245Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=dae04525-fe89-47d9-9179-f7c430226de6
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:238 ThreadId(258)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.559906Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:255 ThreadId(275)
+
+  2025-03-27T11:33:54.559943Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:255 ThreadId(275)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.559959Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:255 ThreadId(275)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.559971Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=c112180c-2e2a-4aa4-9279-bad7c8d43fb6
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:255 ThreadId(275)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.559988Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=c112180c-2e2a-4aa4-9279-bad7c8d43fb6
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:255 ThreadId(275)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.560645Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:273 ThreadId(293)
+
+  2025-03-27T11:33:54.560680Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:273 ThreadId(293)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.560695Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:273 ThreadId(293)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.560707Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=8672934f-78ad-407c-b97c-f7c47a52263d
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:273 ThreadId(293)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.560723Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=8672934f-78ad-407c-b97c-f7c47a52263d
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:273 ThreadId(293)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.561374Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:288 ThreadId(308)
+
+  2025-03-27T11:33:54.561409Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:288 ThreadId(308)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.561425Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:288 ThreadId(308)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.561437Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=9e28a92a-03e1-4795-ade4-8aec5cb748ee
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:288 ThreadId(308)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.561453Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=9e28a92a-03e1-4795-ade4-8aec5cb748ee
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:288 ThreadId(308)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.562108Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:299 ThreadId(319)
+
+  2025-03-27T11:33:54.562143Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:299 ThreadId(319)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.562159Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:299 ThreadId(319)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.562171Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=f07e7099-ce7e-4317-95c0-b5bedc9f89c1
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:299 ThreadId(319)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.562188Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=f07e7099-ce7e-4317-95c0-b5bedc9f89c1
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:299 ThreadId(319)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.562836Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:316 ThreadId(336)
+
+  2025-03-27T11:33:54.562871Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:316 ThreadId(336)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.562886Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:316 ThreadId(336)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.562898Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=95e9c63b-51d1-452b-9f37-44cd2622158b
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:316 ThreadId(336)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.562915Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=95e9c63b-51d1-452b-9f37-44cd2622158b
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:316 ThreadId(336)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.563583Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:330 ThreadId(350)
+
+  2025-03-27T11:33:54.563616Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:330 ThreadId(350)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.563629Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:330 ThreadId(350)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.563642Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=ba6e3775-ffc8-4e66-a1dd-424c2091d8cd
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:330 ThreadId(350)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.563656Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=ba6e3775-ffc8-4e66-a1dd-424c2091d8cd
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:330 ThreadId(350)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.564301Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:348 ThreadId(368)
+
+  2025-03-27T11:33:54.564335Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:348 ThreadId(368)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.564349Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:348 ThreadId(368)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.564362Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=87af6851-24ac-4111-990c-f862aaa84972
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:348 ThreadId(368)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.564378Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=87af6851-24ac-4111-990c-f862aaa84972
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:348 ThreadId(368)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.565021Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:365 ThreadId(385)
+
+  2025-03-27T11:33:54.565056Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:365 ThreadId(385)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.565071Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:365 ThreadId(385)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.565083Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=22b7fcf7-5540-40c5-bd09-9f9ba92714ba
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:365 ThreadId(385)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.565099Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=22b7fcf7-5540-40c5-bd09-9f9ba92714ba
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:365 ThreadId(385)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.565753Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:383 ThreadId(404)
+
+  2025-03-27T11:33:54.565788Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:383 ThreadId(404)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.565803Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:383 ThreadId(404)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.565817Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=9032a43b-63aa-4349-be1c-c32f0dd9b4b9
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:383 ThreadId(404)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.565834Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=9032a43b-63aa-4349-be1c-c32f0dd9b4b9
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:383 ThreadId(404)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.566483Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:402 ThreadId(422)
+
+  2025-03-27T11:33:54.566517Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:402 ThreadId(422)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.566533Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:402 ThreadId(422)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.566545Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=b7039e12-7dc6-486a-aad0-c004468bd7a4
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:402 ThreadId(422)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.566561Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=b7039e12-7dc6-486a-aad0-c004468bd7a4
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:402 ThreadId(422)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.567205Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:418 ThreadId(438)
+
+  2025-03-27T11:33:54.567239Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:418 ThreadId(438)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.567253Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:418 ThreadId(438)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.567265Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=88712f5c-f253-4114-b158-3e870f74bcd8
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:418 ThreadId(438)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.567281Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=88712f5c-f253-4114-b158-3e870f74bcd8
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:418 ThreadId(438)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.567942Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:435 ThreadId(455)
+
+  2025-03-27T11:33:54.567976Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:435 ThreadId(455)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.567991Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:435 ThreadId(455)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.568003Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=d15507b6-397a-477e-9634-38f8ee3639e9
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:435 ThreadId(455)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.568019Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=d15507b6-397a-477e-9634-38f8ee3639e9
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:435 ThreadId(455)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.568661Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:452 ThreadId(472)
+
+  2025-03-27T11:33:54.568694Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:452 ThreadId(472)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.568709Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:452 ThreadId(472)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.568721Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=cea20a71-4232-447a-973f-313ad23eec1e
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:452 ThreadId(472)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.568737Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=cea20a71-4232-447a-973f-313ad23eec1e
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:452 ThreadId(472)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.569382Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:469 ThreadId(489)
+
+  2025-03-27T11:33:54.569416Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:469 ThreadId(489)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.569431Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:469 ThreadId(489)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.569442Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=d6abe446-fede-49fb-a7cd-94d44fe9fe3d
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:469 ThreadId(489)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.569458Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=d6abe446-fede-49fb-a7cd-94d44fe9fe3d
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:469 ThreadId(489)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.570125Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:478 ThreadId(498)
+
+  2025-03-27T11:33:54.570160Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:478 ThreadId(498)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.570175Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:478 ThreadId(498)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.570186Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=f5f94b5c-bfd8-411c-8245-2b4629e37910
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:478 ThreadId(498)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.570200Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=f5f94b5c-bfd8-411c-8245-2b4629e37910
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:478 ThreadId(498)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.570876Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:500 ThreadId(522)
+
+  2025-03-27T11:33:54.570931Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:500 ThreadId(522)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.570947Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:500 ThreadId(522)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.570960Z  INFO  드로우 페이즈 완료: player=Player1, card_uuid=678a72ae-7aea-4fe2-8a36-96b69fa15a19
+    at src\game\game_step.rs:382 on actix-rt|system:0|arbiter:500 ThreadId(522)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.570977Z  INFO  드로우 단계 처리 완료: player=Player1, card_uuid=678a72ae-7aea-4fe2-8a36-96b69fa15a19
+    at src\server\end_point.rs:805 on actix-rt|system:0|arbiter:500 ThreadId(522)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.571632Z  INFO  인증 성공: player_type=Player1, session_id=f4f82f08-8a64-4461-970b-0ce43a85dee0
+    at src\server\end_point.rs:127 on actix-rt|system:0|arbiter:514 ThreadId(537)
+
+  2025-03-27T11:33:54.571669Z  INFO  드로우 단계 처리 시작: player=Player1
+    at src\server\end_point.rs:766 on actix-rt|system:0|arbiter:514 ThreadId(537)
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.571684Z  INFO  드로우 페이즈 시작: player=Player1
+    at src\game\game_step.rs:348 on actix-rt|system:0|arbiter:514 ThreadId(537)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.571694Z ERROR  카드 드로우 실패: player=Player1, error=NoCardsLeft
+    at src\game\game_step.rs:358 on actix-rt|system:0|arbiter:514 ThreadId(537)
+    in handle_draw_phase with player_type: Player1
+    in draw_phase with player: AuthPlayer { ptype: Player1, session_id: f4f82f08-8a64-4461-970b-0ce43a85dee0 }, player_type: Player1
+
+  2025-03-27T11:33:54.632471Z  INFO  인증 성공: player_type=Player1, session_id=417b5358-df4e-4dd1-a266-19a6d09e6077
+    at src\server\end_point.rs:127 on actix-rt|system:15|arbiter:0 ThreadId(20)
+
+  2025-03-27T11:33:54.632549Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at src\server\end_point.rs:376 on actix-rt|system:15|arbiter:0 ThreadId(20)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 417b5358-df4e-4dd1-a266-19a6d09e6077 }, player_type: Player1, session_id: 417b5358-df4e-4dd1-a266-19a6d09e6077
+
+  2025-03-27T11:33:54.632601Z  INFO  WebSocket 연결 성공: player=Player1
+    at src\server\end_point.rs:404 on actix-rt|system:15|arbiter:0 ThreadId(20)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 417b5358-df4e-4dd1-a266-19a6d09e6077 }, player_type: Player1, session_id: 417b5358-df4e-4dd1-a266-19a6d09e6077
+
+  2025-03-27T11:33:54.632622Z  INFO  멀리건 카드 뽑기 시작: player=Player1, count=5
+    at src\server\end_point.rs:422 on actix-rt|system:15|arbiter:0 ThreadId(20)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 417b5358-df4e-4dd1-a266-19a6d09e6077 }, player_type: Player1, session_id: 417b5358-df4e-4dd1-a266-19a6d09e6077
+
+  2025-03-27T11:33:54.632684Z  INFO  멀리건 딜 메시지 전송 완료
+    at src\server\end_point.rs:463 on actix-rt|system:15|arbiter:0 ThreadId(20)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 417b5358-df4e-4dd1-a266-19a6d09e6077 }, player_type: Player1, session_id: 417b5358-df4e-4dd1-a266-19a6d09e6077
+
+  2025-03-27T11:33:54.632693Z  INFO  멀리건 메시지 처리 태스크 시작: player=Player1, session_id=417b5358-df4e-4dd1-a266-19a6d09e6077
+    at src\server\end_point.rs:470 on actix-rt|system:15|arbiter:0 ThreadId(20)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 417b5358-df4e-4dd1-a266-19a6d09e6077 }, player_type: Player1, session_id: 417b5358-df4e-4dd1-a266-19a6d09e6077
+
+  2025-03-27T11:33:54.632712Z  INFO  멀리건 핸들러 완료: player=Player1
+    at src\server\end_point.rs:755 on actix-rt|system:15|arbiter:0 ThreadId(20)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 417b5358-df4e-4dd1-a266-19a6d09e6077 }, player_type: Player1, session_id: 417b5358-df4e-4dd1-a266-19a6d09e6077
+
+  2025-03-27T11:33:54.632931Z  INFO  메시지 처리 성공: player=Player1, message_type=card_game::server::jsons::mulligan::ClientMessage
+    at src\server\end_point.rs:499 on actix-rt|system:15|arbiter:0 ThreadId(20)
+
+  2025-03-27T11:33:54.633087Z  INFO  카드 리롤 시작: player=Player1
+    at src\game\game_step.rs:154 on actix-rt|system:15|arbiter:0 ThreadId(20)
+
+  2025-03-27T11:33:54.633128Z  INFO  멀리건 완료 처리: player=AuthPlayer { ptype: Player1, session_id: 417b5358-df4e-4dd1-a266-19a6d09e6077 }
+    at src\server\end_point.rs:554 on actix-rt|system:15|arbiter:0 ThreadId(20)
+
+  2025-03-27T11:33:54.633234Z  INFO  리롤 응답 메시지 전송 완료
+    at src\server\end_point.rs:599 on actix-rt|system:15|arbiter:0 ThreadId(20)
+
+  2025-03-27T11:33:54.633242Z  INFO  멀리건 세션 종료: player=AuthPlayer { ptype: Player1, session_id: 417b5358-df4e-4dd1-a266-19a6d09e6077 }, session_id=417b5358-df4e-4dd1-a266-19a6d09e6077
+    at src\server\end_point.rs:601 on actix-rt|system:15|arbiter:0 ThreadId(20)
+
+  2025-03-27T11:33:54.633249Z  INFO  세션 종료 시도: player=Player1
+    at src\server\session.rs:97 on actix-rt|system:15|arbiter:0 ThreadId(20)
+
+  2025-03-27T11:33:54.633264Z  INFO  세션 종료 완료: player=Player1
+    at src\server\session.rs:120 on actix-rt|system:15|arbiter:0 ThreadId(20)
+
+  2025-03-27T11:33:54.633856Z  INFO  인증 성공: player_type=Player2, session_id=113b9cc4-e93c-46dd-b8bc-52cbabecba7c
+    at src\server\end_point.rs:127 on actix-rt|system:15|arbiter:17 ThreadId(37)
+
+  2025-03-27T11:33:54.633924Z  INFO  멀리건 단계 핸들러 시작: player=Player2
+    at src\server\end_point.rs:376 on actix-rt|system:15|arbiter:17 ThreadId(37)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: 113b9cc4-e93c-46dd-b8bc-52cbabecba7c }, player_type: Player2, session_id: 113b9cc4-e93c-46dd-b8bc-52cbabecba7c
+
+  2025-03-27T11:33:54.633988Z  INFO  WebSocket 연결 성공: player=Player2
+    at src\server\end_point.rs:404 on actix-rt|system:15|arbiter:17 ThreadId(37)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: 113b9cc4-e93c-46dd-b8bc-52cbabecba7c }, player_type: Player2, session_id: 113b9cc4-e93c-46dd-b8bc-52cbabecba7c
+
+  2025-03-27T11:33:54.634005Z  INFO  멀리건 카드 뽑기 시작: player=Player2, count=5
+    at src\server\end_point.rs:422 on actix-rt|system:15|arbiter:17 ThreadId(37)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: 113b9cc4-e93c-46dd-b8bc-52cbabecba7c }, player_type: Player2, session_id: 113b9cc4-e93c-46dd-b8bc-52cbabecba7c
+
+  2025-03-27T11:33:54.634077Z  INFO  멀리건 딜 메시지 전송 완료
+    at src\server\end_point.rs:463 on actix-rt|system:15|arbiter:17 ThreadId(37)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: 113b9cc4-e93c-46dd-b8bc-52cbabecba7c }, player_type: Player2, session_id: 113b9cc4-e93c-46dd-b8bc-52cbabecba7c
+
+  2025-03-27T11:33:54.634090Z  INFO  멀리건 메시지 처리 태스크 시작: player=Player2, session_id=113b9cc4-e93c-46dd-b8bc-52cbabecba7c
+    at src\server\end_point.rs:470 on actix-rt|system:15|arbiter:17 ThreadId(37)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: 113b9cc4-e93c-46dd-b8bc-52cbabecba7c }, player_type: Player2, session_id: 113b9cc4-e93c-46dd-b8bc-52cbabecba7c
+
+  2025-03-27T11:33:54.634120Z  INFO  멀리건 핸들러 완료: player=Player2
+    at src\server\end_point.rs:755 on actix-rt|system:15|arbiter:17 ThreadId(37)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: 113b9cc4-e93c-46dd-b8bc-52cbabecba7c }, player_type: Player2, session_id: 113b9cc4-e93c-46dd-b8bc-52cbabecba7c
+
+  2025-03-27T11:33:54.634341Z  INFO  메시지 처리 성공: player=Player2, message_type=card_game::server::jsons::mulligan::ClientMessage
+    at src\server\end_point.rs:499 on actix-rt|system:15|arbiter:17 ThreadId(37)
+
+  2025-03-27T11:33:54.634530Z  INFO  카드 리롤 시작: player=Player2
+    at src\game\game_step.rs:154 on actix-rt|system:15|arbiter:17 ThreadId(37)
+
+  2025-03-27T11:33:54.634588Z  INFO  멀리건 완료 처리: player=AuthPlayer { ptype: Player2, session_id: 113b9cc4-e93c-46dd-b8bc-52cbabecba7c }
+    at src\server\end_point.rs:554 on actix-rt|system:15|arbiter:17 ThreadId(37)
+
+  2025-03-27T11:33:54.634676Z  INFO  양 플레이어 모두 준비 완료: 다음 단계 전환 예정
+    at src\server\end_point.rs:573 on actix-rt|system:15|arbiter:17 ThreadId(37)
+
+  2025-03-27T11:33:54.634695Z  INFO  리롤 응답 메시지 전송 완료
+    at src\server\end_point.rs:599 on actix-rt|system:15|arbiter:17 ThreadId(37)
+
+  2025-03-27T11:33:54.634699Z  INFO  멀리건 세션 종료: player=AuthPlayer { ptype: Player2, session_id: 113b9cc4-e93c-46dd-b8bc-52cbabecba7c }, session_id=113b9cc4-e93c-46dd-b8bc-52cbabecba7c
+    at src\server\end_point.rs:601 on actix-rt|system:15|arbiter:17 ThreadId(37)
+
+  2025-03-27T11:33:54.634703Z  INFO  세션 종료 시도: player=Player2
+    at src\server\session.rs:97 on actix-rt|system:15|arbiter:17 ThreadId(37)
+
+  2025-03-27T11:33:54.634712Z  INFO  세션 종료 완료: player=Player2
+    at src\server\session.rs:120 on actix-rt|system:15|arbiter:17 ThreadId(37)
+
+  2025-03-27T11:33:54.742244Z  INFO  인증 성공: player_type=Player1, session_id=f2b55eea-5525-48e0-80ac-157eb3148100
+    at src\server\end_point.rs:127 on actix-rt|system:15|arbiter:23 ThreadId(43)
+
+  2025-03-27T11:33:54.742332Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at src\server\end_point.rs:376 on actix-rt|system:15|arbiter:23 ThreadId(43)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: f2b55eea-5525-48e0-80ac-157eb3148100 }, player_type: Player1, session_id: f2b55eea-5525-48e0-80ac-157eb3148100
+
+  2025-03-27T11:33:54.742387Z  INFO  WebSocket 연결 성공: player=Player1
+    at src\server\end_point.rs:404 on actix-rt|system:15|arbiter:23 ThreadId(43)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: f2b55eea-5525-48e0-80ac-157eb3148100 }, player_type: Player1, session_id: f2b55eea-5525-48e0-80ac-157eb3148100
+
+  2025-03-27T11:33:54.742398Z  INFO  멀리건 카드 뽑기 시작: player=Player1, count=5
+    at src\server\end_point.rs:422 on actix-rt|system:15|arbiter:23 ThreadId(43)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: f2b55eea-5525-48e0-80ac-157eb3148100 }, player_type: Player1, session_id: f2b55eea-5525-48e0-80ac-157eb3148100
+
+  2025-03-27T11:33:54.742461Z  INFO  멀리건 딜 메시지 전송 완료
+    at src\server\end_point.rs:463 on actix-rt|system:15|arbiter:23 ThreadId(43)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: f2b55eea-5525-48e0-80ac-157eb3148100 }, player_type: Player1, session_id: f2b55eea-5525-48e0-80ac-157eb3148100
+
+  2025-03-27T11:33:54.742470Z  INFO  멀리건 메시지 처리 태스크 시작: player=Player1, session_id=f2b55eea-5525-48e0-80ac-157eb3148100
+    at src\server\end_point.rs:470 on actix-rt|system:15|arbiter:23 ThreadId(43)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: f2b55eea-5525-48e0-80ac-157eb3148100 }, player_type: Player1, session_id: f2b55eea-5525-48e0-80ac-157eb3148100
+
+  2025-03-27T11:33:54.742489Z  INFO  멀리건 핸들러 완료: player=Player1
+    at src\server\end_point.rs:755 on actix-rt|system:15|arbiter:23 ThreadId(43)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: f2b55eea-5525-48e0-80ac-157eb3148100 }, player_type: Player1, session_id: f2b55eea-5525-48e0-80ac-157eb3148100
+
+  2025-03-27T11:33:54.742720Z  INFO  메시지 처리 성공: player=Player1, message_type=card_game::server::jsons::mulligan::ClientMessage
+    at src\server\end_point.rs:499 on actix-rt|system:15|arbiter:23 ThreadId(43)
+
+  2025-03-27T11:33:54.742773Z  INFO  멀리건 완료 처리: player=AuthPlayer { ptype: Player1, session_id: f2b55eea-5525-48e0-80ac-157eb3148100 }
+    at src\server\end_point.rs:651 on actix-rt|system:15|arbiter:23 ThreadId(43)
+
+  2025-03-27T11:33:54.742937Z  INFO  완료 메시지 전송 완료
+    at src\server\end_point.rs:688 on actix-rt|system:15|arbiter:23 ThreadId(43)
+
+  2025-03-27T11:33:54.742947Z  INFO  멀리건 세션 종료: player=AuthPlayer { ptype: Player1, session_id: f2b55eea-5525-48e0-80ac-157eb3148100 }, session_id=f2b55eea-5525-48e0-80ac-157eb3148100
+    at src\server\end_point.rs:690 on actix-rt|system:15|arbiter:23 ThreadId(43)
+
+  2025-03-27T11:33:54.742951Z  INFO  세션 종료 시도: player=Player1
+    at src\server\session.rs:97 on actix-rt|system:15|arbiter:23 ThreadId(43)
+
+  2025-03-27T11:33:54.742962Z  INFO  세션 종료 완료: player=Player1
+    at src\server\session.rs:120 on actix-rt|system:15|arbiter:23 ThreadId(43)
+
+  2025-03-27T11:33:54.743481Z  INFO  인증 성공: player_type=Player2, session_id=767fc995-3e97-4345-a118-c0a140739f7e
+    at src\server\end_point.rs:127 on actix-rt|system:15|arbiter:39 ThreadId(59)
+
+  2025-03-27T11:33:54.743519Z  INFO  멀리건 단계 핸들러 시작: player=Player2
+    at src\server\end_point.rs:376 on actix-rt|system:15|arbiter:39 ThreadId(59)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: 767fc995-3e97-4345-a118-c0a140739f7e }, player_type: Player2, session_id: 767fc995-3e97-4345-a118-c0a140739f7e
+
+  2025-03-27T11:33:54.743559Z  INFO  WebSocket 연결 성공: player=Player2
+    at src\server\end_point.rs:404 on actix-rt|system:15|arbiter:39 ThreadId(59)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: 767fc995-3e97-4345-a118-c0a140739f7e }, player_type: Player2, session_id: 767fc995-3e97-4345-a118-c0a140739f7e
+
+  2025-03-27T11:33:54.743569Z  INFO  멀리건 카드 뽑기 시작: player=Player2, count=5
+    at src\server\end_point.rs:422 on actix-rt|system:15|arbiter:39 ThreadId(59)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: 767fc995-3e97-4345-a118-c0a140739f7e }, player_type: Player2, session_id: 767fc995-3e97-4345-a118-c0a140739f7e
+
+  2025-03-27T11:33:54.743609Z  INFO  멀리건 딜 메시지 전송 완료
+    at src\server\end_point.rs:463 on actix-rt|system:15|arbiter:39 ThreadId(59)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: 767fc995-3e97-4345-a118-c0a140739f7e }, player_type: Player2, session_id: 767fc995-3e97-4345-a118-c0a140739f7e
+
+  2025-03-27T11:33:54.743617Z  INFO  멀리건 메시지 처리 태스크 시작: player=Player2, session_id=767fc995-3e97-4345-a118-c0a140739f7e
+    at src\server\end_point.rs:470 on actix-rt|system:15|arbiter:39 ThreadId(59)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: 767fc995-3e97-4345-a118-c0a140739f7e }, player_type: Player2, session_id: 767fc995-3e97-4345-a118-c0a140739f7e
+
+  2025-03-27T11:33:54.743635Z  INFO  멀리건 핸들러 완료: player=Player2
+    at src\server\end_point.rs:755 on actix-rt|system:15|arbiter:39 ThreadId(59)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: 767fc995-3e97-4345-a118-c0a140739f7e }, player_type: Player2, session_id: 767fc995-3e97-4345-a118-c0a140739f7e
+
+  2025-03-27T11:33:54.743809Z  INFO  메시지 처리 성공: player=Player2, message_type=card_game::server::jsons::mulligan::ClientMessage
+    at src\server\end_point.rs:499 on actix-rt|system:15|arbiter:39 ThreadId(59)
+
+  2025-03-27T11:33:54.743939Z  INFO  카드 리롤 시작: player=Player2
+    at src\game\game_step.rs:154 on actix-rt|system:15|arbiter:39 ThreadId(59)
+
+  2025-03-27T11:33:54.743972Z  INFO  멀리건 완료 처리: player=AuthPlayer { ptype: Player2, session_id: 767fc995-3e97-4345-a118-c0a140739f7e }
+    at src\server\end_point.rs:554 on actix-rt|system:15|arbiter:39 ThreadId(59)
+
+  2025-03-27T11:33:54.744050Z  INFO  양 플레이어 모두 준비 완료: 다음 단계 전환 예정
+    at src\server\end_point.rs:573 on actix-rt|system:15|arbiter:39 ThreadId(59)
+
+  2025-03-27T11:33:54.744069Z  INFO  리롤 응답 메시지 전송 완료
+    at src\server\end_point.rs:599 on actix-rt|system:15|arbiter:39 ThreadId(59)
+
+  2025-03-27T11:33:54.744074Z  INFO  멀리건 세션 종료: player=AuthPlayer { ptype: Player2, session_id: 767fc995-3e97-4345-a118-c0a140739f7e }, session_id=767fc995-3e97-4345-a118-c0a140739f7e
+    at src\server\end_point.rs:601 on actix-rt|system:15|arbiter:39 ThreadId(59)
+
+  2025-03-27T11:33:54.744077Z  INFO  세션 종료 시도: player=Player2
+    at src\server\session.rs:97 on actix-rt|system:15|arbiter:39 ThreadId(59)
+
+  2025-03-27T11:33:54.744087Z  INFO  세션 종료 완료: player=Player2
+    at src\server\session.rs:120 on actix-rt|system:15|arbiter:39 ThreadId(59)
+
+  2025-03-27T11:33:54.851002Z  INFO  인증 성공: player_type=Player1, session_id=61e1f303-c45c-4d5b-9610-c4b398d6deea
+    at src\server\end_point.rs:127 on actix-rt|system:15|arbiter:54 ThreadId(74)
+
+  2025-03-27T11:33:54.851098Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at src\server\end_point.rs:376 on actix-rt|system:15|arbiter:54 ThreadId(74)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 61e1f303-c45c-4d5b-9610-c4b398d6deea }, player_type: Player1, session_id: 61e1f303-c45c-4d5b-9610-c4b398d6deea
+
+  2025-03-27T11:33:54.851158Z  INFO  WebSocket 연결 성공: player=Player1
+    at src\server\end_point.rs:404 on actix-rt|system:15|arbiter:54 ThreadId(74)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 61e1f303-c45c-4d5b-9610-c4b398d6deea }, player_type: Player1, session_id: 61e1f303-c45c-4d5b-9610-c4b398d6deea
+
+  2025-03-27T11:33:54.851169Z  INFO  멀리건 카드 뽑기 시작: player=Player1, count=5
+    at src\server\end_point.rs:422 on actix-rt|system:15|arbiter:54 ThreadId(74)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 61e1f303-c45c-4d5b-9610-c4b398d6deea }, player_type: Player1, session_id: 61e1f303-c45c-4d5b-9610-c4b398d6deea
+
+  2025-03-27T11:33:54.851232Z  INFO  멀리건 딜 메시지 전송 완료
+    at src\server\end_point.rs:463 on actix-rt|system:15|arbiter:54 ThreadId(74)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 61e1f303-c45c-4d5b-9610-c4b398d6deea }, player_type: Player1, session_id: 61e1f303-c45c-4d5b-9610-c4b398d6deea
+
+  2025-03-27T11:33:54.851241Z  INFO  멀리건 메시지 처리 태스크 시작: player=Player1, session_id=61e1f303-c45c-4d5b-9610-c4b398d6deea
+    at src\server\end_point.rs:470 on actix-rt|system:15|arbiter:54 ThreadId(74)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 61e1f303-c45c-4d5b-9610-c4b398d6deea }, player_type: Player1, session_id: 61e1f303-c45c-4d5b-9610-c4b398d6deea
+
+  2025-03-27T11:33:54.851261Z  INFO  멀리건 핸들러 완료: player=Player1
+    at src\server\end_point.rs:755 on actix-rt|system:15|arbiter:54 ThreadId(74)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 61e1f303-c45c-4d5b-9610-c4b398d6deea }, player_type: Player1, session_id: 61e1f303-c45c-4d5b-9610-c4b398d6deea
+
+  2025-03-27T11:33:54.851511Z  INFO  메시지 처리 성공: player=Player1, message_type=card_game::server::jsons::mulligan::ClientMessage
+    at src\server\end_point.rs:499 on actix-rt|system:15|arbiter:54 ThreadId(74)
+
+  2025-03-27T11:33:54.851660Z  INFO  카드 리롤 시작: player=Player1
+    at src\game\game_step.rs:154 on actix-rt|system:15|arbiter:54 ThreadId(74)
+
+  2025-03-27T11:33:54.851694Z  INFO  멀리건 완료 처리: player=AuthPlayer { ptype: Player1, session_id: 61e1f303-c45c-4d5b-9610-c4b398d6deea }
+    at src\server\end_point.rs:554 on actix-rt|system:15|arbiter:54 ThreadId(74)
+
+  2025-03-27T11:33:54.851787Z  INFO  리롤 응답 메시지 전송 완료
+    at src\server\end_point.rs:599 on actix-rt|system:15|arbiter:54 ThreadId(74)
+
+  2025-03-27T11:33:54.851793Z  INFO  멀리건 세션 종료: player=AuthPlayer { ptype: Player1, session_id: 61e1f303-c45c-4d5b-9610-c4b398d6deea }, session_id=61e1f303-c45c-4d5b-9610-c4b398d6deea
+    at src\server\end_point.rs:601 on actix-rt|system:15|arbiter:54 ThreadId(74)
+
+  2025-03-27T11:33:54.851797Z  INFO  세션 종료 시도: player=Player1
+    at src\server\session.rs:97 on actix-rt|system:15|arbiter:54 ThreadId(74)
+
+  2025-03-27T11:33:54.851807Z  INFO  세션 종료 완료: player=Player1
+    at src\server\session.rs:120 on actix-rt|system:15|arbiter:54 ThreadId(74)
+
+  2025-03-27T11:33:54.852350Z  INFO  인증 성공: player_type=Player2, session_id=edb2e6f3-00b9-47ea-bda4-d322bd8887aa
+    at src\server\end_point.rs:127 on actix-rt|system:15|arbiter:70 ThreadId(90)
+
+  2025-03-27T11:33:54.852391Z  INFO  멀리건 단계 핸들러 시작: player=Player2
+    at src\server\end_point.rs:376 on actix-rt|system:15|arbiter:70 ThreadId(90)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: edb2e6f3-00b9-47ea-bda4-d322bd8887aa }, player_type: Player2, session_id: edb2e6f3-00b9-47ea-bda4-d322bd8887aa
+
+  2025-03-27T11:33:54.852427Z  INFO  WebSocket 연결 성공: player=Player2
+    at src\server\end_point.rs:404 on actix-rt|system:15|arbiter:70 ThreadId(90)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: edb2e6f3-00b9-47ea-bda4-d322bd8887aa }, player_type: Player2, session_id: edb2e6f3-00b9-47ea-bda4-d322bd8887aa
+
+  2025-03-27T11:33:54.852437Z  INFO  멀리건 카드 뽑기 시작: player=Player2, count=5
+    at src\server\end_point.rs:422 on actix-rt|system:15|arbiter:70 ThreadId(90)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: edb2e6f3-00b9-47ea-bda4-d322bd8887aa }, player_type: Player2, session_id: edb2e6f3-00b9-47ea-bda4-d322bd8887aa
+
+  2025-03-27T11:33:54.852478Z  INFO  멀리건 딜 메시지 전송 완료
+    at src\server\end_point.rs:463 on actix-rt|system:15|arbiter:70 ThreadId(90)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: edb2e6f3-00b9-47ea-bda4-d322bd8887aa }, player_type: Player2, session_id: edb2e6f3-00b9-47ea-bda4-d322bd8887aa
+
+  2025-03-27T11:33:54.852486Z  INFO  멀리건 메시지 처리 태스크 시작: player=Player2, session_id=edb2e6f3-00b9-47ea-bda4-d322bd8887aa
+    at src\server\end_point.rs:470 on actix-rt|system:15|arbiter:70 ThreadId(90)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: edb2e6f3-00b9-47ea-bda4-d322bd8887aa }, player_type: Player2, session_id: edb2e6f3-00b9-47ea-bda4-d322bd8887aa
+
+  2025-03-27T11:33:54.852504Z  INFO  멀리건 핸들러 완료: player=Player2
+    at src\server\end_point.rs:755 on actix-rt|system:15|arbiter:70 ThreadId(90)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: edb2e6f3-00b9-47ea-bda4-d322bd8887aa }, player_type: Player2, session_id: edb2e6f3-00b9-47ea-bda4-d322bd8887aa
+
+  2025-03-27T11:33:54.852669Z  INFO  메시지 처리 성공: player=Player2, message_type=card_game::server::jsons::mulligan::ClientMessage
+    at src\server\end_point.rs:499 on actix-rt|system:15|arbiter:70 ThreadId(90)
+
+  2025-03-27T11:33:54.852691Z  INFO  멀리건 완료 처리: player=AuthPlayer { ptype: Player2, session_id: edb2e6f3-00b9-47ea-bda4-d322bd8887aa }
+    at src\server\end_point.rs:651 on actix-rt|system:15|arbiter:70 ThreadId(90)
+
+  2025-03-27T11:33:54.852780Z  INFO  양 플레이어 모두 준비 완료: 다음 단계 전환 예정
+    at src\server\end_point.rs:669 on actix-rt|system:15|arbiter:70 ThreadId(90)
+
+  2025-03-27T11:33:54.852800Z  INFO  완료 메시지 전송 완료
+    at src\server\end_point.rs:688 on actix-rt|system:15|arbiter:70 ThreadId(90)
+
+  2025-03-27T11:33:54.852805Z  INFO  멀리건 세션 종료: player=AuthPlayer { ptype: Player2, session_id: edb2e6f3-00b9-47ea-bda4-d322bd8887aa }, session_id=edb2e6f3-00b9-47ea-bda4-d322bd8887aa
+    at src\server\end_point.rs:690 on actix-rt|system:15|arbiter:70 ThreadId(90)
+
+  2025-03-27T11:33:54.852809Z  INFO  세션 종료 시도: player=Player2
+    at src\server\session.rs:97 on actix-rt|system:15|arbiter:70 ThreadId(90)
+
+  2025-03-27T11:33:54.852817Z  INFO  세션 종료 완료: player=Player2
+    at src\server\session.rs:120 on actix-rt|system:15|arbiter:70 ThreadId(90)
+
+  2025-03-27T11:33:54.958916Z  INFO  인증 성공: player_type=Player1, session_id=747434fa-20d7-45ba-976b-17dfc9099a89
+    at src\server\end_point.rs:127 on actix-rt|system:15|arbiter:86 ThreadId(106)
+
+  2025-03-27T11:33:54.958996Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at src\server\end_point.rs:376 on actix-rt|system:15|arbiter:86 ThreadId(106)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 747434fa-20d7-45ba-976b-17dfc9099a89 }, player_type: Player1, session_id: 747434fa-20d7-45ba-976b-17dfc9099a89
+
+  2025-03-27T11:33:54.959042Z  INFO  WebSocket 연결 성공: player=Player1
+    at src\server\end_point.rs:404 on actix-rt|system:15|arbiter:86 ThreadId(106)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 747434fa-20d7-45ba-976b-17dfc9099a89 }, player_type: Player1, session_id: 747434fa-20d7-45ba-976b-17dfc9099a89
+
+  2025-03-27T11:33:54.959053Z  INFO  멀리건 카드 뽑기 시작: player=Player1, count=5
+    at src\server\end_point.rs:422 on actix-rt|system:15|arbiter:86 ThreadId(106)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 747434fa-20d7-45ba-976b-17dfc9099a89 }, player_type: Player1, session_id: 747434fa-20d7-45ba-976b-17dfc9099a89
+
+  2025-03-27T11:33:54.959128Z  INFO  멀리건 딜 메시지 전송 완료
+    at src\server\end_point.rs:463 on actix-rt|system:15|arbiter:86 ThreadId(106)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 747434fa-20d7-45ba-976b-17dfc9099a89 }, player_type: Player1, session_id: 747434fa-20d7-45ba-976b-17dfc9099a89
+
+  2025-03-27T11:33:54.959136Z  INFO  멀리건 메시지 처리 태스크 시작: player=Player1, session_id=747434fa-20d7-45ba-976b-17dfc9099a89
+    at src\server\end_point.rs:470 on actix-rt|system:15|arbiter:86 ThreadId(106)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 747434fa-20d7-45ba-976b-17dfc9099a89 }, player_type: Player1, session_id: 747434fa-20d7-45ba-976b-17dfc9099a89
+
+  2025-03-27T11:33:54.959156Z  INFO  멀리건 핸들러 완료: player=Player1
+    at src\server\end_point.rs:755 on actix-rt|system:15|arbiter:86 ThreadId(106)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 747434fa-20d7-45ba-976b-17dfc9099a89 }, player_type: Player1, session_id: 747434fa-20d7-45ba-976b-17dfc9099a89
+
+  2025-03-27T11:33:54.959375Z  INFO  메시지 처리 성공: player=Player1, message_type=card_game::server::jsons::mulligan::ClientMessage
+    at src\server\end_point.rs:499 on actix-rt|system:15|arbiter:86 ThreadId(106)
+
+  2025-03-27T11:33:54.959518Z  INFO  카드 리롤 시작: player=Player1
+    at src\game\game_step.rs:154 on actix-rt|system:15|arbiter:86 ThreadId(106)
+
+  2025-03-27T11:33:54.959549Z  INFO  멀리건 완료 처리: player=AuthPlayer { ptype: Player1, session_id: 747434fa-20d7-45ba-976b-17dfc9099a89 }
+    at src\server\end_point.rs:554 on actix-rt|system:15|arbiter:86 ThreadId(106)
+
+  2025-03-27T11:33:54.959638Z  INFO  리롤 응답 메시지 전송 완료
+    at src\server\end_point.rs:599 on actix-rt|system:15|arbiter:86 ThreadId(106)
+
+  2025-03-27T11:33:54.959644Z  INFO  멀리건 세션 종료: player=AuthPlayer { ptype: Player1, session_id: 747434fa-20d7-45ba-976b-17dfc9099a89 }, session_id=747434fa-20d7-45ba-976b-17dfc9099a89
+    at src\server\end_point.rs:601 on actix-rt|system:15|arbiter:86 ThreadId(106)
+
+  2025-03-27T11:33:54.959648Z  INFO  세션 종료 시도: player=Player1
+    at src\server\session.rs:97 on actix-rt|system:15|arbiter:86 ThreadId(106)
+
+  2025-03-27T11:33:54.959657Z  INFO  세션 종료 완료: player=Player1
+    at src\server\session.rs:120 on actix-rt|system:15|arbiter:86 ThreadId(106)
+
+  2025-03-27T11:33:54.960123Z  INFO  인증 성공: player_type=Player2, session_id=e9ccd74e-97e1-4931-9aa2-4c5a0b9b7feb
+    at src\server\end_point.rs:127 on actix-rt|system:15|arbiter:104 ThreadId(124)
+
+  2025-03-27T11:33:54.960160Z  INFO  멀리건 단계 핸들러 시작: player=Player2
+    at src\server\end_point.rs:376 on actix-rt|system:15|arbiter:104 ThreadId(124)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: e9ccd74e-97e1-4931-9aa2-4c5a0b9b7feb }, player_type: Player2, session_id: e9ccd74e-97e1-4931-9aa2-4c5a0b9b7feb
+
+  2025-03-27T11:33:54.960205Z  INFO  WebSocket 연결 성공: player=Player2
+    at src\server\end_point.rs:404 on actix-rt|system:15|arbiter:104 ThreadId(124)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: e9ccd74e-97e1-4931-9aa2-4c5a0b9b7feb }, player_type: Player2, session_id: e9ccd74e-97e1-4931-9aa2-4c5a0b9b7feb
+
+  2025-03-27T11:33:54.960215Z  INFO  멀리건 카드 뽑기 시작: player=Player2, count=5
+    at src\server\end_point.rs:422 on actix-rt|system:15|arbiter:104 ThreadId(124)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: e9ccd74e-97e1-4931-9aa2-4c5a0b9b7feb }, player_type: Player2, session_id: e9ccd74e-97e1-4931-9aa2-4c5a0b9b7feb
+
+  2025-03-27T11:33:54.960265Z  INFO  멀리건 딜 메시지 전송 완료
+    at src\server\end_point.rs:463 on actix-rt|system:15|arbiter:104 ThreadId(124)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: e9ccd74e-97e1-4931-9aa2-4c5a0b9b7feb }, player_type: Player2, session_id: e9ccd74e-97e1-4931-9aa2-4c5a0b9b7feb
+
+  2025-03-27T11:33:54.960277Z  INFO  멀리건 메시지 처리 태스크 시작: player=Player2, session_id=e9ccd74e-97e1-4931-9aa2-4c5a0b9b7feb
+    at src\server\end_point.rs:470 on actix-rt|system:15|arbiter:104 ThreadId(124)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: e9ccd74e-97e1-4931-9aa2-4c5a0b9b7feb }, player_type: Player2, session_id: e9ccd74e-97e1-4931-9aa2-4c5a0b9b7feb
+
+  2025-03-27T11:33:54.960293Z  INFO  멀리건 핸들러 완료: player=Player2
+    at src\server\end_point.rs:755 on actix-rt|system:15|arbiter:104 ThreadId(124)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: e9ccd74e-97e1-4931-9aa2-4c5a0b9b7feb }, player_type: Player2, session_id: e9ccd74e-97e1-4931-9aa2-4c5a0b9b7feb
+
+  2025-03-27T11:33:54.960457Z  INFO  메시지 처리 성공: player=Player2, message_type=card_game::server::jsons::mulligan::ClientMessage
+    at src\server\end_point.rs:499 on actix-rt|system:15|arbiter:104 ThreadId(124)
+
+  2025-03-27T11:33:54.960560Z  INFO  카드 리롤 시작: player=Player2
+    at src\game\game_step.rs:154 on actix-rt|system:15|arbiter:104 ThreadId(124)
+
+  2025-03-27T11:33:54.960588Z  INFO  멀리건 완료 처리: player=AuthPlayer { ptype: Player2, session_id: e9ccd74e-97e1-4931-9aa2-4c5a0b9b7feb }
+    at src\server\end_point.rs:554 on actix-rt|system:15|arbiter:104 ThreadId(124)
+
+  2025-03-27T11:33:54.960671Z  INFO  양 플레이어 모두 준비 완료: 다음 단계 전환 예정
+    at src\server\end_point.rs:573 on actix-rt|system:15|arbiter:104 ThreadId(124)
+
+  2025-03-27T11:33:54.960690Z  INFO  리롤 응답 메시지 전송 완료
+    at src\server\end_point.rs:599 on actix-rt|system:15|arbiter:104 ThreadId(124)
+
+  2025-03-27T11:33:54.960694Z  INFO  멀리건 세션 종료: player=AuthPlayer { ptype: Player2, session_id: e9ccd74e-97e1-4931-9aa2-4c5a0b9b7feb }, session_id=e9ccd74e-97e1-4931-9aa2-4c5a0b9b7feb
+    at src\server\end_point.rs:601 on actix-rt|system:15|arbiter:104 ThreadId(124)
+
+  2025-03-27T11:33:54.960697Z  INFO  세션 종료 시도: player=Player2
+    at src\server\session.rs:97 on actix-rt|system:15|arbiter:104 ThreadId(124)
+
+  2025-03-27T11:33:54.960706Z  INFO  세션 종료 완료: player=Player2
+    at src\server\session.rs:120 on actix-rt|system:15|arbiter:104 ThreadId(124)
+
+  2025-03-27T11:33:55.052239Z  INFO  인증 성공: player_type=Player1, session_id=e8783b0a-065b-4463-8741-1b796f479de2
+    at src\server\end_point.rs:127 on actix-rt|system:10|arbiter:11 ThreadId(31)
+
+  2025-03-27T11:33:55.052353Z  INFO  WebSocket 연결 성공: player=Player1
+    at src\server\end_point.rs:169 on actix-rt|system:10|arbiter:11 ThreadId(31)
+    in heartbeat with player: AuthPlayer { ptype: Player1, session_id: e8783b0a-065b-4463-8741-1b796f479de2 }, player_type: Player1, session_id: e8783b0a-065b-4463-8741-1b796f479de2
+
+  2025-03-27T11:33:55.052367Z  INFO  하트비트 태스크 시작: player=Player1, session_id=e8783b0a-065b-4463-8741-1b796f479de2
+    at src\server\end_point.rs:185 on actix-rt|system:10|arbiter:11 ThreadId(31)
+    in heartbeat with player: AuthPlayer { ptype: Player1, session_id: e8783b0a-065b-4463-8741-1b796f479de2 }, player_type: Player1, session_id: e8783b0a-065b-4463-8741-1b796f479de2
+
+  2025-03-27T11:33:55.052509Z  INFO  두 번째 WebSocket 연결 생성
+    at tests\test.rs:231 on heartbeat::test_heartbeat_session_management ThreadId(12)
+
+  2025-03-27T11:33:55.052547Z  INFO  두 번째 세션 ID: e8783b0a-065b-4463-8741-1b796f479de2
+    at tests\test.rs:236 on heartbeat::test_heartbeat_session_management ThreadId(12)
+
+  2025-03-27T11:33:55.066963Z  INFO  인증 성공: player_type=Player1, session_id=72899326-bc90-47e6-8458-edef1046cda1
+    at src\server\end_point.rs:127 on actix-rt|system:15|arbiter:124 ThreadId(144)
+
+  2025-03-27T11:33:55.067013Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at src\server\end_point.rs:376 on actix-rt|system:15|arbiter:124 ThreadId(144)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 72899326-bc90-47e6-8458-edef1046cda1 }, player_type: Player1, session_id: 72899326-bc90-47e6-8458-edef1046cda1
+
+  2025-03-27T11:33:55.067055Z  INFO  WebSocket 연결 성공: player=Player1
+    at src\server\end_point.rs:404 on actix-rt|system:15|arbiter:124 ThreadId(144)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 72899326-bc90-47e6-8458-edef1046cda1 }, player_type: Player1, session_id: 72899326-bc90-47e6-8458-edef1046cda1
+
+  2025-03-27T11:33:55.067066Z  INFO  멀리건 카드 뽑기 시작: player=Player1, count=5
+    at src\server\end_point.rs:422 on actix-rt|system:15|arbiter:124 ThreadId(144)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 72899326-bc90-47e6-8458-edef1046cda1 }, player_type: Player1, session_id: 72899326-bc90-47e6-8458-edef1046cda1
+
+  2025-03-27T11:33:55.067119Z  INFO  멀리건 딜 메시지 전송 완료
+    at src\server\end_point.rs:463 on actix-rt|system:15|arbiter:124 ThreadId(144)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 72899326-bc90-47e6-8458-edef1046cda1 }, player_type: Player1, session_id: 72899326-bc90-47e6-8458-edef1046cda1
+
+  2025-03-27T11:33:55.067127Z  INFO  멀리건 메시지 처리 태스크 시작: player=Player1, session_id=72899326-bc90-47e6-8458-edef1046cda1
+    at src\server\end_point.rs:470 on actix-rt|system:15|arbiter:124 ThreadId(144)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 72899326-bc90-47e6-8458-edef1046cda1 }, player_type: Player1, session_id: 72899326-bc90-47e6-8458-edef1046cda1
+
+  2025-03-27T11:33:55.067145Z  INFO  멀리건 핸들러 완료: player=Player1
+    at src\server\end_point.rs:755 on actix-rt|system:15|arbiter:124 ThreadId(144)
+    in mulligan_phase with player: AuthPlayer { ptype: Player1, session_id: 72899326-bc90-47e6-8458-edef1046cda1 }, player_type: Player1, session_id: 72899326-bc90-47e6-8458-edef1046cda1
+
+  2025-03-27T11:33:55.067335Z  INFO  메시지 처리 성공: player=Player1, message_type=card_game::server::jsons::mulligan::ClientMessage
+    at src\server\end_point.rs:499 on actix-rt|system:15|arbiter:124 ThreadId(144)
+
+  2025-03-27T11:33:55.067356Z  INFO  멀리건 완료 처리: player=AuthPlayer { ptype: Player1, session_id: 72899326-bc90-47e6-8458-edef1046cda1 }
+    at src\server\end_point.rs:651 on actix-rt|system:15|arbiter:124 ThreadId(144)
+
+  2025-03-27T11:33:55.067508Z  INFO  완료 메시지 전송 완료
+    at src\server\end_point.rs:688 on actix-rt|system:15|arbiter:124 ThreadId(144)
+
+  2025-03-27T11:33:55.067515Z  INFO  멀리건 세션 종료: player=AuthPlayer { ptype: Player1, session_id: 72899326-bc90-47e6-8458-edef1046cda1 }, session_id=72899326-bc90-47e6-8458-edef1046cda1
+    at src\server\end_point.rs:690 on actix-rt|system:15|arbiter:124 ThreadId(144)
+
+  2025-03-27T11:33:55.067519Z  INFO  세션 종료 시도: player=Player1
+    at src\server\session.rs:97 on actix-rt|system:15|arbiter:124 ThreadId(144)
+
+  2025-03-27T11:33:55.067529Z  INFO  세션 종료 완료: player=Player1
+    at src\server\session.rs:120 on actix-rt|system:15|arbiter:124 ThreadId(144)
+
+  2025-03-27T11:33:55.067976Z  INFO  인증 성공: player_type=Player2, session_id=9cd47104-77e4-41eb-8469-6c6d06e5bae9
+    at src\server\end_point.rs:127 on actix-rt|system:15|arbiter:141 ThreadId(161)
+
+  2025-03-27T11:33:55.068017Z  INFO  멀리건 단계 핸들러 시작: player=Player2
+    at src\server\end_point.rs:376 on actix-rt|system:15|arbiter:141 ThreadId(161)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: 9cd47104-77e4-41eb-8469-6c6d06e5bae9 }, player_type: Player2, session_id: 9cd47104-77e4-41eb-8469-6c6d06e5bae9
+
+  2025-03-27T11:33:55.068052Z  INFO  WebSocket 연결 성공: player=Player2
+    at src\server\end_point.rs:404 on actix-rt|system:15|arbiter:141 ThreadId(161)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: 9cd47104-77e4-41eb-8469-6c6d06e5bae9 }, player_type: Player2, session_id: 9cd47104-77e4-41eb-8469-6c6d06e5bae9
+
+  2025-03-27T11:33:55.068062Z  INFO  멀리건 카드 뽑기 시작: player=Player2, count=5
+    at src\server\end_point.rs:422 on actix-rt|system:15|arbiter:141 ThreadId(161)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: 9cd47104-77e4-41eb-8469-6c6d06e5bae9 }, player_type: Player2, session_id: 9cd47104-77e4-41eb-8469-6c6d06e5bae9
+
+  2025-03-27T11:33:55.068103Z  INFO  멀리건 딜 메시지 전송 완료
+    at src\server\end_point.rs:463 on actix-rt|system:15|arbiter:141 ThreadId(161)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: 9cd47104-77e4-41eb-8469-6c6d06e5bae9 }, player_type: Player2, session_id: 9cd47104-77e4-41eb-8469-6c6d06e5bae9
+
+  2025-03-27T11:33:55.068111Z  INFO  멀리건 메시지 처리 태스크 시작: player=Player2, session_id=9cd47104-77e4-41eb-8469-6c6d06e5bae9
+    at src\server\end_point.rs:470 on actix-rt|system:15|arbiter:141 ThreadId(161)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: 9cd47104-77e4-41eb-8469-6c6d06e5bae9 }, player_type: Player2, session_id: 9cd47104-77e4-41eb-8469-6c6d06e5bae9
+
+  2025-03-27T11:33:55.068129Z  INFO  멀리건 핸들러 완료: player=Player2
+    at src\server\end_point.rs:755 on actix-rt|system:15|arbiter:141 ThreadId(161)
+    in mulligan_phase with player: AuthPlayer { ptype: Player2, session_id: 9cd47104-77e4-41eb-8469-6c6d06e5bae9 }, player_type: Player2, session_id: 9cd47104-77e4-41eb-8469-6c6d06e5bae9
+
+  2025-03-27T11:33:55.068289Z  INFO  메시지 처리 성공: player=Player2, message_type=card_game::server::jsons::mulligan::ClientMessage
+    at src\server\end_point.rs:499 on actix-rt|system:15|arbiter:141 ThreadId(161)
+
+  2025-03-27T11:33:55.068309Z  INFO  멀리건 완료 처리: player=AuthPlayer { ptype: Player2, session_id: 9cd47104-77e4-41eb-8469-6c6d06e5bae9 }
+    at src\server\end_point.rs:651 on actix-rt|system:15|arbiter:141 ThreadId(161)
+
+  2025-03-27T11:33:55.068410Z  INFO  양 플레이어 모두 준비 완료: 다음 단계 전환 예정
+    at src\server\end_point.rs:669 on actix-rt|system:15|arbiter:141 ThreadId(161)
+
+  2025-03-27T11:33:55.068428Z  INFO  완료 메시지 전송 완료
+    at src\server\end_point.rs:688 on actix-rt|system:15|arbiter:141 ThreadId(161)
+
+  2025-03-27T11:33:55.068433Z  INFO  멀리건 세션 종료: player=AuthPlayer { ptype: Player2, session_id: 9cd47104-77e4-41eb-8469-6c6d06e5bae9 }, session_id=9cd47104-77e4-41eb-8469-6c6d06e5bae9
+    at src\server\end_point.rs:690 on actix-rt|system:15|arbiter:141 ThreadId(161)
+
+  2025-03-27T11:33:55.068436Z  INFO  세션 종료 시도: player=Player2
+    at src\server\session.rs:97 on actix-rt|system:15|arbiter:141 ThreadId(161)
+
+  2025-03-27T11:33:55.068447Z  INFO  세션 종료 완료: player=Player2
+    at src\server\session.rs:120 on actix-rt|system:15|arbiter:141 ThreadId(161)
+
+  2025-03-27T11:34:05.068070Z ERROR  하트비트 ping 실패: player=Player1, error=Closed
+    at src\server\end_point.rs:230 on actix-rt|system:10|arbiter:11 ThreadId(31)
+
+  2025-03-27T11:34:05.068123Z  INFO  하트비트 태스크 종료, 세션 정리: player=Player1, session_id=e8783b0a-065b-4463-8741-1b796f479de2
+    at src\server\end_point.rs:259 on actix-rt|system:10|arbiter:11 ThreadId(31)
+
+  2025-03-27T11:34:05.068133Z  INFO  세션 종료 시도: player=Player1
+    at src\server\session.rs:97 on actix-rt|system:10|arbiter:11 ThreadId(31)
+
+  2025-03-27T11:34:05.068160Z  INFO  세션 종료 완료: player=Player1
+    at src\server\session.rs:120 on actix-rt|system:10|arbiter:11 ThreadId(31)
+
+  2025-03-27T11:34:05.068166Z  INFO  세션 정리 성공
+    at src\server\end_point.rs:269 on actix-rt|system:10|arbiter:11 ThreadId(31)
+
+  2025-03-27T11:34:05.068202Z ERROR  세션 종료 실패: player=Player1, error=Closed
+    at src\server\end_point.rs:279 on actix-rt|system:10|arbiter:11 ThreadId(31)
+
+  2025-03-27T11:34:05.068208Z  INFO  하트비트 태스크 종료: player=Player1, session_id=e8783b0a-065b-4463-8741-1b796f479de2
+    at src\server\end_point.rs:284 on actix-rt|system:10|arbiter:11 ThreadId(31)
+
+  2025-03-27T11:34:09.555786Z ERROR  하트비트 ping 실패: player=Player1, error=Closed
+    at src\server\end_point.rs:230 on actix-rt|system:13|arbiter:8 ThreadId(28)
+
+  2025-03-27T11:34:09.555853Z  INFO  하트비트 태스크 종료, 세션 정리: player=Player1, session_id=267d6b61-5c5a-4568-bf3b-dab64f8954d0
+    at src\server\end_point.rs:259 on actix-rt|system:13|arbiter:8 ThreadId(28)
+
+  2025-03-27T11:34:09.555866Z  INFO  세션 종료 시도: player=Player1
+    at src\server\session.rs:97 on actix-rt|system:13|arbiter:8 ThreadId(28)
+
+  2025-03-27T11:34:09.555900Z  INFO  세션 종료 완료: player=Player1
+    at src\server\session.rs:120 on actix-rt|system:13|arbiter:8 ThreadId(28)
+
+  2025-03-27T11:34:09.555907Z  INFO  세션 정리 성공
+    at src\server\end_point.rs:269 on actix-rt|system:13|arbiter:8 ThreadId(28)
+
+  2025-03-27T11:34:09.555934Z ERROR  세션 종료 실패: player=Player1, error=Closed
+    at src\server\end_point.rs:279 on actix-rt|system:13|arbiter:8 ThreadId(28)
+
+  2025-03-27T11:34:09.555942Z  INFO  하트비트 태스크 종료: player=Player1, session_id=267d6b61-5c5a-4568-bf3b-dab64f8954d0
+    at src\server\end_point.rs:284 on actix-rt|system:13|arbiter:8 ThreadId(28)
+
+  2025-03-27T11:34:14.560647Z ERROR  클라이언트 타임아웃: player=Player1, 마지막 응답으로부터 20초 경과
+    at src\server\end_point.rs:220 on actix-rt|system:1|arbiter:3 ThreadId(23)
+
+  2025-03-27T11:34:14.560741Z  INFO  하트비트 태스크 종료, 세션 정리: player=Player1, session_id=32460f0d-4dd7-4371-b338-086e67e7f1e0
+    at src\server\end_point.rs:259 on actix-rt|system:1|arbiter:3 ThreadId(23)
+
+  2025-03-27T11:34:14.560752Z  INFO  세션 종료 시도: player=Player1
+    at src\server\session.rs:97 on actix-rt|system:1|arbiter:3 ThreadId(23)
+
+  2025-03-27T11:34:14.560787Z  INFO  세션 종료 완료: player=Player1
+    at src\server\session.rs:120 on actix-rt|system:1|arbiter:3 ThreadId(23)
+
+  2025-03-27T11:34:14.560792Z  INFO  세션 정리 성공
+    at src\server\end_point.rs:269 on actix-rt|system:1|arbiter:3 ThreadId(23)
+
+  2025-03-27T11:34:14.560767Z ERROR  클라이언트 타임아웃: player=Player1, 마지막 응답으로부터 20초 경과
+    at src\server\end_point.rs:220 on actix-rt|system:12|arbiter:9 ThreadId(29)
+
+  2025-03-27T11:34:14.560806Z  INFO  하트비트 태스크 종료, 세션 정리: player=Player1, session_id=dbf37abc-d7e8-448f-8549-bb1558dcc551
+    at src\server\end_point.rs:259 on actix-rt|system:12|arbiter:9 ThreadId(29)
+
+  2025-03-27T11:34:14.560812Z  INFO  하트비트 태스크 종료: player=Player1, session_id=32460f0d-4dd7-4371-b338-086e67e7f1e0
+    at src\server\end_point.rs:284 on actix-rt|system:1|arbiter:3 ThreadId(23)
+
+  2025-03-27T11:34:14.560818Z  INFO  세션 종료 시도: player=Player1
+    at src\server\session.rs:97 on actix-rt|system:12|arbiter:9 ThreadId(29)
+
+  2025-03-27T11:34:14.560852Z  INFO  세션 종료 완료: player=Player1
+    at src\server\session.rs:120 on actix-rt|system:12|arbiter:9 ThreadId(29)
+
+  2025-03-27T11:34:14.560858Z  INFO  세션 정리 성공
+    at src\server\end_point.rs:269 on actix-rt|system:12|arbiter:9 ThreadId(29)
+
+  2025-03-27T11:34:14.560879Z  INFO  하트비트 태스크 종료: player=Player1, session_id=dbf37abc-d7e8-448f-8549-bb1558dcc551
+    at src\server\end_point.rs:284 on actix-rt|system:12|arbiter:9 ThreadId(29)
+
+  2025-03-27T11:34:15.556249Z  INFO  연결 유지 확인을 위한 keepalive 메시지 전송 시도
+    at tests\test.rs:137 on heartbeat::test_heartbeat_connection ThreadId(9)
+
+  2025-03-27T11:34:15.556399Z  INFO  연결이 유지되고 있음 확인
+    at tests\test.rs:78 on heartbeat::test_heartbeat_connection_timeout ThreadId(10)
+
+  2025-03-27T11:34:15.556423Z  INFO  연결이 끊김 확인
+    at tests\test.rs:152 on heartbeat::test_heartbeat_connection ThreadId(9)
+

@@ -3,7 +3,7 @@
 use std::sync::{Arc, Mutex, MutexGuard};
 
 use exception::GameError;
-use tracing::{warn, Level};
+use tracing::Level;
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::EnvFilter;
 use uuid::Uuid;
@@ -24,6 +24,21 @@ pub mod utils;
 pub mod zone;
 
 extern crate lazy_static;
+
+#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]
+pub struct EffectId(Uuid);
+
+impl From<Uuid> for EffectId {
+    fn from(uuid: Uuid) -> Self {
+        Self(uuid)
+    }
+}
+
+impl From<EffectId> for Uuid {
+    fn from(effect_id: EffectId) -> Self {
+        effect_id.0
+    }
+}
 
 use std::sync::Once;
 static INIT: Once = Once::new();
@@ -124,6 +139,16 @@ impl<T> ArcMutex<T> {
 
     pub fn get(&self) -> MutexGuard<T> {
         self.0.lock().unwrap()
+    }
+}
+
+pub trait StringUuidExt {
+    fn to_uuid(&self) -> Result<Uuid, GameError>;
+}
+
+impl StringUuidExt for String {
+    fn to_uuid(&self) -> Result<Uuid, GameError> {
+        Uuid::parse_str(self).map_err(|_| GameError::ParseError)
     }
 }
 

@@ -1,3 +1,5 @@
+pub mod chain;
+pub mod choice;
 pub mod game_step;
 mod getter;
 mod helper;
@@ -6,6 +8,7 @@ pub mod turn_manager;
 
 use std::collections::HashMap;
 
+use chain::Chain;
 use phase::{Phase, PhaseState};
 use turn_manager::Turn;
 use uuid::Uuid;
@@ -40,6 +43,7 @@ pub struct Game {
     pub player2: OptArc<Player>,
     pub phase_state: PhaseState,
     pub turn: Turn,
+    pub chain: Chain,
 }
 
 /// initialize 함수에 GameConfig 을 넣음으로써 두 플레이어의 Cards 을 설정한다.
@@ -122,8 +126,21 @@ impl Game {
         &self.player2
     }
 
+    pub fn get_chain_mut(&mut self) -> &mut Chain {
+        &mut self.chain
+    }
+
+    // pub fn resolve_chain(&mut self) -> Result<(), GameError> {
+    //     self.chain.resolve(self)?;
+    //     Ok(())
+    // }
+
+    pub fn get_chain(&self) -> &Chain {
+        &self.chain
+    }
+
     /// 플레이어의 덱에서 카드를 뽑아 손에 추가합니다.
-    /// # Arguments
+    /// # Parameters
     /// * `player_type` - 덱에서 카드를 뽑을 플레이어의 종류입니다.
     /// # Returns
     /// * 뽑은 카드를 반환합니다.
@@ -185,16 +202,16 @@ impl Game {
     /// - 플레이어와 상대방의 모든 카드 목록을 합쳐서, 각 카드의 고유한 UUID를 key로 하는 HashMap을 생성합니다.
     /// - 입력받은 UUID 리스트의 순서대로 해당 카드들을 찾아 Vec<Card>로 반환합니다.
     ///
-    /// # 파라미터
+    /// # Parameters
     /// - `uuids`: 찾고자 하는 카드의 고유 식별자(UUID)들이 담긴 벡터입니다.
     ///             각 UUID는 고유하다고 가정합니다.
     ///
-    /// # 반환값
+    /// # Returns
     /// - 입력받은 순서대로 찾은 카드들을 담은 Vec<Card>를 반환합니다.
     ///
-    /// # 패닉
+    /// # Panics
     /// - 만약 입력받은 UUID 중 하나라도 플레이어와 상대방의 카드 목록에서 찾지 못하면,
-    ///   해당 UUID와 함께 panic!이 발생합니다.
+    ///   GameError::CardsNotFound 에러를 반환합니다.
     pub fn get_cards_by_uuids(&self, uuids: Vec<Uuid>) -> Result<Vec<Card>, GameError> {
         let player = self.get_player().get();
         let opponent = self.get_opponent().get();
@@ -215,12 +232,28 @@ impl Game {
             if let Some(card) = card_map.get(&uuid) {
                 results.push(card.clone());
             } else {
-                return Err(GameError::CardNotFound);
+                return Err(GameError::CardsNotFound);
             }
         }
         Ok(results)
     }
 
+    /// 두 플레이어의 카드 목록에서 입력받은 UUID에 해당하는 카드를 순서대로 찾아 반환합니다.
+    ///
+    /// # 설명
+    /// - 플레이어와 상대방의 모든 카드 목록을 합쳐서, 각 카드의 고유한 UUID를 key로 하는 HashMap을 생성합니다.
+    /// - 입력받은 UUID 리스트의 순서대로 해당 카드들을 찾아 Card로 반환합니다.
+    ///
+    /// # Parameters
+    /// - `uuids`: 찾고자 하는 카드의 고유 식별자(UUID)들이 담긴 벡터입니다.
+    ///             각 UUID는 고유하다고 가정합니다.
+    ///
+    /// # Returns
+    /// - 입력받은 순서대로 찾은 카드들을 담은 Card를 반환합니다.
+    ///
+    /// # Panics
+    /// - 만약 입력받은 UUID 를 가지고 플레이어와 상대방의 카드 목록에서 찾지 못하면,
+    ///   GameError::CardNotFound 에러를 반환합니다.
     pub fn get_cards_by_uuid(&self, uuid: Uuid) -> Result<Card, GameError> {
         let player = self.get_player().get();
         let opponent = self.get_opponent().get();
@@ -239,3 +272,5 @@ impl Game {
         card_map.get(&uuid).cloned().ok_or(GameError::CardNotFound)
     }
 }
+
+// TODO: 게임의 상태를 hash 로 변환해서 제공해야함.

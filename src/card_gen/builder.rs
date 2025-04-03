@@ -4,7 +4,7 @@ use crate::{
     card::{
         effect::Effect,
         types::{CardSpecs, CardStatus, CardType, OwnerType},
-        Card,
+        Card, PrioritizedEffect,
     },
     exception::GameError,
     utils::{self, json::CardJson},
@@ -14,7 +14,7 @@ pub struct CardBuilder {
     uuid: Uuid,
     name: String,
     card_type: CardType,
-    effects: Vec<Box<dyn Effect>>,
+    effects: Vec<PrioritizedEffect>,
     json_data: CardJson,
     owner: OwnerType,
     pub specs: CardSpecs,
@@ -36,7 +36,9 @@ impl CardBuilder {
     }
 
     pub fn add_effect<E: Effect + 'static>(mut self, effect: E) -> Self {
-        self.effects.push(Box::new(effect));
+        // TODO: priority 설정
+        self.effects
+            .push(PrioritizedEffect::new(1, Box::new(effect)));
         self
     }
 

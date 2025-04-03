@@ -758,68 +758,37 @@ pub mod mulligan {
 
         assert_eq!(status.as_u16(), 500);
 
-        // 대신 panic하는 대신 반환된 에러 문자열을 비교합니다.
-
         assert!(body.contains(WRONG_PHASE));
+    }
 
-        // let error_message = if body.contains("draw") {
-        //     "WRONG_PHASE".to_string()
-        // } else {
-        //     panic!("Unexpected error response")
-        // };
-
-        // assert_eq!(
-        //     error_message,
-        //     GameError::WrongPhase("".to_string(), "".to_string()).to_string()
-        // );
+    #[actix_web::test]
+    async fn test_mulligan_is_session_close() {
+        panic!("Not implemented yet");
     }
 
     // 이 테스트 뭔가 문제가 많음
-    // #[actix_web::test]
-    // async fn test_mulligan_already_ready() {
-    //     let (addr, _, _) = spawn_server().await;
-    //     let player_type = PlayerType::Player1.as_str();
+    // TODO: 테스트 마저 작성해야함.
+    #[actix_web::test]
+    async fn test_mulligan_already_ready() {
+        // HTTP 기반 잘못된 접근은 WebSocket 테스트가 아니므로 따로 검증합니다.
+        let (addr, _, _) = spawn_server().await;
+        let player_type = PlayerType::Player1.as_str();
 
-    //     // WebSocketTest 객체를 사용하여 훨씬 더 간결한 코드 작성
-    //     let url = format!("ws://{}/mulligan_phase", addr);
-    //     let cookie = format!(
-    //         "user_id={}; game_step={}",
-    //         PlayerType::Player1.as_str(),
-    //         "mulligan"
-    //     );
+        let client = reqwest::Client::new();
+        let response = client
+            .get(format!("http://{}/mulligan_phase", addr))
+            .header("Cookie", format!("user_id={}; game_step=draw", player_type))
+            .send()
+            .await
+            .expect("request failed");
 
-    //     let mut ws = WebSocketTest::connect(url, cookie).await.unwrap();
+        let status = response.status();
+        let body = response.text().await.expect("Failed to read response body");
 
-    //     // 초기 카드 받기
-    //     let _ = ws.expect_mulligan_deal().await;
+        assert_eq!(status.as_u16(), 500);
 
-    //     // 이미 준비된 상태로 변경
-    //     let json = json!({
-    //         "action": "reroll-request",
-    //         "payload": {
-    //             "player": player_type,
-    //             "cards": []
-    //         }
-    //     });
-
-    //     ws.send(Message::Text(json.to_string()))
-    //         .await
-    //         .expect("Failed to send message");
-
-    //     let json = json!({
-    //         "action": "reroll-request",
-    //         "payload": {
-    //             "player": player_type,
-    //             "cards": []
-    //         }
-    //     });
-
-    //     ws.send(Message::Text(json.to_string()))
-    //         .await
-    //         .expect("Failed to send message");
-
-    //     assert!(ws.expect_error().await.contains(ALREADY_READY));
-    // }
+        assert!(body.contains(ALREADY_READY));
+    }
 
     #[actix_web::test]
     #[should_panic]

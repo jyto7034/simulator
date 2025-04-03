@@ -53,6 +53,11 @@ pub enum TargetCount {
     None,
 }
 
+/// 카드 선택 조건
+/// - location: 카드의 위치
+/// - owner: 카드의 소유자
+/// - card_type: 카드의 타입
+/// - custom_filter: 카드에 대한 사용자 정의 필터
 #[derive(Clone)]
 pub struct TargetCondition {
     location: Vec<CardLocation>,

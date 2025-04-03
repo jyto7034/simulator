@@ -6,8 +6,9 @@ use crate::{
     card::{insert::TopInsert, take::TopTake, types::PlayerType},
     exception::GameError,
     selector::TargetCount,
+    server::input_handler::InputRequest,
     zone::zone::Zone,
-    LogExt,
+    EffectId, LogExt,
 };
 
 use super::Game;
@@ -34,10 +35,6 @@ type PhaseResultType = Result<PhaseResult, GameError>;
 
 // mulligan 에 필요한 게임 함수들.
 pub mod mulligan {
-    use core::panic;
-
-    use crate::unit::player;
-
     use super::*;
     impl Game {
         #[instrument(skip(self), fields(player_type = ?player_type.into()))]
@@ -218,6 +215,145 @@ pub mod mulligan {
                 .get()
                 .get_mulligan_state_mut()
                 .is_ready()
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum PlayCardResult {
+    Success,
+    NeedInput(InputRequest),
+    Fail(GameError),
+}
+
+pub mod main_phase1 {
+
+    use crate::server::input_handler::InputHandler;
+
+    use super::*;
+    impl Game {
+        // 카드를 처리하는 함수인데
+        // 외부 ( end point ) 에서 사용하는 함수라서 카드 처리 함수는 이 함수로 유일해야함.
+        pub async fn proceed_card<T: Into<PlayerType> + Copy>(
+            &mut self,
+            player_type: T,
+            card_uuid: Uuid,
+            input_handler: &mut InputHandler,
+        ) -> Result<PlayCardResult, GameError> {
+            let player_type = player_type.into();
+            info!(
+                "카드 처리 시작: player={:?}, card_uuid={:?}",
+                player_type, card_uuid
+            );
+
+            // 카드 조회 및 활성화 가능 여부 확인
+            let card = self.get_cards_by_uuid(card_uuid)?;
+            card.can_activate(&self)?;
+
+            // Chain에 카드 효과 처리 위임
+            // std::mem::take 패턴으로 이중 가변 참조 문제 해결
+            let mut chain = std::mem::take(self.get_chain_mut());
+            let result = chain
+                .process_card_effects(self, player_type, card, input_handler)
+                .await;
+            *self.get_chain_mut() = chain;
+
+            result
+        }
+    }
+}
+
+pub mod gmae_effects_funcs {
+    use crate::card::{effect::DigEffect, Card};
+
+    use super::*;
+
+    impl Game {
+        /// 카드 탐색(Digging) 기능을 수행합니다.
+        ///
+        /// # Arguments
+        /// * `player_type` - 카드를 탐색하는 플레이어
+        /// * `effect_id` - 사용할 탐색 효과의 ID
+        /// * `card_uuid` - 탐색 효과가 있는 소스 카드의 UUID
+        ///
+        /// # Returns
+        /// * `Result<Vec<Uuid>, GameError>` - 탐색 가능한 카드들의 UUID 목록
+        pub fn digging_cards<T: Into<PlayerType> + Copy>(
+            &mut self,
+            player_type: T,
+            effect_id: EffectId,
+            card_uuid: Uuid,
+        ) -> Result<Vec<Uuid>, GameError> {
+            let player_type = player_type.into();
+            info!(
+                "카드 탐색 시작: player={:?}, effect_id={:?}, card={}",
+                player_type, effect_id, card_uuid
+            );
+
+            // 1. 소스 카드 찾기
+            let source_card = self.get_cards_by_uuid(card_uuid)?;
+
+            // 2. 카드에서 해당 Dig 효과 찾기
+            let dig_effect = self.find_dig_effect(&source_card, effect_id)?;
+
+            // 3. 선택 가능한 카드들 찾기
+            let selectable_cards = dig_effect
+                .get_selector()
+                .select_targets(self, &source_card)
+                .map_err(|e| {
+                    error!("대상 선택 실패: {:?}", e);
+                    GameError::InvalidTarget
+                })?;
+
+            // 4. 선택 가능한 카드가 없는 경우 처리
+            if selectable_cards.is_empty() {
+                warn!("선택 가능한 카드가 없음: player={:?}", player_type);
+                return Err(GameError::NoValidTargets);
+            }
+
+            // 5. UUID 목록 생성
+            let card_uuids: Vec<Uuid> = selectable_cards
+                .iter()
+                .map(|card| card.get_uuid())
+                .collect();
+
+            debug!(
+                "탐색 가능한 카드: count={}, uuids={:?}",
+                card_uuids.len(),
+                card_uuids
+            );
+
+            Ok(card_uuids)
+        }
+
+        /// 카드에서 특정 ID를 가진 DigEffect를 찾습니다.
+        fn find_dig_effect<'a>(
+            &mut self,
+            card: &'a Card,
+            effect_id: EffectId,
+        ) -> Result<&'a DigEffect, GameError> {
+            // 효과 찾기
+            let effect = card
+                .get_prioritized_effect()
+                .iter()
+                .find(|e| e.get_effect().get_id() == effect_id)
+                .ok_or_else(|| {
+                    error!("효과를 찾을 수 없음: effect_id={:?}", effect_id);
+                    GameError::EffectNotFound
+                })?;
+
+            // DigEffect로 다운캐스팅
+            effect
+                .get_effect()
+                .as_any()
+                .downcast_ref::<DigEffect>()
+                .ok_or_else(|| {
+                    error!(
+                        "잘못된 효과 타입: expected=DigEffect, effect_id={:?}",
+                        effect_id
+                    );
+                    GameError::InvalidEffectType
+                })
         }
     }
 }

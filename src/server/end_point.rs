@@ -11,14 +11,16 @@ use uuid::Uuid;
 
 use crate::enums::{CLIENT_TIMEOUT, COUNT_OF_MULLIGAN_CARDS, HEARTBEAT_INTERVAL};
 use crate::exception::MessageProcessResult;
+use crate::game::game_step::PlayCardResult;
 use crate::server::helper::{send_error_and_check, MessageHandler};
+use crate::server::input_handler::InputHandler;
 use crate::server::jsons::draw::serialize_draw_answer_message;
 use crate::server::jsons::mulligan::{
     self, serialize_complete_message, serialize_deal_message, serialize_reroll_answer,
 };
-use crate::server::jsons::ValidationPayload;
+use crate::server::jsons::{main_phase1, ValidationPayload};
 use crate::{card::types::PlayerType, exception::GameError};
-use crate::{try_send_error, VecStringExt};
+use crate::{try_send_error, StringUuidExt, VecStringExt};
 
 use super::types::ServerState;
 
@@ -490,6 +492,10 @@ pub async fn mulligan_phase(
                         .await;
 
                     match result {
+                        MessageProcessResult::SystemHandled => {
+                            // TODO: 작성해야함.
+                            debug!("시스템 메시지 처리: player={:?}", player_type);
+                        }
                         MessageProcessResult::Success(msg) => {
                             info!(
                                 "메시지 처리 성공: player={:?}, message_type={}",
@@ -506,9 +512,6 @@ pub async fn mulligan_phase(
                                         try_send_error!(session, GameError::InvalidPlayer, retry 3);
                                     }
 
-                                    let mut game = state.game.lock().await;
-                                    debug!("게임 상태 잠금 획득: 리롤 요청 처리");
-
                                     let player_type = AuthPlayer::new(
                                         payload.player.clone().into(),
                                         mulligan_session_id,
@@ -524,6 +527,9 @@ pub async fn mulligan_phase(
                                         "리롤 요청 처리: player={:?}, cards={:?}",
                                         player_type, payload_cards
                                     );
+
+                                    let mut game = state.game.lock().await;
+                                    debug!("게임 상태 잠금 획득: 리롤 요청 처리");
 
                                     let result =
                                         game.reroll_request(player_type, payload_cards.clone());
@@ -609,13 +615,13 @@ pub async fn mulligan_phase(
                                         try_send_error!(session, GameError::InvalidPlayer, retry 3);
                                     }
 
-                                    let mut game = state.game.lock().await;
-                                    debug!("게임 상태 잠금 획득: 멀리건 완료 요청 처리");
-
                                     let player_type = AuthPlayer::new(
                                         payload.player.clone().into(),
                                         mulligan_session_id,
                                     );
+
+                                    let mut game = state.game.lock().await;
+                                    debug!("게임 상태 잠금 획득: 멀리건 완료 요청 처리");
 
                                     // 이미 준비가 되어있다면 send_error_and_check 함수를 통해 에러 메시지를 전송하고 종료합니다.
                                     if game
@@ -713,9 +719,6 @@ pub async fn mulligan_phase(
                         "WebSocket 종료 메시지 수신: player={:?}, reason={:?}",
                         player_type, reason
                     );
-                    if let Err(e) = session.close(reason).await {
-                        error!("세션 종료 실패: player={:?}, error={:?}", player_type, e);
-                    }
                     break;
                 }
                 Ok(msg) => {
@@ -732,6 +735,20 @@ pub async fn mulligan_phase(
                     break;
                 }
             }
+        }
+
+        if let Err(close_err) = session
+            .close(Some(CloseReason {
+                code: CloseCode::Normal,
+                description: Some("종료".into()),
+            }))
+            .await
+        {
+            error!(
+                "WebSocket 연결 종료 실패: player={:?}, error={:?}",
+                player_type, close_err
+            );
+            panic!("WebSocket 연결 종료 실패");
         }
         info!("WebSocket 메시지 처리 루프 종료: player={:?}", player_type);
     });
@@ -886,18 +903,11 @@ pub async fn main_phase_1_phase(
 
         game.phase_state.mark_player_completed(player_type);
         debug!("플레이어 페이즈 진입 표시: player={:?}", player_type);
-
-        // 에러가 발생할 경우 mark 를 reset 함.
-        let result = game.handle_draw_phase(player_type).inspect_err(|e| {})?;
-
-        game.move_phase();
-
-        result
     };
 
     // Http 업그레이드: 이때 session과 stream이 반환됩니다.
     debug!("WebSocket 연결 업그레이드 시작");
-    let (resp, session, stream) = match handle(&req, payload) {
+    let (resp, mut session, mut stream) = match handle(&req, payload) {
         Ok(result) => {
             info!("WebSocket 연결 성공: player={:?}", player_type);
             result
@@ -910,5 +920,139 @@ pub async fn main_phase_1_phase(
             return Err(GameError::HandleFailed);
         }
     };
-    todo!()
+    debug!("메시지 핸들러 생성");
+
+    let mut input_manager = InputHandler::new();
+    let mut handler = MessageHandler::new();
+
+    let session_id = player.session_id;
+    let session_manager = state.session_manager.clone();
+
+    while let Some(data) = stream.next().await {
+        match data {
+            // 클라이언트에서 받은 메시지를 분석합니다.
+            Ok(Message::Text(json)) => {
+                debug!("클라이언트 메시지 수신: player={:?}", player_type);
+
+                let result = handler
+                    .process_message::<main_phase1::ClientMessage>(
+                        &mut session,
+                        &json,
+                        session_id,
+                        player_type,
+                    )
+                    .await;
+
+                match result {
+                    MessageProcessResult::SystemHandled => {
+                        // TODO: 작성해야함.
+                    }
+                    MessageProcessResult::Success(msg) => {
+                        info!(
+                            "메시지 처리 성공: player={:?}, message_type={}",
+                            player_type,
+                            std::any::type_name::<mulligan::ClientMessage>()
+                        );
+
+                        match msg {
+                            main_phase1::ClientMessage::PlayCard(payload) => {
+                                debug!("카드 플레이 요청 처리: player={:?}", player_type);
+
+                                if !matches!(payload.player.as_str(), "player1" | "player2") {
+                                    error!("유효하지 않은 플레이어: {}", payload.player);
+                                    try_send_error!(session, GameError::InvalidPlayer, retry 3);
+                                }
+
+                                let player_type =
+                                    AuthPlayer::new(payload.player.clone().into(), session_id);
+
+                                if let Err(e) = payload.card.to_uuid() {
+                                    error!("카드 UUID 변환 실패: error={:?}", e);
+                                    try_send_error!(session, GameError::InvalidCards, retry 3);
+                                }
+                                let mut game = state.game.lock().await;
+                                debug!("게임 상태 잠금 획득: 리롤 요청 처리");
+
+                                let payload_cards_uuid = payload.card.to_uuid().unwrap();
+                                let payload_cards =
+                                    game.get_cards_by_uuid(payload_cards_uuid.clone())?;
+
+                                // 사용자 입력 대기의 경우
+                                let result = game
+                                    .proceed_card(
+                                        player_type,
+                                        payload_cards_uuid.clone(),
+                                        &mut input_manager,
+                                    )
+                                    .await;
+                                if let Ok(inner_result) = result {
+                                    match inner_result {
+                                        PlayCardResult::Success => break,
+                                        PlayCardResult::Fail(game_error) => todo!(),
+                                        PlayCardResult::NeedInput(input_request) => todo!(),
+                                    }
+                                } else {
+                                    error!(
+                                        "카드 플레이 실패: player={:?}, error={:?}",
+                                        player_type,
+                                        result.unwrap_err()
+                                    );
+                                    try_send_error!(session, GameError::InvalidCards, retry 3);
+                                }
+                            }
+                        }
+                    }
+                    MessageProcessResult::NeedRetry => {
+                        warn!("메시지 처리 재시도 필요: player={:?}", player_type);
+                        try_send_error!(session, GameError::InvalidApproach, retry 3);
+                        continue;
+                    }
+                    MessageProcessResult::TerminateSession(server_error) => {
+                        error!(
+                            "세션 종료 필요: player={:?}, error={:?}",
+                            player_type, server_error
+                        );
+                        session_manager.end_session(player_type, session_id).await;
+                    }
+                }
+            }
+            Ok(Message::Close(reason)) => {
+                info!(
+                    "WebSocket 종료 메시지 수신: player={:?}, reason={:?}",
+                    player_type, reason
+                );
+                break;
+            }
+            Ok(msg) => {
+                debug!(
+                    "기타 WebSocket 메시지 수신: player={:?}, type={:?}",
+                    player_type, msg
+                );
+            }
+            Err(e) => {
+                error!(
+                    "WebSocket 메시지 수신 오류: player={:?}, error={:?}",
+                    player_type, e
+                );
+                break;
+            }
+        }
+    }
+
+    if let Err(close_err) = session
+        .close(Some(CloseReason {
+            code: CloseCode::Normal,
+            description: Some("종료".into()),
+        }))
+        .await
+    {
+        error!(
+            "WebSocket 연결 종료 실패: player={:?}, error={:?}",
+            player_type, close_err
+        );
+        panic!("WebSocket 연결 종료 실패");
+    }
+    info!("WebSocket 메시지 처리 루프 종료: player={:?}", player_type);
+
+    Ok(resp)
 }

@@ -1,6 +1,6 @@
 use std::fmt;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::{exception::GameError, game::Game, resource::CardSpecsResource, utils::json::CardJson};
 
@@ -230,7 +230,7 @@ pub enum OwnerType {
     None,     // 소유자 없음
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Hash)]
 pub enum PlayerType {
     Player1,
     Player2,

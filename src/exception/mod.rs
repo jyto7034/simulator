@@ -35,6 +35,20 @@ pub const EXCEEDED_CARD_LIMIT: &str = "EXCCED_CARD_LIMIT";
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum GameError {
+    CardCannotActivate,
+    InputNotExpected,
+    InvalidTarget,
+    InvalidChainState,
+    MissingInput,
+    EffectNotFound,
+    AlreadySelected,
+    InvalidSelection,
+    TooManySelections,
+    SelectionClosed,
+    InvalidEffectType,
+    InputRequestCancelled,
+    InvalidInputRequest,
+
     InvalidTargetCount,
     NoValidTargets,
     CannotActivate,
@@ -191,6 +205,7 @@ impl ResponseError for GameError {
 
 pub enum MessageProcessResult<T> {
     Success(T),                  // 성공적으로 메시지 처리
+    SystemHandled,               // 게임 시스템에서 처리하는 메시지
     NeedRetry,                   // 에러가 발생했지만 재시도 가능
     TerminateSession(GameError), // 세션 종료 필요
 }

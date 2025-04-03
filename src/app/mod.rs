@@ -2,6 +2,7 @@ use crate::{
     enums::DeckCode,
     exception::GameError,
     game::{
+        chain::Chain,
         phase::{Phase, PhaseState},
         turn_manager::Turn,
         Game, GameConfig,
@@ -23,6 +24,7 @@ impl App {
                 player2: OptArc::none(),
                 phase_state: PhaseState::new(Phase::Heartbeat),
                 turn: Turn::new(),
+                chain: Chain::new(),
             },
         }
     }

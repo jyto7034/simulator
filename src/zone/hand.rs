@@ -55,7 +55,7 @@ impl Zone for Hand {
 
     fn add_card(&mut self, cards: Vec<Card>, insert: Box<dyn Insert>) -> Result<(), GameError> {
         for card in cards {
-            insert.insert(&mut self.zone_cards, card)?;
+            insert.insert(self, card)?;
         }
         Ok(())
     }

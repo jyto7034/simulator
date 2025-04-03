@@ -1,0 +1,24 @@
+  2025-03-21T16:40:16.816051Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on mulligan::test_mulligan_already_ready ThreadId(3)
+
+  2025-03-21T16:40:16.817649Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on mulligan::test_mulligan_already_ready ThreadId(3)
+
+  2025-03-21T16:40:16.817675Z  INFO  starting service: "actix-web-service-127.0.0.1:9838", workers: 32, listening on: 127.0.0.1:9838
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on mulligan::test_mulligan_already_ready ThreadId(3)
+
+  2025-03-21T16:40:16.826533Z  WARN  페이즈 불일치: 요청된 페이즈=draw, 현재 게임 페이즈=mulligan
+    at src\server\end_point.rs:76 on actix-rt|system:0|arbiter:0 ThreadId(4)
+
+  2025-03-21T16:40:31.102445Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on mulligan::test_mulligan_already_ready ThreadId(3)
+
+  2025-03-21T16:40:31.104009Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on mulligan::test_mulligan_already_ready ThreadId(3)
+
+  2025-03-21T16:40:31.104035Z  INFO  starting service: "actix-web-service-127.0.0.1:9840", workers: 32, listening on: 127.0.0.1:9840
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on mulligan::test_mulligan_already_ready ThreadId(3)
+
+  2025-03-21T16:40:31.112076Z  WARN  페이즈 불일치: 요청된 페이즈=draw, 현재 게임 페이즈=mulligan
+    at src\server\end_point.rs:76 on actix-rt|system:0|arbiter:0 ThreadId(4)
+

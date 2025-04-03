@@ -7,23 +7,46 @@ pub mod types;
 
 use std::fmt;
 
-use effect::Effect;
+use effect::{Effect, EffectLevel};
 use types::{CardSpecs, CardStatus, OwnerType, StatType};
 use uuid::Uuid;
 
-use crate::{
-    card::types::CardType,
-    exception::GameError,
-    game::Game,
-    utils::{self, json::CardJson},
-};
+use crate::{card::types::CardType, exception::GameError, game::Game, utils::json::CardJson};
+
+#[derive(Clone)]
+pub struct PrioritizedEffect {
+    priority: u8, // 낮을수록 높은 우선순위
+    effect: Box<dyn Effect>,
+}
+
+impl PrioritizedEffect {
+    pub fn new(priority: u8, effect: Box<dyn Effect>) -> Self {
+        Self { priority, effect }
+    }
+
+    pub fn get_priority(&self) -> u8 {
+        self.priority
+    }
+
+    pub fn get_effect(&self) -> &Box<dyn Effect> {
+        &self.effect
+    }
+
+    pub fn get_effect_mut(&mut self) -> &mut Box<dyn Effect> {
+        &mut self.effect
+    }
+
+    pub fn get_timing(&self) -> EffectLevel {
+        self.effect.as_ref().get_timing()
+    }
+}
 
 #[derive(Clone)]
 pub struct Card {
     uuid: Uuid,
     name: String,
     card_type: CardType,
-    effects: Vec<Box<dyn Effect>>,
+    effects: Vec<PrioritizedEffect>,
     specs: CardSpecs,
     status: CardStatus,
     owner: OwnerType,
@@ -64,7 +87,7 @@ impl Card {
         owner: OwnerType,
         uuid: Uuid,
         name: String,
-        effects: Vec<Box<dyn Effect>>,
+        effects: Vec<PrioritizedEffect>,
         r#type: CardType,
         specs: CardSpecs,
         status: CardStatus,
@@ -83,26 +106,15 @@ impl Card {
     }
 
     pub fn activate(&self, game: &mut Game) -> Result<(), GameError> {
-        // 카드가 효과를 발동할 수 있는 상태인지 확인
-        if !self.can_activate(game) {
-            return Err(GameError::CannotActivate);
-        }
-
-        // 새 시스템의 효과들 처리
-        for effect in &self.effects {
-            if effect.can_activate(game, self) {
-                effect.apply(game, self)?;
-            }
-        }
-
-        Ok(())
+        todo!()
     }
 
     // 카드가 효과를 발동할 수 있는 상태인지 확인
-    pub fn can_activate(&self, game: &Game) -> bool {
-        !self.status.is_negated()
-            && !self.status.is_disabled()
-            && self.meets_activation_conditions(game)
+    pub fn can_activate(&self, game: &Game) -> Result<(), GameError> {
+        todo!()
+        // !self.status.is_negated()
+        //     && !self.status.is_disabled()
+        //     && self.meets_activation_conditions(game)
     }
 
     // effect 효과로 처리
@@ -158,9 +170,18 @@ impl Card {
         &mut self.status
     }
 
+    pub fn get_prioritized_effect(&self) -> &Vec<PrioritizedEffect> {
+        &self.effects
+    }
+
+    pub fn get_prioritized_effect_mut(&mut self) -> &mut Vec<PrioritizedEffect> {
+        &mut self.effects
+    }
+
     // 효과 추가
     pub fn add_effect<E: Effect + 'static>(&mut self, effect: E) {
-        self.effects.push(Box::new(effect));
+        todo!()
+        // self.effects.push(Box::new(effect));
     }
 
     pub fn modify_stat(&mut self, stat_type: StatType, amount: i32) -> Result<(), GameError> {
@@ -169,19 +190,20 @@ impl Card {
 
     // 카드 복사 (새로운 UUID 생성)
     pub fn clone_with_new_uuid(&self) -> Result<Self, GameError> {
-        Ok(Card {
-            uuid: utils::generate_uuid()?,
-            name: self.name.clone(),
-            card_type: self.card_type.clone(),
-            effects: self
-                .effects
-                .iter()
-                .map(|e| e.clone_effect())
-                .collect::<Result<Vec<_>, _>>()?,
-            specs: self.specs.clone(),
-            status: CardStatus::default(),
-            owner: self.owner.clone(),
-            json_data: self.json_data.clone(),
-        })
+        todo!()
+        // Ok(Card {
+        //     uuid: utils::generate_uuid()?,
+        //     name: self.name.clone(),
+        //     card_type: self.card_type.clone(),
+        //     effects: self
+        //         .effects
+        //         .iter()
+        //         .map(|e| e.clone_effect())
+        //         .collect::<Result<Vec<_>, _>>()?,
+        //     specs: self.specs.clone(),
+        //     status: CardStatus::default(),
+        //     owner: self.owner.clone(),
+        //     json_data: self.json_data.clone(),
+        // })
     }
 }
