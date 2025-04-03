@@ -5,7 +5,7 @@ use crate::{
         Card, PrioritizedEffect,
     },
     exception::GameError,
-    server::input_handler::InputHandler,
+    server::input_handler::InputAnswer,
 };
 use std::collections::HashSet;
 use tracing::info;
@@ -54,7 +54,7 @@ pub struct Chain {
 
     // 유저 입력 대기 정보
     waiting_effect_index: Option<usize>,
-    waiting_input: Option<Vec<Uuid>>,
+    waiting_input: Option<InputAnswer>,
 }
 
 impl Chain {
@@ -76,7 +76,6 @@ impl Chain {
         game: &mut Game,
         player_type: PlayerType,
         card: Card,
-        input_handler: &mut InputHandler,
     ) -> Result<PlayCardResult, GameError> {
         info!(
             "카드 효과 처리: player={:?}, card={:?}",
@@ -89,23 +88,8 @@ impl Chain {
 
         // 1. 즉발 효과 처리
         let result = self
-            .process_immediate_effects(game, &card, &effects, input_handler)
+            .process_immediate_effects(game, &card, &effects)
             .await?;
-        if let Some(input_result) = result {
-            // 즉발 효과가 입력을 요청한 경우
-            // 체인 효과는 보류
-            let chain_effects: Vec<_> = effects
-                .iter()
-                .filter(|e| e.get_effect().get_timing() == EffectLevel::Chain)
-                .map(|e| e.clone())
-                .collect();
-
-            if !chain_effects.is_empty() {
-                self.pending_chain_effects(card, chain_effects);
-            }
-
-            return Ok(input_result);
-        }
 
         // 2. 체인 효과 처리
         self.add_chain_effects(game, &card, &effects)?;
@@ -127,7 +111,6 @@ impl Chain {
         game: &mut Game,
         card: &Card,
         effects: &[PrioritizedEffect],
-        input_handler: &mut InputHandler,
     ) -> Result<Option<PlayCardResult>, GameError> {
         // 즉발 효과 수집
         let immediate_effects: Vec<_> = effects
@@ -151,9 +134,17 @@ impl Chain {
                         // 효과 완료, 처리된 효과로 표시
                         self.processed_effect_ids.insert(effect_id);
                     }
-                    EffectResult::NeedsInput { inner } => {
-                        let input_cards = input_handler.wait_for_input(inner).await?;
-                        effect_clone.handle_input(game, card, input_cards)?;
+                    EffectResult::NeedsInput { inner, handler } => {
+                        let input_cards = game.get_input_waiter_mut().wait_for_input(inner).await?;
+                        let handler_result = handler(game, card, input_cards)?;
+                        match handler_result {
+                            EffectResult::Completed => {
+                                self.processed_effect_ids.insert(effect_id);
+                            }
+                            EffectResult::NeedsInput { .. } => {
+                                // TODO 추가 입력이 필요한 경우 재귀적 처리
+                            }
+                        }
                     }
                 }
             }
@@ -292,7 +283,7 @@ impl Chain {
                             .insert(link.effect.get_id().into());
                         self.waiting_effect_index = None;
                     }
-                    EffectResult::NeedsInput { inner } => {
+                    EffectResult::NeedsInput { inner, handler } => {
                         // 여전히 입력 필요
                         // return Ok(ChainResolutionResult::WaitingForInput(inner));
                     }
@@ -324,7 +315,7 @@ impl Chain {
                     self.processed_effect_ids.insert(effect_id.into());
                     self.links.pop();
                 }
-                EffectResult::NeedsInput { inner } => {
+                EffectResult::NeedsInput { inner, handler } => {
                     // 입력 대기 상태로 전환
                     self.waiting_effect_index = Some(index);
                     self.current_phase = ChainPhase::Waiting;
@@ -367,7 +358,7 @@ impl Chain {
     }
 
     /// 대기 중인 사용자 입력 참조 반환
-    pub fn waiting_input(&self) -> Option<&Vec<Uuid>> {
+    pub fn waiting_input(&self) -> Option<&InputAnswer> {
         self.waiting_input.as_ref()
     }
 
@@ -411,7 +402,7 @@ impl Chain {
     }
 
     /// 대기 중인 사용자 입력 설정
-    pub fn set_waiting_input(&mut self, input: Option<Vec<Uuid>>) {
+    pub fn set_waiting_input(&mut self, input: Option<InputAnswer>) {
         self.waiting_input = input;
     }
 

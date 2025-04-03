@@ -222,13 +222,10 @@ pub mod mulligan {
 #[derive(Debug, Clone)]
 pub enum PlayCardResult {
     Success,
-    NeedInput(InputRequest),
     Fail(GameError),
 }
 
 pub mod main_phase1 {
-
-    use crate::server::input_handler::InputHandler;
 
     use super::*;
     impl Game {
@@ -238,7 +235,6 @@ pub mod main_phase1 {
             &mut self,
             player_type: T,
             card_uuid: Uuid,
-            input_handler: &mut InputHandler,
         ) -> Result<PlayCardResult, GameError> {
             let player_type = player_type.into();
             info!(
@@ -251,11 +247,8 @@ pub mod main_phase1 {
             card.can_activate(&self)?;
 
             // Chain에 카드 효과 처리 위임
-            // std::mem::take 패턴으로 이중 가변 참조 문제 해결
             let mut chain = std::mem::take(self.get_chain_mut());
-            let result = chain
-                .process_card_effects(self, player_type, card, input_handler)
-                .await;
+            let result = chain.process_card_effects(self, player_type, card).await;
             *self.get_chain_mut() = chain;
 
             result

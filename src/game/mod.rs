@@ -18,6 +18,7 @@ use crate::{
     enums::DeckCode,
     exception::GameError,
     selector::TargetCount,
+    server::input_handler::InputWaiter,
     unit::player::{Player, Resoruce},
     utils::deckcode_to_cards,
     zone::zone::Zone,
@@ -44,6 +45,7 @@ pub struct Game {
     pub phase_state: PhaseState,
     pub turn: Turn,
     pub chain: Chain,
+    pub input_waiter: InputWaiter,
 }
 
 /// initialize 함수에 GameConfig 을 넣음으로써 두 플레이어의 Cards 을 설정한다.
@@ -128,6 +130,10 @@ impl Game {
 
     pub fn get_chain_mut(&mut self) -> &mut Chain {
         &mut self.chain
+    }
+
+    pub fn get_input_waiter_mut(&mut self) -> &mut InputWaiter {
+        &mut self.input_waiter
     }
 
     // pub fn resolve_chain(&mut self) -> Result<(), GameError> {

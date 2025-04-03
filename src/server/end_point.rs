@@ -13,7 +13,6 @@ use crate::enums::{CLIENT_TIMEOUT, COUNT_OF_MULLIGAN_CARDS, HEARTBEAT_INTERVAL};
 use crate::exception::MessageProcessResult;
 use crate::game::game_step::PlayCardResult;
 use crate::server::helper::{send_error_and_check, MessageHandler};
-use crate::server::input_handler::InputHandler;
 use crate::server::jsons::draw::serialize_draw_answer_message;
 use crate::server::jsons::mulligan::{
     self, serialize_complete_message, serialize_deal_message, serialize_reroll_answer,
@@ -922,7 +921,6 @@ pub async fn main_phase_1_phase(
     };
     debug!("메시지 핸들러 생성");
 
-    let mut input_manager = InputHandler::new();
     let mut handler = MessageHandler::new();
 
     let session_id = player.session_id;
@@ -979,17 +977,12 @@ pub async fn main_phase_1_phase(
 
                                 // 사용자 입력 대기의 경우
                                 let result = game
-                                    .proceed_card(
-                                        player_type,
-                                        payload_cards_uuid.clone(),
-                                        &mut input_manager,
-                                    )
+                                    .proceed_card(player_type, payload_cards_uuid.clone())
                                     .await;
                                 if let Ok(inner_result) = result {
                                     match inner_result {
                                         PlayCardResult::Success => break,
                                         PlayCardResult::Fail(game_error) => todo!(),
-                                        PlayCardResult::NeedInput(input_request) => todo!(),
                                     }
                                 } else {
                                     error!(

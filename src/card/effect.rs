@@ -3,8 +3,12 @@ use std::any::Any;
 use uuid::Uuid;
 
 use crate::{
-    exception::GameError, game::Game, selector::TargetSelector,
-    server::input_handler::InputRequest, zone::zone::Zone, EffectId,
+    exception::GameError,
+    game::Game,
+    selector::TargetSelector,
+    server::input_handler::{InputAnswer, InputRequest},
+    zone::zone::Zone,
+    EffectId,
 };
 
 use super::{types::StatType, Card};
@@ -14,7 +18,14 @@ pub enum EffectResult {
     Completed,
 
     // 사용자 입력이 필요함
-    NeedsInput { inner: InputRequest },
+    NeedsInput {
+        inner: InputRequest,
+        handler: Box<
+            dyn FnOnce(&mut Game, &Card, InputAnswer) -> Result<EffectResult, GameError>
+                + Send
+                + Sync,
+        >,
+    },
 }
 
 #[derive(PartialEq, Eq)]
@@ -73,7 +84,7 @@ pub trait Effect: Send + Sync + EffectTiming {
         &self,
         game: &mut Game,
         source: &Card,
-        input: Vec<Uuid>,
+        input: InputAnswer,
     ) -> Result<EffectResult, GameError> {
         Err(GameError::InputNotExpected)
     }
@@ -137,7 +148,17 @@ impl Effect for DigEffect {
             .map(|card| card.get_uuid())
             .collect::<Vec<Uuid>>();
 
-        // 사용자 입력 대기
+        Ok(EffectResult::NeedsInput {
+            inner: InputRequest::Dig,
+            handler: Box::new(|game, source, input| Ok(EffectResult::Completed)),
+        })
+    }
+    fn handle_input(
+        &self,
+        game: &mut Game,
+        source: &Card,
+        input: InputAnswer,
+    ) -> Result<EffectResult, GameError> {
         todo!()
     }
 

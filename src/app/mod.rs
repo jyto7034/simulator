@@ -7,6 +7,7 @@ use crate::{
         turn_manager::Turn,
         Game, GameConfig,
     },
+    server::input_handler::InputWaiter,
     OptArc,
 };
 
@@ -25,6 +26,7 @@ impl App {
                 phase_state: PhaseState::new(Phase::Heartbeat),
                 turn: Turn::new(),
                 chain: Chain::new(),
+                input_waiter: InputWaiter::new(),
             },
         }
     }

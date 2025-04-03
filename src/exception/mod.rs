@@ -46,8 +46,7 @@ pub enum GameError {
     TooManySelections,
     SelectionClosed,
     InvalidEffectType,
-    InputRequestCancelled,
-    InvalidInputRequest,
+    InvalidRequestId,
 
     InvalidTargetCount,
     NoValidTargets,
