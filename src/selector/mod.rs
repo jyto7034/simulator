@@ -11,7 +11,7 @@ use crate::{
         types::{CardType, OwnerType},
         Card,
     },
-    enums::CardLocation,
+    enums::ZoneType,
     exception::GameError,
     game::Game,
 };
@@ -26,7 +26,7 @@ pub trait TargetSelector: Send + Sync {
         let mut valid_targets = Vec::new();
 
         for location in self.get_locations() {
-            let cards = game.get_cards_by_player_and_zone_type(self.get_owner().into(), location.0);
+            let cards = game.get_cards_by_player_and_zone_type(self.get_owner().into(), location);
 
             for card in cards {
                 if self.is_valid_target(&card, game, source) {
@@ -40,7 +40,7 @@ pub trait TargetSelector: Send + Sync {
 
     fn get_owner(&self) -> OwnerType;
 
-    fn get_locations(&self) -> Vec<CardLocation>;
+    fn get_locations(&self) -> Vec<ZoneType>;
 
     fn is_valid_target(&self, card: &Card, game: &Game, source: &Card) -> bool;
 }
@@ -60,7 +60,7 @@ pub enum TargetCount {
 /// - custom_filter: 카드에 대한 사용자 정의 필터
 #[derive(Clone)]
 pub struct TargetCondition {
-    location: Vec<CardLocation>,
+    location: Vec<ZoneType>,
     owner: OwnerType,
     card_type: Option<CardType>,
     custom_filter: Option<Arc<dyn Fn(&Card) -> bool + Send + Sync>>,

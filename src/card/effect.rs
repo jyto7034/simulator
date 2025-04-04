@@ -3,15 +3,38 @@ use std::any::Any;
 use uuid::Uuid;
 
 use crate::{
+    enums::ZoneType,
     exception::GameError,
     game::Game,
     selector::TargetSelector,
     server::input_handler::{InputAnswer, InputRequest},
     zone::zone::Zone,
-    EffectId,
 };
 
-use super::{types::StatType, Card};
+use super::{insert::Insert, take::Take, types::StatType, Card};
+
+pub struct EffectInfo {
+    pub effect_id: Uuid,
+    pub effect_type: EffectType,
+    pub from_location: ZoneType,
+    pub to_location: ZoneType,
+}
+
+impl EffectInfo {
+    pub fn new(
+        effect_id: Uuid,
+        effect_type: EffectType,
+        from_location: ZoneType,
+        to_location: ZoneType,
+    ) -> Self {
+        Self {
+            effect_id,
+            effect_type,
+            from_location,
+            to_location,
+        }
+    }
+}
 
 pub enum EffectResult {
     // 효과가 완전히 실행됨
@@ -96,19 +119,28 @@ pub trait Effect: Send + Sync + EffectTiming {
     fn as_any(&self) -> &dyn Any;
     fn as_any_mut(&mut self) -> &mut dyn Any;
 
-    fn get_id(&self) -> EffectId;
+    fn get_id(&self) -> Uuid;
 }
 
 pub struct DigEffect {
     pub selector: Box<dyn TargetSelector>,
-    pub effect_id: EffectId,
+    pub insert: Box<dyn Insert>,
+    pub take: Box<dyn Take>,
+    pub info: EffectInfo,
 }
 
 impl DigEffect {
-    pub fn new(selector: Box<dyn TargetSelector>, count: usize) -> Self {
+    pub fn new(
+        selector: Box<dyn TargetSelector>,
+        insert: Box<dyn Insert>,
+        take: Box<dyn Take>,
+        info: EffectInfo,
+    ) -> Self {
         Self {
             selector,
-            effect_id: EffectId(Uuid::new_v4()),
+            insert,
+            take,
+            info,
         }
     }
 
@@ -136,20 +168,25 @@ impl Effect for DigEffect {
     /// * `GameError` - 효과 적용에 실패한 경우.
     fn begin_effect(&self, game: &mut Game, source: &Card) -> Result<EffectResult, GameError> {
         // select_targets 으로 대상 카드를 가져옵니다.
-        let dug_cards = self.selector.select_targets(game, source);
-        if dug_cards.is_err() {
-            return Err(GameError::InvalidTarget);
+        let potential_targets = self.selector.select_targets(game, source)?;
+
+        if potential_targets.is_empty() {
+            // 파낼 카드가 없으면 효과 종료 (또는 다른 처리)
+            return Ok(EffectResult::Completed);
         }
 
         // Vec<Card> -> Vec<Uuid> 변환
-        let dug_cards = dug_cards
-            .unwrap()
+        let potential_targets_uuids = potential_targets
             .iter()
             .map(|card| card.get_uuid())
             .collect::<Vec<Uuid>>();
 
         Ok(EffectResult::NeedsInput {
-            inner: InputRequest::Dig,
+            inner: InputRequest::Dig {
+                source_card: source.get_uuid(),
+                source_effect_uuid: self.info.effect_id,
+                potential_cards: potential_targets_uuids,
+            },
             handler: Box::new(|game, source, input| Ok(EffectResult::Completed)),
         })
     }
@@ -182,8 +219,8 @@ impl Effect for DigEffect {
         self
     }
 
-    fn get_id(&self) -> EffectId {
-        self.effect_id
+    fn get_id(&self) -> Uuid {
+        self.info.effect_id
     }
 }
 
@@ -220,7 +257,7 @@ impl Effect for DrawEffect {
         todo!()
     }
 
-    fn get_id(&self) -> EffectId {
+    fn get_id(&self) -> Uuid {
         todo!()
     }
 }
@@ -265,7 +302,7 @@ impl Effect for ModifyStatEffect {
         todo!()
     }
 
-    fn get_id(&self) -> EffectId {
+    fn get_id(&self) -> Uuid {
         todo!()
     }
 }

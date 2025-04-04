@@ -10,7 +10,11 @@ use uuid::Uuid;
 
 #[derive(Debug, Clone)]
 pub enum InputRequest {
-    Dig,
+    Dig {
+        source_card: Uuid,
+        source_effect_uuid: Uuid,
+        potential_cards: Vec<Uuid>,
+    },
 }
 
 #[derive(Debug, Clone)]

@@ -44,7 +44,7 @@ impl TargetSelector for MultiCardSelector {
         todo!()
     }
 
-    fn get_locations(&self) -> Vec<crate::enums::CardLocation> {
+    fn get_locations(&self) -> Vec<crate::enums::ZoneType> {
         todo!()
     }
 

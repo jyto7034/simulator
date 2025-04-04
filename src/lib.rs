@@ -25,21 +25,6 @@ pub mod zone;
 
 extern crate lazy_static;
 
-#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]
-pub struct EffectId(Uuid);
-
-impl From<Uuid> for EffectId {
-    fn from(uuid: Uuid) -> Self {
-        Self(uuid)
-    }
-}
-
-impl From<EffectId> for Uuid {
-    fn from(effect_id: EffectId) -> Self {
-        effect_id.0
-    }
-}
-
 use std::sync::Once;
 static INIT: Once = Once::new();
 static mut GUARD: Option<tracing_appender::non_blocking::WorkerGuard> = None;

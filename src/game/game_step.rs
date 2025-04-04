@@ -6,9 +6,8 @@ use crate::{
     card::{insert::TopInsert, take::TopTake, types::PlayerType},
     exception::GameError,
     selector::TargetCount,
-    server::input_handler::InputRequest,
     zone::zone::Zone,
-    EffectId, LogExt,
+    LogExt,
 };
 
 use super::Game;
@@ -274,7 +273,7 @@ pub mod gmae_effects_funcs {
         pub fn digging_cards<T: Into<PlayerType> + Copy>(
             &mut self,
             player_type: T,
-            effect_id: EffectId,
+            effect_id: Uuid,
             card_uuid: Uuid,
         ) -> Result<Vec<Uuid>, GameError> {
             let player_type = player_type.into();
@@ -323,7 +322,7 @@ pub mod gmae_effects_funcs {
         fn find_dig_effect<'a>(
             &mut self,
             card: &'a Card,
-            effect_id: EffectId,
+            effect_id: Uuid,
         ) -> Result<&'a DigEffect, GameError> {
             // 효과 찾기
             let effect = card

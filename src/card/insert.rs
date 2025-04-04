@@ -4,7 +4,7 @@ use crate::{exception::GameError, zone::zone::Zone};
 
 use super::Card;
 
-pub trait Insert {
+pub trait Insert: Send + Sync {
     /// 카드를 지정된 영역에 삽입합니다.
     ///
     /// # Arguments
@@ -18,7 +18,7 @@ pub trait Insert {
     /// 자기 자신의 복제본을 Box로 반환합니다.
     fn clone_box(&self) -> Box<dyn Insert>;
 }
-
+pub struct GeneralInsert;
 pub struct TopInsert;
 pub struct BottomInsert;
 pub struct RandomInsert;

@@ -4,7 +4,7 @@ use crate::{
         types::{OwnerType, StatType},
         Card,
     },
-    enums::{CardLocation, ZoneType},
+    enums::ZoneType,
     selector::single::SingleCardSelector,
     utils::json::CardJson,
 };
@@ -28,10 +28,7 @@ pub fn HM_001(card_json: &CardJson, count: i32) -> Card {
         .add_effect(ModifyStatEffect {
             stat_type: StatType::Attack,
             amount: 2,
-            target_selector: Box::new(SingleCardSelector::new(
-                CardLocation(ZoneType::None),
-                OwnerType::Any,
-            )),
+            target_selector: Box::new(SingleCardSelector::new(ZoneType::None, OwnerType::Any)),
         })
         .build()
 }

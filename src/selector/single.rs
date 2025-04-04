@@ -5,7 +5,7 @@ use crate::{
         types::{CardType, OwnerType},
         Card,
     },
-    enums::CardLocation,
+    enums::ZoneType,
     exception::GameError,
     game::Game,
 };
@@ -17,7 +17,7 @@ pub struct SingleCardSelector {
 }
 
 impl SingleCardSelector {
-    pub fn new(location: CardLocation, owner: OwnerType) -> Self {
+    pub fn new(location: ZoneType, owner: OwnerType) -> Self {
         Self {
             condition: TargetCondition {
                 location: vec![location],
@@ -72,7 +72,7 @@ impl TargetSelector for SingleCardSelector {
         todo!()
     }
 
-    fn get_locations(&self) -> Vec<CardLocation> {
+    fn get_locations(&self) -> Vec<ZoneType> {
         todo!()
     }
 

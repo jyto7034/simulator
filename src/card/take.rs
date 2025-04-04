@@ -4,7 +4,7 @@ use crate::{exception::GameError, selector::TargetCount, zone::zone::Zone};
 
 use super::Card;
 
-pub trait Take {
+pub trait Take: Send + Sync {
     fn take(&mut self, zone: &mut dyn Zone) -> Result<Vec<Card>, GameError>;
     fn clone_box(&self) -> Box<dyn Take>;
 }

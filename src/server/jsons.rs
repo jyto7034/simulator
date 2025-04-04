@@ -38,17 +38,37 @@ pub enum ErrorMessage {
 // Game 관련 메시지 정의
 //------------------------------------------------------------------------------
 pub mod game_features {
-    use crate::game::choice::ChoiceType;
+    /*
+        player: PlayerType,
+        choice_type: ChoiceType,
 
+        // 소스 및 대상 정보
+        source_card_id: Option<Uuid>,   // 선택 효과를 발동한 카드
+        source_effect_id: Option<Uuid>, // 선택을 요청한 효과
+
+        // 선택 제한 설정
+        min_selections: usize,     // 최소 선택 개수
+        max_selections: usize,     // 최대 선택 개수
+        destination: CardLocation, // 선택 후 카드 목적지
+
+        // 상태 관리
+        is_open: bool,      // 선택이 활성화되어 있는지
+        is_mandatory: bool, // 필수 선택 여부 (취소 불가)
+
+    is_hidden_from_opponent: bool, // 상대방에게 숨김 여부
+    */
     use super::*;
     #[derive(Serialize, Deserialize, Debug, Clone)]
     pub struct ChoiceCardPayload {
         pub player: String,
-        pub choice_type: ChoiceType,
+        pub choice_type: String,
+
+        pub source_card_id: Uuid,
 
         // 선택 제한 설정
         pub min_selections: usize, // 최소 선택 개수
         pub max_selections: usize, // 최대 선택 개수
+        pub destination: String,
 
         // 상태 관리
         pub is_open: bool,                 // 선택이 활성화되어 있는지
@@ -386,7 +406,7 @@ pub mod main_phase1 {
     impl Message for ServerMessage {}
 
     /// 클라이언트로 전송할 Draw 카드의 정보가 담긴 메세지를 직렬화합니다.
-    pub fn serialize_draw_answer_message<T: Into<String>>(
+    pub fn serialize_dig_message<T: Into<String>>(
         player: T,
         cards: Uuid,
     ) -> Result<String, GameError> {
