@@ -1,5 +1,4 @@
 pub mod cards;
-pub mod effect;
 pub mod insert;
 pub mod modifier;
 pub mod take;
@@ -7,11 +6,12 @@ pub mod types;
 
 use std::fmt;
 
-use effect::{Effect, EffectLevel};
 use types::{CardSpecs, CardStatus, OwnerType, StatType};
 use uuid::Uuid;
 
-use crate::{card::types::CardType, exception::GameError, game::Game, utils::json::CardJson};
+use crate::{
+    card::types::CardType, effect::Effect, exception::GameError, game::Game, utils::json::CardJson,
+};
 
 #[derive(Clone)]
 pub struct PrioritizedEffect {
@@ -34,10 +34,6 @@ impl PrioritizedEffect {
 
     pub fn get_effect_mut(&mut self) -> &mut Box<dyn Effect> {
         &mut self.effect
-    }
-
-    pub fn get_timing(&self) -> EffectLevel {
-        self.effect.as_ref().get_timing()
     }
 }
 
@@ -109,32 +105,9 @@ impl Card {
         todo!()
     }
 
-    // 카드가 효과를 발동할 수 있는 상태인지 확인
-    pub fn can_activate(&self, game: &Game) -> Result<(), GameError> {
-        todo!()
-        // !self.status.is_negated()
-        //     && !self.status.is_disabled()
-        //     && self.meets_activation_conditions(game)
-    }
-
     // effect 효과로 처리
     pub fn can_be_targeted(&self) -> bool {
         todo!()
-    }
-
-    // 발동 조건 확인
-    fn meets_activation_conditions(&self, game: &Game) -> bool {
-        // 카드 타입별, 상황별 발동 조건 체크
-        match self.card_type {
-            CardType::Dummy => todo!(),
-            CardType::Unit => todo!(),
-            CardType::Field => todo!(),
-            CardType::Game => todo!(),
-            CardType::Spell => todo!(),
-            CardType::Trap => todo!(),
-            CardType::Ace => todo!(),
-            CardType::Any => todo!(),
-        }
     }
 
     // Getter/Setter 메서드들

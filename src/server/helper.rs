@@ -10,7 +10,7 @@ use crate::{
     serialize_error,
 };
 
-use super::jsons::Message;
+use super::jsons::{game_features, Message};
 
 /// 에러 메시지 전송 매크로
 /// - 세션을 통해 에러 메시지를 전송하고, 전송 성공 여부를 반환합니다.
@@ -101,6 +101,15 @@ impl MessageHandler {
                 .handle_parse_error(session, json, e, session_id, player_type)
                 .await;
         }
+
+        // 만약 System Message 인 경우,
+        match serde_json::from_str::<game_features::ClientMessage>(json) {
+            Ok(data) => {
+                self.reset_counters();
+                return MessageProcessResult::SystemHandled(data);
+            }
+            Err(_) => {}
+        };
 
         match serde_json::from_str::<T>(json) {
             Ok(data) => {

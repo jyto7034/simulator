@@ -1,11 +1,16 @@
+use std::fmt;
+
+use tokio::sync::oneshot::Receiver;
 use uuid::Uuid;
 
 use tracing::{debug, error, info, instrument, trace, warn};
 
 use crate::{
     card::{insert::TopInsert, take::TopTake, types::PlayerType},
+    effect::types::HandlerType,
     exception::GameError,
     selector::TargetCount,
+    server::input_handler::InputAnswer,
     zone::zone::Zone,
     LogExt,
 };
@@ -218,10 +223,22 @@ pub mod mulligan {
     }
 }
 
-#[derive(Debug, Clone)]
 pub enum PlayCardResult {
     Success,
+    NeedInput(Receiver<InputAnswer>, HandlerType),
     Fail(GameError),
+}
+
+impl fmt::Debug for PlayCardResult {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            PlayCardResult::Success => write!(f, "PlayCardResult::Success"),
+            PlayCardResult::NeedInput(rx, _) => {
+                write!(f, "PlayCardResult::NeedInput({:?}, <function>)", rx)
+            }
+            PlayCardResult::Fail(err) => write!(f, "PlayCardResult::Fail({:?})", err),
+        }
+    }
 }
 
 pub mod main_phase1 {
@@ -243,7 +260,19 @@ pub mod main_phase1 {
 
             // 카드 조회 및 활성화 가능 여부 확인
             let card = self.get_cards_by_uuid(card_uuid)?;
-            card.can_activate(&self)?;
+            // card.can_activate(&self)?;
+
+            // 효과 처리 다시 작업해야함.
+            // 카드의 종료는 다음과 같음.
+            // 1 . 프리체인 ( 체인에 안걸리고 바로 발동하는 효과들 )
+            // 2 . 체인에 걸리는 효과들 ( 카드 효과들 )
+
+            // 체인 형성 중 일반 카드 ( 일반 소환 등 )는 사용할 수 없음.
+            // 카드 효과 유발에 레벨을 개념을 적용시켜야함.
+            // 스펠 스피드 1, 2, 3 등으로 나눔.
+            // 스펠 스피드 1 은 가장 느린 스피드를 가지는 효과로써, 체인을 이어갈 수 없음.
+            // 스펠 스피드 2 는 스피드 1, 2에 효과에 대해 체인을 이어갈 수 있음.
+            // 스펠 스피드 3 은 스피드 1, 2, 3에 효과에 대해 체인을 이어갈 수 있음.
 
             // Chain에 카드 효과 처리 위임
             let mut chain = std::mem::take(self.get_chain_mut());
@@ -256,7 +285,8 @@ pub mod main_phase1 {
 }
 
 pub mod gmae_effects_funcs {
-    use crate::card::{effect::DigEffect, Card};
+
+    use crate::{card::Card, effect::DigEffect};
 
     use super::*;
 

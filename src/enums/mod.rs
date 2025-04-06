@@ -17,6 +17,19 @@ pub enum ZoneType {
     None,
 }
 
+impl ZoneType {
+    pub fn to_string(&self) -> String {
+        match self {
+            ZoneType::Hand => "Hand".to_string(),
+            ZoneType::Deck => "Deck".to_string(),
+            ZoneType::Graveyard => "Graveyard".to_string(),
+            ZoneType::Effect => "Effect".to_string(),
+            ZoneType::Field => "Field".to_string(),
+            ZoneType::None => "None".to_string(),
+        }
+    }
+}
+
 pub const MAX_CARD_SIZE: usize = 30;
 
 pub struct DeckCode(pub String);

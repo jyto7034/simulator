@@ -112,13 +112,13 @@ impl ChoiceState {
 
     pub fn serialize_message(&self) -> Result<String, GameError> {
         // ChoiceState의 정보를 ChoiceCardPayload로 변환
-        let message = game_features::ChoiceCardPayload {
+        let message = game_features::ChoiceCardRequestPayload {
             player: self.player.to_string(), // PlayerType을 문자열로 변환
             choice_type: self.choice_type.to_string(), // ChoiceType을 문자열로 변환
-            source_card_id: todo!(),
+            source_card_id: self.source_card_id.unwrap(),
             min_selections: self.min_selections,
             max_selections: self.max_selections,
-            destination: todo!(),
+            destination: self.destination.to_string(),
             is_open: self.is_open,
             is_hidden_from_opponent: self.is_hidden_from_opponent,
         };

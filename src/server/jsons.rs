@@ -38,28 +38,9 @@ pub enum ErrorMessage {
 // Game 관련 메시지 정의
 //------------------------------------------------------------------------------
 pub mod game_features {
-    /*
-        player: PlayerType,
-        choice_type: ChoiceType,
-
-        // 소스 및 대상 정보
-        source_card_id: Option<Uuid>,   // 선택 효과를 발동한 카드
-        source_effect_id: Option<Uuid>, // 선택을 요청한 효과
-
-        // 선택 제한 설정
-        min_selections: usize,     // 최소 선택 개수
-        max_selections: usize,     // 최대 선택 개수
-        destination: CardLocation, // 선택 후 카드 목적지
-
-        // 상태 관리
-        is_open: bool,      // 선택이 활성화되어 있는지
-        is_mandatory: bool, // 필수 선택 여부 (취소 불가)
-
-    is_hidden_from_opponent: bool, // 상대방에게 숨김 여부
-    */
     use super::*;
     #[derive(Serialize, Deserialize, Debug, Clone)]
-    pub struct ChoiceCardPayload {
+    pub struct ChoiceCardRequestPayload {
         pub player: String,
         pub choice_type: String,
 
@@ -75,9 +56,27 @@ pub mod game_features {
         pub is_hidden_from_opponent: bool, // 상대방에게 숨김 여부
     }
 
-    impl MessagePayload for ChoiceCardPayload {}
+    impl MessagePayload for ChoiceCardRequestPayload {}
 
-    impl ValidationPayload for ChoiceCardPayload {
+    impl ValidationPayload for ChoiceCardRequestPayload {
+        fn validate(&self, _context: &dyn Any) -> Option<()> {
+            if !matches!(self.player.as_str(), "player1" | "player2") {
+                return None;
+            }
+
+            Some(())
+        }
+    }
+
+    #[derive(Serialize, Deserialize, Debug, Clone)]
+    pub struct ChoiceCardAnswerPayload {
+        pub player: String,
+        pub carsd: Vec<String>,
+    }
+
+    impl MessagePayload for ChoiceCardAnswerPayload {}
+
+    impl ValidationPayload for ChoiceCardAnswerPayload {
         fn validate(&self, _context: &dyn Any) -> Option<()> {
             if !matches!(self.player.as_str(), "player1" | "player2") {
                 return None;
@@ -128,6 +127,8 @@ pub mod game_features {
         EndPhase(EndPhasePayload),
         #[serde(rename = "surrender")]
         Surrender(PlayerPayload),
+        #[serde(rename = "choice-card")]
+        ChoiceCardAnswer(ChoiceCardAnswerPayload),
     }
 
     impl Message for ClientMessage {}
@@ -139,6 +140,8 @@ pub mod game_features {
         EndPhase(EndPhasePayload),
         #[serde(rename = "surrender")]
         Surrender(PlayerPayload),
+        #[serde(rename = "choice-card")]
+        ChoiceCardRequest(ChoiceCardRequestPayload),
     }
 
     impl Message for ServerMessage {}

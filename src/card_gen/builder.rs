@@ -2,10 +2,10 @@ use uuid::Uuid;
 
 use crate::{
     card::{
-        effect::Effect,
         types::{CardSpecs, CardStatus, CardType, OwnerType},
         Card, PrioritizedEffect,
     },
+    effect::Effect,
     exception::GameError,
     utils::{self, json::CardJson},
 };

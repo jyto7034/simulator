@@ -1,9 +1,11 @@
+pub mod types;
 use std::any::Any;
 
+use types::{EffectInfo, EffectResult, EffectSpeed, EffectType, HandlerType};
 use uuid::Uuid;
 
 use crate::{
-    enums::ZoneType,
+    card::{insert::Insert, take::Take, types::StatType, Card},
     exception::GameError,
     game::Game,
     selector::TargetSelector,
@@ -11,80 +13,9 @@ use crate::{
     zone::zone::Zone,
 };
 
-use super::{insert::Insert, take::Take, types::StatType, Card};
-
-pub struct EffectInfo {
-    pub effect_id: Uuid,
-    pub effect_type: EffectType,
-    pub from_location: ZoneType,
-    pub to_location: ZoneType,
-}
-
-impl EffectInfo {
-    pub fn new(
-        effect_id: Uuid,
-        effect_type: EffectType,
-        from_location: ZoneType,
-        to_location: ZoneType,
-    ) -> Self {
-        Self {
-            effect_id,
-            effect_type,
-            from_location,
-            to_location,
-        }
-    }
-}
-
-pub enum EffectResult {
-    // 효과가 완전히 실행됨
-    Completed,
-
-    // 사용자 입력이 필요함
-    NeedsInput {
-        inner: InputRequest,
-        handler: Box<
-            dyn FnOnce(&mut Game, &Card, InputAnswer) -> Result<EffectResult, GameError>
-                + Send
-                + Sync,
-        >,
-    },
-}
-
-#[derive(PartialEq, Eq)]
-pub enum EffectLevel {
-    Immediate,
-    Chain,
-}
-
-pub trait EffectTiming {
-    fn default_timing(&self) -> EffectLevel {
-        EffectLevel::Chain
-    }
-    fn get_timing(&self) -> EffectLevel {
-        self.default_timing()
-    }
-}
-
-impl<T: Effect> EffectTiming for T {}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum EffectType {
-    Dig,
-    Draw,
-    ModifyStat,
-}
-
-#[derive(Debug, Clone, Copy)]
-pub enum EffectProcessPhase {
-    ImmediatePhase, // 즉발 효과 처리 중
-    ChainPhase,     // 체인 효과 처리 중
-    InputWaiting,   // 사용자 입력 대기 중
-}
-
 // 이 카드명의 "카드"는 1턴에 1장밖에 "발동"할 수 없다.
 // 이 카드명의 "효과"는 1턴에 1장밖에 "사용"할 수 없다.
-pub trait Effect: Send + Sync + EffectTiming {
+pub trait Effect: Send + Sync {
     /// 효과를 발동합니다.
     /// # Arguments
     /// * `game` - 게임 객체
@@ -117,9 +48,12 @@ pub trait Effect: Send + Sync + EffectTiming {
     fn get_effect_type(&self) -> EffectType;
 
     fn as_any(&self) -> &dyn Any;
+
     fn as_any_mut(&mut self) -> &mut dyn Any;
 
     fn get_id(&self) -> Uuid;
+
+    fn get_speed(&self) -> EffectSpeed;
 }
 
 pub struct DigEffect {
@@ -187,7 +121,9 @@ impl Effect for DigEffect {
                 source_effect_uuid: self.info.effect_id,
                 potential_cards: potential_targets_uuids,
             },
-            handler: Box::new(|game, source, input| Ok(EffectResult::Completed)),
+            handler: HandlerType::General(Box::new(move |game, source, input| {
+                Ok(EffectResult::Completed)
+            })),
         })
     }
     fn handle_input(
@@ -221,6 +157,10 @@ impl Effect for DigEffect {
 
     fn get_id(&self) -> Uuid {
         self.info.effect_id
+    }
+
+    fn get_speed(&self) -> EffectSpeed {
+        todo!()
     }
 }
 
@@ -258,6 +198,10 @@ impl Effect for DrawEffect {
     }
 
     fn get_id(&self) -> Uuid {
+        todo!()
+    }
+
+    fn get_speed(&self) -> EffectSpeed {
         todo!()
     }
 }
@@ -303,6 +247,10 @@ impl Effect for ModifyStatEffect {
     }
 
     fn get_id(&self) -> Uuid {
+        todo!()
+    }
+
+    fn get_speed(&self) -> EffectSpeed {
         todo!()
     }
 }

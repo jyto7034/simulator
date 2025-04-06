@@ -11,6 +11,7 @@ use uuid::Uuid;
 pub mod app;
 pub mod card;
 pub mod card_gen;
+pub mod effect;
 pub mod enums;
 pub mod exception;
 pub mod game;
@@ -22,7 +23,6 @@ pub mod test;
 pub mod unit;
 pub mod utils;
 pub mod zone;
-
 extern crate lazy_static;
 
 use std::sync::Once;
