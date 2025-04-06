@@ -52,11 +52,26 @@ pub enum EffectResult {
     },
 }
 
-#[derive(PartialEq, Eq, Clone, Copy)]
+#[derive(PartialEq, Eq, PartialOrd, Clone, Copy)]
 pub enum EffectSpeed {
-    Fast,   // 스피드 3
-    Medium, // 스피드 2
-    Slow,   // 스피드 1
+    Quick = 3,  // 스피드 3
+    Medium = 2, // 스피드 2
+    Slow = 1,   // 스피드 1
+}
+
+impl EffectSpeed {
+    pub fn is_faster_than(&self, other: EffectSpeed) -> bool {
+        self > &other
+    }
+    pub fn is_slower_than(&self, other: EffectSpeed) -> bool {
+        self < &other
+    }
+    pub fn is_equal_to(&self, other: EffectSpeed) -> bool {
+        self == &other
+    }
+    pub fn can_it_chain(&self, other: EffectSpeed) -> bool {
+        self.is_faster_than(other) || self.is_equal_to(other)
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

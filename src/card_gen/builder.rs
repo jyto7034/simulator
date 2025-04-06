@@ -3,9 +3,9 @@ use uuid::Uuid;
 use crate::{
     card::{
         types::{CardSpecs, CardStatus, CardType, OwnerType},
-        Card, PrioritizedEffect,
+        Card,
     },
-    effect::Effect,
+    effect::{effects::EffectTiming, types::EffectSpeed, Effect},
     exception::GameError,
     utils::{self, json::CardJson},
 };
@@ -14,7 +14,7 @@ pub struct CardBuilder {
     uuid: Uuid,
     name: String,
     card_type: CardType,
-    effects: Vec<PrioritizedEffect>,
+    effects: Vec<EffectTiming>,
     json_data: CardJson,
     owner: OwnerType,
     pub specs: CardSpecs,
@@ -38,7 +38,7 @@ impl CardBuilder {
     pub fn add_effect<E: Effect + 'static>(mut self, effect: E) -> Self {
         // TODO: priority 설정
         self.effects
-            .push(PrioritizedEffect::new(1, Box::new(effect)));
+            .push(EffectTiming::new(1, EffectSpeed::Medium, Box::new(effect)));
         self
     }
 

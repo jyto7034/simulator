@@ -247,6 +247,11 @@ pub mod main_phase1 {
     impl Game {
         // 카드를 처리하는 함수인데
         // 외부 ( end point ) 에서 사용하는 함수라서 카드 처리 함수는 이 함수로 유일해야함.
+
+        // 카드의 효과 발동 방법은 다음과 같이 2 가지 유형으로 나뉘어짐.
+        // 1. 카드 플레이 ( 핸드에서 필드로 카드를 낸 경우 )
+        // 2. 특정 조건을 만족한 경우, 효과 발동 ( 카드 위치는 상관 없이 )
+        // 이 함수는 1 번에 대해서만 처리하는 함수임.
         pub async fn proceed_card<T: Into<PlayerType> + Copy>(
             &mut self,
             player_type: T,

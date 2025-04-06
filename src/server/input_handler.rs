@@ -12,6 +12,10 @@ pub enum InputRequest {
         source_effect_uuid: Uuid,
         potential_cards: Vec<Uuid>,
     },
+    SelectEffect {
+        source_card: Uuid,
+        potential_effects: Vec<Uuid>,
+    },
 }
 
 #[derive(Debug, Clone)]

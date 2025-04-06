@@ -10,39 +10,19 @@ use types::{CardSpecs, CardStatus, OwnerType, StatType};
 use uuid::Uuid;
 
 use crate::{
-    card::types::CardType, effect::Effect, exception::GameError, game::Game, utils::json::CardJson,
+    card::types::CardType,
+    effect::{effects::EffectTiming, Effect},
+    exception::GameError,
+    game::Game,
+    utils::json::CardJson,
 };
-
-#[derive(Clone)]
-pub struct PrioritizedEffect {
-    priority: u8, // 낮을수록 높은 우선순위
-    effect: Box<dyn Effect>,
-}
-
-impl PrioritizedEffect {
-    pub fn new(priority: u8, effect: Box<dyn Effect>) -> Self {
-        Self { priority, effect }
-    }
-
-    pub fn get_priority(&self) -> u8 {
-        self.priority
-    }
-
-    pub fn get_effect(&self) -> &Box<dyn Effect> {
-        &self.effect
-    }
-
-    pub fn get_effect_mut(&mut self) -> &mut Box<dyn Effect> {
-        &mut self.effect
-    }
-}
 
 #[derive(Clone)]
 pub struct Card {
     uuid: Uuid,
     name: String,
     card_type: CardType,
-    effects: Vec<PrioritizedEffect>,
+    effects: Vec<EffectTiming>,
     specs: CardSpecs,
     status: CardStatus,
     owner: OwnerType,
@@ -83,7 +63,7 @@ impl Card {
         owner: OwnerType,
         uuid: Uuid,
         name: String,
-        effects: Vec<PrioritizedEffect>,
+        effects: Vec<EffectTiming>,
         r#type: CardType,
         specs: CardSpecs,
         status: CardStatus,
@@ -143,11 +123,11 @@ impl Card {
         &mut self.status
     }
 
-    pub fn get_prioritized_effect(&self) -> &Vec<PrioritizedEffect> {
+    pub fn get_prioritized_effect(&self) -> &Vec<EffectTiming> {
         &self.effects
     }
 
-    pub fn get_prioritized_effect_mut(&mut self) -> &mut Vec<PrioritizedEffect> {
+    pub fn get_prioritized_effect_mut(&mut self) -> &mut Vec<EffectTiming> {
         &mut self.effects
     }
 

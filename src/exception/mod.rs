@@ -47,6 +47,8 @@ pub enum GameError {
     SelectionClosed,
     InvalidEffectType,
     InvalidRequestId,
+    InvalidChainPhase,
+    InvalidChainSpeed,
 
     InvalidTargetCount,
     NoValidTargets,
