@@ -49,6 +49,7 @@ pub enum GameError {
     InvalidRequestId,
     InvalidChainPhase,
     InvalidChainSpeed,
+    NoActivatableEffect,
 
     InvalidTargetCount,
     NoValidTargets,

@@ -7,7 +7,7 @@ use crate::{
     exception::GameError,
     server::input_handler::{InputAnswer, InputRequest},
 };
-use std::{collections::HashSet, ops::Deref};
+use std::collections::HashSet;
 use tracing::info;
 use uuid::Uuid;
 
@@ -87,7 +87,7 @@ impl Chain {
 
         if activable_effects.is_empty() {
             // 발동 가능한 효과가 없으면 종료합니다.
-            todo!()
+            return Err(GameError::NoActivatableEffect);
         }
 
         // 발동 가능한 효과가 두 개 이상일 경우, 사용자로부터 선택을 받아야 합니다.
@@ -104,9 +104,14 @@ impl Chain {
                 .await?;
             return Ok(PlayCardResult::NeedInput(
                 rx,
-                HandlerType::General(Box::new(move |game, source, input| {
-                    Ok(EffectResult::Completed)
-                })),
+                HandlerType::General(Box::new(
+                    move |game: &mut Game,
+                          source: &Card,
+                          input: InputAnswer|
+                          -> Result<EffectResult, GameError> {
+                        Ok(EffectResult::Completed)
+                    },
+                )),
             ));
             // TODO: 무슨 효과를 발동할 지 선택 받아야함.
         }

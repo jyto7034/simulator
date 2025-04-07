@@ -1,3 +1,5 @@
+use std::{future::Future, pin::Pin};
+
 use uuid::Uuid;
 
 use crate::{
@@ -13,6 +15,18 @@ pub enum HandlerType {
         Box<
             dyn FnOnce(&mut Game, &Card, InputAnswer) -> Result<EffectResult, GameError>
                 + Send
+                + Sync,
+        >,
+    ),
+    Async(
+        Box<
+            dyn FnOnce(
+                    Game,
+                    &Card,
+                    InputAnswer,
+                ) -> Pin<
+                    Box<dyn Future<Output = Result<EffectResult, GameError>> + Send + Sync>,
+                > + Send
                 + Sync,
         >,
     ),

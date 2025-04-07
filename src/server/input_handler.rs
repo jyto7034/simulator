@@ -21,6 +21,7 @@ pub enum InputRequest {
 #[derive(Debug, Clone)]
 pub enum InputAnswer {
     Dig(Vec<Uuid>),
+    SelectEffect(Uuid),
 }
 
 #[derive(Debug)]
