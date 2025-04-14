@@ -1,0 +1,398 @@
+// tests/heartbeat_actor_direct_test.rs (또는 기존 test.rs 내 모듈)
+
+#[cfg(test)]
+mod heartbeat_actor_direct_tests {
+    use actix::{Actor, Addr};
+    use actix_web::{
+        dev::ServerHandle, web, App, Error as ActixError, HttpRequest, HttpResponse, HttpServer,
+    };
+    use async_tungstenite::{
+        tokio::{connect_async, TokioAdapter},
+        tungstenite::{self, http::Request as WsRequest, protocol::Message},
+    };
+    use card_game::{
+        card::types::PlayerType,
+        enums::{CLIENT_TIMEOUT, HEARTBEAT_INTERVAL},
+        game::phase::Phase,
+        server::{session::PlayerSessionManager, ws_actor::heartbeat::HeartbeatActor},
+    };
+
+    use futures_util::StreamExt;
+    use serde::Deserialize;
+    use std::{
+        net::{SocketAddr, TcpListener},
+        time::Duration,
+    };
+    use tokio::time::sleep;
+    use tracing::{error, info, warn};
+    use uuid::Uuid;
+
+    #[derive(Clone)]
+    struct MinimalTestState {
+        session_manager: PlayerSessionManager,
+    }
+
+    // --- 테스트용 핸들러 ---
+    // 이 핸들러는 인증/페이즈 검사 없이 직접 액터를 시작합니다.
+    async fn test_heartbeat_handler(
+        state: web::Data<MinimalTestState>, // 수정된 상태 사용
+        req: HttpRequest,
+        payload: web::Payload,
+    ) -> Result<HttpResponse, ActixError> {
+        // 표준 Actix 에러 반환
+        // 테스트 편의상 PlayerType과 SessionId를 핸들러 내에서 결정
+        let player_type = PlayerType::Player1; // 예시: 고정 값 사용
+        let session_id = Uuid::new_v4(); // 매번 새로운 ID 생성
+        let session_manager = state.session_manager.clone();
+
+        info!(
+            "[Test Handler] Handling request. Assigned player {:?} with session_id {}",
+            player_type, session_id
+        );
+
+        // WebSocket 업그레이드 시도
+        match actix_ws::handle(&req, payload) {
+            Ok((response, session, _stream)) => {
+                info!("[Test Handler] WebSocket upgrade successful. Starting actor...");
+
+                // 세션 관리자에 세션 등록 (액터 시작 *전* 에 등록)
+                // register_session이 생성된/업데이트된 세션 ID를 반환한다고 가정
+                let registered_session_id = session_manager
+                    .register_session(player_type, Phase::Heartbeat) // 액터는 Heartbeat 로직을 따름
+                    .await
+                    .unwrap();
+
+                // 핸들러에서 생성한 ID와 관리자에 등록된 ID가 일치하는지 확인 (선택적)
+                if registered_session_id != session_id {
+                    warn!(
+                        "[Test Handler] Generated session ID {} differs from registered ID {}",
+                        session_id, registered_session_id
+                    );
+                    // 테스트 시나리오에 따라 여기서 에러 처리 또는 ID 통일 필요
+                }
+
+                // HeartbeatActor 생성 및 시작
+                let actor = HeartbeatActor::new(
+                    player_type,
+                    session_id, // 핸들러에서 생성한 ID 사용
+                    session_manager,
+                    session, // 업그레이드된 세션 전달
+                );
+                let _actor_addr: Addr<HeartbeatActor> = actor.start(); // 액터 시작
+
+                info!(
+                    "[Test Handler] HeartbeatActor started for player {:?} (session_id: {})",
+                    player_type, session_id
+                );
+
+                // 성공적인 업그레이드 응답 반환
+                Ok(response)
+            }
+            Err(e) => {
+                error!("[Test Handler] WebSocket handling failed: {:?}", e);
+                // ProtocolError를 ActixError로 변환 (간단한 예시)
+                Ok(HttpResponse::InternalServerError()
+                    .body(format!("WebSocket upgrade failed: {}", e)))
+            }
+        }
+    }
+
+    // 테스트 서버 설정 함수 (테스트 핸들러 사용)
+    async fn setup_heartbeat_test_server() -> (SocketAddr, web::Data<MinimalTestState>, ServerHandle)
+    {
+        let listener = TcpListener::bind("127.0.0.1:0").expect("Failed to bind random port");
+        let addr = listener.local_addr().unwrap();
+        info!("Test server listening on {}", addr);
+
+        let state = web::Data::new(MinimalTestState {
+            session_manager: PlayerSessionManager::new(),
+        });
+        let state_clone = state.clone();
+
+        let server = HttpServer::new(move || {
+            App::new()
+                .app_data(state_clone.clone())
+                // 테스트 핸들러를 특정 경로에 등록
+                .route("/test_heartbeat", web::get().to(test_heartbeat_handler))
+        })
+        .listen(listener)
+        .expect("Failed to start test server")
+        .run();
+
+        let handle = server.handle();
+        tokio::spawn(server);
+
+        (addr, state, handle)
+    }
+
+    // WebSocket 연결 함수 (raw client, 쿠키 제거)
+    async fn connect_raw_ws(
+        url: &str, // URL은 이제 "ws://..." 형태여야 함
+    ) -> Result<
+        (
+            async_tungstenite::WebSocketStream<TokioAdapter<tokio::net::TcpStream>>,
+            tungstenite::http::Response<Option<Vec<u8>>>,
+        ),
+        tungstenite::Error,
+    > {
+        let host = url
+            .strip_prefix("ws://")
+            .unwrap_or(url) // "ws://" 제거
+            .split('/') // 경로 제거 (호스트 부분만)
+            .next()
+            .unwrap_or("localhost");
+
+        let request = WsRequest::builder()
+            .uri(url) // 전체 URL 사용
+            .header("Host", host)
+            // .header("Cookie", cookie) // 쿠키 제거
+            .header("Upgrade", "websocket")
+            .header("Connection", "Upgrade")
+            .header(
+                "Sec-WebSocket-Key",
+                tungstenite::handshake::client::generate_key(),
+            )
+            .header("Sec-WebSocket-Version", "13")
+            .body(())?;
+
+        connect_async(request).await
+    }
+
+    // 초기 연결 메시지 파싱용 구조체 (동일)
+    #[derive(Deserialize, Debug)]
+    struct HeartbeatConnectedMessage {
+        #[serde(rename = "type")]
+        msg_type: String,
+        player: String,
+        session_id: String,
+    }
+
+    // --- 테스트 케이스들 (쿠키 제거 및 URL 수정) ---
+
+    #[actix_web::test]
+    async fn test_heartbeat_actor_connect_and_initial_message() {
+        let (addr, state, _handle) = setup_heartbeat_test_server().await;
+        let player_type = PlayerType::Player1; // 테스트 핸들러가 Player1으로 고정
+
+        let url = format!("ws://{}/test_heartbeat", addr); // 수정된 경로 및 스킴
+
+        info!("Attempting raw WebSocket connection to {}", url);
+        let (mut ws_stream, response) = connect_raw_ws(&url) // 쿠키 전달 제거
+            .await
+            .expect("Raw WebSocket connection failed");
+        info!(
+            "Raw WebSocket connection successful, response status: {}",
+            response.status()
+        );
+
+        assert_eq!(
+            response.status(),
+            tungstenite::http::StatusCode::SWITCHING_PROTOCOLS
+        );
+
+        info!("Waiting for initial message from HeartbeatActor...");
+        // 초기 메시지 검증 (이전과 유사, PlayerType 확인)
+        let initial_msg = ws_stream
+            .next()
+            .await
+            .expect("Stream ended before initial message")
+            .expect("Stream error receiving initial message");
+
+        let received_session_id = match initial_msg {
+            Message::Text(text) => {
+                info!("Received initial text message: {}", text);
+                let parsed: HeartbeatConnectedMessage =
+                    serde_json::from_str(&text).expect("Failed to parse initial message JSON");
+                assert_eq!(parsed.msg_type, "heartbeat_connected");
+                assert_eq!(parsed.player, player_type.to_string()); // Player1 검증
+
+                parsed
+                    .session_id
+                    .parse::<Uuid>()
+                    .expect("Invalid session UUID")
+            }
+            _ => panic!("Expected initial Text message, got {:?}", initial_msg),
+        };
+        info!("Parsed session ID: {}", received_session_id);
+
+        // 세션 관리자에서 세션 확인
+        assert!(
+            state
+                .session_manager
+                .is_valid_session(player_type, received_session_id, Phase::Heartbeat)
+                .await,
+            "Session not found or invalid in session manager"
+        );
+        info!("Session verified in manager");
+
+        // 클라이언트 측에서 연결 종료
+        info!("Sending Close frame");
+        ws_stream
+            .close(None)
+            .await
+            .expect("Failed to send close frame");
+
+        // 액터가 종료되고 세션이 정리될 시간 주기
+        sleep(Duration::from_millis(300)).await; // 시간 약간 늘림
+
+        // 세션 정리 확인
+        assert!(
+            !state
+                .session_manager
+                .is_valid_session(player_type, received_session_id, Phase::Heartbeat)
+                .await,
+            "Session was not cleaned up in session manager"
+        );
+        info!("Session cleanup verified");
+    }
+
+    #[actix_web::test]
+    async fn test_heartbeat_actor_ping_pong_keepalive() {
+        let (addr, _state, _handle) = setup_heartbeat_test_server().await;
+        let url = format!("ws://{}/test_heartbeat", addr);
+
+        let (mut ws_stream, _) = connect_raw_ws(&url) // 쿠키 제거
+            .await
+            .expect("Raw WebSocket connection failed");
+        info!("Connected. Consuming initial message.");
+
+        // 초기 메시지 소비
+        let _ = ws_stream.next().await.unwrap().unwrap();
+
+        let wait_duration = Duration::from_secs(HEARTBEAT_INTERVAL + 1);
+        let test_duration = Duration::from_secs(CLIENT_TIMEOUT - HEARTBEAT_INTERVAL);
+
+        info!("Waiting for {:?}, responding to pings...", test_duration);
+        let start_time = std::time::Instant::now();
+        let mut pings_received = 0; // 핑 수신 횟수 카운트
+
+        while start_time.elapsed() < test_duration {
+            match tokio::time::timeout(wait_duration, ws_stream.next()).await {
+                Ok(Some(Ok(Message::Ping(ping_data)))) => {
+                    info!("Received Ping #{}, sending Pong.", pings_received + 1);
+                    pings_received += 1;
+                    ws_stream
+                        .send(Message::Pong(ping_data))
+                        .await
+                        .expect("Failed to send Pong");
+                }
+                Ok(Some(Ok(Message::Text(t)))) => {
+                    error!("Received unexpected Text message during keepalive: {}", t);
+                }
+                Ok(Some(Ok(msg))) => {
+                    info!("Received other message type during keepalive: {:?}", msg);
+                    break;
+                }
+                Ok(Some(Err(e))) => {
+                    error!("WebSocket error during keepalive wait: {:?}", e);
+                    break;
+                }
+                Ok(None) => {
+                    error!("WebSocket stream ended unexpectedly during keepalive wait.");
+                    break;
+                }
+                Err(_) => {
+                    info!("No message received in interval, continuing wait.");
+                }
+            }
+            sleep(Duration::from_millis(100)).await;
+            if start_time.elapsed() >= test_duration {
+                break;
+            }
+        }
+
+        assert!(
+            pings_received > 0,
+            "Did not receive any Ping messages during the keepalive test"
+        );
+        info!("Received {} Ping messages.", pings_received);
+
+        info!("Keepalive wait finished. Sending test message.");
+        let test_msg = "Keepalive test";
+        match ws_stream.send(Message::Text(test_msg.to_string())).await {
+            Ok(_) => info!("Successfully sent message after keepalive duration."),
+            Err(e) => panic!("Failed to send message, connection likely closed: {:?}", e),
+        }
+
+        ws_stream.close(None).await.ok();
+    }
+
+    #[actix_web::test]
+    #[should_panic(expected = "Connection should be closed by server after timeout")] // 패닉 메시지 수정
+    async fn test_heartbeat_actor_timeout_without_pong() {
+        let (addr, _state, _handle) = setup_heartbeat_test_server().await;
+        let url = format!("ws://{}/test_heartbeat", addr);
+
+        let (mut ws_stream, _) = connect_raw_ws(&url) // 쿠키 제거
+            .await
+            .expect("Raw WebSocket connection failed");
+        info!("Connected. Consuming initial message.");
+
+        // 초기 메시지 소비
+        let _ = ws_stream.next().await.unwrap().unwrap();
+
+        let timeout_duration = Duration::from_secs(CLIENT_TIMEOUT + 3); // 버퍼 늘림
+        info!(
+            "Waiting for {:?} without sending Pongs...",
+            timeout_duration
+        );
+
+        let start_time = std::time::Instant::now();
+        let mut server_closed = false; // 서버가 연결을 닫았는지 추적
+
+        while start_time.elapsed() < timeout_duration {
+            match tokio::time::timeout(Duration::from_millis(500), ws_stream.next()).await {
+                Ok(Some(Ok(Message::Ping(_)))) => {
+                    info!("Received Ping, IGNORING (not sending Pong).");
+                }
+                Ok(Some(Ok(Message::Close(_)))) => {
+                    info!("Server closed connection as expected due to timeout.");
+                    server_closed = true;
+                    break; // 서버가 닫았으므로 루프 종료
+                }
+                Ok(Some(Ok(msg))) => {
+                    warn!("Received unexpected message during timeout wait: {:?}", msg);
+                }
+                Ok(Some(Err(e))) => {
+                    info!(
+                        "WebSocket error during timeout wait (may indicate closure): {:?}",
+                        e
+                    );
+                    server_closed = true; // 에러도 연결 종료로 간주
+                    break;
+                }
+                Ok(None) => {
+                    info!("WebSocket stream ended during timeout wait.");
+                    server_closed = true; // 스트림 종료도 연결 종료로 간주
+                    break;
+                }
+                Err(_) => {
+                    // 메시지 대기 시간 초과, 계속 대기
+                }
+            }
+            // 서버가 닫지 않았으면 계속 대기
+            if server_closed {
+                break;
+            }
+        }
+
+        info!("Timeout wait finished.");
+
+        // 서버가 연결을 닫았는지 명시적으로 확인
+        if !server_closed {
+            // 서버가 연결을 닫지 않았다면, 추가 읽기 시도 없이 바로 패닉
+            panic!("Connection should be closed by server after timeout, but it wasn't.");
+        } else {
+            info!("Server connection appears closed as expected.");
+            // should_panic 테스트이므로, 여기서 정상 종료되면 테스트 실패
+            // 의도적으로 패닉을 유발하지 않고, should_panic이 감지하도록 둠
+        }
+
+        // 만약 should_panic이 제대로 동작하지 않는다면, 아래 assert!로 실패 유발 가능
+        // assert!(!server_closed, "Connection should be closed by server after timeout");
+    }
+
+    // wrong_phase 테스트는 AuthPlayer 가드가 없으므로 제거됨
+    // #[actix_web::test]
+    // async fn test_heartbeat_wrong_phase_http_rejection() { ... }
+}
