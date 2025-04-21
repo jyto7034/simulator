@@ -11,8 +11,7 @@ use crate::{
     exception::GameError,
     game::GameActor,
     selector::TargetSelector,
-    server::input_handler::{InputAnswer, InputRequest},
-    zone::zone::Zone,
+    server::input_handler::InputAnswer,
 };
 
 // 이 카드명의 "카드"는 1턴에 1장밖에 "발동"할 수 없다.
