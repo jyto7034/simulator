@@ -2,6 +2,7 @@ use std::fmt;
 
 use actix::Addr;
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use crate::{
     exception::GameError, game::GameActor, resource::CardSpecsResource, utils::json::CardJson,
@@ -234,94 +235,53 @@ pub enum OwnerType {
     None,     // 소유자 없음
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Hash)]
-pub enum PlayerType {
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum PlayerKind {
     Player1,
     Player2,
 }
 
-impl PlayerType {
-    pub fn reverse(&self) -> Self {
+impl PlayerKind {
+    pub fn as_str(&self) -> &'static str {
         match self {
-            Self::Player1 => Self::Player1,
-            Self::Player2 => Self::Player2,
-        }
-    }
-
-    pub fn as_str(&self) -> &str {
-        match self {
-            PlayerType::Player1 => "player1",
-            PlayerType::Player2 => "player2",
+            PlayerKind::Player1 => "Player1",
+            PlayerKind::Player2 => "Player2",
         }
     }
 
     pub fn to_string(&self) -> String {
         match self {
-            PlayerType::Player1 => "player1".to_string(),
-            PlayerType::Player2 => "player2".to_string(),
+            PlayerKind::Player1 => "Player1".to_string(),
+            PlayerKind::Player2 => "Player2".to_string(),
+        }
+    }
+
+    pub fn reverse(&self) -> Self {
+        match self {
+            PlayerKind::Player1 => PlayerKind::Player2,
+            PlayerKind::Player2 => PlayerKind::Player1,
         }
     }
 }
 
-impl From<PlayerType> for OwnerType {
-    fn from(value: PlayerType) -> Self {
-        match value {
-            PlayerType::Player1 => Self::Self_,
-            PlayerType::Player2 => Self::Opponent,
+impl From<String> for PlayerKind {
+    fn from(s: String) -> Self {
+        match s.as_str() {
+            "Player1" => PlayerKind::Player1,
+            "Player2" => PlayerKind::Player2,
+            _ => panic!("Invalid PlayerKind string"),
         }
     }
 }
 
-impl From<OwnerType> for PlayerType {
-    fn from(value: OwnerType) -> Self {
-        match value {
-            OwnerType::Self_ => PlayerType::Player1,
-            OwnerType::Opponent => PlayerType::Player2,
-            _ => panic!("Invalid OwnerType to convert to PlayerType"),
-        }
+impl From<PlayerKind> for String {
+    fn from(player_kind: PlayerKind) -> Self {
+        player_kind.to_string()
     }
 }
 
-impl From<PlayerType> for String {
-    fn from(value: PlayerType) -> Self {
-        match value {
-            PlayerType::Player1 => "player1".to_string(),
-            PlayerType::Player2 => "player2".to_string(),
-        }
-    }
-}
-
-impl From<String> for PlayerType {
-    fn from(value: String) -> Self {
-        match &value[..] {
-            "player1" => PlayerType::Player1,
-            "player2" => PlayerType::Player2,
-            _ => panic!("Invalid string to convert to PlayerType. Got: {}", value),
-        }
-    }
-}
-
-impl From<&str> for PlayerType {
-    fn from(value: &str) -> Self {
-        match value {
-            "player1" => PlayerType::Player1,
-            "player2" => PlayerType::Player2,
-            _ => panic!("Invalid string to convert to PlayerType. Got: {}", value),
-        }
-    }
-}
-
-pub trait OwnershipComparable {
-    fn matches_owner(&self, owner: &OwnerType) -> bool;
-}
-
-impl OwnershipComparable for PlayerType {
-    fn matches_owner(&self, owner: &OwnerType) -> bool {
-        matches!(
-            (self, owner),
-            (PlayerType::Player1, OwnerType::Self_)
-                | (PlayerType::Player2, OwnerType::Opponent)
-                | (_, OwnerType::Any)
-        )
-    }
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct PlayerIdentity {
+    pub id: Uuid,
+    pub kind: PlayerKind,
 }

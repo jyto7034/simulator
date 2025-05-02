@@ -3,11 +3,10 @@ use std::io::Write;
 use std::path::Path;
 
 use actix_web::{App, HttpServer};
-use simulator_core::server::end_point::heartbeat;
-use simulator_core::server::types::SessionKey;
 use simulator_core::setup_logger;
 
 use clap::Parser;
+use uuid::Uuid;
 
 // main
 #[derive(Parser)]
@@ -32,7 +31,7 @@ struct Args {
 }
 
 // TODO: 매칭으로 만난 두 플레이어의 닉네임을 받은 뒤, 게임 공용 서버인 valid server 에 전송하여 실제 플레이어가 맞는지 확인 후, key 값을 리턴 받음.
-pub fn check_session(_nick1: String, _nick2: String) -> (SessionKey, SessionKey) {
+pub fn check_session(_nick1: String, _nick2: String) -> (Uuid, Uuid) {
     todo!()
 }
 
@@ -95,12 +94,12 @@ async fn main() -> std::io::Result<()> {
     setup_logger();
     HttpServer::new(move || {
         App::new()
-            // .app_data(state.clone())
-            // .service(mulligan_phase)
-            // .service(draw_phase)
-            // .service(standby_phase)
-            // .service(main_phase_start_phase)
-            .service(heartbeat)
+        // .app_data(state.clone())
+        // .service(mulligan_phase)
+        // .service(draw_phase)
+        // .service(standby_phase)
+        // .service(main_phase_start_phase)
+        // .service(heartbeat)
     })
     .bind("127.0.0.1:8080")?
     .run()

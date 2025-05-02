@@ -1,0 +1,60 @@
+  2025-05-01T10:56:11.005787Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-05-01T10:56:11.006453Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-05-01T10:56:11.006474Z  INFO  starting service: "actix-web-service-127.0.0.1:8992", workers: 32, listening on: 127.0.0.1:8992
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-05-01T10:56:11.013193Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at simulator_core\src\server\end_point.rs:118 on actix-rt|system:0|arbiter:0 ThreadId(4)
+    in game with player: AuthPlayer { ptype: Player1, id: f2836ffe-6089-4ec4-b2ca-77a6ce201861 }, player_type: Player1
+
+  2025-05-01T10:56:11.013260Z  INFO  WebSocket 연결 성공: player=Player1
+    at simulator_core\src\server\end_point.rs:128 on actix-rt|system:0|arbiter:0 ThreadId(4)
+    in game with player: AuthPlayer { ptype: Player1, id: f2836ffe-6089-4ec4-b2ca-77a6ce201861 }, player_type: Player1
+
+  2025-05-01T10:56:11.013356Z  INFO  ConnectionActor started for player f2836ffe-6089-4ec4-b2ca-77a6ce201861
+    at simulator_core\src\server\actor\connection.rs:121 on actix-rt|system:0|arbiter:0 ThreadId(4)
+
+  2025-05-01T10:56:27.667100Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-05-01T10:56:27.668150Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-05-01T10:56:27.668182Z  INFO  starting service: "actix-web-service-127.0.0.1:8996", workers: 32, listening on: 127.0.0.1:8996
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-05-01T10:56:27.675529Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at simulator_core\src\server\end_point.rs:118 on actix-rt|system:0|arbiter:0 ThreadId(4)
+    in game with player: AuthPlayer { ptype: Player1, id: ae7636d5-1399-4b4c-8b54-9bfc01810303 }, player_type: Player1
+
+  2025-05-01T10:56:27.675618Z  INFO  WebSocket 연결 성공: player=Player1
+    at simulator_core\src\server\end_point.rs:128 on actix-rt|system:0|arbiter:0 ThreadId(4)
+    in game with player: AuthPlayer { ptype: Player1, id: ae7636d5-1399-4b4c-8b54-9bfc01810303 }, player_type: Player1
+
+  2025-05-01T10:56:27.675739Z  INFO  ConnectionActor started for player ae7636d5-1399-4b4c-8b54-9bfc01810303
+    at simulator_core\src\server\actor\connection.rs:121 on actix-rt|system:0|arbiter:0 ThreadId(4)
+
+  2025-05-01T10:59:08.630503Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-05-01T10:59:08.631778Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-05-01T10:59:08.631807Z  INFO  starting service: "actix-web-service-127.0.0.1:9043", workers: 32, listening on: 127.0.0.1:9043
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-05-01T10:59:08.638924Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at simulator_core\src\server\end_point.rs:118 on actix-rt|system:0|arbiter:0 ThreadId(4)
+    in game with player: AuthPlayer { ptype: Player1, id: 8b5b9489-3a2a-4c80-970b-b88c4576ec56 }, player_type: Player1
+
+  2025-05-01T10:59:08.639018Z  INFO  WebSocket 연결 성공: player=Player1
+    at simulator_core\src\server\end_point.rs:128 on actix-rt|system:0|arbiter:0 ThreadId(4)
+    in game with player: AuthPlayer { ptype: Player1, id: 8b5b9489-3a2a-4c80-970b-b88c4576ec56 }, player_type: Player1
+
+  2025-05-01T10:59:08.639143Z  INFO  ConnectionActor started for player 8b5b9489-3a2a-4c80-970b-b88c4576ec56
+    at simulator_core\src\server\actor\connection.rs:121 on actix-rt|system:0|arbiter:0 ThreadId(4)
+

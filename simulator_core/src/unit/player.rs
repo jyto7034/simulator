@@ -1,5 +1,5 @@
 use crate::{
-    card::{cards::Cards, types::PlayerType},
+    card::{cards::Cards, types::PlayerKind},
     selector::mulligan::MulliganState,
     zone::{deck::Deck, effect::Effect, field::Field, graveyard::Graveyard, hand::Hand},
     OptArc,
@@ -48,7 +48,7 @@ impl Resoruce {
 #[derive(Clone)]
 pub struct Player {
     pub opponent: OptArc<Player>,
-    player_type: PlayerType,
+    player_type: PlayerKind,
     mulligan_state: MulliganState,
     cards: Cards,
     cost: Resoruce,
@@ -64,7 +64,7 @@ pub struct Player {
 impl Player {
     pub fn new(
         opponent: OptArc<Player>,
-        player_type: PlayerType,
+        player_type: PlayerKind,
         cards: Cards,
         cost: Resoruce,
         mana: Resoruce,
@@ -88,7 +88,7 @@ impl Player {
         &mut self.mulligan_state
     }
 
-    pub fn get_player_type(&self) -> PlayerType {
+    pub fn get_player_type(&self) -> PlayerKind {
         self.player_type
     }
 

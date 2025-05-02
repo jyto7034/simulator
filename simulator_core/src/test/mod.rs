@@ -11,24 +11,25 @@ use async_tungstenite::{
     WebSocketStream,
 };
 use ctor::ctor;
+use futures::SinkExt;
 use futures_util::StreamExt;
 use rand::{seq::SliceRandom, thread_rng};
 use serde::de::DeserializeOwned;
 use serde_json::{json, Value};
 use tokio::net::TcpStream;
+use tracing::{info, warn};
 use url::Url;
 use uuid::Uuid;
 
 use crate::{
-    card::{types::PlayerType, Card},
+    card::{types::PlayerKind, Card},
     card_gen::CardGenerator,
     enums::{CARD_JSON_PATH, HEARTBEAT_INTERVAL, MAX_CARD_SIZE},
     game::GameActor,
     server::{
-        end_point::heartbeat,
+        end_point::game,
         jsons::{draw, mulligan, ErrorMessage},
-        session::PlayerSessionManager,
-        types::{ServerState, SessionKey},
+        types::ServerState,
     },
     setup_logger,
     utils::{json, parse_json_to_deck_code},
@@ -93,16 +94,15 @@ pub fn create_server_state() -> web::Data<ServerState> {
         .expect("Failed to parse deck code");
 
     let game_actor = GameActor::create(|ctx| {
-        let game_actor = GameActor::new();
+        let game_actor = GameActor::new(Uuid::new_v4(), PlayerKind::Player1);
 
         game_actor
     });
 
     web::Data::new(ServerState {
         game: game_actor,
-        player_cookie: SessionKey::new("player1".to_string()),
-        opponent_cookie: SessionKey::new("player2".to_string()),
-        session_manager: PlayerSessionManager::new(),
+        player1_id: Uuid::new_v4(),
+        player2_id: Uuid::new_v4(),
     })
 }
 
@@ -112,11 +112,10 @@ pub async fn spawn_server() -> (SocketAddr, Data<ServerState>, ServerHandle) {
     let listener = TcpListener::bind("127.0.0.1:0").unwrap();
     let addr = listener.local_addr().unwrap();
 
-    let server =
-        HttpServer::new(move || App::new().app_data(server_state.clone()).service(heartbeat))
-            .listen(listener)
-            .unwrap()
-            .run();
+    let server = HttpServer::new(move || App::new().app_data(server_state.clone()).service(game))
+        .listen(listener)
+        .unwrap()
+        .run();
 
     let handle = server.handle();
     tokio::spawn(server);
@@ -213,7 +212,7 @@ pub async fn expect_mulligan_complete_message(
 
 pub fn verify_mulligan_cards(
     server_state: &ServerState,
-    player_type: PlayerType,
+    player_type: PlayerKind,
     rerolled_cards: &[Uuid],
     deal_cards: Option<&[Uuid]>,
     reroll_count: usize,
@@ -283,7 +282,7 @@ impl RequestTest {
         T: DeserializeOwned,
         F: Fn(T) -> R,
     {
-        println!("Response: {}", self.response);
+        info!("Response: {}", self.response);
         let msg = serde_json::from_str::<T>(self.response.as_str())
             .expect("Failed to parse JSON (expect_message)");
         extractor(msg)
@@ -317,23 +316,32 @@ impl RequestTest {
 }
 
 pub struct WebSocketTest {
-    stream: WebSocketStream<TokioAdapter<TcpStream>>,
+    pub stream: futures_util::stream::SplitStream<
+        async_tungstenite::WebSocketStream<
+            async_tungstenite::tokio::TokioAdapter<tokio::net::TcpStream>,
+        >,
+    >,
+    pub sink: futures_util::stream::SplitSink<
+        async_tungstenite::WebSocketStream<
+            async_tungstenite::tokio::TokioAdapter<tokio::net::TcpStream>,
+        >,
+        Message,
+    >,
 }
 //-------------------------------
 // WebSocketTest 구현
 //-------------------------------
+
 impl WebSocketTest {
-    /// 웹소켓 연결을 생성하고 래퍼 객체를 반환합니다
     pub async fn connect(url: String, cookie: String) -> Result<Self, tungstenite::Error> {
+        // ... (connect 로직은 이전과 동일) ...
         let mut url = Url::parse(&url).unwrap();
         if url.scheme() == "http" {
             url.set_scheme("ws").unwrap()
         } else if url.scheme() != "ws" && url.scheme() != "wss" {
-            // ws 또는 wss 가 아니면 에러 처리 (또는 기본 ws로 설정)
-            return Err(tungstenite::Error::Url(UrlError::EmptyHostName));
+            return Err(tungstenite::Error::Url(UrlError::UnsupportedUrlScheme));
         }
 
-        // 호스트 추출 (포트 포함될 수 있음)
         let host = url
             .host_str()
             .ok_or(tungstenite::Error::Url(UrlError::EmptyHostName))?;
@@ -356,22 +364,22 @@ impl WebSocketTest {
             .header("Sec-WebSocket-Version", "13")
             .body(())?;
 
-        let (stream, response) = connect_async(request).await?;
+        let (ws_stream, response) = async_tungstenite::tokio::connect_async(request).await?;
 
         assert_eq!(
             response.status(),
             tungstenite::http::StatusCode::SWITCHING_PROTOCOLS
         );
 
-        Ok(Self { stream })
+        let (sink, stream) = ws_stream.split(); // 스트림과 싱크 분리
+
+        Ok(Self { stream, sink }) // 분리된 스트림과 싱크 저장
     }
 
-    /// 메시지를 전송합니다
     pub async fn send(&mut self, msg: impl Into<Message>) -> Result<(), tungstenite::Error> {
-        self.stream.send(msg.into()).await
+        self.sink.send(msg.into()).await // 싱크를 통해 메시지 전송
     }
 
-    /// 특정 타입의 메시지가 도착할 때까지 대기하고, 다른 메시지(ping 포함)는 적절히 처리합니다
     pub async fn expect_message<T, F, R>(&mut self, extractor: F) -> R
     where
         T: DeserializeOwned,
@@ -381,27 +389,48 @@ impl WebSocketTest {
             loop {
                 match self.stream.next().await {
                     Some(Ok(Message::Text(text))) => {
+                        println!("Received message: {}", text);
                         if let Ok(parsed) = serde_json::from_str::<T>(&text) {
                             return extractor(parsed);
                         } else {
-                            println!("Failed to parse: {}", text);
+                            println!("Failed to parse into expected type: {}", text);
+                            // 중요: 여기서 continue를 해야 다른 타입 메시지를 기다림
+                            continue;
                         }
                     }
                     Some(Ok(Message::Ping(data))) => {
-                        self.stream.send(Message::Pong(data)).await.ok();
+                        println!("Received ping, sending pong");
+                        // 중요: Pong은 sink를 통해 보내야 함
+                        if self.sink.send(Message::Pong(data)).await.is_err() {
+                            // 에러 처리 필요
+                            eprintln!("Failed to send Pong");
+                        }
                     }
-                    Some(Ok(_)) => continue,
+                    Some(Ok(Message::Pong(_))) => {
+                        println!("Received Pong, ignoring.");
+                        continue; // Pong은 무시하고 다음 메시지 기다림
+                    }
+                    Some(Ok(Message::Close(reason))) => {
+                        panic!("WebSocket closed unexpectedly while waiting for specific message. Reason: {:?}", reason);
+                    }
+                    Some(Ok(msg)) => {
+                        println!("Ignoring other message type: {:?}", msg);
+                        continue; // 다른 메시지 타입 무시
+                    }
                     Some(Err(e)) => panic!("WebSocket error: {:?}", e),
                     None => panic!("WebSocket closed unexpectedly"),
                 }
             }
         };
-        match tokio::time::timeout(Duration::from_secs(HEARTBEAT_INTERVAL), callback).await {
+        // 타임아웃 시간은 HEARTBEAT_INTERVAL 보다 길게 설정
+        match tokio::time::timeout(Duration::from_secs(HEARTBEAT_INTERVAL + 5), callback).await {
             Ok(result) => result,
-            Err(_) => panic!("Expected message timeout after 5 seconds"),
+            Err(_) => panic!(
+                "Expected message timeout after {} seconds",
+                HEARTBEAT_INTERVAL + 5
+            ),
         }
     }
-
     /// 에러 메시지를 기다리고 에러 문자열을 반환합니다
     pub async fn expect_error(&mut self) -> String {
         let extractor = |message: ErrorMessage| match message {

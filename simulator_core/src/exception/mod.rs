@@ -1,4 +1,5 @@
-use crate::{card::types::PlayerType, server::jsons::game_features};
+use crate::{card::types::PlayerKind, server::jsons::game_features};
+use actix::MailboxError;
 use actix_web::{http::StatusCode, HttpResponse, ResponseError};
 use std::fmt;
 
@@ -56,7 +57,7 @@ pub enum GameError {
     InvalidTargetCount,
     NoValidTargets,
     CannotActivate,
-    DeckCodeIsMissing(PlayerType),
+    DeckCodeIsMissing(PlayerKind),
     PlayerInitializeFailed,
     PlayerDataNotIntegrity,
     PathNotExist,
@@ -212,4 +213,10 @@ pub enum MessageProcessResult<T> {
     SystemHandled(game_features::ClientMessage), // 게임 시스템에서 처리하는 메시지
     NeedRetry,                                   // 에러가 발생했지만 재시도 가능
     TerminateSession(GameError),                 // 세션 종료 필요
+}
+
+impl From<MailboxError> for GameError {
+    fn from(_: MailboxError) -> Self {
+        GameError::InternalServerError
+    }
 }

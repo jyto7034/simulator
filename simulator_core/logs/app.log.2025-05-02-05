@@ -1,0 +1,111 @@
+  2025-05-02T05:37:37.413919Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-05-02T05:37:37.413919Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-05-02T05:37:37.413925Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-02T05:37:37.415963Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-05-02T05:37:37.415995Z  INFO  starting service: "actix-web-service-127.0.0.1:9492", workers: 32, listening on: 127.0.0.1:9492
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-05-02T05:37:37.416010Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-05-02T05:37:37.416025Z  INFO  starting service: "actix-web-service-127.0.0.1:9494", workers: 32, listening on: 127.0.0.1:9494
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-05-02T05:37:37.416063Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-02T05:37:37.416072Z  INFO  starting service: "actix-web-service-127.0.0.1:9493", workers: 32, listening on: 127.0.0.1:9493
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-02T05:37:37.426946Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at simulator_core\src\server\end_point.rs:118 on actix-rt|system:2|arbiter:1 ThreadId(7)
+    in game with player: AuthPlayer { ptype: Player1, id: 4d503269-0f75-4d12-a43d-5d398d825c24 }, player_type: Player1
+
+  2025-05-02T05:37:37.426946Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at simulator_core\src\server\end_point.rs:118 on actix-rt|system:0|arbiter:2 ThreadId(8)
+    in game with player: AuthPlayer { ptype: Player1, id: df728f9b-ac67-433c-a3c0-139bde55fff0 }, player_type: Player1
+
+  2025-05-02T05:37:37.426954Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at simulator_core\src\server\end_point.rs:118 on actix-rt|system:1|arbiter:0 ThreadId(6)
+    in game with player: AuthPlayer { ptype: Player1, id: f7b6212c-7e05-44b6-bcad-7a23e010463b }, player_type: Player1
+
+  2025-05-02T05:37:37.427067Z  INFO  WebSocket 연결 성공: player=Player1
+    at simulator_core\src\server\end_point.rs:128 on actix-rt|system:1|arbiter:0 ThreadId(6)
+    in game with player: AuthPlayer { ptype: Player1, id: f7b6212c-7e05-44b6-bcad-7a23e010463b }, player_type: Player1
+
+  2025-05-02T05:37:37.427067Z  INFO  WebSocket 연결 성공: player=Player1
+    at simulator_core\src\server\end_point.rs:128 on actix-rt|system:0|arbiter:2 ThreadId(8)
+    in game with player: AuthPlayer { ptype: Player1, id: df728f9b-ac67-433c-a3c0-139bde55fff0 }, player_type: Player1
+
+  2025-05-02T05:37:37.427067Z  INFO  WebSocket 연결 성공: player=Player1
+    at simulator_core\src\server\end_point.rs:128 on actix-rt|system:2|arbiter:1 ThreadId(7)
+    in game with player: AuthPlayer { ptype: Player1, id: 4d503269-0f75-4d12-a43d-5d398d825c24 }, player_type: Player1
+
+  2025-05-02T05:37:37.427220Z  INFO  ConnectionActor started for player df728f9b-ac67-433c-a3c0-139bde55fff0
+    at simulator_core\src\server\actor\connection.rs:127 on actix-rt|system:0|arbiter:2 ThreadId(8)
+
+  2025-05-02T05:37:37.427224Z  INFO  ConnectionActor started for player 4d503269-0f75-4d12-a43d-5d398d825c24
+    at simulator_core\src\server\actor\connection.rs:127 on actix-rt|system:2|arbiter:1 ThreadId(7)
+
+  2025-05-02T05:37:37.427224Z  INFO  ConnectionActor started for player f7b6212c-7e05-44b6-bcad-7a23e010463b
+    at simulator_core\src\server\actor\connection.rs:127 on actix-rt|system:1|arbiter:0 ThreadId(6)
+
+  2025-05-02T05:37:47.434577Z  WARN  Received unexpected message during timeout wait: Ping([104, 101, 97, 114, 116, 98, 101, 97, 116])
+    at simulator_core\tests\test.rs:122 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-05-02T05:37:52.429357Z ERROR  Failed to send ping to player Player1 (session_id: df728f9b-ac67-433c-a3c0-139bde55fff0): Closed
+    at simulator_core\src\server\actor\connection.rs:85 on actix-rt|system:0|arbiter:2 ThreadId(8)
+
+  2025-05-02T05:37:52.429485Z  WARN  Received unexpected message during timeout wait: Ping([104, 101, 97, 114, 116, 98, 101, 97, 116])
+    at simulator_core\tests\test.rs:122 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-05-02T05:37:57.438927Z  WARN  Heartbeat timeout for player Player1 (session_id: f7b6212c-7e05-44b6-bcad-7a23e010463b). Closing connection.
+    at simulator_core\src\server\actor\connection.rs:64 on actix-rt|system:1|arbiter:0 ThreadId(6)
+
+  2025-05-02T05:37:57.438927Z  WARN  Heartbeat timeout for player Player1 (session_id: 4d503269-0f75-4d12-a43d-5d398d825c24). Closing connection.
+    at simulator_core\src\server\actor\connection.rs:64 on actix-rt|system:2|arbiter:1 ThreadId(7)
+
+  2025-05-02T05:37:57.438927Z  WARN  Heartbeat timeout for player Player1 (session_id: df728f9b-ac67-433c-a3c0-139bde55fff0). Closing connection.
+    at simulator_core\src\server\actor\connection.rs:64 on actix-rt|system:0|arbiter:2 ThreadId(8)
+
+  2025-05-02T05:37:57.439015Z  INFO  ConnectionActor stopping for player Player1 (session_id: f7b6212c-7e05-44b6-bcad-7a23e010463b)
+    at simulator_core\src\server\actor\connection.rs:168 on actix-rt|system:1|arbiter:0 ThreadId(6)
+
+  2025-05-02T05:37:57.439019Z  INFO  ConnectionActor stopping for player Player1 (session_id: df728f9b-ac67-433c-a3c0-139bde55fff0)
+    at simulator_core\src\server\actor\connection.rs:168 on actix-rt|system:0|arbiter:2 ThreadId(8)
+
+  2025-05-02T05:37:57.439047Z  INFO  ConnectionActor stopped for player Player1 (session_id: f7b6212c-7e05-44b6-bcad-7a23e010463b)
+    at simulator_core\src\server\actor\connection.rs:178 on actix-rt|system:1|arbiter:0 ThreadId(6)
+
+  2025-05-02T05:37:57.439048Z  INFO  ConnectionActor stopped for player Player1 (session_id: df728f9b-ac67-433c-a3c0-139bde55fff0)
+    at simulator_core\src\server\actor\connection.rs:178 on actix-rt|system:0|arbiter:2 ThreadId(8)
+
+  2025-05-02T05:37:57.439029Z  INFO  ConnectionActor stopping for player Player1 (session_id: 4d503269-0f75-4d12-a43d-5d398d825c24)
+    at simulator_core\src\server\actor\connection.rs:168 on actix-rt|system:2|arbiter:1 ThreadId(7)
+
+  2025-05-02T05:37:57.439066Z  INFO  ConnectionActor stopped for player Player1 (session_id: 4d503269-0f75-4d12-a43d-5d398d825c24)
+    at simulator_core\src\server\actor\connection.rs:178 on actix-rt|system:2|arbiter:1 ThreadId(7)
+
+  2025-05-02T05:37:57.439101Z ERROR  Failed to close WebSocket session for player Player1 (session_id: f7b6212c-7e05-44b6-bcad-7a23e010463b): Closed
+    at simulator_core\src\server\actor\connection.rs:110 on actix-rt|system:1|arbiter:0 ThreadId(6)
+
+  2025-05-02T05:37:57.439101Z ERROR  Failed to close WebSocket session for player Player1 (session_id: df728f9b-ac67-433c-a3c0-139bde55fff0): Closed
+    at simulator_core\src\server\actor\connection.rs:110 on actix-rt|system:0|arbiter:2 ThreadId(8)
+
+  2025-05-02T05:37:57.439106Z  INFO  Session cleanup task completed: player=Player1, session_id=4d503269-0f75-4d12-a43d-5d398d825c24
+    at simulator_core\src\server\actor\connection.rs:115 on actix-rt|system:2|arbiter:1 ThreadId(7)
+
+  2025-05-02T05:37:57.439116Z  INFO  Session cleanup task completed: player=Player1, session_id=f7b6212c-7e05-44b6-bcad-7a23e010463b
+    at simulator_core\src\server\actor\connection.rs:115 on actix-rt|system:1|arbiter:0 ThreadId(6)
+
+  2025-05-02T05:37:57.439131Z  INFO  Session cleanup task completed: player=Player1, session_id=df728f9b-ac67-433c-a3c0-139bde55fff0
+    at simulator_core\src\server\actor\connection.rs:115 on actix-rt|system:0|arbiter:2 ThreadId(8)
+

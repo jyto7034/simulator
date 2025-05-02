@@ -1,14 +1,12 @@
 use actix::Addr;
+use uuid::Uuid;
 
 use crate::{card::cards::Cards, game::GameActor};
 
-use super::session::PlayerSessionManager;
-
 pub struct ServerState {
     pub game: Addr<GameActor>,
-    pub player_cookie: SessionKey,
-    pub opponent_cookie: SessionKey,
-    pub session_manager: PlayerSessionManager,
+    pub player1_id: Uuid,
+    pub player2_id: Uuid,
 }
 
 impl ServerState {
@@ -19,27 +17,12 @@ impl ServerState {
     pub fn new() -> Self {
         Self {
             game: todo!(),
-            player_cookie: todo!(),
-            opponent_cookie: todo!(),
-            session_manager: todo!(),
+            player1_id: todo!(),
+            player2_id: todo!(),
         }
     }
 }
 
 pub trait ValidationPayload {
     fn validate(&self, cards: &Cards) -> Option<()>;
-}
-
-pub struct SessionKey {
-    key: String,
-}
-
-impl SessionKey {
-    pub fn new(key: String) -> Self {
-        Self { key }
-    }
-
-    pub fn get(&self) -> &str {
-        &self.key
-    }
 }

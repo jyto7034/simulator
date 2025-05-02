@@ -1,7 +1,7 @@
 pub mod json;
 
 use crate::card::cards::Cards;
-use crate::card::types::PlayerType;
+use crate::card::types::PlayerKind;
 use crate::card::Card;
 use crate::card_gen::{CardGenerator, Keys};
 use crate::enums::*;
@@ -45,8 +45,8 @@ pub fn parse_json_to_deck_code(
 ) -> Result<(String, String), GameError> {
     match (&p1_card_json, &p2_card_json) {
         (None, None) => return Err(GameError::DecodeError),
-        (None, Some(_)) => return Err(GameError::DeckCodeIsMissing(PlayerType::Player1)),
-        (Some(_), None) => return Err(GameError::DeckCodeIsMissing(PlayerType::Player2)),
+        (None, Some(_)) => return Err(GameError::DeckCodeIsMissing(PlayerKind::Player1)),
+        (Some(_), None) => return Err(GameError::DeckCodeIsMissing(PlayerKind::Player2)),
         _ => {}
     }
 

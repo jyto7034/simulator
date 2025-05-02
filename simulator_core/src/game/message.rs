@@ -3,7 +3,7 @@ use tracing::info;
 use uuid::Uuid;
 
 use crate::{
-    card::types::PlayerType,
+    card::types::PlayerKind,
     exception::GameError,
     game::phase::PlayerPhaseProgress,
     player::{message::RequestMulliganReroll, PlayerActor},
@@ -26,7 +26,7 @@ impl Handler<InitializeGame> for GameActor {
 #[derive(Message)]
 #[rtype(result = "()")]
 pub struct RegisterPlayer {
-    pub player_type: PlayerType,
+    pub player_type: PlayerKind,
     pub player_addr: Addr<PlayerActor>,
 }
 
@@ -37,7 +37,7 @@ impl Handler<RegisterPlayer> for GameActor {
 
 #[derive(Message)]
 #[rtype(result = "()")]
-pub struct PlayerReady(pub PlayerType);
+pub struct PlayerReady(pub PlayerKind);
 
 impl Handler<PlayerReady> for GameActor {
     type Result = ();
@@ -47,7 +47,7 @@ impl Handler<PlayerReady> for GameActor {
 #[derive(Message)]
 #[rtype(result = "Result<(), GameError>")]
 pub struct RequestPlayCard {
-    pub player_type: PlayerType,
+    pub player_type: PlayerKind,
     pub card_id: Uuid,
 }
 
@@ -61,7 +61,7 @@ impl Handler<RequestPlayCard> for GameActor {
 #[derive(Message)]
 #[rtype(result = "Result<(), GameError>")]
 pub struct SubmitInput {
-    pub player_type: PlayerType,
+    pub player_type: PlayerKind,
     pub request_id: Uuid,
     pub answer: InputAnswer,
 }
@@ -76,7 +76,7 @@ impl Handler<SubmitInput> for GameActor {
 #[derive(Message)]
 #[rtype(result = "Result<(), GameError>")]
 pub struct RequestInput {
-    pub player_type: PlayerType,
+    pub player_type: PlayerKind,
     pub request_id: Uuid,
     pub request: InputRequest,
 }
@@ -91,7 +91,7 @@ impl Handler<RequestInput> for GameActor {
 #[derive(Message)]
 #[rtype(result = "Result<Vec<Uuid>, GameError>")]
 pub struct ProcessRerollRequest {
-    pub player_type: PlayerType,
+    pub player_type: PlayerKind,
     pub cards_to_reroll: Vec<Uuid>,
 }
 
@@ -111,10 +111,7 @@ impl Handler<ProcessRerollRequest> for GameActor {
         // TODO: 해당 플레이어가 리롤 가능한 상태인지 추가 검사 (예: 이미 완료하지 않았는지)
 
         // 2. 해당 PlayerActor 주소 가져오기
-        let player_addr = match self.players.get(&msg.player_type) {
-            Some(addr) => addr.clone(),
-            None => return Response::reply(Err(GameError::PlayerNotFound)),
-        };
+        let player_addr = self.get_player_addr_by_kind(msg.player_type);
 
         // 3. PlayerActor에게 RequestMulliganReroll 메시지 보내기
         let fut = async move {
@@ -172,7 +169,7 @@ impl Handler<IsCorrectPhase> for GameActor {
 #[derive(Message)]
 #[rtype(result = "Result<(), GameError>")]
 pub struct CheckReEntry {
-    pub player_type: PlayerType,
+    pub player_type: PlayerKind,
 }
 
 impl Handler<CheckReEntry> for GameActor {

@@ -5,7 +5,7 @@ use serde::de::DeserializeOwned;
 use uuid::Uuid;
 
 use crate::{
-    card::types::PlayerType,
+    card::types::PlayerKind,
     exception::{GameError, MessageProcessResult},
     serialize_error,
 };
@@ -91,7 +91,7 @@ impl MessageHandler {
         session: &mut Session,
         json: &str,
         session_id: Uuid,
-        player_type: PlayerType,
+        player_type: PlayerKind,
     ) -> MessageProcessResult<T> {
         // 반환 값이 Ok면 계속, Err면 함수를 종료해야 함
         let parse_result = serde_json::from_str::<serde_json::Value>(json);
@@ -131,7 +131,7 @@ impl MessageHandler {
         json: &str,
         error: serde_json::Error,
         session_id: Uuid,
-        player_type: PlayerType,
+        player_type: PlayerKind,
     ) -> MessageProcessResult<T> {
         self.parsing_error_count += 1;
 
@@ -155,7 +155,7 @@ impl MessageHandler {
         &mut self,
         session: &mut Session,
         session_id: Uuid,
-        player_type: PlayerType,
+        player_type: PlayerKind,
     ) -> MessageProcessResult<T> {
         self.unexpected_msg_count += 1;
 
@@ -174,7 +174,7 @@ impl MessageHandler {
         session: &mut Session,
         error: GameError,
         session_id: Uuid,
-        player_type: PlayerType,
+        player_type: PlayerKind,
     ) {
         // 에러 메시지 전송 (최대 3회 시도)
         self.send_error_with_retry(session, error).await;

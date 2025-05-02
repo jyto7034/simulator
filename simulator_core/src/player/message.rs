@@ -1,5 +1,10 @@
-use crate::{enums::ZoneType, exception::GameError};
-use actix::{Context, Handler, Message};
+use crate::{
+    card::{cards::CardVecExt, Card},
+    enums::ZoneType,
+    exception::GameError,
+};
+use actix::{Addr, Context, Handler, Message};
+use tracing::info;
 use uuid::Uuid;
 
 use super::PlayerActor;
@@ -39,5 +44,53 @@ impl Handler<RequestMulliganReroll> for PlayerActor {
 
         // 뽑은 카드 목록을 반환
         Ok(new_cards)
+    }
+}
+
+#[derive(Message)]
+#[rtype(result = "()")] // 새로 뽑은 카드 목록 또는 에러 반환
+pub struct SetOpponent {
+    pub opponent: Addr<PlayerActor>,
+}
+
+impl Handler<SetOpponent> for PlayerActor {
+    type Result = ();
+
+    fn handle(&mut self, msg: SetOpponent, ctx: &mut Context<Self>) -> Self::Result {
+        println!(
+            "PLAYER ACTOR [{:?}]: Handling SetOpponent",
+            self.player_type
+        );
+
+        // 상대방 플레이어를 설정
+        self.opponent = Some(msg.opponent);
+    }
+}
+
+#[derive(Message)]
+#[rtype(result = "Vec<Card>")]
+pub struct GetCardsByUuid {
+    pub uuid: Vec<Uuid>,
+}
+
+impl Handler<GetCardsByUuid> for PlayerActor {
+    type Result = Vec<Card>; // 카드 목록 반환
+
+    fn handle(&mut self, msg: GetCardsByUuid, ctx: &mut Context<Self>) -> Self::Result {
+        info!(
+            "PLAYER ACTOR [{:?}]: Handling GetCardsByUuid",
+            self.player_type
+        );
+
+        // UUID에 해당하는 카드 목록을 반환
+        let mut result = vec![];
+        for uuid in msg.uuid {
+            if let Some(card) = self.get_cards().find_by_uuid(uuid) {
+                result.push(card.clone());
+            } else {
+                return vec![]; // 카드가 없으면 빈 벡터 반환
+            }
+        }
+        result
     }
 }

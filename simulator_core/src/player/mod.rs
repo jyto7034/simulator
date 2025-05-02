@@ -3,7 +3,7 @@ use tracing::{debug, instrument};
 use uuid::Uuid;
 
 use crate::{
-    card::{cards::Cards, take::TopTake, types::PlayerType, Card},
+    card::{cards::Cards, take::TopTake, types::PlayerKind, Card},
     enums::ZoneType,
     exception::GameError,
     selector::{mulligan::MulliganState, TargetCount},
@@ -16,8 +16,8 @@ use crate::{
 pub mod message;
 
 pub struct PlayerActor {
-    pub opponent: Addr<PlayerActor>,
-    player_type: PlayerType,
+    opponent: Option<Addr<PlayerActor>>,
+    player_type: PlayerKind,
     mulligan_state: MulliganState,
     cards: Cards,
     cost: Resoruce,
@@ -35,15 +35,11 @@ impl Actor for PlayerActor {
 }
 
 impl PlayerActor {
-    pub fn new(
-        player_type: PlayerType,
-        opponent: Addr<PlayerActor>,
-        mulligan_state: MulliganState,
-    ) -> Self {
+    pub fn new(player_type: PlayerKind) -> Self {
         Self {
             player_type,
-            opponent,
-            mulligan_state,
+            opponent: None,
+            mulligan_state: MulliganState::new(),
             cards: Cards::new(),
             cost: Resoruce::new(0, 0),
             mana: Resoruce::new(0, 0),
@@ -71,7 +67,7 @@ impl PlayerActor {
     }
 
     #[instrument(skip(self), fields(player_type = ?player_type.into()))]
-    pub fn get_new_mulligan_cards<T: Into<PlayerType> + Copy>(
+    pub fn get_new_mulligan_cards<T: Into<PlayerKind> + Copy>(
         &mut self,
         player_type: T,
         count: usize,
@@ -98,6 +94,14 @@ impl PlayerActor {
         );
 
         Ok(uuids)
+    }
+
+    pub fn get_cards_mut(&mut self) -> &mut Cards {
+        &mut self.cards
+    }
+
+    pub fn get_cards(&self) -> &Cards {
+        &self.cards
     }
 }
 

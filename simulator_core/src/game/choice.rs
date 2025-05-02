@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    card::types::PlayerType, enums::ZoneType, exception::GameError, server::jsons::game_features,
+    card::types::PlayerKind, enums::ZoneType, exception::GameError, server::jsons::game_features,
 };
 
 // ChoiceType 은 카드 선택의 종류를 나타냄
@@ -43,7 +43,7 @@ impl ChoiceType {
 #[derive(Debug, Clone)]
 pub struct ChoiceState {
     // 기본 정보
-    player: PlayerType,
+    player: PlayerKind,
     choice_type: ChoiceType,
 
     // 소스 및 대상 정보
@@ -65,7 +65,7 @@ pub struct ChoiceState {
 impl Default for ChoiceState {
     fn default() -> Self {
         Self {
-            player: PlayerType::Player1,
+            player: PlayerKind::Player1,
             choice_type: ChoiceType::Dig,
             source_card_id: None,
             source_effect_id: None,
@@ -80,12 +80,12 @@ impl Default for ChoiceState {
 }
 
 impl ChoiceState {
-    pub fn builder(player: PlayerType, choice_type: ChoiceType) -> ChoiceStateBuilder {
+    pub fn builder(player: PlayerKind, choice_type: ChoiceType) -> ChoiceStateBuilder {
         ChoiceStateBuilder::new(player, choice_type)
     }
 
     pub fn new(
-        player: PlayerType,
+        player: PlayerKind,
         choice_type: ChoiceType,
         source_card_id: Option<Uuid>,
         source_effect_id: Option<Uuid>,
@@ -129,7 +129,7 @@ impl ChoiceState {
 }
 
 pub struct ChoiceStateBuilder {
-    player: PlayerType,
+    player: PlayerKind,
     choice_type: ChoiceType,
     source_card_id: Option<Uuid>,
     source_effect_id: Option<Uuid>,
@@ -142,7 +142,7 @@ pub struct ChoiceStateBuilder {
 }
 
 impl ChoiceStateBuilder {
-    pub fn new(player: PlayerType, choice_type: ChoiceType) -> Self {
+    pub fn new(player: PlayerKind, choice_type: ChoiceType) -> Self {
         Self {
             player,
             choice_type,

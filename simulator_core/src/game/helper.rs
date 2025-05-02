@@ -1,6 +1,8 @@
 use uuid::Uuid;
 
-use crate::{card::types::PlayerType, exception::GameError};
+use crate::{card::types::PlayerKind, exception::GameError, player::message::GetCardsByUuid};
+
+use super::GameActor;
 
 // impl Game {
 //     pub fn restore_then_reroll_mulligan_cards<T: Into<PlayerType>>(
@@ -32,4 +34,43 @@ macro_rules! downcast_effect {
 
 pub async fn wait_for_input() -> Result<(), GameError> {
     todo!()
+}
+
+impl GameActor {
+    /// 파라미터로 들어오는 카드들을 덱의 맨 밑으로 복원합니다.
+    ///
+    /// # Parameters
+    /// * `player_type` - 카드를 복원할 플레이어 타입
+    /// * `src_cards` - 복원할 카드들의 UUID 목록
+    ///
+    /// # Returns
+    /// * `Ok(())` - 모든 카드가 성공적으로 덱의 맨 밑에 추가됨
+    /// * `Err(GameError)` - 카드 복원 중 오류 발생
+    ///
+    /// # Errors
+    /// * `GameError::CardNotFound` - 지정된 UUID를 가진 카드를 플레이어가 소유하지 않은 경우
+    /// * `GameError::ExceededCardLimit` - 덱에 자리가 없어 카드를 추가할 수 없는 경우
+    ///
+    pub async fn restore_card(
+        &mut self,
+        player_type: PlayerKind,
+        src_cards: &Vec<Uuid>,
+    ) -> Result<(), GameError> {
+        let player = self.get_player_addr_by_kind(player_type);
+
+        player
+            .send(GetCardsByUuid {
+                uuid: src_cards.clone(),
+            })
+            .await?;
+        // match player.get_cards().find_by_uuid(card_uuid.clone()) {
+        //     Some(card) => card.clone(),
+        //     None => return Err(GameError::CardNotFound),
+        // }
+        // self.get_player_by_type(player_type)
+        //     .get()
+        //     .get_deck_mut()
+        //     .add_card(vec![card.clone()], Box::new(BottomInsert))?;
+        Ok(())
+    }
 }

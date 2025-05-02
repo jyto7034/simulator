@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::card::types::PlayerType;
+use crate::card::types::PlayerKind;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum PlayerPhaseProgress {
@@ -15,15 +15,15 @@ pub enum PlayerPhaseProgress {
 pub struct PhaseState {
     current_phase: Phase,
     // 플레이어별 진행 상태 저장
-    player_progress: HashMap<PlayerType, PlayerPhaseProgress>,
+    player_progress: HashMap<PlayerKind, PlayerPhaseProgress>,
 }
 
 impl PhaseState {
     pub fn new(phase: Phase) -> Self {
         let mut progress = HashMap::new();
         // 초기 상태는 NotStarted 또는 Entered
-        progress.insert(PlayerType::Player1, PlayerPhaseProgress::NotStarted);
-        progress.insert(PlayerType::Player2, PlayerPhaseProgress::NotStarted);
+        progress.insert(PlayerKind::Player1, PlayerPhaseProgress::NotStarted);
+        progress.insert(PlayerKind::Player2, PlayerPhaseProgress::NotStarted);
         Self {
             current_phase: phase,
             player_progress: progress,
@@ -41,7 +41,7 @@ impl PhaseState {
     }
 
     // 플레이어 진행 상태 가져오기
-    pub fn get_player_progress(&self, player: PlayerType) -> PlayerPhaseProgress {
+    pub fn get_player_progress(&self, player: PlayerKind) -> PlayerPhaseProgress {
         self.player_progress
             .get(&player)
             .cloned()
@@ -49,7 +49,7 @@ impl PhaseState {
     }
 
     // 플레이어 진행 상태 업데이트
-    pub fn update_player_progress(&mut self, player: PlayerType, progress: PlayerPhaseProgress) {
+    pub fn update_player_progress(&mut self, player: PlayerKind, progress: PlayerPhaseProgress) {
         println!("PhaseState Update: Player {:?} -> {:?}", player, progress); // 로그 추가
         self.player_progress.insert(player, progress);
     }
