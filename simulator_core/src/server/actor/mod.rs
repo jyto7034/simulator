@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use types::PlayerInputResponseData;
+use types::PlayerInputResponse;
 use uuid::Uuid;
 
 pub mod connection;
@@ -29,7 +29,7 @@ pub enum UserAction {
     SubmitInput {
         request_id: Uuid,
         #[serde(flatten)]
-        response_data: PlayerInputResponseData,
+        response_data: PlayerInputResponse,
     },
 }
 

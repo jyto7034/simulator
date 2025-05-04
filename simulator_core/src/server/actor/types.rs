@@ -22,7 +22,8 @@ pub enum PlayerInputType {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub enum PlayerInputResponseData {
+pub enum PlayerInputResponse {
+    MulliganRerollAnswer(Vec<Uuid>),
     CardSelection(Vec<Uuid>),
     TargetSelection(Uuid),
     EffectChoice(String),

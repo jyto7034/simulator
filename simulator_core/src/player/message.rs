@@ -1,7 +1,8 @@
 use crate::{
-    card::{cards::CardVecExt, Card},
+    card::{cards::CardVecExt, insert::Insert, take::Take, Card},
     enums::ZoneType,
     exception::GameError,
+    zone::zone::Zone,
 };
 use actix::{Addr, Context, Handler, Message};
 use tracing::info;
@@ -92,5 +93,46 @@ impl Handler<GetCardsByUuid> for PlayerActor {
             }
         }
         result
+    }
+}
+
+#[derive(Message)]
+#[rtype(result = "Result<(), GameError>")]
+pub struct AddCardsToDeck {
+    pub cards: Vec<Card>,
+    pub insert: Box<dyn Insert>,
+}
+
+impl Handler<AddCardsToDeck> for PlayerActor {
+    type Result = Result<(), GameError>; // 성공 또는 에러 반환
+
+    fn handle(&mut self, msg: AddCardsToDeck, ctx: &mut Context<Self>) -> Self::Result {
+        info!(
+            "PLAYER ACTOR [{:?}]: Handling AddCardsToDeck",
+            self.player_type
+        );
+
+        self.deck.add_card(msg.cards, msg.insert)
+    }
+}
+
+#[derive(Message)]
+#[rtype(result = "Result<Vec<Card>, GameError>")]
+pub struct GetCardFromDeck {
+    pub take: Box<dyn Take>,
+}
+
+impl Handler<GetCardFromDeck> for PlayerActor {
+    type Result = Result<Vec<Card>, GameError>; // 카드 목록 또는 에러 반환
+
+    fn handle(&mut self, msg: GetCardFromDeck, ctx: &mut Context<Self>) -> Self::Result {
+        info!(
+            "PLAYER ACTOR [{:?}]: Handling GetCardFromDeck",
+            self.player_type
+        );
+
+        // 덱에서 카드를 가져옴
+        let cards = self.deck.take_card(msg.take)?;
+        Ok(cards)
     }
 }

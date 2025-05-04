@@ -1,6 +1,10 @@
 use uuid::Uuid;
 
-use crate::{card::types::PlayerKind, exception::GameError, player::message::GetCardsByUuid};
+use crate::{
+    card::{cards::CardVecExt, types::PlayerKind},
+    exception::GameError,
+    player::message::GetCardsByUuid,
+};
 
 use super::GameActor;
 
@@ -52,17 +56,36 @@ impl GameActor {
     /// * `GameError::ExceededCardLimit` - 덱에 자리가 없어 카드를 추가할 수 없는 경우
     ///
     pub async fn restore_card(
-        &mut self,
+        &self,
         player_type: PlayerKind,
         src_cards: &Vec<Uuid>,
     ) -> Result<(), GameError> {
         let player = self.get_player_addr_by_kind(player_type);
 
-        player
-            .send(GetCardsByUuid {
-                uuid: src_cards.clone(),
-            })
-            .await?;
+        // UUID에 해당하는 카드 목록을 반환
+        // let mut result = vec![];
+        // for uuid in msg.uuid {
+        //     if let Some(card) = self.get_cards().find_by_uuid(uuid) {
+        //         result.push(card.clone());
+        //     } else {
+        //         return vec![]; // 카드가 없으면 빈 벡터 반환
+        //     }
+        // }
+        // result
+
+        let mut result = vec![];
+        let player_cards = self
+            .all_cards
+            .get(&player_type)
+            .unwrap_or_else(|| panic!("Player cards not found for player type: {:?}", player_type));
+        for uuid in src_cards {
+            if let Some(card) = player_cards.find_by_uuid(uuid.clone()) {
+                result.push(card.clone());
+            } else {
+                return Err(GameError::CardNotFound);
+            }
+        }
+
         // match player.get_cards().find_by_uuid(card_uuid.clone()) {
         //     Some(card) => card.clone(),
         //     None => return Err(GameError::CardNotFound),

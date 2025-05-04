@@ -6,7 +6,10 @@ use turn::Turn;
 use uuid::Uuid;
 
 use crate::{
-    card::types::{PlayerIdentity, PlayerKind},
+    card::{
+        types::{PlayerIdentity, PlayerKind},
+        Card,
+    },
     player::{message::SetOpponent, PlayerActor},
     server::actor::connection::ConnectionActor,
 };
@@ -25,6 +28,7 @@ pub struct GameActor {
     pub players: HashMap<PlayerIdentity, Addr<PlayerActor>>,
     player_states_ready: HashMap<PlayerKind, bool>, // 각 플레이어 초기화 완료 여부
     phase_state: PhaseState,
+    all_cards: HashMap<PlayerKind, Vec<Card>>,
     turn: Turn,
     is_game_over: bool,
     game_id: Uuid,
@@ -81,6 +85,7 @@ impl GameActor {
             turn: Turn::new(),
             is_game_over: false,
             game_id,
+            all_cards: HashMap::new(),
         }
     }
 

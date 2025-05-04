@@ -1,12 +1,16 @@
-use actix::{Addr, Context, Handler, Message, Response};
+use actix::{Addr, Context, Handler, Message, Response, ResponseFuture};
 use tracing::info;
 use uuid::Uuid;
 
 use crate::{
-    card::types::PlayerKind,
+    card::{cards::CardVecExt, insert::BottomInsert, take::RandomTake, types::PlayerKind, Card},
     exception::GameError,
     game::phase::PlayerPhaseProgress,
-    player::{message::RequestMulliganReroll, PlayerActor},
+    player::{
+        message::{AddCardsToDeck, GetCardFromDeck, RequestMulliganReroll},
+        PlayerActor,
+    },
+    selector::TargetCount,
     server::input_handler::{InputAnswer, InputRequest},
 };
 
@@ -89,67 +93,6 @@ impl Handler<RequestInput> for GameActor {
 }
 
 #[derive(Message)]
-#[rtype(result = "Result<Vec<Uuid>, GameError>")]
-pub struct ProcessRerollRequest {
-    pub player_type: PlayerKind,
-    pub cards_to_reroll: Vec<Uuid>,
-}
-
-impl Handler<ProcessRerollRequest> for GameActor {
-    type Result = Response<Result<Vec<Uuid>, GameError>>; // Uuid 반환
-
-    fn handle(&mut self, msg: ProcessRerollRequest, ctx: &mut Context<Self>) -> Self::Result {
-        println!(
-            "GAME ACTOR: Received reroll request from {:?}",
-            msg.player_type
-        );
-
-        // 1. 요청 유효성 검사 (예: 멀리건 페이즈인가?)
-        if self.phase_state.get_phase() != Phase::Mulligan {
-            return Response::reply(Err(GameError::WrongPhase));
-        }
-        // TODO: 해당 플레이어가 리롤 가능한 상태인지 추가 검사 (예: 이미 완료하지 않았는지)
-
-        // 2. 해당 PlayerActor 주소 가져오기
-        let player_addr = self.get_player_addr_by_kind(msg.player_type);
-
-        // 3. PlayerActor에게 RequestMulliganReroll 메시지 보내기
-        let fut = async move {
-            match player_addr
-                .send(RequestMulliganReroll {
-                    cards_to_restore: msg.cards_to_reroll,
-                })
-                .await
-            {
-                Ok(Ok(new_card_uuids)) => {
-                    // 성공 시 새로 뽑은 카드의 UUID 목록 반환
-                    Ok(new_card_uuids)
-                }
-                Ok(Err(e)) => {
-                    // PlayerActor가 에러 반환
-                    eprintln!(
-                        "GAME ACTOR: Reroll failed for {:?}: {:?}",
-                        msg.player_type, e
-                    );
-                    Err(e)
-                }
-                Err(mailbox_error) => {
-                    // 메시지 전송 실패
-                    eprintln!(
-                        "GAME ACTOR: MailboxError during reroll for {:?}: {}",
-                        msg.player_type, mailbox_error
-                    );
-                    Err(GameError::InternalServerError) // 내부 서버 오류로 처리
-                }
-            }
-        };
-
-        // 비동기 작업 결과를 Response로 감싸서 반환
-        Response::fut(fut)
-    }
-}
-
-#[derive(Message)]
 #[rtype(result = "Result<(), GameError>")]
 pub struct IsCorrectPhase {
     pub phase: Phase,
@@ -163,6 +106,47 @@ impl Handler<IsCorrectPhase> for GameActor {
         } else {
             Err(GameError::WrongPhase)
         }
+    }
+}
+
+#[derive(Message)]
+#[rtype(result = "Result<Vec<Card>, GameError>")]
+pub struct RerollRequestMulliganCard {
+    pub player_type: PlayerKind,
+    pub cards: Vec<Uuid>,
+}
+
+impl Handler<RerollRequestMulliganCard> for GameActor {
+    type Result = ResponseFuture<Result<Vec<Card>, GameError>>;
+
+    fn handle(&mut self, msg: RerollRequestMulliganCard, _: &mut Context<Self>) -> Self::Result {
+        let player_type = msg.player_type;
+
+        let mut cards = vec![];
+        let player_cards = self
+            .all_cards
+            .get(&player_type)
+            .unwrap_or_else(|| panic!("Player cards not found for player type: {:?}", player_type));
+        for uuid in msg.cards {
+            if let Some(card) = player_cards.find_by_uuid(uuid.clone()) {
+                cards.push(card.clone());
+            } else {
+                todo!()
+                // return ResponseFuture:;
+            }
+        }
+        let addr = self.get_player_addr_by_kind(player_type);
+        Box::pin(async move {
+            addr.do_send(AddCardsToDeck {
+                cards,
+                insert: Box::new(BottomInsert),
+            });
+
+            addr.send(GetCardFromDeck {
+                take: Box::new(RandomTake(TargetCount::Exact(5))),
+            })
+            .await?
+        })
     }
 }
 

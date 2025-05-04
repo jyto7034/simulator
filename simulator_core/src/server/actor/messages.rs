@@ -1,4 +1,9 @@
-use crate::{card::types::PlayerKind, game::GameActor, player::PlayerActor};
+use crate::{
+    card::types::PlayerKind,
+    exception::GameError,
+    game::{message::RerollRequestMulliganCard, GameActor},
+    player::PlayerActor,
+};
 
 use actix::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -6,7 +11,7 @@ use uuid::Uuid;
 
 use super::{
     connection::ConnectionActor,
-    types::{GameStateSnapshot, PlayerInputRequest},
+    types::{GameStateSnapshot, PlayerInputRequest, PlayerInputResponse},
     UserAction,
 };
 
@@ -19,18 +24,20 @@ pub enum GameEvent {
 }
 
 #[derive(Message, Deserialize, Debug, Clone)]
-#[rtype(result = "()")]
+#[rtype(result = "Result<PlayerInputResponse, GameError>")]
 pub struct HandleUserAction {
     pub player_id: Uuid,
     pub action: UserAction,
 }
 
 impl Handler<HandleUserAction> for GameActor {
-    type Result = ();
+    type Result = ResponseFuture<Result<PlayerInputResponse, GameError>>;
 
     fn handle(&mut self, msg: HandleUserAction, ctx: &mut Self::Context) -> Self::Result {
         match msg.action {
-            UserAction::PlayCard { card_id, target_id } => {}
+            UserAction::PlayCard { card_id, target_id } => {
+                todo!()
+            }
             UserAction::Attack {
                 attacker_id,
                 defender_id,
@@ -42,12 +49,20 @@ impl Handler<HandleUserAction> for GameActor {
             } => todo!(),
             UserAction::RerollRequestMulliganCard { card_id } => {
                 let player_type = self.get_player_type_by_uuid(msg.player_id);
-                self.restore_card(player_type, &card_id)
-                    .expect("Failed to restore card");
+                let addr = ctx.address();
+                Box::pin(async move {
+                    let rerolled_cards = addr
+                        .send(RerollRequestMulliganCard {
+                            player_type,
+                            cards: card_id.clone(),
+                        })
+                        .await??
+                        .iter()
+                        .map(|card| card.get_uuid())
+                        .collect();
 
-                let new_cards = self
-                    .get_new_mulligan_cards(player_type, card_id.len())
-                    .expect("Failed to get new mulligan cards");
+                    Ok(PlayerInputResponse::MulliganRerollAnswer(rerolled_cards))
+                })
             }
             UserAction::CompleteMulligan => todo!(),
         }

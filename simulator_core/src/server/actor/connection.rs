@@ -245,7 +245,7 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
                         );
                         // GameActor에게 메시지 전달
                         self.game_addr.do_send(HandleUserAction {
-                            session_id: self.player_id,
+                            player_id: self.player_id,
                             action: user_action,
                         });
                     }
