@@ -15,9 +15,9 @@ pub struct Deck {
 }
 
 impl Deck {
-    pub fn new() -> Deck {
+    pub fn new(zone_cards: Cards) -> Deck {
         Deck {
-            zone_cards: Cards::new(),
+            zone_cards,
             zone_size: DECK_ZONE_SIZE,
         }
     }

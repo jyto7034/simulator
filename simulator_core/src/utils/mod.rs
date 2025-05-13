@@ -2,17 +2,18 @@ pub mod json;
 
 use crate::card::cards::Cards;
 use crate::card::types::PlayerKind;
-use crate::card::Card;
 use crate::card_gen::{CardGenerator, Keys};
 use crate::enums::*;
 use crate::exception::GameError;
 use base64::{decode, encode};
 use byteorder::WriteBytesExt;
 use serde_json::Value;
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::Read;
 use std::io::{Cursor, Write};
 use std::vec;
+use tracing::warn;
 use uuid::Uuid;
 
 pub fn generate_uuid() -> Result<Uuid, GameError> {
@@ -105,80 +106,88 @@ pub fn parse_json_to_deck_code(
     Ok((p1_code, p2_code))
 }
 
-pub fn deckcode_to_cards(
-    p1_deckcode: String,
-    p2_deckcode: String,
-) -> Result<Vec<Cards>, GameError> {
-    // 거대한 json 파일을 읽는 방법 따로 구현해야댐
-    // json 을 쌩으로 로드하면 좆댐;
-
+pub fn deckcode_to_cards_single(deckcode: String) -> Result<Cards, GameError> {
+    // TODO: 거대한 카드 json 을 한 번에 읽어오는 것보다, 필요한 카드만 읽어오는 방법으로 개선해야함.
+    //       (예: JSON 스트리밍 파서 사용 또는 데이터베이스 사용)
     let file_path = CARD_JSON_PATH;
 
-    // 파일 열기
-    let mut file = File::open(file_path).expect("Failed to open file");
+    let mut file = File::open(file_path).map_err(|e| {
+        warn!(
+            "Failed to open card JSON file at {}: {}. Error: {}",
+            file_path, CARD_JSON_PATH, e
+        );
+        GameError::PathNotExist
+    })?;
 
-    // 파일 내용을 문자열로 읽기
     let mut json_data = String::new();
-    file.read_to_string(&mut json_data)
-        .expect("Failed to read file");
+    file.read_to_string(&mut json_data).map_err(|e| {
+        warn!(
+            "Failed to read card JSON file: {}. Error: {}",
+            CARD_JSON_PATH, e
+        );
+        GameError::ReadFileFailed
+    })?;
 
-    let card_json: Vec<json::CardJson> = match serde_json::from_str(&json_data[..]) {
+    let all_cards_data: Vec<json::CardJson> = match serde_json::from_str(&json_data[..]) {
         Ok(data) => data,
-        Err(_) => return Err(GameError::JsonParseFailed),
-    };
-
-    let decoded_deck1 = match deck_decode(p1_deckcode) {
-        Ok(data) => data,
-        Err(_err) => return Err(GameError::JsonParseFailed),
-    };
-    let decoded_deck2 = match deck_decode(p2_deckcode) {
-        Ok(data) => data,
-        Err(_err) => return Err(GameError::JsonParseFailed),
-    };
-
-    use json::CardJson;
-
-    let card_genertor = CardGenerator::new();
-
-    let mut p1_cards = vec![];
-    let mut p2_cards = vec![];
-
-    let check_values_exist = |card_data: &CardJson,
-                              decoded_deck: &(Vec<i32>, Vec<i32>),
-                              p_cards: &mut Vec<Card>|
-     -> Result<(), GameError> {
-        for dbfid in &decoded_deck.0 {
-            match card_data.dbfid {
-                Some(_dbfid) => {
-                    if &_dbfid == dbfid {
-                        p_cards.push(card_genertor.gen_card_by_id_i32(*dbfid, card_data, 1));
-                    }
-                }
-                None => {}
-            }
+        Err(e) => {
+            warn!(
+                "Failed to parse card JSON data from {}. Error: {}",
+                CARD_JSON_PATH, e
+            );
+            return Err(GameError::JsonParseFailed);
         }
-        for dbfid in &decoded_deck.1 {
-            match card_data.dbfid {
-                Some(_dbfid) => {
-                    if &_dbfid == dbfid {
-                        p_cards.push(card_genertor.gen_card_by_id_i32(*dbfid, card_data, 2));
-                    }
-                }
-                None => {}
-            }
-        }
-        Ok(())
     };
 
-    // player_cards 에는 플레이어의 덱 정보가 담겨있음.
-    // 카드의 종류, 갯수만 있을 뿐, 실질적인 정보는 없고 카드의 id 만 있기 때문에 이것을 사용하여
-    // cards.json 에서 데이터를 가져와야함.
-    // println!("card_json: {:#?}", card_json);
-    for card_data in card_json {
-        check_values_exist(&card_data, &decoded_deck1, &mut p1_cards)?;
-        check_values_exist(&card_data, &decoded_deck2, &mut p2_cards)?;
+    let decoded_deck = match deck_decode(deckcode) {
+        Ok(data) => data,
+        Err(_) => {
+            warn!("Failed to decode deck code.");
+            return Err(GameError::DeckParseError);
+        }
+    };
+
+    let card_generator = CardGenerator::new();
+    let mut deck_cards: Cards = Vec::with_capacity(MAX_CARD_SIZE);
+
+    // all_cards_data를 dbfid 기준으로 HashMap으로 만들어 빠른 조회를 가능하게 합니다.
+    let card_data_map: HashMap<i32, &json::CardJson> = all_cards_data
+        .iter()
+        .filter_map(|cd| cd.dbfid.map(|id| (id, cd)))
+        .collect();
+
+    // decoded_deck.0 (1장씩 있는 카드 ID 리스트) 처리
+    for &dbfid in &decoded_deck.0 {
+        if let Some(card_data) = card_data_map.get(&dbfid) {
+            let card = card_generator.gen_card_by_id_i32(dbfid, card_data, 1);
+            deck_cards.push(card);
+        } else {
+            warn!(
+                "Card data not found for dbfid (1-copy): {}. This card will be skipped.",
+                dbfid
+            );
+        }
     }
-    Ok(vec![p1_cards, p2_cards])
+
+    // decoded_deck.1 (2장씩 있는 카드 ID 리스트) 처리
+    for &dbfid in &decoded_deck.1 {
+        if let Some(card_data) = card_data_map.get(&dbfid) {
+            // `count`가 2이므로, `gen_card_by_id_i32`를 두 번 호출하여
+            // 각각의 카드 인스턴스를 생성합니다.
+            let card1 = card_generator.gen_card_by_id_i32(dbfid, card_data, 1); // 첫 번째 인스턴스
+            deck_cards.push(card1);
+
+            let card2 = card_generator.gen_card_by_id_i32(dbfid, card_data, 1); // 두 번째 인스턴스
+            deck_cards.push(card2);
+        } else {
+            warn!(
+                "Card data not found for dbfid (2-copy): {}. These cards will be skipped.",
+                dbfid
+            );
+        }
+    }
+
+    Ok(deck_cards)
 }
 
 pub fn load_card_id() -> Result<Vec<(String, i32)>, GameError> {

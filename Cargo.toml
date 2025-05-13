@@ -1,8 +1,15 @@
-[package]
-name = "dedicated_server"
+[workspace.package]
 version = "0.1.0"
 edition = "2021"
 description = "card backend"
 
+[workspace]
+members = [
+    "simulator_core",
+    "simulator_dedicated_server",
+    "simulator_match_server",
+]
+
+resolver = "2"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

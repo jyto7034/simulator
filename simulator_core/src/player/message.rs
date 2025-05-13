@@ -1,7 +1,13 @@
 use crate::{
-    card::{cards::CardVecExt, insert::Insert, take::Take, Card},
-    enums::ZoneType,
+    card::{
+        cards::CardVecExt,
+        insert::Insert,
+        take::{RandomTake, Take},
+        Card,
+    },
+    enums::{ZoneType, COUNT_OF_MULLIGAN_CARDS},
     exception::GameError,
+    selector::TargetCount,
     zone::zone::Zone,
 };
 use actix::{Addr, Context, Handler, Message};
@@ -11,13 +17,78 @@ use uuid::Uuid;
 use super::PlayerActor;
 
 #[derive(Message)]
-#[rtype(result = "Result<Vec<Uuid>, GameError>")] // 새로 뽑은 카드 목록 또는 에러 반환
+#[rtype(result = "Result<Vec<Uuid>, GameError>")]
 pub struct RequestMulliganReroll {
-    pub cards_to_restore: Vec<Uuid>, // 덱으로 되돌릴 카드 UUID 목록
+    pub cards_to_restore: Vec<Uuid>,
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct SetOpponent {
+    pub opponent: Addr<PlayerActor>,
+}
+
+#[derive(Message)]
+#[rtype(result = "Vec<Card>")]
+pub struct GetCardsByUuid {
+    pub uuid: Vec<Uuid>,
+}
+
+#[derive(Message)]
+#[rtype(result = "Result<(), GameError>")]
+pub struct AddCardsToDeck {
+    pub cards: Vec<Card>,
+    pub insert: Box<dyn Insert>,
+}
+
+#[derive(Message)]
+#[rtype(result = "Result<Vec<Card>, GameError>")]
+pub struct GetCardFromDeck {
+    pub take: Box<dyn Take>,
+}
+
+#[derive(Message)]
+#[rtype(result = "Vec<Card>")]
+pub struct GetDeckCards;
+
+#[derive(Message)]
+#[rtype(result = "Vec<Card>")]
+pub struct GetHandCards;
+
+#[derive(Message)]
+#[rtype(result = "Vec<Card>")]
+pub struct GetFieldCards;
+
+#[derive(Message)]
+#[rtype(result = "Vec<Card>")]
+pub struct GetGraveyardCards;
+
+#[derive(Message)]
+#[rtype(result = "Vec<Card>")]
+pub struct GetMulliganDealCards;
+
+impl Handler<GetMulliganDealCards> for PlayerActor {
+    type Result = Vec<Card>;
+
+    fn handle(&mut self, _: GetMulliganDealCards, ctx: &mut Context<Self>) -> Self::Result {
+        info!(
+            "PLAYER ACTOR [{:?}]: Handling GetMulliganDealCards",
+            self.player_type
+        );
+
+        self.deck
+            .take_card(Box::new(RandomTake(TargetCount::Exact(
+                COUNT_OF_MULLIGAN_CARDS,
+            ))))
+            .unwrap()
+            .into_iter()
+            .map(|card| card.clone())
+            .collect::<Vec<_>>()
+    }
 }
 
 impl Handler<RequestMulliganReroll> for PlayerActor {
-    type Result = Result<Vec<Uuid>, GameError>; // 새로 뽑은 카드 반환
+    type Result = Result<Vec<Uuid>, GameError>;
 
     fn handle(&mut self, msg: RequestMulliganReroll, ctx: &mut Context<Self>) -> Self::Result {
         println!(
@@ -48,12 +119,6 @@ impl Handler<RequestMulliganReroll> for PlayerActor {
     }
 }
 
-#[derive(Message)]
-#[rtype(result = "()")] // 새로 뽑은 카드 목록 또는 에러 반환
-pub struct SetOpponent {
-    pub opponent: Addr<PlayerActor>,
-}
-
 impl Handler<SetOpponent> for PlayerActor {
     type Result = ();
 
@@ -68,14 +133,8 @@ impl Handler<SetOpponent> for PlayerActor {
     }
 }
 
-#[derive(Message)]
-#[rtype(result = "Vec<Card>")]
-pub struct GetCardsByUuid {
-    pub uuid: Vec<Uuid>,
-}
-
 impl Handler<GetCardsByUuid> for PlayerActor {
-    type Result = Vec<Card>; // 카드 목록 반환
+    type Result = Vec<Card>;
 
     fn handle(&mut self, msg: GetCardsByUuid, ctx: &mut Context<Self>) -> Self::Result {
         info!(
@@ -96,15 +155,8 @@ impl Handler<GetCardsByUuid> for PlayerActor {
     }
 }
 
-#[derive(Message)]
-#[rtype(result = "Result<(), GameError>")]
-pub struct AddCardsToDeck {
-    pub cards: Vec<Card>,
-    pub insert: Box<dyn Insert>,
-}
-
 impl Handler<AddCardsToDeck> for PlayerActor {
-    type Result = Result<(), GameError>; // 성공 또는 에러 반환
+    type Result = Result<(), GameError>;
 
     fn handle(&mut self, msg: AddCardsToDeck, ctx: &mut Context<Self>) -> Self::Result {
         info!(
@@ -116,14 +168,8 @@ impl Handler<AddCardsToDeck> for PlayerActor {
     }
 }
 
-#[derive(Message)]
-#[rtype(result = "Result<Vec<Card>, GameError>")]
-pub struct GetCardFromDeck {
-    pub take: Box<dyn Take>,
-}
-
 impl Handler<GetCardFromDeck> for PlayerActor {
-    type Result = Result<Vec<Card>, GameError>; // 카드 목록 또는 에러 반환
+    type Result = Result<Vec<Card>, GameError>;
 
     fn handle(&mut self, msg: GetCardFromDeck, ctx: &mut Context<Self>) -> Self::Result {
         info!(
@@ -134,5 +180,61 @@ impl Handler<GetCardFromDeck> for PlayerActor {
         // 덱에서 카드를 가져옴
         let cards = self.deck.take_card(msg.take)?;
         Ok(cards)
+    }
+}
+
+impl Handler<GetDeckCards> for PlayerActor {
+    type Result = Vec<Card>;
+
+    fn handle(&mut self, _: GetDeckCards, ctx: &mut Context<Self>) -> Self::Result {
+        info!(
+            "PLAYER ACTOR [{:?}]: Handling GetDeckCards",
+            self.player_type
+        );
+
+        // 덱의 카드 목록을 반환
+        self.deck.get_cards().clone()
+    }
+}
+
+impl Handler<GetHandCards> for PlayerActor {
+    type Result = Vec<Card>; // 카드 목록 반환
+
+    fn handle(&mut self, _: GetHandCards, ctx: &mut Context<Self>) -> Self::Result {
+        info!(
+            "PLAYER ACTOR [{:?}]: Handling GetHandCards",
+            self.player_type
+        );
+
+        // 덱의 카드 목록을 반환
+        self.hand.get_cards().clone()
+    }
+}
+
+impl Handler<GetFieldCards> for PlayerActor {
+    type Result = Vec<Card>; // 카드 목록 반환
+
+    fn handle(&mut self, _: GetFieldCards, ctx: &mut Context<Self>) -> Self::Result {
+        info!(
+            "PLAYER ACTOR [{:?}]: Handling GetFieldCards",
+            self.player_type
+        );
+
+        // 덱의 카드 목록을 반환
+        self.field.get_cards().clone()
+    }
+}
+
+impl Handler<GetGraveyardCards> for PlayerActor {
+    type Result = Vec<Card>; // 카드 목록 반환
+
+    fn handle(&mut self, _: GetGraveyardCards, ctx: &mut Context<Self>) -> Self::Result {
+        info!(
+            "PLAYER ACTOR [{:?}]: Handling GetGraveyardCards",
+            self.player_type
+        );
+
+        // 덱의 카드 목록을 반환
+        self.graveyard.get_cards().clone()
     }
 }

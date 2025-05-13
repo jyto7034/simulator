@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use uuid::Uuid;
 
 pub const CARD_ID_JSON_PATH: &str = "Resource/cards_id.json";
@@ -27,6 +29,12 @@ impl ZoneType {
             ZoneType::Field => "Field".to_string(),
             ZoneType::None => "None".to_string(),
         }
+    }
+}
+
+impl Display for ZoneType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.to_string())
     }
 }
 

@@ -1,7 +1,8 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, time::Duration};
 
-use actix::{Actor, Addr, Context, Message};
+use actix::{Actor, Addr, Context, Handler, Message, ResponseFuture};
 use phase::{Phase, PhaseState};
+use tracing::{error, info};
 use turn::Turn;
 use uuid::Uuid;
 
@@ -10,6 +11,7 @@ use crate::{
         types::{PlayerIdentity, PlayerKind},
         Card,
     },
+    exception::GameError,
     player::{message::SetOpponent, PlayerActor},
     server::actor::connection::ConnectionActor,
 };
@@ -26,19 +28,17 @@ pub struct GameConfig {}
 pub struct GameActor {
     // 플레이어 액터들의 주소 저장 (PlayerActor 정의 필요)
     pub players: HashMap<PlayerIdentity, Addr<PlayerActor>>,
-    player_states_ready: HashMap<PlayerKind, bool>, // 각 플레이어 초기화 완료 여부
-    phase_state: PhaseState,
-    all_cards: HashMap<PlayerKind, Vec<Card>>,
-    turn: Turn,
-    is_game_over: bool,
-    game_id: Uuid,
+    pub connections: HashMap<Uuid, Addr<ConnectionActor>>,
+    pub player_connection_ready: HashMap<PlayerKind, bool>, // 각 플레이어 초기화 완료 여부
+    pub phase_state: PhaseState,
+    pub all_cards: HashMap<PlayerKind, Vec<Card>>,
+    pub turn: Turn,
+    pub is_game_over: bool,
+    pub game_id: Uuid,
 }
+
 impl Actor for GameActor {
     type Context = Context<Self>;
-
-    fn started(&mut self, ctx: &mut Self::Context) {}
-
-    fn stopped(&mut self, ctx: &mut Self::Context) {}
 }
 
 impl GameActor {
@@ -52,62 +52,95 @@ impl GameActor {
     /// # Returns
     ///
     /// 새로운 GameActor 인스턴스.
-    pub fn new(game_id: Uuid, attacker_player_type: PlayerKind) -> Self {
-        let initial_phase = Phase::Mulligan;
+    pub fn new(
+        game_id: Uuid,
+        player1_id: Uuid,
+        player2_id: Uuid,
+        player1_deck_code: String,
+        player2_deck_code: String,
+        attacker_player_type: PlayerKind,
+    ) -> Self {
+        let p1_identity = PlayerIdentity {
+            id: player1_id,
+            kind: PlayerKind::Player1,
+        };
+        let p2_identity = PlayerIdentity {
+            id: player2_id,
+            kind: PlayerKind::Player2,
+        };
 
-        let players_map = HashMap::new();
+        let mut player_actors_map = HashMap::new();
 
-        let player_1_actor_addr = PlayerActor::create(|ctx| {
-            let player_actor = PlayerActor::new(PlayerKind::Player1);
+        // PlayerActor 생성 및 맵에 추가
+        let p1_addr =
+            PlayerActor::create(|_ctx| PlayerActor::new(p1_identity.kind, player1_deck_code));
+        let p2_addr =
+            PlayerActor::create(|_ctx| PlayerActor::new(p2_identity.kind, player2_deck_code));
+        player_actors_map.insert(p1_identity, p1_addr.clone());
+        player_actors_map.insert(p2_identity, p2_addr.clone());
 
-            player_actor
-        });
-        let player_2_actor_addr = PlayerActor::create(|ctx| {
-            let player_actor = PlayerActor::new(PlayerKind::Player2);
+        actix::spawn(async move {
+            while !p1_addr.connected() {
+                tokio::time::sleep(Duration::from_millis(5)).await;
+            }
+            info!("Player 1 connected, P1 can now receive messages.");
 
-            player_actor
-        });
+            while !p2_addr.connected() {
+                tokio::time::sleep(Duration::from_millis(5)).await;
+            }
+            info!("Player 2 connected, P2 can now receive messages.");
 
-        let ready_map = HashMap::new();
-
-        player_1_actor_addr.do_send(SetOpponent {
-            opponent: player_2_actor_addr.clone(),
-        });
-
-        player_2_actor_addr.do_send(SetOpponent {
-            opponent: player_1_actor_addr.clone(),
+            info!("Both players connected. Sending SetOpponent messages.");
+            p1_addr.do_send(SetOpponent {
+                opponent: p2_addr.clone(),
+            });
+            p2_addr.do_send(SetOpponent {
+                opponent: p1_addr.clone(),
+            });
         });
 
         GameActor {
-            players: players_map,
-            player_states_ready: ready_map,
-            phase_state: PhaseState::new(initial_phase),
+            players: player_actors_map,
+            connections: HashMap::new(),
+            player_connection_ready: HashMap::new(),
+            all_cards: HashMap::new(),
+            phase_state: PhaseState::new(Phase::Mulligan),
             turn: Turn::new(),
             is_game_over: false,
             game_id,
-            all_cards: HashMap::new(),
         }
     }
 
     pub fn all_players_ready(&self) -> bool {
-        self.players.len() == 2 && self.player_states_ready.values().all(|&ready| ready)
+        self.player_connection_ready.len() == 2
+            && self
+                .player_connection_ready
+                .get(&PlayerKind::Player1)
+                .is_some()
+            && self
+                .player_connection_ready
+                .get(&PlayerKind::Player2)
+                .is_some()
     }
 
     fn get_player_info_by_kind(&self, target_kind: PlayerKind) -> Option<(Uuid, &PlayerIdentity)> {
-        todo!()
-    }
-
-    /// PlayerKind를 기반으로 PlayerIdentity의 가변 참조를 가져옵니다.
-    fn get_player_info_mut_by_kind(
-        &mut self,
-        target_kind: PlayerKind,
-    ) -> Option<(Uuid, &mut PlayerIdentity)> {
-        todo!()
+        for (identity, addr) in &self.players {
+            if identity.kind == target_kind {
+                return Some((identity.id, identity));
+            }
+        }
+        None
     }
 
     /// PlayerKind를 기반으로 PlayerActor의 주소(Addr)를 가져옵니다.
     pub fn get_player_addr_by_kind(&self, target_kind: PlayerKind) -> Addr<PlayerActor> {
-        todo!()
+        for (identity, addr) in &self.players {
+            if identity.kind == target_kind {
+                return addr.clone();
+            }
+        }
+        // TODO : 나중에 수정해야함.
+        panic!("Player with kind {:?} not found", target_kind)
     }
 
     pub fn get_player_type_by_uuid(&self, player_id: Uuid) -> PlayerKind {
@@ -119,6 +152,15 @@ impl GameActor {
         // TODO : 나중에 수정해야함.
         panic!("Player with ID {} not found", player_id)
     }
+    pub fn get_player_uuid_by_kind(&self, target_kind: PlayerKind) -> Uuid {
+        for (identity, _) in &self.players {
+            if identity.kind == target_kind {
+                return identity.id;
+            }
+        }
+        // TODO : 나중에 수정해야함.
+        panic!("Player with kind {:?} not found", target_kind)
+    }
 
     /// PlayerKind를 기반으로 ConnectionActor의 주소(Addr)를 가져옵니다.
     pub fn get_connection_addr_by_kind(
@@ -128,8 +170,60 @@ impl GameActor {
         todo!()
     }
 
+    /// PlayerKind를 기반으로 해당 PlayerActor에게 메시지를 보내고 결과를 기다립니다. (send 버전)
+    ///
+    /// # Arguments
+    /// * `target_kind` - 메시지를 보낼 대상 플레이어의 PlayerKind.
+    /// * `msg` - 보낼 메시지.
+    ///
+    /// # Returns
+    /// * `ResponseFuture<Result<M::Result, GameActorError>>` -
+    ///   비동기적으로 PlayerActor 핸들러의 결과 또는 에러를 반환합니다.
+    ///   `GameActorError`는 플레이어를 찾지 못했거나 Mailbox 에러를 포함할 수 있습니다.
+    pub fn send_to_player_actor<M>(
+        &self,
+        target_kind: PlayerKind,
+        msg: M,
+    ) -> ResponseFuture<Result<M::Result, GameError>>
+    where
+        M: Message + Send + 'static, // 메시지 제약 조건
+        M::Result: Send,             // 결과 제약 조건
+        PlayerActor: Handler<M>,     // PlayerActor가 이 메시지를 처리할 수 있어야 함
+    {
+        // 1. target_kind에 해당하는 PlayerActor의 주소(Addr)를 찾습니다.
+        let addr = self.get_player_addr_by_kind(target_kind);
+        // 2. 주소를 찾았으면, send 메서드를 호출하고 결과를 await합니다.
+        //    send의 결과는 Result<M::Result, MailboxError> 입니다.
+        //    이를 GameError로 매핑하여 반환합니다.
+
+        let game_id = self.game_id;
+        Box::pin(async move {
+            info!(
+                "GAME ACTOR [{}]: Sending message to PlayerActor ({:?}) and awaiting response.",
+                // self.game_id, // self 직접 접근 불가, 필요시 game_id를 클론해서 전달
+                game_id,
+                target_kind
+            );
+            match addr.send(msg).await {
+                Ok(handler_result) => {
+                    // PlayerActor 핸들러가 반환한 M::Result
+                    // 이 M::Result 자체가 Result<T, E>일 수 있음 (핸들러가 오류를 반환하는 경우)
+                    // 여기서는 M::Result를 그대로 반환 (필요시 내부 Result 처리)
+                    Ok(handler_result)
+                }
+                Err(mailbox_error) => {
+                    error!(
+                        "GAME ACTOR: Mailbox error sending message to PlayerActor ({:?}): {:?}",
+                        target_kind, mailbox_error
+                    );
+                    Err(GameError::MailboxError)
+                }
+            }
+        })
+    }
+
     /// PlayerKind를 기반으로 해당 PlayerActor에게 메시지를 보냅니다. (do_send 버전)
-    pub fn send_to_player_actor<M>(&self, target_kind: PlayerKind, msg: M)
+    pub fn do_send_to_player_actor<M>(&self, target_kind: PlayerKind, msg: M)
     where
         M: Message + Send + 'static,
         M::Result: Send,

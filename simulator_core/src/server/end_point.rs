@@ -1,6 +1,6 @@
 use std::{future::Future, pin::Pin};
 
-use actix::Actor;
+use actix::{Actor, AsyncContext, Context};
 use actix_web::{get, web, FromRequest, HttpRequest, HttpResponse};
 use actix_ws::handle;
 use tracing::{debug, error, info, instrument, warn};
@@ -123,27 +123,30 @@ pub async fn game(
 
     // Http 업그레이드: 이때 session과 stream이 반환됩니다.
     debug!("WebSocket 연결 업그레이드 시작");
-    let (resp, session, stream) = match handle(&req, payload) {
+    let (response, session, message_stream) = match handle(&req, payload) {
         Ok(result) => {
-            info!("WebSocket 연결 성공: player={:?}", player_type);
+            info!(
+                "WebSocket handshake successful for player_id: {}",
+                player_id
+            );
             result
         }
         Err(e) => {
             error!(
-                "WebSocket 핸들링 실패: player={:?}, error={:?}",
-                player_type, e
+                "WebSocket handshake failed for player_id: {}: {:?}",
+                player_id, e
             );
-            return Err(GameError::HandleFailed);
+            return Ok(
+                HttpResponse::InternalServerError().body(format!("WS Handshake Error: {}", e))
+            );
         }
     };
 
-    actix_web::rt::spawn(async move {
-        let connection_actor = ConnectionActor::create(|ctx| {
-            let connection_actor =
-                ConnectionActor::new(session, state.game.clone(), player_id, player_type);
-            connection_actor
-        });
+    ConnectionActor::create(|ctx: &mut Context<ConnectionActor>| {
+        let new_actor = ConnectionActor::new(session, state.game.clone(), player_id, player_type);
+        ctx.add_stream(message_stream);
+        new_actor
     });
 
-    Ok(resp)
+    Ok(response)
 }

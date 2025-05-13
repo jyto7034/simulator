@@ -51,7 +51,8 @@ impl InputWaiter {
 
         {
             // 잠금 획득
-            let mut state: tokio::sync::MutexGuard<'_, HashMap<Uuid, PendingInput>> = self.state.lock().await;
+            let mut state: tokio::sync::MutexGuard<'_, HashMap<Uuid, PendingInput>> =
+                self.state.lock().await;
 
             // 요청 상태를 추가
             state.insert(

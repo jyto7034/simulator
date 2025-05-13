@@ -1,3 +1,179 @@
+pub mod mulligan {
+    use actix::Addr;
+    use simulator_core::{
+        card::types::PlayerKind,
+        enums::{ZoneType, COUNT_OF_MULLIGAN_CARDS},
+        game::{message::GetPlayerZoneCards, GameActor},
+        server::actor::ServerMessage,
+        test::{spawn_server, WebSocketTest},
+    };
+    use uuid::Uuid;
+
+    // 플레이어별 테스트 로직을 위한 헬퍼 함수
+    async fn player_mulligan_sequence(
+        player_kind: PlayerKind,
+        player_id: Uuid,
+        addr: std::net::SocketAddr,
+        game_actor_addr: Addr<GameActor>, // GameActor 주소 전달
+    ) -> Vec<Uuid> {
+        let player_kind_str = player_kind.as_str();
+        let url = format!("ws://{}/game", addr);
+        let cookie = format!("user_id={}", player_id);
+        let mut ws = WebSocketTest::connect(url, cookie).await.unwrap();
+
+        // 1. 초기 HeartbeatConnected 메시지 수신
+        println!(
+            "[{}] Waiting for initial HeartbeatConnected message...",
+            player_kind_str
+        );
+        let initial_extractor = |message: ServerMessage| match message {
+            ServerMessage::HeartbeatConnected { player, session_id } => {
+                assert_eq!(player, player_kind_str);
+                assert!(!session_id.is_nil());
+                println!(
+                    "[{}] Initial HeartbeatConnected received. Session ID: {}",
+                    player_kind_str, session_id
+                );
+            }
+            _ => panic!(
+                "[{}] Expected HeartbeatConnected as the first message, but got {:?}",
+                player_kind_str, message
+            ),
+        };
+        ws.expect_message(initial_extractor).await;
+
+        // 2. MulliganDealCards 메시지 수신
+        println!(
+            "[{}] Waiting for MulliganDealCards message...",
+            player_kind_str
+        );
+        let mulligan_extractor = |message: ServerMessage| -> Vec<Uuid> {
+            match message {
+                ServerMessage::MulliganDealCards { player, cards } => {
+                    // 중요: MulliganDealCards 메시지의 player 필드가 이 카드를 받는 플레이어를 지칭해야 함
+                    assert_eq!(
+                        player, player_kind_str,
+                        "[{}] Mulligan cards for wrong player",
+                        player_kind_str
+                    );
+                    assert_eq!(
+                        cards.len(),
+                        COUNT_OF_MULLIGAN_CARDS,
+                        "[{}] Incorrect number of mulligan cards",
+                        player_kind_str
+                    );
+                    for card_uuid in &cards {
+                        assert!(
+                            !card_uuid.is_nil(),
+                            "[{}] Nil UUID in mulligan cards",
+                            player_kind_str
+                        );
+                    }
+                    println!(
+                        "[{}] MulliganDealCards received with {} cards.",
+                        player_kind_str,
+                        cards.len()
+                    );
+                    cards
+                }
+                // 이 시점에는 다른 메시지가 오면 안 됨 (HeartbeatConnected는 이미 처리됨)
+                _ => panic!(
+                    "[{}] Expected MulliganDealCards message, but got {:?}",
+                    player_kind_str, message
+                ),
+            }
+        };
+        let dealt_cards = ws.expect_message(mulligan_extractor).await;
+
+        // 3. 받은 카드가 덱에 없는지 확인 (GameActor에게 요청)
+        println!(
+            "[{}] Verifying dealt cards are not in deck...",
+            player_kind_str
+        );
+        let deck_cards_result = game_actor_addr
+            .send(GetPlayerZoneCards {
+                // GameActor는 Uuid로 플레이어를 식별하거나, PlayerKind를 Uuid로 변환할 수 있어야 함
+                zone: ZoneType::Deck,
+                player_type: player_kind,
+            })
+            .await;
+
+        match deck_cards_result {
+            Ok(deck_card_objects) => {
+                let deck_uuids: Vec<Uuid> = deck_card_objects
+                    .iter()
+                    .map(|card| card.get_uuid())
+                    .collect();
+                for dealt_card_uuid in dealt_cards.iter() {
+                    assert!(
+                        !deck_uuids.contains(dealt_card_uuid),
+                        "[{}] Deck should not contain card {} that was dealt in mulligan",
+                        player_kind_str,
+                        dealt_card_uuid
+                    );
+                }
+                println!(
+                    "[{}] Dealt cards correctly removed from deck.",
+                    player_kind_str
+                );
+            }
+            Err(e) => panic!(
+                "[{}] GameActor returned error getting deck cards: {:?}",
+                player_kind_str, e
+            ),
+        }
+
+        // 멀리건 단계 완료를 위해 추가적인 메시지 전송/수신 로직이 필요할 수 있음
+        // 예: ws.send(UserAction::CompleteMulligan).await;
+        //     ws.expect_message(ServerMessage::MulliganPhaseEnd).await;
+
+        dealt_cards // 받은 카드 목록 반환
+    }
+
+    #[actix_web::test]
+    async fn test_mulligan_deal_cards_to_each_player_concurrently() {
+        let (addr, state, _handle) = spawn_server().await;
+        let game_actor_addr = state.game.clone(); // AppServerState에 Addr<GameActor> 필드 추가 가정
+
+        let player1_id = state.player1_id;
+        let player2_id = state.player2_id;
+
+        // 두 플레이어의 멀리건 시퀀스를 병렬로 실행
+        let (p1_results, p2_results) = tokio::join!(
+            player_mulligan_sequence(
+                PlayerKind::Player1,
+                player1_id,
+                addr,
+                game_actor_addr.clone()
+            ),
+            player_mulligan_sequence(
+                PlayerKind::Player2,
+                player2_id,
+                addr,
+                game_actor_addr.clone()
+            )
+        );
+
+        println!("Player 1 mulligan cards: {:?}", p1_results);
+        println!("Player 2 mulligan cards: {:?}", p2_results);
+
+        // 추가 검증: P1과 P2가 받은 카드가 서로 다른지 등
+        let mut all_dealt_cards = p1_results.clone();
+        all_dealt_cards.extend(p2_results.clone());
+        let unique_cards_count = all_dealt_cards
+            .iter()
+            .collect::<std::collections::HashSet<_>>()
+            .len();
+        assert_eq!(
+            unique_cards_count,
+            COUNT_OF_MULLIGAN_CARDS * 2,
+            "Dealt cards between players are not unique."
+        );
+
+        println!("Test test_mulligan_deal_cards_to_each_player_concurrently completed.");
+    }
+}
+
 pub mod heartbeat {
     use std::time::Duration;
 
@@ -31,6 +207,7 @@ pub mod heartbeat {
                 assert_eq!(player, player_type);
                 assert!(!session_id.is_nil());
             }
+            _ => panic!("Expected HeartbeatConnected message"),
         };
         ws.expect_message(extractor).await;
     }
@@ -59,7 +236,8 @@ pub mod heartbeat {
                         session_id
                     );
                     session_id
-                } // _ => panic!("Expected HeartbeatConnected message first"),
+                }
+                _ => panic!("Expected HeartbeatConnected message"),
             }
         };
         // 초기 메시지를 기대하지만, 타임아웃되면 실패 처리

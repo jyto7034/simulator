@@ -1,4 +1,4 @@
-use crate::{card::types::PlayerKind, server::jsons::game_features};
+use crate::card::types::PlayerKind;
 use actix::MailboxError;
 use actix_web::{http::StatusCode, HttpResponse, ResponseError};
 use std::fmt;
@@ -53,6 +53,9 @@ pub enum GameError {
     NoActivatableEffect,
     PlayerNotFound,
     NotEnoughCards,
+    MailboxError,
+    PlayerNotReady,
+    NoConnections,
 
     InvalidTargetCount,
     NoValidTargets,
@@ -209,10 +212,9 @@ impl ResponseError for GameError {
 }
 
 pub enum MessageProcessResult<T> {
-    Success(T),                                  // 성공적으로 메시지 처리
-    SystemHandled(game_features::ClientMessage), // 게임 시스템에서 처리하는 메시지
-    NeedRetry,                                   // 에러가 발생했지만 재시도 가능
-    TerminateSession(GameError),                 // 세션 종료 필요
+    Success(T),                  // 성공적으로 메시지 처리
+    NeedRetry,                   // 에러가 발생했지만 재시도 가능
+    TerminateSession(GameError), // 세션 종료 필요
 }
 
 impl From<MailboxError> for GameError {

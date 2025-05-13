@@ -6,8 +6,9 @@ use crate::{
     card::{cards::Cards, take::TopTake, types::PlayerKind, Card},
     enums::ZoneType,
     exception::GameError,
+    game::helper::Resoruce,
     selector::{mulligan::MulliganState, TargetCount},
-    unit::player::Resoruce,
+    utils::deckcode_to_cards_single,
     zone::{
         deck::Deck, effect::Effect, field::Field, graveyard::Graveyard, hand::Hand, zone::Zone,
     },
@@ -35,16 +36,17 @@ impl Actor for PlayerActor {
 }
 
 impl PlayerActor {
-    pub fn new(player_type: PlayerKind) -> Self {
+    pub fn new(player_type: PlayerKind, deck_code: String) -> Self {
+        let cards = deckcode_to_cards_single(deck_code).unwrap();
         Self {
             player_type,
             opponent: None,
             mulligan_state: MulliganState::new(),
-            cards: Cards::new(),
+            cards: cards.clone(),
             cost: Resoruce::new(0, 0),
             mana: Resoruce::new(0, 0),
             hand: Hand::new(),
-            deck: Deck::new(),
+            deck: Deck::new(cards),
             graveyard: Graveyard::new(),
             effect: Effect::new(),
             field: Field::new(),

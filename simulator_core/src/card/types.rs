@@ -1,4 +1,5 @@
-use std::fmt;
+use std::fmt::{self, Display};
+use std::hash::{Hash, Hasher};
 
 use actix::Addr;
 use serde::{Deserialize, Serialize};
@@ -241,6 +242,12 @@ pub enum PlayerKind {
     Player2,
 }
 
+impl Display for PlayerKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
 impl PlayerKind {
     pub fn as_str(&self) -> &'static str {
         match self {
@@ -280,8 +287,15 @@ impl From<PlayerKind> for String {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PlayerIdentity {
     pub id: Uuid,
     pub kind: PlayerKind,
+}
+
+impl Hash for PlayerIdentity {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.id.hash(state);
+        self.kind.hash(state);
+    }
 }

@@ -5,14 +5,17 @@ use actix::{
     StreamHandler,
 };
 use actix_ws::{CloseCode, CloseReason, Message, ProtocolError, Session};
-use messages::{GameEvent, HandleUserAction, RegisterConnection};
+use messages::GameEvent;
 use tracing::{debug, error, info, warn};
 use uuid::Uuid;
 
 use crate::{
     card::types::PlayerKind,
     enums::{CLIENT_TIMEOUT, HEARTBEAT_INTERVAL},
-    game::GameActor,
+    game::{
+        message::{HandleUserAction, RegisterConnection},
+        GameActor,
+    },
     server::actor::ServerMessage,
 };
 
@@ -20,13 +23,14 @@ use super::{messages, UserAction};
 
 /// WebSocket 연결을 관리하는 Actor
 pub struct ConnectionActor {
-    ws_session: Session,        // 웹소켓 세션 제어
-    game_addr: Addr<GameActor>, // 연결된 GameActor 주소
-    player_type: PlayerKind,
+    pub ws_session: Session,        // 웹소켓 세션 제어
+    pub game_addr: Addr<GameActor>, // 연결된 GameActor 주소
+    pub player_type: PlayerKind,
 
-    last_pong: Instant,
-    player_id: Uuid,       // 이 연결의 플레이어 ID
-    cleanup_started: bool, // 중복 정리를 방지하기 위한 플래그
+    pub last_pong: Instant,
+    pub player_id: Uuid,       // 이 연결의 플레이어 ID
+    pub cleanup_started: bool, // 중복 정리를 방지하기 위한 플래그
+    pub initial_pong_received: bool,
 }
 
 impl ConnectionActor {
@@ -55,6 +59,7 @@ impl ConnectionActor {
             last_pong: Instant::now(),
             player_type,
             cleanup_started: false,
+            initial_pong_received: false,
         }
     }
 
@@ -65,12 +70,18 @@ impl ConnectionActor {
                     "Heartbeat timeout for player {:?} (session_id: {}). Closing connection.",
                     act.player_type, act.player_id
                 );
+                let session_to_close = act.ws_session.clone();
+                ctx_inner.spawn(wrap_future::<_, Self>(async move {
+                    let _ = session_to_close
+                        .close(Some(CloseReason::from(CloseCode::Policy)))
+                        .await;
+                }));
                 ctx_inner.stop();
                 return;
             }
 
             // 1. Ping 작업을 Context::spawn을 사용하여 비동기로 실행
-            debug!(
+            info!(
                 "Spawning heartbeat ping task for player {:?} (session_id: {})",
                 act.player_type, act.player_id
             );
@@ -87,7 +98,7 @@ impl ConnectionActor {
                         player_type_log, session_id_log, e
                     );
                 } else {
-                    debug!(
+                    info!(
                         "Ping sent successfully to player {:?} (session_id: {})",
                         player_type_log, session_id_log
                     );
@@ -146,7 +157,7 @@ impl Actor for ConnectionActor {
                     player_type_log, session_id_log, e
                 );
             } else {
-                debug!(
+                info!(
                     "Sent initial heartbeat_connected message to player {:?} (session_id: {})",
                     player_type_log, session_id_log
                 );
@@ -155,12 +166,6 @@ impl Actor for ConnectionActor {
 
         // 표준 Future를 ActorFuture로 감싸서 액터 컨텍스트에서 실행
         ctx.spawn(wrap_future::<_, Self>(send_future));
-
-        // GameActor에게 자신을 등록 (Context<Self>의 address() 사용)
-        self.game_addr.do_send(RegisterConnection {
-            player_id: self.player_id,
-            addr: ctx.address(),
-        });
     }
 
     fn stopping(&mut self, _ctx: &mut Context<Self>) -> Running {
@@ -183,13 +188,15 @@ impl Actor for ConnectionActor {
     }
 }
 
-// 웹소켓 메시지 처리 (StreamHandler 구현)
 impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
     fn handle(&mut self, msg: Result<Message, ProtocolError>, ctx: &mut Context<Self>) {
+        debug!(
+            "ConnectionActor received message from player {:?} (session_id: {}): {:?}",
+            self.player_type, self.player_id, msg
+        );
         match msg {
-            // Ping/Pong/Close는 HeartbeatActor가 주도적으로 처리하므로 여기서는 무시하거나 로깅만 수행
             Ok(Message::Ping(ping_msg)) => {
-                debug!(
+                info!(
                     "ConnectionActor received Ping (handled by HeartbeatActor?) for {}",
                     self.player_id
                 );
@@ -206,7 +213,7 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
                             player_type_log, session_id_log, e
                         );
                     } else {
-                        debug!(
+                        info!(
                             "Sent initial heartbeat_connected message to player {:?} (session_id: {})",
                             player_type_log, session_id_log
                         );
@@ -215,31 +222,46 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
 
                 ctx.spawn(wrap_future::<_, Self>(send_future));
 
-                debug!(
+                info!(
                     "Received Ping from player {:?} (session_id: {})",
                     self.player_type, self.player_id
                 );
             }
             Ok(Message::Pong(_)) => {
                 self.last_pong = Instant::now();
-                debug!(
+                info!(
                     "Received Pong from player {:?} (session_id: {})",
                     self.player_type, self.player_id
                 );
+
+                if !self.initial_pong_received {
+                    self.initial_pong_received = true;
+                    info!(
+                        "Initial Pong received from player {:?} (session_id: {})",
+                        self.player_type, self.player_id
+                    );
+
+                    // 첫 번째 Pong 수신이 되었다면, 양방향 수신이 수립된 것이므로, 다음 단계로 진행함.
+                    // GameActor에게 자신을 등록 (Context<Self>의 address() 사용)
+                    self.game_addr.do_send(RegisterConnection {
+                        player_id: self.player_id,
+                        addr: ctx.address(),
+                    });
+                }
             }
             Ok(Message::Close(reason)) => {
                 info!(
-                    "ConnectionActor received Close (handled by HeartbeatActor?) for {}: {:?}",
+                    "ConnectionActor received Close (handled by HeartbeatActor) for {}: {:?}",
                     self.player_id, reason
                 );
-                ctx.stop(); // 액터 중지 (HeartbeatActor도 같이 중지될 것임)
+                ctx.stop();
             }
 
             // Text 메시지만 처리
             Ok(Message::Text(text)) => {
                 match serde_json::from_str::<UserAction>(&text.to_string()) {
                     Ok(user_action) => {
-                        debug!(
+                        info!(
                             "ConnectionActor forwarding action from {}: {:?}",
                             self.player_id, user_action
                         );
@@ -304,7 +326,7 @@ impl Handler<GameEvent> for ConnectionActor {
     fn handle(&mut self, msg: GameEvent, ctx: &mut Context<Self>) {
         match serde_json::to_string(&msg) {
             Ok(json_string) => {
-                debug!(
+                info!(
                     "ConnectionActor sending event to client {}: {}",
                     self.player_id, json_string
                 );

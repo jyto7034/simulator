@@ -5,19 +5,14 @@ use std::{
 };
 
 use actix::Actor;
-use async_tungstenite::{
-    tokio::{connect_async, TokioAdapter},
-    tungstenite::{self, error::UrlError, http::Request, Message},
-    WebSocketStream,
-};
+use async_tungstenite::tungstenite::{self, error::UrlError, http::Request, Message};
 use ctor::ctor;
 use futures::SinkExt;
 use futures_util::StreamExt;
 use rand::{seq::SliceRandom, thread_rng};
 use serde::de::DeserializeOwned;
 use serde_json::{json, Value};
-use tokio::net::TcpStream;
-use tracing::{info, warn};
+use tracing::info;
 use url::Url;
 use uuid::Uuid;
 
@@ -26,14 +21,9 @@ use crate::{
     card_gen::CardGenerator,
     enums::{CARD_JSON_PATH, HEARTBEAT_INTERVAL, MAX_CARD_SIZE},
     game::GameActor,
-    server::{
-        end_point::game,
-        jsons::{draw, mulligan, ErrorMessage},
-        types::ServerState,
-    },
+    server::{end_point::game, types::ServerState},
     setup_logger,
     utils::{json, parse_json_to_deck_code},
-    VecStringExt,
 };
 
 pub fn generate_random_deck_json() -> (Value, Vec<Card>) {
@@ -93,16 +83,26 @@ pub fn create_server_state() -> web::Data<ServerState> {
     let deck_codes = parse_json_to_deck_code(Some(deck_json), Some(deck_json2))
         .expect("Failed to parse deck code");
 
+    let player1_id = Uuid::new_v4();
+    let player2_id = Uuid::new_v4();
+
     let game_actor = GameActor::create(|ctx| {
-        let game_actor = GameActor::new(Uuid::new_v4(), PlayerKind::Player1);
+        let game_actor = GameActor::new(
+            Uuid::new_v4(),
+            player1_id,
+            player2_id,
+            deck_codes.0,
+            deck_codes.1,
+            PlayerKind::Player1,
+        );
 
         game_actor
     });
 
     web::Data::new(ServerState {
         game: game_actor,
-        player1_id: Uuid::new_v4(),
-        player2_id: Uuid::new_v4(),
+        player1_id: player1_id,
+        player2_id: player2_id,
     })
 }
 
@@ -121,93 +121,6 @@ pub async fn spawn_server() -> (SocketAddr, Data<ServerState>, ServerHandle) {
     tokio::spawn(server);
 
     (addr, server_state_clone, handle)
-}
-
-/// ws_stream 에서 Deal 메시지를 기다리고 파싱하여 카드 리스트를 반환합니다.
-pub async fn expect_mulligan_deal_message(
-    ws_stream: &mut async_tungstenite::WebSocketStream<
-        async_tungstenite::tokio::TokioAdapter<tokio::net::TcpStream>,
-    >,
-) -> Vec<Uuid> {
-    let timeout = tokio::time::timeout(Duration::from_secs(5),
-async{
-    loop{
-        if let Some(msg) = ws_stream.next().await{
-            match msg{
-                Ok(Message::Text(text)) => {
-                    match serde_json::from_str::<mulligan::ServerMessage>(&text) {
-                        Ok(mulligan::ServerMessage::Deal(data)) => {
-                            return data.cards
-                        }
-                        Ok(other) => panic!(
-                            "Expected a MulliganMessage::Deal message, but received a different variant: {:?}",
-                            other
-                        ),
-                        Err(e) => panic!("Failed to parse the deal message JSON: {:?}", e),
-                    }
-                },
-                Ok(Message::Ping(_)) => {
-                    ws_stream.send(Message::Pong(vec![])).await.ok();
-                    continue;
-                },
-                Ok(_) => continue,
-                Err(_) => panic!("WebSocket error"),
-            }
-        }
-    }
-}).await;
-    match timeout {
-        Ok(cards) => cards.to_vec_uuid().expect("Failed to parse card UUID"),
-        Err(_) => panic!(
-            "Did not receive any message from the server while expecting MulliganMessage::Deal."
-        ),
-    }
-}
-
-/// ws_stream 에서 Complete 메시지를 기다리고 파싱하여 카드 리스트를 반환합니다.
-pub async fn expect_mulligan_complete_message(
-    ws_stream: &mut async_tungstenite::WebSocketStream<
-        async_tungstenite::tokio::TokioAdapter<tokio::net::TcpStream>,
-    >,
-) -> Vec<Uuid> {
-    // 타임아웃 설정
-    let timeout = tokio::time::timeout(
-        std::time::Duration::from_secs(5),
-        async {
-            // 원하는 메시지가 올 때까지 계속 메시지를 받습니다
-            loop {
-                if let Some(msg) = ws_stream.next().await {
-                    match msg {
-                        Ok(Message::Text(text)) => {
-                            match serde_json::from_str::<mulligan::ClientMessage>(&text) {
-                                Ok(mulligan::ClientMessage::Complete(data)) => {
-                                    return data.cards
-                                }
-                                Ok(other) => panic!(
-                                    "Expected a MulliganMessage::Complete message, but received a different variant: {:?}",
-                                    other
-                                ),
-                                Err(e) => panic!("Failed to parse the reroll answer JSON: {:?}", e),
-                            }
-                        }
-                        // ping, pong, binary 등 다른 메시지 타입은 무시
-                        Ok(Message::Ping(_)) => {
-                            // ping 메시지에 자동으로 pong 응답
-                            ws_stream.send(Message::Pong(vec![])).await.ok();
-                            continue;
-                        }
-                        Ok(_) => continue,
-                        Err(_) => panic!("WebSocket error"),
-                    }
-                }
-            }
-        }
-    ).await;
-
-    match timeout {
-        Ok(cards) => cards.to_vec_uuid().expect("Failed to parse card UUID"),
-        Err(_) => panic!("Did not receive any message from the server while expecting MulliganMessage::Complete."),
-    }
 }
 
 pub fn verify_mulligan_cards(
@@ -286,32 +199,6 @@ impl RequestTest {
         let msg = serde_json::from_str::<T>(self.response.as_str())
             .expect("Failed to parse JSON (expect_message)");
         extractor(msg)
-    }
-}
-
-//-------------------------------
-// Draw 관련 함수
-//-------------------------------
-impl RequestTest {
-    /// Draw-Answer 메시지를 예상하고 카드 Uuid 를 반환합니다
-    pub fn expect_draw_card(&mut self) -> Uuid {
-        let extractor = |message: draw::ServerMessage| match message {
-            draw::ServerMessage::DrawAnswer(data) => {
-                data.cards.parse().unwrap_or_else(|e| {
-                    // TODO: Log 함수 사용
-                    panic!("Failed to parse card ID: {:?}", e);
-                })
-            }
-        };
-        self.expect_message(extractor)
-    }
-
-    /// Error 메시지를 예상합니다.
-    pub fn expect_error(&mut self) -> String {
-        let extractor = |message: ErrorMessage| match message {
-            ErrorMessage::Error(data) => data.message,
-        };
-        self.expect_message(extractor)
     }
 }
 
@@ -431,67 +318,6 @@ impl WebSocketTest {
             ),
         }
     }
-    /// 에러 메시지를 기다리고 에러 문자열을 반환합니다
-    pub async fn expect_error(&mut self) -> String {
-        let extractor = |message: ErrorMessage| match message {
-            ErrorMessage::Error(data) => data.message,
-        };
-        self.expect_message(extractor).await
-    }
-}
-
-//-------------------------------
-// Mulligan 관련 함수
-//-------------------------------
-impl WebSocketTest {
-    /// 멀리건 딜 메시지를 기다리고 카드 ID 리스트를 반환합니다
-    pub async fn expect_mulligan_deal(&mut self) -> Vec<Uuid> {
-        self.expect_message(|message: mulligan::ServerMessage| match message {
-            mulligan::ServerMessage::Deal(data) => {
-                data.cards.to_vec_uuid().expect("Failed to parse card UUID")
-            }
-            other => panic!("Expected MulliganMessage::Deal but got: {:?}", other),
-        })
-        .await
-    }
-
-    /// 멀리건 완료 메시지를 기다리고 카드 ID 리스트를 반환합니다
-    pub async fn expect_mulligan_complete(&mut self) -> Vec<Uuid> {
-        let extractor = |message: mulligan::ClientMessage| match message {
-            mulligan::ClientMessage::Complete(data) => {
-                data.cards.to_vec_uuid().expect("Failed to parse card UUID")
-            }
-            other => panic!("Expected MulliganMessage::Complete but got: {:?}", other),
-        };
-        self.expect_message(extractor).await
-    }
-
-    /// Reroll-Answer 메시지를 기다리고 카드 ID 리스트를 반환합니다
-    pub async fn expect_mulligan_answer(&mut self) -> Vec<Uuid> {
-        let extractor = |message: mulligan::ServerMessage| match message {
-            mulligan::ServerMessage::RerollAnswer(data) => {
-                data.cards.to_vec_uuid().expect("Failed to parse card UUID")
-            }
-            other => panic!("Expected MulliganMessage::Answer but got: {:?}", other),
-        };
-        self.expect_message(extractor).await
-    }
-}
-
-async fn verify_card_removed_from_deck(
-    server_state: &Data<ServerState>,
-    player_type: &str,
-    card: Uuid,
-) {
-    todo!()
-    // let game = server_state.game.lock().await;
-    // let player = game.get_player_by_type(player_type).get();
-    // let deck = player.get_deck();
-    // assert!(
-    //     !deck.get_cards().contains_uuid(card),
-    //     "Card {} was not removed from the deck",
-    //     card
-    // );
 }
 
 #[ctor]

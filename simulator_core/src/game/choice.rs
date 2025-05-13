@@ -1,9 +1,7 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::{
-    card::types::PlayerKind, enums::ZoneType, exception::GameError, server::jsons::game_features,
-};
+use crate::{card::types::PlayerKind, enums::ZoneType, exception::GameError};
 
 // ChoiceType 은 카드 선택의 종류를 나타냄
 // 클라이언트 단으로 전달할 때, 게임 진행을 위한 정보가 여럿 포함되어 있는데.
@@ -112,19 +110,20 @@ impl ChoiceState {
 
     pub fn serialize_message(&self) -> Result<String, GameError> {
         // ChoiceState의 정보를 ChoiceCardPayload로 변환
-        let message = game_features::ChoiceCardRequestPayload {
-            player: self.player.to_string(), // PlayerType을 문자열로 변환
-            choice_type: self.choice_type.to_string(), // ChoiceType을 문자열로 변환
-            source_card_id: self.source_card_id.unwrap(),
-            min_selections: self.min_selections,
-            max_selections: self.max_selections,
-            destination: self.destination.to_string(),
-            is_open: self.is_open,
-            is_hidden_from_opponent: self.is_hidden_from_opponent,
-        };
+        // let message = game_features::ChoiceCardRequestPayload {
+        //     player: self.player.to_string(), // PlayerType을 문자열로 변환
+        //     choice_type: self.choice_type.to_string(), // ChoiceType을 문자열로 변환
+        //     source_card_id: self.source_card_id.unwrap(),
+        //     min_selections: self.min_selections,
+        //     max_selections: self.max_selections,
+        //     destination: self.destination.to_string(),
+        //     is_open: self.is_open,
+        //     is_hidden_from_opponent: self.is_hidden_from_opponent,
+        // };
 
-        // JSON 문자열로 직렬화
-        serde_json::to_string(&message).map_err(|_| GameError::InternalServerError)
+        // // JSON 문자열로 직렬화
+        // serde_json::to_string(&message).map_err(|_| GameError::InternalServerError)
+        todo!()
     }
 }
 

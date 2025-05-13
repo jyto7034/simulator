@@ -68,10 +68,9 @@ impl TargetSelector for SingleCardSelector {
     }
 
     fn clone_selector(&self) -> Box<dyn TargetSelector> {
-        // Box::new(Self {
-        //     condition: self.condition.clone(),
-        // })
-        todo!()
+        Box::new(Self {
+            condition: self.condition.clone(),
+        })
     }
 
     fn get_owner(&self) -> OwnerType {

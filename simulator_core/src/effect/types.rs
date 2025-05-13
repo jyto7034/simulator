@@ -1,13 +1,6 @@
-use std::{future::Future, pin::Pin};
-
 use uuid::Uuid;
 
-use crate::{
-    card::Card,
-    enums::ZoneType,
-    exception::GameError,
-    server::input_handler::{InputAnswer, InputRequest},
-};
+use crate::{enums::ZoneType, server::input_handler::InputRequest};
 
 pub struct EffectInfo {
     pub effect_id: Uuid,

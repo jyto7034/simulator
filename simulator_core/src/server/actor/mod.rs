@@ -38,6 +38,8 @@ pub enum UserAction {
 pub enum ServerMessage {
     #[serde(rename = "heartbeat_connected")]
     HeartbeatConnected { player: String, session_id: Uuid },
+    #[serde(rename = "mulligan_deal")]
+    MulliganDealCards { player: String, cards: Vec<Uuid> },
 }
 
 impl ServerMessage {
@@ -47,6 +49,12 @@ impl ServerMessage {
                 "type": "heartbeat_connected",
                 "player": player,
                 "session_id": session_id.to_string()
+            })
+            .to_string(),
+            ServerMessage::MulliganDealCards { player, cards } => serde_json::json!({
+                "type": "mulligan_deal",
+                "player": player,
+                "cards": cards.iter().map(|id| id.to_string()).collect::<Vec<_>>()
             })
             .to_string(),
         }

@@ -1,17 +1,29 @@
-use actix::{Addr, Context, Handler, Message, Response, ResponseFuture};
-use tracing::info;
+use actix::{Addr, AsyncContext, Context, Handler, Message, ResponseFuture};
+use serde::Deserialize;
+use tracing::{error, info, warn};
 use uuid::Uuid;
 
 use crate::{
     card::{cards::CardVecExt, insert::BottomInsert, take::RandomTake, types::PlayerKind, Card},
+    enums::ZoneType,
     exception::GameError,
     game::phase::PlayerPhaseProgress,
     player::{
-        message::{AddCardsToDeck, GetCardFromDeck, RequestMulliganReroll},
+        message::{
+            AddCardsToDeck, GetCardFromDeck, GetDeckCards, GetFieldCards, GetGraveyardCards,
+            GetHandCards, GetMulliganDealCards,
+        },
         PlayerActor,
     },
     selector::TargetCount,
-    server::input_handler::{InputAnswer, InputRequest},
+    server::{
+        actor::{
+            connection::ConnectionActor, messages::SendMulliganDealCards,
+            types::PlayerInputResponse, UserAction,
+        },
+        input_handler::{InputAnswer, InputRequest},
+    },
+    PlayerHashMapExt,
 };
 
 use super::{phase::Phase, GameActor, GameConfig};
@@ -20,13 +32,6 @@ use super::{phase::Phase, GameActor, GameConfig};
 #[rtype(result = "Result<(), GameError>")]
 pub struct InitializeGame(pub GameConfig);
 
-impl Handler<InitializeGame> for GameActor {
-    type Result = Result<(), GameError>;
-    fn handle(&mut self, msg: InitializeGame, _: &mut Self::Context) -> Self::Result {
-        Ok(())
-    }
-}
-
 #[derive(Message)]
 #[rtype(result = "()")]
 pub struct RegisterPlayer {
@@ -34,32 +39,15 @@ pub struct RegisterPlayer {
     pub player_addr: Addr<PlayerActor>,
 }
 
-impl Handler<RegisterPlayer> for GameActor {
-    type Result = ();
-    fn handle(&mut self, msg: RegisterPlayer, _: &mut Self::Context) -> Self::Result {}
-}
-
 #[derive(Message)]
 #[rtype(result = "()")]
 pub struct PlayerReady(pub PlayerKind);
-
-impl Handler<PlayerReady> for GameActor {
-    type Result = ();
-    fn handle(&mut self, msg: PlayerReady, _: &mut Self::Context) -> Self::Result {}
-}
 
 #[derive(Message)]
 #[rtype(result = "Result<(), GameError>")]
 pub struct RequestPlayCard {
     pub player_type: PlayerKind,
     pub card_id: Uuid,
-}
-
-impl Handler<RequestPlayCard> for GameActor {
-    type Result = Result<(), GameError>;
-    fn handle(&mut self, msg: RequestPlayCard, _: &mut Self::Context) -> Self::Result {
-        Ok(())
-    }
 }
 
 #[derive(Message)]
@@ -70,13 +58,6 @@ pub struct SubmitInput {
     pub answer: InputAnswer,
 }
 
-impl Handler<SubmitInput> for GameActor {
-    type Result = Result<(), GameError>;
-    fn handle(&mut self, msg: SubmitInput, _: &mut Self::Context) -> Self::Result {
-        Ok(())
-    }
-}
-
 #[derive(Message)]
 #[rtype(result = "Result<(), GameError>")]
 pub struct RequestInput {
@@ -85,17 +66,213 @@ pub struct RequestInput {
     pub request: InputRequest,
 }
 
-impl Handler<RequestInput> for GameActor {
-    type Result = Result<(), GameError>;
-    fn handle(&mut self, msg: RequestInput, _: &mut Self::Context) -> Self::Result {
-        Ok(())
+#[derive(Message)]
+#[rtype(result = "Result<(), GameError>")]
+pub struct IsCorrectPhase {
+    pub phase: Phase,
+}
+
+#[derive(Message)]
+#[rtype(result = "Result<Vec<Card>, GameError>")]
+pub struct RerollRequestMulliganCard {
+    pub player_type: PlayerKind,
+    pub cards: Vec<Uuid>,
+}
+
+#[derive(Message)]
+#[rtype(result = "Vec<Card>")]
+pub struct GetPlayerZoneCards {
+    pub player_type: PlayerKind,
+    pub zone: ZoneType,
+}
+
+#[derive(Message)]
+#[rtype(result = "Result<(), GameError>")]
+pub struct CheckReEntry {
+    pub player_type: PlayerKind,
+}
+
+#[derive(Message, Deserialize, Debug, Clone)]
+#[rtype(result = "Result<PlayerInputResponse, GameError>")]
+pub struct HandleUserAction {
+    pub player_id: Uuid,
+    pub action: UserAction,
+}
+
+impl Handler<HandleUserAction> for GameActor {
+    type Result = ResponseFuture<Result<PlayerInputResponse, GameError>>;
+
+    fn handle(&mut self, msg: HandleUserAction, ctx: &mut Self::Context) -> Self::Result {
+        match msg.action {
+            UserAction::PlayCard { card_id, target_id } => {
+                todo!()
+            }
+            UserAction::Attack {
+                attacker_id,
+                defender_id,
+            } => todo!(),
+            UserAction::EndTurn => todo!(),
+            UserAction::SubmitInput {
+                request_id,
+                response_data,
+            } => todo!(),
+            UserAction::RerollRequestMulliganCard { card_id } => {
+                let player_type = self.get_player_type_by_uuid(msg.player_id);
+                let addr = ctx.address();
+                Box::pin(async move {
+                    let rerolled_cards = addr
+                        .send(RerollRequestMulliganCard {
+                            player_type,
+                            cards: card_id.clone(),
+                        })
+                        .await??
+                        .iter()
+                        .map(|card| card.get_uuid())
+                        .collect();
+
+                    Ok(PlayerInputResponse::MulliganRerollAnswer(rerolled_cards))
+                })
+            }
+            UserAction::CompleteMulligan => todo!(),
+        }
     }
 }
 
 #[derive(Message)]
 #[rtype(result = "Result<(), GameError>")]
-pub struct IsCorrectPhase {
-    pub phase: Phase,
+pub struct RegisterConnection {
+    pub player_id: Uuid,
+    pub addr: Addr<ConnectionActor>,
+}
+
+impl Handler<RegisterConnection> for GameActor {
+    type Result = ResponseFuture<Result<(), GameError>>;
+
+    fn handle(&mut self, msg: RegisterConnection, ctx: &mut Self::Context) -> Self::Result {
+        info!(
+            "GAME ACTOR [{}]: Handling RegisterConnection for player {}",
+            self.game_id, msg.player_id
+        );
+
+        if let Some(_) = self.connections.insert(msg.player_id, msg.addr.clone()) {
+            info!(
+                "GAME ACTOR [{}]: Player {} already registered, updating connection.",
+                self.game_id, msg.player_id
+            );
+        } else {
+            info!(
+                "GAME ACTOR [{}]: Player {} registered successfully.",
+                self.game_id, msg.player_id
+            );
+        }
+
+        let kind = self.get_player_type_by_uuid(msg.player_id);
+        self.player_connection_ready.insert(kind, true);
+
+        let game_id = self.game_id.clone();
+        let player_id = msg.player_id.clone();
+        let is_all_ready = self.all_players_ready();
+
+        let players_uuid = self
+            .players
+            .iter()
+            .map(|(identity, _)| identity.id)
+            .collect::<Vec<_>>();
+        let players_addr = self.players.clone();
+        let connections = self.connections.clone();
+
+        if connections.is_empty() {
+            error!(
+                "GAME ACTOR [{}]: No connections available to send cards",
+                game_id
+            );
+            return Box::pin(async { Err(GameError::NoConnections) });
+        }
+
+        Box::pin(async move {
+            if is_all_ready {
+                info!("GAME ACTOR [{}]: All players are ready", game_id);
+
+                for uuid in players_uuid {
+                    let connection = connections.get(&uuid).ok_or(GameError::NoConnections)?;
+                    let player_addr = players_addr
+                        .get_by_uuid(&uuid)
+                        .ok_or(GameError::NoConnections)?;
+
+                    let player_cards = player_addr
+                        .send(GetMulliganDealCards)
+                        .await?
+                        .iter()
+                        .map(|card| card.get_uuid())
+                        .collect::<Vec<_>>();
+
+                    println!(
+                        "GAME ACTOR [{}]: Sending cards to connection: {:?}",
+                        game_id,
+                        connections.get(&uuid)
+                    );
+                    if let Err(err) = connection
+                        .send(SendMulliganDealCards {
+                            cards: player_cards,
+                        })
+                        .await?
+                    {
+                        warn!(
+                            "GAME ACTOR [{}]: Failed to send cards to connection: {}",
+                            game_id, err
+                        );
+                    } else {
+                        info!(
+                            "GAME ACTOR [{}]: Successfully sent cards to connection",
+                            game_id
+                        );
+                    }
+                }
+            } else {
+                info!("GAME ACTOR [{}]: Not all players are ready yet", game_id);
+            }
+
+            Ok(())
+        })
+    }
+}
+
+impl Handler<InitializeGame> for GameActor {
+    type Result = Result<(), GameError>;
+    fn handle(&mut self, msg: InitializeGame, _: &mut Self::Context) -> Self::Result {
+        Ok(())
+    }
+}
+
+impl Handler<RegisterPlayer> for GameActor {
+    type Result = ();
+    fn handle(&mut self, msg: RegisterPlayer, _: &mut Self::Context) -> Self::Result {}
+}
+
+impl Handler<PlayerReady> for GameActor {
+    type Result = ();
+    fn handle(&mut self, msg: PlayerReady, _: &mut Self::Context) -> Self::Result {}
+}
+
+impl Handler<RequestPlayCard> for GameActor {
+    type Result = Result<(), GameError>;
+    fn handle(&mut self, msg: RequestPlayCard, _: &mut Self::Context) -> Self::Result {
+        Ok(())
+    }
+}
+
+impl Handler<SubmitInput> for GameActor {
+    type Result = Result<(), GameError>;
+    fn handle(&mut self, msg: SubmitInput, _: &mut Self::Context) -> Self::Result {
+        Ok(())
+    }
+}
+
+impl Handler<RequestInput> for GameActor {
+    type Result = Result<(), GameError>;
+    fn handle(&mut self, msg: RequestInput, _: &mut Self::Context) -> Self::Result {
+        Ok(())
+    }
 }
 
 impl Handler<IsCorrectPhase> for GameActor {
@@ -109,11 +286,25 @@ impl Handler<IsCorrectPhase> for GameActor {
     }
 }
 
-#[derive(Message)]
-#[rtype(result = "Result<Vec<Card>, GameError>")]
-pub struct RerollRequestMulliganCard {
-    pub player_type: PlayerKind,
-    pub cards: Vec<Uuid>,
+impl Handler<GetPlayerZoneCards> for GameActor {
+    type Result = ResponseFuture<Vec<Card>>;
+
+    fn handle(&mut self, msg: GetPlayerZoneCards, _: &mut Context<Self>) -> Self::Result {
+        let player_type = msg.player_type;
+        let zone = msg.zone;
+
+        let addr = self.get_player_addr_by_kind(player_type);
+        Box::pin(async move {
+            match zone {
+                ZoneType::Deck => addr.send(GetDeckCards).await,
+                ZoneType::Hand => addr.send(GetHandCards).await,
+                ZoneType::Field => addr.send(GetFieldCards).await,
+                ZoneType::Graveyard => addr.send(GetGraveyardCards).await,
+                _ => panic!("Invalid zone type: {}", zone),
+            }
+            .unwrap()
+        })
+    }
 }
 
 impl Handler<RerollRequestMulliganCard> for GameActor {
@@ -148,12 +339,6 @@ impl Handler<RerollRequestMulliganCard> for GameActor {
             .await?
         })
     }
-}
-
-#[derive(Message)]
-#[rtype(result = "Result<(), GameError>")]
-pub struct CheckReEntry {
-    pub player_type: PlayerKind,
 }
 
 impl Handler<CheckReEntry> for GameActor {
@@ -239,4 +424,20 @@ impl Handler<CheckReEntry> for GameActor {
             Phase::BattleDamageStepEnd => todo!(),
         }
     }
+}
+
+pub struct ChoiceCardRequestPayload {
+    pub player: String,
+    pub choice_type: String,
+
+    pub source_card_id: Uuid,
+
+    // 선택 제한 설정
+    pub min_selections: usize, // 최소 선택 개수
+    pub max_selections: usize, // 최대 선택 개수
+    pub destination: String,
+
+    // 상태 관리
+    pub is_open: bool,                 // 선택이 활성화되어 있는지
+    pub is_hidden_from_opponent: bool, // 상대방에게 숨김 여부
 }
