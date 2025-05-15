@@ -195,7 +195,7 @@ impl RequestTest {
         T: DeserializeOwned,
         F: Fn(T) -> R,
     {
-        info!("Response: {}", self.response);
+        info!("[TEST] Response: {}", self.response);
         let msg = serde_json::from_str::<T>(self.response.as_str())
             .expect("Failed to parse JSON (expect_message)");
         extractor(msg)
@@ -276,32 +276,28 @@ impl WebSocketTest {
             loop {
                 match self.stream.next().await {
                     Some(Ok(Message::Text(text))) => {
-                        println!("Received message: {}", text);
+                        info!("[TEST] Received message: {}", text);
                         if let Ok(parsed) = serde_json::from_str::<T>(&text) {
                             return extractor(parsed);
                         } else {
-                            println!("Failed to parse into expected type: {}", text);
+                            info!("[TEST] Failed to parse into expected type: {}", text);
                             // 중요: 여기서 continue를 해야 다른 타입 메시지를 기다림
                             continue;
                         }
                     }
-                    Some(Ok(Message::Ping(data))) => {
-                        println!("Received ping, sending pong");
-                        // 중요: Pong은 sink를 통해 보내야 함
-                        if self.sink.send(Message::Pong(data)).await.is_err() {
-                            // 에러 처리 필요
-                            eprintln!("Failed to send Pong");
-                        }
+                    Some(Ok(Message::Ping(_))) => {
+                        info!("[TEST] Received ping (auto-pong by tungstenite), ignoring.");
+                        continue; // 자동으로 pong 처리됨
                     }
                     Some(Ok(Message::Pong(_))) => {
-                        println!("Received Pong, ignoring.");
+                        info!("[TEST] Received Pong, ignoring.");
                         continue; // Pong은 무시하고 다음 메시지 기다림
                     }
                     Some(Ok(Message::Close(reason))) => {
                         panic!("WebSocket closed unexpectedly while waiting for specific message. Reason: {:?}", reason);
                     }
                     Some(Ok(msg)) => {
-                        println!("Ignoring other message type: {:?}", msg);
+                        info!("[TEST] Ignoring other message type: {:?}", msg);
                         continue; // 다른 메시지 타입 무시
                     }
                     Some(Err(e)) => panic!("WebSocket error: {:?}", e),

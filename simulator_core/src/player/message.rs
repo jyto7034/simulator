@@ -198,7 +198,7 @@ impl Handler<GetDeckCards> for PlayerActor {
 }
 
 impl Handler<GetHandCards> for PlayerActor {
-    type Result = Vec<Card>; // 카드 목록 반환
+    type Result = Vec<Card>;
 
     fn handle(&mut self, _: GetHandCards, ctx: &mut Context<Self>) -> Self::Result {
         info!(
@@ -212,7 +212,7 @@ impl Handler<GetHandCards> for PlayerActor {
 }
 
 impl Handler<GetFieldCards> for PlayerActor {
-    type Result = Vec<Card>; // 카드 목록 반환
+    type Result = Vec<Card>;
 
     fn handle(&mut self, _: GetFieldCards, ctx: &mut Context<Self>) -> Self::Result {
         info!(
@@ -226,7 +226,7 @@ impl Handler<GetFieldCards> for PlayerActor {
 }
 
 impl Handler<GetGraveyardCards> for PlayerActor {
-    type Result = Vec<Card>; // 카드 목록 반환
+    type Result = Vec<Card>;
 
     fn handle(&mut self, _: GetGraveyardCards, ctx: &mut Context<Self>) -> Self::Result {
         info!(

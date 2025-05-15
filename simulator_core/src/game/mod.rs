@@ -1,7 +1,9 @@
-use std::{collections::HashMap, time::Duration};
+use std::{collections::HashMap, sync::Arc, time::Duration};
 
 use actix::{Actor, Addr, Context, Handler, Message, ResponseFuture};
 use phase::{Phase, PhaseState};
+use state::GameStateManager;
+use tokio::sync::Mutex;
 use tracing::{error, info};
 use turn::Turn;
 use uuid::Uuid;
@@ -21,8 +23,8 @@ pub mod getter;
 pub mod helper;
 pub mod message;
 pub mod phase;
+pub mod state;
 pub mod turn;
-
 pub struct GameConfig {}
 
 pub struct GameActor {
@@ -32,6 +34,7 @@ pub struct GameActor {
     pub player_connection_ready: HashMap<PlayerKind, bool>, // 각 플레이어 초기화 완료 여부
     pub phase_state: PhaseState,
     pub all_cards: HashMap<PlayerKind, Vec<Card>>,
+    pub game_state: Arc<Mutex<GameStateManager>>,
     pub turn: Turn,
     pub is_game_over: bool,
     pub game_id: Uuid,
@@ -108,6 +111,7 @@ impl GameActor {
             turn: Turn::new(),
             is_game_over: false,
             game_id,
+            game_state: Arc::new(Mutex::new(GameStateManager::new())),
         }
     }
 

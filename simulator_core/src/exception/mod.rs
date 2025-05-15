@@ -56,6 +56,7 @@ pub enum GameError {
     MailboxError,
     PlayerNotReady,
     NoConnections,
+    GameStateLockFailed,
 
     InvalidTargetCount,
     NoValidTargets,

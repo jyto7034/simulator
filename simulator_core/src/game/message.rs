@@ -1,13 +1,13 @@
 use actix::{Addr, AsyncContext, Context, Handler, Message, ResponseFuture};
 use serde::Deserialize;
-use tracing::{error, info, warn};
+use tracing::{debug, error, info, warn};
 use uuid::Uuid;
 
 use crate::{
     card::{cards::CardVecExt, insert::BottomInsert, take::RandomTake, types::PlayerKind, Card},
     enums::ZoneType,
     exception::GameError,
-    game::phase::PlayerPhaseProgress,
+    game::{phase::PlayerPhaseProgress, state::PlayerMulliganStatus},
     player::{
         message::{
             AddCardsToDeck, GetCardFromDeck, GetDeckCards, GetFieldCards, GetGraveyardCards,
@@ -159,11 +159,30 @@ impl Handler<RegisterConnection> for GameActor {
                 "GAME ACTOR [{}]: Player {} already registered, updating connection.",
                 self.game_id, msg.player_id
             );
+            return Box::pin(async { Err(GameError::ActiveSessionExists) });
         } else {
             info!(
                 "GAME ACTOR [{}]: Player {} registered successfully.",
                 self.game_id, msg.player_id
             );
+
+            if let Ok(mut gsm) = self.game_state.try_lock() {
+                debug!(
+                    "GAME ACTOR [{}]: Locking game state for player {}",
+                    self.game_id, msg.player_id
+                );
+                gsm.update_player_connection_status(
+                    self.get_player_type_by_uuid(msg.player_id),
+                    true,
+                );
+                drop(gsm);
+            } else {
+                error!(
+                    "GAME ACTOR [{}]: Failed to lock game state for player {}",
+                    self.game_id, msg.player_id
+                );
+                return Box::pin(async { Err(GameError::GameStateLockFailed) });
+            }
         }
 
         let kind = self.get_player_type_by_uuid(msg.player_id);
@@ -180,6 +199,7 @@ impl Handler<RegisterConnection> for GameActor {
             .collect::<Vec<_>>();
         let players_addr = self.players.clone();
         let connections = self.connections.clone();
+        let gsm = self.game_state.clone();
 
         if connections.is_empty() {
             error!(
@@ -226,6 +246,24 @@ impl Handler<RegisterConnection> for GameActor {
                             "GAME ACTOR [{}]: Successfully sent cards to connection",
                             game_id
                         );
+
+                        if let Ok(mut gsm) = gsm.try_lock() {
+                            debug!(
+                                "GAME ACTOR [{}]: Locking game state for player {}",
+                                game_id, uuid
+                            );
+                            gsm.update_player_mulligan_status(
+                                kind,
+                                PlayerMulliganStatus::CardsDealt,
+                            );
+                            drop(gsm);
+                        } else {
+                            error!(
+                                "GAME ACTOR [{}]: Failed to lock game state for player {}",
+                                game_id, uuid
+                            );
+                            return Err(GameError::GameStateLockFailed);
+                        }
                     }
                 }
             } else {

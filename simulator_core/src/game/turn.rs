@@ -1,6 +1,6 @@
 use crate::card::types::PlayerKind;
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct Turn {
     current_turn: PlayerKind,
     turn_count: usize,

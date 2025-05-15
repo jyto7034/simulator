@@ -89,6 +89,7 @@ impl ConnectionActor {
             let mut session_clone = act.ws_session.clone();
             let player_type_log = act.player_type;
             let session_id_log = act.player_id;
+            let last_pong = act.last_pong;
 
             // 2. 비동기 블록을 직접 spawn
             ctx_inner.spawn(wrap_future::<_, Self>(async move {
@@ -99,8 +100,8 @@ impl ConnectionActor {
                     );
                 } else {
                     info!(
-                        "Ping sent successfully to player {:?} (session_id: {})",
-                        player_type_log, session_id_log
+                        "Ping sent successfully to player {:?} (session_id: {}) last_pong {:?}",
+                        player_type_log, session_id_log, last_pong
                     );
                 }
             }));
@@ -197,10 +198,9 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
         match msg {
             Ok(Message::Ping(ping_msg)) => {
                 info!(
-                    "ConnectionActor received Ping (handled by HeartbeatActor?) for {}",
-                    self.player_id
+                    "ConnectionActor for player {:?} (session_id: {}) received Ping from client.",
+                    self.player_type, self.player_id
                 );
-                self.last_pong = Instant::now();
 
                 let player_type_log = self.player_type;
                 let session_id_log = self.player_id;
@@ -209,63 +209,54 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
                 let send_future = async move {
                     if let Err(e) = session_clone.pong(&ping_msg).await {
                         error!(
-                            "Failed to send initial heartbeat_connected message to player {:?} (session_id: {}): {:?}",
+                            "ConnectionActor for player {:?} (session_id: {}): Failed to send Pong to client: {:?}",
                             player_type_log, session_id_log, e
                         );
                     } else {
                         info!(
-                            "Sent initial heartbeat_connected message to player {:?} (session_id: {})",
+                            "ConnectionActor for player {:?} (session_id: {}): Sent Pong to client.",
                             player_type_log, session_id_log
                         );
                     }
                 };
-
                 ctx.spawn(wrap_future::<_, Self>(send_future));
-
-                info!(
-                    "Received Ping from player {:?} (session_id: {})",
-                    self.player_type, self.player_id
-                );
             }
             Ok(Message::Pong(_)) => {
-                self.last_pong = Instant::now();
+                let prev_pong = self.last_pong;
+                self.last_pong = Instant::now(); // 클라이언트 활성 시간 갱신
                 info!(
-                    "Received Pong from player {:?} (session_id: {})",
-                    self.player_type, self.player_id
+                    "ConnectionActor for player {:?} (session_id: {}): Received Pong from client. prev_pong {:?}, last_pong {:?}",
+                    self.player_type, self.player_id, prev_pong, self.last_pong
                 );
 
                 if !self.initial_pong_received {
                     self.initial_pong_received = true;
                     info!(
-                        "Initial Pong received from player {:?} (session_id: {})",
+                        "ConnectionActor for player {:?} (session_id: {}): Initial Pong received. Registering with GameActor.",
                         self.player_type, self.player_id
                     );
 
-                    // 첫 번째 Pong 수신이 되었다면, 양방향 수신이 수립된 것이므로, 다음 단계로 진행함.
-                    // GameActor에게 자신을 등록 (Context<Self>의 address() 사용)
+                    // GameActor에게 자신을 등록
                     self.game_addr.do_send(RegisterConnection {
                         player_id: self.player_id,
-                        addr: ctx.address(),
+                        addr: ctx.address(), // 현재 ConnectionActor의 주소
                     });
                 }
             }
             Ok(Message::Close(reason)) => {
                 info!(
-                    "ConnectionActor received Close (handled by HeartbeatActor) for {}: {:?}",
-                    self.player_id, reason
+                    "ConnectionActor for player {:?} (session_id: {}): Received Close from client. Reason: {:?}",
+                    self.player_type, self.player_id, reason
                 );
                 ctx.stop();
             }
-
-            // Text 메시지만 처리
             Ok(Message::Text(text)) => {
                 match serde_json::from_str::<UserAction>(&text.to_string()) {
                     Ok(user_action) => {
                         info!(
-                            "ConnectionActor forwarding action from {}: {:?}",
-                            self.player_id, user_action
+                            "ConnectionActor for player {:?} (session_id: {}): Forwarding action to GameActor: {:?}",
+                            self.player_type, self.player_id, user_action
                         );
-                        // GameActor에게 메시지 전달
                         self.game_addr.do_send(HandleUserAction {
                             player_id: self.player_id,
                             action: user_action,
@@ -273,18 +264,17 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
                     }
                     Err(e) => {
                         error!(
-                            "ConnectionActor failed to parse UserAction from {}: {}, error: {}",
-                            self.player_id, text, e
+                            "ConnectionActor for player {:?} (session_id: {}): Failed to parse UserAction from text '{}'. Error: {}",
+                            self.player_type, self.player_id, text, e
                         );
                         let error_msg = format!("{{\"error\": \"Invalid message format: {}\"}}", e);
-                        // 에러 메시지 전송 시도 (비동기 처리 필요)
                         let mut session_clone = self.ws_session.clone();
-                        let session_id_log = self.player_id;
+                        let player_id_log = self.player_id; // 로그용 ID 클론
                         ctx.spawn(wrap_future::<_, Self>(async move {
-                            if let Err(e) = session_clone.text(error_msg).await {
+                            if let Err(send_err) = session_clone.text(error_msg).await {
                                 error!(
-                                    "ConnectionActor failed to send error text to {}: {:?}",
-                                    session_id_log, e
+                                    "ConnectionActor for player_id {}: Failed to send error text to client: {:?}",
+                                    player_id_log, send_err
                                 );
                             }
                         }));
@@ -293,32 +283,35 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
             }
             Ok(Message::Binary(_)) => {
                 warn!(
-                    "ConnectionActor received unexpected Binary message from {}",
-                    self.player_id
+                    "ConnectionActor for player {:?} (session_id: {}): Received unexpected Binary message.",
+                    self.player_type, self.player_id
                 );
-                // 필요한 경우 처리
             }
             Err(e) => {
                 error!(
-                    "ConnectionActor websocket error for player {}: {}",
-                    self.player_id, e
+                    "ConnectionActor for player {:?} (session_id: {}): WebSocket error: {}",
+                    self.player_type, self.player_id, e
                 );
-                ctx.stop(); // 에러 발생 시 액터 중지
+                ctx.stop();
             }
-            _ => (),
+            _ => {
+                // 예를 들어 Ok(Message::Continuation(_)) 등 명시적으로 처리하지 않은 메시지 타입
+                warn!(
+                    "ConnectionActor for player {:?} (session_id: {}): Received unhandled message type.",
+                    self.player_type, self.player_id
+                );
+            }
         }
     }
 
-    // 스트림 종료 시 호출됨
     fn finished(&mut self, ctx: &mut Context<Self>) {
         info!(
-            "ConnectionActor websocket Stream finished for player {}, stopping actor.",
-            self.player_id
+            "ConnectionActor for player {:?} (session_id: {}): WebSocket stream finished. Stopping actor.",
+            self.player_type, self.player_id
         );
         ctx.stop();
     }
 }
-
 // GameActor로부터 오는 GameEvent 처리
 impl Handler<GameEvent> for ConnectionActor {
     type Result = ();
