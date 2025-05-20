@@ -1,22 +1,20 @@
 use std::time::{Duration, Instant};
 
 use actix::{
-    fut::wrap_future, Actor, ActorContext, Addr, AsyncContext, Context, Handler, Running,
-    StreamHandler,
+    fut::wrap_future, Actor, ActorContext, Addr, AsyncContext, Context, Running, StreamHandler,
 };
 use actix_ws::{CloseCode, CloseReason, Message, ProtocolError, Session};
-use messages::GameEvent;
+use simulator_core::{
+    card::types::PlayerKind,
+    exception::GameError,
+    game::{message::RegisterConnection, GameActor},
+};
 use tracing::{debug, error, info, warn};
 use uuid::Uuid;
 
 use crate::{
-    card::types::PlayerKind,
+    connection::ServerMessage,
     enums::{CLIENT_TIMEOUT, HEARTBEAT_INTERVAL},
-    game::{
-        message::{HandleUserAction, RegisterConnection},
-        GameActor,
-    },
-    server::actor::ServerMessage,
 };
 
 use super::{messages, UserAction};
@@ -90,6 +88,7 @@ impl ConnectionActor {
             let player_type_log = act.player_type;
             let session_id_log = act.player_id;
             let last_pong = act.last_pong;
+            let ctx_adrr = ctx_inner.address();
 
             // 2. 비동기 블록을 직접 spawn
             ctx_inner.spawn(wrap_future::<_, Self>(async move {
@@ -98,6 +97,9 @@ impl ConnectionActor {
                         "Failed to send ping to player {:?} (session_id: {}): {:?}",
                         player_type_log, session_id_log, e
                     );
+                    ctx_adrr.do_send(messages::StopActorOnError {
+                        error_message: GameError::PingSentFailure,
+                    });
                 } else {
                     info!(
                         "Ping sent successfully to player {:?} (session_id: {}) last_pong {:?}",
@@ -137,11 +139,14 @@ impl Actor for ConnectionActor {
     type Context = Context<Self>;
 
     fn started(&mut self, ctx: &mut Context<Self>) {
-        info!("ConnectionActor started for player {}", self.player_id);
+        let player_type_log = self.player_type;
+        info!(
+            "ConnectionActor started for player {} {}",
+            player_type_log, self.player_id
+        );
 
         self.start_heartbeat_check(ctx);
 
-        let player_type_log = self.player_type;
         let session_id_log = self.player_id;
         let mut session_clone = self.ws_session.clone();
         let init_msg = ServerMessage::HeartbeatConnected {
@@ -239,7 +244,7 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
                     // GameActor에게 자신을 등록
                     self.game_addr.do_send(RegisterConnection {
                         player_id: self.player_id,
-                        addr: ctx.address(), // 현재 ConnectionActor의 주소
+                        recipient: ctx.address().recipient(),
                     });
                 }
             }
@@ -257,10 +262,10 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
                             "ConnectionActor for player {:?} (session_id: {}): Forwarding action to GameActor: {:?}",
                             self.player_type, self.player_id, user_action
                         );
-                        self.game_addr.do_send(HandleUserAction {
-                            player_id: self.player_id,
-                            action: user_action,
-                        });
+                        // self.game_addr.do_send(HandleUserAction {
+                        //     player_id: self.player_id,
+                        //     action: user_action,
+                        // });
                     }
                     Err(e) => {
                         error!(
@@ -310,38 +315,5 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
             self.player_type, self.player_id
         );
         ctx.stop();
-    }
-}
-// GameActor로부터 오는 GameEvent 처리
-impl Handler<GameEvent> for ConnectionActor {
-    type Result = ();
-
-    fn handle(&mut self, msg: GameEvent, ctx: &mut Context<Self>) {
-        match serde_json::to_string(&msg) {
-            Ok(json_string) => {
-                info!(
-                    "ConnectionActor sending event to client {}: {}",
-                    self.player_id, json_string
-                );
-                // 세션을 통해 text 메시지 전송 (비동기 처리)
-                let mut session_clone = self.ws_session.clone();
-                let session_id_log = self.player_id;
-                ctx.spawn(wrap_future::<_, Self>(async move {
-                    if let Err(e) = session_clone.text(json_string).await {
-                        error!(
-                            "ConnectionActor failed to send text event to {}: {:?}",
-                            session_id_log, e
-                        );
-                        // 실패 시 액터 중지 등의 추가 처리 고려
-                    }
-                }));
-            }
-            Err(e) => {
-                error!(
-                    "ConnectionActor failed to serialize GameEvent for player {}: {}",
-                    self.player_id, e
-                );
-            }
-        }
     }
 }

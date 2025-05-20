@@ -6,3 +6,24 @@ description = "card backend"
 
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+simulator_core = { path = "../simulator_core" }
+tokio = { version = "1.15", features = ["full", "tracing"] }
+tracing = "0.1.41"
+tracing-appender = "0.2.3"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+actix-web = "4.9.0"
+actix = "=0.13.5"
+actix-ws = "0.3.0"
+async-tungstenite = {version="0.28.2", features = ["tokio-runtime"]}
+reqwest = "0.12.12"
+url = "2.5.4"
+uuid = { version = "1.14.0", features = ["v4", "serde"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+rand_core = "0.6"
+rand = "0.8.5"
+futures-util = {version = "0.3", features = ["sink"]}
+futures = "0.3.31"
+ctor = "0.4.1"

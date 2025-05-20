@@ -3,14 +3,11 @@ use std::{future::Future, pin::Pin};
 use actix::{Actor, AsyncContext, Context};
 use actix_web::{get, web, FromRequest, HttpRequest, HttpResponse};
 use actix_ws::handle;
+use simulator_core::{card::types::PlayerKind, exception::GameError};
 use tracing::{debug, error, info, instrument, warn};
 use uuid::Uuid;
 
-use crate::{
-    card::types::PlayerKind,
-    exception::GameError,
-    server::{actor::connection::ConnectionActor, types::ServerState},
-};
+use crate::{connection::connection::ConnectionActor, test::ServerState};
 
 #[derive(Debug, Clone, Copy)]
 pub struct AuthPlayer {
@@ -37,7 +34,7 @@ impl FromRequest for AuthPlayer {
     type Error = GameError;
     type Future = Pin<Box<dyn Future<Output = Result<Self, Self::Error>>>>;
 
-    fn from_request(req: &HttpRequest, payload: &mut actix_web::dev::Payload) -> Self::Future {
+    fn from_request(req: &HttpRequest, _payload: &mut actix_web::dev::Payload) -> Self::Future {
         let req = req.clone();
         Box::pin(async move {
             debug!("AuthPlayer::from_request 시작: 인증 처리 중...");

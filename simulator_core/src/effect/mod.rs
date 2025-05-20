@@ -11,7 +11,6 @@ use crate::{
     exception::GameError,
     game::GameActor,
     selector::TargetSelector,
-    server::input_handler::InputAnswer,
 };
 
 // 이 카드명의 "카드"는 1턴에 1장밖에 "발동"할 수 없다.
@@ -35,15 +34,6 @@ pub trait Effect: Send + Sync {
     /// # Returns
     /// * `bool`
     fn can_activate(&self, game: Addr<GameActor>, source: &Card) -> bool;
-
-    fn handle_input(
-        &self,
-        game: Addr<GameActor>,
-        source: &Card,
-        input: InputAnswer,
-    ) -> Result<EffectResult, GameError> {
-        Err(GameError::InputNotExpected)
-    }
 
     fn clone_effect(&self) -> Result<Box<dyn Effect>, GameError>;
 
@@ -131,14 +121,6 @@ impl Effect for DigEffect {
         //         Ok(EffectResult::Completed)
         //     })),
         // })
-        todo!()
-    }
-    fn handle_input(
-        &self,
-        game: Addr<GameActor>,
-        source: &Card,
-        input: InputAnswer,
-    ) -> Result<EffectResult, GameError> {
         todo!()
     }
 

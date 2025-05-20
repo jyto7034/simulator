@@ -1,13 +1,15 @@
-use actix::{Addr, AsyncContext, Context, Handler, Message, ResponseFuture};
-use serde::Deserialize;
-use tracing::{debug, error, info, warn};
+use actix::{Addr, Context, Handler, Message, Recipient, ResponseFuture};
+use tracing::{error, info, warn};
 use uuid::Uuid;
 
 use crate::{
     card::{cards::CardVecExt, insert::BottomInsert, take::RandomTake, types::PlayerKind, Card},
     enums::ZoneType,
     exception::GameError,
-    game::{phase::PlayerPhaseProgress, state::PlayerMulliganStatus},
+    game::{
+        phase::PlayerPhaseProgress,
+        state::{GamePhase, PlayerMulliganStatus},
+    },
     player::{
         message::{
             AddCardsToDeck, GetCardFromDeck, GetDeckCards, GetFieldCards, GetGraveyardCards,
@@ -16,17 +18,15 @@ use crate::{
         PlayerActor,
     },
     selector::TargetCount,
-    server::{
-        actor::{
-            connection::ConnectionActor, messages::SendMulliganDealCards,
-            types::PlayerInputResponse, UserAction,
-        },
-        input_handler::{InputAnswer, InputRequest},
-    },
-    PlayerHashMapExt,
 };
 
 use super::{phase::Phase, GameActor, GameConfig};
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub enum GameEvent {
+    SendMulliganDealCards { cards: Vec<Uuid> },
+}
 
 #[derive(Message)]
 #[rtype(result = "Result<(), GameError>")]
@@ -55,7 +55,6 @@ pub struct RequestPlayCard {
 pub struct SubmitInput {
     pub player_type: PlayerKind,
     pub request_id: Uuid,
-    pub answer: InputAnswer,
 }
 
 #[derive(Message)]
@@ -63,7 +62,6 @@ pub struct SubmitInput {
 pub struct RequestInput {
     pub player_type: PlayerKind,
     pub request_id: Uuid,
-    pub request: InputRequest,
 }
 
 #[derive(Message)]
@@ -92,57 +90,11 @@ pub struct CheckReEntry {
     pub player_type: PlayerKind,
 }
 
-#[derive(Message, Deserialize, Debug, Clone)]
-#[rtype(result = "Result<PlayerInputResponse, GameError>")]
-pub struct HandleUserAction {
-    pub player_id: Uuid,
-    pub action: UserAction,
-}
-
-impl Handler<HandleUserAction> for GameActor {
-    type Result = ResponseFuture<Result<PlayerInputResponse, GameError>>;
-
-    fn handle(&mut self, msg: HandleUserAction, ctx: &mut Self::Context) -> Self::Result {
-        match msg.action {
-            UserAction::PlayCard { card_id, target_id } => {
-                todo!()
-            }
-            UserAction::Attack {
-                attacker_id,
-                defender_id,
-            } => todo!(),
-            UserAction::EndTurn => todo!(),
-            UserAction::SubmitInput {
-                request_id,
-                response_data,
-            } => todo!(),
-            UserAction::RerollRequestMulliganCard { card_id } => {
-                let player_type = self.get_player_type_by_uuid(msg.player_id);
-                let addr = ctx.address();
-                Box::pin(async move {
-                    let rerolled_cards = addr
-                        .send(RerollRequestMulliganCard {
-                            player_type,
-                            cards: card_id.clone(),
-                        })
-                        .await??
-                        .iter()
-                        .map(|card| card.get_uuid())
-                        .collect();
-
-                    Ok(PlayerInputResponse::MulliganRerollAnswer(rerolled_cards))
-                })
-            }
-            UserAction::CompleteMulligan => todo!(),
-        }
-    }
-}
-
 #[derive(Message)]
 #[rtype(result = "Result<(), GameError>")]
 pub struct RegisterConnection {
     pub player_id: Uuid,
-    pub addr: Addr<ConnectionActor>,
+    pub recipient: Recipient<GameEvent>,
 }
 
 impl Handler<RegisterConnection> for GameActor {
@@ -154,121 +106,143 @@ impl Handler<RegisterConnection> for GameActor {
             self.game_id, msg.player_id
         );
 
-        if let Some(_) = self.connections.insert(msg.player_id, msg.addr.clone()) {
-            info!(
-                "GAME ACTOR [{}]: Player {} already registered, updating connection.",
-                self.game_id, msg.player_id
-            );
-            return Box::pin(async { Err(GameError::ActiveSessionExists) });
-        } else {
-            info!(
-                "GAME ACTOR [{}]: Player {} registered successfully.",
-                self.game_id, msg.player_id
-            );
+        // async 블록에서 사용될 값들을 미리 클론하거나 준비합니다.
+        let game_id_clone = self.game_id.clone();
+        let player_id = msg.player_id;
+        let connection_addr = msg.recipient.clone();
 
-            if let Ok(mut gsm) = self.game_state.try_lock() {
-                debug!(
-                    "GAME ACTOR [{}]: Locking game state for player {}",
-                    self.game_id, msg.player_id
-                );
-                gsm.update_player_connection_status(
-                    self.get_player_type_by_uuid(msg.player_id),
-                    true,
-                );
-                drop(gsm);
-            } else {
-                error!(
-                    "GAME ACTOR [{}]: Failed to lock game state for player {}",
-                    self.game_id, msg.player_id
-                );
-                return Box::pin(async { Err(GameError::GameStateLockFailed) });
-            }
-        }
-
-        let kind = self.get_player_type_by_uuid(msg.player_id);
-        self.player_connection_ready.insert(kind, true);
-
-        let game_id = self.game_id.clone();
-        let player_id = msg.player_id.clone();
-        let is_all_ready = self.all_players_ready();
-
-        let players_uuid = self
-            .players
-            .iter()
-            .map(|(identity, _)| identity.id)
-            .collect::<Vec<_>>();
-        let players_addr = self.players.clone();
+        let game_state = self.game_state.clone();
+        let players = self.players.clone();
         let connections = self.connections.clone();
-        let gsm = self.game_state.clone();
 
-        if connections.is_empty() {
-            error!(
-                "GAME ACTOR [{}]: No connections available to send cards",
-                game_id
-            );
-            return Box::pin(async { Err(GameError::NoConnections) });
-        }
+        let player_kind = self.get_player_type_by_uuid(player_id);
 
         Box::pin(async move {
-            if is_all_ready {
-                info!("GAME ACTOR [{}]: All players are ready", game_id);
-
-                for uuid in players_uuid {
-                    let connection = connections.get(&uuid).ok_or(GameError::NoConnections)?;
-                    let player_addr = players_addr
-                        .get_by_uuid(&uuid)
-                        .ok_or(GameError::NoConnections)?;
-
-                    let player_cards = player_addr
-                        .send(GetMulliganDealCards)
-                        .await?
-                        .iter()
-                        .map(|card| card.get_uuid())
-                        .collect::<Vec<_>>();
-
-                    println!(
-                        "GAME ACTOR [{}]: Sending cards to connection: {:?}",
-                        game_id,
-                        connections.get(&uuid)
+            // --- 0. 기존 연결 확인 및 connections 맵 업데이트 (connections_map_arc 사용) ---
+            {
+                // Mutex 잠금 범위 시작
+                let mut connections_guard = connections.lock().await;
+                if connections_guard.contains_key(&player_id) {
+                    info!(
+                        "GAME ACTOR [{}]: Player {} already has an active connection. Rejecting new connection.",
+                        game_id_clone, player_id
                     );
-                    if let Err(err) = connection
-                        .send(SendMulliganDealCards {
-                            cards: player_cards,
-                        })
-                        .await?
-                    {
-                        warn!(
-                            "GAME ACTOR [{}]: Failed to send cards to connection: {}",
-                            game_id, err
-                        );
-                    } else {
-                        info!(
-                            "GAME ACTOR [{}]: Successfully sent cards to connection",
-                            game_id
-                        );
+                    return Err(GameError::ActiveSessionExists);
+                }
+                connections_guard.insert(player_id, connection_addr.clone());
+                info!(
+                    "GAME ACTOR [{}]: Connection for player {} registered successfully. Total connections: {}",
+                    game_id_clone, player_id, connections_guard.len()
+                );
+            } // Mutex drop
 
-                        if let Ok(mut gsm) = gsm.try_lock() {
-                            debug!(
-                                "GAME ACTOR [{}]: Locking game state for player {}",
-                                game_id, uuid
-                            );
-                            gsm.update_player_mulligan_status(
-                                kind,
-                                PlayerMulliganStatus::CardsDealt,
-                            );
-                            drop(gsm);
-                        } else {
+            // --- 1. GameState 업데이트 ---
+            let is_all_players_connected;
+            let mut current_phase; // mut로 변경
+            {
+                // Mutex 잠금 범위 시작
+                let mut gsm = game_state.lock().await;
+                info!(
+                    "GAME ACTOR [{}]: Game state locked for player {}",
+                    game_id_clone, player_id
+                );
+
+                gsm.update_player_connection_status(player_kind, true);
+                info!(
+                    "GAME ACTOR [{}]: Player {} connection status updated in GameStateManager.",
+                    game_id_clone, player_id
+                );
+
+                is_all_players_connected = gsm.is_all_players_connected(); // is_로 변경 가정
+                current_phase = gsm.current_phase(); // 초기 값 할당
+
+                // 초기 페이즈 전환 로직 (모든 플레이어 연결 시)
+                if current_phase == GamePhase::Initial && is_all_players_connected {
+                    info!(
+                        "GAME ACTOR [{}]: All players connected. Transitioning to Mulligan phase.",
+                        game_id_clone
+                    );
+                    gsm.transition_to_phase(GamePhase::Mulligan);
+                    current_phase = gsm.current_phase();
+                }
+            } // Mutex drop
+
+            // --- 2. 게임 로직 진행 ---
+            if current_phase == GamePhase::Mulligan && is_all_players_connected {
+                info!(
+                    "GAME ACTOR [{}]: Proceeding with Mulligan card distribution.",
+                    game_id_clone
+                );
+
+                // players 와 connections (읽기 접근)
+
+                for (player_identity, player_addr) in players.iter() {
+                    let connection_addr = {
+                        let connections_snapshot = connections.lock().await;
+                        connections_snapshot
+                            .get(&player_identity.id)
+                            .ok_or_else(|| {
+                                error!(
+                                    "Connection not found for player {} in connections_snapshot",
+                                    player_identity.id
+                                );
+                                GameError::InternalServerError
+                            })?
+                            .clone()
+                    }; // Mutex drop
+
+                    match player_addr.send(GetMulliganDealCards).await {
+                        Ok(cards) => {
+                            let card_uuids: Vec<Uuid> =
+                                cards.iter().map(|c| c.get_uuid()).collect();
+                            if let Err(e) = connection_addr
+                                .send(GameEvent::SendMulliganDealCards {
+                                    cards: card_uuids.clone(),
+                                })
+                                .await
+                            {
+                                warn!(
+                                    "Failed to send mulligan cards to {}: {:?}",
+                                    player_identity.id, e
+                                );
+                            } else {
+                                info!(
+                                    "Sent mulligan cards ({} count) to player {}",
+                                    card_uuids.len(),
+                                    player_identity.id
+                                );
+                                // 멀리건 상태 업데이트 위해 다시 락
+                                let mut gsm_update = game_state.lock().await;
+                                gsm_update.update_player_mulligan_status(
+                                    player_identity.kind,
+                                    PlayerMulliganStatus::CardsDealt,
+                                );
+                            }
+                        }
+                        Err(mailbox_err) => {
                             error!(
-                                "GAME ACTOR [{}]: Failed to lock game state for player {}",
-                                game_id, uuid
+                                "Mailbox error getting mulligan cards for {}: {:?}",
+                                player_identity.id, mailbox_err
                             );
-                            return Err(GameError::GameStateLockFailed);
                         }
                     }
                 }
-            } else {
-                info!("GAME ACTOR [{}]: Not all players are ready yet", game_id);
+            } else if current_phase == GamePhase::Mulligan {
+                // 이미 멀리건 중 재접속
+                warn!(
+                    "GAME ACTOR [{}]: Player {} reconnected during Mulligan phase.",
+                    game_id_clone, player_id
+                );
+                // ... 재진입 로직 ...
+            } else if current_phase != GamePhase::Initial {
+                // 아직 모든 플레이어가 연결되지 않은 초기 상태가 아닐 때
+                warn!(
+                    "GAME ACTOR [{}]: Player {} connected, but not all players are ready or in an unexpected game phase: {:?}.",
+                    game_id_clone, player_id, current_phase
+                );
             }
+            // current_phase_after_update가 GamePhase::Initial인데 all_players_connected_after_update가 false인 경우는
+            // "Waiting for other players"에 해당하므로 별도 처리가 필요 없을 수 있음 (또는 알림 전송)
 
             Ok(())
         })

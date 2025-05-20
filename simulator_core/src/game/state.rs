@@ -86,7 +86,7 @@ impl GameStateManager {
         }
     }
 
-    pub fn are_all_players_connected(&self) -> bool {
+    pub fn is_all_players_connected(&self) -> bool {
         self.player_states
             .values()
             .all(|s| s.connection_status == PlayerConnectionStatus::Connected)

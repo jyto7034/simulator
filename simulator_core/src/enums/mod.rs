@@ -2,12 +2,12 @@ use std::fmt::Display;
 
 use uuid::Uuid;
 
-pub const CARD_ID_JSON_PATH: &str = "Resource/cards_id.json";
-pub const CARD_JSON_PATH: &str = "Resource/cards.json";
-pub const DECK_JSON_PATH_P1: &str = "Datas/player1_test.json";
-pub const DECK_JSON_PATH_P2: &str = "Datas/player2_test.json";
-pub const UUID_GENERATOR_PATH: &str = "Resource/uuidgen";
-pub const GAME_CONFIG_JSON_PATH: &str = "Datas/config.json";
+pub const CARD_ID_JSON_PATH: &str = "F:/work/simulator/simulator_core/Resource/cards_id.json";
+pub const CARD_JSON_PATH: &str = "F:/work/simulator/simulator_core/Resource/cards.json";
+pub const DECK_JSON_PATH_P1: &str = "F:/work/simulator/simulator_core/Datas/player1_test.json";
+pub const DECK_JSON_PATH_P2: &str = "F:/work/simulator/simulator_core/Datas/player2_test.json";
+pub const UUID_GENERATOR_PATH: &str = "F:/work/simulator/simulator_core/Resource/uuidgen";
+pub const GAME_CONFIG_JSON_PATH: &str = "F:/work/simulator/simulator_core/Datas/config.json";
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Copy)]
 pub enum ZoneType {

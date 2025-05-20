@@ -21,38 +21,10 @@ pub mod helper;
 pub mod player;
 pub mod resource;
 pub mod selector;
-pub mod server;
-pub mod test;
 pub mod utils;
 pub mod zone;
 
 extern crate lazy_static;
-
-// static INIT: Once = Once::new();
-// static mut GUARD: Option<tracing_appender::non_blocking::WorkerGuard> = None;
-// pub fn setup_logger() {
-//     INIT.call_once(|| {
-//         let file_appender = RollingFileAppender::new(Rotation::HOURLY, "logs", "app.log");
-
-//         let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
-
-//         tracing_subscriber::fmt()
-//             .with_env_filter(EnvFilter::from_default_env().add_directive(Level::INFO.into()))
-//             .with_thread_ids(true)
-//             .with_ansi(false)
-//             .with_thread_names(true)
-//             .with_file(true)
-//             .with_line_number(true)
-//             .with_target(false)
-//             .with_writer(non_blocking)
-//             .pretty()
-//             .init();
-
-//         unsafe {
-//             GUARD = Some(_guard);
-//         }
-//     });
-// }
 
 use std::sync::Once;
 static INIT: Once = Once::new();

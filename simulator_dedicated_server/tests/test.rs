@@ -1,12 +1,17 @@
 pub mod mulligan {
+    use std::time::Duration;
+
     use actix::Addr;
-    use simulator_core::{
-        card::types::PlayerKind,
-        enums::{ZoneType, COUNT_OF_MULLIGAN_CARDS},
-        game::{message::GetPlayerZoneCards, GameActor},
-        server::actor::ServerMessage,
+    use dedicated_server::{
+        connection::ServerMessage,
         test::{spawn_server, WebSocketTest},
     };
+    use simulator_core::{
+        card::types::PlayerKind,
+        enums::{ZoneType, CLIENT_TIMEOUT, COUNT_OF_MULLIGAN_CARDS},
+        game::{message::GetPlayerZoneCards, GameActor},
+    };
+    use tokio::time::sleep;
     use uuid::Uuid;
 
     // 플레이어별 테스트 로직을 위한 헬퍼 함수
@@ -133,7 +138,7 @@ pub mod mulligan {
     #[actix_web::test]
     async fn test_mulligan_deal_cards_to_each_player_concurrently() {
         let (addr, state, _handle) = spawn_server().await;
-        let game_actor_addr = state.game.clone(); // AppServerState에 Addr<GameActor> 필드 추가 가정
+        let game_actor_addr = state.game.clone();
 
         let player1_id = state.player1_id;
         let player2_id = state.player2_id;
@@ -172,18 +177,138 @@ pub mod mulligan {
 
         println!("Test test_mulligan_deal_cards_to_each_player_concurrently completed.");
     }
+
+    // TODO: Player 2 가 지연된 입장을 할 경우, 게임의 세션은 닫혀야함.
+    // 지금 Player 1 의 세션은 잘 닫히지만, Player 2 의 세션은 닫히지 않아서
+    // Player 2 혼자 게임에 접속함. 이를 고쳐야함.
+    // 고치는 방식은 플레이어의 세션을 닫는게 아니라, 게임 자체를 종료하는 방식으로.
+    #[actix_web::test]
+    #[should_panic(expected = "[DELAYED_TEST] Player 1 task failed")]
+    async fn test_mulligan_deal_cards_one_player_delayed() {
+        let (addr, state, _handle) = spawn_server().await;
+        let game_actor_addr = state.game.clone();
+
+        let player1_id = state.player1_id;
+        let player2_id = state.player2_id;
+
+        // 플레이어 1은 즉시 시작
+        let player1_task = tokio::spawn(player_mulligan_sequence(
+            PlayerKind::Player1,
+            player1_id,
+            addr,
+            game_actor_addr.clone(),
+        ));
+
+        // 플레이어 2는 10초 지연 후 시작 (이 시간 동안 서버가 P1을 기다리는지 확인)
+        // 이 지연 시간은 서버의 관련 타임아웃 설정보다 길거나 짧게 조절하여 테스트 가능
+        let delay_duration = Duration::from_secs(CLIENT_TIMEOUT + 5);
+        println!(
+            "[DELAYED_TEST] Player 2 will start mulligan sequence after {:?} delay.",
+            delay_duration
+        );
+
+        let player2_task = tokio::spawn(async move {
+            sleep(delay_duration).await;
+            println!("[DELAYED_TEST] Player 2 starting mulligan sequence now.");
+            player_mulligan_sequence(
+                PlayerKind::Player2,
+                player2_id,
+                addr,            // addr도 move 클로저로 옮겨져야 함
+                game_actor_addr, // game_actor_addr도 move 클로저로 옮겨져야 함
+            )
+            .await
+        });
+
+        // 두 태스크의 결과 기다림
+        // P1은 바로 완료될 수 있고, P2는 지연 후 완료되거나,
+        // 서버 정책에 따라 P1이 P2를 기다리다가 특정 조건 후 진행될 수 있음.
+        let (p1_result_outer, p2_result_outer) = tokio::join!(player1_task, player2_task);
+
+        // 태스크 실행 결과 확인 (JoinError 처리)
+        let p1_results = match p1_result_outer {
+            Ok(res) => {
+                println!(
+                    "[DELAYED_TEST] Player 1 mulligan sequence completed with results: {:?}",
+                    res
+                );
+                res
+            }
+            Err(e) => {
+                panic!("[DELAYED_TEST] Player 1 task failed: {:?}", e);
+            }
+        };
+
+        let p2_results = match p2_result_outer {
+            Ok(res) => {
+                println!(
+                    "[DELAYED_TEST] Player 2 mulligan sequence completed with results: {:?}",
+                    res
+                );
+                res
+            }
+            Err(e) => {
+                // 플레이어 2가 지연되는 동안 서버가 P1만으로 게임을 시작하거나 P1 연결을 종료했다면,
+                // P2는 연결조차 실패할 수 있음. 이는 예상된 실패일 수 있음.
+                // 여기서는 일단 패닉으로 처리하지만, 실제로는 서버 정책에 따라 다르게 검증해야 함.
+                println!("[DELAYED_TEST] Player 2 task resulted in an error (this might be expected if server timed out P1 or started game with P1 only): {:?}", e);
+                // 이 테스트의 목적에 따라, P2가 실패하는 것이 정상일 수도 있습니다.
+                // 예를 들어, 서버가 10초 이내에 P1만으로 게임을 시작해버린다면, P2는 연결 시점에
+                // 이미 게임이 진행 중이거나 멀리건 페이즈가 아니어서 실패할 수 있습니다.
+                // 여기서는 일단 빈 Vec을 반환하여 아래 assert_eq가 실패하도록 유도합니다. (테스트 목적에 맞게 수정 필요)
+                // panic!("[DELAYED_TEST] Player 2 task failed: {:?}", e);
+                Vec::new() // 또는 테스트 실패로 간주
+            }
+        };
+
+        // 결과 검증:
+        // 이 부분은 서버가 지연된 플레이어를 어떻게 처리하는지에 따라 달라집니다.
+        // 1. 서버가 P2를 기다려서 두 플레이어 모두 정상적으로 멀리건을 완료하는 경우:
+        if !p1_results.is_empty() && !p2_results.is_empty() {
+            println!("[DELAYED_TEST] Both players seem to have completed mulligan.");
+            let mut all_dealt_cards = p1_results.clone();
+            all_dealt_cards.extend(p2_results.clone());
+            let unique_cards_count = all_dealt_cards
+                .iter()
+                .collect::<std::collections::HashSet<_>>()
+                .len();
+            assert_eq!(
+            unique_cards_count,
+            COUNT_OF_MULLIGAN_CARDS * 2,
+            "[DELAYED_TEST] Dealt cards between players are not unique or not all players completed mulligan."
+        );
+        } else if !p1_results.is_empty() && p2_results.is_empty() {
+            // 2. 서버가 P1만으로 게임을 시작하거나, P2를 기다리다 P1에 대한 타임아웃/오류 처리 후 P2는 실패하는 경우
+            println!("[DELAYED_TEST] Player 1 completed mulligan, but Player 2 did not (possibly expected).");
+            // 이 경우 P1의 멀리건 카드 수만 검증할 수 있습니다.
+            assert_eq!(
+                p1_results.len(),
+                COUNT_OF_MULLIGAN_CARDS,
+                "[DELAYED_TEST] Player 1 did not receive the correct number of mulligan cards."
+            );
+            // 서버 로그를 통해 P1이 P2를 기다렸는지, 또는 특정 시간 후 P1만으로 진행했는지 확인해야 합니다.
+            // 또는 GameActor의 상태를 직접 확인하여 게임이 어떻게 진행되었는지 검증할 수 있습니다.
+            // 예를 들어, GameStateManager.current_phase()가 Mulligan이 아닌 다른 상태로 넘어갔는지 등.
+        } else {
+            // 3. 두 플레이어 모두 실패한 경우 (예: 서버가 P1 지연으로 인해 전체 게임을 시작하지 못함)
+            panic!("[DELAYED_TEST] Neither player completed the mulligan sequence. P1 results: {:?}, P2 results: {:?}", p1_results, p2_results);
+        }
+
+        println!("[DELAYED_TEST] Test test_mulligan_deal_cards_one_player_delayed completed.");
+    }
 }
 
 pub mod heartbeat {
     use std::time::Duration;
 
     use async_tungstenite::tungstenite::Message;
+    use dedicated_server::{
+        connection::ServerMessage,
+        test::{spawn_server, WebSocketTest},
+    };
     use futures::StreamExt;
     use simulator_core::{
         card::types::PlayerKind,
         enums::{CLIENT_TIMEOUT, HEARTBEAT_INTERVAL},
-        server::actor::ServerMessage,
-        test::{spawn_server, WebSocketTest},
     };
     use tokio::time::{sleep, timeout};
     use tracing::info;

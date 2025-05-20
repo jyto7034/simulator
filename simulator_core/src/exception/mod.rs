@@ -57,6 +57,7 @@ pub enum GameError {
     PlayerNotReady,
     NoConnections,
     GameStateLockFailed,
+    PingSentFailure,
 
     InvalidTargetCount,
     NoValidTargets,

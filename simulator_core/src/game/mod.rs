@@ -1,6 +1,7 @@
 use std::{collections::HashMap, sync::Arc, time::Duration};
 
-use actix::{Actor, Addr, Context, Handler, Message, ResponseFuture};
+use actix::{Actor, Addr, Context, Handler, Message, Recipient, ResponseFuture};
+use message::GameEvent;
 use phase::{Phase, PhaseState};
 use state::GameStateManager;
 use tokio::sync::Mutex;
@@ -15,22 +16,23 @@ use crate::{
     },
     exception::GameError,
     player::{message::SetOpponent, PlayerActor},
-    server::actor::connection::ConnectionActor,
 };
 
 pub mod choice;
+pub mod error_message;
 pub mod getter;
 pub mod helper;
 pub mod message;
 pub mod phase;
 pub mod state;
 pub mod turn;
+
 pub struct GameConfig {}
 
 pub struct GameActor {
     // 플레이어 액터들의 주소 저장 (PlayerActor 정의 필요)
     pub players: HashMap<PlayerIdentity, Addr<PlayerActor>>,
-    pub connections: HashMap<Uuid, Addr<ConnectionActor>>,
+    pub connections: Arc<Mutex<HashMap<Uuid, Recipient<GameEvent>>>>, // 플레이어의 ConnectionActor 주소 저장
     pub player_connection_ready: HashMap<PlayerKind, bool>, // 각 플레이어 초기화 완료 여부
     pub phase_state: PhaseState,
     pub all_cards: HashMap<PlayerKind, Vec<Card>>,
@@ -86,14 +88,18 @@ impl GameActor {
             while !p1_addr.connected() {
                 tokio::time::sleep(Duration::from_millis(5)).await;
             }
-            info!("Player 1 connected, P1 can now receive messages.");
+            info!(
+                "PlayerActor 1 connected ( not session connection! ), P1 can now receive messages."
+            );
 
             while !p2_addr.connected() {
                 tokio::time::sleep(Duration::from_millis(5)).await;
             }
-            info!("Player 2 connected, P2 can now receive messages.");
+            info!(
+                "PlayerActor 2 connected ( not session connection! ), P2 can now receive messages."
+            );
 
-            info!("Both players connected. Sending SetOpponent messages.");
+            info!("Both players actor connected. ( not session connection! ) Sending SetOpponent messages.");
             p1_addr.do_send(SetOpponent {
                 opponent: p2_addr.clone(),
             });
@@ -104,7 +110,7 @@ impl GameActor {
 
         GameActor {
             players: player_actors_map,
-            connections: HashMap::new(),
+            connections: Arc::new(Mutex::new(HashMap::new())),
             player_connection_ready: HashMap::new(),
             all_cards: HashMap::new(),
             phase_state: PhaseState::new(Phase::Mulligan),
@@ -170,7 +176,7 @@ impl GameActor {
     pub fn get_connection_addr_by_kind(
         &self,
         target_kind: PlayerKind,
-    ) -> Option<Addr<ConnectionActor>> {
+    ) -> Option<Recipient<GameEvent>> {
         todo!()
     }
 

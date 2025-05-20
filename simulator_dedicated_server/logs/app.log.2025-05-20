@@ -1,0 +1,819 @@
+  2025-05-20T11:50:43.013961Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at simulator_core\src\lib.rs:74 on ThreadId(2)
+
+  2025-05-20T11:50:43.116125Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at simulator_core\src\lib.rs:74 on ThreadId(2)
+
+  2025-05-20T11:51:33.703490Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at simulator_core\src\lib.rs:74 on ThreadId(2)
+
+  2025-05-20T11:51:33.799517Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at simulator_core\src\lib.rs:74 on ThreadId(2)
+
+  2025-05-20T11:56:17.676398Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at simulator_core\src\lib.rs:74 on ThreadId(2)
+
+  2025-05-20T11:56:17.774373Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at simulator_core\src\lib.rs:74 on ThreadId(2)
+
+  2025-05-20T11:56:17.783570Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-05-20T11:56:17.783570Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:17.783570Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:17.783570Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-05-20T11:56:17.783570Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:17.783802Z  INFO  PlayerActor 1 connected ( not session connection! ), P1 can now receive messages.
+    at simulator_core\src\game\mod.rs:91 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:17.783813Z  INFO  PlayerActor 2 connected ( not session connection! ), P2 can now receive messages.
+    at simulator_core\src\game\mod.rs:98 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:17.783816Z  INFO  Both players actor connected. ( not session connection! ) Sending SetOpponent messages.
+    at simulator_core\src\game\mod.rs:102 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:17.783912Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:17.783943Z  INFO  starting service: "actix-web-service-127.0.0.1:12474", workers: 32, listening on: 127.0.0.1:12474
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:17.784845Z  INFO  PlayerActor 1 connected ( not session connection! ), P1 can now receive messages.
+    at simulator_core\src\game\mod.rs:91 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-05-20T11:56:17.784845Z  INFO  PlayerActor 1 connected ( not session connection! ), P1 can now receive messages.
+    at simulator_core\src\game\mod.rs:91 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-05-20T11:56:17.784862Z  INFO  PlayerActor 2 connected ( not session connection! ), P2 can now receive messages.
+    at simulator_core\src\game\mod.rs:98 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-05-20T11:56:17.784865Z  INFO  Both players actor connected. ( not session connection! ) Sending SetOpponent messages.
+    at simulator_core\src\game\mod.rs:102 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-05-20T11:56:17.784885Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-05-20T11:56:17.784894Z  INFO  starting service: "actix-web-service-127.0.0.1:12477", workers: 32, listening on: 127.0.0.1:12477
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-05-20T11:56:17.784885Z  INFO  PlayerActor 2 connected ( not session connection! ), P2 can now receive messages.
+    at simulator_core\src\game\mod.rs:98 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-05-20T11:56:17.784909Z  INFO  Both players actor connected. ( not session connection! ) Sending SetOpponent messages.
+    at simulator_core\src\game\mod.rs:102 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-05-20T11:56:17.784911Z  INFO  PlayerActor 1 connected ( not session connection! ), P1 can now receive messages.
+    at simulator_core\src\game\mod.rs:91 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:17.784920Z  INFO  PlayerActor 2 connected ( not session connection! ), P2 can now receive messages.
+    at simulator_core\src\game\mod.rs:98 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:17.784923Z  INFO  Both players actor connected. ( not session connection! ) Sending SetOpponent messages.
+    at simulator_core\src\game\mod.rs:102 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:17.784942Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:17.784951Z  INFO  starting service: "actix-web-service-127.0.0.1:12475", workers: 32, listening on: 127.0.0.1:12475
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:17.784972Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-05-20T11:56:17.784991Z  INFO  starting service: "actix-web-service-127.0.0.1:12476", workers: 32, listening on: 127.0.0.1:12476
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-05-20T11:56:17.785185Z  INFO  PlayerActor 1 connected ( not session connection! ), P1 can now receive messages.
+    at simulator_core\src\game\mod.rs:91 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:17.785201Z  INFO  PlayerActor 2 connected ( not session connection! ), P2 can now receive messages.
+    at simulator_core\src\game\mod.rs:98 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:17.785204Z  INFO  Both players actor connected. ( not session connection! ) Sending SetOpponent messages.
+    at simulator_core\src\game\mod.rs:102 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:17.785228Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:17.785239Z  INFO  starting service: "actix-web-service-127.0.0.1:12473", workers: 32, listening on: 127.0.0.1:12473
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:17.795584Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at simulator_dedicated_server\src\server\mod.rs:115 on actix-rt|system:4|arbiter:4 ThreadId(12)
+    in game with player: AuthPlayer { ptype: Player1, id: ef2ecaa3-8b72-483a-aaad-e98787617c30 }, player_type: Player1
+
+  2025-05-20T11:56:17.795588Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at simulator_dedicated_server\src\server\mod.rs:115 on actix-rt|system:2|arbiter:0 ThreadId(8)
+    in game with player: AuthPlayer { ptype: Player1, id: 7d2fe99c-d7cc-4511-938c-349827d69621 }, player_type: Player1
+
+  2025-05-20T11:56:17.795609Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at simulator_dedicated_server\src\server\mod.rs:115 on actix-rt|system:0|arbiter:2 ThreadId(10)
+    in game with player: AuthPlayer { ptype: Player1, id: 94d2c013-0c9f-4f64-840d-20d30da34af5 }, player_type: Player1
+
+  2025-05-20T11:56:17.795688Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at simulator_dedicated_server\src\server\mod.rs:115 on actix-rt|system:1|arbiter:6 ThreadId(14)
+    in game with player: AuthPlayer { ptype: Player1, id: 16c899bc-840c-434f-9b75-04780fb23cca }, player_type: Player1
+
+  2025-05-20T11:56:17.795736Z  INFO  멀리건 단계 핸들러 시작: player=Player2
+    at simulator_dedicated_server\src\server\mod.rs:115 on actix-rt|system:1|arbiter:12 ThreadId(20)
+    in game with player: AuthPlayer { ptype: Player2, id: fcfb2389-1277-4eac-b6f2-8e5e54b2d47a }, player_type: Player2
+
+  2025-05-20T11:56:17.795811Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at simulator_dedicated_server\src\server\mod.rs:115 on actix-rt|system:3|arbiter:3 ThreadId(11)
+    in game with player: AuthPlayer { ptype: Player1, id: 43bad9cf-1bce-40ee-be3a-5cb979e69508 }, player_type: Player1
+
+  2025-05-20T11:56:17.795824Z  INFO  WebSocket handshake successful for player_id: fcfb2389-1277-4eac-b6f2-8e5e54b2d47a
+    at simulator_dedicated_server\src\server\mod.rs:125 on actix-rt|system:1|arbiter:12 ThreadId(20)
+    in game with player: AuthPlayer { ptype: Player2, id: fcfb2389-1277-4eac-b6f2-8e5e54b2d47a }, player_type: Player2
+
+  2025-05-20T11:56:17.795825Z  INFO  WebSocket handshake successful for player_id: 16c899bc-840c-434f-9b75-04780fb23cca
+    at simulator_dedicated_server\src\server\mod.rs:125 on actix-rt|system:1|arbiter:6 ThreadId(14)
+    in game with player: AuthPlayer { ptype: Player1, id: 16c899bc-840c-434f-9b75-04780fb23cca }, player_type: Player1
+
+  2025-05-20T11:56:17.795832Z  INFO  WebSocket handshake successful for player_id: 94d2c013-0c9f-4f64-840d-20d30da34af5
+    at simulator_dedicated_server\src\server\mod.rs:125 on actix-rt|system:0|arbiter:2 ThreadId(10)
+    in game with player: AuthPlayer { ptype: Player1, id: 94d2c013-0c9f-4f64-840d-20d30da34af5 }, player_type: Player1
+
+  2025-05-20T11:56:17.795833Z  INFO  WebSocket handshake successful for player_id: 7d2fe99c-d7cc-4511-938c-349827d69621
+    at simulator_dedicated_server\src\server\mod.rs:125 on actix-rt|system:2|arbiter:0 ThreadId(8)
+    in game with player: AuthPlayer { ptype: Player1, id: 7d2fe99c-d7cc-4511-938c-349827d69621 }, player_type: Player1
+
+  2025-05-20T11:56:17.795834Z  INFO  WebSocket handshake successful for player_id: ef2ecaa3-8b72-483a-aaad-e98787617c30
+    at simulator_dedicated_server\src\server\mod.rs:125 on actix-rt|system:4|arbiter:4 ThreadId(12)
+    in game with player: AuthPlayer { ptype: Player1, id: ef2ecaa3-8b72-483a-aaad-e98787617c30 }, player_type: Player1
+
+  2025-05-20T11:56:17.795859Z  INFO  WebSocket handshake successful for player_id: 43bad9cf-1bce-40ee-be3a-5cb979e69508
+    at simulator_dedicated_server\src\server\mod.rs:125 on actix-rt|system:3|arbiter:3 ThreadId(11)
+    in game with player: AuthPlayer { ptype: Player1, id: 43bad9cf-1bce-40ee-be3a-5cb979e69508 }, player_type: Player1
+
+  2025-05-20T11:56:17.796036Z  INFO  ConnectionActor started for player Player2 fcfb2389-1277-4eac-b6f2-8e5e54b2d47a
+    at simulator_dedicated_server\src\connection\connection.rs:143 on actix-rt|system:1|arbiter:12 ThreadId(20)
+
+  2025-05-20T11:56:17.796036Z  INFO  ConnectionActor started for player Player1 ef2ecaa3-8b72-483a-aaad-e98787617c30
+    at simulator_dedicated_server\src\connection\connection.rs:143 on actix-rt|system:4|arbiter:4 ThreadId(12)
+
+  2025-05-20T11:56:17.796036Z  INFO  ConnectionActor started for player Player1 43bad9cf-1bce-40ee-be3a-5cb979e69508
+    at simulator_dedicated_server\src\connection\connection.rs:143 on actix-rt|system:3|arbiter:3 ThreadId(11)
+
+  2025-05-20T11:56:17.796038Z  INFO  ConnectionActor started for player Player1 7d2fe99c-d7cc-4511-938c-349827d69621
+    at simulator_dedicated_server\src\connection\connection.rs:143 on actix-rt|system:2|arbiter:0 ThreadId(8)
+
+  2025-05-20T11:56:17.796040Z  INFO  ConnectionActor started for player Player1 94d2c013-0c9f-4f64-840d-20d30da34af5
+    at simulator_dedicated_server\src\connection\connection.rs:143 on actix-rt|system:0|arbiter:2 ThreadId(10)
+
+  2025-05-20T11:56:17.796043Z  INFO  ConnectionActor started for player Player1 16c899bc-840c-434f-9b75-04780fb23cca
+    at simulator_dedicated_server\src\connection\connection.rs:143 on actix-rt|system:1|arbiter:6 ThreadId(14)
+
+  2025-05-20T11:56:17.796129Z  INFO  [TEST] Waiting for initial connection message...
+    at simulator_dedicated_server\tests\test.rs:348 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-05-20T11:56:17.796127Z  INFO  [TEST] Waiting for initial connection message...
+    at simulator_dedicated_server\tests\test.rs:425 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:17.796284Z  INFO  Sent initial heartbeat_connected message to player Player1 (session_id: 94d2c013-0c9f-4f64-840d-20d30da34af5)
+    at simulator_dedicated_server\src\connection\connection.rs:166 on actix-rt|system:0|arbiter:2 ThreadId(10)
+
+  2025-05-20T11:56:17.796285Z  INFO  Sent initial heartbeat_connected message to player Player1 (session_id: ef2ecaa3-8b72-483a-aaad-e98787617c30)
+    at simulator_dedicated_server\src\connection\connection.rs:166 on actix-rt|system:4|arbiter:4 ThreadId(12)
+
+  2025-05-20T11:56:17.796285Z  INFO  Sent initial heartbeat_connected message to player Player1 (session_id: 16c899bc-840c-434f-9b75-04780fb23cca)
+    at simulator_dedicated_server\src\connection\connection.rs:166 on actix-rt|system:1|arbiter:6 ThreadId(14)
+
+  2025-05-20T11:56:17.796290Z  INFO  Sent initial heartbeat_connected message to player Player1 (session_id: 43bad9cf-1bce-40ee-be3a-5cb979e69508)
+    at simulator_dedicated_server\src\connection\connection.rs:166 on actix-rt|system:3|arbiter:3 ThreadId(11)
+
+  2025-05-20T11:56:17.796290Z  INFO  Sent initial heartbeat_connected message to player Player1 (session_id: 7d2fe99c-d7cc-4511-938c-349827d69621)
+    at simulator_dedicated_server\src\connection\connection.rs:166 on actix-rt|system:2|arbiter:0 ThreadId(8)
+
+  2025-05-20T11:56:17.796291Z  INFO  Sent initial heartbeat_connected message to player Player2 (session_id: fcfb2389-1277-4eac-b6f2-8e5e54b2d47a)
+    at simulator_dedicated_server\src\connection\connection.rs:166 on actix-rt|system:1|arbiter:12 ThreadId(20)
+
+  2025-05-20T11:56:17.796404Z  INFO  [TEST] Received message: {"player":"Player1","session_id":"43bad9cf-1bce-40ee-be3a-5cb979e69508","type":"heartbeat_connected"}
+    at simulator_dedicated_server\src\test\mod.rs:239 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:17.796407Z  INFO  [TEST] Received message: {"player":"Player1","session_id":"16c899bc-840c-434f-9b75-04780fb23cca","type":"heartbeat_connected"}
+    at simulator_dedicated_server\src\test\mod.rs:239 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:17.796409Z  INFO  [TEST] Received message: {"player":"Player1","session_id":"7d2fe99c-d7cc-4511-938c-349827d69621","type":"heartbeat_connected"}
+    at simulator_dedicated_server\src\test\mod.rs:239 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:17.796409Z  INFO  [TEST] Received message: {"player":"Player1","session_id":"ef2ecaa3-8b72-483a-aaad-e98787617c30","type":"heartbeat_connected"}
+    at simulator_dedicated_server\src\test\mod.rs:239 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-05-20T11:56:17.796415Z  INFO  [TEST] Received message: {"player":"Player1","session_id":"94d2c013-0c9f-4f64-840d-20d30da34af5","type":"heartbeat_connected"}
+    at simulator_dedicated_server\src\test\mod.rs:239 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-05-20T11:56:17.796554Z  INFO  [TEST] Initial connection message received. Session ID: 94d2c013-0c9f-4f64-840d-20d30da34af5
+    at simulator_dedicated_server\tests\test.rs:354 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-05-20T11:56:17.796559Z  INFO  Initial connection message received. Session ID: 43bad9cf-1bce-40ee-be3a-5cb979e69508
+    at simulator_dedicated_server\tests\test.rs:431 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:17.796571Z  INFO  [TEST] Waiting for 35 seconds to see if server closes connection (should NOT close due to auto Pong)...
+    at simulator_dedicated_server\tests\test.rs:375 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-05-20T11:56:17.796576Z  INFO  [TEST] Waiting for Ping message...
+    at simulator_dedicated_server\tests\test.rs:443 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:17.796620Z  INFO  [TEST] Received message: {"player":"Player2","session_id":"fcfb2389-1277-4eac-b6f2-8e5e54b2d47a","type":"heartbeat_connected"}
+    at simulator_dedicated_server\src\test\mod.rs:239 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.801745Z  INFO  Spawning heartbeat ping task for player Player1 (session_id: 43bad9cf-1bce-40ee-be3a-5cb979e69508)
+    at simulator_dedicated_server\src\connection\connection.rs:82 on actix-rt|system:3|arbiter:3 ThreadId(11)
+
+  2025-05-20T11:56:22.801727Z  INFO  Spawning heartbeat ping task for player Player2 (session_id: fcfb2389-1277-4eac-b6f2-8e5e54b2d47a)
+    at simulator_dedicated_server\src\connection\connection.rs:82 on actix-rt|system:1|arbiter:12 ThreadId(20)
+
+  2025-05-20T11:56:22.801740Z  INFO  Spawning heartbeat ping task for player Player1 (session_id: 94d2c013-0c9f-4f64-840d-20d30da34af5)
+    at simulator_dedicated_server\src\connection\connection.rs:82 on actix-rt|system:0|arbiter:2 ThreadId(10)
+
+  2025-05-20T11:56:22.801757Z  INFO  Spawning heartbeat ping task for player Player1 (session_id: 16c899bc-840c-434f-9b75-04780fb23cca)
+    at simulator_dedicated_server\src\connection\connection.rs:82 on actix-rt|system:1|arbiter:6 ThreadId(14)
+
+  2025-05-20T11:56:22.801793Z  INFO  ConnectionActor for player Player1 (session_id: ef2ecaa3-8b72-483a-aaad-e98787617c30): WebSocket stream finished. Stopping actor.
+    at simulator_dedicated_server\src\connection\connection.rs:313 on actix-rt|system:4|arbiter:4 ThreadId(12)
+
+  2025-05-20T11:56:22.801823Z  INFO  ConnectionActor stopping for player Player1 (session_id: ef2ecaa3-8b72-483a-aaad-e98787617c30)
+    at simulator_dedicated_server\src\connection\connection.rs:180 on actix-rt|system:4|arbiter:4 ThreadId(12)
+
+  2025-05-20T11:56:22.801844Z  INFO  ConnectionActor stopped for player Player1 (session_id: ef2ecaa3-8b72-483a-aaad-e98787617c30)
+    at simulator_dedicated_server\src\connection\connection.rs:190 on actix-rt|system:4|arbiter:4 ThreadId(12)
+
+  2025-05-20T11:56:22.801839Z  INFO  Ping sent successfully to player Player2 (session_id: fcfb2389-1277-4eac-b6f2-8e5e54b2d47a) last_pong Instant { t: 29564.4663495s }
+    at simulator_dedicated_server\src\connection\connection.rs:104 on actix-rt|system:1|arbiter:12 ThreadId(20)
+
+  2025-05-20T11:56:22.801839Z  INFO  Ping sent successfully to player Player1 (session_id: 94d2c013-0c9f-4f64-840d-20d30da34af5) last_pong Instant { t: 29564.4663617s }
+    at simulator_dedicated_server\src\connection\connection.rs:104 on actix-rt|system:0|arbiter:2 ThreadId(10)
+
+  2025-05-20T11:56:22.801841Z  INFO  Ping sent successfully to player Player1 (session_id: 16c899bc-840c-434f-9b75-04780fb23cca) last_pong Instant { t: 29564.4663516s }
+    at simulator_dedicated_server\src\connection\connection.rs:104 on actix-rt|system:1|arbiter:6 ThreadId(14)
+
+  2025-05-20T11:56:22.801881Z  INFO  Session cleanup task completed: player=Player1, session_id=ef2ecaa3-8b72-483a-aaad-e98787617c30
+    at simulator_dedicated_server\src\connection\connection.rs:130 on actix-rt|system:4|arbiter:4 ThreadId(12)
+
+  2025-05-20T11:56:22.802069Z  INFO  Spawning heartbeat ping task for player Player1 (session_id: 7d2fe99c-d7cc-4511-938c-349827d69621)
+    at simulator_dedicated_server\src\connection\connection.rs:82 on actix-rt|system:2|arbiter:0 ThreadId(8)
+
+  2025-05-20T11:56:22.802093Z  INFO  Ping sent successfully to player Player1 (session_id: 7d2fe99c-d7cc-4511-938c-349827d69621) last_pong Instant { t: 29564.4663634s }
+    at simulator_dedicated_server\src\connection\connection.rs:104 on actix-rt|system:2|arbiter:0 ThreadId(8)
+
+  2025-05-20T11:56:22.802089Z  INFO  [TEST] Received ping (auto-pong by tungstenite), ignoring.
+    at simulator_dedicated_server\src\test\mod.rs:249 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802132Z  INFO  Ping sent successfully to player Player1 (session_id: 43bad9cf-1bce-40ee-be3a-5cb979e69508) last_pong Instant { t: 29564.4663794s }
+    at simulator_dedicated_server\src\connection\connection.rs:104 on actix-rt|system:3|arbiter:3 ThreadId(11)
+
+  2025-05-20T11:56:22.802194Z  INFO  [TEST] Received ping (auto-pong by tungstenite), ignoring.
+    at simulator_dedicated_server\src\test\mod.rs:249 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:22.802208Z  INFO  ConnectionActor for player Player2 (session_id: fcfb2389-1277-4eac-b6f2-8e5e54b2d47a): Received Pong from client. prev_pong Instant { t: 29564.4663495s }, last_pong Instant { t: 29569.4727044s }
+    at simulator_dedicated_server\src\connection\connection.rs:232 on actix-rt|system:1|arbiter:12 ThreadId(20)
+
+  2025-05-20T11:56:22.802219Z  INFO  ConnectionActor for player Player2 (session_id: fcfb2389-1277-4eac-b6f2-8e5e54b2d47a): Initial Pong received. Registering with GameActor.
+    at simulator_dedicated_server\src\connection\connection.rs:239 on actix-rt|system:1|arbiter:12 ThreadId(20)
+
+  2025-05-20T11:56:22.802216Z  INFO  [TEST] Received ping (auto-pong by tungstenite), ignoring.
+    at simulator_dedicated_server\src\test\mod.rs:249 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802255Z  INFO  [TEST] Ping received!
+    at simulator_dedicated_server\tests\test.rs:448 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:22.802270Z  INFO  [TEST] Sending Pong response...
+    at simulator_dedicated_server\tests\test.rs:474 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:22.802287Z  INFO  GAME ACTOR [6a29c75f-6e29-4255-b295-006e199e3373]: Handling RegisterConnection for player fcfb2389-1277-4eac-b6f2-8e5e54b2d47a
+    at simulator_core\src\game\message.rs:104 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802297Z  INFO  ConnectionActor for player Player1 (session_id: 7d2fe99c-d7cc-4511-938c-349827d69621): Received Pong from client. prev_pong Instant { t: 29564.4663634s }, last_pong Instant { t: 29569.4728035s }
+    at simulator_dedicated_server\src\connection\connection.rs:232 on actix-rt|system:2|arbiter:0 ThreadId(8)
+
+  2025-05-20T11:56:22.802301Z  INFO  ConnectionActor for player Player1 (session_id: 16c899bc-840c-434f-9b75-04780fb23cca): Received Pong from client. prev_pong Instant { t: 29564.4663516s }, last_pong Instant { t: 29569.4728079s }
+    at simulator_dedicated_server\src\connection\connection.rs:232 on actix-rt|system:1|arbiter:6 ThreadId(14)
+
+  2025-05-20T11:56:22.802323Z  INFO  [TEST] Pong sent.
+    at simulator_dedicated_server\tests\test.rs:478 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:22.802325Z  INFO  ConnectionActor for player Player1 (session_id: 7d2fe99c-d7cc-4511-938c-349827d69621): Initial Pong received. Registering with GameActor.
+    at simulator_dedicated_server\src\connection\connection.rs:239 on actix-rt|system:2|arbiter:0 ThreadId(8)
+
+  2025-05-20T11:56:22.802330Z  INFO  [TEST] Waiting to see if connection is maintained...
+    at simulator_dedicated_server\tests\test.rs:481 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:22.802330Z  INFO  GAME ACTOR [6a29c75f-6e29-4255-b295-006e199e3373]: Connection for player fcfb2389-1277-4eac-b6f2-8e5e54b2d47a registered successfully. Total connections: 1
+    at simulator_core\src\game\message.rs:133 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802342Z  INFO  GAME ACTOR [6a29c75f-6e29-4255-b295-006e199e3373]: Game state locked for player fcfb2389-1277-4eac-b6f2-8e5e54b2d47a
+    at simulator_core\src\game\message.rs:145 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802337Z  INFO  ConnectionActor for player Player1 (session_id: 16c899bc-840c-434f-9b75-04780fb23cca): Initial Pong received. Registering with GameActor.
+    at simulator_dedicated_server\src\connection\connection.rs:239 on actix-rt|system:1|arbiter:6 ThreadId(14)
+
+  2025-05-20T11:56:22.802350Z  INFO  Player Player2 connection status updated to: Connected
+    at simulator_core\src\game\state.rs:75 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802362Z  INFO  GAME ACTOR [6a29c75f-6e29-4255-b295-006e199e3373]: Player fcfb2389-1277-4eac-b6f2-8e5e54b2d47a connection status updated in GameStateManager.
+    at simulator_core\src\game\message.rs:151 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802362Z  INFO  ConnectionActor for player Player1 (session_id: 43bad9cf-1bce-40ee-be3a-5cb979e69508): Received Pong from client. prev_pong Instant { t: 29564.4663794s }, last_pong Instant { t: 29569.4728689s }
+    at simulator_dedicated_server\src\connection\connection.rs:232 on actix-rt|system:3|arbiter:3 ThreadId(11)
+
+  2025-05-20T11:56:22.802362Z  INFO  GAME ACTOR [443082e2-410e-4b8b-8bb3-dc33f527496b]: Handling RegisterConnection for player 7d2fe99c-d7cc-4511-938c-349827d69621
+    at simulator_core\src\game\message.rs:104 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:22.802375Z  INFO  ConnectionActor for player Player1 (session_id: 43bad9cf-1bce-40ee-be3a-5cb979e69508): Initial Pong received. Registering with GameActor.
+    at simulator_dedicated_server\src\connection\connection.rs:239 on actix-rt|system:3|arbiter:3 ThreadId(11)
+
+  2025-05-20T11:56:22.802383Z  INFO  GAME ACTOR [6a29c75f-6e29-4255-b295-006e199e3373]: Handling RegisterConnection for player 16c899bc-840c-434f-9b75-04780fb23cca
+    at simulator_core\src\game\message.rs:104 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802393Z  INFO  GAME ACTOR [443082e2-410e-4b8b-8bb3-dc33f527496b]: Connection for player 7d2fe99c-d7cc-4511-938c-349827d69621 registered successfully. Total connections: 1
+    at simulator_core\src\game\message.rs:133 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:22.802396Z  INFO  GAME ACTOR [6a29c75f-6e29-4255-b295-006e199e3373]: Connection for player 16c899bc-840c-434f-9b75-04780fb23cca registered successfully. Total connections: 2
+    at simulator_core\src\game\message.rs:133 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802400Z  INFO  GAME ACTOR [443082e2-410e-4b8b-8bb3-dc33f527496b]: Game state locked for player 7d2fe99c-d7cc-4511-938c-349827d69621
+    at simulator_core\src\game\message.rs:145 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:22.802402Z  INFO  GAME ACTOR [6a29c75f-6e29-4255-b295-006e199e3373]: Game state locked for player 16c899bc-840c-434f-9b75-04780fb23cca
+    at simulator_core\src\game\message.rs:145 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802406Z  INFO  Player Player1 connection status updated to: Connected
+    at simulator_core\src\game\state.rs:75 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:22.802406Z  INFO  Player Player1 connection status updated to: Connected
+    at simulator_core\src\game\state.rs:75 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802404Z  INFO  GAME ACTOR [5a524e4f-43e6-46d4-8bc6-0e06a73bdb59]: Handling RegisterConnection for player 43bad9cf-1bce-40ee-be3a-5cb979e69508
+    at simulator_core\src\game\message.rs:104 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:22.802411Z  INFO  GAME ACTOR [443082e2-410e-4b8b-8bb3-dc33f527496b]: Player 7d2fe99c-d7cc-4511-938c-349827d69621 connection status updated in GameStateManager.
+    at simulator_core\src\game\message.rs:151 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:22.802415Z  INFO  Game phase transitioning from Initial to Mulligan
+    at simulator_core\src\game\state.rs:122 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802420Z  INFO  GAME ACTOR [6a29c75f-6e29-4255-b295-006e199e3373]: Player 16c899bc-840c-434f-9b75-04780fb23cca connection status updated in GameStateManager.
+    at simulator_core\src\game\message.rs:151 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802428Z  INFO  GAME ACTOR [6a29c75f-6e29-4255-b295-006e199e3373]: Proceeding with Mulligan card distribution.
+    at simulator_core\src\game\message.rs:172 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802429Z  INFO  GAME ACTOR [5a524e4f-43e6-46d4-8bc6-0e06a73bdb59]: Connection for player 43bad9cf-1bce-40ee-be3a-5cb979e69508 registered successfully. Total connections: 1
+    at simulator_core\src\game\message.rs:133 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:22.802436Z  INFO  GAME ACTOR [5a524e4f-43e6-46d4-8bc6-0e06a73bdb59]: Game state locked for player 43bad9cf-1bce-40ee-be3a-5cb979e69508
+    at simulator_core\src\game\message.rs:145 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:22.802442Z  INFO  Player Player1 connection status updated to: Connected
+    at simulator_core\src\game\state.rs:75 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:22.802446Z  INFO  GAME ACTOR [5a524e4f-43e6-46d4-8bc6-0e06a73bdb59]: Player 43bad9cf-1bce-40ee-be3a-5cb979e69508 connection status updated in GameStateManager.
+    at simulator_core\src\game\message.rs:151 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:22.802455Z  INFO  PLAYER ACTOR [Player1]: Handling GetMulliganDealCards
+    at simulator_core\src\player\message.rs:74 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802542Z  INFO  Received SendMulliganDealCards event, sending directly to client for player: 16c899bc-840c-434f-9b75-04780fb23cca
+    at simulator_dedicated_server\src\connection\messages.rs:33 on actix-rt|system:1|arbiter:6 ThreadId(14)
+
+  2025-05-20T11:56:22.802658Z  INFO  Sent mulligan cards (5 count) to player 16c899bc-840c-434f-9b75-04780fb23cca
+    at simulator_core\src\game\message.rs:209 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802663Z  INFO  Successfully sent Mulligan deal cards directly to player: 16c899bc-840c-434f-9b75-04780fb23cca
+    at simulator_dedicated_server\src\connection\messages.rs:55 on actix-rt|system:1|arbiter:6 ThreadId(14)
+
+  2025-05-20T11:56:22.802677Z  INFO  Player Player1 mulligan status updated from NotStarted to CardsDealt
+    at simulator_core\src\game\state.rs:149 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802696Z  INFO  PLAYER ACTOR [Player2]: Handling GetMulliganDealCards
+    at simulator_core\src\player\message.rs:74 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802770Z  INFO  Received SendMulliganDealCards event, sending directly to client for player: fcfb2389-1277-4eac-b6f2-8e5e54b2d47a
+    at simulator_dedicated_server\src\connection\messages.rs:33 on actix-rt|system:1|arbiter:12 ThreadId(20)
+
+  2025-05-20T11:56:22.802802Z  INFO  [TEST] Received message: {"cards":["da5dc597-8a4a-4636-ad26-ec6d3691dd93","0a89ad47-7fcb-4f46-8b1d-b4ceb3b8e456","1e321587-d18d-4d52-aa59-4aa819d548d7","f85cc726-3f15-47ca-8353-8cd1c31cbf6f","c1d77e67-4d90-4129-b0ab-3c7a0e45edb1"],"player":"Player1","type":"mulligan_deal"}
+    at simulator_dedicated_server\src\test\mod.rs:239 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802824Z  INFO  Successfully sent Mulligan deal cards directly to player: fcfb2389-1277-4eac-b6f2-8e5e54b2d47a
+    at simulator_dedicated_server\src\connection\messages.rs:55 on actix-rt|system:1|arbiter:12 ThreadId(20)
+
+  2025-05-20T11:56:22.802882Z  INFO  PLAYER ACTOR [Player1]: Handling GetDeckCards
+    at simulator_core\src\player\message.rs:190 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802938Z  INFO  Sent mulligan cards (5 count) to player fcfb2389-1277-4eac-b6f2-8e5e54b2d47a
+    at simulator_core\src\game\message.rs:209 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.802949Z  INFO  Player Player2 mulligan status updated from NotStarted to CardsDealt
+    at simulator_core\src\game\state.rs:149 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.803060Z  INFO  [TEST] Received message: {"cards":["aa31dd13-d8c6-4ab8-8cc2-1bf9ea9b47c1","68d81260-5223-43da-923f-e06c1c47b642","73eef685-9959-451b-93a1-f44ae42d31e7","04f07604-9283-44d1-8741-8d3d2631bdb0","e8e1a69f-6167-4888-87b1-27ae135e5289"],"player":"Player2","type":"mulligan_deal"}
+    at simulator_dedicated_server\src\test\mod.rs:239 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.803104Z  INFO  PLAYER ACTOR [Player2]: Handling GetDeckCards
+    at simulator_core\src\player\message.rs:190 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(7)
+
+  2025-05-20T11:56:22.803370Z  INFO  ConnectionActor for player Player2 (session_id: fcfb2389-1277-4eac-b6f2-8e5e54b2d47a): WebSocket stream finished. Stopping actor.
+    at simulator_dedicated_server\src\connection\connection.rs:313 on actix-rt|system:1|arbiter:12 ThreadId(20)
+
+  2025-05-20T11:56:22.803380Z  INFO  ConnectionActor for player Player1 (session_id: 16c899bc-840c-434f-9b75-04780fb23cca): WebSocket stream finished. Stopping actor.
+    at simulator_dedicated_server\src\connection\connection.rs:313 on actix-rt|system:1|arbiter:6 ThreadId(14)
+
+  2025-05-20T11:56:22.803388Z  INFO  ConnectionActor stopping for player Player2 (session_id: fcfb2389-1277-4eac-b6f2-8e5e54b2d47a)
+    at simulator_dedicated_server\src\connection\connection.rs:180 on actix-rt|system:1|arbiter:12 ThreadId(20)
+
+  2025-05-20T11:56:22.803396Z  INFO  ConnectionActor stopped for player Player2 (session_id: fcfb2389-1277-4eac-b6f2-8e5e54b2d47a)
+    at simulator_dedicated_server\src\connection\connection.rs:190 on actix-rt|system:1|arbiter:12 ThreadId(20)
+
+  2025-05-20T11:56:22.803397Z  INFO  ConnectionActor stopping for player Player1 (session_id: 16c899bc-840c-434f-9b75-04780fb23cca)
+    at simulator_dedicated_server\src\connection\connection.rs:180 on actix-rt|system:1|arbiter:6 ThreadId(14)
+
+  2025-05-20T11:56:22.803408Z  INFO  ConnectionActor stopped for player Player1 (session_id: 16c899bc-840c-434f-9b75-04780fb23cca)
+    at simulator_dedicated_server\src\connection\connection.rs:190 on actix-rt|system:1|arbiter:6 ThreadId(14)
+
+  2025-05-20T11:56:22.803416Z  INFO  Session cleanup task completed: player=Player2, session_id=fcfb2389-1277-4eac-b6f2-8e5e54b2d47a
+    at simulator_dedicated_server\src\connection\connection.rs:130 on actix-rt|system:1|arbiter:12 ThreadId(20)
+
+  2025-05-20T11:56:22.803433Z  INFO  Session cleanup task completed: player=Player1, session_id=16c899bc-840c-434f-9b75-04780fb23cca
+    at simulator_dedicated_server\src\connection\connection.rs:130 on actix-rt|system:1|arbiter:6 ThreadId(14)
+
+  2025-05-20T11:56:24.818973Z  INFO  [TEST] Connection seems alive after Pong.
+    at simulator_dedicated_server\tests\test.rs:487 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:24.819028Z  INFO  [TEST] Closing WebSocket connection.
+    at simulator_dedicated_server\tests\test.rs:504 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-05-20T11:56:24.819039Z  INFO  ConnectionActor for player Player1 (session_id: 43bad9cf-1bce-40ee-be3a-5cb979e69508): Received Pong from client. prev_pong Instant { t: 29569.4728689s }, last_pong Instant { t: 29571.4895425s }
+    at simulator_dedicated_server\src\connection\connection.rs:232 on actix-rt|system:3|arbiter:3 ThreadId(11)
+
+  2025-05-20T11:56:24.819140Z  INFO  ConnectionActor for player Player1 (session_id: 43bad9cf-1bce-40ee-be3a-5cb979e69508): Received Close from client. Reason: None
+    at simulator_dedicated_server\src\connection\connection.rs:252 on actix-rt|system:3|arbiter:3 ThreadId(11)
+
+  2025-05-20T11:56:24.819161Z  INFO  ConnectionActor stopping for player Player1 (session_id: 43bad9cf-1bce-40ee-be3a-5cb979e69508)
+    at simulator_dedicated_server\src\connection\connection.rs:180 on actix-rt|system:3|arbiter:3 ThreadId(11)
+
+  2025-05-20T11:56:24.819177Z  INFO  ConnectionActor stopped for player Player1 (session_id: 43bad9cf-1bce-40ee-be3a-5cb979e69508)
+    at simulator_dedicated_server\src\connection\connection.rs:190 on actix-rt|system:3|arbiter:3 ThreadId(11)
+
+  2025-05-20T11:56:24.819214Z  INFO  Session cleanup task completed: player=Player1, session_id=43bad9cf-1bce-40ee-be3a-5cb979e69508
+    at simulator_dedicated_server\src\connection\connection.rs:130 on actix-rt|system:3|arbiter:3 ThreadId(11)
+
+  2025-05-20T11:56:27.800512Z  INFO  Spawning heartbeat ping task for player Player1 (session_id: 7d2fe99c-d7cc-4511-938c-349827d69621)
+    at simulator_dedicated_server\src\connection\connection.rs:82 on actix-rt|system:2|arbiter:0 ThreadId(8)
+
+  2025-05-20T11:56:27.800544Z  INFO  Spawning heartbeat ping task for player Player1 (session_id: 94d2c013-0c9f-4f64-840d-20d30da34af5)
+    at simulator_dedicated_server\src\connection\connection.rs:82 on actix-rt|system:0|arbiter:2 ThreadId(10)
+
+  2025-05-20T11:56:27.800599Z  INFO  Ping sent successfully to player Player1 (session_id: 94d2c013-0c9f-4f64-840d-20d30da34af5) last_pong Instant { t: 29564.4663617s }
+    at simulator_dedicated_server\src\connection\connection.rs:104 on actix-rt|system:0|arbiter:2 ThreadId(10)
+
+  2025-05-20T11:56:27.800597Z  INFO  Ping sent successfully to player Player1 (session_id: 7d2fe99c-d7cc-4511-938c-349827d69621) last_pong Instant { t: 29569.4728035s }
+    at simulator_dedicated_server\src\connection\connection.rs:104 on actix-rt|system:2|arbiter:0 ThreadId(8)
+
+  2025-05-20T11:56:32.801309Z  INFO  Spawning heartbeat ping task for player Player1 (session_id: 94d2c013-0c9f-4f64-840d-20d30da34af5)
+    at simulator_dedicated_server\src\connection\connection.rs:82 on actix-rt|system:0|arbiter:2 ThreadId(10)
+
+  2025-05-20T11:56:32.801392Z  INFO  Ping sent successfully to player Player1 (session_id: 94d2c013-0c9f-4f64-840d-20d30da34af5) last_pong Instant { t: 29564.4663617s }
+    at simulator_dedicated_server\src\connection\connection.rs:104 on actix-rt|system:0|arbiter:2 ThreadId(10)
+
+  2025-05-20T11:56:32.801782Z  INFO  Spawning heartbeat ping task for player Player1 (session_id: 7d2fe99c-d7cc-4511-938c-349827d69621)
+    at simulator_dedicated_server\src\connection\connection.rs:82 on actix-rt|system:2|arbiter:0 ThreadId(8)
+
+  2025-05-20T11:56:32.801826Z ERROR  Failed to send ping to player Player1 (session_id: 7d2fe99c-d7cc-4511-938c-349827d69621): Closed
+    at simulator_dedicated_server\src\connection\connection.rs:96 on actix-rt|system:2|arbiter:0 ThreadId(8)
+
+  2025-05-20T11:56:32.801851Z  WARN  ConnectionActor for player Player1 (session_id: 7d2fe99c-d7cc-4511-938c-349827d69621): 
+    at simulator_dedicated_server\src\connection\messages.rs:20 on actix-rt|system:2|arbiter:0 ThreadId(8)
+
+  2025-05-20T11:56:32.801865Z  INFO  ConnectionActor stopping for player Player1 (session_id: 7d2fe99c-d7cc-4511-938c-349827d69621)
+    at simulator_dedicated_server\src\connection\connection.rs:180 on actix-rt|system:2|arbiter:0 ThreadId(8)
+
+  2025-05-20T11:56:32.801881Z  INFO  ConnectionActor stopped for player Player1 (session_id: 7d2fe99c-d7cc-4511-938c-349827d69621)
+    at simulator_dedicated_server\src\connection\connection.rs:190 on actix-rt|system:2|arbiter:0 ThreadId(8)
+
+  2025-05-20T11:56:32.801917Z ERROR  Failed to close WebSocket session for player Player1 (session_id: 7d2fe99c-d7cc-4511-938c-349827d69621): Closed
+    at simulator_dedicated_server\src\connection\connection.rs:125 on actix-rt|system:2|arbiter:0 ThreadId(8)
+
+  2025-05-20T11:56:32.801928Z  INFO  Session cleanup task completed: player=Player1, session_id=7d2fe99c-d7cc-4511-938c-349827d69621
+    at simulator_dedicated_server\src\connection\connection.rs:130 on actix-rt|system:2|arbiter:0 ThreadId(8)
+
+  2025-05-20T11:56:37.797410Z  INFO  Spawning heartbeat ping task for player Player1 (session_id: 94d2c013-0c9f-4f64-840d-20d30da34af5)
+    at simulator_dedicated_server\src\connection\connection.rs:82 on actix-rt|system:0|arbiter:2 ThreadId(10)
+
+  2025-05-20T11:56:37.797489Z  INFO  Ping sent successfully to player Player1 (session_id: 94d2c013-0c9f-4f64-840d-20d30da34af5) last_pong Instant { t: 29564.4663617s }
+    at simulator_dedicated_server\src\connection\connection.rs:104 on actix-rt|system:0|arbiter:2 ThreadId(10)
+
+  2025-05-20T11:56:42.797311Z  INFO  Spawning heartbeat ping task for player Player1 (session_id: 94d2c013-0c9f-4f64-840d-20d30da34af5)
+    at simulator_dedicated_server\src\connection\connection.rs:82 on actix-rt|system:0|arbiter:2 ThreadId(10)
+
+  2025-05-20T11:56:42.797393Z  INFO  Ping sent successfully to player Player1 (session_id: 94d2c013-0c9f-4f64-840d-20d30da34af5) last_pong Instant { t: 29564.4663617s }
+    at simulator_dedicated_server\src\connection\connection.rs:104 on actix-rt|system:0|arbiter:2 ThreadId(10)
+
+  2025-05-20T11:56:47.804057Z  WARN  Heartbeat timeout for player Player1 (session_id: 94d2c013-0c9f-4f64-840d-20d30da34af5). Closing connection.
+    at simulator_dedicated_server\src\connection\connection.rs:67 on actix-rt|system:0|arbiter:2 ThreadId(10)
+
+  2025-05-20T11:56:47.804132Z  INFO  ConnectionActor stopping for player Player1 (session_id: 94d2c013-0c9f-4f64-840d-20d30da34af5)
+    at simulator_dedicated_server\src\connection\connection.rs:180 on actix-rt|system:0|arbiter:2 ThreadId(10)
+
+  2025-05-20T11:56:47.804155Z  INFO  ConnectionActor stopped for player Player1 (session_id: 94d2c013-0c9f-4f64-840d-20d30da34af5)
+    at simulator_dedicated_server\src\connection\connection.rs:190 on actix-rt|system:0|arbiter:2 ThreadId(10)
+
+  2025-05-20T11:56:47.804210Z  INFO  Session cleanup task completed: player=Player1, session_id=94d2c013-0c9f-4f64-840d-20d30da34af5
+    at simulator_dedicated_server\src\connection\connection.rs:130 on actix-rt|system:0|arbiter:2 ThreadId(10)
+
+  2025-05-20T11:56:52.800680Z  INFO  [TEST] Sending Ping to check if connection is alive...
+    at simulator_dedicated_server\tests\test.rs:383 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-05-20T11:56:52.800841Z  INFO  [TEST] Test Success: Connection is closed after client timeout (as expected).
+    at simulator_dedicated_server\tests\test.rs:408 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-05-20T11:56:52.801321Z  INFO  멀리건 단계 핸들러 시작: player=Player2
+    at simulator_dedicated_server\src\server\mod.rs:115 on actix-rt|system:2|arbiter:1 ThreadId(9)
+    in game with player: AuthPlayer { ptype: Player2, id: 3abb73d5-9740-4229-b2fa-3beb9aef597d }, player_type: Player2
+
+  2025-05-20T11:56:52.801370Z  INFO  WebSocket handshake successful for player_id: 3abb73d5-9740-4229-b2fa-3beb9aef597d
+    at simulator_dedicated_server\src\server\mod.rs:125 on actix-rt|system:2|arbiter:1 ThreadId(9)
+    in game with player: AuthPlayer { ptype: Player2, id: 3abb73d5-9740-4229-b2fa-3beb9aef597d }, player_type: Player2
+
+  2025-05-20T11:56:52.801454Z  INFO  ConnectionActor started for player Player2 3abb73d5-9740-4229-b2fa-3beb9aef597d
+    at simulator_dedicated_server\src\connection\connection.rs:143 on actix-rt|system:2|arbiter:1 ThreadId(9)
+
+  2025-05-20T11:56:52.801504Z  INFO  Sent initial heartbeat_connected message to player Player2 (session_id: 3abb73d5-9740-4229-b2fa-3beb9aef597d)
+    at simulator_dedicated_server\src\connection\connection.rs:166 on actix-rt|system:2|arbiter:1 ThreadId(9)
+
+  2025-05-20T11:56:52.801557Z  INFO  [TEST] Received message: {"player":"Player2","session_id":"3abb73d5-9740-4229-b2fa-3beb9aef597d","type":"heartbeat_connected"}
+    at simulator_dedicated_server\src\test\mod.rs:239 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:57.811490Z  INFO  Spawning heartbeat ping task for player Player2 (session_id: 3abb73d5-9740-4229-b2fa-3beb9aef597d)
+    at simulator_dedicated_server\src\connection\connection.rs:82 on actix-rt|system:2|arbiter:1 ThreadId(9)
+
+  2025-05-20T11:56:57.811583Z  INFO  Ping sent successfully to player Player2 (session_id: 3abb73d5-9740-4229-b2fa-3beb9aef597d) last_pong Instant { t: 29599.4718972s }
+    at simulator_dedicated_server\src\connection\connection.rs:104 on actix-rt|system:2|arbiter:1 ThreadId(9)
+
+  2025-05-20T11:56:57.811751Z  INFO  [TEST] Received ping (auto-pong by tungstenite), ignoring.
+    at simulator_dedicated_server\src\test\mod.rs:249 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:57.811887Z  INFO  ConnectionActor for player Player2 (session_id: 3abb73d5-9740-4229-b2fa-3beb9aef597d): Received Pong from client. prev_pong Instant { t: 29599.4718972s }, last_pong Instant { t: 29604.4823865s }
+    at simulator_dedicated_server\src\connection\connection.rs:232 on actix-rt|system:2|arbiter:1 ThreadId(9)
+
+  2025-05-20T11:56:57.811922Z  INFO  ConnectionActor for player Player2 (session_id: 3abb73d5-9740-4229-b2fa-3beb9aef597d): Initial Pong received. Registering with GameActor.
+    at simulator_dedicated_server\src\connection\connection.rs:239 on actix-rt|system:2|arbiter:1 ThreadId(9)
+
+  2025-05-20T11:56:57.811963Z  INFO  GAME ACTOR [443082e2-410e-4b8b-8bb3-dc33f527496b]: Handling RegisterConnection for player 3abb73d5-9740-4229-b2fa-3beb9aef597d
+    at simulator_core\src\game\message.rs:104 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:57.812002Z  INFO  GAME ACTOR [443082e2-410e-4b8b-8bb3-dc33f527496b]: Connection for player 3abb73d5-9740-4229-b2fa-3beb9aef597d registered successfully. Total connections: 2
+    at simulator_core\src\game\message.rs:133 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:57.812014Z  INFO  GAME ACTOR [443082e2-410e-4b8b-8bb3-dc33f527496b]: Game state locked for player 3abb73d5-9740-4229-b2fa-3beb9aef597d
+    at simulator_core\src\game\message.rs:145 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:57.812020Z  INFO  Player Player2 connection status updated to: Connected
+    at simulator_core\src\game\state.rs:75 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:57.812026Z  INFO  Game phase transitioning from Initial to Mulligan
+    at simulator_core\src\game\state.rs:122 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:57.812030Z  INFO  GAME ACTOR [443082e2-410e-4b8b-8bb3-dc33f527496b]: Player 3abb73d5-9740-4229-b2fa-3beb9aef597d connection status updated in GameStateManager.
+    at simulator_core\src\game\message.rs:151 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:57.812035Z  INFO  GAME ACTOR [443082e2-410e-4b8b-8bb3-dc33f527496b]: Proceeding with Mulligan card distribution.
+    at simulator_core\src\game\message.rs:172 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:57.812050Z  INFO  PLAYER ACTOR [Player2]: Handling GetMulliganDealCards
+    at simulator_core\src\player\message.rs:74 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:57.812162Z  INFO  Received SendMulliganDealCards event, sending directly to client for player: 3abb73d5-9740-4229-b2fa-3beb9aef597d
+    at simulator_dedicated_server\src\connection\messages.rs:33 on actix-rt|system:2|arbiter:1 ThreadId(9)
+
+  2025-05-20T11:56:57.812279Z  INFO  Successfully sent Mulligan deal cards directly to player: 3abb73d5-9740-4229-b2fa-3beb9aef597d
+    at simulator_dedicated_server\src\connection\messages.rs:55 on actix-rt|system:2|arbiter:1 ThreadId(9)
+
+  2025-05-20T11:56:57.812281Z  INFO  Sent mulligan cards (5 count) to player 3abb73d5-9740-4229-b2fa-3beb9aef597d
+    at simulator_core\src\game\message.rs:209 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:57.812299Z  INFO  Player Player2 mulligan status updated from NotStarted to CardsDealt
+    at simulator_core\src\game\state.rs:149 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:57.812321Z  INFO  PLAYER ACTOR [Player1]: Handling GetMulliganDealCards
+    at simulator_core\src\player\message.rs:74 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:57.812363Z  WARN  Failed to send mulligan cards to 7d2fe99c-d7cc-4511-938c-349827d69621: MailboxError(Mailbox has closed)
+    at simulator_core\src\game\message.rs:204 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:57.812425Z  INFO  [TEST] Received message: {"cards":["5c28e293-7795-4558-98a0-2b081201c612","69e75fa8-2291-4828-bed4-205062571a90","5bd232f3-8465-4837-b69b-74259445f5be","e3e0b5ff-72f2-4cd0-8799-8103e5c2c42c","dbbd1886-d998-47c8-80bc-f5bdcfd96b19"],"player":"Player2","type":"mulligan_deal"}
+    at simulator_dedicated_server\src\test\mod.rs:239 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:57.812515Z  INFO  PLAYER ACTOR [Player2]: Handling GetDeckCards
+    at simulator_core\src\player\message.rs:190 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(6)
+
+  2025-05-20T11:56:57.812852Z  INFO  ConnectionActor for player Player2 (session_id: 3abb73d5-9740-4229-b2fa-3beb9aef597d): WebSocket stream finished. Stopping actor.
+    at simulator_dedicated_server\src\connection\connection.rs:313 on actix-rt|system:2|arbiter:1 ThreadId(9)
+
+  2025-05-20T11:56:57.812878Z  INFO  ConnectionActor stopping for player Player2 (session_id: 3abb73d5-9740-4229-b2fa-3beb9aef597d)
+    at simulator_dedicated_server\src\connection\connection.rs:180 on actix-rt|system:2|arbiter:1 ThreadId(9)
+
+  2025-05-20T11:56:57.812890Z  INFO  ConnectionActor stopped for player Player2 (session_id: 3abb73d5-9740-4229-b2fa-3beb9aef597d)
+    at simulator_dedicated_server\src\connection\connection.rs:190 on actix-rt|system:2|arbiter:1 ThreadId(9)
+
+  2025-05-20T11:56:57.812916Z  INFO  Session cleanup task completed: player=Player2, session_id=3abb73d5-9740-4229-b2fa-3beb9aef597d
+    at simulator_dedicated_server\src\connection\connection.rs:130 on actix-rt|system:2|arbiter:1 ThreadId(9)
+
+  2025-05-20T12:34:41.103044Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at simulator_core\src\lib.rs:74 on ThreadId(2)
+
+  2025-05-20T12:34:41.142270Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at simulator_core\src\lib.rs:74 on ThreadId(2)
+
+  2025-05-20T12:34:41.147089Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\builder.rs:272 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:34:41.147275Z  INFO  PlayerActor 1 connected ( not session connection! ), P1 can now receive messages.
+    at simulator_core\src\game\mod.rs:91 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:34:41.147288Z  INFO  PlayerActor 2 connected ( not session connection! ), P2 can now receive messages.
+    at simulator_core\src\game\mod.rs:98 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:34:41.147293Z  INFO  Both players actor connected. ( not session connection! ) Sending SetOpponent messages.
+    at simulator_core\src\game\mod.rs:102 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:34:41.147411Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:191 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:34:41.147445Z  INFO  starting service: "actix-web-service-127.0.0.1:13138", workers: 32, listening on: 127.0.0.1:13138
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.5.0\src\server.rs:197 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:34:41.156040Z  INFO  멀리건 단계 핸들러 시작: player=Player1
+    at simulator_dedicated_server\src\server\mod.rs:115 on actix-rt|system:0|arbiter:0 ThreadId(4)
+    in game with player: AuthPlayer { ptype: Player1, id: 6bac8a98-5ef3-4e52-89a0-1edff93cf57a }, player_type: Player1
+
+  2025-05-20T12:34:41.156149Z  INFO  WebSocket handshake successful for player_id: 6bac8a98-5ef3-4e52-89a0-1edff93cf57a
+    at simulator_dedicated_server\src\server\mod.rs:125 on actix-rt|system:0|arbiter:0 ThreadId(4)
+    in game with player: AuthPlayer { ptype: Player1, id: 6bac8a98-5ef3-4e52-89a0-1edff93cf57a }, player_type: Player1
+
+  2025-05-20T12:34:41.156274Z  INFO  ConnectionActor started for player Player1 6bac8a98-5ef3-4e52-89a0-1edff93cf57a
+    at simulator_dedicated_server\src\connection\connection.rs:143 on actix-rt|system:0|arbiter:0 ThreadId(4)
+
+  2025-05-20T12:34:41.156367Z  INFO  Sent initial heartbeat_connected message to player Player1 (session_id: 6bac8a98-5ef3-4e52-89a0-1edff93cf57a)
+    at simulator_dedicated_server\src\connection\connection.rs:166 on actix-rt|system:0|arbiter:0 ThreadId(4)
+
+  2025-05-20T12:34:41.156434Z  INFO  [TEST] Received message: {"player":"Player1","session_id":"6bac8a98-5ef3-4e52-89a0-1edff93cf57a","type":"heartbeat_connected"}
+    at simulator_dedicated_server\src\test\mod.rs:239 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:34:46.161160Z  INFO  Spawning heartbeat ping task for player Player1 (session_id: 6bac8a98-5ef3-4e52-89a0-1edff93cf57a)
+    at simulator_dedicated_server\src\connection\connection.rs:82 on actix-rt|system:0|arbiter:0 ThreadId(4)
+
+  2025-05-20T12:34:46.161232Z  INFO  Ping sent successfully to player Player1 (session_id: 6bac8a98-5ef3-4e52-89a0-1edff93cf57a) last_pong Instant { t: 31867.8266769s }
+    at simulator_dedicated_server\src\connection\connection.rs:104 on actix-rt|system:0|arbiter:0 ThreadId(4)
+
+  2025-05-20T12:34:46.161422Z  INFO  [TEST] Received ping (auto-pong by tungstenite), ignoring.
+    at simulator_dedicated_server\src\test\mod.rs:249 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:34:46.161592Z  INFO  ConnectionActor for player Player1 (session_id: 6bac8a98-5ef3-4e52-89a0-1edff93cf57a): Received Pong from client. prev_pong Instant { t: 31867.8266769s }, last_pong Instant { t: 31872.8320902s }
+    at simulator_dedicated_server\src\connection\connection.rs:232 on actix-rt|system:0|arbiter:0 ThreadId(4)
+
+  2025-05-20T12:34:46.161612Z  INFO  ConnectionActor for player Player1 (session_id: 6bac8a98-5ef3-4e52-89a0-1edff93cf57a): Initial Pong received. Registering with GameActor.
+    at simulator_dedicated_server\src\connection\connection.rs:239 on actix-rt|system:0|arbiter:0 ThreadId(4)
+
+  2025-05-20T12:34:46.161655Z  INFO  GAME ACTOR [1f3f5c3b-853c-409f-8b3b-89a2fc24c837]: Handling RegisterConnection for player 6bac8a98-5ef3-4e52-89a0-1edff93cf57a
+    at simulator_core\src\game\message.rs:104 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:34:46.161708Z  INFO  GAME ACTOR [1f3f5c3b-853c-409f-8b3b-89a2fc24c837]: Connection for player 6bac8a98-5ef3-4e52-89a0-1edff93cf57a registered successfully. Total connections: 1
+    at simulator_core\src\game\message.rs:133 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:34:46.161717Z  INFO  GAME ACTOR [1f3f5c3b-853c-409f-8b3b-89a2fc24c837]: Game state locked for player 6bac8a98-5ef3-4e52-89a0-1edff93cf57a
+    at simulator_core\src\game\message.rs:145 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:34:46.161723Z  INFO  Player Player1 connection status updated to: Connected
+    at simulator_core\src\game\state.rs:75 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:34:46.161731Z  INFO  GAME ACTOR [1f3f5c3b-853c-409f-8b3b-89a2fc24c837]: Player 6bac8a98-5ef3-4e52-89a0-1edff93cf57a connection status updated in GameStateManager.
+    at simulator_core\src\game\message.rs:151 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:34:51.159058Z  INFO  Spawning heartbeat ping task for player Player1 (session_id: 6bac8a98-5ef3-4e52-89a0-1edff93cf57a)
+    at simulator_dedicated_server\src\connection\connection.rs:82 on actix-rt|system:0|arbiter:0 ThreadId(4)
+
+  2025-05-20T12:34:51.159138Z  INFO  Ping sent successfully to player Player1 (session_id: 6bac8a98-5ef3-4e52-89a0-1edff93cf57a) last_pong Instant { t: 31872.8320902s }
+    at simulator_dedicated_server\src\connection\connection.rs:104 on actix-rt|system:0|arbiter:0 ThreadId(4)
+
+  2025-05-20T12:34:56.171389Z  INFO  Spawning heartbeat ping task for player Player1 (session_id: 6bac8a98-5ef3-4e52-89a0-1edff93cf57a)
+    at simulator_dedicated_server\src\connection\connection.rs:82 on actix-rt|system:0|arbiter:0 ThreadId(4)
+
+  2025-05-20T12:34:56.171469Z ERROR  Failed to send ping to player Player1 (session_id: 6bac8a98-5ef3-4e52-89a0-1edff93cf57a): Closed
+    at simulator_dedicated_server\src\connection\connection.rs:96 on actix-rt|system:0|arbiter:0 ThreadId(4)
+
+  2025-05-20T12:34:56.171506Z  WARN  ConnectionActor for player Player1 (session_id: 6bac8a98-5ef3-4e52-89a0-1edff93cf57a): 
+    at simulator_dedicated_server\src\connection\messages.rs:20 on actix-rt|system:0|arbiter:0 ThreadId(4)
+
+  2025-05-20T12:34:56.171518Z  INFO  ConnectionActor stopping for player Player1 (session_id: 6bac8a98-5ef3-4e52-89a0-1edff93cf57a)
+    at simulator_dedicated_server\src\connection\connection.rs:180 on actix-rt|system:0|arbiter:0 ThreadId(4)
+
+  2025-05-20T12:34:56.171529Z  INFO  ConnectionActor stopped for player Player1 (session_id: 6bac8a98-5ef3-4e52-89a0-1edff93cf57a)
+    at simulator_dedicated_server\src\connection\connection.rs:190 on actix-rt|system:0|arbiter:0 ThreadId(4)
+
+  2025-05-20T12:34:56.171565Z ERROR  Failed to close WebSocket session for player Player1 (session_id: 6bac8a98-5ef3-4e52-89a0-1edff93cf57a): Closed
+    at simulator_dedicated_server\src\connection\connection.rs:125 on actix-rt|system:0|arbiter:0 ThreadId(4)
+
+  2025-05-20T12:34:56.171571Z  INFO  Session cleanup task completed: player=Player1, session_id=6bac8a98-5ef3-4e52-89a0-1edff93cf57a
+    at simulator_dedicated_server\src\connection\connection.rs:130 on actix-rt|system:0|arbiter:0 ThreadId(4)
+
+  2025-05-20T12:35:16.167516Z  INFO  멀리건 단계 핸들러 시작: player=Player2
+    at simulator_dedicated_server\src\server\mod.rs:115 on actix-rt|system:0|arbiter:1 ThreadId(5)
+    in game with player: AuthPlayer { ptype: Player2, id: bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38 }, player_type: Player2
+
+  2025-05-20T12:35:16.167585Z  INFO  WebSocket handshake successful for player_id: bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38
+    at simulator_dedicated_server\src\server\mod.rs:125 on actix-rt|system:0|arbiter:1 ThreadId(5)
+    in game with player: AuthPlayer { ptype: Player2, id: bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38 }, player_type: Player2
+
+  2025-05-20T12:35:16.167670Z  INFO  ConnectionActor started for player Player2 bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38
+    at simulator_dedicated_server\src\connection\connection.rs:143 on actix-rt|system:0|arbiter:1 ThreadId(5)
+
+  2025-05-20T12:35:16.167719Z  INFO  Sent initial heartbeat_connected message to player Player2 (session_id: bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38)
+    at simulator_dedicated_server\src\connection\connection.rs:166 on actix-rt|system:0|arbiter:1 ThreadId(5)
+
+  2025-05-20T12:35:16.167770Z  INFO  [TEST] Received message: {"player":"Player2","session_id":"bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38","type":"heartbeat_connected"}
+    at simulator_dedicated_server\src\test\mod.rs:239 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:35:21.172631Z  INFO  Spawning heartbeat ping task for player Player2 (session_id: bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38)
+    at simulator_dedicated_server\src\connection\connection.rs:82 on actix-rt|system:0|arbiter:1 ThreadId(5)
+
+  2025-05-20T12:35:21.172700Z  INFO  Ping sent successfully to player Player2 (session_id: bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38) last_pong Instant { t: 31902.8381099s }
+    at simulator_dedicated_server\src\connection\connection.rs:104 on actix-rt|system:0|arbiter:1 ThreadId(5)
+
+  2025-05-20T12:35:21.172832Z  INFO  [TEST] Received ping (auto-pong by tungstenite), ignoring.
+    at simulator_dedicated_server\src\test\mod.rs:249 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:35:21.172923Z  INFO  ConnectionActor for player Player2 (session_id: bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38): Received Pong from client. prev_pong Instant { t: 31902.8381099s }, last_pong Instant { t: 31907.8434297s }
+    at simulator_dedicated_server\src\connection\connection.rs:232 on actix-rt|system:0|arbiter:1 ThreadId(5)
+
+  2025-05-20T12:35:21.172940Z  INFO  ConnectionActor for player Player2 (session_id: bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38): Initial Pong received. Registering with GameActor.
+    at simulator_dedicated_server\src\connection\connection.rs:239 on actix-rt|system:0|arbiter:1 ThreadId(5)
+
+  2025-05-20T12:35:21.172995Z  INFO  GAME ACTOR [1f3f5c3b-853c-409f-8b3b-89a2fc24c837]: Handling RegisterConnection for player bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38
+    at simulator_core\src\game\message.rs:104 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:35:21.173067Z  INFO  GAME ACTOR [1f3f5c3b-853c-409f-8b3b-89a2fc24c837]: Connection for player bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38 registered successfully. Total connections: 2
+    at simulator_core\src\game\message.rs:133 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:35:21.173078Z  INFO  GAME ACTOR [1f3f5c3b-853c-409f-8b3b-89a2fc24c837]: Game state locked for player bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38
+    at simulator_core\src\game\message.rs:145 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:35:21.173084Z  INFO  Player Player2 connection status updated to: Connected
+    at simulator_core\src\game\state.rs:75 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:35:21.173110Z  INFO  Game phase transitioning from Initial to Mulligan
+    at simulator_core\src\game\state.rs:122 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:35:21.173119Z  INFO  GAME ACTOR [1f3f5c3b-853c-409f-8b3b-89a2fc24c837]: Player bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38 connection status updated in GameStateManager.
+    at simulator_core\src\game\message.rs:151 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:35:21.173127Z  INFO  GAME ACTOR [1f3f5c3b-853c-409f-8b3b-89a2fc24c837]: Proceeding with Mulligan card distribution.
+    at simulator_core\src\game\message.rs:172 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:35:21.173150Z  INFO  PLAYER ACTOR [Player2]: Handling GetMulliganDealCards
+    at simulator_core\src\player\message.rs:74 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:35:21.173235Z  INFO  Received SendMulliganDealCards event, sending directly to client for player: bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38
+    at simulator_dedicated_server\src\connection\messages.rs:33 on actix-rt|system:0|arbiter:1 ThreadId(5)
+
+  2025-05-20T12:35:21.173322Z  INFO  Successfully sent Mulligan deal cards directly to player: bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38
+    at simulator_dedicated_server\src\connection\messages.rs:55 on actix-rt|system:0|arbiter:1 ThreadId(5)
+
+  2025-05-20T12:35:21.173345Z  INFO  Sent mulligan cards (5 count) to player bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38
+    at simulator_core\src\game\message.rs:209 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:35:21.173361Z  INFO  Player Player2 mulligan status updated from NotStarted to CardsDealt
+    at simulator_core\src\game\state.rs:149 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:35:21.173392Z  INFO  PLAYER ACTOR [Player1]: Handling GetMulliganDealCards
+    at simulator_core\src\player\message.rs:74 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:35:21.173428Z  WARN  Failed to send mulligan cards to 6bac8a98-5ef3-4e52-89a0-1edff93cf57a: MailboxError(Mailbox has closed)
+    at simulator_core\src\game\message.rs:204 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:35:21.173501Z  INFO  [TEST] Received message: {"cards":["ac333002-db70-4386-840c-afcf7be70bad","dcff4a02-54ba-4205-9ab9-be134f589cf7","6cdddf8d-7ac1-4312-93ae-643e71db64b0","3eebfc5e-7f4d-4166-8b41-78ae22e90ed0","3142c74e-2d44-4fd4-b4a8-fe983c73d5e3"],"player":"Player2","type":"mulligan_deal"}
+    at simulator_dedicated_server\src\test\mod.rs:239 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:35:21.173596Z  INFO  PLAYER ACTOR [Player2]: Handling GetDeckCards
+    at simulator_core\src\player\message.rs:190 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(3)
+
+  2025-05-20T12:35:21.173952Z  INFO  ConnectionActor for player Player2 (session_id: bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38): WebSocket stream finished. Stopping actor.
+    at simulator_dedicated_server\src\connection\connection.rs:313 on actix-rt|system:0|arbiter:1 ThreadId(5)
+
+  2025-05-20T12:35:21.173971Z  INFO  ConnectionActor stopping for player Player2 (session_id: bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38)
+    at simulator_dedicated_server\src\connection\connection.rs:180 on actix-rt|system:0|arbiter:1 ThreadId(5)
+
+  2025-05-20T12:35:21.173980Z  INFO  ConnectionActor stopped for player Player2 (session_id: bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38)
+    at simulator_dedicated_server\src\connection\connection.rs:190 on actix-rt|system:0|arbiter:1 ThreadId(5)
+
+  2025-05-20T12:35:21.174002Z  INFO  Session cleanup task completed: player=Player2, session_id=bf99c5d9-b8e4-4f84-8fe0-c5aa52fb7c38
+    at simulator_dedicated_server\src\connection\connection.rs:130 on actix-rt|system:0|arbiter:1 ThreadId(5)
+

@@ -1,6 +1,6 @@
 use uuid::Uuid;
 
-use crate::{enums::ZoneType, server::input_handler::InputRequest};
+use crate::enums::ZoneType;
 
 pub struct EffectInfo {
     pub effect_id: Uuid,
@@ -28,9 +28,6 @@ impl EffectInfo {
 pub enum EffectResult {
     // 효과가 완전히 실행됨
     Completed,
-
-    // 사용자 입력이 필요함
-    NeedsInput { inner: InputRequest },
 }
 
 #[derive(PartialEq, Eq, PartialOrd, Clone, Copy)]

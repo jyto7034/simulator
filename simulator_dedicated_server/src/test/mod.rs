@@ -4,27 +4,37 @@ use std::{
     time::Duration,
 };
 
-use actix::Actor;
+use actix::{Actor, Addr};
+use actix_web::{
+    dev::ServerHandle,
+    web::{self, Data},
+    App, HttpServer,
+};
 use async_tungstenite::tungstenite::{self, error::UrlError, http::Request, Message};
 use ctor::ctor;
-use futures::SinkExt;
-use futures_util::StreamExt;
+use futures::{SinkExt, StreamExt};
 use rand::{seq::SliceRandom, thread_rng};
 use serde::de::DeserializeOwned;
 use serde_json::{json, Value};
-use tracing::info;
-use url::Url;
-use uuid::Uuid;
-
-use crate::{
+use simulator_core::{
     card::{types::PlayerKind, Card},
     card_gen::CardGenerator,
     enums::{CARD_JSON_PATH, HEARTBEAT_INTERVAL, MAX_CARD_SIZE},
     game::GameActor,
-    server::{end_point::game, types::ServerState},
     setup_logger,
     utils::{json, parse_json_to_deck_code},
 };
+use tracing::info;
+use url::Url;
+use uuid::Uuid;
+
+use crate::server::game;
+
+pub struct ServerState {
+    pub game: Addr<GameActor>,
+    pub player1_id: Uuid,
+    pub player2_id: Uuid,
+}
 
 pub fn generate_random_deck_json() -> (Value, Vec<Card>) {
     // 카드 JSON 파일 로드
@@ -70,12 +80,6 @@ pub fn generate_random_deck_json() -> (Value, Vec<Card>) {
     (deck_json, original_cards)
 }
 
-use actix_web::{
-    dev::ServerHandle,
-    web::{self, Data},
-    App, HttpServer,
-};
-
 pub fn create_server_state() -> web::Data<ServerState> {
     let (deck_json, _original_cards) = generate_random_deck_json();
     let (deck_json2, _) = generate_random_deck_json();
@@ -86,7 +90,7 @@ pub fn create_server_state() -> web::Data<ServerState> {
     let player1_id = Uuid::new_v4();
     let player2_id = Uuid::new_v4();
 
-    let game_actor = GameActor::create(|ctx| {
+    let game_actor = GameActor::create(|_ctx| {
         let game_actor = GameActor::new(
             Uuid::new_v4(),
             player1_id,
@@ -121,50 +125,6 @@ pub async fn spawn_server() -> (SocketAddr, Data<ServerState>, ServerHandle) {
     tokio::spawn(server);
 
     (addr, server_state_clone, handle)
-}
-
-pub fn verify_mulligan_cards(
-    server_state: &ServerState,
-    player_type: PlayerKind,
-    rerolled_cards: &[Uuid],
-    deal_cards: Option<&[Uuid]>,
-    reroll_count: usize,
-) {
-    todo!()
-    // let game = server_state.game.try_lock().unwrap();
-    // let player = game.get_player_by_type(player_type).get();
-    // let deck_cards = player.get_deck().get_cards();
-
-    // // 덱 크기 검증
-    // if deck_cards.len() != 25 {
-    //     panic!(
-    //         "Mulligan error: Wrong deck size. expected: {}, Got: {}",
-    //         25,
-    //         deck_cards.len()
-    //     );
-    // }
-
-    // // 뽑은 카드가 덱에 없는지 확인
-    // for card in rerolled_cards {
-    //     if deck_cards.contains_uuid(card.clone()) {
-    //         panic!(
-    //             "Mulligan error (reroll_count = {}): Rerolled card {:?} should not be present in deck",
-    //             reroll_count, card
-    //         );
-    //     }
-    // }
-
-    // // RerollRequest 경우 이전 카드가 덱에 복원되었는지 확인
-    // if let Some(cards) = deal_cards {
-    //     for card in cards {
-    //         if !deck_cards.contains_uuid(card.clone()) {
-    //             panic!(
-    //                 "Mulligan restore error (reroll_count = {}): Restored card {:?} not found in deck",
-    //                 reroll_count, card
-    //             );
-    //         }
-    //     }
-    // }
 }
 
 pub struct RequestTest {
