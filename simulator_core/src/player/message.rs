@@ -6,15 +6,23 @@ use crate::{
         Card,
     },
     enums::{ZoneType, COUNT_OF_MULLIGAN_CARDS},
-    exception::GameError,
+    exception::{GameError, SystemError},
     selector::TargetCount,
     zone::zone::Zone,
 };
-use actix::{Addr, Context, Handler, Message};
+use actix::{ActorContext, Addr, Context, Handler, Message};
 use tracing::info;
 use uuid::Uuid;
 
 use super::PlayerActor;
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct Terminate;
+
+#[derive(Message)]
+#[rtype(result = "Result<(), GameError>")]
+pub struct GameOver;
 
 #[derive(Message)]
 #[rtype(result = "Result<Vec<Uuid>, GameError>")]
@@ -67,6 +75,28 @@ pub struct GetGraveyardCards;
 #[rtype(result = "Vec<Card>")]
 pub struct GetMulliganDealCards;
 
+impl Handler<Terminate> for PlayerActor {
+    type Result = ();
+
+    fn handle(&mut self, _: Terminate, ctx: &mut Context<Self>) -> Self::Result {
+        info!("PLAYER ACTOR [{:?}]: Handling Terminate", self.player_type);
+        ctx.stop();
+    }
+}
+
+impl Handler<GameOver> for PlayerActor {
+    type Result = Result<(), GameError>;
+
+    fn handle(&mut self, _: GameOver, ctx: &mut Context<Self>) -> Self::Result {
+        info!("PLAYER ACTOR [{:?}]: Handling GameOver", self.player_type);
+
+        // 필요시 리소스 해제
+
+        ctx.stop();
+        Ok(())
+    }
+}
+
 impl Handler<GetMulliganDealCards> for PlayerActor {
     type Result = Vec<Card>;
 
@@ -108,7 +138,7 @@ impl Handler<RequestMulliganReroll> for PlayerActor {
 
         // 뽑은 카드의 갯수를 확인
         if new_cards.len() != cards_to_restore.len() {
-            return Err(GameError::InternalServerError);
+            return Err(GameError::System(SystemError::Internal("Card count mismatch after mulligan".to_string())));
         }
 
         // 뽑은 카드를 mulligan state 에 넣음.

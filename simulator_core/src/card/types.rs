@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    exception::GameError, game::GameActor, resource::CardSpecsResource, utils::json::CardJson,
+    exception::{GameError, GameplayError}, game::GameActor, resource::CardSpecsResource, utils::json::CardJson,
 };
 
 use super::modifier::Modifier;
@@ -135,9 +135,9 @@ impl CardType {
                 "Ace" => Ok(CardType::Ace),
                 "Trap" => Ok(CardType::Trap),
                 "Game" => Ok(CardType::Game),
-                _ => Err(GameError::InvalidCardType),
+                _ => Err(GameError::Gameplay(GameplayError::InvalidAction { reason: "Invalid card type".to_string() })),
             },
-            None => Err(GameError::InvalidCardType),
+            None => Err(GameError::Gameplay(GameplayError::InvalidAction { reason: "Invalid card type".to_string() })),
         }
     }
 

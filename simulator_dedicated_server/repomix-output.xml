@@ -1,0 +1,1730 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.github/workflows/main.yml
+.gitignore
+Cargo.toml
+src/connection/connection.rs
+src/connection/messages.rs
+src/connection/mod.rs
+src/connection/types.rs
+src/enums.rs
+src/lib.rs
+src/main.rs
+src/room/mod.rs
+src/server/mod.rs
+src/test/mod.rs
+tests/test.rs
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".github/workflows/main.yml">
+name: Code Coverage
+
+on:
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  codecov:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          components: llvm-tools-preview
+      
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+      
+      - name: Generate code coverage
+        run: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: lcov.info
+</file>
+
+<file path=".gitignore">
+/target
+</file>
+
+<file path="Cargo.toml">
+[package]
+name = "dedicated_server"
+version = "0.1.0"
+edition = "2021"
+description = "card backend"
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+simulator_core = { path = "../simulator_core" }
+tokio = { version = "1.15", features = ["full", "tracing"] }
+tracing = "0.1.41"
+tracing-appender = "0.2.3"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+actix-web = "4.9.0"
+actix = "=0.13.5"
+actix-ws = "0.3.0"
+async-tungstenite = {version="0.28.2", features = ["tokio-runtime"]}
+reqwest = "0.12.12"
+url = "2.5.4"
+uuid = { version = "1.14.0", features = ["v4", "serde"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+rand_core = "0.6"
+rand = "0.8.5"
+futures-util = {version = "0.3", features = ["sink"]}
+futures = "0.3.31"
+ctor = "0.4.1"
+</file>
+
+<file path="src/connection/connection.rs">
+use std::time::{Duration, Instant};
+
+use actix::{
+    fut::wrap_future, Actor, ActorContext, Addr, AsyncContext, Context, Running, SpawnHandle,
+    StreamHandler,
+};
+use actix_ws::{Message, ProtocolError, Session};
+use simulator_core::{
+    card::types::PlayerKind,
+    exception::GameError,
+    game::{
+        msg::connection::{RegisterConnection, RemoveConnection},
+        GameActor,
+    },
+    retry, RetryConfig,
+};
+use tracing::{debug, error, info, warn};
+use uuid::Uuid;
+
+use crate::{
+    connection::{
+        messages::{CancelHeartbeat, StopActorOnError},
+        ServerMessage,
+    },
+    enums::{CLIENT_TIMEOUT, HEARTBEAT_INTERVAL},
+};
+
+use super::UserAction;
+
+/// WebSocket 연결을 관리하는 Actor
+pub struct ConnectionActor {
+    pub ws_session: Session,        // 웹소켓 세션 제어
+    pub game_addr: Addr<GameActor>, // 연결된 GameActor 주소
+    pub player_type: PlayerKind,
+
+    pub last_pong: Instant,
+    pub player_id: Uuid,       // 이 연결의 플레이어 ID
+    pub cleanup_started: bool, // 중복 정리를 방지하기 위한 플래그
+    pub initial_pong_received: bool,
+    pub heartbeat_handle: Option<SpawnHandle>,
+}
+
+impl ConnectionActor {
+    /// ConnectionActor의 새 인스턴스를 생성합니다.
+    ///
+    /// # Arguments
+    ///
+    /// * `session` - 이 액터가 관리할 웹소켓 세션 객체.
+    /// * `game_addr` - 이 플레이어가 참여하는 게임을 관리하는 GameActor의 주소.
+    /// * `session_id` - 이 연결에 해당하는 플레이어의 고유 식별자.
+    /// * `session_manager` - 세션 타임아웃 및 정리를 관리하는 PlayerSessionManager.
+    ///
+    /// # Returns
+    ///
+    /// 새로운 ConnectionActor 인스턴스를 반환합니다.
+    pub fn new(
+        session: Session,
+        game_addr: Addr<GameActor>,
+        player_id: Uuid,
+        player_type: PlayerKind,
+    ) -> Self {
+        Self {
+            ws_session: session,
+            game_addr,
+            player_id,
+            last_pong: Instant::now(),
+            player_type,
+            cleanup_started: false,
+            initial_pong_received: false,
+            heartbeat_handle: None,
+        }
+    }
+
+    fn start_heartbeat_check(&mut self, ctx: &mut Context<Self>) {
+        let handle = ctx.run_interval(Duration::from_secs(HEARTBEAT_INTERVAL), |act, ctx_inner| {
+            if Instant::now().duration_since(act.last_pong) > Duration::from_secs(CLIENT_TIMEOUT) {
+                // Timeout 처리
+                warn!(
+                    "Heartbeat timeout for player {:?} (session_id: {}). Closing connection.",
+                    act.player_type, act.player_id
+                );
+                ctx_inner.stop();
+                return;
+            }
+
+            // 1. Ping 작업을 Context::spawn을 사용하여 비동기로 실행
+            info!(
+                "Spawning heartbeat ping task for player {:?} (session_id: {})",
+                act.player_type, act.player_id
+            );
+
+            let mut session_clone = act.ws_session.clone();
+            let player_type_log = act.player_type;
+            let session_id_log = act.player_id;
+            let last_pong = act.last_pong;
+            let connection_adrr = ctx_inner.address().clone();
+
+            // 2. 비동기 블록을 직접 spawn
+            ctx_inner.spawn(wrap_future::<_, Self>(async move {
+                if let Err(e) = session_clone.ping(b"heartbeat").await {
+                    error!(
+                        "Failed to send ping to player {:?} (session_id: {}): {:?}",
+                        player_type_log, session_id_log, e
+                    );
+                    connection_adrr.do_send(CancelHeartbeat);
+                } else {
+                    info!(
+                        "Ping sent successfully to player {:?} (session_id: {}) last_pong {:?}",
+                        player_type_log, session_id_log, last_pong
+                    );
+                }
+            }));
+        });
+
+        self.heartbeat_handle = Some(handle);
+    }
+
+    fn start_cleanup_task(&mut self) {
+        if self.cleanup_started {
+            return;
+        }
+        self.cleanup_started = true;
+
+        let player_clone = self.player_type;
+        let sid_clone = self.player_id;
+        let ws_session_clone = self.ws_session.clone();
+
+        tokio::spawn(async move {
+            ws_session_clone.close(None).await.unwrap_or_else(|e| {
+                error!(
+                    "Failed to close WebSocket session for player {:?} (session_id: {}): {:?}",
+                    player_clone, sid_clone, e
+                );
+            });
+            info!(
+                "Session cleanup task completed: player={:?}, session_id={}",
+                player_clone, sid_clone
+            );
+        });
+    }
+}
+
+impl Actor for ConnectionActor {
+    type Context = Context<Self>;
+
+    fn started(&mut self, ctx: &mut Context<Self>) {
+        let player_type_log = self.player_type;
+        info!(
+            "ConnectionActor started for player {} {}",
+            player_type_log, self.player_id
+        );
+
+        self.start_heartbeat_check(ctx);
+
+        let session_id_log = self.player_id;
+        let mut session_clone = self.ws_session.clone();
+        let init_msg = ServerMessage::HeartbeatConnected {
+            player: self.player_type.to_string(),
+            session_id: self.player_id,
+        }
+        .to_json();
+
+        // 비동기 작업을 정의하는 Future 생성
+        let send_future = async move {
+            if let Err(e) = session_clone.text(init_msg).await {
+                error!(
+                    "Failed to send initial heartbeat_connected message to player {:?} (session_id: {}): {:?}",
+                    player_type_log, session_id_log, e
+                );
+            } else {
+                info!(
+                    "Sent initial heartbeat_connected message to player {:?} (session_id: {})",
+                    player_type_log, session_id_log
+                );
+            }
+        };
+
+        // 표준 Future를 ActorFuture로 감싸서 액터 컨텍스트에서 실행
+        ctx.spawn(wrap_future::<_, Self>(send_future));
+    }
+
+    fn stopping(&mut self, ctx: &mut Context<Self>) -> Running {
+        info!(
+            "ConnectionActor stopping for player {:?} (session_id: {})",
+            self.player_type, self.player_id
+        );
+
+        let game_addr = self.game_addr.clone();
+        let player_id = self.player_id;
+
+        ctx.spawn(wrap_future::<_, Self>(async move {
+            info!(
+                "Sending RemoveConnection message to GameActor for player {:?} (session_id: {})",
+                player_id, player_id
+            );
+            let res = game_addr.send(RemoveConnection { player_id }).await;
+            if let Err(e) = res {
+                error!(
+                    "Failed to send RemoveConnection message for player {:?} (session_id: {}): {:?}",
+                    player_id, player_id, e
+                );
+            }
+            if let Err(e) = res.unwrap(){
+                error!(
+                    "Failed to remove connection for player {:?} (session_id: {}): {:?}",
+                    player_id, player_id, e
+                );
+            }
+        }));
+
+        if let Some(handle) = self.heartbeat_handle.take() {
+            ctx.cancel_future(handle);
+            info!(
+                "Heartbeat task cancelled for player {:?} (session_id: {})",
+                self.player_type, self.player_id
+            );
+        } else {
+            warn!(
+                "No heartbeat task to cancel for player {:?} (session_id: {})",
+                self.player_type, self.player_id
+            );
+        }
+
+        self.start_cleanup_task();
+
+        Running::Continue
+    }
+
+    fn stopped(&mut self, _ctx: &mut Self::Context) {
+        info!(
+            "ConnectionActor stopped for player {:?} (session_id: {})",
+            self.player_type, self.player_id
+        );
+    }
+}
+
+impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
+    fn handle(&mut self, msg: Result<Message, ProtocolError>, ctx: &mut Context<Self>) {
+        debug!(
+            "ConnectionActor received message from player {:?} (session_id: {}): {:?}",
+            self.player_type, self.player_id, msg
+        );
+        match msg {
+            Ok(Message::Ping(ping_msg)) => {
+                info!(
+                    "ConnectionActor for player {:?} (session_id: {}) received Ping from client.",
+                    self.player_type, self.player_id
+                );
+
+                let player_type_log = self.player_type;
+                let session_id_log = self.player_id;
+                let mut session_clone = self.ws_session.clone();
+
+                let send_future = async move {
+                    if let Err(e) = session_clone.pong(&ping_msg).await {
+                        error!(
+                            "ConnectionActor for player {:?} (session_id: {}): Failed to send Pong to client: {:?}",
+                            player_type_log, session_id_log, e
+                        );
+                    } else {
+                        info!(
+                            "ConnectionActor for player {:?} (session_id: {}): Sent Pong to client.",
+                            player_type_log, session_id_log
+                        );
+                    }
+                };
+                ctx.spawn(wrap_future::<_, Self>(send_future));
+            }
+            Ok(Message::Pong(_)) => {
+                let player_type = self.player_type;
+                let player_id = self.player_id;
+                let game_addr = self.game_addr.clone();
+                let addr = ctx.address().clone();
+
+                self.last_pong = Instant::now(); // 클라이언트 활성 시간 갱신
+                info!(
+                    "ConnectionActor for player {:?} (session_id: {}): Received Pong from client",
+                    self.player_type, self.player_id
+                );
+
+                if !self.initial_pong_received {
+                    self.initial_pong_received = true;
+                    info!(
+                        "ConnectionActor for player {:?} (session_id: {}): Initial Pong received. Registering with GameActor.",
+                        self.player_type, self.player_id
+                    );
+
+                    let connection_addr = ctx.address().clone();
+
+                    ctx.spawn(wrap_future::<_, Self>(async move {
+                        let operation = || {
+                            let game_addr_clone = game_addr.clone();
+                            let connection_addr_clone = connection_addr.clone();
+                            async move {
+                                let register_connection_future = game_addr_clone
+                                    .send(RegisterConnection {
+                                        player_id,
+                                        recipient: connection_addr_clone.recipient(),
+                                    }).await;
+
+                                match register_connection_future {
+                                    Ok(handler_result) => {
+                                        // GameActor의 핸들러가 성공적으로 처리했는지 확인
+                                        match handler_result {
+                                            Ok(_) => {
+                                                return Ok(());
+                                            }
+                                            Err(game_error) => {
+                                                error!(
+                                                "ConnectionActor for player {:?} (session_id: {}): Message sent to GameActor, but registration failed with GameError: {:?}",
+                                                player_type, player_id, game_error
+                                            );
+                                                return Err(game_error);
+                                            }
+                                        }
+                                    }
+                                    Err(mailbox_error) => {
+                                        error!(
+                                        "ConnectionActor for player {:?} (session_id: {}): Failed to send RegisterConnection message to GameActor (MailboxError): {:?}",
+                                        player_type, player_id, mailbox_error
+                                    );
+                                        return Err(GameError::MailboxError);
+                                    }
+                                }
+                            }
+                        };
+
+                        if let Err(e) = retry(operation, RetryConfig::default(), "RegisterConnection").await{
+                            error!(
+                                "ConnectionActor for player {:?} (session_id: {}): Failed to register with GameActor after retries: {:?}",
+                                player_type, player_id, e
+                            );
+                            addr.do_send(StopActorOnError {
+                                error_message: GameError::RetryFailed,
+                            }); // 에러 시 자신에게 중지 요청
+                        } else {
+                            info!(
+                                "ConnectionActor for player {:?} (session_id: {}): Successfully registered with GameActor.",
+                                player_type, player_id
+                            );
+                        }
+                    }));
+                }
+            }
+            Ok(Message::Close(reason)) => {
+                info!(
+                    "ConnectionActor for player {:?} (session_id: {}): Received Close from client. Reason: {:?}",
+                    self.player_type, self.player_id, reason
+                );
+                ctx.stop();
+            }
+            Ok(Message::Text(text)) => {
+                match serde_json::from_str::<UserAction>(&text.to_string()) {
+                    Ok(user_action) => {
+                        info!(
+                            "ConnectionActor for player {:?} (session_id: {}): Forwarding action to GameActor: {:?}",
+                            self.player_type, self.player_id, user_action
+                        );
+                        // self.game_addr.do_send(HandleUserAction {
+                        //     player_id: self.player_id,
+                        //     action: user_action,
+                        // });
+                    }
+                    Err(e) => {
+                        error!(
+                            "ConnectionActor for player {:?} (session_id: {}): Failed to parse UserAction from text '{}'. Error: {}",
+                            self.player_type, self.player_id, text, e
+                        );
+                        let error_msg = format!("{{\"error\": \"Invalid message format: {}\"}}", e);
+                        let mut session_clone = self.ws_session.clone();
+                        let player_id_log = self.player_id; // 로그용 ID 클론
+                        ctx.spawn(wrap_future::<_, Self>(async move {
+                            if let Err(send_err) = session_clone.text(error_msg).await {
+                                error!(
+                                    "ConnectionActor for player_id {}: Failed to send error text to client: {:?}",
+                                    player_id_log, send_err
+                                );
+                            }
+                        }));
+                    }
+                }
+            }
+            Ok(Message::Binary(_)) => {
+                warn!(
+                    "ConnectionActor for player {:?} (session_id: {}): Received unexpected Binary message.",
+                    self.player_type, self.player_id
+                );
+            }
+            Err(e) => {
+                error!(
+                    "ConnectionActor for player {:?} (session_id: {}): WebSocket error: {}",
+                    self.player_type, self.player_id, e
+                );
+                ctx.stop();
+            }
+            _ => {
+                // 예를 들어 Ok(Message::Continuation(_)) 등 명시적으로 처리하지 않은 메시지 타입
+                warn!(
+                    "ConnectionActor for player {:?} (session_id: {}): Received unhandled message type.",
+                    self.player_type, self.player_id
+                );
+            }
+        }
+    }
+
+    fn finished(&mut self, ctx: &mut Context<Self>) {
+        info!(
+            "ConnectionActor for player {:?} (session_id: {}): WebSocket stream finished. Stopping actor.",
+            self.player_type, self.player_id
+        );
+        ctx.stop();
+    }
+}
+</file>
+
+<file path="src/connection/messages.rs">
+use actix::{fut::wrap_future, prelude::*};
+use tracing::{info, warn};
+
+use simulator_core::{exception::GameError, game::msg::GameEvent};
+
+use super::{connection::ConnectionActor, ServerMessage};
+
+use actix::Message;
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct StopActorOnError {
+    pub error_message: GameError,
+}
+
+#[derive(Message)]
+#[rtype(result = "Result<(), GameError>")]
+pub struct CancelHeartbeat;
+
+impl Handler<CancelHeartbeat> for ConnectionActor {
+    type Result = Result<(), GameError>;
+
+    fn handle(&mut self, _msg: CancelHeartbeat, ctx: &mut Context<Self>) -> Self::Result {
+        info!("Cancelling heartbeat for player: {:?}", self.player_type);
+        if let Some(handle) = self.heartbeat_handle {
+            if ctx.cancel_future(handle) {
+                info!(
+                    "Heartbeat cancelled successfully for player: {:?}",
+                    self.player_id
+                );
+                self.heartbeat_handle = None;
+                return Ok(());
+            } else {
+                warn!(
+                    "Failed to cancel heartbeat for player: {:?}, handle may not be valid.",
+                    self.player_id
+                );
+                return Err(GameError::FutureCancelFailed);
+            }
+        }
+        return Err(GameError::HeartbeatHandleNotFound);
+    }
+}
+
+impl Handler<StopActorOnError> for ConnectionActor {
+    type Result = ();
+
+    fn handle(&mut self, msg: StopActorOnError, ctx: &mut Context<Self>) -> Self::Result {
+        info!(
+            "Stopping ConnectionActor for player: {:?} due to error: {:?}",
+            self.player_id, msg.error_message
+        );
+
+        ctx.stop();
+    }
+}
+
+impl Handler<GameEvent> for ConnectionActor {
+    type Result = ();
+    fn handle(&mut self, msg: GameEvent, ctx: &mut Context<Self>) {
+        match msg {
+            GameEvent::SendMulliganDealCards { cards } => {
+                info!("Received SendMulliganDealCards event, sending directly to client for player: {:?}", self.player_id);
+                let data_to_send = ServerMessage::MulliganDealCards {
+                    // ServerMessage는 클라이언트와 약속된 포맷
+                    player: self.player_type.to_string(), // 또는 self.player_id.to_string()
+                    cards: cards,                         // Uuid 리스트
+                }
+                .to_json(); // JSON 문자열로 변환하는 헬퍼
+
+                let mut session_clone = self.ws_session.clone();
+                let player_id_log = self.player_id;
+                let actor_addr = ctx.address(); // 에러 시 중지를 위해
+
+                let send_future = async move {
+                    if let Err(e) = session_clone.text(data_to_send).await {
+                        warn!(
+                            "Failed to send Mulligan deal cards directly for player {}: {:?}",
+                            player_id_log, e
+                        );
+                        actor_addr.do_send(StopActorOnError {
+                            error_message: GameError::CardNotFound,
+                        });
+                    } else {
+                        info!(
+                            "Successfully sent Mulligan deal cards directly to player: {}",
+                            player_id_log
+                        );
+                    }
+                };
+                ctx.spawn(wrap_future::<_, Self>(send_future));
+            }
+            GameEvent::GameStopped => {
+                info!(
+                    "Game stopped event received, stopping ConnectionActor for player: {:?}",
+                    self.player_id
+                );
+                ctx.stop(); // 게임이 중지되면 액터를 중지
+            }
+        }
+    }
+}
+</file>
+
+<file path="src/connection/mod.rs">
+use serde::{Deserialize, Serialize};
+use types::PlayerInputResponse;
+use uuid::Uuid;
+
+pub mod connection;
+pub mod messages;
+pub mod types;
+
+#[derive(Deserialize, Debug, Clone)]
+#[serde(tag = "action")]
+pub enum UserAction {
+    #[serde(rename = "rerollRequestMulliganCard")]
+    RerollRequestMulliganCard { card_id: Vec<Uuid> },
+    #[serde(rename = "completeMulligan")]
+    CompleteMulligan,
+    #[serde(rename = "playCard")]
+    PlayCard {
+        card_id: Uuid,
+        target_id: Option<Uuid>,
+    },
+    #[serde(rename = "attack")]
+    Attack {
+        attacker_id: Uuid,
+        defender_id: Uuid,
+    },
+    #[serde(rename = "endTurn")]
+    EndTurn,
+    #[serde(rename = "submitInput")]
+    SubmitInput {
+        request_id: Uuid,
+        #[serde(flatten)]
+        response_data: PlayerInputResponse,
+    },
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+#[serde(tag = "type")]
+pub enum ServerMessage {
+    #[serde(rename = "heartbeat_connected")]
+    HeartbeatConnected { player: String, session_id: Uuid },
+    #[serde(rename = "mulligan_deal")]
+    MulliganDealCards { player: String, cards: Vec<Uuid> },
+}
+
+impl ServerMessage {
+    pub fn to_json(&self) -> String {
+        match self {
+            ServerMessage::HeartbeatConnected { player, session_id } => serde_json::json!({
+                "type": "heartbeat_connected",
+                "player": player,
+                "session_id": session_id.to_string()
+            })
+            .to_string(),
+            ServerMessage::MulliganDealCards { player, cards } => serde_json::json!({
+                "type": "mulligan_deal",
+                "player": player,
+                "cards": cards.iter().map(|id| id.to_string()).collect::<Vec<_>>()
+            })
+            .to_string(),
+        }
+    }
+}
+</file>
+
+<file path="src/connection/types.rs">
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct GameStateSnapshot {
+    pub current_phase: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct PlayerInputRequest {
+    pub request_id: Uuid,
+    pub input_type: PlayerInputType,
+    pub options: Vec<String>,
+    pub message: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub enum PlayerInputType {
+    SelectCardFromHand,
+    SelectTargetOnField,
+    ChooseEffect,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub enum PlayerInputResponse {
+    MulliganRerollAnswer(Vec<Uuid>),
+    CardSelection(Vec<Uuid>),
+    TargetSelection(Uuid),
+    EffectChoice(String),
+}
+</file>
+
+<file path="src/enums.rs">
+pub const HEARTBEAT_INTERVAL: u64 = 5;
+pub const CLIENT_TIMEOUT: u64 = 30; // 30초 동안 응답 없으면 연결 끊김
+</file>
+
+<file path="src/lib.rs">
+pub mod connection;
+pub mod enums;
+pub mod room;
+pub mod server;
+pub mod test;
+</file>
+
+<file path="src/main.rs">
+fn main() {}
+
+/*
+늑대 수간
+{
+    symbol-shaped pupils, green hair, fox tail, blunt bangs, ahoge,
+    {{{{{{{{{{{{{{{{{furrification, furry female, furry, thick body fur, green body fur, green fur, body fur, furry face, furry body, animal feet, animal nose, two-tone fur, neck fur, pawpads}}}}}}}}}}}}}}}}, huohuo (honkai: star rail), large breasts, areolae, fluffy tail},
+
+    0.4::artist:kambo::,
+
+    1.0::artist:shiroi yoru::, 1.2::artist:wagashi (dagashiya)::, 0.5::artist:atte nanakusa::, 0.8::artist:tianliang duohe fangdongye::, 0.7::artist:kame_(3t)::, nsfw,
+    {{{1 wolf, A very big wolf. oversized animal, bestiality}}}, <tags/clothes>, indoor, -x-ray, -comic, -multiple views, -{{{anal sex}}}, -paper doll, -futanari, :begin :seq {{{{A woman under the wolf. view between legs, squatting, from side}}}}, -{{{sex}}}, {{penis on face, precum}}, twitching penis, surprised, open mouth, testicles, canine penis, knotted, knotting penis, gigantic penis, long penis, gigantic penis, girthy penis, veiny penis, penile spines , twitching penis, :seq {{{{A woman under the wolf. view between legs, squatting, from side}}}}, -{{{sex}}}, imminent fellatio, {{{masturbation, precum, licking penis}}}, open mouth, tongue out, drooling, testicles, canine penis, knotted, knotting penis, gigantic penis, long penis, gigantic penis, girthy penis, veiny penis, penile spines , twitching penis, :seq {{{{A woman under the wolf. view between legs, squatting, from side}}}}, -{{{sex}}}, {{{deepthroat, irrumatio, throat bulge}}}, surprised, testicles, canine penis, penis in mouth, :seq {{{{A woman under the wolf. view between legs, squatting, from side, spreading legs}}}}, -{{{sex}}}, {{{{{{hand on another's head}}}}}}, -{{{sex}}}, {{{deepthroat, irrumatio, throat bulge}}}, surprised, cum, excessive cum, cum in mouth, testicles, canine penis, penis in mouth, :seq {{{{A woman under the wolf. view between legs, squatting, from side}}}}, -{{{sex}}}, smile, -fellatio, -irrumatio, open mouth, tongue out, cum in mouth, cum, excessive cum, male ejaculation, testicles, canine penis, knotted, knotting penis, gigantic penis, long penis, gigantic penis, girthy penis, veiny penis, twitching penis, :seq pov, -{{{sex}}}, {{penis on face, precum}}, twitching penis, surprised, open mouth, testicles, canine penis, knotted, knotting penis, gigantic penis, long penis, gigantic penis, girthy penis, veiny penis, penile spines , twitching penis, :seq pov, -{{{sex}}}, imminent fellatio, {{{masturbation, precum, licking penis}}}, open mouth, tongue out, drooling, testicles, canine penis, knotted, knotting penis, gigantic penis, long penis, gigantic penis, girthy penis, veiny penis, penile spines , twitching penis, :seq -{{{sex}}}, {{{{pov, girl on top, paizuri, deepthroat}}}}, <breasts squeezed together | paizuri underclothes, breasts squeezed together>, double v, testicles, canine penis, knotted, knotting penis, gigantic penis, long penis, gigantic penis, girthy penis, veiny penis, penile spines , twitching penis, precum, :seq -{{{sex}}}, {{{{pov, girl on top, paizuri, deepthroat}}}}, <breasts squeezed together | paizuri underclothes, breasts squeezed together>, {{{surprised, cum, excessive cum, cum in mouth}}}, heart in eye, spoken heart, testicles, canine penis, knotted, knotting penis, gigantic penis, long penis, gigantic penis, girthy penis, veiny penis, penile spines , twitching penis, :seq -{{{sex}}}, {{{{pov, girl on top, paizuri,}}}}, -deepthroat, <breasts squeezed together | paizuri underclothes, breasts squeezed together>, {{{smile, cum, excessive cum, cum in mouth, after fellatio, cum on breasts, cum on face}}}, heart in eye, spoken heart, testicles, canine penis, knotted, knotting penis, gigantic penis, long penis, gigantic penis, girthy penis, veiny penis, penile spines , twitching penis,  :seq -sex, {{{{{{girl on top, squatting, guided penetrating, shallow penetration, imminent penetration, crotch rub}}}}}}, precum, pussy, testicles, canine penis, knotted, knotting penis, gigantic penis, long penis, gigantic penis, girthy penis, veiny penis, penile spines , twitching penis, :seq {{{{{{girl on top, squatting, A dog lying on its stomach.}}}}}}, surprised, bouncing breasts, {{{{deep penetration}}}}, male penetrating female, female orgasm, female penetrated, sex, big dom small sub, pussy, testicles, canine penis, knotted, knotting penis, gigantic penis, long penis, gigantic penis, girthy penis, veiny penis, penile spines , twitching penis, :seq -girl on top, {{{{A woman under the wolf. A wolf on a woman. crotch rub, pussy, from behind}}}}, <all fours|bent over>, imminent penetration, bottomless, panties aside, {{{{{{hand on another's head}}}}}}, -{{{sex}}}, -penetration, testicles, canine penis, knotted, knotting penis, gigantic penis, gigantic penis, girthy penis, veiny penis, penile spines , twitching penis, :seq {{{{A woman under the wolf. sex from behind, A wolf on a woman. doggystyle, {{{from behind}}}, sex, cervix}}}}, bottomless, panties aside, -internal cum, surprised, bouncing breasts, deep penetration, male penetrating female, female orgasm, female penetrated, sex, big dom small sub, testicles, canine penis, knotted, knotting penis, penile spines , :seq -{{{anal sex}}}, {{{{A woman under the wolf. sex from behind, A wolf on a woman. doggystyle, {{{from behind, from below, top-down bottom-up}}}, sex}}}}, pussy juice, cumdrip, {{{{{{hand on another's head}}}}}}, {{{pussy focus, looking back, bottomless, panties aside}}}, -internal cum, deep penetration, male penetrating female, female orgasm, female penetrated, sex, big dom small sub, testicles, canine penis, knotted, knotting penis, penile spines , :seq {{{{mating press, sex, A woman under the wolf. from behind, legs up, lying, on back, boy on top, impregnation, leg lock, motion blur}}}}, spoken heart, feet, cum in pussy, cum overflow, erection, ass focus, pussy focus, {{{bottomless, panties aside}}}, deep penetration, male penetrating female, female orgasm, female penetrated, sex, big dom small sub, testicles, canine penis, penile spines, knotted, knotting penis, penile spines , :seq {{{{{{{{ass-to-ass penetration, top-down bottom-up, from side}}}}}}}},  {{{bottomless, panties aside}}}, internal cum, deep penetration, male penetrating female, vaginal knotting, female orgasm, female penetrated, sex, big dom small sub, testicles, canine penis, knotted, knotting penis, penile spines , cumdrip, pussy juice, cum inflation, spoken heart, cum overflow, orgasm, :seq -imminent penetration, -sex, -deep penetration, -fellatio, {{{{french kiss, pussy focus, from below, girl on top, french kiss, A fox and a woman are kissing. on back, lying, spread legs, spread pussy, cum in pussy, cumdrip, pregnant, impregnation, smile}}}}, heart in eyes, spoken heart, female orgasm, testicles, canine penis, knotted, knotting penis, gigantic penis, long penis, gigantic penis, girthy penis, veiny penis, penile spines , twitching penis, precum, cum on pussy, cum on body,    :end
+    detailed eyes, detailed face, detailed finger, highres, very aesthetic, best quality, amazing quality, incredibly absurdres
+}
+
+{
+    1.0::artist:shiroi yoru::, 1.2::artist:wagashi (dagashiya)::, 0.5::artist:atte nanakusa::, 0.8::artist:tianliang duohe fangdongye::, 0.7::artist:kame_(3t)::, nsfw,
+    <tags/huohuo_horse_wolf>,
+    detailed eyes, detailed face, detailed finger, highres, very aesthetic, best quality, amazing quality, incredibly absurdres
+}
+
+*/
+</file>
+
+<file path="src/room/mod.rs">
+pub struct RoomManagerActor {}
+</file>
+
+<file path="src/server/mod.rs">
+use std::{future::Future, pin::Pin};
+
+use actix::{Actor, AsyncContext, Context};
+use actix_web::{get, web, FromRequest, HttpRequest, HttpResponse};
+use actix_ws::handle;
+use simulator_core::{card::types::PlayerKind, exception::GameError};
+use tracing::{debug, error, info, instrument, warn};
+use uuid::Uuid;
+
+use crate::{connection::connection::ConnectionActor, test::ServerState};
+
+#[derive(Debug, Clone, Copy)]
+pub struct AuthPlayer {
+    ptype: PlayerKind,
+    id: Uuid,
+}
+
+impl AuthPlayer {
+    fn new(ptype: PlayerKind, id: Uuid) -> Self {
+        Self { ptype, id }
+    }
+}
+
+impl AuthPlayer {
+    fn reverse(&self) -> PlayerKind {
+        match self.ptype {
+            PlayerKind::Player1 => PlayerKind::Player2,
+            PlayerKind::Player2 => PlayerKind::Player1,
+        }
+    }
+}
+
+impl FromRequest for AuthPlayer {
+    type Error = GameError;
+    type Future = Pin<Box<dyn Future<Output = Result<Self, Self::Error>>>>;
+
+    fn from_request(req: &HttpRequest, _payload: &mut actix_web::dev::Payload) -> Self::Future {
+        let req = req.clone();
+        Box::pin(async move {
+            debug!("AuthPlayer::from_request 시작: 인증 처리 중...");
+
+            let Some(player_id_cookie) = req.cookie("user_id") else {
+                error!("쿠키 누락: 'user_id' 쿠키를 찾을 수 없음");
+                return Err(GameError::CookieNotFound);
+            };
+
+            let player_id_string = player_id_cookie.to_string().replace("user_id=", "");
+            debug!("쿠키 파싱 완료: player_name={}", player_id_string);
+
+            if let Some(state) = req.app_data::<web::Data<ServerState>>() {
+                let player_id = match Uuid::parse_str(&player_id_string) {
+                    Ok(id) => id,
+                    Err(e) => {
+                        warn!(
+                            "Failed to parse player_id from cookie: '{}'. Error: {}",
+                            player_id_string, e
+                        );
+                        return Err(GameError::InvalidPayload);
+                    }
+                };
+
+                // 서버 상태에서 플레이어 ID 가져오기 (state: &web::Data<ServerState>)
+                let p1_key = state.player1_id;
+                let p2_key = state.player2_id;
+
+                // if-else if-else 로 PlayerType 결정
+                let player_type = if player_id == p1_key {
+                    debug!("Player authenticated as Player1 (ID: {})", player_id);
+                    PlayerKind::Player1
+                } else if player_id == p2_key {
+                    debug!("Player authenticated as Player2 (ID: {})", player_id);
+                    PlayerKind::Player2
+                } else {
+                    // 알 수 없는 ID 처리 (명확한 오류 반환)
+                    error!(
+                        "Authentication failed: Unknown player ID '{}' from cookie. Expected {} or {}.",
+                        player_id, p1_key, p2_key
+                    );
+                    // 인증 실패 또는 잘못된 플레이어 오류 반환
+                    return Err(GameError::InvalidPlayer);
+                };
+
+                debug!("Request Guard 통과: player_type={:?}", player_type);
+
+                Ok(AuthPlayer::new(player_type, player_id))
+            } else {
+                error!("서버 상태 객체를 찾을 수 없음");
+                Err(GameError::ServerStateNotFound)
+            }
+        })
+    }
+}
+
+impl From<AuthPlayer> for PlayerKind {
+    fn from(value: AuthPlayer) -> Self {
+        value.ptype
+    }
+}
+
+impl From<AuthPlayer> for String {
+    fn from(value: AuthPlayer) -> Self {
+        value.ptype.to_string()
+    }
+}
+
+/// Game 의 전반적인 기능을 책임지는 end point
+#[get("/game")]
+#[instrument(skip(state, req, payload), fields(player_type = ?player.ptype))]
+pub async fn game(
+    player: AuthPlayer,
+    state: web::Data<ServerState>,
+    req: HttpRequest,
+    payload: web::Payload,
+) -> Result<HttpResponse, GameError> {
+    info!("멀리건 단계 핸들러 시작: player={:?}", player.ptype);
+
+    let player_type = player.ptype;
+    let player_id = player.id;
+    debug!("플레이어 타입 설정: {:?}", player_type);
+
+    // Http 업그레이드: 이때 session과 stream이 반환됩니다.
+    debug!("WebSocket 연결 업그레이드 시작");
+    let (response, session, message_stream) = match handle(&req, payload) {
+        Ok(result) => {
+            info!(
+                "WebSocket handshake successful for player_id: {}",
+                player_id
+            );
+            result
+        }
+        Err(e) => {
+            error!(
+                "WebSocket handshake failed for player_id: {}: {:?}",
+                player_id, e
+            );
+            return Ok(
+                HttpResponse::InternalServerError().body(format!("WS Handshake Error: {}", e))
+            );
+        }
+    };
+
+    ConnectionActor::create(|ctx: &mut Context<ConnectionActor>| {
+        let new_actor = ConnectionActor::new(session, state.game.clone(), player_id, player_type);
+        ctx.add_stream(message_stream);
+        new_actor
+    });
+
+    Ok(response)
+}
+</file>
+
+<file path="src/test/mod.rs">
+use std::{
+    io::Read,
+    net::{SocketAddr, TcpListener},
+    time::Duration,
+};
+
+use actix::{Actor, Addr};
+use actix_web::{
+    dev::ServerHandle,
+    web::{self, Data},
+    App, HttpServer,
+};
+use async_tungstenite::tungstenite::{self, error::UrlError, http::Request, Message};
+use ctor::ctor;
+use futures::{SinkExt, StreamExt};
+use rand::{seq::SliceRandom, thread_rng};
+use serde::de::DeserializeOwned;
+use serde_json::{json, Value};
+use simulator_core::{
+    card::{types::PlayerKind, Card},
+    card_gen::CardGenerator,
+    enums::{CARD_JSON_PATH, CLIENT_TIMEOUT, HEARTBEAT_INTERVAL, MAX_CARD_SIZE},
+    game::GameActor,
+    setup_logger,
+    utils::{json, parse_json_to_deck_code},
+};
+use tracing::info;
+use url::Url;
+use uuid::Uuid;
+
+use crate::server::game;
+
+pub struct ServerState {
+    pub game: Addr<GameActor>,
+    pub player1_id: Uuid,
+    pub player2_id: Uuid,
+}
+
+pub fn generate_random_deck_json() -> (Value, Vec<Card>) {
+    // 카드 JSON 파일 로드
+    let file_path = CARD_JSON_PATH;
+    let mut file = std::fs::File::open(file_path).expect("Failed to open cards.json");
+    let mut json_data = String::new();
+    file.read_to_string(&mut json_data)
+        .expect("Failed to read file");
+
+    let cards: Vec<json::CardJson> =
+        serde_json::from_str(&json_data).expect("Failed to parse JSON");
+
+    let mut rng = thread_rng();
+    let selected_cards: Vec<json::CardJson> = cards
+        .into_iter()
+        .filter(|card| card.collectible == Some(true))
+        .collect::<Vec<_>>()
+        .choose_multiple(&mut rng, MAX_CARD_SIZE)
+        .cloned()
+        .collect();
+
+    // 선택된 카드로 덱 JSON 생성
+    let deck_json = json!({
+        "decks": [{
+            "Hero": [{
+                "name": "player1"
+            }],
+            "cards": selected_cards.iter().map(|card| {
+                json!({
+                    "id": card.id.clone(),
+                    "num": 1
+                })
+            }).collect::<Vec<_>>()
+        }]
+    });
+
+    // 원본 카드 정보 저장
+    let card_generator = CardGenerator::new();
+    let original_cards: Vec<Card> = selected_cards
+        .iter()
+        .map(|card| card_generator.gen_card_by_id_string(card.id.clone().unwrap(), card, 0))
+        .collect();
+    (deck_json, original_cards)
+}
+
+pub fn create_server_state() -> web::Data<ServerState> {
+    let (deck_json, _original_cards) = generate_random_deck_json();
+    let (deck_json2, _) = generate_random_deck_json();
+
+    let deck_codes = parse_json_to_deck_code(Some(deck_json), Some(deck_json2))
+        .expect("Failed to parse deck code");
+
+    let player1_id = Uuid::new_v4();
+    let player2_id = Uuid::new_v4();
+
+    let game_actor = GameActor::create(|_ctx| {
+        let game_actor = GameActor::new(
+            Uuid::new_v4(),
+            player1_id,
+            player2_id,
+            deck_codes.0,
+            deck_codes.1,
+            PlayerKind::Player1,
+        );
+
+        game_actor
+    });
+
+    web::Data::new(ServerState {
+        game: game_actor,
+        player1_id: player1_id,
+        player2_id: player2_id,
+    })
+}
+
+pub async fn spawn_server() -> (SocketAddr, Data<ServerState>, ServerHandle) {
+    let server_state = create_server_state();
+    let server_state_clone = server_state.clone();
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let addr = listener.local_addr().unwrap();
+
+    let server = HttpServer::new(move || App::new().app_data(server_state.clone()).service(game))
+        .listen(listener)
+        .unwrap()
+        .run();
+
+    let handle = server.handle();
+    tokio::spawn(server);
+
+    (addr, server_state_clone, handle)
+}
+
+pub struct RequestTest {
+    pub response: String,
+}
+
+impl RequestTest {
+    pub async fn connect(
+        step: &str,
+        addr: SocketAddr,
+        cookie: String,
+    ) -> Result<Self, reqwest::Error> {
+        let client = reqwest::Client::new();
+        let response = client
+            .get(format!("http://{}/{}", addr, step))
+            .header("Cookie", cookie)
+            .send()
+            .await?;
+
+        Ok(RequestTest {
+            response: response.text().await.expect("Failed to get response"),
+        })
+    }
+
+    /// 특정 타입의 메세지를 예상합니다. 예상한 메세지가 아닌 경우, panic! 합니다.
+    pub fn expect_message<T, F, R>(&mut self, extractor: F) -> R
+    where
+        T: DeserializeOwned,
+        F: Fn(T) -> R,
+    {
+        info!("[TEST] Response: {}", self.response);
+        let msg = serde_json::from_str::<T>(self.response.as_str())
+            .expect("Failed to parse JSON (expect_message)");
+        extractor(msg)
+    }
+}
+
+pub struct WebSocketTest {
+    pub stream: futures_util::stream::SplitStream<
+        async_tungstenite::WebSocketStream<
+            async_tungstenite::tokio::TokioAdapter<tokio::net::TcpStream>,
+        >,
+    >,
+    pub sink: futures_util::stream::SplitSink<
+        async_tungstenite::WebSocketStream<
+            async_tungstenite::tokio::TokioAdapter<tokio::net::TcpStream>,
+        >,
+        Message,
+    >,
+}
+//-------------------------------
+// WebSocketTest 구현
+//-------------------------------
+
+impl WebSocketTest {
+    pub async fn connect(url: String, cookie: String) -> Result<Self, tungstenite::Error> {
+        // ... (connect 로직은 이전과 동일) ...
+        let mut url = Url::parse(&url).unwrap();
+        if url.scheme() == "http" {
+            url.set_scheme("ws").unwrap()
+        } else if url.scheme() != "ws" && url.scheme() != "wss" {
+            return Err(tungstenite::Error::Url(UrlError::UnsupportedUrlScheme));
+        }
+
+        let host = url
+            .host_str()
+            .ok_or(tungstenite::Error::Url(UrlError::EmptyHostName))?;
+        let host_header = if let Some(port) = url.port() {
+            format!("{}:{}", host, port)
+        } else {
+            host.to_string()
+        };
+
+        let request = Request::builder()
+            .uri(url.as_str())
+            .header("Cookie", cookie)
+            .header("Host", host_header)
+            .header(
+                "Sec-WebSocket-Key",
+                tungstenite::handshake::client::generate_key(),
+            )
+            .header("Upgrade", "websocket")
+            .header("Connection", "Upgrade")
+            .header("Sec-WebSocket-Version", "13")
+            .body(())?;
+
+        let (ws_stream, response) = async_tungstenite::tokio::connect_async(request).await?;
+
+        assert_eq!(
+            response.status(),
+            tungstenite::http::StatusCode::SWITCHING_PROTOCOLS
+        );
+
+        let (sink, stream) = ws_stream.split(); // 스트림과 싱크 분리
+
+        Ok(Self { stream, sink }) // 분리된 스트림과 싱크 저장
+    }
+
+    pub async fn send(&mut self, msg: impl Into<Message>) -> Result<(), tungstenite::Error> {
+        self.sink.send(msg.into()).await // 싱크를 통해 메시지 전송
+    }
+
+    pub async fn expect_message<T, F, R>(&mut self, extractor: F) -> R
+    where
+        T: DeserializeOwned,
+        F: Fn(T) -> R,
+    {
+        let callback = async {
+            loop {
+                match self.stream.next().await {
+                    Some(Ok(Message::Text(text))) => {
+                        info!("[TEST] Received message: {}", text);
+                        if let Ok(parsed) = serde_json::from_str::<T>(&text) {
+                            return extractor(parsed);
+                        } else {
+                            info!("[TEST] Failed to parse into expected type: {}", text);
+                            // 중요: 여기서 continue를 해야 다른 타입 메시지를 기다림
+                            continue;
+                        }
+                    }
+                    Some(Ok(Message::Ping(_))) => {
+                        info!("[TEST] Received ping (auto-pong by tungstenite), ignoring.");
+                        continue; // 자동으로 pong 처리됨
+                    }
+                    Some(Ok(Message::Pong(_))) => {
+                        info!("[TEST] Received Pong, ignoring.");
+                        continue; // Pong은 무시하고 다음 메시지 기다림
+                    }
+                    Some(Ok(Message::Close(reason))) => {
+                        panic!("WebSocket closed unexpectedly while waiting for specific message. Reason: {:?}", reason);
+                    }
+                    Some(Ok(msg)) => {
+                        info!("[TEST] Ignoring other message type: {:?}", msg);
+                        continue; // 다른 메시지 타입 무시
+                    }
+                    Some(Err(e)) => panic!("WebSocket error: {:?}", e),
+                    None => panic!("WebSocket closed unexpectedly"),
+                }
+            }
+        };
+
+        match tokio::time::timeout(Duration::from_secs(CLIENT_TIMEOUT), callback).await {
+            Ok(result) => result,
+            Err(_) => panic!(
+                "Expected message timeout after {} seconds",
+                HEARTBEAT_INTERVAL + 5
+            ),
+        }
+    }
+}
+
+#[ctor]
+fn init() {
+    setup_logger();
+}
+</file>
+
+<file path="tests/test.rs">
+pub mod mulligan {
+    use std::time::Duration;
+
+    use actix::Addr;
+    use dedicated_server::{
+        connection::ServerMessage,
+        test::{spawn_server, WebSocketTest},
+    };
+    use simulator_core::{
+        card::types::PlayerKind,
+        enums::{ZoneType, CLIENT_TIMEOUT, COUNT_OF_MULLIGAN_CARDS},
+        game::{msg::zones::GetPlayerZoneCards, GameActor},
+    };
+    use tokio::time::sleep;
+    use uuid::Uuid;
+
+    // 플레이어별 테스트 로직을 위한 헬퍼 함수
+    async fn player_mulligan_sequence(
+        player_kind: PlayerKind,
+        player_id: Uuid,
+        addr: std::net::SocketAddr,
+        game_actor_addr: Addr<GameActor>, // GameActor 주소 전달
+    ) -> (WebSocketTest, Vec<Uuid>) {
+        let player_kind_str = player_kind.as_str();
+        let url = format!("ws://{}/game", addr);
+        let cookie = format!("user_id={}", player_id);
+        let mut ws = WebSocketTest::connect(url, cookie).await.unwrap();
+
+        // 1. 초기 HeartbeatConnected 메시지 수신
+        println!(
+            "[{}] Waiting for initial HeartbeatConnected message...",
+            player_kind_str
+        );
+        let initial_extractor = |message: ServerMessage| match message {
+            ServerMessage::HeartbeatConnected { player, session_id } => {
+                assert_eq!(player, player_kind_str);
+                assert!(!session_id.is_nil());
+                println!(
+                    "[{}] Initial HeartbeatConnected received. Session ID: {}",
+                    player_kind_str, session_id
+                );
+            }
+            _ => panic!(
+                "[{}] Expected HeartbeatConnected as the first message, but got {:?}",
+                player_kind_str, message
+            ),
+        };
+        ws.expect_message(initial_extractor).await;
+
+        // 2. MulliganDealCards 메시지 수신
+        println!(
+            "[{}] Waiting for MulliganDealCards message...",
+            player_kind_str
+        );
+        let mulligan_extractor = |message: ServerMessage| -> Vec<Uuid> {
+            match message {
+                ServerMessage::MulliganDealCards { player, cards } => {
+                    // 중요: MulliganDealCards 메시지의 player 필드가 이 카드를 받는 플레이어를 지칭해야 함
+                    assert_eq!(
+                        player, player_kind_str,
+                        "[{}] Mulligan cards for wrong player",
+                        player_kind_str
+                    );
+                    assert_eq!(
+                        cards.len(),
+                        COUNT_OF_MULLIGAN_CARDS,
+                        "[{}] Incorrect number of mulligan cards",
+                        player_kind_str
+                    );
+                    for card_uuid in &cards {
+                        assert!(
+                            !card_uuid.is_nil(),
+                            "[{}] Nil UUID in mulligan cards",
+                            player_kind_str
+                        );
+                    }
+                    println!(
+                        "[{}] MulliganDealCards received with {} cards.",
+                        player_kind_str,
+                        cards.len()
+                    );
+                    cards
+                }
+                // 이 시점에는 다른 메시지가 오면 안 됨 (HeartbeatConnected는 이미 처리됨)
+                _ => panic!(
+                    "[{}] Expected MulliganDealCards message, but got {:?}",
+                    player_kind_str, message
+                ),
+            }
+        };
+        let dealt_cards = ws.expect_message(mulligan_extractor).await;
+
+        // 3. 받은 카드가 덱에 없는지 확인 (GameActor에게 요청)
+        println!(
+            "[{}] Verifying dealt cards are not in deck...",
+            player_kind_str
+        );
+        let deck_cards_result = game_actor_addr
+            .send(GetPlayerZoneCards {
+                // GameActor는 Uuid로 플레이어를 식별하거나, PlayerKind를 Uuid로 변환할 수 있어야 함
+                zone: ZoneType::Deck,
+                player_type: player_kind,
+            })
+            .await;
+
+        match deck_cards_result {
+            Ok(deck_card_objects) => {
+                let deck_uuids: Vec<Uuid> = deck_card_objects
+                    .iter()
+                    .map(|card| card.get_uuid())
+                    .collect();
+                for dealt_card_uuid in dealt_cards.iter() {
+                    assert!(
+                        !deck_uuids.contains(dealt_card_uuid),
+                        "[{}] Deck should not contain card {} that was dealt in mulligan",
+                        player_kind_str,
+                        dealt_card_uuid
+                    );
+                }
+                println!(
+                    "[{}] Dealt cards correctly removed from deck.",
+                    player_kind_str
+                );
+            }
+            Err(e) => panic!(
+                "[{}] GameActor returned error getting deck cards: {:?}",
+                player_kind_str, e
+            ),
+        }
+
+        // 멀리건 단계 완료를 위해 추가적인 메시지 전송/수신 로직이 필요할 수 있음
+        // 예: ws.send(UserAction::CompleteMulligan).await;
+        //     ws.expect_message(ServerMessage::MulliganPhaseEnd).await;
+
+        (ws, dealt_cards) // 받은 카드 목록 반환
+    }
+
+    #[actix_web::test]
+    async fn test_mulligan_deal_cards_to_each_player_concurrently() {
+        let (addr, state, _handle) = spawn_server().await;
+        let game_actor_addr = state.game.clone();
+
+        let player1_id = state.player1_id;
+        let player2_id = state.player2_id;
+
+        // 두 플레이어의 멀리건 시퀀스를 병렬로 실행
+        let ((_p1_ws, p1_results), (_p2_ws, p2_results)) = tokio::join!(
+            player_mulligan_sequence(
+                PlayerKind::Player1,
+                player1_id,
+                addr,
+                game_actor_addr.clone()
+            ),
+            player_mulligan_sequence(
+                PlayerKind::Player2,
+                player2_id,
+                addr,
+                game_actor_addr.clone()
+            )
+        );
+
+        println!("Player 1 mulligan cards: {:?}", p1_results);
+        println!("Player 2 mulligan cards: {:?}", p2_results);
+
+        // 추가 검증: P1과 P2가 받은 카드가 서로 다른지 등
+        let mut all_dealt_cards = p1_results.clone();
+        all_dealt_cards.extend(p2_results.clone());
+        let unique_cards_count = all_dealt_cards
+            .iter()
+            .collect::<std::collections::HashSet<_>>()
+            .len();
+        assert_eq!(
+            unique_cards_count,
+            COUNT_OF_MULLIGAN_CARDS * 2,
+            "Dealt cards between players are not unique."
+        );
+
+        println!("Test test_mulligan_deal_cards_to_each_player_concurrently completed.");
+    }
+
+    // TODO: Player 2 가 지연된 입장을 할 경우, 게임의 세션은 닫혀야함.
+    // 지금 Player 1 의 세션은 잘 닫히지만, Player 2 의 세션은 닫히지 않아서
+    // Player 2 혼자 게임에 접속함. 이를 고쳐야함.
+    // 고치는 방식은 플레이어의 세션을 닫는게 아니라, 게임 자체를 종료하는 방식으로.
+    #[actix_web::test]
+    #[should_panic]
+    async fn test_mulligan_deal_cards_one_player_delayed() {
+        let (addr, state, _handle) = spawn_server().await;
+        let game_actor_addr = state.game.clone();
+
+        let player1_id = state.player1_id;
+        let player2_id = state.player2_id;
+
+        // 플레이어 1은 즉시 시작
+        let player1_task = tokio::spawn(player_mulligan_sequence(
+            PlayerKind::Player1,
+            player1_id,
+            addr,
+            game_actor_addr.clone(),
+        ));
+
+        // 플레이어 2는 35초 지연 후 시작 (이 시간 동안 서버가 P1을 기다리는지 확인)
+        // 이 지연 시간은 서버의 관련 타임아웃 설정보다 길거나 짧게 조절하여 테스트 가능
+        let delay_duration = Duration::from_secs(CLIENT_TIMEOUT + 5);
+        println!(
+            "[DELAYED_TEST] Player 2 will start mulligan sequence after {:?} delay.",
+            delay_duration
+        );
+
+        let player2_task = tokio::spawn(async move {
+            sleep(delay_duration).await;
+            println!("[DELAYED_TEST] Player 2 starting mulligan sequence now.");
+            player_mulligan_sequence(PlayerKind::Player2, player2_id, addr, game_actor_addr).await
+        });
+
+        // 두 태스크의 결과 기다림
+        // P1은 바로 완료될 수 있고, P2는 지연 후 완료되거나,
+        // 서버 정책에 따라 P1이 P2를 기다리다가 특정 조건 후 진행될 수 있음.
+        let (p1_result_outer, p2_result_outer) = tokio::join!(player1_task, player2_task);
+
+        // 태스크 실행 결과 확인 (JoinError 처리)
+        let (_p1_ws, p1_results) = match p1_result_outer {
+            Ok((ws, res)) => {
+                println!(
+                    "[DELAYED_TEST] Player 1 mulligan sequence completed with results: {:?}",
+                    res
+                );
+                (ws, res)
+            }
+            Err(e) => {
+                panic!("[DELAYED_TEST] Player 1 task failed: {:?}", e);
+            }
+        };
+
+        let (_p2_ws, p2_results) = match p2_result_outer {
+            Ok((ws, res)) => {
+                println!(
+                    "[DELAYED_TEST] Player 2 mulligan sequence completed with results: {:?}",
+                    res
+                );
+                (ws, res)
+            }
+            Err(e) => {
+                panic!("[DELAYED_TEST] Player 2 task failed: {:?}", e);
+            }
+        };
+
+        // 결과 검증:
+        // 이 부분은 서버가 지연된 플레이어를 어떻게 처리하는지에 따라 달라집니다.
+        // 1. 서버가 P2를 기다려서 두 플레이어 모두 정상적으로 멀리건을 완료하는 경우:
+        if !p1_results.is_empty() && !p2_results.is_empty() {
+            println!("[DELAYED_TEST] Both players seem to have completed mulligan.");
+            let mut all_dealt_cards = p1_results.clone();
+            all_dealt_cards.extend(p2_results.clone());
+            let unique_cards_count = all_dealt_cards
+                .iter()
+                .collect::<std::collections::HashSet<_>>()
+                .len();
+            assert_eq!(
+            unique_cards_count,
+            COUNT_OF_MULLIGAN_CARDS * 2,
+            "[DELAYED_TEST] Dealt cards between players are not unique or not all players completed mulligan."
+        );
+        } else if !p1_results.is_empty() && p2_results.is_empty() {
+            // 2. 서버가 P1만으로 게임을 시작하거나, P2를 기다리다 P1에 대한 타임아웃/오류 처리 후 P2는 실패하는 경우
+            println!("[DELAYED_TEST] Player 1 completed mulligan, but Player 2 did not (possibly expected).");
+            // 이 경우 P1의 멀리건 카드 수만 검증할 수 있습니다.
+            assert_eq!(
+                p1_results.len(),
+                COUNT_OF_MULLIGAN_CARDS,
+                "[DELAYED_TEST] Player 1 did not receive the correct number of mulligan cards."
+            );
+            // 서버 로그를 통해 P1이 P2를 기다렸는지, 또는 특정 시간 후 P1만으로 진행했는지 확인해야 합니다.
+            // 또는 GameActor의 상태를 직접 확인하여 게임이 어떻게 진행되었는지 검증할 수 있습니다.
+            // 예를 들어, GameStateManager.current_phase()가 Mulligan이 아닌 다른 상태로 넘어갔는지 등.
+        } else {
+            // 3. 두 플레이어 모두 실패한 경우 (예: 서버가 P1 지연으로 인해 전체 게임을 시작하지 못함)
+            panic!("[DELAYED_TEST] Neither player completed the mulligan sequence. P1 results: {:?}, P2 results: {:?}", p1_results, p2_results);
+        }
+
+        println!("[DELAYED_TEST] Test test_mulligan_deal_cards_one_player_delayed completed.");
+    }
+}
+
+pub mod heartbeat {
+    use std::time::Duration;
+
+    use async_tungstenite::tungstenite::Message;
+    use dedicated_server::{
+        connection::ServerMessage,
+        test::{spawn_server, WebSocketTest},
+    };
+    use futures::StreamExt;
+    use simulator_core::{
+        card::types::PlayerKind,
+        enums::{CLIENT_TIMEOUT, HEARTBEAT_INTERVAL},
+    };
+    use tokio::time::{sleep, timeout};
+    use tracing::info;
+    use uuid::Uuid;
+
+    #[actix_web::test]
+    async fn test_heartbeat_initialize_msg() {
+        let (addr, state, _handle) = spawn_server().await;
+
+        let player_type = PlayerKind::Player1.as_str();
+
+        // 하트비트 연결 URL 및 쿠키 설정
+        let url = format!("ws://{}/game", addr);
+        let cookie = format!("user_id={}", state.player1_id);
+
+        // 예시: 서버에 GET 요청 보내기
+        let mut ws = WebSocketTest::connect(url, cookie).await.unwrap();
+
+        let extractor = |message: ServerMessage| match message {
+            ServerMessage::HeartbeatConnected { player, session_id } => {
+                assert_eq!(player, player_type);
+                assert!(!session_id.is_nil());
+            }
+            _ => panic!("Expected HeartbeatConnected message"),
+        };
+        ws.expect_message(extractor).await;
+    }
+
+    #[actix_web::test]
+    async fn test_heartbeat_timeout() {
+        let (addr, state, _handle) = spawn_server().await;
+
+        let player1_id = state.player1_id;
+        let player_kind_str = PlayerKind::Player1.as_str();
+
+        let url = format!("ws://{}/game", addr);
+        let cookie = format!("user_id={}", player1_id);
+
+        let mut ws = WebSocketTest::connect(url, cookie).await.unwrap();
+
+        // 1. 초기 연결 메시지 수신
+        info!("[TEST] Waiting for initial connection message...");
+        let initial_extractor = |message: ServerMessage| -> Uuid {
+            match message {
+                ServerMessage::HeartbeatConnected { player, session_id } => {
+                    assert_eq!(player, player_kind_str);
+                    assert!(!session_id.is_nil());
+                    info!(
+                        "[TEST] Initial connection message received. Session ID: {}",
+                        session_id
+                    );
+                    session_id
+                }
+                _ => panic!("Expected HeartbeatConnected message"),
+            }
+        };
+        if timeout(
+            Duration::from_secs(HEARTBEAT_INTERVAL),
+            ws.expect_message(initial_extractor),
+        )
+        .await
+        .is_err()
+        {
+            panic!("Timeout waiting for initial HeartbeatConnected message.");
+        }
+
+        // 2. 충분히 기다림 (CLIENT_TIMEOUT + 여유)
+        let wait_duration = Duration::from_secs(CLIENT_TIMEOUT + 5);
+        info!(
+            "[TEST] Waiting for {} seconds to see if server closes connection (should NOT close due to auto Pong)...",
+            wait_duration.as_secs()
+        );
+
+        sleep(wait_duration).await;
+
+        // 3. 연결이 살아있는지 송수신 테스트 (예: Ping 보내고 Pong 받기)
+        info!("[TEST] Sending Ping to check if connection is alive...");
+        let ping_data = b"test_ping".to_vec();
+        let send_result = ws.send(Message::Ping(ping_data.clone())).await;
+
+        let pong_received = match send_result {
+            Ok(_) => {
+                // Pong 응답을 기다림
+                timeout(Duration::from_secs(2), async {
+                    loop {
+                        match ws.stream.next().await {
+                            Some(Ok(Message::Pong(data))) if data == ping_data => break true,
+                            Some(Ok(_)) => continue,
+                            Some(Err(_)) | None => break false,
+                        }
+                    }
+                })
+                .await
+                .unwrap_or(false)
+            }
+            Err(_) => false, // 이미 연결이 끊겼다면
+        };
+
+        if pong_received {
+            panic!("[TEST] Test Failed: Connection is still alive after client timeout (should be closed).");
+        } else {
+            info!("[TEST] Test Success: Connection is closed after client timeout (as expected).");
+        }
+    }
+
+    #[actix_web::test]
+    async fn test_heartbeat_ping_pong_once() {
+        let (addr, state, _handle) = spawn_server().await;
+
+        let player1_id = state.player1_id;
+        let player_kind_str = PlayerKind::Player1.as_str();
+
+        let url = format!("ws://{}/game", addr);
+        let cookie = format!("user_id={}", player1_id);
+
+        let mut ws = WebSocketTest::connect(url, cookie).await.unwrap();
+
+        // 1. 초기 연결 메시지 수신 (선택 사항이지만, 이전 테스트에서 확인했으므로 여기서도 확인)
+        info!("[TEST] Waiting for initial connection message...");
+        let initial_extractor = |message: ServerMessage| -> Uuid {
+            match message {
+                ServerMessage::HeartbeatConnected { player, session_id } => {
+                    assert_eq!(player, player_kind_str);
+                    assert!(!session_id.is_nil());
+                    info!(
+                        "Initial connection message received. Session ID: {}",
+                        session_id
+                    );
+                    session_id
+                }
+                _ => panic!("Expected HeartbeatConnected message first"),
+            }
+        };
+        let _session_id = ws.expect_message(initial_extractor).await;
+
+        // 2. 서버로부터 Ping 메시지 기다리기
+        info!("[TEST] Waiting for Ping message...");
+        let ping_received = timeout(Duration::from_secs(HEARTBEAT_INTERVAL * 2), async {
+            loop {
+                match ws.stream.next().await {
+                    Some(Ok(Message::Ping(ping_data))) => {
+                        info!("[TEST] Ping received!");
+                        return Some(ping_data);
+                    }
+                    Some(Ok(Message::Text(text))) => {
+                        info!(
+                            "[TEST] Received unexpected Text while waiting for Ping: {}",
+                            text
+                        );
+                        continue;
+                    }
+                    Some(Ok(Message::Pong(_))) => {
+                        info!("[TEST] Received Pong while waiting for Ping, ignoring.");
+                        continue;
+                    }
+                    Some(Ok(_)) => continue,
+                    Some(Err(e)) => panic!("WebSocket error while waiting for Ping: {:?}", e),
+                    None => panic!("WebSocket closed unexpectedly while waiting for Ping"),
+                }
+            }
+        })
+        .await;
+
+        // 3. Ping 수신 및 Pong 전송 확인
+        match ping_received {
+            Ok(Some(ping_data)) => {
+                // Ping을 받았으므로 Pong 전송
+                info!("[TEST] Sending Pong response...");
+                ws.send(Message::Pong(ping_data.clone()))
+                    .await
+                    .expect("Failed to send Pong");
+                info!("[TEST] Pong sent.");
+
+                // 잠시 대기하여 서버가 Pong을 처리하고 연결을 유지하는지 확인
+                info!("[TEST] Waiting to see if connection is maintained...");
+                sleep(Duration::from_secs(2)).await; // 짧은 시간 대기
+
+                // 연결이 살아있는지 확인
+                let test_msg = Message::Pong(ping_data);
+                match ws.send(test_msg).await {
+                    Ok(_) => info!("[TEST] Connection seems alive after Pong."),
+                    Err(e) => panic!("Connection seems closed after Pong: {:?}", e),
+                }
+            }
+            Ok(None) => {
+                // 루프가 값을 반환하지 않고 종료된 경우
+                panic!("Ping waiting loop exited unexpectedly without returning Ping data.");
+            }
+            Err(_) => {
+                panic!(
+                    "Timeout: Did not receive Ping within {} seconds.",
+                    (HEARTBEAT_INTERVAL * 2)
+                );
+            }
+        }
+
+        // 테스트 종료 (정상적으로 연결 종료)
+        info!("[TEST] Closing WebSocket connection.");
+        ws.send(Message::Close(None)).await.ok(); // Close 메시지 전송 시도
+    }
+}
+</file>
+
+</files>

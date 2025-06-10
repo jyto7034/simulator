@@ -1,226 +1,261 @@
+// In: simulator_core/src/exception/mod.rs
+
 use crate::card::types::PlayerKind;
 use actix::MailboxError;
 use actix_web::{http::StatusCode, HttpResponse, ResponseError};
 use std::fmt;
+use uuid::Uuid;
 
-// 에러 메시지를 상수로 정의
-pub const PLAYER_INITIALIZE_FAILED: &str = "PLAYER_INITIALIZE_FAILED";
-pub const PLAYER_DATA_NOT_INTEGRITY: &str = "PLAYER_DATA_NOT_INTEGRITY";
-pub const GENERATE_UUID_FAILED: &str = "GENERATE_UUID_FAILED";
-pub const JSON_PARSE_FAILED: &str = "JSON_PARSE_FAILED";
-pub const DECK_PARSE: &str = "DECK_PARSE";
-pub const PATH_NOT_EXIST: &str = "PATH_NOT_EXIST";
-pub const CARD_ERORR: &str = "CARD_ERORR";
-pub const UNKNOWN: &str = "UNKNOWN";
-pub const WRONG_PHASE: &str = "WRONG_PHASE";
-pub const NOT_FOUND: &str = "NOT_FOUND";
-pub const HANDLE_FAILED: &str = "HANDLE_FAILED";
-pub const INTERNAL_SERVER: &str = "INTERNAL_SERVER";
-pub const COOKIE_NOT_FOUND: &str = "COOKIE_NOT_FOUND";
-pub const SERVER_STATE_NOT_FOUND: &str = "SERVER_STATE_NOT_FOUND";
-pub const INVALID_PAYLOAD: &str = "INVALID_PAYLOAD";
-pub const ACTIVE_SESSION_EXISTS: &str = "ACTIVE_SESSION_EXISTS";
-pub const UNEXPECTED_MESSAGE: &str = "UNEXPECTED_MESSAGE";
-pub const INVALID_APPROACH: &str = "INVALID_APPROACH";
-pub const INVALID_CARDS: &str = "INVALID_CARDS";
-pub const PARSE: &str = "PARSE";
-pub const INVALID_PLAYER: &str = "INVALID_PLAYER";
-pub const NOT_ALLOWED_RE_ENTRY: &str = "NOT_ALLOWED_RE_ENTRY";
-pub const ALREADY_READY: &str = "ALREADY_READY";
-pub const INVALID_OPERATION: &str = "INVALID_OPERATION";
-pub const NO_CARDS_LEFT: &str = "NO_CARDS_LEFT";
-pub const UNKNOWN_OCCURRED: &str = "AN_UNKNOWN_OCCURRED";
-pub const INTERNAL_SERVER_MSG: &str = "INTERNAL_SERVER_MSG";
-pub const PARSE_MSG: &str = "PARSE_MSG";
-pub const EXCEEDED_CARD_LIMIT: &str = "EXCCED_CARD_LIMIT";
+// ===================================================================
+// 1. 세분화된 에러 타입을 정의합니다.
+// ===================================================================
 
-#[derive(Debug, PartialEq, Clone)]
-pub enum GameError {
-    CardCannotActivate,
-    InputNotExpected,
-    InvalidTarget,
-    InvalidChainState,
-    MissingInput,
-    EffectNotFound,
-    AlreadySelected,
-    InvalidSelection,
-    TooManySelections,
-    SelectionClosed,
-    InvalidEffectType,
-    InvalidRequestId,
-    InvalidChainPhase,
-    InvalidChainSpeed,
-    NoActivatableEffect,
-    PlayerNotFound,
-    NotEnoughCards,
-    MailboxError,
-    PlayerNotReady,
-    NoConnections,
-    GameStateLockFailed,
-    PingSentFailure,
-
-    InvalidTargetCount,
-    NoValidTargets,
-    CannotActivate,
-    DeckCodeIsMissing(PlayerKind),
-    PlayerInitializeFailed,
-    PlayerDataNotIntegrity,
-    PathNotExist,
-    CardsNotFound,
-    GameInitializeFailed,
-    DifferentCardTypes,
-    GenerateUUIDFaild,
-    CardNotFound,
-    ExceededCardLimit,
-    FailedToDrawCard,
-    NothingToRemove,
-    InvalidCardData,
-    NotAuthenticated,
-    InvalidCardType,
-    InvalidPlayerType,
-    InvalidOperation,
-    InvalidCards,
-    JsonParseFailed,
-    InvalidPlayer,
-    DecodeError,
-    DeckParseError,
-    ReadFileFailed,
-    NoCardsLeft,
-    CardError,
-    Unknown,
-    WrongPhase,
-    AlreadyReady,
-    HandleFailed,
-    NotAllowedReEntry,
-    InternalServerError,
-    UnexpectedMessage,
-    CookieNotFound,
-    ServerStateNotFound,
-    ActiveSessionExists,
-    ParseError,
-    InvalidPayload,
-    InvalidApproach,
+/// 시스템 레벨의 에러 (네트워크, I/O, 내부 로직 등)
+#[derive(Debug)]
+pub enum SystemError {
+    Io(std::io::Error),
+    Json(serde_json::Error),
+    Mailbox(MailboxError),
+    LockFailed(String),
+    TaskFailed(String),
+    Internal(String), // 예기치 못한 내부 로직 에러
 }
 
+/// 게임 상태와 관련된 에러
+#[derive(Debug, PartialEq, Clone)]
+pub enum StateError {
+    InvalidPhaseTransition,
+    InvalidActionForPhase {
+        current_phase: String,
+        action: String,
+    },
+    GameAlreadyOver,
+    GameAborted,
+    PlayerNotReady(PlayerKind),
+}
+
+/// 클라이언트 연결 및 인증과 관련된 에러
+#[derive(Debug, PartialEq, Clone)]
+pub enum ConnectionError {
+    AuthenticationFailed(String),
+    SessionExists(Uuid), // 이미 세션이 존재하는 플레이어 ID
+    InvalidPayload(String),
+}
+
+/// 게임 플레이 규칙과 관련된 에러
+#[derive(Debug, PartialEq, Clone)]
+pub enum GameplayError {
+    ResourceNotFound {
+        kind: &'static str,
+        id: String,
+    },
+    DeckError(DeckError),
+    InvalidTarget {
+        reason: String,
+    },
+    InvalidAction {
+        reason: String,
+    },
+    ChainError {
+        reason: String,
+    },
+    NotEnoughResources {
+        resource: &'static str,
+        needed: i32,
+        available: i32,
+    },
+}
+
+/// 덱 구성 및 처리 관련 에러
+#[derive(Debug, PartialEq, Clone)]
+pub enum DeckError {
+    ParseFailed(String),
+    CodeMissingFor(PlayerKind),
+    ExceededCardLimit(String),
+    NoCardsLeftToDraw,
+}
+
+// ===================================================================
+// 2. 최상위 GameError Enum을 새롭게 정의합니다.
+// ===================================================================
+
+#[derive(Debug)]
+pub enum GameError {
+    System(SystemError),
+    Connection(ConnectionError),
+    State(StateError),
+    Gameplay(GameplayError),
+}
+
+// ===================================================================
+// 3. Display 트레이트를 구현하여 명확한 로그 메시지를 생성합니다.
+// ===================================================================
+
+// 각 하위 에러 타입에 대한 Display 구현
+impl fmt::Display for SystemError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            SystemError::Io(e) => write!(f, "System I/O error: {}", e),
+            SystemError::Json(e) => write!(f, "System JSON processing error: {}", e),
+            SystemError::Mailbox(e) => write!(f, "Actor mailbox error: {}", e),
+            SystemError::LockFailed(name) => write!(f, "Failed to acquire lock on '{}'", name),
+            SystemError::TaskFailed(name) => write!(f, "Async task '{}' failed to complete", name),
+            SystemError::Internal(msg) => write!(f, "Internal server error: {}", msg),
+        }
+    }
+}
+
+impl fmt::Display for StateError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            StateError::InvalidPhaseTransition => {
+                write!(f, "Invalid game phase transition attempted")
+            }
+            StateError::InvalidActionForPhase {
+                current_phase,
+                action,
+            } => write!(
+                f,
+                "Action '{}' is not allowed during phase '{}'",
+                action, current_phase
+            ),
+            StateError::GameAlreadyOver => {
+                write!(f, "Action attempted but the game is already over")
+            }
+            StateError::GameAborted => write!(f, "Action attempted but the game was aborted"),
+            StateError::PlayerNotReady(pk) => {
+                write!(f, "Player {:?} is not ready for the action", pk)
+            }
+        }
+    }
+}
+
+impl fmt::Display for ConnectionError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            ConnectionError::AuthenticationFailed(reason) => {
+                write!(f, "Authentication failed: {}", reason)
+            }
+            ConnectionError::SessionExists(player_id) => write!(
+                f,
+                "An active session already exists for player {}",
+                player_id
+            ),
+            ConnectionError::InvalidPayload(reason) => {
+                write!(f, "Received invalid payload from client: {}", reason)
+            }
+        }
+    }
+}
+
+impl fmt::Display for GameplayError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            GameplayError::ResourceNotFound { kind, id } => {
+                write!(f, "Resource not found: kind={}, id={}", kind, id)
+            }
+            GameplayError::DeckError(e) => write!(f, "Deck error: {}", e),
+            GameplayError::InvalidTarget { reason } => write!(f, "Invalid target: {}", reason),
+            GameplayError::InvalidAction { reason } => write!(f, "Invalid action: {}", reason),
+            GameplayError::ChainError { reason } => write!(f, "Chain error: {}", reason),
+            GameplayError::NotEnoughResources {
+                resource,
+                needed,
+                available,
+            } => write!(
+                f,
+                "Not enough {}: needed {}, available {}",
+                resource, needed, available
+            ),
+        }
+    }
+}
+
+impl fmt::Display for DeckError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            DeckError::ParseFailed(s) => write!(f, "Failed to parse deck: {}", s),
+            DeckError::CodeMissingFor(pk) => write!(f, "Deck code is missing for player {:?}", pk),
+            DeckError::ExceededCardLimit(s) => write!(f, "Deck limit exceeded: {}", s),
+            DeckError::NoCardsLeftToDraw => write!(f, "No cards left in the deck to draw"),
+        }
+    }
+}
+
+// 최상위 GameError에 대한 Display 구현
 impl fmt::Display for GameError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::PlayerInitializeFailed => write!(f, "{}", PLAYER_INITIALIZE_FAILED),
-            Self::PlayerDataNotIntegrity => write!(f, "{}", PLAYER_DATA_NOT_INTEGRITY),
-            Self::GenerateUUIDFaild => write!(f, "{}", GENERATE_UUID_FAILED),
-            Self::JsonParseFailed => write!(f, "{}", JSON_PARSE_FAILED),
-            Self::DeckParseError => write!(f, "{}", DECK_PARSE),
-            Self::PathNotExist => write!(f, "{}", PATH_NOT_EXIST),
-            Self::CardError => write!(f, "{}", CARD_ERORR),
-            Self::Unknown => write!(f, "{}", UNKNOWN),
-            Self::WrongPhase => write!(f, "{}", WRONG_PHASE),
-            Self::HandleFailed => write!(f, "{}", HANDLE_FAILED),
-            Self::InternalServerError => write!(f, "{}", INTERNAL_SERVER),
-            Self::CookieNotFound => write!(f, "{}", COOKIE_NOT_FOUND),
-            Self::ServerStateNotFound => write!(f, "{}", SERVER_STATE_NOT_FOUND),
-            Self::InvalidPayload => write!(f, "{}", INVALID_PAYLOAD),
-            Self::ActiveSessionExists => write!(f, "{}", ACTIVE_SESSION_EXISTS),
-            Self::UnexpectedMessage => write!(f, "{}", UNEXPECTED_MESSAGE),
-            Self::InvalidApproach => write!(f, "{}", INVALID_APPROACH),
-            Self::InvalidCards => write!(f, "{}", INVALID_CARDS),
-            Self::ParseError => write!(f, "{}", PARSE),
-            Self::InvalidPlayer => write!(f, "{}", INVALID_PLAYER),
-            Self::NotAllowedReEntry => write!(f, "{}", NOT_ALLOWED_RE_ENTRY),
-            Self::AlreadyReady => write!(f, "{}", ALREADY_READY),
-            Self::InvalidOperation => write!(f, "{}", INVALID_OPERATION),
-            Self::NoCardsLeft => write!(f, "{}", NO_CARDS_LEFT),
-            Self::ExceededCardLimit => write!(f, "{}", EXCEEDED_CARD_LIMIT),
-            _ => write!(f, ""),
+            GameError::System(e) => e.fmt(f),
+            GameError::Connection(e) => e.fmt(f),
+            GameError::State(e) => e.fmt(f),
+            GameError::Gameplay(e) => e.fmt(f),
         }
     }
 }
+
+// ===================================================================
+// 4. ResponseError를 구현하여 HTTP 응답으로 변환합니다.
+// ===================================================================
 
 impl ResponseError for GameError {
-    fn error_response(&self) -> HttpResponse {
-        match self {
-            Self::Unknown => {
-                HttpResponse::build(StatusCode::INTERNAL_SERVER_ERROR).body(UNKNOWN_OCCURRED)
-            }
-            Self::WrongPhase => {
-                HttpResponse::build(StatusCode::INTERNAL_SERVER_ERROR).body(WRONG_PHASE)
-            }
-            Self::HandleFailed => {
-                HttpResponse::build(StatusCode::INTERNAL_SERVER_ERROR).body(UNKNOWN_OCCURRED)
-            }
-            Self::InternalServerError => {
-                HttpResponse::build(StatusCode::INTERNAL_SERVER_ERROR).body(INTERNAL_SERVER_MSG)
-            }
-            Self::CookieNotFound => {
-                HttpResponse::build(StatusCode::NOT_FOUND).body(COOKIE_NOT_FOUND)
-            }
-            Self::ServerStateNotFound => {
-                HttpResponse::build(StatusCode::INTERNAL_SERVER_ERROR).body(SERVER_STATE_NOT_FOUND)
-            }
-            Self::InvalidPayload => {
-                HttpResponse::build(StatusCode::BAD_REQUEST).body(INVALID_PAYLOAD)
-            }
-            Self::ActiveSessionExists => {
-                HttpResponse::build(StatusCode::CONFLICT).body(ACTIVE_SESSION_EXISTS)
-            }
-            Self::ParseError => HttpResponse::build(StatusCode::BAD_REQUEST).body(PARSE_MSG),
-            Self::UnexpectedMessage => {
-                HttpResponse::build(StatusCode::BAD_REQUEST).body(UNEXPECTED_MESSAGE)
-            }
-            Self::InvalidCards => HttpResponse::build(StatusCode::BAD_REQUEST).body(INVALID_CARDS),
-            Self::InvalidPlayer => {
-                HttpResponse::build(StatusCode::UNAUTHORIZED).body(INVALID_PLAYER)
-            }
-            Self::InvalidApproach => {
-                HttpResponse::build(StatusCode::BAD_REQUEST).body(INVALID_APPROACH)
-            }
-            Self::NotAllowedReEntry => {
-                HttpResponse::build(StatusCode::CONFLICT).body(NOT_ALLOWED_RE_ENTRY)
-            }
-            Self::AlreadyReady => HttpResponse::build(StatusCode::CONFLICT).body(ALREADY_READY),
-            Self::InvalidOperation => {
-                HttpResponse::build(StatusCode::BAD_REQUEST).body(INVALID_OPERATION)
-            }
-            Self::NoCardsLeft => HttpResponse::build(StatusCode::BAD_REQUEST).body(NO_CARDS_LEFT),
-            // TODO: draw_no_cards_left 테스트 작성중이었음.
-            Self::ExceededCardLimit => {
-                HttpResponse::build(StatusCode::BAD_REQUEST).body(EXCEEDED_CARD_LIMIT)
-            }
-            _ => HttpResponse::build(StatusCode::INTERNAL_SERVER_ERROR).body(UNKNOWN_OCCURRED),
-        }
-    }
-
     fn status_code(&self) -> StatusCode {
         match self {
-            Self::Unknown => StatusCode::INTERNAL_SERVER_ERROR,
-            Self::WrongPhase => StatusCode::INTERNAL_SERVER_ERROR,
-            Self::HandleFailed => StatusCode::INTERNAL_SERVER_ERROR,
-            Self::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
-            Self::CookieNotFound => StatusCode::NOT_FOUND,
-            Self::ServerStateNotFound => StatusCode::INTERNAL_SERVER_ERROR,
-            Self::InvalidPayload => StatusCode::BAD_REQUEST,
-            Self::ActiveSessionExists => StatusCode::CONFLICT,
-            Self::ParseError => StatusCode::BAD_REQUEST,
-            Self::UnexpectedMessage => StatusCode::BAD_REQUEST,
-            Self::InvalidCards => StatusCode::BAD_REQUEST,
-            Self::InvalidPlayer => StatusCode::UNAUTHORIZED,
-            Self::InvalidApproach => StatusCode::BAD_REQUEST,
-            Self::NotAllowedReEntry => StatusCode::CONFLICT,
-            Self::AlreadyReady => StatusCode::CONFLICT,
-            Self::InvalidOperation => StatusCode::BAD_REQUEST,
-            Self::NoCardsLeft => StatusCode::BAD_REQUEST,
-            _ => StatusCode::INTERNAL_SERVER_ERROR,
+            // 시스템 에러는 모두 500번대
+            GameError::System(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            // 상태 에러는 주로 동시성 문제나 순서 문제이므로 409 Conflict
+            GameError::State(StateError::InvalidPhaseTransition) => StatusCode::CONFLICT,
+            GameError::State(StateError::InvalidActionForPhase { .. }) => StatusCode::CONFLICT,
+            GameError::State(_) => StatusCode::CONFLICT,
+            // 연결 에러는 클라이언트의 잘못일 가능성이 높으므로 400번대
+            GameError::Connection(ConnectionError::AuthenticationFailed(_)) => {
+                StatusCode::UNAUTHORIZED
+            }
+            GameError::Connection(ConnectionError::SessionExists(_)) => StatusCode::CONFLICT,
+            GameError::Connection(ConnectionError::InvalidPayload(_)) => StatusCode::BAD_REQUEST,
+            // 게임플레이 에러는 규칙 위반이므로 400 Bad Request
+            GameError::Gameplay(_) => StatusCode::BAD_REQUEST,
         }
     }
-}
 
-pub enum MessageProcessResult<T> {
-    Success(T),                  // 성공적으로 메시지 처리
-    NeedRetry,                   // 에러가 발생했지만 재시도 가능
-    TerminateSession(GameError), // 세션 종료 필요
-}
+    fn error_response(&self) -> HttpResponse {
+        let status = self.status_code();
+        let error_message = self.to_string(); // Display 구현을 사용
 
-impl From<MailboxError> for GameError {
-    fn from(_: MailboxError) -> Self {
-        GameError::InternalServerError
+        // 프로덕션에서는 내부 에러를 클라이언트에 노출하지 않는 것이 좋습니다.
+        let client_message = if status.is_server_error() {
+            "An internal server error occurred.".to_string()
+        } else {
+            error_message.clone()
+        };
+
+        // 서버 로그에는 상세한 에러를 남깁니다.
+        tracing::error!("Request failed: {}", error_message);
+
+        HttpResponse::build(status).json(serde_json::json!({ "error": client_message }))
     }
 }
+
+// ===================================================================
+// 5. From 트레이트를 구현하여 에러 변환을 쉽게 합니다.
+// ===================================================================
+
+impl From<MailboxError> for GameError {
+    fn from(e: MailboxError) -> Self {
+        GameError::System(SystemError::Mailbox(e))
+    }
+}
+
+impl From<serde_json::Error> for GameError {
+    fn from(e: serde_json::Error) -> Self {
+        GameError::System(SystemError::Json(e))
+    }
+}
+
+impl From<std::io::Error> for GameError {
+    fn from(e: std::io::Error) -> Self {
+        GameError::System(SystemError::Io(e))
+    }
+}
+
+// 기존에 정의된 GameError enum과 const 문자열들은 모두 삭제하시면 됩니다.

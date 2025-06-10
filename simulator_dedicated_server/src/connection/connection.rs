@@ -1,23 +1,31 @@
 use std::time::{Duration, Instant};
 
 use actix::{
-    fut::wrap_future, Actor, ActorContext, Addr, AsyncContext, Context, Running, StreamHandler,
+    fut::wrap_future, Actor, ActorContext, Addr, AsyncContext, Context, Running, SpawnHandle,
+    StreamHandler,
 };
-use actix_ws::{CloseCode, CloseReason, Message, ProtocolError, Session};
+use actix_ws::{Message, ProtocolError, Session};
 use simulator_core::{
     card::types::PlayerKind,
-    exception::GameError,
-    game::{message::RegisterConnection, GameActor},
+    exception::{GameError, SystemError},
+    game::{
+        msg::connection::RegisterConnection,
+        GameActor,
+    },
+    retry, RetryConfig,
 };
 use tracing::{debug, error, info, warn};
 use uuid::Uuid;
 
 use crate::{
-    connection::ServerMessage,
+    connection::{
+        messages::{CancelHeartbeat, StopActorOnError},
+        ServerMessage,
+    },
     enums::{CLIENT_TIMEOUT, HEARTBEAT_INTERVAL},
 };
 
-use super::{messages, UserAction};
+use super::UserAction;
 
 /// WebSocket 연결을 관리하는 Actor
 pub struct ConnectionActor {
@@ -29,6 +37,7 @@ pub struct ConnectionActor {
     pub player_id: Uuid,       // 이 연결의 플레이어 ID
     pub cleanup_started: bool, // 중복 정리를 방지하기 위한 플래그
     pub initial_pong_received: bool,
+    pub heartbeat_handle: Option<SpawnHandle>,
 }
 
 impl ConnectionActor {
@@ -58,22 +67,18 @@ impl ConnectionActor {
             player_type,
             cleanup_started: false,
             initial_pong_received: false,
+            heartbeat_handle: None,
         }
     }
 
-    fn start_heartbeat_check(&self, ctx: &mut Context<Self>) {
-        ctx.run_interval(Duration::from_secs(HEARTBEAT_INTERVAL), |act, ctx_inner| {
+    fn start_heartbeat_check(&mut self, ctx: &mut Context<Self>) {
+        let handle = ctx.run_interval(Duration::from_secs(HEARTBEAT_INTERVAL), |act, ctx_inner| {
             if Instant::now().duration_since(act.last_pong) > Duration::from_secs(CLIENT_TIMEOUT) {
+                // Timeout 처리
                 warn!(
                     "Heartbeat timeout for player {:?} (session_id: {}). Closing connection.",
                     act.player_type, act.player_id
                 );
-                let session_to_close = act.ws_session.clone();
-                ctx_inner.spawn(wrap_future::<_, Self>(async move {
-                    let _ = session_to_close
-                        .close(Some(CloseReason::from(CloseCode::Policy)))
-                        .await;
-                }));
                 ctx_inner.stop();
                 return;
             }
@@ -88,7 +93,7 @@ impl ConnectionActor {
             let player_type_log = act.player_type;
             let session_id_log = act.player_id;
             let last_pong = act.last_pong;
-            let ctx_adrr = ctx_inner.address();
+            let connection_adrr = ctx_inner.address().clone();
 
             // 2. 비동기 블록을 직접 spawn
             ctx_inner.spawn(wrap_future::<_, Self>(async move {
@@ -97,9 +102,7 @@ impl ConnectionActor {
                         "Failed to send ping to player {:?} (session_id: {}): {:?}",
                         player_type_log, session_id_log, e
                     );
-                    ctx_adrr.do_send(messages::StopActorOnError {
-                        error_message: GameError::PingSentFailure,
-                    });
+                    connection_adrr.do_send(CancelHeartbeat);
                 } else {
                     info!(
                         "Ping sent successfully to player {:?} (session_id: {}) last_pong {:?}",
@@ -108,6 +111,8 @@ impl ConnectionActor {
                 }
             }));
         });
+
+        self.heartbeat_handle = Some(handle);
     }
 
     fn start_cleanup_task(&mut self) {
@@ -174,16 +179,28 @@ impl Actor for ConnectionActor {
         ctx.spawn(wrap_future::<_, Self>(send_future));
     }
 
-    fn stopping(&mut self, _ctx: &mut Context<Self>) -> Running {
-        // TODO: 필요시 GameActor에게 연결 종료 알림
-        // self.game_addr.do_send(ClientDisconnected { session_id: self.session_id });
+    fn stopping(&mut self, ctx: &mut Context<Self>) -> Running {
         info!(
             "ConnectionActor stopping for player {:?} (session_id: {})",
             self.player_type, self.player_id
         );
+
+        if let Some(handle) = self.heartbeat_handle.take() {
+            ctx.cancel_future(handle);
+            info!(
+                "Heartbeat task cancelled for player {:?} (session_id: {})",
+                self.player_type, self.player_id
+            );
+        } else {
+            warn!(
+                "No heartbeat task to cancel for player {:?} (session_id: {})",
+                self.player_type, self.player_id
+            );
+        }
+
         self.start_cleanup_task();
 
-        Running::Stop
+        Running::Continue
     }
 
     fn stopped(&mut self, _ctx: &mut Self::Context) {
@@ -227,13 +244,19 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
                 ctx.spawn(wrap_future::<_, Self>(send_future));
             }
             Ok(Message::Pong(_)) => {
-                let prev_pong = self.last_pong;
-                self.last_pong = Instant::now(); // 클라이언트 활성 시간 갱신
+                let player_type = self.player_type;
+                let player_id = self.player_id;
+                let game_addr = self.game_addr.clone();
+                let addr = ctx.address().clone();
+
+                // 1. 활성 시간 갱신
+                self.last_pong = Instant::now();
                 info!(
-                    "ConnectionActor for player {:?} (session_id: {}): Received Pong from client. prev_pong {:?}, last_pong {:?}",
-                    self.player_type, self.player_id, prev_pong, self.last_pong
+                    "ConnectionActor for player {:?} (session_id: {}): Received Pong from client",
+                    self.player_type, self.player_id
                 );
 
+                // 2. 초기 Pong 수신 여부 확인
                 if !self.initial_pong_received {
                     self.initial_pong_received = true;
                     info!(
@@ -241,11 +264,78 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
                         self.player_type, self.player_id
                     );
 
-                    // GameActor에게 자신을 등록
-                    self.game_addr.do_send(RegisterConnection {
-                        player_id: self.player_id,
-                        recipient: ctx.address().recipient(),
-                    });
+                    let connection_addr = ctx.address().clone();
+                    let ws_session = self.ws_session.clone(); // ws_session도 클론
+
+                    ctx.spawn(wrap_future::<_, Self>(async move {
+                        // 3. GameActor에 연결 등록 메시지를 전송하는 비동기 함수 생성
+                        let operation = || {
+                            let game_addr_clone = game_addr.clone();
+                            let connection_addr_clone = connection_addr.clone();
+                            async move {
+                                let register_connection_future = game_addr_clone
+                                    .send(RegisterConnection {
+                                        player_id,
+                                        recipient: connection_addr_clone.recipient(),
+                                    }).await;
+
+                                match register_connection_future {
+                                    Ok(handler_result) => {
+                                        match handler_result {
+                                            Ok(_) => {
+                                                return Ok(());
+                                            }
+                                            Err(game_error) => {
+                                                error!(
+                                                    "ConnectionActor for player {:?} (session_id: {}): Message sent to GameActor, but registration failed with GameError: {:?}",
+                                                    player_type, player_id, game_error
+                                                );
+                                                return Err(game_error);
+                                            }
+                                        }
+                                    }
+                                    Err(mailbox_error) => {
+                                        error!(
+                                        "ConnectionActor for player {:?} (session_id: {}): Failed to send RegisterConnection message to GameActor (MailboxError): {:?}",
+                                        player_type, player_id, mailbox_error
+                                    );
+                                        return Err(GameError::System(SystemError::Mailbox(mailbox_error)));
+                                    }
+                                }
+                            }
+                        };
+
+                        // 4. 생성된 비동기 함수를 retry 함수에 넘겨서 재시도 로직 적용
+                        // TODO: retry -> retry_with_condition 로 변경해야하나?
+                        if let Err(e) = retry(operation, RetryConfig::default(), "RegisterConnection").await{
+                            error!(
+                                "ConnectionActor for player {:?} (session_id: {}): Failed to register with GameActor after retries: {:?}",
+                                player_type, player_id, e
+                            );
+
+                            // 클라이언트에게 에러 메시지 전송
+                            let server_error_message = ServerMessage::from(e);
+                            
+                            // 2. ServerMessage를 JSON 문자열로 변환합니다.
+                            //    (to_json 헬퍼 함수가 이 새로운 variant를 처리하도록 수정 필요)
+                            let error_payload = server_error_message.to_json();
+                            
+                            let mut session_clone = ws_session.clone();
+                            if let Err(send_err) = session_clone.text(error_payload).await {
+                                warn!("Failed to send error message to client: {:?}", send_err);
+                            }
+                            addr.do_send(StopActorOnError {
+                                error: GameError::System(SystemError::Internal(
+                                    "Failed to register with GameActor after retries".to_string(),
+                                )),
+                            });
+                        } else {
+                            info!(
+                                "ConnectionActor for player {:?} (session_id: {}): Successfully registered with GameActor.",
+                                player_type, player_id
+                            );
+                        }
+                    }));
                 }
             }
             Ok(Message::Close(reason)) => {

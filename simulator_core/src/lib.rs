@@ -1,12 +1,10 @@
-#![allow(unused_variables, unused_labels, dead_code)]
+// #![allow(unused_variables, unused_labels, dead_code)]
 
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex, MutexGuard},
-};
+use std::{collections::HashMap, future::Future, time::Duration};
 
 use card::types::{PlayerIdentity, PlayerKind};
-use exception::GameError;
+use exception::{GameError, SystemError};
+use tracing::{debug, error, warn};
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 use uuid::Uuid;
@@ -17,7 +15,6 @@ pub mod effect;
 pub mod enums;
 pub mod exception;
 pub mod game;
-pub mod helper;
 pub mod player;
 pub mod resource;
 pub mod selector;
@@ -75,88 +72,13 @@ pub fn setup_logger() {
     });
 }
 
-#[derive(Clone)]
-pub struct OptArc<T>(Option<ArcMutex<T>>);
-
-impl<T> OptArc<T> {
-    // 생성자들
-    pub fn new(value: T) -> Self {
-        Self(Some(ArcMutex::new(value)))
-    }
-
-    pub fn none() -> Self {
-        Self(None)
-    }
-
-    pub fn from_option(opt: Option<T>) -> Self {
-        opt.map(ArcMutex::new).into()
-    }
-
-    pub fn get(&self) -> MutexGuard<T> {
-        self.0.as_ref().unwrap().get()
-    }
-
-    // Option 관련 메서드들
-    pub fn is_some(&self) -> bool {
-        self.0.is_some()
-    }
-
-    pub fn is_none(&self) -> bool {
-        self.0.is_none()
-    }
-
-    pub fn as_ref(&self) -> Option<&ArcMutex<T>> {
-        self.0.as_ref()
-    }
-
-    pub fn take(&mut self) -> Option<ArcMutex<T>> {
-        self.0.take()
-    }
-
-    pub fn replace(&mut self, value: T) -> Option<ArcMutex<T>> {
-        self.0.replace(ArcMutex::new(value))
-    }
-}
-
-impl<T> From<Option<ArcMutex<T>>> for OptArc<T> {
-    fn from(opt: Option<ArcMutex<T>>) -> Self {
-        Self(opt)
-    }
-}
-
-impl<T> From<Option<T>> for OptArc<T> {
-    fn from(opt: Option<T>) -> Self {
-        Self(opt.map(ArcMutex::new))
-    }
-}
-
-impl<T> From<T> for OptArc<T> {
-    fn from(value: T) -> Self {
-        Self::new(value)
-    }
-}
-
-// RcRef 구현 (스레드 안전 버전)
-#[derive(Clone)]
-pub struct ArcMutex<T>(Arc<Mutex<T>>);
-
-impl<T> ArcMutex<T> {
-    pub fn new(value: T) -> Self {
-        Self(Arc::new(Mutex::new(value)))
-    }
-
-    pub fn get(&self) -> MutexGuard<T> {
-        self.0.lock().unwrap()
-    }
-}
-
 pub trait StringUuidExt {
     fn to_uuid(&self) -> Result<Uuid, GameError>;
 }
 
 impl StringUuidExt for String {
     fn to_uuid(&self) -> Result<Uuid, GameError> {
-        Uuid::parse_str(self).map_err(|_| GameError::ParseError)
+        Uuid::parse_str(self).map_err(|_| GameError::System(SystemError::Internal("UUID parse failed".to_string())))
     }
 }
 
@@ -179,7 +101,7 @@ pub trait VecStringExt {
 impl VecStringExt for Vec<String> {
     fn to_vec_uuid(&self) -> Result<Vec<Uuid>, GameError> {
         self.iter()
-            .map(|uuid| Uuid::parse_str(uuid).map_err(|_| return GameError::ParseError))
+            .map(|uuid| Uuid::parse_str(uuid).map_err(|_| GameError::System(SystemError::Internal("UUID parse failed".to_string()))))
             .collect::<Result<Vec<Uuid>, GameError>>()
     }
 }
@@ -221,4 +143,126 @@ impl<V> PlayerHashMapExt<V> for HashMap<PlayerIdentity, V> {
             .find(|(player_identity_key, _value)| player_identity_key.kind == kind_key)
             .map(|(_player_identity_key, value)| value)
     }
+}
+
+pub struct RetryConfig {
+    pub max_attempts: usize,
+    pub base_delay_ms: u64,
+    pub backoff_multiplier: f64,
+    pub max_delay_ms: u64,
+}
+
+impl Default for RetryConfig {
+    fn default() -> Self {
+        Self {
+            max_attempts: 3,
+            base_delay_ms: 100,
+            backoff_multiplier: 2.0,
+            max_delay_ms: 5000,
+        }
+    }
+}
+
+pub async fn retry_with_condition<F, Fut, T, E>(
+    operation: F,
+    config: RetryConfig,
+    should_retry: impl Fn(&E) -> bool,
+    operation_name: &str,
+) -> Result<T, E>
+where
+    F: Fn() -> Fut,
+    Fut: Future<Output = Result<T, E>>,
+    E: std::fmt::Debug,
+{
+    for attempt in 1..=config.max_attempts {
+        match operation().await {
+            Ok(result) => {
+                if attempt > 1 {
+                    debug!(
+                        "{} succeeded on attempt {}/{}",
+                        operation_name, attempt, config.max_attempts
+                    );
+                }
+                return Ok(result);
+            }
+            Err(e) => {
+                if !should_retry(&e) {
+                    warn!(
+                        "{} failed with non-retryable error: {:?}",
+                        operation_name, e
+                    );
+                    return Err(e);
+                }
+                if attempt == config.max_attempts {
+                    error!(
+                        "{} failed after {} attempts. Final error: {:?}",
+                        operation_name, config.max_attempts, e
+                    );
+                    return Err(e);
+                }
+
+                warn!(
+                    "{} failed on attempt {}/{}. Error: {:?}. Retrying...",
+                    operation_name, attempt, config.max_attempts, e
+                );
+
+                let delay_ms = (config.base_delay_ms as f64
+                    * config.backoff_multiplier.powi(attempt as i32 - 1))
+                .min(config.max_delay_ms as f64) as u64;
+
+                tokio::time::sleep(Duration::from_millis(delay_ms)).await;
+            }
+        }
+    }
+
+    // 이 부분은 실제로 도달하지 않아야 함
+    unreachable!()
+}
+
+pub async fn retry<F, Fut, T, E>(
+    operation: F,
+    config: RetryConfig,
+    operation_name: &str,
+) -> Result<T, E>
+where
+    F: Fn() -> Fut,
+    Fut: Future<Output = Result<T, E>>,
+    E: std::fmt::Debug,
+{
+    for attempt in 1..=config.max_attempts {
+        match operation().await {
+            Ok(result) => {
+                if attempt > 1 {
+                    debug!(
+                        "{} succeeded on attempt {}/{}",
+                        operation_name, attempt, config.max_attempts
+                    );
+                }
+                return Ok(result);
+            }
+            Err(e) => {
+                if attempt == config.max_attempts {
+                    error!(
+                        "{} failed after {} attempts. Final error: {:?}",
+                        operation_name, config.max_attempts, e
+                    );
+                    return Err(e);
+                }
+
+                warn!(
+                    "{} failed on attempt {}/{}. Error: {:?}. Retrying...",
+                    operation_name, attempt, config.max_attempts, e
+                );
+
+                let delay_ms = (config.base_delay_ms as f64
+                    * config.backoff_multiplier.powi(attempt as i32 - 1))
+                .min(config.max_delay_ms as f64) as u64;
+
+                tokio::time::sleep(Duration::from_millis(delay_ms)).await;
+            }
+        }
+    }
+
+    // 이 부분은 실제로 도달하지 않아야 함
+    unreachable!()
 }

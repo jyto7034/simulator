@@ -1,6 +1,6 @@
 use uuid::Uuid;
 
-use crate::{exception::GameError, zone::zone::Zone};
+use crate::{exception::{GameError, GameplayError}, zone::zone::Zone};
 
 use super::Card;
 
@@ -102,7 +102,7 @@ impl Insert for SpecificPositionInsert {
             cards.insert(insert_pos, card);
             Ok(())
         } else {
-            Err(GameError::CardNotFound)
+            Err(GameError::Gameplay(GameplayError::ResourceNotFound { kind: "card", id: self.target_card_uuid.to_string() }))
         }
     }
 

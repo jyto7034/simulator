@@ -6,7 +6,7 @@ use crate::{
         Card,
     },
     effect::{effects::EffectTiming, types::EffectSpeed, Effect},
-    exception::GameError,
+    exception::{GameError, GameplayError},
     utils::{self, json::CardJson},
 };
 
@@ -25,7 +25,7 @@ impl CardBuilder {
     pub fn new(card_json: &CardJson) -> Result<Self, GameError> {
         Ok(Self {
             uuid: utils::generate_uuid().unwrap(),
-            name: card_json.name.clone().ok_or(GameError::InvalidCardData)?,
+            name: card_json.name.clone().ok_or(GameError::Gameplay(GameplayError::InvalidAction { reason: "Invalid card data".to_string() }))?,
             card_type: CardType::from_json(card_json)?,
             effects: vec![],
             json_data: card_json.clone(),

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::card::types::PlayerKind;
+use crate::{card::types::PlayerKind, exception::{GameError, StateError}};
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum PlayerPhaseProgress {
@@ -70,244 +70,134 @@ impl PhaseState {
         self.player_progress.len() == 2 && self.player_progress.values().all(|p| *p == progress)
     }
 }
+
+#[derive(Clone, PartialEq, Eq, Copy, Debug)]
+pub enum PlayerActionStatus {
+    NotYetActed,   // 아직 행동하지 않음
+    ActedOrPassed, // 행동을 했거나 우선권을 넘김
+}
+
+#[derive(Clone, PartialEq, Eq, Copy, Debug)]
+pub enum MulliganStatus {
+    NotStarted,                  // 시작 전
+    DealingInitialHands,         // 초기 패 분배 중
+    Player1Deciding(PlayerKind), // P1 멀리건 결정 대기 (현재 턴 플레이어 명시)
+    Player2Deciding(PlayerKind), // P2 멀리건 결정 대기 (현재 턴 플레이어 명시)
+    ApplyingMulligans,           // 멀리건 적용 중 (카드 교체 등)
+    Completed,                   // 멀리건 완료
+}
+
+#[derive(Clone, PartialEq, Eq, Copy, Debug)]
+pub enum DrawPhaseStatus {
+    TurnPlayerDraws, // 턴 플레이어가 드로우
+    EffectsTrigger,  // 드로우 시 발동하는 효과 처리
+    Completed,
+}
+
+#[derive(Clone, PartialEq, Eq, Copy, Debug)]
+pub enum StandbyPhaseStatus {
+    EffectsTrigger, // 스탠바이 페이즈 시 발동하는 효과 처리
+    Completed,
+}
+
+// 우선권 구현해야함.
+// 우선권이란, 해당 턴에 어떤 플레이어가 먼저 행동할 수 있는지 권리를 나타내는 것.
+// 턴 플레이어가 우선권을 가지며, 체인 발생 시 ( 효과 발동 ) / 우선권 포기 시 우선권이 이동함.
+#[derive(Clone, PartialEq, Eq, Copy, Debug)]
+pub enum MainPhaseStatus {
+    OpenState, // 턴 플레이어가 자유롭게 행동 가능 (몬스터 소환, 마법/함정 발동/세트 등)
+               // 체인 발생 시, 또는 우선권 이동 시 세부 상태가 더 필요할 수 있음
+               // 예: WaitingForChainResponse, ResolvingChain
+               // 유희왕은 메인 페이즈 1과 2가 동일한 행동을 할 수 있으므로,
+               // MainPhaseStatus를 공유하고, Phase enum에서 MainPhase1, MainPhase2로 구분합니다.
+}
+
+#[derive(Clone, PartialEq, Eq, Copy, Debug)]
+pub enum BattlePhaseStep {
+    StartStep(PlayerActionStatus), // 배틀 페이즈 개시 단계 (턴 플레이어 우선권)
+    BattleStep(PlayerActionStatus), // 배틀 스텝 (몬스터 공격 선언 또는 종료)
+    DamageStep(DamageStepSubPhase), // 데미지 스텝 (세부 단계로 진입)
+    EndStep(PlayerActionStatus),   // 배틀 페이즈 종료 단계
+}
+
+#[derive(Clone, PartialEq, Eq, Copy, Debug)]
+pub enum DamageStepSubPhase {
+    StartOfDamageStep,        // 데미지 스텝 개시시 (공격 대상이 앞면 표시가 됨 등)
+    BeforeDamageCalculation,  // 데미지 계산 전 (공/수 증감 효과 발동)
+    PerformDamageCalculation, // 데미지 계산 실행
+    AfterDamageCalculation,   // 데미지 계산 후 (전투로 파괴된 몬스터 묘지로, 리버스 효과 발동 등)
+    EndOfDamageStep,          // 데미지 스텝 종료시 (파괴 확정된 몬스터 묘지로 등)
+}
+
+#[derive(Clone, PartialEq, Eq, Copy, Debug)]
+pub enum EndPhaseStatus {
+    EffectsTrigger, // 엔드 페이즈 시 발동하는 효과 처리
+    TurnEnd,        // 실제 턴 종료
+}
+
+// --- 최종 Phase Enum ---
 #[derive(Clone, PartialEq, Eq, Copy, Debug)]
 pub enum Phase {
-    Mulligan,
+    Mulligan(MulliganStatus),
 
-    // 가장 먼저 시작되는 드로우 페이즈 ( 기타 자원 등 증가함. )
-    DrawPhase,
+    DrawPhase(DrawPhaseStatus),       // DP: 턴 플레이어가 1장 드로우
+    StandbyPhase(StandbyPhaseStatus), // SP: 특정 효과 발동
+    MainPhase1(MainPhaseStatus), // MP1: 몬스터 소환/반전소환/특수소환, 마법/함정 발동/세트, 효과 발동, 표시 형식 변경
 
-    // 메인 페이즈 진입 전 시작되는 페이즈
-    StandbyPhase,
-
-    // 메인 페이즈 개시시
-    MainPhaseStart,
-    // 메인 페이즈 개시중
-    MainPhase1,
-
-    // 배틀 페이즈 진입
-    BattlePhaseStart,
-    // 배틀 페이즈 중
-    BattleStep,
-    // 데미지 스텝 개시시
-    BattleDamageStepStart,
-    // 데미지 계산 전
-    BattleDamageStepCalculationBefore,
-    // 데미지 계산 중
-    BattleDamageStepCalculationStart,
-    // 데미지 계산 후
-    BattleDamageStepCalculationEnd,
-    // 데미지 스텝 종료시
-    BattleDamageStepEnd,
-    // 데미지 페이즈 종료
-    BattlePhaseEnd,
-
-    // 메인 페이즈2 시작
-    MainPhase2,
-
-    // 턴 종료
-    EndPhase,
-}
-
-impl From<String> for Phase {
-    fn from(value: String) -> Self {
-        match value.to_lowercase().as_str() {
-            "mulligan" => Phase::Mulligan,
-            "drawphase" => Phase::DrawPhase,
-            "standbyphase" => Phase::StandbyPhase,
-            "mainphasestart" => Phase::MainPhaseStart,
-            "mainphase1" => Phase::MainPhase1,
-            "battlephasestart" => Phase::BattlePhaseStart,
-            "battlestep" => Phase::BattleStep,
-            "battledamagestepstart" => Phase::BattleDamageStepStart,
-            "battledamagestepcalculationbefore" => Phase::BattleDamageStepCalculationBefore,
-            "battledamagestepcalculationstart" => Phase::BattleDamageStepCalculationStart,
-            "battledamagestepcalculationend" => Phase::BattleDamageStepCalculationEnd,
-            "battledamagestepend" => Phase::BattleDamageStepEnd,
-            "battlephaseend" => Phase::BattlePhaseEnd,
-            "mainphase2" => Phase::MainPhase2,
-            "endphase" => Phase::EndPhase,
-            _ => panic!("Invalid Phase string: {}", value),
-        }
-    }
-}
-
-impl PartialOrd for Phase {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for Phase {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.order().cmp(&other.order())
-    }
+    BattlePhase(BattlePhaseStep), // BP: 전투 수행
+    // BattlePhaseStep enum이 세부 스텝(Start, Battle, Damage, End)을 관리
+    MainPhase2(MainPhaseStatus), // MP2: MP1과 동일한 행동 가능 (공격한 몬스터는 표시 형식 변경 불가 등 일부 제약)
+    EndPhase(EndPhaseStatus),    // EP: 특정 효과 발동, 턴 종료
 }
 
 impl Phase {
-    fn order(&self) -> u8 {
+    /// 다음 페이즈로 진행합니다.
+    /// 현재 턴 플레이어 정보가 필요할 수 있습니다.
+    pub fn next(self, current_turn_player: PlayerKind) -> Self {
         match self {
-            Phase::Mulligan => 0,
-            Phase::DrawPhase => 1,
-            Phase::StandbyPhase => 2,
-            Phase::MainPhaseStart => 3,
-            Phase::MainPhase1 => 4,
-            Phase::BattlePhaseStart => 5,
-            Phase::BattleStep => 6,
-            Phase::BattleDamageStepStart => 7,
-            Phase::BattleDamageStepCalculationBefore => 8,
-            Phase::BattleDamageStepCalculationStart => 9,
-            Phase::BattleDamageStepCalculationEnd => 10,
-            Phase::BattleDamageStepEnd => 11,
-            Phase::BattlePhaseEnd => 12,
-            Phase::MainPhase2 => 13,
-            Phase::EndPhase => 14,
+            Phase::Mulligan(status) => match status {
+                MulliganStatus::Completed => Phase::DrawPhase(DrawPhaseStatus::TurnPlayerDraws),
+                _ => self, // 멀리건 내부 상태 진행은 별도 로직으로 처리
+            },
+            Phase::DrawPhase(status) => match status {
+                DrawPhaseStatus::Completed => {
+                    Phase::StandbyPhase(StandbyPhaseStatus::EffectsTrigger)
+                }
+                _ => self,
+            },
+            Phase::StandbyPhase(status) => match status {
+                StandbyPhaseStatus::Completed => Phase::MainPhase1(MainPhaseStatus::OpenState),
+                _ => self,
+            },
+            Phase::MainPhase1(_) => {
+                Phase::BattlePhase(BattlePhaseStep::StartStep(PlayerActionStatus::NotYetActed))
+            } // MP1에서 BP로 가는 것은 플레이어 선택
+            Phase::BattlePhase(step) => match step {
+                BattlePhaseStep::EndStep(PlayerActionStatus::ActedOrPassed) => {
+                    Phase::MainPhase2(MainPhaseStatus::OpenState)
+                }
+                // 데미지 스텝의 각 하위 단계 진행은 BattlePhaseStep 내부 로직으로 처리
+                _ => self,
+            },
+            Phase::MainPhase2(_) => Phase::EndPhase(EndPhaseStatus::EffectsTrigger), // MP2에서는 EP로 강제 진행
+            Phase::EndPhase(status) => match status {
+                EndPhaseStatus::TurnEnd => {
+                    // 턴이 실제로 종료되면 다음 플레이어의 드로우 페이즈로 넘어감
+                    // 이 때 current_turn_player가 변경되어야 함 (이 함수 외부에서 처리)
+                    Phase::DrawPhase(DrawPhaseStatus::TurnPlayerDraws)
+                }
+                _ => self,
+            },
         }
     }
 
-    /// 현재 페이즈가 드로우 페이즈인지 확인
-    pub fn is_draw_phase(&self) -> bool {
-        matches!(self, Phase::DrawPhase)
-    }
-
-    /// 현재 페이즈가 스탠바이 페이즈인지 확인
-    pub fn is_standby_phase(&self) -> bool {
-        matches!(self, Phase::StandbyPhase)
-    }
-
-    /// 메인 페이즈 1 관련 체크
-    pub fn is_main_phase_1(&self) -> bool {
-        matches!(self, Phase::MainPhase1)
-    }
-
-    pub fn is_main_phase_1_start(&self) -> bool {
-        matches!(self, Phase::MainPhaseStart)
-    }
-
-    /// 배틀 페이즈 관련 체크
-    pub fn is_battle_phase(&self) -> bool {
-        matches!(
-            self,
-            Phase::BattlePhaseStart
-                | Phase::BattleStep
-                | Phase::BattleDamageStepStart
-                | Phase::BattleDamageStepCalculationBefore
-                | Phase::BattleDamageStepCalculationStart
-                | Phase::BattleDamageStepCalculationEnd
-                | Phase::BattleDamageStepEnd
-                | Phase::BattlePhaseEnd
-        )
-    }
-
-    pub fn is_battle_step(&self) -> bool {
-        matches!(self, Phase::BattleStep)
-    }
-
-    pub fn is_damage_step(&self) -> bool {
-        matches!(
-            self,
-            Phase::BattleDamageStepStart
-                | Phase::BattleDamageStepCalculationBefore
-                | Phase::BattleDamageStepCalculationStart
-                | Phase::BattleDamageStepCalculationEnd
-                | Phase::BattleDamageStepEnd
-        )
-    }
-
-    pub fn is_damage_calculation(&self) -> bool {
-        matches!(self, Phase::BattleDamageStepCalculationStart)
-    }
-
-    pub fn is_before_damage_calculation(&self) -> bool {
-        matches!(self, Phase::BattleDamageStepCalculationBefore)
-    }
-
-    pub fn is_after_damage_calculation(&self) -> bool {
-        matches!(self, Phase::BattleDamageStepCalculationEnd)
-    }
-
-    /// 메인 페이즈 2 체크
-    pub fn is_main_phase_2(&self) -> bool {
-        matches!(self, Phase::MainPhase2)
-    }
-
-    /// 엔드 페이즈 체크
-    pub fn is_end_phase(&self) -> bool {
-        matches!(self, Phase::EndPhase)
-    }
-
-    /// 메인 페이즈 체크 (1과 2 모두)
-    pub fn is_main_phase(&self) -> bool {
-        matches!(
-            self,
-            Phase::MainPhaseStart | Phase::MainPhase1 | Phase::MainPhase2
-        )
-    }
-
-    /// 일반 소환이 가능한 페이즈인지 체크
-    pub fn can_normal_summon(&self) -> bool {
-        matches!(self, Phase::MainPhase1 | Phase::MainPhase2)
-    }
-
-    /// 공격이 가능한 페이즈인지 체크
-    pub fn can_attack(&self) -> bool {
-        matches!(self, Phase::BattleStep)
-    }
-
-    /// 현재 페이즈가 개시시인지 체크
-    pub fn is_phase_start(&self) -> bool {
-        matches!(
-            self,
-            Phase::MainPhaseStart | Phase::BattlePhaseStart | Phase::BattleDamageStepStart
-        )
-    }
-
-    /// 다음 페이즈 반환
-    pub fn next_phase(&self) -> Phase {
+    // 메인 페이즈에서 엔드 페이즈로 바로 넘어갈 수 있는 경우 (플레이어가 배틀 페이즈 스킵 선택)
+    pub fn skip_to_end_phase(self) -> Result<Self, GameError> {
         match self {
-            Phase::Mulligan => Phase::DrawPhase,
-            Phase::DrawPhase => Phase::StandbyPhase,
-            Phase::StandbyPhase => Phase::MainPhaseStart,
-            Phase::MainPhaseStart => Phase::MainPhase1,
-            Phase::MainPhase1 => Phase::BattlePhaseStart,
-            Phase::BattlePhaseStart => Phase::BattleStep,
-            Phase::BattleStep => Phase::BattleDamageStepStart,
-            Phase::BattleDamageStepStart => Phase::BattleDamageStepCalculationBefore,
-            Phase::BattleDamageStepCalculationBefore => Phase::BattleDamageStepCalculationStart,
-            Phase::BattleDamageStepCalculationStart => Phase::BattleDamageStepCalculationEnd,
-            Phase::BattleDamageStepCalculationEnd => Phase::BattleDamageStepEnd,
-            Phase::BattleDamageStepEnd => Phase::BattlePhaseEnd,
-            Phase::BattlePhaseEnd => Phase::MainPhase2,
-            Phase::MainPhase2 => Phase::EndPhase,
-            Phase::EndPhase => Phase::DrawPhase,
-        }
-    }
-
-    pub fn move_to_next_phase(&mut self) {
-        *self = self.next_phase();
-    }
-
-    pub fn set_phase(&mut self, phase: Phase) {
-        *self = phase;
-    }
-
-    pub fn as_str(&self) -> &'static str {
-        match self {
-            Phase::Mulligan => "Mulligan",
-            Phase::DrawPhase => "DrawPhase",
-            Phase::StandbyPhase => "StandbyPhase",
-            Phase::MainPhaseStart => "MainPhaseStart",
-            Phase::MainPhase1 => "MainPhase1",
-            Phase::BattlePhaseStart => "BattlePhaseStart",
-            Phase::BattleStep => "BattleStep",
-            Phase::BattleDamageStepStart => "BattleDamageStepStart",
-            Phase::BattleDamageStepCalculationBefore => "BattleDamageStepCalculationBefore",
-            Phase::BattleDamageStepCalculationStart => "BattleDamageStepCalculationStart",
-            Phase::BattleDamageStepCalculationEnd => "BattleDamageStepCalculationEnd",
-            Phase::BattleDamageStepEnd => "BattleDamageStepEnd",
-            Phase::BattlePhaseEnd => "BattlePhaseEnd",
-            Phase::MainPhase2 => "MainPhase2",
-            Phase::EndPhase => "EndPhase",
+            Phase::MainPhase1(_) | Phase::MainPhase2(_) => {
+                Ok(Phase::EndPhase(EndPhaseStatus::EffectsTrigger))
+            }
+            _ => Err(GameError::State(StateError::InvalidPhaseTransition)), // 다른 페이즈에서는 스킵 불가
         }
     }
 }

@@ -19,7 +19,7 @@ use serde_json::{json, Value};
 use simulator_core::{
     card::{types::PlayerKind, Card},
     card_gen::CardGenerator,
-    enums::{CARD_JSON_PATH, HEARTBEAT_INTERVAL, MAX_CARD_SIZE},
+    enums::{CARD_JSON_PATH, CLIENT_TIMEOUT, HEARTBEAT_INTERVAL, MAX_CARD_SIZE},
     game::GameActor,
     setup_logger,
     utils::{json, parse_json_to_deck_code},
@@ -265,8 +265,8 @@ impl WebSocketTest {
                 }
             }
         };
-        // 타임아웃 시간은 HEARTBEAT_INTERVAL 보다 길게 설정
-        match tokio::time::timeout(Duration::from_secs(HEARTBEAT_INTERVAL + 5), callback).await {
+
+        match tokio::time::timeout(Duration::from_secs(CLIENT_TIMEOUT), callback).await {
             Ok(result) => result,
             Err(_) => panic!(
                 "Expected message timeout after {} seconds",

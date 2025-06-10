@@ -1,12 +1,14 @@
 use std::{collections::HashMap, sync::Arc, time::Duration};
 
-use actix::{Actor, Addr, Context, Handler, Message, Recipient, ResponseFuture};
-use message::GameEvent;
-use phase::{Phase, PhaseState};
+use actix::{
+    fut, Actor, ActorFutureExt, Addr, AsyncContext, Context, Handler, Message, Recipient, ResponseFuture, Running, SpawnHandle
+};
+use futures::future::join_all;
+use msg::GameEvent;
 use state::GameStateManager;
 use tokio::sync::Mutex;
-use tracing::{error, info};
-use turn::Turn;
+use tracing::{error, info, warn};
+use turn::TurnState;
 use uuid::Uuid;
 
 use crate::{
@@ -14,18 +16,18 @@ use crate::{
         types::{PlayerIdentity, PlayerKind},
         Card,
     },
-    exception::GameError,
-    player::{message::SetOpponent, PlayerActor},
+    exception::{GameError, SystemError},
+    player::{
+        message::{GameOver, SetOpponent, Terminate},
+        PlayerActor,
+    },
 };
 
 pub mod choice;
-pub mod error_message;
-pub mod getter;
-pub mod helper;
-pub mod message;
 pub mod phase;
 pub mod state;
 pub mod turn;
+pub mod msg;
 
 pub struct GameConfig {}
 
@@ -34,16 +36,126 @@ pub struct GameActor {
     pub players: HashMap<PlayerIdentity, Addr<PlayerActor>>,
     pub connections: Arc<Mutex<HashMap<Uuid, Recipient<GameEvent>>>>, // 플레이어의 ConnectionActor 주소 저장
     pub player_connection_ready: HashMap<PlayerKind, bool>, // 각 플레이어 초기화 완료 여부
-    pub phase_state: PhaseState,
+    pub opponent_wait_timer_handle: Option<SpawnHandle>,
+    pub opponent_player_kind: Option<PlayerKind>,
+
+    // 게임의 현재 페이즈와 턴
+    pub turn: TurnState,
+
     pub all_cards: HashMap<PlayerKind, Vec<Card>>,
     pub game_state: Arc<Mutex<GameStateManager>>,
-    pub turn: Turn,
     pub is_game_over: bool,
     pub game_id: Uuid,
+
+    // gsm lock 에 실패한 경우 등에 사용되는 플래그
+    pub unexpected_stop: bool,
+    pub cleanup_initiated: bool, 
 }
 
 impl Actor for GameActor {
     type Context = Context<Self>;
+
+    fn stopping(&mut self, ctx: &mut Context<Self>) -> Running {
+        if self.cleanup_initiated {
+            info!(
+                "GameActor [{}]: stopping() called again, but cleanup is already in progress. Ignoring.",
+                self.game_id
+            );
+            // 이미 정리 작업이 진행 중이므로, 해당 작업이 끝날 때까지 액터를 살려둬야 합니다.
+            return Running::Continue; 
+        }
+        // 정리 작업이 처음 시작됨을 표시합니다.
+        self.cleanup_initiated = true;
+        
+        info!(
+            "GameActor [{}] is stopping. Initiating comprehensive cleanup.",
+            self.game_id
+        );
+
+        // 1. GameStateManager 정리
+        let game_state = self.game_state.clone();
+        let connections = self.connections.clone();
+        let player_addrs: Vec<Addr<PlayerActor>> = self.players.values().cloned().collect();
+        let game_id_clone = self.game_id;
+
+        let cleanup_future = async move {
+            info!(
+                "GameActor [{}]: Starting comprehensive cleanup task.",
+                game_id_clone
+            );
+
+            // 1. GameStateManager에서 모든 연결된 플레이어 제거
+            {
+                let mut gsm = game_state.lock().await;
+                let connected_players: Vec<_> = gsm.player_states.keys().cloned().collect();
+                for player_kind in connected_players {
+                    gsm.remove_connected_player(player_kind);
+                }
+                info!(
+                    "GameActor [{}]: All players removed from GameStateManager.",
+                    game_id_clone
+                );
+            }
+
+            // 2. 모든 연결 정리
+            {
+                let mut connections_guard = connections.lock().await;
+                connections_guard.clear();
+                info!(
+                    "GameActor [{}]: All connections cleared.",
+                    game_id_clone
+                );
+            }
+
+            // 3. PlayerActor들에게 GameOver 전송
+            let mut send_futures = Vec::new();
+            for player_addr in player_addrs {
+                info!(
+                    "GameActor [{}]: Preparing to send GameOver to PlayerActor ({:?}).",
+                    game_id_clone, player_addr
+                );
+                let fut = player_addr.send(GameOver);
+                send_futures.push(async move { 
+                    match fut.await {
+                        Ok(_) => info!("GameActor [{}]: Successfully sent GameOver to PlayerActor ({:?})", game_id_clone, player_addr),
+                        Err(e) => {
+                            warn!(
+                                "GameActor [{}]: Failed to send GameOver to PlayerActor ({:?}): {:?}. Attempting Terminate.",
+                                game_id_clone, player_addr, e
+                            );
+                            player_addr.do_send(Terminate);
+                        }
+                    }
+                });
+            }
+
+            join_all(send_futures).await;
+
+            info!(
+                "GameActor [{}]: Comprehensive cleanup task completed.",
+                game_id_clone
+            );
+        };
+
+        let stop_self_after_cleanup = fut::wrap_future(cleanup_future).then(
+            move |_, act: &mut GameActor, _ctx_then: &mut Context<GameActor>| {
+                info!(
+                    "GameActor [{}]: All cleanup completed.",
+                    act.game_id
+                );
+                fut::ready(())
+            },
+        );
+
+        ctx.spawn(stop_self_after_cleanup);
+
+        info!("GameActor [{}]: stopping() method finished, comprehensive cleanup scheduled.", self.game_id);
+        Running::Continue
+    }
+
+    fn stopped(&mut self, ctx: &mut Self::Context) {
+        info!("GameActor [{}] has stopped.", self.game_id);
+    }
 }
 
 impl GameActor {
@@ -113,11 +225,14 @@ impl GameActor {
             connections: Arc::new(Mutex::new(HashMap::new())),
             player_connection_ready: HashMap::new(),
             all_cards: HashMap::new(),
-            phase_state: PhaseState::new(Phase::Mulligan),
-            turn: Turn::new(),
+            turn: TurnState::new(attacker_player_type),
             is_game_over: false,
             game_id,
             game_state: Arc::new(Mutex::new(GameStateManager::new())),
+            opponent_wait_timer_handle: None,
+            opponent_player_kind: None,
+            unexpected_stop: false,
+            cleanup_initiated: false,
         }
     }
 
@@ -134,9 +249,27 @@ impl GameActor {
     }
 
     fn get_player_info_by_kind(&self, target_kind: PlayerKind) -> Option<(Uuid, &PlayerIdentity)> {
-        for (identity, addr) in &self.players {
+        for (identity, _) in &self.players {
             if identity.kind == target_kind {
                 return Some((identity.id, identity));
+            }
+        }
+        None
+    }
+
+    fn get_player_identity_by_kind(&self, target_kind: PlayerKind) -> Option<&PlayerIdentity> {
+        for (identity, _) in &self.players {
+            if identity.kind == target_kind {
+                return Some(identity);
+            }
+        }
+        None
+    }
+
+    fn get_player_identity_by_uuid(&self, player_id: Uuid) -> Option<&PlayerIdentity> {
+        for (identity, _) in &self.players {
+            if identity.id == player_id {
+                return Some(identity);
             }
         }
         None
@@ -226,7 +359,7 @@ impl GameActor {
                         "GAME ACTOR: Mailbox error sending message to PlayerActor ({:?}): {:?}",
                         target_kind, mailbox_error
                     );
-                    Err(GameError::MailboxError)
+                    Err(GameError::System(SystemError::Mailbox(mailbox_error)))
                 }
             }
         })

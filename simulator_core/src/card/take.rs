@@ -1,6 +1,6 @@
 use uuid::Uuid;
 
-use crate::{exception::GameError, selector::TargetCount, zone::zone::Zone};
+use crate::{exception::{GameError, SystemError, GameplayError, DeckError}, selector::TargetCount, zone::zone::Zone};
 
 use super::Card;
 use crate::card::cards::CardVecExt;
@@ -25,7 +25,7 @@ impl Take for TopTake {
             return Ok(Vec::new());
         }
         if count > available {
-            return Err(GameError::InternalServerError);
+            return Err(GameError::System(SystemError::Internal("Not enough cards available".to_string())));
         }
 
         // drain은 앞에서부터 제거하므로, 뒤에서부터 가져오려면 인덱스 계산 필요
@@ -53,7 +53,7 @@ impl Take for BottomTake {
             return Ok(Vec::new());
         }
         if count > available {
-            return Err(GameError::InternalServerError);
+            return Err(GameError::System(SystemError::Internal("Not enough cards available".to_string())));
         }
 
         // 앞에서부터 count만큼 제거
@@ -80,7 +80,7 @@ impl Take for RandomTake {
             return Ok(Vec::new());
         }
         if count > available {
-            return Err(GameError::InternalServerError);
+            return Err(GameError::System(SystemError::Internal("Not enough cards available".to_string())));
         }
 
         // 1. 무작위 인덱스를 count만큼 중복 없이 뽑기
@@ -121,7 +121,7 @@ impl Take for SpecificTake {
 
         match cards.remove_by_uuid(self.0) {
             Some(card) => Ok(vec![card]),
-            None => Err(GameError::CardNotFound),
+            None => Err(GameError::Gameplay(GameplayError::ResourceNotFound { kind: "card", id: self.0.to_string() })),
         }
     }
 
@@ -141,7 +141,7 @@ fn calculate_take_count(target_count: TargetCount, available: usize) -> Result<u
             if n > available {
                 // 정확히 n개를 가져와야 하는데 부족한 경우 -> 에러 처리 또는 정책 결정 필요
                 // 여기서는 일단 에러로 처리 (혹은 0개를 반환할 수도 있음)
-                Err(GameError::NotEnoughCards) // 더 구체적인 에러 타입 정의 필요
+                Err(GameError::Gameplay(GameplayError::DeckError(DeckError::NoCardsLeftToDraw)))
             } else {
                 Ok(n)
             }
@@ -149,7 +149,7 @@ fn calculate_take_count(target_count: TargetCount, available: usize) -> Result<u
         TargetCount::Range(low, high) => {
             if available < low {
                 // 최소 요구량보다 적으면 에러 또는 0 반환
-                Err(GameError::NotEnoughCards) // 또는 Ok(0)
+                Err(GameError::Gameplay(GameplayError::DeckError(DeckError::NoCardsLeftToDraw)))
             } else {
                 // low 이상 high 이하, 그리고 available 이하의 값을 반환
                 Ok(min(high, available))

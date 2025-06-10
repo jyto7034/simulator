@@ -1,7 +1,12 @@
+use std::io::Error;
+
 use actix::{fut::wrap_future, prelude::*};
 use tracing::{info, warn};
 
-use simulator_core::{exception::GameError, game::message::GameEvent};
+use simulator_core::{
+    exception::{GameError, GameplayError, SystemError},
+    game::msg::GameEvent,
+};
 
 use super::{connection::ConnectionActor, ServerMessage};
 
@@ -10,18 +15,52 @@ use actix::Message;
 #[derive(Message)]
 #[rtype(result = "()")]
 pub struct StopActorOnError {
-    pub error_message: GameError,
+    pub error: GameError,
+}
+
+#[derive(Message)]
+#[rtype(result = "Result<(), GameError>")]
+pub struct CancelHeartbeat;
+
+impl Handler<CancelHeartbeat> for ConnectionActor {
+    type Result = Result<(), GameError>;
+
+    fn handle(&mut self, _msg: CancelHeartbeat, ctx: &mut Context<Self>) -> Self::Result {
+        info!("Cancelling heartbeat for player: {:?}", self.player_type);
+        if let Some(handle) = self.heartbeat_handle {
+            if ctx.cancel_future(handle) {
+                info!(
+                    "Heartbeat cancelled successfully for player: {:?}",
+                    self.player_id
+                );
+                self.heartbeat_handle = None;
+                return Ok(());
+            } else {
+                warn!(
+                    "Failed to cancel heartbeat for player: {:?}, handle may not be valid.",
+                    self.player_id
+                );
+                return Err(GameError::System(SystemError::Internal(
+                    "Failed to cancel heartbeat, handle may not be valid.".to_string(),
+                )));
+            }
+        }
+        return Err(GameError::System(SystemError::Internal(
+            "No heartbeat handle to cancel.".to_string(),
+        )));
+    }
 }
 
 impl Handler<StopActorOnError> for ConnectionActor {
     type Result = ();
 
     fn handle(&mut self, msg: StopActorOnError, ctx: &mut Context<Self>) -> Self::Result {
-        warn!(
-            "ConnectionActor for player {:?} (session_id: {}): {}",
-            self.player_type, self.player_id, msg.error_message
+        info!(
+            "Stopping ConnectionActor for player: {:?} due to error: {:?}",
+            self.player_id, msg.error
         );
-        ctx.stop(); // 여기서 컨텍스트를 통해 액터 중지
+        // HeartBeat 등 리소스는 stopping 에서 처리함.
+        ctx.stop();
     }
 }
 
@@ -49,8 +88,11 @@ impl Handler<GameEvent> for ConnectionActor {
                             player_id_log, e
                         );
                         actor_addr.do_send(StopActorOnError {
-                            error_message: GameError::CardNotFound,
-                        }); // 에러 시 자신에게 중지 요청
+                            error: GameError::System(SystemError::Io(Error::new(
+                                std::io::ErrorKind::ConnectionRefused,
+                                format!("Failed to send Mulligan deal cards: {}", e),
+                            ))),
+                        });
                     } else {
                         info!(
                             "Successfully sent Mulligan deal cards directly to player: {}",
@@ -59,6 +101,13 @@ impl Handler<GameEvent> for ConnectionActor {
                     }
                 };
                 ctx.spawn(wrap_future::<_, Self>(send_future));
+            }
+            GameEvent::GameStopped => {
+                info!(
+                    "Game stopped event received, stopping ConnectionActor for player: {:?}",
+                    self.player_id
+                );
+                ctx.stop(); // 게임이 중지되면 액터를 중지
             }
         }
     }

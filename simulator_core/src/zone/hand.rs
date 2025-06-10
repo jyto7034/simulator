@@ -8,7 +8,7 @@ use crate::{
         Card,
     },
     enums::UNIT_ZONE_SIZE,
-    exception::GameError,
+    exception::{GameError, GameplayError},
 };
 
 use super::zone::Zone;
@@ -32,7 +32,7 @@ impl Hand {
         self.zone_cards
             .remove_by_uuid(card.get_uuid())
             .map(|_| ())
-            .ok_or(GameError::CardNotFound)
+            .ok_or(GameError::Gameplay(GameplayError::ResourceNotFound { kind: "card", id: card.get_uuid().to_string() }))
     }
 }
 

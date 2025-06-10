@@ -13,7 +13,6 @@ fn main() {}
     detailed eyes, detailed face, detailed finger, highres, very aesthetic, best quality, amazing quality, incredibly absurdres
 }
 
-말 수간
 {
     1.0::artist:shiroi yoru::, 1.2::artist:wagashi (dagashiya)::, 0.5::artist:atte nanakusa::, 0.8::artist:tianliang duohe fangdongye::, 0.7::artist:kame_(3t)::, nsfw,
     <tags/huohuo_horse_wolf>,

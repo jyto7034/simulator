@@ -1,5 +1,5 @@
 pub mod mulligan {
-    use std::time::Duration;
+    use std::{collections::HashSet, sync::Arc, time::Duration};
 
     use actix::Addr;
     use dedicated_server::{
@@ -9,9 +9,9 @@ pub mod mulligan {
     use simulator_core::{
         card::types::PlayerKind,
         enums::{ZoneType, CLIENT_TIMEOUT, COUNT_OF_MULLIGAN_CARDS},
-        game::{message::GetPlayerZoneCards, GameActor},
+        game::{msg::zones::GetPlayerZoneCards, GameActor},
     };
-    use tokio::time::sleep;
+    use tokio::{join, sync::Barrier, time::sleep};
     use uuid::Uuid;
 
     // 플레이어별 테스트 로직을 위한 헬퍼 함수
@@ -20,7 +20,7 @@ pub mod mulligan {
         player_id: Uuid,
         addr: std::net::SocketAddr,
         game_actor_addr: Addr<GameActor>, // GameActor 주소 전달
-    ) -> Vec<Uuid> {
+    ) -> (WebSocketTest, Vec<Uuid>) {
         let player_kind_str = player_kind.as_str();
         let url = format!("ws://{}/game", addr);
         let cookie = format!("user_id={}", player_id);
@@ -132,7 +132,7 @@ pub mod mulligan {
         // 예: ws.send(UserAction::CompleteMulligan).await;
         //     ws.expect_message(ServerMessage::MulliganPhaseEnd).await;
 
-        dealt_cards // 받은 카드 목록 반환
+        (ws, dealt_cards) // 받은 카드 목록 반환
     }
 
     #[actix_web::test]
@@ -144,7 +144,7 @@ pub mod mulligan {
         let player2_id = state.player2_id;
 
         // 두 플레이어의 멀리건 시퀀스를 병렬로 실행
-        let (p1_results, p2_results) = tokio::join!(
+        let ((_p1_ws, p1_results), (_p2_ws, p2_results)) = tokio::join!(
             player_mulligan_sequence(
                 PlayerKind::Player1,
                 player1_id,
@@ -178,12 +178,8 @@ pub mod mulligan {
         println!("Test test_mulligan_deal_cards_to_each_player_concurrently completed.");
     }
 
-    // TODO: Player 2 가 지연된 입장을 할 경우, 게임의 세션은 닫혀야함.
-    // 지금 Player 1 의 세션은 잘 닫히지만, Player 2 의 세션은 닫히지 않아서
-    // Player 2 혼자 게임에 접속함. 이를 고쳐야함.
-    // 고치는 방식은 플레이어의 세션을 닫는게 아니라, 게임 자체를 종료하는 방식으로.
     #[actix_web::test]
-    #[should_panic(expected = "[DELAYED_TEST] Player 1 task failed")]
+    #[should_panic]
     async fn test_mulligan_deal_cards_one_player_delayed() {
         let (addr, state, _handle) = spawn_server().await;
         let game_actor_addr = state.game.clone();
@@ -199,7 +195,7 @@ pub mod mulligan {
             game_actor_addr.clone(),
         ));
 
-        // 플레이어 2는 10초 지연 후 시작 (이 시간 동안 서버가 P1을 기다리는지 확인)
+        // 플레이어 2는 35초 지연 후 시작 (이 시간 동안 서버가 P1을 기다리는지 확인)
         // 이 지연 시간은 서버의 관련 타임아웃 설정보다 길거나 짧게 조절하여 테스트 가능
         let delay_duration = Duration::from_secs(CLIENT_TIMEOUT + 5);
         println!(
@@ -210,13 +206,7 @@ pub mod mulligan {
         let player2_task = tokio::spawn(async move {
             sleep(delay_duration).await;
             println!("[DELAYED_TEST] Player 2 starting mulligan sequence now.");
-            player_mulligan_sequence(
-                PlayerKind::Player2,
-                player2_id,
-                addr,            // addr도 move 클로저로 옮겨져야 함
-                game_actor_addr, // game_actor_addr도 move 클로저로 옮겨져야 함
-            )
-            .await
+            player_mulligan_sequence(PlayerKind::Player2, player2_id, addr, game_actor_addr).await
         });
 
         // 두 태스크의 결과 기다림
@@ -225,38 +215,29 @@ pub mod mulligan {
         let (p1_result_outer, p2_result_outer) = tokio::join!(player1_task, player2_task);
 
         // 태스크 실행 결과 확인 (JoinError 처리)
-        let p1_results = match p1_result_outer {
-            Ok(res) => {
+        let (_p1_ws, p1_results) = match p1_result_outer {
+            Ok((ws, res)) => {
                 println!(
                     "[DELAYED_TEST] Player 1 mulligan sequence completed with results: {:?}",
                     res
                 );
-                res
+                (ws, res)
             }
             Err(e) => {
                 panic!("[DELAYED_TEST] Player 1 task failed: {:?}", e);
             }
         };
 
-        let p2_results = match p2_result_outer {
-            Ok(res) => {
+        let (_p2_ws, p2_results) = match p2_result_outer {
+            Ok((ws, res)) => {
                 println!(
                     "[DELAYED_TEST] Player 2 mulligan sequence completed with results: {:?}",
                     res
                 );
-                res
+                (ws, res)
             }
             Err(e) => {
-                // 플레이어 2가 지연되는 동안 서버가 P1만으로 게임을 시작하거나 P1 연결을 종료했다면,
-                // P2는 연결조차 실패할 수 있음. 이는 예상된 실패일 수 있음.
-                // 여기서는 일단 패닉으로 처리하지만, 실제로는 서버 정책에 따라 다르게 검증해야 함.
-                println!("[DELAYED_TEST] Player 2 task resulted in an error (this might be expected if server timed out P1 or started game with P1 only): {:?}", e);
-                // 이 테스트의 목적에 따라, P2가 실패하는 것이 정상일 수도 있습니다.
-                // 예를 들어, 서버가 10초 이내에 P1만으로 게임을 시작해버린다면, P2는 연결 시점에
-                // 이미 게임이 진행 중이거나 멀리건 페이즈가 아니어서 실패할 수 있습니다.
-                // 여기서는 일단 빈 Vec을 반환하여 아래 assert_eq가 실패하도록 유도합니다. (테스트 목적에 맞게 수정 필요)
-                // panic!("[DELAYED_TEST] Player 2 task failed: {:?}", e);
-                Vec::new() // 또는 테스트 실패로 간주
+                panic!("[DELAYED_TEST] Player 2 task failed: {:?}", e);
             }
         };
 
@@ -294,6 +275,64 @@ pub mod mulligan {
         }
 
         println!("[DELAYED_TEST] Test test_mulligan_deal_cards_one_player_delayed completed.");
+    }
+
+    #[actix_web::test]
+    async fn test_mulligan_deal_cards_on_simultaneous_connection_with_barrier() {
+        // 1. Arrange: 서버와 함께 Barrier를 준비합니다.
+        let (addr, state, _handle) = spawn_server().await;
+        let game_actor_addr = state.game.clone();
+        let player1_id = state.player1_id;
+        let player2_id = state.player2_id;
+
+        // 2개의 태스크를 동기화할 Barrier 생성
+        let barrier = Arc::new(Barrier::new(2));
+
+        println!("[BARRIER_TEST] Starting simultaneous connection test with Barrier.");
+
+        // 2. Act: 각 플레이어 태스크가 Barrier에서 대기 후 동시에 진행하도록 합니다.
+        let p1_barrier = barrier.clone();
+        let p1_task = tokio::spawn(async move {
+            println!("[BARRIER_TEST] Player 1 task is ready and waiting at the barrier.");
+            p1_barrier.wait().await; // .await를 추가하여 비동기로 대기
+            println!("[BARRIER_TEST] Player 1 task released from barrier, connecting now.");
+            player_mulligan_sequence(PlayerKind::Player1, player1_id, addr, game_actor_addr).await
+        });
+
+        let p2_barrier = barrier.clone();
+        let p2_task = tokio::spawn(async move {
+            println!("[BARRIER_TEST] Player 2 task is ready and waiting at the barrier.");
+            p2_barrier.wait().await; // .await를 추가하여 비동기로 대기
+            println!("[BARRIER_TEST] Player 2 task released from barrier, connecting now.");
+            player_mulligan_sequence(PlayerKind::Player2, player2_id, addr, state.game.clone())
+                .await
+        });
+
+        // 두 태스크의 결과를 기다립니다.
+        let (p1_result, p2_result) = join!(p1_task, p2_task);
+
+        let (_p1_ws, p1_dealt_cards) = p1_result.expect("Player 1 task panicked");
+        let (_p2_ws, p2_dealt_cards) = p2_result.expect("Player 2 task panicked");
+
+        println!("[BARRIER_TEST] Both players completed their sequences after barrier.");
+
+        // 3. Assert: 결과는 기존 테스트와 동일하게 검증합니다.
+        assert_eq!(p1_dealt_cards.len(), COUNT_OF_MULLIGAN_CARDS);
+        assert_eq!(p2_dealt_cards.len(), COUNT_OF_MULLIGAN_CARDS);
+
+        let mut all_dealt_cards = p1_dealt_cards.clone();
+        all_dealt_cards.extend(p2_dealt_cards.clone());
+
+        let mut unique_cards = HashSet::new();
+        for card_uuid in all_dealt_cards {
+            assert!(
+                unique_cards.insert(card_uuid),
+                "Duplicate card found: {}",
+                card_uuid
+            );
+        }
+
+        println!("[BARRIER_TEST] Simultaneous connection test with Barrier PASSED.");
     }
 }
 

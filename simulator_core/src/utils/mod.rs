@@ -4,7 +4,7 @@ use crate::card::cards::Cards;
 use crate::card::types::PlayerKind;
 use crate::card_gen::{CardGenerator, Keys};
 use crate::enums::*;
-use crate::exception::GameError;
+use crate::exception::{GameError, SystemError, GameplayError, DeckError};
 use base64::{decode, encode};
 use byteorder::WriteBytesExt;
 use serde_json::Value;
@@ -34,7 +34,7 @@ pub fn read_game_config_json() -> Result<json::GameConfigJson, GameError> {
 
     let card_json: json::GameConfigJson = match serde_json::from_str(&json_data[..]) {
         Ok(data) => data,
-        Err(_) => return Err(GameError::JsonParseFailed),
+        Err(e) => return Err(GameError::System(SystemError::Json(e))),
     };
 
     Ok(card_json)
@@ -45,9 +45,9 @@ pub fn parse_json_to_deck_code(
     p2_card_json: Option<Value>,
 ) -> Result<(String, String), GameError> {
     match (&p1_card_json, &p2_card_json) {
-        (None, None) => return Err(GameError::DecodeError),
-        (None, Some(_)) => return Err(GameError::DeckCodeIsMissing(PlayerKind::Player1)),
-        (Some(_), None) => return Err(GameError::DeckCodeIsMissing(PlayerKind::Player2)),
+        (None, None) => return Err(GameError::Gameplay(GameplayError::DeckError(DeckError::ParseFailed("Decode error".to_string())))),
+        (None, Some(_)) => return Err(GameError::Gameplay(GameplayError::DeckError(DeckError::CodeMissingFor(PlayerKind::Player1)))),
+        (Some(_), None) => return Err(GameError::Gameplay(GameplayError::DeckError(DeckError::CodeMissingFor(PlayerKind::Player2)))),
         _ => {}
     }
 
@@ -56,20 +56,20 @@ pub fn parse_json_to_deck_code(
         player_num: usize,
     ) -> Result<json::Decks, GameError> {
         if let Some(value) = json_value {
-            serde_json::from_value(value).map_err(|_| GameError::JsonParseFailed)
+            serde_json::from_value(value).map_err(|e| GameError::System(SystemError::Json(e)))
         } else {
             let file_path = match player_num {
                 PLAYER_1 => DECK_JSON_PATH_P1,
                 PLAYER_2 => DECK_JSON_PATH_P2,
-                _ => return Err(GameError::PathNotExist),
+                _ => return Err(GameError::System(SystemError::Io(std::io::Error::new(std::io::ErrorKind::NotFound, "Path not found")))),
             };
 
-            let mut file = File::open(file_path).map_err(|_| GameError::PathNotExist)?;
+            let mut file = File::open(file_path).map_err(|e| GameError::System(SystemError::Io(e)))?;
             let mut json_data = String::new();
             file.read_to_string(&mut json_data)
-                .map_err(|_| GameError::JsonParseFailed)?;
+                .map_err(|e| GameError::System(SystemError::Io(e)))?;
 
-            serde_json::from_str(&json_data).map_err(|_| GameError::JsonParseFailed)
+            serde_json::from_str(&json_data).map_err(|e| GameError::System(SystemError::Json(e)))
         }
     }
 
@@ -116,7 +116,7 @@ pub fn deckcode_to_cards_single(deckcode: String) -> Result<Cards, GameError> {
             "Failed to open card JSON file at {}: {}. Error: {}",
             file_path, CARD_JSON_PATH, e
         );
-        GameError::PathNotExist
+        GameError::System(SystemError::Io(e))
     })?;
 
     let mut json_data = String::new();
@@ -125,7 +125,7 @@ pub fn deckcode_to_cards_single(deckcode: String) -> Result<Cards, GameError> {
             "Failed to read card JSON file: {}. Error: {}",
             CARD_JSON_PATH, e
         );
-        GameError::ReadFileFailed
+        GameError::System(SystemError::Io(e))
     })?;
 
     let all_cards_data: Vec<json::CardJson> = match serde_json::from_str(&json_data[..]) {
@@ -135,7 +135,7 @@ pub fn deckcode_to_cards_single(deckcode: String) -> Result<Cards, GameError> {
                 "Failed to parse card JSON data from {}. Error: {}",
                 CARD_JSON_PATH, e
             );
-            return Err(GameError::JsonParseFailed);
+            return Err(GameError::System(SystemError::Json(e)));
         }
     };
 
@@ -143,7 +143,7 @@ pub fn deckcode_to_cards_single(deckcode: String) -> Result<Cards, GameError> {
         Ok(data) => data,
         Err(_) => {
             warn!("Failed to decode deck code.");
-            return Err(GameError::DeckParseError);
+            return Err(GameError::Gameplay(GameplayError::DeckError(DeckError::ParseFailed("Deck decode failed".to_string()))));
         }
     };
 
@@ -203,7 +203,7 @@ pub fn load_card_id() -> Result<Vec<(String, i32)>, GameError> {
 
     let card_json: Vec<json::Item> = match serde_json::from_str(&json_data[..]) {
         Ok(data) => data,
-        Err(_) => return Err(GameError::JsonParseFailed),
+        Err(e) => return Err(GameError::System(SystemError::Json(e))),
     };
 
     let mut ids = vec![];

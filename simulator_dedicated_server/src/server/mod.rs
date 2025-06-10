@@ -3,7 +3,10 @@ use std::{future::Future, pin::Pin};
 use actix::{Actor, AsyncContext, Context};
 use actix_web::{get, web, FromRequest, HttpRequest, HttpResponse};
 use actix_ws::handle;
-use simulator_core::{card::types::PlayerKind, exception::GameError};
+use simulator_core::{
+    card::types::PlayerKind,
+    exception::{ConnectionError, GameError, SystemError},
+};
 use tracing::{debug, error, info, instrument, warn};
 use uuid::Uuid;
 
@@ -41,7 +44,9 @@ impl FromRequest for AuthPlayer {
 
             let Some(player_id_cookie) = req.cookie("user_id") else {
                 error!("쿠키 누락: 'user_id' 쿠키를 찾을 수 없음");
-                return Err(GameError::CookieNotFound);
+                return Err(GameError::Connection(ConnectionError::InvalidPayload(
+                    "Missing 'user_id' cookie".to_string(),
+                )));
             };
 
             let player_id_string = player_id_cookie.to_string().replace("user_id=", "");
@@ -55,7 +60,10 @@ impl FromRequest for AuthPlayer {
                             "Failed to parse player_id from cookie: '{}'. Error: {}",
                             player_id_string, e
                         );
-                        return Err(GameError::InvalidPayload);
+                        return Err(GameError::System(SystemError::Internal(format!(
+                            "Invalid UUID format in cookie: '{}'",
+                            player_id_string
+                        ))));
                     }
                 };
 
@@ -77,7 +85,10 @@ impl FromRequest for AuthPlayer {
                         player_id, p1_key, p2_key
                     );
                     // 인증 실패 또는 잘못된 플레이어 오류 반환
-                    return Err(GameError::InvalidPlayer);
+                    return Err(GameError::Connection(ConnectionError::InvalidPayload(format!(
+                        "Authentication failed: Unknown player ID '{}' from cookie. Expected {} or {}.",
+                        player_id, p1_key, p2_key)
+                    )));
                 };
 
                 debug!("Request Guard 통과: player_type={:?}", player_type);
@@ -85,7 +96,9 @@ impl FromRequest for AuthPlayer {
                 Ok(AuthPlayer::new(player_type, player_id))
             } else {
                 error!("서버 상태 객체를 찾을 수 없음");
-                Err(GameError::ServerStateNotFound)
+                Err(GameError::System(SystemError::Internal(
+                    "Can't not found server state".to_string(),
+                )))
             }
         })
     }

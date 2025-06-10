@@ -6,7 +6,6 @@ use crate::{
     card::{cards::Cards, take::TopTake, types::PlayerKind, Card},
     enums::ZoneType,
     exception::GameError,
-    game::helper::Resoruce,
     selector::{mulligan::MulliganState, TargetCount},
     utils::deckcode_to_cards_single,
     zone::{
@@ -15,6 +14,13 @@ use crate::{
 };
 
 pub mod message;
+
+pub struct Resoruce {}
+impl Resoruce {
+    pub fn new(a: usize, b: usize) -> Self {
+        Self {}
+    }
+}
 
 pub struct PlayerActor {
     opponent: Option<Addr<PlayerActor>>,
