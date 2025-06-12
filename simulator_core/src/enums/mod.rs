@@ -1,5 +1,6 @@
 use std::fmt::Display;
 
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 pub const CARD_ID_JSON_PATH: &str = "F:/work/simulator/simulator_core/Resource/cards_id.json";
@@ -9,7 +10,7 @@ pub const DECK_JSON_PATH_P2: &str = "F:/work/simulator/simulator_core/Datas/play
 pub const UUID_GENERATOR_PATH: &str = "F:/work/simulator/simulator_core/Resource/uuidgen";
 pub const GAME_CONFIG_JSON_PATH: &str = "F:/work/simulator/simulator_core/Datas/config.json";
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash, Copy)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Copy, Serialize, Deserialize)]
 pub enum ZoneType {
     Hand,
     Deck,

@@ -9,7 +9,7 @@ use simulator_core::{
     card::types::PlayerKind,
     exception::{GameError, SystemError},
     game::{
-        msg::connection::RegisterConnection,
+        msg::connection::{RegisterConnection, UnRegisterConnection},
         GameActor,
     },
     retry, RetryConfig,
@@ -197,6 +197,10 @@ impl Actor for ConnectionActor {
                 self.player_type, self.player_id
             );
         }
+
+        self.game_addr.do_send(UnRegisterConnection {
+            player_id: self.player_id,
+        });
 
         self.start_cleanup_task();
 

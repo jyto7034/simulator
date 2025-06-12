@@ -18,6 +18,7 @@ pub mod game;
 pub mod player;
 pub mod resource;
 pub mod selector;
+pub mod sync;
 pub mod utils;
 pub mod zone;
 
@@ -78,7 +79,8 @@ pub trait StringUuidExt {
 
 impl StringUuidExt for String {
     fn to_uuid(&self) -> Result<Uuid, GameError> {
-        Uuid::parse_str(self).map_err(|_| GameError::System(SystemError::Internal("UUID parse failed".to_string())))
+        Uuid::parse_str(self)
+            .map_err(|_| GameError::System(SystemError::Internal("UUID parse failed".to_string())))
     }
 }
 
@@ -101,7 +103,11 @@ pub trait VecStringExt {
 impl VecStringExt for Vec<String> {
     fn to_vec_uuid(&self) -> Result<Vec<Uuid>, GameError> {
         self.iter()
-            .map(|uuid| Uuid::parse_str(uuid).map_err(|_| GameError::System(SystemError::Internal("UUID parse failed".to_string()))))
+            .map(|uuid| {
+                Uuid::parse_str(uuid).map_err(|_| {
+                    GameError::System(SystemError::Internal("UUID parse failed".to_string()))
+                })
+            })
             .collect::<Result<Vec<Uuid>, GameError>>()
     }
 }

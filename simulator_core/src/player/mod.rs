@@ -15,26 +15,130 @@ use crate::{
 
 pub mod message;
 
-pub struct Resoruce {}
+/// 플레이어의 소모 가능한 자원 (마나, 코스트 등)을 관리하는 구조체
+#[derive(Clone, Debug)]
+pub struct Resoruce {
+    current: i32,  // 현재 보유량
+    max: i32,      // 최대 보유 가능량
+    per_turn: i32, // 턴당 자동 충전량
+}
+
 impl Resoruce {
-    pub fn new(a: usize, b: usize) -> Self {
-        Self {}
+    /// 새로운 자원 생성
+    /// current: 현재 보유량, max: 최대 보유량
+    pub fn new(current: i32, max: i32) -> Self {
+        Self {
+            current,
+            max,
+            per_turn: 1, // 기본값: 턴당 1씩 충전
+        }
+    }
+
+    /// 턴당 충전량을 설정한 자원 생성
+    pub fn new_with_per_turn(current: i32, max: i32, per_turn: i32) -> Self {
+        Self {
+            current,
+            max,
+            per_turn,
+        }
+    }
+
+    /// 현재 보유량 반환
+    pub fn get_current(&self) -> i32 {
+        self.current
+    }
+
+    /// 최대 보유량 반환
+    pub fn get_max(&self) -> i32 {
+        self.max
+    }
+
+    /// 턴당 충전량 반환
+    pub fn get_per_turn(&self) -> i32 {
+        self.per_turn
+    }
+
+    /// 자원 소모 (성공 여부 반환)
+    pub fn spend(&mut self, amount: i32) -> bool {
+        if self.current >= amount {
+            self.current -= amount;
+            true
+        } else {
+            false
+        }
+    }
+
+    /// 자원 소모 가능 여부 확인
+    pub fn can_spend(&self, amount: i32) -> bool {
+        self.current >= amount
+    }
+
+    /// 자원 충전 (최대값 초과 불가)
+    pub fn refill(&mut self, amount: i32) {
+        self.current = (self.current + amount).min(self.max);
+    }
+
+    /// 턴 시작시 자동 충전
+    pub fn turn_refill(&mut self) {
+        self.refill(self.per_turn);
+    }
+
+    /// 최대값 증가 (마나 크리스탈 증가 등)
+    pub fn increase_max(&mut self, amount: i32) {
+        self.max += amount;
+        // 최대값 증가시 현재값도 증가 (하스스톤 스타일)
+        self.current += amount;
+    }
+
+    /// 자원 완전 충전
+    pub fn full_refill(&mut self) {
+        self.current = self.max;
+    }
+
+    /// 현재 자원이 비어있는지 확인
+    pub fn is_empty(&self) -> bool {
+        self.current <= 0
+    }
+
+    /// 현재 자원이 가득 찬지 확인
+    pub fn is_full(&self) -> bool {
+        self.current >= self.max
+    }
+
+    /// 현재 자원 직접 설정 (최대값 초과 불가)
+    pub fn set_current(&mut self, amount: i32) {
+        self.current = amount.clamp(0, self.max);
+    }
+
+    /// 최대값 직접 설정
+    pub fn set_max(&mut self, max: i32) {
+        self.max = max;
+        // 현재값이 새로운 최대값을 초과하면 조정
+        if self.current > self.max {
+            self.current = self.max;
+        }
+    }
+
+    /// 턴당 충전량 설정
+    pub fn set_per_turn(&mut self, per_turn: i32) {
+        self.per_turn = per_turn;
     }
 }
 
 pub struct PlayerActor {
-    opponent: Option<Addr<PlayerActor>>,
-    player_type: PlayerKind,
-    mulligan_state: MulliganState,
-    cards: Cards,
-    cost: Resoruce,
-    mana: Resoruce,
+    pub opponent: Option<Addr<PlayerActor>>,
+    pub player_type: PlayerKind,
+    pub mulligan_state: MulliganState,
+    pub cards: Cards,
+    pub cost: Resoruce,
+    pub mana: Resoruce,
+    pub health: i32,
 
-    hand: Hand,
-    deck: Deck,
-    graveyard: Graveyard,
-    effect: Effect,
-    field: Field,
+    pub hand: Hand,
+    pub deck: Deck,
+    pub graveyard: Graveyard,
+    pub effect: Effect,
+    pub field: Field,
 }
 
 impl Actor for PlayerActor {
@@ -49,13 +153,15 @@ impl PlayerActor {
             opponent: None,
             mulligan_state: MulliganState::new(),
             cards: cards.clone(),
-            cost: Resoruce::new(0, 0),
-            mana: Resoruce::new(0, 0),
+            cost: Resoruce::new(0, 0), // 코스트는 보통 카드별로 다르므로 0으로 시작
+            mana: Resoruce::new(1, 1), // 게임 시작시 마나 1/1으로 시작 (하스스톤 스타일)
             hand: Hand::new(),
             deck: Deck::new(cards),
             graveyard: Graveyard::new(),
             effect: Effect::new(),
             field: Field::new(),
+            // TODO: Player Health 를 정확히 구현해야함.
+            health: 20,
         }
     }
 

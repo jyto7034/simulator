@@ -2,16 +2,23 @@ pub mod mulligan {
     use std::{collections::HashSet, sync::Arc, time::Duration};
 
     use actix::Addr;
+    use async_tungstenite::tungstenite::Message;
     use dedicated_server::{
         connection::ServerMessage,
+        enums::HEARTBEAT_INTERVAL,
         test::{spawn_server, WebSocketTest},
     };
+    use futures::StreamExt;
     use simulator_core::{
         card::types::PlayerKind,
         enums::{ZoneType, CLIENT_TIMEOUT, COUNT_OF_MULLIGAN_CARDS},
         game::{msg::zones::GetPlayerZoneCards, GameActor},
     };
-    use tokio::{join, sync::Barrier, time::sleep};
+    use tokio::{
+        join,
+        sync::Barrier,
+        time::{sleep, timeout},
+    };
     use uuid::Uuid;
 
     // 플레이어별 테스트 로직을 위한 헬퍼 함수
@@ -333,6 +340,104 @@ pub mod mulligan {
         }
 
         println!("[BARRIER_TEST] Simultaneous connection test with Barrier PASSED.");
+    }
+
+    #[actix_web::test]
+    async fn test_rejects_duplicate_connection_for_same_player() {
+        // 1. Arrange: 테스트 서버를 시작하고 P1의 정보를 준비합니다.
+        let (addr, state, _handle) = spawn_server().await;
+        let player1_id = state.player1_id;
+        let url = format!("ws://{}/game", addr);
+        let cookie = format!("user_id={}", player1_id);
+
+        println!("[DUPLICATE_TEST] Starting duplicate connection test for Player 1.");
+
+        // 2. Act (First Connection): 첫 번째 연결을 성공적으로 맺습니다.
+        let mut ws1 = WebSocketTest::connect(url.clone(), cookie.clone())
+            .await
+            .expect("First connection should succeed");
+
+        println!("[DUPLICATE_TEST] First connection established.");
+
+        // 첫 번째 연결이 HeartbeatConnected 메시지를 받아 활성화되었는지 확인합니다.
+        ws1.expect_message(|msg: ServerMessage| match msg {
+            ServerMessage::HeartbeatConnected { player, session_id } => {
+                assert_eq!(player, "Player1");
+                assert_eq!(session_id, player1_id);
+            }
+            _ => panic!("Expected HeartbeatConnected for the first connection"),
+        })
+        .await;
+        println!("[DUPLICATE_TEST] First connection confirmed active.");
+
+        // 잠시 시간을 주어 첫 번째 연결이 서버에 완전히 등록되도록 합니다.
+        tokio::time::sleep(Duration::from_millis(100)).await;
+
+        // 3. Act (Second Connection): 동일한 플레이어로 두 번째 연결을 시도합니다.
+        let mut ws2 = WebSocketTest::connect(url, cookie)
+            .await
+            .expect("Second connection handshake should also succeed initially");
+
+        println!("[DUPLICATE_TEST] Second connection established. Now expecting it to be closed by server.");
+
+        // 4. Assert (Second Connection Closed): 두 번째 연결이 서버에 의해 닫히는지 확인합니다.
+        // 서버는 중복 세션을 감지하고 이 연결을 끊어야 합니다.
+        // 스트림에서 Close 메시지를 받거나 스트림이 끝나면(None) 성공입니다.
+        let close_result = timeout(Duration::from_secs(5), async {
+            loop {
+                match ws2.stream.next().await {
+                    Some(Ok(Message::Close(_))) => {
+                        println!("[DUPLICATE_TEST] Second connection received a Close frame as expected.");
+                        return true;
+                    },
+                    Some(Ok(Message::Text(text))) => {
+                        // 초기 HeartbeatConnected가 올 수도 있지만, 그 후엔 바로 Close가 와야 합니다.
+                        println!("[DUPLICATE_TEST] Second connection received text (ignoring and waiting for close): {}", text);
+                        continue;
+                    }
+                    Some(Ok(msg)) => {
+                        println!("[DUPLICATE_TEST] Second connection received other message (ignoring): {:?}", msg);
+                        continue;
+                    },
+                    Some(Err(e)) => {
+                        println!("[DUPLICATE_TEST] Second connection terminated with error: {:?}", e);
+                        return true; // 에러로 인한 종료도 예상된 결과일 수 있습니다.
+                    },
+                    None => {
+                        println!("[DUPLICATE_TEST] Second connection stream ended (None), which is also an expected outcome.");
+                        return true;
+                    }
+                }
+            }
+        }).await;
+
+        assert!(
+            close_result.unwrap_or(false),
+            "Server did not close the duplicate connection within 5 seconds."
+        );
+
+        // 5. Assert (First Connection Intact): 첫 번째 연결이 여전히 살아있는지 확인합니다.
+        // 서버로부터 오는 다음 heartbeat ping을 기다리는 것으로 확인할 수 있습니다.
+        println!("[DUPLICATE_TEST] Verifying first connection is still alive.");
+        let ping_check_result = timeout(Duration::from_secs(HEARTBEAT_INTERVAL + 2), async {
+            loop {
+                match ws1.stream.next().await {
+                    Some(Ok(Message::Ping(_))) => {
+                        println!("[DUPLICATE_TEST] First connection received a heartbeat ping. It's alive!");
+                        return true;
+                    }
+                    Some(Ok(_)) => continue, // 다른 메시지는 무시
+                    Some(Err(_)) | None => return false, // 스트림이 닫혔으면 실패
+                }
+            }
+        }).await;
+
+        assert!(
+            ping_check_result.unwrap_or(false),
+            "The first connection was unexpectedly closed after a duplicate attempt."
+        );
+
+        println!("[DUPLICATE_TEST] Duplicate connection test PASSED.");
     }
 }
 

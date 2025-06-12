@@ -109,6 +109,8 @@ impl Handler<GameEvent> for ConnectionActor {
                 );
                 ctx.stop(); // 게임이 중지되면 액터를 중지
             }
+            GameEvent::SyncState { snapshot } => todo!(),
+            GameEvent::StateUpdate(_) => todo!(),
         }
     }
 }

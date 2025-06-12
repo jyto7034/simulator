@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 
-use crate::{card::types::PlayerKind, exception::{GameError, StateError}};
+use crate::{
+    card::types::PlayerKind,
+    exception::{GameError, StateError},
+};
 
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum PlayerPhaseProgress {
@@ -135,7 +138,6 @@ pub enum EndPhaseStatus {
     TurnEnd,        // 실제 턴 종료
 }
 
-// --- 최종 Phase Enum ---
 #[derive(Clone, PartialEq, Eq, Copy, Debug)]
 pub enum Phase {
     Mulligan(MulliganStatus),
@@ -153,7 +155,7 @@ pub enum Phase {
 impl Phase {
     /// 다음 페이즈로 진행합니다.
     /// 현재 턴 플레이어 정보가 필요할 수 있습니다.
-    pub fn next(self, current_turn_player: PlayerKind) -> Self {
+    pub fn next(self, _current_turn_player: PlayerKind) -> Self {
         match self {
             Phase::Mulligan(status) => match status {
                 MulliganStatus::Completed => Phase::DrawPhase(DrawPhaseStatus::TurnPlayerDraws),
@@ -198,6 +200,103 @@ impl Phase {
                 Ok(Phase::EndPhase(EndPhaseStatus::EffectsTrigger))
             }
             _ => Err(GameError::State(StateError::InvalidPhaseTransition)), // 다른 페이즈에서는 스킵 불가
+        }
+    }
+}
+
+// Display implementations for all Status enums
+impl std::fmt::Display for PlayerActionStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            PlayerActionStatus::NotYetActed => write!(f, "NotYetActed"),
+            PlayerActionStatus::ActedOrPassed => write!(f, "ActedOrPassed"),
+        }
+    }
+}
+
+impl std::fmt::Display for MulliganStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            MulliganStatus::NotStarted => write!(f, "NotStarted"),
+            MulliganStatus::DealingInitialHands => write!(f, "DealingInitialHands"),
+            MulliganStatus::Player1Deciding(player) => write!(f, "Player1Deciding_{:?}", player),
+            MulliganStatus::Player2Deciding(player) => write!(f, "Player2Deciding_{:?}", player),
+            MulliganStatus::ApplyingMulligans => write!(f, "ApplyingMulligans"),
+            MulliganStatus::Completed => write!(f, "Completed"),
+        }
+    }
+}
+
+impl std::fmt::Display for DrawPhaseStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            DrawPhaseStatus::TurnPlayerDraws => write!(f, "TurnPlayerDraws"),
+            DrawPhaseStatus::EffectsTrigger => write!(f, "EffectsTrigger"),
+            DrawPhaseStatus::Completed => write!(f, "Completed"),
+        }
+    }
+}
+
+impl std::fmt::Display for StandbyPhaseStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            StandbyPhaseStatus::EffectsTrigger => write!(f, "EffectsTrigger"),
+            StandbyPhaseStatus::Completed => write!(f, "Completed"),
+        }
+    }
+}
+
+impl std::fmt::Display for MainPhaseStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            MainPhaseStatus::OpenState => write!(f, "OpenState"),
+        }
+    }
+}
+
+impl std::fmt::Display for DamageStepSubPhase {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            DamageStepSubPhase::StartOfDamageStep => write!(f, "StartOfDamageStep"),
+            DamageStepSubPhase::BeforeDamageCalculation => write!(f, "BeforeDamageCalculation"),
+            DamageStepSubPhase::PerformDamageCalculation => write!(f, "PerformDamageCalculation"),
+            DamageStepSubPhase::AfterDamageCalculation => write!(f, "AfterDamageCalculation"),
+            DamageStepSubPhase::EndOfDamageStep => write!(f, "EndOfDamageStep"),
+        }
+    }
+}
+
+impl std::fmt::Display for BattlePhaseStep {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            BattlePhaseStep::StartStep(status) => write!(f, "StartStep_{}", status),
+            BattlePhaseStep::BattleStep(status) => write!(f, "BattleStep_{}", status),
+            BattlePhaseStep::DamageStep(substep) => write!(f, "DamageStep_{}", substep),
+            BattlePhaseStep::EndStep(status) => write!(f, "EndStep_{}", status),
+        }
+    }
+}
+
+impl std::fmt::Display for EndPhaseStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            EndPhaseStatus::EffectsTrigger => write!(f, "EffectsTrigger"),
+            EndPhaseStatus::TurnEnd => write!(f, "TurnEnd"),
+        }
+    }
+}
+
+// Main Phase Display implementation
+impl std::fmt::Display for Phase {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Phase::Mulligan(status) => write!(f, "Mulligan_{}", status),
+            Phase::DrawPhase(status) => write!(f, "DrawPhase_{}", status),
+            Phase::StandbyPhase(status) => write!(f, "StandbyPhase_{}", status),
+            Phase::MainPhase1(status) => write!(f, "MainPhase1_{}", status),
+            Phase::BattlePhase(step) => write!(f, "BattlePhase_{}", step),
+            Phase::MainPhase2(status) => write!(f, "MainPhase2_{}", status),
+            Phase::EndPhase(status) => write!(f, "EndPhase_{}", status),
         }
     }
 }

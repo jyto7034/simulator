@@ -3,7 +3,7 @@ use std::{collections::HashMap, sync::Arc, time::Duration};
 use actix::{
     fut, Actor, ActorFutureExt, Addr, AsyncContext, Context, Handler, Message, Recipient, ResponseFuture, Running, SpawnHandle
 };
-use futures::future::join_all;
+use futures::{future::join_all, FutureExt};
 use msg::GameEvent;
 use state::GameStateManager;
 use tokio::sync::Mutex;
@@ -15,12 +15,10 @@ use crate::{
     card::{
         types::{PlayerIdentity, PlayerKind},
         Card,
-    },
-    exception::{GameError, SystemError},
-    player::{
+    }, exception::{GameError, SystemError}, game::msg::system::GetPlayerStateSnapshot, player::{
         message::{GameOver, SetOpponent, Terminate},
         PlayerActor,
-    },
+    }, sync::{snapshots::{GameStateSnapshot, OpponentStateSnapshot}, SyncActor}
 };
 
 pub mod choice;
@@ -36,8 +34,13 @@ pub struct GameActor {
     pub players: HashMap<PlayerIdentity, Addr<PlayerActor>>,
     pub connections: Arc<Mutex<HashMap<Uuid, Recipient<GameEvent>>>>, // 플레이어의 ConnectionActor 주소 저장
     pub player_connection_ready: HashMap<PlayerKind, bool>, // 각 플레이어 초기화 완료 여부
+
+    // 상대방 플레이어의 연결 대기 타이머 핸들
     pub opponent_wait_timer_handle: Option<SpawnHandle>,
     pub opponent_player_kind: Option<PlayerKind>,
+
+    // 재접속 타이머 핸들
+    pub reconnection_timer: HashMap<PlayerKind, SpawnHandle>,
 
     // 게임의 현재 페이즈와 턴
     pub turn: TurnState,
@@ -50,10 +53,29 @@ pub struct GameActor {
     // gsm lock 에 실패한 경우 등에 사용되는 플래그
     pub unexpected_stop: bool,
     pub cleanup_initiated: bool, 
+
+    pub sync_actor: Option<Addr<SyncActor>>,
 }
 
 impl Actor for GameActor {
     type Context = Context<Self>;
+
+    fn started(&mut self, ctx: &mut Context<Self>) {
+        info!("GameActor [{}] has started. Initializing SyncActor.", self.game_id);
+        
+        let game_addr = ctx.address();
+
+        let sync_actor_addr = SyncActor::create(|_| {
+            SyncActor::new(game_addr)
+        });
+
+        // 3. 생성된 SyncActor의 주소를 GameActor의 필드에 저장합니다.
+        self.sync_actor = Some(sync_actor_addr);
+
+        let mut gsm = self.game_state.lock().now_or_never().unwrap(); // started는 동기적으로 실행되므로 now_or_never 가능
+        gsm.initialize_players();
+    }
+
 
     fn stopping(&mut self, ctx: &mut Context<Self>) -> Running {
         if self.cleanup_initiated {
@@ -89,7 +111,7 @@ impl Actor for GameActor {
                 let mut gsm = game_state.lock().await;
                 let connected_players: Vec<_> = gsm.player_states.keys().cloned().collect();
                 for player_kind in connected_players {
-                    gsm.remove_connected_player(player_kind);
+                    gsm.update_player_connection_status(player_kind, false);
                 }
                 info!(
                     "GameActor [{}]: All players removed from GameStateManager.",
@@ -233,6 +255,8 @@ impl GameActor {
             opponent_player_kind: None,
             unexpected_stop: false,
             cleanup_initiated: false,
+            reconnection_timer: HashMap::new(),
+            sync_actor: None,
         }
     }
 
@@ -246,6 +270,51 @@ impl GameActor {
                 .player_connection_ready
                 .get(&PlayerKind::Player2)
                 .is_some()
+    }
+
+    pub async fn create_snapshot_for(
+        &self,
+        perspective_of: PlayerKind,
+    ) -> Result<GameStateSnapshot, GameError> {
+        let my_player_addr = self.get_player_addr_by_kind(perspective_of);
+        let opponent_player_addr = self.get_player_addr_by_kind(perspective_of.reverse());
+
+        // 두 플레이어의 상태를 병렬로 가져옵니다.
+        let (my_state_res, opponent_state_res) = tokio::join!(
+            my_player_addr.send(GetPlayerStateSnapshot),
+            opponent_player_addr.send(GetPlayerStateSnapshot)
+        );
+
+        let my_state = my_state_res??;
+        let opponent_state = opponent_state_res??;
+
+        // 상대방 정보는 공개된 정보로 변환합니다.
+        let opponent_info_for_me = OpponentStateSnapshot {
+            player_kind: opponent_state.player_kind,
+            health: opponent_state.health,
+            mana: opponent_state.mana,
+            mana_max: opponent_state.mana_max,
+            deck_count: opponent_state.deck_count,
+            hand_count: opponent_state.hand.len(), // 손패는 개수만
+            field: opponent_state.field,
+            graveyard: opponent_state.graveyard,
+        };
+
+        // TODO: 현재 시퀀스 번호와 해시를 SyncActor로부터 가져오거나 GameActor가 직접 관리
+        let current_seq = 0; // self.sync_actor.send(GetCurrentSeq).await?
+        let current_hash = None; // self.calculate_hash()
+
+        let snapshot = GameStateSnapshot {
+            seq: current_seq,
+            state_hash: current_hash,
+            current_phase: self.turn.current_phase.to_string(), // Phase를 문자열로
+            turn_player: self.turn.current_turn_plyaer,
+            turn_count: self.turn.turn_count,
+            my_info: my_state,
+            opponent_info: opponent_info_for_me,
+        };
+        
+        Ok(snapshot)
     }
 
     fn get_player_info_by_kind(&self, target_kind: PlayerKind) -> Option<(Uuid, &PlayerIdentity)> {
