@@ -4,7 +4,7 @@ pub mod types;
 
 use std::collections::HashMap;
 
-use actix::{Actor, Addr, Context, Handler, Recipient};
+use actix::{dev::SendError, Actor, Addr, Context, Handler, Recipient};
 use tracing::{info, warn};
 
 use crate::{
@@ -37,14 +37,30 @@ impl SyncActor {
     }
 
     /// 모든 연결된 클라이언트에게 페이로드를 브로드캐스트합니다.
-    async fn broadcast(&self, payload: StateUpdatePayload) {
-        let event = GameEvent::StateUpdate(payload); // GameEvent enum 래핑
+    fn broadcast(&mut self, payload: StateUpdatePayload) {
+        let event = GameEvent::StateUpdate(payload);
+
+        let mut dead_recipients = Vec::new();
+
         for (player, recipient) in &self.connections {
-            // TODO: Retry 로직 적용해야함.
-            if let Err(e) = recipient.send(event.clone()).await {
-                // Clone을 통해 각 클라이언트에 메시지 전송
-                warn!("Failed to send state update to player {:?}: {}", player, e);
+            match recipient.try_send(event.clone()) {
+                Ok(_) => {}
+                Err(SendError::Full(_)) => {
+                    warn!("Mailbox for player {:?} is full. Update might be delayed or dropped if it happens frequently.", player);
+                }
+                Err(SendError::Closed(_)) => {
+                    warn!(
+                        "Mailbox for player {:?} is closed. Marking for removal.",
+                        player
+                    );
+                    dead_recipients.push(*player);
+                }
             }
+        }
+
+        // 루프가 끝난 후 죽은 수신자들을 정리
+        for player in dead_recipients {
+            self.connections.remove(&player);
         }
     }
 }
