@@ -33,6 +33,7 @@ pub async fn steam_authentication_handler(
     state: web::Data<AppState>,
     req_body: web::Json<SteamAuthRequest>,
 ) -> Result<HttpResponse, AuthError> {
+    info!("Received Steam authentication request with ticket",);
     let api_url = "https://api.steampowered.com/ISteamUserAuth/AuthenticateUserTicket/v1/";
 
     // 1. 스팀 웹 API에 GET 요청을 보냅니다.

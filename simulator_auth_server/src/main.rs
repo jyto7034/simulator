@@ -1,19 +1,19 @@
 use actix_web::{web, App, HttpServer};
-use simulator_auth_server::auth_server::{
-    end_point::{delete_player_handler, steam_authentication_handler},
-    types::AppState,
+use simulator_auth_server::{
+    auth_server::{
+        end_point::{delete_player_handler, steam_authentication_handler},
+        types::AppState,
+    },
+    setup_logger,
 };
 use sqlx::postgres::PgPoolOptions;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenvy::dotenv().ok();
-    tracing_subscriber::fmt()
-        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
-        .init();
-
     std::fs::write("steam_appid.txt", "480")?;
 
+    setup_logger();
     tracing::info!("Steamworks SDK Initialized.");
 
     let database_url =
@@ -35,7 +35,7 @@ async fn main() -> std::io::Result<()> {
         expected_identity: std::env::var("EXPECTED_IDENTITY")
             .expect("EXPECTED_IDENTITY must be set in .env file"),
     };
-    let bind_address = "127.0.0.1:8080";
+    let bind_address = "127.0.0.1:3000";
     tracing::info!("Starting Actix-Web server on {}", bind_address);
 
     HttpServer::new(move || {
