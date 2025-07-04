@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use actix::{
-    fut::wrap_future, ActorContext, AsyncContext, Context, Handler, Message, ResponseFuture,
+    AsyncContext, Context, Handler, Message, ResponseFuture,
 };
 use tracing::{error, info, warn};
 use uuid::Uuid;
@@ -10,7 +10,7 @@ use crate::{
     card::types::PlayerKind,
     enums::CLIENT_TIMEOUT,
     exception::{ConnectionError, GameError, StateError, SystemError},
-    game::{state::GamePhase, GameActor},
+    game::{msg::{connection, system::Terminate}, state::GamePhase, GameActor},
 };
 
 use super::GameEvent;
@@ -33,6 +33,7 @@ pub struct UnRegisterConnection {
 pub struct HandleOpponentWaitTimer {
     // 기다리는 상대의 종류
     pub opponent_kind: PlayerKind,
+    pub player_uuid: Uuid,
 }
 
 #[derive(Message)]
@@ -42,50 +43,46 @@ pub struct CancelOpponentWaitTimer;
 impl Handler<UnRegisterConnection> for GameActor {
     type Result = ResponseFuture<Result<(), GameError>>;
 
-    fn handle(&mut self, msg: UnRegisterConnection, _ctx: &mut Self::Context) -> Self::Result {
-        let kind = self.get_player_type_by_uuid(msg.player_id);
-
+    fn handle(&mut self, msg: UnRegisterConnection, ctx: &mut Self::Context) -> Self::Result {
+        let player_kind = self.get_player_type_by_uuid(msg.player_id);
         info!(
             "GAME ACTOR [{}]: Handling UnRegisterConnection for player {}",
-            self.game_id, kind
+            self.game_id, player_kind
         );
-
-        // timer 생성.
 
         let game_id_clone = self.game_id.clone();
         let player_id = msg.player_id;
-
         let connections = self.connections.clone();
         let game_state = self.game_state.clone();
+        let addr = ctx.address(); // 자기 자신의 주소
 
         Box::pin(async move {
-            // --- 0. 기존 연결 확인 및 connections 맵 업데이트 ---
+            // connections 맵 업데이트
             {
                 let mut connections_guard = connections.lock().await;
-
-                if !connections_guard.contains_key(&player_id) {
-                    info!(
-                        "GAME ACTOR [{}]: Player {} does not have an active connection. Ignoring unregistration.",
-                        game_id_clone, player_id
-                    );
-                    return Ok(());
+                if connections_guard.remove(&player_id).is_none() {
+                    return Ok(()); // 이미 처리됨
                 }
-
-                connections_guard.remove(&player_id);
-                info!(
-                    "GAME ACTOR [{}]: Connection for player {} unregistered successfully. Remaining connections: {}",
-                    game_id_clone, player_id, connections_guard.len()
-                );
             }
 
-            // --- 1. GameState 업데이트 ---
+            // GameState 업데이트
+            let should_abort;
             {
                 let mut gsm = game_state.lock().await;
-                gsm.update_player_connection_status(kind, false);
-                info!(
-                    "GAME ACTOR [{}]: Player {} connection status updated in GameStateManager.",
-                    game_id_clone, player_id
-                );
+                gsm.update_player_connection_status(player_kind, false);
+                
+                // 게임 시작 전이고, 이제 연결된 플레이어가 아무도 없다면 게임을 중단해야 함
+                info!("player cont = {}", gsm.count_connected_players());
+                should_abort = gsm.is_in_waiting_phase() && gsm.count_connected_players() == 0;
+            }
+
+            if should_abort {
+                info!("[{}] Last player disconnected before game start. Aborting game session.", game_id_clone);
+                addr.do_send(CancelOpponentWaitTimer); // 타이머 취소
+                addr.do_send(Terminate); // 액터 종료
+            } else {
+                // 게임 진행 중에 연결이 끊긴 경우 (재접속 타이머 로직)
+                info!("[{}] Player {} disconnected during the game.", game_id_clone, player_kind);
             }
 
             Ok(())
@@ -289,6 +286,7 @@ impl Handler<RegisterConnection> for GameActor {
                 }
                 game_actor_addr.do_send(HandleOpponentWaitTimer {
                     opponent_kind: player_kind.reverse(),
+                    player_uuid: player_id,
                 });
             }
 
@@ -309,11 +307,15 @@ impl Handler<HandleOpponentWaitTimer> for GameActor {
             "Starting opponent wait timer for first player: {}",
             msg.opponent_kind
         );
-
+        
+        let connections = self.connections.clone();
+        let uuid = msg.player_uuid;
         self.opponent_player_kind = Some(msg.opponent_kind);
-        let handle = ctx.run_later(Duration::from_secs(CLIENT_TIMEOUT), move |act, _ctx_later| {
+
+        let handle = ctx.run_later(Duration::from_secs(CLIENT_TIMEOUT), move |act, ctx_later| {
             let game_state = act.game_state.clone();
             let game_id = act.game_id.clone();
+            let ctx_inner = ctx_later.address();
             
             actix::spawn(async move {
                 let mut gsm = game_state.lock().await;
@@ -329,6 +331,16 @@ impl Handler<HandleOpponentWaitTimer> for GameActor {
                         msg.opponent_kind
                     );
                     gsm.transition_to_phase(GamePhase::Aborted);
+                    
+                    ctx_inner.do_send(Terminate);
+
+                    {
+                        let connections = connections.lock().await;
+                        if let Some(connection) = connections.get(&uuid){
+                            connection.do_send(GameEvent::GameStopped);
+                        }
+                    }
+
 
                 } else if gsm.current_phase() == GamePhase::Aborted {
                     info!(

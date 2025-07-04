@@ -10,6 +10,8 @@ use crate::{
     utils::{self, json::CardJson},
 };
 
+/// `CardBuilder`는 카드 생성을 위한 빌더 패턴을 구현합니다.
+/// 카드 속성을 설정하고 `Card` 인스턴스를 생성하는 데 사용됩니다.
 pub struct CardBuilder {
     uuid: Uuid,
     name: String,
@@ -17,11 +19,21 @@ pub struct CardBuilder {
     effects: Vec<EffectTiming>,
     json_data: CardJson,
     owner: OwnerType,
+    /// CardSpecs는 카드의 스펙 정보(공격력, 방어력 등)를 담고 있습니다.  `CardBuilder`를 통해 설정됩니다.
     pub specs: CardSpecs,
     status: CardStatus,
 }
 
 impl CardBuilder {
+    /// `new`는 `CardBuilder`의 새 인스턴스를 생성합니다.
+    ///
+    /// # Arguments
+    ///
+    /// * `card_json` - 카드 정보가 담긴 JSON 데이터에 대한 참조.
+    ///
+    /// # Returns
+    ///
+    /// * `Result<Self, GameError>` - 성공하면 `CardBuilder` 인스턴스, 실패하면 `GameError`.
     pub fn new(card_json: &CardJson) -> Result<Self, GameError> {
         Ok(Self {
             uuid: utils::generate_uuid().unwrap(),
@@ -89,6 +101,11 @@ impl CardBuilder {
     //     self
     // }
 
+    /// `build`는 설정된 속성을 사용하여 `Card` 인스턴스를 생성합니다.
+    ///
+    /// # Returns
+    ///
+    /// * `Card` - 생성된 카드 인스턴스.
     pub fn build(self) -> Card {
         // owner: OwnerType,
         // uuid: UUID,

@@ -1,10 +1,10 @@
 use std::io::Error;
 
 use actix::{fut::wrap_future, prelude::*};
-use tracing::{info, warn};
+use tracing::{error, info, warn};
 
 use simulator_core::{
-    exception::{GameError, GameplayError, SystemError},
+    exception::{GameError, SystemError},
     game::msg::GameEvent,
 };
 
@@ -112,5 +112,46 @@ impl Handler<GameEvent> for ConnectionActor {
             GameEvent::SyncState { snapshot } => todo!(),
             GameEvent::StateUpdate(_) => todo!(),
         }
+    }
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct PostRegistrationSetup;
+
+impl Handler<PostRegistrationSetup> for ConnectionActor {
+    type Result = ();
+
+    fn handle(&mut self, _msg: PostRegistrationSetup, ctx: &mut Context<Self>) {
+        info!("asd");
+        // 1. Send the HeartbeatConnected message
+        let success_msg = ServerMessage::HeartbeatConnected {
+            player: self.player_type.to_string(),
+            session_id: self.player_id,
+        }
+        .to_json();
+
+        let mut session_clone = self.ws_session.clone();
+        let actor_addr = ctx.address();
+        ctx.spawn(wrap_future::<_, Self>(async move {
+            if let Err(e) = session_clone.text(success_msg).await {
+                error!(
+                    "Failed to send HeartbeatConnected after successful registration: {:?}",
+                    e
+                );
+                actor_addr.do_send(StopActorOnError {
+                    error: GameError::System(SystemError::Io(std::io::Error::new(
+                        std::io::ErrorKind::BrokenPipe,
+                        e.to_string(),
+                    ))),
+                });
+            }
+        }));
+
+        // 2. Send the first Ping immediately
+        self.send_ping(ctx);
+
+        // 3. Start the periodic heartbeat interval
+        self.start_heartbeat_interval(ctx);
     }
 }

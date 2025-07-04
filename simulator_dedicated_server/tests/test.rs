@@ -4,7 +4,7 @@ pub mod mulligan {
     use actix::Addr;
     use async_tungstenite::tungstenite::Message;
     use dedicated_server::{
-        connection::ServerMessage,
+        connection::{ServerErrorCode, ServerMessage},
         enums::HEARTBEAT_INTERVAL,
         test::{spawn_server, WebSocketTest},
     };
@@ -19,329 +19,355 @@ pub mod mulligan {
         sync::Barrier,
         time::{sleep, timeout},
     };
+    use tracing::info;
     use uuid::Uuid;
 
     // 플레이어별 테스트 로직을 위한 헬퍼 함수
-    async fn player_mulligan_sequence(
+    async fn connect_and_register_player(
         player_kind: PlayerKind,
         player_id: Uuid,
         addr: std::net::SocketAddr,
-        game_actor_addr: Addr<GameActor>, // GameActor 주소 전달
-    ) -> (WebSocketTest, Vec<Uuid>) {
+    ) -> WebSocketTest {
         let player_kind_str = player_kind.as_str();
         let url = format!("ws://{}/game", addr);
         let cookie = format!("user_id={}", player_id);
         let mut ws = WebSocketTest::connect(url, cookie).await.unwrap();
 
-        // 1. 초기 HeartbeatConnected 메시지 수신
-        println!(
-            "[{}] Waiting for initial HeartbeatConnected message...",
+        // 1. 서버가 연결을 등록하도록 수동으로 첫 Pong을 보냅니다.
+        ws.send(Message::Pong(vec![]))
+            .await
+            .expect("Failed to send initial Pong");
+        info!(
+            "[{}] Manually sent initial Pong to trigger registration.",
             player_kind_str
         );
-        let initial_extractor = |message: ServerMessage| match message {
-            ServerMessage::HeartbeatConnected { player, session_id } => {
-                assert_eq!(player, player_kind_str);
-                assert!(!session_id.is_nil());
-                println!(
-                    "[{}] Initial HeartbeatConnected received. Session ID: {}",
-                    player_kind_str, session_id
-                );
-            }
-            _ => panic!(
-                "[{}] Expected HeartbeatConnected as the first message, but got {:?}",
-                player_kind_str, message
-            ),
-        };
-        ws.expect_message(initial_extractor).await;
 
-        // 2. MulliganDealCards 메시지 수신
-        println!(
-            "[{}] Waiting for MulliganDealCards message...",
-            player_kind_str
-        );
-        let mulligan_extractor = |message: ServerMessage| -> Vec<Uuid> {
+        // 2. HeartbeatConnected 메시지를 수신하여 등록 완료를 확인합니다.
+        //    이 함수는 한 명만 연결할 때도, 두 명이 동시에 연결할 때도 사용되므로,
+        //    다른 메시지(MulliganDealCards)가 먼저 올 수도 있습니다.
+        //    따라서 expect_message 루프가 HeartbeatConnected를 찾을 때까지 다른 메시지를 무시해야 합니다.
+        ws.expect_message(|message: ServerMessage| {
             match message {
-                ServerMessage::MulliganDealCards { player, cards } => {
-                    // 중요: MulliganDealCards 메시지의 player 필드가 이 카드를 받는 플레이어를 지칭해야 함
-                    assert_eq!(
-                        player, player_kind_str,
-                        "[{}] Mulligan cards for wrong player",
-                        player_kind_str
+                ServerMessage::HeartbeatConnected { player, session_id } => {
+                    assert_eq!(player, player_kind_str);
+                    assert_eq!(session_id, player_id);
+                    info!(
+                        "[{}] Initial HeartbeatConnected received. Session ID: {}",
+                        player_kind_str, session_id
                     );
-                    assert_eq!(
-                        cards.len(),
-                        COUNT_OF_MULLIGAN_CARDS,
-                        "[{}] Incorrect number of mulligan cards",
-                        player_kind_str
-                    );
-                    for card_uuid in &cards {
-                        assert!(
-                            !card_uuid.is_nil(),
-                            "[{}] Nil UUID in mulligan cards",
-                            player_kind_str
-                        );
-                    }
-                    println!(
-                        "[{}] MulliganDealCards received with {} cards.",
-                        player_kind_str,
-                        cards.len()
-                    );
-                    cards
                 }
-                // 이 시점에는 다른 메시지가 오면 안 됨 (HeartbeatConnected는 이미 처리됨)
+                // MulliganDealCards는 이 함수에서 처리하지 않으므로, 만약 먼저 온다면 패닉을 일으켜 로직 오류를 알립니다.
+                // 혹은 테스트 시나리오에 따라 무시하고 계속 HeartbeatConnected를 기다릴 수도 있습니다.
+                // 여기서는 일단 패닉 처리하여, 호출 순서가 잘못되었음을 명확히 합니다.
                 _ => panic!(
-                    "[{}] Expected MulliganDealCards message, but got {:?}",
+                    "[{}] Expected HeartbeatConnected, but got {:?} instead.",
                     player_kind_str, message
                 ),
             }
-        };
-        let dealt_cards = ws.expect_message(mulligan_extractor).await;
+        })
+        .await;
 
-        // 3. 받은 카드가 덱에 없는지 확인 (GameActor에게 요청)
-        println!(
+        ws
+    }
+
+    async fn connect_and_send_pong(
+        player_kind: PlayerKind,
+        player_id: Uuid,
+        addr: std::net::SocketAddr,
+    ) -> WebSocketTest {
+        let player_kind_str = player_kind.as_str();
+        let url = format!("ws://{}/game", addr);
+        let cookie = format!("user_id={}", player_id);
+        let mut ws = WebSocketTest::connect(url, cookie).await.unwrap();
+
+        // 서버가 연결을 등록하도록 수동으로 첫 Pong을 보냅니다.
+        ws.send(Message::Pong(vec![]))
+            .await
+            .expect("Failed to send initial Pong");
+        info!("[{}] Connected and sent initial Pong.", player_kind_str);
+
+        ws
+    }
+
+    /// WebSocketTest 인스턴스를 통해 MulliganDealCards 메시지를 기다리고 검증합니다.
+    async fn expect_mulligan_cards(
+        ws: &mut WebSocketTest,
+        player_kind: PlayerKind,
+        game_actor_addr: Addr<GameActor>,
+    ) -> Vec<Uuid> {
+        let player_kind_str = player_kind.as_str();
+        info!(
+            "[{}] Waiting for MulliganDealCards message...",
+            player_kind_str
+        );
+
+        let dealt_cards = ws
+            .expect_message(|message: ServerMessage| -> Vec<Uuid> {
+                match message {
+                    ServerMessage::MulliganDealCards { player, cards } => {
+                        assert_eq!(
+                            player, player_kind_str,
+                            "[{}] Mulligan cards for wrong player",
+                            player_kind_str
+                        );
+                        assert_eq!(
+                            cards.len(),
+                            COUNT_OF_MULLIGAN_CARDS,
+                            "[{}] Incorrect number of mulligan cards",
+                            player_kind_str
+                        );
+                        assert!(
+                            cards.iter().all(|c| !c.is_nil()),
+                            "[{}] Nil UUID in mulligan cards",
+                            player_kind_str
+                        );
+                        info!(
+                            "[{}] MulliganDealCards received with {} cards.",
+                            player_kind_str,
+                            cards.len()
+                        );
+                        cards
+                    }
+                    _ => panic!(
+                        "[{}] Expected MulliganDealCards, but got {:?}",
+                        player_kind_str, message
+                    ),
+                }
+            })
+            .await;
+
+        // 받은 카드가 덱에 없는지 확인
+        info!(
             "[{}] Verifying dealt cards are not in deck...",
             player_kind_str
         );
         let deck_cards_result = game_actor_addr
             .send(GetPlayerZoneCards {
-                // GameActor는 Uuid로 플레이어를 식별하거나, PlayerKind를 Uuid로 변환할 수 있어야 함
                 zone: ZoneType::Deck,
                 player_type: player_kind,
             })
-            .await;
+            .await
+            .expect("Mailbox error getting deck cards");
 
-        match deck_cards_result {
-            Ok(deck_card_objects) => {
-                let deck_uuids: Vec<Uuid> = deck_card_objects
-                    .iter()
-                    .map(|card| card.get_uuid())
-                    .collect();
-                for dealt_card_uuid in dealt_cards.iter() {
-                    assert!(
-                        !deck_uuids.contains(dealt_card_uuid),
-                        "[{}] Deck should not contain card {} that was dealt in mulligan",
-                        player_kind_str,
-                        dealt_card_uuid
-                    );
-                }
-                println!(
-                    "[{}] Dealt cards correctly removed from deck.",
-                    player_kind_str
-                );
-            }
-            Err(e) => panic!(
-                "[{}] GameActor returned error getting deck cards: {:?}",
-                player_kind_str, e
-            ),
+        let deck_uuids: Vec<Uuid> = deck_cards_result
+            .iter()
+            .map(|card| card.get_uuid())
+            .collect();
+        for dealt_card_uuid in &dealt_cards {
+            assert!(
+                !deck_uuids.contains(dealt_card_uuid),
+                "[{}] Deck should not contain card {} that was dealt in mulligan",
+                player_kind_str,
+                dealt_card_uuid
+            );
         }
+        info!(
+            "[{}] Dealt cards correctly removed from deck.",
+            player_kind_str
+        );
 
-        // 멀리건 단계 완료를 위해 추가적인 메시지 전송/수신 로직이 필요할 수 있음
-        // 예: ws.send(UserAction::CompleteMulligan).await;
-        //     ws.expect_message(ServerMessage::MulliganPhaseEnd).await;
-
-        (ws, dealt_cards) // 받은 카드 목록 반환
+        dealt_cards
     }
 
     #[actix_web::test]
     async fn test_mulligan_deal_cards_to_each_player_concurrently() {
         let (addr, state, _handle) = spawn_server().await;
         let game_actor_addr = state.game.clone();
-
         let player1_id = state.player1_id;
         let player2_id = state.player2_id;
 
-        // 두 플레이어의 멀리건 시퀀스를 병렬로 실행
-        let ((_p1_ws, p1_results), (_p2_ws, p2_results)) = tokio::join!(
-            player_mulligan_sequence(
-                PlayerKind::Player1,
-                player1_id,
-                addr,
-                game_actor_addr.clone()
-            ),
-            player_mulligan_sequence(
-                PlayerKind::Player2,
-                player2_id,
-                addr,
-                game_actor_addr.clone()
-            )
+        // 1. 두 플레이어를 병렬로 연결하고 등록합니다.
+        let (p1_connect_result, p2_connect_result) = tokio::join!(
+            connect_and_register_player(PlayerKind::Player1, player1_id, addr),
+            connect_and_register_player(PlayerKind::Player2, player2_id, addr)
         );
 
-        println!("Player 1 mulligan cards: {:?}", p1_results);
-        println!("Player 2 mulligan cards: {:?}", p2_results);
+        let mut ws1 = p1_connect_result;
+        let mut ws2 = p2_connect_result;
 
-        // 추가 검증: P1과 P2가 받은 카드가 서로 다른지 등
-        let mut all_dealt_cards = p1_results.clone();
-        all_dealt_cards.extend(p2_results.clone());
-        let unique_cards_count = all_dealt_cards
-            .iter()
-            .collect::<std::collections::HashSet<_>>()
-            .len();
+        // 2. 두 플레이어가 모두 등록되었으므로, 이제 서버는 멀리건 카드를 보내야 합니다.
+        let (p1_cards_result, p2_cards_result) = tokio::join!(
+            expect_mulligan_cards(&mut ws1, PlayerKind::Player1, game_actor_addr.clone()),
+            expect_mulligan_cards(&mut ws2, PlayerKind::Player2, game_actor_addr.clone())
+        );
+
+        // 3. 추가 검증
+        let mut all_dealt_cards = p1_cards_result;
+        all_dealt_cards.extend(p2_cards_result);
+        let unique_cards_count = all_dealt_cards.iter().collect::<HashSet<_>>().len();
         assert_eq!(
             unique_cards_count,
             COUNT_OF_MULLIGAN_CARDS * 2,
             "Dealt cards between players are not unique."
         );
-
         println!("Test test_mulligan_deal_cards_to_each_player_concurrently completed.");
     }
 
     #[actix_web::test]
-    #[should_panic]
     async fn test_mulligan_deal_cards_one_player_delayed() {
         let (addr, state, _handle) = spawn_server().await;
-        let game_actor_addr = state.game.clone();
 
         let player1_id = state.player1_id;
         let player2_id = state.player2_id;
 
-        // 플레이어 1은 즉시 시작
-        let player1_task = tokio::spawn(player_mulligan_sequence(
-            PlayerKind::Player1,
-            player1_id,
-            addr,
-            game_actor_addr.clone(),
-        ));
+        // --- Player 1's Task ---
+        // P1은 즉시 연결하고, 서버가 타임아웃으로 자신을 끊을 때까지 기다립니다.
+        let p1_task = tokio::spawn(async move {
+            let mut ws1 = connect_and_register_player(PlayerKind::Player1, player1_id, addr).await;
+            info!("[DELAYED_TEST] P1 connected and registered. Now waiting for server to close connection due to P2 timeout.");
 
-        // 플레이어 2는 35초 지연 후 시작 (이 시간 동안 서버가 P1을 기다리는지 확인)
-        // 이 지연 시간은 서버의 관련 타임아웃 설정보다 길거나 짧게 조절하여 테스트 가능
-        let delay_duration = Duration::from_secs(CLIENT_TIMEOUT + 5);
-        println!(
-            "[DELAYED_TEST] Player 2 will start mulligan sequence after {:?} delay.",
-            delay_duration
-        );
+            // 서버가 P2를 기다리다 타임아웃되어 연결을 끊을 때까지 대기
+            // GameActor의 Abort -> ConnectionActor의 stop 흐름
+            let close_future = async {
+                loop {
+                    if let Some(msg) = ws1.stream.next().await {
+                        match msg {
+                            Ok(Message::Close(_)) => {
+                                info!("[DELAYED_TEST] P1 connection closed by server as expected.");
+                                break;
+                            }
+                            Ok(Message::Ping(_)) => continue, // Ping은 무시
+                            _ => {}                           // 다른 메시지도 무시
+                        }
+                    } else {
+                        info!("[DELAYED_TEST] P1 stream ended, which is also expected.");
+                        break;
+                    }
+                }
+            };
 
-        let player2_task = tokio::spawn(async move {
-            sleep(delay_duration).await;
-            println!("[DELAYED_TEST] Player 2 starting mulligan sequence now.");
-            player_mulligan_sequence(PlayerKind::Player2, player2_id, addr, game_actor_addr).await
+            // CLIENT_TIMEOUT + 약간의 여유시간을 기다립니다.
+            match timeout(Duration::from_secs(CLIENT_TIMEOUT + 5), close_future).await {
+                Ok(_) => info!("[DELAYED_TEST] P1 task finished successfully."),
+                Err(_) => panic!("[DELAYED_TEST] P1 connection was not closed by server within the timeout period."),
+            }
         });
 
-        // 두 태스크의 결과 기다림
-        // P1은 바로 완료될 수 있고, P2는 지연 후 완료되거나,
-        // 서버 정책에 따라 P1이 P2를 기다리다가 특정 조건 후 진행될 수 있음.
-        let (p1_result_outer, p2_result_outer) = tokio::join!(player1_task, player2_task);
+        // --- Player 2's Task ---
+        // P2는 타임아웃이 발생한 *이후에* 연결을 시도합니다. 이 시도는 실패해야 합니다.
+        let p2_task = tokio::spawn(async move {
+            // P1이 타임아웃되기에 충분한 시간을 기다립니다.
+            sleep(Duration::from_secs(CLIENT_TIMEOUT + 2)).await;
+            info!("[DELAYED_TEST] P2 starting connection attempt after timeout.");
 
-        // 태스크 실행 결과 확인 (JoinError 처리)
-        let (_p1_ws, p1_results) = match p1_result_outer {
-            Ok((ws, res)) => {
-                println!(
-                    "[DELAYED_TEST] Player 1 mulligan sequence completed with results: {:?}",
-                    res
-                );
-                (ws, res)
-            }
-            Err(e) => {
-                panic!("[DELAYED_TEST] Player 1 task failed: {:?}", e);
-            }
-        };
+            let url = format!("ws://{}/game", addr);
+            let cookie = format!("user_id={}", player2_id);
+            let reconnect_result = WebSocketTest::connect(url, cookie).await;
 
-        let (_p2_ws, p2_results) = match p2_result_outer {
-            Ok((ws, res)) => {
-                println!(
-                    "[DELAYED_TEST] Player 2 mulligan sequence completed with results: {:?}",
-                    res
-                );
-                (ws, res)
-            }
-            Err(e) => {
-                panic!("[DELAYED_TEST] Player 2 task failed: {:?}", e);
-            }
-        };
-
-        // 결과 검증:
-        // 이 부분은 서버가 지연된 플레이어를 어떻게 처리하는지에 따라 달라집니다.
-        // 1. 서버가 P2를 기다려서 두 플레이어 모두 정상적으로 멀리건을 완료하는 경우:
-        if !p1_results.is_empty() && !p2_results.is_empty() {
-            println!("[DELAYED_TEST] Both players seem to have completed mulligan.");
-            let mut all_dealt_cards = p1_results.clone();
-            all_dealt_cards.extend(p2_results.clone());
-            let unique_cards_count = all_dealt_cards
-                .iter()
-                .collect::<std::collections::HashSet<_>>()
-                .len();
-            assert_eq!(
-            unique_cards_count,
-            COUNT_OF_MULLIGAN_CARDS * 2,
-            "[DELAYED_TEST] Dealt cards between players are not unique or not all players completed mulligan."
-        );
-        } else if !p1_results.is_empty() && p2_results.is_empty() {
-            // 2. 서버가 P1만으로 게임을 시작하거나, P2를 기다리다 P1에 대한 타임아웃/오류 처리 후 P2는 실패하는 경우
-            println!("[DELAYED_TEST] Player 1 completed mulligan, but Player 2 did not (possibly expected).");
-            // 이 경우 P1의 멀리건 카드 수만 검증할 수 있습니다.
-            assert_eq!(
-                p1_results.len(),
-                COUNT_OF_MULLIGAN_CARDS,
-                "[DELAYED_TEST] Player 1 did not receive the correct number of mulligan cards."
+            // GameActor가 이미 종료되었으므로 연결 시도는 실패해야 합니다.
+            assert!(
+                reconnect_result.is_err(),
+                "[DELAYED_TEST] P2 connection should have failed, but it succeeded."
             );
-            // 서버 로그를 통해 P1이 P2를 기다렸는지, 또는 특정 시간 후 P1만으로 진행했는지 확인해야 합니다.
-            // 또는 GameActor의 상태를 직접 확인하여 게임이 어떻게 진행되었는지 검증할 수 있습니다.
-            // 예를 들어, GameStateManager.current_phase()가 Mulligan이 아닌 다른 상태로 넘어갔는지 등.
-        } else {
-            // 3. 두 플레이어 모두 실패한 경우 (예: 서버가 P1 지연으로 인해 전체 게임을 시작하지 못함)
-            panic!("[DELAYED_TEST] Neither player completed the mulligan sequence. P1 results: {:?}, P2 results: {:?}", p1_results, p2_results);
-        }
+            info!("[DELAYED_TEST] P2 connection attempt failed as expected.");
+        });
 
-        println!("[DELAYED_TEST] Test test_mulligan_deal_cards_one_player_delayed completed.");
+        // 두 태스크의 결과를 기다립니다.
+        let (p1_result, p2_result) = tokio::join!(p1_task, p2_task);
+
+        // 태스크 자체가 패닉하지 않았는지 확인
+        p1_result.expect("Player 1 task panicked");
+        p2_result.expect("Player 2 task panicked");
+
+        println!("[DELAYED_TEST] Test test_mulligan_deal_cards_one_player_delayed completed successfully.");
     }
 
     #[actix_web::test]
     async fn test_mulligan_deal_cards_on_simultaneous_connection_with_barrier() {
-        // 1. Arrange: 서버와 함께 Barrier를 준비합니다.
         let (addr, state, _handle) = spawn_server().await;
-        let game_actor_addr = state.game.clone();
         let player1_id = state.player1_id;
         let player2_id = state.player2_id;
-
-        // 2개의 태스크를 동기화할 Barrier 생성
         let barrier = Arc::new(Barrier::new(2));
 
-        println!("[BARRIER_TEST] Starting simultaneous connection test with Barrier.");
-
-        // 2. Act: 각 플레이어 태스크가 Barrier에서 대기 후 동시에 진행하도록 합니다.
+        // 1. Act (Phase 1): 동시에 연결 및 Pong 전송
         let p1_barrier = barrier.clone();
         let p1_task = tokio::spawn(async move {
-            println!("[BARRIER_TEST] Player 1 task is ready and waiting at the barrier.");
-            p1_barrier.wait().await; // .await를 추가하여 비동기로 대기
-            println!("[BARRIER_TEST] Player 1 task released from barrier, connecting now.");
-            player_mulligan_sequence(PlayerKind::Player1, player1_id, addr, game_actor_addr).await
+            p1_barrier.wait().await;
+            connect_and_send_pong(PlayerKind::Player1, player1_id, addr).await
         });
 
         let p2_barrier = barrier.clone();
         let p2_task = tokio::spawn(async move {
-            println!("[BARRIER_TEST] Player 2 task is ready and waiting at the barrier.");
-            p2_barrier.wait().await; // .await를 추가하여 비동기로 대기
-            println!("[BARRIER_TEST] Player 2 task released from barrier, connecting now.");
-            player_mulligan_sequence(PlayerKind::Player2, player2_id, addr, state.game.clone())
-                .await
+            p2_barrier.wait().await;
+            connect_and_send_pong(PlayerKind::Player2, player2_id, addr).await
         });
 
-        // 두 태스크의 결과를 기다립니다.
         let (p1_result, p2_result) = join!(p1_task, p2_task);
+        let mut ws1 = p1_result.unwrap();
+        let mut ws2 = p2_result.unwrap();
 
-        let (_p1_ws, p1_dealt_cards) = p1_result.expect("Player 1 task panicked");
-        let (_p2_ws, p2_dealt_cards) = p2_result.expect("Player 2 task panicked");
+        info!(
+            "[BARRIER_TEST] Both players connected and sent Pong. Now expecting initial messages."
+        );
 
-        println!("[BARRIER_TEST] Both players completed their sequences after barrier.");
+        // 2. Act (Phase 2): 각 클라이언트가 초기 메시지 2개를 수신하고 검증합니다.
+        let p1_message_handler = async {
+            let mut received_messages = Vec::new();
+            // 2개의 메시지를 받습니다.
+            received_messages.push(ws1.expect_message_opt(|msg| Some(msg)).await);
+            received_messages.push(ws1.expect_message_opt(|msg| Some(msg)).await);
 
-        // 3. Assert: 결과는 기존 테스트와 동일하게 검증합니다.
-        assert_eq!(p1_dealt_cards.len(), COUNT_OF_MULLIGAN_CARDS);
-        assert_eq!(p2_dealt_cards.len(), COUNT_OF_MULLIGAN_CARDS);
+            let mut seen_heartbeat = false;
+            let mut dealt_cards: Option<Vec<Uuid>> = None;
 
-        let mut all_dealt_cards = p1_dealt_cards.clone();
-        all_dealt_cards.extend(p2_dealt_cards.clone());
+            for msg in received_messages {
+                match msg {
+                    ServerMessage::HeartbeatConnected { player, session_id } => {
+                        assert_eq!(player, "Player1");
+                        assert_eq!(session_id, player1_id);
+                        seen_heartbeat = true;
+                    }
+                    ServerMessage::MulliganDealCards { player, cards } => {
+                        assert_eq!(player, "Player1");
+                        assert_eq!(cards.len(), COUNT_OF_MULLIGAN_CARDS);
+                        dealt_cards = Some(cards);
+                    }
+                    _ => panic!("[Player1] Received unexpected message: {:?}", msg),
+                }
+            }
 
-        let mut unique_cards = HashSet::new();
-        for card_uuid in all_dealt_cards {
-            assert!(
-                unique_cards.insert(card_uuid),
-                "Duplicate card found: {}",
-                card_uuid
-            );
-        }
+            assert!(seen_heartbeat, "Player1 did not receive HeartbeatConnected");
+            dealt_cards.expect("Player1 did not receive MulliganDealCards")
+        };
+
+        let p2_message_handler = async {
+            let mut received_messages = Vec::new();
+            received_messages.push(ws2.expect_message_opt(|msg| Some(msg)).await);
+            received_messages.push(ws2.expect_message_opt(|msg| Some(msg)).await);
+
+            let mut seen_heartbeat = false;
+            let mut dealt_cards: Option<Vec<Uuid>> = None;
+
+            for msg in received_messages {
+                match msg {
+                    ServerMessage::HeartbeatConnected { player, session_id } => {
+                        assert_eq!(player, "Player2");
+                        assert_eq!(session_id, player2_id);
+                        seen_heartbeat = true;
+                    }
+                    ServerMessage::MulliganDealCards { player, cards } => {
+                        assert_eq!(player, "Player2");
+                        assert_eq!(cards.len(), COUNT_OF_MULLIGAN_CARDS);
+                        dealt_cards = Some(cards);
+                    }
+                    _ => panic!("[Player2] Received unexpected message: {:?}", msg),
+                }
+            }
+
+            assert!(seen_heartbeat, "Player2 did not receive HeartbeatConnected");
+            dealt_cards.expect("Player2 did not receive MulliganDealCards")
+        };
+
+        let (p1_dealt_cards, p2_dealt_cards) = join!(p1_message_handler, p2_message_handler);
+
+        // 3. Assert
+        let mut all_dealt_cards = p1_dealt_cards;
+        all_dealt_cards.extend(p2_dealt_cards);
+        let unique_cards_count = all_dealt_cards.iter().collect::<HashSet<_>>().len();
+        assert_eq!(unique_cards_count, COUNT_OF_MULLIGAN_CARDS * 2);
 
         println!("[BARRIER_TEST] Simultaneous connection test with Barrier PASSED.");
     }
-
     #[actix_web::test]
     async fn test_rejects_duplicate_connection_for_same_player() {
         // 1. Arrange: 테스트 서버를 시작하고 P1의 정보를 준비합니다.
@@ -352,14 +378,15 @@ pub mod mulligan {
 
         println!("[DUPLICATE_TEST] Starting duplicate connection test for Player 1.");
 
-        // 2. Act (First Connection): 첫 번째 연결을 성공적으로 맺습니다.
+        // 2. Act (First Connection): 첫 번째 연결을 성공적으로 맺고, 등록 완료 메시지를 기다립니다.
         let mut ws1 = WebSocketTest::connect(url.clone(), cookie.clone())
             .await
             .expect("First connection should succeed");
 
         println!("[DUPLICATE_TEST] First connection established.");
 
-        // 첫 번째 연결이 HeartbeatConnected 메시지를 받아 활성화되었는지 확인합니다.
+        // tungstenite 클라이언트는 서버의 Ping에 자동으로 Pong으로 응답합니다.
+        // Pong 응답 후 서버가 성공적으로 등록하고 보내주는 HeartbeatConnected 메시지를 기다립니다.
         ws1.expect_message(|msg: ServerMessage| match msg {
             ServerMessage::HeartbeatConnected { player, session_id } => {
                 assert_eq!(player, "Player1");
@@ -370,51 +397,32 @@ pub mod mulligan {
         .await;
         println!("[DUPLICATE_TEST] First connection confirmed active.");
 
-        // 잠시 시간을 주어 첫 번째 연결이 서버에 완전히 등록되도록 합니다.
-        tokio::time::sleep(Duration::from_millis(100)).await;
-
         // 3. Act (Second Connection): 동일한 플레이어로 두 번째 연결을 시도합니다.
         let mut ws2 = WebSocketTest::connect(url, cookie)
             .await
             .expect("Second connection handshake should also succeed initially");
 
-        println!("[DUPLICATE_TEST] Second connection established. Now expecting it to be closed by server.");
+        println!("[DUPLICATE_TEST] Second connection established. Now expecting an error message.");
 
-        // 4. Assert (Second Connection Closed): 두 번째 연결이 서버에 의해 닫히는지 확인합니다.
-        // 서버는 중복 세션을 감지하고 이 연결을 끊어야 합니다.
-        // 스트림에서 Close 메시지를 받거나 스트림이 끝나면(None) 성공입니다.
-        let close_result = timeout(Duration::from_secs(5), async {
-            loop {
-                match ws2.stream.next().await {
-                    Some(Ok(Message::Close(_))) => {
-                        println!("[DUPLICATE_TEST] Second connection received a Close frame as expected.");
-                        return true;
-                    },
-                    Some(Ok(Message::Text(text))) => {
-                        // 초기 HeartbeatConnected가 올 수도 있지만, 그 후엔 바로 Close가 와야 합니다.
-                        println!("[DUPLICATE_TEST] Second connection received text (ignoring and waiting for close): {}", text);
-                        continue;
-                    }
-                    Some(Ok(msg)) => {
-                        println!("[DUPLICATE_TEST] Second connection received other message (ignoring): {:?}", msg);
-                        continue;
-                    },
-                    Some(Err(e)) => {
-                        println!("[DUPLICATE_TEST] Second connection terminated with error: {:?}", e);
-                        return true; // 에러로 인한 종료도 예상된 결과일 수 있습니다.
-                    },
-                    None => {
-                        println!("[DUPLICATE_TEST] Second connection stream ended (None), which is also an expected outcome.");
-                        return true;
-                    }
+        // 4. Assert (Second Connection receives error and is closed):
+        // 두 번째 연결은 중복 세션 에러 메시지를 받고 즉시 종료되어야 합니다.
+        ws2.expect_message(|msg: ServerMessage| {
+            match msg {
+                ServerMessage::Error(payload) => {
+                    assert_eq!(payload.code, ServerErrorCode::ActiveSessionExists);
+                    println!("[DUPLICATE_TEST] Second connection received correct ActiveSessionExists error.");
                 }
+                _ => panic!("[DUPLICATE_TEST] Expected an Error message for the second connection, but got {:?}", msg),
             }
         }).await;
 
+        // 에러 메시지 전송 후, 서버는 연결을 닫아야 합니다. 스트림이 닫혔는지 확인합니다.
+        let next_msg = timeout(Duration::from_secs(1), ws2.stream.next()).await;
         assert!(
-            close_result.unwrap_or(false),
-            "Server did not close the duplicate connection within 5 seconds."
+            matches!(next_msg, Ok(None) | Ok(Some(Ok(Message::Close(_))))),
+            "Second connection was not closed after sending the error message."
         );
+        println!("[DUPLICATE_TEST] Second connection was closed as expected.");
 
         // 5. Assert (First Connection Intact): 첫 번째 연결이 여전히 살아있는지 확인합니다.
         // 서버로부터 오는 다음 heartbeat ping을 기다리는 것으로 확인할 수 있습니다.
@@ -438,6 +446,101 @@ pub mod mulligan {
         );
 
         println!("[DUPLICATE_TEST] Duplicate connection test PASSED.");
+    }
+
+    #[actix_web::test]
+    async fn test_game_aborts_if_first_player_disconnects() {
+        // 1. Arrange
+        let (addr, state, _handle) = spawn_server().await;
+        let player1_id = state.player1_id;
+        let url = format!("ws://{}/game", addr);
+        let cookie = format!("user_id={}", player1_id);
+
+        info!("[ABORT_TEST] Starting test: P1 connects, then disconnects before P2 joins.");
+
+        // 2. Act: P1 connects, confirms, and disconnects.
+        let mut ws1 = WebSocketTest::connect(url.clone(), cookie.clone())
+            .await
+            .expect("P1 initial connection should succeed");
+
+        ws1.send(Message::Pong(vec![]))
+            .await
+            .expect("Failed to send initial Pong");
+        info!("[ABORT_TEST] P1 sent initial Pong.");
+
+        ws1.expect_message(|msg: ServerMessage| {
+            if !matches!(msg, ServerMessage::HeartbeatConnected { .. }) {
+                panic!("Expected HeartbeatConnected, got {:?}", msg);
+            }
+        })
+        .await;
+        info!("[ABORT_TEST] P1 connection confirmed. Server is now waiting for P2.");
+
+        ws1.close().await.expect("Failed to close P1's websocket");
+        info!("[ABORT_TEST] P1 connection close command sent.");
+
+        sleep(Duration::from_millis(500)).await;
+        info!("[ABORT_TEST] P1 disconnected. Checking if the game session was aborted.");
+
+        // 3. Assert: The game session should be terminated.
+        let reconnect_result = WebSocketTest::connect(url, cookie).await;
+
+        if let Ok(mut ws_reconnect) = reconnect_result {
+            info!("[ABORT_TEST] Reconnection handshake succeeded. Now triggering registration attempt.");
+
+            // *** KEY CHANGE: Trigger the registration process by sending a Pong ***
+            // This will cause the new ConnectionActor to message the (now dead) GameActor.
+            let send_pong_result = ws_reconnect.send(Message::Pong(vec![])).await;
+
+            if send_pong_result.is_err() {
+                // If sending the Pong fails, it means the connection was already closed. This is a pass.
+                info!("[ABORT_TEST] PASSED: Could not send Pong on new connection, as it was already closing.");
+            } else {
+                // If Pong was sent, we expect the server to detect the dead GameActor and close the connection.
+                let first_message =
+                    timeout(Duration::from_secs(2), ws_reconnect.stream.next()).await;
+
+                match first_message {
+                    Ok(Some(Ok(Message::Close(_)))) | Ok(None) => {
+                        info!("[ABORT_TEST] PASSED: Reconnection was closed by the server after registration attempt.");
+                    }
+                    Ok(Some(Err(e))) => {
+                        info!("[ABORT_TEST] PASSED: Reconnection failed with an error, which is an acceptable outcome. Error: {:?}", e);
+                    }
+                    Ok(Some(Ok(msg))) => {
+                        // It's possible to receive an error message before the close frame.
+                        if let Ok(server_msg) =
+                            serde_json::from_str::<ServerMessage>(&msg.to_string())
+                        {
+                            if matches!(server_msg, ServerMessage::Error(_)) {
+                                info!("[ABORT_TEST] PASSED: Received an error message before closing.");
+                                // Check for a subsequent close frame
+                                let second_message =
+                                    timeout(Duration::from_secs(1), ws_reconnect.stream.next())
+                                        .await;
+                                assert!(matches!(
+                                    second_message,
+                                    Ok(Some(Ok(Message::Close(_)))) | Ok(None)
+                                ));
+                                return;
+                            }
+                        }
+                        panic!(
+                            "[ABORT_TEST] FAILED: Reconnection was not closed. Instead, received message: {:?}",
+                            msg
+                        );
+                    }
+                    Err(_) => {
+                        panic!("[ABORT_TEST] FAILED: Timed out waiting for the server to close the reconnection.");
+                    }
+                }
+            }
+        } else if let Err(e) = reconnect_result {
+            info!(
+                "[ABORT_TEST] PASSED: Reconnection attempt failed at the handshake level, as expected. Error: {}",
+                e
+            );
+        }
     }
 }
 
@@ -471,6 +574,12 @@ pub mod heartbeat {
         // 예시: 서버에 GET 요청 보내기
         let mut ws = WebSocketTest::connect(url, cookie).await.unwrap();
 
+        // 2. 서버가 연결을 등록하도록 수동으로 첫 Pong을 보냅니다.
+        ws.send(Message::Pong(vec![]))
+            .await
+            .expect("Failed to send initial Pong");
+        info!("[TEST] Manually sent initial Pong to trigger registration.");
+
         let extractor = |message: ServerMessage| match message {
             ServerMessage::HeartbeatConnected { player, session_id } => {
                 assert_eq!(player, player_type);
@@ -481,6 +590,7 @@ pub mod heartbeat {
         ws.expect_message(extractor).await;
     }
 
+    // TODO: 제대로된 사유로 성공하는지 확인해야함.
     #[actix_web::test]
     async fn test_heartbeat_timeout() {
         let (addr, state, _handle) = spawn_server().await;
@@ -492,6 +602,12 @@ pub mod heartbeat {
         let cookie = format!("user_id={}", player1_id);
 
         let mut ws = WebSocketTest::connect(url, cookie).await.unwrap();
+
+        // 2. 서버가 연결을 등록하도록 수동으로 첫 Pong을 보냅니다.
+        ws.send(Message::Pong(vec![]))
+            .await
+            .expect("Failed to send initial Pong");
+        info!("[TEST] Manually sent initial Pong to trigger registration.");
 
         // 1. 초기 연결 메시지 수신
         info!("[TEST] Waiting for initial connection message...");
@@ -569,6 +685,12 @@ pub mod heartbeat {
         let cookie = format!("user_id={}", player1_id);
 
         let mut ws = WebSocketTest::connect(url, cookie).await.unwrap();
+
+        // 2. 서버가 연결을 등록하도록 수동으로 첫 Pong을 보냅니다.
+        ws.send(Message::Pong(vec![]))
+            .await
+            .expect("Failed to send initial Pong");
+        info!("[TEST] Manually sent initial Pong to trigger registration.");
 
         // 1. 초기 연결 메시지 수신 (선택 사항이지만, 이전 테스트에서 확인했으므로 여기서도 확인)
         info!("[TEST] Waiting for initial connection message...");

@@ -1,0 +1,11 @@
+# 서버 설정
+bind_address = "0.0.0.0"
+port = 8080
+log_level = "INFO"
+
+# Redis 설정
+redis_url = "redis://127.0.0.1:6379"
+
+# 매치메이킹 설정
+matchmaking_interval_seconds = 2
+initial_mmr_range = 100

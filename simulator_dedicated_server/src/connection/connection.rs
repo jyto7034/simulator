@@ -6,20 +6,17 @@ use actix::{
 };
 use actix_ws::{Message, ProtocolError, Session};
 use simulator_core::{
-    card::types::PlayerKind,
-    exception::{GameError, SystemError},
-    game::{
+    card::types::PlayerKind, exception::{ConnectionError, GameError, SystemError}, game::{
         msg::connection::{RegisterConnection, UnRegisterConnection},
         GameActor,
-    },
-    retry, RetryConfig,
+    }, retry_with_condition, Condition, RetryConfig
 };
 use tracing::{debug, error, info, warn};
 use uuid::Uuid;
 
 use crate::{
     connection::{
-        messages::{CancelHeartbeat, StopActorOnError},
+        messages::{PostRegistrationSetup, StopActorOnError},
         ServerMessage,
     },
     enums::{CLIENT_TIMEOUT, HEARTBEAT_INTERVAL},
@@ -71,10 +68,42 @@ impl ConnectionActor {
         }
     }
 
-    fn start_heartbeat_check(&mut self, ctx: &mut Context<Self>) {
+    pub fn send_ping(&self, ctx: &mut Context<Self>) {
+        info!(
+            "Spawning heartbeat ping task for player {:?} (session_id: {})",
+            self.player_type, self.player_id
+        );
+
+        let mut session_clone = self.ws_session.clone();
+        let player_type_log = self.player_type;
+        let session_id_log = self.player_id;
+        let connection_addr = ctx.address().clone(); // Corrected: use ctx.address()
+
+        ctx.spawn(wrap_future::<_, Self>(async move {
+            if let Err(e) = session_clone.ping(b"heartbeat").await {
+                error!(
+                    "Failed to send ping to player {:?} (session_id: {}): {:?}",
+                    player_type_log, session_id_log, e
+                );
+                connection_addr.do_send(StopActorOnError { 
+                    error: GameError::System(SystemError::Io(std::io::Error::new(std::io::ErrorKind::ConnectionAborted, e.to_string()))) 
+                });
+            } else {
+                info!(
+                    "Ping sent successfully to player {:?} (session_id: {})",
+                    player_type_log, session_id_log
+                );
+            }
+        }));
+    }
+
+    pub fn start_heartbeat_interval(&mut self, ctx: &mut Context<Self>) {
+        if self.heartbeat_handle.is_some() {
+            return;
+        }
+
         let handle = ctx.run_interval(Duration::from_secs(HEARTBEAT_INTERVAL), |act, ctx_inner| {
             if Instant::now().duration_since(act.last_pong) > Duration::from_secs(CLIENT_TIMEOUT) {
-                // Timeout 처리
                 warn!(
                     "Heartbeat timeout for player {:?} (session_id: {}). Closing connection.",
                     act.player_type, act.player_id
@@ -82,38 +111,13 @@ impl ConnectionActor {
                 ctx_inner.stop();
                 return;
             }
-
-            // 1. Ping 작업을 Context::spawn을 사용하여 비동기로 실행
-            info!(
-                "Spawning heartbeat ping task for player {:?} (session_id: {})",
-                act.player_type, act.player_id
-            );
-
-            let mut session_clone = act.ws_session.clone();
-            let player_type_log = act.player_type;
-            let session_id_log = act.player_id;
-            let last_pong = act.last_pong;
-            let connection_adrr = ctx_inner.address().clone();
-
-            // 2. 비동기 블록을 직접 spawn
-            ctx_inner.spawn(wrap_future::<_, Self>(async move {
-                if let Err(e) = session_clone.ping(b"heartbeat").await {
-                    error!(
-                        "Failed to send ping to player {:?} (session_id: {}): {:?}",
-                        player_type_log, session_id_log, e
-                    );
-                    connection_adrr.do_send(CancelHeartbeat);
-                } else {
-                    info!(
-                        "Ping sent successfully to player {:?} (session_id: {}) last_pong {:?}",
-                        player_type_log, session_id_log, last_pong
-                    );
-                }
-            }));
+            
+            act.send_ping(ctx_inner);
         });
 
         self.heartbeat_handle = Some(handle);
     }
+
 
     fn start_cleanup_task(&mut self) {
         if self.cleanup_started {
@@ -143,40 +147,12 @@ impl ConnectionActor {
 impl Actor for ConnectionActor {
     type Context = Context<Self>;
 
-    fn started(&mut self, ctx: &mut Context<Self>) {
+    fn started(&mut self, _ctx: &mut Context<Self>) {
         let player_type_log = self.player_type;
         info!(
             "ConnectionActor started for player {} {}",
             player_type_log, self.player_id
         );
-
-        self.start_heartbeat_check(ctx);
-
-        let session_id_log = self.player_id;
-        let mut session_clone = self.ws_session.clone();
-        let init_msg = ServerMessage::HeartbeatConnected {
-            player: self.player_type.to_string(),
-            session_id: self.player_id,
-        }
-        .to_json();
-
-        // 비동기 작업을 정의하는 Future 생성
-        let send_future = async move {
-            if let Err(e) = session_clone.text(init_msg).await {
-                error!(
-                    "Failed to send initial heartbeat_connected message to player {:?} (session_id: {}): {:?}",
-                    player_type_log, session_id_log, e
-                );
-            } else {
-                info!(
-                    "Sent initial heartbeat_connected message to player {:?} (session_id: {})",
-                    player_type_log, session_id_log
-                );
-            }
-        };
-
-        // 표준 Future를 ActorFuture로 감싸서 액터 컨텍스트에서 실행
-        ctx.spawn(wrap_future::<_, Self>(send_future));
     }
 
     fn stopping(&mut self, ctx: &mut Context<Self>) -> Running {
@@ -310,8 +286,14 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
                         };
 
                         // 4. 생성된 비동기 함수를 retry 함수에 넘겨서 재시도 로직 적용
-                        // TODO: retry -> retry_with_condition 로 변경해야하나?
-                        if let Err(e) = retry(operation, RetryConfig::default(), "RegisterConnection").await{
+                        let condition = |e: &GameError| {
+                            if let GameError::Connection(ConnectionError::SessionExists(_)) = e {
+                                return Condition::Stop;
+                            }
+                            Condition::Continue
+                        };
+                        
+                        if let Err(e) = retry_with_condition(operation, RetryConfig::default(), condition,"RegisterConnection").await{
                             error!(
                                 "ConnectionActor for player {:?} (session_id: {}): Failed to register with GameActor after retries: {:?}",
                                 player_type, player_id, e
@@ -338,6 +320,8 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
                                 "ConnectionActor for player {:?} (session_id: {}): Successfully registered with GameActor.",
                                 player_type, player_id
                             );
+
+                            connection_addr.do_send(PostRegistrationSetup);
                         }
                     }));
                 }

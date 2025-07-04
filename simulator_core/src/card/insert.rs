@@ -21,7 +21,9 @@ pub trait Insert: Send + Sync {
 pub struct GeneralInsert;
 pub struct TopInsert;
 pub struct BottomInsert;
+/// 카드를 영역 내 임의의 위치에 삽입하는 전략을 나타내는 구조체입니다.
 pub struct RandomInsert;
+/// 카드를 특정 카드 위 또는 아래에 삽입하는 전략을 나타내는 구조체입니다.
 pub struct SpecificPositionInsert {
     target_card_uuid: Uuid,
     is_above: bool,
@@ -80,6 +82,16 @@ impl Insert for RandomInsert {
 
 // 특정 위치 구현
 impl SpecificPositionInsert {
+    /// `SpecificPositionInsert` 구조체의 생성자입니다.
+    ///
+    /// # Arguments
+    ///
+    /// * `target_card_uuid` - 삽입 위치를 결정하는 대상 카드의 UUID
+    /// * `is_above` - `true`이면 대상 카드 위에, `false`이면 대상 카드 아래에 삽입합니다.
+    ///
+    /// # Returns
+    ///
+    /// * `SpecificPositionInsert` - 새로 생성된 `SpecificPositionInsert` 인스턴스
     pub fn new(target_card_uuid: Uuid, is_above: bool) -> Self {
         Self {
             target_card_uuid,

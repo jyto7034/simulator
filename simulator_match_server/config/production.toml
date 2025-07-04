@@ -1,0 +1,3 @@
+redis_url = "redis://your-production-redis-endpoint:6379"
+log_level = "WARN"
+password = ""

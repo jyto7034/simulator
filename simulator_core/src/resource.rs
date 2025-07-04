@@ -56,6 +56,10 @@ pub trait Resource {
     }
 }
 
+/// `Resource` 트레이트를 확장하여 자원에 대한 추가적인 편의 메소드를 제공합니다.
+/// 주로 현재 값과 기본 값 간의 비교, 초기화 등에 사용됩니다.
+// TODO: 더 많은 확장 기능 (예: 버프/디버프 적용/해제) 추가 고려
+// TODO: 특정 조건에 따라 값을 변경하는 로직 추가 고려
 pub trait ResourceExtension: Resource {
     /// 기본값으로 초기화
     fn reset_to_base(&mut self) {
@@ -84,11 +88,16 @@ pub trait ResourceExtension: Resource {
 }
 
 #[derive(Clone)]
+/// 카드 스펙에 사용되는 자원을 나타내는 구조체입니다.
+/// `value`는 현재 값, `base`는 기본 값을 저장합니다.
+// TODO: 자원 타입에 대한 제네릭 파라미터 추가 고려 (현재는 i32로 고정)
+// TODO: 디버깅 편의를 위한 `Debug` 트레이트 구현 고려
 pub struct CardSpecsResource {
     value: i32,
     base: i32,
 }
 
+/// `CardSpecsResource` 구조체에 `Resource` 트레이트를 구현합니다.
 impl Resource for CardSpecsResource {
     fn get_value(&self) -> i32 {
         self.value
@@ -103,9 +112,15 @@ impl Resource for CardSpecsResource {
     }
 }
 
+/// `CardSpecsResource` 구조체에 `ResourceExtension` 트레이트를 구현합니다.
 impl ResourceExtension for CardSpecsResource {}
 
 impl CardSpecsResource {
+    /// 새로운 `CardSpecsResource` 인스턴스를 생성합니다.
+    ///
+    /// # Arguments
+    ///
+    /// * `value` - 자원의 초기 값 및 기본 값으로 설정될 값입니다.
     pub fn new(value: i32) -> Self {
         Self { value, base: value }
     }

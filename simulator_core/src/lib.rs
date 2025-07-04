@@ -22,8 +22,6 @@ pub mod sync;
 pub mod utils;
 pub mod zone;
 
-extern crate lazy_static;
-
 use std::sync::Once;
 static INIT: Once = Once::new();
 static mut GUARD: Option<tracing_appender::non_blocking::WorkerGuard> = None;
@@ -169,10 +167,16 @@ impl Default for RetryConfig {
     }
 }
 
+#[derive(PartialEq, Eq)]
+pub enum Condition {
+    Continue,
+    Stop,
+}
+
 pub async fn retry_with_condition<F, Fut, T, E>(
     operation: F,
     config: RetryConfig,
-    should_retry: impl Fn(&E) -> bool,
+    should_retry: impl Fn(&E) -> Condition,
     operation_name: &str,
 ) -> Result<T, E>
 where
@@ -192,7 +196,7 @@ where
                 return Ok(result);
             }
             Err(e) => {
-                if !should_retry(&e) {
+                if should_retry(&e) == Condition::Stop {
                     warn!(
                         "{} failed with non-retryable error: {:?}",
                         operation_name, e

@@ -24,15 +24,6 @@ impl AuthPlayer {
     }
 }
 
-impl AuthPlayer {
-    fn reverse(&self) -> PlayerKind {
-        match self.ptype {
-            PlayerKind::Player1 => PlayerKind::Player2,
-            PlayerKind::Player2 => PlayerKind::Player1,
-        }
-    }
-}
-
 impl FromRequest for AuthPlayer {
     type Error = GameError;
     type Future = Pin<Box<dyn Future<Output = Result<Self, Self::Error>>>>;
@@ -117,6 +108,18 @@ impl From<AuthPlayer> for String {
 }
 
 /// Game 의 전반적인 기능을 책임지는 end point
+#[get("/create_room")]
+// #[instrument(skip(state, req, payload), fields(player_type = ?player.ptype))]
+pub async fn create_room(
+    _player: AuthPlayer,
+    _state: web::Data<ServerState>,
+    _req: HttpRequest,
+    _payload: web::Payload,
+) -> Result<HttpResponse, GameError> {
+    todo!()
+}
+
+/// Game 의 전반적인 기능을 책임지는 end point
 #[get("/game")]
 #[instrument(skip(state, req, payload), fields(player_type = ?player.ptype))]
 pub async fn game(
@@ -125,8 +128,6 @@ pub async fn game(
     req: HttpRequest,
     payload: web::Payload,
 ) -> Result<HttpResponse, GameError> {
-    info!("멀리건 단계 핸들러 시작: player={:?}", player.ptype);
-
     let player_type = player.ptype;
     let player_id = player.id;
     debug!("플레이어 타입 설정: {:?}", player_type);

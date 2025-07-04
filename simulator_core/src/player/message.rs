@@ -138,7 +138,9 @@ impl Handler<RequestMulliganReroll> for PlayerActor {
 
         // 뽑은 카드의 갯수를 확인
         if new_cards.len() != cards_to_restore.len() {
-            return Err(GameError::System(SystemError::Internal("Card count mismatch after mulligan".to_string())));
+            return Err(GameError::System(SystemError::Internal(
+                "Card count mismatch after mulligan".to_string(),
+            )));
         }
 
         // 뽑은 카드를 mulligan state 에 넣음.

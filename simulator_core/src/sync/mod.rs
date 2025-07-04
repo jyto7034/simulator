@@ -19,6 +19,9 @@ use crate::{
     },
 };
 
+/// `SyncActor`는 게임 상태 동기화를 담당합니다.
+// TODO: 상태 동기화 로직 개선
+// TODO: 최적화
 pub struct SyncActor {
     game_addr: Addr<GameActor>,
     connections: HashMap<PlayerKind, Recipient<GameEvent>>,

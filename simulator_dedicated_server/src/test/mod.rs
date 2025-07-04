@@ -223,8 +223,61 @@ impl WebSocketTest {
         Ok(Self { stream, sink }) // 분리된 스트림과 싱크 저장
     }
 
+    /// Sends a close frame and attempts to gracefully close the WebSocket connection.
+    /// This makes the "disconnect" action explicit and reliable for tests.
+    pub async fn close(&mut self) -> Result<(), tungstenite::Error> {
+        info!("[TEST_WS] Sending Close frame to server.");
+        // First, send a close message to the server.
+        self.sink.send(Message::Close(None)).await?;
+        // Then, fully close the sink.
+        self.sink.close().await
+    }
+
     pub async fn send(&mut self, msg: impl Into<Message>) -> Result<(), tungstenite::Error> {
         self.sink.send(msg.into()).await // 싱크를 통해 메시지 전송
+    }
+
+    pub async fn expect_message_opt<T, F>(&mut self, mut extractor: F) -> T
+    where
+        T: DeserializeOwned,
+        F: FnMut(T) -> Option<T>, // 클로저가 Option<T>를 반환하도록 변경
+    {
+        let callback = async {
+            loop {
+                match self.stream.next().await {
+                    Some(Ok(Message::Text(text))) => {
+                        info!("[TEST] Received message: {}", text);
+                        if let Ok(parsed) = serde_json::from_str::<T>(&text) {
+                            // 클로저를 실행하고, Some(T)가 반환되면 루프를 종료하고 값을 반환
+                            if let Some(result) = extractor(parsed) {
+                                return result;
+                            }
+                            // None이 반환되면, 원하는 메시지가 아니므로 계속 루프를 돕니다.
+                        } else {
+                            info!("[TEST] Failed to parse into expected type: {}", text);
+                            continue;
+                        }
+                    }
+                    // ... (Ping, Pong, Close 등 나머지 핸들링은 동일)
+                    Some(Ok(Message::Ping(_))) => continue,
+                    Some(Ok(Message::Pong(_))) => continue,
+                    Some(Ok(Message::Close(reason))) => {
+                        panic!("WebSocket closed unexpectedly. Reason: {:?}", reason);
+                    }
+                    Some(Ok(msg)) => {
+                        info!("[TEST] Ignoring other message type: {:?}", msg);
+                        continue;
+                    }
+                    Some(Err(e)) => panic!("WebSocket error: {:?}", e),
+                    None => panic!("WebSocket closed unexpectedly"),
+                }
+            }
+        };
+
+        match tokio::time::timeout(Duration::from_secs(CLIENT_TIMEOUT), callback).await {
+            Ok(result) => result,
+            Err(_) => panic!("Expected message timeout after {} seconds", CLIENT_TIMEOUT),
+        }
     }
 
     pub async fn expect_message<T, F, R>(&mut self, extractor: F) -> R

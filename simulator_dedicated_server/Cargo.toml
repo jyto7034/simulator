@@ -27,3 +27,4 @@ rand = "0.8.5"
 futures-util = {version = "0.3", features = ["sink"]}
 futures = "0.3.31"
 ctor = "0.4.1"
+glicko2 = "0.3.1"

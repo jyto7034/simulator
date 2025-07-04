@@ -1,3 +1,8 @@
+//! phase.rs
+//!
+//! 게임 시뮬레이터의 핵심 모듈
+//! 이 모듈은 game와 관련된 기능을 제공합니다.
+
 use std::collections::HashMap;
 
 use crate::{
@@ -74,13 +79,13 @@ impl PhaseState {
     }
 }
 
-#[derive(Clone, PartialEq, Eq, Copy, Debug)]
+#[derive(Clone, PartialEq, Eq, Copy, Debug, PartialOrd, Ord)]
 pub enum PlayerActionStatus {
     NotYetActed,   // 아직 행동하지 않음
     ActedOrPassed, // 행동을 했거나 우선권을 넘김
 }
 
-#[derive(Clone, PartialEq, Eq, Copy, Debug)]
+#[derive(Clone, PartialEq, Eq, Copy, Debug, PartialOrd, Ord)]
 pub enum MulliganStatus {
     NotStarted,                  // 시작 전
     DealingInitialHands,         // 초기 패 분배 중
@@ -90,14 +95,14 @@ pub enum MulliganStatus {
     Completed,                   // 멀리건 완료
 }
 
-#[derive(Clone, PartialEq, Eq, Copy, Debug)]
+#[derive(Clone, PartialEq, Eq, Copy, Debug, PartialOrd, Ord)]
 pub enum DrawPhaseStatus {
     TurnPlayerDraws, // 턴 플레이어가 드로우
     EffectsTrigger,  // 드로우 시 발동하는 효과 처리
     Completed,
 }
 
-#[derive(Clone, PartialEq, Eq, Copy, Debug)]
+#[derive(Clone, PartialEq, Eq, Copy, Debug, PartialOrd, Ord)]
 pub enum StandbyPhaseStatus {
     EffectsTrigger, // 스탠바이 페이즈 시 발동하는 효과 처리
     Completed,
@@ -106,7 +111,7 @@ pub enum StandbyPhaseStatus {
 // 우선권 구현해야함.
 // 우선권이란, 해당 턴에 어떤 플레이어가 먼저 행동할 수 있는지 권리를 나타내는 것.
 // 턴 플레이어가 우선권을 가지며, 체인 발생 시 ( 효과 발동 ) / 우선권 포기 시 우선권이 이동함.
-#[derive(Clone, PartialEq, Eq, Copy, Debug)]
+#[derive(Clone, PartialEq, Eq, Copy, Debug, PartialOrd, Ord)]
 pub enum MainPhaseStatus {
     OpenState, // 턴 플레이어가 자유롭게 행동 가능 (몬스터 소환, 마법/함정 발동/세트 등)
                // 체인 발생 시, 또는 우선권 이동 시 세부 상태가 더 필요할 수 있음
@@ -115,7 +120,7 @@ pub enum MainPhaseStatus {
                // MainPhaseStatus를 공유하고, Phase enum에서 MainPhase1, MainPhase2로 구분합니다.
 }
 
-#[derive(Clone, PartialEq, Eq, Copy, Debug)]
+#[derive(Clone, PartialEq, Eq, Copy, Debug, PartialOrd, Ord)]
 pub enum BattlePhaseStep {
     StartStep(PlayerActionStatus), // 배틀 페이즈 개시 단계 (턴 플레이어 우선권)
     BattleStep(PlayerActionStatus), // 배틀 스텝 (몬스터 공격 선언 또는 종료)
@@ -123,7 +128,7 @@ pub enum BattlePhaseStep {
     EndStep(PlayerActionStatus),   // 배틀 페이즈 종료 단계
 }
 
-#[derive(Clone, PartialEq, Eq, Copy, Debug)]
+#[derive(Clone, PartialEq, Eq, Copy, Debug, PartialOrd, Ord)]
 pub enum DamageStepSubPhase {
     StartOfDamageStep,        // 데미지 스텝 개시시 (공격 대상이 앞면 표시가 됨 등)
     BeforeDamageCalculation,  // 데미지 계산 전 (공/수 증감 효과 발동)
@@ -132,13 +137,13 @@ pub enum DamageStepSubPhase {
     EndOfDamageStep,          // 데미지 스텝 종료시 (파괴 확정된 몬스터 묘지로 등)
 }
 
-#[derive(Clone, PartialEq, Eq, Copy, Debug)]
+#[derive(Clone, PartialEq, Eq, Copy, Debug, PartialOrd, Ord)]
 pub enum EndPhaseStatus {
     EffectsTrigger, // 엔드 페이즈 시 발동하는 효과 처리
     TurnEnd,        // 실제 턴 종료
 }
 
-#[derive(Clone, PartialEq, Eq, Copy, Debug)]
+#[derive(Clone, PartialEq, Eq, Copy, Debug, PartialOrd, Ord)]
 pub enum Phase {
     Mulligan(MulliganStatus),
 

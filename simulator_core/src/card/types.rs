@@ -6,18 +6,35 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    exception::{GameError, GameplayError}, game::GameActor, resource::CardSpecsResource, utils::json::CardJson,
+    exception::{GameError, GameplayError},
+    game::GameActor,
+    resource::CardSpecsResource,
+    utils::json::CardJson,
 };
 
 use super::modifier::Modifier;
 
 #[derive(Clone)]
+/// `CardSpecs`는 카드의 공격력, 방어력, 비용과 같은 스펙을 나타내는 구조체입니다.
+// TODO: `attack`, `defense` 필드의 타입을 CardSpecsResource가 아닌 구체적인 타입으로 변경할 필요가 있는지 검토
+// TODO: 필드에 대한 상세 설명 추가 (공격력 범위, 방어력 계산 방식 등)
 pub struct CardSpecs {
     attack: CardSpecsResource,
     defense: CardSpecsResource,
     cost: i32,
 }
 
+/// `CardSpecs`의 새로운 인스턴스를 생성합니다.
+///
+/// # Arguments
+///
+/// * `json` - `CardJson` 구조체의 참조. 카드 스펙 정보를 담고 있습니다.
+///
+/// # Returns
+///
+/// 새로운 `CardSpecs` 인스턴스.
+// TODO: JSON 필드가 없을 경우의 예외 처리 추가
+// TODO: `unwrap()` 호출 대신 `?` 연산자를 사용하여 오류를 전파하도록 변경
 impl CardSpecs {
     pub fn new(json: &CardJson) -> Self {
         Self {
@@ -30,12 +47,23 @@ impl CardSpecs {
 
 // CardStatus 구조체 (카드의 현재 상태)
 #[derive(Clone, Default)]
+/// `CardStatus`는 카드의 현재 상태를 나타내는 구조체입니다.
+///
+/// 카드가 무효화되었는지, 비활성화되었는지, 그리고 적용된 수정자 목록을 저장합니다.
+// TODO: `modifiers` 필드에 대한 상세 설명 추가 (수정자의 종류, 적용 방식 등)
 pub struct CardStatus {
     is_negated: bool,
     is_disabled: bool,
     modifiers: Vec<Modifier>,
 }
 
+/// `CardStatus`의 새로운 기본 인스턴스를 생성합니다.
+///
+/// 초기 상태는 무효화되지 않고, 비활성화되지 않았으며, 수정자 목록은 비어 있습니다.
+///
+/// # Returns
+///
+/// 기본값을 가진 새로운 `CardStatus` 인스턴스.
 impl CardStatus {
     pub fn new() -> Self {
         Self {
@@ -55,6 +83,10 @@ impl CardStatus {
 }
 
 #[derive(Clone, PartialEq, Eq, Copy)]
+/// `ModifierType`은 수정자의 유형을 나타내는 열거형입니다.
+///
+/// 공격력 증가, 방어력 증가, 비용 변경, 효과 무효화, 속성 변경 등의 유형을 정의합니다.
+// TODO: 각 ModifierType에 대한 상세 설명 추가 (공격력 증가의 종류, 속성 변경의 범위 등)
 pub enum ModifierType {
     AttackBoost,
     DefenseBoost,
@@ -64,6 +96,10 @@ pub enum ModifierType {
 }
 
 #[derive(Clone, Copy)]
+/// `Duration`은 수정자의 지속 시간을 나타내는 열거형입니다.
+///
+/// 영구, 턴 종료까지, 페이즈 종료까지, 특정 턴 수 동안 등의 지속 시간을 정의합니다.
+// TODO: 각 Duration에 대한 상세 설명 추가 (턴 종료, 페이즈 종료의 시점 정의)
 pub enum Duration {
     Permanent,
     UntilEndOfTurn,
@@ -107,12 +143,20 @@ impl CardStatus {
 }
 
 #[derive(Debug, PartialEq, Clone, Eq, Copy, Hash)]
+/// `SpellType`은 마법 카드의 종류를 나타내는 열거형입니다.
+///
+/// SlowSpell, FastSpell 등의 유형을 정의합니다.
+// TODO: 각 SpellType에 대한 상세 설명 추가 (발동 조건, 효과 발동 시점 등)
 pub enum SpellType {
     SlowSpell,
     FastSpell,
 }
 
 #[derive(Eq, PartialEq, Hash, Clone, Copy)]
+/// `CardType`은 카드의 종류를 나타내는 열거형입니다.
+///
+/// Dummy, Unit, Spell, Field, Ace, Trap, Game, Any 등의 유형을 정의합니다.
+// TODO: 각 CardType에 대한 상세 설명 추가 (카드 사용 조건, 지속 효과 등)
 pub enum CardType {
     Dummy,
     Unit,
@@ -135,9 +179,13 @@ impl CardType {
                 "Ace" => Ok(CardType::Ace),
                 "Trap" => Ok(CardType::Trap),
                 "Game" => Ok(CardType::Game),
-                _ => Err(GameError::Gameplay(GameplayError::InvalidAction { reason: "Invalid card type".to_string() })),
+                _ => Err(GameError::Gameplay(GameplayError::InvalidAction {
+                    reason: "Invalid card type".to_string(),
+                })),
             },
-            None => Err(GameError::Gameplay(GameplayError::InvalidAction { reason: "Invalid card type".to_string() })),
+            None => Err(GameError::Gameplay(GameplayError::InvalidAction {
+                reason: "Invalid card type".to_string(),
+            })),
         }
     }
 
@@ -217,6 +265,10 @@ impl fmt::Debug for CardType {
 }
 
 #[derive(Copy, Clone)]
+/// `StatType`은 스탯의 종류를 나타내는 열거형입니다.
+///
+/// Attack, Defense 등의 유형을 정의합니다.
+// TODO: 각 StatType에 대한 상세 설명 추가 (스탯 계산 방식, 적용 범위 등)
 pub enum StatType {
     Attack,
     Defense,
@@ -236,7 +288,10 @@ pub enum OwnerType {
     None,     // 소유자 없음
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, PartialOrd, Ord)]
+/// `PlayerKind`는 플레이어의 종류를 나타내는 열거형입니다.
+///
+/// Player1, Player2 등의 유형을 정의합니다.
 pub enum PlayerKind {
     Player1,
     Player2,
@@ -288,6 +343,9 @@ impl From<PlayerKind> for String {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// `PlayerIdentity`는 플레이어의 고유 식별 정보를 나타내는 구조체입니다.
+///
+/// `id`는 플레이어의 UUID이고, `kind`는 플레이어의 종류(`PlayerKind`)입니다.
 pub struct PlayerIdentity {
     pub id: Uuid,
     pub kind: PlayerKind,

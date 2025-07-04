@@ -1,0 +1,46 @@
+# Add patterns to ignore here, one per line
+# Example:
+# *.log
+# tmp/
+
+# Python 관련 파일들
+*.py
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.egg-info/
+.pytest_cache/
+venv/
+env/
+.venv/
+.env/
+gemini_env/
+.python-version
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Rust 빌드 캐시
+target/
+Cargo.lock
+*.rs.bk
+
+# 로그 파일들
+*.log
+logs/
+
+# IDE 설정 파일들
+.vscode/
+.idea/
+
+# 임시 파일들
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# repomix 출력 파일들
+repomix-*.xml
+repomix-*.md
+documentation_plan.json
+clean_documentation_plan.json

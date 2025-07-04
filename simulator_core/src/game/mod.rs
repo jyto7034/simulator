@@ -11,15 +11,7 @@ use tracing::{error, info, warn};
 use turn::TurnState;
 use uuid::Uuid;
 
-use crate::{
-    card::{
-        types::{PlayerIdentity, PlayerKind},
-        Card,
-    }, exception::{GameError, SystemError}, game::msg::system::GetPlayerStateSnapshot, player::{
-        message::{GameOver, SetOpponent, Terminate},
-        PlayerActor,
-    }, sync::{snapshots::{GameStateSnapshot, OpponentStateSnapshot}, SyncActor}
-};
+use crate::{card::{types::{PlayerIdentity, PlayerKind}, Card}, exception::{GameError, SystemError}, game::{msg::{system::GetPlayerStateSnapshot}, state::GamePhase}, player::{message::{GameOver, Terminate}, PlayerActor}, sync::{snapshots::{GameStateSnapshot, OpponentStateSnapshot}, SyncActor}};
 
 pub mod choice;
 pub mod phase;
@@ -27,39 +19,54 @@ pub mod state;
 pub mod turn;
 pub mod msg;
 
+/// 게임 설정을 위한 빈 구조체입니다. 현재는 필드를 포함하지 않습니다.
 pub struct GameConfig {}
 
+/// 게임 액터는 게임 로직의 핵심을 담당합니다.
+/// 플레이어 연결 관리, 게임 상태 관리, 턴 진행 등을 처리합니다.
+// TODO: 상태 관리 개선
+// TODO: 락 사용 최소화
 pub struct GameActor {
-    // 플레이어 액터들의 주소 저장 (PlayerActor 정의 필요)
+    /// 플레이어 액터들의 주소를 저장합니다.
     pub players: HashMap<PlayerIdentity, Addr<PlayerActor>>,
-    pub connections: Arc<Mutex<HashMap<Uuid, Recipient<GameEvent>>>>, // 플레이어의 ConnectionActor 주소 저장
-    pub player_connection_ready: HashMap<PlayerKind, bool>, // 각 플레이어 초기화 완료 여부
+    /// 플레이어의 ConnectionActor 주소를 저장합니다.
+    pub connections: Arc<Mutex<HashMap<Uuid, Recipient<GameEvent>>>>,
+    /// 각 플레이어 초기화 완료 여부를 나타냅니다.
+    pub player_connection_ready: HashMap<PlayerKind, bool>,
 
-    // 상대방 플레이어의 연결 대기 타이머 핸들
+    /// 상대방 플레이어의 연결 대기 타이머 핸들입니다.
     pub opponent_wait_timer_handle: Option<SpawnHandle>,
+    /// 연결을 기다리는 상대방 플레이어의 종류입니다.
     pub opponent_player_kind: Option<PlayerKind>,
 
-    // 재접속 타이머 핸들
+    /// 재접속 타이머 핸들입니다.
     pub reconnection_timer: HashMap<PlayerKind, SpawnHandle>,
 
-    // 게임의 현재 페이즈와 턴
+    /// 게임의 현재 턴 상태를 관리합니다.
     pub turn: TurnState,
 
+    /// 모든 카드 정보를 저장합니다. 플레이어 종류별로 카드를 관리합니다.
     pub all_cards: HashMap<PlayerKind, Vec<Card>>,
+    /// 게임 상태를 관리하는 객체입니다.
     pub game_state: Arc<Mutex<GameStateManager>>,
-    pub is_game_over: bool,
+    /// 게임의 고유 ID입니다.
     pub game_id: Uuid,
 
-    // gsm lock 에 실패한 경우 등에 사용되는 플래그
+    /// gsm lock 에 실패한 경우 등에 사용되는 플래그입니다.
     pub unexpected_stop: bool,
-    pub cleanup_initiated: bool, 
 
+    /// 동기화 액터의 주소를 저장합니다.
     pub sync_actor: Option<Addr<SyncActor>>,
 }
 
 impl Actor for GameActor {
     type Context = Context<Self>;
 
+    /// 액터가 시작될 때 호출되는 메서드입니다.
+    ///
+    /// # Arguments
+    ///
+    /// * `ctx` - 액터 컨텍스트.
     fn started(&mut self, ctx: &mut Context<Self>) {
         info!("GameActor [{}] has started. Initializing SyncActor.", self.game_id);
         
@@ -76,19 +83,36 @@ impl Actor for GameActor {
         gsm.initialize_players();
     }
 
-
+    /// 액터가 정지될 때 호출되는 메서드입니다.
+    ///
+    /// # Arguments
+    ///
+    /// * `ctx` - 액터 컨텍스트.
     fn stopping(&mut self, ctx: &mut Context<Self>) -> Running {
-        if self.cleanup_initiated {
-            info!(
-                "GameActor [{}]: stopping() called again, but cleanup is already in progress. Ignoring.",
-                self.game_id
-            );
-            // 이미 정리 작업이 진행 중이므로, 해당 작업이 끝날 때까지 액터를 살려둬야 합니다.
-            return Running::Continue; 
-        }
-        // 정리 작업이 처음 시작됨을 표시합니다.
-        self.cleanup_initiated = true;
-        
+        {
+            // Start gsm Lock
+            let mut gsm = self.game_state.try_lock().unwrap();
+            let current_phase = gsm.current_phase();
+            let connection_len = self.connections.try_lock().unwrap().len();
+            if current_phase == GamePhase::Stopping && connection_len == 0 {
+                info!(
+                    "GameActor [{}]: Entering Stopped.",
+                    self.game_id
+                );
+                gsm.transition_to_phase(GamePhase::Stopped);
+                return Running::Stop;
+            }else if current_phase == GamePhase::Stopping{
+                info!(
+                    "GameActor [{}]: stopping() called again, but cleanup is already in progress. Ignoring.",
+                    self.game_id
+                );
+                // 이미 정리 작업이 진행 중이므로, 해당 작업이 끝날 때까지 액터를 살려둬야 합니다.
+                return Running::Continue; 
+            }
+            
+            gsm.transition_to_phase(GamePhase::Stopping);
+        } // Drop gsm
+            
         info!(
             "GameActor [{}] is stopping. Initiating comprehensive cleanup.",
             self.game_id
@@ -106,7 +130,31 @@ impl Actor for GameActor {
                 game_id_clone
             );
 
-            // 1. GameStateManager에서 모든 연결된 플레이어 제거
+            // 1. PlayerActor들에게 GameOver 전송
+            let mut send_futures = Vec::new();
+            for player_addr in player_addrs {
+                info!(
+                    "GameActor [{}]: Preparing to send GameOver to PlayerActor ({:?}).",
+                    game_id_clone, player_addr
+                );
+                let fut = player_addr.send(GameOver);
+                send_futures.push(async move { 
+                    match fut.await {
+                        Ok(_) => {
+                            info!("GameActor [{}]: Successfully sent GameOver to PlayerActor ({:?})", game_id_clone, player_addr);
+                        },
+                        Err(e) => {
+                            warn!(
+                                "GameActor [{}]: Failed to send GameOver to PlayerActor ({:?}): {:?}. Attempting Terminate.",
+                                game_id_clone, player_addr, e
+                            );
+                            player_addr.do_send(Terminate);
+                        }
+                    }
+                });
+            }
+
+            // 2. GameStateManager에서 모든 연결된 플레이어 제거
             {
                 let mut gsm = game_state.lock().await;
                 let connected_players: Vec<_> = gsm.player_states.keys().cloned().collect();
@@ -119,7 +167,7 @@ impl Actor for GameActor {
                 );
             }
 
-            // 2. 모든 연결 정리
+            // 3. 모든 연결 정리
             {
                 let mut connections_guard = connections.lock().await;
                 connections_guard.clear();
@@ -127,28 +175,6 @@ impl Actor for GameActor {
                     "GameActor [{}]: All connections cleared.",
                     game_id_clone
                 );
-            }
-
-            // 3. PlayerActor들에게 GameOver 전송
-            let mut send_futures = Vec::new();
-            for player_addr in player_addrs {
-                info!(
-                    "GameActor [{}]: Preparing to send GameOver to PlayerActor ({:?}).",
-                    game_id_clone, player_addr
-                );
-                let fut = player_addr.send(GameOver);
-                send_futures.push(async move { 
-                    match fut.await {
-                        Ok(_) => info!("GameActor [{}]: Successfully sent GameOver to PlayerActor ({:?})", game_id_clone, player_addr),
-                        Err(e) => {
-                            warn!(
-                                "GameActor [{}]: Failed to send GameOver to PlayerActor ({:?}): {:?}. Attempting Terminate.",
-                                game_id_clone, player_addr, e
-                            );
-                            player_addr.do_send(Terminate);
-                        }
-                    }
-                });
             }
 
             join_all(send_futures).await;
@@ -159,12 +185,14 @@ impl Actor for GameActor {
             );
         };
 
-        let stop_self_after_cleanup = fut::wrap_future(cleanup_future).then(
-            move |_, act: &mut GameActor, _ctx_then: &mut Context<GameActor>| {
+       let stop_self_after_cleanup = fut::wrap_future(cleanup_future).then(
+            move |_, _act: &mut GameActor, ctx_then: &mut Context<GameActor>| {
                 info!(
-                    "GameActor [{}]: All cleanup completed.",
-                    act.game_id
+                    "GameActor [{}]: All cleanup completed. Now stopping context.",
+                    _act.game_id
                 );
+                ctx_then.address().do_send(msg::system::Terminate);
+                
                 fut::ready(())
             },
         );
@@ -175,7 +203,12 @@ impl Actor for GameActor {
         Running::Continue
     }
 
-    fn stopped(&mut self, ctx: &mut Self::Context) {
+    /// 액터가 완전히 정지된 후 호출되는 메서드입니다.
+    ///
+    /// # Arguments
+    ///
+    /// * `ctx` - 액터 컨텍스트.
+    fn stopped(&mut self, _ctx: &mut Self::Context) {
         info!("GameActor [{}] has stopped.", self.game_id);
     }
 }
@@ -186,11 +219,41 @@ impl GameActor {
     /// # Arguments
     ///
     /// * `game_id` - 이 게임 세션의 고유 ID.
+    /// * `player1_id` - 플레이어 1의 ID.
+    /// * `player2_id` - 플레이어 2의 ID.
+    /// * `player1_deck_code` - 플레이어 1의 덱 코드.
+    /// * `player2_deck_code` - 플레이어 2의 덱 코드.
     /// * `attacker_player_type` - 선공 플레이어의 타입.
     ///
     /// # Returns
     ///
     /// 새로운 GameActor 인스턴스.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use uuid::Uuid;
+    /// use crate::game::GameActor;
+    /// use crate::card::types::PlayerKind;
+    ///
+    /// let game_id = Uuid::new_v4();
+    /// let player1_id = Uuid::new_v4();
+    /// let player2_id = Uuid::new_v4();
+    /// let player1_deck_code = "test_deck_1".to_string();
+    /// let player2_deck_code = "test_deck_2".to_string();
+    /// let attacker_player_type = PlayerKind::Player1;
+    ///
+    /// let game_actor = GameActor::new(
+    ///     game_id,
+    ///     player1_id,
+    ///     player2_id,
+    ///     player1_deck_code,
+    ///     player2_deck_code,
+    ///     attacker_player_type,
+    /// );
+    ///
+    /// assert_eq!(game_actor.game_id, game_id);
+    /// ```
     pub fn new(
         game_id: Uuid,
         player1_id: Uuid,
@@ -233,33 +296,31 @@ impl GameActor {
                 "PlayerActor 2 connected ( not session connection! ), P2 can now receive messages."
             );
 
-            info!("Both players actor connected. ( not session connection! ) Sending SetOpponent messages.");
-            p1_addr.do_send(SetOpponent {
-                opponent: p2_addr.clone(),
-            });
-            p2_addr.do_send(SetOpponent {
-                opponent: p1_addr.clone(),
-            });
+            info!("Both players actor connected. ( not session connection! ) Sending SetOpponent messages");
         });
 
-        GameActor {
+        let game_state_manager = GameStateManager::new();
+
+        Self {
             players: player_actors_map,
             connections: Arc::new(Mutex::new(HashMap::new())),
-            player_connection_ready: HashMap::new(),
-            all_cards: HashMap::new(),
-            turn: TurnState::new(attacker_player_type),
-            is_game_over: false,
-            game_id,
-            game_state: Arc::new(Mutex::new(GameStateManager::new())),
+            player_connection_ready: HashMap::from([
+                (PlayerKind::Player1, false),
+                (PlayerKind::Player2, false),
+            ]),
             opponent_wait_timer_handle: None,
             opponent_player_kind: None,
-            unexpected_stop: false,
-            cleanup_initiated: false,
             reconnection_timer: HashMap::new(),
+            turn: TurnState::new(attacker_player_type),
+            all_cards: HashMap::new(),
+            game_state: Arc::new(Mutex::new(game_state_manager)),
+            game_id,
+            unexpected_stop: false,
             sync_actor: None,
         }
     }
 
+    
     pub fn all_players_ready(&self) -> bool {
         self.player_connection_ready.len() == 2
             && self

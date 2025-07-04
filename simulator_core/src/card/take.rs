@@ -14,6 +14,15 @@ pub trait Take: Send + Sync {
 #[derive(Clone)]
 pub struct TopTake(pub TargetCount);
 
+/// `TopTake` 구조체를 위한 `Take` 트레이트 구현입니다.
+///
+/// 덱이나 영역의 위에서부터 지정된 개수의 카드를 가져옵니다.
+///
+/// # Errors
+///
+/// * `GameError::System(SystemError::Internal)`: 사용 가능한 카드 수가 요청한 카드 수보다 적을 경우 발생합니다.
+// TODO: 오류 발생 조건에 대한 더 자세한 설명이 필요합니다. 예를 들어, `TargetCount`의 설정에 따라 어떤 경우에 오류가 발생하는지 명확히 기술해야 합니다.
+// TODO: 성능 개선을 위해 `drain` 대신 다른 방법을 사용할 수 있는지 검토해 볼 수 있습니다.
 impl Take for TopTake {
     fn take(&mut self, zone: &mut dyn Zone) -> Result<Vec<Card>, GameError> {
         let cards = zone.get_cards_mut();
@@ -42,6 +51,15 @@ impl Take for TopTake {
 #[derive(Clone)]
 pub struct BottomTake(pub TargetCount);
 
+/// `BottomTake` 구조체를 위한 `Take` 트레이트 구현입니다.
+///
+/// 덱이나 영역의 아래에서부터 지정된 개수의 카드를 가져옵니다.
+///
+/// # Errors
+///
+/// * `GameError::System(SystemError::Internal)`: 사용 가능한 카드 수가 요청한 카드 수보다 적을 경우 발생합니다.
+// TODO: 오류 발생 조건에 대한 더 자세한 설명이 필요합니다. 예를 들어, `TargetCount`의 설정에 따라 어떤 경우에 오류가 발생하는지 명확히 기술해야 합니다.
+// TODO: 성능 개선을 위해 `drain` 대신 다른 방법을 사용할 수 있는지 검토해 볼 수 있습니다.
 impl Take for BottomTake {
     fn take(&mut self, zone: &mut dyn Zone) -> Result<Vec<Card>, GameError> {
         let cards = zone.get_cards_mut();
@@ -69,6 +87,16 @@ impl Take for BottomTake {
 #[derive(Clone)]
 pub struct RandomTake(pub TargetCount);
 
+/// `RandomTake` 구조체를 위한 `Take` 트레이트 구현입니다.
+///
+/// 덱이나 영역에서 무작위로 지정된 개수의 카드를 가져옵니다.
+///
+/// # Errors
+///
+/// * `GameError::System(SystemError::Internal)`: 사용 가능한 카드 수가 요청한 카드 수보다 적을 경우 발생합니다.
+// TODO: 오류 발생 조건에 대한 더 자세한 설명이 필요합니다. 예를 들어, `TargetCount`의 설정에 따라 어떤 경우에 오류가 발생하는지 명확히 기술해야 합니다.
+// TODO: 무작위 선택 알고리즘의 시간 복잡도에 대한 언급이 필요합니다. 큰 덱에서 성능 문제가 발생할 수 있는지 고려해야 합니다.
+// TODO: 현재 구현은 무작위로 선택된 카드를 제거된 순서의 역순으로 반환합니다. 이는 의도된 동작인지 명확히 해야 하며, 필요에 따라 원래 뽑힌 순서대로 반환하도록 수정할 수 있습니다.
 impl Take for RandomTake {
     fn take(&mut self, zone: &mut dyn Zone) -> Result<Vec<Card>, GameError> {
         let cards = zone.get_cards_mut();
@@ -115,6 +143,15 @@ impl Take for RandomTake {
 #[derive(Clone)]
 pub struct SpecificTake(pub Uuid);
 
+/// `SpecificTake` 구조체를 위한 `Take` 트레이트 구현입니다.
+///
+/// 특정 UUID를 가진 카드를 덱이나 영역에서 가져옵니다.
+///
+/// # Errors
+///
+/// * `GameError::Gameplay(GameplayError::ResourceNotFound)`: 지정된 UUID를 가진 카드가 없을 경우 발생합니다.
+// TODO: 만약 동일한 UUID를 가진 카드가 여러 장 존재할 경우, 어떤 카드가 선택되는지에 대한 설명이 필요합니다.
+// TODO: 만약 특정 UUID를 가진 카드가 여러 장 존재할 경우, 모든 카드를 가져오는 기능을 추가할 수 있습니다.
 impl Take for SpecificTake {
     fn take(&mut self, zone: &mut dyn Zone) -> Result<Vec<Card>, GameError> {
         let cards = zone.get_cards_mut();

@@ -53,7 +53,7 @@ impl ServerMessage {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")] // JSON에서는 "ACTIVE_SESSION_EXISTS"와 같이 변환
 pub enum ServerErrorCode {
     ActiveSessionExists,
