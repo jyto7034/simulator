@@ -1,348 +1,207 @@
-  2025-07-06T18:27:02.539916Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+  2025-07-06T18:53:58.611698Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
     at simulator_match_server\src\lib.rs:69 on main ThreadId(1)
 
-  2025-07-06T18:27:02.541915Z  INFO  Redis connection manager created.
+  2025-07-06T18:53:58.613840Z  INFO  Redis connection manager created.
     at simulator_match_server\src\main.rs:43 on main ThreadId(1)
 
-  2025-07-06T18:27:02.542083Z  INFO  DedicatedServerProvider actor started.
+  2025-07-06T18:53:58.613957Z  INFO  DedicatedServerProvider actor started.
     at simulator_match_server\src\main.rs:46 on main ThreadId(1)
 
-  2025-07-06T18:27:02.542469Z  INFO  Matchmaker actor started.
+  2025-07-06T18:53:58.614411Z  INFO  Matchmaker actor started.
     at simulator_match_server\src\main.rs:54 on main ThreadId(1)
 
-  2025-07-06T18:27:02.542549Z  INFO  Starting Actix-Web server on 0.0.0.0:8080
+  2025-07-06T18:53:58.614519Z  INFO  Starting Actix-Web server on 0.0.0.0:8080
     at simulator_match_server\src\main.rs:64 on main ThreadId(1)
 
-  2025-07-06T18:27:02.542886Z  INFO  starting 32 workers
+  2025-07-06T18:53:58.614883Z  INFO  starting 32 workers
     at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on main ThreadId(1)
 
-  2025-07-06T18:27:02.542983Z  INFO  Actix runtime found; starting in Actix runtime
+  2025-07-06T18:53:58.614973Z  INFO  Actix runtime found; starting in Actix runtime
     at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on main ThreadId(1)
 
-  2025-07-06T18:27:02.543052Z  INFO  starting service: "actix-web-service-0.0.0.0:8080", workers: 32, listening on: 0.0.0.0:8080
+  2025-07-06T18:53:58.615044Z  INFO  starting service: "actix-web-service-0.0.0.0:8080", workers: 32, listening on: 0.0.0.0:8080
     at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on main ThreadId(1)
 
-  2025-07-06T18:27:02.550843Z  INFO  Matchmaker actor started.
+  2025-07-06T18:53:58.622776Z  INFO  Matchmaker actor started.
     at simulator_match_server\src\matchmaker\actor.rs:44 on main ThreadId(1)
 
-  2025-07-06T18:27:56.458127Z  INFO  MatchmakingSession started.
+  2025-07-06T18:54:06.443940Z  INFO  MatchmakingSession started.
     at simulator_match_server\src\ws_session.rs:56 on actix-rt|system:0|arbiter:0 ThreadId(3)
 
-  2025-07-06T18:27:56.458731Z  INFO  Player aeef5ef1-6bd1-4e88-8104-57ad70c27c5e requests queue for Normal_1v1. Subscribing before enqueuing.
+  2025-07-06T18:54:06.444574Z  INFO  Player 804ec75c-3538-4e27-bb6a-a6bd8548b73a requests queue for Normal_1v1. Subscribing before enqueuing.
     at simulator_match_server\src\ws_session.rs:116 on actix-rt|system:0|arbiter:0 ThreadId(3)
 
-  2025-07-06T18:27:56.459509Z  INFO  Player aeef5ef1-6bd1-4e88-8104-57ad70c27c5e added to queue queue:Normal_1v1
-    at simulator_match_server\src\matchmaker\actor.rs:150 on main ThreadId(1)
+  2025-07-06T18:54:06.445539Z  INFO  Player 804ec75c-3538-4e27-bb6a-a6bd8548b73a added to queue queue:Normal_1v1
+    at simulator_match_server\src\matchmaker\actor.rs:188 on main ThreadId(1)
 
-  2025-07-06T18:27:56.518867Z  INFO  MatchmakingSession started.
+  2025-07-06T18:54:07.855408Z  INFO  MatchmakingSession started.
     at simulator_match_server\src\ws_session.rs:56 on actix-rt|system:0|arbiter:1 ThreadId(4)
 
-  2025-07-06T18:27:56.519248Z  INFO  Player 9099ff2d-c9ff-4afd-94ef-9470b8b8c4be requests queue for Normal_1v1. Subscribing before enqueuing.
+  2025-07-06T18:54:07.855838Z  INFO  Player 211bd408-11f0-4e6c-bc27-db80bb9b725b requests queue for Normal_1v1. Subscribing before enqueuing.
     at simulator_match_server\src\ws_session.rs:116 on actix-rt|system:0|arbiter:1 ThreadId(4)
 
-  2025-07-06T18:27:56.520013Z  INFO  Player 9099ff2d-c9ff-4afd-94ef-9470b8b8c4be added to queue queue:Normal_1v1
-    at simulator_match_server\src\matchmaker\actor.rs:150 on main ThreadId(1)
+  2025-07-06T18:54:07.856570Z  INFO  Player 211bd408-11f0-4e6c-bc27-db80bb9b725b added to queue queue:Normal_1v1
+    at simulator_match_server\src\matchmaker\actor.rs:188 on main ThreadId(1)
 
-  2025-07-06T18:27:57.562948Z  INFO  [Normal_1v1] Found a potential match with players: ["aeef5ef1-6bd1-4e88-8104-57ad70c27c5e", "9099ff2d-c9ff-4afd-94ef-9470b8b8c4be"]
-    at simulator_match_server\src\matchmaker\actor.rs:256 on main ThreadId(1)
+  2025-07-06T18:54:08.637838Z  INFO  [Normal_1v1] Found a potential match with players: ["211bd408-11f0-4e6c-bc27-db80bb9b725b", "804ec75c-3538-4e27-bb6a-a6bd8548b73a"]
+    at simulator_match_server\src\matchmaker\actor.rs:294 on main ThreadId(1)
 
-  2025-07-06T18:27:57.563510Z  INFO  [Normal_1v1] Notifying players to start loading for session e9a6ec6a-b6b0-4f63-a607-8dae5197723d
-    at simulator_match_server\src\matchmaker\actor.rs:290 on main ThreadId(1)
+  2025-07-06T18:54:08.638200Z  INFO  [Normal_1v1] Notifying players to start loading for session 1d2aa336-c882-432c-a76a-dc749b41d1d3
+    at simulator_match_server\src\matchmaker\actor.rs:328 on main ThreadId(1)
 
-  2025-07-06T18:27:59.566284Z  INFO  Player 9099ff2d-c9ff-4afd-94ef-9470b8b8c4be finished loading for session e9a6ec6a-b6b0-4f63-a607-8dae5197723d
-    at simulator_match_server\src\ws_session.rs:162 on actix-rt|system:0|arbiter:1 ThreadId(4)
-
-  2025-07-06T18:27:59.566343Z  INFO  Player aeef5ef1-6bd1-4e88-8104-57ad70c27c5e finished loading for session e9a6ec6a-b6b0-4f63-a607-8dae5197723d
+  2025-07-06T18:54:10.650924Z  INFO  Player 804ec75c-3538-4e27-bb6a-a6bd8548b73a finished loading for session 1d2aa336-c882-432c-a76a-dc749b41d1d3
     at simulator_match_server\src\ws_session.rs:162 on actix-rt|system:0|arbiter:0 ThreadId(3)
 
-  2025-07-06T18:27:59.566896Z  INFO  Player 9099ff2d-c9ff-4afd-94ef-9470b8b8c4be is ready in loading session e9a6ec6a-b6b0-4f63-a607-8dae5197723d
-    at simulator_match_server\src\matchmaker\actor.rs:326 on main ThreadId(1)
-
-  2025-07-06T18:27:59.567008Z  INFO  Player aeef5ef1-6bd1-4e88-8104-57ad70c27c5e is ready in loading session e9a6ec6a-b6b0-4f63-a607-8dae5197723d
-    at simulator_match_server\src\matchmaker\actor.rs:326 on main ThreadId(1)
-
-  2025-07-06T18:27:59.567336Z  INFO  [Normal_1v1] All players are ready for session e9a6ec6a-b6b0-4f63-a607-8dae5197723d. Finding a dedicated server...
-    at simulator_match_server\src\matchmaker\actor.rs:359 on main ThreadId(1)
-
-  2025-07-06T18:27:59.567433Z  INFO  [Normal_1v1] All players are ready for session e9a6ec6a-b6b0-4f63-a607-8dae5197723d. Finding a dedicated server...
-    at simulator_match_server\src\matchmaker\actor.rs:359 on main ThreadId(1)
-
-  2025-07-06T18:27:59.567525Z  INFO  Finding an available dedicated server from Redis...
-    at simulator_match_server\src\provider.rs:47 on main ThreadId(1)
-
-  2025-07-06T18:27:59.567590Z  INFO  Finding an available dedicated server from Redis...
-    at simulator_match_server\src\provider.rs:47 on main ThreadId(1)
-
-  2025-07-06T18:27:59.567914Z  INFO  Found idle server: ServerInfo { address: "127.0.0.1:8088", status: "idle" }
-    at simulator_match_server\src\provider.rs:82 on main ThreadId(1)
-
-  2025-07-06T18:27:59.568001Z  INFO  Found idle server: ServerInfo { address: "127.0.0.1:8088", status: "idle" }
-    at simulator_match_server\src\provider.rs:82 on main ThreadId(1)
-
-  2025-07-06T18:27:59.570375Z  INFO  [Normal_1v1] Successfully created session: CreateSessionResp { server_address: "ws://127.0.0.1:8088/game?session_id=8be45385-1be5-488c-a1c1-8d6cdd229dd7", session_id: 8be45385-1be5-488c-a1c1-8d6cdd229dd7 }
-    at simulator_match_server\src\matchmaker\actor.rs:394 on main ThreadId(1)
-
-  2025-07-06T18:27:59.570519Z  INFO  [Normal_1v1] Successfully created session: CreateSessionResp { server_address: "ws://127.0.0.1:8088/game?session_id=abf1b1b5-40f5-4dcf-929c-05d3fccb6a46", session_id: abf1b1b5-40f5-4dcf-929c-05d3fccb6a46 }
-    at simulator_match_server\src\matchmaker\actor.rs:394 on main ThreadId(1)
-
-  2025-07-06T18:27:59.571498Z  INFO  Player 9099ff2d-c9ff-4afd-94ef-9470b8b8c4be disconnected during loading session e9a6ec6a-b6b0-4f63-a607-8dae5197723d, sending cancel request.
-    at simulator_match_server\src\ws_session.rs:65 on actix-rt|system:0|arbiter:1 ThreadId(4)
-
-  2025-07-06T18:27:59.571605Z  INFO  Player aeef5ef1-6bd1-4e88-8104-57ad70c27c5e disconnected during loading session e9a6ec6a-b6b0-4f63-a607-8dae5197723d, sending cancel request.
-    at simulator_match_server\src\ws_session.rs:65 on actix-rt|system:0|arbiter:0 ThreadId(3)
-
-  2025-07-06T18:27:59.571736Z  INFO  MatchmakingSession for player Some(9099ff2d-c9ff-4afd-94ef-9470b8b8c4be) is stopping.
-    at simulator_match_server\src\ws_session.rs:81 on actix-rt|system:0|arbiter:1 ThreadId(4)
-
-  2025-07-06T18:27:59.571848Z  INFO  Cancelling loading session e9a6ec6a-b6b0-4f63-a607-8dae5197723d due to player 9099ff2d-c9ff-4afd-94ef-9470b8b8c4be disconnection.
-    at simulator_match_server\src\matchmaker\actor.rs:464 on main ThreadId(1)
-
-  2025-07-06T18:27:59.571957Z  INFO  MatchmakingSession for player Some(aeef5ef1-6bd1-4e88-8104-57ad70c27c5e) is stopping.
-    at simulator_match_server\src\ws_session.rs:81 on actix-rt|system:0|arbiter:0 ThreadId(3)
-
-  2025-07-06T18:27:59.572026Z  INFO  Cancelling loading session e9a6ec6a-b6b0-4f63-a607-8dae5197723d due to player aeef5ef1-6bd1-4e88-8104-57ad70c27c5e disconnection.
-    at simulator_match_server\src\matchmaker\actor.rs:464 on main ThreadId(1)
-
-  2025-07-06T18:27:59.572306Z  WARN  Loading session e9a6ec6a-b6b0-4f63-a607-8dae5197723d not found or already cleaned up.
-    at simulator_match_server\src\matchmaker\actor.rs:475 on main ThreadId(1)
-
-  2025-07-06T18:27:59.572399Z  WARN  Loading session e9a6ec6a-b6b0-4f63-a607-8dae5197723d not found or already cleaned up.
-    at simulator_match_server\src\matchmaker\actor.rs:475 on main ThreadId(1)
-
-  2025-07-06T18:28:02.554467Z  INFO  Checking for stale loading sessions...
-    at simulator_match_server\src\matchmaker\actor.rs:528 on main ThreadId(1)
-
-  2025-07-06T18:29:02.556985Z  INFO  Checking for stale loading sessions...
-    at simulator_match_server\src\matchmaker\actor.rs:528 on main ThreadId(1)
-
-  2025-07-06T18:30:02.553408Z  INFO  Checking for stale loading sessions...
-    at simulator_match_server\src\matchmaker\actor.rs:528 on main ThreadId(1)
-
-  2025-07-06T18:31:02.567715Z  INFO  Checking for stale loading sessions...
-    at simulator_match_server\src\matchmaker\actor.rs:528 on main ThreadId(1)
-
-  2025-07-06T18:32:02.564430Z  INFO  Checking for stale loading sessions...
-    at simulator_match_server\src\matchmaker\actor.rs:528 on main ThreadId(1)
-
-  2025-07-06T18:41:09.319352Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
-    at simulator_match_server\src\lib.rs:69 on main ThreadId(1)
-
-  2025-07-06T18:41:09.321442Z  INFO  Redis connection manager created.
-    at simulator_match_server\src\main.rs:43 on main ThreadId(1)
-
-  2025-07-06T18:41:09.321641Z  INFO  DedicatedServerProvider actor started.
-    at simulator_match_server\src\main.rs:46 on main ThreadId(1)
-
-  2025-07-06T18:41:09.322095Z  INFO  Matchmaker actor started.
-    at simulator_match_server\src\main.rs:54 on main ThreadId(1)
-
-  2025-07-06T18:41:09.322168Z  INFO  Starting Actix-Web server on 0.0.0.0:8080
-    at simulator_match_server\src\main.rs:64 on main ThreadId(1)
-
-  2025-07-06T18:41:09.322468Z  INFO  starting 32 workers
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on main ThreadId(1)
-
-  2025-07-06T18:41:09.322551Z  INFO  Actix runtime found; starting in Actix runtime
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on main ThreadId(1)
-
-  2025-07-06T18:41:09.322618Z  INFO  starting service: "actix-web-service-0.0.0.0:8080", workers: 32, listening on: 0.0.0.0:8080
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on main ThreadId(1)
-
-  2025-07-06T18:41:09.330258Z  INFO  Matchmaker actor started.
-    at simulator_match_server\src\matchmaker\actor.rs:44 on main ThreadId(1)
-
-  2025-07-06T18:42:09.343711Z  INFO  Checking for stale loading sessions...
-    at simulator_match_server\src\matchmaker\actor.rs:528 on main ThreadId(1)
-
-  2025-07-06T18:42:51.292701Z  INFO  MatchmakingSession started.
-    at simulator_match_server\src\ws_session.rs:56 on actix-rt|system:0|arbiter:0 ThreadId(3)
-
-  2025-07-06T18:42:51.293519Z  INFO  Player b3932b9d-9f80-48ea-8dcb-e067736d01e8 requests queue for Normal_1v1. Subscribing before enqueuing.
-    at simulator_match_server\src\ws_session.rs:116 on actix-rt|system:0|arbiter:0 ThreadId(3)
-
-  2025-07-06T18:42:51.294374Z  INFO  Player b3932b9d-9f80-48ea-8dcb-e067736d01e8 added to queue queue:Normal_1v1
-    at simulator_match_server\src\matchmaker\actor.rs:150 on main ThreadId(1)
-
-  2025-07-06T18:42:51.347218Z  INFO  MatchmakingSession started.
-    at simulator_match_server\src\ws_session.rs:56 on actix-rt|system:0|arbiter:1 ThreadId(4)
-
-  2025-07-06T18:42:51.347638Z  INFO  Player 19587d2d-1343-43f2-863d-c293d55c157a requests queue for Normal_1v1. Subscribing before enqueuing.
-    at simulator_match_server\src\ws_session.rs:116 on actix-rt|system:0|arbiter:1 ThreadId(4)
-
-  2025-07-06T18:42:51.348347Z  INFO  Player 19587d2d-1343-43f2-863d-c293d55c157a added to queue queue:Normal_1v1
-    at simulator_match_server\src\matchmaker\actor.rs:150 on main ThreadId(1)
-
-  2025-07-06T18:42:54.336070Z  INFO  [Normal_1v1] Found a potential match with players: ["b3932b9d-9f80-48ea-8dcb-e067736d01e8", "19587d2d-1343-43f2-863d-c293d55c157a"]
-    at simulator_match_server\src\matchmaker\actor.rs:256 on main ThreadId(1)
-
-  2025-07-06T18:42:54.336410Z  INFO  [Normal_1v1] Notifying players to start loading for session e4fdf46a-0311-4ca8-b3bb-091a380bfff7
-    at simulator_match_server\src\matchmaker\actor.rs:290 on main ThreadId(1)
-
-  2025-07-06T18:42:56.344567Z  INFO  Player b3932b9d-9f80-48ea-8dcb-e067736d01e8 finished loading for session e4fdf46a-0311-4ca8-b3bb-091a380bfff7
-    at simulator_match_server\src\ws_session.rs:162 on actix-rt|system:0|arbiter:0 ThreadId(3)
-
-  2025-07-06T18:42:56.344657Z  INFO  Player 19587d2d-1343-43f2-863d-c293d55c157a finished loading for session e4fdf46a-0311-4ca8-b3bb-091a380bfff7
+  2025-07-06T18:54:10.651065Z  INFO  Player 211bd408-11f0-4e6c-bc27-db80bb9b725b finished loading for session 1d2aa336-c882-432c-a76a-dc749b41d1d3
     at simulator_match_server\src\ws_session.rs:162 on actix-rt|system:0|arbiter:1 ThreadId(4)
 
-  2025-07-06T18:42:56.345019Z  INFO  Player b3932b9d-9f80-48ea-8dcb-e067736d01e8 is ready in loading session e4fdf46a-0311-4ca8-b3bb-091a380bfff7
-    at simulator_match_server\src\matchmaker\actor.rs:326 on main ThreadId(1)
+  2025-07-06T18:54:10.657994Z  INFO  Player 804ec75c-3538-4e27-bb6a-a6bd8548b73a is ready, but waiting for others in session 1d2aa336-c882-432c-a76a-dc749b41d1d3.
+    at simulator_match_server\src\matchmaker\actor.rs:367 on main ThreadId(1)
 
-  2025-07-06T18:42:56.345121Z  INFO  Player 19587d2d-1343-43f2-863d-c293d55c157a is ready in loading session e4fdf46a-0311-4ca8-b3bb-091a380bfff7
-    at simulator_match_server\src\matchmaker\actor.rs:326 on main ThreadId(1)
+  2025-07-06T18:54:10.658130Z  INFO  All players ["211bd408-11f0-4e6c-bc27-db80bb9b725b", "804ec75c-3538-4e27-bb6a-a6bd8548b73a"] are ready for session 1d2aa336-c882-432c-a76a-dc749b41d1d3. Finding a dedicated server...
+    at simulator_match_server\src\matchmaker\actor.rs:383 on main ThreadId(1)
 
-  2025-07-06T18:42:56.345384Z  INFO  [Normal_1v1] All players are ready for session e4fdf46a-0311-4ca8-b3bb-091a380bfff7. Finding a dedicated server...
-    at simulator_match_server\src\matchmaker\actor.rs:359 on main ThreadId(1)
-
-  2025-07-06T18:42:56.345482Z  INFO  [Normal_1v1] All players are ready for session e4fdf46a-0311-4ca8-b3bb-091a380bfff7. Finding a dedicated server...
-    at simulator_match_server\src\matchmaker\actor.rs:359 on main ThreadId(1)
-
-  2025-07-06T18:42:56.345570Z  INFO  Finding an available dedicated server from Redis...
+  2025-07-06T18:54:10.658232Z  INFO  Finding an available dedicated server from Redis...
     at simulator_match_server\src\provider.rs:47 on main ThreadId(1)
 
-  2025-07-06T18:42:56.345633Z  INFO  Finding an available dedicated server from Redis...
-    at simulator_match_server\src\provider.rs:47 on main ThreadId(1)
-
-  2025-07-06T18:42:56.346071Z  INFO  Found idle server: ServerInfo { address: "127.0.0.1:8088", status: "idle" }
+  2025-07-06T18:54:10.658599Z  INFO  Found idle server: ServerInfo { address: "127.0.0.1:8088", status: "idle" }
     at simulator_match_server\src\provider.rs:82 on main ThreadId(1)
 
-  2025-07-06T18:42:56.346146Z  INFO  Found idle server: ServerInfo { address: "127.0.0.1:8088", status: "idle" }
-    at simulator_match_server\src\provider.rs:82 on main ThreadId(1)
+  2025-07-06T18:54:10.661132Z  INFO  [Normal_1v1] Successfully created session: CreateSessionResp { server_address: "ws://127.0.0.1:8088/game?session_id=74671bf4-4a94-4c5b-a4d4-d18467a65171", session_id: 74671bf4-4a94-4c5b-a4d4-d18467a65171 }
+    at simulator_match_server\src\matchmaker\actor.rs:427 on main ThreadId(1)
 
-  2025-07-06T18:42:56.348709Z  INFO  [Normal_1v1] Successfully created session: CreateSessionResp { server_address: "ws://127.0.0.1:8088/game?session_id=2bc92522-026e-42ee-8ea2-c619ad8a96c1", session_id: 2bc92522-026e-42ee-8ea2-c619ad8a96c1 }
-    at simulator_match_server\src\matchmaker\actor.rs:394 on main ThreadId(1)
-
-  2025-07-06T18:42:56.348860Z  INFO  [Normal_1v1] Successfully created session: CreateSessionResp { server_address: "ws://127.0.0.1:8088/game?session_id=591ebe35-9b99-480d-9b97-3aff365b576f", session_id: 591ebe35-9b99-480d-9b97-3aff365b576f }
-    at simulator_match_server\src\matchmaker\actor.rs:394 on main ThreadId(1)
-
-  2025-07-06T18:42:56.349718Z  INFO  Player 19587d2d-1343-43f2-863d-c293d55c157a disconnected during loading session e4fdf46a-0311-4ca8-b3bb-091a380bfff7, sending cancel request.
+  2025-07-06T18:54:10.662063Z  INFO  Player 211bd408-11f0-4e6c-bc27-db80bb9b725b disconnected during loading session 1d2aa336-c882-432c-a76a-dc749b41d1d3, sending cancel request.
     at simulator_match_server\src\ws_session.rs:65 on actix-rt|system:0|arbiter:1 ThreadId(4)
 
-  2025-07-06T18:42:56.349872Z  INFO  Player b3932b9d-9f80-48ea-8dcb-e067736d01e8 disconnected during loading session e4fdf46a-0311-4ca8-b3bb-091a380bfff7, sending cancel request.
+  2025-07-06T18:54:10.662200Z  INFO  Player 804ec75c-3538-4e27-bb6a-a6bd8548b73a disconnected during loading session 1d2aa336-c882-432c-a76a-dc749b41d1d3, sending cancel request.
     at simulator_match_server\src\ws_session.rs:65 on actix-rt|system:0|arbiter:0 ThreadId(3)
 
-  2025-07-06T18:42:56.350034Z  INFO  MatchmakingSession for player Some(19587d2d-1343-43f2-863d-c293d55c157a) is stopping.
+  2025-07-06T18:54:10.662335Z  INFO  MatchmakingSession for player Some(211bd408-11f0-4e6c-bc27-db80bb9b725b) is stopping.
     at simulator_match_server\src\ws_session.rs:81 on actix-rt|system:0|arbiter:1 ThreadId(4)
 
-  2025-07-06T18:42:56.350160Z  INFO  Cancelling loading session e4fdf46a-0311-4ca8-b3bb-091a380bfff7 due to player 19587d2d-1343-43f2-863d-c293d55c157a disconnection.
-    at simulator_match_server\src\matchmaker\actor.rs:464 on main ThreadId(1)
-
-  2025-07-06T18:42:56.350258Z  INFO  MatchmakingSession for player Some(b3932b9d-9f80-48ea-8dcb-e067736d01e8) is stopping.
+  2025-07-06T18:54:10.662458Z  INFO  MatchmakingSession for player Some(804ec75c-3538-4e27-bb6a-a6bd8548b73a) is stopping.
     at simulator_match_server\src\ws_session.rs:81 on actix-rt|system:0|arbiter:0 ThreadId(3)
 
-  2025-07-06T18:42:56.350362Z  INFO  Cancelling loading session e4fdf46a-0311-4ca8-b3bb-091a380bfff7 due to player b3932b9d-9f80-48ea-8dcb-e067736d01e8 disconnection.
-    at simulator_match_server\src\matchmaker\actor.rs:464 on main ThreadId(1)
+  2025-07-06T18:54:10.662579Z  INFO  Cancelling loading session 1d2aa336-c882-432c-a76a-dc749b41d1d3 due to player 211bd408-11f0-4e6c-bc27-db80bb9b725b disconnection.
+    at simulator_match_server\src\matchmaker\actor.rs:498 on main ThreadId(1)
 
-  2025-07-06T18:42:56.350646Z  WARN  Loading session e4fdf46a-0311-4ca8-b3bb-091a380bfff7 not found or already cleaned up.
-    at simulator_match_server\src\matchmaker\actor.rs:475 on main ThreadId(1)
+  2025-07-06T18:54:10.662763Z  INFO  Cancelling loading session 1d2aa336-c882-432c-a76a-dc749b41d1d3 due to player 804ec75c-3538-4e27-bb6a-a6bd8548b73a disconnection.
+    at simulator_match_server\src\matchmaker\actor.rs:498 on main ThreadId(1)
 
-  2025-07-06T18:42:56.350773Z  WARN  Loading session e4fdf46a-0311-4ca8-b3bb-091a380bfff7 not found or already cleaned up.
-    at simulator_match_server\src\matchmaker\actor.rs:475 on main ThreadId(1)
+  2025-07-06T18:54:10.663159Z  WARN  Loading session 1d2aa336-c882-432c-a76a-dc749b41d1d3 not found or already cleaned up.
+    at simulator_match_server\src\matchmaker\actor.rs:509 on main ThreadId(1)
 
-  2025-07-06T18:43:09.333490Z  INFO  Checking for stale loading sessions...
-    at simulator_match_server\src\matchmaker\actor.rs:528 on main ThreadId(1)
+  2025-07-06T18:54:10.663248Z  WARN  Loading session 1d2aa336-c882-432c-a76a-dc749b41d1d3 not found or already cleaned up.
+    at simulator_match_server\src\matchmaker\actor.rs:509 on main ThreadId(1)
 
-  2025-07-06T18:44:09.333690Z  INFO  Checking for stale loading sessions...
-    at simulator_match_server\src\matchmaker\actor.rs:528 on main ThreadId(1)
+  2025-07-06T18:54:58.631627Z  INFO  Checking for stale loading sessions...
+    at simulator_match_server\src\matchmaker\actor.rs:562 on main ThreadId(1)
 
-  2025-07-06T18:44:19.416234Z  INFO  SIGINT received; starting forced shutdown
+  2025-07-06T18:55:58.630284Z  INFO  Checking for stale loading sessions...
+    at simulator_match_server\src\matchmaker\actor.rs:562 on main ThreadId(1)
+
+  2025-07-06T18:56:58.638523Z  INFO  Checking for stale loading sessions...
+    at simulator_match_server\src\matchmaker\actor.rs:562 on main ThreadId(1)
+
+  2025-07-06T18:57:12.134998Z  INFO  SIGINT received; starting forced shutdown
     at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:333 on main ThreadId(1)
 
-  2025-07-06T18:44:19.416416Z  INFO  accept thread stopped
+  2025-07-06T18:57:12.135197Z  INFO  accept thread stopped
     at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\accept.rs:143 on actix-server acceptor ThreadId(35)
 
-  2025-07-06T18:44:19.416503Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:0 ThreadId(3)
-
-  2025-07-06T18:44:19.416585Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:3 ThreadId(6)
-
-  2025-07-06T18:44:19.416651Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:2 ThreadId(5)
-
-  2025-07-06T18:44:19.416706Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:9 ThreadId(12)
-
-  2025-07-06T18:44:19.416768Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:10 ThreadId(13)
-
-  2025-07-06T18:44:19.416853Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:8 ThreadId(11)
-
-  2025-07-06T18:44:19.416918Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:1 ThreadId(4)
-
-  2025-07-06T18:44:19.416976Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:16 ThreadId(19)
-
-  2025-07-06T18:44:19.417028Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:18 ThreadId(21)
-
-  2025-07-06T18:44:19.417084Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:15 ThreadId(18)
-
-  2025-07-06T18:44:19.417174Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:20 ThreadId(23)
-
-  2025-07-06T18:44:19.417233Z  INFO  shutting down idle worker
+  2025-07-06T18:57:12.135289Z  INFO  shutting down idle worker
     at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:23 ThreadId(26)
 
-  2025-07-06T18:44:19.417318Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:25 ThreadId(28)
+  2025-07-06T18:57:12.135370Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:1 ThreadId(4)
 
-  2025-07-06T18:44:19.417409Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:22 ThreadId(25)
+  2025-07-06T18:57:12.135456Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:2 ThreadId(5)
 
-  2025-07-06T18:44:19.417469Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:21 ThreadId(24)
+  2025-07-06T18:57:12.135561Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:3 ThreadId(6)
 
-  2025-07-06T18:44:19.417561Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:14 ThreadId(17)
-
-  2025-07-06T18:44:19.417625Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:13 ThreadId(16)
-
-  2025-07-06T18:44:19.417694Z  INFO  shutting down idle worker
+  2025-07-06T18:57:12.135626Z  INFO  shutting down idle worker
     at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:4 ThreadId(7)
 
-  2025-07-06T18:44:19.417783Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:7 ThreadId(10)
+  2025-07-06T18:57:12.135743Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:9 ThreadId(12)
 
-  2025-07-06T18:44:19.417841Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:19 ThreadId(22)
+  2025-07-06T18:57:12.135804Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:10 ThreadId(13)
 
-  2025-07-06T18:44:19.417988Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:5 ThreadId(8)
+  2025-07-06T18:57:12.135899Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:8 ThreadId(11)
 
-  2025-07-06T18:44:19.418043Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:11 ThreadId(14)
-
-  2025-07-06T18:44:19.418107Z  INFO  shutting down idle worker
+  2025-07-06T18:57:12.136024Z  INFO  shutting down idle worker
     at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:6 ThreadId(9)
 
-  2025-07-06T18:44:19.418253Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:12 ThreadId(15)
+  2025-07-06T18:57:12.136071Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:14 ThreadId(17)
 
-  2025-07-06T18:44:19.418328Z  INFO  shutting down idle worker
+  2025-07-06T18:57:12.136196Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:11 ThreadId(14)
+
+  2025-07-06T18:57:12.136327Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:15 ThreadId(18)
+
+  2025-07-06T18:57:12.136385Z  INFO  shutting down idle worker
     at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:17 ThreadId(20)
 
-  2025-07-06T18:44:19.418378Z  INFO  shutting down idle worker
+  2025-07-06T18:57:12.136439Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:5 ThreadId(8)
+
+  2025-07-06T18:57:12.136501Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:20 ThreadId(23)
+
+  2025-07-06T18:57:12.136559Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:7 ThreadId(10)
+
+  2025-07-06T18:57:12.136618Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:21 ThreadId(24)
+
+  2025-07-06T18:57:12.136674Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:12 ThreadId(15)
+
+  2025-07-06T18:57:12.136742Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:19 ThreadId(22)
+
+  2025-07-06T18:57:12.136805Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:16 ThreadId(19)
+
+  2025-07-06T18:57:12.136889Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2025-07-06T18:57:12.136946Z  INFO  shutting down idle worker
     at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:24 ThreadId(27)
 
-  2025-07-06T18:44:19.418438Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:26 ThreadId(29)
+  2025-07-06T18:57:12.137009Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:22 ThreadId(25)
 
-  2025-07-06T18:44:19.418499Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:27 ThreadId(30)
-
-  2025-07-06T18:44:19.418561Z  INFO  shutting down idle worker
-    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:29 ThreadId(32)
-
-  2025-07-06T18:44:19.418624Z  INFO  shutting down idle worker
+  2025-07-06T18:57:12.137075Z  INFO  shutting down idle worker
     at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:28 ThreadId(31)
 
-  2025-07-06T18:44:19.418685Z  INFO  shutting down idle worker
+  2025-07-06T18:57:12.137158Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:29 ThreadId(32)
+
+  2025-07-06T18:57:12.137219Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:26 ThreadId(29)
+
+  2025-07-06T18:57:12.137293Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:27 ThreadId(30)
+
+  2025-07-06T18:57:12.137381Z  INFO  shutting down idle worker
     at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:30 ThreadId(33)
 
-  2025-07-06T18:44:19.418737Z  INFO  shutting down idle worker
+  2025-07-06T18:57:12.137450Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:13 ThreadId(16)
+
+  2025-07-06T18:57:12.137532Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:25 ThreadId(28)
+
+  2025-07-06T18:57:12.137628Z  INFO  shutting down idle worker
     at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:31 ThreadId(34)
+
+  2025-07-06T18:57:12.137745Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:18 ThreadId(21)
 

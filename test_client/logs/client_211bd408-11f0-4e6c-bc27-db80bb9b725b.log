@@ -1,0 +1,33 @@
+  2025-07-06T18:54:07.852968Z  INFO  Logger initialized. Log file: client_211bd408-11f0-4e6c-bc27-db80bb9b725b.log
+    at test_client\src\main.rs:55 on main ThreadId(1)
+
+  2025-07-06T18:54:07.853144Z  INFO  [211bd408-11f0-4e6c-bc27-db80bb9b725b] Starting in NORMAL mode
+    at test_client\src\main.rs:223 on main ThreadId(1)
+
+  2025-07-06T18:54:07.855626Z  INFO  [211bd408-11f0-4e6c-bc27-db80bb9b725b] Connected.
+    at test_client\src\main.rs:228 on main ThreadId(1)
+
+  2025-07-06T18:54:07.855752Z  INFO  [211bd408-11f0-4e6c-bc27-db80bb9b725b] Sent enqueue request.
+    at test_client\src\main.rs:235 on main ThreadId(1)
+
+  2025-07-06T18:54:07.856901Z  INFO  [211bd408-11f0-4e6c-bc27-db80bb9b725b] Received: {"type":"queued"}
+    at test_client\src\main.rs:240 on main ThreadId(1)
+
+  2025-07-06T18:54:08.638762Z  INFO  [211bd408-11f0-4e6c-bc27-db80bb9b725b] Received: {"type":"start_loading","loading_session_id":"1d2aa336-c882-432c-a76a-dc749b41d1d3"}
+    at test_client\src\main.rs:240 on main ThreadId(1)
+
+  2025-07-06T18:54:08.638886Z  INFO  [211bd408-11f0-4e6c-bc27-db80bb9b725b] Simulating asset loading...
+    at test_client\src\main.rs:246 on main ThreadId(1)
+
+  2025-07-06T18:54:10.650750Z  INFO  [211bd408-11f0-4e6c-bc27-db80bb9b725b] Loading complete. Notified server.
+    at test_client\src\main.rs:253 on main ThreadId(1)
+
+  2025-07-06T18:54:10.661665Z  INFO  [211bd408-11f0-4e6c-bc27-db80bb9b725b] Received: {"type":"match_found","session_id":"74671bf4-4a94-4c5b-a4d4-d18467a65171","server_address":"ws://127.0.0.1:8088/game?session_id=74671bf4-4a94-4c5b-a4d4-d18467a65171"}
+    at test_client\src\main.rs:240 on main ThreadId(1)
+
+  2025-07-06T18:54:10.661772Z  INFO  [211bd408-11f0-4e6c-bc27-db80bb9b725b] Match found! Shutting down.
+    at test_client\src\main.rs:256 on main ThreadId(1)
+
+  2025-07-06T18:54:10.661828Z  INFO  [211bd408-11f0-4e6c-bc27-db80bb9b725b] Test finished.
+    at test_client\src\main.rs:263 on main ThreadId(1)
+

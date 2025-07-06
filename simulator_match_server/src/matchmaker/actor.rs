@@ -5,7 +5,7 @@ use crate::{
 };
 use actix::{Actor, Addr, AsyncContext, Context, Handler, Message, ResponseFuture};
 use redis::aio::ConnectionManager;
-use redis::{AsyncCommands, FromRedisValue, RedisResult, Script, ToRedisArgs, Value};
+use redis::{AsyncCommands, RedisResult, Script};
 use serde::{Deserialize, Serialize};
 use simulator_metrics::{MATCHES_CREATED_TOTAL, PLAYERS_IN_QUEUE};
 use std::collections::HashMap;
@@ -103,12 +103,50 @@ struct TryMatch {
 #[rtype(result = "()")]
 struct CheckStaleLoadingSessions;
 
-// --- Lua Script ---
+// --- Lua Scripts ---
 const ATOMIC_MATCH_SCRIPT: &str = r#"
     local queue_key = KEYS[1]
     local required_players = tonumber(ARGV[1])
     if redis.call('SCARD', queue_key) >= required_players then
         return redis.call('SPOP', queue_key, required_players)
+    else
+        return {}
+    end
+"#;
+
+const ATOMIC_LOADING_COMPLETE_SCRIPT: &str = r#"
+    local loading_key = KEYS[1]
+    local player_id = ARGV[1]
+
+    -- Check if the loading session still exists
+    if redis.call('EXISTS', loading_key) == 0 then
+        return {} -- Session already completed or cancelled
+    end
+
+    -- Set the current player's status to "ready"
+    redis.call('HSET', loading_key, player_id, 'ready')
+
+    -- Check if all players are ready
+    local players = redis.call('HGETALL', loading_key)
+    local all_ready = true
+    local player_ids = {}
+    local count = 0
+    for i=1, #players, 2 do
+        -- Filter out metadata fields
+        if players[i] ~= 'game_mode' and players[i] ~= 'created_at' then
+            if players[i+1] ~= 'ready' then
+                all_ready = false
+                break
+            end
+            table.insert(player_ids, players[i])
+            count = count + 1
+        end
+    end
+
+    -- If all are ready, delete the key and return the player IDs
+    if all_ready and count > 0 then
+        redis.call('DEL', loading_key)
+        return player_ids
     else
         return {}
     end
@@ -227,7 +265,7 @@ impl Handler<TryMatch> for Matchmaker {
             if game_mode_settings.use_mmr_matching {
                 // TODO: MMR 기반 매칭 로직 구현
                 // 현재는 단순 매칭 로직을 사용하지만, 향후 이 분기 내에
-                // MMR 값에 따라 플레이어를 정렬하고, 비슷한 MMR을 가진
+                // MMR 값에 따라 플레이��를 정렬하고, 비슷한 MMR을 가진
                 // 플레이어들을 매칭시키는 로직을 추가할 수 있습니다.
                 // 예: ZRANGEBYSCORE, ZPOPMAX 등의 Redis 명령어를 활용
                 warn!(
@@ -235,7 +273,7 @@ impl Handler<TryMatch> for Matchmaker {
                     game_mode_settings.id
                 );
             }
-            
+
             // 공통 매칭 로직 (현재는 MMR 사용 여부와 관계없이 동일)
             let script = Script::new(ATOMIC_MATCH_SCRIPT);
             let player_ids: Vec<String> = match script
@@ -371,7 +409,12 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                             .collect(),
                     };
 
-                    match http_client.post(&create_session_url).json(&req_body).send().await {
+                    match http_client
+                        .post(&create_session_url)
+                        .json(&req_body)
+                        .send()
+                        .await
+                    {
                         Ok(resp) if resp.status().is_success() => {
                             #[derive(Deserialize, Debug)]
                             struct CreateSessionResp {
@@ -415,7 +458,10 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                         }
                         Err(e) => {
                             let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
-                            error!("[{}] Failed to contact dedicated server: {}. Re-queuing players.", game_mode, e);
+                            error!(
+                                "[{}] Failed to contact dedicated server: {}. Re-queuing players.",
+                                game_mode, e
+                            );
                             requeue_players(&mut redis, &queue_key, &player_ids).await;
                         }
                     }
@@ -441,6 +487,10 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
     }
 }
 
+// TODO
+// (심각) 존재하지 않는 게임 모드로 플레이어가 고립되는 문제
+// (심각) 게임 서버 할당 실패 시 플레이어가 잘못된 큐로 돌아가는 문제
+// (중요) 서버 부하 증가 시 성능 저하를 유발하는 KEYS 명령어 사용
 impl Handler<CancelLoadingSession> for Matchmaker {
     type Result = ResponseFuture<()>;
     fn handle(&mut self, msg: CancelLoadingSession, _ctx: &mut Self::Context) -> Self::Result {
