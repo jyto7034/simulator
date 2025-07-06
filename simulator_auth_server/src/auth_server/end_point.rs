@@ -1,11 +1,13 @@
 use actix_web::{web, HttpResponse};
 use serde::{Deserialize, Serialize};
 use tracing::info;
+use chrono::{Utc, Duration};
+use jsonwebtoken::{encode, Header, EncodingKey};
 
 use crate::auth_server::{
     db_operation,
     errors::AuthError,
-    types::{AppState, SteamApiResponse},
+    types::{AppState, SteamApiResponse, Claims},
 };
 
 // --- HTTP 요청 본문 구조체 ---
@@ -18,12 +20,61 @@ struct SteamAuthRequest {
 struct AuthSuccessResponse {
     message: String,
     steam_id: String,
+    token: String,
 }
 
 #[derive(Serialize)]
 struct GenericSuccessResponse {
     message: String,
 }
+
+#[derive(Deserialize)]
+pub struct TestAuthRequest {
+    pub steam_id: i64,
+    pub username: Option<String>,
+}
+
+/// [TEST ONLY] /auth/test/login
+/// 테스트 목적으로 Steam 인증 없이 가짜 플레이어에 대한 JWT를 발급합니다.
+/// 이 엔드포인트는 `test-endpoints` 피처가 활성화된 경우에만 컴파일됩니다.
+#[cfg(feature = "test-endpoints")]
+#[actix_web::post("/test/login")]
+pub async fn test_authentication_handler(
+    state: web::Data<AppState>,
+    req_body: web::Json<TestAuthRequest>,
+) -> Result<HttpResponse, AuthError> {
+    let steam_id_i64 = req_body.steam_id;
+    let username = req_body.username.clone().unwrap_or(format!("test_user_{}", steam_id_i64));
+
+    // 1. 실제 로그인과 동일한 DB 작업을 수행합니다.
+    db_operation::upsert_player_on_login(&state.db_pool, steam_id_i64, &username).await?;
+    tracing::info!("[TEST] Upserted test player: {}", steam_id_i64);
+
+    // 2. JWT를 생성합니다.
+    let now = Utc::now();
+    let claims = Claims {
+        sub: steam_id_i64.to_string(),
+        iat: now.timestamp() as usize,
+        exp: (now + Duration::days(1)).timestamp() as usize, // 테스트용 토큰은 하루 동안 유효
+    };
+
+    let token = encode(
+        &Header::default(),
+        &claims,
+        &EncodingKey::from_secret(state.jwt_secret.as_ref()),
+    )
+    .map_err(|e| AuthError::InternalServerError(anyhow::anyhow!(e)))?;
+
+    tracing::info!("[TEST] Generated JWT for test player: {}", steam_id_i64);
+
+    // 3. 성공 응답에 토큰을 포함하여 반환합니다.
+    Ok(HttpResponse::Ok().json(AuthSuccessResponse {
+        message: "Test authentication successful.".to_string(),
+        steam_id: steam_id_i64.to_string(),
+        token,
+    }))
+}
+
 
 // --- 엔드포인트 핸들러 ---
 /// POST /auth/steam
@@ -85,10 +136,25 @@ pub async fn steam_authentication_handler(
                 &temp_username,
             )
             .await?;
+            
+            // JWT 생성
+            let now = Utc::now();
+            let claims = Claims {
+                sub: steam_id_u64.to_string(),
+                iat: now.timestamp() as usize,
+                exp: (now + Duration::days(1)).timestamp() as usize,
+            };
+            let token = encode(
+                &Header::default(),
+                &claims,
+                &EncodingKey::from_secret(state.jwt_secret.as_ref()),
+            )
+            .map_err(|e| AuthError::InternalServerError(anyhow::anyhow!(e)))?;
 
             Ok(HttpResponse::Ok().json(AuthSuccessResponse {
                 message: "Steam Web API authentication successful.".to_string(),
                 steam_id: steam_id_u64.to_string(),
+                token,
             }))
         } else {
             // 결과가 "OK"가 아닌 경우
@@ -111,7 +177,7 @@ pub async fn steam_authentication_handler(
 }
 
 /// DELETE /test/player/{steam_id}
-/// 테스트용으로 생성된 플레이어 계정과 관련 데이터를 삭제합니다.
+/// 테스트용으로 생성된 플���이어 계정과 관련 데이터를 삭제합니다.
 #[actix_web::delete("/player/{steam_id}")]
 pub async fn delete_player_handler(
     state: web::Data<AppState>,

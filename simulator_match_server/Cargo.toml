@@ -15,9 +15,10 @@ tracing-appender = "0.2.3"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 actix-web = "4.9.0"
 actix = "=0.13.5"
-actix-ws = "0.3.0"
+actix-ws = "0.2.5"
+actix-web-actors = "4.3.0"
 async-tungstenite = {version="0.28.2", features = ["tokio-runtime"]}
-reqwest = "0.12.12"
+reqwest = { version = "0.12.12", features = ["json"] }
 url = "2.5.4"
 uuid = { version = "1.14.0", features = ["v4", "serde"] }
 serde = { version = "1.0", features = ["derive"] }
@@ -27,8 +28,13 @@ rand = "0.8.5"
 futures-util = {version = "0.3", features = ["sink"]}
 futures = "0.3.31"
 ctor = "0.4.1"
-redis = { version = "0.22.3", features = ["tokio-comp"] }
+redis = { version = "0.22.3", features = ["tokio-comp", "connection-manager"] }
 thiserror-core = "1.0.50"
 dotenv = "0.15.0"
 thiserror = "2.0.12"
 config = {version = "0.15.11", features = ["toml"]}
+jsonwebtoken = "9.3.1"
+anyhow = "1.0"
+actix-web-prom = "0.10.0"
+simulator_metrics = { path = "../simulator_metrics" }
+chrono = { version = "0.4.41", features = ["serde"] }

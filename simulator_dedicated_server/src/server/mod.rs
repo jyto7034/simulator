@@ -1,16 +1,23 @@
 use std::{future::Future, pin::Pin};
-
-use actix::{Actor, AsyncContext, Context};
-use actix_web::{get, web, FromRequest, HttpRequest, HttpResponse};
+use actix_web::{web, FromRequest, HttpRequest, HttpResponse, get};
 use actix_ws::handle;
+use serde::Deserialize;
 use simulator_core::{
     card::types::PlayerKind,
-    exception::{ConnectionError, GameError, SystemError},
+    exception::{ConnectionError, GameError},
 };
-use tracing::{debug, error, info, instrument, warn};
+use tracing::{debug, error, info, instrument};
 use uuid::Uuid;
 
-use crate::{connection::connection::ConnectionActor, test::ServerState};
+// test 모듈 의존성 제거
+// use crate::{connection::connection::ConnectionActor, test::ServerState}; 
+use crate::connection::connection::ConnectionActor;
+
+
+#[derive(Deserialize)]
+struct GameWsQuery {
+    session_id: Uuid,
+}
 
 #[derive(Debug, Clone, Copy)]
 pub struct AuthPlayer {
@@ -31,66 +38,27 @@ impl FromRequest for AuthPlayer {
     fn from_request(req: &HttpRequest, _payload: &mut actix_web::dev::Payload) -> Self::Future {
         let req = req.clone();
         Box::pin(async move {
-            debug!("AuthPlayer::from_request 시작: 인증 처리 중...");
+            debug!("AuthPlayer::from_request 시작: session_id 기반 인증 처리 중...");
 
-            let Some(player_id_cookie) = req.cookie("user_id") else {
-                error!("쿠키 누락: 'user_id' 쿠키를 찾을 수 없음");
-                return Err(GameError::Connection(ConnectionError::InvalidPayload(
-                    "Missing 'user_id' cookie".to_string(),
-                )));
-            };
-
-            let player_id_string = player_id_cookie.to_string().replace("user_id=", "");
-            debug!("쿠키 파싱 완료: player_name={}", player_id_string);
-
-            if let Some(state) = req.app_data::<web::Data<ServerState>>() {
-                let player_id = match Uuid::parse_str(&player_id_string) {
-                    Ok(id) => id,
-                    Err(e) => {
-                        warn!(
-                            "Failed to parse player_id from cookie: '{}'. Error: {}",
-                            player_id_string, e
-                        );
-                        return Err(GameError::System(SystemError::Internal(format!(
-                            "Invalid UUID format in cookie: '{}'",
-                            player_id_string
-                        ))));
-                    }
-                };
-
-                // 서버 상태에서 플레이어 ID 가져오기 (state: &web::Data<ServerState>)
-                let p1_key = state.player1_id;
-                let p2_key = state.player2_id;
-
-                // if-else if-else 로 PlayerType 결정
-                let player_type = if player_id == p1_key {
-                    debug!("Player authenticated as Player1 (ID: {})", player_id);
-                    PlayerKind::Player1
-                } else if player_id == p2_key {
-                    debug!("Player authenticated as Player2 (ID: {})", player_id);
-                    PlayerKind::Player2
-                } else {
-                    // 알 수 없는 ID 처리 (명확한 오류 반환)
-                    error!(
-                        "Authentication failed: Unknown player ID '{}' from cookie. Expected {} or {}.",
-                        player_id, p1_key, p2_key
-                    );
-                    // 인증 실패 또는 잘못된 플레이어 오류 반환
-                    return Err(GameError::Connection(ConnectionError::InvalidPayload(format!(
-                        "Authentication failed: Unknown player ID '{}' from cookie. Expected {} or {}.",
-                        player_id, p1_key, p2_key)
+            let query = match web::Query::<GameWsQuery>::from_query(req.query_string()) {
+                Ok(q) => q,
+                Err(e) => {
+                    error!("쿼리 파라미터 파싱 실패: 'session_id'를 찾을 수 없거나 형식이 잘못됨. {}", e);
+                    return Err(GameError::Connection(ConnectionError::InvalidPayload(
+                        "Missing or invalid 'session_id' query parameter".to_string(),
                     )));
-                };
+                }
+            };
+            
+            let session_id = query.session_id;
+            info!("세션 ID 확인: {}", session_id);
 
-                debug!("Request Guard 통과: player_type={:?}", player_type);
+            // TODO: Redis 또는 내부 상태에서 이 session_id가 유효한지 검증하는 로직 필요
+            let player_id = Uuid::new_v4(); 
+            let player_type = PlayerKind::Player1;
 
-                Ok(AuthPlayer::new(player_type, player_id))
-            } else {
-                error!("서버 상태 객체를 찾을 수 없음");
-                Err(GameError::System(SystemError::Internal(
-                    "Can't not found server state".to_string(),
-                )))
-            }
+            debug!("Request Guard 통과: player_type={:?}, player_id={}", player_type, player_id);
+            Ok(AuthPlayer::new(player_type, player_id))
         })
     }
 }
@@ -107,24 +75,19 @@ impl From<AuthPlayer> for String {
     }
 }
 
-/// Game 의 전반적인 기능을 책임지는 end point
 #[get("/create_room")]
-// #[instrument(skip(state, req, payload), fields(player_type = ?player.ptype))]
 pub async fn create_room(
     _player: AuthPlayer,
-    _state: web::Data<ServerState>,
     _req: HttpRequest,
     _payload: web::Payload,
 ) -> Result<HttpResponse, GameError> {
     todo!()
 }
 
-/// Game 의 전반적인 기능을 책임지는 end point
 #[get("/game")]
-#[instrument(skip(state, req, payload), fields(player_type = ?player.ptype))]
+#[instrument(skip(req, payload), fields(player_type = ?player.ptype))]
 pub async fn game(
     player: AuthPlayer,
-    state: web::Data<ServerState>,
     req: HttpRequest,
     payload: web::Payload,
 ) -> Result<HttpResponse, GameError> {
@@ -132,9 +95,8 @@ pub async fn game(
     let player_id = player.id;
     debug!("플레이어 타입 설정: {:?}", player_type);
 
-    // Http 업그레이드: 이때 session과 stream이 반환됩니다.
     debug!("WebSocket 연결 업그레이드 시작");
-    let (response, session, message_stream) = match handle(&req, payload) {
+    let (_response, _session, _message_stream) = match handle(&req, payload) {
         Ok(result) => {
             info!(
                 "WebSocket handshake successful for player_id: {}",
@@ -153,11 +115,6 @@ pub async fn game(
         }
     };
 
-    ConnectionActor::create(|ctx: &mut Context<ConnectionActor>| {
-        let new_actor = ConnectionActor::new(session, state.game.clone(), player_id, player_type);
-        ctx.add_stream(message_stream);
-        new_actor
-    });
-
-    Ok(response)
+    // TODO: main.rs에서 GameActor를 생성하고 ServerState를 통해 전달받아 ConnectionActor와 연결해야 함
+    todo!("GameActor를 생성하고 ConnectionActor와 연결해야 합니다.");
 }

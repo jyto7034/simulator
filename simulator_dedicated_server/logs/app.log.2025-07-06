@@ -1,0 +1,1131 @@
+  2025-07-06T08:26:34.682240Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at simulator_core\src\lib.rs:70 on ThreadId(2)
+
+  2025-07-06T08:26:34.703769Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at simulator_core\src\lib.rs:70 on ThreadId(2)
+
+  2025-07-06T08:26:34.727109Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at simulator_core\src\lib.rs:70 on ThreadId(2)
+
+  2025-07-06T08:26:34.737116Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.737116Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.737122Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.737116Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.737117Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.737116Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.737116Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:26:34.737116Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.737473Z  INFO  [ABORT_TEST] Starting test: P1 connects, then disconnects before P2 joins.
+    at simulator_dedicated_server\tests\test.rs:459 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.737644Z  INFO  PlayerActor 1 connected ( not session connection! ), P1 can now receive messages.
+    at simulator_core\src\game\mod.rs:288 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:26:34.737645Z  INFO  PlayerActor 1 connected ( not session connection! ), P1 can now receive messages.
+    at simulator_core\src\game\mod.rs:288 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.737662Z  INFO  PlayerActor 2 connected ( not session connection! ), P2 can now receive messages.
+    at simulator_core\src\game\mod.rs:295 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:26:34.737663Z  INFO  PlayerActor 2 connected ( not session connection! ), P2 can now receive messages.
+    at simulator_core\src\game\mod.rs:295 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.737671Z  INFO  Both players actor connected. ( not session connection! ) Sending SetOpponent messages
+    at simulator_core\src\game\mod.rs:299 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:26:34.737676Z  INFO  Both players actor connected. ( not session connection! ) Sending SetOpponent messages
+    at simulator_core\src\game\mod.rs:299 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.737710Z  INFO  GameActor [1b2ff012-f8c0-48d8-b8ad-4979e55c0c5e] has started. Initializing SyncActor.
+    at simulator_core\src\game\mod.rs:71 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:26:34.737711Z  INFO  GameActor [309ebb09-a637-4903-92d5-5684a76e0a1d] has started. Initializing SyncActor.
+    at simulator_core\src\game\mod.rs:71 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.737716Z  INFO  SyncActor created.
+    at simulator_core\src\sync\mod.rs:34 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:26:34.737719Z  INFO  SyncActor created.
+    at simulator_core\src\sync\mod.rs:34 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.737746Z  INFO  GameStateManager initialized for players Player1 and Player2
+    at simulator_core\src\game\state.rs:222 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.737746Z  INFO  GameStateManager initialized for players Player1 and Player2
+    at simulator_core\src\game\state.rs:222 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:26:34.737776Z  INFO  SyncActor started and is ready to handle sync events.
+    at simulator_core\src\sync\mod.rs:75 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.737779Z  INFO  SyncActor started and is ready to handle sync events.
+    at simulator_core\src\sync\mod.rs:75 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:26:34.737840Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.737843Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:26:34.737871Z  INFO  starting service: "actix-web-service-127.0.0.1:4324", workers: 32, listening on: 127.0.0.1:4324
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:26:34.737881Z  INFO  starting service: "actix-web-service-127.0.0.1:4329", workers: 32, listening on: 127.0.0.1:4329
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.738984Z  INFO  PlayerActor 1 connected ( not session connection! ), P1 can now receive messages.
+    at simulator_core\src\game\mod.rs:288 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.738998Z  INFO  PlayerActor 2 connected ( not session connection! ), P2 can now receive messages.
+    at simulator_core\src\game\mod.rs:295 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.739001Z  INFO  Both players actor connected. ( not session connection! ) Sending SetOpponent messages
+    at simulator_core\src\game\mod.rs:299 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.739002Z  INFO  PlayerActor 1 connected ( not session connection! ), P1 can now receive messages.
+    at simulator_core\src\game\mod.rs:288 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.739002Z  INFO  PlayerActor 1 connected ( not session connection! ), P1 can now receive messages.
+    at simulator_core\src\game\mod.rs:288 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.739008Z  INFO  GameActor [3b1581d6-4350-42f5-a9fd-71d1ee6d59f9] has started. Initializing SyncActor.
+    at simulator_core\src\game\mod.rs:71 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.739002Z  INFO  PlayerActor 1 connected ( not session connection! ), P1 can now receive messages.
+    at simulator_core\src\game\mod.rs:288 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.739012Z  INFO  PlayerActor 2 connected ( not session connection! ), P2 can now receive messages.
+    at simulator_core\src\game\mod.rs:295 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.739012Z  INFO  PlayerActor 2 connected ( not session connection! ), P2 can now receive messages.
+    at simulator_core\src\game\mod.rs:295 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.739012Z  INFO  PlayerActor 2 connected ( not session connection! ), P2 can now receive messages.
+    at simulator_core\src\game\mod.rs:295 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.739015Z  INFO  Both players actor connected. ( not session connection! ) Sending SetOpponent messages
+    at simulator_core\src\game\mod.rs:299 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.739015Z  INFO  Both players actor connected. ( not session connection! ) Sending SetOpponent messages
+    at simulator_core\src\game\mod.rs:299 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.739016Z  INFO  Both players actor connected. ( not session connection! ) Sending SetOpponent messages
+    at simulator_core\src\game\mod.rs:299 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.739014Z  INFO  SyncActor created.
+    at simulator_core\src\sync\mod.rs:34 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.739017Z  INFO  PlayerActor 1 connected ( not session connection! ), P1 can now receive messages.
+    at simulator_core\src\game\mod.rs:288 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.739025Z  INFO  GameActor [f925dd36-cb37-42c8-b50e-99125122cd17] has started. Initializing SyncActor.
+    at simulator_core\src\game\mod.rs:71 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.739025Z  INFO  GameActor [c9044687-07e3-42c4-9ec9-8d20087b0644] has started. Initializing SyncActor.
+    at simulator_core\src\game\mod.rs:71 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.739025Z  INFO  GameActor [feb29818-9550-4135-8a98-643a14d45a00] has started. Initializing SyncActor.
+    at simulator_core\src\game\mod.rs:71 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.739027Z  INFO  PlayerActor 2 connected ( not session connection! ), P2 can now receive messages.
+    at simulator_core\src\game\mod.rs:295 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.739030Z  INFO  GameStateManager initialized for players Player1 and Player2
+    at simulator_core\src\game\state.rs:222 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.739032Z  INFO  Both players actor connected. ( not session connection! ) Sending SetOpponent messages
+    at simulator_core\src\game\mod.rs:299 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.739032Z  INFO  SyncActor created.
+    at simulator_core\src\sync\mod.rs:34 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.739033Z  INFO  SyncActor created.
+    at simulator_core\src\sync\mod.rs:34 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.739039Z  INFO  SyncActor started and is ready to handle sync events.
+    at simulator_core\src\sync\mod.rs:75 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.739042Z  INFO  GameActor [35451344-baa2-4913-9539-fe510a6b3170] has started. Initializing SyncActor.
+    at simulator_core\src\game\mod.rs:71 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.739047Z  INFO  GameStateManager initialized for players Player1 and Player2
+    at simulator_core\src\game\state.rs:222 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.739032Z  INFO  SyncActor created.
+    at simulator_core\src\sync\mod.rs:34 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.739051Z  INFO  GameStateManager initialized for players Player1 and Player2
+    at simulator_core\src\game\state.rs:222 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.739052Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.739049Z  INFO  SyncActor created.
+    at simulator_core\src\sync\mod.rs:34 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.739060Z  INFO  SyncActor started and is ready to handle sync events.
+    at simulator_core\src\sync\mod.rs:75 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.739065Z  INFO  starting service: "actix-web-service-127.0.0.1:4330", workers: 32, listening on: 127.0.0.1:4330
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.739058Z  INFO  SyncActor started and is ready to handle sync events.
+    at simulator_core\src\sync\mod.rs:75 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.739065Z  INFO  GameStateManager initialized for players Player1 and Player2
+    at simulator_core\src\game\state.rs:222 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.739069Z  INFO  GameStateManager initialized for players Player1 and Player2
+    at simulator_core\src\game\state.rs:222 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.739072Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.739077Z  INFO  SyncActor started and is ready to handle sync events.
+    at simulator_core\src\sync\mod.rs:75 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.739078Z  INFO  SyncActor started and is ready to handle sync events.
+    at simulator_core\src\sync\mod.rs:75 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.739081Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.739084Z  INFO  starting service: "actix-web-service-127.0.0.1:4325", workers: 32, listening on: 127.0.0.1:4325
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.739089Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.739090Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.739091Z  INFO  starting service: "actix-web-service-127.0.0.1:4327", workers: 32, listening on: 127.0.0.1:4327
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.739099Z  INFO  starting service: "actix-web-service-127.0.0.1:4328", workers: 32, listening on: 127.0.0.1:4328
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.739101Z  INFO  starting service: "actix-web-service-127.0.0.1:4326", workers: 32, listening on: 127.0.0.1:4326
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.739181Z  INFO  PlayerActor 1 connected ( not session connection! ), P1 can now receive messages.
+    at simulator_core\src\game\mod.rs:288 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.739192Z  INFO  PlayerActor 2 connected ( not session connection! ), P2 can now receive messages.
+    at simulator_core\src\game\mod.rs:295 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.739196Z  INFO  Both players actor connected. ( not session connection! ) Sending SetOpponent messages
+    at simulator_core\src\game\mod.rs:299 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.739205Z  INFO  GameActor [6e4061a1-6f97-44bb-bff1-54519992ce5c] has started. Initializing SyncActor.
+    at simulator_core\src\game\mod.rs:71 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.739213Z  INFO  SyncActor created.
+    at simulator_core\src\sync\mod.rs:34 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.739224Z  INFO  GameStateManager initialized for players Player1 and Player2
+    at simulator_core\src\game\state.rs:222 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.739232Z  INFO  SyncActor started and is ready to handle sync events.
+    at simulator_core\src\sync\mod.rs:75 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.739245Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.739256Z  INFO  starting service: "actix-web-service-127.0.0.1:4331", workers: 32, listening on: 127.0.0.1:4331
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.754287Z ERROR  쿼리 파라미터 파싱 실패: 'session_id'를 찾을 수 없거나 형식이 잘못됨. Query deserialize error: missing field `session_id`
+    at simulator_dedicated_server\src\server\mod.rs:46 on actix-rt|system:6|arbiter:17 ThreadId(28)
+
+  2025-07-06T08:26:34.754266Z ERROR  쿼리 파라미터 파싱 실패: 'session_id'를 찾을 수 없거나 형식이 잘못됨. Query deserialize error: missing field `session_id`
+    at simulator_dedicated_server\src\server\mod.rs:46 on actix-rt|system:3|arbiter:2 ThreadId(13)
+
+  2025-07-06T08:26:34.754278Z ERROR  쿼리 파라미터 파싱 실패: 'session_id'를 찾을 수 없거나 형식이 잘못됨. Query deserialize error: missing field `session_id`
+    at simulator_dedicated_server\src\server\mod.rs:46 on actix-rt|system:4|arbiter:0 ThreadId(11)
+
+  2025-07-06T08:26:34.754272Z ERROR  쿼리 파라미터 파싱 실패: 'session_id'를 찾을 수 없거나 형식이 잘못됨. Query deserialize error: missing field `session_id`
+    at simulator_dedicated_server\src\server\mod.rs:46 on actix-rt|system:3|arbiter:1 ThreadId(12)
+
+  2025-07-06T08:26:34.754266Z ERROR  쿼리 파라미터 파싱 실패: 'session_id'를 찾을 수 없거나 형식이 잘못됨. Query deserialize error: missing field `session_id`
+    at simulator_dedicated_server\src\server\mod.rs:46 on actix-rt|system:2|arbiter:8 ThreadId(19)
+
+  2025-07-06T08:26:34.754266Z ERROR  쿼리 파라미터 파싱 실패: 'session_id'를 찾을 수 없거나 형식이 잘못됨. Query deserialize error: missing field `session_id`
+    at simulator_dedicated_server\src\server\mod.rs:46 on actix-rt|system:5|arbiter:4 ThreadId(15)
+
+  2025-07-06T08:26:34.754266Z ERROR  쿼리 파라미터 파싱 실패: 'session_id'를 찾을 수 없거나 형식이 잘못됨. Query deserialize error: missing field `session_id`
+    at simulator_dedicated_server\src\server\mod.rs:46 on actix-rt|system:6|arbiter:9 ThreadId(20)
+
+  2025-07-06T08:26:34.754266Z ERROR  쿼리 파라미터 파싱 실패: 'session_id'를 찾을 수 없거나 형식이 잘못됨. Query deserialize error: missing field `session_id`
+    at simulator_dedicated_server\src\server\mod.rs:46 on actix-rt|system:7|arbiter:5 ThreadId(16)
+
+  2025-07-06T08:26:34.754266Z ERROR  쿼리 파라미터 파싱 실패: 'session_id'를 찾을 수 없거나 형식이 잘못됨. Query deserialize error: missing field `session_id`
+    at simulator_dedicated_server\src\server\mod.rs:46 on actix-rt|system:0|arbiter:7 ThreadId(18)
+
+  2025-07-06T08:26:34.754269Z ERROR  쿼리 파라미터 파싱 실패: 'session_id'를 찾을 수 없거나 형식이 잘못됨. Query deserialize error: missing field `session_id`
+    at simulator_dedicated_server\src\server\mod.rs:46 on actix-rt|system:1|arbiter:6 ThreadId(17)
+
+  2025-07-06T08:26:34.754416Z ERROR  Request failed: Received invalid payload from client: Missing or invalid 'session_id' query parameter
+    at simulator_core\src\exception\mod.rs:233 on actix-rt|system:1|arbiter:6 ThreadId(17)
+
+  2025-07-06T08:26:34.754417Z ERROR  Request failed: Received invalid payload from client: Missing or invalid 'session_id' query parameter
+    at simulator_core\src\exception\mod.rs:233 on actix-rt|system:0|arbiter:7 ThreadId(18)
+
+  2025-07-06T08:26:34.754416Z ERROR  Request failed: Received invalid payload from client: Missing or invalid 'session_id' query parameter
+    at simulator_core\src\exception\mod.rs:233 on actix-rt|system:7|arbiter:5 ThreadId(16)
+
+  2025-07-06T08:26:34.754419Z ERROR  Request failed: Received invalid payload from client: Missing or invalid 'session_id' query parameter
+    at simulator_core\src\exception\mod.rs:233 on actix-rt|system:5|arbiter:4 ThreadId(15)
+
+  2025-07-06T08:26:34.754421Z ERROR  Request failed: Received invalid payload from client: Missing or invalid 'session_id' query parameter
+    at simulator_core\src\exception\mod.rs:233 on actix-rt|system:2|arbiter:8 ThreadId(19)
+
+  2025-07-06T08:26:34.754417Z ERROR  Request failed: Received invalid payload from client: Missing or invalid 'session_id' query parameter
+    at simulator_core\src\exception\mod.rs:233 on actix-rt|system:6|arbiter:17 ThreadId(28)
+
+  2025-07-06T08:26:34.754418Z ERROR  Request failed: Received invalid payload from client: Missing or invalid 'session_id' query parameter
+    at simulator_core\src\exception\mod.rs:233 on actix-rt|system:6|arbiter:9 ThreadId(20)
+
+  2025-07-06T08:26:34.754421Z ERROR  Request failed: Received invalid payload from client: Missing or invalid 'session_id' query parameter
+    at simulator_core\src\exception\mod.rs:233 on actix-rt|system:3|arbiter:2 ThreadId(13)
+
+  2025-07-06T08:26:34.754418Z ERROR  Request failed: Received invalid payload from client: Missing or invalid 'session_id' query parameter
+    at simulator_core\src\exception\mod.rs:233 on actix-rt|system:3|arbiter:1 ThreadId(12)
+
+  2025-07-06T08:26:34.754419Z ERROR  Request failed: Received invalid payload from client: Missing or invalid 'session_id' query parameter
+    at simulator_core\src\exception\mod.rs:233 on actix-rt|system:4|arbiter:0 ThreadId(11)
+
+  2025-07-06T08:26:34.755259Z  INFO  Game phase transitioning from Initial to Stopping
+    at simulator_core\src\game\state.rs:402 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.755260Z  INFO  Game phase transitioning from Initial to Stopping
+    at simulator_core\src\game\state.rs:402 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.755259Z  INFO  Game phase transitioning from Initial to Stopping
+    at simulator_core\src\game\state.rs:402 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.755259Z  INFO  Game phase transitioning from Initial to Stopping
+    at simulator_core\src\game\state.rs:402 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.755262Z  INFO  Game phase transitioning from Initial to Stopping
+    at simulator_core\src\game\state.rs:402 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.755278Z  INFO  GameActor [35451344-baa2-4913-9539-fe510a6b3170] is stopping. Initiating comprehensive cleanup.
+    at simulator_core\src\game\mod.rs:116 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.755279Z  INFO  Game phase transitioning from Initial to Stopping
+    at simulator_core\src\game\state.rs:402 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.755287Z  INFO  GameActor [f925dd36-cb37-42c8-b50e-99125122cd17] is stopping. Initiating comprehensive cleanup.
+    at simulator_core\src\game\mod.rs:116 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.755289Z  INFO  GameActor [6e4061a1-6f97-44bb-bff1-54519992ce5c] is stopping. Initiating comprehensive cleanup.
+    at simulator_core\src\game\mod.rs:116 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.755293Z  INFO  GameActor [35451344-baa2-4913-9539-fe510a6b3170]: stopping() method finished, comprehensive cleanup scheduled.
+    at simulator_core\src\game\mod.rs:202 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.755295Z  INFO  GameActor [f925dd36-cb37-42c8-b50e-99125122cd17]: stopping() method finished, comprehensive cleanup scheduled.
+    at simulator_core\src\game\mod.rs:202 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.755293Z  INFO  GameActor [feb29818-9550-4135-8a98-643a14d45a00] is stopping. Initiating comprehensive cleanup.
+    at simulator_core\src\game\mod.rs:116 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.755295Z  INFO  GameActor [6e4061a1-6f97-44bb-bff1-54519992ce5c]: stopping() method finished, comprehensive cleanup scheduled.
+    at simulator_core\src\game\mod.rs:202 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.755302Z  INFO  GameActor [feb29818-9550-4135-8a98-643a14d45a00]: stopping() method finished, comprehensive cleanup scheduled.
+    at simulator_core\src\game\mod.rs:202 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.755302Z  INFO  GameActor [c9044687-07e3-42c4-9ec9-8d20087b0644] is stopping. Initiating comprehensive cleanup.
+    at simulator_core\src\game\mod.rs:116 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.755306Z  INFO  GameActor [3b1581d6-4350-42f5-a9fd-71d1ee6d59f9] is stopping. Initiating comprehensive cleanup.
+    at simulator_core\src\game\mod.rs:116 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.755309Z  INFO  GameActor [c9044687-07e3-42c4-9ec9-8d20087b0644]: stopping() method finished, comprehensive cleanup scheduled.
+    at simulator_core\src\game\mod.rs:202 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.755314Z  INFO  GameActor [3b1581d6-4350-42f5-a9fd-71d1ee6d59f9]: stopping() method finished, comprehensive cleanup scheduled.
+    at simulator_core\src\game\mod.rs:202 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.755319Z  INFO  GameActor [feb29818-9550-4135-8a98-643a14d45a00]: Starting comprehensive cleanup task.
+    at simulator_core\src\game\mod.rs:128 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.755320Z  INFO  GameActor [3b1581d6-4350-42f5-a9fd-71d1ee6d59f9]: Starting comprehensive cleanup task.
+    at simulator_core\src\game\mod.rs:128 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.755319Z  INFO  GameActor [f925dd36-cb37-42c8-b50e-99125122cd17]: Starting comprehensive cleanup task.
+    at simulator_core\src\game\mod.rs:128 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.755320Z  INFO  GameActor [35451344-baa2-4913-9539-fe510a6b3170]: Starting comprehensive cleanup task.
+    at simulator_core\src\game\mod.rs:128 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.755320Z  INFO  GameActor [c9044687-07e3-42c4-9ec9-8d20087b0644]: Starting comprehensive cleanup task.
+    at simulator_core\src\game\mod.rs:128 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.755328Z  INFO  GameActor [6e4061a1-6f97-44bb-bff1-54519992ce5c]: Starting comprehensive cleanup task.
+    at simulator_core\src\game\mod.rs:128 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.755338Z  INFO  GameActor [c9044687-07e3-42c4-9ec9-8d20087b0644]: Preparing to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }).
+    at simulator_core\src\game\mod.rs:136 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.755333Z  INFO  GameActor [3b1581d6-4350-42f5-a9fd-71d1ee6d59f9]: Preparing to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }).
+    at simulator_core\src\game\mod.rs:136 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.755340Z  INFO  Game phase transitioning from Initial to Stopping
+    at simulator_core\src\game\state.rs:402 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.755333Z  INFO  GameActor [6e4061a1-6f97-44bb-bff1-54519992ce5c]: Preparing to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }).
+    at simulator_core\src\game\mod.rs:136 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.755337Z  INFO  GameActor [feb29818-9550-4135-8a98-643a14d45a00]: Preparing to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }).
+    at simulator_core\src\game\mod.rs:136 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.755338Z  INFO  GameActor [35451344-baa2-4913-9539-fe510a6b3170]: Preparing to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }).
+    at simulator_core\src\game\mod.rs:136 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.755350Z  INFO  GameActor [309ebb09-a637-4903-92d5-5684a76e0a1d] is stopping. Initiating comprehensive cleanup.
+    at simulator_core\src\game\mod.rs:116 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.755332Z  INFO  GameActor [f925dd36-cb37-42c8-b50e-99125122cd17]: Preparing to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }).
+    at simulator_core\src\game\mod.rs:136 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.755355Z  INFO  GameActor [6e4061a1-6f97-44bb-bff1-54519992ce5c]: Preparing to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }).
+    at simulator_core\src\game\mod.rs:136 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.755355Z  INFO  GameActor [feb29818-9550-4135-8a98-643a14d45a00]: Preparing to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }).
+    at simulator_core\src\game\mod.rs:136 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.755357Z  INFO  GameActor [309ebb09-a637-4903-92d5-5684a76e0a1d]: stopping() method finished, comprehensive cleanup scheduled.
+    at simulator_core\src\game\mod.rs:202 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.755358Z  INFO  GameActor [f925dd36-cb37-42c8-b50e-99125122cd17]: Preparing to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }).
+    at simulator_core\src\game\mod.rs:136 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.755361Z  INFO  GameActor [35451344-baa2-4913-9539-fe510a6b3170]: Preparing to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }).
+    at simulator_core\src\game\mod.rs:136 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.755362Z  INFO  GameActor [309ebb09-a637-4903-92d5-5684a76e0a1d]: Starting comprehensive cleanup task.
+    at simulator_core\src\game\mod.rs:128 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.755364Z  INFO  GameActor [c9044687-07e3-42c4-9ec9-8d20087b0644]: Preparing to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }).
+    at simulator_core\src\game\mod.rs:136 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.755366Z  INFO  GameActor [309ebb09-a637-4903-92d5-5684a76e0a1d]: Preparing to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }).
+    at simulator_core\src\game\mod.rs:136 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.755368Z  INFO  GameActor [3b1581d6-4350-42f5-a9fd-71d1ee6d59f9]: Preparing to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }).
+    at simulator_core\src\game\mod.rs:136 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.755371Z  INFO  GameActor [309ebb09-a637-4903-92d5-5684a76e0a1d]: Preparing to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }).
+    at simulator_core\src\game\mod.rs:136 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.755373Z  WARN  Player Player1 connection status already Disconnected. No change.
+    at simulator_core\src\game\state.rs:340 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.755373Z  WARN  Player Player1 connection status already Disconnected. No change.
+    at simulator_core\src\game\state.rs:340 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.755374Z  WARN  Player Player1 connection status already Disconnected. No change.
+    at simulator_core\src\game\state.rs:340 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.755375Z  WARN  Player Player2 connection status already Disconnected. No change.
+    at simulator_core\src\game\state.rs:340 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.755377Z  WARN  Player Player2 connection status already Disconnected. No change.
+    at simulator_core\src\game\state.rs:340 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.755377Z  WARN  Player Player2 connection status already Disconnected. No change.
+    at simulator_core\src\game\state.rs:340 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.755376Z  WARN  Player Player2 connection status already Disconnected. No change.
+    at simulator_core\src\game\state.rs:340 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.755375Z  WARN  Player Player1 connection status already Disconnected. No change.
+    at simulator_core\src\game\state.rs:340 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.755377Z  WARN  Player Player2 connection status already Disconnected. No change.
+    at simulator_core\src\game\state.rs:340 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.755378Z  WARN  Player Player2 connection status already Disconnected. No change.
+    at simulator_core\src\game\state.rs:340 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.755379Z  WARN  Player Player1 connection status already Disconnected. No change.
+    at simulator_core\src\game\state.rs:340 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.755380Z  WARN  Player Player1 connection status already Disconnected. No change.
+    at simulator_core\src\game\state.rs:340 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.755380Z  INFO  GameActor [c9044687-07e3-42c4-9ec9-8d20087b0644]: All players removed from GameStateManager.
+    at simulator_core\src\game\mod.rs:164 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.755380Z  INFO  GameActor [35451344-baa2-4913-9539-fe510a6b3170]: All players removed from GameStateManager.
+    at simulator_core\src\game\mod.rs:164 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.755380Z  WARN  Player Player2 connection status already Disconnected. No change.
+    at simulator_core\src\game\state.rs:340 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.755381Z  INFO  GameActor [6e4061a1-6f97-44bb-bff1-54519992ce5c]: All players removed from GameStateManager.
+    at simulator_core\src\game\mod.rs:164 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.755382Z  WARN  Player Player1 connection status already Disconnected. No change.
+    at simulator_core\src\game\state.rs:340 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.755383Z  INFO  GameActor [3b1581d6-4350-42f5-a9fd-71d1ee6d59f9]: All players removed from GameStateManager.
+    at simulator_core\src\game\mod.rs:164 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.755383Z  INFO  GameActor [feb29818-9550-4135-8a98-643a14d45a00]: All players removed from GameStateManager.
+    at simulator_core\src\game\mod.rs:164 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.755384Z  INFO  GameActor [f925dd36-cb37-42c8-b50e-99125122cd17]: All players removed from GameStateManager.
+    at simulator_core\src\game\mod.rs:164 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.755385Z  INFO  GameActor [309ebb09-a637-4903-92d5-5684a76e0a1d]: All players removed from GameStateManager.
+    at simulator_core\src\game\mod.rs:164 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.755395Z  INFO  GameActor [3b1581d6-4350-42f5-a9fd-71d1ee6d59f9]: All connections cleared.
+    at simulator_core\src\game\mod.rs:174 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.755395Z  INFO  GameActor [c9044687-07e3-42c4-9ec9-8d20087b0644]: All connections cleared.
+    at simulator_core\src\game\mod.rs:174 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.755395Z  INFO  GameActor [f925dd36-cb37-42c8-b50e-99125122cd17]: All connections cleared.
+    at simulator_core\src\game\mod.rs:174 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.755400Z  INFO  GameActor [309ebb09-a637-4903-92d5-5684a76e0a1d]: All connections cleared.
+    at simulator_core\src\game\mod.rs:174 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.755400Z  INFO  GameActor [6e4061a1-6f97-44bb-bff1-54519992ce5c]: All connections cleared.
+    at simulator_core\src\game\mod.rs:174 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.755401Z  INFO  GameActor [feb29818-9550-4135-8a98-643a14d45a00]: All connections cleared.
+    at simulator_core\src\game\mod.rs:174 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.755401Z  INFO  GameActor [35451344-baa2-4913-9539-fe510a6b3170]: All connections cleared.
+    at simulator_core\src\game\mod.rs:174 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.755407Z  WARN  GameActor [6e4061a1-6f97-44bb-bff1-54519992ce5c]: Failed to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }): MailboxError(Mailbox has closed). Attempting Terminate.
+    at simulator_core\src\game\mod.rs:147 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.755407Z  WARN  GameActor [35451344-baa2-4913-9539-fe510a6b3170]: Failed to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }): MailboxError(Mailbox has closed). Attempting Terminate.
+    at simulator_core\src\game\mod.rs:147 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.755407Z  WARN  GameActor [3b1581d6-4350-42f5-a9fd-71d1ee6d59f9]: Failed to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }): MailboxError(Mailbox has closed). Attempting Terminate.
+    at simulator_core\src\game\mod.rs:147 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.755408Z  WARN  GameActor [309ebb09-a637-4903-92d5-5684a76e0a1d]: Failed to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }): MailboxError(Mailbox has closed). Attempting Terminate.
+    at simulator_core\src\game\mod.rs:147 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.755407Z  WARN  GameActor [feb29818-9550-4135-8a98-643a14d45a00]: Failed to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }): MailboxError(Mailbox has closed). Attempting Terminate.
+    at simulator_core\src\game\mod.rs:147 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.755409Z  WARN  GameActor [c9044687-07e3-42c4-9ec9-8d20087b0644]: Failed to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }): MailboxError(Mailbox has closed). Attempting Terminate.
+    at simulator_core\src\game\mod.rs:147 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.755413Z  WARN  GameActor [35451344-baa2-4913-9539-fe510a6b3170]: Failed to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }): MailboxError(Mailbox has closed). Attempting Terminate.
+    at simulator_core\src\game\mod.rs:147 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.755413Z  WARN  GameActor [6e4061a1-6f97-44bb-bff1-54519992ce5c]: Failed to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }): MailboxError(Mailbox has closed). Attempting Terminate.
+    at simulator_core\src\game\mod.rs:147 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.755413Z  WARN  GameActor [3b1581d6-4350-42f5-a9fd-71d1ee6d59f9]: Failed to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }): MailboxError(Mailbox has closed). Attempting Terminate.
+    at simulator_core\src\game\mod.rs:147 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.755414Z  WARN  GameActor [feb29818-9550-4135-8a98-643a14d45a00]: Failed to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }): MailboxError(Mailbox has closed). Attempting Terminate.
+    at simulator_core\src\game\mod.rs:147 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.755414Z  WARN  GameActor [309ebb09-a637-4903-92d5-5684a76e0a1d]: Failed to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }): MailboxError(Mailbox has closed). Attempting Terminate.
+    at simulator_core\src\game\mod.rs:147 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.755413Z  WARN  GameActor [f925dd36-cb37-42c8-b50e-99125122cd17]: Failed to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }): MailboxError(Mailbox has closed). Attempting Terminate.
+    at simulator_core\src\game\mod.rs:147 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.755414Z  WARN  GameActor [c9044687-07e3-42c4-9ec9-8d20087b0644]: Failed to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }): MailboxError(Mailbox has closed). Attempting Terminate.
+    at simulator_core\src\game\mod.rs:147 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.755419Z  INFO  GameActor [feb29818-9550-4135-8a98-643a14d45a00]: Comprehensive cleanup task completed.
+    at simulator_core\src\game\mod.rs:182 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.755419Z  INFO  GameActor [35451344-baa2-4913-9539-fe510a6b3170]: Comprehensive cleanup task completed.
+    at simulator_core\src\game\mod.rs:182 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.755419Z  INFO  GameActor [3b1581d6-4350-42f5-a9fd-71d1ee6d59f9]: Comprehensive cleanup task completed.
+    at simulator_core\src\game\mod.rs:182 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.755419Z  INFO  GameActor [6e4061a1-6f97-44bb-bff1-54519992ce5c]: Comprehensive cleanup task completed.
+    at simulator_core\src\game\mod.rs:182 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.755419Z  INFO  GameActor [309ebb09-a637-4903-92d5-5684a76e0a1d]: Comprehensive cleanup task completed.
+    at simulator_core\src\game\mod.rs:182 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.755418Z  WARN  GameActor [f925dd36-cb37-42c8-b50e-99125122cd17]: Failed to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }): MailboxError(Mailbox has closed). Attempting Terminate.
+    at simulator_core\src\game\mod.rs:147 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.755420Z  INFO  GameActor [c9044687-07e3-42c4-9ec9-8d20087b0644]: Comprehensive cleanup task completed.
+    at simulator_core\src\game\mod.rs:182 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.755422Z  INFO  GameActor [3b1581d6-4350-42f5-a9fd-71d1ee6d59f9]: All cleanup completed. Now stopping context.
+    at simulator_core\src\game\mod.rs:190 on mulligan::test_game_aborts_if_first_player_disconnects ThreadId(6)
+
+  2025-07-06T08:26:34.755422Z  INFO  GameActor [6e4061a1-6f97-44bb-bff1-54519992ce5c]: All cleanup completed. Now stopping context.
+    at simulator_core\src\game\mod.rs:190 on mulligan::test_mulligan_deal_cards_to_each_player_concurrently ThreadId(9)
+
+  2025-07-06T08:26:34.755422Z  INFO  GameActor [35451344-baa2-4913-9539-fe510a6b3170]: All cleanup completed. Now stopping context.
+    at simulator_core\src\game\mod.rs:190 on heartbeat::test_heartbeat_ping_pong_once ThreadId(4)
+
+  2025-07-06T08:26:34.755423Z  INFO  GameActor [feb29818-9550-4135-8a98-643a14d45a00]: All cleanup completed. Now stopping context.
+    at simulator_core\src\game\mod.rs:190 on heartbeat::test_heartbeat_initialize_msg ThreadId(3)
+
+  2025-07-06T08:26:34.755423Z  INFO  GameActor [309ebb09-a637-4903-92d5-5684a76e0a1d]: All cleanup completed. Now stopping context.
+    at simulator_core\src\game\mod.rs:190 on mulligan::test_mulligan_deal_cards_on_simultaneous_connection_with_barrier ThreadId(7)
+
+  2025-07-06T08:26:34.755423Z  INFO  GameActor [c9044687-07e3-42c4-9ec9-8d20087b0644]: All cleanup completed. Now stopping context.
+    at simulator_core\src\game\mod.rs:190 on mulligan::test_rejects_duplicate_connection_for_same_player ThreadId(10)
+
+  2025-07-06T08:26:34.755424Z  INFO  GameActor [f925dd36-cb37-42c8-b50e-99125122cd17]: Comprehensive cleanup task completed.
+    at simulator_core\src\game\mod.rs:182 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:26:34.755427Z  INFO  GameActor [f925dd36-cb37-42c8-b50e-99125122cd17]: All cleanup completed. Now stopping context.
+    at simulator_core\src\game\mod.rs:190 on heartbeat::test_heartbeat_timeout ThreadId(5)
+
+  2025-07-06T08:27:06.758446Z  INFO  [DELAYED_TEST] P2 starting connection attempt after timeout.
+    at simulator_dedicated_server\tests\test.rs:251 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:27:06.759294Z ERROR  쿼리 파라미터 파싱 실패: 'session_id'를 찾을 수 없거나 형식이 잘못됨. Query deserialize error: missing field `session_id`
+    at simulator_dedicated_server\src\server\mod.rs:46 on actix-rt|system:4|arbiter:3 ThreadId(14)
+
+  2025-07-06T08:27:06.759343Z ERROR  Request failed: Received invalid payload from client: Missing or invalid 'session_id' query parameter
+    at simulator_core\src\exception\mod.rs:233 on actix-rt|system:4|arbiter:3 ThreadId(14)
+
+  2025-07-06T08:27:06.759528Z  INFO  [DELAYED_TEST] P2 connection attempt failed as expected.
+    at simulator_dedicated_server\tests\test.rs:262 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:27:06.759756Z  INFO  Game phase transitioning from Initial to Stopping
+    at simulator_core\src\game\state.rs:402 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:27:06.759767Z  INFO  GameActor [1b2ff012-f8c0-48d8-b8ad-4979e55c0c5e] is stopping. Initiating comprehensive cleanup.
+    at simulator_core\src\game\mod.rs:116 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:27:06.759776Z  INFO  GameActor [1b2ff012-f8c0-48d8-b8ad-4979e55c0c5e]: stopping() method finished, comprehensive cleanup scheduled.
+    at simulator_core\src\game\mod.rs:202 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:27:06.759785Z  INFO  GameActor [1b2ff012-f8c0-48d8-b8ad-4979e55c0c5e]: Starting comprehensive cleanup task.
+    at simulator_core\src\game\mod.rs:128 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:27:06.759789Z  INFO  GameActor [1b2ff012-f8c0-48d8-b8ad-4979e55c0c5e]: Preparing to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }).
+    at simulator_core\src\game\mod.rs:136 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:27:06.759799Z  INFO  GameActor [1b2ff012-f8c0-48d8-b8ad-4979e55c0c5e]: Preparing to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }).
+    at simulator_core\src\game\mod.rs:136 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:27:06.759810Z  WARN  Player Player1 connection status already Disconnected. No change.
+    at simulator_core\src\game\state.rs:340 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:27:06.759816Z  WARN  Player Player2 connection status already Disconnected. No change.
+    at simulator_core\src\game\state.rs:340 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:27:06.759819Z  INFO  GameActor [1b2ff012-f8c0-48d8-b8ad-4979e55c0c5e]: All players removed from GameStateManager.
+    at simulator_core\src\game\mod.rs:164 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:27:06.759823Z  INFO  GameActor [1b2ff012-f8c0-48d8-b8ad-4979e55c0c5e]: All connections cleared.
+    at simulator_core\src\game\mod.rs:174 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:27:06.759830Z  WARN  GameActor [1b2ff012-f8c0-48d8-b8ad-4979e55c0c5e]: Failed to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }): MailboxError(Mailbox has closed). Attempting Terminate.
+    at simulator_core\src\game\mod.rs:147 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:27:06.759836Z  WARN  GameActor [1b2ff012-f8c0-48d8-b8ad-4979e55c0c5e]: Failed to send GameOver to PlayerActor (Addr { tx: AddressSender { sender_task: Mutex { data: SenderTask { task: None, is_parked: false } }, maybe_parked: false } }): MailboxError(Mailbox has closed). Attempting Terminate.
+    at simulator_core\src\game\mod.rs:147 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:27:06.759841Z  INFO  GameActor [1b2ff012-f8c0-48d8-b8ad-4979e55c0c5e]: Comprehensive cleanup task completed.
+    at simulator_core\src\game\mod.rs:182 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:27:06.759844Z  INFO  GameActor [1b2ff012-f8c0-48d8-b8ad-4979e55c0c5e]: All cleanup completed. Now stopping context.
+    at simulator_core\src\game\mod.rs:190 on mulligan::test_mulligan_deal_cards_one_player_delayed ThreadId(8)
+
+  2025-07-06T08:31:00.709023Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at simulator_core\src\lib.rs:70 on ThreadId(2)
+
+  2025-07-06T08:31:44.762708Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at simulator_core\src\lib.rs:70 on ThreadId(2)
+
+  2025-07-06T08:31:44.767152Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on main ThreadId(2)
+
+  2025-07-06T08:31:44.767202Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on main ThreadId(2)
+
+  2025-07-06T08:31:44.767224Z  INFO  starting service: "actix-web-service-127.0.0.1:8088", workers: 32, listening on: 127.0.0.1:8088
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on main ThreadId(2)
+
+  2025-07-06T09:45:01.453128Z  INFO  SIGINT received; starting forced shutdown
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:333 on main ThreadId(2)
+
+  2025-07-06T09:45:01.453458Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:3 ThreadId(6)
+
+  2025-07-06T09:45:01.453471Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:10 ThreadId(13)
+
+  2025-07-06T09:45:01.453571Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:25 ThreadId(28)
+
+  2025-07-06T09:45:01.453570Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:26 ThreadId(29)
+
+  2025-07-06T09:45:01.453585Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:16 ThreadId(19)
+
+  2025-07-06T09:45:01.453441Z  INFO  accept thread stopped
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\accept.rs:143 on actix-server acceptor ThreadId(35)
+
+  2025-07-06T09:45:01.453599Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:19 ThreadId(22)
+
+  2025-07-06T09:45:01.453463Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:4 ThreadId(7)
+
+  2025-07-06T09:45:01.453553Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:22 ThreadId(25)
+
+  2025-07-06T09:45:01.453640Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:31 ThreadId(34)
+
+  2025-07-06T09:45:01.453475Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:11 ThreadId(14)
+
+  2025-07-06T09:45:01.453462Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2025-07-06T09:45:01.453551Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:15 ThreadId(18)
+
+  2025-07-06T09:45:01.453566Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:28 ThreadId(31)
+
+  2025-07-06T09:45:01.453441Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:6 ThreadId(9)
+
+  2025-07-06T09:45:01.453506Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:7 ThreadId(10)
+
+  2025-07-06T09:45:01.453468Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:5 ThreadId(8)
+
+  2025-07-06T09:45:01.453666Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:8 ThreadId(11)
+
+  2025-07-06T09:45:01.453549Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:20 ThreadId(23)
+
+  2025-07-06T09:45:01.453600Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:18 ThreadId(21)
+
+  2025-07-06T09:45:01.453732Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:12 ThreadId(15)
+
+  2025-07-06T09:45:01.453664Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:29 ThreadId(32)
+
+  2025-07-06T09:45:01.453639Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:24 ThreadId(27)
+
+  2025-07-06T09:45:01.453704Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:21 ThreadId(24)
+
+  2025-07-06T09:45:01.453567Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:30 ThreadId(33)
+
+  2025-07-06T09:45:01.453603Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:13 ThreadId(16)
+
+  2025-07-06T09:45:01.453526Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:9 ThreadId(12)
+
+  2025-07-06T09:45:01.453550Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2025-07-06T09:45:01.453768Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:23 ThreadId(26)
+
+  2025-07-06T09:45:01.453662Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:14 ThreadId(17)
+
+  2025-07-06T09:45:01.453613Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:17 ThreadId(20)
+
+  2025-07-06T09:45:01.453596Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:27 ThreadId(30)
+
+  2025-07-06T09:45:01.453525Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2025-07-06T09:52:31.909911Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at simulator_core\src\lib.rs:70 on ThreadId(2)
+
+  2025-07-06T09:52:31.912727Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on main ThreadId(2)
+
+  2025-07-06T09:52:31.912758Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on main ThreadId(2)
+
+  2025-07-06T09:52:31.912773Z  INFO  starting service: "actix-web-service-127.0.0.1:8088", workers: 32, listening on: 127.0.0.1:8088
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on main ThreadId(2)
+
+  2025-07-06T10:22:00.768983Z  INFO  SIGINT received; starting forced shutdown
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:333 on main ThreadId(2)
+
+  2025-07-06T10:22:00.769056Z  INFO  accept thread stopped
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\accept.rs:143 on actix-server acceptor ThreadId(35)
+
+  2025-07-06T10:22:00.769080Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2025-07-06T10:22:00.769112Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:10 ThreadId(13)
+
+  2025-07-06T10:22:00.769126Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:12 ThreadId(15)
+
+  2025-07-06T10:22:00.769105Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:9 ThreadId(12)
+
+  2025-07-06T10:22:00.769110Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:3 ThreadId(6)
+
+  2025-07-06T10:22:00.769130Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2025-07-06T10:22:00.769110Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:5 ThreadId(8)
+
+  2025-07-06T10:22:00.769118Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:11 ThreadId(14)
+
+  2025-07-06T10:22:00.769110Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:4 ThreadId(7)
+
+  2025-07-06T10:22:00.769100Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:6 ThreadId(9)
+
+  2025-07-06T10:22:00.769177Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:23 ThreadId(26)
+
+  2025-07-06T10:22:00.769174Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:22 ThreadId(25)
+
+  2025-07-06T10:22:00.769146Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:18 ThreadId(21)
+
+  2025-07-06T10:22:00.769102Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:7 ThreadId(10)
+
+  2025-07-06T10:22:00.769131Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:13 ThreadId(16)
+
+  2025-07-06T10:22:00.769213Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:15 ThreadId(18)
+
+  2025-07-06T10:22:00.769190Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:21 ThreadId(24)
+
+  2025-07-06T10:22:00.769188Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:20 ThreadId(23)
+
+  2025-07-06T10:22:00.769188Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:16 ThreadId(19)
+
+  2025-07-06T10:22:00.769217Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:17 ThreadId(20)
+
+  2025-07-06T10:22:00.769234Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:19 ThreadId(22)
+
+  2025-07-06T10:22:00.769127Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:8 ThreadId(11)
+
+  2025-07-06T10:22:00.769110Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2025-07-06T10:22:00.769337Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:31 ThreadId(34)
+
+  2025-07-06T10:22:00.769399Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:24 ThreadId(27)
+
+  2025-07-06T10:22:00.769441Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:26 ThreadId(29)
+
+  2025-07-06T10:22:00.769594Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:27 ThreadId(30)
+
+  2025-07-06T10:22:00.769306Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:25 ThreadId(28)
+
+  2025-07-06T10:22:00.769650Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:28 ThreadId(31)
+
+  2025-07-06T10:22:00.769255Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:14 ThreadId(17)
+
+  2025-07-06T10:22:00.769336Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:30 ThreadId(33)
+
+  2025-07-06T10:22:00.769670Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:29 ThreadId(32)
+
+  2025-07-06T10:22:02.570592Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at simulator_core\src\lib.rs:70 on ThreadId(2)
+
+  2025-07-06T10:22:02.573273Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on main ThreadId(2)
+
+  2025-07-06T10:22:02.573299Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on main ThreadId(2)
+
+  2025-07-06T10:22:02.573311Z  INFO  starting service: "actix-web-service-127.0.0.1:8088", workers: 32, listening on: 127.0.0.1:8088
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on main ThreadId(2)
+
+  2025-07-06T13:37:13.083352Z  INFO  SIGINT received; starting forced shutdown
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:333 on main ThreadId(2)
+
+  2025-07-06T13:37:13.083669Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:11 ThreadId(14)
+
+  2025-07-06T13:37:13.083640Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2025-07-06T13:37:13.083672Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:3 ThreadId(6)
+
+  2025-07-06T13:37:13.083662Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2025-07-06T13:37:13.083629Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:5 ThreadId(8)
+
+  2025-07-06T13:37:13.083750Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:18 ThreadId(21)
+
+  2025-07-06T13:37:13.083638Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:9 ThreadId(12)
+
+  2025-07-06T13:37:13.083656Z  INFO  accept thread stopped
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\accept.rs:143 on actix-server acceptor ThreadId(35)
+
+  2025-07-06T13:37:13.083728Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:20 ThreadId(23)
+
+  2025-07-06T13:37:13.083802Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:27 ThreadId(30)
+
+  2025-07-06T13:37:13.083760Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:29 ThreadId(32)
+
+  2025-07-06T13:37:13.083655Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:8 ThreadId(11)
+
+  2025-07-06T13:37:13.083760Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:30 ThreadId(33)
+
+  2025-07-06T13:37:13.083656Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:6 ThreadId(9)
+
+  2025-07-06T13:37:13.083821Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:24 ThreadId(27)
+
+  2025-07-06T13:37:13.083672Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:4 ThreadId(7)
+
+  2025-07-06T13:37:13.083660Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:10 ThreadId(13)
+
+  2025-07-06T13:37:13.083868Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:13 ThreadId(16)
+
+  2025-07-06T13:37:13.083776Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:22 ThreadId(25)
+
+  2025-07-06T13:37:13.083736Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:26 ThreadId(29)
+
+  2025-07-06T13:37:13.083758Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:17 ThreadId(20)
+
+  2025-07-06T13:37:13.083652Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2025-07-06T13:37:13.083733Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:15 ThreadId(18)
+
+  2025-07-06T13:37:13.083866Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:19 ThreadId(22)
+
+  2025-07-06T13:37:13.083926Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:31 ThreadId(34)
+
+  2025-07-06T13:37:13.083836Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:25 ThreadId(28)
+
+  2025-07-06T13:37:13.083838Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:12 ThreadId(15)
+
+  2025-07-06T13:37:13.084117Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:16 ThreadId(19)
+
+  2025-07-06T13:37:13.083883Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:21 ThreadId(24)
+
+  2025-07-06T13:37:13.083745Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:28 ThreadId(31)
+
+  2025-07-06T13:37:13.084144Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:23 ThreadId(26)
+
+  2025-07-06T13:37:13.084138Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:14 ThreadId(17)
+
+  2025-07-06T13:37:13.084153Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:7 ThreadId(10)
+
+  2025-07-06T14:18:20.006970Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at simulator_core\src\lib.rs:70 on ThreadId(2)
+
+  2025-07-06T14:19:17.129331Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at simulator_core\src\lib.rs:70 on main ThreadId(1)
+
+  2025-07-06T14:19:17.132145Z  INFO  Successfully registered server in Redis with key: dedicated_server:fe75a5f0-af17-4d8a-ba0b-bfd62a3cb723
+    at simulator_dedicated_server\src\main.rs:96 on main ThreadId(1)
+
+  2025-07-06T14:19:17.132164Z  INFO  Starting dedicated server on 127.0.0.1:8088
+    at simulator_dedicated_server\src\main.rs:101 on main ThreadId(1)
+
+  2025-07-06T14:19:17.132524Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on main ThreadId(1)
+
+  2025-07-06T14:19:17.132593Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on main ThreadId(1)
+
+  2025-07-06T14:19:17.132623Z  INFO  starting service: "actix-web-service-127.0.0.1:8088", workers: 32, listening on: 127.0.0.1:8088
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on main ThreadId(1)
+
+  2025-07-06T14:19:38.786231Z  INFO  Received request to create session for players: [e4af6869-e01c-4964-8a18-d1936738182a, 76c9f709-98ba-43fe-b78d-2d66f4cb56b7]
+    at simulator_dedicated_server\src\main.rs:35 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2025-07-06T14:23:02.841242Z  INFO  SIGINT received; starting forced shutdown
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:333 on main ThreadId(1)
+
+  2025-07-06T14:23:02.841357Z  INFO  accept thread stopped
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\accept.rs:143 on actix-server acceptor ThreadId(35)
+
+  2025-07-06T14:23:02.841371Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2025-07-06T14:23:02.841373Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2025-07-06T14:23:02.841375Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:3 ThreadId(6)
+
+  2025-07-06T14:23:02.841378Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:7 ThreadId(10)
+
+  2025-07-06T14:23:02.841372Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2025-07-06T14:23:02.841375Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:4 ThreadId(7)
+
+  2025-07-06T14:23:02.841390Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:10 ThreadId(13)
+
+  2025-07-06T14:23:02.841394Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:9 ThreadId(12)
+
+  2025-07-06T14:23:02.841410Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:12 ThreadId(15)
+
+  2025-07-06T14:23:02.841376Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:6 ThreadId(9)
+
+  2025-07-06T14:23:02.841392Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:11 ThreadId(14)
+
+  2025-07-06T14:23:02.841384Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:8 ThreadId(11)
+
+  2025-07-06T14:23:02.841417Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:13 ThreadId(16)
+
+  2025-07-06T14:23:02.841375Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:5 ThreadId(8)
+
+  2025-07-06T14:23:02.841505Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:18 ThreadId(21)
+
+  2025-07-06T14:23:02.841508Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:17 ThreadId(20)
+
+  2025-07-06T14:23:02.841539Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:25 ThreadId(28)
+
+  2025-07-06T14:23:02.841492Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:15 ThreadId(18)
+
+  2025-07-06T14:23:02.841550Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:27 ThreadId(30)
+
+  2025-07-06T14:23:02.841528Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:24 ThreadId(27)
+
+  2025-07-06T14:23:02.841564Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:30 ThreadId(33)
+
+  2025-07-06T14:23:02.841525Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:22 ThreadId(25)
+
+  2025-07-06T14:23:02.841525Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:23 ThreadId(26)
+
+  2025-07-06T14:23:02.841513Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:20 ThreadId(23)
+
+  2025-07-06T14:23:02.841518Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:21 ThreadId(24)
+
+  2025-07-06T14:23:02.841512Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:19 ThreadId(22)
+
+  2025-07-06T14:23:02.841632Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:28 ThreadId(31)
+
+  2025-07-06T14:23:02.841561Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:31 ThreadId(34)
+
+  2025-07-06T14:23:02.841494Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:16 ThreadId(19)
+
+  2025-07-06T14:23:02.841557Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:29 ThreadId(32)
+
+  2025-07-06T14:23:02.841481Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:14 ThreadId(17)
+
+  2025-07-06T14:23:02.841552Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:26 ThreadId(29)
+

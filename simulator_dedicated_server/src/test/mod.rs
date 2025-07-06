@@ -328,8 +328,3 @@ impl WebSocketTest {
         }
     }
 }
-
-#[ctor]
-fn init() {
-    setup_logger();
-}

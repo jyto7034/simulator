@@ -9,6 +9,7 @@ pub struct AppState {
     pub steam_web_api_key: String,
     pub app_id: u32,
     pub expected_identity: String,
+    pub jwt_secret: String,
 }
 
 #[derive(serde::Deserialize, Debug)]
@@ -35,4 +36,12 @@ pub struct SteamApiResponseParams {
 pub struct SteamApiError {
     pub errorcode: i32,
     pub errordesc: String,
+}
+
+// --- JWT Claims ---
+#[derive(serde::Serialize, serde::Deserialize, Debug)]
+pub struct Claims {
+    pub sub: String, // Subject (user's steam_id)
+    pub iat: usize,  // Issued at (timestamp)
+    pub exp: usize,  // Expiration time (timestamp)
 }

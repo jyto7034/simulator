@@ -9,7 +9,8 @@ members = [
     "simulator_core",
     "simulator_dedicated_server",
     "simulator_match_server",
-    "simulator_client/src-tauri",
+    "simulator_client/src-tauri", "test_client",
+    "simulator_metrics",
 ]
 
 resolver = "2"

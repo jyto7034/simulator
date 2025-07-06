@@ -1,0 +1,1082 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.github/workflows/main.yml
+.gitignore
+Cargo.toml
+config/development.toml
+config/production.toml
+enhanced.md
+src/auth.rs
+src/env.rs
+src/lib.rs
+src/main.rs
+src/matchmaker/actor.rs
+src/matchmaker/http.rs
+src/matchmaker/mod.rs
+src/protocol.rs
+src/provider.rs
+src/util.rs
+src/ws_session.rs
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".github/workflows/main.yml">
+name: Code Coverage
+
+on:
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  codecov:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          components: llvm-tools-preview
+      
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+      
+      - name: Generate code coverage
+        run: cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: lcov.info
+</file>
+
+<file path=".gitignore">
+/target
+</file>
+
+<file path="Cargo.toml">
+[package]
+name = "match_server"
+version = "0.1.0"
+edition = "2021"
+description = "card backend"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+
+
+[dependencies]
+tokio = { version = "1.15", features = ["full", "tracing"] }
+tracing = "0.1.41"
+tracing-appender = "0.2.3"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+actix-web = "4.9.0"
+actix = "=0.13.5"
+actix-ws = "0.2.5"
+actix-web-actors = "4.3.0"
+async-tungstenite = {version="0.28.2", features = ["tokio-runtime"]}
+reqwest = { version = "0.12.12", features = ["json"] }
+url = "2.5.4"
+uuid = { version = "1.14.0", features = ["v4", "serde"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+rand_core = "0.6"
+rand = "0.8.5"
+futures-util = {version = "0.3", features = ["sink"]}
+futures = "0.3.31"
+ctor = "0.4.1"
+redis = { version = "0.22.3", features = ["tokio-comp", "connection-manager"] }
+thiserror-core = "1.0.50"
+dotenv = "0.15.0"
+thiserror = "2.0.12"
+config = {version = "0.15.11", features = ["toml"]}
+jsonwebtoken = "9.3.1"
+anyhow = "1.0"
+chrono = { version = "0.4.41", features = ["serde"] }
+</file>
+
+<file path="config/development.toml">
+# 서버 설정
+[server]
+bind_address = "0.0.0.0"
+port = 8080
+log_level = "INFO"
+
+# Redis 설정
+[redis]
+url = "redis://127.0.0.1:6379"
+
+# 매치메이킹 설정
+[matchmaking]
+matchmaking_interval_seconds = 2
+initial_mmr_range = 100
+
+[jwt]
+secret = "your-super-secret-and-long-key-that-no-one-knows"
+
+[matchmaking]
+tick_interval_seconds = 5
+queue_key_prefix = "queue"
+game_modes = ["1v1_ranked"]
+</file>
+
+<file path="config/production.toml">
+redis_url = "redis://your-production-redis-endpoint:6379"
+log_level = "WARN"
+password = ""
+</file>
+
+<file path="enhanced.md">
+네, 좋은 질문입니다. 앞서 다른 LLM이 제안한 세 가지는 이 프로젝트의 뼈대를 바로잡는 훌륭한 리팩토링입니다. 거기에 더해, 시스템을 한 단계 더 발전시키고 실제 프로덕션 환경에 가깝게 만들 수 있는 몇 가지 사항을 첨언해 드리겠습니다.
+
+---
+
+### 첨언 및 추가 개선 제안
+
+기존 제안이 "좋은 코드로 만들기"에 집중했다면, 제 제안은 **"확장 가능하고 운영하기 좋은 서비스로 만들기"**에 조금 더 초점을 맞추겠습니다.
+
+#### 1. 더 정교한 매치메이킹 로직 (MMR 기반 확장)
+
+현재 매치메이킹은 단순히 "큐에 2명이 모이면 매칭"하는 방식입니다. 실제 게임에서는 실력이 비슷한 플레이어끼리 매칭시켜주는 것이 핵심입니다.
+
+- **현재의 한계:**
+  `ATOMIC_MATCH_SCRIPT`는 큐(Set)에서 순서 없이 N명을 추출(`SPOP`)합니다. 이는 실력(MMR)을 전혀 고려하지 않습니다. `config/development.toml`에 `initial_mmr_range`라는 설정이 있지만, 실제 로직에는 사용되지 않고 있습니다.
+
+- **개선 제안:**
+
+  1.  **Redis Sorted Set (`ZSET`) 활용:** 플레이어를 큐에 넣을 때, 단순 `SADD`가 아닌 `ZADD`를 사용합니다. `ZADD queue:1v1_ranked <MMR> <player_id>` 와 같이 MMR을 score로 사용합니다.
+  2.  **MMR 범위 검색 로직 구현:** Lua 스크립트를 수정하여, 특정 MMR을 기준으로 `-50` ~ `+50` 범위 내의 플레이어를 찾는 로직(`ZRANGEBYSCORE`)을 구현합니다.
+  3.  **MMR 범위 확장:** "매칭 대기 시간"도 함께 고려합니다. 플레이어가 큐에 들어온 시간을 함께 저장하고, 대기 시간이 길어질수록(예: 30초 이상) 검색하는 MMR 범위를 점진적으로 확장(예: `-100` ~ `+100`)하는 로직을 추가합니다. 이는 "매칭 품질"과 "매칭 속도" 사이의 균형을 맞추는 핵심적인 기술입니다.
+
+- **기대 효과:**
+  사용자에게 훨씬 공정한 매치를 제공하여 게임 경험의 질을 높일 수 있습니다.
+
+#### 2. 확장성을 위한 Redis 커넥션 관리
+
+현재 웹소켓 세션(`ws_session.rs`)에서 Redis Pub/Sub을 구독하는 방식은 확장성에 문제가 될 수 있습니다.
+
+- **현재의 한계:**
+  `MatchmakingSession`이 시작될 때마다 `redis_client.get_async_connection().await`를 호출하여 새로운 개별 커넥션을 생성합니다. 만약 동시 접속자가 수천 명에 이르면, 서버는 Redis와 수천 개의 개별 TCP 커넥션을 맺게 되어 서버와 Redis 양쪽에 심각한 부하를 유발합니다.
+
+- **개선 제안:**
+  `main.rs`에서 이미 `redis::aio::ConnectionManager`라는 커넥션 풀을 생성했습니다. `MatchmakingSession`에 `RedisClient` 자체가 아니라 이 `ConnectionManager`의 복사본을 전달하세요. 그리고 세션 내에서 커넥션이 필요할 때마다 `conn_manager.get_connection().await`를 통해 풀에서 커넥션을 대여하고, 사용이 끝나면 풀에 자동으로 반납되도록 구현합니다.
+
+- **기대 효과:**
+  제한된 수의 커넥션을 효율적으로 재사용하여 수많은 동시 접속자를 안정적으로 처리할 수 있게 됩니다. 이는 서버의 확장성을 크게 향상시킵니다.
+
+#### 3. 운영을 위한 관측 가능성(Observability) 확보
+
+현재는 `tracing`을 이용한 로그만 남기고 있습니다. 실제 서비스를 운영하려면 시스템의 전반적인 상태를 한눈에 파악할 수 있는 지표(Metric)가 필수적입니다.
+
+- **현재의 한계:**
+  "현재 대기열에 몇 명이 있는지?", "지난 1시간 동안 매칭 성공률은 몇 %인지?"와 같은 질문에 답하려면 로그를 일일이 파싱해야 해서 매우 비효율적입니다.
+
+- **개선 제안:**
+  `prometheus`나 `metrics` 같은 크레이트를 도입하여 주요 지표를 수집하고, `/metrics`와 같은 별도 엔드포인트를 통해 외부 모니터링 시스템(예: Prometheus, Grafana)이 이 지표를 수집해 가도록 구성합니다.
+
+  - **주요 모니터링 지표:**
+    - 게임 모드별 현재 대기자 수 (Gauge)
+    - 매칭 성공 및 실패 횟수 (Counter)
+    - 플레이어 평균 대기 시간 (Histogram)
+    - 활성화된 웹소켓 세션 수 (Gauge)
+
+- **기대 효과:**
+  시스템의 상태와 성능을 실시간으로 시각화하고 이상 징후를 조기에 발견하여 장애에 신속하게 대응할 수 있습니다.
+
+#### 4. 인증(Authentication) 흐름 강화
+
+`auth.rs`에 JWT를 검증하는 로직이 있지만, 웹소켓에서는 이 흐름이 명확하게 사용되지 않고 `ClientMessage::Enqueue`에서 클라이언트가 직접 `player_id`를 보내주는 구조입니다.
+
+- **현재의 한계:**
+  악의적인 사용자가 다른 사람의 `player_id`를 보내 매칭을 시도하는 등 보안에 취약할 수 있습니다.
+
+- **개선 제안:**
+
+  1.  웹소켓 연결이 수립될 때, 첫 메시지로 인증 토큰(JWT)을 받습니다.
+  2.  서버는 토큰을 검증하고, 성공 시 토큰에 포함된 `sub`(사용자 ID)를 `MatchmakingSession` 액터의 상태에 안전하게 저장합니다.
+  3.  이후의 모든 요청(`Enqueue` 등)은 클라이언트가 보내는 ID가 아닌, **세션에 저장된 인증된 ID**를 사용하도록 변경합니다. `ClientMessage::Enqueue`에서는 `player_id` 필드를 제거합니다.
+
+- **기대 효과:**
+  인증된 사용자만 자신의 계정으로 매칭을 요청할 수 있도록 보장하여 시스템의 보안을 강화합니다.
+
+### 최종 요약
+
+| 구분              | 기존 LLM의 제안 (코드 품질 개선) | 내 첨언 (서비스 품질 개선)                   |
+| :---------------- | :------------------------------- | :------------------------------------------- |
+| **아키텍처**      | `Matchmaker` 책임 분리           | MMR 기반의 정교한 매칭 로직 도입             |
+| **설정/유연성**   | 설정값 중앙 관리                 | Redis 커넥션 풀링을 통한 확장성 확보         |
+| **안정성/신뢰성** | 에러 처리 및 복구 로직 추가      | 관측 가능성(Metrics) 확보로 안정적 운영 지원 |
+| **보안**          | (언급 없음)                      | 웹소켓 통신에 명확한 인증 흐름 적용          |
+
+다른 LLM의 제안이 코드의 내실을 다지는 훌륭한 첫걸음이라면, 제가 첨언한 내용들은 그 기반 위에서 실제 수많은 유저에게 안정적으로 서비스를 제공하기 위한 다음 단계라고 할 수 있습니다. 두 제안을 함께 고려하시면 훨씬 더 완성도 높은 시스템을 만드실 수 있을 겁니다.
+</file>
+
+<file path="src/auth.rs">
+use actix_web::{dev::Payload, web, FromRequest, HttpRequest};
+use jsonwebtoken::{decode, DecodingKey, Validation};
+use serde::{Deserialize, Serialize};
+use std::future::{ready, Ready};
+
+use crate::AppState;
+
+// JWT Claims 구조체 (auth_server의 것과 동일해야 함)
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Claims {
+    pub sub: String, // Subject (user's steam_id)
+    pub iat: usize,
+    pub exp: usize,
+}
+
+// 핸들러에서 인증된 사용자 정보를 담을 구조체
+#[derive(Debug)]
+pub struct AuthenticatedUser {
+    pub steam_id: i64,
+}
+
+// Actix-Web 추출기(Extractor) 구현
+impl FromRequest for AuthenticatedUser {
+    type Error = actix_web::Error;
+    type Future = Ready<Result<Self, Self::Error>>;
+
+    fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
+        let app_state = req.app_data::<web::Data<AppState>>().unwrap();
+
+        // 1. Authorization 헤더에서 토큰 추출
+        let auth_header = match req.headers().get("Authorization") {
+            Some(header) => header.to_str().unwrap_or(""),
+            None => {
+                return ready(Err(actix_web::error::ErrorUnauthorized(
+                    "Missing Authorization header",
+                )))
+            }
+        };
+
+        if !auth_header.starts_with("Bearer ") {
+            return ready(Err(actix_web::error::ErrorUnauthorized(
+                "Invalid token format",
+            )));
+        }
+
+        let token = &auth_header["Bearer ".len()..];
+
+        // 2. JWT 디코딩 및 검증
+        let token_data = match decode::<Claims>(
+            token,
+            &DecodingKey::from_secret(app_state.jwt_secret.as_ref()),
+            &Validation::default(),
+        ) {
+            Ok(data) => data,
+            Err(e) => {
+                // 로그에 에러 기록
+                tracing::warn!("JWT validation failed: {}", e);
+                return ready(Err(actix_web::error::ErrorUnauthorized("Invalid token")));
+            }
+        };
+
+        // 3. Claims에서 steam_id 파싱
+        let steam_id = match token_data.claims.sub.parse::<i64>() {
+            Ok(id) => id,
+            Err(_) => {
+                return ready(Err(actix_web::error::ErrorBadRequest(
+                    "Invalid steam_id in token",
+                )))
+            }
+        };
+
+        // 4. 성공 시 AuthenticatedUser 반환
+        ready(Ok(AuthenticatedUser { steam_id }))
+    }
+}
+</file>
+
+<file path="src/env.rs">
+use config::{Config, ConfigError, File};
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct ServerSettings {
+    pub bind_address: String,
+    pub port: u16,
+    pub log_level: String,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct RedisSettings {
+    pub url: String,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct JwtSettings {
+    pub secret: String,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct MatchmakingSettings {
+    pub tick_interval_seconds: u64,
+    pub queue_key_prefix: String,
+    pub game_modes: Vec<String>,
+}
+
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct Settings {
+    pub server: ServerSettings,
+    pub redis: RedisSettings,
+    pub jwt: JwtSettings,
+    pub matchmaking: MatchmakingSettings,
+}
+
+impl Settings {
+    pub fn new() -> Result<Self, ConfigError> {
+        let run_mode = std::env::var("RUN_MODE").unwrap_or_else(|_| "development".into());
+
+        let s = Config::builder()
+            .add_source(File::with_name(&format!("config/{}", run_mode)).required(true))
+            .build()?;
+
+        s.try_deserialize()
+    }
+}
+</file>
+
+<file path="src/lib.rs">
+use crate::{matchmaker::Matchmaker, provider::DedicatedServerProvider};
+use actix::Addr;
+use redis::Client as RedisClient;
+
+pub mod auth;
+pub mod env;
+pub mod matchmaker;
+pub mod util;
+pub mod ws_session;
+pub mod protocol;
+pub mod provider;
+
+// 서버 전체에서 공유될 상태
+#[derive(Clone)]
+pub struct AppState {
+    pub jwt_secret: String,
+    pub redis_client: RedisClient,
+    pub matchmaker_addr: Addr<Matchmaker>,
+    pub provider_addr: Addr<DedicatedServerProvider>,
+}
+</file>
+
+<file path="src/main.rs">
+use actix::Actor;
+use actix_web::{get, web, App, Error, HttpRequest, HttpResponse, HttpServer};
+use actix_web_actors::ws;
+use match_server::{
+    env::Settings, matchmaker, provider::DedicatedServerProvider, ws_session::MatchmakingSession,
+    AppState,
+};
+use tracing::info;
+
+#[get("/ws/")]
+async fn matchmaking_ws_route(
+    req: HttpRequest,
+    stream: web::Payload,
+    state: web::Data<AppState>,
+) -> Result<HttpResponse, Error> {
+    let session =
+        MatchmakingSession::new(state.matchmaker_addr.clone(), state.redis_client.clone());
+    ws::start(session, &req, stream)
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    dotenv::dotenv().ok();
+    let settings = Settings::new().expect("Failed to load settings.");
+    tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::new(
+            &settings.server.log_level,
+        ))
+        .init();
+
+    info!("Logger Initialized.");
+
+    let redis_client =
+        redis::Client::open(settings.redis.url.clone()).expect("Failed to create Redis client");
+    let redis_conn_manager = redis::aio::ConnectionManager::new(redis_client.clone())
+        .await
+        .expect("Failed to create Redis connection manager");
+    info!("Redis connection manager created.");
+
+    // DedicatedServerProvider 액터 시작
+    let provider_addr = DedicatedServerProvider::new(redis_conn_manager.clone()).start();
+    info!("DedicatedServerProvider actor started.");
+
+    // Matchmaker 액터 시작 (Provider 주소 전달)
+    let matchmaker_addr = matchmaker::Matchmaker::new(
+        redis_conn_manager,
+        settings.matchmaking.clone(),
+        provider_addr.clone(),
+    )
+    .start();
+    info!("Matchmaker actor started.");
+
+    let app_state = AppState {
+        jwt_secret: settings.jwt.secret.clone(),
+        redis_client: redis_client.clone(),
+        matchmaker_addr: matchmaker_addr.clone(),
+        provider_addr,
+    };
+
+    let bind_address = format!("{}:{}", settings.server.bind_address, settings.server.port);
+    info!("Starting Actix-Web server on {}", bind_address);
+
+    HttpServer::new(move || {
+        App::new()
+            .app_data(web::Data::new(app_state.clone()))
+            .service(matchmaking_ws_route)
+    })
+    .bind(&bind_address)?
+    .run()
+    .await
+}
+</file>
+
+<file path="src/matchmaker/actor.rs">
+use crate::{
+    protocol::ServerMessage, 
+    env::MatchmakingSettings,
+    provider::{DedicatedServerProvider, FindAvailableServer}
+};
+use actix::{Actor, Addr, AsyncContext, Context, Handler, Message, ResponseFuture};
+use redis::aio::ConnectionManager;
+use redis::{AsyncCommands, Script};
+use serde::{Deserialize, Serialize};
+use std::time::Duration;
+use tracing::{error, info, warn};
+use uuid::Uuid;
+
+// --- Actor Definition ---
+
+/// Matchmaker 액터는 주기적으로 매칭을 시도하고, 성공 시 세션 생성을 요청하는 역할을 담당합니다.
+pub struct Matchmaker {
+    /// Redis 연결을 위한 커넥션 매니저입니다.
+    redis: ConnectionManager,
+    /// 외부 서비스(dedicated_server)와 통신하기 위한 HTTP 클라이언트입니다.
+    http_client: reqwest::Client,
+    /// 매치메이킹 관련 설정을 담고 있는 구조체입니다.
+    settings: MatchmakingSettings,
+    /// 사용 가능한 게임 서버를 찾아주는 Provider 액터의 주소입니다.
+    provider_addr: Addr<DedicatedServerProvider>,
+}
+
+impl Matchmaker {
+    /// Matchmaker 액터의 새 인스턴스를 생성합니다.
+    pub fn new(
+        redis: ConnectionManager, 
+        settings: MatchmakingSettings,
+        provider_addr: Addr<DedicatedServerProvider>
+    ) -> Self {
+        Self {
+            redis,
+            http_client: reqwest::Client::new(),
+            settings,
+            provider_addr,
+        }
+    }
+}
+
+impl Actor for Matchmaker {
+    type Context = Context<Self>;
+
+    /// 액터가 시작될 때 호출됩니다.
+    fn started(&mut self, ctx: &mut Self::Context) {
+        info!("Matchmaker actor started.");
+        ctx.run_interval(Duration::from_secs(self.settings.tick_interval_seconds), |act, ctx| {
+            for mode in act.settings.game_modes.iter() {
+                ctx.address().do_send(TryMatch { game_mode: mode.clone() });
+            }
+        });
+    }
+}
+
+// --- Message Definitions ---
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct EnqueuePlayer {
+    pub player_id: Uuid,
+    pub game_mode: String,
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct DequeuePlayer {
+    pub player_id: Uuid,
+    pub game_mode: String,
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+struct TryMatch {
+    game_mode: String,
+}
+
+// --- Lua Script ---
+const ATOMIC_MATCH_SCRIPT: &str = r#"
+    local queue_key = KEYS[1]
+    local required_players = tonumber(ARGV[1])
+    if redis.call('SCARD', queue_key) >= required_players then
+        return redis.call('SPOP', queue_key, required_players)
+    else
+        return {}
+    end
+"#;
+
+// --- Helper Functions ---
+async fn publish_message(redis: &mut ConnectionManager, player_id: Uuid, message: ServerMessage) {
+    let channel = format!("notifications:{}", player_id);
+    let payload = serde_json::to_string(&message).unwrap();
+    if let Err(e) = redis.publish::<_, _, ()>(&channel, &payload).await {
+        warn!("Failed to publish message to channel {}: {}", channel, e);
+    }
+}
+
+/// 매칭 실패 시 플레이어들을 다시 대기열에 넣습니다.
+async fn requeue_players(redis: &mut ConnectionManager, queue_key: &str, player_ids: &[String]) {
+    warn!("Re-queuing players due to an error: {:?}", player_ids);
+    let result: Result<i32, _> = redis.sadd(queue_key, player_ids).await;
+    if let Err(e) = result {
+        error!("CRITICAL: Failed to re-queue players {:?} into {}: {}", player_ids, queue_key, e);
+    }
+}
+
+
+// --- Message Handlers ---
+impl Handler<EnqueuePlayer> for Matchmaker {
+    type Result = ResponseFuture<()>;
+    fn handle(&mut self, msg: EnqueuePlayer, _ctx: &mut Self::Context) -> Self::Result {
+        let mut redis = self.redis.clone();
+        let queue_key_prefix = self.settings.queue_key_prefix.clone();
+        Box::pin(async move {
+            let player_id_str = msg.player_id.to_string();
+            let queue_key = format!("{}:{}", queue_key_prefix, msg.game_mode);
+            let result: Result<i32, _> = redis.sadd(&queue_key, &player_id_str).await;
+            match result {
+                Ok(count) if count > 0 => {
+                    info!("Player {} added to queue {}", player_id_str, queue_key);
+                    publish_message(&mut redis, msg.player_id, ServerMessage::Queued).await;
+                }
+                Ok(_) => {
+                    warn!("Player {} already in queue {}", player_id_str, queue_key);
+                    publish_message(&mut redis, msg.player_id, ServerMessage::Error{message: "Already in queue".to_string()}).await;
+                }
+                Err(e) => {
+                    error!("Failed to add player to queue: {}", e);
+                    publish_message(&mut redis, msg.player_id, ServerMessage::Error{message: "Internal server error".to_string()}).await;
+                }
+            }
+        })
+    }
+}
+
+impl Handler<DequeuePlayer> for Matchmaker {
+    type Result = ResponseFuture<()>;
+    fn handle(&mut self, msg: DequeuePlayer, _ctx: &mut Self::Context) -> Self::Result {
+        let mut redis = self.redis.clone();
+        let queue_key_prefix = self.settings.queue_key_prefix.clone();
+        Box::pin(async move {
+            let queue_key = format!("{}:{}", queue_key_prefix, msg.game_mode);
+            let player_id_str = msg.player_id.to_string();
+            let result: Result<i32, _> = redis.srem(&queue_key, &player_id_str).await;
+            match result {
+                Ok(count) if count > 0 => {
+                    info!("Player {} (disconnected) removed from queue {}", player_id_str, queue_key);
+                }
+                Ok(_) => {
+                    tracing::debug!("Player {} was not in queue {}, likely already matched.", player_id_str, queue_key);
+                }
+                Err(e) => {
+                    error!("Failed to remove player {} from queue {}: {}", player_id_str, queue_key, e);
+                }
+            }
+        })
+    }
+}
+
+impl Handler<TryMatch> for Matchmaker {
+    type Result = ResponseFuture<()>;
+    fn handle(&mut self, msg: TryMatch, _ctx: &mut Self::Context) -> Self::Result {
+        let mut redis = self.redis.clone();
+        let http_client = self.http_client.clone();
+        let game_mode = msg.game_mode;
+        let required_players = 2;
+        let queue_key_prefix = self.settings.queue_key_prefix.clone();
+        let provider_addr = self.provider_addr.clone();
+
+        Box::pin(async move {
+            let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
+            let script = Script::new(ATOMIC_MATCH_SCRIPT);
+            let player_ids: Vec<String> = match script.key(&queue_key).arg(required_players).invoke_async(&mut redis).await {
+                Ok(p) => p,
+                Err(e) => {
+                    error!("Matchmaking script failed: {}", e);
+                    return;
+                }
+            };
+
+            if player_ids.len() == required_players {
+                info!("Found a match with players: {:?}", player_ids);
+
+                // 1. Provider를 통해 사용 가능한 서버를 요청합니다.
+                match provider_addr.send(FindAvailableServer).await {
+                    Ok(Ok(server_info)) => {
+                        // 2. 성공적으로 서버 정보를 받으면, 세션 생성을 요청합니다.
+                        let create_session_url = format!("http://{}/session/create", server_info.address);
+                        #[derive(Serialize)]
+                        struct CreateSessionReq { players: Vec<Uuid> }
+                        let req_body = CreateSessionReq { 
+                            players: player_ids.iter().map(|id| Uuid::parse_str(id).unwrap()).collect()
+                        };
+
+                        match http_client.post(&create_session_url).json(&req_body).send().await {
+                            Ok(resp) if resp.status().is_success() => {
+                                #[derive(Deserialize, Debug)]
+                                struct CreateSessionResp { server_address: String, session_id: Uuid }
+                                
+                                match resp.json::<CreateSessionResp>().await {
+                                    Ok(session_info) => {
+                                        info!("Successfully created session: {:?}", session_info);
+                                        let message = ServerMessage::MatchFound {
+                                            session_id: session_info.session_id,
+                                            server_address: session_info.server_address.clone(),
+                                        };
+                                        for player_id_str in &player_ids {
+                                            let player_id = Uuid::parse_str(player_id_str).unwrap();
+                                            publish_message(&mut redis, player_id, message.clone()).await;
+                                        }
+                                    }
+                                    Err(e) => {
+                                        error!("Failed to parse session creation response: {}. Re-queuing players.", e);
+                                        requeue_players(&mut redis, &queue_key, &player_ids).await;
+                                    }
+                                }
+                            }
+                            Ok(resp) => {
+                                error!("Dedicated server returned error: {}. Re-queuing players.", resp.status());
+                                requeue_players(&mut redis, &queue_key, &player_ids).await;
+                            }
+                            Err(e) => {
+                                error!("Failed to contact dedicated server: {}. Re-queuing players.", e);
+                                requeue_players(&mut redis, &queue_key, &player_ids).await;
+                            }
+                        }
+                    }
+                    Ok(Err(e)) => {
+                        error!("Failed to find available server: {}. Re-queuing players.", e);
+                        requeue_players(&mut redis, &queue_key, &player_ids).await;
+                    }
+                    Err(e) => {
+                        error!("Mailbox error when contacting provider: {}. Re-queuing players.", e);
+                        requeue_players(&mut redis, &queue_key, &player_ids).await;
+                    }
+                }
+            }
+        })
+    }
+}
+</file>
+
+<file path="src/matchmaker/http.rs">
+use actix_web::{post, web, HttpResponse, Responder};
+use tracing::{info, warn};
+
+use crate::{
+    auth::AuthenticatedUser,
+    matchmaker::actor::{EnqueuePlayer, EnqueueResult}, // EnqueueResult 임포트
+    AppState,
+};
+
+#[derive(serde::Deserialize)]
+pub struct MatchmakingRequest {
+    pub game_mode: String,
+}
+
+/// POST /matchmaking/queue
+/// 인증된 사용자를 매칭 대기열에 추가하라는 요청을 Matchmaker 액터에게 보냅니다.
+#[post("/queue")]
+pub async fn enqueue_player(
+    user: AuthenticatedUser,
+    state: web::Data<AppState>,
+    req_body: web::Json<MatchmakingRequest>,
+) -> impl Responder {
+    info!(
+        "Player {} requests matchmaking for game mode: {}",
+        user.steam_id, req_body.game_mode
+    );
+
+    // Matchmaker 액터에게 메시지를 보내고 응답을 기다립니다.
+    match state
+        .matchmaker_addr
+        .send(EnqueuePlayer {
+            steam_id: user.steam_id,
+            game_mode: req_body.game_mode.clone(),
+        })
+        .await
+    {
+        // 액터로부터 응답을 성공적으로 받은 경우
+        Ok(result) => match result {
+            EnqueueResult::Success => HttpResponse::Ok().json(serde_json::json!({
+                "message": "Successfully joined the matchmaking queue.",
+                "steam_id": user.steam_id,
+                "status": "pending"
+            })),
+            EnqueueResult::AlreadyInQueue => HttpResponse::Conflict().json(serde_json::json!({
+                "message": "You are already in the matchmaking queue.",
+                "steam_id": user.steam_id,
+                "status": "already_in_queue"
+            })),
+            EnqueueResult::InternalError => {
+                HttpResponse::InternalServerError().json("Failed to add player to queue")
+            }
+        },
+        // 액터에게 메시지를 보내는 데 실패한 경우 (예: 액터가 다운됨)
+        Err(e) => {
+            warn!("Actor send error: {}", e);
+            HttpResponse::InternalServerError().json("Internal server error")
+        }
+    }
+}
+</file>
+
+<file path="src/matchmaker/mod.rs">
+//! Matchmaker 모듈은 매칭 관련 로직을 담당합니다.
+//!
+//! - `actor`: 매칭 대기열을 관리하고 실제 매칭을 수행하는 액터입니다.
+
+pub mod actor;
+
+// 다른 모듈에서 쉽게 사용할 수 있도록 공개합니다.
+pub use actor::Matchmaker;
+</file>
+
+<file path="src/protocol.rs">
+use actix::prelude::*;
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
+
+// --- Client to Server Messages ---
+
+#[derive(Deserialize, Message)]
+#[rtype(result = "()")]
+#[serde(tag = "type")]
+pub enum ClientMessage {
+    #[serde(rename = "enqueue")]
+    Enqueue {
+        // JWT should be sent in an auth step, but for now, we'll pass ID directly
+        player_id: Uuid,
+        game_mode: String,
+    },
+}
+
+// --- Server to Client Messages ---
+
+#[derive(Serialize, Deserialize, Message, Clone)]
+#[rtype(result = "()")]
+#[serde(tag = "type")]
+pub enum ServerMessage {
+    #[serde(rename = "match_found")]
+    MatchFound {
+        session_id: Uuid,
+        server_address: String,
+    },
+    #[serde(rename = "error")]
+    Error {
+        message: String,
+    },
+    #[serde(rename = "queued")]
+    Queued,
+}
+</file>
+
+<file path="src/provider.rs">
+use actix::{Actor, Context, Handler, Message, ResponseFuture};
+use redis::{aio::ConnectionManager, AsyncCommands};
+use serde::Deserialize;
+use tracing::{error, info};
+
+// --- Actor Definition ---
+
+/// 사용 가능한 Dedicated Server를 찾아 제공하는 책임을 가진 액터입니다.
+pub struct DedicatedServerProvider {
+    redis: ConnectionManager,
+}
+
+impl DedicatedServerProvider {
+    pub fn new(redis: ConnectionManager) -> Self {
+        Self { redis }
+    }
+}
+
+impl Actor for DedicatedServerProvider {
+    type Context = Context<Self>;
+}
+
+// --- Message Definition ---
+
+/// 사용 가능한 서버를 찾아달라는 메시지입니다.
+#[derive(Message)]
+#[rtype(result = "Result<ServerInfo, anyhow::Error>")]
+pub struct FindAvailableServer;
+
+/// 찾아낸 서버의 정보를 담는 구조체입니다.
+#[derive(Deserialize, Debug, Clone)]
+pub struct ServerInfo {
+    pub address: String,
+    pub status: String,
+}
+
+// --- Message Handler ---
+
+impl Handler<FindAvailableServer> for DedicatedServerProvider {
+    type Result = ResponseFuture<Result<ServerInfo, anyhow::Error>>;
+
+    /// `FindAvailableServer` 메시지를 처리합니다.
+    /// Redis를 스캔하여 첫 번째 유휴 서버를 찾습니다.
+    fn handle(&mut self, _msg: FindAvailableServer, _ctx: &mut Context<Self>) -> Self::Result {
+        let mut redis = self.redis.clone();
+
+        Box::pin(async move {
+            info!("Finding an available dedicated server from Redis...");
+            
+            let server_keys: Vec<String> = redis.keys("dedicated_server:*").await?;
+            if server_keys.is_empty() {
+                return Err(anyhow::anyhow!("No available dedicated servers found in Redis."));
+            }
+
+            // TODO: 현재는 첫 번째 서버를 무조건 반환하지만,
+            //       향후에는 여러 서버의 상태를 확인하고 'idle' 상태인 서버를 반환하는 로직이 필요합니다.
+            let server_key = &server_keys[0];
+            let server_info_json: String = redis.get(server_key).await?;
+            let server_info: ServerInfo = serde_json::from_str(&server_info_json)?;
+
+            info!("Found server: {:?}", server_info);
+            Ok(server_info)
+        })
+    }
+}
+</file>
+
+<file path="src/util.rs">
+use std::env;
+
+pub async fn connect_to_redis_with_auth() -> redis::RedisResult<()> {
+    let redis_url =
+        env::var("REDIS_URL").expect("REDIS_URL must be set, e.g., redis://:password@host:port");
+
+    let client = redis::Client::open(redis_url)?;
+    let _ = client.get_async_connection().await?;
+
+    Ok(())
+}
+</file>
+
+<file path="src/ws_session.rs">
+use crate::{
+    matchmaker::actor::{DequeuePlayer, EnqueuePlayer},
+    protocol::{ClientMessage, ServerMessage},
+    Matchmaker,
+};
+use actix::{
+    fut, Actor, ActorContext, Addr, AsyncContext, Handler, Running, StreamHandler,
+};
+use actix_web_actors::ws;
+use futures_util::stream::StreamExt;
+use redis::Client as RedisClient;
+use std::time::{Duration, Instant};
+use tracing::{error, info, warn};
+use uuid::Uuid;
+
+const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(5);
+const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
+
+pub struct MatchmakingSession {
+    player_id: Option<Uuid>,
+    game_mode: Option<String>, // Store the game mode for dequeueing
+    hb: Instant,
+    matchmaker_addr: Addr<Matchmaker>,
+    redis_client: RedisClient,
+}
+
+impl MatchmakingSession {
+    pub fn new(matchmaker_addr: Addr<Matchmaker>, redis_client: RedisClient) -> Self {
+        Self {
+            player_id: None,
+            game_mode: None,
+            hb: Instant::now(),
+            matchmaker_addr,
+            redis_client,
+        }
+    }
+
+    fn hb(&self, ctx: &mut ws::WebsocketContext<Self>) {
+        ctx.run_interval(HEARTBEAT_INTERVAL, |act, ctx| {
+            if Instant::now().duration_since(act.hb) > CLIENT_TIMEOUT {
+                info!("Websocket Client heartbeat failed, disconnecting!");
+                ctx.stop();
+                return;
+            }
+            ctx.ping(b"");
+        });
+    }
+}
+
+impl Actor for MatchmakingSession {
+    type Context = ws::WebsocketContext<Self>;
+
+    fn started(&mut self, ctx: &mut Self::Context) {
+        info!("MatchmakingSession started.");
+        self.hb(ctx);
+    }
+
+    fn stopping(&mut self, _: &mut Self::Context) -> Running {
+        if let (Some(player_id), Some(game_mode)) = (self.player_id, self.game_mode.clone()) {
+            info!("Player {} disconnected, sending dequeue request for game mode {}", player_id, game_mode);
+            self.matchmaker_addr.do_send(DequeuePlayer {
+                player_id,
+                game_mode,
+            });
+        }
+        info!("MatchmakingSession for player {:?} is stopping.", self.player_id);
+        Running::Stop
+    }
+}
+
+impl Handler<ServerMessage> for MatchmakingSession {
+    type Result = ();
+
+    fn handle(&mut self, msg: ServerMessage, ctx: &mut Self::Context) {
+        ctx.text(serde_json::to_string(&msg).unwrap());
+    }
+}
+
+impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MatchmakingSession {
+    fn handle(&mut self, msg: Result<ws::Message, ws::ProtocolError>, ctx: &mut Self::Context) {
+        match msg {
+            Ok(ws::Message::Ping(msg)) => {
+                self.hb = Instant::now();
+                ctx.pong(&msg);
+            }
+            Ok(ws::Message::Pong(_)) => {
+                self.hb = Instant::now();
+            }
+            Ok(ws::Message::Text(text)) => {
+                match serde_json::from_str::<ClientMessage>(&text) {
+                    Ok(ClientMessage::Enqueue { player_id, game_mode }) => {
+                        if self.player_id.is_some() {
+                            warn!("Player {} tried to enqueue more than once.", player_id);
+                            return;
+                        }
+                        
+                        info!("Player {} requests queue for {}. Subscribing before enqueuing.", player_id, game_mode);
+                        self.player_id = Some(player_id);
+                        self.game_mode = Some(game_mode.clone());
+                        
+                        let redis_client = self.redis_client.clone();
+                        let addr = ctx.address().clone();
+                        let matchmaker_addr = self.matchmaker_addr.clone();
+
+                        let future = async move {
+                            let mut conn = match redis_client.get_async_connection().await {
+                                Ok(c) => c,
+                                Err(e) => {
+                                    error!("Failed to get redis connection: {}", e);
+                                    addr.do_send(ServerMessage::Error { message: "Internal server error".into() });
+                                    return;
+                                }
+                            };
+                            let mut pubsub = conn.into_pubsub();
+                            let channel = format!("notifications:{}", player_id);
+                            
+                            if let Err(e) = pubsub.subscribe(&channel).await {
+                                error!("Failed to subscribe to channel {}: {}", channel, e);
+                                addr.do_send(ServerMessage::Error { message: "Internal server error".into() });
+                                return;
+                            }
+
+                            // Now that we are subscribed, we can safely enqueue
+                            matchmaker_addr.do_send(EnqueuePlayer {
+                                player_id,
+                                game_mode,
+                            });
+
+                            // Start listening for messages
+                            let mut stream = pubsub.on_message();
+                            while let Some(msg) = stream.next().await {
+                                let payload: String = match msg.get_payload() {
+                                    Ok(p) => p,
+                                    Err(_) => continue,
+                                };
+                                if let Ok(server_msg) = serde_json::from_str::<ServerMessage>(&payload) {
+                                    addr.do_send(server_msg);
+                                }
+                            }
+                        };
+                        ctx.spawn(fut::wrap_future(future));
+                    }
+                    Err(e) => {
+                        warn!("Failed to parse client message: {}", e);
+                        ctx.text(serde_json::to_string(&ServerMessage::Error { message: "Invalid message format".to_string() }).unwrap());
+                    }
+                }
+            }
+            Ok(ws::Message::Close(reason)) => {
+                ctx.close(reason);
+                ctx.stop();
+            }
+            _ => ctx.stop(),
+        }
+    }
+}
+</file>
+
+</files>

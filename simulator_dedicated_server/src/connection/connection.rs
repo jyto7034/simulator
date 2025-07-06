@@ -11,6 +11,7 @@ use simulator_core::{
         GameActor,
     }, retry_with_condition, Condition, RetryConfig
 };
+use simulator_metrics::ACTIVE_SESSIONS; // 메트릭 임포트
 use tracing::{debug, error, info, warn};
 use uuid::Uuid;
 
@@ -26,30 +27,17 @@ use super::UserAction;
 
 /// WebSocket 연결을 관리하는 Actor
 pub struct ConnectionActor {
-    pub ws_session: Session,        // 웹소켓 세션 제어
-    pub game_addr: Addr<GameActor>, // 연결된 GameActor 주소
+    pub ws_session: Session,
+    pub game_addr: Addr<GameActor>,
     pub player_type: PlayerKind,
-
     pub last_pong: Instant,
-    pub player_id: Uuid,       // 이 연결의 플레이어 ID
-    pub cleanup_started: bool, // 중복 정리를 방지하기 위한 플래그
+    pub player_id: Uuid,
+    pub cleanup_started: bool,
     pub initial_pong_received: bool,
     pub heartbeat_handle: Option<SpawnHandle>,
 }
 
 impl ConnectionActor {
-    /// ConnectionActor의 새 인스턴스를 생성합니다.
-    ///
-    /// # Arguments
-    ///
-    /// * `session` - 이 액터가 관리할 웹소켓 세션 객체.
-    /// * `game_addr` - 이 플레이어가 참여하는 게임을 관리하는 GameActor의 주소.
-    /// * `session_id` - 이 연결에 해당하는 플레이어의 고유 식별자.
-    /// * `session_manager` - 세션 타임아웃 및 정리를 관리하는 PlayerSessionManager.
-    ///
-    /// # Returns
-    ///
-    /// 새로운 ConnectionActor 인스턴스를 반환합니다.
     pub fn new(
         session: Session,
         game_addr: Addr<GameActor>,
@@ -77,7 +65,7 @@ impl ConnectionActor {
         let mut session_clone = self.ws_session.clone();
         let player_type_log = self.player_type;
         let session_id_log = self.player_id;
-        let connection_addr = ctx.address().clone(); // Corrected: use ctx.address()
+        let connection_addr = ctx.address().clone();
 
         ctx.spawn(wrap_future::<_, Self>(async move {
             if let Err(e) = session_clone.ping(b"heartbeat").await {
@@ -161,6 +149,9 @@ impl Actor for ConnectionActor {
             self.player_type, self.player_id
         );
 
+        // 세션이 종료되므로 활성 세션 게이지를 1 감소시킵니다.
+        ACTIVE_SESSIONS.dec();
+
         if let Some(handle) = self.heartbeat_handle.take() {
             ctx.cancel_future(handle);
             info!(
@@ -229,14 +220,12 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
                 let game_addr = self.game_addr.clone();
                 let addr = ctx.address().clone();
 
-                // 1. 활성 시간 갱신
                 self.last_pong = Instant::now();
                 info!(
                     "ConnectionActor for player {:?} (session_id: {}): Received Pong from client",
                     self.player_type, self.player_id
                 );
 
-                // 2. 초기 Pong 수신 여부 확인
                 if !self.initial_pong_received {
                     self.initial_pong_received = true;
                     info!(
@@ -245,10 +234,9 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
                     );
 
                     let connection_addr = ctx.address().clone();
-                    let ws_session = self.ws_session.clone(); // ws_session도 클론
+                    let ws_session = self.ws_session.clone();
 
                     ctx.spawn(wrap_future::<_, Self>(async move {
-                        // 3. GameActor에 연결 등록 메시지를 전송하는 비동기 함수 생성
                         let operation = || {
                             let game_addr_clone = game_addr.clone();
                             let connection_addr_clone = connection_addr.clone();
@@ -262,30 +250,21 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
                                 match register_connection_future {
                                     Ok(handler_result) => {
                                         match handler_result {
-                                            Ok(_) => {
-                                                return Ok(());
-                                            }
+                                            Ok(_) => Ok(()),
                                             Err(game_error) => {
-                                                error!(
-                                                    "ConnectionActor for player {:?} (session_id: {}): Message sent to GameActor, but registration failed with GameError: {:?}",
-                                                    player_type, player_id, game_error
-                                                );
-                                                return Err(game_error);
+                                                error!("Registration failed with GameError: {:?}", game_error);
+                                                Err(game_error)
                                             }
                                         }
                                     }
                                     Err(mailbox_error) => {
-                                        error!(
-                                        "ConnectionActor for player {:?} (session_id: {}): Failed to send RegisterConnection message to GameActor (MailboxError): {:?}",
-                                        player_type, player_id, mailbox_error
-                                    );
-                                        return Err(GameError::System(SystemError::Mailbox(mailbox_error)));
+                                        error!("MailboxError: {:?}", mailbox_error);
+                                        Err(GameError::System(SystemError::Mailbox(mailbox_error)))
                                     }
                                 }
                             }
                         };
 
-                        // 4. 생성된 비동기 함수를 retry 함수에 넘겨서 재시도 로직 적용
                         let condition = |e: &GameError| {
                             if let GameError::Connection(ConnectionError::SessionExists(_)) = e {
                                 return Condition::Stop;
@@ -294,16 +273,8 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
                         };
                         
                         if let Err(e) = retry_with_condition(operation, RetryConfig::default(), condition,"RegisterConnection").await{
-                            error!(
-                                "ConnectionActor for player {:?} (session_id: {}): Failed to register with GameActor after retries: {:?}",
-                                player_type, player_id, e
-                            );
-
-                            // 클라이언트에게 에러 메시지 전송
+                            error!("Failed to register with GameActor after retries: {:?}", e);
                             let server_error_message = ServerMessage::from(e);
-                            
-                            // 2. ServerMessage를 JSON 문자열로 변환합니다.
-                            //    (to_json 헬퍼 함수가 이 새로운 variant를 처리하도록 수정 필요)
                             let error_payload = server_error_message.to_json();
                             
                             let mut session_clone = ws_session.clone();
@@ -316,82 +287,49 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
                                 )),
                             });
                         } else {
-                            info!(
-                                "ConnectionActor for player {:?} (session_id: {}): Successfully registered with GameActor.",
-                                player_type, player_id
-                            );
-
+                            info!("Successfully registered with GameActor.");
                             connection_addr.do_send(PostRegistrationSetup);
                         }
                     }));
                 }
             }
             Ok(Message::Close(reason)) => {
-                info!(
-                    "ConnectionActor for player {:?} (session_id: {}): Received Close from client. Reason: {:?}",
-                    self.player_type, self.player_id, reason
-                );
+                info!("Received Close from client. Reason: {:?}", reason);
                 ctx.stop();
             }
             Ok(Message::Text(text)) => {
                 match serde_json::from_str::<UserAction>(&text.to_string()) {
                     Ok(user_action) => {
-                        info!(
-                            "ConnectionActor for player {:?} (session_id: {}): Forwarding action to GameActor: {:?}",
-                            self.player_type, self.player_id, user_action
-                        );
-                        // self.game_addr.do_send(HandleUserAction {
-                        //     player_id: self.player_id,
-                        //     action: user_action,
-                        // });
+                        info!("Forwarding action to GameActor: {:?}", user_action);
+                        // self.game_addr.do_send(HandleUserAction { ... });
                     }
                     Err(e) => {
-                        error!(
-                            "ConnectionActor for player {:?} (session_id: {}): Failed to parse UserAction from text '{}'. Error: {}",
-                            self.player_type, self.player_id, text, e
-                        );
+                        error!("Failed to parse UserAction from text '{}'. Error: {}", text, e);
                         let error_msg = format!("{{\"error\": \"Invalid message format: {}\"}}", e);
                         let mut session_clone = self.ws_session.clone();
-                        let player_id_log = self.player_id; // 로그용 ID 클론
                         ctx.spawn(wrap_future::<_, Self>(async move {
                             if let Err(send_err) = session_clone.text(error_msg).await {
-                                error!(
-                                    "ConnectionActor for player_id {}: Failed to send error text to client: {:?}",
-                                    player_id_log, send_err
-                                );
+                                error!("Failed to send error text to client: {:?}", send_err);
                             }
                         }));
                     }
                 }
             }
             Ok(Message::Binary(_)) => {
-                warn!(
-                    "ConnectionActor for player {:?} (session_id: {}): Received unexpected Binary message.",
-                    self.player_type, self.player_id
-                );
+                warn!("Received unexpected Binary message.");
             }
             Err(e) => {
-                error!(
-                    "ConnectionActor for player {:?} (session_id: {}): WebSocket error: {}",
-                    self.player_type, self.player_id, e
-                );
+                error!("WebSocket error: {}", e);
                 ctx.stop();
             }
             _ => {
-                // 예를 들어 Ok(Message::Continuation(_)) 등 명시적으로 처리하지 않은 메시지 타입
-                warn!(
-                    "ConnectionActor for player {:?} (session_id: {}): Received unhandled message type.",
-                    self.player_type, self.player_id
-                );
+                warn!("Received unhandled message type.");
             }
         }
     }
 
     fn finished(&mut self, ctx: &mut Context<Self>) {
-        info!(
-            "ConnectionActor for player {:?} (session_id: {}): WebSocket stream finished. Stopping actor.",
-            self.player_type, self.player_id
-        );
+        info!("WebSocket stream finished. Stopping actor.");
         ctx.stop();
     }
 }

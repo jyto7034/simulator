@@ -28,3 +28,7 @@ futures-util = {version = "0.3", features = ["sink"]}
 futures = "0.3.31"
 ctor = "0.4.1"
 glicko2 = "0.3.1"
+redis = { version = "0.25", features = ["tokio-comp", "connection-manager"] }
+anyhow = "1.0"
+actix-web-prom = "0.10.0"
+simulator_metrics = { path = "../simulator_metrics" }
