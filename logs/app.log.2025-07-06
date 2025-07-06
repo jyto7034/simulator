@@ -1,0 +1,12 @@
+2025-07-06T18:12:01.159159Z  INFO test_client: Logger initialized.
+2025-07-06T18:12:01.159226Z  INFO test_client: [43d80da6-3fa8-4ed0-9f70-d9c2464135bd] Starting in NORMAL mode
+2025-07-06T18:12:01.161911Z  INFO test_client: [43d80da6-3fa8-4ed0-9f70-d9c2464135bd] Connected.
+2025-07-06T18:12:01.162051Z  INFO test_client: [43d80da6-3fa8-4ed0-9f70-d9c2464135bd] Sent enqueue request.
+2025-07-06T18:12:01.163531Z  INFO test_client: [43d80da6-3fa8-4ed0-9f70-d9c2464135bd] Received: {"type":"queued"}
+2025-07-06T18:12:03.902757Z  INFO test_client: [43d80da6-3fa8-4ed0-9f70-d9c2464135bd] Received: {"type":"start_loading","loading_session_id":"a4d2d266-26f6-4b00-8de4-072c80f6d4d1"}
+2025-07-06T18:12:03.902817Z  INFO test_client: [43d80da6-3fa8-4ed0-9f70-d9c2464135bd] Simulating asset loading...
+2025-07-06T18:12:05.909991Z  INFO test_client: [43d80da6-3fa8-4ed0-9f70-d9c2464135bd] Loading complete. Notified server.
+2025-07-06T18:14:03.907098Z  INFO test_client: [43d80da6-3fa8-4ed0-9f70-d9c2464135bd] Received: {"type":"error","message":"Matchmaking timed out. You have been returned to the queue."}
+2025-07-06T18:14:08.907642Z  INFO test_client: [43d80da6-3fa8-4ed0-9f70-d9c2464135bd] Received: {"type":"start_loading","loading_session_id":"a4da6410-4c2c-4f87-a7d3-d2b7c32c8c7d"}
+2025-07-06T18:14:08.907684Z  INFO test_client: [43d80da6-3fa8-4ed0-9f70-d9c2464135bd] Simulating asset loading...
+2025-07-06T18:14:10.912180Z  INFO test_client: [43d80da6-3fa8-4ed0-9f70-d9c2464135bd] Loading complete. Notified server.

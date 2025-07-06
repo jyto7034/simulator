@@ -1,6 +1,6 @@
 use actix_web::{post, web, App, HttpResponse, HttpServer, Responder};
 use actix_web_prom::PrometheusMetricsBuilder;
-use dedicated_server::server::game as game_ws_handler;
+use dedicated_server::{server::game as game_ws_handler, setup_logger};
 use redis::AsyncCommands;
 use serde::{Deserialize, Serialize};
 use simulator_metrics::{register_custom_metrics, ACTIVE_SESSIONS};
@@ -84,9 +84,7 @@ async fn create_session(
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    tracing_subscriber::fmt()
-        .with_env_filter(tracing_subscriber::EnvFilter::new("info"))
-        .init();
+    setup_logger();
 
     let prometheus = PrometheusMetricsBuilder::new("dedicated_server")
         .endpoint("/metrics")

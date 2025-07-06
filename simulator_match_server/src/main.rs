@@ -3,8 +3,8 @@ use actix_web::{get, web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
 use actix_web_prom::PrometheusMetricsBuilder;
 use match_server::{
-    env::Settings, matchmaker, provider::DedicatedServerProvider, ws_session::MatchmakingSession,
-    AppState,
+    env::Settings, matchmaker, provider::DedicatedServerProvider, setup_logger,
+    ws_session::MatchmakingSession, AppState,
 };
 use simulator_metrics::register_custom_metrics;
 use tracing::info;
@@ -24,13 +24,7 @@ async fn matchmaking_ws_route(
 async fn main() -> std::io::Result<()> {
     dotenv::dotenv().ok();
     let settings = Settings::new().expect("Failed to load settings.");
-    tracing_subscriber::fmt()
-        .with_env_filter(tracing_subscriber::EnvFilter::new(
-            &settings.server.log_level,
-        ))
-        .init();
-
-    info!("Logger Initialized.");
+    setup_logger();
 
     // Prometheus 미들웨어 설정
     let prometheus = PrometheusMetricsBuilder::new("match_server")

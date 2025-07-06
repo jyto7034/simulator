@@ -6,10 +6,13 @@ use actix::{
 };
 use actix_ws::{Message, ProtocolError, Session};
 use simulator_core::{
-    card::types::PlayerKind, exception::{ConnectionError, GameError, SystemError}, game::{
+    card::types::PlayerKind,
+    exception::{ConnectionError, GameError, SystemError},
+    game::{
         msg::connection::{RegisterConnection, UnRegisterConnection},
         GameActor,
-    }, retry_with_condition, Condition, RetryConfig
+    },
+    retry_with_condition, Condition, RetryConfig,
 };
 use simulator_metrics::ACTIVE_SESSIONS; // 메트릭 임포트
 use tracing::{debug, error, info, warn};
@@ -73,8 +76,11 @@ impl ConnectionActor {
                     "Failed to send ping to player {:?} (session_id: {}): {:?}",
                     player_type_log, session_id_log, e
                 );
-                connection_addr.do_send(StopActorOnError { 
-                    error: GameError::System(SystemError::Io(std::io::Error::new(std::io::ErrorKind::ConnectionAborted, e.to_string()))) 
+                connection_addr.do_send(StopActorOnError {
+                    error: GameError::System(SystemError::Io(std::io::Error::new(
+                        std::io::ErrorKind::ConnectionAborted,
+                        e.to_string(),
+                    ))),
                 });
             } else {
                 info!(
@@ -99,13 +105,12 @@ impl ConnectionActor {
                 ctx_inner.stop();
                 return;
             }
-            
+
             act.send_ping(ctx_inner);
         });
 
         self.heartbeat_handle = Some(handle);
     }
-
 
     fn start_cleanup_task(&mut self) {
         if self.cleanup_started {
@@ -223,14 +228,14 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
                 self.last_pong = Instant::now();
                 info!(
                     "ConnectionActor for player {:?} (session_id: {}): Received Pong from client",
-                    self.player_type, self.player_id
+                    player_type, self.player_id
                 );
 
                 if !self.initial_pong_received {
                     self.initial_pong_received = true;
                     info!(
                         "ConnectionActor for player {:?} (session_id: {}): Initial Pong received. Registering with GameActor.",
-                        self.player_type, self.player_id
+                        player_type, self.player_id
                     );
 
                     let connection_addr = ctx.address().clone();
@@ -245,18 +250,20 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
                                     .send(RegisterConnection {
                                         player_id,
                                         recipient: connection_addr_clone.recipient(),
-                                    }).await;
+                                    })
+                                    .await;
 
                                 match register_connection_future {
-                                    Ok(handler_result) => {
-                                        match handler_result {
-                                            Ok(_) => Ok(()),
-                                            Err(game_error) => {
-                                                error!("Registration failed with GameError: {:?}", game_error);
-                                                Err(game_error)
-                                            }
+                                    Ok(handler_result) => match handler_result {
+                                        Ok(_) => Ok(()),
+                                        Err(game_error) => {
+                                            error!(
+                                                "Registration failed with GameError: {:?}",
+                                                game_error
+                                            );
+                                            Err(game_error)
                                         }
-                                    }
+                                    },
                                     Err(mailbox_error) => {
                                         error!("MailboxError: {:?}", mailbox_error);
                                         Err(GameError::System(SystemError::Mailbox(mailbox_error)))
@@ -271,12 +278,19 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
                             }
                             Condition::Continue
                         };
-                        
-                        if let Err(e) = retry_with_condition(operation, RetryConfig::default(), condition,"RegisterConnection").await{
+
+                        if let Err(e) = retry_with_condition(
+                            operation,
+                            RetryConfig::default(),
+                            condition,
+                            "RegisterConnection",
+                        )
+                        .await
+                        {
                             error!("Failed to register with GameActor after retries: {:?}", e);
                             let server_error_message = ServerMessage::from(e);
                             let error_payload = server_error_message.to_json();
-                            
+
                             let mut session_clone = ws_session.clone();
                             if let Err(send_err) = session_clone.text(error_payload).await {
                                 warn!("Failed to send error message to client: {:?}", send_err);
@@ -304,7 +318,10 @@ impl StreamHandler<Result<Message, ProtocolError>> for ConnectionActor {
                         // self.game_addr.do_send(HandleUserAction { ... });
                     }
                     Err(e) => {
-                        error!("Failed to parse UserAction from text '{}'. Error: {}", text, e);
+                        error!(
+                            "Failed to parse UserAction from text '{}'. Error: {}",
+                            text, e
+                        );
                         let error_msg = format!("{{\"error\": \"Invalid message format: {}\"}}", e);
                         let mut session_clone = self.ws_session.clone();
                         ctx.spawn(wrap_future::<_, Self>(async move {

@@ -1,18 +1,19 @@
 use std::{future::Future, pin::Pin};
-use actix_web::{web, FromRequest, HttpRequest, HttpResponse, get};
+use actix_web::{web, FromRequest, HttpRequest, HttpResponse, get, post, Responder};
 use actix_ws::handle;
+use redis::AsyncCommands;
 use serde::Deserialize;
 use simulator_core::{
     card::types::PlayerKind,
     exception::{ConnectionError, GameError},
 };
+use simulator_metrics::ACTIVE_SESSIONS;
 use tracing::{debug, error, info, instrument};
 use uuid::Uuid;
 
-// test 모듈 의존성 제거
-// use crate::{connection::connection::ConnectionActor, test::ServerState}; 
-use crate::connection::connection::ConnectionActor;
+use crate::types::{CreateSessionRequest, CreateSessionResponse, ServerState};
 
+// --- WebSocket Endpoint ---
 
 #[derive(Deserialize)]
 struct GameWsQuery {
@@ -53,7 +54,6 @@ impl FromRequest for AuthPlayer {
             let session_id = query.session_id;
             info!("세션 ID 확인: {}", session_id);
 
-            // TODO: Redis 또는 내부 상태에서 이 session_id가 유효한지 검증하는 로직 필요
             let player_id = Uuid::new_v4(); 
             let player_type = PlayerKind::Player1;
 
@@ -61,27 +61,6 @@ impl FromRequest for AuthPlayer {
             Ok(AuthPlayer::new(player_type, player_id))
         })
     }
-}
-
-impl From<AuthPlayer> for PlayerKind {
-    fn from(value: AuthPlayer) -> Self {
-        value.ptype
-    }
-}
-
-impl From<AuthPlayer> for String {
-    fn from(value: AuthPlayer) -> Self {
-        value.ptype.to_string()
-    }
-}
-
-#[get("/create_room")]
-pub async fn create_room(
-    _player: AuthPlayer,
-    _req: HttpRequest,
-    _payload: web::Payload,
-) -> Result<HttpResponse, GameError> {
-    todo!()
 }
 
 #[get("/game")]
@@ -95,7 +74,7 @@ pub async fn game(
     let player_id = player.id;
     debug!("플레이어 타입 설정: {:?}", player_type);
 
-    debug!("WebSocket 연결 업그레이드 시작");
+    debug!("WebSocket 연�� 업그레이드 시작");
     let (_response, _session, _message_stream) = match handle(&req, payload) {
         Ok(result) => {
             info!(
@@ -115,6 +94,43 @@ pub async fn game(
         }
     };
 
-    // TODO: main.rs에서 GameActor를 생성하고 ServerState를 통해 전달받아 ConnectionActor와 연결해야 함
     todo!("GameActor를 생성하고 ConnectionActor와 연결해야 합니다.");
+}
+
+
+// --- HTTP Endpoint ---
+
+#[post("/session/create")]
+pub async fn create_session(
+    req: web::Json<CreateSessionRequest>,
+    state: web::Data<ServerState>,
+) -> impl Responder {
+    let session_id = Uuid::new_v4();
+    tracing::info!("Received request to create session for players: {:?}", req.players);
+
+    let mut redis_conn = state.redis_conn.clone();
+    let server_key = &state.server_id;
+    
+    let bind_address = "127.0.0.1:8088";
+    let new_server_info = serde_json::to_string(&serde_json::json!({
+        "address": bind_address,
+        "status": "busy"
+    })).unwrap();
+
+    match redis_conn.set::<_, _, ()>(server_key, new_server_info).await {
+        Ok(_) => tracing::info!("Server {} status updated to busy.", server_key),
+        Err(e) => {
+            tracing::error!("Failed to update server {} status to busy: {}", server_key, e);
+            return HttpResponse::InternalServerError().body("Failed to update server status.");
+        }
+    }
+
+    ACTIVE_SESSIONS.inc();
+
+    let response = CreateSessionResponse {
+        server_address: format!("ws://{}/game?session_id={}", bind_address, session_id),
+        session_id,
+    };
+
+    HttpResponse::Ok().json(response)
 }

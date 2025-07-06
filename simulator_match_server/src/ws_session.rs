@@ -1,5 +1,5 @@
 use crate::{
-    matchmaker::actor::{DequeuePlayer, EnqueuePlayer},
+    matchmaker::actor::{CancelLoadingSession, DequeuePlayer, EnqueuePlayer, HandleLoadingComplete},
     protocol::{ClientMessage, ServerMessage},
     Matchmaker,
 };
@@ -18,7 +18,8 @@ const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
 
 pub struct MatchmakingSession {
     player_id: Option<Uuid>,
-    game_mode: Option<String>, // Store the game mode for dequeueing
+    game_mode: Option<String>,
+    loading_session_id: Option<Uuid>, // 현재 참여 중인 로딩 세션 ID
     hb: Instant,
     matchmaker_addr: Addr<Matchmaker>,
     redis_client: RedisClient,
@@ -29,6 +30,7 @@ impl MatchmakingSession {
         Self {
             player_id: None,
             game_mode: None,
+            loading_session_id: None,
             hb: Instant::now(),
             matchmaker_addr,
             redis_client,
@@ -56,12 +58,25 @@ impl Actor for MatchmakingSession {
     }
 
     fn stopping(&mut self, _: &mut Self::Context) -> Running {
-        if let (Some(player_id), Some(game_mode)) = (self.player_id, self.game_mode.clone()) {
-            info!("Player {} disconnected, sending dequeue request for game mode {}", player_id, game_mode);
-            self.matchmaker_addr.do_send(DequeuePlayer {
-                player_id,
-                game_mode,
-            });
+        // 세션이 종료될 때, 상태에 따라 적절한 정리 메시지를 보냅니다.
+        match (self.player_id, self.loading_session_id, self.game_mode.clone()) {
+            // 로딩 중에 연결이 끊긴 경우
+            (Some(player_id), Some(loading_session_id), _) => {
+                info!("Player {} disconnected during loading session {}, sending cancel request.", player_id, loading_session_id);
+                self.matchmaker_addr.do_send(CancelLoadingSession {
+                    player_id,
+                    loading_session_id,
+                });
+            },
+            // 단순 대기열에만 있다가 연결이 끊긴 경우
+            (Some(player_id), None, Some(game_mode)) => {
+                info!("Player {} disconnected from queue, sending dequeue request for game mode {}", player_id, game_mode);
+                self.matchmaker_addr.do_send(DequeuePlayer {
+                    player_id,
+                    game_mode,
+                });
+            },
+            _ => {}
         }
         info!("MatchmakingSession for player {:?} is stopping.", self.player_id);
         Running::Stop
@@ -72,6 +87,10 @@ impl Handler<ServerMessage> for MatchmakingSession {
     type Result = ();
 
     fn handle(&mut self, msg: ServerMessage, ctx: &mut Self::Context) {
+        // 서버로부터 메시지를 받으면, 로딩 세션 ID를 상태에 저장합니다.
+        if let ServerMessage::StartLoading { loading_session_id } = &msg {
+            self.loading_session_id = Some(*loading_session_id);
+        }
         ctx.text(serde_json::to_string(&msg).unwrap());
     }
 }
@@ -103,7 +122,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MatchmakingSessio
                         let matchmaker_addr = self.matchmaker_addr.clone();
 
                         let future = async move {
-                            let mut conn = match redis_client.get_async_connection().await {
+                            let conn = match redis_client.get_async_connection().await {
                                 Ok(c) => c,
                                 Err(e) => {
                                     error!("Failed to get redis connection: {}", e);
@@ -120,13 +139,11 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MatchmakingSessio
                                 return;
                             }
 
-                            // Now that we are subscribed, we can safely enqueue
                             matchmaker_addr.do_send(EnqueuePlayer {
                                 player_id,
                                 game_mode,
                             });
 
-                            // Start listening for messages
                             let mut stream = pubsub.on_message();
                             while let Some(msg) = stream.next().await {
                                 let payload: String = match msg.get_payload() {
@@ -139,6 +156,17 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MatchmakingSessio
                             }
                         };
                         ctx.spawn(fut::wrap_future(future));
+                    }
+                    Ok(ClientMessage::LoadingComplete { loading_session_id }) => {
+                        if let Some(player_id) = self.player_id {
+                            info!("Player {} finished loading for session {}", player_id, loading_session_id);
+                            self.matchmaker_addr.do_send(HandleLoadingComplete {
+                                player_id,
+                                loading_session_id,
+                            });
+                        } else {
+                            warn!("Received LoadingComplete from a session with no player_id.");
+                        }
                     }
                     Err(e) => {
                         warn!("Failed to parse client message: {}", e);
