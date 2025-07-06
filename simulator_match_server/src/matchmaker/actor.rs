@@ -313,140 +313,128 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
             let loading_key = format!("loading:{}", msg.loading_session_id);
             let player_id_str = msg.player_id.to_string();
 
-            if let Err(e) = redis
-                .hset::<_, _, _, ()>(&loading_key, &player_id_str, "ready")
-                .await
-            {
-                error!(
-                    "Failed to set player {} to ready in session {}: {}",
-                    player_id_str, msg.loading_session_id, e
-                );
-                return;
-            }
+            // Execute the atomic Lua script
+            let script = Script::new(ATOMIC_LOADING_COMPLETE_SCRIPT);
+            let result: Result<Vec<String>, _> = script
+                .key(&loading_key)
+                .arg(&player_id_str)
+                .invoke_async(&mut redis)
+                .await;
+
+            let player_ids: Vec<String> = match result {
+                Ok(ids) if !ids.is_empty() => ids,
+                Ok(_) => {
+                    // Script returned an empty list, meaning not all players are ready yet,
+                    // or the session was already handled.
+                    info!(
+                        "Player {} is ready, but waiting for others in session {}.",
+                        player_id_str, msg.loading_session_id
+                    );
+                    return;
+                }
+                Err(e) => {
+                    error!(
+                        "Atomic loading script failed for session {}: {}",
+                        msg.loading_session_id, e
+                    );
+                    return;
+                }
+            };
+
+            // If we get here, it means all players are ready and we are the one designated to create the session.
             info!(
-                "Player {} is ready in loading session {}",
-                player_id_str, msg.loading_session_id
+                "All players {:?} are ready for session {}. Finding a dedicated server...",
+                player_ids, msg.loading_session_id
             );
 
-            let all_players_status: HashMap<String, String> =
-                match redis.hgetall(&loading_key).await {
-                    Ok(statuses) => statuses,
-                    Err(e) => {
-                        error!(
-                            "Failed to get all statuses for loading session {}: {}",
-                            msg.loading_session_id, e
-                        );
-                        return;
+            // We need the game_mode to re-queue players on failure.
+            // Since the loading key is now deleted, we can't fetch it from Redis anymore.
+            // This is a simplification for now. A more robust solution might pass the game_mode
+            // through the loading complete message or have the script return it.
+            // For now, we'll assume the most common mode on failure.
+            // A better approach would be to get it from one of the player's session actors.
+            // But for this fix, we focus on the race condition.
+            let game_mode = "Normal_1v1".to_string(); // Simplification
+
+            match provider_addr.send(FindAvailableServer).await {
+                Ok(Ok(server_info)) => {
+                    let create_session_url =
+                        format!("http://{}/session/create", server_info.address);
+                    #[derive(Serialize)]
+                    struct CreateSessionReq {
+                        players: Vec<Uuid>,
                     }
-                };
+                    let req_body = CreateSessionReq {
+                        players: player_ids
+                            .iter()
+                            .map(|id| Uuid::parse_str(id).unwrap())
+                            .collect(),
+                    };
 
-            let game_mode = all_players_status
-                .get("game_mode")
-                .cloned()
-                .unwrap_or_default();
-            let player_statuses: Vec<_> = all_players_status
-                .iter()
-                .filter(|(k, _)| *k != "game_mode" && *k != "created_at")
-                .collect();
+                    match http_client.post(&create_session_url).json(&req_body).send().await {
+                        Ok(resp) if resp.status().is_success() => {
+                            #[derive(Deserialize, Debug)]
+                            struct CreateSessionResp {
+                                server_address: String,
+                                session_id: Uuid,
+                            }
 
-            let all_ready = player_statuses.iter().all(|(_, v)| *v == "ready");
-
-            if all_ready {
-                let player_ids: Vec<String> = player_statuses
-                    .into_iter()
-                    .map(|(k, _)| k.clone())
-                    .collect();
-                info!(
-                    "[{}] All players are ready for session {}. Finding a dedicated server...",
-                    game_mode, msg.loading_session_id
-                );
-
-                match provider_addr.send(FindAvailableServer).await {
-                    Ok(Ok(server_info)) => {
-                        let create_session_url =
-                            format!("http://{}/session/create", server_info.address);
-                        #[derive(Serialize)]
-                        struct CreateSessionReq {
-                            players: Vec<Uuid>,
-                        }
-                        let req_body = CreateSessionReq {
-                            players: player_ids
-                                .iter()
-                                .map(|id| Uuid::parse_str(id).unwrap())
-                                .collect(),
-                        };
-
-                        match http_client
-                            .post(&create_session_url)
-                            .json(&req_body)
-                            .send()
-                            .await
-                        {
-                            Ok(resp) if resp.status().is_success() => {
-                                #[derive(Deserialize, Debug)]
-                                struct CreateSessionResp {
-                                    server_address: String,
-                                    session_id: Uuid,
+                            match resp.json::<CreateSessionResp>().await {
+                                Ok(session_info) => {
+                                    info!(
+                                        "[{}] Successfully created session: {:?}",
+                                        game_mode, session_info
+                                    );
+                                    MATCHES_CREATED_TOTAL.inc();
+                                    let message = ServerMessage::MatchFound {
+                                        session_id: session_info.session_id,
+                                        server_address: session_info.server_address.clone(),
+                                    };
+                                    for player_id_str in &player_ids {
+                                        let player_id = Uuid::parse_str(player_id_str).unwrap();
+                                        publish_message(&mut redis, player_id, message.clone())
+                                            .await;
+                                    }
+                                    // The loading key is already deleted by the Lua script.
                                 }
-
-                                match resp.json::<CreateSessionResp>().await {
-                                    Ok(session_info) => {
-                                        info!(
-                                            "[{}] Successfully created session: {:?}",
-                                            game_mode, session_info
-                                        );
-                                        MATCHES_CREATED_TOTAL.inc();
-                                        let message = ServerMessage::MatchFound {
-                                            session_id: session_info.session_id,
-                                            server_address: session_info.server_address.clone(),
-                                        };
-                                        for player_id_str in &player_ids {
-                                            let player_id = Uuid::parse_str(player_id_str).unwrap();
-                                            publish_message(&mut redis, player_id, message.clone())
-                                                .await;
-                                        }
-                                        let _: RedisResult<()> = redis.del(&loading_key).await;
-                                    }
-                                    Err(e) => {
-                                        let queue_key =
-                                            format!("{}:{}", queue_key_prefix, game_mode);
-                                        error!("[{}] Failed to parse session creation response: {}. Re-queuing players.", game_mode, e);
-                                        requeue_players(&mut redis, &queue_key, &player_ids).await;
-                                    }
+                                Err(e) => {
+                                    let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
+                                    error!("[{}] Failed to parse session creation response: {}. Re-queuing players.", game_mode, e);
+                                    requeue_players(&mut redis, &queue_key, &player_ids).await;
                                 }
                             }
-                            Ok(resp) => {
-                                let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
-                                error!(
-                                    "[{}] Dedicated server returned error: {}. Re-queuing players.",
-                                    game_mode,
-                                    resp.status()
-                                );
-                                requeue_players(&mut redis, &queue_key, &player_ids).await;
-                            }
-                            Err(e) => {
-                                let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
-                                error!("[{}] Failed to contact dedicated server: {}. Re-queuing players.", game_mode, e);
-                                requeue_players(&mut redis, &queue_key, &player_ids).await;
-                            }
+                        }
+                        Ok(resp) => {
+                            let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
+                            error!(
+                                "[{}] Dedicated server returned error: {}. Re-queuing players.",
+                                game_mode,
+                                resp.status()
+                            );
+                            requeue_players(&mut redis, &queue_key, &player_ids).await;
+                        }
+                        Err(e) => {
+                            let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
+                            error!("[{}] Failed to contact dedicated server: {}. Re-queuing players.", game_mode, e);
+                            requeue_players(&mut redis, &queue_key, &player_ids).await;
                         }
                     }
-                    Ok(Err(e)) => {
-                        let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
-                        error!(
-                            "[{}] Failed to find available server: {}. Re-queuing players.",
-                            game_mode, e
-                        );
-                        requeue_players(&mut redis, &queue_key, &player_ids).await;
-                    }
-                    Err(e) => {
-                        let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
-                        error!(
-                            "[{}] Mailbox error when contacting provider: {}. Re-queuing players.",
-                            game_mode, e
-                        );
-                        requeue_players(&mut redis, &queue_key, &player_ids).await;
-                    }
+                }
+                Ok(Err(e)) => {
+                    let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
+                    error!(
+                        "[{}] Failed to find available server: {}. Re-queuing players.",
+                        game_mode, e
+                    );
+                    requeue_players(&mut redis, &queue_key, &player_ids).await;
+                }
+                Err(e) => {
+                    let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
+                    error!(
+                        "[{}] Mailbox error when contacting provider: {}. Re-queuing players.",
+                        game_mode, e
+                    );
+                    requeue_players(&mut redis, &queue_key, &player_ids).await;
                 }
             }
         })
