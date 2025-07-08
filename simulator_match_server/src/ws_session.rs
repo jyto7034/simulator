@@ -1,16 +1,15 @@
 use crate::{
-    matchmaker::actor::{CancelLoadingSession, DequeuePlayer, EnqueuePlayer, HandleLoadingComplete},
+    matchmaker::actor::{CancelLoadingSession, DequeuePlayer, EnqueuePlayer},
     protocol::{ClientMessage, ServerMessage},
-    Matchmaker,
+    pubsub::{Deregister, Register},
+    Matchmaker, SubscriptionManager,
 };
 use actix::{
-    fut, Actor, ActorContext, Addr, AsyncContext, Handler, Running, StreamHandler,
+    Actor, ActorContext, Addr, AsyncContext, Handler, Recipient, Running, StreamHandler,
 };
 use actix_web_actors::ws;
-use futures_util::stream::StreamExt;
-use redis::Client as RedisClient;
 use std::time::{Duration, Instant};
-use tracing::{error, info, warn};
+use tracing::{info, warn};
 use uuid::Uuid;
 
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(5);
@@ -19,21 +18,24 @@ const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
 pub struct MatchmakingSession {
     player_id: Option<Uuid>,
     game_mode: Option<String>,
-    loading_session_id: Option<Uuid>, // 현재 참여 중인 로딩 세션 ID
+    loading_session_id: Option<Uuid>,
     hb: Instant,
     matchmaker_addr: Addr<Matchmaker>,
-    redis_client: RedisClient,
+    sub_manager: Recipient<Register>,
 }
 
 impl MatchmakingSession {
-    pub fn new(matchmaker_addr: Addr<Matchmaker>, redis_client: RedisClient) -> Self {
+    pub fn new(
+        matchmaker_addr: Addr<Matchmaker>,
+        sub_manager: Recipient<Register>,
+    ) -> Self {
         Self {
             player_id: None,
             game_mode: None,
             loading_session_id: None,
             hb: Instant::now(),
             matchmaker_addr,
-            redis_client,
+            sub_manager,
         }
     }
 
@@ -58,36 +60,40 @@ impl Actor for MatchmakingSession {
     }
 
     fn stopping(&mut self, _: &mut Self::Context) -> Running {
-        // 세션이 종료될 때, 상태에 따라 적절한 정리 메시지를 보냅니다.
-        match (self.player_id, self.loading_session_id, self.game_mode.clone()) {
-            // 로딩 중에 연결이 끊긴 경우
-            (Some(player_id), Some(loading_session_id), _) => {
-                info!("Player {} disconnected during loading session {}, sending cancel request.", player_id, loading_session_id);
-                self.matchmaker_addr.do_send(CancelLoadingSession {
-                    player_id,
-                    loading_session_id,
-                });
-            },
-            // 단순 대기열에만 있다가 연결이 끊긴 경우
-            (Some(player_id), None, Some(game_mode)) => {
-                info!("Player {} disconnected from queue, sending dequeue request for game mode {}", player_id, game_mode);
-                self.matchmaker_addr.do_send(DequeuePlayer {
-                    player_id,
-                    game_mode,
-                });
-            },
-            _ => {}
+        if let Some(player_id) = self.player_id {
+            // Unregister from the subscription manager
+            let deregister_msg = Deregister { player_id };
+            if let Err(e) = self.sub_manager.do_send(deregister_msg) {
+                warn!("Failed to send Deregister message: {}", e);
+            }
+
+            // Send appropriate cleanup messages to the matchmaker
+            match (self.loading_session_id, self.game_mode.clone()) {
+                (Some(loading_session_id), _) => {
+                    self.matchmaker_addr.do_send(CancelLoadingSession {
+                        player_id,
+                        loading_session_id,
+                    });
+                }
+                (None, Some(game_mode)) => {
+                    self.matchmaker_addr.do_send(DequeuePlayer {
+                        player_id,
+                        game_mode,
+                    });
+                }
+                _ => {}
+            }
         }
         info!("MatchmakingSession for player {:?} is stopping.", self.player_id);
         Running::Stop
     }
 }
 
+// This handler now receives messages forwarded from the SubscriptionManager
 impl Handler<ServerMessage> for MatchmakingSession {
     type Result = ();
 
     fn handle(&mut self, msg: ServerMessage, ctx: &mut Self::Context) {
-        // 서버로부터 메시지를 받으면, 로딩 세션 ID를 상태에 저장합니다.
         if let ServerMessage::StartLoading { loading_session_id } = &msg {
             self.loading_session_id = Some(*loading_session_id);
         }
@@ -112,55 +118,33 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MatchmakingSessio
                             warn!("Player {} tried to enqueue more than once.", player_id);
                             return;
                         }
-                        
-                        info!("Player {} requests queue for {}. Subscribing before enqueuing.", player_id, game_mode);
+
+                        info!("Player {} requests queue for {}.", player_id, game_mode);
                         self.player_id = Some(player_id);
                         self.game_mode = Some(game_mode.clone());
-                        
-                        let redis_client = self.redis_client.clone();
-                        let addr = ctx.address().clone();
-                        let matchmaker_addr = self.matchmaker_addr.clone();
 
-                        let future = async move {
-                            let conn = match redis_client.get_async_connection().await {
-                                Ok(c) => c,
-                                Err(e) => {
-                                    error!("Failed to get redis connection: {}", e);
-                                    addr.do_send(ServerMessage::Error { message: "Internal server error".into() });
-                                    return;
-                                }
-                            };
-                            let mut pubsub = conn.into_pubsub();
-                            let channel = format!("notifications:{}", player_id);
-                            
-                            if let Err(e) = pubsub.subscribe(&channel).await {
-                                error!("Failed to subscribe to channel {}: {}", channel, e);
-                                addr.do_send(ServerMessage::Error { message: "Internal server error".into() });
-                                return;
-                            }
-
-                            matchmaker_addr.do_send(EnqueuePlayer {
-                                player_id,
-                                game_mode,
-                            });
-
-                            let mut stream = pubsub.on_message();
-                            while let Some(msg) = stream.next().await {
-                                let payload: String = match msg.get_payload() {
-                                    Ok(p) => p,
-                                    Err(_) => continue,
-                                };
-                                if let Ok(server_msg) = serde_json::from_str::<ServerMessage>(&payload) {
-                                    addr.do_send(server_msg);
-                                }
-                            }
+                        // Register with the SubscriptionManager
+                        let register_msg = Register {
+                            player_id,
+                            addr: ctx.address().recipient(),
                         };
-                        ctx.spawn(fut::wrap_future(future));
+                        if let Err(e) = self.sub_manager.do_send(register_msg) {
+                             error!("Failed to send Register message: {}", e);
+                             ctx.stop();
+                             return;
+                        }
+
+                        // Send enqueue message to the matchmaker
+                        self.matchmaker_addr.do_send(EnqueuePlayer {
+                            player_id,
+                            game_mode,
+                        });
                     }
                     Ok(ClientMessage::LoadingComplete { loading_session_id }) => {
                         if let Some(player_id) = self.player_id {
                             info!("Player {} finished loading for session {}", player_id, loading_session_id);
-                            self.matchmaker_addr.do_send(HandleLoadingComplete {
+                            // This message is now named HandleLoadingComplete in matchmaker
+                            self.matchmaker_addr.do_send(crate::matchmaker::actor::HandleLoadingComplete {
                                 player_id,
                                 loading_session_id,
                             });

@@ -1,4 +1,8 @@
-use crate::{matchmaker::Matchmaker, provider::DedicatedServerProvider};
+use crate::{
+    matchmaker::Matchmaker,
+    provider::DedicatedServerProvider,
+    pubsub::SubscriptionManager,
+};
 use actix::Addr;
 use redis::Client as RedisClient;
 
@@ -7,6 +11,7 @@ pub mod env;
 pub mod matchmaker;
 pub mod protocol;
 pub mod provider;
+pub mod pubsub;
 pub mod util;
 pub mod ws_session;
 
@@ -14,10 +19,14 @@ pub mod ws_session;
 #[derive(Clone)]
 pub struct AppState {
     pub jwt_secret: String,
-    pub redis_client: RedisClient,
+    // redis_client는 이제 pubsub 액터에서만 사용되므로 AppState에서 제거
+    // pub redis_client: RedisClient,
     pub matchmaker_addr: Addr<Matchmaker>,
-    pub provider_addr: Addr<DedicatedServerProvider>,
+    // provider_addr는 Matchmaker가 내부적으로 소유하므로 AppState에서 제거
+    // pub provider_addr: Addr<DedicatedServerProvider>,
+    pub sub_manager_addr: Addr<SubscriptionManager>,
 }
+
 
 use std::{io, sync::Once};
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
