@@ -1,0 +1,6 @@
+  2025-07-08T21:08:22.208727Z  INFO  Logger initialized. Log file: client_0b47b974-ac4f-47e5-bf58-62b8c658933b.log
+    at test_client\src\main.rs:55 on main ThreadId(1)
+
+  2025-07-08T21:08:22.208783Z  INFO  [0b47b974-ac4f-47e5-bf58-62b8c658933b] Starting in NORMAL mode
+    at test_client\src\main.rs:223 on main ThreadId(1)
+

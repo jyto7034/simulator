@@ -1,14 +1,11 @@
-use crate::{
-    protocol::ServerMessage,
-    provider::{DedicatedServerProvider, FindAvailableServer},
-};
-use actix::{Actor, Addr, AsyncContext, Context, Handler, ResponseFuture};
+use crate::{protocol::ServerMessage, provider::FindAvailableServer};
+use actix::{Handler, ResponseFuture};
 use redis::aio::ConnectionManager;
 use redis::{AsyncCommands, RedisResult, Script};
 use serde::{Deserialize, Serialize};
 use simulator_metrics::{MATCHES_CREATED_TOTAL, PLAYERS_IN_QUEUE};
 use std::collections::HashMap;
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::time::{SystemTime, UNIX_EPOCH};
 use tracing::{error, info, warn};
 use uuid::Uuid;
 
@@ -282,7 +279,12 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                             .collect(),
                     };
 
-                    match http_client.post(&create_session_url).json(&req_body).send().await {
+                    match http_client
+                        .post(&create_session_url)
+                        .json(&req_body)
+                        .send()
+                        .await
+                    {
                         Ok(resp) if resp.status().is_success() => {
                             #[derive(Deserialize, Debug)]
                             struct CreateSessionResp {
@@ -325,7 +327,10 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                         }
                         Err(e) => {
                             let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
-                            error!("[{}] Failed to contact dedicated server: {}. Re-queuing players.", game_mode, e);
+                            error!(
+                                "[{}] Failed to contact dedicated server: {}. Re-queuing players.",
+                                game_mode, e
+                            );
                             requeue_players(&mut redis, &queue_key, &player_ids).await;
                         }
                     }

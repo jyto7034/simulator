@@ -1,7 +1,5 @@
 use crate::{
-    matchmaker::messages::{
-        CancelLoadingSession, DequeuePlayer, EnqueuePlayer, HandleLoadingComplete,
-    },
+    matchmaker::messages::{CancelLoadingSession, DequeuePlayer, EnqueuePlayer},
     protocol::{ClientMessage, ServerMessage},
     pubsub::{Deregister, Register},
     Matchmaker, SubscriptionManager,
@@ -144,11 +142,12 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MatchmakingSessio
                                 "Player {} finished loading for session {}",
                                 player_id, loading_session_id
                             );
-                            self.matchmaker_addr
-                                .do_send(crate::matchmaker::messages::HandleLoadingComplete {
+                            self.matchmaker_addr.do_send(
+                                crate::matchmaker::messages::HandleLoadingComplete {
                                     player_id,
                                     loading_session_id,
-                                });
+                                },
+                            );
                         } else {
                             warn!("Received LoadingComplete from a session with no player_id.");
                         }
