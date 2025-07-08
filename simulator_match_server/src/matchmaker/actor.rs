@@ -5,7 +5,7 @@ use crate::{
 };
 use actix::{Actor, Addr, AsyncContext, Context, Handler, Message, ResponseFuture};
 use redis::aio::ConnectionManager;
-use redis::{AsyncCommands, RedisResult, Script};
+use redis::{AsyncCommands, FromRedisValue, RedisResult, Script, ToRedisArgs, Value};
 use serde::{Deserialize, Serialize};
 use simulator_metrics::{MATCHES_CREATED_TOTAL, PLAYERS_IN_QUEUE};
 use std::collections::HashMap;
@@ -118,34 +118,32 @@ const ATOMIC_LOADING_COMPLETE_SCRIPT: &str = r#"
     local loading_key = KEYS[1]
     local player_id = ARGV[1]
 
-    -- Check if the loading session still exists
     if redis.call('EXISTS', loading_key) == 0 then
-        return {} -- Session already completed or cancelled
+        return {} -- Session already handled
     end
 
-    -- Set the current player's status to "ready"
     redis.call('HSET', loading_key, player_id, 'ready')
 
-    -- Check if all players are ready
     local players = redis.call('HGETALL', loading_key)
     local all_ready = true
     local player_ids = {}
-    local count = 0
+    local game_mode = ''
     for i=1, #players, 2 do
-        -- Filter out metadata fields
-        if players[i] ~= 'game_mode' and players[i] ~= 'created_at' then
+        if players[i] == 'game_mode' then
+            game_mode = players[i+1]
+        elseif players[i] ~= 'created_at' then
             if players[i+1] ~= 'ready' then
                 all_ready = false
                 break
             end
             table.insert(player_ids, players[i])
-            count = count + 1
         end
     end
 
-    -- If all are ready, delete the key and return the player IDs
-    if all_ready and count > 0 then
+    if all_ready and #player_ids > 0 then
         redis.call('DEL', loading_key)
+        -- Return game_mode as the first element
+        table.insert(player_ids, 1, game_mode)
         return player_ids
     else
         return {}
@@ -179,6 +177,28 @@ impl Handler<EnqueuePlayer> for Matchmaker {
     fn handle(&mut self, msg: EnqueuePlayer, _ctx: &mut Self::Context) -> Self::Result {
         let mut redis = self.redis.clone();
         let queue_key_prefix = self.settings.queue_key_prefix.clone();
+
+        // --- Problem #1 Fix: Validate game_mode ---
+        let is_valid_game_mode = self.settings.game_modes.iter().any(|m| m.id == msg.game_mode);
+        if !is_valid_game_mode {
+            let player_id = msg.player_id;
+            return Box::pin(async move {
+                warn!(
+                    "Player {} tried to enqueue for invalid game mode: {}",
+                    player_id, msg.game_mode
+                );
+                publish_message(
+                    &mut redis,
+                    player_id,
+                    ServerMessage::Error {
+                        message: format!("Invalid game mode: {}", msg.game_mode),
+                    },
+                )
+                .await;
+            });
+        }
+        // --- End of Fix ---
+
         Box::pin(async move {
             let player_id_str = msg.player_id.to_string();
             let queue_key = format!("{}:{}", queue_key_prefix, msg.game_mode);
@@ -263,18 +283,12 @@ impl Handler<TryMatch> for Matchmaker {
             let required_players = game_mode_settings.required_players;
 
             if game_mode_settings.use_mmr_matching {
-                // TODO: MMR 기반 매칭 로직 구현
-                // 현재는 단순 매칭 로직을 사용하지만, 향후 이 분기 내에
-                // MMR 값에 따라 플레이��를 정렬하고, 비슷한 MMR을 가진
-                // 플레이어들을 매칭시키는 로직을 추가할 수 있습니다.
-                // 예: ZRANGEBYSCORE, ZPOPMAX 등의 Redis 명령어를 활용
                 warn!(
                     "MMR-based matching for '{}' is not yet implemented. Falling back to simple matching.",
                     game_mode_settings.id
                 );
             }
 
-            // 공통 매칭 로직 (현재는 MMR 사용 여부와 관계없이 동일)
             let script = Script::new(ATOMIC_MATCH_SCRIPT);
             let player_ids: Vec<String> = match script
                 .key(&queue_key)
@@ -304,7 +318,6 @@ impl Handler<TryMatch> for Matchmaker {
                     players_map.insert(player_id.clone(), "loading".to_string());
                 }
                 players_map.insert("game_mode".to_string(), game_mode_settings.id.clone());
-                // 타임아웃 처리를 위해 생성 시간을 기록합니다.
                 let current_timestamp = SystemTime::now()
                     .duration_since(UNIX_EPOCH)
                     .unwrap()
@@ -351,7 +364,6 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
             let loading_key = format!("loading:{}", msg.loading_session_id);
             let player_id_str = msg.player_id.to_string();
 
-            // Execute the atomic Lua script
             let script = Script::new(ATOMIC_LOADING_COMPLETE_SCRIPT);
             let result: Result<Vec<String>, _> = script
                 .key(&loading_key)
@@ -359,11 +371,9 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                 .invoke_async(&mut redis)
                 .await;
 
-            let player_ids: Vec<String> = match result {
+            let mut script_result: Vec<String> = match result {
                 Ok(ids) if !ids.is_empty() => ids,
                 Ok(_) => {
-                    // Script returned an empty list, meaning not all players are ready yet,
-                    // or the session was already handled.
                     info!(
                         "Player {} is ready, but waiting for others in session {}.",
                         player_id_str, msg.loading_session_id
@@ -379,20 +389,13 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                 }
             };
 
-            // If we get here, it means all players are ready and we are the one designated to create the session.
+            let game_mode = script_result.remove(0);
+            let player_ids = script_result;
+
             info!(
                 "All players {:?} are ready for session {}. Finding a dedicated server...",
                 player_ids, msg.loading_session_id
             );
-
-            // We need the game_mode to re-queue players on failure.
-            // Since the loading key is now deleted, we can't fetch it from Redis anymore.
-            // This is a simplification for now. A more robust solution might pass the game_mode
-            // through the loading complete message or have the script return it.
-            // For now, we'll assume the most common mode on failure.
-            // A better approach would be to get it from one of the player's session actors.
-            // But for this fix, we focus on the race condition.
-            let game_mode = "Normal_1v1".to_string(); // Simplification
 
             match provider_addr.send(FindAvailableServer).await {
                 Ok(Ok(server_info)) => {
@@ -409,12 +412,7 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                             .collect(),
                     };
 
-                    match http_client
-                        .post(&create_session_url)
-                        .json(&req_body)
-                        .send()
-                        .await
-                    {
+                    match http_client.post(&create_session_url).json(&req_body).send().await {
                         Ok(resp) if resp.status().is_success() => {
                             #[derive(Deserialize, Debug)]
                             struct CreateSessionResp {
@@ -438,7 +436,6 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                                         publish_message(&mut redis, player_id, message.clone())
                                             .await;
                                     }
-                                    // The loading key is already deleted by the Lua script.
                                 }
                                 Err(e) => {
                                     let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
@@ -458,10 +455,7 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                         }
                         Err(e) => {
                             let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
-                            error!(
-                                "[{}] Failed to contact dedicated server: {}. Re-queuing players.",
-                                game_mode, e
-                            );
+                            error!("[{}] Failed to contact dedicated server: {}. Re-queuing players.", game_mode, e);
                             requeue_players(&mut redis, &queue_key, &player_ids).await;
                         }
                     }
@@ -487,10 +481,6 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
     }
 }
 
-// TODO
-// (심각) 존재하지 않는 게임 모드로 플레이어가 고립되는 문제
-// (심각) 게임 서버 할당 실패 시 플레이어가 잘못된 큐로 돌아가는 문제
-// (중요) 서버 부하 증가 시 성능 저하를 유발하는 KEYS 명령어 사용
 impl Handler<CancelLoadingSession> for Matchmaker {
     type Result = ResponseFuture<()>;
     fn handle(&mut self, msg: CancelLoadingSession, _ctx: &mut Self::Context) -> Self::Result {
