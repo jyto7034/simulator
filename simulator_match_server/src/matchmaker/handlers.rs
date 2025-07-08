@@ -369,6 +369,16 @@ impl Handler<CancelLoadingSession> for Matchmaker {
                 msg.loading_session_id, msg.player_id
             );
 
+            // --- Problem #1 Fix: Change status instead of deleting ---
+            if let Err(e) = redis
+                .hset::<_, _, _, ()>(&loading_key, "status", "cancelled")
+                .await
+            {
+                error!("Failed to set loading session status to cancelled: {}", e);
+                // Continue anyway to try and re-queue players
+            }
+            // --- End of Fix ---
+
             let all_players_status: HashMap<String, String> = match redis
                 .hgetall::<_, HashMap<String, String>>(&loading_key)
                 .await
@@ -383,7 +393,8 @@ impl Handler<CancelLoadingSession> for Matchmaker {
                 }
             };
 
-            let _: RedisResult<()> = redis.del(&loading_key).await;
+            // Don't delete the key anymore, let it expire or be cleaned up by stale check
+            // let _: RedisResult<()> = redis.del(&loading_key).await;
 
             let game_mode = all_players_status
                 .get("game_mode")
@@ -398,6 +409,7 @@ impl Handler<CancelLoadingSession> for Matchmaker {
                     let k_str = k.as_str();
                     k_str != "game_mode"
                         && k_str != "created_at"
+                        && k_str != "status"
                         && k_str != disconnected_player_id_str
                 })
                 .cloned()

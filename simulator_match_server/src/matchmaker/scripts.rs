@@ -12,8 +12,13 @@ pub(super) const ATOMIC_LOADING_COMPLETE_SCRIPT: &str = r#"
     local loading_key = KEYS[1]
     local player_id = ARGV[1]
 
+    -- Stop if session does not exist or is already cancelled/timed_out
     if redis.call('EXISTS', loading_key) == 0 then
-        return {} -- Session already handled
+        return {}
+    end
+    local status = redis.call('HGET', loading_key, 'status')
+    if status and status ~= 'loading' then
+        return {}
     end
 
     redis.call('HSET', loading_key, player_id, 'ready')
@@ -25,7 +30,7 @@ pub(super) const ATOMIC_LOADING_COMPLETE_SCRIPT: &str = r#"
     for i=1, #players, 2 do
         if players[i] == 'game_mode' then
             game_mode = players[i+1]
-        elseif players[i] ~= 'created_at' then
+        elseif players[i] ~= 'created_at' and players[i] ~= 'status' then
             if players[i+1] ~= 'ready' then
                 all_ready = false
                 break
@@ -36,7 +41,6 @@ pub(super) const ATOMIC_LOADING_COMPLETE_SCRIPT: &str = r#"
 
     if all_ready and #player_ids > 0 then
         redis.call('DEL', loading_key)
-        -- Return game_mode as the first element
         table.insert(player_ids, 1, game_mode)
         return player_ids
     else
