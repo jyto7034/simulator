@@ -1,12 +1,23 @@
-use actix::{Actor, Addr, Context, ContextFutureSpawner, Handler, Message, WrapFuture};
+use actix::{
+    Actor, ActorContext, Addr, AsyncContext, Context, ContextFutureSpawner, Handler, Message,
+    Running, WrapFuture,
+};
 use futures_util::stream::StreamExt;
 use redis::Client as RedisClient;
 use std::collections::HashMap;
+use std::time::Duration;
 use tracing::{error, info, warn};
 use uuid::Uuid;
 
 use crate::protocol::ServerMessage;
 use crate::ws_session::MatchmakingSession;
+
+const RECONNECT_DELAY: Duration = Duration::from_secs(5);
+
+// --- Messages for this module ---
+#[derive(Message)]
+#[rtype(result = "()")]
+struct Connect;
 
 // --- SubscriptionManager Actor ---
 
@@ -26,8 +37,6 @@ impl SubscriptionManager {
 impl Actor for SubscriptionManager {
     type Context = Context<Self>;
 }
-
-// --- Messages for SubscriptionManager ---
 
 #[derive(Message)]
 #[rtype(result = "()")]
@@ -49,11 +58,8 @@ pub struct ForwardMessage {
     pub message: ServerMessage,
 }
 
-// --- Handlers for SubscriptionManager ---
-
 impl Handler<Register> for SubscriptionManager {
     type Result = ();
-
     fn handle(&mut self, msg: Register, _ctx: &mut Context<Self>) -> Self::Result {
         info!("Player {} registered for notifications.", msg.player_id);
         self.sessions.insert(msg.player_id, msg.addr);
@@ -62,7 +68,6 @@ impl Handler<Register> for SubscriptionManager {
 
 impl Handler<Deregister> for SubscriptionManager {
     type Result = ();
-
     fn handle(&mut self, msg: Deregister, _ctx: &mut Context<Self>) -> Self::Result {
         info!("Player {} deregistered.", msg.player_id);
         self.sessions.remove(&msg.player_id);
@@ -71,10 +76,8 @@ impl Handler<Deregister> for SubscriptionManager {
 
 impl Handler<ForwardMessage> for SubscriptionManager {
     type Result = ();
-
     fn handle(&mut self, msg: ForwardMessage, _ctx: &mut Context<Self>) -> Self::Result {
         if let Some(recipient_addr) = self.sessions.get(&msg.player_id) {
-            // do_send for Addr does not return a result
             recipient_addr.do_send(msg.message);
         } else {
             warn!(
@@ -87,7 +90,6 @@ impl Handler<ForwardMessage> for SubscriptionManager {
 
 // --- RedisSubscriber Actor ---
 
-/// A dedicated actor that holds a single Redis Pub/Sub connection.
 pub struct RedisSubscriber {
     redis_client: RedisClient,
     manager_addr: Addr<SubscriptionManager>,
@@ -100,28 +102,29 @@ impl RedisSubscriber {
             manager_addr,
         }
     }
-}
 
-impl Actor for RedisSubscriber {
-    type Context = Context<Self>;
-
-    fn started(&mut self, ctx: &mut Self::Context) {
-        info!("RedisSubscriber actor started. Attempting to connect and subscribe...");
+    fn connect_and_subscribe(&self, ctx: &mut Context<Self>) {
+        info!("Attempting to connect and subscribe to Redis...");
         let client = self.redis_client.clone();
         let manager = self.manager_addr.clone();
+        let self_addr = ctx.address();
 
         async move {
             let conn = match client.get_async_connection().await {
-                Ok(c) => c,
+                Ok(c) => {
+                    info!("Successfully connected to Redis.");
+                    c
+                }
                 Err(e) => {
                     error!("RedisSubscriber failed to get connection: {}", e);
-                    // TODO: Implement retry logic
+                    self_addr.do_send(Connect); // Trigger reconnect
                     return;
                 }
             };
             let mut pubsub = conn.into_pubsub();
             if let Err(e) = pubsub.psubscribe("notifications:*").await {
                 error!("RedisSubscriber failed to psubscribe: {}", e);
+                self_addr.do_send(Connect); // Trigger reconnect
                 return;
             }
             info!("Successfully subscribed to 'notifications:*'");
@@ -145,8 +148,30 @@ impl Actor for RedisSubscriber {
                     }
                 }
             }
+            warn!("Redis Pub/Sub stream ended. Attempting to reconnect...");
+            self_addr.do_send(Connect); // Trigger reconnect
         }
         .into_actor(self)
         .wait(ctx);
+    }
+}
+
+impl Actor for RedisSubscriber {
+    type Context = Context<Self>;
+
+    fn started(&mut self, ctx: &mut Context<Self>) {
+        info!("RedisSubscriber actor started.");
+        self.connect_and_subscribe(ctx);
+    }
+}
+
+impl Handler<Connect> for RedisSubscriber {
+    type Result = ();
+
+    fn handle(&mut self, _msg: Connect, ctx: &mut Context<Self>) -> Self::Result {
+        info!("Reconnect message received. Waiting for a delay...");
+        ctx.run_later(RECONNECT_DELAY, |act, ctx| {
+            act.connect_and_subscribe(ctx);
+        });
     }
 }
