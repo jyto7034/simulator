@@ -1,5 +1,7 @@
 use crate::{
-    matchmaker::actor::{CancelLoadingSession, DequeuePlayer, EnqueuePlayer},
+    matchmaker::messages::{
+        CancelLoadingSession, DequeuePlayer, EnqueuePlayer, HandleLoadingComplete,
+    },
     protocol::{ClientMessage, ServerMessage},
     pubsub::{Deregister, Register},
     Matchmaker, SubscriptionManager,
@@ -92,10 +94,7 @@ impl Handler<ServerMessage> for MatchmakingSession {
     type Result = ();
 
     fn handle(&mut self, msg: ServerMessage, ctx: &mut Self::Context) {
-        if let ServerMessage::StartLoading {
-            loading_session_id,
-        } = &msg
-        {
+        if let ServerMessage::StartLoading { loading_session_id } = &msg {
             self.loading_session_id = Some(*loading_session_id);
         }
         ctx.text(serde_json::to_string(&msg).unwrap());
@@ -139,16 +138,14 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MatchmakingSessio
                             game_mode,
                         });
                     }
-                    Ok(ClientMessage::LoadingComplete {
-                        loading_session_id,
-                    }) => {
+                    Ok(ClientMessage::LoadingComplete { loading_session_id }) => {
                         if let Some(player_id) = self.player_id {
                             info!(
                                 "Player {} finished loading for session {}",
                                 player_id, loading_session_id
                             );
                             self.matchmaker_addr
-                                .do_send(crate::matchmaker::actor::HandleLoadingComplete {
+                                .do_send(crate::matchmaker::messages::HandleLoadingComplete {
                                     player_id,
                                     loading_session_id,
                                 });

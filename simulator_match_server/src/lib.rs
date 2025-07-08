@@ -1,10 +1,8 @@
 use crate::{
     matchmaker::Matchmaker,
-    provider::DedicatedServerProvider,
     pubsub::SubscriptionManager,
 };
 use actix::Addr;
-use redis::Client as RedisClient;
 
 pub mod auth;
 pub mod env;
@@ -14,6 +12,7 @@ pub mod provider;
 pub mod pubsub;
 pub mod util;
 pub mod ws_session;
+
 
 // 서버 전체에서 공유될 상태
 #[derive(Clone)]
@@ -26,7 +25,6 @@ pub struct AppState {
     // pub provider_addr: Addr<DedicatedServerProvider>,
     pub sub_manager_addr: Addr<SubscriptionManager>,
 }
-
 
 use std::{io, sync::Once};
 use tracing_appender::rolling::{RollingFileAppender, Rotation};

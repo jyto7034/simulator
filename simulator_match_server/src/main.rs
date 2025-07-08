@@ -4,7 +4,7 @@ use actix_web_actors::ws;
 use actix_web_prom::PrometheusMetricsBuilder;
 use match_server::{
     env::Settings,
-    matchmaker,
+    matchmaker::Matchmaker,
     provider::DedicatedServerProvider,
     pubsub::{RedisSubscriber, SubscriptionManager},
     setup_logger,
@@ -20,13 +20,10 @@ async fn matchmaking_ws_route(
     stream: web::Payload,
     state: web::Data<AppState>,
 ) -> Result<HttpResponse, Error> {
-    let session = MatchmakingSession::new(
-        state.matchmaker_addr.clone(),
-        state.sub_manager_addr.clone(),
-    );
+    let session =
+        MatchmakingSession::new(state.matchmaker_addr.clone(), state.sub_manager_addr.clone());
     ws::start(session, &req, stream)
 }
-
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -59,7 +56,7 @@ async fn main() -> std::io::Result<()> {
     let provider_addr = DedicatedServerProvider::new(redis_conn_manager.clone()).start();
     info!("DedicatedServerProvider actor started.");
 
-    let matchmaker_addr = matchmaker::Matchmaker::new(
+    let matchmaker_addr = Matchmaker::new(
         redis_conn_manager,
         settings.matchmaking.clone(),
         provider_addr.clone(),
@@ -86,3 +83,4 @@ async fn main() -> std::io::Result<()> {
     .run()
     .await
 }
+

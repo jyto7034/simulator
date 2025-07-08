@@ -1,12 +1,7 @@
-use actix::{
-    Actor, ActorContext, Addr, AsyncContext, Context, ContextFutureSpawner, Handler, Message,
-    Recipient, Running, StreamHandler, WrapFuture,
-};
+use actix::{Actor, Addr, Context, ContextFutureSpawner, Handler, Message, WrapFuture};
 use futures_util::stream::StreamExt;
-use redis::aio::ConnectionManager;
 use redis::Client as RedisClient;
 use std::collections::HashMap;
-use std::time::{Duration, Instant};
 use tracing::{error, info, warn};
 use uuid::Uuid;
 
