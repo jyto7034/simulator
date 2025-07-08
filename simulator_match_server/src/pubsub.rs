@@ -1,6 +1,6 @@
 use actix::{
-    Actor, ActorContext, Addr, AsyncContext, Context, Handler, Message, Recipient, Running,
-    StreamHandler,
+    Actor, ActorContext, Addr, AsyncContext, Context, ContextFutureSpawner, Handler, Message,
+    Recipient, Running, StreamHandler, WrapFuture,
 };
 use futures_util::stream::StreamExt;
 use redis::aio::ConnectionManager;
@@ -11,12 +11,13 @@ use tracing::{error, info, warn};
 use uuid::Uuid;
 
 use crate::protocol::ServerMessage;
+use crate::ws_session::MatchmakingSession;
 
 // --- SubscriptionManager Actor ---
 
 /// Manages the mapping between player_id and their WebSocket session actor address.
 pub struct SubscriptionManager {
-    sessions: HashMap<Uuid, Recipient<ServerMessage>>,
+    sessions: HashMap<Uuid, Addr<MatchmakingSession>>,
 }
 
 impl SubscriptionManager {
@@ -37,7 +38,7 @@ impl Actor for SubscriptionManager {
 #[rtype(result = "()")]
 pub struct Register {
     pub player_id: Uuid,
-    pub addr: Recipient<ServerMessage>,
+    pub addr: Addr<MatchmakingSession>,
 }
 
 #[derive(Message)]
@@ -77,14 +78,9 @@ impl Handler<ForwardMessage> for SubscriptionManager {
     type Result = ();
 
     fn handle(&mut self, msg: ForwardMessage, _ctx: &mut Context<Self>) -> Self::Result {
-        if let Some(recipient) = self.sessions.get(&msg.player_id) {
-            if let Err(e) = recipient.do_send(msg.message) {
-                warn!(
-                    "Failed to forward message to player {}: {}. Removing session.",
-                    msg.player_id, e
-                );
-                self.sessions.remove(&msg.player_id);
-            }
+        if let Some(recipient_addr) = self.sessions.get(&msg.player_id) {
+            // do_send for Addr does not return a result
+            recipient_addr.do_send(msg.message);
         } else {
             warn!(
                 "Could not find session for player {} to forward message.",

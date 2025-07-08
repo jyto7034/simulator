@@ -173,19 +173,6 @@ use_mmr_matching = false   # MMR 기반 매칭 사용 여부 (일반 모드)
 # id = "Ranked_1v1"
 # required_players = 2
 # use_mmr_matching = true    # 랭크 모드에서는 이 값을 true로 설정
-
-
-# 게임 모드 목록 (테이블 배열)
-# 각 [[matchmaking.game_modes]] 항목이 하나의 게임 모드를 정의합니다.
-[[matchmaking.game_modes]]
-id = "Normal_1v1"          # 게임 모드의 고유 ID
-required_players = 2       # 매칭에 필요한 인원
-use_mmr_matching = false   # MMR 기반 매칭 사용 여부 (일반 모드)
-
-# [[matchmaking.game_modes]]
-# id = "Ranked_1v1"
-# required_players = 2
-# use_mmr_matching = true    # 랭크 모드에서는 이 값을 true로 설정
 </file>
 
 <file path="config/production.toml">
@@ -1057,6 +1044,10 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
     }
 }
 
+// TODO
+// 존재하지 않는 게임 모드로 플레이어가 고립되는 문제
+// 게임 서버 할당 실패 시 플레이어가 잘못된 큐로 돌아가는 문제
+// 서버 부하 증가 시 성능 저하를 유발하는 KEYS 명령어 사용
 impl Handler<CancelLoadingSession> for Matchmaker {
     type Result = ResponseFuture<()>;
     fn handle(&mut self, msg: CancelLoadingSession, _ctx: &mut Self::Context) -> Self::Result {

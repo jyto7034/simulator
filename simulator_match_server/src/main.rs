@@ -18,14 +18,15 @@ use tracing::info;
 async fn matchmaking_ws_route(
     req: HttpRequest,
     stream: web::Payload,
-    state: web.Data<AppState>,
+    state: web::Data<AppState>,
 ) -> Result<HttpResponse, Error> {
     let session = MatchmakingSession::new(
         state.matchmaker_addr.clone(),
-        state.sub_manager_addr.clone().recipient(),
+        state.sub_manager_addr.clone(),
     );
     ws::start(session, &req, stream)
 }
+
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

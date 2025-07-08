@@ -10,7 +10,7 @@ use crate::{
     card::types::PlayerKind,
     enums::CLIENT_TIMEOUT,
     exception::{ConnectionError, GameError, StateError, SystemError},
-    game::{msg::{connection, system::Terminate}, state::GamePhase, GameActor},
+    game::{msg::system::Terminate, state::GamePhase, GameActor},
 };
 
 use super::GameEvent;
