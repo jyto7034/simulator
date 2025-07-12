@@ -1,6 +1,0 @@
-  2025-07-08T21:08:19.238807Z  INFO  Logger initialized. Log file: client_d2b0588a-5870-4aff-9518-c2eef489d354.log
-    at test_client\src\main.rs:55 on main ThreadId(1)
-
-  2025-07-08T21:08:19.238864Z  INFO  [d2b0588a-5870-4aff-9518-c2eef489d354] Starting in NORMAL mode
-    at test_client\src\main.rs:223 on main ThreadId(1)
-

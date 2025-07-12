@@ -30,7 +30,6 @@ pub struct GameModeSettings {
 pub struct MatchmakingSettings {
     pub tick_interval_seconds: u64,
     pub queue_key_prefix: String,
-    // 이제 게임 모드는 단순 문자열이 아닌, 자체 설정을 가진 구조체의 벡터가 됩니다.
     pub game_modes: Vec<GameModeSettings>,
 }
 

@@ -1,4 +1,5 @@
 use actix::{Actor, Context, Handler, Message, ResponseFuture};
+use futures_util::stream::StreamExt;
 use redis::{aio::ConnectionManager, AsyncCommands};
 use serde::Deserialize;
 use tracing::{info, warn};
@@ -46,15 +47,22 @@ impl Handler<FindAvailableServer> for DedicatedServerProvider {
         Box::pin(async move {
             info!("Finding an available dedicated server from Redis...");
 
-            // 1. 모든 서버 키를 가져옵니다.
-            let server_keys: Vec<String> = redis.keys("dedicated_server:*").await?;
-            if server_keys.is_empty() {
-                warn!("No dedicated server instances found in Redis.");
-                return Err(anyhow::anyhow!("No dedicated server instances registered."));
-            }
+            // SCAN 사용으로 Redis 블로킹 방지
+            let mut keys: Vec<String> = Vec::new();
+            match redis.scan_match::<_, String>("dedicated_server:*").await {
+                Ok(mut iter) => {
+                    while let Some(key) = iter.next().await {
+                        keys.push(key);
+                    }
+                }
+                Err(e) => {
+                    warn!("Failed to scan dedicated servers: {}", e);
+                    return Err(anyhow::anyhow!("Failed to scan dedicated servers: {}", e));
+                }
+            };
 
-            // 2. 각 서버의 상태를 확인하여 "idle"인 서버를 찾습니다.
-            for key in server_keys {
+            // 각 서버의 상태를 확인하여 "idle"인 서버를 찾습니다.
+            for key in keys {
                 let server_info_json: String = match redis.get(&key).await {
                     Ok(info) => info,
                     Err(e) => {
@@ -77,14 +85,14 @@ impl Handler<FindAvailableServer> for DedicatedServerProvider {
                     }
                 };
 
-                // 3. "idle" 상태인 서버를 찾으면 즉시 반환합니다.
+                // "idle" 상태인 서버를 찾으면 즉시 반환합니다.
                 if server_info.status == "idle" {
                     info!("Found idle server: {:?}", server_info);
                     return Ok(server_info);
                 }
             }
 
-            // 4. 모든 서버를 확인했지만 "idle" 상태인 서버가 없는 경우
+            // 모든 서버를 확인했지만 "idle" 상태인 서버가 없는 경우
             warn!("All dedicated servers are currently busy.");
             Err(anyhow::anyhow!("All dedicated servers are busy."))
         })

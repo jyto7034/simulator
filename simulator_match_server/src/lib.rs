@@ -1,7 +1,4 @@
-use crate::{
-    matchmaker::Matchmaker,
-    pubsub::SubscriptionManager,
-};
+use crate::{matchmaker::Matchmaker, pubsub::SubscriptionManager};
 use actix::Addr;
 
 pub mod auth;
@@ -12,7 +9,6 @@ pub mod provider;
 pub mod pubsub;
 pub mod util;
 pub mod ws_session;
-
 
 // 서버 전체에서 공유될 상태
 #[derive(Clone)]

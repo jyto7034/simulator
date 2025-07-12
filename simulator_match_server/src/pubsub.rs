@@ -1,6 +1,5 @@
 use actix::{
-    Actor, ActorContext, Addr, AsyncContext, Context, ContextFutureSpawner, Handler, Message,
-    Running, WrapFuture,
+    Actor, Addr, AsyncContext, Context, ContextFutureSpawner, Handler, Message, WrapFuture,
 };
 use futures_util::stream::StreamExt;
 use redis::Client as RedisClient;

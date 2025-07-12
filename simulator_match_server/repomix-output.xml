@@ -45,17 +45,21 @@ The content is organized as follows:
 Cargo.toml
 config/development.toml
 config/production.toml
-enhanced.md
+review.md
 src/auth.rs
 src/env.rs
 src/lib.rs
 src/main.rs
 src/matchmaker/actor.rs
-src/matchmaker/http.rs
+src/matchmaker/handlers.rs
+src/matchmaker/lock.rs
+src/matchmaker/messages.rs
 src/matchmaker/mod.rs
+src/matchmaker/scripts.rs
 src/protocol.rs
 src/provider.rs
-src/util.rs
+src/pubsub.rs
+src/util/mod.rs
 src/ws_session.rs
 </directory_structure>
 
@@ -112,6 +116,7 @@ description = "card backend"
 
 
 [dependencies]
+backoff = "0.4"
 tokio = { version = "1.15", features = ["full", "tracing"] }
 tracing = "0.1.41"
 tracing-appender = "0.2.3"
@@ -141,6 +146,7 @@ anyhow = "1.0"
 actix-web-prom = "0.10.0"
 simulator_metrics = { path = "../simulator_metrics" }
 chrono = { version = "0.4.41", features = ["serde"] }
+hex = "0.4.3"
 </file>
 
 <file path="config/development.toml">
@@ -181,89 +187,147 @@ log_level = "WARN"
 password = ""
 </file>
 
-<file path="enhanced.md">
-네, 좋은 질문입니다. 앞서 다른 LLM이 제안한 세 가지는 이 프로젝트의 뼈대를 바로잡는 훌륭한 리팩토링입니다. 거기에 더해, 시스템을 한 단계 더 발전시키고 실제 프로덕션 환경에 가깝게 만들 수 있는 몇 가지 사항을 첨언해 드리겠습니다.
+<file path="review.md">
+네, 알겠습니다. 분산락을 적용한 후의 `matchmaker/handlers.rs` 코드를 중심으로 전체적인 핸들러 로직을 꼼꼼하게 검토하고 평가해 드리겠습니다.
+
+### 종합 평가 (Overall Assessment)
+
+**아주 큰 진전입니다.** 가장 치명적이었던 **"유령 플레이어 발생 (Race Condition)" 문제가 `HandleLoadingComplete`와 `CancelLoadingSession`에 분산락을 적용함으로써 성공적으로 해결되었습니다.** 이는 시스템 안정성 측면에서 매우 중요한 성과입니다. `TryMatch`와 `CheckStaleLoadingSessions`에 락을 적용한 것 또한 여러 서버 인스턴스가 동시에 실행될 때의 안정성을 높이는 좋은 결정입니다.
+
+다만, 일부 핸들러에서는 분산락이 과도하게 적용되거나 불필요한 경우가 발견되었습니다. 이는 코드를 복잡하게 만들고 약간의 성능 저하를 일으킬 수 있습니다.
+
+| 핸들러 (Handler)            | 목적                              | 락 적용 평가 (Lock Correctness)    | 권장 사항                                          |
+| :-------------------------- | :-------------------------------- | :--------------------------------- | :------------------------------------------------- |
+| `HandleLoadingComplete`     | 로딩 완료 처리, 매치 생성 시도    | ✅ **매우 좋음 (Excellent)**       | 현행 유지                                          |
+| `CancelLoadingSession`      | 연결 끊김으로 인한 로딩 세션 취소 | ✅ **매우 좋음 (Excellent)**       | 현행 유지 (이전 대화에서 정리한 코드가 올바릅니다) |
+| `TryMatch`                  | 주기적인 매칭 시도                | ✅ **좋음 (Good)**                 | 현행 유지                                          |
+| `CheckStaleLoadingSessions` | 오래된 로딩 세션 정리             | ✅ **좋음 (Good)**                 | `KEYS`를 `SCAN`으로 시급히 교체해야 합니다.        |
+| `EnqueuePlayer`             | 플레이어를 매칭 큐에 추가         | ⚠️ **불필요 (Unnecessary)**        | **락 제거 권장**                                   |
+| `DequeuePlayer`             | 플레이어를 매칭 큐에서 제거       | ❌ **잘못된 사용 (Incorrect Use)** | **락 제거 권장**                                   |
 
 ---
 
-### 첨언 및 추가 개선 제안
+### 상세 분석
 
-기존 제안이 "좋은 코드로 만들기"에 집중했다면, 제 제안은 **"확장 가능하고 운영하기 좋은 서비스로 만들기"**에 조금 더 초점을 맞추겠습니다.
+#### 1. 잘 적용된 부분 (Excellent Use Cases)
 
-#### 1. 더 정교한 매치메이킹 로직 (MMR 기반 확장)
+**`Handler<HandleLoadingComplete>` 및 `Handler<CancelLoadingSession>`**
 
-현재 매치메이킹은 단순히 "큐에 2명이 모이면 매칭"하는 방식입니다. 실제 게임에서는 실력이 비슷한 플레이어끼리 매칭시켜주는 것이 핵심입니다.
+- **평가**: **완벽합니다.** 두 핸들러는 동일한 `loading:<session_id>` 리소스를 두고 경쟁하므로, `lock:loading:<session_id>` 라는 동일한 락 키를 사용하여 상호 배제(mutual exclusion)를 보장하는 것이 이 문제의 정석적인 해결책입니다. 어느 한쪽이 락을 획득하면 다른 쪽은 작업을 수행하지 않게 되어, 데이터 정합성이 100% 보장됩니다.
+- **결과**: `new_issues.md`에서 지적된 **가장 치명적인 버그 #1이 해결되었습니다.**
 
-- **현재의 한계:**
-  `ATOMIC_MATCH_SCRIPT`는 큐(Set)에서 순서 없이 N명을 추출(`SPOP`)합니다. 이는 실력(MMR)을 전혀 고려하지 않습니다. `config/development.toml`에 `initial_mmr_range`라는 설정이 있지만, 실제 로직에는 사용되지 않고 있습니다.
+**`Handler<TryMatch>`**
 
-- **개선 제안:**
+- **평가**: **좋은 사용 사례입니다.** 여러 서버 인스턴스가 매치메이킹을 수행할 때, 각 게임 모드(`lock:match:<game_mode>`)에 대해 하나의 인스턴스만 주기적인 매칭을 시도하도록 보장합니다. 이는 불필요한 Redis 부하를 줄이고, 여러 인스턴스가 동일한 플레이어 그룹을 동시에 매칭시키려는 미세한 경쟁 상태를 방지합니다.
+- **결과**: 다중 서버 환경에서의 안정성과 효율성이 향상되었습니다.
 
-  1.  **Redis Sorted Set (`ZSET`) 활용:** 플레이어를 큐에 넣을 때, 단순 `SADD`가 아닌 `ZADD`를 사용합니다. `ZADD queue:1v1_ranked <MMR> <player_id>` 와 같이 MMR을 score로 사용합니다.
-  2.  **MMR 범위 검색 로직 구현:** Lua 스크립트를 수정하여, 특정 MMR을 기준으로 `-50` ~ `+50` 범위 내의 플레이어를 찾는 로직(`ZRANGEBYSCORE`)을 구현합니다.
-  3.  **MMR 범위 확장:** "매칭 대기 시간"도 함께 고려합니다. 플레이어가 큐에 들어온 시간을 함께 저장하고, 대기 시간이 길어질수록(예: 30초 이상) 검색하는 MMR 범위를 점진적으로 확장(예: `-100` ~ `+100`)하는 로직을 추가합니다. 이는 "매칭 품질"과 "매칭 속도" 사이의 균형을 맞추는 핵심적인 기술입니다.
+**`Handler<CheckStaleLoadingSessions>`**
 
-- **기대 효과:**
-  사용자에게 훨씬 공정한 매치를 제공하여 게임 경험의 질을 높일 수 있습니다.
+- **평가**: **논리적으로 올바릅니다.** 정리 작업이 현재 활발하게 처리 중인(`HandleLoadingComplete` 또는 `CancelLoadingSession`이 락을 획득한) 세션을 건드리지 않도록 보호하는 역할을 훌륭하게 수행합니다.
+- **결과**: 시스템의 안정성이 더욱 향상되었습니다.
 
-#### 2. 확장성을 위한 Redis 커넥션 관리
+#### 2. 과도하거나 불필요한 부분 (Over-application and Unnecessary Use)
 
-현재 웹소켓 세션(`ws_session.rs`)에서 Redis Pub/Sub을 구독하는 방식은 확장성에 문제가 될 수 있습니다.
+**`Handler<EnqueuePlayer>` 및 `Handler<DequeuePlayer>`**
 
-- **현재의 한계:**
-  `MatchmakingSession`이 시작될 때마다 `redis_client.get_async_connection().await`를 호출하여 새로운 개별 커넥션을 생성합니다. 만약 동시 접속자가 수천 명에 이르면, 서버는 Redis와 수천 개의 개별 TCP 커넥션을 맺게 되어 서버와 Redis 양쪽에 심각한 부하를 유발합니다.
+- **문제점**: 이 두 핸들러에 적용된 락은 불필요하며 오히려 코드를 복잡하게 만듭니다.
+- **이유**:
 
-- **개선 제안:**
-  `main.rs`에서 이미 `redis::aio::ConnectionManager`라는 커넥션 풀을 생성했습니다. `MatchmakingSession`에 `RedisClient` 자체가 아니라 이 `ConnectionManager`의 복사본을 전달하세요. 그리고 세션 내에서 커넥션이 필요할 때마다 `conn_manager.get_connection().await`를 통해 풀에서 커넥션을 대여하고, 사용이 끝나면 풀에 자동으로 반납되도록 구현합니다.
+  1.  **Redis 명령어의 원자성(Atomicity)**: `Enqueue`에서 사용하는 `SADD` (Set Add)와 `Dequeue`에서 사용하는 `SREM` (Set Remove)은 Redis에서 **원자적으로 실행되는 명령어**입니다. 즉, 이 명령어 하나가 실행되는 동안 다른 명령어가 끼어들 수 없습니다. 여러 서버에서 동시에 `SADD`를 호출해도 데이터가 깨지지 않으며, 각 요청은 순차적으로 안전하게 처리됩니다.
+  2.  **불필요한 복잡성**: 락을 획득하고 해제하는 코드가 추가되어 가독성을 해치고, 락 획득 실패 시의 분기 처리가 로직을 불필요하게 복잡하게 만듭니다.
+  3.  **잘못된 사용 (`DequeuePlayer`)**: `DequeuePlayer`에서는 락 획득에 실패하면 경고를 로그로 남기고 "락 없이 그냥 진행"합니다. 이는 락의 목적 자체를 무의미하게 만듭니다. 만약 락이 정말 필요했다면 획득 실패 시 작업을 중단해야 하고, 필요 없다면 애초에 시도조차 하지 말아야 합니다.
 
-- **기대 효과:**
-  제한된 수의 커넥션을 효율적으로 재사용하여 수많은 동시 접속자를 안정적으로 처리할 수 있게 됩니다. 이는 서버의 확장성을 크게 향상시킵니다.
+- **권장 사항**: 이 두 핸들러에서는 **분산락 관련 코드를 모두 제거**하여 코드를 단순하고 명확하게 만드는 것이 좋습니다. Redis의 원자성만으로도 충분히 안전합니다.
 
-#### 3. 운영을 위한 관측 가능성(Observability) 확보
+---
 
-현재는 `tracing`을 이용한 로그만 남기고 있습니다. 실제 서비스를 운영하려면 시스템의 전반적인 상태를 한눈에 파악할 수 있는 지표(Metric)가 필수적입니다.
+### 남아있는 주요 문제점 (Remaining Critical Issues)
 
-- **현재의 한계:**
-  "현재 대기열에 몇 명이 있는지?", "지난 1시간 동안 매칭 성공률은 몇 %인지?"와 같은 질문에 답하려면 로그를 일일이 파싱해야 해서 매우 비효율적입니다.
+분산락이 잘 적용되었음에도 불구하고, `new_issues.md`에서 지적된 또 다른 심각한 문제가 아직 남아있습니다.
 
-- **개선 제안:**
-  `prometheus`나 `metrics` 같은 크레이트를 도입하여 주요 지표를 수집하고, `/metrics`와 같은 별도 엔드포인트를 통해 외부 모니터링 시스템(예: Prometheus, Grafana)이 이 지표를 수집해 가도록 구성합니다.
+**`KEYS` 명령어 사용 문제 (버그 #2)**
 
-  - **주요 모니터링 지표:**
-    - 게임 모드별 현재 대기자 수 (Gauge)
-    - 매칭 성공 및 실패 횟수 (Counter)
-    - 플레이어 평균 대기 시간 (Histogram)
-    - 활성화된 웹소켓 세션 수 (Gauge)
+- `CheckStaleLoadingSessions`와 `provider.rs`의 `FindAvailableServer` 핸들러에서 여전히 `KEYS` 명령어를 사용하고 있습니다.
+- **위험성**: Redis의 키 개수가 많아지면 `KEYS "pattern:*"` 명령어는 **Redis 서버 전체를 몇 초간 멈추게 할 수 있는 매우 위험한 작업**입니다. 이는 운영 환경에서 심각한 장애로 이어질 수 있습니다.
+- **해결책**: 반드시 커서(cursor) 기반의 반복자인 **`SCAN` 명령어로 교체**해야 합니다. `SCAN`은 전체 키를 한 번에 스캔하지 않고, 일부 키와 다음 반복을 위한 커서 값을 반환하므로 Redis 서버를 블로킹하지 않습니다.
 
-- **기대 효과:**
-  시스템의 상태와 성능을 실시간으로 시각화하고 이상 징후를 조기에 발견하여 장애에 신속하게 대응할 수 있습니다.
+### 수정 권장 사항
 
-#### 4. 인증(Authentication) 흐름 강화
+1.  **`EnqueuePlayer`와 `DequeuePlayer`에서 락 제거**
 
-`auth.rs`에 JWT를 검증하는 로직이 있지만, 웹소켓에서는 이 흐름이 명확하게 사용되지 않고 `ClientMessage::Enqueue`에서 클라이언트가 직접 `player_id`를 보내주는 구조입니다.
+    ```rust
+    // in src/matchmaker/handlers.rs
 
-- **현재의 한계:**
-  악의적인 사용자가 다른 사람의 `player_id`를 보내 매칭을 시도하는 등 보안에 취약할 수 있습니다.
+    // --- EnqueuePlayer 수정 ---
+    impl Handler<EnqueuePlayer> for Matchmaker {
+        type Result = ResponseFuture<()>;
+        fn handle(&mut self, msg: EnqueuePlayer, _ctx: &mut Self::Context) -> Self::Result {
+            let mut redis = self.redis.clone();
+            let queue_key_prefix = self.settings.queue_key_prefix.clone();
+            // ... (is_valid_game_mode 체크는 그대로 둡니다) ...
 
-- **개선 제안:**
+            Box::pin(async move {
+                let player_id_str = msg.player_id.to_string();
+                let queue_key = format!("{}:{}", queue_key_prefix, msg.game_mode);
 
-  1.  웹소켓 연결이 수립될 때, 첫 메시지로 인증 토큰(JWT)을 받습니다.
-  2.  서버는 토큰을 검증하고, 성공 시 토큰에 포함된 `sub`(사용자 ID)를 `MatchmakingSession` 액터의 상태에 안전하게 저장합니다.
-  3.  이후의 모든 요청(`Enqueue` 등)은 클라이언트가 보내는 ID가 아닌, **세션에 저장된 인증된 ID**를 사용하도록 변경합니다. `ClientMessage::Enqueue`에서는 `player_id` 필드를 제거합니다.
+                // 락 없이 바로 SADD 실행
+                let result: Result<i32, _> = redis.sadd(&queue_key, &player_id_str).await;
+                match result {
+                    Ok(count) if count > 0 => {
+                        info!("Player {} added to queue {}", player_id_str, queue_key);
+                        PLAYERS_IN_QUEUE.inc();
+                        publish_message(&mut redis, msg.player_id, ServerMessage::Queued).await;
+                    }
+                    // ... (이하 에러 처리 로직은 동일) ...
+                }
+            })
+        }
+    }
 
-- **기대 효과:**
-  인증된 사용자만 자신의 계정으로 매칭을 요청할 수 있도록 보장하여 시스템의 보안을 강화합니다.
+    // --- DequeuePlayer 수정 ---
+    impl Handler<DequeuePlayer> for Matchmaker {
+        type Result = ResponseFuture<()>;
+        fn handle(&mut self, msg: DequeuePlayer, _ctx: &mut Self::Context) -> Self::Result {
+            let mut redis = self.redis.clone();
+            let queue_key_prefix = self.settings.queue_key_prefix.clone();
+            Box::pin(async move {
+                let queue_key = format!("{}:{}", queue_key_prefix, msg.game_mode);
+                let player_id_str = msg.player_id.to_string();
 
-### 최종 요약
+                // 락 없이 바로 SREM 실행
+                let result: Result<i32, _> = redis.srem(&queue_key, &player_id_str).await;
+                match result {
+                    Ok(count) if count > 0 => {
+                        info!(
+                            "Player {} (disconnected) removed from queue {}",
+                            player_id_str, queue_key
+                        );
+                        PLAYERS_IN_QUEUE.dec();
+                    }
+                     // ... (이하 로직은 동일) ...
+                }
+            })
+        }
+    }
+    ```
 
-| 구분              | 기존 LLM의 제안 (코드 품질 개선) | 내 첨언 (서비스 품질 개선)                   |
-| :---------------- | :------------------------------- | :------------------------------------------- |
-| **아키텍처**      | `Matchmaker` 책임 분리           | MMR 기반의 정교한 매칭 로직 도입             |
-| **설정/유연성**   | 설정값 중앙 관리                 | Redis 커넥션 풀링을 통한 확장성 확보         |
-| **안정성/신뢰성** | 에러 처리 및 복구 로직 추가      | 관측 가능성(Metrics) 확보로 안정적 운영 지원 |
-| **보안**          | (언급 없음)                      | 웹소켓 통신에 명확한 인증 흐름 적용          |
+2.  **`KEYS`를 `SCAN`으로 교체 (필수)**
 
-다른 LLM의 제안이 코드의 내실을 다지는 훌륭한 첫걸음이라면, 제가 첨언한 내용들은 그 기반 위에서 실제 수많은 유저에게 안정적으로 서비스를 제공하기 위한 다음 단계라고 할 수 있습니다. 두 제안을 함께 고려하시면 훨씬 더 완성도 높은 시스템을 만드실 수 있을 겁니다.
+    예를 들어 `CheckStaleLoadingSessions`에서는 `redis.keys("loading:*")` 대신 다음과 같은 `SCAN` 루프를 사용해야 합니다.
+
+    ```rust
+    // 개념적 예시
+    use redis::AsyncIter;
+    // ...
+    let mut iter: AsyncIter<String> = redis.scan_match("loading:*").await?;
+    while let Some(key) = iter.next_item().await {
+        // ... 각 key에 대한 락 획득 및 처리 로직 ...
+    }
+    ```
+
+### 최종 결론
+
+분산락을 성공적으로 도입하여 **가장 시급했던 경쟁 상태 문제를 해결하셨습니다.** 이제 다음 단계로, 불필요한 락을 제거하여 코드를 정리하고, **남아있는 치명적인 `KEYS` 명령어 문제를 `SCAN`으로 교체**하는 작업에 집중하시면 훨씬 더 안정적이고 효율적인 시스템을 완성하실 수 있을 것입니다. 수고 많으셨습니다
 </file>
 
 <file path="src/auth.rs">
@@ -377,7 +441,6 @@ pub struct GameModeSettings {
 pub struct MatchmakingSettings {
     pub tick_interval_seconds: u64,
     pub queue_key_prefix: String,
-    // 이제 게임 모드는 단순 문자열이 아닌, 자체 설정을 가진 구조체의 벡터가 됩니다.
     pub game_modes: Vec<GameModeSettings>,
 }
 
@@ -403,15 +466,15 @@ impl Settings {
 </file>
 
 <file path="src/lib.rs">
-use crate::{matchmaker::Matchmaker, provider::DedicatedServerProvider};
+use crate::{matchmaker::Matchmaker, pubsub::SubscriptionManager};
 use actix::Addr;
-use redis::Client as RedisClient;
 
 pub mod auth;
 pub mod env;
 pub mod matchmaker;
 pub mod protocol;
 pub mod provider;
+pub mod pubsub;
 pub mod util;
 pub mod ws_session;
 
@@ -419,9 +482,12 @@ pub mod ws_session;
 #[derive(Clone)]
 pub struct AppState {
     pub jwt_secret: String,
-    pub redis_client: RedisClient,
+    // redis_client는 이제 pubsub 액터에서만 사용되므로 AppState에서 제거
+    // pub redis_client: RedisClient,
     pub matchmaker_addr: Addr<Matchmaker>,
-    pub provider_addr: Addr<DedicatedServerProvider>,
+    // provider_addr는 Matchmaker가 내부적으로 소유하므로 AppState에서 제거
+    // pub provider_addr: Addr<DedicatedServerProvider>,
+    pub sub_manager_addr: Addr<SubscriptionManager>,
 }
 
 use std::{io, sync::Once};
@@ -482,8 +548,13 @@ use actix_web::{get, web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
 use actix_web_prom::PrometheusMetricsBuilder;
 use match_server::{
-    env::Settings, matchmaker, provider::DedicatedServerProvider, setup_logger,
-    ws_session::MatchmakingSession, AppState,
+    env::Settings,
+    matchmaker::Matchmaker,
+    provider::DedicatedServerProvider,
+    pubsub::{RedisSubscriber, SubscriptionManager},
+    setup_logger,
+    ws_session::MatchmakingSession,
+    AppState,
 };
 use simulator_metrics::register_custom_metrics;
 use tracing::info;
@@ -495,7 +566,7 @@ async fn matchmaking_ws_route(
     state: web::Data<AppState>,
 ) -> Result<HttpResponse, Error> {
     let session =
-        MatchmakingSession::new(state.matchmaker_addr.clone(), state.redis_client.clone());
+        MatchmakingSession::new(state.matchmaker_addr.clone(), state.sub_manager_addr.clone());
     ws::start(session, &req, stream)
 }
 
@@ -505,13 +576,11 @@ async fn main() -> std::io::Result<()> {
     let settings = Settings::new().expect("Failed to load settings.");
     setup_logger();
 
-    // Prometheus 미들웨어 설정
     let prometheus = PrometheusMetricsBuilder::new("match_server")
         .endpoint("/metrics")
         .build()
         .unwrap();
 
-    // 공용 크레이트에서 정의한 커스텀 메트릭 등록
     register_custom_metrics(&prometheus.registry).expect("Failed to register custom metrics");
 
     let redis_client =
@@ -521,10 +590,18 @@ async fn main() -> std::io::Result<()> {
         .expect("Failed to create Redis connection manager");
     info!("Redis connection manager created.");
 
+    // --- Start New Pub/Sub Actors ---
+    let sub_manager_addr = SubscriptionManager::new().start();
+    info!("SubscriptionManager actor started.");
+
+    RedisSubscriber::new(redis_client.clone(), sub_manager_addr.clone()).start();
+    info!("RedisSubscriber actor started.");
+    // --- End of Start New Actors ---
+
     let provider_addr = DedicatedServerProvider::new(redis_conn_manager.clone()).start();
     info!("DedicatedServerProvider actor started.");
 
-    let matchmaker_addr = matchmaker::Matchmaker::new(
+    let matchmaker_addr = Matchmaker::new(
         redis_conn_manager,
         settings.matchmaking.clone(),
         provider_addr.clone(),
@@ -534,9 +611,8 @@ async fn main() -> std::io::Result<()> {
 
     let app_state = AppState {
         jwt_secret: settings.jwt.secret.clone(),
-        redis_client: redis_client.clone(),
         matchmaker_addr: matchmaker_addr.clone(),
-        provider_addr,
+        sub_manager_addr,
     };
 
     let bind_address = format!("{}:{}", settings.server.bind_address, settings.server.port);
@@ -544,7 +620,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
-            .wrap(prometheus.clone()) // Prometheus 미들웨어 추가
+            .wrap(prometheus.clone())
             .app_data(web::Data::new(app_state.clone()))
             .service(matchmaking_ws_route)
     })
@@ -555,29 +631,22 @@ async fn main() -> std::io::Result<()> {
 </file>
 
 <file path="src/matchmaker/actor.rs">
-use crate::{
-    env::GameModeSettings,
-    protocol::ServerMessage,
-    provider::{DedicatedServerProvider, FindAvailableServer},
-};
-use actix::{Actor, Addr, AsyncContext, Context, Handler, Message, ResponseFuture};
+use crate::provider::DedicatedServerProvider;
+use actix::{Actor, Addr, AsyncContext, Context};
 use redis::aio::ConnectionManager;
-use redis::{AsyncCommands, RedisResult, Script};
-use serde::{Deserialize, Serialize};
-use simulator_metrics::{MATCHES_CREATED_TOTAL, PLAYERS_IN_QUEUE};
-use std::collections::HashMap;
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use tracing::{error, info, warn};
-use uuid::Uuid;
+use std::time::Duration;
+use tracing::info;
 
-const LOADING_SESSION_TIMEOUT_SECONDS: u64 = 60;
+use super::messages::{CheckStaleLoadingSessions, TryMatch};
+
+pub(super) const LOADING_SESSION_TIMEOUT_SECONDS: u64 = 60;
 
 // --- Actor Definition ---
 pub struct Matchmaker {
-    redis: ConnectionManager,
-    http_client: reqwest::Client,
-    settings: crate::env::MatchmakingSettings,
-    provider_addr: Addr<DedicatedServerProvider>,
+    pub(super) redis: ConnectionManager,
+    pub(super) http_client: reqwest::Client,
+    pub(super) settings: crate::env::MatchmakingSettings,
+    pub(super) provider_addr: Addr<DedicatedServerProvider>,
 }
 
 impl Matchmaker {
@@ -619,95 +688,73 @@ impl Actor for Matchmaker {
         );
     }
 }
+</file>
 
-// --- Message Definitions ---
-#[derive(Message)]
-#[rtype(result = "()")]
-pub struct EnqueuePlayer {
-    pub player_id: Uuid,
-    pub game_mode: String,
-}
+<file path="src/matchmaker/handlers.rs">
+use crate::{protocol::ServerMessage, provider::FindAvailableServer};
+use actix::{Handler, ResponseFuture};
+use futures_util::stream::StreamExt;
+use redis::aio::ConnectionManager;
+use redis::{AsyncCommands, RedisResult, Script};
+use serde::{Deserialize, Serialize};
+use simulator_metrics::{MATCHES_CREATED_TOTAL, PLAYERS_IN_QUEUE};
+use std::collections::HashMap;
+use std::time::{SystemTime, UNIX_EPOCH};
+use tracing::{error, info, warn};
+use uuid::Uuid;
 
-#[derive(Message)]
-#[rtype(result = "()")]
-pub struct DequeuePlayer {
-    pub player_id: Uuid,
-    pub game_mode: String,
-}
+/*
+  1. 아키텍처 및 액터(Actor)의 역할
+   * Matchmaker 액터의 가장 핵심적인 책임은 무엇이며, DedicatedServerProvider 액터와는 어떤
+     관계를 맺고 있나요? 두 액터가 서로 통신하는 주된 이유는 무엇입니까?
+answer:
+    Matchmaker 액터는 started() 에서 run_interval 를 통해 주기적으로 TryMatch 메시지와 CheckStaleLoadingSessions 메시지를 처리합니다.
+    이는 매칭 요청을 처리하고 오래된 로딩 세션을 정리하는 책임을 가집니다.
+    매칭 성공 시, dedicated server를 찾아서 게임을 생성하는데, 이 때 dedicated server를 찾기 위해 DedicatedServerProvider 액터와 통신합니다.
 
-#[derive(Message)]
-#[rtype(result = "()")]
-pub struct HandleLoadingComplete {
-    pub player_id: Uuid,
-    pub loading_session_id: Uuid,
-}
+  2. 매치메이킹 핵심 로직
+   * 플레이어가 매칭을 요청(EnqueuePlayer)했을 때부터, 매치가 성사되어 로딩을 시작하라는
+     메시지(StartLoading)를 받기까지의 과정을 단계별로 설명해주세요. 이 과정에서 어떤 액터와
+     Redis 키(key)가 관련되나요?
+answer:
+    1. 먼저 게임 모드 유효성 검사를 실시합니다. 만약 유효하지 않다면 publish_message 함수를 통해 구독자에게 ServerMessage::Error 메시지를 발행합니다.
+    2. redis.sadd(&queue_key, &player_id_str).await; 함수를 통해 redis 에 원자적으로 k:queue, v:player_id_str 데이터 쌍을 추가합니다.
+    2-1. 만약 성공 한다면 ( Ok(count) )
+        - 플레이어가 큐에 추가되었다는 로그를 남기고, PLAYERS_IN_QUEUE 메트릭을 증가시킵니다.
+        - publish_message 함수를 통해 구독자에게 ServerMessage::Queued 메시지를 발행합니다.
+    2-2. 만약 실패한다면 ( Ok(_) )
+        - 플레이어가 이미 큐에 존재한다는 경고 로그를 남기고, publish_message 함수를 통해 구독자에게 ServerMessage::Error 메시지를 발행합니다.
+    2-3. 만약 redis.sadd 함수가 실패한다면 ( Err(e) )
+        - 에러 로그를 남기고, publish_message 함수를 통해 구독자에게 ServerMessage::Error 메시지를 발행합니다.
+    3. MatchMaker Actor 에서 주기적으로 수행되는 TryMatch 메시지의 Handler 가 수행됩니다.
+    4. lock 을 획득 후 ATOMIC_MATCH_SCRIPT 를 실행하여 redis 에서 매칭 대기중인 player_id 를 가져옵니다.
+    5.
 
-#[derive(Message)]
-#[rtype(result = "()")]
-pub struct CancelLoadingSession {
-    pub player_id: Uuid,
-    pub loading_session_id: Uuid,
-}
+  3. 상태 관리와 Redis
+   * 이 시스템에서 Redis는 여러 가지 중요한 상태를 관리합니다. '플레이어 대기열', '로딩 중인
+     세션', '전용 서버 목록' 이 세 가지를 관리하기 위해 각각 어떤 Redis 자료구조(Data
+     Structure)와 키(Key) 패턴이 사용되고 있나요?
 
-#[derive(Message, Clone)]
-#[rtype(result = "()")]
-struct TryMatch {
-    game_mode: GameModeSettings,
-}
+  4. 분산 환경 및 동시성 제어
+   * match_server가 여러 인스턴스로 실행될 수 있는 분산 환경을 가정해 보겠습니다. 두 개의 다른
+     서버 인스턴스가 정확히 같은 시간에 동일한 게임 모드의 매칭을 시도할 때, 플레이어들이
+     중복으로 매칭되는 문제를 방지하기 위해 어떤 장치가 마련되어 있나요?
 
-/// 오래된 로딩 세션을 정리하기 위한 내부 메시지입니다.
-#[derive(Message)]
-#[rtype(result = "()")]
-struct CheckStaleLoadingSessions;
+  5. 오류 처리 및 복원력
+   * 플레이어 그룹이 성공적으로 매칭되어 로딩 상태에 들어갔지만, 한 명의 플레이어가 로딩을
+     완료하지 못하고 타임아웃이 발생했다고 가정해봅시다.
+       * 시스템은 이 "오래된(stale)" 로딩 세션을 어떻게 감지하고 정리하나요?
+       * 남아있는 다른 플레이어들은 어떻게 처리되나요?
+*/
 
-// --- Lua Scripts ---
-const ATOMIC_MATCH_SCRIPT: &str = r#"
-    local queue_key = KEYS[1]
-    local required_players = tonumber(ARGV[1])
-    if redis.call('SCARD', queue_key) >= required_players then
-        return redis.call('SPOP', queue_key, required_players)
-    else
-        return {}
-    end
-"#;
+use super::{
+    actor::{Matchmaker, LOADING_SESSION_TIMEOUT_SECONDS},
+    lock::DistributedLock, // DistributedLock 임포트
+    messages::*,
+    scripts::{ATOMIC_LOADING_COMPLETE_SCRIPT, ATOMIC_MATCH_SCRIPT},
+};
 
-const ATOMIC_LOADING_COMPLETE_SCRIPT: &str = r#"
-    local loading_key = KEYS[1]
-    local player_id = ARGV[1]
-
-    -- Check if the loading session still exists
-    if redis.call('EXISTS', loading_key) == 0 then
-        return {} -- Session already completed or cancelled
-    end
-
-    -- Set the current player's status to "ready"
-    redis.call('HSET', loading_key, player_id, 'ready')
-
-    -- Check if all players are ready
-    local players = redis.call('HGETALL', loading_key)
-    local all_ready = true
-    local player_ids = {}
-    local count = 0
-    for i=1, #players, 2 do
-        -- Filter out metadata fields
-        if players[i] ~= 'game_mode' and players[i] ~= 'created_at' then
-            if players[i+1] ~= 'ready' then
-                all_ready = false
-                break
-            end
-            table.insert(player_ids, players[i])
-            count = count + 1
-        end
-    end
-
-    -- If all are ready, delete the key and return the player IDs
-    if all_ready and count > 0 then
-        redis.call('DEL', loading_key)
-        return player_ids
-    else
-        return {}
-    end
-"#;
+const LOCK_DURATION_MS: usize = 10_000; // 10초
 
 // --- Helper Functions ---
 async fn publish_message(redis: &mut ConnectionManager, player_id: Uuid, message: ServerMessage) {
@@ -720,6 +767,9 @@ async fn publish_message(redis: &mut ConnectionManager, player_id: Uuid, message
 
 async fn requeue_players(redis: &mut ConnectionManager, queue_key: &str, player_ids: &[String]) {
     warn!("Re-queuing players due to an error: {:?}", player_ids);
+    if player_ids.is_empty() {
+        return;
+    }
     PLAYERS_IN_QUEUE.add(player_ids.len() as i64);
     let result: Result<i32, _> = redis.sadd(queue_key, player_ids).await;
     if let Err(e) = result {
@@ -731,14 +781,43 @@ async fn requeue_players(redis: &mut ConnectionManager, queue_key: &str, player_
 }
 
 // --- Message Handlers ---
+
+/// EnqueuePlayer: 플레이어를 큐에 추가하는 메시지
 impl Handler<EnqueuePlayer> for Matchmaker {
     type Result = ResponseFuture<()>;
     fn handle(&mut self, msg: EnqueuePlayer, _ctx: &mut Self::Context) -> Self::Result {
         let mut redis = self.redis.clone();
         let queue_key_prefix = self.settings.queue_key_prefix.clone();
+
+        // 게임 모드 유효성 검사
+        let is_valid_game_mode = self
+            .settings
+            .game_modes
+            .iter()
+            .any(|m| m.id == msg.game_mode);
+        if !is_valid_game_mode {
+            let player_id = msg.player_id;
+            return Box::pin(async move {
+                warn!(
+                    "Player {} tried to enqueue for invalid game mode: {}",
+                    player_id, msg.game_mode
+                );
+                publish_message(
+                    &mut redis,
+                    player_id,
+                    ServerMessage::Error {
+                        message: format!("Invalid game mode: {}", msg.game_mode),
+                    },
+                )
+                .await;
+            });
+        }
+
         Box::pin(async move {
             let player_id_str = msg.player_id.to_string();
             let queue_key = format!("{}:{}", queue_key_prefix, msg.game_mode);
+
+            // Redis SADD는 원자적이므로 락 불필요
             let result: Result<i32, _> = redis.sadd(&queue_key, &player_id_str).await;
             match result {
                 Ok(count) if count > 0 => {
@@ -781,6 +860,8 @@ impl Handler<DequeuePlayer> for Matchmaker {
         Box::pin(async move {
             let queue_key = format!("{}:{}", queue_key_prefix, msg.game_mode);
             let player_id_str = msg.player_id.to_string();
+
+            // Redis SREM은 원자적이므로 락 불필요
             let result: Result<i32, _> = redis.srem(&queue_key, &player_id_str).await;
             match result {
                 Ok(count) if count > 0 => {
@@ -817,21 +898,35 @@ impl Handler<TryMatch> for Matchmaker {
 
         Box::pin(async move {
             let queue_key = format!("{}:{}", queue_key_prefix, game_mode_settings.id);
+            // 게임에 필요한 플레이어 수 입니다.
             let required_players = game_mode_settings.required_players;
+            let lock_key = format!("lock:match:{}", game_mode_settings.id);
 
             if game_mode_settings.use_mmr_matching {
-                // TODO: MMR 기반 매칭 로직 구현
-                // 현재는 단순 매칭 로직을 사용하지만, 향후 이 분기 내에
-                // MMR 값에 따라 플레이��를 정렬하고, 비슷한 MMR을 가진
-                // 플레이어들을 매칭시키는 로직을 추가할 수 있습니다.
-                // 예: ZRANGEBYSCORE, ZPOPMAX 등의 Redis 명령어를 활용
                 warn!(
                     "MMR-based matching for '{}' is not yet implemented. Falling back to simple matching.",
                     game_mode_settings.id
                 );
             }
 
-            // 공통 매칭 로직 (현재는 MMR 사용 여부와 관계없이 동일)
+            // --- 분산락 획득 ---
+            let lock = match DistributedLock::acquire(&mut redis, &lock_key, LOCK_DURATION_MS).await
+            {
+                Ok(Some(lock)) => lock,
+                Ok(None) => {
+                    // 다른 서버가 이미 매칭 처리 중이므로 건너뛰기
+                    return;
+                }
+                Err(e) => {
+                    error!(
+                        "Failed to acquire lock for matching in {}: {}",
+                        game_mode_settings.id, e
+                    );
+                    return;
+                }
+            };
+
+            // 필요한 플레이어 수 만큼 redis 에서 player id 를 가져옵니다.
             let script = Script::new(ATOMIC_MATCH_SCRIPT);
             let player_ids: Vec<String> = match script
                 .key(&queue_key)
@@ -842,6 +937,13 @@ impl Handler<TryMatch> for Matchmaker {
                 Ok(p) => p,
                 Err(e) => {
                     error!("Matchmaking script failed for queue {}: {}", queue_key, e);
+                    // 락 해제
+                    if let Err(lock_err) = lock.release(&mut redis).await {
+                        error!(
+                            "Failed to release lock for matching in {}: {}",
+                            game_mode_settings.id, lock_err
+                        );
+                    }
                     return;
                 }
             };
@@ -856,18 +958,18 @@ impl Handler<TryMatch> for Matchmaker {
                 let loading_session_id = Uuid::new_v4();
                 let loading_key = format!("loading:{}", loading_session_id);
 
-                let mut players_map: HashMap<String, String> = HashMap::new();
+                let mut players_map = HashMap::new();
                 for player_id in &player_ids {
                     players_map.insert(player_id.clone(), "loading".to_string());
                 }
                 players_map.insert("game_mode".to_string(), game_mode_settings.id.clone());
-                // 타임아웃 처리를 위해 생성 시간을 기록합니다.
                 let current_timestamp = SystemTime::now()
                     .duration_since(UNIX_EPOCH)
                     .unwrap()
                     .as_secs()
                     .to_string();
                 players_map.insert("created_at".to_string(), current_timestamp);
+                players_map.insert("status".to_string(), "loading".to_string());
 
                 let players_map_slice: Vec<_> = players_map.iter().collect();
                 if let Err(e) = redis
@@ -879,6 +981,13 @@ impl Handler<TryMatch> for Matchmaker {
                         e
                     );
                     requeue_players(&mut redis, &queue_key, &player_ids).await;
+                    // 락 해제
+                    if let Err(lock_err) = lock.release(&mut redis).await {
+                        error!(
+                            "Failed to release lock for matching in {}: {}",
+                            game_mode_settings.id, lock_err
+                        );
+                    }
                     return;
                 }
 
@@ -891,6 +1000,14 @@ impl Handler<TryMatch> for Matchmaker {
                     let player_id = Uuid::parse_str(player_id_str).unwrap();
                     publish_message(&mut redis, player_id, message.clone()).await;
                 }
+            }
+
+            // --- 분산락 해제 ---
+            if let Err(e) = lock.release(&mut redis).await {
+                error!(
+                    "Failed to release lock for matching in {}: {}",
+                    game_mode_settings.id, e
+                );
             }
         })
     }
@@ -907,8 +1024,28 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
         Box::pin(async move {
             let loading_key = format!("loading:{}", msg.loading_session_id);
             let player_id_str = msg.player_id.to_string();
+            let lock_key = format!("lock:{}", loading_key);
 
-            // Execute the atomic Lua script
+            // --- 분산락 획득 ---
+            let lock = match DistributedLock::acquire(&mut redis, &lock_key, LOCK_DURATION_MS).await
+            {
+                Ok(Some(lock)) => lock,
+                Ok(None) => {
+                    info!(
+                        "Could not acquire lock for session {}, another process is handling it.",
+                        msg.loading_session_id
+                    );
+                    return;
+                }
+                Err(e) => {
+                    error!(
+                        "Failed to acquire lock for session {}: {}",
+                        msg.loading_session_id, e
+                    );
+                    return;
+                }
+            };
+
             let script = Script::new(ATOMIC_LOADING_COMPLETE_SCRIPT);
             let result: Result<Vec<String>, _> = script
                 .key(&loading_key)
@@ -916,11 +1053,17 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                 .invoke_async(&mut redis)
                 .await;
 
-            let player_ids: Vec<String> = match result {
+            // --- 분산락 해제 ---
+            if let Err(e) = lock.release(&mut redis).await {
+                error!(
+                    "Failed to release lock for session {}: {}",
+                    msg.loading_session_id, e
+                );
+            }
+
+            let mut script_result: Vec<String> = match result {
                 Ok(ids) if !ids.is_empty() => ids,
                 Ok(_) => {
-                    // Script returned an empty list, meaning not all players are ready yet,
-                    // or the session was already handled.
                     info!(
                         "Player {} is ready, but waiting for others in session {}.",
                         player_id_str, msg.loading_session_id
@@ -936,20 +1079,13 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                 }
             };
 
-            // If we get here, it means all players are ready and we are the one designated to create the session.
+            let game_mode = script_result.remove(0);
+            let player_ids = script_result;
+
             info!(
                 "All players {:?} are ready for session {}. Finding a dedicated server...",
                 player_ids, msg.loading_session_id
             );
-
-            // We need the game_mode to re-queue players on failure.
-            // Since the loading key is now deleted, we can't fetch it from Redis anymore.
-            // This is a simplification for now. A more robust solution might pass the game_mode
-            // through the loading complete message or have the script return it.
-            // For now, we'll assume the most common mode on failure.
-            // A better approach would be to get it from one of the player's session actors.
-            // But for this fix, we focus on the race condition.
-            let game_mode = "Normal_1v1".to_string(); // Simplification
 
             match provider_addr.send(FindAvailableServer).await {
                 Ok(Ok(server_info)) => {
@@ -995,7 +1131,6 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                                         publish_message(&mut redis, player_id, message.clone())
                                             .await;
                                     }
-                                    // The loading key is already deleted by the Lua script.
                                 }
                                 Err(e) => {
                                     let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
@@ -1044,10 +1179,6 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
     }
 }
 
-// TODO
-// 존재하지 않는 게임 모드로 플레이어가 고립되는 문제
-// 게임 서버 할당 실패 시 플레이어가 잘못된 큐로 돌아가는 문제
-// 서버 부하 증가 시 성능 저하를 유발하는 KEYS 명령어 사용
 impl Handler<CancelLoadingSession> for Matchmaker {
     type Result = ResponseFuture<()>;
     fn handle(&mut self, msg: CancelLoadingSession, _ctx: &mut Self::Context) -> Self::Result {
@@ -1056,27 +1187,79 @@ impl Handler<CancelLoadingSession> for Matchmaker {
 
         Box::pin(async move {
             let loading_key = format!("loading:{}", msg.loading_session_id);
+            let lock_key = format!("lock:{}", loading_key);
+
             info!(
-                "Cancelling loading session {} due to player {} disconnection.",
+                "Attempting to cancel loading session {} due to player {} disconnection.",
                 msg.loading_session_id, msg.player_id
             );
 
+            // --- 1. 분산락 획득 ---
+            let lock = match DistributedLock::acquire(&mut redis, &lock_key, LOCK_DURATION_MS).await
+            {
+                Ok(Some(lock)) => lock,
+                Ok(None) => {
+                    info!("Could not acquire lock for cancellation on session {}, another process is handling it.", msg.loading_session_id);
+                    return;
+                }
+                Err(e) => {
+                    error!(
+                        "Failed to acquire lock for cancellation on session {}: {}",
+                        msg.loading_session_id, e
+                    );
+                    return;
+                }
+            };
+
+            // --- 2. 락 내부에서 세션 데이터 확인 ---
+            // 이 시점에 HandleLoadingComplete가 먼저 성공했다면, 키는 이미 존재하지 않을 것입니다.
             let all_players_status: HashMap<String, String> = match redis
                 .hgetall::<_, HashMap<String, String>>(&loading_key)
                 .await
             {
                 Ok(statuses) if !statuses.is_empty() => statuses,
                 _ => {
+                    // 세션이 존재하지 않으면(이미 처리되었으면) 아무것도 할 필요가 없습니다.
                     warn!(
-                        "Loading session {} not found or already cleaned up.",
+                        "Loading session {} already handled or cleaned up before cancellation.",
                         msg.loading_session_id
                     );
+                    // 락을 해제하고 종료합니다.
+                    if let Err(e) = lock.release(&mut redis).await {
+                        error!(
+                            "Failed to release lock for session {}: {}",
+                            msg.loading_session_id, e
+                        );
+                    }
                     return;
                 }
             };
 
-            let _: RedisResult<()> = redis.del(&loading_key).await;
+            // --- 3. 세션 키 삭제 (취소 로직의 핵심) ---
+            // 여기서 키를 삭제함으로써, 뒤늦게 도착할 수 있는 HandleLoadingComplete가 아무 작업도 못하게 만듭니다.
+            info!(
+                "Cancelling and deleting loading session {}.",
+                msg.loading_session_id
+            );
+            if let Err(e) = redis.del::<_, ()>(&loading_key).await {
+                // 키 삭제 실패는 크리티컬한 상황일 수 있으나, 로직은 계속 진행하여 플레이어 재입장을 시도합니다.
+                error!(
+                    "Failed to delete loading session key {}: {}",
+                    loading_key, e
+                );
+            }
 
+            // --- 4. 락 해제 ---
+            // 재입장 로직은 다른 플레이어에게 알림을 보내는 등 시간이 걸릴 수 있으므로,
+            // 임계 영역에 해당하는 키 삭제 후에는 가능한 한 빨리 락을 해제합니다.
+            if let Err(e) = lock.release(&mut redis).await {
+                error!(
+                    "Failed to release lock for session {}: {}",
+                    msg.loading_session_id, e
+                );
+            }
+
+            // --- 5. 나머지 플레이어 처리 ---
             let game_mode = all_players_status
                 .get("game_mode")
                 .cloned()
@@ -1090,6 +1273,7 @@ impl Handler<CancelLoadingSession> for Matchmaker {
                     let k_str = k.as_str();
                     k_str != "game_mode"
                         && k_str != "created_at"
+                        && k_str != "status"
                         && k_str != disconnected_player_id_str
                 })
                 .cloned()
@@ -1097,17 +1281,20 @@ impl Handler<CancelLoadingSession> for Matchmaker {
 
             if !players_to_requeue.is_empty() {
                 info!("Notifying remaining players and re-queuing them.");
+                let message = ServerMessage::Error {
+                    message:
+                        "A player disconnected during loading. You have been returned to the queue."
+                            .to_string(),
+                };
                 for player_id_str in &players_to_requeue {
                     let player_id = Uuid::parse_str(player_id_str).unwrap();
-                    let message = ServerMessage::Error { message: "A player disconnected during loading. You have been returned to the queue.".to_string() };
-                    publish_message(&mut redis, player_id, message).await;
+                    publish_message(&mut redis, player_id, message.clone()).await;
                 }
                 requeue_players(&mut redis, &queue_key, &players_to_requeue).await;
             }
         })
     }
 }
-
 impl Handler<CheckStaleLoadingSessions> for Matchmaker {
     type Result = ResponseFuture<()>;
 
@@ -1121,21 +1308,45 @@ impl Handler<CheckStaleLoadingSessions> for Matchmaker {
 
         Box::pin(async move {
             info!("Checking for stale loading sessions...");
-            let Ok(keys) = redis.keys::<_, Vec<String>>("loading:*").await else {
-                return;
+
+            // SCAN 사용으로 Redis 블로킹 방지
+            let mut keys: Vec<String> = Vec::new();
+            match redis.scan_match::<_, String>("loading:*").await {
+                Ok(mut iter) => {
+                    while let Some(key) = iter.next().await {
+                        keys.push(key);
+                    }
+                }
+                Err(e) => {
+                    error!("Failed to scan loading sessions: {}", e);
+                    return;
+                }
             };
 
             for key in keys {
+                let lock_key = format!("lock:{}", key);
+
+                // --- 각 세션에 대한 분산락 획득 시도 ---
+                let lock =
+                    match DistributedLock::acquire(&mut redis, &lock_key, LOCK_DURATION_MS).await {
+                        Ok(Some(lock)) => lock,
+                        _ => continue, // 락 획득 실패 시 (다른 프로세스가 처리 중이거나 에러), 다음 키로 넘어감
+                    };
+
                 let Ok(all_players_status): RedisResult<HashMap<String, String>> =
                     redis.hgetall(&key).await
                 else {
+                    // 락 해제
+                    let _ = lock.release(&mut redis).await;
                     continue;
                 };
 
                 let Some(created_at_str) = all_players_status.get("created_at") else {
+                    let _ = lock.release(&mut redis).await;
                     continue;
                 };
                 let Ok(created_at) = created_at_str.parse::<u64>() else {
+                    let _ = lock.release(&mut redis).await;
                     continue;
                 };
 
@@ -1157,22 +1368,28 @@ impl Handler<CheckStaleLoadingSessions> for Matchmaker {
 
                     let players_to_requeue: Vec<String> = all_players_status
                         .keys()
-                        .filter(|k| *k != "game_mode" && *k != "created_at")
+                        .filter(|k| *k != "game_mode" && *k != "created_at" && *k != "status")
                         .cloned()
                         .collect();
 
                     if !players_to_requeue.is_empty() {
+                        let message = ServerMessage::Error {
+                            message: "Matchmaking timed out. You have been returned to the queue."
+                                .to_string(),
+                        };
                         for player_id_str in &players_to_requeue {
                             let player_id = Uuid::parse_str(player_id_str).unwrap();
-                            let message = ServerMessage::Error {
-                                message:
-                                    "Matchmaking timed out. You have been returned to the queue."
-                                        .to_string(),
-                            };
-                            publish_message(&mut redis, player_id, message).await;
+                            publish_message(&mut redis, player_id, message.clone()).await;
                         }
                         requeue_players(&mut redis, &queue_key, &players_to_requeue).await;
                     }
+                }
+                // --- 작업 완료 후 락 해제 ---
+                if let Err(e) = lock.release(&mut redis).await {
+                    error!(
+                        "Failed to release lock for stale check on key {}: {}",
+                        key, e
+                    );
                 }
             }
         })
@@ -1180,77 +1397,188 @@ impl Handler<CheckStaleLoadingSessions> for Matchmaker {
 }
 </file>
 
-<file path="src/matchmaker/http.rs">
-use actix_web::{post, web, HttpResponse, Responder};
-use tracing::{info, warn};
+<file path="src/matchmaker/lock.rs">
+use redis::aio::ConnectionManager;
+// `cmd`를 추가하고, `Commands`와 `Script`를 임포트합니다. `SetOptions`는 사용하지 않으므로 삭제합니다.
+use redis::{cmd, RedisResult, Script};
+use uuid::Uuid;
 
-use crate::{
-    auth::AuthenticatedUser,
-    matchmaker::actor::{EnqueuePlayer, EnqueueResult}, // EnqueueResult 임포트
-    AppState,
-};
+const RELEASE_SCRIPT: &str = r#"
+    if redis.call("get", KEYS[1]) == ARGV[1] then
+        return redis.call("del", KEYS[1])
+    else
+        return 0
+    end
+"#;
 
-#[derive(serde::Deserialize)]
-pub struct MatchmakingRequest {
-    pub game_mode: String,
+/// Redis를 이용한 분산락 구조체.
+/// Drop 트레이트를 구현하지 않았으므로, 사용 후 반드시 `release`를 명시적으로 호출해야 합니다.
+pub struct DistributedLock {
+    key: String,
+    value: String,
 }
 
-/// POST /matchmaking/queue
-/// 인증된 사용자를 매칭 대기열에 추가하라는 요청을 Matchmaker 액터에게 보냅니다.
-#[post("/queue")]
-pub async fn enqueue_player(
-    user: AuthenticatedUser,
-    state: web::Data<AppState>,
-    req_body: web::Json<MatchmakingRequest>,
-) -> impl Responder {
-    info!(
-        "Player {} requests matchmaking for game mode: {}",
-        user.steam_id, req_body.game_mode
-    );
+impl DistributedLock {
+    /// 분산락을 획득합니다.
+    ///
+    /// # Arguments
+    /// * `redis` - Redis 커넥션 매니저
+    /// * `key` - 락을 걸 대상 키
+    /// * `duration_ms` - 락의 만료 시간 (밀리초)
+    ///
+    /// # Returns
+    /// * `Ok(Some(lock))` - 락 획득 성공
+    /// * `Ok(None)` - 다른 프로세스가 락을 이미 소유하고 있음
+    /// * `Err(e)` - Redis 오류 발생
+    pub async fn acquire(
+        redis: &mut ConnectionManager,
+        key: &str,
+        duration_ms: usize,
+    ) -> RedisResult<Option<Self>> {
+        let value = Uuid::new_v4().to_string();
 
-    // Matchmaker 액터에게 메시지를 보내고 응답을 기다립니다.
-    match state
-        .matchmaker_addr
-        .send(EnqueuePlayer {
-            steam_id: user.steam_id,
-            game_mode: req_body.game_mode.clone(),
-        })
-        .await
-    {
-        // 액터로부터 응답을 성공적으로 받은 경우
-        Ok(result) => match result {
-            EnqueueResult::Success => HttpResponse::Ok().json(serde_json::json!({
-                "message": "Successfully joined the matchmaking queue.",
-                "steam_id": user.steam_id,
-                "status": "pending"
-            })),
-            EnqueueResult::AlreadyInQueue => HttpResponse::Conflict().json(serde_json::json!({
-                "message": "You are already in the matchmaking queue.",
-                "steam_id": user.steam_id,
-                "status": "already_in_queue"
-            })),
-            EnqueueResult::InternalError => {
-                HttpResponse::InternalServerError().json("Failed to add player to queue")
-            }
-        },
-        // 액터에게 메시지를 보내는 데 실패한 경우 (예: 액터가 다운됨)
-        Err(e) => {
-            warn!("Actor send error: {}", e);
-            HttpResponse::InternalServerError().json("Internal server error")
+        // `set_options` 대신 `cmd`를 사용하여 'SET key value NX PX ms' 명령을 직접 구성합니다.
+        let result: Option<String> = cmd("SET")
+            .arg(key)
+            .arg(&value)
+            .arg("NX") // Set only if the key does not already exist.
+            .arg("PX") // Set the specified expire time, in milliseconds.
+            .arg(duration_ms)
+            .query_async(redis) // ConnectionManager에서 비동기적으로 실행
+            .await?;
+
+        // 'SET NX'는 성공 시 "OK"를 반환하고, 키가 이미 존재하면 nil을 반환합니다.
+        // `redis-rs`는 "OK"를 `Some("OK".to_string())`으로, nil을 `None`으로 변환합니다.
+        if result.is_some() {
+            Ok(Some(Self {
+                key: key.to_string(),
+                value,
+            }))
+        } else {
+            Ok(None)
         }
+    }
+
+    /// 획득했던 분산락을 해제합니다.
+    pub async fn release(&self, redis: &mut ConnectionManager) -> RedisResult<()> {
+        let script = Script::new(RELEASE_SCRIPT);
+        script
+            .key(&self.key)
+            .arg(&self.value)
+            .invoke_async::<_, ()>(redis)
+            .await?;
+        Ok(())
     }
 }
 </file>
 
+<file path="src/matchmaker/messages.rs">
+use crate::env::GameModeSettings;
+use actix::Message;
+use uuid::Uuid;
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct EnqueuePlayer {
+    pub player_id: Uuid,
+    pub game_mode: String,
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct DequeuePlayer {
+    pub player_id: Uuid,
+    pub game_mode: String,
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct HandleLoadingComplete {
+    pub player_id: Uuid,
+    pub loading_session_id: Uuid,
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct CancelLoadingSession {
+    pub player_id: Uuid,
+    pub loading_session_id: Uuid,
+}
+
+#[derive(Message, Clone)]
+#[rtype(result = "()")]
+pub(super) struct TryMatch {
+    pub(super) game_mode: GameModeSettings,
+}
+
+/// 오래된 로딩 세션을 정리하기 위한 내부 메시지입니다.
+#[derive(Message)]
+#[rtype(result = "()")]
+pub(super) struct CheckStaleLoadingSessions;
+</file>
+
 <file path="src/matchmaker/mod.rs">
-//! Matchmaker 모듈은 매칭 관련 로직을 담당합니다.
-//!
-//! - `actor`: 매칭 대기열을 관리하고 실제 매칭을 수행하는 액터입니다.
-
 pub mod actor;
-
-// 다른 모듈에서 쉽게 사용할 수 있도록 공개합니다.
+mod handlers;
+mod lock;
+pub mod messages;
+mod scripts;
 pub use actor::Matchmaker;
+</file>
+
+<file path="src/matchmaker/scripts.rs">
+pub(super) const ATOMIC_MATCH_SCRIPT: &str = r#"
+    local queue_key = KEYS[1]
+    local required_players = tonumber(ARGV[1])
+    if redis.call('SCARD', queue_key) >= required_players then
+        return redis.call('SPOP', queue_key, required_players)
+    else
+        return {}
+    end
+"#;
+
+pub(super) const ATOMIC_LOADING_COMPLETE_SCRIPT: &str = r#"
+    local loading_key = KEYS[1]
+    local player_id = ARGV[1]
+
+    -- Stop if session does not exist or is already handled
+    if redis.call('EXISTS', loading_key) == 0 then
+        return {}
+    end
+    -- 추가: 세션 상태가 'loading'이 아니면 (예: 'cancelled') 중단
+    local status = redis.call('HGET', loading_key, 'status')
+    if status and status ~= 'loading' then
+        return {}
+    end
+
+    redis.call('HSET', loading_key, player_id, 'ready')
+
+    local players = redis.call('HGETALL', loading_key)
+    local all_ready = true
+    local player_ids = {}
+    local game_mode = ''
+    for i=1, #players, 2 do
+        if players[i] == 'game_mode' then
+            game_mode = players[i+1]
+        elseif players[i] ~= 'created_at' and players[i] ~= 'status' then
+            if players[i+1] ~= 'ready' then
+                all_ready = false
+                break
+            end
+            table.insert(player_ids, players[i])
+        end
+    end
+
+    if all_ready and #player_ids > 0 then
+        -- 성공 시 키 삭제
+        redis.call('DEL', loading_key)
+        -- game_mode를 맨 앞에 추가하여 반환
+        table.insert(player_ids, 1, game_mode)
+        return player_ids
+    else
+        return {}
+    end
+"#;
 </file>
 
 <file path="src/protocol.rs">
@@ -1310,6 +1638,7 @@ pub enum ServerMessage {
 
 <file path="src/provider.rs">
 use actix::{Actor, Context, Handler, Message, ResponseFuture};
+use futures_util::stream::StreamExt;
 use redis::{aio::ConnectionManager, AsyncCommands};
 use serde::Deserialize;
 use tracing::{info, warn};
@@ -1357,15 +1686,22 @@ impl Handler<FindAvailableServer> for DedicatedServerProvider {
         Box::pin(async move {
             info!("Finding an available dedicated server from Redis...");
 
-            // 1. 모든 서버 키를 가져옵니다.
-            let server_keys: Vec<String> = redis.keys("dedicated_server:*").await?;
-            if server_keys.is_empty() {
-                warn!("No dedicated server instances found in Redis.");
-                return Err(anyhow::anyhow!("No dedicated server instances registered."));
-            }
+            // SCAN 사용으로 Redis 블로킹 방지
+            let mut keys: Vec<String> = Vec::new();
+            match redis.scan_match::<_, String>("dedicated_server:*").await {
+                Ok(mut iter) => {
+                    while let Some(key) = iter.next().await {
+                        keys.push(key);
+                    }
+                }
+                Err(e) => {
+                    warn!("Failed to scan dedicated servers: {}", e);
+                    return Err(anyhow::anyhow!("Failed to scan dedicated servers: {}", e));
+                }
+            };
 
-            // 2. 각 서버의 상태를 확인하여 "idle"인 서버를 찾습니다.
-            for key in server_keys {
+            // 각 서버의 상태를 확인하여 "idle"인 서버를 찾습니다.
+            for key in keys {
                 let server_info_json: String = match redis.get(&key).await {
                     Ok(info) => info,
                     Err(e) => {
@@ -1388,14 +1724,14 @@ impl Handler<FindAvailableServer> for DedicatedServerProvider {
                     }
                 };
 
-                // 3. "idle" 상태인 서버를 찾으면 즉시 반환합니다.
+                // "idle" 상태인 서버를 찾으면 즉시 반환합니다.
                 if server_info.status == "idle" {
                     info!("Found idle server: {:?}", server_info);
                     return Ok(server_info);
                 }
             }
 
-            // 4. 모든 서버를 확인했지만 "idle" 상태인 서버가 없는 경우
+            // 모든 서버를 확인했지만 "idle" 상태인 서버가 없는 경우
             warn!("All dedicated servers are currently busy.");
             Err(anyhow::anyhow!("All dedicated servers are busy."))
         })
@@ -1403,34 +1739,200 @@ impl Handler<FindAvailableServer> for DedicatedServerProvider {
 }
 </file>
 
-<file path="src/util.rs">
-use std::env;
+<file path="src/pubsub.rs">
+use actix::{
+    Actor, Addr, AsyncContext, Context, ContextFutureSpawner, Handler, Message, WrapFuture,
+};
+use futures_util::stream::StreamExt;
+use redis::Client as RedisClient;
+use std::collections::HashMap;
+use std::time::Duration;
+use tracing::{error, info, warn};
+use uuid::Uuid;
 
-pub async fn connect_to_redis_with_auth() -> redis::RedisResult<()> {
-    let redis_url =
-        env::var("REDIS_URL").expect("REDIS_URL must be set, e.g., redis://:password@host:port");
+use crate::protocol::ServerMessage;
+use crate::ws_session::MatchmakingSession;
 
-    let client = redis::Client::open(redis_url)?;
-    let _ = client.get_async_connection().await?;
+const RECONNECT_DELAY: Duration = Duration::from_secs(5);
 
-    Ok(())
+// --- Messages for this module ---
+#[derive(Message)]
+#[rtype(result = "()")]
+struct Connect;
+
+// --- SubscriptionManager Actor ---
+
+/// Manages the mapping between player_id and their WebSocket session actor address.
+pub struct SubscriptionManager {
+    sessions: HashMap<Uuid, Addr<MatchmakingSession>>,
 }
+
+impl SubscriptionManager {
+    pub fn new() -> Self {
+        Self {
+            sessions: HashMap::new(),
+        }
+    }
+}
+
+impl Actor for SubscriptionManager {
+    type Context = Context<Self>;
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct Register {
+    pub player_id: Uuid,
+    pub addr: Addr<MatchmakingSession>,
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct Deregister {
+    pub player_id: Uuid,
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct ForwardMessage {
+    pub player_id: Uuid,
+    pub message: ServerMessage,
+}
+
+impl Handler<Register> for SubscriptionManager {
+    type Result = ();
+    fn handle(&mut self, msg: Register, _ctx: &mut Context<Self>) -> Self::Result {
+        info!("Player {} registered for notifications.", msg.player_id);
+        self.sessions.insert(msg.player_id, msg.addr);
+    }
+}
+
+impl Handler<Deregister> for SubscriptionManager {
+    type Result = ();
+    fn handle(&mut self, msg: Deregister, _ctx: &mut Context<Self>) -> Self::Result {
+        info!("Player {} deregistered.", msg.player_id);
+        self.sessions.remove(&msg.player_id);
+    }
+}
+
+impl Handler<ForwardMessage> for SubscriptionManager {
+    type Result = ();
+    fn handle(&mut self, msg: ForwardMessage, _ctx: &mut Context<Self>) -> Self::Result {
+        if let Some(recipient_addr) = self.sessions.get(&msg.player_id) {
+            recipient_addr.do_send(msg.message);
+        } else {
+            warn!(
+                "Could not find session for player {} to forward message.",
+                msg.player_id
+            );
+        }
+    }
+}
+
+// --- RedisSubscriber Actor ---
+
+pub struct RedisSubscriber {
+    redis_client: RedisClient,
+    manager_addr: Addr<SubscriptionManager>,
+}
+
+impl RedisSubscriber {
+    pub fn new(redis_client: RedisClient, manager_addr: Addr<SubscriptionManager>) -> Self {
+        Self {
+            redis_client,
+            manager_addr,
+        }
+    }
+
+    fn connect_and_subscribe(&self, ctx: &mut Context<Self>) {
+        info!("Attempting to connect and subscribe to Redis...");
+        let client = self.redis_client.clone();
+        let manager = self.manager_addr.clone();
+        let self_addr = ctx.address();
+
+        async move {
+            let conn = match client.get_async_connection().await {
+                Ok(c) => {
+                    info!("Successfully connected to Redis.");
+                    c
+                }
+                Err(e) => {
+                    error!("RedisSubscriber failed to get connection: {}", e);
+                    self_addr.do_send(Connect); // Trigger reconnect
+                    return;
+                }
+            };
+            let mut pubsub = conn.into_pubsub();
+            if let Err(e) = pubsub.psubscribe("notifications:*").await {
+                error!("RedisSubscriber failed to psubscribe: {}", e);
+                self_addr.do_send(Connect); // Trigger reconnect
+                return;
+            }
+            info!("Successfully subscribed to 'notifications:*'");
+
+            let mut stream = pubsub.on_message();
+            while let Some(msg) = stream.next().await {
+                let channel: String = msg.get_channel_name().to_string();
+                let payload: String = match msg.get_payload() {
+                    Ok(p) => p,
+                    Err(_) => continue,
+                };
+
+                if let Some(player_id_str) = channel.strip_prefix("notifications:") {
+                    if let Ok(player_id) = Uuid::parse_str(player_id_str) {
+                        if let Ok(server_msg) = serde_json::from_str::<ServerMessage>(&payload) {
+                            manager.do_send(ForwardMessage {
+                                player_id,
+                                message: server_msg,
+                            });
+                        }
+                    }
+                }
+            }
+            warn!("Redis Pub/Sub stream ended. Attempting to reconnect...");
+            self_addr.do_send(Connect); // Trigger reconnect
+        }
+        .into_actor(self)
+        .wait(ctx);
+    }
+}
+
+impl Actor for RedisSubscriber {
+    type Context = Context<Self>;
+
+    fn started(&mut self, ctx: &mut Context<Self>) {
+        info!("RedisSubscriber actor started.");
+        self.connect_and_subscribe(ctx);
+    }
+}
+
+impl Handler<Connect> for RedisSubscriber {
+    type Result = ();
+
+    fn handle(&mut self, _msg: Connect, ctx: &mut Context<Self>) -> Self::Result {
+        info!("Reconnect message received. Waiting for a delay...");
+        ctx.run_later(RECONNECT_DELAY, |act, ctx| {
+            act.connect_and_subscribe(ctx);
+        });
+    }
+}
+</file>
+
+<file path="src/util/mod.rs">
+
 </file>
 
 <file path="src/ws_session.rs">
 use crate::{
-    matchmaker::actor::{CancelLoadingSession, DequeuePlayer, EnqueuePlayer, HandleLoadingComplete},
+    matchmaker::messages::{CancelLoadingSession, DequeuePlayer, EnqueuePlayer},
     protocol::{ClientMessage, ServerMessage},
-    Matchmaker,
+    pubsub::{Deregister, Register},
+    Matchmaker, SubscriptionManager,
 };
-use actix::{
-    fut, Actor, ActorContext, Addr, AsyncContext, Handler, Running, StreamHandler,
-};
+use actix::{Actor, ActorContext, Addr, AsyncContext, Handler, Running, StreamHandler};
 use actix_web_actors::ws;
-use futures_util::stream::StreamExt;
-use redis::Client as RedisClient;
 use std::time::{Duration, Instant};
-use tracing::{error, info, warn};
+use tracing::{info, warn};
 use uuid::Uuid;
 
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(5);
@@ -1439,21 +1941,24 @@ const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
 pub struct MatchmakingSession {
     player_id: Option<Uuid>,
     game_mode: Option<String>,
-    loading_session_id: Option<Uuid>, // 현재 참여 중인 로딩 세션 ID
+    loading_session_id: Option<Uuid>,
     hb: Instant,
     matchmaker_addr: Addr<Matchmaker>,
-    redis_client: RedisClient,
+    sub_manager_addr: Addr<SubscriptionManager>,
 }
 
 impl MatchmakingSession {
-    pub fn new(matchmaker_addr: Addr<Matchmaker>, redis_client: RedisClient) -> Self {
+    pub fn new(
+        matchmaker_addr: Addr<Matchmaker>,
+        sub_manager_addr: Addr<SubscriptionManager>,
+    ) -> Self {
         Self {
             player_id: None,
             game_mode: None,
             loading_session_id: None,
             hb: Instant::now(),
             matchmaker_addr,
-            redis_client,
+            sub_manager_addr,
         }
     }
 
@@ -1478,36 +1983,40 @@ impl Actor for MatchmakingSession {
     }
 
     fn stopping(&mut self, _: &mut Self::Context) -> Running {
-        // 세션이 종료될 때, 상태에 따라 적절한 정리 메시지를 보냅니다.
-        match (self.player_id, self.loading_session_id, self.game_mode.clone()) {
-            // 로딩 중에 연결이 끊긴 경우
-            (Some(player_id), Some(loading_session_id), _) => {
-                info!("Player {} disconnected during loading session {}, sending cancel request.", player_id, loading_session_id);
-                self.matchmaker_addr.do_send(CancelLoadingSession {
-                    player_id,
-                    loading_session_id,
-                });
-            },
-            // 단순 대기열에만 있다가 연결이 끊긴 경우
-            (Some(player_id), None, Some(game_mode)) => {
-                info!("Player {} disconnected from queue, sending dequeue request for game mode {}", player_id, game_mode);
-                self.matchmaker_addr.do_send(DequeuePlayer {
-                    player_id,
-                    game_mode,
-                });
-            },
-            _ => {}
+        if let Some(player_id) = self.player_id {
+            // Unregister from the subscription manager
+            self.sub_manager_addr.do_send(Deregister { player_id });
+
+            // Send appropriate cleanup messages to the matchmaker
+            match (self.loading_session_id, self.game_mode.clone()) {
+                (Some(loading_session_id), _) => {
+                    self.matchmaker_addr.do_send(CancelLoadingSession {
+                        player_id,
+                        loading_session_id,
+                    });
+                }
+                (None, Some(game_mode)) => {
+                    self.matchmaker_addr.do_send(DequeuePlayer {
+                        player_id,
+                        game_mode,
+                    });
+                }
+                _ => {}
+            }
         }
-        info!("MatchmakingSession for player {:?} is stopping.", self.player_id);
+        info!(
+            "MatchmakingSession for player {:?} is stopping.",
+            self.player_id
+        );
         Running::Stop
     }
 }
 
+// This handler now receives messages forwarded from the SubscriptionManager
 impl Handler<ServerMessage> for MatchmakingSession {
     type Result = ();
 
     fn handle(&mut self, msg: ServerMessage, ctx: &mut Self::Context) {
-        // 서버로부터 메시지를 받으면, 로딩 세션 ID를 상태에 저장합니다.
         if let ServerMessage::StartLoading { loading_session_id } = &msg {
             self.loading_session_id = Some(*loading_session_id);
         }
@@ -1527,70 +2036,55 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MatchmakingSessio
             }
             Ok(ws::Message::Text(text)) => {
                 match serde_json::from_str::<ClientMessage>(&text) {
-                    Ok(ClientMessage::Enqueue { player_id, game_mode }) => {
+                    Ok(ClientMessage::Enqueue {
+                        player_id,
+                        game_mode,
+                    }) => {
                         if self.player_id.is_some() {
                             warn!("Player {} tried to enqueue more than once.", player_id);
                             return;
                         }
-                        
-                        info!("Player {} requests queue for {}. Subscribing before enqueuing.", player_id, game_mode);
+
+                        info!("Player {} requests queue for {}.", player_id, game_mode);
                         self.player_id = Some(player_id);
                         self.game_mode = Some(game_mode.clone());
-                        
-                        let redis_client = self.redis_client.clone();
-                        let addr = ctx.address().clone();
-                        let matchmaker_addr = self.matchmaker_addr.clone();
 
-                        let future = async move {
-                            let conn = match redis_client.get_async_connection().await {
-                                Ok(c) => c,
-                                Err(e) => {
-                                    error!("Failed to get redis connection: {}", e);
-                                    addr.do_send(ServerMessage::Error { message: "Internal server error".into() });
-                                    return;
-                                }
-                            };
-                            let mut pubsub = conn.into_pubsub();
-                            let channel = format!("notifications:{}", player_id);
-                            
-                            if let Err(e) = pubsub.subscribe(&channel).await {
-                                error!("Failed to subscribe to channel {}: {}", channel, e);
-                                addr.do_send(ServerMessage::Error { message: "Internal server error".into() });
-                                return;
-                            }
+                        // Register with the SubscriptionManager
+                        self.sub_manager_addr.do_send(Register {
+                            player_id,
+                            addr: ctx.address(),
+                        });
 
-                            matchmaker_addr.do_send(EnqueuePlayer {
-                                player_id,
-                                game_mode,
-                            });
-
-                            let mut stream = pubsub.on_message();
-                            while let Some(msg) = stream.next().await {
-                                let payload: String = match msg.get_payload() {
-                                    Ok(p) => p,
-                                    Err(_) => continue,
-                                };
-                                if let Ok(server_msg) = serde_json::from_str::<ServerMessage>(&payload) {
-                                    addr.do_send(server_msg);
-                                }
-                            }
-                        };
-                        ctx.spawn(fut::wrap_future(future));
+                        // Send enqueue message to the matchmaker
+                        self.matchmaker_addr.do_send(EnqueuePlayer {
+                            player_id,
+                            game_mode,
+                        });
                     }
                     Ok(ClientMessage::LoadingComplete { loading_session_id }) => {
                         if let Some(player_id) = self.player_id {
-                            info!("Player {} finished loading for session {}", player_id, loading_session_id);
-                            self.matchmaker_addr.do_send(HandleLoadingComplete {
-                                player_id,
-                                loading_session_id,
-                            });
+                            info!(
+                                "Player {} finished loading for session {}",
+                                player_id, loading_session_id
+                            );
+                            self.matchmaker_addr.do_send(
+                                crate::matchmaker::messages::HandleLoadingComplete {
+                                    player_id,
+                                    loading_session_id,
+                                },
+                            );
                         } else {
                             warn!("Received LoadingComplete from a session with no player_id.");
                         }
                     }
                     Err(e) => {
                         warn!("Failed to parse client message: {}", e);
-                        ctx.text(serde_json::to_string(&ServerMessage::Error { message: "Invalid message format".to_string() }).unwrap());
+                        ctx.text(
+                            serde_json::to_string(&ServerMessage::Error {
+                                message: "Invalid message format".to_string(),
+                            })
+                            .unwrap(),
+                        );
                     }
                 }
             }

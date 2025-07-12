@@ -64,301 +64,372 @@ uuid = { version = "1", features = ["v4", "serde"] }
 tokio-tungstenite = { version = "0.23", features = ["native-tls"] }
 url = "2"
 
+# Added dependencies
+async-trait = "0.1.80"
+anyhow = "1.0.86"
+
 tracing = "0.1.41"
 tracing-appender = "0.2.3"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 </file>
 
 <file path="src/main.rs">
-use futures_util::{SinkExt, StreamExt};
-use serde_json::{json, Value};
+use anyhow::Result;
+use async_trait::async_trait;
+use futures_util::{stream::SplitSink, SinkExt, StreamExt};
+use serde::{Deserialize, Serialize};
 use std::env;
-use tokio::time::{sleep, Duration};
-use tokio_tungstenite::{connect_async, tungstenite::Message};
-use url::Url;
-use uuid::Uuid;
-
 use std::io;
+use std::time::Duration;
+use tokio::net::TcpStream;
+use tokio::time::sleep;
+use tokio_tungstenite::{connect_async, tungstenite::Message, MaybeTlsStream, WebSocketStream};
+use tracing::{error, info, instrument, warn};
 use tracing_appender::non_blocking::WorkerGuard;
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
+use url::Url;
+use uuid::Uuid;
 
-// --- 로거 설정 (수정됨) ---
-/// 각 클라이언트 인스턴스에 대한 고유한 로거를 설정하고,
-/// 로그 파일이 올바르게 기록되도록 보장하는 WorkerGuard를 반환합니다.
-pub fn setup_logger(player_id: Uuid) -> WorkerGuard {
-    // 로그 파일 이름에 player_id를 포함하여 고유하게 만듭니다.
+// --- 로거 설정 ---
+pub fn setup_logger(player_id: &str) -> WorkerGuard {
     let log_filename = format!("client_{}.log", player_id);
     let file_appender = RollingFileAppender::new(Rotation::NEVER, "logs", log_filename.clone());
     let (non_blocking_file_writer, guard) = tracing_appender::non_blocking(file_appender);
 
-    // 2. 로그 레벨 필터 설정 (환경 변수 또는 기본값 INFO)
-    let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info")); // 기본 INFO 레벨
+    let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
 
-    // 3. 콘솔 출력 레이어 설정
-    let console_layer = fmt::layer()
-        .with_writer(io::stdout) // 표준 출력으로 설정
-        .with_ansi(true) // ANSI 색상 코드 사용 (터미널 지원 시)
-        .with_thread_ids(true) // 스레드 ID 포함
-        .with_thread_names(true) // 스레드 이름 포함
-        .with_file(true) // 파일 경로 포함
-        .with_line_number(true) // 라인 번호 포함
-        .with_target(false) // target 정보 제외 (선택 사항)
-        .pretty(); // 사람이 읽기 좋은 포맷
-
-    // 4. 파일 출력 레이어 설정
+    let console_layer = fmt::layer().with_writer(io::stdout).pretty();
     let file_layer = fmt::layer()
-        .with_writer(non_blocking_file_writer) // Non-blocking 파일 로거 사용
-        .with_ansi(false) // 파일에는 ANSI 코드 제외
-        .with_thread_ids(true)
-        .with_thread_names(true)
-        .with_file(true)
-        .with_line_number(true)
-        .with_target(false)
-        .pretty();
+        .with_writer(non_blocking_file_writer)
+        .with_ansi(false);
 
-    // 5. 레지스트리(Registry)에 필터와 레이어 결합
     tracing_subscriber::registry()
-        .with(filter) // 필터를 먼저 적용
-        .with(console_layer) // 콘솔 레이어 추가
-        .with(file_layer) // 파일 레이어 추가
-        .init(); // 전역 Subscriber로 설정
+        .with(filter)
+        .with(console_layer)
+        .with(file_layer)
+        .init();
 
-    tracing::info!("Logger initialized. Log file: {}", log_filename);
+    info!("Logger initialized. Log file: {}", log_filename);
     guard
 }
 
-// --- 역할별 클라이언트 로직 (기존과 동일) ---
+// --- 메시지 정의 ---
+#[derive(Serialize)]
+struct ClientMessage<'a> {
+    #[serde(rename = "type")]
+    msg_type: &'a str,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    player_id: Option<Uuid>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    game_mode: Option<&'a str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    loading_session_id: Option<Uuid>,
+}
 
-/// 역할 A: 매칭 후 로딩 중에 연결을 끊는 클라이언트
-async fn run_disconnector(player_id: Uuid) -> Result<(), Box<dyn std::error::Error>> {
-    tracing::info!("[{}] Starting as DISCONNECTOR", player_id);
+#[derive(Deserialize, Debug)]
+struct ServerMessage {
+    #[serde(rename = "type")]
+    msg_type: String,
+    #[serde(default)]
+    message: String,
+    #[serde(default)]
+    loading_session_id: Option<Uuid>,
+    #[serde(default)]
+    server_address: String,
+    #[serde(default)]
+    session_id: Option<Uuid>,
+}
+
+// --- Type alias for the WebSocket stream sink part ---
+type WsSink = SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>;
+
+// --- 플레이어 행동 정의 ---
+#[async_trait]
+trait PlayerBehavior {
+    async fn on_start_loading(
+        &self,
+        player_id: Uuid,
+        loading_id: Uuid,
+        ws_sink: &mut WsSink,
+    ) -> Result<bool>;
+
+    fn on_error(&self, player_id: Uuid, error_msg: &str) -> bool;
+
+    fn on_match_found(&self, player_id: Uuid) -> bool {
+        info!("[{}] >>> SUCCESS: MatchFound received!", player_id);
+        false
+    }
+}
+
+// --- 시나리오별 행동 구현 ---
+
+struct Disconnector;
+#[async_trait]
+impl PlayerBehavior for Disconnector {
+    async fn on_start_loading(
+        &self,
+        player_id: Uuid,
+        _loading_id: Uuid,
+        ws_sink: &mut WsSink,
+    ) -> Result<bool> {
+        warn!("[{}] Received StartLoading. Disconnecting now!", player_id);
+        ws_sink.close().await?;
+        Ok(false)
+    }
+    fn on_error(&self, player_id: Uuid, error_msg: &str) -> bool {
+        error!("[{}] Received unexpected error: {}", player_id, error_msg);
+        false
+    }
+}
+
+struct Victim;
+#[async_trait]
+impl PlayerBehavior for Victim {
+    async fn on_start_loading(
+        &self,
+        player_id: Uuid,
+        loading_id: Uuid,
+        ws_sink: &mut WsSink,
+    ) -> Result<bool> {
+        info!(
+            "[{}] Received StartLoading. Sending LoadingComplete.",
+            player_id
+        );
+        let msg = ClientMessage {
+            msg_type: "loading_complete",
+            loading_session_id: Some(loading_id),
+            player_id: None,
+            game_mode: None,
+        };
+        ws_sink
+            .send(Message::Text(serde_json::to_string(&msg)?))
+            .await?;
+        Ok(true)
+    }
+    fn on_error(&self, player_id: Uuid, error_msg: &str) -> bool {
+        if error_msg.contains("disconnected") || error_msg.contains("timed out") {
+            info!(
+                "[{}] >>> SUCCESS: Received expected cancellation error: {}",
+                player_id, error_msg
+            );
+        } else {
+            error!("[{}] Received unexpected error: {}", player_id, error_msg);
+        }
+        false
+    }
+}
+
+struct TimeoutPlayer;
+#[async_trait]
+impl PlayerBehavior for TimeoutPlayer {
+    async fn on_start_loading(
+        &self,
+        player_id: Uuid,
+        _loading_id: Uuid,
+        _ws_sink: &mut WsSink,
+    ) -> Result<bool> {
+        warn!(
+            "[{}] Received StartLoading. Waiting for 65 seconds to cause a timeout...",
+            player_id
+        );
+        sleep(Duration::from_secs(65)).await;
+        info!("[{}] Timeout period passed.", player_id);
+        Ok(false)
+    }
+    fn on_error(&self, player_id: Uuid, error_msg: &str) -> bool {
+        info!(
+            "[{}] Received error (likely after timeout): {}",
+            player_id, error_msg
+        );
+        false
+    }
+}
+
+struct GhostDisconnector;
+#[async_trait]
+impl PlayerBehavior for GhostDisconnector {
+    async fn on_start_loading(
+        &self,
+        player_id: Uuid,
+        _loading_id: Uuid,
+        ws_sink: &mut WsSink,
+    ) -> Result<bool> {
+        warn!(
+            "[{}] Received StartLoading. Disconnecting IMMEDIATELY to test race condition!",
+            player_id
+        );
+        ws_sink.close().await?;
+        Ok(false)
+    }
+    fn on_error(&self, player_id: Uuid, error_msg: &str) -> bool {
+        error!("[{}] Received unexpected error: {}", player_id, error_msg);
+        false
+    }
+}
+
+// --- Enum Wrapper for Behaviors ---
+enum Behavior {
+    Disconnect(Disconnector),
+    Victim(Victim),
+    Timeout(TimeoutPlayer),
+    Ghost(GhostDisconnector),
+}
+
+#[async_trait]
+impl PlayerBehavior for Behavior {
+    async fn on_start_loading(
+        &self,
+        player_id: Uuid,
+        loading_id: Uuid,
+        ws_sink: &mut WsSink,
+    ) -> Result<bool> {
+        match self {
+            Behavior::Disconnect(b) => b.on_start_loading(player_id, loading_id, ws_sink).await,
+            Behavior::Victim(b) => b.on_start_loading(player_id, loading_id, ws_sink).await,
+            Behavior::Timeout(b) => b.on_start_loading(player_id, loading_id, ws_sink).await,
+            Behavior::Ghost(b) => b.on_start_loading(player_id, loading_id, ws_sink).await,
+        }
+    }
+
+    fn on_error(&self, player_id: Uuid, error_msg: &str) -> bool {
+        match self {
+            Behavior::Disconnect(b) => b.on_error(player_id, error_msg),
+            Behavior::Victim(b) => b.on_error(player_id, error_msg),
+            Behavior::Timeout(b) => b.on_error(player_id, error_msg),
+            Behavior::Ghost(b) => b.on_error(player_id, error_msg),
+        }
+    }
+
+    fn on_match_found(&self, player_id: Uuid) -> bool {
+        match self {
+            Behavior::Disconnect(b) => b.on_match_found(player_id),
+            Behavior::Victim(b) => b.on_match_found(player_id),
+            Behavior::Timeout(b) => b.on_match_found(player_id),
+            Behavior::Ghost(b) => b.on_match_found(player_id),
+        }
+    }
+}
+
+// --- 플레이어 실행 로직 ---
+#[instrument(skip_all, fields(player_id = %player_id))]
+async fn run_player(player_id: Uuid, behavior: Behavior) -> Result<()> {
+    info!("Starting player with specific behavior");
 
     let url = Url::parse("ws://127.0.0.1:8080/ws/")?;
-    let (mut ws_stream, _) = connect_async(url.as_str())
-        .await
-        .expect("Failed to connect");
-    tracing::info!("[{}] Connected.", player_id);
+    let (ws_stream, _) = connect_async(url.as_str()).await?;
+    info!("Connected to server.");
 
-    let enqueue_msg =
-        json!({ "type": "enqueue", "player_id": player_id, "game_mode": "Normal_1v1" });
-    ws_stream
-        .send(Message::Text(enqueue_msg.to_string()))
+    let (mut ws_sink, mut ws_stream) = ws_stream.split();
+
+    let enqueue_msg = ClientMessage {
+        msg_type: "enqueue",
+        player_id: Some(player_id),
+        game_mode: Some("Normal_1v1"),
+        loading_session_id: None,
+    };
+    ws_sink
+        .send(Message::Text(serde_json::to_string(&enqueue_msg)?))
         .await?;
-    tracing::info!("[{}] Sent enqueue request.", player_id);
+    info!("Sent enqueue request.");
 
     while let Some(msg) = ws_stream.next().await {
-        let msg = msg?;
-        if let Message::Text(text) = msg {
-            tracing::info!("[{}] Received: {}", player_id, text);
-            let server_msg: Value = serde_json::from_str(&text)?;
-            if server_msg["type"].as_str() == Some("start_loading") {
-                tracing::warn!("[{}] Received StartLoading. Disconnecting now!", player_id);
-                ws_stream.close(None).await?;
+        let msg = match msg {
+            Ok(Message::Text(text)) => text,
+            Ok(_) => continue,
+            Err(e) => {
+                warn!("WebSocket stream error: {}", e);
                 break;
             }
+        };
+
+        let server_msg: ServerMessage = match serde_json::from_str(&msg) {
+            Ok(m) => m,
+            Err(e) => {
+                warn!("Failed to parse server message: {}. Raw: {}", e, msg);
+                continue;
+            }
+        };
+
+        info!("Received: {:?}", server_msg);
+
+        let continue_loop = match server_msg.msg_type.as_str() {
+            "start_loading" => {
+                behavior
+                    .on_start_loading(
+                        player_id,
+                        server_msg.loading_session_id.unwrap(),
+                        &mut ws_sink,
+                    )
+                    .await?
+            }
+            "error" => behavior.on_error(player_id, &server_msg.message),
+            "match_found" => behavior.on_match_found(player_id),
+            "queued" => true,
+            _ => true,
+        };
+
+        if !continue_loop {
+            break;
         }
     }
-    tracing::info!("[{}] Test finished.", player_id);
+
+    info!("Test finished for this player.");
     Ok(())
 }
 
-/// 역할 B: 매칭이 취소된 후, 유령 플레이어가 아닌 새로운 플레이어와 다시 매칭되는지 확인하는 클라이언트
-async fn run_victim(player_id: Uuid) -> Result<(), Box<dyn std::error::Error>> {
-    tracing::info!("[{}] Starting as VICTIM", player_id);
+// --- 시나리오 정의 및 메인 함수 ---
 
-    let url = Url::parse("ws://127.0.0.1:8080/ws/")?;
-    let (mut ws_stream, _) = connect_async(url.as_str())
-        .await
-        .expect("Failed to connect");
-    tracing::info!("[{}] Connected.", player_id);
-
-    let enqueue_msg =
-        json!({ "type": "enqueue", "player_id": player_id, "game_mode": "Normal_1v1" });
-    ws_stream
-        .send(Message::Text(enqueue_msg.to_string()))
-        .await?;
-    tracing::info!("[{}] Sent enqueue request.", player_id);
-
-    let mut is_requeued = false;
-
-    while let Some(msg) = ws_stream.next().await {
-        let msg = msg?;
-        if let Message::Text(text) = msg {
-            tracing::info!("[{}] Received: {}", player_id, text);
-            let server_msg: Value = serde_json::from_str(&text)?;
-            match server_msg["type"].as_str() {
-                Some("error")
-                    if server_msg["message"]
-                        .as_str()
-                        .unwrap()
-                        .contains("disconnected") =>
-                {
-                    tracing::info!(
-                        "[{}] Match cancelled as expected. I am now back in the queue.",
-                        player_id
-                    );
-                    is_requeued = true;
-                }
-                Some("start_loading") => {
-                    if !is_requeued {
-                        tracing::info!("[{}] First match found (with disconnector). Waiting for cancellation...", player_id);
-                    } else {
-                        tracing::info!(
-                            "[{}] Second match found! This should be with the newcomer.",
-                            player_id
-                        );
-                        let loading_id =
-                            Uuid::parse_str(server_msg["loading_session_id"].as_str().unwrap())?;
-                        tracing::info!("[{}] Simulating asset loading...", player_id);
-                        sleep(Duration::from_secs(2)).await;
-                        let loading_complete_msg =
-                            json!({ "type": "loading_complete", "loading_session_id": loading_id });
-                        ws_stream
-                            .send(Message::Text(loading_complete_msg.to_string()))
-                            .await?;
-                        tracing::info!("[{}] Loading complete. Notified server.", player_id);
-                    }
-                }
-                Some("match_found") => {
-                    tracing::info!(
-                        "[{}] Successfully received MatchFound. Bug is fixed!",
-                        player_id
-                    );
-                    break;
-                }
-                _ => {}
-            }
-        }
-    }
-    tracing::info!("[{}] Test finished.", player_id);
-    Ok(())
-}
-
-/// 역할 C: 앞선 매칭이 취소된 후, 대기열에 있던 플레이어와 정상적으로 매칭되는지 확인하는 클라이언트
-async fn run_newcomer(player_id: Uuid) -> Result<(), Box<dyn std::error::Error>> {
-    tracing::info!("[{}] Starting as NEWCOMER. Waiting 5 seconds...", player_id);
-    sleep(Duration::from_secs(5)).await; // A와 B가 먼저 매칭되도록 잠시 대기
-
-    let url = Url::parse("ws://127.0.0.1:8080/ws/")?;
-    let (mut ws_stream, _) = connect_async(url.as_str())
-        .await
-        .expect("Failed to connect");
-    tracing::info!("[{}] Connected.", player_id);
-
-    let enqueue_msg =
-        json!({ "type": "enqueue", "player_id": player_id, "game_mode": "Normal_1v1" });
-    ws_stream
-        .send(Message::Text(enqueue_msg.to_string()))
-        .await?;
-    tracing::info!("[{}] Sent enqueue request.", player_id);
-
-    while let Some(msg) = ws_stream.next().await {
-        let msg = msg?;
-        if let Message::Text(text) = msg {
-            tracing::info!("[{}] Received: {}", player_id, text);
-            let server_msg: Value = serde_json::from_str(&text)?;
-            match server_msg["type"].as_str() {
-                Some("start_loading") => {
-                    tracing::info!(
-                        "[{}] Match found! This should be with the victim.",
-                        player_id
-                    );
-                    let loading_id =
-                        Uuid::parse_str(server_msg["loading_session_id"].as_str().unwrap())?;
-                    tracing::info!("[{}] Simulating asset loading...", player_id);
-                    sleep(Duration::from_secs(2)).await;
-                    let loading_complete_msg =
-                        json!({ "type": "loading_complete", "loading_session_id": loading_id });
-                    ws_stream
-                        .send(Message::Text(loading_complete_msg.to_string()))
-                        .await?;
-                    tracing::info!("[{}] Loading complete. Notified server.", player_id);
-                }
-                Some("match_found") => {
-                    tracing::info!(
-                        "[{}] Successfully received MatchFound. Bug is fixed!",
-                        player_id
-                    );
-                    break;
-                }
-                _ => {}
-            }
-        }
-    }
-    tracing::info!("[{}] Test finished.", player_id);
-    Ok(())
-}
-
-/// 일반적인 매칭 성공 흐름을 테스트하는 기본 클라이언트
-async fn run_normal(player_id: Uuid) -> Result<(), Box<dyn std::error::Error>> {
-    tracing::info!("[{}] Starting in NORMAL mode", player_id);
-    let url = Url::parse("ws://127.0.0.1:8080/ws/")?;
-    let (mut ws_stream, _) = connect_async(url.as_str())
-        .await
-        .expect("Failed to connect");
-    tracing::info!("[{}] Connected.", player_id);
-
-    let enqueue_msg =
-        json!({ "type": "enqueue", "player_id": player_id, "game_mode": "Normal_1v1" });
-    ws_stream
-        .send(Message::Text(enqueue_msg.to_string()))
-        .await?;
-    tracing::info!("[{}] Sent enqueue request.", player_id);
-
-    while let Some(msg) = ws_stream.next().await {
-        let msg = msg?;
-        if let Message::Text(text) = msg {
-            tracing::info!("[{}] Received: {}", player_id, text);
-            let server_msg: Value = serde_json::from_str(&text)?;
-            match server_msg["type"].as_str() {
-                Some("start_loading") => {
-                    let loading_id =
-                        Uuid::parse_str(server_msg["loading_session_id"].as_str().unwrap())?;
-                    tracing::info!("[{}] Simulating asset loading...", player_id);
-                    sleep(Duration::from_secs(2)).await;
-                    let loading_complete_msg =
-                        json!({ "type": "loading_complete", "loading_session_id": loading_id });
-                    ws_stream
-                        .send(Message::Text(loading_complete_msg.to_string()))
-                        .await?;
-                    tracing::info!("[{}] Loading complete. Notified server.", player_id);
-                }
-                Some("match_found") => {
-                    tracing::info!("[{}] Match found! Shutting down.", player_id);
-                    break;
-                }
-                _ => {}
-            }
-        }
-    }
-    tracing::info!("[{}] Test finished.", player_id);
-    Ok(())
+#[derive(Debug, PartialEq, Clone, Copy)]
+enum Scenario {
+    Disconnect,
+    Timeout,
+    Ghost,
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // player_id를 먼저 생성합니다.
-    let player_id = Uuid::new_v4();
-
-    // 로거를 설정하고 guard를 받아서 main 함수가 끝날 때까지 유지합니다.
-    // 이렇게 하면 프로그램 종료 직전까지 모든 로그가 파일에 기록되는 것을 보장합니다.
-    let _guard = setup_logger(player_id);
-
+async fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();
-    let role = args.get(1).map(|s| s.as_str());
+    let scenario_str = args.get(1).map(|s| s.as_str()).unwrap_or("disconnect");
+    let role_str = args.get(2).map(|s| s.as_str()).unwrap_or("victim");
 
-    match role {
-        Some("disconnector") => run_disconnector(player_id).await?,
-        Some("victim") => run_victim(player_id).await?,
-        Some("newcomer") => run_newcomer(player_id).await?,
-        Some("normal") | None => run_normal(player_id).await?,
-        Some(other) => {
-            tracing::error!("Unknown role: {}", other);
-            println!("Usage: cargo run --bin test_client -- [disconnector|victim|newcomer|normal]");
+    let player_id = Uuid::new_v4();
+    let _guard = setup_logger(&player_id.to_string()[..8]);
+
+    let scenario = match scenario_str {
+        "disconnect" => Scenario::Disconnect,
+        "timeout" => Scenario::Timeout,
+        "ghost" => Scenario::Ghost,
+        _ => {
+            anyhow::bail!(
+                "Unknown scenario: {}. Use: disconnect, timeout, ghost",
+                scenario_str
+            );
         }
+    };
+
+    info!("Selected Scenario: {:?}, Role: {}", scenario, role_str);
+
+    let behavior = match (scenario, role_str) {
+        (Scenario::Disconnect, "disconnector") => Behavior::Disconnect(Disconnector),
+        (Scenario::Disconnect, "victim") => Behavior::Victim(Victim),
+
+        (Scenario::Timeout, "timeout_player") => Behavior::Timeout(TimeoutPlayer),
+        (Scenario::Timeout, "victim") => Behavior::Victim(Victim),
+
+        (Scenario::Ghost, "disconnector") => Behavior::Ghost(GhostDisconnector),
+        (Scenario::Ghost, "victim") => Behavior::Victim(Victim),
+
+        _ => {
+            anyhow::bail!("Invalid role '{}' for scenario '{:?}'", role_str, scenario);
+        }
+    };
+
+    if let Err(e) = run_player(player_id, behavior).await {
+        error!("Player execution failed: {:?}", e);
     }
 
+    sleep(Duration::from_millis(200)).await;
     Ok(())
 }
 </file>

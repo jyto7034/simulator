@@ -711,6 +711,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "backoff"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b62ddb9cb1ec0a098ad4bbf9344d0713fa193ae1a80af55febcff2627b6a00c1"
+dependencies = [
+ "getrandom 0.2.16",
+ "instant",
+ "rand 0.8.5",
+]
+
+[[package]]
 name = "backtrace"
 version = "0.3.75"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3194,6 +3205,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "instant"
+version = "0.1.13"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e0242819d153cba4b4b05a5a8f2a7e9bbf97b6055b2a002b395c96b5ff3c0222"
+dependencies = [
+ "cfg-if",
+]
+
+[[package]]
 name = "ipnet"
 version = "2.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3635,12 +3655,14 @@ dependencies = [
  "actix-ws 0.2.5",
  "anyhow",
  "async-tungstenite",
+ "backoff",
  "chrono",
  "config",
  "ctor 0.4.2",
  "dotenv",
  "futures",
  "futures-util",
+ "hex",
  "jsonwebtoken",
  "rand 0.8.5",
  "rand_core 0.6.4",
@@ -7045,6 +7067,8 @@ dependencies = [
 name = "test_client"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "async-trait",
  "futures-util",
  "reqwest",
  "serde",
