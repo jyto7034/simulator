@@ -1,5 +1,6 @@
-use crate::{matchmaker::Matchmaker, pubsub::SubscriptionManager};
+use crate::{env::Settings, matchmaker::Matchmaker, pubsub::SubscriptionManager};
 use actix::Addr;
+use redis::aio::ConnectionManager;
 
 pub mod auth;
 pub mod env;
@@ -13,13 +14,10 @@ pub mod ws_session;
 // 서버 전체에서 공유될 상태
 #[derive(Clone)]
 pub struct AppState {
-    pub jwt_secret: String,
-    // redis_client는 이제 pubsub 액터에서만 사용되므로 AppState에서 제거
-    // pub redis_client: RedisClient,
+    pub settings: Settings,
     pub matchmaker_addr: Addr<Matchmaker>,
-    // provider_addr는 Matchmaker가 내부적으로 소유하므로 AppState에서 제거
-    // pub provider_addr: Addr<DedicatedServerProvider>,
     pub sub_manager_addr: Addr<SubscriptionManager>,
+    pub redis_conn_manager: ConnectionManager,
 }
 
 use std::{io, sync::Once};
@@ -27,14 +25,19 @@ use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 static INIT: Once = Once::new();
 static mut GUARD: Option<tracing_appender::non_blocking::WorkerGuard> = None;
-pub fn setup_logger() {
+pub fn setup_logger(settings: &Settings) {
     INIT.call_once(|| {
         // 1. 파일 로거 설정
-        let file_appender = RollingFileAppender::new(Rotation::DAILY, "logs", "app.log");
+        let file_appender = RollingFileAppender::new(
+            Rotation::DAILY,
+            &settings.logging.directory,
+            &settings.logging.filename,
+        );
         let (non_blocking_file_writer, _guard) = tracing_appender::non_blocking(file_appender);
 
-        // 2. 로그 레벨 필터 설정 (환경 변수 또는 기본값 INFO)
-        let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info")); // 기본 INFO 레벨
+        // 2. 로그 레벨 필터 설정 (환경 변수 또는 설정 파일 값)
+        let filter = EnvFilter::try_from_default_env()
+            .unwrap_or_else(|_| EnvFilter::new(&settings.server.log_level));
 
         // 3. 콘솔 출력 레이어 설정
         let console_layer = fmt::layer()
@@ -69,6 +72,10 @@ pub fn setup_logger() {
             GUARD = Some(_guard);
         }
 
-        tracing::info!("로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.");
+        tracing::info!(
+            "로거 초기화 완료: 콘솔 및 파일({}/{}) 출력 활성화.",
+            settings.logging.directory,
+            settings.logging.filename
+        );
     });
 }

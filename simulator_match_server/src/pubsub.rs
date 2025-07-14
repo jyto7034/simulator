@@ -1,17 +1,15 @@
+use crate::{env::Settings, protocol::ServerMessage, ws_session::MatchmakingSession};
 use actix::{
     Actor, Addr, AsyncContext, Context, ContextFutureSpawner, Handler, Message, WrapFuture,
 };
 use futures_util::stream::StreamExt;
 use redis::Client as RedisClient;
+use simulator_metrics::{APPLICATION_RESTARTS_TOTAL, REDIS_CONNECTION_FAILURES_TOTAL};
 use std::collections::HashMap;
 use std::time::Duration;
+use tokio::sync::mpsc;
 use tracing::{error, info, warn};
 use uuid::Uuid;
-
-use crate::protocol::ServerMessage;
-use crate::ws_session::MatchmakingSession;
-
-const RECONNECT_DELAY: Duration = Duration::from_secs(5);
 
 // --- Messages for this module ---
 #[derive(Message)]
@@ -92,43 +90,83 @@ impl Handler<ForwardMessage> for SubscriptionManager {
 pub struct RedisSubscriber {
     redis_client: RedisClient,
     manager_addr: Addr<SubscriptionManager>,
+    reconnect_attempts: u32,
+    settings: Settings,
+    shutdown_tx: mpsc::Sender<()>, // Shutdown channel sender
 }
 
 impl RedisSubscriber {
-    pub fn new(redis_client: RedisClient, manager_addr: Addr<SubscriptionManager>) -> Self {
+    pub fn new(
+        redis_client: RedisClient,
+        manager_addr: Addr<SubscriptionManager>,
+        settings: Settings,
+        shutdown_tx: mpsc::Sender<()>,
+    ) -> Self {
         Self {
             redis_client,
             manager_addr,
+            reconnect_attempts: 0,
+            settings,
+            shutdown_tx,
         }
     }
 
-    fn connect_and_subscribe(&self, ctx: &mut Context<Self>) {
+    fn connect_and_subscribe(&mut self, ctx: &mut Context<Self>) {
         info!("Attempting to connect and subscribe to Redis...");
         let client = self.redis_client.clone();
         let manager = self.manager_addr.clone();
         let self_addr = ctx.address();
+        let current_reconnect_attempts = self.reconnect_attempts;
+        let settings = self.settings.clone();
+        let shutdown_tx = self.shutdown_tx.clone();
 
         async move {
+            if current_reconnect_attempts >= settings.redis.max_reconnect_attempts {
+                REDIS_CONNECTION_FAILURES_TOTAL
+                    .with_label_values(&["pubsub"])
+                    .inc();
+                APPLICATION_RESTARTS_TOTAL.inc();
+                error!(
+                    "Max Redis reconnect attempts ({}) reached. Sending shutdown signal.",
+                    settings.redis.max_reconnect_attempts
+                );
+                if shutdown_tx.send(()).await.is_err() {
+                    error!("Failed to send shutdown signal. Forcing exit.");
+                    std::process::exit(1); // Fallback
+                }
+                return;
+            }
+
             let conn = match client.get_async_connection().await {
                 Ok(c) => {
                     info!("Successfully connected to Redis.");
+                    self_addr.do_send(ResetReconnectAttempts); // Reset on success
                     c
                 }
                 Err(e) => {
+                    REDIS_CONNECTION_FAILURES_TOTAL
+                        .with_label_values(&["pubsub"])
+                        .inc();
                     error!("RedisSubscriber failed to get connection: {}", e);
                     self_addr.do_send(Connect); // Trigger reconnect
                     return;
                 }
             };
             let mut pubsub = conn.into_pubsub();
-            if let Err(e) = pubsub.psubscribe("notifications:*").await {
+            let channel_pattern = &settings.redis.notification_channel_pattern;
+            if let Err(e) = pubsub.psubscribe(channel_pattern).await {
+                REDIS_CONNECTION_FAILURES_TOTAL
+                    .with_label_values(&["pubsub"])
+                    .inc();
                 error!("RedisSubscriber failed to psubscribe: {}", e);
                 self_addr.do_send(Connect); // Trigger reconnect
                 return;
             }
-            info!("Successfully subscribed to 'notifications:*'");
+            info!("Successfully subscribed to '{}'", channel_pattern);
 
             let mut stream = pubsub.on_message();
+            let prefix_to_strip = channel_pattern.trim_end_matches('*');
+
             while let Some(msg) = stream.next().await {
                 let channel: String = msg.get_channel_name().to_string();
                 let payload: String = match msg.get_payload() {
@@ -136,7 +174,7 @@ impl RedisSubscriber {
                     Err(_) => continue,
                 };
 
-                if let Some(player_id_str) = channel.strip_prefix("notifications:") {
+                if let Some(player_id_str) = channel.strip_prefix(prefix_to_strip) {
                     if let Ok(player_id) = Uuid::parse_str(player_id_str) {
                         if let Ok(server_msg) = serde_json::from_str::<ServerMessage>(&payload) {
                             manager.do_send(ForwardMessage {
@@ -164,12 +202,29 @@ impl Actor for RedisSubscriber {
     }
 }
 
+#[derive(Message)]
+#[rtype(result = "()")]
+struct ResetReconnectAttempts;
+
+impl Handler<ResetReconnectAttempts> for RedisSubscriber {
+    type Result = ();
+    fn handle(&mut self, _msg: ResetReconnectAttempts, _ctx: &mut Context<Self>) -> Self::Result {
+        info!("Redis connection successful. Resetting reconnect attempts.");
+        self.reconnect_attempts = 0;
+    }
+}
+
 impl Handler<Connect> for RedisSubscriber {
     type Result = ();
 
     fn handle(&mut self, _msg: Connect, ctx: &mut Context<Self>) -> Self::Result {
-        info!("Reconnect message received. Waiting for a delay...");
-        ctx.run_later(RECONNECT_DELAY, |act, ctx| {
+        self.reconnect_attempts += 1;
+        let delay = Duration::from_millis(std::cmp::min(
+            self.settings.redis.max_reconnect_delay_ms,
+            self.settings.redis.initial_reconnect_delay_ms * (2u64.pow(self.reconnect_attempts - 1)),
+        ));
+        info!("Reconnect message received. Attempt: {}. Waiting for a delay of {:?} before next attempt.", self.reconnect_attempts, delay);
+        ctx.run_later(delay, |act, ctx| {
             act.connect_and_subscribe(ctx);
         });
     }

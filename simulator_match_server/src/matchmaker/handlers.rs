@@ -1,72 +1,42 @@
 use crate::{protocol::ServerMessage, provider::FindAvailableServer};
-use actix::{Handler, ResponseFuture};
+use actix::{AsyncContext, Handler, ResponseFuture};
 use futures_util::stream::StreamExt;
 use redis::aio::ConnectionManager;
-use redis::{AsyncCommands, RedisResult, Script};
+use redis::{AsyncCommands, Script};
 use serde::{Deserialize, Serialize};
-use simulator_metrics::{MATCHES_CREATED_TOTAL, PLAYERS_IN_QUEUE};
-use std::collections::HashMap;
-use std::time::{SystemTime, UNIX_EPOCH};
+use simulator_metrics::{
+    HTTP_TIMEOUT_ERRORS_TOTAL, MATCHES_CREATED_TOTAL, MATCHMAKING_ERRORS_TOTAL, PLAYERS_IN_QUEUE,
+    SYSTEM_TIME_ERRORS_TOTAL,
+};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tracing::{error, info, warn};
 use uuid::Uuid;
 
-/*
-  1. 아키텍처 및 액터(Actor)의 역할
-   * Matchmaker 액터의 가장 핵심적인 책임은 무엇이며, DedicatedServerProvider 액터와는 어떤
-     관계를 맺고 있나요? 두 액터가 서로 통신하는 주된 이유는 무엇입니까?
-answer:
-    Matchmaker 액터는 started() 에서 run_interval 를 통해 주기적으로 TryMatch 메시지와 CheckStaleLoadingSessions 메시지를 처리합니다.
-    이는 매칭 요청을 처리하고 오래된 로딩 세션을 정리하는 책임을 가집니다.
-    매칭 성공 시, dedicated server를 찾아서 게임을 생성하는데, 이 때 dedicated server를 찾기 위해 DedicatedServerProvider 액터와 통신합니다.
-
-  2. 매치메이킹 핵심 로직
-   * 플레이어가 매칭을 요청(EnqueuePlayer)했을 때부터, 매치가 성사되어 로딩을 시작하라는
-     메시지(StartLoading)를 받기까지의 과정을 단계별로 설명해주세요. 이 과정에서 어떤 액터와
-     Redis 키(key)가 관련되나요?
-answer:
-    1. 먼저 게임 모드 유효성 검사를 실시합니다. 만약 유효하지 않다면 publish_message 함수를 통해 구독자에게 ServerMessage::Error 메시지를 발행합니다.
-    2. redis.sadd(&queue_key, &player_id_str).await; 함수를 통해 redis 에 원자적으로 k:queue, v:player_id_str 데이터 쌍을 추가합니다.
-    2-1. 만약 성공 한다면 ( Ok(count) )
-        - 플레이어가 큐에 추가되었다는 로그를 남기고, PLAYERS_IN_QUEUE 메트릭을 증가시킵니다.
-        - publish_message 함수를 통해 구독자에게 ServerMessage::Queued 메시지를 발행합니다.
-    2-2. 만약 실패한다면 ( Ok(_) )
-        - 플레이어가 이미 큐에 존재한다는 경고 로그를 남기고, publish_message 함수를 통해 구독자에게 ServerMessage::Error 메시지를 발행합니다.
-    2-3. 만약 redis.sadd 함수가 실패한다면 ( Err(e) )
-        - 에러 로그를 남기고, publish_message 함수를 통해 구독자에게 ServerMessage::Error 메시지를 발행합니다.
-    3. MatchMaker Actor 에서 주기적으로 수행되는 TryMatch 메시지의 Handler 가 수행됩니다.
-    4. lock 을 획득 후 ATOMIC_MATCH_SCRIPT 를 실행하여 redis 에서 매칭 대기중인 player_id 를 가져옵니다.
-    5.
-
-  3. 상태 관리와 Redis
-   * 이 시스템에서 Redis는 여러 가지 중요한 상태를 관리합니다. '플레이어 대기열', '로딩 중인
-     세션', '전용 서버 목록' 이 세 가지를 관리하기 위해 각각 어떤 Redis 자료구조(Data
-     Structure)와 키(Key) 패턴이 사용되고 있나요?
-
-  4. 분산 환경 및 동시성 제어
-   * match_server가 여러 인스턴스로 실행될 수 있는 분산 환경을 가정해 보겠습니다. 두 개의 다른
-     서버 인스턴스가 정확히 같은 시간에 동일한 게임 모드의 매칭을 시도할 때, 플레이어들이
-     중복으로 매칭되는 문제를 방지하기 위해 어떤 장치가 마련되어 있나요?
-
-  5. 오류 처리 및 복원력
-   * 플레이어 그룹이 성공적으로 매칭되어 로딩 상태에 들어갔지만, 한 명의 플레이어가 로딩을
-     완료하지 못하고 타임아웃이 발생했다고 가정해봅시다.
-       * 시스템은 이 "오래된(stale)" 로딩 세션을 어떻게 감지하고 정리하나요?
-       * 남아있는 다른 플레이어들은 어떻게 처리되나요?
-*/
-
 use super::{
-    actor::{Matchmaker, LOADING_SESSION_TIMEOUT_SECONDS},
+    actor::Matchmaker,
     lock::DistributedLock, // DistributedLock 임포트
     messages::*,
-    scripts::{ATOMIC_LOADING_COMPLETE_SCRIPT, ATOMIC_MATCH_SCRIPT},
+    scripts::{
+        ATOMIC_CANCEL_SESSION_SCRIPT, ATOMIC_LOADING_COMPLETE_SCRIPT, ATOMIC_MATCH_SCRIPT,
+        CLEANUP_STALE_SESSION_SCRIPT,
+    },
 };
 
-const LOCK_DURATION_MS: usize = 10_000; // 10초
+const LOCK_DURATION_MS: usize = 30_000; // 30초
 
 // --- Helper Functions ---
 async fn publish_message(redis: &mut ConnectionManager, player_id: Uuid, message: ServerMessage) {
     let channel = format!("notifications:{}", player_id);
-    let payload = serde_json::to_string(&message).unwrap();
+    let payload = match serde_json::to_string(&message) {
+        Ok(p) => p,
+        Err(e) => {
+            warn!(
+                "Failed to serialize ServerMessage for player {}: {}",
+                player_id, e
+            );
+            return;
+        }
+    };
     if let Err(e) = redis.publish::<_, _, ()>(&channel, &payload).await {
         warn!("Failed to publish message to channel {}: {}", channel, e);
     }
@@ -94,35 +64,29 @@ impl Handler<EnqueuePlayer> for Matchmaker {
     type Result = ResponseFuture<()>;
     fn handle(&mut self, msg: EnqueuePlayer, _ctx: &mut Self::Context) -> Self::Result {
         let mut redis = self.redis.clone();
-        let queue_key_prefix = self.settings.queue_key_prefix.clone();
+        let settings = self.settings.clone();
 
-        // 게임 모드 유효성 검사
-        let is_valid_game_mode = self
-            .settings
-            .game_modes
-            .iter()
-            .any(|m| m.id == msg.game_mode);
-        if !is_valid_game_mode {
-            let player_id = msg.player_id;
-            return Box::pin(async move {
+        Box::pin(async move {
+            // 게임 모드 유효성 검사
+            let is_valid_game_mode = settings.game_modes.iter().any(|m| m.id == msg.game_mode);
+            if !is_valid_game_mode {
                 warn!(
                     "Player {} tried to enqueue for invalid game mode: {}",
-                    player_id, msg.game_mode
+                    msg.player_id, msg.game_mode
                 );
                 publish_message(
                     &mut redis,
-                    player_id,
+                    msg.player_id,
                     ServerMessage::Error {
                         message: format!("Invalid game mode: {}", msg.game_mode),
                     },
                 )
                 .await;
-            });
-        }
+                return;
+            }
 
-        Box::pin(async move {
             let player_id_str = msg.player_id.to_string();
-            let queue_key = format!("{}:{}", queue_key_prefix, msg.game_mode);
+            let queue_key = format!("{}:{}", settings.queue_key_prefix, msg.game_mode);
 
             // Redis SADD는 원자적이므로 락 불필요
             let result: Result<i32, _> = redis.sadd(&queue_key, &player_id_str).await;
@@ -200,12 +164,11 @@ impl Handler<TryMatch> for Matchmaker {
     type Result = ResponseFuture<()>;
     fn handle(&mut self, msg: TryMatch, _ctx: &mut Self::Context) -> Self::Result {
         let mut redis = self.redis.clone();
-        let game_mode_settings = msg.game_mode;
-        let queue_key_prefix = self.settings.queue_key_prefix.clone();
+        let game_mode_settings = msg.game_mode.clone();
+        let settings = self.settings.clone();
 
         Box::pin(async move {
-            let queue_key = format!("{}:{}", queue_key_prefix, game_mode_settings.id);
-            // 게임에 필요한 플레이어 수 입니다.
+            let queue_key = format!("{}:{}", settings.queue_key_prefix, game_mode_settings.id);
             let required_players = game_mode_settings.required_players;
             let lock_key = format!("lock:match:{}", game_mode_settings.id);
 
@@ -216,14 +179,10 @@ impl Handler<TryMatch> for Matchmaker {
                 );
             }
 
-            // --- 분산락 획득 ---
             let lock = match DistributedLock::acquire(&mut redis, &lock_key, LOCK_DURATION_MS).await
             {
                 Ok(Some(lock)) => lock,
-                Ok(None) => {
-                    // 다른 서버가 이미 매칭 처리 중이므로 건너뛰기
-                    return;
-                }
+                Ok(None) => return,
                 Err(e) => {
                     error!(
                         "Failed to acquire lock for matching in {}: {}",
@@ -233,83 +192,74 @@ impl Handler<TryMatch> for Matchmaker {
                 }
             };
 
-            // 필요한 플레이어 수 만큼 redis 에서 player id 를 가져옵니다.
+            let current_timestamp = match SystemTime::now().duration_since(UNIX_EPOCH) {
+                Ok(d) => d.as_secs().to_string(),
+                Err(e) => {
+                    SYSTEM_TIME_ERRORS_TOTAL.inc();
+                    error!(
+                        "System time is before UNIX EPOCH, cannot get timestamp: {}",
+                        e
+                    );
+                    if let Err(e) = lock.release(&mut redis).await {
+                        error!("Failed to release lock: {}", e);
+                    }
+                    return;
+                }
+            };
+
+            let loading_session_id = Uuid::new_v4();
             let script = Script::new(ATOMIC_MATCH_SCRIPT);
-            let player_ids: Vec<String> = match script
+            let script_result: Vec<String> = match script
                 .key(&queue_key)
                 .arg(required_players)
+                .arg(loading_session_id.to_string())
+                .arg(current_timestamp)
+                .arg(settings.loading_session_timeout_seconds)
                 .invoke_async(&mut redis)
                 .await
             {
                 Ok(p) => p,
                 Err(e) => {
                     error!("Matchmaking script failed for queue {}: {}", queue_key, e);
-                    // 락 해제
-                    if let Err(lock_err) = lock.release(&mut redis).await {
-                        error!(
-                            "Failed to release lock for matching in {}: {}",
-                            game_mode_settings.id, lock_err
-                        );
+                    if let Err(e) = lock.release(&mut redis).await {
+                        error!("Failed to release lock: {}", e);
                     }
                     return;
                 }
             };
 
-            if player_ids.len() as u32 == required_players {
+            if script_result.len() as u32 >= (required_players + 2) {
+                let game_mode = script_result.get(0).cloned().unwrap_or_default();
+                let returned_loading_session_id = script_result
+                    .get(1)
+                    .and_then(|s| Uuid::parse_str(s).ok())
+                    .unwrap_or_else(|| {
+                        error!("Could not parse loading session ID from script result.");
+                        loading_session_id // Fallback to the one we generated
+                    });
+                let player_ids: Vec<String> = script_result[2..].to_vec();
+
                 PLAYERS_IN_QUEUE.sub(required_players as i64);
                 info!(
-                    "[{}] Found a potential match with players: {:?}",
-                    game_mode_settings.id, player_ids
+                    "[{}] Found a potential match with players: {:?} for session {}",
+                    game_mode, player_ids, returned_loading_session_id
                 );
 
-                let loading_session_id = Uuid::new_v4();
-                let loading_key = format!("loading:{}", loading_session_id);
-
-                let mut players_map = HashMap::new();
-                for player_id in &player_ids {
-                    players_map.insert(player_id.clone(), "loading".to_string());
-                }
-                players_map.insert("game_mode".to_string(), game_mode_settings.id.clone());
-                let current_timestamp = SystemTime::now()
-                    .duration_since(UNIX_EPOCH)
-                    .unwrap()
-                    .as_secs()
-                    .to_string();
-                players_map.insert("created_at".to_string(), current_timestamp);
-                players_map.insert("status".to_string(), "loading".to_string());
-
-                let players_map_slice: Vec<_> = players_map.iter().collect();
-                if let Err(e) = redis
-                    .hset_multiple::<_, _, _, ()>(&loading_key, &players_map_slice)
-                    .await
-                {
-                    error!(
-                        "Failed to create loading session in Redis: {}. Re-queuing players.",
-                        e
-                    );
-                    requeue_players(&mut redis, &queue_key, &player_ids).await;
-                    // 락 해제
-                    if let Err(lock_err) = lock.release(&mut redis).await {
-                        error!(
-                            "Failed to release lock for matching in {}: {}",
-                            game_mode_settings.id, lock_err
+                let message = ServerMessage::StartLoading {
+                    loading_session_id: returned_loading_session_id,
+                };
+                for player_id_str in &player_ids {
+                    if let Ok(player_id) = Uuid::parse_str(player_id_str) {
+                        publish_message(&mut redis, player_id, message.clone()).await;
+                    } else {
+                        warn!(
+                            "Could not parse player UUID from script result: {}",
+                            player_id_str
                         );
                     }
-                    return;
-                }
-
-                info!(
-                    "[{}] Notifying players to start loading for session {}",
-                    game_mode_settings.id, loading_session_id
-                );
-                let message = ServerMessage::StartLoading { loading_session_id };
-                for player_id_str in &player_ids {
-                    let player_id = Uuid::parse_str(player_id_str).unwrap();
-                    publish_message(&mut redis, player_id, message.clone()).await;
                 }
             }
 
-            // --- 분산락 해제 ---
             if let Err(e) = lock.release(&mut redis).await {
                 error!(
                     "Failed to release lock for matching in {}: {}",
@@ -333,7 +283,6 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
             let player_id_str = msg.player_id.to_string();
             let lock_key = format!("lock:{}", loading_key);
 
-            // --- 분산락 획득 ---
             let lock = match DistributedLock::acquire(&mut redis, &lock_key, LOCK_DURATION_MS).await
             {
                 Ok(Some(lock)) => lock,
@@ -360,14 +309,6 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                 .invoke_async(&mut redis)
                 .await;
 
-            // --- 분산락 해제 ---
-            if let Err(e) = lock.release(&mut redis).await {
-                error!(
-                    "Failed to release lock for session {}: {}",
-                    msg.loading_session_id, e
-                );
-            }
-
             let mut script_result: Vec<String> = match result {
                 Ok(ids) if !ids.is_empty() => ids,
                 Ok(_) => {
@@ -375,6 +316,12 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                         "Player {} is ready, but waiting for others in session {}.",
                         player_id_str, msg.loading_session_id
                     );
+                    if let Err(e) = lock.release(&mut redis).await {
+                        error!(
+                            "Failed to release lock for session {}: {}",
+                            msg.loading_session_id, e
+                        );
+                    }
                     return;
                 }
                 Err(e) => {
@@ -382,11 +329,25 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                         "Atomic loading script failed for session {}: {}",
                         msg.loading_session_id, e
                     );
+                    if let Err(e) = lock.release(&mut redis).await {
+                        error!(
+                            "Failed to release lock for session {}: {}",
+                            msg.loading_session_id, e
+                        );
+                    }
                     return;
                 }
             };
 
-            let game_mode = script_result.remove(0);
+            let game_mode = if !script_result.is_empty() {
+                script_result.remove(0)
+            } else {
+                error!("Script result for loading complete is empty, cannot proceed.");
+                if let Err(e) = lock.release(&mut redis).await {
+                    error!("Failed to release lock: {}", e);
+                }
+                return;
+            };
             let player_ids = script_result;
 
             info!(
@@ -394,7 +355,9 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                 player_ids, msg.loading_session_id
             );
 
-            match provider_addr.send(FindAvailableServer).await {
+            let find_server_result = provider_addr.send(FindAvailableServer).await;
+
+            match find_server_result {
                 Ok(Ok(server_info)) => {
                     let create_session_url =
                         format!("http://{}/session/create", server_info.address);
@@ -405,13 +368,14 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                     let req_body = CreateSessionReq {
                         players: player_ids
                             .iter()
-                            .map(|id| Uuid::parse_str(id).unwrap())
+                            .filter_map(|id| Uuid::parse_str(id).ok())
                             .collect(),
                     };
 
                     match http_client
                         .post(&create_session_url)
                         .json(&req_body)
+                        .timeout(Duration::from_secs(5))
                         .send()
                         .await
                     {
@@ -434,13 +398,17 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                                         server_address: session_info.server_address.clone(),
                                     };
                                     for player_id_str in &player_ids {
-                                        let player_id = Uuid::parse_str(player_id_str).unwrap();
-                                        publish_message(&mut redis, player_id, message.clone())
-                                            .await;
+                                        if let Ok(player_id) = Uuid::parse_str(player_id_str) {
+                                            publish_message(&mut redis, player_id, message.clone())
+                                                .await;
+                                        }
                                     }
                                 }
                                 Err(e) => {
                                     let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
+                                    MATCHMAKING_ERRORS_TOTAL
+                                        .with_label_values(&["session_response_parse_failed"])
+                                        .inc();
                                     error!("[{}] Failed to parse session creation response: {}. Re-queuing players.", game_mode, e);
                                     requeue_players(&mut redis, &queue_key, &player_ids).await;
                                 }
@@ -448,6 +416,9 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                         }
                         Ok(resp) => {
                             let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
+                            MATCHMAKING_ERRORS_TOTAL
+                                .with_label_values(&["dedicated_server_error_response"])
+                                .inc();
                             error!(
                                 "[{}] Dedicated server returned error: {}. Re-queuing players.",
                                 game_mode,
@@ -457,8 +428,16 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                         }
                         Err(e) => {
                             let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
+                            if e.is_timeout() {
+                                HTTP_TIMEOUT_ERRORS_TOTAL
+                                    .with_label_values(&["dedicated_server"])
+                                    .inc();
+                            }
+                            MATCHMAKING_ERRORS_TOTAL
+                                .with_label_values(&["dedicated_server_request_failed"])
+                                .inc();
                             error!(
-                                "[{}] Failed to contact dedicated server: {}. Re-queuing players.",
+                                "[{}] Failed to contact dedicated server (timeout or network error): {}. Re-queuing players.",
                                 game_mode, e
                             );
                             requeue_players(&mut redis, &queue_key, &player_ids).await;
@@ -467,6 +446,9 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                 }
                 Ok(Err(e)) => {
                     let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
+                    MATCHMAKING_ERRORS_TOTAL
+                        .with_label_values(&["server_provider_failed"])
+                        .inc();
                     error!(
                         "[{}] Failed to find available server: {}. Re-queuing players.",
                         game_mode, e
@@ -475,12 +457,22 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                 }
                 Err(e) => {
                     let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
+                    MATCHMAKING_ERRORS_TOTAL
+                        .with_label_values(&["server_provider_mailbox_error"])
+                        .inc();
                     error!(
                         "[{}] Mailbox error when contacting provider: {}. Re-queuing players.",
                         game_mode, e
                     );
                     requeue_players(&mut redis, &queue_key, &player_ids).await;
                 }
+            }
+
+            if let Err(e) = lock.release(&mut redis).await {
+                error!(
+                    "Failed to release lock for session {}: {}",
+                    msg.loading_session_id, e
+                );
             }
         })
     }
@@ -494,108 +486,63 @@ impl Handler<CancelLoadingSession> for Matchmaker {
 
         Box::pin(async move {
             let loading_key = format!("loading:{}", msg.loading_session_id);
-            let lock_key = format!("lock:{}", loading_key);
+            let disconnected_player_id_str = msg.player_id.to_string();
 
             info!(
                 "Attempting to cancel loading session {} due to player {} disconnection.",
                 msg.loading_session_id, msg.player_id
             );
 
-            // --- 1. 분산락 획득 ---
-            let lock = match DistributedLock::acquire(&mut redis, &lock_key, LOCK_DURATION_MS).await
-            {
-                Ok(Some(lock)) => lock,
-                Ok(None) => {
-                    info!("Could not acquire lock for cancellation on session {}, another process is handling it.", msg.loading_session_id);
+            let script = Script::new(ATOMIC_CANCEL_SESSION_SCRIPT);
+            let result: Result<Vec<String>, _> = script
+                .key(&loading_key)
+                .arg(&disconnected_player_id_str)
+                .invoke_async(&mut redis)
+                .await;
+
+            let mut script_result = match result {
+                Ok(val) if !val.is_empty() => val,
+                Ok(_) => {
+                    warn!(
+                        "Loading session {} already handled or cleaned up before cancellation.",
+                        msg.loading_session_id
+                    );
                     return;
                 }
                 Err(e) => {
                     error!(
-                        "Failed to acquire lock for cancellation on session {}: {}",
+                        "Failed to run cancellation script for session {}: {}",
                         msg.loading_session_id, e
                     );
                     return;
                 }
             };
 
-            // --- 2. 락 내부에서 세션 데이터 확인 ---
-            // 이 시점에 HandleLoadingComplete가 먼저 성공했다면, 키는 이미 존재하지 않을 것입니다.
-            let all_players_status: HashMap<String, String> = match redis
-                .hgetall::<_, HashMap<String, String>>(&loading_key)
-                .await
-            {
-                Ok(statuses) if !statuses.is_empty() => statuses,
-                _ => {
-                    // 세션이 존재하지 않으면(이미 처리되었으면) 아무것도 할 필요가 없습니다.
-                    warn!(
-                        "Loading session {} already handled or cleaned up before cancellation.",
-                        msg.loading_session_id
-                    );
-                    // 락을 해제하고 종료합니다.
-                    if let Err(e) = lock.release(&mut redis).await {
-                        error!(
-                            "Failed to release lock for session {}: {}",
-                            msg.loading_session_id, e
-                        );
-                    }
-                    return;
-                }
+            let game_mode = if !script_result.is_empty() {
+                script_result.remove(0)
+            } else {
+                error!("Script result for cancellation is empty, cannot proceed.");
+                return;
             };
-
-            // --- 3. 세션 키 삭제 (취소 로직의 핵심) ---
-            // 여기서 키를 삭제함으로써, 뒤늦게 도착할 수 있는 HandleLoadingComplete가 아무 작업도 못하게 만듭니다.
-            info!(
-                "Cancelling and deleting loading session {}.",
-                msg.loading_session_id
-            );
-            if let Err(e) = redis.del::<_, ()>(&loading_key).await {
-                // 키 삭제 실패는 크리티컬한 상황일 수 있으나, 로직은 계속 진행하여 플레이어 재입장을 시도합니다.
-                error!(
-                    "Failed to delete loading session key {}: {}",
-                    loading_key, e
-                );
-            }
-
-            // --- 4. 락 해제 ---
-            // 재입장 로직은 다른 플레이어에게 알림을 보내는 등 시간이 걸릴 수 있으므로,
-            // 임계 영역에 해당하는 키 삭제 후에는 가능한 한 빨리 락을 해제합니다.
-            if let Err(e) = lock.release(&mut redis).await {
-                error!(
-                    "Failed to release lock for session {}: {}",
-                    msg.loading_session_id, e
-                );
-            }
-
-            // --- 5. 나머지 플레이어 처리 ---
-            let game_mode = all_players_status
-                .get("game_mode")
-                .cloned()
-                .unwrap_or_default();
-            let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
-
-            let disconnected_player_id_str = msg.player_id.to_string();
-            let players_to_requeue: Vec<String> = all_players_status
-                .keys()
-                .filter(|k| {
-                    let k_str = k.as_str();
-                    k_str != "game_mode"
-                        && k_str != "created_at"
-                        && k_str != "status"
-                        && k_str != disconnected_player_id_str
-                })
-                .cloned()
-                .collect();
+            let players_to_requeue = script_result;
 
             if !players_to_requeue.is_empty() {
-                info!("Notifying remaining players and re-queuing them.");
+                info!(
+                    "Notifying remaining players {:?} and re-queuing them for game mode '{}'.",
+                    players_to_requeue, game_mode
+                );
+                let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
+
                 let message = ServerMessage::Error {
                     message:
                         "A player disconnected during loading. You have been returned to the queue."
                             .to_string(),
                 };
+
                 for player_id_str in &players_to_requeue {
-                    let player_id = Uuid::parse_str(player_id_str).unwrap();
-                    publish_message(&mut redis, player_id, message.clone()).await;
+                    if let Ok(player_id) = Uuid::parse_str(player_id_str) {
+                        publish_message(&mut redis, player_id, message.clone()).await;
+                    }
                 }
                 requeue_players(&mut redis, &queue_key, &players_to_requeue).await;
             }
@@ -611,12 +558,12 @@ impl Handler<CheckStaleLoadingSessions> for Matchmaker {
         _ctx: &mut Self::Context,
     ) -> Self::Result {
         let mut redis = self.redis.clone();
-        let queue_key_prefix = self.settings.queue_key_prefix.clone();
+        let matchmaker_addr = _ctx.address();
+        let settings = self.settings.clone();
 
         Box::pin(async move {
             info!("Checking for stale loading sessions...");
 
-            // SCAN 사용으로 Redis 블로킹 방지
             let mut keys: Vec<String> = Vec::new();
             match redis.scan_match::<_, String>("loading:*").await {
                 Ok(mut iter) => {
@@ -633,65 +580,96 @@ impl Handler<CheckStaleLoadingSessions> for Matchmaker {
             for key in keys {
                 let lock_key = format!("lock:{}", key);
 
-                // --- 각 세션에 대한 분산락 획득 시도 ---
                 let lock =
                     match DistributedLock::acquire(&mut redis, &lock_key, LOCK_DURATION_MS).await {
                         Ok(Some(lock)) => lock,
-                        _ => continue, // 락 획득 실패 시 (다른 프로세스가 처리 중이거나 에러), 다음 키로 넘어감
+                        _ => continue,
                     };
 
-                let Ok(all_players_status): RedisResult<HashMap<String, String>> =
-                    redis.hgetall(&key).await
-                else {
-                    // 락 해제
-                    let _ = lock.release(&mut redis).await;
-                    continue;
+                let now = match SystemTime::now().duration_since(UNIX_EPOCH) {
+                    Ok(d) => d.as_secs(),
+                    Err(e) => {
+                        SYSTEM_TIME_ERRORS_TOTAL.inc();
+                        error!(
+                            "System time is before UNIX EPOCH, cannot check stale sessions: {}",
+                            e
+                        );
+                        if let Err(e) = lock.release(&mut redis).await {
+                            error!("Failed to release lock: {}", e);
+                        }
+                        continue;
+                    }
                 };
 
-                let Some(created_at_str) = all_players_status.get("created_at") else {
-                    let _ = lock.release(&mut redis).await;
+                let script = Script::new(CLEANUP_STALE_SESSION_SCRIPT);
+                let result: Result<Vec<String>, _> = script
+                    .key(&key)
+                    .arg(now as i64)
+                    .arg(settings.loading_session_timeout_seconds as i64)
+                    .invoke_async(&mut redis)
+                    .await;
+
+                let mut script_result = match result {
+                    Ok(val) if !val.is_empty() => val,
+                    Ok(_) => {
+                        if let Err(e) = lock.release(&mut redis).await {
+                            error!(
+                                "Failed to release lock for stale check on key {}: {}",
+                                key, e
+                            );
+                        }
+                        continue;
+                    }
+                    Err(e) => {
+                        error!(
+                            "Failed to run stale session cleanup script for key {}: {}",
+                            key, e
+                        );
+                        if let Err(e) = lock.release(&mut redis).await {
+                            error!(
+                                "Failed to release lock for stale check on key {}: {}",
+                                key, e
+                            );
+                        }
+                        continue;
+                    }
+                };
+
+                let game_mode = if !script_result.is_empty() {
+                    script_result.remove(0)
+                } else {
+                    error!("Script result for stale check is empty, cannot proceed.");
+                    if let Err(e) = lock.release(&mut redis).await {
+                        error!("Failed to release lock: {}", e);
+                    }
                     continue;
                 };
-                let Ok(created_at) = created_at_str.parse::<u64>() else {
-                    let _ = lock.release(&mut redis).await;
-                    continue;
-                };
+                let players_to_requeue = script_result;
 
-                let now = SystemTime::now()
-                    .duration_since(UNIX_EPOCH)
-                    .unwrap()
-                    .as_secs();
+                if !players_to_requeue.is_empty() {
+                    warn!(
+                        "Found stale loading session {}. Scheduling re-queuing for players {:?} for game mode '{}'.",
+                        key, players_to_requeue, game_mode
+                    );
 
-                if now > created_at + LOADING_SESSION_TIMEOUT_SECONDS {
-                    warn!("Found stale loading session {}. Cleaning up.", key);
-
-                    let _: RedisResult<()> = redis.del(&key).await;
-
-                    let game_mode = all_players_status
-                        .get("game_mode")
-                        .cloned()
-                        .unwrap_or_default();
-                    let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
-
-                    let players_to_requeue: Vec<String> = all_players_status
-                        .keys()
-                        .filter(|k| *k != "game_mode" && *k != "created_at" && *k != "status")
-                        .cloned()
-                        .collect();
-
-                    if !players_to_requeue.is_empty() {
-                        let message = ServerMessage::Error {
-                            message: "Matchmaking timed out. You have been returned to the queue."
+                    let message = ServerMessage::Error {
+                        message:
+                            "Matchmaking timed out. You will be returned to the queue shortly."
                                 .to_string(),
-                        };
-                        for player_id_str in &players_to_requeue {
-                            let player_id = Uuid::parse_str(player_id_str).unwrap();
+                    };
+                    for player_id_str in &players_to_requeue {
+                        if let Ok(player_id) = Uuid::parse_str(player_id_str) {
                             publish_message(&mut redis, player_id, message.clone()).await;
                         }
-                        requeue_players(&mut redis, &queue_key, &players_to_requeue).await;
                     }
+
+                    matchmaker_addr.do_send(DelayedRequeuePlayers {
+                        player_ids: players_to_requeue,
+                        game_mode: game_mode,
+                        delay: Duration::from_secs(5),
+                    });
                 }
-                // --- 작업 완료 후 락 해제 ---
+
                 if let Err(e) = lock.release(&mut redis).await {
                     error!(
                         "Failed to release lock for stale check on key {}: {}",
@@ -699,6 +677,24 @@ impl Handler<CheckStaleLoadingSessions> for Matchmaker {
                     );
                 }
             }
+        })
+    }
+}
+
+impl Handler<DelayedRequeuePlayers> for Matchmaker {
+    type Result = ResponseFuture<()>;
+
+    fn handle(&mut self, msg: DelayedRequeuePlayers, _ctx: &mut Self::Context) -> Self::Result {
+        let mut redis = self.redis.clone();
+        let queue_key_prefix = self.settings.queue_key_prefix.clone();
+
+        Box::pin(async move {
+            info!(
+                "Re-queuing players {:?} for game mode {} after delay.",
+                msg.player_ids, msg.game_mode
+            );
+            let queue_key = format!("{}:{}", queue_key_prefix, msg.game_mode);
+            requeue_players(&mut redis, &queue_key, &msg.player_ids).await;
         })
     }
 }

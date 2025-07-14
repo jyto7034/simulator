@@ -25,15 +25,24 @@ impl FromRequest for AuthenticatedUser {
     type Future = Ready<Result<Self, Self::Error>>;
 
     fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
-        let app_state = req.app_data::<web::Data<AppState>>().unwrap();
+        let app_state = req.app_data::<web::Data<AppState>>().expect(
+            "AppState not configured in Actix-Web application. This is a critical server configuration error.",
+        );
 
         // 1. Authorization 헤더에서 토큰 추출
         let auth_header = match req.headers().get("Authorization") {
-            Some(header) => header.to_str().unwrap_or(""),
+            Some(header) => match header.to_str() {
+                Ok(s) => s,
+                Err(_) => {
+                    return ready(Err(actix_web::error::ErrorUnauthorized(
+                        "Invalid Authorization header encoding",
+                    )));
+                }
+            },
             None => {
                 return ready(Err(actix_web::error::ErrorUnauthorized(
                     "Missing Authorization header",
-                )))
+                )));
             }
         };
 
@@ -48,7 +57,7 @@ impl FromRequest for AuthenticatedUser {
         // 2. JWT 디코딩 및 검증
         let token_data = match decode::<Claims>(
             token,
-            &DecodingKey::from_secret(app_state.jwt_secret.as_ref()),
+            &DecodingKey::from_secret(app_state.settings.jwt.secret.as_ref()),
             &Validation::default(),
         ) {
             Ok(data) => data,
@@ -65,7 +74,7 @@ impl FromRequest for AuthenticatedUser {
             Err(_) => {
                 return ready(Err(actix_web::error::ErrorBadRequest(
                     "Invalid steam_id in token",
-                )))
+                )));
             }
         };
 
