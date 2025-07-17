@@ -1,12 +1,24 @@
-use crate::{    matchmaker::messages::{CancelLoadingSession, DequeuePlayer, EnqueuePlayer},    protocol::{ClientMessage, ServerMessage},    pubsub::{Deregister, Register},    Matchmaker, SubscriptionManager,};use actix::{    fut, Actor, ActorContext, ActorFutureExt, Addr, AsyncContext, Handler, Running, StreamHandler,};use actix_web_actors::ws;use std::time::{Duration, Instant};use tracing::{info, warn};use uuid::Uuid;
+use crate::{
+    matchmaker::messages::{CancelLoadingSession, DequeuePlayer, EnqueuePlayer},
+    protocol::{ClientMessage, ServerMessage},
+    pubsub::{Deregister, Register},
+    Matchmaker, SubscriptionManager,
+};
+use actix::{
+    fut, Actor, ActorContext, ActorFutureExt, Addr, AsyncContext, Handler, Running, StreamHandler,
+};
+use actix_web_actors::ws;
+use std::time::{Duration, Instant};
+use tracing::{info, warn};
+use uuid::Uuid;
 
 /// Represents the state of the matchmaking session.
 #[derive(Clone, Debug, PartialEq)]
 enum SessionState {
-    Idle,        // Initial state, no activity.
-    Enqueuing,   // Enqueue request received, processing.
-    InQueue,     // Successfully enqueued, waiting for a match.
-    InLoading,   // Match found, loading assets.
+    Idle,          // Initial state, no activity.
+    Enqueuing,     // Enqueue request received, processing.
+    InQueue,       // Successfully enqueued, waiting for a match.
+    InLoading,     // Match found, loading assets.
     Disconnecting, // Session is gracefully shutting down.
 }
 
@@ -127,7 +139,7 @@ impl Handler<ServerMessage> for MatchmakingSession {
 
     fn handle(&mut self, msg: ServerMessage, ctx: &mut Self::Context) {
         match msg {
-            ServerMessage::Queued => {
+            ServerMessage::EnQueued => {
                 self.state = SessionState::InQueue;
             }
             ServerMessage::StartLoading { loading_session_id } => {
@@ -154,71 +166,72 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for MatchmakingSessio
             Ok(ws::Message::Pong(_)) => {
                 self.hb = Instant::now();
             }
-            Ok(ws::Message::Text(text)) => {
-                match serde_json::from_str::<ClientMessage>(&text) {
-                    Ok(ClientMessage::Enqueue { player_id, game_mode }) => {
-                        if self.state != SessionState::Idle {
-                            warn!(
-                                "Player {:?} sent Enqueue request in non-idle state: {:?}. Ignoring.",
-                                self.player_id.or(Some(player_id)),
-                                self.state
-                            );
-                            return;
-                        }
-
-                        info!(
-                            "Player {} requests queue for {}. Updating session state.",
-                            player_id, game_mode
+            Ok(ws::Message::Text(text)) => match serde_json::from_str::<ClientMessage>(&text) {
+                Ok(ClientMessage::Enqueue {
+                    player_id,
+                    game_mode,
+                }) => {
+                    if self.state != SessionState::Idle {
+                        warn!(
+                            "Player {:?} sent Enqueue request in non-idle state: {:?}. Ignoring.",
+                            self.player_id.or(Some(player_id)),
+                            self.state
                         );
-
-                        self.state = SessionState::Enqueuing;
-                        self.player_id = Some(player_id);
-                        self.game_mode = Some(game_mode.clone());
-
-                        self.sub_manager_addr.do_send(Register {
-                            player_id,
-                            addr: ctx.address(),
-                        });
-
-                        self.matchmaker_addr.do_send(EnqueuePlayer {
-                            player_id,
-                            game_mode,
-                        });
+                        return;
                     }
-                    Ok(ClientMessage::LoadingComplete { loading_session_id }) => {
-                        if self.state != SessionState::InLoading {
-                            warn!(
+
+                    info!(
+                        "Player {} requests queue for {}. Updating session state.",
+                        player_id, game_mode
+                    );
+
+                    self.state = SessionState::Enqueuing;
+                    self.player_id = Some(player_id);
+                    self.game_mode = Some(game_mode.clone());
+
+                    self.sub_manager_addr.do_send(Register {
+                        player_id,
+                        addr: ctx.address(),
+                    });
+
+                    self.matchmaker_addr.do_send(EnqueuePlayer {
+                        player_id,
+                        game_mode,
+                    });
+                }
+                Ok(ClientMessage::LoadingComplete { loading_session_id }) => {
+                    if self.state != SessionState::InLoading {
+                        warn!(
                                 "Received LoadingComplete from player {:?} not in loading state. Ignoring.",
                                 self.player_id
                             );
-                            return;
-                        }
-                        if let Some(player_id) = self.player_id {
-                            info!(
-                                "Player {} finished loading for session {}",
-                                player_id, loading_session_id
-                            );
-                            self.matchmaker_addr.do_send(
-                                crate::matchmaker::messages::HandleLoadingComplete {
-                                    player_id,
-                                    loading_session_id,
-                                },
-                            );
-                        } else {
-                            warn!("Received LoadingComplete from a session with no player_id.");
-                        }
+                        return;
                     }
-                    Err(e) => {
-                        warn!("Failed to parse client message: {}", e);
-                        match serde_json::to_string(&ServerMessage::Error {
-                            message: "Invalid message format".to_string(),
-                        }) {
-                            Ok(text) => ctx.text(text),
-                            Err(e) => warn!("Failed to serialize error message for client: {}", e),
-                        }
+                    if let Some(player_id) = self.player_id {
+                        info!(
+                            "Player {} finished loading for session {}",
+                            player_id, loading_session_id
+                        );
+                        self.matchmaker_addr.do_send(
+                            crate::matchmaker::messages::HandleLoadingComplete {
+                                player_id,
+                                loading_session_id,
+                            },
+                        );
+                    } else {
+                        warn!("Received LoadingComplete from a session with no player_id.");
                     }
                 }
-            }
+                Err(e) => {
+                    warn!("Failed to parse client message: {}", e);
+                    match serde_json::to_string(&ServerMessage::Error {
+                        message: "Invalid message format".to_string(),
+                    }) {
+                        Ok(text) => ctx.text(text),
+                        Err(e) => warn!("Failed to serialize error message for client: {}", e),
+                    }
+                }
+            },
             Ok(ws::Message::Close(reason)) => {
                 ctx.close(reason);
                 ctx.stop();

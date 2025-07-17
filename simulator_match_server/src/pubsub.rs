@@ -10,6 +10,7 @@ use std::time::Duration;
 use tokio::sync::mpsc;
 use tracing::{error, info, warn};
 use uuid::Uuid;
+use serde::Serialize;
 
 // --- Messages for this module ---
 #[derive(Message)]
@@ -55,6 +56,16 @@ pub struct ForwardMessage {
     pub message: ServerMessage,
 }
 
+#[derive(Message)]
+#[rtype(result = "Result<Vec<SessionInfo>, anyhow::Error>")]
+pub struct GetActiveSessionsDebug;
+
+#[derive(Serialize, Debug, Clone)]
+pub struct SessionInfo {
+    pub player_id: String,
+    pub connected_at: String,
+}
+
 impl Handler<Register> for SubscriptionManager {
     type Result = ();
     fn handle(&mut self, msg: Register, _ctx: &mut Context<Self>) -> Self::Result {
@@ -82,6 +93,23 @@ impl Handler<ForwardMessage> for SubscriptionManager {
                 msg.player_id
             );
         }
+    }
+}
+
+impl Handler<GetActiveSessionsDebug> for SubscriptionManager {
+    type Result = Result<Vec<SessionInfo>, anyhow::Error>;
+    
+    fn handle(&mut self, _msg: GetActiveSessionsDebug, _ctx: &mut Context<Self>) -> Self::Result {
+        let sessions: Vec<SessionInfo> = self
+            .sessions
+            .keys()
+            .map(|player_id| SessionInfo {
+                player_id: player_id.to_string(),
+                connected_at: chrono::Utc::now().to_rfc3339(), // 실제로는 연결 시간을 저장해야 함
+            })
+            .collect();
+        
+        Ok(sessions)
     }
 }
 

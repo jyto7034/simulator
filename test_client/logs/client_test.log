@@ -1,0 +1,12 @@
+  2025-07-15T14:27:40.395207Z  INFO  Logger initialized. Log file: client_test.log
+    at test_client\src\lib.rs:48 on run_example_test ThreadId(2)
+
+  2025-07-15T14:29:24.355498Z  INFO  Logger initialized. Log file: client_test.log
+    at test_client\src\lib.rs:48 on run_example_test ThreadId(2)
+
+  2025-07-15T14:34:12.110947Z  INFO  Logger initialized. Log file: client_test.log
+    at test_client\src\lib.rs:48 on run_example_test ThreadId(2)
+
+  2025-07-15T14:34:52.100246Z  INFO  Logger initialized. Log file: client_test.log
+    at test_client\src\lib.rs:48 on run_example_test ThreadId(2)
+

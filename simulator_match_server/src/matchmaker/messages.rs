@@ -1,5 +1,6 @@
 use crate::env::GameModeSettings;
 use actix::Message;
+use std::time::Duration;
 use uuid::Uuid;
 
 #[derive(Message)]
@@ -40,3 +41,23 @@ pub(super) struct TryMatch {
 #[derive(Message)]
 #[rtype(result = "()")]
 pub(super) struct CheckStaleLoadingSessions;
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct DelayedRequeuePlayers {
+    pub player_ids: Vec<String>,
+    pub game_mode: String,
+    pub delay: Duration,
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct RetryRequeuePlayers {
+    pub player_ids: Vec<String>,
+    pub game_mode: String,
+    pub retry_count: u32,
+}
+
+#[derive(Message)]
+#[rtype(result = "String")]
+pub struct GetDebugInfo;

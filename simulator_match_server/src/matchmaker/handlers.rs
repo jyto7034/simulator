@@ -12,13 +12,15 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tracing::{error, info, warn};
 use uuid::Uuid;
 
+// test_client 작성해서 시나리오 테스트 해야함.
+
 use super::{
     actor::Matchmaker,
     lock::DistributedLock, // DistributedLock 임포트
     messages::*,
     scripts::{
-        ATOMIC_CANCEL_SESSION_SCRIPT, ATOMIC_LOADING_COMPLETE_SCRIPT, ATOMIC_MATCH_SCRIPT,
-        CLEANUP_STALE_SESSION_SCRIPT,
+        get_atomic_cancel_session_script, get_atomic_loading_complete_script,
+        get_atomic_match_script, get_cleanup_stale_session_script,
     },
 };
 
@@ -94,7 +96,7 @@ impl Handler<EnqueuePlayer> for Matchmaker {
                 Ok(count) if count > 0 => {
                     info!("Player {} added to queue {}", player_id_str, queue_key);
                     PLAYERS_IN_QUEUE.inc();
-                    publish_message(&mut redis, msg.player_id, ServerMessage::Queued).await;
+                    publish_message(&mut redis, msg.player_id, ServerMessage::EnQueued).await;
                 }
                 Ok(_) => {
                     warn!("Player {} already in queue {}", player_id_str, queue_key);
@@ -208,7 +210,7 @@ impl Handler<TryMatch> for Matchmaker {
             };
 
             let loading_session_id = Uuid::new_v4();
-            let script = Script::new(ATOMIC_MATCH_SCRIPT);
+            let script = Script::new(get_atomic_match_script());
             let script_result: Vec<String> = match script
                 .key(&queue_key)
                 .arg(required_players)
@@ -302,7 +304,7 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                 }
             };
 
-            let script = Script::new(ATOMIC_LOADING_COMPLETE_SCRIPT);
+            let script = Script::new(get_atomic_loading_complete_script());
             let result: Result<Vec<String>, _> = script
                 .key(&loading_key)
                 .arg(&player_id_str)
@@ -493,7 +495,7 @@ impl Handler<CancelLoadingSession> for Matchmaker {
                 msg.loading_session_id, msg.player_id
             );
 
-            let script = Script::new(ATOMIC_CANCEL_SESSION_SCRIPT);
+            let script = Script::new(get_atomic_cancel_session_script());
             let result: Result<Vec<String>, _> = script
                 .key(&loading_key)
                 .arg(&disconnected_player_id_str)
@@ -601,7 +603,7 @@ impl Handler<CheckStaleLoadingSessions> for Matchmaker {
                     }
                 };
 
-                let script = Script::new(CLEANUP_STALE_SESSION_SCRIPT);
+                let script = Script::new(get_cleanup_stale_session_script());
                 let result: Result<Vec<String>, _> = script
                     .key(&key)
                     .arg(now as i64)

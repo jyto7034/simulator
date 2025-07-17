@@ -1,9 +1,14 @@
 use crate::{env::Settings, matchmaker::Matchmaker, pubsub::SubscriptionManager};
 use actix::Addr;
 use redis::aio::ConnectionManager;
+use std::{io, sync::Arc};
+use tracing_appender::rolling::{RollingFileAppender, Rotation};
+use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
 pub mod auth;
+pub mod debug;
 pub mod env;
+pub mod events;
 pub mod matchmaker;
 pub mod protocol;
 pub mod provider;
@@ -11,29 +16,20 @@ pub mod pubsub;
 pub mod util;
 pub mod ws_session;
 
-// 서버 전체에서 공유될 상태
-#[derive(Clone)]
-pub struct AppState {
-    pub settings: Settings,
-    pub matchmaker_addr: Addr<Matchmaker>,
-    pub sub_manager_addr: Addr<SubscriptionManager>,
-    pub redis_conn_manager: ConnectionManager,
+// RAII 패턴을 사용한 로거 매니저
+pub struct LoggerManager {
+    _guard: tracing_appender::non_blocking::WorkerGuard,
 }
 
-use std::{io, sync::Once};
-use tracing_appender::rolling::{RollingFileAppender, Rotation};
-use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
-static INIT: Once = Once::new();
-static mut GUARD: Option<tracing_appender::non_blocking::WorkerGuard> = None;
-pub fn setup_logger(settings: &Settings) {
-    INIT.call_once(|| {
+impl LoggerManager {
+    pub fn setup(settings: &Settings) -> Self {
         // 1. 파일 로거 설정
         let file_appender = RollingFileAppender::new(
             Rotation::DAILY,
             &settings.logging.directory,
             &settings.logging.filename,
         );
-        let (non_blocking_file_writer, _guard) = tracing_appender::non_blocking(file_appender);
+        let (non_blocking_file_writer, guard) = tracing_appender::non_blocking(file_appender);
 
         // 2. 로그 레벨 필터 설정 (환경 변수 또는 설정 파일 값)
         let filter = EnvFilter::try_from_default_env()
@@ -68,14 +64,22 @@ pub fn setup_logger(settings: &Settings) {
             .with(file_layer) // 파일 레이어 추가
             .init(); // 전역 Subscriber로 설정
 
-        unsafe {
-            GUARD = Some(_guard);
-        }
-
         tracing::info!(
             "로거 초기화 완료: 콘솔 및 파일({}/{}) 출력 활성화.",
             settings.logging.directory,
             settings.logging.filename
         );
-    });
+
+        Self { _guard: guard }
+    }
+}
+
+// 서버 전체에서 공유될 상태
+#[derive(Clone)]
+pub struct AppState {
+    pub settings: Settings,
+    pub matchmaker_addr: Addr<Matchmaker>,
+    pub sub_manager_addr: Addr<SubscriptionManager>,
+    pub redis_conn_manager: ConnectionManager,
+    pub _logger_manager: Arc<LoggerManager>, // RAII 패턴으로 메모리 관리
 }

@@ -1,52 +1,33 @@
-pub(super) const ATOMIC_MATCH_SCRIPT: &str = r#"
-    local queue_key = KEYS[1]
-    local required_players = tonumber(ARGV[1])
-    if redis.call('SCARD', queue_key) >= required_players then
-        return redis.call('SPOP', queue_key, required_players)
-    else
-        return {}
-    end
-"#;
+use std::path::Path;
+use std::fs;
+use std::sync::OnceLock;
 
-pub(super) const ATOMIC_LOADING_COMPLETE_SCRIPT: &str = r#"
-    local loading_key = KEYS[1]
-    local player_id = ARGV[1]
+static ATOMIC_MATCH_SCRIPT: OnceLock<String> = OnceLock::new();
+static ATOMIC_LOADING_COMPLETE_SCRIPT: OnceLock<String> = OnceLock::new();
+static ATOMIC_CANCEL_SESSION_SCRIPT: OnceLock<String> = OnceLock::new();
+static CLEANUP_STALE_SESSION_SCRIPT: OnceLock<String> = OnceLock::new();
 
-    -- Stop if session does not exist or is already handled
-    if redis.call('EXISTS', loading_key) == 0 then
-        return {}
-    end
-    -- 추가: 세션 상태가 'loading'이 아니면 (예: 'cancelled') 중단
-    local status = redis.call('HGET', loading_key, 'status')
-    if status and status ~= 'loading' then
-        return {}
-    end
+fn load_script(filename: &str) -> String {
+    let script_path = Path::new("scripts").join(filename);
+    fs::read_to_string(&script_path)
+        .unwrap_or_else(|e| {
+            eprintln!("Failed to load script {}: {}", script_path.display(), e);
+            String::new()
+        })
+}
 
-    redis.call('HSET', loading_key, player_id, 'ready')
+pub(super) fn get_atomic_match_script() -> &'static str {
+    ATOMIC_MATCH_SCRIPT.get_or_init(|| load_script("ATOMIC_MATCH_SCRIPT.lua"))
+}
 
-    local players = redis.call('HGETALL', loading_key)
-    local all_ready = true
-    local player_ids = {}
-    local game_mode = ''
-    for i=1, #players, 2 do
-        if players[i] == 'game_mode' then
-            game_mode = players[i+1]
-        elseif players[i] ~= 'created_at' and players[i] ~= 'status' then
-            if players[i+1] ~= 'ready' then
-                all_ready = false
-                break
-            end
-            table.insert(player_ids, players[i])
-        end
-    end
+pub(super) fn get_atomic_loading_complete_script() -> &'static str {
+    ATOMIC_LOADING_COMPLETE_SCRIPT.get_or_init(|| load_script("ATOMIC_LOADING_COMPLETE_SCRIPT.lua"))
+}
 
-    if all_ready and #player_ids > 0 then
-        -- 성공 시 키 삭제
-        redis.call('DEL', loading_key)
-        -- game_mode를 맨 앞에 추가하여 반환
-        table.insert(player_ids, 1, game_mode)
-        return player_ids
-    else
-        return {}
-    end
-"#;
+pub(super) fn get_atomic_cancel_session_script() -> &'static str {
+    ATOMIC_CANCEL_SESSION_SCRIPT.get_or_init(|| load_script("ATOMIC_CANCEL_SESSION_SCRIPT.lua"))
+}
+
+pub(super) fn get_cleanup_stale_session_script() -> &'static str {
+    CLEANUP_STALE_SESSION_SCRIPT.get_or_init(|| load_script("CLEANUP_STALE_SESSION_SCRIPT.lua"))
+}

@@ -7,12 +7,11 @@ use match_server::{
     matchmaker::Matchmaker,
     provider::DedicatedServerProvider,
     pubsub::{RedisSubscriber, SubscriptionManager},
-    setup_logger,
     ws_session::MatchmakingSession,
-    AppState,
+    AppState, LoggerManager,
 };
 use simulator_metrics::register_custom_metrics;
-use std::time::Duration;
+use std::{sync::Arc, time::Duration};
 use tokio::sync::mpsc;
 use tracing::{error, info};
 
@@ -35,7 +34,9 @@ async fn matchmaking_ws_route(
 async fn main() -> std::io::Result<()> {
     dotenv::dotenv().ok();
     let settings = Settings::new().expect("Failed to load settings.");
-    setup_logger(&settings);
+    
+    // RAII 패턴으로 로거 매니저 생성
+    let logger_manager = Arc::new(LoggerManager::setup(&settings));
 
     let prometheus = PrometheusMetricsBuilder::new("match_server")
         .endpoint("/metrics")
@@ -85,6 +86,7 @@ async fn main() -> std::io::Result<()> {
         matchmaker_addr: matchmaker_addr.clone(),
         sub_manager_addr,
         redis_conn_manager: redis_conn_manager.clone(),
+        _logger_manager: logger_manager, // RAII 패턴으로 메모리 관리
     };
 
     let bind_address = format!("{}:{}", settings.server.bind_address, settings.server.port);
@@ -96,6 +98,15 @@ async fn main() -> std::io::Result<()> {
             .wrap(prometheus.clone())
             .app_data(web::Data::new(app_state.clone()))
             .service(matchmaking_ws_route)
+            .service(match_server::events::event_stream_ws)
+            // 디버그 엔드포인트들 추가
+            .service(match_server::debug::debug_queue_status)
+            .service(match_server::debug::debug_active_sessions)
+            .service(match_server::debug::debug_loading_sessions)
+            .service(match_server::debug::debug_redis_health)
+            .service(match_server::debug::debug_ghost_detection)
+            .service(match_server::debug::debug_matchmaker_state)
+            .service(match_server::debug::debug_dashboard)
     })
     .bind(&bind_address)?
     .run();

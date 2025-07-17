@@ -1,5 +1,4 @@
 use redis::aio::ConnectionManager;
-// `cmd`를 추가하고, `Commands`와 `Script`를 임포트합니다. `SetOptions`는 사용하지 않으므로 삭제합니다.
 use redis::{cmd, RedisResult, Script};
 use uuid::Uuid;
 
@@ -37,12 +36,12 @@ impl DistributedLock {
     ) -> RedisResult<Option<Self>> {
         let value = Uuid::new_v4().to_string();
 
-        // `set_options` 대신 `cmd`를 사용하여 'SET key value NX PX ms' 명령을 직접 구성합니다.
+        // 'SET key value NX PX ms' 명령을 직접 구성합니다.
         let result: Option<String> = cmd("SET")
             .arg(key)
             .arg(&value)
-            .arg("NX") // Set only if the key does not already exist.
-            .arg("PX") // Set the specified expire time, in milliseconds.
+            .arg("NX")
+            .arg("PX")
             .arg(duration_ms)
             .query_async(redis) // ConnectionManager에서 비동기적으로 실행
             .await?;

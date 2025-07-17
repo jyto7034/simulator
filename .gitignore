@@ -1,3 +1,7 @@
 /target
 /gemini_env
 .env
+/claude
+/md
+repomix-output.xml
+repomix.config.json
