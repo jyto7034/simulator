@@ -1,6 +1,8 @@
 use actix::Message;
 
-use crate::{player_actor::PlayerState, TestFailure, WsSink, WsStream};
+use crate::{
+    behaviors::ServerMessage, player_actor::PlayerState, TestResult, WsSink, WsStream,
+};
 
 #[derive(Message)]
 #[rtype(result = "()")]
@@ -27,3 +29,10 @@ pub struct ConnectionEstablished {
 #[rtype(result = "()")]
 
 pub struct InternalSendText(pub String);
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct BehaviorFinished {
+    pub result: TestResult,
+    pub original_message: ServerMessage,
+}

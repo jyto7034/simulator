@@ -1,13 +1,13 @@
 use actix::{Actor, Addr, AsyncContext, Context};
 use futures_util::StreamExt;
-use std::{sync::Arc, time::Duration};
+use std::time::Duration;
 use tokio_tungstenite::connect_async;
 use tracing::{error, info};
 use url::Url;
 use uuid::Uuid;
 
 use crate::{
-    behavior::PlayerBehavior,
+    behaviors::PlayerBehavior,
     player_actor::message::{ConnectionEstablished, SetState},
     WsSink, WsStream,
 };
@@ -35,14 +35,14 @@ pub struct PlayerContext {
 // 플레이어
 pub struct PlayerActor {
     pub state: PlayerState,
-    pub behavior: Arc<dyn PlayerBehavior>,
+    pub behavior: Box<dyn PlayerBehavior>,
     pub player_id: Uuid,
     pub stream: Option<WsStream>,
     pub sink: Option<WsSink>,
 }
 
 impl PlayerActor {
-    pub fn new(behavior: Arc<dyn PlayerBehavior>, player_id: Uuid) -> Self {
+    pub fn new(behavior: Box<dyn PlayerBehavior>, player_id: Uuid) -> Self {
         Self {
             state: PlayerState::Idle,
             behavior,
@@ -76,7 +76,7 @@ impl Actor for PlayerActor {
 }
 
 impl PlayerActor {
-    pub async fn establish_connection() -> anyhow::Result<(WsSink, WsStream)> {
+    async fn establish_connection() -> anyhow::Result<(WsSink, WsStream)> {
         let url =
             Url::parse(DEFAULT_SERVER_URL).map_err(|e| anyhow::anyhow!("Invalid URL: {}", e))?;
 
