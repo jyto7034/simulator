@@ -10,6 +10,14 @@ use tracing_appender::non_blocking::WorkerGuard;
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
+use futures_util::stream::{SplitSink, SplitStream};
+use tokio::net::TcpStream;
+use tokio_tungstenite::{MaybeTlsStream, WebSocketStream};
+
+type WsSink =
+    SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, tokio_tungstenite::tungstenite::Message>;
+type WsStream = SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>;
+
 // --- 로거 설정 ---
 pub fn setup_logger(player_id: &str) -> WorkerGuard {
     let log_filename = format!("client_{}.log", player_id);
@@ -49,4 +57,15 @@ pub fn setup_logger(player_id: &str) -> WorkerGuard {
 
     info!("Logger initialized. Log file: {}", log_filename);
     guard
+}
+
+pub enum Connection {}
+pub enum System {}
+pub enum Expected {}
+
+pub enum TestFailure {
+    None,
+    Connection(Connection),
+    System(System),
+    Expected(Expected),
 }

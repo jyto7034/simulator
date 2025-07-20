@@ -85,16 +85,10 @@ struct ServerMessage {
 
 // --- Type alias for the WebSocket stream sink part ---
 
-
 // --- 플레이어 행동 정의 ---
 #[async_trait]
 trait PlayerBehavior {
-    async fn on_start_loading(
-        &self,
-        player_id: Uuid,
-        loading_id: Uuid,
-        
-    ) -> Result<bool>;
+    async fn on_start_loading(&self, player_id: Uuid, loading_id: Uuid) -> Result<bool>;
 
     fn on_error(&self, player_id: Uuid, error_msg: &str) -> bool;
 
@@ -109,14 +103,9 @@ trait PlayerBehavior {
 struct Disconnector;
 #[async_trait]
 impl PlayerBehavior for Disconnector {
-    async fn on_start_loading(
-        &self,
-        player_id: Uuid,
-        _loading_id: Uuid,
-        
-    ) -> Result<bool> {
+    async fn on_start_loading(&self, player_id: Uuid, _loading_id: Uuid) -> Result<bool> {
         warn!("[{}] Received StartLoading. Disconnecting now!", player_id);
-        
+
         Ok(false)
     }
     fn on_error(&self, player_id: Uuid, error_msg: &str) -> bool {
@@ -128,12 +117,7 @@ impl PlayerBehavior for Disconnector {
 struct Victim;
 #[async_trait]
 impl PlayerBehavior for Victim {
-    async fn on_start_loading(
-        &self,
-        player_id: Uuid,
-        loading_id: Uuid,
-        
-    ) -> Result<bool> {
+    async fn on_start_loading(&self, player_id: Uuid, loading_id: Uuid) -> Result<bool> {
         info!(
             "[{}] Received StartLoading. Sending LoadingComplete.",
             player_id
@@ -144,7 +128,7 @@ impl PlayerBehavior for Victim {
             player_id: None,
             game_mode: None,
         };
-        
+
         Ok(true)
     }
     fn on_error(&self, player_id: Uuid, error_msg: &str) -> bool {
@@ -163,12 +147,7 @@ impl PlayerBehavior for Victim {
 struct TimeoutPlayer;
 #[async_trait]
 impl PlayerBehavior for TimeoutPlayer {
-    async fn on_start_loading(
-        &self,
-        player_id: Uuid,
-        _loading_id: Uuid,
-        _
-    ) -> Result<bool> {
+    async fn on_start_loading(&self, player_id: Uuid, _loading_id: Uuid) -> Result<bool> {
         warn!(
             "[{}] Received StartLoading. Waiting for 65 seconds to cause a timeout...",
             player_id
@@ -189,17 +168,12 @@ impl PlayerBehavior for TimeoutPlayer {
 struct GhostDisconnector;
 #[async_trait]
 impl PlayerBehavior for GhostDisconnector {
-    async fn on_start_loading(
-        &self,
-        player_id: Uuid,
-        _loading_id: Uuid,
-        
-    ) -> Result<bool> {
+    async fn on_start_loading(&self, player_id: Uuid, _loading_id: Uuid) -> Result<bool> {
         warn!(
             "[{}] Received StartLoading. Disconnecting IMMEDIATELY to test race condition!",
             player_id
         );
-        
+
         Ok(false)
     }
     fn on_error(&self, player_id: Uuid, error_msg: &str) -> bool {
@@ -218,12 +192,7 @@ enum Behavior {
 
 #[async_trait]
 impl PlayerBehavior for Behavior {
-    async fn on_start_loading(
-        &self,
-        player_id: Uuid,
-        loading_id: Uuid,
-        
-    ) -> Result<bool> {
+    async fn on_start_loading(&self, player_id: Uuid, loading_id: Uuid) -> Result<bool> {
         match self {
             Behavior::Disconnect(b) => b.on_start_loading(player_id, loading_id).await,
             Behavior::Victim(b) => b.on_start_loading(player_id, loading_id).await,
@@ -268,7 +237,7 @@ async fn run_player(player_id: Uuid, behavior: Behavior) -> Result<()> {
         game_mode: Some("Normal_1v1"),
         loading_session_id: None,
     };
-    
+
     info!("Sent enqueue request.");
 
     while let Some(msg) = ws_stream.next().await {
@@ -294,10 +263,7 @@ async fn run_player(player_id: Uuid, behavior: Behavior) -> Result<()> {
         let continue_loop = match server_msg.msg_type.as_str() {
             "start_loading" => {
                 behavior
-                    .on_start_loading(
-                        player_id,
-                        server_msg.loading_session_id.unwrap(),
-                    )
+                    .on_start_loading(player_id, server_msg.loading_session_id.unwrap())
                     .await?
             }
             "error" => behavior.on_error(player_id, &server_msg.message),

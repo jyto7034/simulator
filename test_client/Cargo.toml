@@ -13,6 +13,7 @@ futures-util = "0.3"
 uuid = { version = "1", features = ["v4", "serde"] }
 tokio-tungstenite = { version = "0.23", features = ["native-tls"] }
 url = "2"
+awc = "3.7.0"
 actix-web = "4.9.0"
 actix = "=0.13.5"
 actix-ws = "0.2.5"
@@ -24,6 +25,7 @@ anyhow = "1.0.86"
 tracing = "0.1.41"
 tracing-appender = "0.2.3"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+backoff = "0.4"
 
 # Environment configuration
 simulator_env = { path = "../simulator_env" }

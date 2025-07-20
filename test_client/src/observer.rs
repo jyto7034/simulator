@@ -160,16 +160,16 @@ impl EventObserver {
 
         // Build WebSocket URL with query parameters
         // match_server_url이 이미 "ws://127.0.0.1:8080" 형태
-        let final_url = if let Some(pid) = player_id {
+        let url = if let Some(pid) = player_id {
             format!("{}/events/stream?player_id={}", self.match_server_url, pid)
         } else {
             format!("{}/events/stream", self.match_server_url)
         };
 
-        info!("Connecting to WebSocket: {}", final_url);
+        info!("Connecting to WebSocket: {}", url);
 
         // Connect to event stream
-        let (ws_stream, _) = connect_async(&final_url).await?;
+        let (ws_stream, _) = connect_async(&url).await?;
         let (mut _write, mut read) = ws_stream.split();
 
         let start_time = Instant::now();

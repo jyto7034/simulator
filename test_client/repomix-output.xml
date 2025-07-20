@@ -46,6 +46,10 @@ src/copy.rs
 src/lib.rs
 src/main.rs
 src/observer.rs
+src/player_actor/handler.rs
+src/player_actor/message.rs
+src/player_actor/mod.rs
+src/scenario_actor/mod.rs
 src/scenario.rs
 tests/test.rs
 </directory_structure>
@@ -69,13 +73,15 @@ futures-util = "0.3"
 uuid = { version = "1", features = ["v4", "serde"] }
 tokio-tungstenite = { version = "0.23", features = ["native-tls"] }
 url = "2"
-actix-web = "4.11.0"
+awc = "3.7.0"
+actix-web = "4.9.0"
+actix = "=0.13.5"
+actix-ws = "0.2.5"
+actix-web-actors = "4.3.0"
+ctor = "0.4.1"
 chrono = { version = "0.4", features = ["serde"] }
-
-# Added dependencies
 async-trait = "0.1.80"
 anyhow = "1.0.86"
-
 tracing = "0.1.41"
 tracing-appender = "0.2.3"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
@@ -85,81 +91,96 @@ simulator_env = { path = "../simulator_env" }
 </file>
 
 <file path="src/behavior.rs">
+use crate::player_actor::PlayerContext;
 use anyhow::Result;
 use async_trait::async_trait;
-use futures_util::{stream::SplitSink, SinkExt};
 use serde::{Deserialize, Serialize};
-use tokio::net::TcpStream;
-use tokio_tungstenite::{tungstenite::Message, MaybeTlsStream, WebSocketStream};
 use tracing::{error, info, warn};
 use uuid::Uuid;
-
-type WsSink = SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>;
 
 // --- 메시지 정의 ---
 #[derive(Serialize)]
 #[serde(tag = "type")]
-enum ClientMessage {
+pub enum ClientMessage {
     #[serde(rename = "enqueue")]
     Enqueue { player_id: Uuid, game_mode: String },
     #[serde(rename = "loading_complete")]
     LoadingComplete { loading_session_id: Uuid },
 }
 
-#[derive(Deserialize, Debug)]
-struct ServerMessage {
-    #[serde(rename = "type")]
-    msg_type: String,
-    #[serde(default)]
-    message: String,
-    #[serde(default)]
-    loading_session_id: Option<Uuid>,
-    #[serde(default)]
-    server_address: String,
-    #[serde(default)]
-    session_id: Option<Uuid>,
+#[derive(Deserialize, Debug, PartialEq)]
+pub enum ServerMessage {
+    /// 대기열에 성공적으로 등록되었음을 알립니다.
+    #[serde(rename = "enqueued")]
+    EnQueued,
+
+    /// 클라이언트에게 에셋 로딩을 시작하라고 지시합니다.
+    #[serde(rename = "start_loading")]
+    StartLoading { loading_session_id: Uuid },
+
+    /// 최종적으로 매칭이 성사되었고, 게임 서버 접속 정보를 전달합니다.
+    #[serde(rename = "match_found")]
+    MatchFound {
+        session_id: Uuid, // dedicated_server의 게임 세션 ID
+        server_address: String,
+    },
+
+    /// 에러가 발생했음을 알립니다.
+    #[serde(rename = "error")]
+    Error { message: String },
 }
 
 /// 플레이어 행동을 정의하는 trait
 /// 매칭 서버와의 상호작용에서 발생하는 모든 이벤트에 대한 반응을 정의
 #[async_trait]
-pub trait PlayerBehavior {
+pub trait PlayerBehavior: Send + Sync {
     /// 0. 매칭 실패 시 (모든 단계에서 발생 가능)
-    fn on_error(&self, player_id: Uuid, error_msg: &str) -> bool {
-        error!("[{}] Error occurred: {}", player_id, error_msg);
+    fn on_error(&self, player_context: &PlayerContext, error_msg: &str) -> bool {
+        error!(
+            "[{}] Error occurred: {}",
+            player_context.player_id, error_msg
+        );
         false // 기본적으로 에러 시 종료
     }
 
     /// 1. 매칭 시작 - 큐 진입 메시지 전송
-    async fn start_match(&self, player_id: Uuid, _ws_sink: &mut WsSink) -> Result<bool> {
-        info!("[{}] Starting match - sending enqueue message", player_id);
+    async fn on_queued(&self, player_context: &PlayerContext) -> Result<bool> {
+        info!(
+            "[{}] Starting match - sending enqueue message",
+            player_context.player_id
+        );
         Ok(true) // 기본적으로 계속 진행
     }
 
     /// 2. 매칭 성공 - 상대방이 발견되었을 때
-    fn on_match_found(&self, player_id: Uuid) -> bool {
-        info!("[{}] Match found - opponent discovered!", player_id);
+    fn on_match_found(&self, player_context: &PlayerContext) -> bool {
+        info!(
+            "[{}] Match found - opponent discovered!",
+            player_context.player_id
+        );
         true // 기본적으로 로딩 단계로 진행
     }
 
     /// 3. 로딩 시작 - 게임 에셋 로딩 시작 알림
-    async fn on_start_loading(
+    async fn on_loading_start(
         &self,
-        player_id: Uuid,
+        player_context: &PlayerContext,
         loading_session_id: Uuid,
-        _ws_sink: &mut WsSink,
     ) -> Result<bool> {
         info!(
             "[{}] Loading started - session: {}",
-            player_id, loading_session_id
+            player_context.player_id, loading_session_id
         );
         Ok(true) // 기본적으로 계속 진행
     }
 
     /// 4. 로딩 완료 - 모든 플레이어의 로딩이 완료된 후
-    async fn on_loading_complete(&self, player_id: Uuid, _ws_sink: &mut WsSink) -> Result<bool> {
-        info!("[{}] Loading complete - ready to start game", player_id);
-        Ok(false) // 기본적으로 테스트 완료 후 종료
+    fn on_loading_complete(&self, player_context: &PlayerContext) -> bool {
+        info!(
+            "[{}] Loading complete - ready to start game",
+            player_context.player_id
+        );
+        false // 기본적으로 테스트 완료 후 종료
     }
 }
 
@@ -172,52 +193,59 @@ pub struct NormalPlayer;
 #[async_trait]
 impl PlayerBehavior for NormalPlayer {
     /// client 측에서 match server 에 enqueue msg 전송.
-    async fn start_match(&self, player_id: Uuid, ws_sink: &mut WsSink) -> Result<bool> {
-        info!("[{}] Normal player starting match", player_id);
+    async fn on_queued(&self, player_context: &PlayerContext) -> Result<bool> {
+        info!(
+            "[{}] Normal player starting match",
+            player_context.player_id
+        );
 
         let msg = ClientMessage::Enqueue {
-            player_id,
+            player_id: player_context.player_id,
             game_mode: "Normal_1v1".to_string(),
         };
 
-        ws_sink
-            .send(Message::Text(serde_json::to_string(&msg)?))
-            .await?;
-
-        info!("[{}] Enqueue message sent", player_id);
+        info!("[{}] Enqueue message sent", player_context.player_id);
         Ok(true)
     }
 
-    fn on_match_found(&self, player_id: Uuid) -> bool {
-        info!("[{}] Normal player excited about match!", player_id);
+    fn on_match_found(&self, player_context: &PlayerContext) -> bool {
+        info!(
+            "[{}] Normal player excited about match!",
+            player_context.player_id
+        );
         true
     }
 
-    async fn on_start_loading(
+    async fn on_loading_start(
         &self,
-        player_id: Uuid,
+        player_context: &PlayerContext,
         loading_session_id: Uuid,
-        ws_sink: &mut WsSink,
     ) -> Result<bool> {
-        info!("[{}] Normal player starting to load assets", player_id);
+        info!(
+            "[{}] Normal player starting to load assets",
+            player_context.player_id
+        );
 
         // 정상적으로 loading_complete 메시지 전송
         let msg = ClientMessage::LoadingComplete { loading_session_id };
 
-        ws_sink
-            .send(Message::Text(serde_json::to_string(&msg)?))
-            .await?;
+        // ws_sink
+        //     .send(Message::Text(serde_json::to_string(&msg)?))
+        //     .await?;
 
-        info!("[{}] Normal player sent loading_complete", player_id);
+        info!(
+            "[{}] Normal player sent loading_complete",
+            player_context.player_id
+        );
         Ok(true)
     }
 
-    async fn on_loading_complete(&self, player_id: Uuid, _ws_sink: &mut WsSink) -> Result<bool> {
+    fn on_loading_complete(&self, player_context: &PlayerContext) -> bool {
         info!(
             "[{}] Normal player successfully completed the flow!",
-            player_id
+            player_context.player_id
         );
-        Ok(false) // 성공적으로 완료했으므로 종료
+        false // 성공적으로 완료했으므로 종료
     }
 }
 
@@ -227,9 +255,12 @@ pub struct QuitDuringMatch;
 
 #[async_trait]
 impl PlayerBehavior for QuitDuringMatch {
-    async fn start_match(&self, player_id: Uuid, ws_sink: &mut WsSink) -> Result<bool> {
-        warn!("[{}] Impatient player - quitting during match!", player_id);
-        ws_sink.close().await?;
+    async fn on_queued(&self, player_context: &PlayerContext) -> Result<bool> {
+        warn!(
+            "[{}] Impatient player - quitting during match!",
+            player_context.player_id
+        );
+
         Ok(false) // 연결 끊고 종료
     }
 }
@@ -240,14 +271,16 @@ pub struct QuitDuringLoading;
 
 #[async_trait]
 impl PlayerBehavior for QuitDuringLoading {
-    async fn on_start_loading(
+    async fn on_loading_start(
         &self,
-        player_id: Uuid,
+        player_context: &PlayerContext,
         _loading_session_id: Uuid,
-        ws_sink: &mut WsSink,
     ) -> Result<bool> {
-        warn!("[{}] Quitting during loading start!", player_id);
-        ws_sink.close().await?;
+        warn!(
+            "[{}] Quitting during loading start!",
+            player_context.player_id
+        );
+        //
         Ok(false)
     }
 }
@@ -260,25 +293,23 @@ pub struct SlowLoader {
 
 #[async_trait]
 impl PlayerBehavior for SlowLoader {
-    async fn on_start_loading(
+    async fn on_loading_start(
         &self,
-        player_id: Uuid,
+        player_context: &PlayerContext,
         loading_session_id: Uuid,
-        ws_sink: &mut WsSink,
     ) -> Result<bool> {
         warn!(
             "[{}] Slow loader - waiting {} seconds",
-            player_id, self.delay_seconds
+            player_context.player_id, self.delay_seconds
         );
 
         tokio::time::sleep(tokio::time::Duration::from_secs(self.delay_seconds)).await;
 
         let msg = ClientMessage::LoadingComplete { loading_session_id };
-
-        ws_sink
-            .send(Message::Text(serde_json::to_string(&msg)?))
-            .await?;
-        info!("[{}] Slow loader finally sent loading_complete", player_id);
+        info!(
+            "[{}] Slow loader finally sent loading_complete",
+            player_context.player_id
+        );
         Ok(true)
     }
 }
@@ -289,8 +320,11 @@ pub struct IgnoreMatchFound;
 
 #[async_trait]
 impl PlayerBehavior for IgnoreMatchFound {
-    fn on_match_found(&self, player_id: Uuid) -> bool {
-        warn!("[{}] Ignoring match found - staying in queue", player_id);
+    fn on_match_found(&self, player_context: &PlayerContext) -> bool {
+        warn!(
+            "[{}] Ignoring match found - staying in queue",
+            player_context.player_id
+        );
         false // 로딩 단계로 가지 않고 종료
     }
 }
@@ -336,73 +370,65 @@ pub enum BehaviorType {
 
 #[async_trait]
 impl PlayerBehavior for BehaviorType {
-    fn on_error(&self, player_id: Uuid, error_msg: &str) -> bool {
+    fn on_error(&self, player_context: &PlayerContext, error_msg: &str) -> bool {
         match self {
-            BehaviorType::Normal(b) => b.on_error(player_id, error_msg),
-            BehaviorType::QuitDuringMatch(b) => b.on_error(player_id, error_msg),
-            BehaviorType::QuitDuringLoading(b) => b.on_error(player_id, error_msg),
-            BehaviorType::SlowLoader(b) => b.on_error(player_id, error_msg),
-            BehaviorType::IgnoreMatchFound(b) => b.on_error(player_id, error_msg),
+            BehaviorType::Normal(b) => b.on_error(player_context, error_msg),
+            BehaviorType::QuitDuringMatch(b) => b.on_error(player_context, error_msg),
+            BehaviorType::QuitDuringLoading(b) => b.on_error(player_context, error_msg),
+            BehaviorType::SlowLoader(b) => b.on_error(player_context, error_msg),
+            BehaviorType::IgnoreMatchFound(b) => b.on_error(player_context, error_msg),
         }
     }
 
-    async fn start_match(&self, player_id: Uuid, ws_sink: &mut WsSink) -> Result<bool> {
+    async fn on_queued(&self, player_context: &PlayerContext) -> Result<bool> {
         match self {
-            BehaviorType::Normal(b) => b.start_match(player_id, ws_sink).await,
-            BehaviorType::QuitDuringMatch(b) => b.start_match(player_id, ws_sink).await,
-            BehaviorType::QuitDuringLoading(b) => b.start_match(player_id, ws_sink).await,
-            BehaviorType::SlowLoader(b) => b.start_match(player_id, ws_sink).await,
-            BehaviorType::IgnoreMatchFound(b) => b.start_match(player_id, ws_sink).await,
+            BehaviorType::Normal(b) => b.on_queued(player_context).await,
+            BehaviorType::QuitDuringMatch(b) => b.on_queued(player_context).await,
+            BehaviorType::QuitDuringLoading(b) => b.on_queued(player_context).await,
+            BehaviorType::SlowLoader(b) => b.on_queued(player_context).await,
+            BehaviorType::IgnoreMatchFound(b) => b.on_queued(player_context).await,
         }
     }
 
-    fn on_match_found(&self, player_id: Uuid) -> bool {
+    fn on_match_found(&self, player_context: &PlayerContext) -> bool {
         match self {
-            BehaviorType::Normal(b) => b.on_match_found(player_id),
-            BehaviorType::QuitDuringMatch(b) => b.on_match_found(player_id),
-            BehaviorType::QuitDuringLoading(b) => b.on_match_found(player_id),
-            BehaviorType::SlowLoader(b) => b.on_match_found(player_id),
-            BehaviorType::IgnoreMatchFound(b) => b.on_match_found(player_id),
+            BehaviorType::Normal(b) => b.on_match_found(player_context),
+            BehaviorType::QuitDuringMatch(b) => b.on_match_found(player_context),
+            BehaviorType::QuitDuringLoading(b) => b.on_match_found(player_context),
+            BehaviorType::SlowLoader(b) => b.on_match_found(player_context),
+            BehaviorType::IgnoreMatchFound(b) => b.on_match_found(player_context),
         }
     }
 
-    async fn on_start_loading(
+    async fn on_loading_start(
         &self,
-        player_id: Uuid,
+        player_context: &PlayerContext,
         loading_session_id: Uuid,
-        ws_sink: &mut WsSink,
     ) -> Result<bool> {
         match self {
-            BehaviorType::Normal(b) => {
-                b.on_start_loading(player_id, loading_session_id, ws_sink)
-                    .await
-            }
+            BehaviorType::Normal(b) => b.on_loading_start(player_context, loading_session_id).await,
             BehaviorType::QuitDuringMatch(b) => {
-                b.on_start_loading(player_id, loading_session_id, ws_sink)
-                    .await
+                b.on_loading_start(player_context, loading_session_id).await
             }
             BehaviorType::QuitDuringLoading(b) => {
-                b.on_start_loading(player_id, loading_session_id, ws_sink)
-                    .await
+                b.on_loading_start(player_context, loading_session_id).await
             }
             BehaviorType::SlowLoader(b) => {
-                b.on_start_loading(player_id, loading_session_id, ws_sink)
-                    .await
+                b.on_loading_start(player_context, loading_session_id).await
             }
             BehaviorType::IgnoreMatchFound(b) => {
-                b.on_start_loading(player_id, loading_session_id, ws_sink)
-                    .await
+                b.on_loading_start(player_context, loading_session_id).await
             }
         }
     }
 
-    async fn on_loading_complete(&self, player_id: Uuid, ws_sink: &mut WsSink) -> Result<bool> {
+    fn on_loading_complete(&self, player_context: &PlayerContext) -> bool {
         match self {
-            BehaviorType::Normal(b) => b.on_loading_complete(player_id, ws_sink).await,
-            BehaviorType::QuitDuringMatch(b) => b.on_loading_complete(player_id, ws_sink).await,
-            BehaviorType::QuitDuringLoading(b) => b.on_loading_complete(player_id, ws_sink).await,
-            BehaviorType::SlowLoader(b) => b.on_loading_complete(player_id, ws_sink).await,
-            BehaviorType::IgnoreMatchFound(b) => b.on_loading_complete(player_id, ws_sink).await,
+            BehaviorType::Normal(b) => b.on_loading_complete(player_context),
+            BehaviorType::QuitDuringMatch(b) => b.on_loading_complete(player_context),
+            BehaviorType::QuitDuringLoading(b) => b.on_loading_complete(player_context),
+            BehaviorType::SlowLoader(b) => b.on_loading_complete(player_context),
+            BehaviorType::IgnoreMatchFound(b) => b.on_loading_complete(player_context),
         }
     }
 }
@@ -495,17 +521,11 @@ struct ServerMessage {
 }
 
 // --- Type alias for the WebSocket stream sink part ---
-type WsSink = SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, Message>;
 
 // --- 플레이어 행동 정의 ---
 #[async_trait]
 trait PlayerBehavior {
-    async fn on_start_loading(
-        &self,
-        player_id: Uuid,
-        loading_id: Uuid,
-        ws_sink: &mut WsSink,
-    ) -> Result<bool>;
+    async fn on_start_loading(&self, player_id: Uuid, loading_id: Uuid) -> Result<bool>;
 
     fn on_error(&self, player_id: Uuid, error_msg: &str) -> bool;
 
@@ -520,14 +540,9 @@ trait PlayerBehavior {
 struct Disconnector;
 #[async_trait]
 impl PlayerBehavior for Disconnector {
-    async fn on_start_loading(
-        &self,
-        player_id: Uuid,
-        _loading_id: Uuid,
-        ws_sink: &mut WsSink,
-    ) -> Result<bool> {
+    async fn on_start_loading(&self, player_id: Uuid, _loading_id: Uuid) -> Result<bool> {
         warn!("[{}] Received StartLoading. Disconnecting now!", player_id);
-        ws_sink.close().await?;
+
         Ok(false)
     }
     fn on_error(&self, player_id: Uuid, error_msg: &str) -> bool {
@@ -539,12 +554,7 @@ impl PlayerBehavior for Disconnector {
 struct Victim;
 #[async_trait]
 impl PlayerBehavior for Victim {
-    async fn on_start_loading(
-        &self,
-        player_id: Uuid,
-        loading_id: Uuid,
-        ws_sink: &mut WsSink,
-    ) -> Result<bool> {
+    async fn on_start_loading(&self, player_id: Uuid, loading_id: Uuid) -> Result<bool> {
         info!(
             "[{}] Received StartLoading. Sending LoadingComplete.",
             player_id
@@ -555,9 +565,7 @@ impl PlayerBehavior for Victim {
             player_id: None,
             game_mode: None,
         };
-        ws_sink
-            .send(Message::Text(serde_json::to_string(&msg)?))
-            .await?;
+
         Ok(true)
     }
     fn on_error(&self, player_id: Uuid, error_msg: &str) -> bool {
@@ -576,12 +584,7 @@ impl PlayerBehavior for Victim {
 struct TimeoutPlayer;
 #[async_trait]
 impl PlayerBehavior for TimeoutPlayer {
-    async fn on_start_loading(
-        &self,
-        player_id: Uuid,
-        _loading_id: Uuid,
-        _ws_sink: &mut WsSink,
-    ) -> Result<bool> {
+    async fn on_start_loading(&self, player_id: Uuid, _loading_id: Uuid) -> Result<bool> {
         warn!(
             "[{}] Received StartLoading. Waiting for 65 seconds to cause a timeout...",
             player_id
@@ -602,17 +605,12 @@ impl PlayerBehavior for TimeoutPlayer {
 struct GhostDisconnector;
 #[async_trait]
 impl PlayerBehavior for GhostDisconnector {
-    async fn on_start_loading(
-        &self,
-        player_id: Uuid,
-        _loading_id: Uuid,
-        ws_sink: &mut WsSink,
-    ) -> Result<bool> {
+    async fn on_start_loading(&self, player_id: Uuid, _loading_id: Uuid) -> Result<bool> {
         warn!(
             "[{}] Received StartLoading. Disconnecting IMMEDIATELY to test race condition!",
             player_id
         );
-        ws_sink.close().await?;
+
         Ok(false)
     }
     fn on_error(&self, player_id: Uuid, error_msg: &str) -> bool {
@@ -631,17 +629,12 @@ enum Behavior {
 
 #[async_trait]
 impl PlayerBehavior for Behavior {
-    async fn on_start_loading(
-        &self,
-        player_id: Uuid,
-        loading_id: Uuid,
-        ws_sink: &mut WsSink,
-    ) -> Result<bool> {
+    async fn on_start_loading(&self, player_id: Uuid, loading_id: Uuid) -> Result<bool> {
         match self {
-            Behavior::Disconnect(b) => b.on_start_loading(player_id, loading_id, ws_sink).await,
-            Behavior::Victim(b) => b.on_start_loading(player_id, loading_id, ws_sink).await,
-            Behavior::Timeout(b) => b.on_start_loading(player_id, loading_id, ws_sink).await,
-            Behavior::Ghost(b) => b.on_start_loading(player_id, loading_id, ws_sink).await,
+            Behavior::Disconnect(b) => b.on_start_loading(player_id, loading_id).await,
+            Behavior::Victim(b) => b.on_start_loading(player_id, loading_id).await,
+            Behavior::Timeout(b) => b.on_start_loading(player_id, loading_id).await,
+            Behavior::Ghost(b) => b.on_start_loading(player_id, loading_id).await,
         }
     }
 
@@ -673,7 +666,7 @@ async fn run_player(player_id: Uuid, behavior: Behavior) -> Result<()> {
     let (ws_stream, _) = connect_async(url.as_str()).await?;
     info!("Connected to server.");
 
-    let (mut ws_sink, mut ws_stream) = ws_stream.split();
+    let mut ws_stream = ws_stream;
 
     let enqueue_msg = ClientMessage {
         msg_type: "enqueue",
@@ -681,9 +674,7 @@ async fn run_player(player_id: Uuid, behavior: Behavior) -> Result<()> {
         game_mode: Some("Normal_1v1"),
         loading_session_id: None,
     };
-    ws_sink
-        .send(Message::Text(serde_json::to_string(&enqueue_msg)?))
-        .await?;
+
     info!("Sent enqueue request.");
 
     while let Some(msg) = ws_stream.next().await {
@@ -709,11 +700,7 @@ async fn run_player(player_id: Uuid, behavior: Behavior) -> Result<()> {
         let continue_loop = match server_msg.msg_type.as_str() {
             "start_loading" => {
                 behavior
-                    .on_start_loading(
-                        player_id,
-                        server_msg.loading_session_id.unwrap(),
-                        &mut ws_sink,
-                    )
+                    .on_start_loading(player_id, server_msg.loading_session_id.unwrap())
                     .await?
             }
             "error" => behavior.on_error(player_id, &server_msg.message),
@@ -789,7 +776,9 @@ async fn _run() -> Result<()> {
 <file path="src/lib.rs">
 pub mod behavior;
 pub mod observer;
+pub mod player_actor;
 pub mod scenario;
+pub mod scenario_actor;
 
 use std::io;
 use tracing::info;
@@ -836,6 +825,17 @@ pub fn setup_logger(player_id: &str) -> WorkerGuard {
 
     info!("Logger initialized. Log file: {}", log_filename);
     guard
+}
+
+pub enum Connection {}
+pub enum System {}
+pub enum Expected {}
+
+pub enum TestFailure {
+    None,
+    Connection(Connection),
+    System(System),
+    Expected(Expected),
 }
 </file>
 
@@ -1191,6 +1191,227 @@ impl ObservationResult {
                 )
             }
         }
+    }
+}
+</file>
+
+<file path="src/player_actor/handler.rs">
+use std::sync::Arc;
+
+use actix::{
+    fut, ActorContext, ActorFutureExt, AsyncContext, Handler, MessageResult, StreamHandler,
+};
+use actix_web_actors::ws;
+use tracing::{error, info, warn};
+
+use crate::{
+    behavior::ServerMessage,
+    player_actor::{
+        message::{GetPlayerId, SendMessage},
+        PlayerActor, PlayerContext, PlayerState,
+    },
+};
+
+impl Handler<GetPlayerId> for PlayerActor {
+    type Result = MessageResult<GetPlayerId>;
+
+    fn handle(&mut self, _msg: GetPlayerId, _ctx: &mut Self::Context) -> Self::Result {
+        MessageResult(self.player_id)
+    }
+}
+
+impl Handler<SendMessage> for PlayerActor {
+    type Result = ();
+
+    fn handle(&mut self, _msg: SendMessage, _ctx: &mut Self::Context) {
+        info!("SendMessage handler called for player {}", self.player_id);
+    }
+}
+
+impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for PlayerActor {
+    fn handle(&mut self, item: Result<ws::Message, ws::ProtocolError>, ctx: &mut Self::Context) {
+        // --- 1. 메시지 파싱 (동기 작업) ---
+        let msg = match item {
+            Ok(ws::Message::Text(text)) => {
+                match serde_json::from_str::<ServerMessage>(&text) {
+                    Ok(server_msg) => server_msg,
+                    Err(e) => {
+                        warn!("[{}] Failed to parse server message: {}", self.player_id, e);
+                        return; // 파싱 실패 시 아무것도 안 하고 종료
+                    }
+                }
+            }
+            Ok(ws::Message::Close(reason)) => {
+                info!(
+                    "[{}] Server closed connection: {:?}",
+                    self.player_id, reason
+                );
+                ctx.stop(); // 서버가 연결을 닫으면 액터도 중지
+                return;
+            }
+            Err(e) => {
+                error!("[{}] WebSocket connection error: {}", self.player_id, e);
+                ctx.stop(); // 프로토콜 에러 발생 시 액터 중지
+                return;
+            }
+            _ => return, // Ping, Pong, Binary 등 다른 메시지는 무시
+        };
+
+        info!("[{}] Received message: {:?}", self.player_id, msg);
+
+        let behavior = Arc::clone(&self.behavior);
+        let current_state = self.state;
+        let self_addr = ctx.address();
+
+        let async_logic = async move {
+            let player_id = self_addr.send(GetPlayerId).await.unwrap();
+            let player_context = PlayerContext {
+                player_id,
+                addr: self_addr.clone(),
+            };
+
+            match current_state {
+                // PlayerState 가 Idle 인 경우 매칭 시작하기 전 상태임.
+                // 서버에 EnQueued 메시지를 보내고, 상태를 Enqueued 로 변경합니다.
+                PlayerState::Idle => {
+                    if let ServerMessage::EnQueued = msg {
+                        match behavior.on_queued(&player_context).await {
+                            Ok(_) => {
+                                info!("[{}] Match started successfully", player_id);
+                                return Ok(PlayerState::Enqueued);
+                            }
+                            Err(_) => {
+                                error!("[{}] Failed to start match", player_id);
+                                return Err(anyhow::anyhow!("Failed to start match"));
+                            }
+                        };
+                    }
+                }
+                PlayerState::Enqueued => {
+                    if let ServerMessage::MatchFound {
+                        session_id,
+                        server_address,
+                    } = msg
+                    {
+                        match behavior.on_match_found(&player_context) {
+                            true => todo!(),
+                            false => todo!(),
+                        }
+                    }
+                }
+                PlayerState::Loading => {}
+                _ => {}
+            }
+
+            Ok(current_state)
+        };
+
+        let future_wrapper = fut::wrap_future::<_, Self>(async_logic).map(
+            |result: Result<PlayerState, _>, actor, ctx| match result {
+                Ok(new_state) => {
+                    info!(
+                        "[{}] Transitioning from {:?} to {:?}",
+                        actor.player_id, actor.state, new_state
+                    );
+                    actor.state = new_state;
+                }
+                Err(e) => {
+                    error!(
+                        "[{}] Behavior action failed: {}. Stopping actor.",
+                        actor.player_id, e
+                    );
+                    ctx.stop();
+                }
+            },
+        );
+
+        ctx.wait(future_wrapper);
+    }
+}
+</file>
+
+<file path="src/player_actor/message.rs">
+use actix::Message;
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct SendMessage(pub String);
+
+#[derive(Message)]
+#[rtype(result = "uuid::Uuid")]
+pub struct GetPlayerId;
+</file>
+
+<file path="src/player_actor/mod.rs">
+use actix::{Actor, Addr, Context};
+use std::sync::Arc;
+use tracing::info;
+use uuid::Uuid;
+
+use crate::behavior::PlayerBehavior;
+
+pub mod handler;
+pub mod message;
+
+#[derive(Debug, Clone, PartialEq, Copy)]
+pub enum PlayerState {
+    Idle,
+    Enqueued,
+    Loading,
+    Disconnected,
+}
+
+#[derive(Clone)]
+pub struct PlayerContext {
+    pub player_id: Uuid,
+    pub addr: Addr<PlayerActor>,
+}
+
+// TODO: Test Player 를 Actor 로 모델링해야함.
+// 플레이어
+pub struct PlayerActor {
+    pub state: PlayerState,
+    pub behavior: Arc<dyn PlayerBehavior>,
+    pub player_id: Uuid,
+}
+
+impl PlayerActor {
+    pub fn new(behavior: Arc<dyn PlayerBehavior>, player_id: Uuid) -> Self {
+        Self {
+            state: PlayerState::Idle,
+            behavior,
+            player_id,
+        }
+    }
+}
+
+impl Actor for PlayerActor {
+    type Context = Context<Self>;
+
+    fn started(&mut self, _ctx: &mut Self::Context) {
+        info!("PlayerActor started with state");
+    }
+}
+</file>
+
+<file path="src/scenario_actor/mod.rs">
+use actix::{Actor, Context};
+use tracing::info;
+
+pub mod handler;
+pub mod message;
+
+/// match 가 결함 없이 잘 수행할 수 있도록 임의적으로 상황을 만들어고 테스트하여 더욱 견고하게 합니다.
+/// 그것이 시나리오 입니다.
+/// 한 시나리오에는 두 플레이어가 배정된 역할을 가지고 참여합니다.
+/// 그런 시나리오들을 관리하는 Actor 입니다.
+pub struct ScenarioActor {}
+
+impl Actor for ScenarioActor {
+    type Context = Context<Self>;
+
+    fn started(&mut self, _ctx: &mut Self::Context) {
+        info!("ScenarioActor started");
     }
 }
 </file>

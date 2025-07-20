@@ -15,6 +15,12 @@ pub enum ClientMessage {
     LoadingComplete { loading_session_id: Uuid },
 }
 
+impl ClientMessage {
+    pub fn to_string(&self) -> String {
+        serde_json::to_string(self).unwrap()
+    }
+}
+
 #[derive(Deserialize, Debug, PartialEq)]
 pub enum ServerMessage {
     /// 대기열에 성공적으로 등록되었음을 알립니다.
