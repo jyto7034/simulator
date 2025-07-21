@@ -1,6 +1,6 @@
 use super::PlayerBehavior;
 use crate::behaviors::ClientMessage;
-use crate::{player_actor::PlayerContext, BehaviorOutcome, TestResult};
+use crate::{player_actor::PlayerContext, BehaviorOutcome, BehaviorResponse};
 use async_trait::async_trait;
 use tracing::{info, warn};
 use uuid::Uuid;
@@ -17,7 +17,7 @@ impl PlayerBehavior for SlowLoader {
         &self,
         player_context: &PlayerContext,
         loading_session_id: Uuid,
-    ) -> TestResult {
+    ) -> BehaviorResponse {
         warn!(
             "[{}] Slow loader - waiting {} seconds",
             player_context.player_id, self.delay_seconds
@@ -30,7 +30,7 @@ impl PlayerBehavior for SlowLoader {
             "[{}] Slow loader finally sent loading_complete",
             player_context.player_id
         );
-        Ok(BehaviorOutcome::Continue)
+        BehaviorResponse(Ok(BehaviorOutcome::Continue), None)
     }
 
     fn clone_trait(&self) -> Box<dyn PlayerBehavior> {

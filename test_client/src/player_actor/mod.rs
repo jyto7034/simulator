@@ -1,6 +1,5 @@
 use actix::{Actor, Addr, AsyncContext, Context};
 use futures_util::StreamExt;
-use std::time::Duration;
 use tokio_tungstenite::connect_async;
 use tracing::{error, info};
 use url::Url;
@@ -8,15 +7,13 @@ use uuid::Uuid;
 
 use crate::{
     behaviors::PlayerBehavior,
+    observer_actor::ObserverActor,
     player_actor::message::{ConnectionEstablished, SetState},
-    WsSink, WsStream,
+    WsSink, WsStream, CONNECTION_TIMEOUT, DEFAULT_SERVER_URL,
 };
 
 pub mod handler;
 pub mod message;
-
-const DEFAULT_SERVER_URL: &str = "ws://127.0.0.1:8080/ws/";
-const CONNECTION_TIMEOUT: Duration = Duration::from_secs(30);
 
 #[derive(Debug, Clone, PartialEq, Copy)]
 pub enum PlayerState {
@@ -34,6 +31,7 @@ pub struct PlayerContext {
 
 // 플레이어
 pub struct PlayerActor {
+    pub observer: Addr<ObserverActor>,
     pub state: PlayerState,
     pub behavior: Box<dyn PlayerBehavior>,
     pub player_id: Uuid,
@@ -42,8 +40,13 @@ pub struct PlayerActor {
 }
 
 impl PlayerActor {
-    pub fn new(behavior: Box<dyn PlayerBehavior>, player_id: Uuid) -> Self {
+    pub fn new(
+        observer: Addr<ObserverActor>,
+        behavior: Box<dyn PlayerBehavior>,
+        player_id: Uuid,
+    ) -> Self {
         Self {
+            observer,
             state: PlayerState::Idle,
             behavior,
             player_id,
@@ -72,6 +75,12 @@ impl Actor for PlayerActor {
                 }
             }
         });
+    }
+
+    fn stopped(&mut self, _ctx: &mut Self::Context) {
+        // TODO: 결과를 집계한 다음, 결과와 함께 종료 사실을 SingleScenarioActor 에게 전송.
+        // PlayerCompleted Msg 사용하면 됨.
+        // 근데 옵저버와 약간 기능이 겹치는 것 같은데 기능 관계를 한 번 정리해야할 듯.
     }
 }
 

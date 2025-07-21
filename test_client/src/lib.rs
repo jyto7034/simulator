@@ -1,9 +1,11 @@
 pub mod behaviors;
-pub mod observer;
+pub mod observer_actor;
 pub mod player_actor;
 pub mod scenario_actor;
 
 use std::io;
+use std::time::Duration;
+use actix::Message;
 use tracing::info;
 use tracing_appender::non_blocking::WorkerGuard;
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
@@ -13,9 +15,14 @@ use futures_util::stream::{SplitSink, SplitStream};
 use tokio::net::TcpStream;
 use tokio_tungstenite::{MaybeTlsStream, WebSocketStream};
 
+use crate::observer_actor::message::ExpectEvent;
+
 type WsSink =
     SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, tokio_tungstenite::tungstenite::Message>;
 type WsStream = SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>;
+
+const DEFAULT_SERVER_URL: &str = "ws://127.0.0.1:8080/ws/";
+const CONNECTION_TIMEOUT: Duration = Duration::from_secs(30);
 
 // --- 로거 설정 ---
 pub fn setup_logger(player_id: &str) -> WorkerGuard {
@@ -84,3 +91,8 @@ pub enum TestFailure {
     /// 시스템 내부 오류
     System(String),
 }
+
+// Behavior의 반환 타입
+#[derive(Debug, Clone, Message)]
+#[rtype(result = "()")]
+pub struct BehaviorResponse(pub TestResult, pub Option<ExpectEvent>);

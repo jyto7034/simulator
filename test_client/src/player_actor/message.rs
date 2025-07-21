@@ -1,7 +1,8 @@
 use actix::Message;
 
 use crate::{
-    behaviors::ServerMessage, player_actor::PlayerState, TestResult, WsSink, WsStream,
+    behaviors::ServerMessage, player_actor::PlayerState, BehaviorResponse, WsSink,
+    WsStream,
 };
 
 #[derive(Message)]
@@ -33,6 +34,6 @@ pub struct InternalSendText(pub String);
 #[derive(Message)]
 #[rtype(result = "()")]
 pub struct BehaviorFinished {
-    pub result: TestResult,
+    pub response: BehaviorResponse,
     pub original_message: ServerMessage,
 }

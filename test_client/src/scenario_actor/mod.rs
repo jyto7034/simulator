@@ -2,7 +2,7 @@ use actix::{Actor, Addr, AsyncContext, Context};
 use tracing::info;
 use uuid::Uuid;
 
-use crate::{behaviors::BehaviorType, player_actor::PlayerActor};
+use crate::{behaviors::BehaviorType, observer_actor::ObserverActor, player_actor::PlayerActor};
 
 pub mod handler;
 pub mod message;
@@ -98,24 +98,36 @@ impl SingleScenarioActor {
 impl Actor for SingleScenarioActor {
     type Context = Context<Self>;
 
-    fn started(&mut self, _ctx: &mut Self::Context) {
+    fn started(&mut self, ctx: &mut Self::Context) {
         info!(
             "SingleScenarioActor started for scenario: {}",
             self.scenario.name
         );
 
-        // perpetrator와 victim PlayerActor 생성
+        // 1. ObserverActor 생성
+        let observer = ObserverActor::new(
+            "ws://127.0.0.1:8080".to_string(),
+            self.scenario.name.clone(),
+            self.runner_addr.clone(),
+        );
+        let observer_addr = observer.start();
+
+        // 2. PlayerActor 생성 시 Observer 주소 주입
         let perpetrator_id = Uuid::new_v4();
         let victim_id = Uuid::new_v4();
 
         let perpetrator_behavior = Box::new(self.scenario.perpetrator_behavior.clone());
         let victim_behavior = Box::new(self.scenario.victim_behavior.clone());
 
-        let perpetrator_actor = PlayerActor::new(perpetrator_behavior, perpetrator_id);
-        let victim_actor = PlayerActor::new(victim_behavior, victim_id);
+        let perpetrator_actor =
+            PlayerActor::new(observer_addr.clone(), perpetrator_behavior, perpetrator_id);
+        let victim_actor = PlayerActor::new(observer_addr.clone(), victim_behavior, victim_id);
 
         perpetrator_actor.start();
         victim_actor.start();
+
+        // 3. Observer에게 관찰 시작 알림
+        // observer_addr.do_send(StartObservation { player_id_filter: None });
 
         info!(
             "Created players for scenario {}: perpetrator={}, victim={}",

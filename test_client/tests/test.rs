@@ -1,30 +1,40 @@
-// use anyhow::Result;
-// use test_client::scenario::TestScenario;
-// use tracing::{error, info};
-// use simulator_env;
+use actix::Actor;
+use anyhow::Result;
+use simulator_env;
+use test_client::{
+    behaviors::{normal::NormalPlayer, quit, BehaviorType},
+    scenario_actor::{Scenario, ScenarioRunnerActor},
+};
+use tracing::info;
 
-// #[actix_web::test]
-// pub async fn run_example_test() -> Result<()> {
-//     // 환경 설정 초기화
-//     simulator_env::init()?;
+#[actix_web::test]
+pub async fn run_example_test() -> Result<()> {
+    // 환경 설정 초기화
+    simulator_env::init()?;
 
-//     // 디버깅을 위해 사용되는 URL 출력
-//     let match_url = simulator_env::env::match_server_url();
-//     let ws_url = simulator_env::env::match_server_ws_url();
+    // 디버깅을 위해 사용되는 URL 출력
+    let match_url = simulator_env::env::match_server_url();
+    let ws_url = simulator_env::env::match_server_ws_url();
 
-//     info!("Match server URL: {}", match_url);
-//     info!("Match server WebSocket URL: {}", ws_url);
+    let scenarios = vec![
+        Scenario::new(
+            "Normal Scenario".to_string(),
+            "_".to_string(),
+            BehaviorType::Normal(NormalPlayer),
+            BehaviorType::Normal(NormalPlayer),
+        ),
+        Scenario::new(
+            "Normal : QuitDuringMatch".to_string(),
+            "_".to_string(),
+            BehaviorType::Normal(NormalPlayer),
+            BehaviorType::QuitDuringMatch(quit::QuitDuringMatch),
+        ),
+    ];
 
-//     let mut scenario = TestScenario::setup_normal_match_test();
+    let _ = ScenarioRunnerActor::create(|_ctx| ScenarioRunnerActor::new(scenarios));
 
-//     let result = scenario.run().await?;
-//     info!("Test completed: {}", result.get_summary());
+    info!("Match server URL: {}", match_url);
+    info!("Match server WebSocket URL: {}", ws_url);
 
-//     if result.is_success() {
-//         info!("✓ Test passed!");
-//     } else {
-//         error!("✗ Test failed!");
-//     }
-
-//     Ok(())
-// }
+    anyhow::Ok(())
+}

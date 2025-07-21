@@ -14,7 +14,7 @@ use crate::{
         },
         PlayerActor, PlayerContext, PlayerState,
     },
-    BehaviorOutcome,
+    BehaviorOutcome, BehaviorResponse,
 };
 
 impl Handler<GetPlayerId> for PlayerActor {
@@ -39,7 +39,6 @@ impl StreamHandler<Result<Message, tokio_tungstenite::tungstenite::Error>> for P
         item: Result<Message, tokio_tungstenite::tungstenite::Error>,
         ctx: &mut Self::Context,
     ) {
-        // --- 이 부분은 그대로 유지 ---
         let msg = match item {
             Ok(Message::Text(text)) => match serde_json::from_str::<ServerMessage>(&text) {
                 Ok(server_msg) => server_msg,
@@ -66,21 +65,16 @@ impl StreamHandler<Result<Message, tokio_tungstenite::tungstenite::Error>> for P
 
         info!("[{}] Received message: {:?}", self.player_id, msg);
 
-        // --- 비동기 작업 준비 (소유권을 이전할 데이터들) ---
-        let behavior = self.behavior.clone_trait(); // Arc<T> 복사는 저렴합니다.
+        let behavior = self.behavior.clone_trait();
         let player_context = PlayerContext {
             player_id: self.player_id,
-            addr: ctx.address(), // Addr<T>는 Clone 가능하며 'static 입니다.
+            addr: ctx.address(),
         };
 
-        // `msg`도 소유권을 이전해야 하므로 클론합니다.
         let fut_msg = msg.clone();
 
-        // --- 핵심 변경: ctx.wait 대신 actix::spawn 사용 ---
-        // 이 비동기 블록은 'static 생명주기를 가지므로, self를 참조할 수 없습니다.
         actix::spawn(async move {
-            // PlayerBehavior의 비동기 함수를 호출합니다.
-            let result = match fut_msg {
+            let response = match fut_msg {
                 ServerMessage::EnQueued => behavior.on_enqueued(&player_context).await,
                 ServerMessage::StartLoading { loading_session_id } => {
                     behavior
@@ -93,9 +87,8 @@ impl StreamHandler<Result<Message, tokio_tungstenite::tungstenite::Error>> for P
                 }
             };
 
-            // 작업이 끝나면, 그 결과와 원본 메시지를 담아 액터에게 다시 보냅니다.
             player_context.addr.do_send(BehaviorFinished {
-                result,
+                response,
                 original_message: msg,
             });
         });
@@ -105,14 +98,18 @@ impl Handler<BehaviorFinished> for PlayerActor {
     type Result = ();
 
     fn handle(&mut self, msg: BehaviorFinished, ctx: &mut Self::Context) {
-        // 이 핸들러는 동기적이므로, `self`와 `ctx`에 아무런 문제 없이 접근 가능합니다.
-        let result = msg.result;
+        let response: BehaviorResponse = msg.response;
         let original_message = msg.original_message;
+
+        if let Some(expected_event) = response.1 {
+            self.observer.do_send(expected_event);
+        }
+
+        let result = response.0;
 
         match result {
             Ok(BehaviorOutcome::Continue) => {
                 info!("[{}] Continuing with flow", self.player_id);
-                // 원본 메시지를 기반으로 상태를 변경합니다.
                 match original_message {
                     ServerMessage::EnQueued => self.state = PlayerState::Enqueued,
                     ServerMessage::StartLoading { .. } => self.state = PlayerState::Loading,
@@ -128,7 +125,6 @@ impl Handler<BehaviorFinished> for PlayerActor {
             }
             Ok(BehaviorOutcome::Retry) => {
                 warn!("[{}] Retry requested by behavior", self.player_id);
-                // 여기에 재시도 로직을 구현할 수 있습니다.
             }
             Err(test_failure) => {
                 error!("[{}] Test failed: {:?}", self.player_id, test_failure);

@@ -1,4 +1,6 @@
-use crate::{player_actor::PlayerContext, BehaviorOutcome, TestFailure, TestResult};
+use crate::{
+    player_actor::PlayerContext, BehaviorOutcome, BehaviorResponse, TestFailure,
+};
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use tracing::{error, info};
@@ -54,21 +56,21 @@ pub enum ServerMessage {
 #[async_trait]
 pub trait PlayerBehavior: Send + Sync {
     /// 0. 매칭 실패 시 (모든 단계에서 발생 가능)
-    async fn on_error(&self, player_context: &PlayerContext, error_msg: &str) -> TestResult {
+    async fn on_error(&self, player_context: &PlayerContext, error_msg: &str) -> BehaviorResponse {
         error!(
             "[{}] Error occurred: {}",
             player_context.player_id, error_msg
         );
-        Err(TestFailure::System(error_msg.to_string()))
+        BehaviorResponse(Err(TestFailure::System(error_msg.to_string())), None)
     }
 
     /// 1. 큐 진입 확인 - 서버로부터 EnQueued 응답을 받았을 때
-    async fn on_enqueued(&self, player_context: &PlayerContext) -> TestResult {
+    async fn on_enqueued(&self, player_context: &PlayerContext) -> BehaviorResponse {
         info!(
             "[{}] Successfully enqueued - confirmed by server",
             player_context.player_id
         );
-        Ok(BehaviorOutcome::Continue) // 기본적으로 계속 진행
+        BehaviorResponse(Ok(BehaviorOutcome::Continue), None) // 기본적으로 계속 진행
     }
 
     /// 2. 로딩 시작 - 상대방 발견 시, 리소스 로딩 시작
@@ -76,30 +78,30 @@ pub trait PlayerBehavior: Send + Sync {
         &self,
         player_context: &PlayerContext,
         loading_session_id: Uuid,
-    ) -> TestResult {
+    ) -> BehaviorResponse {
         info!(
             "[{}] Loading started - session: {}",
             player_context.player_id, loading_session_id
         );
-        Ok(BehaviorOutcome::Continue) // 기본적으로 계속 진행
+        BehaviorResponse(Ok(BehaviorOutcome::Continue), None) // 기본적으로 계속 진행
     }
 
     /// 3. 로딩 완료 - 모든 플레이어의 로딩이 완료된 후
-    async fn on_loading_complete(&self, player_context: &PlayerContext) -> TestResult {
+    async fn on_loading_complete(&self, player_context: &PlayerContext) -> BehaviorResponse {
         info!(
             "[{}] Loading complete - ready to start game",
             player_context.player_id
         );
-        Ok(BehaviorOutcome::Stop) // 기본적으로 테스트 완료 후 종료
+        BehaviorResponse(Ok(BehaviorOutcome::Stop), None) // 기본적으로 테스트 완료 후 종료
     }
 
     /// 4. 매칭 성공 - 모든 플레이어가 로딩을 완료하고 전용 서버까지 할당 받았을 때.
-    async fn on_match_found(&self, player_context: &PlayerContext) -> TestResult {
+    async fn on_match_found(&self, player_context: &PlayerContext) -> BehaviorResponse {
         info!(
             "[{}] Match found - opponent discovered!",
             player_context.player_id
         );
-        Ok(BehaviorOutcome::Continue) // 기본적으로 로딩 단계로 진행
+        BehaviorResponse(Ok(BehaviorOutcome::Continue), None) // 기본적으로 로딩 단계로 진행
     }
 
     fn clone_trait(&self) -> Box<dyn PlayerBehavior>;
@@ -138,7 +140,7 @@ pub enum BehaviorType {
 
 #[async_trait]
 impl PlayerBehavior for BehaviorType {
-    async fn on_error(&self, player_context: &PlayerContext, error_msg: &str) -> TestResult {
+    async fn on_error(&self, player_context: &PlayerContext, error_msg: &str) -> BehaviorResponse {
         match self {
             BehaviorType::Normal(b) => b.on_error(player_context, error_msg).await,
             BehaviorType::QuitDuringMatch(b) => b.on_error(player_context, error_msg).await,
@@ -151,7 +153,7 @@ impl PlayerBehavior for BehaviorType {
         }
     }
 
-    async fn on_enqueued(&self, player_context: &PlayerContext) -> TestResult {
+    async fn on_enqueued(&self, player_context: &PlayerContext) -> BehaviorResponse {
         match self {
             BehaviorType::Normal(b) => b.on_enqueued(player_context).await,
             BehaviorType::QuitDuringMatch(b) => b.on_enqueued(player_context).await,
@@ -164,7 +166,7 @@ impl PlayerBehavior for BehaviorType {
         }
     }
 
-    async fn on_match_found(&self, player_context: &PlayerContext) -> TestResult {
+    async fn on_match_found(&self, player_context: &PlayerContext) -> BehaviorResponse {
         match self {
             BehaviorType::Normal(b) => b.on_match_found(player_context).await,
             BehaviorType::QuitDuringMatch(b) => b.on_match_found(player_context).await,
@@ -181,7 +183,7 @@ impl PlayerBehavior for BehaviorType {
         &self,
         player_context: &PlayerContext,
         loading_session_id: Uuid,
-    ) -> TestResult {
+    ) -> BehaviorResponse {
         match self {
             BehaviorType::Normal(b) => b.on_loading_start(player_context, loading_session_id).await,
             BehaviorType::QuitDuringMatch(b) => {
@@ -208,7 +210,7 @@ impl PlayerBehavior for BehaviorType {
         }
     }
 
-    async fn on_loading_complete(&self, player_context: &PlayerContext) -> TestResult {
+    async fn on_loading_complete(&self, player_context: &PlayerContext) -> BehaviorResponse {
         match self {
             BehaviorType::Normal(b) => b.on_loading_complete(player_context).await,
             BehaviorType::QuitDuringMatch(b) => b.on_loading_complete(player_context).await,
