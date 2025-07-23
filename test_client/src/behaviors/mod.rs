@@ -1,6 +1,4 @@
-use crate::{
-    player_actor::PlayerContext, BehaviorOutcome, BehaviorResponse, TestFailure,
-};
+use crate::{player_actor::PlayerContext, BehaviorOutcome, BehaviorResponse, TestFailure};
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use tracing::{error, info};
@@ -30,6 +28,7 @@ impl ClientMessage {
 }
 
 #[derive(Deserialize, Debug, PartialEq, Clone)]
+#[serde(tag = "type")]
 pub enum ServerMessage {
     /// 대기열에 성공적으로 등록되었음을 알립니다.
     #[serde(rename = "enqueued")]
@@ -133,7 +132,7 @@ pub enum BehaviorType {
     QuitDuringLoading(quit::QuitDuringLoading),
     SlowLoader(slow::SlowLoader),
     IgnoreMatchFound(ignore::IgnoreMatchFound),
-    SuddenDisconnect(disconnect::SuddenDisconnect),
+    NetworkDisconnect(disconnect::NetworkDisconnect),
     LoadingFailure(failure::LoadingFailure),
     LoadingIgnorer(failure::LoadingIgnorer),
 }
@@ -147,7 +146,7 @@ impl PlayerBehavior for BehaviorType {
             BehaviorType::QuitDuringLoading(b) => b.on_error(player_context, error_msg).await,
             BehaviorType::SlowLoader(b) => b.on_error(player_context, error_msg).await,
             BehaviorType::IgnoreMatchFound(b) => b.on_error(player_context, error_msg).await,
-            BehaviorType::SuddenDisconnect(b) => b.on_error(player_context, error_msg).await,
+            BehaviorType::NetworkDisconnect(b) => b.on_error(player_context, error_msg).await,
             BehaviorType::LoadingFailure(b) => b.on_error(player_context, error_msg).await,
             BehaviorType::LoadingIgnorer(b) => b.on_error(player_context, error_msg).await,
         }
@@ -160,7 +159,7 @@ impl PlayerBehavior for BehaviorType {
             BehaviorType::QuitDuringLoading(b) => b.on_enqueued(player_context).await,
             BehaviorType::SlowLoader(b) => b.on_enqueued(player_context).await,
             BehaviorType::IgnoreMatchFound(b) => b.on_enqueued(player_context).await,
-            BehaviorType::SuddenDisconnect(b) => b.on_enqueued(player_context).await,
+            BehaviorType::NetworkDisconnect(b) => b.on_enqueued(player_context).await,
             BehaviorType::LoadingFailure(b) => b.on_enqueued(player_context).await,
             BehaviorType::LoadingIgnorer(b) => b.on_enqueued(player_context).await,
         }
@@ -173,7 +172,7 @@ impl PlayerBehavior for BehaviorType {
             BehaviorType::QuitDuringLoading(b) => b.on_match_found(player_context).await,
             BehaviorType::SlowLoader(b) => b.on_match_found(player_context).await,
             BehaviorType::IgnoreMatchFound(b) => b.on_match_found(player_context).await,
-            BehaviorType::SuddenDisconnect(b) => b.on_match_found(player_context).await,
+            BehaviorType::NetworkDisconnect(b) => b.on_match_found(player_context).await,
             BehaviorType::LoadingFailure(b) => b.on_match_found(player_context).await,
             BehaviorType::LoadingIgnorer(b) => b.on_match_found(player_context).await,
         }
@@ -198,7 +197,7 @@ impl PlayerBehavior for BehaviorType {
             BehaviorType::IgnoreMatchFound(b) => {
                 b.on_loading_start(player_context, loading_session_id).await
             }
-            BehaviorType::SuddenDisconnect(b) => {
+            BehaviorType::NetworkDisconnect(b) => {
                 b.on_loading_start(player_context, loading_session_id).await
             }
             BehaviorType::LoadingFailure(b) => {
@@ -217,7 +216,7 @@ impl PlayerBehavior for BehaviorType {
             BehaviorType::QuitDuringLoading(b) => b.on_loading_complete(player_context).await,
             BehaviorType::SlowLoader(b) => b.on_loading_complete(player_context).await,
             BehaviorType::IgnoreMatchFound(b) => b.on_loading_complete(player_context).await,
-            BehaviorType::SuddenDisconnect(b) => b.on_loading_complete(player_context).await,
+            BehaviorType::NetworkDisconnect(b) => b.on_loading_complete(player_context).await,
             BehaviorType::LoadingFailure(b) => b.on_loading_complete(player_context).await,
             BehaviorType::LoadingIgnorer(b) => b.on_loading_complete(player_context).await,
         }
@@ -230,7 +229,7 @@ impl PlayerBehavior for BehaviorType {
             BehaviorType::QuitDuringLoading(b) => b.clone_trait(),
             BehaviorType::SlowLoader(b) => b.clone_trait(),
             BehaviorType::IgnoreMatchFound(b) => b.clone_trait(),
-            BehaviorType::SuddenDisconnect(b) => b.clone_trait(),
+            BehaviorType::NetworkDisconnect(b) => b.clone_trait(),
             BehaviorType::LoadingFailure(b) => b.clone_trait(),
             BehaviorType::LoadingIgnorer(b) => b.clone_trait(),
         }

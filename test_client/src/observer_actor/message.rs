@@ -1,6 +1,7 @@
 use actix::Message;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use std::fmt;
 use std::time::Duration;
 use uuid::Uuid;
 
@@ -17,13 +18,77 @@ pub struct EventStreamMessage {
 }
 
 // PlayerActor가 ObserverActor에게 보내는 검증 요청
-#[derive(Debug, Clone, Message)]
+#[derive(Message)]
 #[rtype(result = "()")]
 pub struct ExpectEvent {
     pub event_type: String,
     pub player_id: Option<Uuid>,
-    // pub data_matcher: Box<dyn Fn(&serde_json::Value) -> bool + Send + Sync>,
+    pub data_matcher: Box<dyn Fn(&serde_json::Value) -> bool + Send + Sync>,
     pub timeout: Duration,
+}
+
+impl fmt::Debug for ExpectEvent {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("ExpectEvent")
+            .field("event_type", &self.event_type)
+            .field("player_id", &self.player_id)
+            .field("data_matcher", &"<function>")
+            .field("timeout", &self.timeout)
+            .finish()
+    }
+}
+
+impl Clone for ExpectEvent {
+    fn clone(&self) -> Self {
+        Self {
+            event_type: self.event_type.clone(),
+            player_id: self.player_id,
+            data_matcher: Box::new(|_| true), // Default matcher for cloning
+            timeout: self.timeout,
+        }
+    }
+}
+
+impl ExpectEvent {
+    pub fn new(
+        event_type: String,
+        player_id: Option<Uuid>,
+        matcher: Box<dyn Fn(&serde_json::Value) -> bool + Send + Sync>,
+        timeout: Duration,
+    ) -> Self {
+        Self {
+            event_type,
+            player_id,
+            data_matcher: matcher,
+            timeout,
+        }
+    }
+
+    pub fn simple(event_type: String, player_id: Option<Uuid>) -> Self {
+        Self::new(
+            event_type,
+            player_id,
+            Box::new(|_| true),
+            Duration::from_secs(10),
+        )
+    }
+
+    pub fn matches(&self, event: &EventStreamMessage) -> bool {
+        // Check event type
+        if self.event_type != event.event_type {
+            return false;
+        }
+
+        // Check player ID
+        if let Some(expected_player_id) = self.player_id {
+            if event.player_id != Some(expected_player_id) {
+                return false;
+            }
+        }
+
+        // Check data matcher
+        (self.data_matcher)(&event.data)
+    }
 }
 
 // SingleScenarioActor가 ObserverActor에게 관찰 시작을 알리는 메시지

@@ -43,8 +43,17 @@ impl StreamHandler<Result<Message, tokio_tungstenite::tungstenite::Error>> for P
             Ok(Message::Text(text)) => match serde_json::from_str::<ServerMessage>(&text) {
                 Ok(server_msg) => server_msg,
                 Err(e) => {
-                    warn!("[{}] Failed to parse server message: {}", self.player_id, e);
-                    return;
+                    error!(
+                        "[{}] Failed to parse server message: {}",
+                        self.player_id, e
+                    );
+                    error!("[{}] Raw message: {}", self.player_id, text);
+                    
+                    // 파싱 에러 시 테스트 실패하도록 panic
+                    panic!(
+                        "Player {} failed to parse server message: {}. Raw message: {}", 
+                        self.player_id, e, text
+                    );
                 }
             },
             Ok(Message::Close(reason)) => {
@@ -150,7 +159,7 @@ impl Handler<ConnectionEstablished> for PlayerActor {
         // 연결이 성공하면 큐에 등록 요청
         let enqueue_msg = ClientMessage::Enqueue {
             player_id: self.player_id,
-            game_mode: "normal".to_string(), // TODO: scenario ID 사용
+            game_mode: "Normal_1v1".to_string(),
         };
 
         ctx.address()

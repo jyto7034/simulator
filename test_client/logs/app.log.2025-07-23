@@ -1,0 +1,102 @@
+  2025-07-23T17:01:08.901431Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at test_client\src\lib.rs:71 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.901536Z  INFO  Starting Normal vs Normal scenario test
+    at test_client\tests\test.rs:25 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.901727Z  INFO  ScenarioRunnerActor started with 1 scenarios
+    at test_client\src\scenario_actor\mod.rs:72 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.901845Z  INFO  SingleScenarioActor started for scenario: Normal vs Normal
+    at test_client\src\scenario_actor\mod.rs:106 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.901929Z  INFO  Created players for scenario Normal vs Normal: perpetrator=331fd945-8ad3-4cb0-bb38-9def06376662, victim=d5d46727-86bb-4393-a271-92047441f710
+    at test_client\src\scenario_actor\mod.rs:137 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.902008Z  INFO  [Normal vs Normal] ObserverActor started.
+    at test_client\src\observer_actor\mod.rs:51 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.902067Z  INFO  [Normal vs Normal] Starting event observation...
+    at test_client\src\observer_actor\handler.rs:30 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.903589Z  INFO  PlayerActor started with state
+    at test_client\src\player_actor\mod.rs:63 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.903673Z  INFO  PlayerActor started with state
+    at test_client\src\player_actor\mod.rs:63 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.905060Z  INFO  [331fd945-8ad3-4cb0-bb38-9def06376662] Connection established
+    at test_client\src\player_actor\handler.rs:150 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.905209Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:186 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.905387Z  INFO  [Normal vs Normal] Successfully connected to event stream.
+    at test_client\src\observer_actor\handler.rs:60 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.905502Z  INFO  [d5d46727-86bb-4393-a271-92047441f710] Connection established
+    at test_client\src\player_actor\handler.rs:150 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.905606Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:186 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.906291Z  INFO  [Normal vs Normal] Received event: EventStreamMessage { event_type: "server_message", player_id: Some(331fd945-8ad3-4cb0-bb38-9def06376662), timestamp: 2025-07-23T17:01:08.905979100Z, data: Object {"type": String("enqueued")} }
+    at test_client\src\observer_actor\handler.rs:106 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.906645Z  INFO  [331fd945-8ad3-4cb0-bb38-9def06376662] Received message: EnQueued
+    at test_client\src\player_actor\handler.rs:75 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.906749Z  INFO  [d5d46727-86bb-4393-a271-92047441f710] Received message: EnQueued
+    at test_client\src\player_actor\handler.rs:75 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.906857Z  INFO  [331fd945-8ad3-4cb0-bb38-9def06376662] Normal player successfully enqueued
+    at test_client\src\behaviors\normal.rs:16 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.906934Z  INFO  [d5d46727-86bb-4393-a271-92047441f710] Normal player successfully enqueued
+    at test_client\src\behaviors\normal.rs:16 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.906994Z  INFO  [Normal vs Normal] Received event: EventStreamMessage { event_type: "server_message", player_id: Some(d5d46727-86bb-4393-a271-92047441f710), timestamp: 2025-07-23T17:01:08.906344400Z, data: Object {"type": String("enqueued")} }
+    at test_client\src\observer_actor\handler.rs:106 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.907072Z  INFO  [331fd945-8ad3-4cb0-bb38-9def06376662] Continuing with flow
+    at test_client\src\player_actor\handler.rs:121 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:08.907136Z  INFO  [d5d46727-86bb-4393-a271-92047441f710] Continuing with flow
+    at test_client\src\player_actor\handler.rs:121 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:12.752416Z  INFO  [Normal vs Normal] Received event: EventStreamMessage { event_type: "server_message", player_id: Some(d5d46727-86bb-4393-a271-92047441f710), timestamp: 2025-07-23T17:01:12.751975Z, data: Object {"loading_session_id": String("306cbaae-7fa6-4829-8390-e7aaf5be9564"), "type": String("start_loading")} }
+    at test_client\src\observer_actor\handler.rs:106 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:12.752555Z  INFO  [Normal vs Normal] Received event: EventStreamMessage { event_type: "server_message", player_id: Some(331fd945-8ad3-4cb0-bb38-9def06376662), timestamp: 2025-07-23T17:01:12.752003300Z, data: Object {"loading_session_id": String("306cbaae-7fa6-4829-8390-e7aaf5be9564"), "type": String("start_loading")} }
+    at test_client\src\observer_actor\handler.rs:106 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:12.752760Z  INFO  [d5d46727-86bb-4393-a271-92047441f710] Received message: StartLoading { loading_session_id: 306cbaae-7fa6-4829-8390-e7aaf5be9564 }
+    at test_client\src\player_actor\handler.rs:75 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:12.752864Z  INFO  [331fd945-8ad3-4cb0-bb38-9def06376662] Received message: StartLoading { loading_session_id: 306cbaae-7fa6-4829-8390-e7aaf5be9564 }
+    at test_client\src\player_actor\handler.rs:75 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:12.752934Z  INFO  [d5d46727-86bb-4393-a271-92047441f710] Normal player starting to load assets
+    at test_client\src\behaviors\normal.rs:36 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:12.752988Z  INFO  [d5d46727-86bb-4393-a271-92047441f710] Normal player sent loading_complete
+    at test_client\src\behaviors\normal.rs:48 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:12.753043Z  INFO  [331fd945-8ad3-4cb0-bb38-9def06376662] Normal player starting to load assets
+    at test_client\src\behaviors\normal.rs:36 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:12.753089Z  INFO  [331fd945-8ad3-4cb0-bb38-9def06376662] Normal player sent loading_complete
+    at test_client\src\behaviors\normal.rs:48 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:12.753153Z  INFO  [d5d46727-86bb-4393-a271-92047441f710] Continuing with flow
+    at test_client\src\player_actor\handler.rs:121 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:12.753221Z  INFO  [331fd945-8ad3-4cb0-bb38-9def06376662] Continuing with flow
+    at test_client\src\player_actor\handler.rs:121 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:38.912718Z  INFO  Normal vs Normal scenario test completed
+    at test_client\tests\test.rs:38 on test_normal_vs_normal_scenario ThreadId(2)
+
+  2025-07-23T17:01:38.912900Z  INFO  [Normal vs Normal] ObserverActor stopped.
+    at test_client\src\observer_actor\mod.rs:56 on test_normal_vs_normal_scenario ThreadId(2)
+

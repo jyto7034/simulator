@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use tracing::warn;
 use uuid::Uuid;
 
-/// 매칭 중 나가는 플레이어 - 큐에서 기다리다가 포기
+/// 매칭 중 의도적으로 나가는 플레이어
 #[derive(Debug, Clone)]
 pub struct QuitDuringMatch;
 

@@ -113,9 +113,8 @@ impl Handler<InternalEvent> for ObserverActor {
 
         let current_expected = &self.expected_sequence[self.current_step];
 
-        // TODO: `matches` 로직 복원. data_matcher를 어떻게 처리할지 결정해야 함.
-        let is_match = current_expected.event_type == event.event_type
-            && current_expected.player_id == event.player_id;
+        // ExpectEvent의 matches 메서드 사용
+        let is_match = current_expected.matches(&event);
 
         if is_match {
             info!(

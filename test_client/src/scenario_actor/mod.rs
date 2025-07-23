@@ -2,7 +2,11 @@ use actix::{Actor, Addr, AsyncContext, Context};
 use tracing::info;
 use uuid::Uuid;
 
-use crate::{behaviors::BehaviorType, observer_actor::ObserverActor, player_actor::PlayerActor};
+use crate::{
+    behaviors::BehaviorType,
+    observer_actor::{message::StartObservation, ObserverActor},
+    player_actor::PlayerActor,
+};
 
 pub mod handler;
 pub mod message;
@@ -98,7 +102,7 @@ impl SingleScenarioActor {
 impl Actor for SingleScenarioActor {
     type Context = Context<Self>;
 
-    fn started(&mut self, ctx: &mut Self::Context) {
+    fn started(&mut self, _ctx: &mut Self::Context) {
         info!(
             "SingleScenarioActor started for scenario: {}",
             self.scenario.name
@@ -126,8 +130,9 @@ impl Actor for SingleScenarioActor {
         perpetrator_actor.start();
         victim_actor.start();
 
-        // 3. Observer에게 관찰 시작 알림
-        // observer_addr.do_send(StartObservation { player_id_filter: None });
+        observer_addr.do_send(StartObservation {
+            player_id_filter: None,
+        });
 
         info!(
             "Created players for scenario {}: perpetrator={}, victim={}",

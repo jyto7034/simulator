@@ -2,7 +2,10 @@ use actix::{Actor, Addr, Context};
 use std::time::Duration;
 use tracing::info;
 
-use crate::{observer_actor::message::{EventStreamMessage, ExpectEvent}, scenario_actor::ScenarioResult};
+use crate::{
+    observer_actor::message::{EventStreamMessage, ExpectEvent},
+    scenario_actor::{ScenarioResult, ScenarioRunnerActor},
+};
 
 pub mod handler;
 pub mod message;
@@ -21,15 +24,14 @@ pub struct ObserverActor {
     pub received_events: Vec<EventStreamMessage>,
     pub current_step: usize,
     pub test_name: String,
-    // pub redis_conn: ConnectionManager, // Redis 연결
-    pub scenario_runner_addr: Addr<crate::scenario_actor::ScenarioRunnerActor>, // 결과 보고용
+    pub scenario_runner_addr: Addr<ScenarioRunnerActor>, // 결과 보고용
 }
 
 impl ObserverActor {
     pub fn new(
         match_server_url: String,
         test_name: String,
-        scenario_runner_addr: Addr<crate::scenario_actor::ScenarioRunnerActor>,
+        scenario_runner_addr: Addr<ScenarioRunnerActor>,
     ) -> Self {
         Self {
             match_server_url,
@@ -45,7 +47,7 @@ impl ObserverActor {
 impl Actor for ObserverActor {
     type Context = Context<Self>;
 
-    fn started(&mut self, ctx: &mut Self::Context) {
+    fn started(&mut self, _ctx: &mut Self::Context) {
         info!("[{}] ObserverActor started.", self.test_name);
         // `StartObservation` 메시지를 받으면 WebSocket 연결 및 구독 시작
     }
@@ -87,8 +89,4 @@ pub enum ObservationResult {
         reason: String,
         events: Vec<EventStreamMessage>,
     },
-}
-
-impl ObservationResult {
-    // ... (기존 ObservationResult의 helper 함수들)
 }
