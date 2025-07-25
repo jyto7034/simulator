@@ -6,7 +6,7 @@ use uuid::Uuid;
 
 use crate::{
     observer_actor::message::{EventStreamMessage, ExpectEvent},
-    scenario_actor::{ScenarioResult, ScenarioRunnerActor},
+    scenario_actor::ScenarioRunnerActor,
 };
 
 pub mod handler;
