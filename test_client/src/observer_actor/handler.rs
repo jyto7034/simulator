@@ -1,25 +1,32 @@
-use actix::{
-    ActorContext, ActorFutureExt, AsyncContext, Handler, StreamHandler, WrapFuture,
-};
+use actix::{ActorContext, ActorFutureExt, AsyncContext, Handler, StreamHandler, WrapFuture};
 use futures_util::StreamExt;
 use tokio_tungstenite::{connect_async, tungstenite};
 use tracing::{error, info, warn};
 
 use crate::observer_actor::{
-        message::{ExpectEvent, InternalEvent, StartObservation},
-        EventStreamMessage, ObserverActor,
-    };
+    message::{ExpectEvent, InternalEvent, StartObservation},
+    EventStreamMessage, ObserverActor,
+};
 
 impl Handler<ExpectEvent> for ObserverActor {
     type Result = ();
 
     fn handle(&mut self, msg: ExpectEvent, _ctx: &mut Self::Context) {
+        let player_id = msg.player_id.expect("ExpectEvent must have a player_id for per-player tracking");
+        
         info!(
-            "[{}] Received expectation: {:?}",
-            self.test_name,
-            msg.event_type
+            "[{}] Received expectation for player {}: {:?}",
+            self.test_name, player_id, msg.event_type
         );
-        self.expected_sequence.push(msg);
+        
+        // 해당 플레이어의 기대 이벤트 목록에 추가
+        self.player_expectations
+            .entry(player_id)
+            .or_insert_with(Vec::new)
+            .push(msg);
+            
+        // 플레이어 step 초기화 (아직 없다면)
+        self.player_steps.entry(player_id).or_insert(0);
     }
 }
 
@@ -27,17 +34,10 @@ impl Handler<StartObservation> for ObserverActor {
     type Result = ();
 
     fn handle(&mut self, msg: StartObservation, ctx: &mut Self::Context) {
-        info!(
-            "[{}] Starting event observation...",
-            self.test_name
-        );
+        info!("[{}] Starting event observation...", self.test_name);
 
         let url = if let Some(pid) = msg.player_id_filter {
-            format!(
-                "{}/events/stream?player_id={}",
-                self.match_server_url,
-                pid
-            )
+            format!("{}/events/stream?player_id={}", self.match_server_url, pid)
         } else {
             format!("{}/events/stream", self.match_server_url)
         };
@@ -57,7 +57,10 @@ impl Handler<StartObservation> for ObserverActor {
         .into_actor(self)
         .map(|stream_opt, act, ctx| {
             if let Some(stream) = stream_opt {
-                info!("[{}] Successfully connected to event stream.", act.test_name);
+                info!(
+                    "[{}] Successfully connected to event stream.",
+                    act.test_name
+                );
                 ctx.add_stream(stream);
             } else {
                 error!("[{}] Failed to add event stream.", act.test_name);
@@ -106,33 +109,69 @@ impl Handler<InternalEvent> for ObserverActor {
         info!("[{}] Received event: {:?}", self.test_name, event);
         self.received_events.push(event.clone());
 
-        if self.current_step >= self.expected_sequence.len() {
-            // 모든 예상을 완료했으면 더 이상 확인할 필요 없음
+        // 이벤트에 player_id가 있는 경우만 처리
+        if let Some(event_player_id) = event.player_id {
+            self.check_player_expectations(event_player_id, &event, ctx);
+        }
+        
+        // 모든 플레이어의 기대 이벤트가 완료되었는지 확인
+        self.check_all_players_completed(ctx);
+    }
+}
+
+impl ObserverActor {
+    /// 특정 플레이어의 기대 이벤트를 확인
+    fn check_player_expectations(&mut self, player_id: uuid::Uuid, event: &EventStreamMessage, _ctx: &mut actix::Context<Self>) {
+        // 해당 플레이어의 기대 이벤트 목록과 현재 step 가져오기
+        let player_expectations = match self.player_expectations.get(&player_id) {
+            Some(expectations) => expectations,
+            None => return, // 이 플레이어에 대한 기대 이벤트가 없음
+        };
+        
+        let current_step = *self.player_steps.get(&player_id).unwrap_or(&0);
+        
+        // 현재 step에 해당하는 기대 이벤트가 있는지 확인
+        if current_step >= player_expectations.len() {
+            // 이미 모든 기대 이벤트를 완료한 플레이어
             return;
         }
-
-        let current_expected = &self.expected_sequence[self.current_step];
-
-        // ExpectEvent의 matches 메서드 사용
-        let is_match = current_expected.matches(&event);
-
-        if is_match {
+        
+        let expected_event = &player_expectations[current_step];
+        
+        // 이벤트가 기대와 일치하는지 확인
+        if expected_event.matches(event) {
             info!(
-                "✓ [{}] Step {} matched: {}",
-                self.test_name,
-                self.current_step,
-                event.event_type
+                "✓ [{}] Player {} step {} matched: {}",
+                self.test_name, player_id, current_step, event.event_type
             );
-            self.current_step += 1;
-
-            if self.current_step >= self.expected_sequence.len() {
-                info!("[{}] All expected events received.", self.test_name);
-                // 모든 시나리오 완료. 성공 메시지 전송
-                // ctx.address().do_send(ObservationCompleted(ObservationResult::Success { ... }));
-                ctx.stop();
-            }
+            
+            // 해당 플레이어의 step 증가
+            self.player_steps.insert(player_id, current_step + 1);
         } else {
-            warn!("Event doesn't match expected: {:?}", event);
+            warn!(
+                "Event doesn't match expected for player {}: {:?}",
+                player_id, event
+            );
+        }
+    }
+    
+    /// 모든 플레이어의 기대 이벤트가 완료되었는지 확인
+    fn check_all_players_completed(&self, ctx: &mut actix::Context<Self>) {
+        let mut all_completed = true;
+        
+        for (player_id, expectations) in &self.player_expectations {
+            let current_step = *self.player_steps.get(player_id).unwrap_or(&0);
+            if current_step < expectations.len() {
+                all_completed = false;
+                break;
+            }
+        }
+        
+        if all_completed && !self.player_expectations.is_empty() {
+            info!("[{}] All players completed their expected events.", self.test_name);
+            // 모든 시나리오 완료. 성공 메시지 전송
+            // ctx.address().do_send(ObservationCompleted(ObservationResult::Success { ... }));
+            ctx.stop();
         }
     }
 }

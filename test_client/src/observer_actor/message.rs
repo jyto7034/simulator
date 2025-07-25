@@ -64,6 +64,15 @@ impl ExpectEvent {
         }
     }
 
+    /// match_server에서 사용하는 "server_message" 이벤트를 위한 편의 함수
+    pub fn server_message(
+        player_id: Option<Uuid>,
+        matcher: Box<dyn Fn(&serde_json::Value) -> bool + Send + Sync>,
+        timeout: Duration,
+    ) -> Self {
+        Self::new("server_message".to_string(), player_id, matcher, timeout)
+    }
+
     pub fn simple(event_type: String, player_id: Option<Uuid>) -> Self {
         Self::new(
             event_type,
