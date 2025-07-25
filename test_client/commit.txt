@@ -1,85 +1,13 @@
-feat(TestClient): Complete Observer Actor refactoring and BehaviorResponse pattern implementation
+feat(TestClient): Refactor ObserverActor to support per-player event tracking
 
-## Summary
-Successfully completed the Observer Actor refactoring plan as specified in OBSERVER_REFACTOR.md. Transformed the test framework from a simple observer pattern to a comprehensive Actor-based architecture with proper validation and result reporting system.
+- Replace single sequential event tracking with per-player HashMap structure
+- Change `expected_sequence: Vec<ExpectEvent>` to `player_expectations: HashMap<Uuid, Vec<ExpectEvent>>`
+- Change `current_step: usize` to `player_steps: HashMap<Uuid, usize>` for independent player progress
+- Update ExpectEvent handler to store expectations per player ID
+- Refactor InternalEvent handler with `check_player_expectations()` for individual player validation
+- Add `check_all_players_completed()` to verify scenario completion only when all players finish
+- Fix sequential step validation issue where Player1's events affected Player2's step progression
+- Enable independent behavior validation for multiple players in scenarios
 
-## Key Changes
-
-### 1. ObserverActor Implementation (Stage 1)
-- **Created complete ObserverActor structure**: `observer_actor/mod.rs`, `message.rs`, `handler.rs`
-- **Migrated EventObserver logic**: Converted existing WebSocket event observation logic to Actor model
-- **Implemented core messages**: `ExpectEvent`, `StartObservation`, `InternalEvent`, `ObservationCompleted`
-- **Added WebSocket stream handling**: Real-time event subscription and processing from match server
-
-### 2. BehaviorResponse Pattern (Stage 2)
-- **Introduced BehaviorResponse struct**: `BehaviorResponse(TestResult, Option<ExpectEvent>)`
-- **Updated PlayerBehavior trait**: All methods now return `BehaviorResponse` instead of `TestResult`
-- **Enhanced behavior capabilities**: Behaviors can now request validation from ObserverActor
-- **Maintained backward compatibility**: Existing test logic preserved while adding new functionality
-
-### 3. PlayerActor Integration (Stage 3)
-- **Added observer field**: `observer: Addr<ObserverActor>` to PlayerActor struct
-- **Implemented behavior validation flow**: PlayerActor → Behavior execution → Observer validation request
-- **Updated Handler<BehaviorFinished>**: Automatically sends `ExpectEvent` to Observer when present
-- **Enhanced constructor**: PlayerActor now requires ObserverActor address during initialization
-
-### 4. SingleScenarioActor Architecture (Stage 4)
-- **Restructured actor creation order**: ObserverActor created first, then PlayerActors
-- **Implemented dependency injection**: Observer address passed to both perpetrator and victim PlayerActors
-- **Added scenario-level coordination**: Observer manages entire scenario validation lifecycle
-- **Enhanced logging and monitoring**: Comprehensive scenario execution tracking
-
-### 5. Validation Logic Implementation (Stage 5)
-- **ExpectEvent message handling**: Queue-based event expectation management
-- **WebSocket event stream integration**: Real-time server event monitoring
-- **Redis validation infrastructure**: Foundation for server state verification
-- **Result aggregation system**: Comprehensive scenario success/failure determination
-
-## Technical Improvements
-
-### Architecture Benefits
-- **Separation of concerns**: Clear distinction between action execution (PlayerActor) and validation (ObserverActor)
-- **Scalable validation**: ObserverActor can validate multiple PlayerActors in parallel
-- **Comprehensive monitoring**: Full visibility into test scenario execution
-- **Flexible validation rules**: Behaviors can specify custom validation requirements
-
-### Code Quality Enhancements
-- **Type safety**: Strong typing with BehaviorResponse pattern
-- **Error handling**: Robust error propagation and handling throughout the system
-- **Memory efficiency**: Proper Actor lifecycle management and resource cleanup
-- **Async/await compatibility**: Full integration with Rust async ecosystem
-
-### Testing Framework Evolution
-- **Scenario isolation**: Each scenario has dedicated ObserverActor for independent validation
-- **Real-time feedback**: Immediate validation results during test execution
-- **Comprehensive reporting**: Detailed success/failure analysis with specific error information
-- **Extensible design**: Easy to add new validation types and behaviors
-
-## Files Modified
-- `src/observer_actor/mod.rs`: Core ObserverActor implementation
-- `src/observer_actor/message.rs`: Inter-actor communication messages
-- `src/observer_actor/handler.rs`: WebSocket stream handling and validation logic
-- `src/behaviors/mod.rs`: Updated PlayerBehavior trait and BehaviorResponse pattern
-- `src/behaviors/*.rs`: All behavior implementations updated to use BehaviorResponse
-- `src/player_actor/mod.rs`: Added observer field and dependency injection
-- `src/player_actor/handler.rs`: Enhanced behavior result processing
-- `src/scenario_actor/mod.rs`: Restructured actor creation and coordination
-- `src/lib.rs`: Updated type definitions and imports
-
-## Migration Impact
-- **Zero breaking changes**: Existing test scenarios continue to work
-- **Enhanced capabilities**: New validation features available for advanced testing
-- **Performance improvement**: Better resource utilization through Actor model
-- **Maintainability**: Cleaner code structure with clear responsibilities
-
-## Testing Status
-- **Compilation**: All code compiles successfully with zero errors
-- **Unused imports**: Cleaned up with `cargo fix`
-- **Actor integration**: Complete message flow from PlayerActor → ObserverActor → SingleScenarioActor
-- **Ready for integration**: Framework ready for Redis validation and real-world testing
-
-## Next Steps
-- Implement Redis connection and state validation logic in ObserverActor
-- Add comprehensive error handling for network failures and validation timeouts
-- Extend behavior library with additional test scenarios
-- Integration testing with actual match server and Redis instance
+This change resolves the issue where ObserverActor treated multiple players as a single sequence,
+causing premature scenario completion when the first player's events were satisfied.
