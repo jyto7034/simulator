@@ -1,5 +1,5 @@
 use super::PlayerBehavior;
-use crate::{player_actor::PlayerContext, BehaviorResponse, TestFailure};
+use crate::{player_actor::PlayerContext, TestFailure, BehaviorResult};
 use async_trait::async_trait;
 use tracing::warn;
 
@@ -9,17 +9,14 @@ pub struct IgnoreMatchFound;
 
 #[async_trait]
 impl PlayerBehavior for IgnoreMatchFound {
-    async fn on_match_found(&self, player_context: &PlayerContext) -> BehaviorResponse {
+    async fn on_match_found(&self, player_context: &PlayerContext) -> BehaviorResult {
         warn!(
             "[{}] Ignoring match found - staying in queue",
             player_context.player_id
         );
-        BehaviorResponse(
-            Err(TestFailure::Behavior(
-                "Intentionally ignoring match found".to_string(),
-            )),
-            None,
-        ) // 로딩 단계로 가지 않고 종료
+        Err(TestFailure::Behavior(
+            "Intentionally ignoring match found".to_string(),
+        ))
     }
 
     fn clone_trait(&self) -> Box<dyn PlayerBehavior> {

@@ -14,5 +14,5 @@ pub struct ScenarioCompleted {
 #[rtype(result = "()")]
 pub struct PlayerCompleted {
     pub player_id: uuid::Uuid,
-    pub result: crate::TestResult,
+    pub result: crate::BehaviorResult,
 }

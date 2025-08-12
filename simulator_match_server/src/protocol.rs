@@ -26,16 +26,16 @@ pub enum ServerMessage {
     #[serde(rename = "enqueued")]
     EnQueued,
 
-    /// 클라이언트에게 에셋 로딩을 시작하라고 지시합니다.
-    #[serde(rename = "start_loading")]
-    StartLoading { loading_session_id: Uuid },
-
     /// 최종적으로 매칭이 성사되었고, 게임 서버 접속 정보를 전달합니다.
     #[serde(rename = "match_found")]
     MatchFound {
         session_id: Uuid, // dedicated_server의 게임 세션 ID
         server_address: String,
     },
+
+    /// 클라이언트에게 에셋 로딩을 시작하라고 지시합니다.
+    #[serde(rename = "start_loading")]
+    StartLoading { loading_session_id: Uuid },
 
     /// 에러가 발생했음을 알립니다.
     #[serde(rename = "error")]

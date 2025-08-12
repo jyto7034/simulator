@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use actix::{Actor, Addr, AsyncContext, Context};
 use tracing::info;
 use uuid::Uuid;
@@ -6,6 +8,7 @@ use crate::{
     behaviors::BehaviorType,
     observer_actor::{message::StartObservation, ObserverActor},
     player_actor::PlayerActor,
+    schedules,
 };
 
 pub mod handler;
@@ -86,7 +89,7 @@ impl Actor for ScenarioRunnerActor {
 pub struct SingleScenarioActor {
     scenario: Scenario,
     runner_addr: Addr<ScenarioRunnerActor>,
-    player_results: Vec<crate::TestResult>,
+    player_results: Vec<crate::BehaviorResult>,
 }
 
 impl SingleScenarioActor {
@@ -108,17 +111,24 @@ impl Actor for SingleScenarioActor {
             self.scenario.name
         );
 
-        // 1. ObserverActor 생성
+        let perpetrator_id = Uuid::new_v4();
+        let victim_id = Uuid::new_v4();
+
+        let perpetrator_schedule = schedules::get_schedule_for_perpetrator(&self.scenario.perpetrator_behavior);
+        let victim_schedule = schedules::get_schedule_for_victim(&self.scenario.victim_behavior);
+        let mut players_schedule = HashMap::new();
+
+        players_schedule.insert(perpetrator_id, perpetrator_schedule);
+        players_schedule.insert(victim_id, victim_schedule);
+
         let observer = ObserverActor::new(
             "ws://127.0.0.1:8080".to_string(),
             self.scenario.name.clone(),
             self.runner_addr.clone(),
+            players_schedule,
+            HashMap::new(),
         );
         let observer_addr = observer.start();
-
-        // 2. PlayerActor 생성 시 Observer 주소 주입
-        let perpetrator_id = Uuid::new_v4();
-        let victim_id = Uuid::new_v4();
 
         let perpetrator_behavior = Box::new(self.scenario.perpetrator_behavior.clone());
         let victim_behavior = Box::new(self.scenario.victim_behavior.clone());
@@ -130,8 +140,9 @@ impl Actor for SingleScenarioActor {
         perpetrator_actor.start();
         victim_actor.start();
 
+        // 4. Observer에게 관찰 시작 알림
         observer_addr.do_send(StartObservation {
-            player_id_filter: None,
+            player_ids: vec![perpetrator_id, victim_id],
         });
 
         info!(

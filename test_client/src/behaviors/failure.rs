@@ -1,5 +1,5 @@
 use super::PlayerBehavior;
-use crate::{player_actor::PlayerContext, BehaviorOutcome, BehaviorResponse, TestFailure};
+use crate::{player_actor::PlayerContext, BehaviorOutcome, BehaviorResult, TestFailure};
 use async_trait::async_trait;
 use tracing::{error, warn};
 use uuid::Uuid;
@@ -13,14 +13,11 @@ impl PlayerBehavior for LoadingFailure {
         &self,
         player_context: &PlayerContext,
         _loading_session_id: Uuid,
-    ) -> BehaviorResponse {
+    ) -> BehaviorResult {
         error!("[{}] Reporting loading failure!", player_context.player_id);
-        BehaviorResponse(
-            Err(TestFailure::Behavior(
-                "Intentionally failing loading".to_string(),
-            )),
-            None,
-        )
+        Err(TestFailure::Behavior(
+            "Intentionally failing loading".to_string(),
+        ))
     }
 
     fn clone_trait(&self) -> Box<dyn PlayerBehavior> {
@@ -37,13 +34,13 @@ impl PlayerBehavior for LoadingIgnorer {
         &self,
         player_context: &PlayerContext,
         _loading_session_id: Uuid,
-    ) -> BehaviorResponse {
+    ) -> BehaviorResult {
         warn!(
             "[{}] Ignoring loading message and doing nothing.",
             player_context.player_id
         );
         // 아무것도 하지 않고 계속 진행하여 서버 타임아웃을 유발
-        BehaviorResponse(Ok(BehaviorOutcome::Continue), None)
+        Ok(BehaviorOutcome::Continue)
     }
 
     fn clone_trait(&self) -> Box<dyn PlayerBehavior> {

@@ -2,8 +2,8 @@ pub mod behaviors;
 pub mod observer_actor;
 pub mod player_actor;
 pub mod scenario_actor;
+pub mod schedules;
 
-use actix::Message;
 use std::io;
 use std::time::Duration;
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
@@ -12,8 +12,6 @@ use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, Env
 use futures_util::stream::{SplitSink, SplitStream};
 use tokio::net::TcpStream;
 use tokio_tungstenite::{MaybeTlsStream, WebSocketStream};
-
-use crate::observer_actor::message::ExpectEvent;
 
 type WsSink =
     SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, tokio_tungstenite::tungstenite::Message>;
@@ -83,7 +81,7 @@ pub enum BehaviorOutcome {
 }
 
 /// PlayerBehavior 메서드들의 반환 타입
-pub type TestResult = Result<BehaviorOutcome, TestFailure>;
+pub type BehaviorResult = Result<BehaviorOutcome, TestFailure>;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum TestFailure {
@@ -98,8 +96,3 @@ pub enum TestFailure {
     /// 시스템 내부 오류
     System(String),
 }
-
-// Behavior의 반환 타입
-#[derive(Debug, Clone, Message)]
-#[rtype(result = "()")]
-pub struct BehaviorResponse(pub TestResult, pub Option<ExpectEvent>);

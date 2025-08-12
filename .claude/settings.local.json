@@ -6,7 +6,14 @@
       "Bash(grep:*)",
       "Bash(mkdir:*)",
       "Bash(mv:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(for file in *.rs)",
+      "Bash(do if [ \"$file\" != \"mod.rs\" ])",
+      "Bash(then echo \"=== $file ===\")",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(for:*)",
+      "Bash(do sed -i 's/fn on_match_found(/async fn on_match_found(/g; s/fn on_loading_complete(/async fn on_loading_complete(/g; s/fn on_error(/async fn on_error(/g' \"$file\")"
     ],
     "deny": []
   }

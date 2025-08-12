@@ -1,4 +1,4 @@
-use crate::{protocol::ServerMessage, provider::FindAvailableServer};
+use crate::{protocol::ServerMessage, provider::FindAvailableServer, state_events::*};
 use actix::{AsyncContext, Handler, ResponseFuture};
 use futures_util::stream::StreamExt;
 use redis::aio::ConnectionManager;
@@ -12,11 +12,9 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use tracing::{error, info, warn};
 use uuid::Uuid;
 
-// test_client 작성해서 시나리오 테스트 해야함.
-
 use super::{
     actor::Matchmaker,
-    lock::DistributedLock, // DistributedLock 임포트
+    lock::DistributedLock,
     messages::*,
     scripts::{
         get_atomic_cancel_session_script, get_atomic_loading_complete_script,
@@ -49,13 +47,35 @@ async fn requeue_players(redis: &mut ConnectionManager, queue_key: &str, player_
     if player_ids.is_empty() {
         return;
     }
-    PLAYERS_IN_QUEUE.add(player_ids.len() as i64);
-    let result: Result<i32, _> = redis.sadd(queue_key, player_ids).await;
-    if let Err(e) = result {
-        error!(
-            "CRITICAL: Failed to re-queue players {:?} into {}: {}",
-            player_ids, queue_key, e
-        );
+
+    // Extract game_mode from queue_key (e.g., "queue:Normal_1v1" -> "Normal_1v1")
+    let game_mode = queue_key.split(':').nth(1).unwrap_or("unknown").to_string();
+
+    // Perform SADD first and use its return value to adjust metrics accurately
+    match redis.sadd::<_, _, i32>(queue_key, player_ids).await {
+        Ok(added) => {
+            if added > 0 {
+                PLAYERS_IN_QUEUE.add(added as i64);
+            }
+
+            // Publish state event for players requeued
+            if let Err(e) = publish_players_requeued(redis, game_mode.clone(), player_ids.to_vec()).await {
+                warn!("Failed to publish players_requeued event: {}", e);
+            }
+
+            // Also publish queue size changed for better observability
+            if let Ok(size) = redis.scard::<_, usize>(queue_key).await {
+                if let Err(e) = publish_queue_size_changed(redis, game_mode, size).await {
+                    warn!("Failed to publish queue_size_changed after requeue: {}", e);
+                }
+            }
+        }
+        Err(e) => {
+            error!(
+                "CRITICAL: Failed to re-queue players {:?} into {}: {}",
+                player_ids, queue_key, e
+            );
+        }
     }
 }
 
@@ -97,6 +117,19 @@ impl Handler<EnqueuePlayer> for Matchmaker {
                     info!("Player {} added to queue {}", player_id_str, queue_key);
                     PLAYERS_IN_QUEUE.inc();
                     publish_message(&mut redis, msg.player_id, ServerMessage::EnQueued).await;
+
+                    // Publish state event for queue size change
+                    if let Ok(queue_size) = redis.scard::<_, usize>(&queue_key).await {
+                        if let Err(e) = publish_queue_size_changed(
+                            &mut redis,
+                            msg.game_mode.clone(),
+                            queue_size,
+                        )
+                        .await
+                        {
+                            warn!("Failed to publish queue_size_changed event: {}", e);
+                        }
+                    }
                 }
                 Ok(_) => {
                     warn!("Player {} already in queue {}", player_id_str, queue_key);
@@ -143,6 +176,22 @@ impl Handler<DequeuePlayer> for Matchmaker {
                         player_id_str, queue_key
                     );
                     PLAYERS_IN_QUEUE.dec();
+
+                    // Publish state event for queue size change
+                    if let Ok(queue_size) = redis.scard::<_, usize>(&queue_key).await {
+                        if let Err(e) = publish_queue_size_changed(
+                            &mut redis,
+                            msg.game_mode.clone(),
+                            queue_size,
+                        )
+                        .await
+                        {
+                            warn!(
+                                "Failed to publish queue_size_changed event after dequeue: {}",
+                                e
+                            );
+                        }
+                    }
                 }
                 Ok(_) => {
                     tracing::debug!(
@@ -260,6 +309,26 @@ impl Handler<TryMatch> for Matchmaker {
                         );
                     }
                 }
+
+                // Publish state event for loading session creation
+                if let Err(e) = publish_loading_session_created(
+                    &mut redis,
+                    returned_loading_session_id.to_string(),
+                    game_mode.clone(),
+                    player_ids.clone(),
+                    settings.loading_session_timeout_seconds,
+                )
+                .await
+                {
+                    warn!("Failed to publish loading_session_created event: {}", e);
+                }
+
+                // After successful match, publish queue size change since players were removed
+                if let Ok(queue_size) = redis.scard::<_, usize>(&queue_key).await {
+                    if let Err(e) = publish_queue_size_changed(&mut redis, game_mode.clone(), queue_size).await {
+                        warn!("Failed to publish queue_size_changed after match: {}", e);
+                    }
+                }
             }
 
             if let Err(e) = lock.release(&mut redis).await {
@@ -318,6 +387,18 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                         "Player {} is ready, but waiting for others in session {}.",
                         player_id_str, msg.loading_session_id
                     );
+
+                    // Publish state event for individual player ready
+                    if let Err(e) = publish_player_ready(
+                        &mut redis,
+                        msg.loading_session_id.to_string(),
+                        player_id_str.clone(),
+                    )
+                    .await
+                    {
+                        warn!("Failed to publish player_ready event: {}", e);
+                    }
+
                     if let Err(e) = lock.release(&mut redis).await {
                         error!(
                             "Failed to release lock for session {}: {}",
@@ -356,6 +437,17 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                 "All players {:?} are ready for session {}. Finding a dedicated server...",
                 player_ids, msg.loading_session_id
             );
+
+            // Publish state event for loading session completion
+            if let Err(e) = publish_loading_session_completed(
+                &mut redis,
+                msg.loading_session_id.to_string(),
+                player_ids.clone(),
+            )
+            .await
+            {
+                warn!("Failed to publish loading_session_completed event: {}", e);
+            }
 
             let find_server_result = provider_addr.send(FindAvailableServer).await;
 
@@ -405,6 +497,20 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                                                 .await;
                                         }
                                     }
+
+                                    // Publish state event for dedicated session creation
+                                    if let Err(e) = publish_dedicated_session_created(
+                                        &mut redis,
+                                        session_info.session_id.to_string(),
+                                        session_info.server_address.clone(),
+                                    )
+                                    .await
+                                    {
+                                        warn!(
+                                            "Failed to publish dedicated_session_created event: {}",
+                                            e
+                                        );
+                                    }
                                 }
                                 Err(e) => {
                                     let queue_key = format!("{}:{}", queue_key_prefix, game_mode);
@@ -412,6 +518,21 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                                         .with_label_values(&["session_response_parse_failed"])
                                         .inc();
                                     error!("[{}] Failed to parse session creation response: {}. Re-queuing players.", game_mode, e);
+
+                                    // Publish state event for dedicated session failure
+                                    if let Err(e) = publish_dedicated_session_failed(
+                                        &mut redis,
+                                        msg.loading_session_id.to_string(),
+                                        "session_response_parse_failed".to_string(),
+                                    )
+                                    .await
+                                    {
+                                        warn!(
+                                            "Failed to publish dedicated_session_failed event: {}",
+                                            e
+                                        );
+                                    }
+
                                     requeue_players(&mut redis, &queue_key, &player_ids).await;
                                 }
                             }
@@ -426,6 +547,18 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                                 game_mode,
                                 resp.status()
                             );
+
+                            // Publish state event for dedicated session failure
+                            if let Err(e) = publish_dedicated_session_failed(
+                                &mut redis,
+                                msg.loading_session_id.to_string(),
+                                format!("dedicated_server_error_response: {}", resp.status()),
+                            )
+                            .await
+                            {
+                                warn!("Failed to publish dedicated_session_failed event: {}", e);
+                            }
+
                             requeue_players(&mut redis, &queue_key, &player_ids).await;
                         }
                         Err(e) => {
@@ -442,6 +575,23 @@ impl Handler<HandleLoadingComplete> for Matchmaker {
                                 "[{}] Failed to contact dedicated server (timeout or network error): {}. Re-queuing players.",
                                 game_mode, e
                             );
+
+                            // Publish state event for dedicated session failure
+                            let failure_reason = if e.is_timeout() {
+                                "dedicated_server_timeout".to_string()
+                            } else {
+                                format!("dedicated_server_request_failed: {}", e)
+                            };
+                            if let Err(e) = publish_dedicated_session_failed(
+                                &mut redis,
+                                msg.loading_session_id.to_string(),
+                                failure_reason,
+                            )
+                            .await
+                            {
+                                warn!("Failed to publish dedicated_session_failed event: {}", e);
+                            }
+
                             requeue_players(&mut redis, &queue_key, &player_ids).await;
                         }
                     }
@@ -659,6 +809,20 @@ impl Handler<CheckStaleLoadingSessions> for Matchmaker {
                             "Matchmaking timed out. You will be returned to the queue shortly."
                                 .to_string(),
                     };
+                    // Extract session_id from key (e.g., "loading:session_id" -> "session_id")
+                    let session_id = key.strip_prefix("loading:").unwrap_or(&key).to_string();
+
+                    // Publish state event for loading session timeout
+                    if let Err(e) = publish_loading_session_timeout(
+                        &mut redis,
+                        session_id.clone(),
+                        players_to_requeue.clone(),
+                    )
+                    .await
+                    {
+                        warn!("Failed to publish loading_session_timeout event: {}", e);
+                    }
+
                     for player_id_str in &players_to_requeue {
                         if let Ok(player_id) = Uuid::parse_str(player_id_str) {
                             publish_message(&mut redis, player_id, message.clone()).await;

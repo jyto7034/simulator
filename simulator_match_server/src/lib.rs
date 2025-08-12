@@ -13,6 +13,7 @@ pub mod matchmaker;
 pub mod protocol;
 pub mod provider;
 pub mod pubsub;
+pub mod state_events;
 pub mod util;
 pub mod ws_session;
 

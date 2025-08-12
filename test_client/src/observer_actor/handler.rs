@@ -1,34 +1,13 @@
 use actix::{ActorContext, ActorFutureExt, AsyncContext, Handler, StreamHandler, WrapFuture};
 use futures_util::StreamExt;
+use std::collections::HashSet;
 use tokio_tungstenite::{connect_async, tungstenite};
-use tracing::{error, info, warn};
+use tracing::{error, info};
 
 use crate::observer_actor::{
-    message::{ExpectEvent, InternalEvent, StartObservation},
-    EventStreamMessage, ObserverActor,
+    message::{InternalEvent, StartObservation},
+    EventStreamMessage, ObserverActor, Phase,
 };
-
-impl Handler<ExpectEvent> for ObserverActor {
-    type Result = ();
-
-    fn handle(&mut self, msg: ExpectEvent, _ctx: &mut Self::Context) {
-        let player_id = msg.player_id.expect("ExpectEvent must have a player_id for per-player tracking");
-        
-        info!(
-            "[{}] Received expectation for player {}: {:?}",
-            self.test_name, player_id, msg.event_type
-        );
-        
-        // 해당 플레이어의 기대 이벤트 목록에 추가
-        self.player_expectations
-            .entry(player_id)
-            .or_insert_with(Vec::new)
-            .push(msg);
-            
-        // 플레이어 step 초기화 (아직 없다면)
-        self.player_steps.entry(player_id).or_insert(0);
-    }
-}
 
 impl Handler<StartObservation> for ObserverActor {
     type Result = ();
@@ -36,11 +15,14 @@ impl Handler<StartObservation> for ObserverActor {
     fn handle(&mut self, msg: StartObservation, ctx: &mut Self::Context) {
         info!("[{}] Starting event observation...", self.test_name);
 
-        let url = if let Some(pid) = msg.player_id_filter {
-            format!("{}/events/stream?player_id={}", self.match_server_url, pid)
-        } else {
-            format!("{}/events/stream", self.match_server_url)
-        };
+        // 관찰 시작 시, 모든 플레이어를 초기 단계(Matching)로 설정
+        for player_id in &msg.player_ids {
+            self.players_phase.insert(*player_id, Phase::Matching);
+            self.player_received_events_in_phase
+                .insert(*player_id, HashSet::new());
+        }
+
+        let url = format!("{}/events/stream", self.match_server_url);
 
         let actor_future = async move {
             match connect_async(&url).await {
@@ -83,7 +65,6 @@ impl StreamHandler<Result<tungstenite::Message, tungstenite::Error>> for Observe
             Ok(tungstenite::Message::Text(text)) => {
                 match serde_json::from_str::<EventStreamMessage>(&text) {
                     Ok(event) => {
-                        // 받은 이벤트를 내부 메시지로 변환하여 자신에게 보냄
                         ctx.address().do_send(InternalEvent(event));
                     }
                     Err(e) => {
@@ -109,69 +90,102 @@ impl Handler<InternalEvent> for ObserverActor {
         info!("[{}] Received event: {:?}", self.test_name, event);
         self.received_events.push(event.clone());
 
-        // 이벤트에 player_id가 있는 경우만 처리
-        if let Some(event_player_id) = event.player_id {
-            self.check_player_expectations(event_player_id, &event, ctx);
+        if let Some(player_id) = event.player_id {
+            self.check_phase_completion(player_id, &event, ctx);
         }
-        
-        // 모든 플레이어의 기대 이벤트가 완료되었는지 확인
-        self.check_all_players_completed(ctx);
     }
 }
 
 impl ObserverActor {
-    /// 특정 플레이어의 기대 이벤트를 확인
-    fn check_player_expectations(&mut self, player_id: uuid::Uuid, event: &EventStreamMessage, _ctx: &mut actix::Context<Self>) {
-        // 해당 플레이어의 기대 이벤트 목록과 현재 step 가져오기
-        let player_expectations = match self.player_expectations.get(&player_id) {
-            Some(expectations) => expectations,
-            None => return, // 이 플레이어에 대한 기대 이벤트가 없음
-        };
-        
-        let current_step = *self.player_steps.get(&player_id).unwrap_or(&0);
-        
-        // 현재 step에 해당하는 기대 이벤트가 있는지 확인
-        if current_step >= player_expectations.len() {
-            // 이미 모든 기대 이벤트를 완료한 플레이어
+    /// 플레이어의 현재 단계(Phase)의 완료 조건을 확인하고, 충족 시 다음 단계로 전환합니다.
+    fn check_phase_completion(
+        &mut self,
+        player_id: uuid::Uuid,
+        event: &EventStreamMessage,
+        ctx: &mut actix::Context<Self>,
+    ) {
+        // let event_type = &event.event_type;
+        // let data = &event.data;
+
+        // let current_phase = match self.players_phase.get(&player_id) {
+        //     Some(phase) => phase.clone(),
+        //     None => {
+        //         warn!(
+        //             "[{}] Received event for untracked player {}",
+        //             self.test_name, player_id
+        //         );
+        //         return;
+        //     }
+        // };
+
+        // // 현재 단계에서 받은 이벤트로 기록
+        // self.player_received_events_in_phase
+        //     .entry(player_id)
+        //     .or_default()
+        //     .insert(event_type.clone());
+
+        // 현재 단계의 완료 조건 가져오기
+        // if let Some(condition) = self.scenario_schedule.get(&current_phase) {
+        //     // 전환 이벤트가 발생했는지 확인
+        //     if *event_type == condition.transition_event {
+        //         let received_events = self
+        //             .player_received_events_in_phase
+        //             .get(&player_id)
+        //             .unwrap();
+
+        //         // 필수 이벤트들을 모두 받았는지 확인
+        //         if condition.required_events.is_subset(received_events) {
+        //             // Matcher가 존재하면 실행하고, 없으면 통과로 간주
+        //             let matcher_passed = condition
+        //                 .transition_matcher
+        //                 .as_ref()
+        //                 .map_or(true, |matcher| matcher(data));
+
+        //             if matcher_passed {
+        //                 // --- 단계 전환 ---
+        //                 let next_phase = condition.next_phase.clone();
+        //                 info!(
+        //                     "[{}] Player {} completed phase {:?} -> transitioning to {:?}",
+        //                     self.test_name, player_id, current_phase, next_phase
+        //                 );
+        //                 self.players_phase.insert(player_id, next_phase);
+        //                 self.player_received_events_in_phase
+        //                     .insert(player_id, HashSet::new()); // 다음 단계를 위해 초기화
+        //             } else {
+        //                 warn!(
+        //                     "[{}] Player {} failed matcher for event {:?}",
+        //                     self.test_name, player_id, event_type
+        //                 );
+        //                 // TODO: 실패 처리 로직 추가
+        //             }
+        //         }
+        //     }
+        // }
+
+        // 모든 플레이어가 최종 단계에 도달했는지 확인
+        self.check_all_players_finished(ctx);
+    }
+
+    /// 모든 플레이어가 Finished 상태에 도달했는지 확인합니다.
+    fn check_all_players_finished(&self, ctx: &mut actix::Context<Self>) {
+        if self.players_phase.is_empty() {
             return;
         }
-        
-        let expected_event = &player_expectations[current_step];
-        
-        // 이벤트가 기대와 일치하는지 확인
-        if expected_event.matches(event) {
+
+        let all_finished = self
+            .players_phase
+            .values()
+            .all(|phase| *phase == Phase::Finished);
+
+        if all_finished {
             info!(
-                "✓ [{}] Player {} step {} matched: {}",
-                self.test_name, player_id, current_step, event.event_type
+                "✓ [{}] All players have finished the scenario successfully.",
+                self.test_name
             );
-            
-            // 해당 플레이어의 step 증가
-            self.player_steps.insert(player_id, current_step + 1);
-        } else {
-            warn!(
-                "Event doesn't match expected for player {}: {:?}",
-                player_id, event
-            );
-        }
-    }
-    
-    /// 모든 플레이어의 기대 이벤트가 완료되었는지 확인
-    fn check_all_players_completed(&self, ctx: &mut actix::Context<Self>) {
-        let mut all_completed = true;
-        
-        for (player_id, expectations) in &self.player_expectations {
-            let current_step = *self.player_steps.get(player_id).unwrap_or(&0);
-            if current_step < expectations.len() {
-                all_completed = false;
-                break;
-            }
-        }
-        
-        if all_completed && !self.player_expectations.is_empty() {
-            info!("[{}] All players completed their expected events.", self.test_name);
-            // 모든 시나리오 완료. 성공 메시지 전송
-            // ctx.address().do_send(ObservationCompleted(ObservationResult::Success { ... }));
+            // TODO: 성공 결과 전송
             ctx.stop();
         }
+
+        // TODO: 실패 조건 처리 (e.g., 한 명이라도 Failed 상태가 되면 즉시 중단)
     }
 }

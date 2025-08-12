@@ -9,12 +9,11 @@ use crate::{
     behaviors::{ClientMessage, ServerMessage},
     player_actor::{
         message::{
-            BehaviorFinished, ConnectionEstablished, GetPlayerId, InternalSendText, SendMessage,
-            SetState,
+            BehaviorFinished, ConnectionEstablished, GetPlayerId, InternalSendText, SetState,
         },
         PlayerActor, PlayerContext, PlayerState,
     },
-    BehaviorOutcome, BehaviorResponse,
+    BehaviorOutcome,
 };
 
 impl Handler<GetPlayerId> for PlayerActor {
@@ -22,14 +21,6 @@ impl Handler<GetPlayerId> for PlayerActor {
 
     fn handle(&mut self, _msg: GetPlayerId, _ctx: &mut Self::Context) -> Self::Result {
         MessageResult(self.player_id)
-    }
-}
-
-impl Handler<SendMessage> for PlayerActor {
-    type Result = ();
-
-    fn handle(&mut self, _msg: SendMessage, _ctx: &mut Self::Context) {
-        info!("SendMessage handler called for player {}", self.player_id);
     }
 }
 
@@ -43,15 +34,12 @@ impl StreamHandler<Result<Message, tokio_tungstenite::tungstenite::Error>> for P
             Ok(Message::Text(text)) => match serde_json::from_str::<ServerMessage>(&text) {
                 Ok(server_msg) => server_msg,
                 Err(e) => {
-                    error!(
-                        "[{}] Failed to parse server message: {}",
-                        self.player_id, e
-                    );
+                    error!("[{}] Failed to parse server message: {}", self.player_id, e);
                     error!("[{}] Raw message: {}", self.player_id, text);
-                    
+
                     // 파싱 에러 시 테스트 실패하도록 panic
                     panic!(
-                        "Player {} failed to parse server message: {}. Raw message: {}", 
+                        "Player {} failed to parse server message: {}. Raw message: {}",
                         self.player_id, e, text
                     );
                 }
@@ -107,14 +95,8 @@ impl Handler<BehaviorFinished> for PlayerActor {
     type Result = ();
 
     fn handle(&mut self, msg: BehaviorFinished, ctx: &mut Self::Context) {
-        let response: BehaviorResponse = msg.response;
+        let result = msg.response;
         let original_message = msg.original_message;
-
-        if let Some(expected_event) = response.1 {
-            self.observer.do_send(expected_event);
-        }
-
-        let result = response.0;
 
         match result {
             Ok(BehaviorOutcome::Continue) => {

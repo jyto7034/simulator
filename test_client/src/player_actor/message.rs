@@ -1,13 +1,8 @@
 use actix::Message;
 
 use crate::{
-    behaviors::ServerMessage, player_actor::PlayerState, BehaviorResponse, WsSink,
-    WsStream,
+    behaviors::ServerMessage, player_actor::PlayerState, BehaviorResult, WsSink, WsStream,
 };
-
-#[derive(Message)]
-#[rtype(result = "()")]
-pub struct SendMessage(pub String);
 
 #[derive(Message)]
 #[rtype(result = "uuid::Uuid")]
@@ -34,6 +29,6 @@ pub struct InternalSendText(pub String);
 #[derive(Message)]
 #[rtype(result = "()")]
 pub struct BehaviorFinished {
-    pub response: BehaviorResponse,
+    pub response: BehaviorResult,
     pub original_message: ServerMessage,
 }

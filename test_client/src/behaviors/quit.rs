@@ -1,5 +1,5 @@
 use super::PlayerBehavior;
-use crate::{player_actor::PlayerContext, BehaviorResponse, TestFailure};
+use crate::{player_actor::PlayerContext, TestFailure, BehaviorResult};
 use async_trait::async_trait;
 use tracing::warn;
 use uuid::Uuid;
@@ -10,18 +10,15 @@ pub struct QuitDuringMatch;
 
 #[async_trait]
 impl PlayerBehavior for QuitDuringMatch {
-    async fn on_enqueued(&self, player_context: &PlayerContext) -> BehaviorResponse {
+    async fn on_enqueued(&self, player_context: &PlayerContext) -> BehaviorResult {
         warn!(
             "[{}] Impatient player - quitting after enqueue confirmed!",
             player_context.player_id
         );
 
-        BehaviorResponse(
-            Err(TestFailure::Behavior(
-                "Intentionally quit after enqueue".to_string(),
-            )),
-            None,
-        )
+        Err(TestFailure::Behavior(
+            "Intentionally quit after enqueue".to_string(),
+        ))
     }
 
     fn clone_trait(&self) -> Box<dyn PlayerBehavior> {
@@ -39,17 +36,14 @@ impl PlayerBehavior for QuitDuringLoading {
         &self,
         player_context: &PlayerContext,
         _loading_session_id: Uuid,
-    ) -> BehaviorResponse {
+    ) -> BehaviorResult {
         warn!(
             "[{}] Quitting during loading start!",
             player_context.player_id
         );
-        BehaviorResponse(
-            Err(TestFailure::Behavior(
-                "Intentionally quit during loading".to_string(),
-            )),
-            None,
-        )
+        Err(TestFailure::Behavior(
+            "Intentionally quit during loading".to_string(),
+        ))
     }
 
     fn clone_trait(&self) -> Box<dyn PlayerBehavior> {
