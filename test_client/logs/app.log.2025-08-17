@@ -1,0 +1,276 @@
+  2025-08-17T16:24:16.174299Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at test_client\src\lib.rs:71 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.175926Z  INFO  ScenarioRunnerActor started with 1 scenarios
+    at test_client\src\scenario_actor\mod.rs:95 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.176045Z  INFO  SingleScenarioActor started for scenario: Normal vs Normal
+    at test_client\src\scenario_actor\mod.rs:137 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.176187Z  INFO  Created players for scenario Normal vs Normal: perpetrator=05294f76-a207-4326-92a7-cad36cd8039e, victim=2b6c21d0-6434-42df-a1d9-4929ab44ce9b
+    at test_client\src\scenario_actor\mod.rs:187 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.176265Z  INFO  [Normal vs Normal] ObserverActor started.
+    at test_client\src\observer_actor\mod.rs:115 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.176342Z  INFO  [Normal vs Normal] SingleScenarioActor address set
+    at test_client\src\observer_actor\handler.rs:366 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.176398Z  INFO  [Normal vs Normal] Starting event observation...
+    at test_client\src\observer_actor\handler.rs:16 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.176913Z  INFO  PlayerActor started with state
+    at test_client\src\player_actor\mod.rs:66 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.176982Z  INFO  PlayerActor started with state
+    at test_client\src\player_actor\mod.rs:66 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.178059Z  INFO  [2b6c21d0-6434-42df-a1d9-4929ab44ce9b] Connection established
+    at test_client\src\player_actor\handler.rs:134 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.178357Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:200 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.178556Z  INFO  [Normal vs Normal] Successfully connected to event stream.
+    at test_client\src\observer_actor\handler.rs:64 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.178647Z  INFO  [05294f76-a207-4326-92a7-cad36cd8039e] Connection established
+    at test_client\src\player_actor\handler.rs:134 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.178775Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:200 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.179604Z  INFO  [Normal vs Normal] ✓ 큐 사이즈 검증 통과 Normal_1v1: 2 -> 2 (변화량: 0)
+    at test_client\src\observer_actor\mod.rs:212 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.179901Z  INFO  [Normal vs Normal] ✓ 큐 사이즈 검증 통과 Normal_1v1: 2 -> 2 (변화량: 0)
+    at test_client\src\observer_actor\mod.rs:212 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.180055Z  INFO  [2b6c21d0-6434-42df-a1d9-4929ab44ce9b] Received message: EnQueued
+    at test_client\src\player_actor\handler.rs:64 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.180194Z  INFO  [2b6c21d0-6434-42df-a1d9-4929ab44ce9b] Normal player successfully enqueued
+    at test_client\src\behaviors\normal.rs:32 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.180298Z  INFO  [2b6c21d0-6434-42df-a1d9-4929ab44ce9b] Continuing with flow
+    at test_client\src\player_actor\handler.rs:105 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.180427Z  INFO  [05294f76-a207-4326-92a7-cad36cd8039e] Received message: EnQueued
+    at test_client\src\player_actor\handler.rs:64 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.180513Z  INFO  [05294f76-a207-4326-92a7-cad36cd8039e] Normal player successfully enqueued
+    at test_client\src\behaviors\normal.rs:32 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:16.180587Z  INFO  [05294f76-a207-4326-92a7-cad36cd8039e] Continuing with flow
+    at test_client\src\player_actor\handler.rs:105 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:17.140496Z  INFO  [2b6c21d0-6434-42df-a1d9-4929ab44ce9b] Received message: StartLoading { loading_session_id: 0b9eb9f0-b962-4200-acb4-d2f6773b7fa6 }
+    at test_client\src\player_actor\handler.rs:64 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:17.140717Z  INFO  [2b6c21d0-6434-42df-a1d9-4929ab44ce9b] Normal player starting to load assets
+    at test_client\src\behaviors\normal.rs:52 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:17.140813Z  INFO  [2b6c21d0-6434-42df-a1d9-4929ab44ce9b] Normal player sent loading_complete
+    at test_client\src\behaviors\normal.rs:63 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:17.140918Z  WARN  Soft check failed: player 2b6c21d0-6434-42df-a1d9-4929ab44ce9b StartLoading for unknown/mismatched session 0b9eb9f0-b962-4200-acb4-d2f6773b7fa6
+    at test_client\src\observer_actor\mod.rs:168 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:17.141009Z  INFO  [Normal vs Normal] Player 2b6c21d0-6434-42df-a1d9-4929ab44ce9b completed phase Matching -> transitioning to Loading
+    at test_client\src\observer_actor\handler.rs:280 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:17.141093Z  WARN  Soft check failed: player 05294f76-a207-4326-92a7-cad36cd8039e StartLoading for unknown/mismatched session 0b9eb9f0-b962-4200-acb4-d2f6773b7fa6
+    at test_client\src\observer_actor\mod.rs:168 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:17.141164Z  INFO  [Normal vs Normal] Player 05294f76-a207-4326-92a7-cad36cd8039e completed phase Matching -> transitioning to Loading
+    at test_client\src\observer_actor\handler.rs:280 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:17.141288Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:200 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:17.141394Z  INFO  [2b6c21d0-6434-42df-a1d9-4929ab44ce9b] Continuing with flow
+    at test_client\src\player_actor\handler.rs:105 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:17.141532Z  INFO  [05294f76-a207-4326-92a7-cad36cd8039e] Received message: StartLoading { loading_session_id: 0b9eb9f0-b962-4200-acb4-d2f6773b7fa6 }
+    at test_client\src\player_actor\handler.rs:64 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:17.141657Z  INFO  [05294f76-a207-4326-92a7-cad36cd8039e] Normal player starting to load assets
+    at test_client\src\behaviors\normal.rs:52 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:17.141733Z  INFO  [05294f76-a207-4326-92a7-cad36cd8039e] Normal player sent loading_complete
+    at test_client\src\behaviors\normal.rs:63 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:17.141832Z  INFO  [Normal vs Normal] ✓ 큐 사이즈 검증 통과 Normal_1v1: 0 -> 0 (변화량: 0)
+    at test_client\src\observer_actor\mod.rs:212 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:17.141937Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:200 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:17.142016Z  INFO  [05294f76-a207-4326-92a7-cad36cd8039e] Continuing with flow
+    at test_client\src\player_actor\handler.rs:105 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:17.143659Z  INFO  [Normal vs Normal] ✓ 큐 사이즈 검증 통과 Normal_1v1: 0 -> 0 (변화량: 0)
+    at test_client\src\observer_actor\mod.rs:212 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:47.229880Z  WARN  ✗ [Normal vs Normal] Scenario failed - at least one player is in Failed state.
+    at test_client\src\observer_actor\handler.rs:317 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:47.230046Z  INFO  [Normal vs Normal] ObserverActor stopped.
+    at test_client\src\observer_actor\mod.rs:119 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:47.230224Z  INFO  Scenario Normal vs Normal failed: One or more players failed phase validation
+    at test_client\src\scenario_actor\handler.rs:118 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:47.230376Z  INFO  Scenario 7b55cdba-a4e9-4e3b-a8e3-9a7cac4e7bfe completed with result: Failure("Error: One or more players failed phase validation")
+    at test_client\src\scenario_actor\handler.rs:13 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:47.230469Z  INFO  All 1 scenarios completed!
+    at test_client\src\scenario_actor\handler.rs:22 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:24:47.230606Z  INFO  Final results: 0/1 scenarios succeeded
+    at test_client\src\scenario_actor\handler.rs:30 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.513988Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at test_client\src\lib.rs:71 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.515563Z  INFO  ScenarioRunnerActor started with 1 scenarios
+    at test_client\src\scenario_actor\mod.rs:95 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.515654Z  INFO  SingleScenarioActor started for scenario: Normal vs Normal
+    at test_client\src\scenario_actor\mod.rs:137 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.515770Z  INFO  Created players for scenario Normal vs Normal: perpetrator=d15f3782-d3a1-4f46-9243-6e3885ea7bc1, victim=a23963f6-991d-445d-9f99-779300ab314e
+    at test_client\src\scenario_actor\mod.rs:187 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.515830Z  INFO  [Normal vs Normal] ObserverActor started.
+    at test_client\src\observer_actor\mod.rs:115 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.515886Z  INFO  [Normal vs Normal] SingleScenarioActor address set
+    at test_client\src\observer_actor\handler.rs:366 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.515947Z  INFO  [Normal vs Normal] Starting event observation...
+    at test_client\src\observer_actor\handler.rs:16 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.516446Z  INFO  PlayerActor started with state
+    at test_client\src\player_actor\mod.rs:66 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.516519Z  INFO  PlayerActor started with state
+    at test_client\src\player_actor\mod.rs:66 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.517709Z  INFO  [a23963f6-991d-445d-9f99-779300ab314e] Connection established
+    at test_client\src\player_actor\handler.rs:134 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.517926Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:200 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.518162Z  INFO  [Normal vs Normal] Successfully connected to event stream.
+    at test_client\src\observer_actor\handler.rs:64 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.518250Z  INFO  [d15f3782-d3a1-4f46-9243-6e3885ea7bc1] Connection established
+    at test_client\src\player_actor\handler.rs:134 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.518360Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:200 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.519125Z  INFO  [Normal vs Normal] ✓ 큐 사이즈 검증 통과 Normal_1v1: 1 -> 1 (변화량: 0)
+    at test_client\src\observer_actor\mod.rs:212 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.519438Z  INFO  [a23963f6-991d-445d-9f99-779300ab314e] Received message: EnQueued
+    at test_client\src\player_actor\handler.rs:64 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.519598Z  INFO  [a23963f6-991d-445d-9f99-779300ab314e] Normal player successfully enqueued
+    at test_client\src\behaviors\normal.rs:32 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.519700Z  INFO  [Normal vs Normal] ✓ 큐 사이즈 검증 통과 Normal_1v1: 2 -> 2 (변화량: 0)
+    at test_client\src\observer_actor\mod.rs:212 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.519773Z  INFO  [a23963f6-991d-445d-9f99-779300ab314e] Continuing with flow
+    at test_client\src\player_actor\handler.rs:105 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.519892Z  INFO  [d15f3782-d3a1-4f46-9243-6e3885ea7bc1] Received message: EnQueued
+    at test_client\src\player_actor\handler.rs:64 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.519960Z  INFO  [d15f3782-d3a1-4f46-9243-6e3885ea7bc1] Normal player successfully enqueued
+    at test_client\src\behaviors\normal.rs:32 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:15.520017Z  INFO  [d15f3782-d3a1-4f46-9243-6e3885ea7bc1] Continuing with flow
+    at test_client\src\player_actor\handler.rs:105 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.156729Z  INFO  [a23963f6-991d-445d-9f99-779300ab314e] Received message: StartLoading { loading_session_id: 9b838613-d65d-43da-95b5-3c9114f59c4f }
+    at test_client\src\player_actor\handler.rs:64 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.156859Z  WARN  Soft check failed: player a23963f6-991d-445d-9f99-779300ab314e StartLoading for unknown/mismatched session 9b838613-d65d-43da-95b5-3c9114f59c4f
+    at test_client\src\observer_actor\mod.rs:168 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.156952Z  INFO  [Normal vs Normal] Player a23963f6-991d-445d-9f99-779300ab314e completed phase Matching -> transitioning to Loading
+    at test_client\src\observer_actor\handler.rs:280 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.157046Z  WARN  Soft check failed: player d15f3782-d3a1-4f46-9243-6e3885ea7bc1 StartLoading for unknown/mismatched session 9b838613-d65d-43da-95b5-3c9114f59c4f
+    at test_client\src\observer_actor\mod.rs:168 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.157114Z  INFO  [Normal vs Normal] Player d15f3782-d3a1-4f46-9243-6e3885ea7bc1 completed phase Matching -> transitioning to Loading
+    at test_client\src\observer_actor\handler.rs:280 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.157201Z  INFO  [a23963f6-991d-445d-9f99-779300ab314e] Normal player starting to load assets
+    at test_client\src\behaviors\normal.rs:52 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.157259Z  INFO  [a23963f6-991d-445d-9f99-779300ab314e] Normal player sent loading_complete
+    at test_client\src\behaviors\normal.rs:63 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.157371Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:200 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.157435Z  INFO  [a23963f6-991d-445d-9f99-779300ab314e] Continuing with flow
+    at test_client\src\player_actor\handler.rs:105 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.157566Z  INFO  [d15f3782-d3a1-4f46-9243-6e3885ea7bc1] Received message: StartLoading { loading_session_id: 9b838613-d65d-43da-95b5-3c9114f59c4f }
+    at test_client\src\player_actor\handler.rs:64 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.157719Z  INFO  [d15f3782-d3a1-4f46-9243-6e3885ea7bc1] Normal player starting to load assets
+    at test_client\src\behaviors\normal.rs:52 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.157792Z  INFO  [d15f3782-d3a1-4f46-9243-6e3885ea7bc1] Normal player sent loading_complete
+    at test_client\src\behaviors\normal.rs:63 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.157889Z  INFO  [Normal vs Normal] ✓ 큐 사이즈 검증 통과 Normal_1v1: 0 -> 0 (변화량: 0)
+    at test_client\src\observer_actor\mod.rs:212 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.158006Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:200 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.158065Z  INFO  [d15f3782-d3a1-4f46-9243-6e3885ea7bc1] Continuing with flow
+    at test_client\src\player_actor\handler.rs:105 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.159703Z  INFO  [Normal vs Normal] Player a23963f6-991d-445d-9f99-779300ab314e completed phase Loading -> transitioning to Finished
+    at test_client\src\observer_actor\handler.rs:280 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.159842Z  INFO  [a23963f6-991d-445d-9f99-779300ab314e] Received message: MatchFound { session_id: c13d84e8-b6cc-4d34-8e45-adf8489ba09f, server_address: "ws://fake-dedicated/game?session_id=c13d84e8-b6cc-4d34-8e45-adf8489ba09f" }
+    at test_client\src\player_actor\handler.rs:64 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.159991Z  INFO  [a23963f6-991d-445d-9f99-779300ab314e] Normal player excited about match!
+    at test_client\src\behaviors\normal.rs:40 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.160056Z  INFO  [Normal vs Normal] Player d15f3782-d3a1-4f46-9243-6e3885ea7bc1 completed phase Loading -> transitioning to Finished
+    at test_client\src\observer_actor\handler.rs:280 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.160122Z  INFO  ✓ [Normal vs Normal] All players have finished the scenario successfully.
+    at test_client\src\observer_actor\handler.rs:342 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.160205Z  INFO  [Normal vs Normal] ObserverActor stopped.
+    at test_client\src\observer_actor\mod.rs:119 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.160350Z  INFO  [a23963f6-991d-445d-9f99-779300ab314e] Continuing with flow
+    at test_client\src\player_actor\handler.rs:105 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.160435Z  INFO  Scenario Normal vs Normal completed successfully
+    at test_client\src\scenario_actor\handler.rs:110 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.160511Z  INFO  Scenario ceb21961-2dcd-4607-8f67-b7cce14c020b completed with result: Success
+    at test_client\src\scenario_actor\handler.rs:13 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.160562Z  INFO  All 1 scenarios completed!
+    at test_client\src\scenario_actor\handler.rs:22 on test_normal_vs_normal ThreadId(2)
+
+  2025-08-17T16:35:16.160609Z  INFO  Final results: 1/1 scenarios succeeded
+    at test_client\src\scenario_actor\handler.rs:30 on test_normal_vs_normal ThreadId(2)
+

@@ -5,13 +5,13 @@ description = "card backend"
 
 [workspace]
 members = [ 
-    "simulator_auth_server",
-    "simulator_core",
-    "simulator_dedicated_server",
-    "simulator_match_server",
-    "simulator_client/src-tauri", "test_client",
-    "simulator_metrics",
-    "simulator_env",
+    "auth_server",
+    "core",
+    "dedicated_server",
+    "match_server",
+    "client/src-tauri", "test_client",
+    "metrics",
+    "env",
 ]
 
 resolver = "2"

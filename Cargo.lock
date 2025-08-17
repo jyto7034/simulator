@@ -467,6 +467,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7d902e3d592a523def97af8f317b08ce16b7ab854c1985a0c671e6f15cebc236"
 
 [[package]]
+name = "arrayref"
+version = "0.3.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "76a2e8124351fda1ef8aaaa3bbd7ebbcb486bbcd4225aca0aa0d84bb2db8fecb"
+
+[[package]]
+name = "arrayvec"
+version = "0.7.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7c02d123df017efcdfbd739ef81735b36c5ba83ec3c59c80a9d7ecc718f92e50"
+
+[[package]]
 name = "async-broadcast"
 version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -688,6 +700,35 @@ dependencies = [
 ]
 
 [[package]]
+name = "auth_server"
+version = "0.1.0"
+dependencies = [
+ "actix",
+ "actix-http",
+ "actix-web",
+ "anyhow",
+ "chrono",
+ "crossbeam-utils",
+ "ctor 0.4.2",
+ "dotenvy",
+ "futures",
+ "futures-util",
+ "hex",
+ "jsonwebtoken",
+ "once_cell",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "steamworks",
+ "tokio",
+ "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
+ "uuid",
+]
+
+[[package]]
 name = "autocfg"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -845,6 +886,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "46502ad458c9a52b69d4d4d32775c788b7a1b85e8bc9d482d92250fc0e3f8efe"
 dependencies = [
  "digest",
+]
+
+[[package]]
+name = "blake3"
+version = "1.8.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3888aaa89e4b2a40fca9848e400f6a658a5a3978de7be858e209cafa8be9a4a0"
+dependencies = [
+ "arrayref",
+ "arrayvec",
+ "cc",
+ "cfg-if",
+ "constant_time_eq",
 ]
 
 [[package]]
@@ -1241,6 +1295,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b94f61472cee1439c0b966b47e3aca9ae07e45d070759512cd390ea2bebc6675"
 
 [[package]]
+name = "client"
+version = "0.1.0"
+dependencies = [
+ "hex",
+ "serde",
+ "serde_json",
+ "steamworks",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-http",
+ "tauri-plugin-opener",
+ "tokio",
+]
+
+[[package]]
 name = "color-eyre"
 version = "0.6.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1412,6 +1481,12 @@ dependencies = [
  "once_cell",
  "tiny-keccak",
 ]
+
+[[package]]
+name = "constant_time_eq"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
 
 [[package]]
 name = "convert_case"
@@ -1785,15 +1860,15 @@ dependencies = [
  "ctor 0.4.2",
  "futures",
  "futures-util",
+ "game_core",
  "glicko2",
+ "metrics",
  "rand 0.8.5",
  "rand_core 0.6.4",
  "redis 0.25.4",
  "reqwest",
  "serde",
  "serde_json",
- "simulator_core",
- "simulator_metrics",
  "tokio",
  "tracing",
  "tracing-appender",
@@ -2123,6 +2198,21 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.104",
+]
+
+[[package]]
+name = "env"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "config 0.13.4",
+ "dirs 5.0.1",
+ "dotenv",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "toml 0.8.23",
+ "tracing",
 ]
 
 [[package]]
@@ -2456,6 +2546,50 @@ dependencies = [
 ]
 
 [[package]]
+name = "game_core"
+version = "0.1.0"
+dependencies = [
+ "actix",
+ "actix-web",
+ "actix-ws 0.3.0",
+ "argon2",
+ "async-tungstenite",
+ "base64 0.13.1",
+ "byteorder",
+ "cargo-llvm-cov",
+ "clap 4.5.40",
+ "console-subscriber",
+ "criterion",
+ "ctor 0.4.2",
+ "dotenv",
+ "futures",
+ "futures-util",
+ "globwalk",
+ "gnuplot",
+ "hex",
+ "lazy_static",
+ "once_cell",
+ "parking_lot",
+ "paste",
+ "rand 0.8.5",
+ "rand_core 0.6.4",
+ "rayon",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "serial_test",
+ "structopt",
+ "tokio",
+ "tokio-console",
+ "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
+ "url",
+ "uuid",
+]
+
+[[package]]
 name = "gdk"
 version = "0.18.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2698,6 +2832,30 @@ name = "glob"
 version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8d1add55171497b4705a648c6b583acafb01d58050a51727785f0b2c8e0a2b2"
+
+[[package]]
+name = "globset"
+version = "0.4.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "54a1028dfc5f5df5da8a56a73e6c153c9a9708ec57232470703592a3f18e49f5"
+dependencies = [
+ "aho-corasick",
+ "bstr",
+ "log",
+ "regex-automata 0.4.9",
+ "regex-syntax 0.8.5",
+]
+
+[[package]]
+name = "globwalk"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0bf760ebf69878d9fd8f110c89703d90ce35095324d1f1edcb595c63945ee757"
+dependencies = [
+ "bitflags 2.9.1",
+ "ignore",
+ "walkdir",
+]
 
 [[package]]
 name = "gnuplot"
@@ -3253,6 +3411,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "ignore"
+version = "0.4.23"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6d89fd380afde86567dfba715db065673989d6253f42b88179abd3eae47bda4b"
+dependencies = [
+ "crossbeam-deque",
+ "globset",
+ "log",
+ "memchr",
+ "regex-automata 0.4.9",
+ "same-file",
+ "walkdir",
+ "winapi-util",
+]
+
+[[package]]
 name = "impl-more"
 version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3748,33 +3922,21 @@ dependencies = [
  "actix",
  "actix-web",
  "actix-web-actors",
- "actix-web-prom",
- "actix-ws 0.2.5",
  "anyhow",
- "async-tungstenite",
- "backoff",
  "chrono",
  "config 0.15.11",
- "ctor 0.4.2",
  "dotenv",
  "futures",
  "futures-util",
- "hex",
  "jsonwebtoken",
- "rand 0.8.5",
- "rand_core 0.6.4",
  "redis 0.22.3",
  "reqwest",
  "serde",
  "serde_json",
- "simulator_metrics",
- "thiserror 2.0.12",
- "thiserror-core",
  "tokio",
  "tracing",
  "tracing-appender",
  "tracing-subscriber",
- "url",
  "uuid",
 ]
 
@@ -3833,6 +3995,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "488016bfae457b036d996092f6cb448677611ce4449e970ceaf42695203f218a"
 dependencies = [
  "autocfg",
+]
+
+[[package]]
+name = "metrics"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "lazy_static",
+ "prometheus",
 ]
 
 [[package]]
@@ -5970,6 +6141,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde_yaml"
+version = "0.9.34+deprecated"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6a8b1a1a2ebf674015cc02edccce75287f1a0130d394307b36743c2f5d504b47"
+dependencies = [
+ "indexmap 2.9.0",
+ "itoa",
+ "ryu",
+ "serde",
+ "unsafe-libyaml",
+]
+
+[[package]]
 name = "serial_test"
 version = "3.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6153,116 +6337,6 @@ dependencies = [
  "num-traits",
  "thiserror 2.0.12",
  "time",
-]
-
-[[package]]
-name = "simulator_auth_server"
-version = "0.1.0"
-dependencies = [
- "actix",
- "actix-http",
- "actix-web",
- "anyhow",
- "chrono",
- "crossbeam-utils",
- "ctor 0.4.2",
- "dotenvy",
- "futures",
- "futures-util",
- "hex",
- "jsonwebtoken",
- "once_cell",
- "reqwest",
- "serde",
- "serde_json",
- "sqlx",
- "steamworks",
- "tokio",
- "tracing",
- "tracing-appender",
- "tracing-subscriber",
- "uuid",
-]
-
-[[package]]
-name = "simulator_client"
-version = "0.1.0"
-dependencies = [
- "hex",
- "serde",
- "serde_json",
- "steamworks",
- "tauri",
- "tauri-build",
- "tauri-plugin-http",
- "tauri-plugin-opener",
- "tokio",
-]
-
-[[package]]
-name = "simulator_core"
-version = "0.1.0"
-dependencies = [
- "actix",
- "actix-web",
- "actix-ws 0.3.0",
- "argon2",
- "async-tungstenite",
- "base64 0.13.1",
- "byteorder",
- "cargo-llvm-cov",
- "clap 4.5.40",
- "console-subscriber",
- "criterion",
- "ctor 0.4.2",
- "dotenv",
- "futures",
- "futures-util",
- "gnuplot",
- "hex",
- "lazy_static",
- "once_cell",
- "parking_lot",
- "paste",
- "rand 0.8.5",
- "rand_core 0.6.4",
- "rayon",
- "reqwest",
- "serde",
- "serde_json",
- "serial_test",
- "structopt",
- "tokio",
- "tokio-console",
- "tracing",
- "tracing-appender",
- "tracing-subscriber",
- "url",
- "uuid",
-]
-
-[[package]]
-name = "simulator_env"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "config 0.13.4",
- "dirs 5.0.1",
- "dotenv",
- "once_cell",
- "serde",
- "serde_json",
- "toml 0.8.23",
- "tracing",
-]
-
-[[package]]
-name = "simulator_metrics"
-version = "0.1.0"
-dependencies = [
- "actix-web",
- "lazy_static",
- "prometheus",
 ]
 
 [[package]]
@@ -7218,15 +7292,22 @@ dependencies = [
  "async-trait",
  "awc",
  "backoff",
+ "blake3",
  "chrono",
+ "clap 4.5.40",
  "ctor 0.4.2",
+ "env",
  "futures-util",
+ "rand 0.8.5",
+ "rand_chacha 0.3.1",
+ "redis 0.22.3",
+ "regex",
  "reqwest",
  "serde",
  "serde_json",
- "simulator_env",
  "tokio",
  "tokio-tungstenite",
+ "toml 0.8.23",
  "tracing",
  "tracing-appender",
  "tracing-subscriber",
@@ -7259,26 +7340,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "567b8a2dae586314f7be2a752ec7474332959c6460e02bde30d702a66d488708"
 dependencies = [
  "thiserror-impl 2.0.12",
-]
-
-[[package]]
-name = "thiserror-core"
-version = "1.0.50"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c001ee18b7e5e3f62cbf58c7fe220119e68d902bb7443179c0c8aef30090e999"
-dependencies = [
- "thiserror-core-impl",
-]
-
-[[package]]
-name = "thiserror-core-impl"
-version = "1.0.50"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e4c60d69f36615a077cc7663b9cb8e42275722d23e58a7fa3d2c7f2915d09d04"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.104",
 ]
 
 [[package]]
@@ -7963,6 +8024,12 @@ name = "unicode-xid"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ebc1c04c71510c7f702b52b7c350734c9ff1295c464a03335b00bb84fc54f853"
+
+[[package]]
+name = "unsafe-libyaml"
+version = "0.2.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "673aac59facbab8a9007c7f6108d11f63b603f7cabff99fabf650fea5c32b861"
 
 [[package]]
 name = "untrusted"

@@ -1,0 +1,37 @@
+# Swarm test for 100 players total
+# 1 shard x 100 players
+
+# Keep the window modest so the test completes in CI/local quickly
+duration_secs = 60
+
+shards = 1
+players_per_shard = 100
+
+game_mode = "Normal_1v1"
+match_server_base = "ws://127.0.0.1:8080"
+
+# Deterministic seed for reproducibility
+seed = 100100
+
+[behavior_mix]
+# Keep modest behavior stress while still realistic
+slow_ratio = 0.10
+slow_delay_seconds = 6
+
+spiky_ratio = 0.05
+spiky_delay_ms = 150
+
+timeout_ratio = 0.02
+quit_before_ratio = 0.03
+quit_during_loading_ratio = 0.03
+
+invalid_mode_unknown_weight = 1.0
+invalid_mode_missing_weight = 0.0
+invalid_mode_early_loading_complete_weight = 0.0
+invalid_mode_duplicate_enqueue_weight = 0.0
+invalid_mode_wrong_session_id_weight = 0.0
+
+invalid_ratio = 0.01
+
+# Optional output path for summary
+result_path = "logs/swarm_100_results.json"

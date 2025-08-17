@@ -1,10 +1,10 @@
 use super::PlayerBehavior;
 use crate::behaviors::ClientMessage;
 use crate::player_actor::message::InternalSendText;
-use crate::BehaviorResult;
 use crate::{player_actor::PlayerContext, BehaviorOutcome};
+use crate::{BehaviorResult, TestFailure};
 use async_trait::async_trait;
-use tracing::info;
+use tracing::{info, warn};
 use uuid::Uuid;
 
 /// 정상적인 플레이어 - 모든 단계를 순서대로 완주
@@ -13,13 +13,26 @@ pub struct NormalPlayer;
 
 #[async_trait]
 impl PlayerBehavior for NormalPlayer {
+    /// 매칭 실패 시 처리 - Normal 플레이어는 에러를 받으면 로그를 남기고 테스트 실패로 처리
+    async fn on_error(&self, player_context: &PlayerContext, error_msg: &str) -> BehaviorResult {
+        warn!(
+            "[{}] Normal player received error: {}",
+            player_context.player_id, error_msg
+        );
+
+        // Normal 플레이어가 에러를 받는 것은 예상치 못한 상황이므로 테스트 실패
+        Err(TestFailure::MatchmakingError(format!(
+            "Normal player should not receive errors during matchmaking: {}",
+            error_msg
+        )))
+    }
+
     /// 서버로부터 EnQueued 확인 응답을 받았을 때
     async fn on_enqueued(&self, player_context: &PlayerContext) -> BehaviorResult {
         info!(
             "[{}] Normal player successfully enqueued",
             player_context.player_id
         );
-        // Phase 기반 검증으로 변경되었으므로, 더 이상 ExpectEvent를 보내지 않음
         Ok(BehaviorOutcome::Continue)
     }
 
@@ -52,7 +65,6 @@ impl PlayerBehavior for NormalPlayer {
             player_context.player_id
         );
 
-        // Phase 기반 검증으로 변경되었으므로, 더 이상 ExpectEvent를 보내지 않음
         Ok(BehaviorOutcome::Continue)
     }
 

@@ -1,0 +1,52 @@
+# Load Test Swarm Configuration
+# This configuration runs a more intensive load test
+
+# Test duration in seconds
+duration_secs = 120
+
+# Number of shards (parallel test groups)
+shards = 2
+
+# Number of players per shard
+players_per_shard = 50
+
+# Game mode to test
+game_mode = "Normal_1v1"
+
+# Match server base URL
+match_server_base = "ws://127.0.0.1:8080"
+
+# Deterministic seed for reproducible tests
+seed = 54321
+
+# Behavior mix configuration - more diverse behaviors for load testing
+[behavior_mix]
+# Higher ratio of slow loading players
+slow_ratio = 0.2
+slow_delay_seconds = 8
+
+# More spiky players to test intermittent issues
+spiky_ratio = 0.1
+spiky_delay_ms = 200
+
+# Timeout players
+timeout_ratio = 0.05
+
+# Players that quit before match
+quit_before_ratio = 0.08
+
+# Players that quit during loading
+quit_during_loading_ratio = 0.07
+
+# Invalid behavior weights - test various error scenarios
+invalid_mode_unknown_weight = 2.0
+invalid_mode_missing_weight = 1.0
+invalid_mode_early_loading_complete_weight = 1.0
+invalid_mode_duplicate_enqueue_weight = 1.0
+invalid_mode_wrong_session_id_weight = 1.0
+
+# Higher ratio of invalid behaviors for stress testing
+invalid_ratio = 0.05
+
+# Save detailed results
+result_path = "logs/swarm_load_test_results.json"

@@ -4,6 +4,7 @@ use tracing::info;
 use super::message::{PlayerCompleted, ScenarioCompleted};
 use super::ScenarioResult;
 use super::{ScenarioRunnerActor, SingleScenarioActor};
+use crate::observer_actor::message::ObservationCompleted;
 
 impl Handler<ScenarioCompleted> for ScenarioRunnerActor {
     type Result = ();
@@ -30,6 +31,15 @@ impl Handler<ScenarioCompleted> for ScenarioRunnerActor {
                 "Final results: {}/{} scenarios succeeded",
                 success_count, self.total_count
             );
+
+            // Notify tests, if a notifier is registered
+            if let Some(tx) = self.completion_tx.take() {
+                let _ = tx.send(super::ScenarioSummary {
+                    total: self.total_count,
+                    success_count,
+                    results: self.results.clone(),
+                });
+            }
 
             ctx.stop();
             actix::System::current().stop();
@@ -86,5 +96,36 @@ impl SingleScenarioActor {
 
             ScenarioResult::Failure(format!("Failed players: {}", failed_players.join(", ")))
         }
+    }
+}
+
+impl Handler<ObservationCompleted> for SingleScenarioActor {
+    type Result = ();
+
+    fn handle(&mut self, msg: ObservationCompleted, ctx: &mut Self::Context) -> Self::Result {
+        let observation_result = msg.0;
+        
+        let scenario_result = match observation_result {
+            crate::observer_actor::ObservationResult::Success { .. } => {
+                info!("Scenario {} completed successfully", self.scenario.name);
+                ScenarioResult::Success
+            }
+            crate::observer_actor::ObservationResult::Timeout { reason, .. } => {
+                info!("Scenario {} timed out: {}", self.scenario.name, reason);
+                ScenarioResult::Failure(format!("Timeout: {}", reason))
+            }
+            crate::observer_actor::ObservationResult::Error { reason, .. } => {
+                info!("Scenario {} failed: {}", self.scenario.name, reason);
+                ScenarioResult::Failure(format!("Error: {}", reason))
+            }
+        };
+
+        // ScenarioRunnerActor에게 결과 전송
+        self.runner_addr.do_send(ScenarioCompleted {
+            scenario_id: self.scenario.id,
+            result: scenario_result,
+        });
+
+        ctx.stop();
     }
 }

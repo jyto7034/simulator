@@ -31,6 +31,18 @@ pub enum EventType {
     // Error
     Error,
 
+    // State events (events:*)
+    QueueSizeChanged,
+    LoadingSessionCreated,
+    PlayerReady,
+    LoadingSessionCompleted,
+    LoadingSessionTimeout,
+    PlayersRequeued,
+    DedicatedSessionCreated,
+    DedicatedSessionFailed,
+    LoadingSessionCanceled,
+    StateViolation,
+
     #[serde(other)]
     Unknown,
 }
@@ -61,3 +73,16 @@ pub struct ObservationCompleted(pub ObservationResult);
 #[derive(Message)]
 #[rtype(result = "()")]
 pub(super) struct InternalEvent(pub EventStreamMessage);
+
+// SingleScenarioActor 주소를 설정하는 메시지
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct SetSingleScenarioAddr {
+    pub addr: actix::Addr<crate::scenario_actor::SingleScenarioActor>,
+}
+
+// 관찰을 중단하고 WebSocket 스트림을 종료하기 위한 메시지
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct StopObservation;
+

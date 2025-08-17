@@ -28,7 +28,16 @@ pub struct InternalSendText(pub String);
 
 #[derive(Message)]
 #[rtype(result = "()")]
+pub struct InternalClose;
+
+#[derive(Message)]
+#[rtype(result = "()")]
 pub struct BehaviorFinished {
     pub response: BehaviorResult,
     pub original_message: ServerMessage,
 }
+
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct TriggerEnqueueNow;

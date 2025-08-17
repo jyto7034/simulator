@@ -9,7 +9,7 @@ use crate::{
     behaviors::PlayerBehavior,
     observer_actor::ObserverActor,
     player_actor::message::{ConnectionEstablished, SetState},
-    WsSink, WsStream, CONNECTION_TIMEOUT, DEFAULT_SERVER_URL,
+    WsSink, WsStream, CONNECTION_TIMEOUT,
 };
 
 pub mod handler;
@@ -35,6 +35,7 @@ pub struct PlayerActor {
     pub state: PlayerState,
     pub behavior: Box<dyn PlayerBehavior>,
     pub player_id: Uuid,
+    pub auto_enqueue: bool,
     pub stream: Option<WsStream>,
     pub sink: Option<WsSink>,
 }
@@ -44,12 +45,14 @@ impl PlayerActor {
         observer: Addr<ObserverActor>,
         behavior: Box<dyn PlayerBehavior>,
         player_id: Uuid,
+        auto_enqueue: bool,
     ) -> Self {
         Self {
             observer,
             state: PlayerState::Idle,
             behavior,
             player_id,
+            auto_enqueue,
             stream: None,
             sink: None,
         }
@@ -76,18 +79,12 @@ impl Actor for PlayerActor {
             }
         });
     }
-
-    fn stopped(&mut self, _ctx: &mut Self::Context) {
-        // TODO: 결과를 집계한 다음, 결과와 함께 종료 사실을 SingleScenarioActor 에게 전송.
-        // PlayerCompleted Msg 사용하면 됨.
-        // 근데 옵저버와 약간 기능이 겹치는 것 같은데 기능 관계를 한 번 정리해야할 듯.
-    }
 }
 
 impl PlayerActor {
     async fn establish_connection() -> anyhow::Result<(WsSink, WsStream)> {
-        let url =
-            Url::parse(DEFAULT_SERVER_URL).map_err(|e| anyhow::anyhow!("Invalid URL: {}", e))?;
+        let url = Url::parse(&crate::server_ws_url())
+            .map_err(|e| anyhow::anyhow!("Invalid URL: {}", e))?;
 
         let (ws_stream, _) = tokio::time::timeout(CONNECTION_TIMEOUT, connect_async(url.as_str()))
             .await

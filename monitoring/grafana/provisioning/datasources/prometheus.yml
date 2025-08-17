@@ -1,0 +1,13 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
+    jsonData:
+      # Grafana가 Prometheus에 질의할 최소 스텝(샘플 간격). Auto 스텝 계산의 하한값.
+      # 스크레이프 주기(2s)에 맞춰 2초로 설정하여 더 빠른 그래프 갱신을 유도합니다.
+      timeInterval: 2s

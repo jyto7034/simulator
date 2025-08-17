@@ -3,6 +3,8 @@ pub mod observer_actor;
 pub mod player_actor;
 pub mod scenario_actor;
 pub mod schedules;
+pub mod swarm;
+pub mod test_utils;
 
 use std::io;
 use std::time::Duration;
@@ -70,6 +72,14 @@ pub fn setup_logger() {
     });
 }
 
+pub fn server_ws_url() -> String {
+    std::env::var("TEST_CLIENT_WS_URL").unwrap_or_else(|_| DEFAULT_SERVER_URL.to_string())
+}
+
+pub fn default_game_mode() -> String {
+    std::env::var("TEST_CLIENT_GAME_MODE").unwrap_or_else(|_| "Normal_1v1".to_string())
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum BehaviorOutcome {
     /// 다음 단계로 계속 진행
@@ -95,4 +105,5 @@ pub enum TestFailure {
     Behavior(String),
     /// 시스템 내부 오류
     System(String),
+    MatchmakingError(String),
 }

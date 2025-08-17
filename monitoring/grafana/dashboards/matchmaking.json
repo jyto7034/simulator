@@ -1,0 +1,165 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Active WS Connections",
+      "datasource": "Prometheus",
+      "targets": [{ "expr": "active_ws_connections", "refId": "A" }],
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Players in Queue",
+      "datasource": "Prometheus",
+      "targets": [{ "expr": "players_in_queue", "refId": "A" }],
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 }
+    },
+
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Total Enqueued",
+      "datasource": "Prometheus",
+      "targets": [
+        { "expr": "sum(enqueued_total_by_mode) or vector(0)", "refId": "A" }
+      ],
+      "gridPos": { "x": 0, "y": 10, "w": 6, "h": 4 }
+    },
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "Matched Players (total)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(matched_players_total_by_mode) or vector(0)",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 6, "y": 10, "w": 6, "h": 4 }
+    },
+    {
+      "id": 8,
+      "type": "stat",
+      "title": "Loading Completed (sessions)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(loading_completed_total_by_mode) or vector(0)",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 12, "y": 10, "w": 6, "h": 4 }
+    },
+    {
+      "id": 9,
+      "type": "stat",
+      "title": "Dedicated Allocation Success (sessions)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(dedicated_allocation_success_total_by_mode) or vector(0)",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 18, "y": 10, "w": 6, "h": 4 }
+    },
+
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "Loading Duration p50/p90/p99 (s)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(loading_duration_seconds_bucket[$__rate_interval])))",
+          "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.9, sum by (le) (rate(loading_duration_seconds_bucket[$__rate_interval])))",
+          "refId": "B"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(loading_duration_seconds_bucket[$__rate_interval])))",
+          "refId": "C"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 14, "w": 12, "h": 6 }
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "Match Wait p50/p90/p99 (s)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(match_time_seconds_bucket[$__rate_interval])))",
+          "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.9, sum by (le) (rate(match_time_seconds_bucket[$__rate_interval])))",
+          "refId": "B"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(match_time_seconds_bucket[$__rate_interval])))",
+          "refId": "C"
+        }
+      ],
+      "gridPos": { "x": 12, "y": 14, "w": 12, "h": 6 }
+    },
+
+    {
+      "type": "row",
+      "title": "Player Behaviors",
+      "gridPos": { "x": 0, "y": 27, "w": 24, "h": 1 }
+    },
+
+    {
+      "id": 16,
+      "type": "stat",
+      "title": "Total Abnormal Behaviors",
+      "datasource": "Prometheus",
+      "fieldConfig": { "defaults": { "unit": "none", "decimals": 0 } },
+      "targets": [
+        {
+          "expr": "sum(test_player_behavior_total{run_id=\"$run_id\"}) or vector(0)",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 12, "y": 22, "w": 6, "h": 6 }
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": ["matchmaking"],
+  "templating": {
+    "list": [
+      {
+        "name": "run_id",
+        "type": "query",
+        "datasource": "Prometheus",
+        "hide": 0,
+        "label": "Run",
+        "query": "label_values(test_enqueued_total_by_mode, run_id)",
+        "refresh": 1,
+        "includeAll": false,
+        "multi": false,
+        "current": { "selected": false, "text": "", "value": "" }
+      }
+    ]
+  },
+  "time": { "from": "now-15m", "to": "now" },
+  "timezone": "",
+  "title": "Matchmaking (v2)",
+  "uid": "matchmaking-v2",
+  "version": 1
+}

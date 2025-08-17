@@ -1,12 +1,16 @@
 use std::collections::HashMap;
 
 use actix::{Actor, Addr, AsyncContext, Context};
+use tokio::sync::oneshot;
 use tracing::info;
 use uuid::Uuid;
 
 use crate::{
     behaviors::BehaviorType,
-    observer_actor::{message::StartObservation, ObserverActor},
+    observer_actor::{
+        message::{SetSingleScenarioAddr, StartObservation},
+        ObserverActor,
+    },
     player_actor::PlayerActor,
     schedules,
 };
@@ -54,6 +58,7 @@ pub struct ScenarioRunnerActor {
     completed_count: usize,
     total_count: usize,
     results: Vec<ScenarioResult>,
+    completion_tx: Option<oneshot::Sender<ScenarioSummary>>, // notify tests when all done
 }
 
 impl ScenarioRunnerActor {
@@ -64,7 +69,22 @@ impl ScenarioRunnerActor {
             completed_count: 0,
             total_count,
             results: Vec::new(),
+            completion_tx: None,
         }
+    }
+
+    /// Start a runner and notify via oneshot when all scenarios finish.
+    pub fn start_with_notifier(
+        scenarios: Vec<Scenario>,
+        completion_tx: oneshot::Sender<ScenarioSummary>,
+    ) -> Addr<Self> {
+        actix::Actor::create(|_ctx| Self {
+            total_count: scenarios.len(),
+            scenarios,
+            completed_count: 0,
+            results: Vec::new(),
+            completion_tx: Some(completion_tx),
+        })
     }
 }
 
@@ -102,10 +122,18 @@ impl SingleScenarioActor {
     }
 }
 
+/// Summary sent to tests when all scenarios complete.
+#[derive(Debug, Clone)]
+pub struct ScenarioSummary {
+    pub total: usize,
+    pub success_count: usize,
+    pub results: Vec<ScenarioResult>,
+}
+
 impl Actor for SingleScenarioActor {
     type Context = Context<Self>;
 
-    fn started(&mut self, _ctx: &mut Self::Context) {
+    fn started(&mut self, ctx: &mut Self::Context) {
         info!(
             "SingleScenarioActor started for scenario: {}",
             self.scenario.name
@@ -114,7 +142,8 @@ impl Actor for SingleScenarioActor {
         let perpetrator_id = Uuid::new_v4();
         let victim_id = Uuid::new_v4();
 
-        let perpetrator_schedule = schedules::get_schedule_for_perpetrator(&self.scenario.perpetrator_behavior);
+        let perpetrator_schedule =
+            schedules::get_schedule_for_perpetrator(&self.scenario.perpetrator_behavior);
         let victim_schedule = schedules::get_schedule_for_victim(&self.scenario.victim_behavior);
         let mut players_schedule = HashMap::new();
 
@@ -128,14 +157,24 @@ impl Actor for SingleScenarioActor {
             players_schedule,
             HashMap::new(),
         );
+
+        // SingleScenarioActor 주소를 Observer에 설정 (순환 참조 방지를 위해 나중에 설정)
         let observer_addr = observer.start();
+
+        // ObserverActor에 SingleScenarioActor 주소 설정
+        observer_addr.do_send(SetSingleScenarioAddr {
+            addr: ctx.address(),
+        });
 
         let perpetrator_behavior = Box::new(self.scenario.perpetrator_behavior.clone());
         let victim_behavior = Box::new(self.scenario.victim_behavior.clone());
 
-        let perpetrator_actor =
-            PlayerActor::new(observer_addr.clone(), perpetrator_behavior, perpetrator_id);
-        let victim_actor = PlayerActor::new(observer_addr.clone(), victim_behavior, victim_id);
+        let perpetrator_actor = PlayerActor::new(
+            observer_addr.clone(), perpetrator_behavior, perpetrator_id, true,
+        );
+        let victim_actor = PlayerActor::new(
+            observer_addr.clone(), victim_behavior, victim_id, true,
+        );
 
         perpetrator_actor.start();
         victim_actor.start();

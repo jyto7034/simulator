@@ -1,23 +1,48 @@
-feat(TestClient): Refactor ObserverActor to support per-player event tracking
+feat(match_server): Add Redis pub/sub based state events for real-time system monitoring
 
-- Replace single sequential event tracking with per-player HashMap structure
-- Change `expected_sequence: Vec<ExpectEvent>` to `player_expectations: HashMap<Uuid, Vec<ExpectEvent>>`
-- Change `current_step: usize` to `player_steps: HashMap<Uuid, usize>` for independent player progress
-- Update ExpectEvent handler to store expectations per player ID
-- Refactor InternalEvent handler with `check_player_expectations()` for individual player validation
-- Add `check_all_players_completed()` to verify scenario completion only when all players finish
-- Fix sequential step validation issue where Player1's events affected Player2's step progression
-- Enable independent behavior validation for multiple players in scenarios
+Implement comprehensive state event system to provide real-time visibility into match server operations for test clients and monitoring systems.
 
-This change resolves the issue where ObserverActor treated multiple players as a single sequence,
-causing premature scenario completion when the first player's events were satisfied.
+## Changes Made:
 
-## Known Issue Identified
+### Core Infrastructure:
+- **New module:** `src/state_events.rs`
+  - StateEvent enum with 8 event types (queue_size_changed, loading_session_created, player_ready, loading_session_completed, loading_session_timeout, players_requeued, dedicated_session_created, dedicated_session_failed)
+  - JSON serialization with timestamp and structured data
+  - Channel routing logic (events:queue:{game_mode}, events:session:{session_id})
+  - Publisher functions for all event types
 
-During implementation, discovered a fundamental design contradiction:
-- ExpectEvents are added incrementally as behavior methods execute
-- Completion check only considers currently added ExpectEvents
-- Results in premature scenario completion when first ExpectEvent is satisfied
-- Documented in observer_actor_design_issue.md for future resolution
+### Event Stream Extension:
+- **Updated:** `src/events.rs`
+  - Extended WebSocket event stream to subscribe to both `notifications:*` and `events:*` channels
+  - Added state event processing pipeline alongside existing server message handling
+  - Graceful fallback if state events subscription fails
 
-The per-player tracking structure is correct, but completion logic needs redesign.
+### Matchmaker Integration:
+- **Updated:** `src/matchmaker/handlers.rs`
+  - **Enqueue/Dequeue:** Publish queue_size_changed events with accurate player counts
+  - **Match Creation:** Publish loading_session_created events with session details and TTL
+  - **Loading Progress:** Publish player_ready events for individual completions
+  - **Session Completion:** Publish loading_session_completed when all players ready
+  - **Server Allocation:** Publish dedicated_session_created on success, dedicated_session_failed on failures
+  - **Timeout Handling:** Publish loading_session_timeout for stale session cleanup
+  - **Requeuing:** Publish players_requeued events when players return to queue
+  - Improved requeue_players() function with better error handling and metrics accuracy
+
+## Event Flow:
+1. Match server operations trigger state events
+2. Events published to Redis channels (events:queue:* or events:session:*)
+3. Event stream WebSocket forwards events to test clients
+4. ObserverActor can now receive detailed real-time system state updates
+
+## Benefits:
+- **Test Client Enhancement:** ObserverActor can now verify actual server state changes vs intended client behavior
+- **Real-time Monitoring:** Live visibility into queue sizes, session progress, and server allocation
+- **Debugging:** Detailed event tracing for troubleshooting matchmaking issues
+- **Future Extensibility:** Foundation for metrics, analytics, and advanced monitoring systems
+
+## Technical Details:
+- All events include RFC3339 timestamps
+- Channel-based routing for efficient filtering
+- Error handling with warnings to prevent event failures from breaking core functionality
+- JSON serialization compatible with existing event stream infrastructure
+- Backward compatible - existing notification system unchanged

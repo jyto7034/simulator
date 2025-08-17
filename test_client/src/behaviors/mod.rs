@@ -1,17 +1,16 @@
-use crate::{player_actor::PlayerContext, BehaviorOutcome, TestFailure, BehaviorResult};
+use crate::{player_actor::PlayerContext, BehaviorOutcome, BehaviorResult, TestFailure};
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
-use tracing::{error, info};
 use uuid::Uuid;
 
-pub mod disconnect;
-pub mod failure;
-pub mod ignore;
+pub mod invalid;
 pub mod normal;
 pub mod quit;
 pub mod slow;
+pub mod spiky_loader;
+pub mod timeout_loader;
 
-// --- 메시지 정의 ---
+// --- 메시지 정의 (서버 프로토콜과 1:1 매핑) ---
 #[derive(Serialize, Clone)]
 #[serde(tag = "type")]
 pub enum ClientMessage {
@@ -19,6 +18,7 @@ pub enum ClientMessage {
     Enqueue { player_id: Uuid, game_mode: String },
     #[serde(rename = "loading_complete")]
     LoadingComplete { loading_session_id: Uuid },
+    // 주의: 현재 프로토콜에 "cancel"은 없습니다. (큐 잡히기 전만 클라이언트가 연결을 끊어 취소 가능)
 }
 
 impl ClientMessage {
@@ -30,208 +30,273 @@ impl ClientMessage {
 #[derive(Deserialize, Debug, PartialEq, Clone)]
 #[serde(tag = "type")]
 pub enum ServerMessage {
-    /// 대기열에 성공적으로 등록되었음을 알립니다.
     #[serde(rename = "enqueued")]
     EnQueued,
-
-    /// 클라이언트에게 에셋 로딩을 시작하라고 지시합니다.
     #[serde(rename = "start_loading")]
     StartLoading { loading_session_id: Uuid },
-
-    /// 최종적으로 매칭이 성사되었고, 게임 서버 접속 정보를 전달합니다.
     #[serde(rename = "match_found")]
     MatchFound {
-        session_id: Uuid, // dedicated_server의 게임 세션 ID
+        session_id: Uuid,
         server_address: String,
     },
-
-    /// 에러가 발생했음을 알립니다.
     #[serde(rename = "error")]
     Error { message: String },
 }
 
-/// 플레이어 행동을 정의하는 trait
-/// 매칭 서버와의 상호작용에서 발생하는 모든 이벤트에 대한 반응을 정의
+// --- Behavior 설계 원칙 ---
+// - 매칭에는 거절/수락 개념이 없음.
+// - 큐가 잡히기 전까지만 취소(=연결 종료) 가능.
+// - 큐가 잡히면(StartLoading/MatchFound) 즉시 게임 진입.
+// - 따라서 Behavior는 다음 네 가지 축으로 단순화:
+//   1) 정상 흐름(Normal)
+//   2) 느린 로딩(SlowLoader)
+//   3) 큐 잡히기 전 임의 시점 종료(QuitBeforeMatch)
+//   4) 매치 성사 무시(Timeout 유도) -> 필요시 유지(여기서는 제외 가능)
+
 #[async_trait]
 pub trait PlayerBehavior: Send + Sync {
-    /// 0. 매칭 실패 시 (모든 단계에서 발생 가능)
-    async fn on_error(&self, player_context: &PlayerContext, error_msg: &str) -> BehaviorResult {
-        error!(
-            "[{}] Error occurred: {}",
-            player_context.player_id, error_msg
-        );
-        Err(TestFailure::System(error_msg.to_string()))
-    }
-
-    /// 1. 큐 진입 확인 - 서버로부터 EnQueued 응답을 받았을 때
-    async fn on_enqueued(&self, player_context: &PlayerContext) -> BehaviorResult {
-        info!(
-            "[{}] Successfully enqueued - confirmed by server",
-            player_context.player_id
-        );
+    // 연결 직후 훅(WS 연결/스트림 준비 완료 뒤 호출). 기본은 no-op
+    async fn on_connected(&self, _player: &PlayerContext) -> BehaviorResult {
         Ok(BehaviorOutcome::Continue)
     }
 
-    /// 2. 로딩 시작 - 상대방 발견 시, 리소스 로딩 시작
+    // 0) 에러 수신 시
+    async fn on_error(&self, _player: &PlayerContext, _msg: &str) -> BehaviorResult {
+        Err(TestFailure::System("server_error".into()))
+    }
+
+    // 1) 대기열 진입 확인
+    async fn on_enqueued(&self, _player: &PlayerContext) -> BehaviorResult {
+        Ok(BehaviorOutcome::Continue)
+    }
+
+    // 2) 로딩 시작(=매치가 성사되어 게임 진입을 준비)
     async fn on_loading_start(
         &self,
-        player_context: &PlayerContext,
-        loading_session_id: Uuid,
+        _player: &PlayerContext,
+        _loading_session_id: Uuid,
     ) -> BehaviorResult {
-        info!(
-            "[{}] Loading started - session: {}",
-            player_context.player_id, loading_session_id
-        );
         Ok(BehaviorOutcome::Continue)
     }
 
-    /// 3. 로딩 완료 - 모든 플레이어의 로딩이 완료된 후
-    async fn on_loading_complete(&self, player_context: &PlayerContext) -> BehaviorResult {
-        info!(
-            "[{}] Loading complete - ready to start game",
-            player_context.player_id
-        );
+    // 3) 매치 최종 확정(일부 서버에서는 MatchFound가 먼저/혹은 StartLoading 이후 올 수 있음)
+    async fn on_match_found(&self, _player: &PlayerContext) -> BehaviorResult {
+        Ok(BehaviorOutcome::Continue)
+    }
+
+    // 4) 로딩 완료 후 종료
+    async fn on_loading_complete(&self, _player: &PlayerContext) -> BehaviorResult {
         Ok(BehaviorOutcome::Stop)
-    }
-
-    /// 4. 매칭 성공 - 모든 플레이어가 로딩을 완료하고 전용 서버까지 할당 받았을 때.
-    async fn on_match_found(&self, player_context: &PlayerContext) -> BehaviorResult {
-        info!(
-            "[{}] Match found - opponent discovered!",
-            player_context.player_id
-        );
-        Ok(BehaviorOutcome::Continue)
     }
 
     fn clone_trait(&self) -> Box<dyn PlayerBehavior>;
 }
 
-// --- 미구현 행동들 ---
-pub struct UnstableConnection; // 간헐적 연결 끊김
-pub struct SlowConnection; // 네트워크 지연
-pub struct HeartbeatFailure; // 120초 하트비트 실패
-pub struct PartialLoader; // 일부만 로딩하고 멈춤
-pub struct InvalidMessageSender; // 잘못된 JSON 전송
-pub struct WrongStateSender; // 잘못된 상태에서 메시지 전송
-pub struct DuplicateEnqueuer; // 중복 큐 참가 시도
-pub struct InvalidGameMode; // 존재하지 않는 게임 모드
-pub struct Spammer; // 메시지 스팸
-pub struct ConnectionFlooder; // 연결 폭탄
-pub struct MalformedSender; // 의도적 잘못된 데이터
-pub struct ResourceExhauster; // 리소스 고갈 유도
-pub struct RaceConditionTester; // 동시성 문제 유발
-pub struct StateTransitionAbuser; // 상태 전환 악용
-pub struct TimingAttacker; // 타이밍 기반 공격
-pub struct CleanupEscaper; // 정리 과정 회피
-
-// --- Behavior Enum Wrapper ---
+// --- Behavior Enum (flattened) ---
 #[derive(Debug, Clone)]
 pub enum BehaviorType {
-    Normal(normal::NormalPlayer),
-    QuitDuringMatch(quit::QuitDuringMatch),
-    QuitDuringLoading(quit::QuitDuringLoading),
-    SlowLoader(slow::SlowLoader),
-    IgnoreMatchFound(ignore::IgnoreMatchFound),
-    NetworkDisconnect(disconnect::NetworkDisconnect),
-    LoadingFailure(failure::LoadingFailure),
-    LoadingIgnorer(failure::LoadingIgnorer),
+    Normal,
+    SlowLoader { delay_seconds: u64 },
+    SpikyLoader { delay_ms: u64 },
+    TimeoutLoader,
+    QuitBeforeMatch,
+    QuitDuringLoading,
+    Invalid { mode: invalid::InvalidMode },
 }
 
 #[async_trait]
 impl PlayerBehavior for BehaviorType {
-    async fn on_error(&self, player_context: &PlayerContext, error_msg: &str) -> BehaviorResult {
+    async fn on_connected(&self, p: &PlayerContext) -> BehaviorResult {
         match self {
-            BehaviorType::Normal(b) => b.on_error(player_context, error_msg).await,
-            BehaviorType::QuitDuringMatch(b) => b.on_error(player_context, error_msg).await,
-            BehaviorType::QuitDuringLoading(b) => b.on_error(player_context, error_msg).await,
-            BehaviorType::SlowLoader(b) => b.on_error(player_context, error_msg).await,
-            BehaviorType::IgnoreMatchFound(b) => b.on_error(player_context, error_msg).await,
-            BehaviorType::NetworkDisconnect(b) => b.on_error(player_context, error_msg).await,
-            BehaviorType::LoadingFailure(b) => b.on_error(player_context, error_msg).await,
-            BehaviorType::LoadingIgnorer(b) => b.on_error(player_context, error_msg).await,
-        }
-    }
-
-    async fn on_enqueued(&self, player_context: &PlayerContext) -> BehaviorResult {
-        match self {
-            BehaviorType::Normal(b) => b.on_enqueued(player_context).await,
-            BehaviorType::QuitDuringMatch(b) => b.on_enqueued(player_context).await,
-            BehaviorType::QuitDuringLoading(b) => b.on_enqueued(player_context).await,
-            BehaviorType::SlowLoader(b) => b.on_enqueued(player_context).await,
-            BehaviorType::IgnoreMatchFound(b) => b.on_enqueued(player_context).await,
-            BehaviorType::NetworkDisconnect(b) => b.on_enqueued(player_context).await,
-            BehaviorType::LoadingFailure(b) => b.on_enqueued(player_context).await,
-            BehaviorType::LoadingIgnorer(b) => b.on_enqueued(player_context).await,
-        }
-    }
-
-    async fn on_match_found(&self, player_context: &PlayerContext) -> BehaviorResult {
-        match self {
-            BehaviorType::Normal(b) => b.on_match_found(player_context).await,
-            BehaviorType::QuitDuringMatch(b) => b.on_match_found(player_context).await,
-            BehaviorType::QuitDuringLoading(b) => b.on_match_found(player_context).await,
-            BehaviorType::SlowLoader(b) => b.on_match_found(player_context).await,
-            BehaviorType::IgnoreMatchFound(b) => b.on_match_found(player_context).await,
-            BehaviorType::NetworkDisconnect(b) => b.on_match_found(player_context).await,
-            BehaviorType::LoadingFailure(b) => b.on_match_found(player_context).await,
-            BehaviorType::LoadingIgnorer(b) => b.on_match_found(player_context).await,
-        }
-    }
-
-    async fn on_loading_start(
-        &self,
-        player_context: &PlayerContext,
-        loading_session_id: Uuid,
-    ) -> BehaviorResult {
-        match self {
-            BehaviorType::Normal(b) => b.on_loading_start(player_context, loading_session_id).await,
-            BehaviorType::QuitDuringMatch(b) => {
-                b.on_loading_start(player_context, loading_session_id).await
+            BehaviorType::Normal => self::normal::NormalPlayer.on_connected(p).await,
+            BehaviorType::SlowLoader { delay_seconds } => {
+                self::slow::SlowLoader {
+                    delay_seconds: *delay_seconds,
+                }
+                .on_connected(p)
+                .await
             }
-            BehaviorType::QuitDuringLoading(b) => {
-                b.on_loading_start(player_context, loading_session_id).await
+            BehaviorType::SpikyLoader { delay_ms } => {
+                self::spiky_loader::SpikyLoader {
+                    delay_ms: *delay_ms,
+                }
+                .on_connected(p)
+                .await
             }
-            BehaviorType::SlowLoader(b) => {
-                b.on_loading_start(player_context, loading_session_id).await
+            BehaviorType::TimeoutLoader => {
+                self::timeout_loader::TimeoutLoader.on_connected(p).await
             }
-            BehaviorType::IgnoreMatchFound(b) => {
-                b.on_loading_start(player_context, loading_session_id).await
-            }
-            BehaviorType::NetworkDisconnect(b) => {
-                b.on_loading_start(player_context, loading_session_id).await
-            }
-            BehaviorType::LoadingFailure(b) => {
-                b.on_loading_start(player_context, loading_session_id).await
-            }
-            BehaviorType::LoadingIgnorer(b) => {
-                b.on_loading_start(player_context, loading_session_id).await
+            BehaviorType::QuitBeforeMatch => self::quit::QuitBeforeMatch.on_connected(p).await,
+            BehaviorType::QuitDuringLoading => self::quit::QuitDuringLoading.on_connected(p).await,
+            BehaviorType::Invalid { mode } => {
+                self::invalid::InvalidMessages { mode: mode.clone() }
+                    .on_connected(p)
+                    .await
             }
         }
     }
 
-    async fn on_loading_complete(&self, player_context: &PlayerContext) -> BehaviorResult {
+    async fn on_error(&self, p: &PlayerContext, m: &str) -> BehaviorResult {
         match self {
-            BehaviorType::Normal(b) => b.on_loading_complete(player_context).await,
-            BehaviorType::QuitDuringMatch(b) => b.on_loading_complete(player_context).await,
-            BehaviorType::QuitDuringLoading(b) => b.on_loading_complete(player_context).await,
-            BehaviorType::SlowLoader(b) => b.on_loading_complete(player_context).await,
-            BehaviorType::IgnoreMatchFound(b) => b.on_loading_complete(player_context).await,
-            BehaviorType::NetworkDisconnect(b) => b.on_loading_complete(player_context).await,
-            BehaviorType::LoadingFailure(b) => b.on_loading_complete(player_context).await,
-            BehaviorType::LoadingIgnorer(b) => b.on_loading_complete(player_context).await,
+            BehaviorType::Normal => self::normal::NormalPlayer.on_error(p, m).await,
+            BehaviorType::SlowLoader { delay_seconds } => {
+                self::slow::SlowLoader {
+                    delay_seconds: *delay_seconds,
+                }
+                .on_error(p, m)
+                .await
+            }
+            BehaviorType::SpikyLoader { delay_ms } => {
+                self::spiky_loader::SpikyLoader {
+                    delay_ms: *delay_ms,
+                }
+                .on_error(p, m)
+                .await
+            }
+            BehaviorType::TimeoutLoader => self::timeout_loader::TimeoutLoader.on_error(p, m).await,
+            BehaviorType::QuitBeforeMatch => self::quit::QuitBeforeMatch.on_error(p, m).await,
+            BehaviorType::QuitDuringLoading => self::quit::QuitDuringLoading.on_error(p, m).await,
+            BehaviorType::Invalid { mode } => {
+                self::invalid::InvalidMessages { mode: mode.clone() }
+                    .on_error(p, m)
+                    .await
+            }
+        }
+    }
+
+    async fn on_enqueued(&self, p: &PlayerContext) -> BehaviorResult {
+        match self {
+            BehaviorType::Normal => self::normal::NormalPlayer.on_enqueued(p).await,
+            BehaviorType::SlowLoader { delay_seconds } => {
+                self::slow::SlowLoader {
+                    delay_seconds: *delay_seconds,
+                }
+                .on_enqueued(p)
+                .await
+            }
+            BehaviorType::SpikyLoader { delay_ms } => {
+                self::spiky_loader::SpikyLoader {
+                    delay_ms: *delay_ms,
+                }
+                .on_enqueued(p)
+                .await
+            }
+            BehaviorType::TimeoutLoader => self::timeout_loader::TimeoutLoader.on_enqueued(p).await,
+            BehaviorType::QuitBeforeMatch => self::quit::QuitBeforeMatch.on_enqueued(p).await,
+            BehaviorType::QuitDuringLoading => self::quit::QuitDuringLoading.on_enqueued(p).await,
+            BehaviorType::Invalid { mode } => {
+                self::invalid::InvalidMessages { mode: mode.clone() }
+                    .on_enqueued(p)
+                    .await
+            }
+        }
+    }
+
+    async fn on_match_found(&self, p: &PlayerContext) -> BehaviorResult {
+        match self {
+            BehaviorType::Normal => self::normal::NormalPlayer.on_match_found(p).await,
+            BehaviorType::SlowLoader { delay_seconds } => {
+                self::slow::SlowLoader {
+                    delay_seconds: *delay_seconds,
+                }
+                .on_match_found(p)
+                .await
+            }
+            BehaviorType::SpikyLoader { delay_ms } => {
+                self::spiky_loader::SpikyLoader {
+                    delay_ms: *delay_ms,
+                }
+                .on_match_found(p)
+                .await
+            }
+            BehaviorType::TimeoutLoader => {
+                self::timeout_loader::TimeoutLoader.on_match_found(p).await
+            }
+            BehaviorType::QuitBeforeMatch => self::quit::QuitBeforeMatch.on_match_found(p).await,
+            BehaviorType::QuitDuringLoading => {
+                self::quit::QuitDuringLoading.on_match_found(p).await
+            }
+            BehaviorType::Invalid { mode } => {
+                self::invalid::InvalidMessages { mode: mode.clone() }
+                    .on_match_found(p)
+                    .await
+            }
+        }
+    }
+
+    async fn on_loading_start(&self, p: &PlayerContext, id: Uuid) -> BehaviorResult {
+        match self {
+            BehaviorType::Normal => self::normal::NormalPlayer.on_loading_start(p, id).await,
+            BehaviorType::SlowLoader { delay_seconds } => {
+                self::slow::SlowLoader {
+                    delay_seconds: *delay_seconds,
+                }
+                .on_loading_start(p, id)
+                .await
+            }
+            BehaviorType::SpikyLoader { delay_ms } => {
+                self::spiky_loader::SpikyLoader {
+                    delay_ms: *delay_ms,
+                }
+                .on_loading_start(p, id)
+                .await
+            }
+            BehaviorType::TimeoutLoader => {
+                self::timeout_loader::TimeoutLoader
+                    .on_loading_start(p, id)
+                    .await
+            }
+            BehaviorType::QuitBeforeMatch => {
+                self::quit::QuitBeforeMatch.on_loading_start(p, id).await
+            }
+            BehaviorType::QuitDuringLoading => {
+                self::quit::QuitDuringLoading.on_loading_start(p, id).await
+            }
+            BehaviorType::Invalid { mode } => {
+                self::invalid::InvalidMessages { mode: mode.clone() }
+                    .on_loading_start(p, id)
+                    .await
+            }
+        }
+    }
+
+    async fn on_loading_complete(&self, p: &PlayerContext) -> BehaviorResult {
+        match self {
+            BehaviorType::Normal => self::normal::NormalPlayer.on_loading_complete(p).await,
+            BehaviorType::SlowLoader { delay_seconds } => {
+                self::slow::SlowLoader {
+                    delay_seconds: *delay_seconds,
+                }
+                .on_loading_complete(p)
+                .await
+            }
+            BehaviorType::SpikyLoader { delay_ms } => {
+                self::spiky_loader::SpikyLoader {
+                    delay_ms: *delay_ms,
+                }
+                .on_loading_complete(p)
+                .await
+            }
+            BehaviorType::TimeoutLoader => {
+                self::timeout_loader::TimeoutLoader
+                    .on_loading_complete(p)
+                    .await
+            }
+            BehaviorType::QuitBeforeMatch => {
+                self::quit::QuitBeforeMatch.on_loading_complete(p).await
+            }
+            BehaviorType::QuitDuringLoading => {
+                self::quit::QuitDuringLoading.on_loading_complete(p).await
+            }
+            BehaviorType::Invalid { mode } => {
+                self::invalid::InvalidMessages { mode: mode.clone() }
+                    .on_loading_complete(p)
+                    .await
+            }
         }
     }
 
     fn clone_trait(&self) -> Box<dyn PlayerBehavior> {
-        match self {
-            BehaviorType::Normal(b) => b.clone_trait(),
-            BehaviorType::QuitDuringMatch(b) => b.clone_trait(),
-            BehaviorType::QuitDuringLoading(b) => b.clone_trait(),
-            BehaviorType::SlowLoader(b) => b.clone_trait(),
-            BehaviorType::IgnoreMatchFound(b) => b.clone_trait(),
-            BehaviorType::NetworkDisconnect(b) => b.clone_trait(),
-            BehaviorType::LoadingFailure(b) => b.clone_trait(),
-            BehaviorType::LoadingIgnorer(b) => b.clone_trait(),
-        }
+        Box::new(self.clone())
     }
 }

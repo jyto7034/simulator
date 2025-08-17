@@ -1,0 +1,47 @@
+# Match Server Load Test Settings
+# Use with: RUN_MODE=loadtest
+
+[server]
+bind_address = "0.0.0.0"
+port = 8080
+log_level = "info"
+
+[logging]
+directory = "logs"
+filename = "app.log"
+
+[redis]
+# Local Redis for load testing
+url = "redis://127.0.0.1:6379"
+# Be resilient to transient disconnects under load
+max_reconnect_attempts = 20
+initial_reconnect_delay_ms = 500
+max_reconnect_delay_ms = 60000
+# Pub/Sub patterns
+dedicated_server_key_pattern = "dedicated_server:*"
+notification_channel_pattern = "notifications:*"
+state_event_channel_pattern = "events:*"
+# Emit state events so Observer/Grafana can monitor
+enable_state_events = true
+
+[jwt]
+secret = "dev-loadtest-secret"
+
+[matchmaking]
+tick_interval_seconds = 1
+queue_key_prefix = "queue"
+heartbeat_interval_seconds = 20
+client_timeout_seconds = 120
+loading_session_timeout_seconds = 90
+max_dedicated_server_retries = 2
+dedicated_request_timeout_seconds = 10
+allocation_token_ttl_seconds = 30
+slow_loading_threshold_seconds = 30
+
+[server_status]
+idle = "idle"
+
+[[matchmaking.game_modes]]
+id = "Normal_1v1"
+required_players = 2
+use_mmr_matching = false

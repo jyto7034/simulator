@@ -1,0 +1,51 @@
+# 서버 설정
+[server]
+bind_address = "0.0.0.0"
+port = 8080
+log_level = "warn" # 로그 레벨
+
+# 로깅 설정
+[logging]
+directory = "logs"
+filename = "app.log"
+
+# Redis 설정
+[redis]
+url = "redis://your-production-redis-endpoint:6379"
+max_reconnect_attempts = 10
+initial_reconnect_delay_ms = 1000
+max_reconnect_delay_ms = 60000
+dedicated_server_key_pattern = "dedicated_server:*"
+notification_channel_pattern = "notifications:*"
+state_event_channel_pattern = "events:*"
+enable_state_events = false
+
+[jwt]
+secret = "a-very-secure-secret-that-should-be-injected-via-env-vars"
+
+# 매치메이킹 설정
+[matchmaking]
+tick_interval_seconds = 5
+queue_key_prefix = "queue"
+heartbeat_interval_seconds = 30
+client_timeout_seconds = 120
+loading_session_timeout_seconds = 60
+max_dedicated_server_retries = 5
+dedicated_request_timeout_seconds = 5
+allocation_token_ttl_seconds = 20
+slow_loading_threshold_seconds = 20
+
+# 게임 서버 상태 문자열
+[server_status]
+idle = "idle"
+
+# 게임 모드 목록 (테이블 배열)
+[[matchmaking.game_modes]]
+id = "Normal_1v1"
+required_players = 2
+use_mmr_matching = false
+
+[[matchmaking.game_modes]]
+id = "Ranked_1v1"
+required_players = 2
+use_mmr_matching = true

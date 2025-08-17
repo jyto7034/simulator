@@ -1,0 +1,65 @@
+groups:
+  - name: sim_slo_alerts
+    interval: 30s
+    rules:
+      - alert: HighStateViolations
+        expr: increase(state_violations_total[2m]) > 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "State violations detected"
+          description: "state_violations_total increased in the last 2m. Check simulator match server logs."
+
+      - alert: HighMatchWaitP95
+        expr: histogram_quantile(0.95, sum by (le) (rate(match_time_seconds_bucket[5m]))) > 15
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Match wait p95 over 15s"
+          description: "Match wait p95 exceeded 15s for the last 5 minutes."
+
+      - alert: HighLoadingP95
+        expr: histogram_quantile(0.95, sum by (le) (rate(loading_duration_seconds_bucket[5m]))) > 30
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Loading duration p95 over 30s"
+          description: "Loading duration p95 exceeded 30s for the last 5 minutes."
+
+      - alert: HTTPTimeouts
+        expr: sum(rate(http_timeout_errors_total[5m])) > 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "HTTP timeouts observed"
+          description: "HTTP timeouts observed contacting providers or dependencies."
+
+      - alert: RedisConnectionFailures
+        expr: sum(rate(redis_connection_failures_total[5m])) > 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis connection failures"
+          description: "Redis connection failures observed in last 5 minutes."
+
+      - alert: InconsistentSuccessVsError
+        expr: |
+          ((
+            sum(increase(matchmaking_errors_total[15m]))
+            /
+            clamp_min(sum(increase(matchmaking_errors_total[15m])) + sum(increase(dedicated_allocation_success_total_by_mode[15m])), 1)
+          ) > bool 0.7)
+          and
+          (sum(increase(dedicated_allocation_success_total_by_mode[15m])) > bool sum(increase(matchmaking_errors_total[15m])))
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Inconsistency: high abnormal ratio but successes dominate"
+          description: |
+            Abnormal scenarios exceed 70% over 15m, yet dedicated allocation successes exceed error counts. Check metrics and logic for inconsistency.

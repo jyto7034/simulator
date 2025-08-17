@@ -1,0 +1,45 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+rule_files:
+  - "rules.yml"
+
+scrape_configs:
+  # Prometheus 자체 모니터링
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Match Server 메트릭 수집
+  - job_name: 'match-server'
+    static_configs:
+      - targets: ['host.docker.internal:8080']  # Windows Docker Desktop용
+    metrics_path: '/metrics'
+    scrape_interval: 2s  # 더 빠른 대시보드 갱신을 위해 단축
+    scrape_timeout: 1s
+
+  # Dedicated Server 메트릭 수집 (포트는 실제 설정에 맞게 조정)
+  - job_name: 'dedicated-server'
+    static_configs:
+      - targets: ['host.docker.internal:8088']  # Windows Docker Desktop용, dedicated_server bind port
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+    scrape_timeout: 4s
+
+  # 시스템 메트릭 (Node Exporter 사용 시)
+  # - job_name: 'node-exporter'
+  #   static_configs:
+  #     - targets: ['host.docker.internal:9100']
+
+  # Redis 메트릭 (Redis Exporter 사용 시)
+  # - job_name: 'redis-exporter'
+  #   static_configs:
+  #     - targets: ['redis-exporter:9121']
+
+# 알림 규칙 (선택사항)
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets:
+#           # - alertmanager:9093

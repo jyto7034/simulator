@@ -9,7 +9,8 @@ use crate::{
     behaviors::{ClientMessage, ServerMessage},
     player_actor::{
         message::{
-            BehaviorFinished, ConnectionEstablished, GetPlayerId, InternalSendText, SetState,
+            BehaviorFinished, ConnectionEstablished, GetPlayerId, InternalClose, InternalSendText,
+            SetState, TriggerEnqueueNow,
         },
         PlayerActor, PlayerContext, PlayerState,
     },
@@ -91,6 +92,7 @@ impl StreamHandler<Result<Message, tokio_tungstenite::tungstenite::Error>> for P
         });
     }
 }
+
 impl Handler<BehaviorFinished> for PlayerActor {
     type Result = ();
 
@@ -137,15 +139,45 @@ impl Handler<ConnectionEstablished> for PlayerActor {
         if let Some(stream) = self.stream.take() {
             ctx.add_stream(stream);
         }
+        // 연결 직후 behavior 훅 호출(자동 Enqueue 사용 시에도 no-op로 계속)
+        {
+            let behavior = self.behavior.clone_trait();
+            let ctx_addr = ctx.address();
+            let player_id = self.player_id;
+            actix::spawn(async move {
+                let _ = behavior
+                    .on_connected(&crate::player_actor::PlayerContext {
+                        player_id,
+                        addr: ctx_addr,
+                    })
+                    .await;
+            });
+        }
 
-        // 연결이 성공하면 큐에 등록 요청
-        let enqueue_msg = ClientMessage::Enqueue {
-            player_id: self.player_id,
-            game_mode: "Normal_1v1".to_string(),
-        };
+        // 자동 Enqueue 설정일 때만 전송
+        if self.auto_enqueue {
+            let enqueue_msg = ClientMessage::Enqueue {
+                player_id: self.player_id,
+                game_mode: crate::default_game_mode(),
+            };
+            ctx.address()
+                .do_send(InternalSendText(enqueue_msg.to_string()));
+        }
+    }
+}
 
-        ctx.address()
-            .do_send(InternalSendText(enqueue_msg.to_string()));
+impl Handler<TriggerEnqueueNow> for PlayerActor {
+    type Result = ();
+    fn handle(&mut self, _msg: TriggerEnqueueNow, ctx: &mut Self::Context) {
+        if let Some(_) = self.sink {
+            // sink가 있어야만 가능
+            let enqueue_msg = ClientMessage::Enqueue {
+                player_id: self.player_id,
+                game_mode: crate::default_game_mode(),
+            };
+            ctx.address()
+                .do_send(InternalSendText(enqueue_msg.to_string()));
+        }
     }
 }
 
@@ -173,6 +205,17 @@ impl Handler<InternalSendText> for PlayerActor {
         } else {
             error!("Cannot send message: WebSocket sink is not available or already in use.");
         }
+    }
+}
+
+impl actix::Handler<InternalClose> for PlayerActor {
+    type Result = ();
+    fn handle(&mut self, _msg: InternalClose, ctx: &mut Self::Context) {
+        info!(
+            "[{}] Closing connection by behavior request",
+            self.player_id
+        );
+        ctx.stop();
     }
 }
 

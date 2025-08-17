@@ -1,0 +1,50 @@
+# Swarm Template Configuration
+# This uses template-based generation for randomized testing
+
+# Test duration in seconds
+duration_secs = 60
+
+# Player count range (will be randomly selected within this range)
+player_count_min = 20
+player_count_max = 40
+
+# Connections per second range (spawn rate)
+cps_min = 2.0
+cps_max = 5.0
+
+# Behavior mix template with ranges
+[behavior_mix]
+# Slow loader ratios and delays
+slow_ratio_min = 0.05
+slow_ratio_max = 0.15
+slow_delay_seconds_min = 3
+slow_delay_seconds_max = 10
+
+# Spiky loader ratios and delays
+spiky_ratio_min = 0.02
+spiky_ratio_max = 0.08
+spiky_delay_ms_min = 100
+spiky_delay_ms_max = 300
+
+# Timeout ratios
+timeout_ratio_min = 0.01
+timeout_ratio_max = 0.05
+
+# Quit before match ratios
+quit_before_ratio_min = 0.02
+quit_before_ratio_max = 0.06
+
+# Quit during loading ratios
+quit_during_loading_ratio_min = 0.02
+quit_during_loading_ratio_max = 0.06
+
+# Invalid behavior ratios
+invalid_ratio_min = 0.005
+invalid_ratio_max = 0.02
+
+# Invalid behavior mode weights
+invalid_mode_unknown_weight = 1.0
+invalid_mode_missing_weight = 1.0
+invalid_mode_early_loading_complete_weight = 1.0
+invalid_mode_duplicate_enqueue_weight = 1.0
+invalid_mode_wrong_session_id_weight = 1.0

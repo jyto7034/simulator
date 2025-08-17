@@ -67,13 +67,13 @@ fn phase_loading_to_finished_error_with_required(
 
 fn build_schedule_for_behavior(behavior: &BehaviorType) -> HashMap<Phase, PhaseCondition> {
     match behavior {
-        BehaviorType::Normal(_) | BehaviorType::SlowLoader(_) => {
+        BehaviorType::Normal | BehaviorType::SlowLoader { .. } | BehaviorType::SpikyLoader { .. } => {
             let mut schedule = HashMap::new();
             schedule.insert(Phase::Matching, phase_matching_to_loading());
             schedule.insert(Phase::Loading, phase_loading_to_finished_match_found());
             schedule
         }
-        BehaviorType::QuitDuringLoading(_) => {
+        BehaviorType::TimeoutLoader | BehaviorType::QuitDuringLoading => {
             let mut schedule = HashMap::new();
             schedule.insert(Phase::Matching, phase_matching_to_loading());
             schedule.insert(
@@ -85,28 +85,29 @@ fn build_schedule_for_behavior(behavior: &BehaviorType) -> HashMap<Phase, PhaseC
             );
             schedule
         }
-        BehaviorType::IgnoreMatchFound(_)
-        | BehaviorType::LoadingFailure(_)
-        | BehaviorType::LoadingIgnorer(_) => {
+        BehaviorType::QuitBeforeMatch => {
+            // 큐 잡히기 전 종료: Loading 단계로 가지 않으며, Error/Dequeued 등을 관찰하고 종료로 간주
             let mut schedule = HashMap::new();
-            schedule.insert(Phase::Matching, phase_matching_to_loading());
+            // Matching 단계에서 에러가 오면 Finished로 전환하는 간단한 정책
             schedule.insert(
-                Phase::Loading,
-                phase_loading_to_finished_error_with_required(
-                    HashSet::from([EventType::MatchFound]),
-                    &["timeout", "loading", "failed"],
-                ),
+                Phase::Matching,
+                PhaseCondition {
+                    required_events: HashSet::new(),
+                    transition_event: EventType::Error,
+                    transition_matcher: None,
+                    next_phase: Phase::Finished,
+                },
             );
             schedule
         }
-        BehaviorType::QuitDuringMatch(_) | BehaviorType::NetworkDisconnect(_) => {
+        BehaviorType::Invalid { .. } => {
             let mut schedule = HashMap::new();
             schedule.insert(Phase::Matching, phase_matching_to_loading());
             schedule.insert(
                 Phase::Loading,
                 phase_loading_to_finished_error_with_required(
-                    HashSet::from([EventType::MatchFound]),
-                    &["disconnect", "quit", "connection"],
+                    HashSet::new(),
+                    &["error", "invalid", "bad", "timeout"],
                 ),
             );
             schedule
@@ -122,7 +123,7 @@ pub fn get_schedule_for_perpetrator(
 
 pub fn get_schedule_for_victim(victim_behavior: &BehaviorType) -> HashMap<Phase, PhaseCondition> {
     match victim_behavior {
-        BehaviorType::Normal(_) | BehaviorType::SlowLoader(_) => {
+        BehaviorType::Normal | BehaviorType::SlowLoader { .. } => {
             let mut schedule = HashMap::new();
             schedule.insert(Phase::Matching, phase_matching_to_loading());
             schedule.insert(Phase::Loading, phase_loading_to_finished_match_found());

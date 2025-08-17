@@ -1,0 +1,52 @@
+# Basic Swarm Test Configuration
+# This configuration runs a simple swarm test with minimal load
+
+# Test duration in seconds
+duration_secs = 30
+
+# Number of shards (parallel test groups)
+shards = 1
+
+# Number of players per shard
+players_per_shard = 10
+
+# Game mode to test
+game_mode = "Normal_1v1"
+
+# Match server base URL
+match_server_base = "ws://127.0.0.1:8080"
+
+# Deterministic seed for reproducible tests
+seed = 12345
+
+# Behavior mix configuration - defines how players behave
+[behavior_mix]
+# Ratio of slow loading players (0.0 to 1.0)
+slow_ratio = 0.1
+slow_delay_seconds = 5
+
+# Ratio of spiky (intermittent delay) players
+spiky_ratio = 0.05
+spiky_delay_ms = 150
+
+# Ratio of players that timeout during loading
+timeout_ratio = 0.02
+
+# Ratio of players that quit before match is found
+quit_before_ratio = 0.03
+
+# Ratio of players that quit during loading phase
+quit_during_loading_ratio = 0.03
+
+# Invalid behavior weights (for testing error handling)
+invalid_mode_unknown_weight = 1.0
+invalid_mode_missing_weight = 0.0
+invalid_mode_early_loading_complete_weight = 0.0
+invalid_mode_duplicate_enqueue_weight = 0.0
+invalid_mode_wrong_session_id_weight = 0.0
+
+# Overall ratio of invalid behavior players
+invalid_ratio = 0.01
+
+# Optional: Path to save test results (JSON format)
+# result_path = "logs/swarm_test_results.json"
