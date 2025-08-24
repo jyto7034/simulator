@@ -1,0 +1,29 @@
+# Swarm preset: medium
+# ~100 players total
+
+duration_secs = 60
+# target ~50 players per shard
+shards = 2
+players_per_shard = 50
+# Optional overrides
+# game_mode = "Normal_1v1"
+# match_server_base = "ws://127.0.0.1:8080"
+# seed = 12345
+# burst: ratio of players per shard to start simultaneously (0.0..1.0)
+burst_ratio = 0.3
+
+
+[behavior_mix]
+slow_ratio = 0.10
+slow_delay_seconds = 5
+spiky_ratio = 0.05
+spiky_delay_ms = 150
+timeout_ratio = 0.02
+quit_before_ratio = 0.03
+quit_during_loading_ratio = 0.03
+invalid_ratio = 0.00
+invalid_mode_unknown_weight = 1.0
+invalid_mode_missing_weight = 0.0
+invalid_mode_duplicate_enqueue_weight = 0.0
+invalid_mode_wrong_session_id_weight = 0.0
+

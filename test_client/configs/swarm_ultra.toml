@@ -1,45 +1,29 @@
-# Swarm Max Load Test Configuration
-# Target: 1000 players total
+# Swarm preset: ultra
+# ~5000 players total
 
-# Test window (increase if you want longer sustained load)
-duration_secs = 300
+duration_secs = 180
+# target ~50 players per shard
+shards = 64
+players_per_shard = 79
+# Optional overrides
+# game_mode = "Normal_1v1"
+# match_server_base = "ws://127.0.0.1:8080"
+# seed = 12345
+# burst: ratio of players per shard to start simultaneously (0.0..1.0)
+burst_ratio = 0.15
 
-# Total players = shards * players_per_shard
-# Here: 10 * 100 = 1000
-shards = 5
-players_per_shard = 100
 
-# Game mode and match server base URL
-game_mode = "Normal_1v1"
-match_server_base = "ws://127.0.0.1:8080"
-
-# Deterministic seed for reproducibility
-seed = 20250816
-
-# Behavior mix tuned for high-load but still realistic coverage
 [behavior_mix]
-# Slower loaders to create realistic spread in loading durations
-slow_ratio = 0.15
-slow_delay_seconds = 8
+slow_ratio = 0.10
+slow_delay_seconds = 5
+spiky_ratio = 0.12
+spiky_delay_ms = 150
+timeout_ratio = 0.04
+quit_before_ratio = 0.03
+quit_during_loading_ratio = 0.03
+invalid_ratio = 0.00
+invalid_mode_unknown_weight = 1.0
+invalid_mode_missing_weight = 0.0
+invalid_mode_duplicate_enqueue_weight = 0.0
+invalid_mode_wrong_session_id_weight = 0.0
 
-# Spiky loaders to inject intermittent delays
-spiky_ratio = 0.10
-spiky_delay_ms = 200
-
-# A few that timeout or quit to emulate churn
-timeout_ratio = 0.03
-quit_before_ratio = 0.05
-quit_during_loading_ratio = 0.05
-
-# Invalid behavior modes (weights are normalized internally when chosen)
-invalid_mode_unknown_weight = 2.0
-invalid_mode_missing_weight = 1.0
-invalid_mode_early_loading_complete_weight = 1.0
-invalid_mode_duplicate_enqueue_weight = 1.0
-invalid_mode_wrong_session_id_weight = 1.0
-
-# Overall ratio of invalid players (keep modest to avoid overwhelming the run)
-invalid_ratio = 0.02
-
-# Optional: Persist a deterministic path (otherwise a timestamped file is used)
-result_path = "logs/swarm_max_test_results.json"

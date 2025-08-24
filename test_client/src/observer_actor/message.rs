@@ -17,17 +17,7 @@ pub enum EventType {
     StartLoading,
     LoadingComplete,
 
-    // Data Sync
-    DeckDataReceived,
-    ProfileDataReceived,
-
-    // Game
-    GameStart,
-    TurnStart,
-
-    // Server Message
     ServerMessage,
-
     // Error
     Error,
 
@@ -85,4 +75,12 @@ pub struct SetSingleScenarioAddr {
 #[derive(Message)]
 #[rtype(result = "()")]
 pub struct StopObservation;
+
+// PlayerActor -> ObserverActor: notify per-player behavior completion so Observer can forward to SingleScenarioActor
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct PlayerFinishedFromActor {
+    pub player_id: uuid::Uuid,
+    pub result: crate::BehaviorResult,
+}
 

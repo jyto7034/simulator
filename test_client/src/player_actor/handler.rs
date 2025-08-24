@@ -1,5 +1,6 @@
 use actix::{
     fut, ActorContext, ActorFutureExt, AsyncContext, Handler, MessageResult, StreamHandler,
+    WrapFuture,
 };
 use futures_util::SinkExt;
 use tokio_tungstenite::tungstenite::Message;
@@ -114,14 +115,35 @@ impl Handler<BehaviorFinished> for PlayerActor {
                     "[{}] Player completed flow, stopping actor.",
                     self.player_id
                 );
+                // Notify Observer that this player finished, so overall scenario can close
+                self.observer
+                    .do_send(crate::observer_actor::message::PlayerFinishedFromActor {
+                        player_id: self.player_id,
+                        result: Ok(BehaviorOutcome::Stop),
+                    });
                 ctx.stop();
             }
             Ok(BehaviorOutcome::Retry) => {
                 warn!("[{}] Retry requested by behavior", self.player_id);
             }
             Err(test_failure) => {
-                error!("[{}] Test failed: {:?}", self.player_id, test_failure);
-                ctx.stop();
+                match test_failure {
+                    // 의도한 실패
+                    crate::TestFailure::Behavior(_) => {
+                        warn!("[{}] Behavior failure: {:?}", self.player_id, test_failure);
+                    }
+                    _ => {
+                        error!("[{}] Test failed: {:?}", self.player_id, test_failure);
+                        // Notify Observer to allow scenario to conclude even on error branches
+                        self.observer.do_send(
+                            crate::observer_actor::message::PlayerFinishedFromActor {
+                                player_id: self.player_id,
+                                result: Ok(BehaviorOutcome::Stop),
+                            },
+                        );
+                        ctx.stop();
+                    }
+                }
             }
         }
     }
@@ -211,11 +233,18 @@ impl Handler<InternalSendText> for PlayerActor {
 impl actix::Handler<InternalClose> for PlayerActor {
     type Result = ();
     fn handle(&mut self, _msg: InternalClose, ctx: &mut Self::Context) {
-        info!(
-            "[{}] Closing connection by behavior request",
-            self.player_id
-        );
-        ctx.stop();
+        if let Some(mut sink) = self.sink.take() {
+            let fut = async move {
+                let _ = sink.send(Message::Close(None)).await;
+                sink
+            };
+            let fut = fut.into_actor(self).map(|_sink, _, ctx| {
+                ctx.stop();
+            });
+            ctx.spawn(fut);
+        } else {
+            ctx.stop();
+        }
     }
 }
 

@@ -6,7 +6,7 @@ use crate::behaviors::BehaviorType;
 
 use super::seed::rng_for;
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BehaviorMixTemplate {
     // InvalidMessages 비율
     pub invalid_ratio_min: f64,
@@ -35,7 +35,7 @@ pub struct BehaviorMixTemplate {
     // InvalidMessages 모드 비율(세부 분포). 합이 1.0이 아니어도 내부에서 정규화
     pub invalid_mode_unknown_weight: f64,
     pub invalid_mode_missing_weight: f64,
-    pub invalid_mode_early_loading_complete_weight: f64,
+
     // InvalidMessages 모드 비율(추가)
     pub invalid_mode_duplicate_enqueue_weight: f64,
     pub invalid_mode_wrong_session_id_weight: f64,
@@ -55,7 +55,7 @@ pub struct BehaviorMixConfig {
     // InvalidMessages 모드 weight (정규화는 선택 시점에 수행)
     pub invalid_mode_unknown_weight: f64,
     pub invalid_mode_missing_weight: f64,
-    pub invalid_mode_early_loading_complete_weight: f64,
+
     pub invalid_mode_duplicate_enqueue_weight: f64,
     pub invalid_mode_wrong_session_id_weight: f64,
 
@@ -87,7 +87,7 @@ pub fn gen_behavior_mix(seed: u64, tpl: &BehaviorMixTemplate) -> BehaviorMixConf
         invalid_ratio: pick(tpl.invalid_ratio_min, tpl.invalid_ratio_max, &mut r),
         invalid_mode_unknown_weight: tpl.invalid_mode_unknown_weight,
         invalid_mode_missing_weight: tpl.invalid_mode_missing_weight,
-        invalid_mode_early_loading_complete_weight: tpl.invalid_mode_early_loading_complete_weight,
+
         invalid_mode_duplicate_enqueue_weight: tpl.invalid_mode_duplicate_enqueue_weight,
         invalid_mode_wrong_session_id_weight: tpl.invalid_mode_wrong_session_id_weight,
     }
@@ -126,19 +126,18 @@ pub fn behavior_for_index(
         let mut r2: ChaCha20Rng = rng_for(seed, &format!("behavior/{}/invalid_mode", idx));
         let total = mix.invalid_mode_unknown_weight
             + mix.invalid_mode_missing_weight
-            + mix.invalid_mode_early_loading_complete_weight
+            
             + mix.invalid_mode_duplicate_enqueue_weight
             + mix.invalid_mode_wrong_session_id_weight;
-        let (w_u, w_m, w_e, w_d, w_w) = if total > 0.0 {
+        let (w_u, w_m, w_d, w_w) = if total > 0.0 {
             (
                 mix.invalid_mode_unknown_weight / total,
                 mix.invalid_mode_missing_weight / total,
-                mix.invalid_mode_early_loading_complete_weight / total,
                 mix.invalid_mode_duplicate_enqueue_weight / total,
                 mix.invalid_mode_wrong_session_id_weight / total,
             )
         } else {
-            (1.0, 0.0, 0.0, 0.0, 0.0)
+            (1.0, 0.0, 0.0, 0.0)
         };
         let v2: f64 = r2.gen::<f64>();
         let mut a2 = 0.0;
@@ -147,8 +146,8 @@ pub fn behavior_for_index(
             crate::behaviors::invalid::InvalidMode::UnknownType
         } else if pick_mode(w_m) {
             crate::behaviors::invalid::InvalidMode::MissingField
-        } else if pick_mode(w_e) {
-            crate::behaviors::invalid::InvalidMode::EarlyLoadingComplete
+        } else if false { // no w_e branch anymore
+            crate::behaviors::invalid::InvalidMode::MissingField
         } else if pick_mode(w_d) {
             crate::behaviors::invalid::InvalidMode::DuplicateEnqueue
         } else if pick_mode(w_w) {

@@ -81,7 +81,7 @@ The swarm test includes various player behavior types:
 ### Invalid Behaviors (Error Testing)
 - **UnknownGameMode**: Requests invalid game mode
 - **MissingFields**: Sends malformed messages
-- **EarlyLoadingComplete**: Sends loading complete before start
+
 - **DuplicateEnqueue**: Sends multiple enqueue requests
 - **WrongSessionId**: Uses incorrect session IDs
 

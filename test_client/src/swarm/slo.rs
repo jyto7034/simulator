@@ -2,6 +2,7 @@ use regex::Regex;
 use serde::Serialize;
 use std::collections::HashMap;
 use crate::swarm::behavior_mix::BehaviorMixConfig;
+use crate::swarm::manifest::BehaviorOutcomeCounts;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct SloThresholds {
@@ -22,6 +23,8 @@ pub struct SloReport {
     pub dedicated_alloc_success_total: u64,
     // Behavior ratios summary
     pub behavior_summary: Option<BehaviorSummary>,
+    // Outcome counts calculated from metrics
+    pub outcome_counts: BehaviorOutcomeCounts,
 
     pub passed: bool,
     pub details: Vec<String>,
@@ -146,16 +149,36 @@ fn pxx_from_hist(hist: &Histogram, quantile: f64) -> Option<f64> {
 }
 
 fn sum_counters(scrape: &str, metric_name: &str, label_filter: Option<(&str, &str)>) -> u64 {
-    let re = Regex::new(&format!(
+    // Support both labeled and unlabeled metrics:
+    // metric_name{labels} value  (labeled)
+    // metric_name value          (unlabeled)
+    let labeled_re = Regex::new(&format!(
         r"^{}\{{(?P<labels>[^}}]*)\}}\s+(?P<value>[-0-9\.eE]+)$",
         regex::escape(metric_name)
     ))
     .unwrap();
+    let unlabeled_re = Regex::new(&format!(
+        r"^{}\s+(?P<value>[-0-9\.eE]+)$",
+        regex::escape(metric_name)
+    ))
+    .unwrap();
+    
     let mut sum = 0u64;
     for line in scrape.lines() {
-        if let Some(caps) = re.captures(line) {
+        if let Some(caps) = labeled_re.captures(line) {
             let labels = caps.name("labels").map(|m| m.as_str()).unwrap_or("");
             if !label_match(labels, label_filter) {
+                continue;
+            }
+            let val: u64 = caps
+                .name("value")
+                .and_then(|m| m.as_str().parse::<f64>().ok())
+                .unwrap_or(0.0)
+                as u64;
+            sum += val;
+        } else if let Some(caps) = unlabeled_re.captures(line) {
+            // For unlabeled metrics, only match if no filter is specified
+            if label_filter.is_some() {
                 continue;
             }
             let val: u64 = caps
@@ -212,8 +235,13 @@ pub async fn evaluate_slo(
         let mix_env = std::env::var("TEST_CLIENT_BEHAVIOR_MIX").ok();
         if let Some(mix_json) = mix_env {
             if let Ok(mix) = serde_json::from_str::<BehaviorMixConfig>(&mix_json) {
-                let expected_abnormal = (mix.timeout_ratio + mix.quit_before_ratio + mix.quit_during_loading_ratio + mix.invalid_ratio).clamp(0.0, 1.0);
+                let expected_abnormal = (mix.timeout_ratio
+                    + mix.quit_before_ratio
+                    + mix.quit_during_loading_ratio
+                    + mix.invalid_ratio)
+                    .clamp(0.0, 1.0);
                 let expected_normal = (1.0 - expected_abnormal).max(0.0);
+                // Observed abnormal ratio inferred from (enqueued - matched)
                 let observed_abnormal = if enqueued_total > 0 && matched_players_total <= enqueued_total {
                     Some(((enqueued_total - matched_players_total) as f64 / enqueued_total as f64).clamp(0.0, 1.0))
                 } else { None };
@@ -250,6 +278,17 @@ pub async fn evaluate_slo(
         details.push(format!("violations {} > {}", violations, th.max_violations));
     }
 
+    // Calculate outcome counts here with game mode filter awareness
+    let outcome_counts = calculate_outcome_counts_filtered(
+        enqueued_total,
+        matched_players_total,
+        loading_completed_total,
+        dedicated_alloc_success_total,
+        violations,
+        &text,
+        filter,
+    );
+
     Ok(SloReport {
         p95_match_time_secs: p95_match,
         p95_loading_secs: p95_load,
@@ -259,7 +298,96 @@ pub async fn evaluate_slo(
         loading_completed_total,
         dedicated_alloc_success_total,
         behavior_summary,
+        outcome_counts,
         passed,
         details,
     })
+}
+
+/// Calculate outcome counts with game mode filter awareness
+fn calculate_outcome_counts_filtered(
+    enqueued_total: u64,
+    matched_players_total: u64,
+    loading_completed_total: u64,
+    dedicated_alloc_success_total: u64,
+    violations_total: u64,
+    metrics_text: &str,
+    _filter: Option<(&str, &str)>,
+) -> BehaviorOutcomeCounts {
+    // Parse specific error types from metrics
+    // Note: loading_session_timeout_players_total has no game_mode label, so use None filter
+    let timeout_players = sum_counters(metrics_text, "loading_session_timeout_players_total", None);
+    let matchmaking_errors = sum_counters(metrics_text, "matchmaking_errors_total", None);
+    
+    // Calculate outcome counts based on the flow
+    let successful_matches = dedicated_alloc_success_total;
+    let loading_timeouts = timeout_players;
+    let connection_failures = if enqueued_total > matched_players_total {
+        // Some players didn't even get matched - likely connection issues
+        let failed_to_match = enqueued_total - matched_players_total;
+        // Subtract known errors to avoid double counting
+        failed_to_match.saturating_sub(matchmaking_errors + violations_total)
+    } else {
+        0
+    };
+    let invalid_requests = violations_total;
+    let other_failures = if matched_players_total > loading_completed_total {
+        // Players matched but didn't complete loading (excluding known timeouts)
+        (matched_players_total - loading_completed_total).saturating_sub(loading_timeouts)
+    } else {
+        0
+    };
+
+    BehaviorOutcomeCounts {
+        successful_matches,
+        loading_timeouts,
+        quit_before_match: 0, // This would need specific tracking
+        quit_during_loading: 0, // This would need specific tracking
+        connection_failures,
+        invalid_requests,
+        other_failures,
+    }
+}
+
+/// Calculate outcome counts based on metrics from the match server (legacy function)
+pub fn calculate_outcome_counts(
+    enqueued_total: u64,
+    matched_players_total: u64,
+    loading_completed_total: u64,
+    dedicated_alloc_success_total: u64,
+    violations_total: u64,
+    metrics_text: &str,
+) -> BehaviorOutcomeCounts {
+    // Parse specific error types from metrics
+    let timeout_players = sum_counters(metrics_text, "loading_session_timeout_players_total", None);
+    let matchmaking_errors = sum_counters(metrics_text, "matchmaking_errors_total", None);
+    
+    // Calculate outcome counts based on the flow
+    let successful_matches = dedicated_alloc_success_total;
+    let loading_timeouts = timeout_players;
+    let connection_failures = if enqueued_total > matched_players_total {
+        // Some players didn't even get matched - likely connection issues
+        let failed_to_match = enqueued_total - matched_players_total;
+        // Subtract known errors to avoid double counting
+        failed_to_match.saturating_sub(matchmaking_errors + violations_total)
+    } else {
+        0
+    };
+    let invalid_requests = violations_total;
+    let other_failures = if matched_players_total > loading_completed_total {
+        // Players matched but didn't complete loading (excluding known timeouts)
+        (matched_players_total - loading_completed_total).saturating_sub(loading_timeouts)
+    } else {
+        0
+    };
+
+    BehaviorOutcomeCounts {
+        successful_matches,
+        loading_timeouts,
+        quit_before_match: 0, // This would need specific tracking
+        quit_during_loading: 0, // This would need specific tracking
+        connection_failures,
+        invalid_requests,
+        other_failures,
+    }
 }

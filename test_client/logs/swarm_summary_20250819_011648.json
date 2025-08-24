@@ -1,0 +1,65 @@
+{
+  "timestamp": "2025-08-19T01:16:48.985506600Z",
+  "seed": 123,
+  "config": {
+    "duration_secs": 20,
+    "shards": 1,
+    "players_per_shard": 4,
+    "game_mode": null,
+    "match_server_base": null,
+    "seed": 123,
+    "behavior_mix": {
+      "slow_ratio": 0.0,
+      "slow_delay_seconds": 6,
+      "spiky_ratio": 0.0,
+      "spiky_delay_ms": 150,
+      "timeout_ratio": 0.75,
+      "quit_before_ratio": 0.0,
+      "quit_during_loading_ratio": 0.0,
+      "invalid_mode_unknown_weight": 1.0,
+      "invalid_mode_missing_weight": 0.0,
+      "invalid_mode_duplicate_enqueue_weight": 0.0,
+      "invalid_mode_wrong_session_id_weight": 0.0,
+      "invalid_ratio": 0.0
+    },
+    "result_path": null,
+    "burst_ratio": 1.0
+  },
+  "metrics_url": "http://127.0.0.1:8080/metrics",
+  "slo": {
+    "p95_match_time_secs": 2.0,
+    "p95_loading_secs": null,
+    "violations_total": 0,
+    "enqueued_total": 4,
+    "matched_players_total": 4,
+    "loading_completed_total": 0,
+    "dedicated_alloc_success_total": 0,
+    "behavior_summary": null,
+    "outcome_counts": {
+      "successful_matches": 0,
+      "loading_timeouts": 3,
+      "quit_before_match": 0,
+      "quit_during_loading": 0,
+      "connection_failures": 0,
+      "invalid_requests": 0,
+      "other_failures": 1
+    },
+    "passed": true,
+    "details": [
+      "p95 loading unavailable"
+    ]
+  },
+  "outcome_counts": {
+    "successful_matches": 0,
+    "loading_timeouts": 3,
+    "quit_before_match": 0,
+    "quit_during_loading": 0,
+    "connection_failures": 0,
+    "invalid_requests": 0,
+    "other_failures": 1
+  },
+  "still_queued_at_end": {
+    "total": 0,
+    "by_mode": {}
+  }
+}

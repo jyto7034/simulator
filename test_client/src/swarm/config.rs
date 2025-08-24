@@ -1,3 +1,4 @@
+use super::behavior_mix::BehaviorMixConfig;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -11,11 +12,11 @@ pub struct SwarmConfig {
     /// Deterministic seed for the run (overrides SWARM_SEED env)
     pub seed: Option<u64>,
     /// Inline behavior mix configuration (concrete values)
-    pub behavior_mix: Option<crate::swarm::behavior_mix::BehaviorMixConfig>,
-    /// Optional path to a template TOML to generate a ConcreteConfig (used only to get behavior_mix)
-    pub template_path: Option<String>,
+    pub behavior_mix: Option<BehaviorMixConfig>,
     /// Optional result summary output path (JSON). If not set, defaults to logs/swarm_summary_<ts>.json
     pub result_path: Option<String>,
+    /// Ratio of players per shard to start simultaneously (0.0..=1.0). None or 0.0 disables burst.
+    pub burst_ratio: Option<f64>,
 }
 
 impl SwarmConfig {

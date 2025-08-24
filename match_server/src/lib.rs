@@ -1,28 +1,30 @@
-use crate::{env::Settings, matchmaker::Matchmaker, pubsub::SubscriptionManager};
 use actix::Addr;
-use redis::aio::ConnectionManager;
-use std::{io, sync::{Arc, RwLock}};
+use actix_web::HttpRequest;
+use serde::{Deserialize, Serialize};
+use std::io;
+use std::net::IpAddr;
+use std::sync::{Arc, RwLock};
+use tracing::{debug, error, warn};
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
-pub mod auth;
-pub mod debug;
+use ::redis::aio::ConnectionManager;
+
+use crate::subscript::SubScriptionManager;
+use crate::{
+    blacklist::BlacklistManager, env::Settings, matchmaker::Matchmaker, metrics::MetricsCtx,
+};
+
+pub mod blacklist;
 pub mod env;
-pub mod events;
 pub mod matchmaker;
+pub mod metrics;
 pub mod protocol;
 pub mod provider;
-pub mod pubsub;
-pub mod state_events;
-// pub mod util; // removed: run_id moved to AppState
-pub mod ws_session;
-pub mod admin;
+pub mod redis;
+pub mod session;
+pub mod subscript;
 
-// metrics_helper removed
-
-pub mod invariants;
-
-// RAII 패턴을 사용한 로거 매니저
 pub struct LoggerManager {
     _guard: tracing_appender::non_blocking::WorkerGuard,
 }
@@ -80,13 +82,69 @@ impl LoggerManager {
     }
 }
 
-// 서버 전체에서 공유될 상태
+// 서버 전체에서 공
+
 #[derive(Clone)]
 pub struct AppState {
     pub settings: Settings,
     pub matchmaker_addr: Addr<Matchmaker>,
-    pub sub_manager_addr: Addr<SubscriptionManager>,
+    pub sub_manager_addr: Addr<SubScriptionManager>,
+    pub blacklist_manager_addr: Addr<BlacklistManager>,
     pub redis_conn_manager: ConnectionManager,
-    pub _logger_manager: Arc<LoggerManager>, // RAII 패턴으로 메모리 관리
+    pub logger_manager: Arc<LoggerManager>,
     pub current_run_id: Arc<RwLock<Option<String>>>,
+    pub metrics: Arc<MetricsCtx>,
+    pub metrics_registry: prometheus::Registry,
+}
+
+pub fn extract_client_ip(req: &HttpRequest) -> Option<IpAddr> {
+    // 1. X-Forwarded-For 검증 강화
+    if let Some(forwarded) = req.headers().get("x-forwarded-for") {
+        if let Ok(forwarded_str) = forwarded.to_str() {
+            for ip_str in forwarded_str.split(',') {
+                let ip_str = ip_str.trim();
+                if let Ok(ip) = ip_str.parse::<IpAddr>() {
+                    // Private IP 및 localhost 필터링
+                    if !is_private_or_loopback_ip(&ip) {
+                        debug!("Extracted public client IP from X-Forwarded-For: {}", ip);
+                        return Some(ip);
+                    }
+                }
+            }
+        }
+    }
+
+    // 2-3. 기존 X-Real-IP, CF-Connecting-IP 처리...
+
+    // 4. Direct connection (개발 환경에서만 허용)
+    if cfg!(debug_assertions) {
+        // 디버그 빌드에서만
+        if let Some(peer_addr) = req.connection_info().peer_addr() {
+            if let Some(ip_str) = peer_addr.split(':').next() {
+                if let Ok(ip) = ip_str.parse::<IpAddr>() {
+                    warn!("Using direct connection IP in development: {}", ip);
+                    return Some(ip);
+                }
+            }
+        }
+    }
+
+    error!(
+        "Could not extract valid client IP from request headers: {:?}",
+        req.headers()
+    );
+    None
+}
+
+fn is_private_or_loopback_ip(ip: &IpAddr) -> bool {
+    match ip {
+        IpAddr::V4(ipv4) => ipv4.is_private() || ipv4.is_loopback() || ipv4.is_link_local(),
+        IpAddr::V6(ipv6) => ipv6.is_loopback() || ipv6.is_unspecified(),
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub enum GameMode {
+    #[serde(rename = "Normal")]
+    Normal,
 }

@@ -20,8 +20,17 @@ impl PlayerBehavior for NormalPlayer {
             player_context.player_id, error_msg
         );
 
-        // Normal 플레이어가 에러를 받는 것은 예상치 못한 상황이므로 테스트 실패
-        Err(TestFailure::MatchmakingError(format!(
+        // Timeout 에러인 경우 계속 진행 (requeue 허용) - Blacklist 테스트용
+        if error_msg.contains("timed out") || error_msg.contains("returned to the queue") {
+            info!(
+                "[{}] Timeout occurred, continuing for requeue",
+                player_context.player_id
+            );
+            return Ok(BehaviorOutcome::Continue);
+        }
+
+        // 다른 에러는 여전히 테스트 실패로 처리
+        Err(TestFailure::Behavior(format!(
             "Normal player should not receive errors during matchmaking: {}",
             error_msg
         )))
@@ -41,7 +50,8 @@ impl PlayerBehavior for NormalPlayer {
             "[{}] Normal player excited about match!",
             player_context.player_id
         );
-        Ok(BehaviorOutcome::Continue)
+        // For test flow, treat MatchFound as end of client behavior
+        Ok(BehaviorOutcome::Stop)
     }
 
     async fn on_loading_start(

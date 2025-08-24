@@ -39,6 +39,7 @@ pub enum ServerMessage {
         session_id: Uuid,
         server_address: String,
     },
+    // error code 넣어야함.
     #[serde(rename = "error")]
     Error { message: String },
 }

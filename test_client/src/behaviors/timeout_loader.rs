@@ -1,6 +1,7 @@
 use super::PlayerBehavior;
 use crate::{player_actor::PlayerContext, BehaviorOutcome, BehaviorResult};
 use async_trait::async_trait;
+use tracing::error;
 use uuid::Uuid;
 
 /// TimeoutLoader: 로딩 시작 후 아무 것도 하지 않아 서버 타임아웃/실패 경로를 유발
@@ -15,6 +16,11 @@ impl PlayerBehavior for TimeoutLoader {
         _loading_session_id: Uuid,
     ) -> BehaviorResult {
         // do nothing
+        Ok(BehaviorOutcome::Continue)
+    }
+
+    async fn on_error(&self, player: &PlayerContext, _msg: &str) -> BehaviorResult {
+        error!("[{}] Timeout occurred", player.player_id);
         Ok(BehaviorOutcome::Continue)
     }
 

@@ -79,6 +79,24 @@ impl Handler<StartObservation> for ObserverActor {
     }
 }
 
+
+impl actix::Handler<crate::observer_actor::message::PlayerFinishedFromActor> for ObserverActor {
+    type Result = ();
+    fn handle(&mut self, msg: crate::observer_actor::message::PlayerFinishedFromActor, ctx: &mut Self::Context) {
+        // Mark this player as Finished in phase model
+        self.players_phase.insert(msg.player_id, crate::observer_actor::Phase::Finished);
+        self.player_received_events_in_phase.insert(msg.player_id, std::collections::HashSet::new());
+        // For abnormal scenarios we consider the scenario concluded once any player finishes
+        if let Some(single) = &self.single_scenario_addr {
+            single.do_send(ObservationCompleted(ObservationResult::Success {
+                events: self.received_events.clone().into(),
+                duration: self.started_at.elapsed(),
+            }));
+        }
+        ctx.stop();
+    }
+}
+
 impl actix::Handler<crate::observer_actor::message::StopObservation> for super::ObserverActor {
     type Result = ();
     fn handle(&mut self, _msg: crate::observer_actor::message::StopObservation, ctx: &mut Self::Context) {
@@ -237,6 +255,13 @@ impl ObserverActor {
                     return;
                 }
             }
+            // 그 외 에러 메시지는 테스트 상 종료로 간주 (성공/실패 판단은 상위에서 수행)
+            self.players_phase
+                .insert(player_id, crate::observer_actor::Phase::Finished);
+            self.player_received_events_in_phase
+                .insert(player_id, std::collections::HashSet::new());
+            self.check_all_players_finished(ctx);
+            return;
         }
 
         let current_phase = match self.players_phase.get(&player_id) {

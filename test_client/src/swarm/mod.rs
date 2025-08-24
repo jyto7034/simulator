@@ -1,19 +1,36 @@
 use actix::Actor;
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tracing::{info, warn};
 
 use crate::observer_actor::{message::StartObservation, ObserverActor, Phase, PhaseCondition};
 use crate::player_actor::PlayerActor;
+use crate::scenario_actor::ScenarioRunnerActor;
+use crate::swarm::behavior_mix::{behavior_for_index, BehaviorMixConfig};
+use crate::swarm::manifest::{save_swarm_summary, SwarmRunSummary};
 use crate::swarm::schedule::spawn_schedule_constant;
 use crate::swarm::seed::uuid_for;
-use crate::swarm::behavior_mix::{behavior_for_index, BehaviorMixConfig};
-use crate::swarm::template::SwarmTemplate;
-use crate::swarm::generate::generate;
-use crate::swarm::manifest::{SwarmRunSummary, save_swarm_summary};
-use crate::scenario_actor::ScenarioRunnerActor;
+use redis::{AsyncCommands, AsyncIter};
 use uuid::Uuid;
 
 pub mod config;
+fn resolve_seed_and_mix(cfg: &config::SwarmConfig) -> (u64, BehaviorMixConfig) {
+    let seed = cfg
+        .seed
+        .or_else(|| {
+            std::env::var("SWARM_SEED")
+                .ok()
+                .and_then(|s| s.parse::<u64>().ok())
+        })
+        .unwrap_or(42);
+    let mix = if let Some(m) = cfg.behavior_mix.clone() {
+        m
+    } else {
+        panic!()
+    };
+    (seed, mix)
+}
+
 pub mod slo;
 
 pub async fn run_swarm(cfg: config::SwarmConfig) -> anyhow::Result<()> {
@@ -31,100 +48,13 @@ pub async fn run_swarm(cfg: config::SwarmConfig) -> anyhow::Result<()> {
     }
 
     // Decide deterministic seed and behavior mix
-    let seed = cfg
-        .seed
-        .or_else(|| std::env::var("SWARM_SEED").ok().and_then(|s| s.parse::<u64>().ok()))
-        .unwrap_or(42);
-    let mix: BehaviorMixConfig = if let Some(m) = cfg.behavior_mix.clone() {
-        m
-    } else if let Some(path) = cfg.template_path.clone() {
-        match std::fs::read_to_string(&path) {
-            Ok(toml) => match toml::from_str::<SwarmTemplate>(&toml) {
-                Ok(tpl) => generate(seed, &tpl).behavior_mix,
-                Err(e) => {
-                    warn!("Failed to parse template at {}: {}. Using default mix.", path, e);
-                    BehaviorMixConfig {
-                        slow_ratio: 0.1,
-                        slow_delay_seconds: 5,
-                        spiky_ratio: 0.05,
-                        spiky_delay_ms: 150,
-                        timeout_ratio: 0.02,
-                        quit_before_ratio: 0.03,
-                        quit_during_loading_ratio: 0.03,
-                        invalid_mode_unknown_weight: 1.0,
-                        invalid_mode_missing_weight: 0.0,
-                        invalid_mode_early_loading_complete_weight: 0.0,
-                        invalid_mode_duplicate_enqueue_weight: 0.0,
-                        invalid_mode_wrong_session_id_weight: 0.0,
-                        invalid_ratio: 0.0,
-                    }
-                }
-            },
-            Err(e) => {
-                warn!("Failed to read template at {}: {}. Using default mix.", path, e);
-                BehaviorMixConfig {
-                    slow_ratio: 0.1,
-                    slow_delay_seconds: 5,
-                    spiky_ratio: 0.05,
-                    spiky_delay_ms: 150,
-                    timeout_ratio: 0.02,
-                    quit_before_ratio: 0.03,
-                    quit_during_loading_ratio: 0.03,
-                    invalid_mode_unknown_weight: 1.0,
-                    invalid_mode_missing_weight: 0.0,
-                    invalid_mode_early_loading_complete_weight: 0.0,
-                    invalid_mode_duplicate_enqueue_weight: 0.0,
-                    invalid_mode_wrong_session_id_weight: 0.0,
-                    invalid_ratio: 0.0,
-                }
-            }
-        }
-    } else {
-        BehaviorMixConfig {
-            slow_ratio: 0.1,
-            slow_delay_seconds: 5,
-            spiky_ratio: 0.05,
-            spiky_delay_ms: 150,
-            timeout_ratio: 0.02,
-            quit_before_ratio: 0.03,
-            quit_during_loading_ratio: 0.03,
-            invalid_mode_unknown_weight: 1.0,
-            invalid_mode_missing_weight: 0.0,
-            invalid_mode_early_loading_complete_weight: 0.0,
-            invalid_mode_duplicate_enqueue_weight: 0.0,
-            invalid_mode_wrong_session_id_weight: 0.0,
-            invalid_ratio: 0.0,
-        }
-    };
+    let (seed, mix) = resolve_seed_and_mix(&cfg);
 
-    // Generate run_id and export to Observer
-    let run_id = uuid::Uuid::new_v4().to_string();
-    std::env::set_var("OBSERVER_RUN_ID", &run_id);
-
-    // Reset match server test run_id for test-scoped metrics
-    if let Some(base) = cfg.match_server_base.clone() {
-        let http = if base.starts_with("ws://") { base.replacen("ws://", "http://", 1) } else if base.starts_with("wss://") { base.replacen("wss://", "https://", 1) } else { base.clone() };
-        let url = format!("{}/admin/test/reset?run_id={}", http.trim_end_matches('/'), run_id);
-        match reqwest::get(&url).await {
-            Ok(resp) if resp.status().is_success() => info!("[run_id] reset sent: {}", run_id),
-            Ok(resp) => warn!("[run_id] reset failed: status={} url={}", resp.status(), url),
-            Err(e) => warn!("[run_id] reset error: {} url={}", e, url),
-        }
-    } else {
-        warn!("match_server_base not set; skipping /admin/test/reset call");
-    }
-
-    // Log Grafana dashboard URL for this run (from now to now+duration)
-    let start_ms = chrono::Utc::now().timestamp_millis();
-    let end_ms = start_ms + (cfg.duration_secs as i64 * 1000);
-    let grafana_url = format!(
-        "http://localhost:3000/d/sim-swarm/simulator-matchmaking?from={}&to={}&var-run_id={}&refresh=5s",
-        start_ms, end_ms, run_id
-    );
-    info!("Open Grafana for this run: {}", grafana_url);
+    // (Legacy run_id/Grafana/reset removed)
 
     // Spawn observers per shard and orchestrate players
-    let mut observer_addrs: Vec<actix::Addr<ObserverActor>> = Vec::with_capacity(cfg.shards as usize);
+    let mut observer_addrs: Vec<actix::Addr<ObserverActor>> =
+        Vec::with_capacity(cfg.shards as usize);
     for shard in 0..cfg.shards {
         let test_name = format!("SwarmShard-{}", shard);
         let players_schedule = std::collections::HashMap::<
@@ -132,7 +62,6 @@ pub async fn run_swarm(cfg: config::SwarmConfig) -> anyhow::Result<()> {
             std::collections::HashMap<Phase, PhaseCondition>,
         >::new();
         let players_phase = std::collections::HashMap::<Uuid, Phase>::new();
-
         // Expect base server URL like ws://host:port
         let base_url = cfg
             .events_base_url()
@@ -156,14 +85,17 @@ pub async fn run_swarm(cfg: config::SwarmConfig) -> anyhow::Result<()> {
         } else {
             player_count as f64
         };
-        let schedule_ms = spawn_schedule_constant(shard_seed, "swarm", player_count, cps.max(0.1), 200);
+        let schedule_ms =
+            spawn_schedule_constant(shard_seed, "swarm", player_count, cps.max(0.1), 200);
 
         // Prepare player id list and kick off observation (ids pre-registered for shard filtering)
         let mut ids: Vec<Uuid> = Vec::with_capacity(player_count as usize);
         for i in 0..player_count {
             ids.push(uuid_for(shard_seed, "player", i));
         }
-        observer_addr.do_send(StartObservation { player_ids: ids.clone() });
+        observer_addr.do_send(StartObservation {
+            player_ids: ids.clone(),
+        });
 
         // Spawn players according to schedule
         let t0 = Instant::now();
@@ -178,19 +110,45 @@ pub async fn run_swarm(cfg: config::SwarmConfig) -> anyhow::Result<()> {
         if let Some(gm) = cfg.game_mode.clone() {
             std::env::set_var("TEST_CLIENT_GAME_MODE", gm);
         }
-            // Export behavior mix for SLO summary to consume
-            std::env::set_var("TEST_CLIENT_BEHAVIOR_MIX", serde_json::to_string(&mix).unwrap_or("{}".into()));
+        // Export behavior mix for SLO summary to consume
+        // Optional per-shard burst barrier
+        let burst_n = if let Some(r) = cfg.burst_ratio {
+            if r > 0.0 {
+                ((player_count as f64) * r).ceil().max(1.0) as usize
+            } else {
+                0
+            }
+        } else {
+            0
+        };
+        let burst_barrier = if burst_n > 0 {
+            Some(Arc::new(tokio::sync::Barrier::new(burst_n)))
+        } else {
+            None
+        };
 
         for (i, ms) in schedule_ms.iter().enumerate() {
             let when_ms = *ms;
             let obs = observer_addr.clone();
             let pid = ids[i];
             let mix_clone = mix.clone();
+            let burst_barrier = burst_barrier.clone();
             actix::spawn(async move {
                 let target = t0 + Duration::from_millis(when_ms);
                 let now = Instant::now();
-                if target > now {
-                    tokio::time::sleep(target - now).await;
+                // If within burst, wait at barrier for simultaneous start; otherwise honor schedule
+                if let Some(bar) = burst_barrier.clone() {
+                    if i < burst_n {
+                        bar.wait().await;
+                    } else {
+                        if target > now {
+                            tokio::time::sleep(target - now).await;
+                        }
+                    }
+                } else {
+                    if target > now {
+                        tokio::time::sleep(target - now).await;
+                    }
                 }
                 let behavior = behavior_for_index(shard_seed, i as u64, &mix_clone);
                 let actor = PlayerActor::new(obs, Box::new(behavior), pid, true);
@@ -238,22 +196,23 @@ pub async fn run_swarm(cfg: config::SwarmConfig) -> anyhow::Result<()> {
             }
             // Persist summary
             let ts = chrono::Utc::now();
+            let still_queued_at_end = compute_still_queued().await.unwrap_or_default();
+
+            // Use outcome counts calculated in SLO report
+            let outcome_counts = report.outcome_counts.clone();
+
             let summary = SwarmRunSummary {
                 timestamp: ts,
                 seed,
-                run_id: run_id.clone(),
                 config: cfg.clone(),
                 metrics_url: metrics_url.clone(),
                 slo: report,
+                outcome_counts,
+                still_queued_at_end,
             };
-            let out_path = cfg
-                .result_path
-                .clone()
-                .unwrap_or_else(|| format!(
-                    "logs/swarm_summary_{}_{}.json",
-                    ts.format("%Y%m%d_%H%M%S"),
-                    &run_id
-                ));
+            let out_path = cfg.result_path.clone().unwrap_or_else(|| {
+                format!("logs/swarm_summary_{}.json", ts.format("%Y%m%d_%H%M%S"),)
+            });
             if let Err(e) = save_swarm_summary(std::path::Path::new(&out_path), &summary) {
                 warn!("Failed to save swarm summary to {}: {}", out_path, e);
             } else {
@@ -270,13 +229,42 @@ pub async fn run_swarm(cfg: config::SwarmConfig) -> anyhow::Result<()> {
     // Short delay to allow server to register WS closes
     tokio::time::sleep(std::time::Duration::from_millis(500)).await;
     actix::System::current().stop();
-    if overall_ok { Ok(()) } else { Err(anyhow::anyhow!("SLO failed")) }
+    if overall_ok {
+        Ok(())
+    } else {
+        Err(anyhow::anyhow!("SLO failed"))
+    }
 }
+
+/// Scan Redis for queue:* keys and compute remaining players per mode.
+async fn compute_still_queued() -> anyhow::Result<crate::swarm::manifest::RemainingQueueSummary> {
+    let cfg = env::SimulatorConfig::global();
+    let r = &cfg.database.redis;
+    let url = r.url();
+    let client = redis::Client::open(url.as_str())?;
+    let mut conn = client.get_async_connection().await?;
+    let mut iter: AsyncIter<String> = conn.scan_match("queue:*").await?;
+    let mut keys: Vec<String> = Vec::new();
+    while let Some(k) = iter.next_item().await {
+        keys.push(k);
+    }
+    use std::collections::HashMap;
+    let mut by_mode: HashMap<String, u64> = HashMap::new();
+    let mut total: u64 = 0;
+    for key in keys.into_iter() {
+        let size: i64 = conn.scard(&key).await.unwrap_or(0);
+        let mode = key.split(':').nth(1).unwrap_or("unknown").to_string();
+        let u = size.max(0) as u64;
+        *by_mode.entry(mode).or_insert(0) += u;
+        total += u;
+    }
+    Ok(crate::swarm::manifest::RemainingQueueSummary { total, by_mode })
+}
+pub mod behavior_mix;
 pub mod concrete;
 pub mod generate;
 pub mod manifest;
-pub mod seed;
-pub mod template;
 pub mod schedule;
+pub mod seed;
 pub mod swarm;
-pub mod behavior_mix;
+pub mod template;

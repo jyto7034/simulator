@@ -149,7 +149,6 @@ impl ObserverActor {
                 }
             }
             ET::StartLoading => {
-                // Soft check: StartLoading.loading_session_id must exist and include player
                 if let (Some(pid), Some(session)) = (
                     event.player_id,
                     event
