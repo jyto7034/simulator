@@ -37,7 +37,6 @@ pub struct BehaviorFinished {
     pub original_message: ServerMessage,
 }
 
-
 #[derive(Message)]
 #[rtype(result = "()")]
 pub struct TriggerEnqueueNow;

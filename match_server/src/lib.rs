@@ -1,32 +1,49 @@
-use actix::Addr;
+use ::redis::aio::ConnectionManager;
+use actix::{Addr, Message};
 use actix_web::HttpRequest;
+use backoff::ExponentialBackoff;
+use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::io;
 use std::net::IpAddr;
 use std::sync::{Arc, RwLock};
+use std::time::{Duration, Instant};
 use tracing::{debug, error, warn};
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
-use ::redis::aio::ConnectionManager;
-
+use crate::env::RetrySettings;
 use crate::subscript::SubScriptionManager;
-use crate::{
-    blacklist::BlacklistManager, env::Settings, matchmaker::Matchmaker, metrics::MetricsCtx,
-};
+use crate::{env::Settings, matchmaker::MatchmakerAddr, metrics::MetricsCtx};
 
-pub mod blacklist;
+lazy_static! {
+    static ref RETRY_CONFIG: RwLock<Option<ExponentialBackoff>> = RwLock::new(None);
+}
+
 pub mod env;
 pub mod matchmaker;
 pub mod metrics;
 pub mod protocol;
-pub mod provider;
-pub mod redis;
+pub mod redis_events;
 pub mod session;
 pub mod subscript;
 
 pub struct LoggerManager {
     _guard: tracing_appender::non_blocking::WorkerGuard,
+}
+
+#[derive(Debug)]
+pub enum StopReason {
+    ClientDisconnected,
+    GracefulShutdown,
+    Error(String),
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct Stop {
+    pub reason: StopReason,
 }
 
 impl LoggerManager {
@@ -73,7 +90,7 @@ impl LoggerManager {
             .init(); // 전역 Subscriber로 설정
 
         tracing::info!(
-            "로거 초기화 완료: 콘솔 및 파일({}/{}) 출력 활성화.",
+            "Logger initialization complete: console and file ({}/{}) output enabled",
             settings.logging.directory,
             settings.logging.filename
         );
@@ -82,19 +99,28 @@ impl LoggerManager {
     }
 }
 
-// 서버 전체에서 공
+pub fn init_retry_config(settings: &RetrySettings) {
+    let backoff = ExponentialBackoff {
+        max_elapsed_time: Some(Duration::from_millis(settings.message_max_elapsed_time_ms)),
+        initial_interval: Duration::from_millis(settings.message_initial_interval_ms),
+        max_interval: Duration::from_millis(settings.message_max_interval_ms),
+        ..Default::default()
+    };
+
+    *RETRY_CONFIG.write().unwrap() = Some(backoff);
+}
 
 #[derive(Clone)]
 pub struct AppState {
     pub settings: Settings,
-    pub matchmaker_addr: Addr<Matchmaker>,
+    pub matchmakers: HashMap<GameMode, MatchmakerAddr>,
     pub sub_manager_addr: Addr<SubScriptionManager>,
-    pub blacklist_manager_addr: Addr<BlacklistManager>,
-    pub redis_conn_manager: ConnectionManager,
+    pub redis: ConnectionManager,
     pub logger_manager: Arc<LoggerManager>,
     pub current_run_id: Arc<RwLock<Option<String>>>,
     pub metrics: Arc<MetricsCtx>,
     pub metrics_registry: prometheus::Registry,
+    pub rate_limiter: Arc<RateLimiter>,
 }
 
 pub fn extract_client_ip(req: &HttpRequest) -> Option<IpAddr> {
@@ -143,8 +169,69 @@ fn is_private_or_loopback_ip(ip: &IpAddr) -> bool {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum GameMode {
+    None,
     #[serde(rename = "Normal")]
     Normal,
+    #[serde(rename = "Ranked")]
+    Ranked,
+}
+
+/// Simple rate limiter using token bucket algorithm
+pub struct RateLimiter {
+    buckets: Arc<RwLock<HashMap<IpAddr, TokenBucket>>>,
+    max_requests_per_second: u32,
+    #[allow(dead_code)]
+    cleanup_interval: Duration,
+}
+
+struct TokenBucket {
+    tokens: f64,
+    last_refill: Instant,
+    max_tokens: f64,
+    refill_rate: f64, // tokens per second
+}
+
+impl RateLimiter {
+    pub fn new(max_requests_per_second: u32) -> Self {
+        Self {
+            buckets: Arc::new(RwLock::new(HashMap::new())),
+            max_requests_per_second,
+            cleanup_interval: Duration::from_secs(300), // cleanup every 5 minutes
+        }
+    }
+
+    pub fn check(&self, ip: &IpAddr) -> bool {
+        let mut buckets = self.buckets.write().unwrap();
+        let bucket = buckets.entry(*ip).or_insert_with(|| TokenBucket {
+            tokens: self.max_requests_per_second as f64,
+            last_refill: Instant::now(),
+            max_tokens: self.max_requests_per_second as f64,
+            refill_rate: self.max_requests_per_second as f64,
+        });
+
+        // Refill tokens based on elapsed time
+        let now = Instant::now();
+        let elapsed = now.duration_since(bucket.last_refill).as_secs_f64();
+        bucket.tokens = (bucket.tokens + elapsed * bucket.refill_rate).min(bucket.max_tokens);
+        bucket.last_refill = now;
+
+        // Check if we have tokens
+        if bucket.tokens >= 1.0 {
+            bucket.tokens -= 1.0;
+            true
+        } else {
+            false
+        }
+    }
+
+    /// Cleanup old entries (call periodically)
+    pub fn cleanup(&self) {
+        let mut buckets = self.buckets.write().unwrap();
+        let now = Instant::now();
+        buckets.retain(|_, bucket| {
+            now.duration_since(bucket.last_refill) < Duration::from_secs(600) // 10 minutes
+        });
+    }
 }

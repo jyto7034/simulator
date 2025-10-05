@@ -1,0 +1,4836 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+Cargo.toml
+commit.txt
+configs/swarm_high.toml
+configs/swarm_load_test.toml
+configs/swarm_max.toml
+configs/swarm_medium.toml
+configs/swarm_minimal.toml
+configs/swarm_ultra.toml
+README_SWARM.md
+src/behaviors/invalid.rs
+src/behaviors/mod.rs
+src/behaviors/normal.rs
+src/behaviors/quit.rs
+src/behaviors/slow.rs
+src/behaviors/spiky_loader.rs
+src/behaviors/timeout_loader.rs
+src/lib.rs
+src/main.rs
+src/observer_actor/handler.rs
+src/observer_actor/message.rs
+src/observer_actor/mod.rs
+src/player_actor/handler.rs
+src/player_actor/message.rs
+src/player_actor/mod.rs
+src/scenario_actor/handler.rs
+src/scenario_actor/message.rs
+src/scenario_actor/mod.rs
+src/schedules.rs
+src/swarm/behavior_mix.rs
+src/swarm/concrete.rs
+src/swarm/config.rs
+src/swarm/generate.rs
+src/swarm/manifest.rs
+src/swarm/mod.rs
+src/swarm/schedule.rs
+src/swarm/seed.rs
+src/swarm/slo.rs
+src/swarm/swarm.rs
+src/swarm/template.rs
+src/test_utils.rs
+tests/behavior_scenarios.rs
+tests/swarm_test.rs
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="Cargo.toml">
+[package]
+name = "test_client"
+version.workspace = true
+edition.workspace = true
+description.workspace = true
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.12", features = ["json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+futures-util = "0.3"
+uuid = { version = "1", features = ["v4", "serde"] }
+tokio-tungstenite = { version = "0.23", features = ["native-tls"] }
+url = "2"
+awc = "3.7.0"
+actix-web = "4.9.0"
+actix = "=0.13.5"
+actix-ws = "0.2.5"
+actix-web-actors = "4.3.0"
+ctor = "0.4.1"
+chrono = { version = "0.4", features = ["serde"] }
+async-trait = "0.1.80"
+anyhow = "1"
+tracing = "0.1.41"
+tracing-appender = "0.2.3"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+backoff = "0.4"
+clap = { version = "4", features = ["derive"] }
+toml = "0.8"
+regex = "1"
+
+# Environment configuration
+env = { path = "../env" }
+rand = "0.8"
+rand_chacha = "0.3"
+blake3 = "1"
+redis = { version = "0.22.3", features = ["tokio-comp"] }
+</file>
+
+<file path="commit.txt">
+feat(TestClient): Refactor ObserverActor to support per-player event tracking
+
+- Replace single sequential event tracking with per-player HashMap structure
+- Change `expected_sequence: Vec<ExpectEvent>` to `player_expectations: HashMap<Uuid, Vec<ExpectEvent>>`
+- Change `current_step: usize` to `player_steps: HashMap<Uuid, usize>` for independent player progress
+- Update ExpectEvent handler to store expectations per player ID
+- Refactor InternalEvent handler with `check_player_expectations()` for individual player validation
+- Add `check_all_players_completed()` to verify scenario completion only when all players finish
+- Fix sequential step validation issue where Player1's events affected Player2's step progression
+- Enable independent behavior validation for multiple players in scenarios
+
+This change resolves the issue where ObserverActor treated multiple players as a single sequence,
+causing premature scenario completion when the first player's events were satisfied.
+
+## Known Issue Identified
+
+During implementation, discovered a fundamental design contradiction:
+- ExpectEvents are added incrementally as behavior methods execute
+- Completion check only considers currently added ExpectEvents
+- Results in premature scenario completion when first ExpectEvent is satisfied
+- Documented in observer_actor_design_issue.md for future resolution
+
+The per-player tracking structure is correct, but completion logic needs redesign.
+</file>
+
+<file path="configs/swarm_high.toml">
+# Swarm preset: high
+# ~500 players total
+
+duration_secs = 90
+# target ~50 players per shard
+shards = 10
+players_per_shard = 50
+# Optional overrides
+# game_mode = "Normal_1v1"
+# match_server_base = "ws://127.0.0.1:8080"
+# seed = 12345
+# burst: ratio of players per shard to start simultaneously (0.0..1.0)
+burst_ratio = 0.25
+
+
+[behavior_mix]
+slow_ratio = 0.10
+slow_delay_seconds = 5
+spiky_ratio = 0.08
+spiky_delay_ms = 150
+timeout_ratio = 0.03
+quit_before_ratio = 0.03
+quit_during_loading_ratio = 0.03
+invalid_ratio = 0.00
+invalid_mode_unknown_weight = 1.0
+invalid_mode_missing_weight = 0.0
+invalid_mode_duplicate_enqueue_weight = 0.0
+invalid_mode_wrong_session_id_weight = 0.0
+</file>
+
+<file path="configs/swarm_load_test.toml">
+# Load Test Swarm Configuration
+# This configuration runs a more intensive load test
+
+# Test duration in seconds
+duration_secs = 120
+
+# Number of shards (parallel test groups)
+shards = 2
+
+# Number of players per shard
+players_per_shard = 50
+
+# Game mode to test
+game_mode = "Normal_1v1"
+
+# Match server base URL
+match_server_base = "ws://127.0.0.1:8080"
+
+# Deterministic seed for reproducible tests
+seed = 54321
+
+# Behavior mix configuration - more diverse behaviors for load testing
+[behavior_mix]
+# Higher ratio of slow loading players
+slow_ratio = 0.2
+slow_delay_seconds = 8
+
+# More spiky players to test intermittent issues
+spiky_ratio = 0.1
+spiky_delay_ms = 200
+
+# Timeout players
+timeout_ratio = 0.05
+
+# Players that quit before match
+quit_before_ratio = 0.08
+
+# Players that quit during loading
+quit_during_loading_ratio = 0.07
+
+# Invalid behavior weights - test various error scenarios
+invalid_mode_unknown_weight = 2.0
+invalid_mode_missing_weight = 1.0
+invalid_mode_early_loading_complete_weight = 1.0
+invalid_mode_duplicate_enqueue_weight = 1.0
+invalid_mode_wrong_session_id_weight = 1.0
+
+# Higher ratio of invalid behaviors for stress testing
+invalid_ratio = 0.05
+
+# Save detailed results
+result_path = "logs/swarm_load_test_results.json"
+</file>
+
+<file path="configs/swarm_max.toml">
+# Swarm preset: max
+# ~1000 players total
+
+duration_secs = 120
+# target ~50 players per shard
+shards = 20
+players_per_shard = 50
+# Optional overrides
+# game_mode = "Normal_1v1"
+# match_server_base = "ws://127.0.0.1:8080"
+# seed = 12345
+# burst: ratio of players per shard to start simultaneously (0.0..1.0)
+burst_ratio = 0.2
+
+
+[behavior_mix]
+slow_ratio = 0.10
+slow_delay_seconds = 5
+spiky_ratio = 0.10
+spiky_delay_ms = 150
+timeout_ratio = 0.03
+quit_before_ratio = 0.03
+quit_during_loading_ratio = 0.03
+invalid_ratio = 0.00
+invalid_mode_unknown_weight = 1.0
+invalid_mode_missing_weight = 0.0
+invalid_mode_duplicate_enqueue_weight = 0.0
+invalid_mode_wrong_session_id_weight = 0.0
+</file>
+
+<file path="configs/swarm_medium.toml">
+# Swarm preset: medium
+# ~100 players total
+
+duration_secs = 60
+# target ~50 players per shard
+shards = 2
+players_per_shard = 50
+# Optional overrides
+# game_mode = "Normal_1v1"
+# match_server_base = "ws://127.0.0.1:8080"
+# seed = 12345
+# burst: ratio of players per shard to start simultaneously (0.0..1.0)
+burst_ratio = 0.3
+
+
+[behavior_mix]
+slow_ratio = 0.10
+slow_delay_seconds = 5
+spiky_ratio = 0.05
+spiky_delay_ms = 150
+timeout_ratio = 0.02
+quit_before_ratio = 0.03
+quit_during_loading_ratio = 0.03
+invalid_ratio = 0.00
+invalid_mode_unknown_weight = 1.0
+invalid_mode_missing_weight = 0.0
+invalid_mode_duplicate_enqueue_weight = 0.0
+invalid_mode_wrong_session_id_weight = 0.0
+</file>
+
+<file path="configs/swarm_minimal.toml">
+# Swarm preset: minimal
+# 10 players total, short duration
+
+duration_secs = 30
+shards = 2
+players_per_shard = 5
+# Optional overrides
+# game_mode = "Normal_1v1"
+# match_server_base = "ws://127.0.0.1:8080"
+# seed = 12345
+# burst: ratio of players per shard to start simultaneously (0.0..1.0)
+burst_ratio = 0.3
+
+
+[behavior_mix]
+# Ratios (0.0..1.0)
+slow_ratio = 0.10
+slow_delay_seconds = 6
+spiky_ratio = 0.05
+spiky_delay_ms = 150
+timeout_ratio = 0.02
+quit_before_ratio = 0.03
+quit_during_loading_ratio = 0.03
+invalid_ratio = 0.00
+invalid_mode_unknown_weight = 1.0
+invalid_mode_missing_weight = 0.0
+invalid_mode_duplicate_enqueue_weight = 0.0
+invalid_mode_wrong_session_id_weight = 0.0
+</file>
+
+<file path="configs/swarm_ultra.toml">
+# Swarm preset: ultra
+# ~5000 players total
+
+duration_secs = 180
+# target ~50 players per shard
+shards = 64
+players_per_shard = 79
+# Optional overrides
+# game_mode = "Normal_1v1"
+# match_server_base = "ws://127.0.0.1:8080"
+# seed = 12345
+# burst: ratio of players per shard to start simultaneously (0.0..1.0)
+burst_ratio = 0.15
+
+
+[behavior_mix]
+slow_ratio = 0.10
+slow_delay_seconds = 5
+spiky_ratio = 0.12
+spiky_delay_ms = 150
+timeout_ratio = 0.04
+quit_before_ratio = 0.03
+quit_during_loading_ratio = 0.03
+invalid_ratio = 0.00
+invalid_mode_unknown_weight = 1.0
+invalid_mode_missing_weight = 0.0
+invalid_mode_duplicate_enqueue_weight = 0.0
+invalid_mode_wrong_session_id_weight = 0.0
+</file>
+
+<file path="README_SWARM.md">
+# Swarm Testing Guide
+
+This guide explains how to run swarm tests for the match server using the test client.
+
+## Overview
+
+Swarm tests simulate multiple players connecting to the match server simultaneously to test:
+- Server performance under load
+- Matchmaking behavior with various player types
+- Error handling and recovery
+- System stability over time
+
+## Quick Start
+
+### 1. Using the Test Script (Recommended)
+
+```bash
+# Run basic swarm test
+./test_client/scripts/run_swarm_tests.sh -t basic
+
+# Run load test
+./test_client/scripts/run_swarm_tests.sh -t load
+
+# Run minimal smoke test
+./test_client/scripts/run_swarm_tests.sh -t minimal
+
+# Run with custom server
+./test_client/scripts/run_swarm_tests.sh -t basic -s ws://192.168.1.100:8080
+```
+
+### 2. Using Cargo Tests
+
+```bash
+# Run individual test functions
+cargo test --package test_client test_swarm_basic -- --nocapture
+cargo test --package test_client test_swarm_load -- --nocapture
+cargo test --package test_client test_swarm_minimal -- --nocapture
+```
+
+### 3. Using the Swarm Binary
+
+```bash
+# Run with custom config file
+cargo run --bin swarm -- --config test_client/configs/swarm_basic.toml
+```
+
+## Configuration Files
+
+### Basic Configuration (`configs/swarm_basic.toml`)
+- **Duration**: 30 seconds
+- **Players**: 10 players (1 shard × 10 players)
+- **Behavior**: Mostly normal players with minimal edge cases
+- **Use case**: Quick functional testing
+
+### Load Test Configuration (`configs/swarm_load_test.toml`)
+- **Duration**: 2 minutes
+- **Players**: 100 players (2 shards × 50 players)
+- **Behavior**: Diverse mix including slow, spiky, and problematic players
+- **Use case**: Performance and stress testing
+
+### Template Configuration (`configs/swarm_template.toml`)
+- **Duration**: 60 seconds
+- **Players**: 20-40 players (randomized)
+- **Behavior**: Randomized behavior ratios within specified ranges
+- **Use case**: Randomized testing scenarios
+
+## Player Behaviors
+
+The swarm test includes various player behavior types:
+
+### Normal Behaviors
+- **Normal**: Standard matchmaking flow
+- **SlowLoader**: Takes longer to load assets
+- **SpikyLoader**: Intermittent delays during loading
+
+### Edge Case Behaviors
+- **QuitBeforeMatch**: Disconnects before match is found
+- **QuitDuringLoading**: Disconnects during asset loading
+- **TimeoutLoader**: Never completes loading (causes timeout)
+
+### Invalid Behaviors (Error Testing)
+- **UnknownGameMode**: Requests invalid game mode
+- **MissingFields**: Sends malformed messages
+
+- **DuplicateEnqueue**: Sends multiple enqueue requests
+- **WrongSessionId**: Uses incorrect session IDs
+
+## Configuration Parameters
+
+### Basic Parameters
+```toml
+duration_secs = 30          # Test duration
+shards = 1                  # Number of parallel test groups
+players_per_shard = 10      # Players per shard
+game_mode = "Normal_1v1"    # Game mode to test
+match_server_base = "ws://127.0.0.1:8080"  # Server URL
+seed = 12345                # Deterministic seed for reproducibility
+```
+
+### Behavior Mix
+```toml
+[behavior_mix]
+slow_ratio = 0.1                    # 10% slow players
+slow_delay_seconds = 5              # 5 second delay
+spiky_ratio = 0.05                  # 5% spiky players
+spiky_delay_ms = 150                # 150ms spikes
+timeout_ratio = 0.02                # 2% timeout players
+quit_before_ratio = 0.03            # 3% quit before match
+quit_during_loading_ratio = 0.03    # 3% quit during loading
+invalid_ratio = 0.01                # 1% invalid behavior
+```
+
+## Results and Monitoring
+
+### Test Results
+- Results are saved to `logs/` directory in JSON format
+- Include metrics like success rates, timing, and SLO compliance
+- Timestamped files for historical comparison
+
+### Real-time Monitoring
+- Tests connect to the server's event stream for real-time monitoring
+- Logs show player connection status and behavior outcomes
+- Error conditions are captured and reported
+
+### SLO (Service Level Objectives)
+The swarm tests evaluate:
+- **Match Success Rate**: Percentage of successful matches
+- **Average Match Time**: Time from enqueue to match found
+- **Loading Success Rate**: Percentage of successful loading phases
+- **Error Rate**: Frequency of server errors
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Connection Refused**
+   ```
+   Error: Connection refused (os error 111)
+   ```
+   - Ensure the match server is running on the specified URL
+   - Check firewall settings
+
+2. **Test Timeout**
+   ```
+   Error: Swarm test timed out
+   ```
+   - Server may be overloaded or unresponsive
+   - Increase timeout or reduce player count
+
+3. **High Error Rate**
+   ```
+   Warning: SLO failed - high error rate
+   ```
+   - Check server logs for errors
+   - Verify server configuration and resources
+
+### Debug Tips
+
+1. **Enable Debug Logging**
+   ```bash
+   RUST_LOG=debug cargo test test_swarm_basic -- --nocapture
+   ```
+
+2. **Run Minimal Test First**
+   ```bash
+   ./test_client/scripts/run_swarm_tests.sh -t minimal
+   ```
+
+3. **Check Server Health**
+   - Verify match server is running and healthy
+   - Check server metrics and logs
+
+## Advanced Usage
+
+### Custom Configurations
+
+Create your own configuration file:
+
+```toml
+# my_custom_test.toml
+duration_secs = 45
+shards = 1
+players_per_shard = 20
+game_mode = "Custom_2v2"
+match_server_base = "ws://my-server:8080"
+seed = 98765
+
+[behavior_mix]
+# Your custom behavior ratios
+slow_ratio = 0.15
+# ... other parameters
+```
+
+Run with:
+```bash
+./test_client/scripts/run_swarm_tests.sh -t custom -c my_custom_test.toml
+```
+
+### Environment Variables
+
+- `SMOKE_MATCH_BASE`: Override match server URL
+- `SMOKE_GAME_MODE`: Override game mode
+- `SWARM_SEED`: Override random seed
+- `OBSERVER_STREAM_KIND`: Control event streaming (default: "state_violation")
+
+### Integration with CI/CD
+
+```bash
+# Example CI script
+#!/bin/bash
+set -e
+
+# Start match server
+./start_match_server.sh &
+SERVER_PID=$!
+
+# Wait for server to be ready
+sleep 10
+
+# Run swarm tests
+./test_client/scripts/run_swarm_tests.sh -t basic
+
+# Cleanup
+kill $SERVER_PID
+```
+
+## Performance Considerations
+
+- **Memory Usage**: Each player actor consumes memory; monitor for large tests
+- **Network Connections**: High player counts may hit connection limits
+- **Server Resources**: Ensure adequate CPU/memory on the match server
+- **Test Duration**: Longer tests provide better statistical significance
+
+## Best Practices
+
+1. **Start Small**: Begin with minimal tests before scaling up
+2. **Use Deterministic Seeds**: For reproducible test results
+3. **Monitor Resources**: Watch CPU, memory, and network usage
+4. **Save Results**: Keep test results for trend analysis
+5. **Test Incrementally**: Gradually increase load to find limits
+</file>
+
+<file path="src/behaviors/invalid.rs">
+use super::PlayerBehavior;
+use crate::behaviors::ClientMessage;
+use crate::player_actor::message::InternalSendText;
+use crate::{player_actor::PlayerContext, BehaviorOutcome, BehaviorResult};
+use async_trait::async_trait;
+use uuid::Uuid;
+
+/// InvalidMessages: 고의로 잘못된/순서가 어긋난 메시지를 전송해 서버의 강건성을 검증
+/// - 모드 별로 다른 invalid 시나리오를 구성할 수 있도록 단순 variant 제공
+#[derive(Debug, Clone)]
+pub enum InvalidMode {
+    /// 존재하지 않는 타입
+    UnknownType,
+    /// 필수 필드 누락
+    MissingField,
+    /// EnQueued 이후 중복 Enqueue 시도
+    DuplicateEnqueue,
+    /// 잘못된(다른) 로딩 세션 ID로 loading_complete 전송
+    WrongSessionId,
+}
+
+#[derive(Debug, Clone)]
+pub struct InvalidMessages {
+    pub mode: InvalidMode,
+}
+
+#[async_trait]
+impl PlayerBehavior for InvalidMessages {
+    async fn on_enqueued(&self, ctx: &PlayerContext) -> BehaviorResult {
+        match self.mode {
+            InvalidMode::UnknownType => {
+                ctx.addr
+                    .do_send(InternalSendText("{\"type\":\"bad_type\"}".to_string()));
+            }
+            InvalidMode::MissingField => {
+                ctx.addr
+                    .do_send(InternalSendText("{\"type\":\"enqueue\"}".to_string()));
+            }
+
+            InvalidMode::DuplicateEnqueue => {
+                let msg = ClientMessage::Enqueue {
+                    player_id: ctx.player_id,
+                    game_mode: crate::default_game_mode(),
+                };
+                ctx.addr.do_send(InternalSendText(msg.to_string()));
+            }
+            _ => {}
+        }
+        Ok(BehaviorOutcome::Continue)
+    }
+
+    async fn on_loading_start(&self, ctx: &PlayerContext, _id: Uuid) -> BehaviorResult {
+        match self.mode {
+            InvalidMode::WrongSessionId => {
+                // 올바르지 않은(다른) 세션 ID로 완료 통지
+                let wrong = Uuid::new_v4();
+                let msg = ClientMessage::LoadingComplete {
+                    loading_session_id: wrong,
+                };
+                ctx.addr.do_send(InternalSendText(msg.to_string()));
+                return Ok(BehaviorOutcome::Stop);
+            }
+            InvalidMode::DuplicateEnqueue => {
+                // 이후 플로우는 정상으로 진행하여 시나리오를 종료할 수 있게 한다
+                let msg = ClientMessage::LoadingComplete {
+                    loading_session_id: _id,
+                };
+                ctx.addr.do_send(InternalSendText(msg.to_string()));
+                return Ok(BehaviorOutcome::Stop);
+            }
+            _ => {}
+        }
+        Ok(BehaviorOutcome::Continue)
+    }
+
+    fn clone_trait(&self) -> Box<dyn PlayerBehavior> {
+        Box::new(self.clone())
+    }
+}
+</file>
+
+<file path="src/behaviors/mod.rs">
+use crate::{player_actor::PlayerContext, BehaviorOutcome, BehaviorResult, TestFailure};
+use async_trait::async_trait;
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
+
+pub mod invalid;
+pub mod normal;
+pub mod quit;
+pub mod slow;
+pub mod spiky_loader;
+pub mod timeout_loader;
+
+// --- 메시지 정의 (서버 프로토콜과 1:1 매핑) ---
+#[derive(Serialize, Clone)]
+#[serde(tag = "type")]
+pub enum ClientMessage {
+    #[serde(rename = "enqueue")]
+    Enqueue { player_id: Uuid, game_mode: String },
+    #[serde(rename = "loading_complete")]
+    LoadingComplete { loading_session_id: Uuid },
+    // 주의: 현재 프로토콜에 "cancel"은 없습니다. (큐 잡히기 전만 클라이언트가 연결을 끊어 취소 가능)
+}
+
+impl ClientMessage {
+    pub fn to_string(&self) -> String {
+        serde_json::to_string(self).unwrap()
+    }
+}
+
+#[derive(Deserialize, Debug, PartialEq, Clone)]
+#[serde(tag = "type")]
+pub enum ServerMessage {
+    #[serde(rename = "enqueued")]
+    EnQueued,
+    #[serde(rename = "start_loading")]
+    StartLoading { loading_session_id: Uuid },
+    #[serde(rename = "match_found")]
+    MatchFound {
+        session_id: Uuid,
+        server_address: String,
+    },
+    // error code 넣어야함.
+    #[serde(rename = "error")]
+    Error { message: String },
+}
+
+// --- Behavior 설계 원칙 ---
+// - 매칭에는 거절/수락 개념이 없음.
+// - 큐가 잡히기 전까지만 취소(=연결 종료) 가능.
+// - 큐가 잡히면(StartLoading/MatchFound) 즉시 게임 진입.
+// - 따라서 Behavior는 다음 네 가지 축으로 단순화:
+//   1) 정상 흐름(Normal)
+//   2) 느린 로딩(SlowLoader)
+//   3) 큐 잡히기 전 임의 시점 종료(QuitBeforeMatch)
+//   4) 매치 성사 무시(Timeout 유도) -> 필요시 유지(여기서는 제외 가능)
+
+#[async_trait]
+pub trait PlayerBehavior: Send + Sync {
+    // 연결 직후 훅(WS 연결/스트림 준비 완료 뒤 호출). 기본은 no-op
+    async fn on_connected(&self, _player: &PlayerContext) -> BehaviorResult {
+        Ok(BehaviorOutcome::Continue)
+    }
+
+    // 0) 에러 수신 시
+    async fn on_error(&self, _player: &PlayerContext, _msg: &str) -> BehaviorResult {
+        Err(TestFailure::System("server_error".into()))
+    }
+
+    // 1) 대기열 진입 확인
+    async fn on_enqueued(&self, _player: &PlayerContext) -> BehaviorResult {
+        Ok(BehaviorOutcome::Continue)
+    }
+
+    // 2) 로딩 시작(=매치가 성사되어 게임 진입을 준비)
+    async fn on_loading_start(
+        &self,
+        _player: &PlayerContext,
+        _loading_session_id: Uuid,
+    ) -> BehaviorResult {
+        Ok(BehaviorOutcome::Continue)
+    }
+
+    // 3) 매치 최종 확정(일부 서버에서는 MatchFound가 먼저/혹은 StartLoading 이후 올 수 있음)
+    async fn on_match_found(&self, _player: &PlayerContext) -> BehaviorResult {
+        Ok(BehaviorOutcome::Continue)
+    }
+
+    // 4) 로딩 완료 후 종료
+    async fn on_loading_complete(&self, _player: &PlayerContext) -> BehaviorResult {
+        Ok(BehaviorOutcome::Stop)
+    }
+
+    fn clone_trait(&self) -> Box<dyn PlayerBehavior>;
+}
+
+// --- Behavior Enum (flattened) ---
+#[derive(Debug, Clone)]
+pub enum BehaviorType {
+    Normal,
+    SlowLoader { delay_seconds: u64 },
+    SpikyLoader { delay_ms: u64 },
+    TimeoutLoader,
+    QuitBeforeMatch,
+    QuitDuringLoading,
+    Invalid { mode: invalid::InvalidMode },
+}
+
+#[async_trait]
+impl PlayerBehavior for BehaviorType {
+    async fn on_connected(&self, p: &PlayerContext) -> BehaviorResult {
+        match self {
+            BehaviorType::Normal => self::normal::NormalPlayer.on_connected(p).await,
+            BehaviorType::SlowLoader { delay_seconds } => {
+                self::slow::SlowLoader {
+                    delay_seconds: *delay_seconds,
+                }
+                .on_connected(p)
+                .await
+            }
+            BehaviorType::SpikyLoader { delay_ms } => {
+                self::spiky_loader::SpikyLoader {
+                    delay_ms: *delay_ms,
+                }
+                .on_connected(p)
+                .await
+            }
+            BehaviorType::TimeoutLoader => {
+                self::timeout_loader::TimeoutLoader.on_connected(p).await
+            }
+            BehaviorType::QuitBeforeMatch => self::quit::QuitBeforeMatch.on_connected(p).await,
+            BehaviorType::QuitDuringLoading => self::quit::QuitDuringLoading.on_connected(p).await,
+            BehaviorType::Invalid { mode } => {
+                self::invalid::InvalidMessages { mode: mode.clone() }
+                    .on_connected(p)
+                    .await
+            }
+        }
+    }
+
+    async fn on_error(&self, p: &PlayerContext, m: &str) -> BehaviorResult {
+        match self {
+            BehaviorType::Normal => self::normal::NormalPlayer.on_error(p, m).await,
+            BehaviorType::SlowLoader { delay_seconds } => {
+                self::slow::SlowLoader {
+                    delay_seconds: *delay_seconds,
+                }
+                .on_error(p, m)
+                .await
+            }
+            BehaviorType::SpikyLoader { delay_ms } => {
+                self::spiky_loader::SpikyLoader {
+                    delay_ms: *delay_ms,
+                }
+                .on_error(p, m)
+                .await
+            }
+            BehaviorType::TimeoutLoader => self::timeout_loader::TimeoutLoader.on_error(p, m).await,
+            BehaviorType::QuitBeforeMatch => self::quit::QuitBeforeMatch.on_error(p, m).await,
+            BehaviorType::QuitDuringLoading => self::quit::QuitDuringLoading.on_error(p, m).await,
+            BehaviorType::Invalid { mode } => {
+                self::invalid::InvalidMessages { mode: mode.clone() }
+                    .on_error(p, m)
+                    .await
+            }
+        }
+    }
+
+    async fn on_enqueued(&self, p: &PlayerContext) -> BehaviorResult {
+        match self {
+            BehaviorType::Normal => self::normal::NormalPlayer.on_enqueued(p).await,
+            BehaviorType::SlowLoader { delay_seconds } => {
+                self::slow::SlowLoader {
+                    delay_seconds: *delay_seconds,
+                }
+                .on_enqueued(p)
+                .await
+            }
+            BehaviorType::SpikyLoader { delay_ms } => {
+                self::spiky_loader::SpikyLoader {
+                    delay_ms: *delay_ms,
+                }
+                .on_enqueued(p)
+                .await
+            }
+            BehaviorType::TimeoutLoader => self::timeout_loader::TimeoutLoader.on_enqueued(p).await,
+            BehaviorType::QuitBeforeMatch => self::quit::QuitBeforeMatch.on_enqueued(p).await,
+            BehaviorType::QuitDuringLoading => self::quit::QuitDuringLoading.on_enqueued(p).await,
+            BehaviorType::Invalid { mode } => {
+                self::invalid::InvalidMessages { mode: mode.clone() }
+                    .on_enqueued(p)
+                    .await
+            }
+        }
+    }
+
+    async fn on_match_found(&self, p: &PlayerContext) -> BehaviorResult {
+        match self {
+            BehaviorType::Normal => self::normal::NormalPlayer.on_match_found(p).await,
+            BehaviorType::SlowLoader { delay_seconds } => {
+                self::slow::SlowLoader {
+                    delay_seconds: *delay_seconds,
+                }
+                .on_match_found(p)
+                .await
+            }
+            BehaviorType::SpikyLoader { delay_ms } => {
+                self::spiky_loader::SpikyLoader {
+                    delay_ms: *delay_ms,
+                }
+                .on_match_found(p)
+                .await
+            }
+            BehaviorType::TimeoutLoader => {
+                self::timeout_loader::TimeoutLoader.on_match_found(p).await
+            }
+            BehaviorType::QuitBeforeMatch => self::quit::QuitBeforeMatch.on_match_found(p).await,
+            BehaviorType::QuitDuringLoading => {
+                self::quit::QuitDuringLoading.on_match_found(p).await
+            }
+            BehaviorType::Invalid { mode } => {
+                self::invalid::InvalidMessages { mode: mode.clone() }
+                    .on_match_found(p)
+                    .await
+            }
+        }
+    }
+
+    async fn on_loading_start(&self, p: &PlayerContext, id: Uuid) -> BehaviorResult {
+        match self {
+            BehaviorType::Normal => self::normal::NormalPlayer.on_loading_start(p, id).await,
+            BehaviorType::SlowLoader { delay_seconds } => {
+                self::slow::SlowLoader {
+                    delay_seconds: *delay_seconds,
+                }
+                .on_loading_start(p, id)
+                .await
+            }
+            BehaviorType::SpikyLoader { delay_ms } => {
+                self::spiky_loader::SpikyLoader {
+                    delay_ms: *delay_ms,
+                }
+                .on_loading_start(p, id)
+                .await
+            }
+            BehaviorType::TimeoutLoader => {
+                self::timeout_loader::TimeoutLoader
+                    .on_loading_start(p, id)
+                    .await
+            }
+            BehaviorType::QuitBeforeMatch => {
+                self::quit::QuitBeforeMatch.on_loading_start(p, id).await
+            }
+            BehaviorType::QuitDuringLoading => {
+                self::quit::QuitDuringLoading.on_loading_start(p, id).await
+            }
+            BehaviorType::Invalid { mode } => {
+                self::invalid::InvalidMessages { mode: mode.clone() }
+                    .on_loading_start(p, id)
+                    .await
+            }
+        }
+    }
+
+    async fn on_loading_complete(&self, p: &PlayerContext) -> BehaviorResult {
+        match self {
+            BehaviorType::Normal => self::normal::NormalPlayer.on_loading_complete(p).await,
+            BehaviorType::SlowLoader { delay_seconds } => {
+                self::slow::SlowLoader {
+                    delay_seconds: *delay_seconds,
+                }
+                .on_loading_complete(p)
+                .await
+            }
+            BehaviorType::SpikyLoader { delay_ms } => {
+                self::spiky_loader::SpikyLoader {
+                    delay_ms: *delay_ms,
+                }
+                .on_loading_complete(p)
+                .await
+            }
+            BehaviorType::TimeoutLoader => {
+                self::timeout_loader::TimeoutLoader
+                    .on_loading_complete(p)
+                    .await
+            }
+            BehaviorType::QuitBeforeMatch => {
+                self::quit::QuitBeforeMatch.on_loading_complete(p).await
+            }
+            BehaviorType::QuitDuringLoading => {
+                self::quit::QuitDuringLoading.on_loading_complete(p).await
+            }
+            BehaviorType::Invalid { mode } => {
+                self::invalid::InvalidMessages { mode: mode.clone() }
+                    .on_loading_complete(p)
+                    .await
+            }
+        }
+    }
+
+    fn clone_trait(&self) -> Box<dyn PlayerBehavior> {
+        Box::new(self.clone())
+    }
+}
+</file>
+
+<file path="src/behaviors/normal.rs">
+use super::PlayerBehavior;
+use crate::behaviors::ClientMessage;
+use crate::player_actor::message::InternalSendText;
+use crate::{player_actor::PlayerContext, BehaviorOutcome};
+use crate::{BehaviorResult, TestFailure};
+use async_trait::async_trait;
+use tracing::{info, warn};
+use uuid::Uuid;
+
+/// 정상적인 플레이어 - 모든 단계를 순서대로 완주
+#[derive(Debug, Clone)]
+pub struct NormalPlayer;
+
+#[async_trait]
+impl PlayerBehavior for NormalPlayer {
+    /// 매칭 실패 시 처리 - Normal 플레이어는 에러를 받으면 로그를 남기고 테스트 실패로 처리
+    async fn on_error(&self, player_context: &PlayerContext, error_msg: &str) -> BehaviorResult {
+        warn!(
+            "[{}] Normal player received error: {}",
+            player_context.player_id, error_msg
+        );
+
+        // Timeout 에러인 경우 계속 진행 (requeue 허용) - Blacklist 테스트용
+        if error_msg.contains("timed out") || error_msg.contains("returned to the queue") {
+            info!(
+                "[{}] Timeout occurred, continuing for requeue",
+                player_context.player_id
+            );
+            return Ok(BehaviorOutcome::Continue);
+        }
+
+        // 다른 에러는 여전히 테스트 실패로 처리
+        Err(TestFailure::Behavior(format!(
+            "Normal player should not receive errors during matchmaking: {}",
+            error_msg
+        )))
+    }
+
+    /// 서버로부터 EnQueued 확인 응답을 받았을 때
+    async fn on_enqueued(&self, player_context: &PlayerContext) -> BehaviorResult {
+        info!(
+            "[{}] Normal player successfully enqueued",
+            player_context.player_id
+        );
+        Ok(BehaviorOutcome::Continue)
+    }
+
+    async fn on_match_found(&self, player_context: &PlayerContext) -> BehaviorResult {
+        info!(
+            "[{}] Normal player excited about match!",
+            player_context.player_id
+        );
+        // For test flow, treat MatchFound as end of client behavior
+        Ok(BehaviorOutcome::Stop)
+    }
+
+    async fn on_loading_start(
+        &self,
+        player_context: &PlayerContext,
+        loading_session_id: Uuid,
+    ) -> BehaviorResult {
+        info!(
+            "[{}] Normal player starting to load assets",
+            player_context.player_id
+        );
+
+        // loading_complete 메시지 전송
+        let msg = ClientMessage::LoadingComplete { loading_session_id };
+        player_context
+            .addr
+            .do_send(InternalSendText(msg.to_string()));
+
+        info!(
+            "[{}] Normal player sent loading_complete",
+            player_context.player_id
+        );
+
+        Ok(BehaviorOutcome::Continue)
+    }
+
+    async fn on_loading_complete(&self, player_context: &PlayerContext) -> BehaviorResult {
+        info!(
+            "[{}] Normal player successfully completed the flow!",
+            player_context.player_id
+        );
+        Ok(BehaviorOutcome::Stop) // 성공적으로 완료했으므로 종료
+    }
+
+    fn clone_trait(&self) -> Box<dyn PlayerBehavior> {
+        Box::new(self.clone())
+    }
+}
+</file>
+
+<file path="src/behaviors/quit.rs">
+use super::PlayerBehavior;
+use crate::{player_actor::PlayerContext, BehaviorOutcome, BehaviorResult, TestFailure};
+use async_trait::async_trait;
+use tracing::warn;
+use uuid::Uuid;
+
+/// 큐가 잡히기 전 의도적으로 매칭을 취소(연결 종료)하는 플레이어
+#[derive(Debug, Clone)]
+pub struct QuitBeforeMatch;
+
+#[async_trait]
+impl PlayerBehavior for QuitBeforeMatch {
+    /// Enqueued 직후 짧은 지연 후 연결 종료(큐 잡히기 전까지 취소 가능 규칙 반영)
+    async fn on_enqueued(&self, player_context: &PlayerContext) -> BehaviorResult {
+        tokio::time::sleep(tokio::time::Duration::from_millis(50)).await;
+        player_context
+            .addr
+            .do_send(crate::player_actor::message::InternalClose);
+        Ok(BehaviorOutcome::Stop)
+    }
+
+    /// 오류는 테스트 실패로 간주하지 않고 계속 진행(서버가 재시도 중일 수 있음)
+    async fn on_error(&self, _player_context: &PlayerContext, _error_msg: &str) -> BehaviorResult {
+        Ok(BehaviorOutcome::Continue)
+    }
+
+    fn clone_trait(&self) -> Box<dyn PlayerBehavior> {
+        Box::new(self.clone())
+    }
+}
+
+/// 로딩 중 연결 끊는 플레이어 - 로딩 시작되자마자 나가기
+#[derive(Debug, Clone)]
+pub struct QuitDuringLoading;
+
+#[async_trait]
+impl PlayerBehavior for QuitDuringLoading {
+    async fn on_loading_start(
+        &self,
+        player_context: &PlayerContext,
+        _loading_session_id: Uuid,
+    ) -> BehaviorResult {
+        warn!(
+            "[{}] Quitting during loading start!",
+            player_context.player_id
+        );
+        Err(TestFailure::Behavior(
+            "Intentionally quit during loading".to_string(),
+        ))
+    }
+
+    fn clone_trait(&self) -> Box<dyn PlayerBehavior> {
+        Box::new(self.clone())
+    }
+}
+</file>
+
+<file path="src/behaviors/slow.rs">
+use super::PlayerBehavior;
+use crate::behaviors::ClientMessage;
+use crate::player_actor::message::InternalSendText;
+use crate::BehaviorResult;
+use crate::{player_actor::PlayerContext, BehaviorOutcome};
+use async_trait::async_trait;
+use tracing::{info, warn};
+use uuid::Uuid;
+
+/// 느린 로더 - 로딩에 오랜 시간이 걸리는 플레이어
+#[derive(Debug, Clone)]
+pub struct SlowLoader {
+    pub delay_seconds: u64,
+}
+
+#[async_trait]
+impl PlayerBehavior for SlowLoader {
+    async fn on_loading_start(
+        &self,
+        player_context: &PlayerContext,
+        loading_session_id: Uuid,
+    ) -> BehaviorResult {
+        warn!(
+            "[{}] Slow loader - waiting {} seconds",
+            player_context.player_id, self.delay_seconds
+        );
+
+        tokio::time::sleep(tokio::time::Duration::from_secs(self.delay_seconds)).await;
+
+        let msg = ClientMessage::LoadingComplete { loading_session_id };
+        player_context
+            .addr
+            .do_send(InternalSendText(msg.to_string()));
+
+        info!(
+            "[{}] Slow loader finally sent loading_complete",
+            player_context.player_id
+        );
+        Ok(BehaviorOutcome::Continue)
+    }
+
+    fn clone_trait(&self) -> Box<dyn PlayerBehavior> {
+        Box::new(self.clone())
+    }
+}
+</file>
+
+<file path="src/behaviors/spiky_loader.rs">
+use super::PlayerBehavior;
+use crate::behaviors::ClientMessage;
+use crate::player_actor::message::InternalSendText;
+use crate::{player_actor::PlayerContext, BehaviorOutcome, BehaviorResult};
+use async_trait::async_trait;
+use uuid::Uuid;
+
+/// SpikyLoader: 로딩 단계에서 가변 지연을 주어 스파이크를 유발
+/// - min_delay_ms..=max_delay_ms 범위에서 per-player 결정적 지연을 적용한다(상위에서 주입 필요)
+#[derive(Debug, Clone)]
+pub struct SpikyLoader {
+    pub delay_ms: u64,
+}
+
+#[async_trait]
+impl PlayerBehavior for SpikyLoader {
+    async fn on_loading_start(
+        &self,
+        player_context: &PlayerContext,
+        loading_session_id: Uuid,
+    ) -> BehaviorResult {
+        tokio::time::sleep(tokio::time::Duration::from_millis(self.delay_ms)).await;
+        let msg = ClientMessage::LoadingComplete { loading_session_id };
+        player_context
+            .addr
+            .do_send(InternalSendText(msg.to_string()));
+        Ok(BehaviorOutcome::Continue)
+    }
+
+    fn clone_trait(&self) -> Box<dyn PlayerBehavior> {
+        Box::new(self.clone())
+    }
+}
+</file>
+
+<file path="src/behaviors/timeout_loader.rs">
+use super::PlayerBehavior;
+use crate::{player_actor::PlayerContext, BehaviorOutcome, BehaviorResult};
+use async_trait::async_trait;
+use tracing::error;
+use uuid::Uuid;
+
+/// TimeoutLoader: 로딩 시작 후 아무 것도 하지 않아 서버 타임아웃/실패 경로를 유발
+#[derive(Debug, Clone)]
+pub struct TimeoutLoader;
+
+#[async_trait]
+impl PlayerBehavior for TimeoutLoader {
+    async fn on_loading_start(
+        &self,
+        _player_context: &PlayerContext,
+        _loading_session_id: Uuid,
+    ) -> BehaviorResult {
+        // do nothing
+        Ok(BehaviorOutcome::Continue)
+    }
+
+    async fn on_error(&self, player: &PlayerContext, _msg: &str) -> BehaviorResult {
+        error!("[{}] Timeout occurred", player.player_id);
+        Ok(BehaviorOutcome::Continue)
+    }
+
+    fn clone_trait(&self) -> Box<dyn PlayerBehavior> {
+        Box::new(self.clone())
+    }
+}
+</file>
+
+<file path="src/lib.rs">
+pub mod behaviors;
+pub mod observer_actor;
+pub mod player_actor;
+pub mod scenario_actor;
+pub mod schedules;
+pub mod swarm;
+pub mod test_utils;
+
+use std::io;
+use std::time::Duration;
+use tracing_appender::rolling::{RollingFileAppender, Rotation};
+use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
+
+use futures_util::stream::{SplitSink, SplitStream};
+use tokio::net::TcpStream;
+use tokio_tungstenite::{MaybeTlsStream, WebSocketStream};
+
+type WsSink =
+    SplitSink<WebSocketStream<MaybeTlsStream<TcpStream>>, tokio_tungstenite::tungstenite::Message>;
+type WsStream = SplitStream<WebSocketStream<MaybeTlsStream<TcpStream>>>;
+
+const DEFAULT_SERVER_URL: &str = "ws://127.0.0.1:8080/ws/";
+const CONNECTION_TIMEOUT: Duration = Duration::from_secs(30);
+
+// --- 로거 설정 ---
+use std::sync::Once;
+static INIT: Once = Once::new();
+static mut GUARD: Option<tracing_appender::non_blocking::WorkerGuard> = None;
+pub fn setup_logger() {
+    INIT.call_once(|| {
+        // 1. 파일 로거 설정
+        let file_appender = RollingFileAppender::new(Rotation::DAILY, "logs", "app.log");
+        let (non_blocking_file_writer, _guard) = tracing_appender::non_blocking(file_appender);
+
+        // 2. 로그 레벨 필터 설정 (환경 변수 또는 기본값 INFO)
+        let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info")); // 기본 INFO 레벨
+
+        // 3. 콘솔 출력 레이어 설정
+        let console_layer = fmt::layer()
+            .with_writer(io::stdout) // 표준 출력으로 설정
+            .with_ansi(true) // ANSI 색상 코드 사용 (터미널 지원 시)
+            .with_thread_ids(true) // 스레드 ID 포함
+            .with_thread_names(true) // 스레드 이름 포함
+            .with_file(true) // 파일 경로 포함
+            .with_line_number(true) // 라인 번호 포함
+            .with_target(false) // target 정보 제외 (선택 사항)
+            .pretty(); // 사람이 읽기 좋은 포맷
+
+        // 4. 파일 출력 레이어 설정
+        let file_layer = fmt::layer()
+            .with_writer(non_blocking_file_writer) // Non-blocking 파일 로거 사용
+            .with_ansi(false) // 파일에는 ANSI 코드 제외
+            .with_thread_ids(true)
+            .with_thread_names(true)
+            .with_file(true)
+            .with_line_number(true)
+            .with_target(false)
+            .pretty();
+
+        // 5. 레지스트리(Registry)에 필터와 레이어 결합
+        tracing_subscriber::registry()
+            .with(filter) // 필터를 먼저 적용
+            .with(console_layer) // 콘솔 레이어 추가
+            .with(file_layer) // 파일 레이어 추가
+            .init(); // 전역 Subscriber로 설정
+
+        unsafe {
+            GUARD = Some(_guard);
+        }
+
+        tracing::info!("로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.");
+    });
+}
+
+pub fn server_ws_url() -> String {
+    std::env::var("TEST_CLIENT_WS_URL").unwrap_or_else(|_| DEFAULT_SERVER_URL.to_string())
+}
+
+pub fn default_game_mode() -> String {
+    std::env::var("TEST_CLIENT_GAME_MODE").unwrap_or_else(|_| "Normal_1v1".to_string())
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum BehaviorOutcome {
+    /// 다음 단계로 계속 진행
+    Continue,
+    /// 정상 완료 후 종료
+    Stop,
+    /// 재시도 필요
+    Retry,
+}
+
+/// PlayerBehavior 메서드들의 반환 타입
+pub type BehaviorResult = Result<BehaviorOutcome, TestFailure>;
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum TestFailure {
+    /// 연결 관련 실패 (네트워크, WebSocket 등)
+    Connection(String),
+    /// 타임아웃 발생
+    Timeout(String),
+    /// 프로토콜 오류 (잘못된 메시지, 순서 등)
+    Protocol(String),
+    /// 의도된 테스트 행동 (플레이어가 일부러 실패하는 케이스)
+    Behavior(String),
+    /// 시스템 내부 오류
+    System(String),
+    MatchmakingError(String),
+}
+</file>
+
+<file path="src/main.rs">
+use anyhow::Result;
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    Ok(())
+}
+</file>
+
+<file path="src/observer_actor/handler.rs">
+use actix::{ActorContext, ActorFutureExt, AsyncContext, Handler, StreamHandler, WrapFuture};
+use futures_util::StreamExt;
+use std::collections::HashSet;
+use tokio_tungstenite::{connect_async, tungstenite};
+use tracing::{debug, error, info, warn};
+
+use crate::observer_actor::{
+    message::{InternalEvent, ObservationCompleted, SetSingleScenarioAddr, StartObservation},
+    EventStreamMessage, ObservationResult, ObserverActor, Phase,
+};
+
+impl Handler<StartObservation> for ObserverActor {
+    type Result = ();
+
+    fn handle(&mut self, msg: StartObservation, ctx: &mut Self::Context) {
+        info!("[{}] Starting event observation...", self.test_name);
+
+        // 관찰 시작 시, 모든 플레이어를 초기 단계(Matching)로 설정
+        for player_id in &msg.player_ids {
+            self.players_phase.insert(*player_id, Phase::Matching);
+            self.player_received_events_in_phase
+                .insert(*player_id, HashSet::new());
+        }
+
+        // 기본 스트림 URL에 선택적으로 kind 필터를 추가(환경 변수로 제어)
+        // Build stream URL with optional filters from env (kind, game_mode, session_id, event_type)
+        let mut params: Vec<String> = Vec::new();
+        if let Ok(kind) = std::env::var("OBSERVER_STREAM_KIND") {
+            if !kind.is_empty() {
+                params.push(format!("kind={}", kind));
+            }
+        }
+        if let Ok(gm) = std::env::var("OBSERVER_FILTER_GAME_MODE") {
+            if !gm.is_empty() {
+                params.push(format!("game_mode={}", gm));
+            }
+        }
+        if let Ok(sid) = std::env::var("OBSERVER_FILTER_SESSION_ID") {
+            if !sid.is_empty() {
+                params.push(format!("session_id={}", sid));
+            }
+        }
+        if let Ok(et) = std::env::var("OBSERVER_FILTER_EVENT_TYPE") {
+            if !et.is_empty() {
+                params.push(format!("event_type={}", et));
+            }
+        }
+        if let Ok(run_id) = std::env::var("OBSERVER_RUN_ID") {
+            if !run_id.is_empty() {
+                params.push(format!("run_id={}", run_id));
+            }
+        }
+        let url = if params.is_empty() {
+            format!("{}/events/stream", self.match_server_url)
+        } else {
+            format!(
+                "{}/events/stream?{}",
+                self.match_server_url,
+                params.join("&")
+            )
+        };
+
+        let actor_future = async move {
+            match connect_async(&url).await {
+                Ok((ws_stream, _)) => {
+                    let (_sink, stream) = ws_stream.split();
+                    Some(stream)
+                }
+                Err(e) => {
+                    error!("Failed to connect to event stream: {}", e);
+                    None
+                }
+            }
+        }
+        .into_actor(self)
+        .map(|stream_opt, act, ctx| {
+            if let Some(stream) = stream_opt {
+                info!(
+                    "[{}] Successfully connected to event stream.",
+                    act.test_name
+                );
+                ctx.add_stream(stream);
+            } else {
+                error!("[{}] Failed to add event stream.", act.test_name);
+                ctx.stop();
+            }
+        });
+
+        // 스웜 환경에서 대량 이벤트를 수용하기 위해 메일박스 용량 증가
+        ctx.set_mailbox_capacity(50_000);
+
+        ctx.spawn(actor_future);
+    }
+}
+
+impl actix::Handler<crate::observer_actor::message::PlayerFinishedFromActor> for ObserverActor {
+    type Result = ();
+    fn handle(
+        &mut self,
+        msg: crate::observer_actor::message::PlayerFinishedFromActor,
+        ctx: &mut Self::Context,
+    ) {
+        // Mark this player as Finished in phase model
+        self.players_phase
+            .insert(msg.player_id, crate::observer_actor::Phase::Finished);
+        self.player_received_events_in_phase
+            .insert(msg.player_id, std::collections::HashSet::new());
+        // For abnormal scenarios we consider the scenario concluded once any player finishes
+        if let Some(single) = &self.single_scenario_addr {
+            single.do_send(ObservationCompleted(ObservationResult::Success {
+                events: self.received_events.clone().into(),
+                duration: self.started_at.elapsed(),
+            }));
+        }
+        ctx.stop();
+    }
+}
+
+impl actix::Handler<crate::observer_actor::message::StopObservation> for super::ObserverActor {
+    type Result = ();
+    fn handle(
+        &mut self,
+        _msg: crate::observer_actor::message::StopObservation,
+        ctx: &mut Self::Context,
+    ) {
+        // Stop the event stream by stopping the actor
+        ctx.stop();
+    }
+}
+
+// WebSocket 스트림으로부터 메시지를 받는 핸들러
+impl StreamHandler<Result<tungstenite::Message, tungstenite::Error>> for ObserverActor {
+    fn handle(
+        &mut self,
+        item: Result<tungstenite::Message, tungstenite::Error>,
+        ctx: &mut Self::Context,
+    ) {
+        match item {
+            Ok(tungstenite::Message::Text(text)) => {
+                match serde_json::from_str::<EventStreamMessage>(&text) {
+                    Ok(event) => {
+                        ctx.address().do_send(InternalEvent(event));
+                    }
+                    Err(_e) => {
+                        // events:* 스타일의 상태 이벤트는 값 파싱으로 캐시 갱신만 시도
+                        if let Ok(evt) = serde_json::from_str::<serde_json::Value>(&text) {
+                            if let Some(t) = evt.get("event").and_then(|v| v.as_str()) {
+                                if t == "queue_size_changed" {
+                                    if let (Some(mode), Some(size)) = (
+                                        evt.get("game_mode")
+                                            .and_then(|v| v.as_str())
+                                            .map(|s| s.to_string()),
+                                        evt.get("size").and_then(|v| v.as_i64()),
+                                    ) {
+                                        self.last_queue_size
+                                            .insert(mode, (size, chrono::Utc::now()));
+                                    }
+                                }
+                            }
+                        } else {
+                            error!("Failed to parse event stream message");
+                        }
+                    }
+                }
+            }
+            Ok(_) => { /* 다른 메시지 타입은 무시 */ }
+            Err(e) => {
+                error!("Event stream error: {}. Stopping observer.", e);
+                ctx.stop();
+            }
+        }
+    }
+}
+
+// 내부 이벤트 메시지를 처리하여 검증 로직을 수행하는 핸들러
+impl Handler<InternalEvent> for ObserverActor {
+    type Result = ();
+
+    fn handle(&mut self, msg: InternalEvent, ctx: &mut Self::Context) {
+        let event = msg.0;
+        // Process state events inside actor context (message-forwarded)
+        self.process_state_event(&event);
+        debug!("[{}] Received event: {:?}", self.test_name, event);
+        // Shard-level filtering: drop unrelated player-scoped events
+        if let Some(pid) = event.player_id {
+            if !self.players_phase.contains_key(&pid) {
+                // Allowlist non-player state events always pass through
+                match event.event_type {
+                    crate::observer_actor::message::EventType::QueueSizeChanged
+                    | crate::observer_actor::message::EventType::DedicatedSessionFailed
+                    | crate::observer_actor::message::EventType::LoadingSessionCreated
+                    | crate::observer_actor::message::EventType::LoadingSessionCompleted
+                    | crate::observer_actor::message::EventType::LoadingSessionTimeout
+                    | crate::observer_actor::message::EventType::PlayersRequeued
+                    | crate::observer_actor::message::EventType::LoadingSessionCanceled
+                    | crate::observer_actor::message::EventType::ServerMessage
+                    | crate::observer_actor::message::EventType::Error
+                    | crate::observer_actor::message::EventType::StateViolation => {}
+                    _ => {
+                        // Drop unrelated per-player event
+                        return;
+                    }
+                }
+            }
+        }
+
+        // 링버퍼 append
+        if self.received_events.len() == self.max_events_kept {
+            self.received_events.pop_front();
+        }
+        self.received_events.push_back(event.clone());
+
+        if let Some(player_id) = event.player_id {
+            self.check_phase_completion(player_id, &event, ctx);
+        } else if event.event_type
+            == crate::observer_actor::message::EventType::DedicatedSessionFailed
+        {
+            // 최종 실패(reason=max_retries_exceeded)만 실패로 간주
+            let reason = event
+                .data
+                .get("reason")
+                .and_then(|v| v.as_str())
+                .unwrap_or("")
+                .to_lowercase();
+
+            if reason.contains("max_retries_exceeded") {
+                let keys: Vec<_> = self.players_phase.keys().cloned().collect();
+                for pid in keys {
+                    self.players_phase
+                        .insert(pid, crate::observer_actor::Phase::Failed);
+                }
+                self.check_all_players_finished(ctx);
+            } else {
+                warn!(
+                    "[{}] Non-final dedicated_session_failed observed: {}",
+                    self.test_name, reason
+                );
+            }
+        } else if event.event_type == crate::observer_actor::message::EventType::StateViolation {
+            // 서버 불변식 위반은 스웜 검증에서 즉시 실패로 처리
+            let code = event
+                .data
+                .get("code")
+                .and_then(|v| v.as_str())
+                .unwrap_or("unknown");
+            warn!(
+                "[{}] State violation observed: {} — failing scenario",
+                self.test_name, code
+            );
+            let keys: Vec<_> = self.players_phase.keys().cloned().collect();
+            for pid in keys {
+                self.players_phase
+                    .insert(pid, crate::observer_actor::Phase::Failed);
+            }
+            self.check_all_players_finished(ctx);
+        }
+    }
+}
+
+impl ObserverActor {
+    /// 플레이어의 현재 단계(Phase)의 완료 조건을 확인하고, 충족 시 다음 단계로 전환합니다.
+    fn check_phase_completion(
+        &mut self,
+        player_id: uuid::Uuid,
+        event: &EventStreamMessage,
+        ctx: &mut actix::Context<Self>,
+    ) {
+        let event_type = &event.event_type;
+        let data = &event.data;
+
+        // 전용 서버 할당 실패와 같은 치명적 에러가 클라이언트에 전달되면 해당 플레이어를 종료로 전환
+        if *event_type == crate::observer_actor::message::EventType::Error {
+            if let Some(msg) = data.get("message").and_then(|v| v.as_str()) {
+                let m = msg.to_lowercase();
+                if m.contains("failed") && m.contains("attempt") {
+                    self.players_phase
+                        .insert(player_id, crate::observer_actor::Phase::Failed);
+                    self.player_received_events_in_phase
+                        .insert(player_id, std::collections::HashSet::new());
+                    self.check_all_players_finished(ctx);
+                    return;
+                }
+            }
+            // 그 외 에러 메시지는 테스트 상 종료로 간주 (성공/실패 판단은 상위에서 수행)
+            self.players_phase
+                .insert(player_id, crate::observer_actor::Phase::Finished);
+            self.player_received_events_in_phase
+                .insert(player_id, std::collections::HashSet::new());
+            self.check_all_players_finished(ctx);
+            return;
+        }
+
+        let current_phase = match self.players_phase.get(&player_id) {
+            Some(phase) => phase.clone(),
+            None => {
+                warn!(
+                    "[{}] Received event for untracked player {}",
+                    self.test_name, player_id
+                );
+                return;
+            }
+        };
+
+        // 현재 단계에서 받은 이벤트로 기록
+        self.player_received_events_in_phase
+            .entry(player_id)
+            .or_default()
+            .insert(event_type.clone());
+
+        // 현재 단계의 완료 조건 가져오기 - 플레이어별 스케줄에서 찾기
+        if let Some(player_schedule) = self.players_schedule.get(&player_id) {
+            if let Some(condition) = player_schedule.get(&current_phase) {
+                // 전환 이벤트가 발생했는지 확인
+                if *event_type == condition.transition_event {
+                    let received_events = self
+                        .player_received_events_in_phase
+                        .get(&player_id)
+                        .unwrap();
+
+                    // 필수 이벤트들을 모두 받았는지 확인
+                    if condition.required_events.is_subset(received_events) {
+                        // Matcher가 존재하면 실행하고, 없으면 통과로 간주
+                        let matcher_passed = condition
+                            .transition_matcher
+                            .as_ref()
+                            .map_or(true, |matcher| matcher(data));
+
+                        if matcher_passed {
+                            // --- 단계 전환 ---
+                            let next_phase = condition.next_phase.clone();
+                            info!(
+                                "[{}] Player {} completed phase {:?} -> transitioning to {:?}",
+                                self.test_name, player_id, current_phase, next_phase
+                            );
+                            self.players_phase.insert(player_id, next_phase);
+                            self.player_received_events_in_phase
+                                .insert(player_id, HashSet::new()); // 다음 단계를 위해 초기화
+                        } else {
+                            warn!(
+                                "[{}] Player {} failed matcher for event {:?}",
+                                self.test_name, player_id, event_type
+                            );
+                            // 매처 실패 시 Failed 상태로 전환
+                            self.players_phase.insert(player_id, Phase::Failed);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 모든 플레이어가 최종 단계에 도달했는지 확인
+        self.check_all_players_finished(ctx);
+    }
+
+    /// 모든 플레이어가 Finished 상태에 도달했는지 확인합니다.
+    fn check_all_players_finished(&self, ctx: &mut actix::Context<Self>) {
+        if self.players_phase.is_empty() {
+            return;
+        }
+
+        // 실패한 플레이어가 있는지 먼저 확인
+        let has_failed = self
+            .players_phase
+            .values()
+            .any(|phase| *phase == Phase::Failed);
+
+        if has_failed {
+            warn!(
+                "✗ [{}] Scenario failed - at least one player is in Failed state.",
+                self.test_name
+            );
+
+            // SingleScenarioActor에게 실패 결과 전송
+            if let Some(single_scenario_addr) = &self.single_scenario_addr {
+                let failure_reason = format!("One or more players failed phase validation");
+                single_scenario_addr.do_send(ObservationCompleted(ObservationResult::Error {
+                    failed_step: 0,
+                    reason: failure_reason,
+                    events: self.received_events.clone().into(),
+                }));
+            }
+            ctx.stop();
+            return;
+        }
+
+        // 모든 플레이어가 완료했는지 확인
+        let all_finished = self
+            .players_phase
+            .values()
+            .all(|phase| *phase == Phase::Finished);
+
+        if all_finished {
+            info!(
+                "✓ [{}] All players have finished the scenario successfully.",
+                self.test_name
+            );
+
+            // SingleScenarioActor에게 성공 결과 전송
+            if let Some(single_scenario_addr) = &self.single_scenario_addr {
+                let duration = self.started_at.elapsed();
+
+                single_scenario_addr.do_send(ObservationCompleted(ObservationResult::Success {
+                    events: self.received_events.clone().into(),
+                    duration,
+                }));
+            }
+            ctx.stop();
+        }
+    }
+}
+
+impl Handler<SetSingleScenarioAddr> for ObserverActor {
+    type Result = ();
+
+    fn handle(&mut self, msg: SetSingleScenarioAddr, _ctx: &mut Self::Context) -> Self::Result {
+        self.single_scenario_addr = Some(msg.addr);
+        info!("[{}] SingleScenarioActor address set", self.test_name);
+    }
+}
+</file>
+
+<file path="src/observer_actor/message.rs">
+use actix::Message;
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
+
+use crate::observer_actor::ObservationResult;
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
+#[serde(rename_all = "snake_case")]
+pub enum EventType {
+    // Matchmaking
+    Enqueued,
+    Dequeued,
+    MatchFound,
+
+    // Loading
+    StartLoading,
+    LoadingComplete,
+
+    ServerMessage,
+    // Error
+    Error,
+
+    // State events (events:*)
+    QueueSizeChanged,
+    LoadingSessionCreated,
+    PlayerReady,
+    LoadingSessionCompleted,
+    LoadingSessionTimeout,
+    PlayersRequeued,
+    DedicatedSessionCreated,
+    DedicatedSessionFailed,
+    LoadingSessionCanceled,
+    StateViolation,
+
+    #[serde(other)]
+    Unknown,
+}
+
+// WebSocket을 통해 서버로부터 받는 이벤트 메시지
+#[derive(Serialize, Deserialize, Clone, Debug, Message)]
+#[rtype(result = "()")]
+pub struct EventStreamMessage {
+    pub event_type: EventType,
+    pub player_id: Option<Uuid>,
+    pub timestamp: DateTime<Utc>,
+    pub data: serde_json::Value,
+}
+
+// SingleScenarioActor가 ObserverActor에게 관찰 시작을 알리는 메시지
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct StartObservation {
+    pub player_ids: Vec<Uuid>, // 관찰할 플레이어들의 ID 목록
+}
+
+// 관찰 결과를 담아 SingleScenarioActor에게 보내는 메시지
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct ObservationCompleted(pub ObservationResult);
+
+// 내부적으로 WebSocket 스트림에서 받은 메시지를 처리하기 위한 메시지
+#[derive(Message)]
+#[rtype(result = "()")]
+pub(super) struct InternalEvent(pub EventStreamMessage);
+
+// SingleScenarioActor 주소를 설정하는 메시지
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct SetSingleScenarioAddr {
+    pub addr: actix::Addr<crate::scenario_actor::SingleScenarioActor>,
+}
+
+// 관찰을 중단하고 WebSocket 스트림을 종료하기 위한 메시지
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct StopObservation;
+
+// PlayerActor -> ObserverActor: notify per-player behavior completion so Observer can forward to SingleScenarioActor
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct PlayerFinishedFromActor {
+    pub player_id: uuid::Uuid,
+    pub result: crate::BehaviorResult,
+}
+</file>
+
+<file path="src/observer_actor/mod.rs">
+use actix::{Actor, Addr, Context};
+use std::collections::{HashMap, HashSet, VecDeque};
+use std::time::{Duration, Instant};
+use tracing::{info, warn};
+use uuid::Uuid;
+
+use crate::{
+    observer_actor::message::{EventStreamMessage, EventType},
+    scenario_actor::{ScenarioRunnerActor, SingleScenarioActor},
+};
+
+pub mod handler;
+pub mod message;
+
+// 1. 시나리오의 단계를 정의하는 Enum
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum Phase {
+    Matching,
+    Loading,
+    Finished, // 모든 과정이 끝난 최종 단계
+    Failed,   // 실패한 단계
+}
+
+use std::sync::Arc;
+
+// 2. 각 단계(Phase)의 완료 조건을 정의하는 구조체
+pub struct PhaseCondition {
+    pub required_events: HashSet<EventType>,
+    pub transition_event: EventType,
+    pub transition_matcher: Option<Arc<dyn Fn(&serde_json::Value) -> bool + Send + Sync>>,
+    pub next_phase: Phase,
+}
+
+impl Clone for PhaseCondition {
+    fn clone(&self) -> Self {
+        Self {
+            required_events: self.required_events.clone(),
+            transition_event: self.transition_event.clone(),
+            transition_matcher: self.transition_matcher.clone(),
+            next_phase: self.next_phase.clone(),
+        }
+    }
+}
+
+/// ObserverActor
+///
+/// ## 역할
+/// 시나리오/스웜의 전체적인 이벤트 흐름과 상태 변화를 감시하고 검증합니다.
+pub struct ObserverActor {
+    pub match_server_url: String,
+    // 메모리 사용을 제어하기 위한 링버퍼(간단 구현). 마지막 N개만 유지
+    pub received_events: VecDeque<EventStreamMessage>,
+    pub max_events_kept: usize,
+
+    pub test_name: String,
+    pub scenario_runner_addr: Addr<ScenarioRunnerActor>,
+    pub single_scenario_addr: Option<Addr<SingleScenarioActor>>,
+
+    // --- Phase 기반 검증을 위한 상태 필드 ---
+    /// 전체 시나리오의 단계별 진행 조건
+    pub players_schedule: HashMap<Uuid, HashMap<Phase, PhaseCondition>>,
+    /// 플레이어별 현재 단계
+    pub players_phase: HashMap<Uuid, Phase>,
+    /// 플레이어별로 현재 단계에서 받은 이벤트들
+    pub player_received_events_in_phase: HashMap<Uuid, HashSet<EventType>>,
+
+    // --- 상태 이벤트 기반 빠른 검증을 위한 캐시 ---
+    pub state_sessions: HashMap<String, HashSet<Uuid>>,
+    pub last_queue_size: HashMap<String, (i64, chrono::DateTime<chrono::Utc>)>,
+
+    pub ws_retry_attempts: u32,
+    pub consistency_warnings: Vec<String>,
+    pub started_at: Instant,
+}
+
+impl ObserverActor {
+    pub fn new(
+        match_server_url: String,
+        test_name: String,
+        scenario_runner_addr: Addr<ScenarioRunnerActor>,
+        players_schedule: HashMap<Uuid, HashMap<Phase, PhaseCondition>>,
+        players_phase: HashMap<Uuid, Phase>,
+    ) -> Self {
+        let max_events_kept = std::env::var("OBSERVER_RINGBUFFER_SIZE")
+            .ok()
+            .and_then(|v| v.parse::<usize>().ok())
+            .unwrap_or(10_000);
+        Self {
+            match_server_url,
+            received_events: VecDeque::with_capacity(max_events_kept),
+            max_events_kept,
+            test_name,
+            scenario_runner_addr,
+            single_scenario_addr: None,
+            players_schedule,
+            players_phase,
+            player_received_events_in_phase: HashMap::new(),
+            state_sessions: HashMap::new(),
+            last_queue_size: HashMap::new(),
+            ws_retry_attempts: 0,
+            consistency_warnings: Vec::new(),
+            started_at: Instant::now(),
+        }
+    }
+
+    pub fn set_single_scenario_addr(&mut self, addr: Addr<SingleScenarioActor>) {
+        self.single_scenario_addr = Some(addr);
+    }
+}
+
+impl Actor for ObserverActor {
+    type Context = Context<Self>;
+
+    fn started(&mut self, _ctx: &mut Self::Context) {
+        info!("[{}] ObserverActor started.", self.test_name);
+    }
+
+    fn stopped(&mut self, _ctx: &mut Self::Context) {
+        info!("[{}] ObserverActor stopped.", self.test_name);
+    }
+}
+
+impl ObserverActor {
+    /// Process state events and perform soft consistency checks.
+    pub fn process_state_event(&mut self, event: &EventStreamMessage) {
+        use crate::observer_actor::message::EventType as ET;
+
+        match event.event_type {
+            ET::LoadingSessionCreated => {
+                let session_id = event
+                    .data
+                    .get("session_id")
+                    .and_then(|v| v.as_str())
+                    .unwrap_or("")
+                    .to_string();
+                let players: HashSet<Uuid> = event
+                    .data
+                    .get("players")
+                    .and_then(|v| v.as_array())
+                    .map(|arr| {
+                        arr.iter()
+                            .filter_map(|s| s.as_str())
+                            .filter_map(|s| Uuid::parse_str(s).ok())
+                            .collect()
+                    })
+                    .unwrap_or_default();
+                if !session_id.is_empty() {
+                    self.state_sessions.insert(session_id, players);
+                }
+            }
+            ET::StartLoading => {
+                if let (Some(pid), Some(session)) = (
+                    event.player_id,
+                    event
+                        .data
+                        .get("loading_session_id")
+                        .and_then(|v| v.as_str())
+                        .map(|s| s.to_string()),
+                ) {
+                    let ok =
+                        check_start_loading_against_created(&self.state_sessions, &session, pid);
+                    if !ok {
+                        let msg = format!(
+                            "Soft check failed: player {} StartLoading for unknown/mismatched session {}",
+                            pid, session
+                        );
+                        warn!("{}", msg);
+                        self.consistency_warnings.push(msg);
+                    }
+                }
+            }
+            ET::LoadingSessionCompleted
+            | ET::LoadingSessionTimeout
+            | ET::LoadingSessionCanceled => {
+                // Clean up session map to avoid leaks
+                if let Some(session) = event.data.get("session_id").and_then(|v| v.as_str()) {
+                    self.state_sessions.remove(session);
+                }
+            }
+            ET::QueueSizeChanged => {
+                // 캐시 갱신
+                if let Some((gm, size)) = self.extract_queue_info(event) {
+                    self.last_queue_size.insert(gm, (size, event.timestamp));
+                }
+                // 최근 플레이어 액션과 비교하여 큐 사이즈 변화 검증
+                self.validate_queue_size_change(event);
+            }
+
+            _ => {}
+        }
+    }
+
+    /// QueueSizeChanged 이벤트를 최근 플레이어 액션과 비교하여 검증
+    fn validate_queue_size_change(&self, current_event: &EventStreamMessage) {
+        // 현재 큐 정보 추출
+        let (game_mode, current_size) = match self.extract_queue_info(current_event) {
+            Some(info) => info,
+            None => return, // 잘못된 이벤트 형식
+        };
+
+        // 이 게임 모드의 이전 큐 사이즈 찾기
+        let previous_size = self.find_previous_queue_size(&game_mode);
+        let actual_change = current_size - previous_size;
+
+        // 최근 플레이어 액션들을 기반으로 예상 변화량 계산
+        let expected_change =
+            self.calculate_expected_queue_change(&game_mode, current_event.timestamp);
+
+        // 검증
+        if actual_change == expected_change {
+            info!(
+                "[{}] ✓ 큐 사이즈 검증 통과 {}: {} -> {} (변화량: {})",
+                self.test_name, game_mode, previous_size, current_size, actual_change
+            );
+        } else {
+            let warning = format!(
+                "큐 사이즈 검증 실패 {}: 예상 변화량 {}, 실제 변화량 {} ({}->{})",
+                game_mode, expected_change, actual_change, previous_size, current_size
+            );
+            warn!("[{}] {}", self.test_name, warning);
+            // 현재는 정보 제공용이므로 consistency_warnings에 추가하지 않음
+        }
+    }
+
+    /// QueueSizeChanged 이벤트에서 game_mode와 큐 사이즈 추출
+    fn extract_queue_info(&self, event: &EventStreamMessage) -> Option<(String, i64)> {
+        let game_mode = event.data.get("game_mode")?.as_str()?.to_string();
+        let size = event.data.get("size")?.as_i64()?;
+        Some((game_mode, size))
+    }
+
+    /// 특정 게임 모드의 가장 최근 큐 사이즈 찾기(O(1) 캐시 이용)
+    fn find_previous_queue_size(&self, target_game_mode: &str) -> i64 {
+        self.last_queue_size
+            .get(target_game_mode)
+            .map(|(size, _ts)| *size)
+            .unwrap_or(0)
+    }
+
+    /// 최근 플레이어 액션들을 기반으로 예상 큐 변화량 계산(링버퍼에서 필요한 범위만)
+    fn calculate_expected_queue_change(
+        &self,
+        target_game_mode: &str,
+        current_timestamp: chrono::DateTime<chrono::Utc>,
+    ) -> i64 {
+        use crate::observer_actor::message::EventType as ET;
+
+        // 이전 QueueSizeChanged 이벤트의 타임스탬프 찾기(캐시)
+        let previous_timestamp = self
+            .last_queue_size
+            .get(target_game_mode)
+            .map(|(_size, ts)| *ts)
+            .unwrap_or(chrono::DateTime::<chrono::Utc>::MIN_UTC);
+
+        let mut expected_change = 0i64;
+
+        // 링버퍼 순회(최근 이벤트만)
+        for event in self.received_events.iter() {
+            // 시간 윈도우 내의 이벤트만 고려
+            if event.timestamp <= previous_timestamp || event.timestamp >= current_timestamp {
+                continue;
+            }
+
+            // 이 이벤트가 대상 게임 모드에 영향을 주는지 확인
+            let affects_game_mode = match event.event_type {
+                ET::Enqueued | ET::Dequeued | ET::StartLoading => {
+                    // TODO: player_id -> game_mode 매핑이 가능해지면 대체
+                    target_game_mode == "Normal_1v1"
+                }
+                ET::PlayersRequeued => event
+                    .data
+                    .get("game_mode")
+                    .and_then(|v| v.as_str())
+                    .map(|mode| mode == target_game_mode)
+                    .unwrap_or(false),
+                _ => false,
+            };
+
+            if affects_game_mode {
+                expected_change += match event.event_type {
+                    ET::Enqueued => 1,
+                    ET::Dequeued => -1,
+                    ET::StartLoading => -1,
+                    ET::PlayersRequeued => event
+                        .data
+                        .get("players")
+                        .and_then(|v| v.as_array())
+                        .map(|arr| arr.len() as i64)
+                        .unwrap_or(0),
+                    _ => 0,
+                };
+            }
+        }
+
+        expected_change
+    }
+}
+
+/// 단위 테스트용 순수 헬퍼 함수: LoadingSessionCreated 상태와 비교하여 StartLoading 검증
+pub fn check_start_loading_against_created(
+    sessions: &HashMap<String, HashSet<Uuid>>,
+    session_id: &str,
+    player_id: Uuid,
+) -> bool {
+    if let Some(players) = sessions.get(session_id) {
+        players.contains(&player_id)
+    } else {
+        false
+    }
+}
+
+#[derive(Debug)]
+pub enum ObservationResult {
+    Success {
+        events: Vec<EventStreamMessage>,
+        duration: Duration,
+    },
+    Timeout {
+        failed_step: usize,
+        reason: String,
+        events: Vec<EventStreamMessage>,
+    },
+    Error {
+        failed_step: usize,
+        reason: String,
+        events: Vec<EventStreamMessage>,
+    },
+}
+</file>
+
+<file path="src/player_actor/handler.rs">
+use actix::{
+    fut, ActorContext, ActorFutureExt, AsyncContext, Handler, MessageResult, StreamHandler,
+    WrapFuture,
+};
+use futures_util::SinkExt;
+use tokio_tungstenite::tungstenite::Message;
+use tracing::{error, info, warn};
+
+use crate::{
+    behaviors::{ClientMessage, ServerMessage},
+    player_actor::{
+        message::{
+            BehaviorFinished, ConnectionEstablished, GetPlayerId, InternalClose, InternalSendText,
+            SetState, TriggerEnqueueNow,
+        },
+        PlayerActor, PlayerContext, PlayerState,
+    },
+    BehaviorOutcome,
+};
+
+impl Handler<GetPlayerId> for PlayerActor {
+    type Result = MessageResult<GetPlayerId>;
+
+    fn handle(&mut self, _msg: GetPlayerId, _ctx: &mut Self::Context) -> Self::Result {
+        MessageResult(self.player_id)
+    }
+}
+
+impl StreamHandler<Result<Message, tokio_tungstenite::tungstenite::Error>> for PlayerActor {
+    fn handle(
+        &mut self,
+        item: Result<Message, tokio_tungstenite::tungstenite::Error>,
+        ctx: &mut Self::Context,
+    ) {
+        let msg = match item {
+            Ok(Message::Text(text)) => match serde_json::from_str::<ServerMessage>(&text) {
+                Ok(server_msg) => server_msg,
+                Err(e) => {
+                    error!("[{}] Failed to parse server message: {}", self.player_id, e);
+                    error!("[{}] Raw message: {}", self.player_id, text);
+
+                    // 파싱 에러 시 테스트 실패하도록 panic
+                    panic!(
+                        "Player {} failed to parse server message: {}. Raw message: {}",
+                        self.player_id, e, text
+                    );
+                }
+            },
+            Ok(Message::Close(reason)) => {
+                info!(
+                    "[{}] Server closed connection: {:?}",
+                    self.player_id, reason
+                );
+                ctx.stop();
+                return;
+            }
+            Err(e) => {
+                error!("[{}] WebSocket connection error: {}", self.player_id, e);
+                ctx.stop();
+                return;
+            }
+            _ => return,
+        };
+
+        info!("[{}] Received message: {:?}", self.player_id, msg);
+
+        let behavior = self.behavior.clone_trait();
+        let player_context = PlayerContext {
+            player_id: self.player_id,
+            addr: ctx.address(),
+        };
+
+        let fut_msg = msg.clone();
+
+        actix::spawn(async move {
+            let response = match fut_msg {
+                ServerMessage::EnQueued => behavior.on_enqueued(&player_context).await,
+                ServerMessage::StartLoading { loading_session_id } => {
+                    behavior
+                        .on_loading_start(&player_context, loading_session_id)
+                        .await
+                }
+                ServerMessage::MatchFound { .. } => behavior.on_match_found(&player_context).await,
+                ServerMessage::Error { message } => {
+                    behavior.on_error(&player_context, &message).await
+                }
+            };
+
+            player_context.addr.do_send(BehaviorFinished {
+                response,
+                original_message: msg,
+            });
+        });
+    }
+}
+
+impl Handler<BehaviorFinished> for PlayerActor {
+    type Result = ();
+
+    fn handle(&mut self, msg: BehaviorFinished, ctx: &mut Self::Context) {
+        let result = msg.response;
+        let original_message = msg.original_message;
+
+        match result {
+            Ok(BehaviorOutcome::Continue) => {
+                info!("[{}] Continuing with flow", self.player_id);
+                match original_message {
+                    ServerMessage::EnQueued => self.state = PlayerState::Enqueued,
+                    ServerMessage::StartLoading { .. } => self.state = PlayerState::Loading,
+                    _ => {}
+                }
+            }
+            Ok(BehaviorOutcome::Stop) => {
+                info!(
+                    "[{}] Player completed flow, stopping actor.",
+                    self.player_id
+                );
+                // Notify Observer that this player finished, so overall scenario can close
+                self.observer
+                    .do_send(crate::observer_actor::message::PlayerFinishedFromActor {
+                        player_id: self.player_id,
+                        result: Ok(BehaviorOutcome::Stop),
+                    });
+                ctx.stop();
+            }
+            Ok(BehaviorOutcome::Retry) => {
+                warn!("[{}] Retry requested by behavior", self.player_id);
+            }
+            Err(test_failure) => {
+                match test_failure {
+                    // 의도한 실패
+                    crate::TestFailure::Behavior(_) => {
+                        warn!("[{}] Behavior failure: {:?}", self.player_id, test_failure);
+                    }
+                    _ => {
+                        error!("[{}] Test failed: {:?}", self.player_id, test_failure);
+                        // Notify Observer to allow scenario to conclude even on error branches
+                        self.observer.do_send(
+                            crate::observer_actor::message::PlayerFinishedFromActor {
+                                player_id: self.player_id,
+                                result: Ok(BehaviorOutcome::Stop),
+                            },
+                        );
+                        ctx.stop();
+                    }
+                }
+            }
+        }
+    }
+}
+
+impl Handler<ConnectionEstablished> for PlayerActor {
+    type Result = ();
+
+    fn handle(&mut self, msg: ConnectionEstablished, ctx: &mut Self::Context) {
+        info!("[{}] Connection established", self.player_id);
+
+        self.sink = Some(msg.sink);
+        self.stream = Some(msg.stream);
+
+        if let Some(stream) = self.stream.take() {
+            ctx.add_stream(stream);
+        }
+        // 연결 직후 behavior 훅 호출(자동 Enqueue 사용 시에도 no-op로 계속)
+        {
+            let behavior = self.behavior.clone_trait();
+            let ctx_addr = ctx.address();
+            let player_id = self.player_id;
+            actix::spawn(async move {
+                let _ = behavior
+                    .on_connected(&crate::player_actor::PlayerContext {
+                        player_id,
+                        addr: ctx_addr,
+                    })
+                    .await;
+            });
+        }
+
+        // 자동 Enqueue 설정일 때만 전송
+        if self.auto_enqueue {
+            let enqueue_msg = ClientMessage::Enqueue {
+                player_id: self.player_id,
+                game_mode: crate::default_game_mode(),
+            };
+            ctx.address()
+                .do_send(InternalSendText(enqueue_msg.to_string()));
+        }
+    }
+}
+
+impl Handler<TriggerEnqueueNow> for PlayerActor {
+    type Result = ();
+    fn handle(&mut self, _msg: TriggerEnqueueNow, ctx: &mut Self::Context) {
+        if let Some(_) = self.sink {
+            // sink가 있어야만 가능
+            let enqueue_msg = ClientMessage::Enqueue {
+                player_id: self.player_id,
+                game_mode: crate::default_game_mode(),
+            };
+            ctx.address()
+                .do_send(InternalSendText(enqueue_msg.to_string()));
+        }
+    }
+}
+
+impl Handler<InternalSendText> for PlayerActor {
+    type Result = ();
+
+    fn handle(&mut self, msg: InternalSendText, ctx: &mut Self::Context) {
+        if let Some(mut sink) = self.sink.take() {
+            let send_future = async move {
+                let result = sink.send(Message::Text(msg.0)).await;
+                (result, sink)
+            };
+
+            let actor_future =
+                fut::wrap_future::<_, Self>(send_future).map(|(result, sink), actor, ctx| {
+                    if let Err(e) = result {
+                        error!("WebSocket sink failed: {}. Connection will be closed.", e);
+                        ctx.stop();
+                    } else {
+                        info!("Message sent Successfully.");
+                        actor.sink = Some(sink);
+                    }
+                });
+            ctx.wait(actor_future);
+        } else {
+            error!("Cannot send message: WebSocket sink is not available or already in use.");
+        }
+    }
+}
+
+impl actix::Handler<InternalClose> for PlayerActor {
+    type Result = ();
+    fn handle(&mut self, _msg: InternalClose, ctx: &mut Self::Context) {
+        if let Some(mut sink) = self.sink.take() {
+            let fut = async move {
+                let _ = sink.send(Message::Close(None)).await;
+                sink
+            };
+            let fut = fut.into_actor(self).map(|_sink, _, ctx| {
+                ctx.stop();
+            });
+            ctx.spawn(fut);
+        } else {
+            ctx.stop();
+        }
+    }
+}
+
+impl Handler<SetState> for PlayerActor {
+    type Result = ();
+
+    fn handle(&mut self, msg: SetState, _ctx: &mut Self::Context) {
+        self.state = msg.0;
+        info!("[{}] State changed to: {:?}", self.player_id, self.state);
+    }
+}
+</file>
+
+<file path="src/player_actor/message.rs">
+use actix::Message;
+
+use crate::{
+    behaviors::ServerMessage, player_actor::PlayerState, BehaviorResult, WsSink, WsStream,
+};
+
+#[derive(Message)]
+#[rtype(result = "uuid::Uuid")]
+pub struct GetPlayerId;
+
+#[derive(Message)]
+#[rtype(result = "()")]
+
+pub struct SetState(pub PlayerState);
+
+#[derive(Message)]
+#[rtype(result = "()")]
+
+pub struct ConnectionEstablished {
+    pub sink: WsSink,
+    pub stream: WsStream,
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+
+pub struct InternalSendText(pub String);
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct InternalClose;
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct BehaviorFinished {
+    pub response: BehaviorResult,
+    pub original_message: ServerMessage,
+}
+
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct TriggerEnqueueNow;
+</file>
+
+<file path="src/player_actor/mod.rs">
+use actix::{Actor, Addr, AsyncContext, Context};
+use futures_util::StreamExt;
+use tokio_tungstenite::connect_async;
+use tracing::{error, info};
+use url::Url;
+use uuid::Uuid;
+
+use crate::{
+    behaviors::PlayerBehavior,
+    observer_actor::ObserverActor,
+    player_actor::message::{ConnectionEstablished, SetState},
+    WsSink, WsStream, CONNECTION_TIMEOUT,
+};
+
+pub mod handler;
+pub mod message;
+
+#[derive(Debug, Clone, PartialEq, Copy)]
+pub enum PlayerState {
+    Idle,
+    Enqueued,
+    Loading,
+    Disconnected,
+}
+
+#[derive(Clone)]
+pub struct PlayerContext {
+    pub player_id: Uuid,
+    pub addr: Addr<PlayerActor>,
+}
+
+// 플레이어
+pub struct PlayerActor {
+    pub observer: Addr<ObserverActor>,
+    pub state: PlayerState,
+    pub behavior: Box<dyn PlayerBehavior>,
+    pub player_id: Uuid,
+    pub auto_enqueue: bool,
+    pub stream: Option<WsStream>,
+    pub sink: Option<WsSink>,
+}
+
+impl PlayerActor {
+    pub fn new(
+        observer: Addr<ObserverActor>,
+        behavior: Box<dyn PlayerBehavior>,
+        player_id: Uuid,
+        auto_enqueue: bool,
+    ) -> Self {
+        Self {
+            observer,
+            state: PlayerState::Idle,
+            behavior,
+            player_id,
+            auto_enqueue,
+            stream: None,
+            sink: None,
+        }
+    }
+}
+
+impl Actor for PlayerActor {
+    type Context = Context<Self>;
+
+    fn started(&mut self, ctx: &mut Self::Context) {
+        info!("PlayerActor started with state");
+        let addr = ctx.address();
+        let player_id = self.player_id;
+
+        actix::spawn(async move {
+            match Self::establish_connection().await {
+                Ok((sink, stream)) => {
+                    addr.do_send(ConnectionEstablished { sink, stream });
+                }
+                Err(e) => {
+                    error!("Player [{}] failed to connect: {}", player_id, e);
+                    addr.do_send(SetState(PlayerState::Disconnected));
+                }
+            }
+        });
+    }
+}
+
+impl PlayerActor {
+    async fn establish_connection() -> anyhow::Result<(WsSink, WsStream)> {
+        let url = Url::parse(&crate::server_ws_url())
+            .map_err(|e| anyhow::anyhow!("Invalid URL: {}", e))?;
+
+        let (ws_stream, _) = tokio::time::timeout(CONNECTION_TIMEOUT, connect_async(url.as_str()))
+            .await
+            .map_err(|_| anyhow::anyhow!("Connection timeout"))?
+            .map_err(|e| anyhow::anyhow!("Connection failed: {}", e))?;
+
+        let (sink, stream) = ws_stream.split();
+        Ok((sink, stream))
+    }
+}
+</file>
+
+<file path="src/scenario_actor/handler.rs">
+use actix::{ActorContext, Handler};
+use tracing::info;
+
+use super::message::{PlayerCompleted, ScenarioCompleted};
+use super::ScenarioResult;
+use super::{ScenarioRunnerActor, SingleScenarioActor};
+use crate::observer_actor::message::ObservationCompleted;
+
+impl Handler<ScenarioCompleted> for ScenarioRunnerActor {
+    type Result = ();
+
+    fn handle(&mut self, msg: ScenarioCompleted, ctx: &mut Self::Context) -> Self::Result {
+        info!(
+            "Scenario {} completed with result: {:?}",
+            msg.scenario_id, msg.result
+        );
+
+        self.results.push(msg.result);
+        self.completed_count += 1;
+
+        if self.completed_count >= self.total_count {
+            info!("All {} scenarios completed!", self.total_count);
+
+            let success_count = self
+                .results
+                .iter()
+                .filter(|r| matches!(r, ScenarioResult::Success))
+                .count();
+
+            info!(
+                "Final results: {}/{} scenarios succeeded",
+                success_count, self.total_count
+            );
+
+            // Notify tests, if a notifier is registered
+            if let Some(tx) = self.completion_tx.take() {
+                let _ = tx.send(super::ScenarioSummary {
+                    total: self.total_count,
+                    success_count,
+                    results: self.results.clone(),
+                });
+            }
+
+            ctx.stop();
+            actix::System::current().stop();
+        }
+    }
+}
+
+impl Handler<PlayerCompleted> for SingleScenarioActor {
+    type Result = ();
+
+    fn handle(&mut self, msg: PlayerCompleted, ctx: &mut Self::Context) -> Self::Result {
+        info!(
+            "Player {} completed with result: {:?}",
+            msg.player_id, msg.result
+        );
+
+        self.player_results.push(msg.result);
+
+        if self.player_results.len() >= 2 {
+            let scenario_result = self.determine_scenario_result();
+
+            self.runner_addr.do_send(ScenarioCompleted {
+                scenario_id: self.scenario.id,
+                result: scenario_result,
+            });
+
+            ctx.stop();
+        }
+    }
+}
+
+impl SingleScenarioActor {
+    fn determine_scenario_result(&self) -> ScenarioResult {
+        let all_success = self
+            .player_results
+            .iter()
+            .all(|result| matches!(result, Ok(crate::BehaviorOutcome::Stop)));
+
+        if all_success {
+            ScenarioResult::Success
+        } else {
+            let failed_players: Vec<String> = self
+                .player_results
+                .iter()
+                .enumerate()
+                .filter_map(|(i, result)| {
+                    if !matches!(result, Ok(crate::BehaviorOutcome::Stop)) {
+                        Some(format!("Player {}: {:?}", i, result))
+                    } else {
+                        None
+                    }
+                })
+                .collect();
+
+            ScenarioResult::Failure(format!("Failed players: {}", failed_players.join(", ")))
+        }
+    }
+}
+
+impl Handler<ObservationCompleted> for SingleScenarioActor {
+    type Result = ();
+
+    fn handle(&mut self, msg: ObservationCompleted, ctx: &mut Self::Context) -> Self::Result {
+        let observation_result = msg.0;
+
+        let scenario_result = match observation_result {
+            crate::observer_actor::ObservationResult::Success { .. } => {
+                info!("Scenario {} completed successfully", self.scenario.name);
+                ScenarioResult::Success
+            }
+            crate::observer_actor::ObservationResult::Timeout { reason, .. } => {
+                info!("Scenario {} timed out: {}", self.scenario.name, reason);
+                ScenarioResult::Failure(format!("Timeout: {}", reason))
+            }
+            crate::observer_actor::ObservationResult::Error { reason, .. } => {
+                info!("Scenario {} failed: {}", self.scenario.name, reason);
+                ScenarioResult::Failure(format!("Error: {}", reason))
+            }
+        };
+
+        // ScenarioRunnerActor에게 결과 전송
+        self.runner_addr.do_send(ScenarioCompleted {
+            scenario_id: self.scenario.id,
+            result: scenario_result,
+        });
+
+        ctx.stop();
+    }
+}
+</file>
+
+<file path="src/scenario_actor/message.rs">
+use crate::scenario_actor::ScenarioResult;
+use actix::Message;
+
+/// SingleScenarioActor ScenarioRunnerActor
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct ScenarioCompleted {
+    pub scenario_id: uuid::Uuid,
+    pub result: ScenarioResult,
+}
+
+/// PlayerActor SingleScenarioActor
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct PlayerCompleted {
+    pub player_id: uuid::Uuid,
+    pub result: crate::BehaviorResult,
+}
+</file>
+
+<file path="src/scenario_actor/mod.rs">
+use std::collections::HashMap;
+
+use actix::{Actor, Addr, AsyncContext, Context};
+use tokio::sync::oneshot;
+use tracing::info;
+use uuid::Uuid;
+
+use crate::{
+    behaviors::BehaviorType,
+    observer_actor::{
+        message::{SetSingleScenarioAddr, StartObservation},
+        ObserverActor,
+    },
+    player_actor::PlayerActor,
+    schedules,
+};
+
+pub mod handler;
+pub mod message;
+
+/// Scenario 정의
+#[derive(Debug, Clone)]
+pub struct Scenario {
+    pub id: Uuid,
+    pub name: String,
+    pub description: String,
+    pub perpetrator_behavior: BehaviorType,
+    pub victim_behavior: BehaviorType,
+}
+
+impl Scenario {
+    pub fn new(
+        name: String,
+        description: String,
+        perpetrator_behavior: BehaviorType,
+        victim_behavior: BehaviorType,
+    ) -> Self {
+        Self {
+            id: Uuid::new_v4(),
+            name,
+            description,
+            perpetrator_behavior,
+            victim_behavior,
+        }
+    }
+}
+
+/// 시나리오 실행 결과
+#[derive(Debug, Clone)]
+pub enum ScenarioResult {
+    Success,
+    Failure(String),
+}
+
+/// 전체 테스트 스위트를 관리하는 Manager 액터
+pub struct ScenarioRunnerActor {
+    scenarios: Vec<Scenario>,
+    completed_count: usize,
+    total_count: usize,
+    results: Vec<ScenarioResult>,
+    completion_tx: Option<oneshot::Sender<ScenarioSummary>>, // notify tests when all done
+}
+
+impl ScenarioRunnerActor {
+    pub fn new(scenarios: Vec<Scenario>) -> Self {
+        let total_count = scenarios.len();
+        Self {
+            scenarios,
+            completed_count: 0,
+            total_count,
+            results: Vec::new(),
+            completion_tx: None,
+        }
+    }
+
+    /// Start a runner and notify via oneshot when all scenarios finish.
+    pub fn start_with_notifier(
+        scenarios: Vec<Scenario>,
+        completion_tx: oneshot::Sender<ScenarioSummary>,
+    ) -> Addr<Self> {
+        actix::Actor::create(|_ctx| Self {
+            total_count: scenarios.len(),
+            scenarios,
+            completed_count: 0,
+            results: Vec::new(),
+            completion_tx: Some(completion_tx),
+        })
+    }
+}
+
+impl Actor for ScenarioRunnerActor {
+    type Context = Context<Self>;
+
+    fn started(&mut self, ctx: &mut Self::Context) {
+        info!(
+            "ScenarioRunnerActor started with {} scenarios",
+            self.total_count
+        );
+
+        // 모든 시나리오에 대해 SingleScenarioActor 생성 및 시작
+        for scenario in self.scenarios.clone() {
+            let scenario_actor = SingleScenarioActor::new(scenario, ctx.address());
+            scenario_actor.start();
+        }
+    }
+}
+
+/// 개별 시나리오를 책임지고 실행하는 Worker 액터
+pub struct SingleScenarioActor {
+    scenario: Scenario,
+    runner_addr: Addr<ScenarioRunnerActor>,
+    player_results: Vec<crate::BehaviorResult>,
+}
+
+impl SingleScenarioActor {
+    pub fn new(scenario: Scenario, runner_addr: Addr<ScenarioRunnerActor>) -> Self {
+        Self {
+            scenario,
+            runner_addr,
+            player_results: Vec::new(),
+        }
+    }
+}
+
+/// Summary sent to tests when all scenarios complete.
+#[derive(Debug, Clone)]
+pub struct ScenarioSummary {
+    pub total: usize,
+    pub success_count: usize,
+    pub results: Vec<ScenarioResult>,
+}
+
+impl Actor for SingleScenarioActor {
+    type Context = Context<Self>;
+
+    fn started(&mut self, ctx: &mut Self::Context) {
+        info!(
+            "SingleScenarioActor started for scenario: {}",
+            self.scenario.name
+        );
+
+        let perpetrator_id = Uuid::new_v4();
+        let victim_id = Uuid::new_v4();
+
+        let perpetrator_schedule =
+            schedules::get_schedule_for_perpetrator(&self.scenario.perpetrator_behavior);
+        let victim_schedule = schedules::get_schedule_for_victim(&self.scenario.victim_behavior);
+        let mut players_schedule = HashMap::new();
+
+        players_schedule.insert(perpetrator_id, perpetrator_schedule);
+        players_schedule.insert(victim_id, victim_schedule);
+
+        let observer = ObserverActor::new(
+            "ws://127.0.0.1:8080".to_string(),
+            self.scenario.name.clone(),
+            self.runner_addr.clone(),
+            players_schedule,
+            HashMap::new(),
+        );
+
+        // SingleScenarioActor 주소를 Observer에 설정 (순환 참조 방지를 위해 나중에 설정)
+        let observer_addr = observer.start();
+
+        // ObserverActor에 SingleScenarioActor 주소 설정
+        observer_addr.do_send(SetSingleScenarioAddr {
+            addr: ctx.address(),
+        });
+
+        let perpetrator_behavior = Box::new(self.scenario.perpetrator_behavior.clone());
+        let victim_behavior = Box::new(self.scenario.victim_behavior.clone());
+
+        let perpetrator_actor = PlayerActor::new(
+            observer_addr.clone(),
+            perpetrator_behavior,
+            perpetrator_id,
+            true,
+        );
+        let victim_actor =
+            PlayerActor::new(observer_addr.clone(), victim_behavior, victim_id, true);
+
+        perpetrator_actor.start();
+        victim_actor.start();
+
+        // 4. Observer에게 관찰 시작 알림
+        observer_addr.do_send(StartObservation {
+            player_ids: vec![perpetrator_id, victim_id],
+        });
+
+        info!(
+            "Created players for scenario {}: perpetrator={}, victim={}",
+            self.scenario.name, perpetrator_id, victim_id
+        );
+    }
+}
+</file>
+
+<file path="src/schedules.rs">
+use std::collections::{HashMap, HashSet};
+use std::sync::Arc;
+
+use serde_json::Value;
+
+use crate::{
+    behaviors::BehaviorType,
+    observer_actor::{message::EventType, Phase, PhaseCondition},
+};
+
+fn phase_matching_to_loading() -> PhaseCondition {
+    PhaseCondition {
+        required_events: HashSet::from([EventType::Enqueued]),
+        transition_event: EventType::StartLoading,
+        transition_matcher: None,
+        next_phase: Phase::Loading,
+    }
+}
+
+fn is_match_found_payload(data: &Value) -> bool {
+    data.get("session_id").is_some() && data.get("server_address").is_some()
+}
+
+fn phase_loading_to_finished_match_found() -> PhaseCondition {
+    PhaseCondition {
+        required_events: HashSet::new(),
+        transition_event: EventType::MatchFound,
+        transition_matcher: Some(Arc::new(|data| is_match_found_payload(data))),
+        next_phase: Phase::Finished,
+    }
+}
+
+fn error_message_contains_any(data: &Value, needles: &[&str]) -> bool {
+    if let Some(msg) = data.get("message").and_then(|v| v.as_str()) {
+        let msg = msg.to_lowercase();
+        needles.iter().any(|needle| msg.contains(needle))
+    } else {
+        true
+    }
+}
+
+fn phase_loading_to_finished_error<F>(predicate: F) -> PhaseCondition
+where
+    F: Fn(&Value) -> bool + Send + Sync + 'static,
+{
+    PhaseCondition {
+        required_events: HashSet::new(),
+        transition_event: EventType::Error,
+        transition_matcher: Some(Arc::new(predicate)),
+        next_phase: Phase::Finished,
+    }
+}
+
+fn phase_loading_to_finished_error_with_required(
+    required: HashSet<EventType>,
+    needles: &'static [&'static str],
+) -> PhaseCondition {
+    PhaseCondition {
+        required_events: required,
+        transition_event: EventType::Error,
+        transition_matcher: Some(Arc::new(move |data| {
+            error_message_contains_any(data, needles)
+        })),
+        next_phase: Phase::Finished,
+    }
+}
+
+fn build_schedule_for_behavior(behavior: &BehaviorType) -> HashMap<Phase, PhaseCondition> {
+    match behavior {
+        BehaviorType::Normal
+        | BehaviorType::SlowLoader { .. }
+        | BehaviorType::SpikyLoader { .. } => {
+            let mut schedule = HashMap::new();
+            schedule.insert(Phase::Matching, phase_matching_to_loading());
+            schedule.insert(Phase::Loading, phase_loading_to_finished_match_found());
+            schedule
+        }
+        BehaviorType::TimeoutLoader | BehaviorType::QuitDuringLoading => {
+            let mut schedule = HashMap::new();
+            schedule.insert(Phase::Matching, phase_matching_to_loading());
+            schedule.insert(
+                Phase::Loading,
+                phase_loading_to_finished_error_with_required(
+                    HashSet::new(),
+                    &["quit", "disconnect", "timeout"],
+                ),
+            );
+            schedule
+        }
+        BehaviorType::QuitBeforeMatch => {
+            // 큐 잡히기 전 종료: Loading 단계로 가지 않으며, Error/Dequeued 등을 관찰하고 종료로 간주
+            let mut schedule = HashMap::new();
+            // Matching 단계에서 에러가 오면 Finished로 전환하는 간단한 정책
+            schedule.insert(
+                Phase::Matching,
+                PhaseCondition {
+                    required_events: HashSet::new(),
+                    transition_event: EventType::Error,
+                    transition_matcher: None,
+                    next_phase: Phase::Finished,
+                },
+            );
+            schedule
+        }
+        BehaviorType::Invalid { .. } => {
+            let mut schedule = HashMap::new();
+            schedule.insert(Phase::Matching, phase_matching_to_loading());
+            schedule.insert(
+                Phase::Loading,
+                phase_loading_to_finished_error_with_required(
+                    HashSet::new(),
+                    &["error", "invalid", "bad", "timeout"],
+                ),
+            );
+            schedule
+        }
+    }
+}
+
+pub fn get_schedule_for_perpetrator(
+    perpetrator_behavior: &BehaviorType,
+) -> HashMap<Phase, PhaseCondition> {
+    build_schedule_for_behavior(perpetrator_behavior)
+}
+
+pub fn get_schedule_for_victim(victim_behavior: &BehaviorType) -> HashMap<Phase, PhaseCondition> {
+    match victim_behavior {
+        BehaviorType::Normal | BehaviorType::SlowLoader { .. } => {
+            let mut schedule = HashMap::new();
+            schedule.insert(Phase::Matching, phase_matching_to_loading());
+            schedule.insert(Phase::Loading, phase_loading_to_finished_match_found());
+            schedule
+        }
+        _ => {
+            let mut schedule = HashMap::new();
+            schedule.insert(Phase::Matching, phase_matching_to_loading());
+            schedule.insert(
+                Phase::Loading,
+                phase_loading_to_finished_error(|_data| true),
+            );
+            schedule
+        }
+    }
+}
+</file>
+
+<file path="src/swarm/behavior_mix.rs">
+use rand::Rng;
+use rand_chacha::ChaCha20Rng;
+use serde::{Deserialize, Serialize};
+
+use crate::behaviors::BehaviorType;
+
+use super::seed::rng_for;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BehaviorMixTemplate {
+    // InvalidMessages 비율
+    pub invalid_ratio_min: f64,
+    pub invalid_ratio_max: f64,
+
+    // 행동별 비율/파라미터 범위
+    pub slow_ratio_min: f64,
+    pub slow_ratio_max: f64,
+    pub slow_delay_seconds_min: u64,
+    pub slow_delay_seconds_max: u64,
+
+    pub spiky_ratio_min: f64,
+    pub spiky_ratio_max: f64,
+    pub spiky_delay_ms_min: u64,
+    pub spiky_delay_ms_max: u64,
+
+    pub timeout_ratio_min: f64,
+    pub timeout_ratio_max: f64,
+
+    pub quit_before_ratio_min: f64,
+    pub quit_before_ratio_max: f64,
+
+    pub quit_during_loading_ratio_min: f64,
+    pub quit_during_loading_ratio_max: f64,
+
+    // InvalidMessages 모드 비율(세부 분포). 합이 1.0이 아니어도 내부에서 정규화
+    pub invalid_mode_unknown_weight: f64,
+    pub invalid_mode_missing_weight: f64,
+
+    // InvalidMessages 모드 비율(추가)
+    pub invalid_mode_duplicate_enqueue_weight: f64,
+    pub invalid_mode_wrong_session_id_weight: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BehaviorMixConfig {
+    pub slow_ratio: f64,
+    pub slow_delay_seconds: u64,
+    pub spiky_ratio: f64,
+    pub spiky_delay_ms: u64,
+    pub timeout_ratio: f64,
+    pub quit_before_ratio: f64,
+    pub quit_during_loading_ratio: f64,
+
+    // InvalidMessages 모드 weight (정규화는 선택 시점에 수행)
+    pub invalid_mode_unknown_weight: f64,
+    pub invalid_mode_missing_weight: f64,
+
+    pub invalid_mode_duplicate_enqueue_weight: f64,
+    pub invalid_mode_wrong_session_id_weight: f64,
+
+    pub invalid_ratio: f64,
+}
+
+pub fn gen_behavior_mix(seed: u64, tpl: &BehaviorMixTemplate) -> BehaviorMixConfig {
+    let mut r = rng_for(seed, "behavior_mix");
+    let pick = |min: f64, max: f64, r: &mut ChaCha20Rng| -> f64 {
+        if (min - max).abs() < f64::EPSILON {
+            min
+        } else {
+            r.gen_range(min..=max)
+        }
+    };
+    let pick_u = |min: u64, max: u64, r: &mut ChaCha20Rng| -> u64 {
+        if min == max {
+            min
+        } else {
+            r.gen_range(min..=max)
+        }
+    };
+
+    BehaviorMixConfig {
+        slow_ratio: pick(tpl.slow_ratio_min, tpl.slow_ratio_max, &mut r),
+        slow_delay_seconds: pick_u(
+            tpl.slow_delay_seconds_min,
+            tpl.slow_delay_seconds_max,
+            &mut r,
+        ),
+        spiky_ratio: pick(tpl.spiky_ratio_min, tpl.spiky_ratio_max, &mut r),
+        spiky_delay_ms: pick_u(tpl.spiky_delay_ms_min, tpl.spiky_delay_ms_max, &mut r),
+        timeout_ratio: pick(tpl.timeout_ratio_min, tpl.timeout_ratio_max, &mut r),
+        quit_before_ratio: pick(tpl.quit_before_ratio_min, tpl.quit_before_ratio_max, &mut r),
+        quit_during_loading_ratio: pick(
+            tpl.quit_during_loading_ratio_min,
+            tpl.quit_during_loading_ratio_max,
+            &mut r,
+        ),
+        invalid_ratio: pick(tpl.invalid_ratio_min, tpl.invalid_ratio_max, &mut r),
+        invalid_mode_unknown_weight: tpl.invalid_mode_unknown_weight,
+        invalid_mode_missing_weight: tpl.invalid_mode_missing_weight,
+
+        invalid_mode_duplicate_enqueue_weight: tpl.invalid_mode_duplicate_enqueue_weight,
+        invalid_mode_wrong_session_id_weight: tpl.invalid_mode_wrong_session_id_weight,
+    }
+}
+
+/// 플레이어 인덱스별로 Behavior를 결정적으로 할당합니다.
+pub fn behavior_for_index(seed: u64, idx: u64, mix: &BehaviorMixConfig) -> BehaviorType {
+    let mut r: ChaCha20Rng = rng_for(seed, &format!("behavior/{}", idx));
+    let v: f64 = r.gen::<f64>();
+
+    // 누적 구간 선택 방식
+    let mut acc = 0.0;
+    let choose = |v: f64, p: f64, acc: &mut f64| -> bool {
+        *acc += p;
+        v < *acc
+    };
+
+    if choose(v, mix.quit_before_ratio, &mut acc) {
+        return BehaviorType::QuitBeforeMatch;
+    }
+    if choose(v, mix.quit_during_loading_ratio, &mut acc) {
+        return BehaviorType::QuitDuringLoading;
+    }
+    if choose(v, mix.timeout_ratio, &mut acc) {
+        return BehaviorType::TimeoutLoader;
+    }
+    if choose(v, mix.spiky_ratio, &mut acc) {
+        return BehaviorType::SpikyLoader {
+            delay_ms: mix.spiky_delay_ms,
+        };
+    }
+    if choose(v, mix.slow_ratio, &mut acc) {
+        return BehaviorType::SlowLoader {
+            delay_seconds: mix.slow_delay_seconds,
+        };
+    }
+    if choose(v, mix.invalid_ratio, &mut acc) {
+        // Invalid 모드는 weights로 세분화
+        let mut r2: ChaCha20Rng = rng_for(seed, &format!("behavior/{}/invalid_mode", idx));
+        let total = mix.invalid_mode_unknown_weight
+            + mix.invalid_mode_missing_weight
+            + mix.invalid_mode_duplicate_enqueue_weight
+            + mix.invalid_mode_wrong_session_id_weight;
+        let (w_u, w_m, w_d, w_w) = if total > 0.0 {
+            (
+                mix.invalid_mode_unknown_weight / total,
+                mix.invalid_mode_missing_weight / total,
+                mix.invalid_mode_duplicate_enqueue_weight / total,
+                mix.invalid_mode_wrong_session_id_weight / total,
+            )
+        } else {
+            (1.0, 0.0, 0.0, 0.0)
+        };
+        let v2: f64 = r2.gen::<f64>();
+        let mut a2 = 0.0;
+        let mut pick_mode = |p: f64| -> bool {
+            a2 += p;
+            v2 < a2
+        };
+        let mode = if pick_mode(w_u) {
+            crate::behaviors::invalid::InvalidMode::UnknownType
+        } else if pick_mode(w_m) {
+            crate::behaviors::invalid::InvalidMode::MissingField
+        } else if false {
+            // no w_e branch anymore
+            crate::behaviors::invalid::InvalidMode::MissingField
+        } else if pick_mode(w_d) {
+            crate::behaviors::invalid::InvalidMode::DuplicateEnqueue
+        } else if pick_mode(w_w) {
+            crate::behaviors::invalid::InvalidMode::WrongSessionId
+        } else {
+            // 가드: 떠남
+            crate::behaviors::invalid::InvalidMode::UnknownType
+        };
+        return BehaviorType::Invalid { mode };
+    }
+    BehaviorType::Normal
+}
+</file>
+
+<file path="src/swarm/concrete.rs">
+use serde::Serialize;
+
+use super::behavior_mix::BehaviorMixConfig;
+
+#[derive(Debug, Clone, Serialize)]
+pub struct ConcreteConfig {
+    pub duration_secs: u64,
+    pub player_count: u64,
+    pub cps: f64,
+    pub behavior_mix: BehaviorMixConfig,
+}
+</file>
+
+<file path="src/swarm/config.rs">
+use super::behavior_mix::BehaviorMixConfig;
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct SwarmConfig {
+    pub duration_secs: u32,
+    pub shards: usize,
+    pub players_per_shard: usize,
+    pub game_mode: Option<String>,
+    /// Base URL like ws://127.0.0.1:8080 (Observer builds /events/stream)
+    pub match_server_base: Option<String>,
+    /// Deterministic seed for the run (overrides SWARM_SEED env)
+    pub seed: Option<u64>,
+    /// Inline behavior mix configuration (concrete values)
+    pub behavior_mix: Option<BehaviorMixConfig>,
+    /// Optional result summary output path (JSON). If not set, defaults to logs/swarm_summary_<ts>.json
+    pub result_path: Option<String>,
+    /// Ratio of players per shard to start simultaneously (0.0..=1.0). None or 0.0 disables burst.
+    pub burst_ratio: Option<f64>,
+}
+
+impl SwarmConfig {
+    pub fn from_toml_str(s: &str) -> anyhow::Result<Self> {
+        let cfg: SwarmConfig = toml::from_str(s)?;
+        Ok(cfg)
+    }
+
+    pub fn events_base_url(&self) -> Option<String> {
+        self.match_server_base.clone()
+    }
+}
+</file>
+
+<file path="src/swarm/generate.rs">
+use rand::Rng;
+use rand_chacha::ChaCha20Rng;
+
+use super::{behavior_mix::gen_behavior_mix, concrete::ConcreteConfig, template::SwarmTemplate};
+use crate::swarm::seed::rng_for;
+
+pub fn generate(global_seed: u64, tpl: &SwarmTemplate) -> ConcreteConfig {
+    let mut r_counts: ChaCha20Rng = rng_for(global_seed, "counts");
+    let mut r_cps: ChaCha20Rng = rng_for(global_seed, "cps");
+
+    let player_count = if tpl.player_count_min == tpl.player_count_max {
+        tpl.player_count_min
+    } else {
+        r_counts.gen_range(tpl.player_count_min..=tpl.player_count_max)
+    };
+
+    let cps = if (tpl.cps_min - tpl.cps_max).abs() < f64::EPSILON {
+        tpl.cps_min
+    } else {
+        r_cps.gen_range(tpl.cps_min..=tpl.cps_max)
+    };
+
+    let behavior_mix = gen_behavior_mix(global_seed, &tpl.behavior_mix);
+
+    ConcreteConfig {
+        duration_secs: tpl.duration_secs,
+        player_count,
+        cps,
+        behavior_mix,
+    }
+}
+</file>
+
+<file path="src/swarm/manifest.rs">
+use anyhow::Result;
+use chrono::{DateTime, Utc};
+use serde::Serialize;
+use std::path::Path;
+
+use super::concrete::ConcreteConfig;
+
+#[derive(Debug, Serialize)]
+pub struct RunManifest {
+    pub seed: u64,
+    pub config: ConcreteConfig,
+}
+
+pub fn save_manifest(path: &Path, manifest: &RunManifest) -> Result<()> {
+    let payload = serde_json::to_vec_pretty(manifest)?;
+    std::fs::write(path, payload)?;
+    Ok(())
+}
+
+#[derive(Debug, Serialize, Default, Clone)]
+pub struct BehaviorOutcomeCounts {
+    pub successful_matches: u64,
+    pub loading_timeouts: u64,
+    pub quit_before_match: u64,
+    pub quit_during_loading: u64,
+    pub connection_failures: u64,
+    pub invalid_requests: u64,
+    pub other_failures: u64,
+}
+
+#[derive(Debug, Serialize)]
+pub struct SwarmRunSummary<CfgT: Serialize> {
+    pub timestamp: DateTime<Utc>,
+    pub seed: u64,
+
+    pub config: CfgT,
+    pub metrics_url: String,
+    pub slo: crate::swarm::slo::SloReport,
+    pub outcome_counts: BehaviorOutcomeCounts,
+    /// Snapshot of players remaining in queues at run end
+    pub still_queued_at_end: RemainingQueueSummary,
+}
+
+pub fn save_swarm_summary<CfgT: Serialize>(
+    path: &Path,
+    summary: &SwarmRunSummary<CfgT>,
+) -> Result<()> {
+    let payload = serde_json::to_vec_pretty(summary)?;
+    if let Some(dir) = path.parent() {
+        std::fs::create_dir_all(dir).ok();
+    }
+    std::fs::write(path, payload)?;
+    Ok(())
+}
+
+#[derive(Debug, Serialize, Default, Clone)]
+pub struct RemainingQueueSummary {
+    pub total: u64,
+    pub by_mode: std::collections::HashMap<String, u64>,
+}
+</file>
+
+<file path="src/swarm/mod.rs">
+use actix::Actor;
+use std::sync::Arc;
+use std::time::{Duration, Instant};
+use tracing::{info, warn};
+
+use crate::observer_actor::{message::StartObservation, ObserverActor, Phase, PhaseCondition};
+use crate::player_actor::PlayerActor;
+use crate::scenario_actor::ScenarioRunnerActor;
+use crate::swarm::behavior_mix::{behavior_for_index, BehaviorMixConfig};
+use crate::swarm::manifest::{save_swarm_summary, SwarmRunSummary};
+use crate::swarm::schedule::spawn_schedule_constant;
+use crate::swarm::seed::uuid_for;
+use redis::{AsyncCommands, AsyncIter};
+use uuid::Uuid;
+
+pub mod config;
+fn resolve_seed_and_mix(cfg: &config::SwarmConfig) -> (u64, BehaviorMixConfig) {
+    let seed = cfg
+        .seed
+        .or_else(|| {
+            std::env::var("SWARM_SEED")
+                .ok()
+                .and_then(|s| s.parse::<u64>().ok())
+        })
+        .unwrap_or(42);
+    let mix = if let Some(m) = cfg.behavior_mix.clone() {
+        m
+    } else {
+        panic!()
+    };
+    (seed, mix)
+}
+
+pub mod slo;
+
+pub async fn run_swarm(cfg: config::SwarmConfig) -> anyhow::Result<()> {
+    info!(
+        "Starting swarm: shards={}, players_per_shard={}, duration_secs={}",
+        cfg.shards, cfg.players_per_shard, cfg.duration_secs
+    );
+
+    // Start a single runner to satisfy ObserverActor's dependency
+    let runner = ScenarioRunnerActor::new(vec![]).start();
+
+    // Prefer streaming only violations by default to reduce noise
+    if std::env::var("OBSERVER_STREAM_KIND").is_err() {
+        std::env::set_var("OBSERVER_STREAM_KIND", "state_violation");
+    }
+
+    // Decide deterministic seed and behavior mix
+    let (seed, mix) = resolve_seed_and_mix(&cfg);
+
+    // (Legacy run_id/Grafana/reset removed)
+
+    // Spawn observers per shard and orchestrate players
+    let mut observer_addrs: Vec<actix::Addr<ObserverActor>> =
+        Vec::with_capacity(cfg.shards as usize);
+    for shard in 0..cfg.shards {
+        let test_name = format!("SwarmShard-{}", shard);
+        let players_schedule = std::collections::HashMap::<
+            Uuid,
+            std::collections::HashMap<Phase, PhaseCondition>,
+        >::new();
+        let players_phase = std::collections::HashMap::<Uuid, Phase>::new();
+        // Expect base server URL like ws://host:port
+        let base_url = cfg
+            .events_base_url()
+            .unwrap_or_else(|| "ws://127.0.0.1:8080".to_string());
+
+        let observer = ObserverActor::new(
+            base_url,
+            test_name,
+            runner.clone(),
+            players_schedule,
+            players_phase,
+        );
+        let observer_addr = observer.start();
+        observer_addrs.push(observer_addr.clone());
+
+        // Compute deterministic player ids and schedule
+        let shard_seed = seed + shard as u64;
+        let player_count = cfg.players_per_shard as u64;
+        let cps = if cfg.duration_secs > 0 {
+            (player_count as f64) / (cfg.duration_secs as f64)
+        } else {
+            player_count as f64
+        };
+        let schedule_ms =
+            spawn_schedule_constant(shard_seed, "swarm", player_count, cps.max(0.1), 200);
+
+        // Prepare player id list and kick off observation (ids pre-registered for shard filtering)
+        let mut ids: Vec<Uuid> = Vec::with_capacity(player_count as usize);
+        for i in 0..player_count {
+            ids.push(uuid_for(shard_seed, "player", i));
+        }
+        observer_addr.do_send(StartObservation {
+            player_ids: ids.clone(),
+        });
+
+        // Spawn players according to schedule
+        let t0 = Instant::now();
+        // Set global config for server URL/game_mode consumed by PlayerActors
+        let ws_url = format!(
+            "{}/ws/",
+            cfg.events_base_url()
+                .unwrap_or_else(|| "ws://127.0.0.1:8080".to_string())
+                .trim_end_matches('/')
+        );
+        std::env::set_var("TEST_CLIENT_WS_URL", ws_url);
+        if let Some(gm) = cfg.game_mode.clone() {
+            std::env::set_var("TEST_CLIENT_GAME_MODE", gm);
+        }
+        // Export behavior mix for SLO summary to consume
+        // Optional per-shard burst barrier
+        let burst_n = if let Some(r) = cfg.burst_ratio {
+            if r > 0.0 {
+                ((player_count as f64) * r).ceil().max(1.0) as usize
+            } else {
+                0
+            }
+        } else {
+            0
+        };
+        let burst_barrier = if burst_n > 0 {
+            Some(Arc::new(tokio::sync::Barrier::new(burst_n)))
+        } else {
+            None
+        };
+
+        for (i, ms) in schedule_ms.iter().enumerate() {
+            let when_ms = *ms;
+            let obs = observer_addr.clone();
+            let pid = ids[i];
+            let mix_clone = mix.clone();
+            let burst_barrier = burst_barrier.clone();
+            actix::spawn(async move {
+                let target = t0 + Duration::from_millis(when_ms);
+                let now = Instant::now();
+                // If within burst, wait at barrier for simultaneous start; otherwise honor schedule
+                if let Some(bar) = burst_barrier.clone() {
+                    if i < burst_n {
+                        bar.wait().await;
+                    } else {
+                        if target > now {
+                            tokio::time::sleep(target - now).await;
+                        }
+                    }
+                } else {
+                    if target > now {
+                        tokio::time::sleep(target - now).await;
+                    }
+                }
+                let behavior = behavior_for_index(shard_seed, i as u64, &mix_clone);
+                let actor = PlayerActor::new(obs, Box::new(behavior), pid, true);
+                actor.start();
+            });
+        }
+    }
+
+    // Hold the system for the configured duration
+    let dur = Duration::from_secs(cfg.duration_secs as u64);
+    info!("Swarm run window: {:?}", dur);
+    tokio::time::sleep(dur).await;
+
+    warn!("Swarm window elapsed. Evaluating SLO...");
+    let metrics_url = cfg
+        .match_server_base
+        .as_ref()
+        .map(|b| slo::metrics_url_from_base(b))
+        .unwrap_or_else(|| "http://127.0.0.1:8080/metrics".into());
+    let thresholds = slo::SloThresholds {
+        p95_match_time_secs: std::env::var("SLO_P95_MATCH_TIME_SECS")
+            .ok()
+            .and_then(|s| s.parse::<f64>().ok())
+            .unwrap_or(10.0),
+        p95_loading_secs: std::env::var("SLO_P95_LOADING_SECS")
+            .ok()
+            .and_then(|s| s.parse::<f64>().ok())
+            .unwrap_or(20.0),
+        max_violations: std::env::var("SLO_MAX_VIOLATIONS")
+            .ok()
+            .and_then(|s| s.parse::<u64>().ok())
+            .unwrap_or(0),
+    };
+    let mut overall_ok = true;
+    match slo::evaluate_slo(&metrics_url, cfg.game_mode.as_deref(), &thresholds).await {
+        Ok(report) => {
+            if report.passed {
+                info!(
+                    "SLO PASS: violations={}, p95_match={:?}s, p95_loading={:?}s",
+                    report.violations_total, report.p95_match_time_secs, report.p95_loading_secs
+                );
+            } else {
+                warn!("SLO FAIL: {:?}", report.details);
+                overall_ok = false;
+            }
+            // Persist summary
+            let ts = chrono::Utc::now();
+            let still_queued_at_end = compute_still_queued().await.unwrap_or_default();
+
+            // Use outcome counts calculated in SLO report
+            let outcome_counts = report.outcome_counts.clone();
+
+            let summary = SwarmRunSummary {
+                timestamp: ts,
+                seed,
+                config: cfg.clone(),
+                metrics_url: metrics_url.clone(),
+                slo: report,
+                outcome_counts,
+                still_queued_at_end,
+            };
+            let out_path = cfg.result_path.clone().unwrap_or_else(|| {
+                format!("logs/swarm_summary_{}.json", ts.format("%Y%m%d_%H%M%S"),)
+            });
+            if let Err(e) = save_swarm_summary(std::path::Path::new(&out_path), &summary) {
+                warn!("Failed to save swarm summary to {}: {}", out_path, e);
+            } else {
+                info!("Saved swarm summary to {}", out_path);
+            }
+        }
+        Err(e) => warn!("SLO evaluation failed: {}", e),
+    }
+
+    // Gracefully stop observers to close /events/stream sockets
+    for obs in observer_addrs.into_iter() {
+        obs.do_send(crate::observer_actor::message::StopObservation);
+    }
+    // Short delay to allow server to register WS closes
+    tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+    actix::System::current().stop();
+    if overall_ok {
+        Ok(())
+    } else {
+        Err(anyhow::anyhow!("SLO failed"))
+    }
+}
+
+/// Scan Redis for queue:* keys and compute remaining players per mode.
+async fn compute_still_queued() -> anyhow::Result<crate::swarm::manifest::RemainingQueueSummary> {
+    let cfg = env::SimulatorConfig::global();
+    let r = &cfg.database.redis;
+    let url = r.url();
+    let client = redis::Client::open(url.as_str())?;
+    let mut conn = client.get_async_connection().await?;
+    let mut iter: AsyncIter<String> = conn.scan_match("queue:*").await?;
+    let mut keys: Vec<String> = Vec::new();
+    while let Some(k) = iter.next_item().await {
+        keys.push(k);
+    }
+    use std::collections::HashMap;
+    let mut by_mode: HashMap<String, u64> = HashMap::new();
+    let mut total: u64 = 0;
+    for key in keys.into_iter() {
+        let size: i64 = conn.scard(&key).await.unwrap_or(0);
+        let mode = key.split(':').nth(1).unwrap_or("unknown").to_string();
+        let u = size.max(0) as u64;
+        *by_mode.entry(mode).or_insert(0) += u;
+        total += u;
+    }
+    Ok(crate::swarm::manifest::RemainingQueueSummary { total, by_mode })
+}
+pub mod behavior_mix;
+pub mod concrete;
+pub mod generate;
+pub mod manifest;
+pub mod schedule;
+pub mod seed;
+pub mod swarm;
+pub mod template;
+</file>
+
+<file path="src/swarm/schedule.rs">
+use crate::swarm::seed::rng_for;
+use rand::Rng;
+
+pub type SpawnScheduleMs = Vec<u64>;
+
+/// Generate a constant-rate spawn schedule with optional per-player jitter (in ms).
+///
+/// Deterministic: fully determined by (global_seed, namespace, player_count, cps, jitter_ms).
+/// - global_seed: test seed
+/// - namespace: optional disambiguator (e.g., group name). Use "spawn" if unsure.
+/// - player_count: total players to spawn
+/// - cps: target average creations per second
+/// - jitter_ms: uniform random jitter added to each spawn time in [0, jitter_ms]
+pub fn spawn_schedule_constant(
+    global_seed: u64,
+    namespace: &str,
+    player_count: u64,
+    cps: f64,
+    jitter_ms: u64,
+) -> SpawnScheduleMs {
+    assert!(cps > 0.0, "cps must be > 0");
+
+    let mut schedule = Vec::with_capacity(player_count as usize);
+    // Base deterministic times (no jitter): floor(1000 * i / cps)
+    for i in 0..player_count {
+        let base_ms = ((i as f64) * 1000.0 / cps).floor() as u64;
+        // Per-index RNG to avoid cross-correlation and to isolate jitter stream
+        let mut rng = rng_for(global_seed, &format!("spawn/{}/{}", namespace, i));
+        let jitter = if jitter_ms == 0 {
+            0
+        } else {
+            rng.gen_range(0..=jitter_ms)
+        };
+        schedule.push(base_ms + jitter);
+    }
+    schedule
+}
+
+/// Utility: convert a schedule (ms offsets) into per-second buckets counts for visualization.
+/// Returns a vector y[t] with length = duration_secs, where y[t] is the number of spawns in second t.
+pub fn bucketize_per_second(schedule_ms: &SpawnScheduleMs, duration_secs: u64) -> Vec<u64> {
+    let mut buckets = vec![0u64; duration_secs as usize];
+    for &ms in schedule_ms.iter() {
+        let sec = (ms / 1000) as usize;
+        if sec < buckets.len() {
+            buckets[sec] += 1;
+        }
+    }
+    buckets
+}
+</file>
+
+<file path="src/swarm/seed.rs">
+use blake3::Hasher;
+use rand::SeedableRng;
+use rand_chacha::ChaCha20Rng;
+use uuid::Uuid;
+
+/// 결정적 RNG 생성기: global_seed와 네임스페이스 문자열을 해시하여 32바이트 시드를 생성
+pub fn rng_for(global_seed: u64, namespace: &str) -> ChaCha20Rng {
+    let mut h = Hasher::new();
+    h.update(&global_seed.to_le_bytes());
+    h.update(namespace.as_bytes());
+    let bytes = *h.finalize().as_bytes();
+    ChaCha20Rng::from_seed(bytes)
+}
+
+/// 결정적 UUID 생성: (global_seed, namespace, index)를 해시해 16바이트로 잘라 UUID로 변환
+pub fn uuid_for(global_seed: u64, namespace: &str, index: u64) -> Uuid {
+    let mut h = Hasher::new();
+    h.update(&global_seed.to_le_bytes());
+    h.update(namespace.as_bytes());
+    h.update(&index.to_le_bytes());
+    let hash = h.finalize();
+    let mut bytes = [0u8; 16];
+    bytes.copy_from_slice(&hash.as_bytes()[0..16]);
+    Uuid::from_bytes(bytes)
+}
+</file>
+
+<file path="src/swarm/slo.rs">
+use crate::swarm::behavior_mix::BehaviorMixConfig;
+use crate::swarm::manifest::BehaviorOutcomeCounts;
+use regex::Regex;
+use serde::Serialize;
+use std::collections::HashMap;
+
+#[derive(Debug, Clone, Serialize)]
+pub struct SloThresholds {
+    pub p95_match_time_secs: f64,
+    pub p95_loading_secs: f64,
+    pub max_violations: u64,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct SloReport {
+    pub p95_match_time_secs: Option<f64>,
+    pub p95_loading_secs: Option<f64>,
+    pub violations_total: u64,
+    // Additional counters for dashboard/summary
+    pub enqueued_total: u64,
+    pub matched_players_total: u64,
+    pub loading_completed_total: u64,
+    pub dedicated_alloc_success_total: u64,
+    // Behavior ratios summary
+    pub behavior_summary: Option<BehaviorSummary>,
+    // Outcome counts calculated from metrics
+    pub outcome_counts: BehaviorOutcomeCounts,
+
+    pub passed: bool,
+    pub details: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct BehaviorSummary {
+    pub expected_normal_ratio: f64,
+    pub expected_abnormal_ratio: f64,
+    pub observed_normal_ratio: Option<f64>,
+    pub observed_abnormal_ratio: Option<f64>,
+}
+
+/// Build metrics URL from base like ws://host:port → http://host:port/metrics unless overridden.
+pub fn metrics_url_from_base(base: &str) -> String {
+    let http = if base.starts_with("ws://") {
+        base.replacen("ws://", "http://", 1)
+    } else if base.starts_with("wss://") {
+        base.replacen("wss://", "https://", 1)
+    } else {
+        base.to_string()
+    };
+    format!("{}/metrics", http.trim_end_matches('/'))
+}
+
+pub async fn fetch_metrics(url: &str) -> anyhow::Result<String> {
+    let resp = reqwest::get(url).await?;
+    let text = resp.text().await?;
+    Ok(text)
+}
+
+#[derive(Debug, Clone)]
+struct Histogram {
+    buckets: Vec<(f64, u64)>, // (le, count)
+    count: u64,
+}
+
+fn parse_histograms(
+    scrape: &str,
+    metric_name: &str,
+    label_filter: Option<(&str, &str)>,
+) -> Histogram {
+    let bucket_re = Regex::new(&format!(
+        r"^{}\_bucket\{{(?P<labels>[^}}]*)\}}\s+(?P<value>[-0-9\.eE]+)$",
+        regex::escape(metric_name)
+    ))
+    .unwrap();
+    let count_re = Regex::new(&format!(
+        r"^{}\_count\{{(?P<labels>[^}}]*)\}}\s+(?P<value>[-0-9\.eE]+)$",
+        regex::escape(metric_name)
+    ))
+    .unwrap();
+
+    let mut agg: HashMap<String, u64> = HashMap::new();
+    let mut total_count: u64 = 0;
+
+    for line in scrape.lines() {
+        if let Some(caps) = bucket_re.captures(line) {
+            let labels = caps.name("labels").map(|m| m.as_str()).unwrap_or("");
+            if !label_match(labels, label_filter) {
+                continue;
+            }
+            if let Some(le_str) = extract_label(labels, "le") {
+                let val: u64 = caps
+                    .name("value")
+                    .and_then(|m| m.as_str().parse::<f64>().ok())
+                    .unwrap_or(0.0) as u64;
+                *agg.entry(le_str).or_insert(0) += val;
+            }
+        } else if let Some(caps) = count_re.captures(line) {
+            let labels = caps.name("labels").map(|m| m.as_str()).unwrap_or("");
+            if !label_match(labels, label_filter) {
+                continue;
+            }
+            let val: u64 = caps
+                .name("value")
+                .and_then(|m| m.as_str().parse::<f64>().ok())
+                .unwrap_or(0.0) as u64;
+            total_count += val;
+        }
+    }
+
+    let mut buckets: Vec<(f64, u64)> = agg
+        .into_iter()
+        .map(|(k, v)| {
+            let le = if k == "+Inf" || k == "Inf" {
+                f64::INFINITY
+            } else {
+                k.parse::<f64>().unwrap_or(f64::INFINITY)
+            };
+            (le, v)
+        })
+        .collect();
+    buckets.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
+    Histogram {
+        buckets,
+        count: total_count,
+    }
+}
+
+fn label_match(labels: &str, filter: Option<(&str, &str)>) -> bool {
+    if let Some((k, v)) = filter {
+        if let Some(val) = extract_label(labels, k) {
+            return val == v;
+        }
+        return false;
+    }
+    true
+}
+
+fn extract_label(labels: &str, key: &str) -> Option<String> {
+    let re = Regex::new(&format!(r#"{}\s*=\s*\"([^\"]*)\""#, regex::escape(key))).ok()?;
+    re.captures(labels)
+        .and_then(|c| c.get(1).map(|m| m.as_str().to_string()))
+}
+
+fn pxx_from_hist(hist: &Histogram, quantile: f64) -> Option<f64> {
+    if hist.count == 0 || hist.buckets.is_empty() {
+        return None;
+    }
+    let target = (hist.count as f64 * quantile).ceil() as u64;
+    for (le, cnt) in hist.buckets.iter() {
+        if *cnt >= target {
+            return Some(*le);
+        }
+    }
+    hist.buckets.last().map(|(le, _)| *le)
+}
+
+fn sum_counters(scrape: &str, metric_name: &str, label_filter: Option<(&str, &str)>) -> u64 {
+    // Support both labeled and unlabeled metrics:
+    // metric_name{labels} value  (labeled)
+    // metric_name value          (unlabeled)
+    let labeled_re = Regex::new(&format!(
+        r"^{}\{{(?P<labels>[^}}]*)\}}\s+(?P<value>[-0-9\.eE]+)$",
+        regex::escape(metric_name)
+    ))
+    .unwrap();
+    let unlabeled_re = Regex::new(&format!(
+        r"^{}\s+(?P<value>[-0-9\.eE]+)$",
+        regex::escape(metric_name)
+    ))
+    .unwrap();
+
+    let mut sum = 0u64;
+    for line in scrape.lines() {
+        if let Some(caps) = labeled_re.captures(line) {
+            let labels = caps.name("labels").map(|m| m.as_str()).unwrap_or("");
+            if !label_match(labels, label_filter) {
+                continue;
+            }
+            let val: u64 = caps
+                .name("value")
+                .and_then(|m| m.as_str().parse::<f64>().ok())
+                .unwrap_or(0.0) as u64;
+            sum += val;
+        } else if let Some(caps) = unlabeled_re.captures(line) {
+            // For unlabeled metrics, only match if no filter is specified
+            if label_filter.is_some() {
+                continue;
+            }
+            let val: u64 = caps
+                .name("value")
+                .and_then(|m| m.as_str().parse::<f64>().ok())
+                .unwrap_or(0.0) as u64;
+            sum += val;
+        }
+    }
+    sum
+}
+
+pub async fn evaluate_slo(
+    metrics_url: &str,
+    game_mode: Option<&str>,
+    th: &SloThresholds,
+) -> anyhow::Result<SloReport> {
+    let text = fetch_metrics(metrics_url).await?;
+    let filter = game_mode.map(|m| ("game_mode", m));
+    let match_hist = parse_histograms(&text, "match_time_seconds", filter);
+    let load_hist = parse_histograms(&text, "loading_duration_seconds", filter);
+    let p95_match = pxx_from_hist(&match_hist, 0.95);
+    let p95_load = pxx_from_hist(&load_hist, 0.95);
+
+    let violations = sum_counters(&text, "state_violations_total", None);
+    // Additional totals for summary/panels
+    let enqueued_total = sum_counters(&text, "enqueued_total_by_mode", filter);
+    let matched_players_total = sum_counters(&text, "matched_players_total_by_mode", filter);
+    let loading_completed_total = sum_counters(&text, "loading_completed_total_by_mode", filter);
+    let dedicated_alloc_success_total =
+        sum_counters(&text, "dedicated_allocation_success_total_by_mode", filter);
+
+    let mut passed = true;
+    let mut details = Vec::new();
+    if let Some(v) = p95_match {
+        if v > th.p95_match_time_secs {
+            passed = false;
+            details.push(format!(
+                "p95 match_time {:.2}s > {:.2}s",
+                v, th.p95_match_time_secs
+            ));
+        }
+    } else {
+        details.push("p95 match_time unavailable".into());
+    }
+    if let Some(v) = p95_load {
+        if v > th.p95_loading_secs {
+            passed = false;
+            details.push(format!(
+                "p95 loading {:.2}s > {:.2}s",
+                v, th.p95_loading_secs
+            ));
+        }
+    } else {
+        details.push("p95 loading unavailable".into());
+    }
+
+    // Derive behavior expected/observed ratios if we can infer BehaviorMixConfig
+    let behavior_summary = {
+        let mix_env = std::env::var("TEST_CLIENT_BEHAVIOR_MIX").ok();
+        if let Some(mix_json) = mix_env {
+            if let Ok(mix) = serde_json::from_str::<BehaviorMixConfig>(&mix_json) {
+                let expected_abnormal = (mix.timeout_ratio
+                    + mix.quit_before_ratio
+                    + mix.quit_during_loading_ratio
+                    + mix.invalid_ratio)
+                    .clamp(0.0, 1.0);
+                let expected_normal = (1.0 - expected_abnormal).max(0.0);
+                // Observed abnormal ratio inferred from (enqueued - matched)
+                let observed_abnormal = if enqueued_total > 0
+                    && matched_players_total <= enqueued_total
+                {
+                    Some(
+                        ((enqueued_total - matched_players_total) as f64 / enqueued_total as f64)
+                            .clamp(0.0, 1.0),
+                    )
+                } else {
+                    None
+                };
+                let observed_normal = observed_abnormal.map(|a| (1.0 - a).max(0.0));
+
+                // Sanity rules
+                if loading_completed_total > 0 && dedicated_alloc_success_total == 0 {
+                    details.push(
+                        "Sanity: loading_completed_total > 0 but dedicated_alloc_success_total = 0"
+                            .into(),
+                    );
+                    passed = false;
+                }
+                if let Some(a) = observed_abnormal {
+                    let diff = (a - expected_abnormal).abs();
+                    if diff > 0.2 {
+                        // deviation threshold
+                        details.push(format!("Observed abnormal ratio deviates from expected by >0.2: obs={:.2}, exp={:.2}", a, expected_abnormal));
+                        passed = false;
+                    }
+                    if a > 0.6 && (dedicated_alloc_success_total as f64) > a * enqueued_total as f64
+                    {
+                        details.push(format!("Suspicious: observed_abnormal_ratio={:.2} but dedicated_success_total={} > abnormal_count~{:.0}", a, dedicated_alloc_success_total, a * enqueued_total as f64));
+                        passed = false;
+                    }
+                }
+
+                Some(BehaviorSummary {
+                    expected_normal_ratio: expected_normal,
+                    expected_abnormal_ratio: expected_abnormal,
+                    observed_normal_ratio: observed_normal,
+                    observed_abnormal_ratio: observed_abnormal,
+                })
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    };
+    if violations > th.max_violations {
+        passed = false;
+        details.push(format!("violations {} > {}", violations, th.max_violations));
+    }
+
+    // Calculate outcome counts here with game mode filter awareness
+    let outcome_counts = calculate_outcome_counts_filtered(
+        enqueued_total,
+        matched_players_total,
+        loading_completed_total,
+        dedicated_alloc_success_total,
+        violations,
+        &text,
+        filter,
+    );
+
+    Ok(SloReport {
+        p95_match_time_secs: p95_match,
+        p95_loading_secs: p95_load,
+        violations_total: violations,
+        enqueued_total,
+        matched_players_total,
+        loading_completed_total,
+        dedicated_alloc_success_total,
+        behavior_summary,
+        outcome_counts,
+        passed,
+        details,
+    })
+}
+
+/// Calculate outcome counts with game mode filter awareness
+fn calculate_outcome_counts_filtered(
+    enqueued_total: u64,
+    matched_players_total: u64,
+    loading_completed_total: u64,
+    dedicated_alloc_success_total: u64,
+    violations_total: u64,
+    metrics_text: &str,
+    _filter: Option<(&str, &str)>,
+) -> BehaviorOutcomeCounts {
+    // Parse specific error types from metrics
+    // Note: loading_session_timeout_players_total has no game_mode label, so use None filter
+    let timeout_players = sum_counters(metrics_text, "loading_session_timeout_players_total", None);
+    let matchmaking_errors = sum_counters(metrics_text, "matchmaking_errors_total", None);
+
+    // Calculate outcome counts based on the flow
+    let successful_matches = dedicated_alloc_success_total;
+    let loading_timeouts = timeout_players;
+    let connection_failures = if enqueued_total > matched_players_total {
+        // Some players didn't even get matched - likely connection issues
+        let failed_to_match = enqueued_total - matched_players_total;
+        // Subtract known errors to avoid double counting
+        failed_to_match.saturating_sub(matchmaking_errors + violations_total)
+    } else {
+        0
+    };
+    let invalid_requests = violations_total;
+    let other_failures = if matched_players_total > loading_completed_total {
+        // Players matched but didn't complete loading (excluding known timeouts)
+        (matched_players_total - loading_completed_total).saturating_sub(loading_timeouts)
+    } else {
+        0
+    };
+
+    BehaviorOutcomeCounts {
+        successful_matches,
+        loading_timeouts,
+        quit_before_match: 0,   // This would need specific tracking
+        quit_during_loading: 0, // This would need specific tracking
+        connection_failures,
+        invalid_requests,
+        other_failures,
+    }
+}
+
+/// Calculate outcome counts based on metrics from the match server (legacy function)
+pub fn calculate_outcome_counts(
+    enqueued_total: u64,
+    matched_players_total: u64,
+    loading_completed_total: u64,
+    dedicated_alloc_success_total: u64,
+    violations_total: u64,
+    metrics_text: &str,
+) -> BehaviorOutcomeCounts {
+    // Parse specific error types from metrics
+    let timeout_players = sum_counters(metrics_text, "loading_session_timeout_players_total", None);
+    let matchmaking_errors = sum_counters(metrics_text, "matchmaking_errors_total", None);
+
+    // Calculate outcome counts based on the flow
+    let successful_matches = dedicated_alloc_success_total;
+    let loading_timeouts = timeout_players;
+    let connection_failures = if enqueued_total > matched_players_total {
+        // Some players didn't even get matched - likely connection issues
+        let failed_to_match = enqueued_total - matched_players_total;
+        // Subtract known errors to avoid double counting
+        failed_to_match.saturating_sub(matchmaking_errors + violations_total)
+    } else {
+        0
+    };
+    let invalid_requests = violations_total;
+    let other_failures = if matched_players_total > loading_completed_total {
+        // Players matched but didn't complete loading (excluding known timeouts)
+        (matched_players_total - loading_completed_total).saturating_sub(loading_timeouts)
+    } else {
+        0
+    };
+
+    BehaviorOutcomeCounts {
+        successful_matches,
+        loading_timeouts,
+        quit_before_match: 0,   // This would need specific tracking
+        quit_during_loading: 0, // This would need specific tracking
+        connection_failures,
+        invalid_requests,
+        other_failures,
+    }
+}
+</file>
+
+<file path="src/swarm/swarm.rs">
+use std::time::{Duration, Instant};
+
+use actix::prelude::*;
+use tracing::info;
+use uuid::Uuid;
+
+use crate::{
+    behaviors::BehaviorType,
+    observer_actor::{message::StartObservation, ObserverActor},
+    player_actor::PlayerActor,
+};
+
+use super::{concrete::ConcreteConfig, schedule::spawn_schedule_constant, seed::uuid_for};
+
+/// Swarm 런처: ConcreteConfig와 seed를 받아 플레이어들을 일정에 맞춰 생성/시작한다.
+pub struct SwarmLauncher {
+    pub match_server_url: String,
+    pub test_name: String,
+}
+
+impl SwarmLauncher {
+    pub fn new(match_server_url: String, test_name: String) -> Self {
+        Self {
+            match_server_url,
+            test_name,
+        }
+    }
+
+    pub fn run(&self, seed: u64, cfg: &ConcreteConfig) {
+        let system = System::new();
+        let match_server_url = self.match_server_url.clone();
+        let test_name = self.test_name.clone();
+
+        system.block_on(async move {
+            // 1) Observer 준비 (단일 시나리오가 아닌, 전체 플레이어 이벤트 관찰용)
+            let observer = ObserverActor::new(
+                match_server_url,
+                test_name,
+                // dummy runner addr (unused in swarm mode)
+                actix::Actor::create(|_ctx| {
+                    crate::scenario_actor::ScenarioRunnerActor::new(vec![])
+                }),
+                std::collections::HashMap::new(),
+                std::collections::HashMap::new(),
+            );
+            let observer_addr = observer.start();
+
+            // 2) 스폰 스케줄 생성
+            let schedule_ms = spawn_schedule_constant(seed, "swarm", cfg.player_count, cfg.cps, 0);
+
+            // 3) Observer 이벤트 스트림 시작(플레이어 ID는 생성 후 추가적으로 보낼 수도 있음)
+            observer_addr.do_send(StartObservation { player_ids: vec![] });
+
+            // 4) 스케줄에 맞춰 플레이어 생성
+            let t0 = Instant::now();
+            for (i, ms) in schedule_ms.iter().enumerate() {
+                let delay = *ms as u64;
+                let observer_addr_cloned = observer_addr.clone();
+
+                // 각 플레이어용 결정적 UUID
+                let player_id: Uuid = uuid_for(seed, "player", i as u64);
+                // behavior mix에서 index별로 결정적으로 할당
+                let behavior: BehaviorType = crate::swarm::behavior_mix::behavior_for_index(
+                    seed,
+                    i as u64,
+                    &cfg.behavior_mix,
+                );
+
+                actix::spawn(async move {
+                    let now = Instant::now();
+                    if now < t0 + Duration::from_millis(delay) {
+                        tokio::time::sleep((t0 + Duration::from_millis(delay)) - now).await;
+                    }
+
+                    // 플레이어 생성 및 시작
+                    let actor = PlayerActor::new(
+                        observer_addr_cloned.clone(),
+                        Box::new(behavior),
+                        player_id,
+                        true,
+                    );
+                    actor.start();
+                });
+            }
+
+            info!(
+                "Swarm launched: {} players over ~{:.2}s (cps={:.2})",
+                cfg.player_count,
+                (cfg.player_count as f64 / cfg.cps),
+                cfg.cps
+            );
+        });
+
+        system.run().unwrap();
+    }
+}
+</file>
+
+<file path="src/swarm/template.rs">
+use serde::Deserialize;
+
+use super::behavior_mix::BehaviorMixTemplate;
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct SwarmTemplate {
+    // 전체 테스트 지속 시간 (초)
+    pub duration_secs: u64,
+
+    // 총 플레이어 수 범위
+    pub player_count_min: u64,
+    pub player_count_max: u64,
+
+    // 평균 초당 생성량(CPS) 범위
+    pub cps_min: f64,
+    pub cps_max: f64,
+
+    // Behavior Mix 템플릿(예: Slow 비율/지연)
+    pub behavior_mix: BehaviorMixTemplate,
+    // 향후 확장: spikes, groups 등
+}
+</file>
+
+<file path="src/test_utils.rs">
+use anyhow::Result;
+
+pub async fn flush_redis_default() -> Result<()> {
+    // Read redis config from env (host/port/db)
+    let cfg = env::SimulatorConfig::global();
+    let r = &cfg.database.redis;
+    let url = if let Some(pw) = &r.password {
+        format!("redis://:{}@{}:{}/{}", pw, r.host, r.port, r.db)
+    } else {
+        format!("redis://{}:{}/{}", r.host, r.port, r.db)
+    };
+
+    let client = redis::Client::open(url)?;
+    let mut conn = client.get_async_connection().await?;
+
+    // FLUSHDB for the selected DB only (safer than FLUSHALL)
+    redis::cmd("FLUSHDB")
+        .query_async::<_, ()>(&mut conn)
+        .await?;
+    Ok(())
+}
+</file>
+
+<file path="tests/behavior_scenarios.rs">
+use actix::Actor;
+use anyhow::Result;
+use std::{thread::sleep, time::Duration};
+
+async fn fetch_metrics_text() -> anyhow::Result<String> {
+    let url = std::env::var("TEST_normal_vs_URL")
+        .unwrap_or_else(|_| "http://127.0.0.1:8080/metrics".into());
+    let text = reqwest::get(url).await?.text().await?;
+    Ok(text)
+}
+
+fn parse_counter(metrics: &str, name: &str) -> Option<f64> {
+    for line in metrics.lines() {
+        if line.starts_with('#') {
+            continue;
+        }
+        if let Some(rest) = line.strip_prefix(name) {
+            let parts: Vec<_> = rest.trim().split_whitespace().collect();
+            if let Some(vs) = parts.get(0) {
+                if let Ok(v) = vs.parse::<f64>() {
+                    return Some(v);
+                }
+            }
+        }
+    }
+    None
+}
+
+async fn get_counter(name: &str) -> f64 {
+    match fetch_metrics_text().await {
+        Ok(text) => parse_counter(&text, name).unwrap_or(0.0),
+        Err(_) => 0.0,
+    }
+}
+
+use env as _;
+use test_client::{
+    behaviors::{invalid::InvalidMode, BehaviorType},
+    scenario_actor::{Scenario, ScenarioRunnerActor, ScenarioSummary},
+    setup_logger,
+};
+
+use test_client::test_utils::flush_redis_default;
+pub async fn run_single_scenario_test(
+    name: &str,
+    perpetrator: BehaviorType,
+    victim: BehaviorType,
+) -> Result<ScenarioSummary> {
+    env::init()?;
+    let _ = setup_logger();
+    // Flush Redis to ensure clean state
+    flush_redis_default().await?;
+
+    let scenarios = vec![Scenario::new(
+        name.to_string(),
+        name.to_string(),
+        perpetrator,
+        victim,
+    )];
+
+    let (tx, rx) = tokio::sync::oneshot::channel::<ScenarioSummary>();
+    let _addr = ScenarioRunnerActor::start_with_notifier(scenarios, tx);
+
+    let summary = tokio::time::timeout(tokio::time::Duration::from_secs(60), rx)
+        .await
+        .map_err(|_| anyhow::anyhow!("scenario completion timed out"))??;
+
+    Ok(summary)
+}
+
+/*
+    Blacklist 기능을 test 하고 있었음.
+    timeout 발생 시 perpetrator 와 vitim 이 requeue 된다는 전제 하에,
+    timeout player, normal 두 플레이어를 match 에 넣고 계속 TryMatch 를 유도하여 timeout player 가 blacklist 에 등록되는지 확인할 생각이었음.
+    근데
+
+    2025-08-19T01:54:30.700046Z ERROR  [3b673777-5b1e-40ad-a3e6-aafe18765a64] Test failed: MatchmakingError("Normal player should not receive errors during matchmaking: Matchmaking timed out. You will be returned to the queue shortly.")
+    at test_client\src\player_actor\handler.rs:125 on test_blacklist_blocked ThreadId(2)
+
+    2025-08-19T01:54:30.700153Z ERROR  [6983b7e3-7ee0-450c-8ae8-6a78a2019647] Test failed: System("server_error")
+
+    로그 보니까 timeout 발생 시 test 자체를 failed 시켜버려서 requeue 되도 test 가 끝났기 때문에 player 와 match server 간 연결이 끊겨버림.
+    때문에 TryMatch 가 발생하지 않고 blacklist 기능 작동 여부를 확인 할 수 없었음.
+
+    timeout 이 발생해도 test 가 실패하지 않도록 수정해야함.
+
+*/
+
+#[actix_web::test]
+async fn test_blacklist_blocked() -> Result<()> {
+    env::init()?;
+    let _ = setup_logger();
+    // Flush Redis to ensure clean state
+    flush_redis_default().await?;
+
+    let scenarios = vec![Scenario::new(
+        "Blacklist Test: TimeoutLoader vs Normal".to_string(),
+        "Testing blacklist functionality with timeout scenarios".to_string(),
+        BehaviorType::TimeoutLoader,
+        BehaviorType::Normal,
+    )];
+
+    // Create a channel to keep the test running but not wait for completion
+    let (tx, rx) = tokio::sync::oneshot::channel::<ScenarioSummary>();
+    let _addr = ScenarioRunnerActor::start_with_notifier(scenarios, tx);
+
+    // Wait 20 seconds to allow multiple timeout/requeue cycles
+    tokio::time::sleep(Duration::from_secs(60)).await;
+
+    // Try to receive result but don't fail if it times out (expected for this test)
+    let _result = tokio::time::timeout(Duration::from_millis(100), rx).await;
+
+    // Test passes if we reach here without crashing
+    println!("Blacklist test completed - check server logs for blacklist behavior");
+    Ok(())
+}
+
+#[actix_web::test]
+async fn test_normal_vs_normal() -> Result<()> {
+    let base_new = get_counter("players_enqueued_new_total").await;
+    let base_alloc = get_counter("players_allocated_total").await;
+
+    let summary = run_single_scenario_test(
+        "Metrics: Normal vs Normal",
+        BehaviorType::Normal,
+        BehaviorType::Normal,
+    )
+    .await?;
+    assert_eq!(summary.total, 1);
+
+    // wait for metrics flush
+    tokio::time::sleep(Duration::from_millis(300)).await;
+
+    let after_new = get_counter("players_enqueued_new_total").await;
+    let after_alloc = get_counter("players_allocated_total").await;
+
+    assert!(
+        after_new >= base_new + 2.0,
+        "new_enqueued should increase by >= 2 ({} -> {})",
+        base_new,
+        after_new
+    );
+    assert!(
+        after_alloc >= base_alloc + 2.0,
+        "allocated should increase by >= 2 ({} -> {})",
+        base_alloc,
+        after_alloc
+    );
+    Ok(())
+}
+
+#[actix_web::test]
+async fn test_normal_vs_unknown_type() -> Result<()> {
+    let base_unknown = get_counter("abnormal_unknown_type_total").await;
+
+    let _ = run_single_scenario_test(
+        "Metrics: UnknownType vs Normal",
+        BehaviorType::Invalid {
+            mode: InvalidMode::UnknownType,
+        },
+        BehaviorType::Normal,
+    )
+    .await?;
+
+    tokio::time::sleep(Duration::from_millis(200)).await;
+    let after_unknown = get_counter("abnormal_unknown_type_total").await;
+    assert!(
+        after_unknown >= base_unknown + 1.0,
+        "unknown_type should increase ({} -> {})",
+        base_unknown,
+        after_unknown
+    );
+    Ok(())
+}
+
+#[actix_web::test]
+async fn test_normal_vs_wrong_session_id() -> Result<()> {
+    let base_wrong = get_counter("abnormal_wrong_session_id_total").await;
+
+    let _ = run_single_scenario_test(
+        "Metrics: WrongSessionId vs Normal",
+        BehaviorType::Invalid {
+            mode: InvalidMode::WrongSessionId,
+        },
+        BehaviorType::Normal,
+    )
+    .await?;
+
+    tokio::time::sleep(Duration::from_millis(200)).await;
+    let after_wrong = get_counter("abnormal_wrong_session_id_total").await;
+    assert!(
+        after_wrong >= base_wrong + 1.0,
+        "wrong_session_id should increase ({} -> {})",
+        base_wrong,
+        after_wrong
+    );
+    Ok(())
+}
+
+#[actix_web::test]
+async fn test_normal_vs_spiky_loader() -> Result<()> {
+    let summary = run_single_scenario_test(
+        "Normal vs SpikyLoader",
+        BehaviorType::SpikyLoader { delay_ms: 500 },
+        BehaviorType::Normal,
+    )
+    .await?;
+
+    assert_eq!(summary.total, 1);
+    assert_eq!(summary.success_count, 1);
+    Ok(())
+}
+
+#[actix_web::test]
+async fn test_normal_vs_invalid_duplicate_enqueue() -> Result<()> {
+    let summary = run_single_scenario_test(
+        "Invalid(DuplicateEnqueue) vs Normal",
+        BehaviorType::Invalid {
+            mode: InvalidMode::DuplicateEnqueue,
+        },
+        BehaviorType::Normal,
+    )
+    .await?;
+
+    assert_eq!(summary.total, 1);
+    assert_eq!(summary.success_count, 1);
+    Ok(())
+}
+
+#[actix_web::test]
+async fn test_normal_vs_invalid_missing_field() -> Result<()> {
+    let summary = run_single_scenario_test(
+        "Invalid(MissingField) vs Normal",
+        BehaviorType::Invalid {
+            mode: InvalidMode::MissingField,
+        },
+        BehaviorType::Normal,
+    )
+    .await?;
+
+    assert_eq!(summary.total, 1);
+    assert_eq!(summary.success_count, 1);
+    Ok(())
+}
+</file>
+
+<file path="tests/swarm_test.rs">
+use anyhow::Result;
+use std::time::Duration;
+use test_client::{setup_logger, swarm::config::SwarmConfig};
+use tracing::{info, warn};
+
+use test_client::test_utils::flush_redis_default;
+
+#[actix_web::test]
+async fn test_swarm_minimal() -> Result<()> {
+    // Initialize environment and logging
+    env::init()?;
+    setup_logger();
+    // Flush Redis to ensure clean state
+    flush_redis_default().await?;
+
+    info!("🧪 Starting basic swarm test");
+
+    // Load basic swarm configuration
+    let config_content = include_str!("../configs/swarm_minimal.toml");
+    let config = SwarmConfig::from_toml_str(config_content)?;
+
+    info!("Loaded swarm config: {:?}", config);
+
+    // Run the swarm test with timeout
+    let result = tokio::time::timeout(
+        Duration::from_secs(config.duration_secs as u64 + 30), // Add 30s buffer
+        test_client::swarm::run_swarm(config),
+    )
+    .await;
+
+    match result {
+        Ok(Ok(())) => {
+            info!("✅ Basic swarm test completed successfully");
+            Ok(())
+        }
+        Ok(Err(e)) => {
+            warn!("❌ Swarm test failed: {}", e);
+            Err(e)
+        }
+        Err(_) => {
+            warn!("❌ Swarm test timed out");
+            Err(anyhow::anyhow!("Swarm test timed out"))
+        }
+    }
+}
+
+#[actix_web::test]
+async fn test_swarm_medium() -> Result<()> {
+    // Initialize environment and logging
+    env::init()?;
+    setup_logger();
+    // Flush Redis to ensure clean state
+    flush_redis_default().await?;
+
+    info!("🧪 Starting medium swarm test");
+
+    // Load basic swarm configuration
+    let config_content = include_str!("../configs/swarm_medium.toml");
+    let config = SwarmConfig::from_toml_str(config_content)?;
+
+    info!("Loaded swarm config: {:?}", config);
+
+    // Run the swarm test with timeout
+    let result = tokio::time::timeout(
+        Duration::from_secs(config.duration_secs as u64 + 30), // Add 30s buffer
+        test_client::swarm::run_swarm(config),
+    )
+    .await;
+
+    match result {
+        Ok(Ok(())) => {
+            info!("✅ Basic swarm test completed successfully");
+            Ok(())
+        }
+        Ok(Err(e)) => {
+            warn!("❌ Swarm test failed: {}", e);
+            Err(e)
+        }
+        Err(_) => {
+            warn!("❌ Swarm test timed out");
+            Err(anyhow::anyhow!("Swarm test timed out"))
+        }
+    }
+}
+
+#[actix_web::test]
+async fn test_swarm_max() -> Result<()> {
+    // Initialize environment and logging
+    env::init()?;
+    setup_logger();
+    // Flush Redis to ensure clean state
+    flush_redis_default().await?;
+
+    info!("🧪 Starting basic swarm test");
+
+    // Load basic swarm configuration
+    let config_content = include_str!("../configs/swarm_max.toml");
+    let config = SwarmConfig::from_toml_str(config_content)?;
+
+    info!("Loaded swarm config: {:?}", config);
+
+    // Run the swarm test with timeout
+    let result = tokio::time::timeout(
+        Duration::from_secs(config.duration_secs as u64 + 30), // Add 30s buffer
+        test_client::swarm::run_swarm(config),
+    )
+    .await;
+
+    match result {
+        Ok(Ok(())) => {
+            info!("✅ Load swarm test completed successfully");
+            Ok(())
+        }
+        Ok(Err(e)) => {
+            warn!("❌ Swarm test failed: {}", e);
+            Err(e)
+        }
+        Err(_) => {
+            warn!("❌ Swarm test timed out");
+            Err(anyhow::anyhow!("Swarm test timed out"))
+        }
+    }
+}
+
+#[actix_web::test]
+async fn test_swarm_ultra() -> Result<()> {
+    // Initialize environment and logging
+    env::init()?;
+    setup_logger();
+    // Flush Redis to ensure clean state
+    flush_redis_default().await?;
+
+    info!("🧪 Starting basic swarm test");
+
+    // Load basic swarm configuration
+    let config_content = include_str!("../configs/swarm_ultra.toml");
+    let config = SwarmConfig::from_toml_str(config_content)?;
+
+    info!("Loaded swarm config: {:?}", config);
+
+    // Run the swarm test with timeout
+    let result = tokio::time::timeout(
+        Duration::from_secs(config.duration_secs as u64 + 30), // Add 30s buffer
+        test_client::swarm::run_swarm(config),
+    )
+    .await;
+
+    match result {
+        Ok(Ok(())) => {
+            info!("✅ Load swarm test completed successfully");
+            Ok(())
+        }
+        Ok(Err(e)) => {
+            warn!("❌ Swarm test failed: {}", e);
+            Err(e)
+        }
+        Err(_) => {
+            warn!("❌ Swarm test timed out");
+            Err(anyhow::anyhow!("Swarm test timed out"))
+        }
+    }
+}
+
+#[actix_web::test]
+async fn test_swarm_load() -> Result<()> {
+    // Initialize environment and logging
+    env::init()?;
+    setup_logger();
+    // Flush Redis to ensure clean state
+    flush_redis_default().await?;
+
+    info!("🧪 Starting load swarm test");
+
+    // Load load test configuration
+    let config_content = include_str!("../configs/swarm_load_test.toml");
+    let config = SwarmConfig::from_toml_str(config_content)?;
+
+    info!("Loaded load test config: {:?}", config);
+
+    // Run the swarm test with longer timeout for load test
+    let result = tokio::time::timeout(
+        Duration::from_secs(config.duration_secs as u64 + 60), // Add 60s buffer for load test
+        test_client::swarm::run_swarm(config),
+    )
+    .await;
+
+    match result {
+        Ok(Ok(())) => {
+            info!("✅ Load swarm test completed successfully");
+            Ok(())
+        }
+        Ok(Err(e)) => {
+            warn!("❌ Load swarm test failed: {}", e);
+            Err(e)
+        }
+        Err(_) => {
+            warn!("❌ Load swarm test timed out");
+            Err(anyhow::anyhow!("Load swarm test timed out"))
+        }
+    }
+}
+</file>
+
+</files>

@@ -19,13 +19,14 @@ pub mod message;
 pub enum PlayerState {
     Idle,
     Enqueued,
-    Loading,
+    Matched, // MatchFound 받은 상태
     Disconnected,
 }
 
 #[derive(Clone)]
 pub struct PlayerContext {
     pub player_id: Uuid,
+    pub pod_id: String,
     pub addr: Addr<PlayerActor>,
 }
 

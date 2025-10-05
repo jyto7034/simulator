@@ -1,0 +1,7 @@
+[package]
+name = "game_server"
+version.workspace = true
+edition.workspace = true
+description.workspace = true
+
+[dependencies]

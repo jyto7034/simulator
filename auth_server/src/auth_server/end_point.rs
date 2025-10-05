@@ -1,13 +1,13 @@
 use actix_web::{web, HttpResponse};
+use chrono::{Duration, Utc};
+use jsonwebtoken::{encode, EncodingKey, Header};
 use serde::{Deserialize, Serialize};
 use tracing::info;
-use chrono::{Utc, Duration};
-use jsonwebtoken::{encode, Header, EncodingKey};
 
 use crate::auth_server::{
     db_operation,
     errors::AuthError,
-    types::{AppState, SteamApiResponse, Claims},
+    types::{AppState, Claims, SteamApiResponse},
 };
 
 // --- HTTP 요청 본문 구조체 ---
@@ -44,7 +44,10 @@ pub async fn test_authentication_handler(
     req_body: web::Json<TestAuthRequest>,
 ) -> Result<HttpResponse, AuthError> {
     let steam_id_i64 = req_body.steam_id;
-    let username = req_body.username.clone().unwrap_or(format!("test_user_{}", steam_id_i64));
+    let username = req_body
+        .username
+        .clone()
+        .unwrap_or(format!("test_user_{}", steam_id_i64));
 
     // 1. 실제 로그인과 동일한 DB 작업을 수행합니다.
     db_operation::upsert_player_on_login(&state.db_pool, steam_id_i64, &username).await?;
@@ -74,7 +77,6 @@ pub async fn test_authentication_handler(
         token,
     }))
 }
-
 
 // --- 엔드포인트 핸들러 ---
 /// POST /auth/steam
@@ -136,7 +138,7 @@ pub async fn steam_authentication_handler(
                 &temp_username,
             )
             .await?;
-            
+
             // JWT 생성
             let now = Utc::now();
             let claims = Claims {

@@ -9,4 +9,3 @@ pub struct ConcreteConfig {
     pub cps: f64,
     pub behavior_mix: BehaviorMixConfig,
 }
-

@@ -2,7 +2,7 @@ use actix::prelude::*;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::GameMode;
+use crate::{matchmaker::operations::try_match::PlayerCandidate, GameMode};
 
 // --- Client to Server Messages ---
 
@@ -15,10 +15,15 @@ pub enum ClientMessage {
     Enqueue {
         player_id: Uuid,
         game_mode: GameMode,
+        metadata: String,
     },
-    /// 클라이언트가 에셋 로딩을 완료했음을 서버에 알립니다.
-    #[serde(rename = "loading_complete")]
-    LoadingComplete { loading_session_id: Uuid },
+
+    /// 플레이어가 매칭 대기열에서 나가기를 요청합니다.
+    #[serde(rename = "dequeue")]
+    Dequeue {
+        player_id: Uuid,
+        game_mode: GameMode,
+    },
 }
 
 // --- Server to Client Messages ---
@@ -28,7 +33,13 @@ pub enum ClientMessage {
 pub enum ServerMessage {
     /// 대기열에 성공적으로 등록되었음을 알립니다.
     #[serde(rename = "enqueued")]
-    EnQueued,
+    EnQueued {
+        pod_id: String, // 플레이어가 연결된 Match Server pod ID
+    },
+
+    /// 대기열에서 성공적으로 제거되었음을 알립니다.
+    #[serde(rename = "dequeued")]
+    DeQueued,
 
     /// 최종적으로 매칭이 성사되었고, 게임 서버 접속 정보를 전달합니다.
     #[serde(rename = "match_found")]
@@ -37,12 +48,7 @@ pub enum ServerMessage {
         server_address: String,
     },
 
-    /// 클라이언트에게 에셋 로딩을 시작하라고 지시합니다.
-    #[serde(rename = "start_loading")]
-    StartLoading { loading_session_id: Uuid },
-
     /// 에러가 발생했음을 알립니다.
-    /// code는 선택적이며, 구 클라이언트와의 호환을 위해 없을 수 있습니다.
     #[serde(rename = "error")]
     Error { code: ErrorCode, message: String },
 }
@@ -54,6 +60,7 @@ pub enum ErrorCode {
     InvalidGameMode,
     AlreadyInQueue,
     InternalError,
+    NotInQueue,
     InvalidMessageFormat,
     WrongSessionId,
     TemporaryAllocationError,
@@ -62,4 +69,14 @@ pub enum ErrorCode {
     MaxRetriesExceeded,
     MatchmakingTimeout,
     PlayerTemporarilyBlocked,
+    RateLimitExceeded,
+}
+
+// --- Battle Request Messages ---
+
+/// Match Server가 Game Server로 전송하는 전투 요청
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct BattleRequest {
+    pub player1: PlayerCandidate,
+    pub player2: PlayerCandidate,
 }

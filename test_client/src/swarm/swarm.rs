@@ -74,7 +74,10 @@ impl SwarmLauncher {
 
                     // 플레이어 생성 및 시작
                     let actor = PlayerActor::new(
-                        observer_addr_cloned.clone(), Box::new(behavior), player_id, true,
+                        observer_addr_cloned.clone(),
+                        Box::new(behavior),
+                        player_id,
+                        true,
                     );
                     actor.start();
                 });

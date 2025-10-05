@@ -104,7 +104,7 @@ impl Handler<ObservationCompleted> for SingleScenarioActor {
 
     fn handle(&mut self, msg: ObservationCompleted, ctx: &mut Self::Context) -> Self::Result {
         let observation_result = msg.0;
-        
+
         let scenario_result = match observation_result {
             crate::observer_actor::ObservationResult::Success { .. } => {
                 info!("Scenario {} completed successfully", self.scenario.name);

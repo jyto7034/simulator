@@ -138,11 +138,7 @@ lazy_static! {
         .unwrap();
 }
 
-
 // All test and per-mode metrics removed
-
-
-
 
 /// Registers all custom metrics defined in this crate to the given registry.
 ///
@@ -174,9 +170,7 @@ pub fn register_custom_metrics(registry: &Registry) -> Result<(), prometheus::Er
     registry.register(Box::new(ENQUEUED_TOTAL_BY_MODE.clone()))?;
     registry.register(Box::new(MATCHED_PLAYERS_TOTAL_BY_MODE.clone()))?;
     registry.register(Box::new(LOADING_COMPLETED_TOTAL_BY_MODE.clone()))?;
-    registry.register(Box::new(
-        DEDICATED_ALLOCATION_SUCCESS_TOTAL_BY_MODE.clone(),
-    ))?;
+    registry.register(Box::new(DEDICATED_ALLOCATION_SUCCESS_TOTAL_BY_MODE.clone()))?;
     registry.register(Box::new(PLAYERS_IN_QUEUE_BY_MODE.clone()))?;
     registry.register(Box::new(MATCH_TIME_SECONDS.clone()))?;
     registry.register(Box::new(LOADING_DURATION_SECONDS.clone()))?;

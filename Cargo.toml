@@ -9,9 +9,11 @@ members = [
     "core",
     "dedicated_server",
     "match_server",
-    "client/src-tauri", "test_client",
+    "client/src-tauri", 
+    "test_client",
     "metrics",
-    "env",
+    "game_server",
+    "env"
 ]
 
 resolver = "2"

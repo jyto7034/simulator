@@ -1,11 +1,7 @@
 use rand::Rng;
 use rand_chacha::ChaCha20Rng;
 
-use super::{
-    behavior_mix::{gen_behavior_mix},
-    concrete::ConcreteConfig,
-    template::SwarmTemplate,
-};
+use super::{behavior_mix::gen_behavior_mix, concrete::ConcreteConfig, template::SwarmTemplate};
 use crate::swarm::seed::rng_for;
 
 pub fn generate(global_seed: u64, tpl: &SwarmTemplate) -> ConcreteConfig {

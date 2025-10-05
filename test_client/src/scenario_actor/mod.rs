@@ -170,11 +170,13 @@ impl Actor for SingleScenarioActor {
         let victim_behavior = Box::new(self.scenario.victim_behavior.clone());
 
         let perpetrator_actor = PlayerActor::new(
-            observer_addr.clone(), perpetrator_behavior, perpetrator_id, true,
+            observer_addr.clone(),
+            perpetrator_behavior,
+            perpetrator_id,
+            true,
         );
-        let victim_actor = PlayerActor::new(
-            observer_addr.clone(), victim_behavior, victim_id, true,
-        );
+        let victim_actor =
+            PlayerActor::new(observer_addr.clone(), victim_behavior, victim_id, true);
 
         perpetrator_actor.start();
         victim_actor.start();

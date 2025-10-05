@@ -14,7 +14,8 @@ pub async fn flush_redis_default() -> Result<()> {
     let mut conn = client.get_async_connection().await?;
 
     // FLUSHDB for the selected DB only (safer than FLUSHALL)
-    redis::cmd("FLUSHDB").query_async::<_, ()>(&mut conn).await?;
+    redis::cmd("FLUSHDB")
+        .query_async::<_, ()>(&mut conn)
+        .await?;
     Ok(())
 }
-

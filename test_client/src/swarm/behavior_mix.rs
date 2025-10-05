@@ -39,7 +39,6 @@ pub struct BehaviorMixTemplate {
     // InvalidMessages 모드 비율(추가)
     pub invalid_mode_duplicate_enqueue_weight: f64,
     pub invalid_mode_wrong_session_id_weight: f64,
-
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -63,18 +62,29 @@ pub struct BehaviorMixConfig {
 }
 
 pub fn gen_behavior_mix(seed: u64, tpl: &BehaviorMixTemplate) -> BehaviorMixConfig {
-
     let mut r = rng_for(seed, "behavior_mix");
     let pick = |min: f64, max: f64, r: &mut ChaCha20Rng| -> f64 {
-        if (min - max).abs() < f64::EPSILON { min } else { r.gen_range(min..=max) }
+        if (min - max).abs() < f64::EPSILON {
+            min
+        } else {
+            r.gen_range(min..=max)
+        }
     };
     let pick_u = |min: u64, max: u64, r: &mut ChaCha20Rng| -> u64 {
-        if min == max { min } else { r.gen_range(min..=max) }
+        if min == max {
+            min
+        } else {
+            r.gen_range(min..=max)
+        }
     };
 
     BehaviorMixConfig {
         slow_ratio: pick(tpl.slow_ratio_min, tpl.slow_ratio_max, &mut r),
-        slow_delay_seconds: pick_u(tpl.slow_delay_seconds_min, tpl.slow_delay_seconds_max, &mut r),
+        slow_delay_seconds: pick_u(
+            tpl.slow_delay_seconds_min,
+            tpl.slow_delay_seconds_max,
+            &mut r,
+        ),
         spiky_ratio: pick(tpl.spiky_ratio_min, tpl.spiky_ratio_max, &mut r),
         spiky_delay_ms: pick_u(tpl.spiky_delay_ms_min, tpl.spiky_delay_ms_max, &mut r),
         timeout_ratio: pick(tpl.timeout_ratio_min, tpl.timeout_ratio_max, &mut r),
@@ -94,39 +104,41 @@ pub fn gen_behavior_mix(seed: u64, tpl: &BehaviorMixTemplate) -> BehaviorMixConf
 }
 
 /// 플레이어 인덱스별로 Behavior를 결정적으로 할당합니다.
-pub fn behavior_for_index(
-    seed: u64,
-    idx: u64,
-    mix: &BehaviorMixConfig,
-) -> BehaviorType {
+pub fn behavior_for_index(seed: u64, idx: u64, mix: &BehaviorMixConfig) -> BehaviorType {
     let mut r: ChaCha20Rng = rng_for(seed, &format!("behavior/{}", idx));
     let v: f64 = r.gen::<f64>();
 
     // 누적 구간 선택 방식
     let mut acc = 0.0;
-    let choose = |v: f64, p: f64, acc: &mut f64| -> bool { *acc += p; v < *acc };
+    let choose = |v: f64, p: f64, acc: &mut f64| -> bool {
+        *acc += p;
+        v < *acc
+    };
 
     if choose(v, mix.quit_before_ratio, &mut acc) {
         return BehaviorType::QuitBeforeMatch;
     }
     if choose(v, mix.quit_during_loading_ratio, &mut acc) {
-        return BehaviorType::QuitDuringLoading;
+        // DEPRECATED: quit_during_loading → QuitAfterEnqueue로 변경
+        return BehaviorType::QuitAfterEnqueue;
     }
     if choose(v, mix.timeout_ratio, &mut acc) {
-        return BehaviorType::TimeoutLoader;
+        // DEPRECATED: timeout_ratio → Normal로 변경
+        return BehaviorType::Normal;
     }
     if choose(v, mix.spiky_ratio, &mut acc) {
-        return BehaviorType::SpikyLoader { delay_ms: mix.spiky_delay_ms };
+        // DEPRECATED: spiky_ratio → Normal로 변경
+        return BehaviorType::Normal;
     }
     if choose(v, mix.slow_ratio, &mut acc) {
-        return BehaviorType::SlowLoader { delay_seconds: mix.slow_delay_seconds };
+        // DEPRECATED: slow_ratio → Normal로 변경
+        return BehaviorType::Normal;
     }
     if choose(v, mix.invalid_ratio, &mut acc) {
         // Invalid 모드는 weights로 세분화
         let mut r2: ChaCha20Rng = rng_for(seed, &format!("behavior/{}/invalid_mode", idx));
         let total = mix.invalid_mode_unknown_weight
             + mix.invalid_mode_missing_weight
-            
             + mix.invalid_mode_duplicate_enqueue_weight
             + mix.invalid_mode_wrong_session_id_weight;
         let (w_u, w_m, w_d, w_w) = if total > 0.0 {
@@ -141,17 +153,21 @@ pub fn behavior_for_index(
         };
         let v2: f64 = r2.gen::<f64>();
         let mut a2 = 0.0;
-        let mut pick_mode = |p: f64| -> bool { a2 += p; v2 < a2 };
+        let mut pick_mode = |p: f64| -> bool {
+            a2 += p;
+            v2 < a2
+        };
         let mode = if pick_mode(w_u) {
             crate::behaviors::invalid::InvalidMode::UnknownType
         } else if pick_mode(w_m) {
             crate::behaviors::invalid::InvalidMode::MissingField
-        } else if false { // no w_e branch anymore
+        } else if false {
+            // no w_e branch anymore
             crate::behaviors::invalid::InvalidMode::MissingField
         } else if pick_mode(w_d) {
             crate::behaviors::invalid::InvalidMode::DuplicateEnqueue
         } else if pick_mode(w_w) {
-            crate::behaviors::invalid::InvalidMode::WrongSessionId
+            crate::behaviors::invalid::InvalidMode::WrongPlayerId
         } else {
             // 가드: 떠남
             crate::behaviors::invalid::InvalidMode::UnknownType

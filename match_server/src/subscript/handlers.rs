@@ -1,12 +1,53 @@
-use actix::{Context, Handler};
-use tracing::info;
+use actix::{ActorContext, Context, Handler};
+use tracing::{info, warn};
 
-use crate::subscript::{messages::GracefulShutdown, SubScriptionManager};
+use crate::{
+    subscript::{
+        messages::{Deregister, ForwardServerMessage, Register},
+        SubScriptionManager,
+    },
+    Stop,
+};
 
-impl Handler<GracefulShutdown> for SubScriptionManager {
+impl Handler<ForwardServerMessage> for SubScriptionManager {
+    type Result = ();
+    fn handle(&mut self, msg: ForwardServerMessage, _ctx: &mut Context<Self>) -> Self::Result {
+        if let Some(session_addr) = self.sessions.get(&msg.player_id) {
+            session_addr.do_send(msg.message);
+        } else {
+            warn!(
+                "Could not find session for player {} to forward message.",
+                msg.player_id
+            );
+        }
+    }
+}
+
+impl Handler<Register> for SubScriptionManager {
+    type Result = ();
+    fn handle(&mut self, msg: Register, _ctx: &mut Context<Self>) -> Self::Result {
+        info!("Player {} registered for notifications.", msg.player_id);
+        self.sessions.insert(msg.player_id, msg.addr);
+    }
+}
+
+impl Handler<Deregister> for SubScriptionManager {
+    type Result = ();
+    fn handle(&mut self, msg: Deregister, _ctx: &mut Context<Self>) -> Self::Result {
+        info!("Player {} deregistered.", msg.player_id);
+        let _ = self.sessions.remove(&msg.player_id);
+    }
+}
+
+impl Handler<Stop> for SubScriptionManager {
     type Result = ();
 
-    fn handle(&mut self, _msg: GracefulShutdown, _ctx: &mut Context<Self>) -> Self::Result {
-        info!("Reconnect message received. Attempt: {}. Waiting for a delay of {:?} before next attempt.", 1, 2);
+    fn handle(&mut self, msg: Stop, ctx: &mut Self::Context) -> Self::Result {
+        info!(
+            "Stop message received in SubScriptionManager actor. Stopping actor. {:?}",
+            msg.reason
+        );
+        self.sessions.clear();
+        ctx.stop();
     }
 }

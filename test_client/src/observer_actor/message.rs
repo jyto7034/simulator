@@ -83,4 +83,3 @@ pub struct PlayerFinishedFromActor {
     pub player_id: uuid::Uuid,
     pub result: crate::BehaviorResult,
 }
-

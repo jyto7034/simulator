@@ -67,22 +67,24 @@ impl StreamHandler<Result<Message, tokio_tungstenite::tungstenite::Error>> for P
         let behavior = self.behavior.clone_trait();
         let player_context = PlayerContext {
             player_id: self.player_id,
+            pod_id: "".to_string(),
             addr: ctx.address(),
         };
 
         let fut_msg = msg.clone();
 
         actix::spawn(async move {
-            let response = match fut_msg {
-                ServerMessage::EnQueued => behavior.on_enqueued(&player_context).await,
-                ServerMessage::StartLoading { loading_session_id } => {
-                    behavior
-                        .on_loading_start(&player_context, loading_session_id)
-                        .await
+            let response = match &fut_msg {
+                ServerMessage::EnQueued { pod_id } => {
+                    // Update player_context with pod_id
+                    let mut ctx = player_context.clone();
+                    ctx.pod_id = pod_id.clone();
+                    behavior.on_enqueued(&ctx).await
                 }
+                ServerMessage::DeQueued => behavior.on_dequeued(&player_context).await,
                 ServerMessage::MatchFound { .. } => behavior.on_match_found(&player_context).await,
-                ServerMessage::Error { message } => {
-                    behavior.on_error(&player_context, &message).await
+                ServerMessage::Error { code, message } => {
+                    behavior.on_error(&player_context, *code, message).await
                 }
             };
 
@@ -104,9 +106,13 @@ impl Handler<BehaviorFinished> for PlayerActor {
         match result {
             Ok(BehaviorOutcome::Continue) => {
                 info!("[{}] Continuing with flow", self.player_id);
-                match original_message {
-                    ServerMessage::EnQueued => self.state = PlayerState::Enqueued,
-                    ServerMessage::StartLoading { .. } => self.state = PlayerState::Loading,
+                match &original_message {
+                    ServerMessage::EnQueued { pod_id } => {
+                        info!("[{}] Stored pod_id: {}", self.player_id, pod_id);
+                        self.state = PlayerState::Enqueued;
+                    }
+                    ServerMessage::DeQueued => self.state = PlayerState::Idle,
+                    ServerMessage::MatchFound { .. } => self.state = PlayerState::Matched,
                     _ => {}
                 }
             }
@@ -170,6 +176,7 @@ impl Handler<ConnectionEstablished> for PlayerActor {
                 let _ = behavior
                     .on_connected(&crate::player_actor::PlayerContext {
                         player_id,
+                        pod_id: "".to_string(),
                         addr: ctx_addr,
                     })
                     .await;
@@ -181,6 +188,7 @@ impl Handler<ConnectionEstablished> for PlayerActor {
             let enqueue_msg = ClientMessage::Enqueue {
                 player_id: self.player_id,
                 game_mode: crate::default_game_mode(),
+                metadata: format!(r#"{{"player_id":"{}"}}"#, self.player_id),
             };
             ctx.address()
                 .do_send(InternalSendText(enqueue_msg.to_string()));
@@ -196,6 +204,7 @@ impl Handler<TriggerEnqueueNow> for PlayerActor {
             let enqueue_msg = ClientMessage::Enqueue {
                 player_id: self.player_id,
                 game_mode: crate::default_game_mode(),
+                metadata: format!(r#"{{"player_id":"{}"}}"#, self.player_id),
             };
             ctx.address()
                 .do_send(InternalSendText(enqueue_msg.to_string()));

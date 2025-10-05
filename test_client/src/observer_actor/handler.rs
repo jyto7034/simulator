@@ -26,24 +26,38 @@ impl Handler<StartObservation> for ObserverActor {
         // Build stream URL with optional filters from env (kind, game_mode, session_id, event_type)
         let mut params: Vec<String> = Vec::new();
         if let Ok(kind) = std::env::var("OBSERVER_STREAM_KIND") {
-            if !kind.is_empty() { params.push(format!("kind={}", kind)); }
+            if !kind.is_empty() {
+                params.push(format!("kind={}", kind));
+            }
         }
         if let Ok(gm) = std::env::var("OBSERVER_FILTER_GAME_MODE") {
-            if !gm.is_empty() { params.push(format!("game_mode={}", gm)); }
+            if !gm.is_empty() {
+                params.push(format!("game_mode={}", gm));
+            }
         }
         if let Ok(sid) = std::env::var("OBSERVER_FILTER_SESSION_ID") {
-            if !sid.is_empty() { params.push(format!("session_id={}", sid)); }
+            if !sid.is_empty() {
+                params.push(format!("session_id={}", sid));
+            }
         }
         if let Ok(et) = std::env::var("OBSERVER_FILTER_EVENT_TYPE") {
-            if !et.is_empty() { params.push(format!("event_type={}", et)); }
+            if !et.is_empty() {
+                params.push(format!("event_type={}", et));
+            }
         }
         if let Ok(run_id) = std::env::var("OBSERVER_RUN_ID") {
-            if !run_id.is_empty() { params.push(format!("run_id={}", run_id)); }
+            if !run_id.is_empty() {
+                params.push(format!("run_id={}", run_id));
+            }
         }
         let url = if params.is_empty() {
             format!("{}/events/stream", self.match_server_url)
         } else {
-            format!("{}/events/stream?{}", self.match_server_url, params.join("&"))
+            format!(
+                "{}/events/stream?{}",
+                self.match_server_url,
+                params.join("&")
+            )
         };
 
         let actor_future = async move {
@@ -79,13 +93,18 @@ impl Handler<StartObservation> for ObserverActor {
     }
 }
 
-
 impl actix::Handler<crate::observer_actor::message::PlayerFinishedFromActor> for ObserverActor {
     type Result = ();
-    fn handle(&mut self, msg: crate::observer_actor::message::PlayerFinishedFromActor, ctx: &mut Self::Context) {
+    fn handle(
+        &mut self,
+        msg: crate::observer_actor::message::PlayerFinishedFromActor,
+        ctx: &mut Self::Context,
+    ) {
         // Mark this player as Finished in phase model
-        self.players_phase.insert(msg.player_id, crate::observer_actor::Phase::Finished);
-        self.player_received_events_in_phase.insert(msg.player_id, std::collections::HashSet::new());
+        self.players_phase
+            .insert(msg.player_id, crate::observer_actor::Phase::Finished);
+        self.player_received_events_in_phase
+            .insert(msg.player_id, std::collections::HashSet::new());
         // For abnormal scenarios we consider the scenario concluded once any player finishes
         if let Some(single) = &self.single_scenario_addr {
             single.do_send(ObservationCompleted(ObservationResult::Success {
@@ -99,12 +118,15 @@ impl actix::Handler<crate::observer_actor::message::PlayerFinishedFromActor> for
 
 impl actix::Handler<crate::observer_actor::message::StopObservation> for super::ObserverActor {
     type Result = ();
-    fn handle(&mut self, _msg: crate::observer_actor::message::StopObservation, ctx: &mut Self::Context) {
+    fn handle(
+        &mut self,
+        _msg: crate::observer_actor::message::StopObservation,
+        ctx: &mut Self::Context,
+    ) {
         // Stop the event stream by stopping the actor
         ctx.stop();
     }
 }
-
 
 // WebSocket 스트림으로부터 메시지를 받는 핸들러
 impl StreamHandler<Result<tungstenite::Message, tungstenite::Error>> for ObserverActor {
@@ -125,7 +147,9 @@ impl StreamHandler<Result<tungstenite::Message, tungstenite::Error>> for Observe
                             if let Some(t) = evt.get("event").and_then(|v| v.as_str()) {
                                 if t == "queue_size_changed" {
                                     if let (Some(mode), Some(size)) = (
-                                        evt.get("game_mode").and_then(|v| v.as_str()).map(|s| s.to_string()),
+                                        evt.get("game_mode")
+                                            .and_then(|v| v.as_str())
+                                            .map(|s| s.to_string()),
                                         evt.get("size").and_then(|v| v.as_i64()),
                                     ) {
                                         self.last_queue_size
@@ -188,7 +212,9 @@ impl Handler<InternalEvent> for ObserverActor {
 
         if let Some(player_id) = event.player_id {
             self.check_phase_completion(player_id, &event, ctx);
-        } else if event.event_type == crate::observer_actor::message::EventType::DedicatedSessionFailed {
+        } else if event.event_type
+            == crate::observer_actor::message::EventType::DedicatedSessionFailed
+        {
             // 최종 실패(reason=max_retries_exceeded)만 실패로 간주
             let reason = event
                 .data
