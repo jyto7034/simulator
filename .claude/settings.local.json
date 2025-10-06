@@ -7,7 +7,20 @@
       "Bash(tree:*)",
       "Bash(cargo:*)",
       "Bash(cat:*)",
-      "Read(//mnt/c/Users/blast/Desktop/**)"
+      "Read(//mnt/c/Users/blast/Desktop/**)",
+      "Bash(sudo service:*)",
+      "Bash(redis-cli:*)",
+      "Bash(ip addr:*)",
+      "Read(//etc/redis/**)",
+      "Bash(ss:*)",
+      "Bash(netstat:*)",
+      "Bash(cargo.exe test -p test_client test_quit_after_enqueue_vs_quit_after_enqueue -- --nocapture)",
+      "Bash(powershell.exe:*)",
+      "Bash(cargo.exe check --manifest-path=/mnt/c/Users/blast/Desktop/main/test_client/Cargo.toml)",
+      "Bash(cargo.exe check:*)",
+      "Bash(cargo.exe test:*)",
+      "Bash(cargo.exe build:*)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []

@@ -58,7 +58,7 @@ impl Session {
         }
     }
 
-    fn transition_to(&mut self, new_state: SessionState, ctx: &mut ws::WebsocketContext<Self>) {
+    fn transition_to(&mut self, new_state: SessionState, ctx: &mut ws::WebsocketContext<Self>) -> bool {
         // 유효한 상태 전환인지 확인. 만약 유효하지 않다면 Error 상태로 전환 후 error 메시지 전송.
         if !self.state.can_transition_to(new_state) {
             let violation = classify_violation(self.state, new_state);
@@ -69,13 +69,13 @@ impl Session {
             match violation {
                 TransitionViolation::Minor => {
                     warn!("Minor state violation, ignoring transition");
-                    return; // 현재 상태 유지
+                    return false; // 현재 상태 유지
                 }
 
                 TransitionViolation::Major => {
                     self.state = SessionState::Error;
                     send_err(ctx, ErrorCode::InternalError, "Invalid state transition");
-                    return;
+                    return false;
                 }
 
                 TransitionViolation::Critical => {
@@ -85,7 +85,7 @@ impl Session {
                         ctx.close(Some(ws::CloseCode::Protocol.into()));
                         ctx.stop();
                     });
-                    return;
+                    return false;
                 }
             }
         }
@@ -98,6 +98,7 @@ impl Session {
             old_state.description(),
             new_state.description()
         );
+        true
     }
 
     fn hb(&self, ctx: &mut ws::WebsocketContext<Self>) {
@@ -121,7 +122,8 @@ impl Actor for Session {
         // Metrics: WebSocket 연결 증가
         metrics::ACTIVE_WS_CONNECTIONS.inc();
 
-        self.transition_to(SessionState::Idle, ctx);
+        // Session is already initialized to Idle state in constructor
+        // No need to transition_to(Idle) here
 
         self.hb(ctx);
     }
@@ -148,14 +150,21 @@ impl Actor for Session {
         let ctx_clone = ctx.address();
         let player_id = self.player_id.clone();
         let game_mode = self.game_mode.clone();
+        let current_state = self.state;
 
         async move {
+            // Only dequeue if player is still in queue
+            // Skip if already dequeued or never enqueued
             let res_match = if let Some(addr) = matchmaker_addr {
-                addr.dequeue(Dequeue {
-                    player_id,
-                    game_mode,
-                })
-                .await
+                if current_state == SessionState::InQueue || current_state == SessionState::Dequeuing {
+                    addr.dequeue(Dequeue {
+                        player_id,
+                        game_mode,
+                    })
+                    .await
+                } else {
+                    Ok(()) // Already dequeued or never enqueued, skip cleanup dequeue
+                }
             } else {
                 Ok(())
             };
@@ -225,7 +234,9 @@ impl Session {
             }
         };
 
-        self.transition_to(SessionState::Enqueuing, ctx);
+        if !self.transition_to(SessionState::Enqueuing, ctx) {
+            return; // State transition failed, stop processing
+        }
 
         self.player_id = player_id;
         self.game_mode = game_mode;
@@ -265,7 +276,9 @@ impl Session {
             }
         };
 
-        self.transition_to(SessionState::Dequeuing, ctx);
+        if !self.transition_to(SessionState::Dequeuing, ctx) {
+            return; // State transition failed, stop processing
+        }
 
         matchmaker.do_send_dequeue(Dequeue {
             player_id: self.player_id,

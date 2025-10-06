@@ -68,7 +68,7 @@ impl Actor for NormalMatchmaker {
         });
     }
 
-    fn stopping(&mut self, ctx: &mut Self::Context) -> actix::Running {
+    fn stopping(&mut self, _ctx: &mut Self::Context) -> actix::Running {
         info!(
             "NormalMatchmaker for mode {:?} stopping, cancelling futures",
             self.mode_settings.game_mode
@@ -77,16 +77,8 @@ impl Actor for NormalMatchmaker {
         // 모든 실행 중인 future에게 종료 신호
         self.shutdown_token.cancel();
 
-        // 완료 대기 (타임아웃 25초)
-        if ctx.waiting() {
-            info!("Waiting for pending futures to complete");
-            ctx.run_later(Duration::from_secs(25), |_act, _ctx| {
-                warn!("Graceful shutdown timeout, force stopping");
-            });
-            actix::Running::Continue
-        } else {
-            info!("No pending futures, stopping immediately");
-            actix::Running::Stop
-        }
+        // 즉시 종료 (System shutdown 중에는 run_later() 호출 불가)
+        info!("Stopping immediately");
+        actix::Running::Stop
     }
 }

@@ -22,6 +22,7 @@ lazy_static! {
 }
 
 pub mod env;
+pub mod event_stream;
 pub mod matchmaker;
 pub mod metrics;
 pub mod protocol;
@@ -48,7 +49,12 @@ pub struct Stop {
 
 impl LoggerManager {
     pub fn setup(settings: &Settings) -> Self {
-        // 1. 파일 로거 설정
+        // 1. 로그 디렉토리 생성 (존재하지 않으면)
+        if let Err(e) = std::fs::create_dir_all(&settings.logging.directory) {
+            eprintln!("Failed to create log directory '{}': {}", settings.logging.directory, e);
+        }
+
+        // 2. 파일 로거 설정
         let file_appender = RollingFileAppender::new(
             Rotation::DAILY,
             &settings.logging.directory,
@@ -56,11 +62,11 @@ impl LoggerManager {
         );
         let (non_blocking_file_writer, guard) = tracing_appender::non_blocking(file_appender);
 
-        // 2. 로그 레벨 필터 설정 (환경 변수 또는 설정 파일 값)
+        // 3. 로그 레벨 필터 설정 (환경 변수 또는 설정 파일 값)
         let filter = EnvFilter::try_from_default_env()
             .unwrap_or_else(|_| EnvFilter::new(&settings.server.log_level));
 
-        // 3. 콘솔 출력 레이어 설정
+        // 4. 콘솔 출력 레이어 설정
         let console_layer = fmt::layer()
             .with_writer(io::stdout) // 표준 출력으로 설정
             .with_ansi(true) // ANSI 색상 코드 사용 (터미널 지원 시)
@@ -71,7 +77,7 @@ impl LoggerManager {
             .with_target(false) // target 정보 제외 (선택 사항)
             .pretty(); // 사람이 읽기 좋은 포맷
 
-        // 4. 파일 출력 레이어 설정
+        // 5. 파일 출력 레이어 설정
         let file_layer = fmt::layer()
             .with_writer(non_blocking_file_writer) // Non-blocking 파일 로거 사용
             .with_ansi(false) // 파일에는 ANSI 코드 제외
@@ -82,7 +88,7 @@ impl LoggerManager {
             .with_target(false)
             .pretty();
 
-        // 5. 레지스트리(Registry)에 필터와 레이어 결합
+        // 6. 레지스트리(Registry)에 필터와 레이어 결합
         tracing_subscriber::registry()
             .with(filter) // 필터를 먼저 적용
             .with(console_layer) // 콘솔 레이어 추가

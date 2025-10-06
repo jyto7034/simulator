@@ -3,6 +3,7 @@ use actix_web::{get, web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
 use match_server::{
     env::Settings,
+    event_stream::{EventStreamSession, StreamFilters},
     extract_client_ip, init_retry_config,
     matchmaker::{spawn_matchmakers, MatchmakerDeps},
     metrics::MetricsCtx,
@@ -42,8 +43,27 @@ async fn matchmaking_ws_route(
     ws::start(session, &req, stream)
 }
 
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
+#[get("/events/stream")]
+async fn events_stream_route(
+    req: HttpRequest,
+    stream: web::Payload,
+    state: web::Data<AppState>,
+) -> Result<HttpResponse, Error> {
+    // 쿼리 파라미터에서 필터 추출
+    let query = req.query_string();
+    let filters = StreamFilters::from_query(query);
+
+    info!("Event stream connection with filters: {:?}", filters);
+
+    // Redis 연결 클론
+    let redis = state.redis.clone();
+
+    // EventStreamSession 시작
+    let session = EventStreamSession::new(redis, filters);
+    ws::start(session, &req, stream)
+}
+
+fn main() -> std::io::Result<()> {
     // 1. 환경변수 로드
     dotenv::dotenv().ok();
 
@@ -58,134 +78,140 @@ async fn main() -> std::io::Result<()> {
     init_retry_config(&settings.retry);
     info!("Retry config initialized");
 
-    // 5. Redis 클라이언트 생성
-    let redis_url =
-        std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://127.0.0.1:6379".to_string());
-    let redis_client =
-        redis::Client::open(redis_url.clone()).expect("Failed to create Redis client");
+    // 5. Actix System 시작
+    let system = System::new();
 
-    let redis_conn_manager = redis::aio::ConnectionManager::new(redis_client.clone())
-        .await
-        .expect("Failed to create Redis connection manager");
-    info!("Redis connection established: {}", redis_url);
+    system.block_on(async {
+        // 6. Redis 클라이언트 생성
+        let redis_url =
+            std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://127.0.0.1:6379".to_string());
+        let redis_client =
+            redis::Client::open(redis_url.clone()).expect("Failed to create Redis client");
 
-    // 6. 전역 Shutdown Token 생성
-    let shutdown_token = CancellationToken::new();
+        let redis_conn_manager = redis::aio::ConnectionManager::new(redis_client.clone())
+            .await
+            .expect("Failed to create Redis connection manager");
+        info!("Redis connection established: {}", redis_url);
 
-    // 7. SubScriptionManager 시작
-    let sub_manager_addr = SubScriptionManager::new().start();
-    info!("SubScriptionManager actor started");
+        // 7. 전역 Shutdown Token 생성
+        let shutdown_token = CancellationToken::new();
 
-    // 8. Metrics 초기화
-    let metrics = Arc::new(MetricsCtx::new());
-    let metrics_registry = prometheus::Registry::new();
-    metrics::register_custom_metrics(&metrics_registry)
-        .expect("Failed to register custom metrics");
-    info!("Metrics initialized and registered");
+        // 8. SubScriptionManager 시작
+        let sub_manager_addr = SubScriptionManager::new().start();
+        info!("SubScriptionManager actor started");
 
-    // 9. Matchmaker Dependencies 준비
-    let matchmaker_deps = MatchmakerDeps {
-        redis: redis_conn_manager.clone(),
-        settings: settings.matchmaking.clone(),
-        subscription_addr: sub_manager_addr.clone(),
-        metrics: metrics.clone(),
-        shutdown_token: shutdown_token.clone(),
-    };
+        // 9. Metrics 초기화
+        let metrics = Arc::new(MetricsCtx::new());
+        let metrics_registry = prometheus::Registry::new();
+        metrics::register_custom_metrics(&metrics_registry)
+            .expect("Failed to register custom metrics");
+        info!("Metrics initialized and registered");
 
-    // 10. Matchmaker들 시작 (Normal, Ranked)
-    let game_modes = vec![GameMode::Normal, GameMode::Ranked];
-    let matchmakers = spawn_matchmakers(&matchmaker_deps, game_modes)
-        .expect("Failed to spawn matchmakers");
-    info!("Matchmakers started: Normal, Ranked");
-
-    // 11. Rate Limiter 초기화 (10 requests/second per IP)
-    let rate_limiter = Arc::new(match_server::RateLimiter::new(10));
-    info!("Rate limiter initialized: 10 req/sec per IP");
-
-    // 12. AppState 구성
-    let current_run_id = Arc::new(RwLock::new(None));
-    let app_state = AppState {
-        settings: settings.clone(),
-        matchmakers,
-        sub_manager_addr,
-        redis: redis_conn_manager.clone(),
-        logger_manager,
-        current_run_id,
-        metrics,
-        metrics_registry: metrics_registry.clone(),
-        rate_limiter,
-    };
-
-    // 13. HTTP 서버 시작
-    let bind_address = format!("{}:{}", settings.server.bind_address, settings.server.port);
-    info!("Starting HTTP server on {}", bind_address);
-
-    let mut server = HttpServer::new(move || {
-        // /metrics 엔드포인트 (optional auth)
-        let metrics_route = |req: HttpRequest, state: web::Data<AppState>| async move {
-            // Check auth token if configured
-            if let Some(expected_token) = &state.settings.server.metrics_auth_token {
-                let auth_header = req.headers().get("Authorization");
-                let provided_token = auth_header
-                    .and_then(|h| h.to_str().ok())
-                    .and_then(|s| s.strip_prefix("Bearer "));
-
-                if provided_token != Some(expected_token.as_str()) {
-                    return HttpResponse::Unauthorized()
-                        .body("Unauthorized: Invalid or missing token");
-                }
-            }
-
-            let metric_families = state.metrics_registry.gather();
-            let mut buffer = Vec::new();
-            let encoder = TextEncoder::new();
-
-            if let Err(e) = encoder.encode(&metric_families, &mut buffer) {
-                return HttpResponse::InternalServerError()
-                    .body(format!("Metrics encode error: {}", e));
-            }
-
-            HttpResponse::Ok()
-                .content_type(encoder.format_type())
-                .body(buffer)
+        // 10. Matchmaker Dependencies 준비
+        let matchmaker_deps = MatchmakerDeps {
+            redis: redis_conn_manager.clone(),
+            settings: settings.matchmaking.clone(),
+            subscription_addr: sub_manager_addr.clone(),
+            metrics: metrics.clone(),
+            shutdown_token: shutdown_token.clone(),
         };
 
-        // Healthcheck endpoints
-        let health_route = || async { HttpResponse::Ok().body("OK") };
-        let ready_route = || async { HttpResponse::Ok().body("READY") };
+        // 11. Matchmaker들 시작 (Normal, Ranked)
+        let game_modes = vec![GameMode::Normal, GameMode::Ranked];
+        let matchmakers = spawn_matchmakers(&matchmaker_deps, game_modes)
+            .expect("Failed to spawn matchmakers");
+        info!("Matchmakers started: Normal, Ranked");
 
-        App::new()
-            .app_data(web::Data::new(app_state.clone()))
-            .service(matchmaking_ws_route)
-            .route("/metrics", web::get().to(metrics_route))
-            .route("/health", web::get().to(health_route))
-            .route("/ready", web::get().to(ready_route))
+        // 12. Rate Limiter 초기화 (10 requests/second per IP)
+        let rate_limiter = Arc::new(match_server::RateLimiter::new(10));
+        info!("Rate limiter initialized: 10 req/sec per IP");
+
+        // 13. AppState 구성
+        let current_run_id = Arc::new(RwLock::new(None));
+        let app_state = AppState {
+            settings: settings.clone(),
+            matchmakers,
+            sub_manager_addr,
+            redis: redis_conn_manager.clone(),
+            logger_manager,
+            current_run_id,
+            metrics,
+            metrics_registry: metrics_registry.clone(),
+            rate_limiter,
+        };
+
+        // 14. HTTP 서버 시작
+        let bind_address = format!("{}:{}", settings.server.bind_address, settings.server.port);
+        info!("Starting HTTP server on {}", bind_address);
+
+        let mut server = HttpServer::new(move || {
+            // /metrics 엔드포인트 (optional auth)
+            let metrics_route = |req: HttpRequest, state: web::Data<AppState>| async move {
+                // Check auth token if configured
+                if let Some(expected_token) = &state.settings.server.metrics_auth_token {
+                    let auth_header = req.headers().get("Authorization");
+                    let provided_token = auth_header
+                        .and_then(|h| h.to_str().ok())
+                        .and_then(|s| s.strip_prefix("Bearer "));
+
+                    if provided_token != Some(expected_token.as_str()) {
+                        return HttpResponse::Unauthorized()
+                            .body("Unauthorized: Invalid or missing token");
+                    }
+                }
+
+                let metric_families = state.metrics_registry.gather();
+                let mut buffer = Vec::new();
+                let encoder = TextEncoder::new();
+
+                if let Err(e) = encoder.encode(&metric_families, &mut buffer) {
+                    return HttpResponse::InternalServerError()
+                        .body(format!("Metrics encode error: {}", e));
+                }
+
+                HttpResponse::Ok()
+                    .content_type(encoder.format_type())
+                    .body(buffer)
+            };
+
+            // Healthcheck endpoints
+            let health_route = || async { HttpResponse::Ok().body("OK") };
+            let ready_route = || async { HttpResponse::Ok().body("READY") };
+
+            App::new()
+                .app_data(web::Data::new(app_state.clone()))
+                .service(matchmaking_ws_route)
+                .service(events_stream_route)
+                .route("/metrics", web::get().to(metrics_route))
+                .route("/health", web::get().to(health_route))
+                .route("/ready", web::get().to(ready_route))
+        })
+        .bind(&bind_address)?
+        .run();
+
+        info!("Match Server is running on {}", bind_address);
+
+        // 15. 종료 신호 대기
+        tokio::select! {
+            // 서버 자체 종료 (드문 경우)
+            res = &mut server => {
+                error!("Server exited unexpectedly");
+                return res;
+            },
+
+            // Ctrl+C 종료 (정상 종료)
+            _ = tokio::signal::ctrl_c() => {
+                info!("Ctrl+C received. Initiating graceful shutdown...");
+                shutdown_token.cancel();  // 모든 Actor에 종료 신호
+                System::current().stop();
+            },
+        }
+
+        // 16. 모든 Actor와 연결 정리 대기
+        info!("Waiting for all actors to shutdown...");
+        server.await?;
+        info!("System has shut down gracefully");
+
+        Ok(())
     })
-    .bind(&bind_address)?
-    .run();
-
-    info!("Match Server is running on {}", bind_address);
-
-    // 14. 종료 신호 대기
-    tokio::select! {
-        // 서버 자체 종료 (드문 경우)
-        res = &mut server => {
-            error!("Server exited unexpectedly");
-            return res;
-        },
-
-        // Ctrl+C 종료 (정상 종료)
-        _ = tokio::signal::ctrl_c() => {
-            info!("Ctrl+C received. Initiating graceful shutdown...");
-            shutdown_token.cancel();  // 모든 Actor에 종료 신호
-            System::current().stop();
-        },
-    }
-
-    // 15. 모든 Actor와 연결 정리 대기
-    info!("Waiting for all actors to shutdown...");
-    server.await?;
-    info!("System has shut down gracefully");
-
-    Ok(())
 }

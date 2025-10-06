@@ -139,6 +139,13 @@ impl Actor for SingleScenarioActor {
             self.scenario.name
         );
 
+        // 테스트 세션 ID 생성
+        let test_session_id = Uuid::new_v4().to_string();
+        info!(
+            "Generated test_session_id for scenario {}: {}",
+            self.scenario.name, test_session_id
+        );
+
         let perpetrator_id = Uuid::new_v4();
         let victim_id = Uuid::new_v4();
 
@@ -153,6 +160,7 @@ impl Actor for SingleScenarioActor {
         let observer = ObserverActor::new(
             "ws://127.0.0.1:8080".to_string(),
             self.scenario.name.clone(),
+            test_session_id.clone(),
             self.runner_addr.clone(),
             players_schedule,
             HashMap::new(),
@@ -173,10 +181,16 @@ impl Actor for SingleScenarioActor {
             observer_addr.clone(),
             perpetrator_behavior,
             perpetrator_id,
+            test_session_id.clone(),
             true,
         );
-        let victim_actor =
-            PlayerActor::new(observer_addr.clone(), victim_behavior, victim_id, true);
+        let victim_actor = PlayerActor::new(
+            observer_addr.clone(),
+            victim_behavior,
+            victim_id,
+            test_session_id.clone(),
+            true,
+        );
 
         perpetrator_actor.start();
         victim_actor.start();
@@ -187,8 +201,8 @@ impl Actor for SingleScenarioActor {
         });
 
         info!(
-            "Created players for scenario {}: perpetrator={}, victim={}",
-            self.scenario.name, perpetrator_id, victim_id
+            "Created players for scenario {}: perpetrator={}, victim={}, session={}",
+            self.scenario.name, perpetrator_id, victim_id, test_session_id
         );
     }
 }

@@ -182,6 +182,20 @@ pub async fn enqueue(
         )
         .await;
 
+        // Publish queue_size_changed event (global event for all watchers)
+        redis_events::try_publish_test_event(
+            &mut redis,
+            &metadata_with_pod,
+            "queue_size_changed",
+            &pod_id,
+            vec![
+                ("size", current_size.to_string()),
+                ("game_mode", format!("{:?}", game_mode)),
+                ("reason", "enqueued".to_string()),
+            ],
+        )
+        .await;
+
         ServerMessage::EnQueued { pod_id }
     } else {
         warn!("Player {} already in queue {:?}", player_id, game_mode);

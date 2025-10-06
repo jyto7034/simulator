@@ -87,7 +87,7 @@ fn build_schedule_for_behavior(behavior: &BehaviorType) -> HashMap<Phase, PhaseC
             schedule.insert(
                 Phase::Matching,
                 PhaseCondition {
-                    required_events: HashSet::new(),
+                    required_events: HashSet::from([EventType::QueueSizeChanged]),
                     transition_event: EventType::Error,
                     transition_matcher: None,
                     next_phase: Phase::Finished,
@@ -101,7 +101,7 @@ fn build_schedule_for_behavior(behavior: &BehaviorType) -> HashMap<Phase, PhaseC
             schedule.insert(
                 Phase::Matching,
                 PhaseCondition {
-                    required_events: HashSet::new(),
+                    required_events: HashSet::from([EventType::QueueSizeChanged]),
                     transition_event: EventType::Dequeued,
                     transition_matcher: None,
                     next_phase: Phase::Finished,
@@ -133,33 +133,6 @@ pub fn get_schedule_for_perpetrator(
 }
 
 pub fn get_schedule_for_victim(victim_behavior: &BehaviorType) -> HashMap<Phase, PhaseCondition> {
-    match victim_behavior {
-        BehaviorType::Normal => {
-            let mut schedule = HashMap::new();
-            schedule.insert(
-                Phase::Matching,
-                PhaseCondition {
-                    required_events: HashSet::new(),
-                    transition_event: EventType::MatchFound,
-                    transition_matcher: None,
-                    next_phase: Phase::Finished,
-                },
-            );
-            schedule
-        }
-        _ => {
-            // 다른 behavior는 Error 또는 종료로 간주
-            let mut schedule = HashMap::new();
-            schedule.insert(
-                Phase::Matching,
-                PhaseCondition {
-                    required_events: HashSet::new(),
-                    transition_event: EventType::Error,
-                    transition_matcher: None,
-                    next_phase: Phase::Finished,
-                },
-            );
-            schedule
-        }
-    }
+    // victim도 동일한 스케줄 사용 (behavior에 따라 적절한 이벤트 기대)
+    build_schedule_for_behavior(victim_behavior)
 }

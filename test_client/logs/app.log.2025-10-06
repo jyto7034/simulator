@@ -1,0 +1,144 @@
+  2025-10-06T08:01:43.618617Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at test_client\src\lib.rs:71 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.627360Z  INFO  ScenarioRunnerActor started with 1 scenarios
+    at test_client\src\scenario_actor\mod.rs:95 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.628673Z  INFO  SingleScenarioActor started for scenario: QuitAfterEnqueue vs QuitAfterEnqueue
+    at test_client\src\scenario_actor\mod.rs:137 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.629681Z  INFO  Generated test_session_id for scenario QuitAfterEnqueue vs QuitAfterEnqueue: c0398a08-b6ec-4620-b79c-4619d36db8ed
+    at test_client\src\scenario_actor\mod.rs:144 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.633845Z  INFO  Created players for scenario QuitAfterEnqueue vs QuitAfterEnqueue: perpetrator=5e25e3b2-447a-434b-8d55-a394c420446f, victim=22d645c7-5839-4ad8-9bd4-060dba320e21, session=c0398a08-b6ec-4620-b79c-4619d36db8ed
+    at test_client\src\scenario_actor\mod.rs:203 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.634778Z  INFO  [QuitAfterEnqueue vs QuitAfterEnqueue] ObserverActor started.
+    at test_client\src\observer_actor\mod.rs:118 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.635761Z  INFO  [QuitAfterEnqueue vs QuitAfterEnqueue] SingleScenarioActor address set
+    at test_client\src\observer_actor\handler.rs:431 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.636691Z  INFO  [QuitAfterEnqueue vs QuitAfterEnqueue] Starting event observation...
+    at test_client\src\observer_actor\handler.rs:16 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.637969Z  INFO  PlayerActor started with state
+    at test_client\src\player_actor\mod.rs:70 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.639038Z  INFO  PlayerActor started with state
+    at test_client\src\player_actor\mod.rs:70 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.649679Z  INFO  [22d645c7-5839-4ad8-9bd4-060dba320e21] Connection established
+    at test_client\src\player_actor\handler.rs:162 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.651864Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:237 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.653938Z  INFO  [QuitAfterEnqueue vs QuitAfterEnqueue] Successfully connected to event stream.
+    at test_client\src\observer_actor\handler.rs:83 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.656257Z  INFO  [5e25e3b2-447a-434b-8d55-a394c420446f] Connection established
+    at test_client\src\player_actor\handler.rs:162 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.658594Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:237 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.665363Z  INFO  [22d645c7-5839-4ad8-9bd4-060dba320e21] Received message: EnQueued { pod_id: "default-pod" }
+    at test_client\src\player_actor\handler.rs:65 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.666377Z  INFO  [22d645c7-5839-4ad8-9bd4-060dba320e21] Enqueued, now requesting dequeue...
+    at test_client\src\behaviors\quit.rs:43 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.673357Z  INFO  [5e25e3b2-447a-434b-8d55-a394c420446f] Received message: EnQueued { pod_id: "default-pod" }
+    at test_client\src\player_actor\handler.rs:65 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.674681Z  INFO  [5e25e3b2-447a-434b-8d55-a394c420446f] Enqueued, now requesting dequeue...
+    at test_client\src\behaviors\quit.rs:43 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.768441Z  INFO  [QuitAfterEnqueue vs QuitAfterEnqueue] Processing QueueSizeChanged event for consistency check.
+    at test_client\src\observer_actor\mod.rs:160 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.771328Z  INFO  [QuitAfterEnqueue vs QuitAfterEnqueue] Global event QueueSizeChanged broadcasted to 2 players
+    at test_client\src\observer_actor\handler.rs:236 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.772807Z  INFO  [QuitAfterEnqueue vs QuitAfterEnqueue] Processing QueueSizeChanged event for consistency check.
+    at test_client\src\observer_actor\mod.rs:160 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.773945Z  INFO  [QuitAfterEnqueue vs QuitAfterEnqueue] Global event QueueSizeChanged broadcasted to 2 players
+    at test_client\src\observer_actor\handler.rs:236 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.775278Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:237 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.777910Z  INFO  [22d645c7-5839-4ad8-9bd4-060dba320e21] Continuing with flow
+    at test_client\src\player_actor\handler.rs:108 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.779620Z  INFO  [22d645c7-5839-4ad8-9bd4-060dba320e21] Stored pod_id: default-pod
+    at test_client\src\player_actor\handler.rs:111 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.785475Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:237 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.787007Z  INFO  [5e25e3b2-447a-434b-8d55-a394c420446f] Continuing with flow
+    at test_client\src\player_actor\handler.rs:108 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.788515Z  INFO  [5e25e3b2-447a-434b-8d55-a394c420446f] Stored pod_id: default-pod
+    at test_client\src\player_actor\handler.rs:111 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.789532Z  INFO  [22d645c7-5839-4ad8-9bd4-060dba320e21] Received message: DeQueued
+    at test_client\src\player_actor\handler.rs:65 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.790530Z  INFO  [5e25e3b2-447a-434b-8d55-a394c420446f] Received message: DeQueued
+    at test_client\src\player_actor\handler.rs:65 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.791548Z  INFO  [22d645c7-5839-4ad8-9bd4-060dba320e21] Successfully dequeued after intentional quit!
+    at test_client\src\behaviors\quit.rs:67 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.792593Z  INFO  [5e25e3b2-447a-434b-8d55-a394c420446f] Successfully dequeued after intentional quit!
+    at test_client\src\behaviors\quit.rs:67 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.793589Z  INFO  [22d645c7-5839-4ad8-9bd4-060dba320e21] Player completed flow, stopping actor.
+    at test_client\src\player_actor\handler.rs:120 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.803131Z  INFO  [5e25e3b2-447a-434b-8d55-a394c420446f] Player completed flow, stopping actor.
+    at test_client\src\player_actor\handler.rs:120 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.805261Z  WARN  [QuitAfterEnqueue vs QuitAfterEnqueue] Player 22d645c7-5839-4ad8-9bd4-060dba320e21 reported completion but phase is Some(Matching), waiting for phase validation via events
+    at test_client\src\observer_actor\handler.rs:112 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.807958Z  WARN  [QuitAfterEnqueue vs QuitAfterEnqueue] Player 5e25e3b2-447a-434b-8d55-a394c420446f reported completion but phase is Some(Matching), waiting for phase validation via events
+    at test_client\src\observer_actor\handler.rs:112 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.857298Z  INFO  [QuitAfterEnqueue vs QuitAfterEnqueue] Player 22d645c7-5839-4ad8-9bd4-060dba320e21 completed phase Matching -> transitioning to Finished
+    at test_client\src\observer_actor\handler.rs:345 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.860490Z  INFO  [QuitAfterEnqueue vs QuitAfterEnqueue] Processing QueueSizeChanged event for consistency check.
+    at test_client\src\observer_actor\mod.rs:160 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.861535Z  INFO  [QuitAfterEnqueue vs QuitAfterEnqueue] Global event QueueSizeChanged broadcasted to 2 players
+    at test_client\src\observer_actor\handler.rs:236 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.862575Z  INFO  [QuitAfterEnqueue vs QuitAfterEnqueue] Player 5e25e3b2-447a-434b-8d55-a394c420446f completed phase Matching -> transitioning to Finished
+    at test_client\src\observer_actor\handler.rs:345 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.863612Z  INFO  ✓ [QuitAfterEnqueue vs QuitAfterEnqueue] All players have finished the scenario successfully.
+    at test_client\src\observer_actor\handler.rs:407 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.864580Z  INFO  [QuitAfterEnqueue vs QuitAfterEnqueue] ObserverActor stopped.
+    at test_client\src\observer_actor\mod.rs:122 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.866948Z  INFO  Scenario QuitAfterEnqueue vs QuitAfterEnqueue completed successfully
+    at test_client\src\scenario_actor\handler.rs:110 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.868591Z  INFO  Scenario c1c7b9b8-80ea-45c4-8e4f-5301fb5a5a8b completed with result: Success
+    at test_client\src\scenario_actor\handler.rs:13 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.869593Z  INFO  All 1 scenarios completed!
+    at test_client\src\scenario_actor\handler.rs:22 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.878885Z  INFO  Final results: 1/1 scenarios succeeded
+    at test_client\src\scenario_actor\handler.rs:30 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-06T08:01:43.880261Z  INFO  ✅ Test completed: ScenarioSummary { total: 1, success_count: 1, results: [Success] }
+    at test_client\tests\normal_vs_quit.rs:50 on test_quit_after_enqueue_vs_quit_after_enqueue ThreadId(2)
+

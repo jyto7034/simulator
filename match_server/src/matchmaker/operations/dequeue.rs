@@ -141,6 +141,20 @@ pub async fn dequeue(
         )
         .await;
 
+        // Publish queue_size_changed event (global event for all watchers)
+        redis_events::try_publish_test_event(
+            &mut redis,
+            &metadata,
+            "queue_size_changed",
+            &pod_id,
+            vec![
+                ("size", current_size.to_string()),
+                ("game_mode", format!("{:?}", game_mode)),
+                ("reason", "dequeued".to_string()),
+            ],
+        )
+        .await;
+
         ServerMessage::DeQueued
     } else {
         warn!("Player {} not found in queue {:?}", player_id, game_mode);

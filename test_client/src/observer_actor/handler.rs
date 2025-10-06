@@ -25,6 +25,10 @@ impl Handler<StartObservation> for ObserverActor {
         // 기본 스트림 URL에 선택적으로 kind 필터를 추가(환경 변수로 제어)
         // Build stream URL with optional filters from env (kind, game_mode, session_id, event_type)
         let mut params: Vec<String> = Vec::new();
+
+        // test_session_id는 항상 포함
+        params.push(format!("session_id={}", self.test_session_id));
+
         if let Ok(kind) = std::env::var("OBSERVER_STREAM_KIND") {
             if !kind.is_empty() {
                 params.push(format!("kind={}", kind));
@@ -35,6 +39,7 @@ impl Handler<StartObservation> for ObserverActor {
                 params.push(format!("game_mode={}", gm));
             }
         }
+        // 환경 변수로도 session_id를 오버라이드할 수 있음 (테스트용)
         if let Ok(sid) = std::env::var("OBSERVER_FILTER_SESSION_ID") {
             if !sid.is_empty() {
                 params.push(format!("session_id={}", sid));
@@ -100,19 +105,27 @@ impl actix::Handler<crate::observer_actor::message::PlayerFinishedFromActor> for
         msg: crate::observer_actor::message::PlayerFinishedFromActor,
         ctx: &mut Self::Context,
     ) {
-        // Mark this player as Finished in phase model
-        self.players_phase
-            .insert(msg.player_id, crate::observer_actor::Phase::Finished);
-        self.player_received_events_in_phase
-            .insert(msg.player_id, std::collections::HashSet::new());
-        // For abnormal scenarios we consider the scenario concluded once any player finishes
-        if let Some(single) = &self.single_scenario_addr {
-            single.do_send(ObservationCompleted(ObservationResult::Success {
-                events: self.received_events.clone().into(),
-                duration: self.started_at.elapsed(),
-            }));
+        // PlayerActor reported completion, but we must verify phase validation first
+        let current_phase = self.players_phase.get(&msg.player_id);
+
+        if current_phase != Some(&crate::observer_actor::Phase::Finished) {
+            warn!(
+                "[{}] Player {} reported completion but phase is {:?}, waiting for phase validation via events",
+                self.test_name, msg.player_id, current_phase
+            );
+            // Wait for phase validation to complete via event stream
+            // The player will transition to Finished when required_events are satisfied
+            return;
         }
-        ctx.stop();
+
+        // Phase is already Finished via event validation - scenario can conclude
+        info!(
+            "[{}] Player {} confirmed finished via phase validation",
+            self.test_name, msg.player_id
+        );
+
+        // Check if all players have finished
+        self.check_all_players_finished(ctx);
     }
 }
 
@@ -187,12 +200,7 @@ impl Handler<InternalEvent> for ObserverActor {
                 // Allowlist non-player state events always pass through
                 match event.event_type {
                     crate::observer_actor::message::EventType::QueueSizeChanged
-                    | crate::observer_actor::message::EventType::DedicatedSessionFailed
-                    | crate::observer_actor::message::EventType::LoadingSessionCreated
-                    | crate::observer_actor::message::EventType::LoadingSessionCompleted
-                    | crate::observer_actor::message::EventType::LoadingSessionTimeout
                     | crate::observer_actor::message::EventType::PlayersRequeued
-                    | crate::observer_actor::message::EventType::LoadingSessionCanceled
                     | crate::observer_actor::message::EventType::ServerMessage
                     | crate::observer_actor::message::EventType::Error
                     | crate::observer_actor::message::EventType::StateViolation => {}
@@ -212,47 +220,53 @@ impl Handler<InternalEvent> for ObserverActor {
 
         if let Some(player_id) = event.player_id {
             self.check_phase_completion(player_id, &event, ctx);
-        } else if event.event_type
-            == crate::observer_actor::message::EventType::DedicatedSessionFailed
-        {
-            // 최종 실패(reason=max_retries_exceeded)만 실패로 간주
-            let reason = event
-                .data
-                .get("reason")
-                .and_then(|v| v.as_str())
-                .unwrap_or("")
-                .to_lowercase();
+        } else {
+            // Global events without player_id: broadcast to all players
+            match event.event_type {
+                crate::observer_actor::message::EventType::QueueSizeChanged
+                | crate::observer_actor::message::EventType::PlayersRequeued => {
+                    // Add to all players' received events
+                    let player_ids: Vec<_> = self.players_phase.keys().cloned().collect();
+                    for player_id in &player_ids {
+                        self.player_received_events_in_phase
+                            .entry(*player_id)
+                            .or_default()
+                            .insert(event.event_type.clone());
+                    }
+                    info!(
+                        "[{}] Global event {:?} broadcasted to {} players",
+                        self.test_name,
+                        event.event_type,
+                        player_ids.len()
+                    );
 
-            if reason.contains("max_retries_exceeded") {
-                let keys: Vec<_> = self.players_phase.keys().cloned().collect();
-                for pid in keys {
-                    self.players_phase
-                        .insert(pid, crate::observer_actor::Phase::Failed);
+                    // Check phase completion for all players after broadcasting global event
+                    for player_id in player_ids {
+                        self.check_phase_completion(player_id, &event, ctx);
+                    }
                 }
-                self.check_all_players_finished(ctx);
-            } else {
-                warn!(
-                    "[{}] Non-final dedicated_session_failed observed: {}",
-                    self.test_name, reason
-                );
+                crate::observer_actor::message::EventType::StateViolation => {
+                    // 서버 불변식 위반은 스웜 검증에서 즉시 실패로 처리
+                    let code = event
+                        .data
+                        .get("code")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("unknown");
+                    warn!(
+                        "[{}] State violation observed: {} — failing scenario",
+                        self.test_name, code
+                    );
+                    let keys: Vec<_> = self.players_phase.keys().cloned().collect();
+                    for pid in keys {
+                        self.players_phase
+                            .insert(pid, crate::observer_actor::Phase::Failed);
+                    }
+                    self.check_all_players_finished(ctx);
+                }
+                _ => {
+                    // Other global events are logged but not used for phase validation
+                }
             }
-        } else if event.event_type == crate::observer_actor::message::EventType::StateViolation {
-            // 서버 불변식 위반은 스웜 검증에서 즉시 실패로 처리
-            let code = event
-                .data
-                .get("code")
-                .and_then(|v| v.as_str())
-                .unwrap_or("unknown");
-            warn!(
-                "[{}] State violation observed: {} — failing scenario",
-                self.test_name, code
-            );
-            let keys: Vec<_> = self.players_phase.keys().cloned().collect();
-            for pid in keys {
-                self.players_phase
-                    .insert(pid, crate::observer_actor::Phase::Failed);
-            }
-            self.check_all_players_finished(ctx);
         }
     }
 }

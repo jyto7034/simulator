@@ -36,6 +36,7 @@ pub struct PlayerActor {
     pub state: PlayerState,
     pub behavior: Box<dyn PlayerBehavior>,
     pub player_id: Uuid,
+    pub test_session_id: String,
     pub auto_enqueue: bool,
     pub stream: Option<WsStream>,
     pub sink: Option<WsSink>,
@@ -46,6 +47,7 @@ impl PlayerActor {
         observer: Addr<ObserverActor>,
         behavior: Box<dyn PlayerBehavior>,
         player_id: Uuid,
+        test_session_id: String,
         auto_enqueue: bool,
     ) -> Self {
         Self {
@@ -53,6 +55,7 @@ impl PlayerActor {
             state: PlayerState::Idle,
             behavior,
             player_id,
+            test_session_id,
             auto_enqueue,
             stream: None,
             sink: None,

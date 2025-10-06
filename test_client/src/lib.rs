@@ -77,7 +77,7 @@ pub fn server_ws_url() -> String {
 }
 
 pub fn default_game_mode() -> String {
-    std::env::var("TEST_CLIENT_GAME_MODE").unwrap_or_else(|_| "Normal_1v1".to_string())
+    std::env::var("TEST_CLIENT_GAME_MODE").unwrap_or_else(|_| "Normal".to_string())
 }
 
 #[derive(Debug, Clone, PartialEq)]

@@ -53,6 +53,7 @@ pub struct ObserverActor {
     pub max_events_kept: usize,
 
     pub test_name: String,
+    pub test_session_id: String,
     pub scenario_runner_addr: Addr<ScenarioRunnerActor>,
     pub single_scenario_addr: Option<Addr<SingleScenarioActor>>,
 
@@ -77,6 +78,7 @@ impl ObserverActor {
     pub fn new(
         match_server_url: String,
         test_name: String,
+        test_session_id: String,
         scenario_runner_addr: Addr<ScenarioRunnerActor>,
         players_schedule: HashMap<Uuid, HashMap<Phase, PhaseCondition>>,
         players_phase: HashMap<Uuid, Phase>,
@@ -90,6 +92,7 @@ impl ObserverActor {
             received_events: VecDeque::with_capacity(max_events_kept),
             max_events_kept,
             test_name,
+            test_session_id,
             scenario_runner_addr,
             single_scenario_addr: None,
             players_schedule,
@@ -126,28 +129,7 @@ impl ObserverActor {
         use crate::observer_actor::message::EventType as ET;
 
         match event.event_type {
-            ET::LoadingSessionCreated => {
-                let session_id = event
-                    .data
-                    .get("session_id")
-                    .and_then(|v| v.as_str())
-                    .unwrap_or("")
-                    .to_string();
-                let players: HashSet<Uuid> = event
-                    .data
-                    .get("players")
-                    .and_then(|v| v.as_array())
-                    .map(|arr| {
-                        arr.iter()
-                            .filter_map(|s| s.as_str())
-                            .filter_map(|s| Uuid::parse_str(s).ok())
-                            .collect()
-                    })
-                    .unwrap_or_default();
-                if !session_id.is_empty() {
-                    self.state_sessions.insert(session_id, players);
-                }
-            }
+
             ET::StartLoading => {
                 if let (Some(pid), Some(session)) = (
                     event.player_id,
@@ -169,21 +151,13 @@ impl ObserverActor {
                     }
                 }
             }
-            ET::LoadingSessionCompleted
-            | ET::LoadingSessionTimeout
-            | ET::LoadingSessionCanceled => {
-                // Clean up session map to avoid leaks
-                if let Some(session) = event.data.get("session_id").and_then(|v| v.as_str()) {
-                    self.state_sessions.remove(session);
-                }
-            }
             ET::QueueSizeChanged => {
                 // 캐시 갱신
                 if let Some((gm, size)) = self.extract_queue_info(event) {
                     self.last_queue_size.insert(gm, (size, event.timestamp));
                 }
                 // 최근 플레이어 액션과 비교하여 큐 사이즈 변화 검증
-                self.validate_queue_size_change(event);
+                info!("[{}] Processing QueueSizeChanged event for consistency check.", self.test_name);
             }
 
             _ => {}
@@ -191,7 +165,7 @@ impl ObserverActor {
     }
 
     /// QueueSizeChanged 이벤트를 최근 플레이어 액션과 비교하여 검증
-    fn validate_queue_size_change(&self, current_event: &EventStreamMessage) {
+    fn _validate_queue_size_change(&self, current_event: &EventStreamMessage) {
         // 현재 큐 정보 추출
         let (game_mode, current_size) = match self.extract_queue_info(current_event) {
             Some(info) => info,

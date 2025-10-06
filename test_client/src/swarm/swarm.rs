@@ -32,10 +32,15 @@ impl SwarmLauncher {
         let test_name = self.test_name.clone();
 
         system.block_on(async move {
+            // 테스트 세션 ID 생성
+            let test_session_id = Uuid::new_v4().to_string();
+            info!("Generated test_session_id for swarm: {}", test_session_id);
+
             // 1) Observer 준비 (단일 시나리오가 아닌, 전체 플레이어 이벤트 관찰용)
             let observer = ObserverActor::new(
                 match_server_url,
-                test_name,
+                test_name.clone(),
+                test_session_id.clone(),
                 // dummy runner addr (unused in swarm mode)
                 actix::Actor::create(|_ctx| {
                     crate::scenario_actor::ScenarioRunnerActor::new(vec![])
@@ -56,6 +61,7 @@ impl SwarmLauncher {
             for (i, ms) in schedule_ms.iter().enumerate() {
                 let delay = *ms as u64;
                 let observer_addr_cloned = observer_addr.clone();
+                let test_session_id_cloned = test_session_id.clone();
 
                 // 각 플레이어용 결정적 UUID
                 let player_id: Uuid = uuid_for(seed, "player", i as u64);
@@ -77,6 +83,7 @@ impl SwarmLauncher {
                         observer_addr_cloned.clone(),
                         Box::new(behavior),
                         player_id,
+                        test_session_id_cloned,
                         true,
                     );
                     actor.start();

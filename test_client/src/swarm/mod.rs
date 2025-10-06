@@ -57,6 +57,8 @@ pub async fn run_swarm(cfg: config::SwarmConfig) -> anyhow::Result<()> {
         Vec::with_capacity(cfg.shards as usize);
     for shard in 0..cfg.shards {
         let test_name = format!("SwarmShard-{}", shard);
+        let test_session_id = Uuid::new_v4().to_string();
+        info!("Generated test_session_id for shard {}: {}", shard, test_session_id);
         let players_schedule = std::collections::HashMap::<
             Uuid,
             std::collections::HashMap<Phase, PhaseCondition>,
@@ -70,6 +72,7 @@ pub async fn run_swarm(cfg: config::SwarmConfig) -> anyhow::Result<()> {
         let observer = ObserverActor::new(
             base_url,
             test_name,
+            test_session_id.clone(),
             runner.clone(),
             players_schedule,
             players_phase,
@@ -133,6 +136,7 @@ pub async fn run_swarm(cfg: config::SwarmConfig) -> anyhow::Result<()> {
             let pid = ids[i];
             let mix_clone = mix.clone();
             let burst_barrier = burst_barrier.clone();
+            let test_session_id_clone = test_session_id.clone();
             actix::spawn(async move {
                 let target = t0 + Duration::from_millis(when_ms);
                 let now = Instant::now();
@@ -151,7 +155,7 @@ pub async fn run_swarm(cfg: config::SwarmConfig) -> anyhow::Result<()> {
                     }
                 }
                 let behavior = behavior_for_index(shard_seed, i as u64, &mix_clone);
-                let actor = PlayerActor::new(obs, Box::new(behavior), pid, true);
+                let actor = PlayerActor::new(obs, Box::new(behavior), pid, test_session_id_clone, true);
                 actor.start();
             });
         }

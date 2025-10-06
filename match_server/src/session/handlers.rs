@@ -30,7 +30,9 @@ impl Handler<ServerMessage> for Session {
         match &msg {
             ServerMessage::EnQueued { pod_id: _ } => {
                 // 하위 액터에서 Client 에게 메시지를 보낸다는 것은, Queue 에 성공적으로 등록되었음을 의미함.
-                self.transition_to(SessionState::InQueue, ctx);
+                if !self.transition_to(SessionState::InQueue, ctx) {
+                    return; // State transition failed, stop processing
+                }
                 if let Ok(json) = serde_json::to_string(&msg) {
                     ctx.text(json);
                 } else {
@@ -38,7 +40,9 @@ impl Handler<ServerMessage> for Session {
                 }
             }
             ServerMessage::DeQueued => {
-                self.transition_to(SessionState::Dequeued, ctx);
+                if !self.transition_to(SessionState::Dequeued, ctx) {
+                    return; // State transition failed, stop processing
+                }
                 if let Ok(json) = serde_json::to_string(&msg) {
                     ctx.text(json);
                 } else {
@@ -49,7 +53,9 @@ impl Handler<ServerMessage> for Session {
                 session_id: _,
                 server_address: _,
             } => {
-                self.transition_to(SessionState::Completed, ctx);
+                if !self.transition_to(SessionState::Completed, ctx) {
+                    return; // State transition failed, stop processing
+                }
                 if let Ok(json) = serde_json::to_string(&msg) {
                     ctx.text(json);
                 } else {
@@ -62,7 +68,9 @@ impl Handler<ServerMessage> for Session {
                 code: _,
                 message: _,
             } => {
-                self.transition_to(SessionState::Error, ctx);
+                if !self.transition_to(SessionState::Error, ctx) {
+                    return; // State transition failed, stop processing
+                }
                 if let Ok(json) = serde_json::to_string(&msg) {
                     ctx.text(json);
                 } else {

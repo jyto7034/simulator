@@ -1,5 +1,5 @@
 use actix::{ActorContext, Context, Handler};
-use tracing::{info, warn};
+use tracing::{debug, info, warn};
 
 use crate::{
     subscript::{
@@ -15,8 +15,10 @@ impl Handler<ForwardServerMessage> for SubScriptionManager {
         if let Some(session_addr) = self.sessions.get(&msg.player_id) {
             session_addr.do_send(msg.message);
         } else {
-            warn!(
-                "Could not find session for player {} to forward message.",
+            // Session may have already cleaned up during graceful shutdown
+            // This is a normal race condition, not an error
+            debug!(
+                "Session already cleaned up for player {} - message not forwarded",
                 msg.player_id
             );
         }

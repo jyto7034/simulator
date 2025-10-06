@@ -23,14 +23,8 @@ pub enum EventType {
 
     // State events (events:*)
     QueueSizeChanged,
-    LoadingSessionCreated,
     PlayerReady,
-    LoadingSessionCompleted,
-    LoadingSessionTimeout,
     PlayersRequeued,
-    DedicatedSessionCreated,
-    DedicatedSessionFailed,
-    LoadingSessionCanceled,
     StateViolation,
 
     #[serde(other)]

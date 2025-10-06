@@ -188,7 +188,10 @@ impl Handler<ConnectionEstablished> for PlayerActor {
             let enqueue_msg = ClientMessage::Enqueue {
                 player_id: self.player_id,
                 game_mode: crate::default_game_mode(),
-                metadata: format!(r#"{{"player_id":"{}"}}"#, self.player_id),
+                metadata: format!(
+                    r#"{{"player_id":"{}","test_session_id":"{}"}}"#,
+                    self.player_id, self.test_session_id
+                ),
             };
             ctx.address()
                 .do_send(InternalSendText(enqueue_msg.to_string()));
@@ -204,7 +207,10 @@ impl Handler<TriggerEnqueueNow> for PlayerActor {
             let enqueue_msg = ClientMessage::Enqueue {
                 player_id: self.player_id,
                 game_mode: crate::default_game_mode(),
-                metadata: format!(r#"{{"player_id":"{}"}}"#, self.player_id),
+                metadata: format!(
+                    r#"{{"player_id":"{}","test_session_id":"{}"}}"#,
+                    self.player_id, self.test_session_id
+                ),
             };
             ctx.address()
                 .do_send(InternalSendText(enqueue_msg.to_string()));

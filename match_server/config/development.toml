@@ -28,7 +28,7 @@ message_max_interval_ms = 100
 
 # 매치메이킹 설정
 [matchmaking]
-try_match_tick_interval_seconds = 1
+try_match_tick_interval_seconds = 5
 queue_key_prefix = "queue"
 queue_order_key_prefix = "queue_order"
 match_fetch_request_channel_prefix = "match_fetch_req"
