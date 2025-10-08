@@ -157,6 +157,15 @@ impl Actor for SingleScenarioActor {
         players_schedule.insert(perpetrator_id, perpetrator_schedule);
         players_schedule.insert(victim_id, victim_schedule);
 
+        // Determine which players are expected to fail based on their behavior type
+        let mut expected_failures = std::collections::HashSet::new();
+        if self.scenario.perpetrator_behavior.is_expected_to_fail() {
+            expected_failures.insert(perpetrator_id);
+        }
+        if self.scenario.victim_behavior.is_expected_to_fail() {
+            expected_failures.insert(victim_id);
+        }
+
         let observer = ObserverActor::new(
             "ws://127.0.0.1:8080".to_string(),
             self.scenario.name.clone(),
@@ -164,6 +173,7 @@ impl Actor for SingleScenarioActor {
             self.runner_addr.clone(),
             players_schedule,
             HashMap::new(),
+            expected_failures,
         );
 
         // SingleScenarioActor 주소를 Observer에 설정 (순환 참조 방지를 위해 나중에 설정)
@@ -176,20 +186,26 @@ impl Actor for SingleScenarioActor {
 
         let perpetrator_behavior = Box::new(self.scenario.perpetrator_behavior.clone());
         let victim_behavior = Box::new(self.scenario.victim_behavior.clone());
+        let perpetrator_auto_enqueue = !matches!(
+            self.scenario.perpetrator_behavior,
+            BehaviorType::Invalid { .. }
+        );
+        let victim_auto_enqueue =
+            !matches!(self.scenario.victim_behavior, BehaviorType::Invalid { .. });
 
         let perpetrator_actor = PlayerActor::new(
             observer_addr.clone(),
             perpetrator_behavior,
             perpetrator_id,
             test_session_id.clone(),
-            true,
+            perpetrator_auto_enqueue,
         );
         let victim_actor = PlayerActor::new(
             observer_addr.clone(),
             victim_behavior,
             victim_id,
             test_session_id.clone(),
-            true,
+            victim_auto_enqueue,
         );
 
         perpetrator_actor.start();

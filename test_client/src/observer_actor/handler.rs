@@ -5,7 +5,10 @@ use tokio_tungstenite::{connect_async, tungstenite};
 use tracing::{debug, error, info, warn};
 
 use crate::observer_actor::{
-    message::{InternalEvent, ObservationCompleted, SetSingleScenarioAddr, StartObservation},
+    message::{
+        EventType, InternalEvent, ObservationCompleted, PlayerFinishedFromActor,
+        SetSingleScenarioAddr, StartObservation, StopObservation,
+    },
     EventStreamMessage, ObservationResult, ObserverActor, Phase,
 };
 
@@ -98,45 +101,60 @@ impl Handler<StartObservation> for ObserverActor {
     }
 }
 
-impl actix::Handler<crate::observer_actor::message::PlayerFinishedFromActor> for ObserverActor {
+impl actix::Handler<PlayerFinishedFromActor> for ObserverActor {
     type Result = ();
-    fn handle(
-        &mut self,
-        msg: crate::observer_actor::message::PlayerFinishedFromActor,
-        ctx: &mut Self::Context,
-    ) {
-        // PlayerActor reported completion, but we must verify phase validation first
+    fn handle(&mut self, msg: PlayerFinishedFromActor, ctx: &mut Self::Context) {
+        // 플레이어 이벤트 기반 검증 기능을 살리되
+        // 플레이어의 실패는 테스트 실패로 즉시 처리 되어야함
+        // 처음에 작성해둔 명세가 타이트 하지 않았음, 플레이어의 실패는 의도된 행동이기 때문에 Ok() 로 처리하자고 했는데
+        // 실제로 Ok() 로 처리를 하니 테스트가 timeout 되는 경우가 발생 ( 플레이어 한 쪽이 실패했는데 Failed 가 아닌 Ok() 를 반환해서 다른 한 쪽이 끝날 때까지 대기. )
         let current_phase = self.players_phase.get(&msg.player_id);
 
-        if current_phase != Some(&crate::observer_actor::Phase::Finished) {
-            warn!(
-                "[{}] Player {} reported completion but phase is {:?}, waiting for phase validation via events",
-                self.test_name, msg.player_id, current_phase
-            );
-            // Wait for phase validation to complete via event stream
-            // The player will transition to Finished when required_events are satisfied
-            return;
+        match msg.result {
+            // Player reported a failure - wait for phase validation via events
+            Err(ref failure) => {
+                // Phase 검증: Failed 또는 Finished가 될 때까지 대기
+                match current_phase {
+                    Some(&Phase::Failed) | Some(&Phase::Finished) => {
+                        info!(
+                            "[{}] Player {} failure confirmed via phase validation (phase: {:?})",
+                            self.test_name, msg.player_id, current_phase
+                        );
+                        self.check_all_players_finished(ctx);
+                    }
+                    _ => {
+                        warn!(
+                            "[{}] Player {} reported failure: {:?}, but phase is {:?}, waiting for phase validation via events",
+                            self.test_name, msg.player_id, failure, current_phase
+                        );
+                    }
+                }
+            }
+
+            // Player reported success - wait for phase validation via events
+            Ok(_) => {
+                // Phase 검증: Finished가 될 때까지 대기
+                if current_phase != Some(&Phase::Finished) {
+                    warn!(
+                        "[{}] Player {} reported completion but phase is {:?}, waiting for phase validation via events",
+                        self.test_name, msg.player_id, current_phase
+                    );
+                    return;
+                }
+
+                info!(
+                    "[{}] Player {} confirmed finished via phase validation",
+                    self.test_name, msg.player_id
+                );
+                self.check_all_players_finished(ctx);
+            }
         }
-
-        // Phase is already Finished via event validation - scenario can conclude
-        info!(
-            "[{}] Player {} confirmed finished via phase validation",
-            self.test_name, msg.player_id
-        );
-
-        // Check if all players have finished
-        self.check_all_players_finished(ctx);
     }
 }
 
-impl actix::Handler<crate::observer_actor::message::StopObservation> for super::ObserverActor {
+impl actix::Handler<StopObservation> for super::ObserverActor {
     type Result = ();
-    fn handle(
-        &mut self,
-        _msg: crate::observer_actor::message::StopObservation,
-        ctx: &mut Self::Context,
-    ) {
-        // Stop the event stream by stopping the actor
+    fn handle(&mut self, _msg: StopObservation, ctx: &mut Self::Context) {
         ctx.stop();
     }
 }
@@ -191,21 +209,17 @@ impl Handler<InternalEvent> for ObserverActor {
 
     fn handle(&mut self, msg: InternalEvent, ctx: &mut Self::Context) {
         let event = msg.0;
-        // Process state events inside actor context (message-forwarded)
         self.process_state_event(&event);
         debug!("[{}] Received event: {:?}", self.test_name, event);
-        // Shard-level filtering: drop unrelated player-scoped events
         if let Some(pid) = event.player_id {
             if !self.players_phase.contains_key(&pid) {
-                // Allowlist non-player state events always pass through
                 match event.event_type {
-                    crate::observer_actor::message::EventType::QueueSizeChanged
-                    | crate::observer_actor::message::EventType::PlayersRequeued
-                    | crate::observer_actor::message::EventType::ServerMessage
-                    | crate::observer_actor::message::EventType::Error
-                    | crate::observer_actor::message::EventType::StateViolation => {}
+                    EventType::QueueSizeChanged
+                    | EventType::PlayersRequeued
+                    | EventType::ServerMessage
+                    | EventType::Error
+                    | EventType::StateViolation => {}
                     _ => {
-                        // Drop unrelated per-player event
                         return;
                     }
                 }
@@ -221,11 +235,8 @@ impl Handler<InternalEvent> for ObserverActor {
         if let Some(player_id) = event.player_id {
             self.check_phase_completion(player_id, &event, ctx);
         } else {
-            // Global events without player_id: broadcast to all players
             match event.event_type {
-                crate::observer_actor::message::EventType::QueueSizeChanged
-                | crate::observer_actor::message::EventType::PlayersRequeued => {
-                    // Add to all players' received events
+                EventType::QueueSizeChanged | EventType::PlayersRequeued => {
                     let player_ids: Vec<_> = self.players_phase.keys().cloned().collect();
                     for player_id in &player_ids {
                         self.player_received_events_in_phase
@@ -240,12 +251,11 @@ impl Handler<InternalEvent> for ObserverActor {
                         player_ids.len()
                     );
 
-                    // Check phase completion for all players after broadcasting global event
                     for player_id in player_ids {
                         self.check_phase_completion(player_id, &event, ctx);
                     }
                 }
-                crate::observer_actor::message::EventType::StateViolation => {
+                EventType::StateViolation => {
                     // 서버 불변식 위반은 스웜 검증에서 즉시 실패로 처리
                     let code = event
                         .data
@@ -263,9 +273,7 @@ impl Handler<InternalEvent> for ObserverActor {
                     }
                     self.check_all_players_finished(ctx);
                 }
-                _ => {
-                    // Other global events are logged but not used for phase validation
-                }
+                _ => {}
             }
         }
     }
@@ -282,24 +290,22 @@ impl ObserverActor {
         let event_type = &event.event_type;
         let data = &event.data;
 
-        // 전용 서버 할당 실패와 같은 치명적 에러가 클라이언트에 전달되면 해당 플레이어를 종료로 전환
-        if *event_type == crate::observer_actor::message::EventType::Error {
+        // 치명적 에러가 클라이언트에 전달되면 해당 플레이어를 종료로 전환
+        if *event_type == EventType::Error {
             if let Some(msg) = data.get("message").and_then(|v| v.as_str()) {
                 let m = msg.to_lowercase();
                 if m.contains("failed") && m.contains("attempt") {
-                    self.players_phase
-                        .insert(player_id, crate::observer_actor::Phase::Failed);
+                    self.players_phase.insert(player_id, Phase::Failed);
                     self.player_received_events_in_phase
-                        .insert(player_id, std::collections::HashSet::new());
+                        .insert(player_id, HashSet::new());
                     self.check_all_players_finished(ctx);
                     return;
                 }
             }
             // 그 외 에러 메시지는 테스트 상 종료로 간주 (성공/실패 판단은 상위에서 수행)
-            self.players_phase
-                .insert(player_id, crate::observer_actor::Phase::Finished);
+            self.players_phase.insert(player_id, Phase::Finished);
             self.player_received_events_in_phase
-                .insert(player_id, std::collections::HashSet::new());
+                .insert(player_id, HashSet::new());
             self.check_all_players_finished(ctx);
             return;
         }
@@ -366,27 +372,36 @@ impl ObserverActor {
         self.check_all_players_finished(ctx);
     }
 
-    /// 모든 플레이어가 Finished 상태에 도달했는지 확인합니다.
-    fn check_all_players_finished(&self, ctx: &mut actix::Context<Self>) {
+    /// 모든 플레이어가 terminal state에 도달했는지 확인합니다.
+    /// - Expected failures: Failed 상태가 예상됨
+    /// - Normal players: Finished 상태가 예상됨
+    fn check_all_players_finished(&mut self, ctx: &mut actix::Context<Self>) {
         if self.players_phase.is_empty() {
             return;
         }
 
-        // 실패한 플레이어가 있는지 먼저 확인
-        let has_failed = self
+        // 1. Check for unexpected failures (failures not in expected_failures set)
+        let unexpected_failures: Vec<_> = self
             .players_phase
-            .values()
-            .any(|phase| *phase == Phase::Failed);
+            .iter()
+            .filter(|(player_id, phase)| {
+                **phase == Phase::Failed && !self.expected_failures.contains(player_id)
+            })
+            .map(|(id, _)| *id)
+            .collect();
 
-        if has_failed {
+        if !unexpected_failures.is_empty() {
             warn!(
-                "✗ [{}] Scenario failed - at least one player is in Failed state.",
-                self.test_name
+                "✗ [{}] Scenario failed - unexpected failures detected: {:?}",
+                self.test_name, unexpected_failures
             );
 
             // SingleScenarioActor에게 실패 결과 전송
             if let Some(single_scenario_addr) = &self.single_scenario_addr {
-                let failure_reason = format!("One or more players failed phase validation");
+                let failure_reason = format!(
+                    "Unexpected player failures: {} player(s)",
+                    unexpected_failures.len()
+                );
                 single_scenario_addr.do_send(ObservationCompleted(ObservationResult::Error {
                     failed_step: 0,
                     reason: failure_reason,
@@ -397,15 +412,18 @@ impl ObserverActor {
             return;
         }
 
-        // 모든 플레이어가 완료했는지 확인
-        let all_finished = self
-            .players_phase
-            .values()
-            .all(|phase| *phase == Phase::Finished);
+        // 2. Check if all players reached terminal state
+        // Terminal states:
+        // - Finished (for normal players)
+        // - Failed (only if expected)
+        let all_terminal = self.players_phase.iter().all(|(player_id, phase)| {
+            *phase == Phase::Finished
+                || (*phase == Phase::Failed && self.expected_failures.contains(player_id))
+        });
 
-        if all_finished {
+        if all_terminal {
             info!(
-                "✓ [{}] All players have finished the scenario successfully.",
+                "✓ [{}] All players reached terminal state - test complete.",
                 self.test_name
             );
 

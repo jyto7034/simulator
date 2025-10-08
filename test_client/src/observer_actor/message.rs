@@ -3,7 +3,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::observer_actor::ObservationResult;
+use crate::{observer_actor::ObservationResult, BehaviorResult};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Hash)]
 #[serde(rename_all = "snake_case")]
@@ -13,12 +13,7 @@ pub enum EventType {
     Dequeued,
     MatchFound,
 
-    // Loading
-    StartLoading,
-    LoadingComplete,
-
     ServerMessage,
-    // Error
     Error,
 
     // State events (events:*)
@@ -75,5 +70,5 @@ pub struct StopObservation;
 #[rtype(result = "()")]
 pub struct PlayerFinishedFromActor {
     pub player_id: uuid::Uuid,
-    pub result: crate::BehaviorResult,
+    pub result: BehaviorResult,
 }

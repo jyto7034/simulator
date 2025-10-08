@@ -16,6 +16,14 @@ pub enum InvalidMode {
     DuplicateEnqueue,
     /// 잘못된 player_id로 Dequeue 시도
     WrongPlayerId,
+    /// 존재하지 않는 game_mode
+    InvalidGameMode,
+    /// 비정상적으로 큰 metadata (1MB)
+    LargeMetadata,
+    /// 잘못된 JSON 구조
+    MalformedJson,
+    /// Idle 상태에서 Dequeue 시도 (state machine 위반)
+    IdleToDequeue,
 }
 
 #[derive(Debug, Clone)]
@@ -25,6 +33,48 @@ pub struct InvalidMessages {
 
 #[async_trait]
 impl PlayerBehavior for InvalidMessages {
+    async fn on_connected(&self, ctx: &PlayerContext) -> BehaviorResult {
+        match self.mode {
+            InvalidMode::IdleToDequeue => {
+                // Idle 상태에서 즉시 Dequeue 시도 (아직 Enqueue도 안했는데)
+                let msg = ClientMessage::Dequeue {
+                    player_id: ctx.player_id,
+                    game_mode: crate::default_game_mode(),
+                };
+                ctx.addr.do_send(InternalSendText(msg.to_string()));
+            }
+            InvalidMode::InvalidGameMode => {
+                // 존재하지 않는 game_mode로 Enqueue
+                ctx.addr.do_send(InternalSendText(
+                    format!(
+                        r#"{{"type":"enqueue","player_id":"{}","game_mode":"NonExistentMode","metadata":"{{}}"}}"#,
+                        ctx.player_id
+                    )
+                ));
+            }
+            InvalidMode::LargeMetadata => {
+                // 1MB 크기의 metadata로 Enqueue
+                let large_data = "x".repeat(1_000_000);
+                let msg = ClientMessage::Enqueue {
+                    player_id: ctx.player_id,
+                    game_mode: crate::default_game_mode(),
+                    metadata: format!(r#"{{"data":"{}"}}"#, large_data),
+                };
+                ctx.addr.do_send(InternalSendText(msg.to_string()));
+            }
+            InvalidMode::MalformedJson => {
+                // 잘못된 JSON 구조 (닫히지 않은 중괄호)
+                ctx.addr.do_send(InternalSendText(
+                    r#"{"type":"enqueue","player_id":"#.to_string()
+                ));
+            }
+            _ => {
+                // 다른 모드들은 on_enqueued에서 처리
+            }
+        }
+        Ok(BehaviorOutcome::Continue)
+    }
+
     async fn on_enqueued(&self, ctx: &PlayerContext) -> BehaviorResult {
         match self.mode {
             InvalidMode::UnknownType => {
@@ -53,6 +103,10 @@ impl PlayerBehavior for InvalidMessages {
                     game_mode: crate::default_game_mode(),
                 };
                 ctx.addr.do_send(InternalSendText(msg.to_string()));
+            }
+            _ => {
+                // IdleToDequeue, InvalidGameMode, LargeMetadata, MalformedJson은
+                // on_connected에서 이미 처리됨
             }
         }
         Ok(BehaviorOutcome::Continue)

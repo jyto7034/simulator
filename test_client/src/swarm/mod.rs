@@ -76,6 +76,7 @@ pub async fn run_swarm(cfg: config::SwarmConfig) -> anyhow::Result<()> {
             runner.clone(),
             players_schedule,
             players_phase,
+            std::collections::HashSet::new(), // No expected failures in swarm tests
         );
         let observer_addr = observer.start();
         observer_addrs.push(observer_addr.clone());

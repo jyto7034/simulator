@@ -1,69 +1,9 @@
 use std::collections::{HashMap, HashSet};
-use std::sync::Arc;
-
-use serde_json::Value;
 
 use crate::{
     behaviors::BehaviorType,
     observer_actor::{message::EventType, Phase, PhaseCondition},
 };
-
-fn phase_matching_to_loading() -> PhaseCondition {
-    PhaseCondition {
-        required_events: HashSet::from([EventType::Enqueued]),
-        transition_event: EventType::StartLoading,
-        transition_matcher: None,
-        next_phase: Phase::Loading,
-    }
-}
-
-fn is_match_found_payload(data: &Value) -> bool {
-    data.get("session_id").is_some() && data.get("server_address").is_some()
-}
-
-fn phase_loading_to_finished_match_found() -> PhaseCondition {
-    PhaseCondition {
-        required_events: HashSet::new(),
-        transition_event: EventType::MatchFound,
-        transition_matcher: Some(Arc::new(|data| is_match_found_payload(data))),
-        next_phase: Phase::Finished,
-    }
-}
-
-fn error_message_contains_any(data: &Value, needles: &[&str]) -> bool {
-    if let Some(msg) = data.get("message").and_then(|v| v.as_str()) {
-        let msg = msg.to_lowercase();
-        needles.iter().any(|needle| msg.contains(needle))
-    } else {
-        true
-    }
-}
-
-fn phase_loading_to_finished_error<F>(predicate: F) -> PhaseCondition
-where
-    F: Fn(&Value) -> bool + Send + Sync + 'static,
-{
-    PhaseCondition {
-        required_events: HashSet::new(),
-        transition_event: EventType::Error,
-        transition_matcher: Some(Arc::new(predicate)),
-        next_phase: Phase::Finished,
-    }
-}
-
-fn phase_loading_to_finished_error_with_required(
-    required: HashSet<EventType>,
-    needles: &'static [&'static str],
-) -> PhaseCondition {
-    PhaseCondition {
-        required_events: required,
-        transition_event: EventType::Error,
-        transition_matcher: Some(Arc::new(move |data| {
-            error_message_contains_any(data, needles)
-        })),
-        next_phase: Phase::Finished,
-    }
-}
 
 fn build_schedule_for_behavior(behavior: &BehaviorType) -> HashMap<Phase, PhaseCondition> {
     match behavior {
@@ -109,8 +49,10 @@ fn build_schedule_for_behavior(behavior: &BehaviorType) -> HashMap<Phase, PhaseC
             );
             schedule
         }
+
         BehaviorType::Invalid { .. } => {
-            // Invalid: Error 받으면 종료
+            // Invalid: Error 이벤트를 기다리고 Finished로 전환
+            // Error 이벤트는 이제 Redis stream으로도 발행됨
             let mut schedule = HashMap::new();
             schedule.insert(
                 Phase::Matching,
@@ -133,6 +75,37 @@ pub fn get_schedule_for_perpetrator(
 }
 
 pub fn get_schedule_for_victim(victim_behavior: &BehaviorType) -> HashMap<Phase, PhaseCondition> {
-    // victim도 동일한 스케줄 사용 (behavior에 따라 적절한 이벤트 기대)
     build_schedule_for_behavior(victim_behavior)
 }
+
+/*
+=== 구현된 Behavior들 ===
+
+✅ Normal: 정상 흐름
+✅ QuitBeforeMatch: 연결 후 즉시 종료
+✅ QuitAfterEnqueue: Enqueue 후 Dequeue
+
+✅ Invalid { mode }:
+  - InvalidGameMode: 존재하지 않는 game_mode로 Enqueue
+  - LargeMetadata: 비정상적으로 큰 metadata (1MB)로 Enqueue
+  - MalformedJson: 잘못된 JSON 구조로 전송
+  - IdleToDequeue: Idle 상태에서 Dequeue 시도 (state machine 위반)
+  - UnknownType: 존재하지 않는 메시지 타입 전송
+  - MissingField: 필수 필드 누락된 메시지 전송
+  - DuplicateEnqueue: Enqueued 상태에서 다시 Enqueue
+  - WrongPlayerId: 다른 player_id로 Dequeue 시도
+
+=== 구현 불가능한 Behavior ===
+
+❌ NoHeartbeat (무응답/느린 응답):
+   - tokio-tungstenite가 자동으로 ping/pong 처리
+   - 클라이언트 레벨에서 pong 무시 불가능
+   - 서버 timeout 테스트는 수동으로 연결 끊기로 대체 가능
+
+=== 사용 예시 ===
+
+// Invalid behavior 생성
+BehaviorType::Invalid { mode: InvalidMode::LargeMetadata }
+BehaviorType::Invalid { mode: InvalidMode::IdleToDequeue }
+BehaviorType::Invalid { mode: InvalidMode::DuplicateEnqueue }
+*/

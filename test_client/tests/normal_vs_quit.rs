@@ -1,4 +1,3 @@
-use actix::Actor;
 use anyhow::Result;
 use test_client::{
     behaviors::BehaviorType,

@@ -8,6 +8,7 @@ use tracing::{error, info, warn};
 
 use crate::{
     behaviors::{ClientMessage, ServerMessage},
+    observer_actor::message::PlayerFinishedFromActor,
     player_actor::{
         message::{
             BehaviorFinished, ConnectionEstablished, GetPlayerId, InternalClose, InternalSendText,
@@ -121,12 +122,10 @@ impl Handler<BehaviorFinished> for PlayerActor {
                     "[{}] Player completed flow, stopping actor.",
                     self.player_id
                 );
-                // Notify Observer that this player finished, so overall scenario can close
-                self.observer
-                    .do_send(crate::observer_actor::message::PlayerFinishedFromActor {
-                        player_id: self.player_id,
-                        result: Ok(BehaviorOutcome::Stop),
-                    });
+                self.observer.do_send(PlayerFinishedFromActor {
+                    player_id: self.player_id,
+                    result: Ok(BehaviorOutcome::Stop),
+                });
                 ctx.stop();
             }
             Ok(BehaviorOutcome::Retry) => {
@@ -140,13 +139,10 @@ impl Handler<BehaviorFinished> for PlayerActor {
                     }
                     _ => {
                         error!("[{}] Test failed: {:?}", self.player_id, test_failure);
-                        // Notify Observer to allow scenario to conclude even on error branches
-                        self.observer.do_send(
-                            crate::observer_actor::message::PlayerFinishedFromActor {
-                                player_id: self.player_id,
-                                result: Ok(BehaviorOutcome::Stop),
-                            },
-                        );
+                        self.observer.do_send(PlayerFinishedFromActor {
+                            player_id: self.player_id,
+                            result: Err(test_failure.clone()),
+                        });
                         ctx.stop();
                     }
                 }

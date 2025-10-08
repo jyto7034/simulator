@@ -47,6 +47,7 @@ impl SwarmLauncher {
                 }),
                 std::collections::HashMap::new(),
                 std::collections::HashMap::new(),
+                std::collections::HashSet::new(), // No expected failures in swarm tests
             );
             let observer_addr = observer.start();
 

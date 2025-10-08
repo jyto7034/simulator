@@ -116,8 +116,13 @@ pub enum BehaviorType {
     QuitBeforeMatch,
     QuitAfterEnqueue, // Enqueue 성공 후 즉시 Dequeue 또는 종료
     Invalid { mode: invalid::InvalidMode },
-    // Deprecated (Loading phase removed)
-    // SlowLoader, SpikyLoader, TimeoutLoader
+}
+
+impl BehaviorType {
+    /// Returns true if this behavior is expected to fail (receive an error from server)
+    pub fn is_expected_to_fail(&self) -> bool {
+        matches!(self, BehaviorType::Invalid { .. })
+    }
 }
 
 #[async_trait]
