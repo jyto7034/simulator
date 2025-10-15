@@ -1,9 +1,9 @@
 pub mod behaviors;
 pub mod observer_actor;
 pub mod player_actor;
+pub mod protocols;
 pub mod scenario_actor;
 pub mod schedules;
-pub mod swarm;
 pub mod test_utils;
 
 use std::io;
@@ -77,33 +77,18 @@ pub fn server_ws_url() -> String {
 }
 
 pub fn default_game_mode() -> String {
-    std::env::var("TEST_CLIENT_GAME_MODE").unwrap_or_else(|_| "Normal".to_string())
+    std::env::var("TEST_CLIENT_GAME_MODE").unwrap_or_else(|_| "Ranked".to_string())
 }
 
+/// Behavior 실행 결과
 #[derive(Debug, Clone, PartialEq)]
 pub enum BehaviorOutcome {
     /// 다음 단계로 계속 진행
     Continue,
     /// 정상 완료 후 종료
-    Stop,
-    /// 재시도 필요
-    Retry,
-}
-
-/// PlayerBehavior 메서드들의 반환 타입
-pub type BehaviorResult = Result<BehaviorOutcome, TestFailure>;
-
-#[derive(Debug, Clone, PartialEq)]
-pub enum TestFailure {
-    /// 연결 관련 실패 (네트워크, WebSocket 등)
-    Connection(String),
-    /// 타임아웃 발생
-    Timeout(String),
-    /// 프로토콜 오류 (잘못된 메시지, 순서 등)
-    Protocol(String),
-    /// 의도된 테스트 행동 (플레이어가 일부러 실패하는 케이스)
-    Behavior(String),
-    /// 시스템 내부 오류
-    System(String),
-    MatchmakingError(String),
+    Complete,
+    /// 진행할 수 없는 오류 발생
+    Error(String),
+    /// 의도된 에러 (테스트 목적)
+    IntendError,
 }

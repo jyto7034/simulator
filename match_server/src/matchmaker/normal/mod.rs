@@ -6,13 +6,13 @@ use std::{
 use actix::{Actor, Addr, AsyncContext};
 use redis::aio::ConnectionManager;
 use tokio_util::sync::CancellationToken;
-use tracing::{info, warn};
+use tracing::info;
 
 pub mod handlers;
 
 use crate::{
     env::{MatchModeSettings, MatchmakingSettings},
-    matchmaker::{common::MatchmakerInner, messages::TryMatch},
+    matchmaker::{circuit_breaker::CircuitBreaker, common::MatchmakerInner, messages::TryMatch},
     metrics::MetricsCtx,
     subscript::SubScriptionManager,
 };
@@ -43,9 +43,18 @@ impl NormalMatchmaker {
         sub_manager_addr: Addr<SubScriptionManager>,
         metrics: std::sync::Arc<MetricsCtx>,
         shutdown_token: CancellationToken,
+        redis_circuit: std::sync::Arc<CircuitBreaker>,
     ) -> Self {
         Self {
-            inner: MatchmakerInner::new(redis, settings, mode_settings, sub_manager_addr, metrics, shutdown_token),
+            inner: MatchmakerInner::new(
+                redis,
+                settings,
+                mode_settings,
+                sub_manager_addr,
+                metrics,
+                shutdown_token,
+                redis_circuit,
+            ),
         }
     }
 }
@@ -60,11 +69,24 @@ impl Actor for NormalMatchmaker {
         );
         let interval = self.settings.try_match_tick_interval_seconds;
         let mode_settings = self.mode_settings.clone();
+        let addr = ctx.address();
+        let shutdown_token = self.shutdown_token.clone();
 
-        ctx.run_interval(Duration::from_secs(interval), move |_actor, ctx| {
-            ctx.notify(TryMatch {
-                match_mode_settings: mode_settings.clone(),
-            });
+        tokio::spawn(async move {
+            let mut interval_timer = tokio::time::interval(Duration::from_secs(interval));
+            interval_timer.tick().await;
+
+            loop {
+                interval_timer.tick().await;
+
+                if shutdown_token.is_cancelled() {
+                    break;
+                }
+
+                addr.do_send(TryMatch {
+                    match_mode_settings: mode_settings.clone(),
+                });
+            }
         });
     }
 
@@ -77,8 +99,6 @@ impl Actor for NormalMatchmaker {
         // 모든 실행 중인 future에게 종료 신호
         self.shutdown_token.cancel();
 
-        // 즉시 종료 (System shutdown 중에는 run_later() 호출 불가)
-        info!("Stopping immediately");
         actix::Running::Stop
     }
 }

@@ -20,7 +20,7 @@ impl Settings {
         let s = Config::builder()
             // Load environment-specific file (e.g., development.toml, production.toml)
             .add_source(
-                File::with_name(&format!("match_server/config/{}", run_mode))
+                File::with_name(&format!("config/{}", run_mode))
                     .format(FileFormat::Toml)
                     .required(true),
             )
@@ -48,6 +48,11 @@ pub struct MatchmakingSettings {
     pub dedicated_request_timeout_seconds: u64,
     pub allocation_token_ttl_seconds: u64,
     pub slow_loading_threshold_seconds: u64,
+    /// Redis operation timeout in seconds (prevents infinite waiting on Redis operations)
+    pub redis_operation_timeout_seconds: u64,
+    /// Skip game server availability check (for development environments without game servers)
+    #[serde(default)]
+    pub skip_game_server_check: bool,
 }
 
 #[derive(Debug, Deserialize, Clone)]

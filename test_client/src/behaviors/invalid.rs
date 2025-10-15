@@ -1,115 +1,271 @@
-use super::PlayerBehavior;
-use crate::behaviors::ClientMessage;
-use crate::player_actor::message::InternalSendText;
-use crate::{player_actor::PlayerContext, BehaviorOutcome, BehaviorResult};
 use async_trait::async_trait;
 
-/// InvalidMessages: 고의로 잘못된/순서가 어긋난 메시지를 전송해 서버의 강건성을 검증
-/// - 모드 별로 다른 invalid 시나리오를 구성할 수 있도록 단순 variant 제공
-#[derive(Debug, Clone)]
-pub enum InvalidMode {
-    /// 존재하지 않는 타입
-    UnknownType,
-    /// 필수 필드 누락
-    MissingField,
-    /// EnQueued 이후 중복 Enqueue 시도
-    DuplicateEnqueue,
-    /// 잘못된 player_id로 Dequeue 시도
-    WrongPlayerId,
-    /// 존재하지 않는 game_mode
-    InvalidGameMode,
-    /// 비정상적으로 큰 metadata (1MB)
-    LargeMetadata,
-    /// 잘못된 JSON 구조
-    MalformedJson,
-    /// Idle 상태에서 Dequeue 시도 (state machine 위반)
-    IdleToDequeue,
-}
+use crate::{
+    player_actor::{message::InternalSendText, PlayerContext},
+    protocols::ClientMessage,
+    BehaviorOutcome,
+};
 
+use super::PlayerBehavior;
+
+// ============================================================
+// Invalid Enqueue Behaviors
+// ============================================================
+
+/// 존재하지 않는 타입의 메시지 전송
 #[derive(Debug, Clone)]
-pub struct InvalidMessages {
-    pub mode: InvalidMode,
-}
+pub struct InvalidEnqueueUnknownType;
 
 #[async_trait]
-impl PlayerBehavior for InvalidMessages {
-    async fn on_connected(&self, ctx: &PlayerContext) -> BehaviorResult {
-        match self.mode {
-            InvalidMode::IdleToDequeue => {
-                // Idle 상태에서 즉시 Dequeue 시도 (아직 Enqueue도 안했는데)
-                let msg = ClientMessage::Dequeue {
-                    player_id: ctx.player_id,
-                    game_mode: crate::default_game_mode(),
-                };
-                ctx.addr.do_send(InternalSendText(msg.to_string()));
-            }
-            InvalidMode::InvalidGameMode => {
-                // 존재하지 않는 game_mode로 Enqueue
-                ctx.addr.do_send(InternalSendText(
-                    format!(
-                        r#"{{"type":"enqueue","player_id":"{}","game_mode":"NonExistentMode","metadata":"{{}}"}}"#,
-                        ctx.player_id
-                    )
-                ));
-            }
-            InvalidMode::LargeMetadata => {
-                // 1MB 크기의 metadata로 Enqueue
-                let large_data = "x".repeat(1_000_000);
-                let msg = ClientMessage::Enqueue {
-                    player_id: ctx.player_id,
-                    game_mode: crate::default_game_mode(),
-                    metadata: format!(r#"{{"data":"{}"}}"#, large_data),
-                };
-                ctx.addr.do_send(InternalSendText(msg.to_string()));
-            }
-            InvalidMode::MalformedJson => {
-                // 잘못된 JSON 구조 (닫히지 않은 중괄호)
-                ctx.addr.do_send(InternalSendText(
-                    r#"{"type":"enqueue","player_id":"#.to_string()
-                ));
-            }
-            _ => {
-                // 다른 모드들은 on_enqueued에서 처리
-            }
-        }
-        Ok(BehaviorOutcome::Continue)
+impl PlayerBehavior for InvalidEnqueueUnknownType {
+    async fn on_connected(&self, ctx: &PlayerContext) -> BehaviorOutcome {
+        // 먼저 정상 Enqueue를 보내야 on_enqueued()가 호출됨
+        let metadata = serde_json::json!({
+            "test_session_id": ctx.test_session_id
+        })
+        .to_string();
+
+        let msg = ClientMessage::Enqueue {
+            player_id: ctx.player_id,
+            game_mode: crate::default_game_mode(),
+            metadata,
+        };
+        ctx.addr.do_send(InternalSendText(msg.to_string()));
+        BehaviorOutcome::Continue
     }
 
-    async fn on_enqueued(&self, ctx: &PlayerContext) -> BehaviorResult {
-        match self.mode {
-            InvalidMode::UnknownType => {
-                ctx.addr
-                    .do_send(InternalSendText("{\"type\":\"bad_type\"}".to_string()));
-            }
-            InvalidMode::MissingField => {
-                // player_id 누락
-                ctx.addr
-                    .do_send(InternalSendText("{\"type\":\"enqueue\"}".to_string()));
-            }
-            InvalidMode::DuplicateEnqueue => {
-                // 중복 Enqueue 시도
-                let msg = ClientMessage::Enqueue {
-                    player_id: ctx.player_id,
-                    game_mode: crate::default_game_mode(),
-                    metadata: "{}".to_string(),
-                };
-                ctx.addr.do_send(InternalSendText(msg.to_string()));
-            }
-            InvalidMode::WrongPlayerId => {
-                // 다른 player_id로 Dequeue 시도
-                let wrong_id = uuid::Uuid::new_v4();
-                let msg = ClientMessage::Dequeue {
-                    player_id: wrong_id,
-                    game_mode: crate::default_game_mode(),
-                };
-                ctx.addr.do_send(InternalSendText(msg.to_string()));
-            }
-            _ => {
-                // IdleToDequeue, InvalidGameMode, LargeMetadata, MalformedJson은
-                // on_connected에서 이미 처리됨
-            }
-        }
-        Ok(BehaviorOutcome::Continue)
+    async fn on_enqueued(&self, ctx: &PlayerContext) -> BehaviorOutcome {
+        ctx.addr
+            .do_send(InternalSendText("{\"type\":\"bad_type\"}".to_string()));
+        BehaviorOutcome::IntendError
+    }
+
+    fn clone_trait(&self) -> Box<dyn PlayerBehavior> {
+        Box::new(self.clone())
+    }
+}
+
+/// 필수 필드 누락된 메시지 전송
+#[derive(Debug, Clone)]
+pub struct InvalidEnqueueMissingField;
+
+#[async_trait]
+impl PlayerBehavior for InvalidEnqueueMissingField {
+    async fn on_connected(&self, ctx: &PlayerContext) -> BehaviorOutcome {
+        let metadata = serde_json::json!({
+            "test_session_id": ctx.test_session_id
+        })
+        .to_string();
+
+        let msg = ClientMessage::Enqueue {
+            player_id: ctx.player_id,
+            game_mode: crate::default_game_mode(),
+            metadata,
+        };
+        ctx.addr.do_send(InternalSendText(msg.to_string()));
+        BehaviorOutcome::Continue
+    }
+
+    async fn on_enqueued(&self, ctx: &PlayerContext) -> BehaviorOutcome {
+        // player_id 누락
+        ctx.addr
+            .do_send(InternalSendText("{\"type\":\"enqueue\"}".to_string()));
+        BehaviorOutcome::IntendError
+    }
+
+    fn clone_trait(&self) -> Box<dyn PlayerBehavior> {
+        Box::new(self.clone())
+    }
+}
+
+/// EnQueued 이후 중복 Enqueue 시도
+#[derive(Debug, Clone)]
+pub struct InvalidEnqueueDuplicate;
+
+#[async_trait]
+impl PlayerBehavior for InvalidEnqueueDuplicate {
+    async fn on_connected(&self, ctx: &PlayerContext) -> BehaviorOutcome {
+        let metadata = serde_json::json!({
+            "test_session_id": ctx.test_session_id
+        })
+        .to_string();
+
+        let msg = ClientMessage::Enqueue {
+            player_id: ctx.player_id,
+            game_mode: crate::default_game_mode(),
+            metadata,
+        };
+        ctx.addr.do_send(InternalSendText(msg.to_string()));
+        BehaviorOutcome::Continue
+    }
+
+    async fn on_enqueued(&self, ctx: &PlayerContext) -> BehaviorOutcome {
+        // 중복 Enqueue 시도
+        let metadata = serde_json::json!({
+            "test_session_id": ctx.test_session_id
+        })
+        .to_string();
+
+        let msg = ClientMessage::Enqueue {
+            player_id: ctx.player_id,
+            game_mode: crate::default_game_mode(),
+            metadata,
+        };
+        ctx.addr.do_send(InternalSendText(msg.to_string()));
+        BehaviorOutcome::IntendError
+    }
+
+    fn clone_trait(&self) -> Box<dyn PlayerBehavior> {
+        Box::new(self.clone())
+    }
+}
+
+// ============================================================
+// Invalid Dequeue Behaviors
+// ============================================================
+
+/// Dequeue 시 존재하지 않는 타입 전송
+#[derive(Debug, Clone)]
+pub struct InvalidDequeueUnknownType;
+
+#[async_trait]
+impl PlayerBehavior for InvalidDequeueUnknownType {
+    async fn on_connected(&self, ctx: &PlayerContext) -> BehaviorOutcome {
+        let metadata = serde_json::json!({
+            "test_session_id": ctx.test_session_id
+        })
+        .to_string();
+
+        let msg = ClientMessage::Enqueue {
+            player_id: ctx.player_id,
+            game_mode: crate::default_game_mode(),
+            metadata,
+        };
+        ctx.addr.do_send(InternalSendText(msg.to_string()));
+        BehaviorOutcome::Continue
+    }
+
+    async fn on_enqueued(&self, ctx: &PlayerContext) -> BehaviorOutcome {
+        // Enqueued 후 잘못된 타입의 dequeue 메시지
+        ctx.addr
+            .do_send(InternalSendText("{\"type\":\"bad_dequeue\"}".to_string()));
+        BehaviorOutcome::IntendError
+    }
+
+    fn clone_trait(&self) -> Box<dyn PlayerBehavior> {
+        Box::new(self.clone())
+    }
+}
+
+/// Dequeue 시 필수 필드 누락
+#[derive(Debug, Clone)]
+pub struct InvalidDequeueMissingField;
+
+#[async_trait]
+impl PlayerBehavior for InvalidDequeueMissingField {
+    async fn on_connected(&self, ctx: &PlayerContext) -> BehaviorOutcome {
+        let metadata = serde_json::json!({
+            "test_session_id": ctx.test_session_id
+        })
+        .to_string();
+
+        let msg = ClientMessage::Enqueue {
+            player_id: ctx.player_id,
+            game_mode: crate::default_game_mode(),
+            metadata,
+        };
+        ctx.addr.do_send(InternalSendText(msg.to_string()));
+        BehaviorOutcome::Continue
+    }
+
+    async fn on_enqueued(&self, ctx: &PlayerContext) -> BehaviorOutcome {
+        // player_id 누락된 dequeue
+        ctx.addr
+            .do_send(InternalSendText("{\"type\":\"dequeue\"}".to_string()));
+        BehaviorOutcome::IntendError
+    }
+
+    fn clone_trait(&self) -> Box<dyn PlayerBehavior> {
+        Box::new(self.clone())
+    }
+}
+
+/// Dequeued 이후 중복 Dequeue 시도
+#[derive(Debug, Clone)]
+pub struct InvalidDequeueDuplicate;
+
+#[async_trait]
+impl PlayerBehavior for InvalidDequeueDuplicate {
+    async fn on_connected(&self, ctx: &PlayerContext) -> BehaviorOutcome {
+        let metadata = serde_json::json!({
+            "test_session_id": ctx.test_session_id
+        })
+        .to_string();
+
+        let msg = ClientMessage::Enqueue {
+            player_id: ctx.player_id,
+            game_mode: crate::default_game_mode(),
+            metadata,
+        };
+        ctx.addr.do_send(InternalSendText(msg.to_string()));
+        BehaviorOutcome::Continue
+    }
+
+    async fn on_enqueued(&self, ctx: &PlayerContext) -> BehaviorOutcome {
+        // 첫 번째 정상 dequeue
+        let msg = ClientMessage::Dequeue {
+            player_id: ctx.player_id,
+            game_mode: crate::default_game_mode(),
+        };
+        ctx.addr.do_send(InternalSendText(msg.to_string()));
+        BehaviorOutcome::Continue
+    }
+
+    async fn on_dequeued(&self, ctx: &PlayerContext) -> BehaviorOutcome {
+        // Dequeued 후 중복 dequeue 시도
+        let msg = ClientMessage::Dequeue {
+            player_id: ctx.player_id,
+            game_mode: crate::default_game_mode(),
+        };
+        ctx.addr.do_send(InternalSendText(msg.to_string()));
+        BehaviorOutcome::IntendError
+    }
+
+    fn clone_trait(&self) -> Box<dyn PlayerBehavior> {
+        Box::new(self.clone())
+    }
+}
+
+/// 잘못된 player_id로 Dequeue 시도
+#[derive(Debug, Clone)]
+pub struct InvalidDequeueWrongPlayerId;
+
+#[async_trait]
+impl PlayerBehavior for InvalidDequeueWrongPlayerId {
+    async fn on_connected(&self, ctx: &PlayerContext) -> BehaviorOutcome {
+        let metadata = serde_json::json!({
+            "test_session_id": ctx.test_session_id
+        })
+        .to_string();
+
+        let msg = ClientMessage::Enqueue {
+            player_id: ctx.player_id,
+            game_mode: crate::default_game_mode(),
+            metadata,
+        };
+        ctx.addr.do_send(InternalSendText(msg.to_string()));
+        BehaviorOutcome::Continue
+    }
+
+    async fn on_enqueued(&self, ctx: &PlayerContext) -> BehaviorOutcome {
+        // 다른 player_id로 Dequeue 시도
+        let wrong_id = uuid::Uuid::new_v4();
+        let msg = ClientMessage::Dequeue {
+            player_id: wrong_id,
+            game_mode: crate::default_game_mode(),
+        };
+        ctx.addr.do_send(InternalSendText(msg.to_string()));
+        BehaviorOutcome::IntendError
     }
 
     fn clone_trait(&self) -> Box<dyn PlayerBehavior> {

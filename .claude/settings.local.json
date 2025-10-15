@@ -1,26 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find:*)",
-      "WebFetch(domain:docs.rs)",
-      "WebFetch(domain:calculator.aws)",
-      "Bash(tree:*)",
-      "Bash(cargo:*)",
-      "Bash(cat:*)",
-      "Read(//mnt/c/Users/blast/Desktop/**)",
-      "Bash(sudo service:*)",
+      "Bash(cargo check:*)",
       "Bash(redis-cli:*)",
-      "Bash(ip addr:*)",
-      "Read(//etc/redis/**)",
-      "Bash(ss:*)",
-      "Bash(netstat:*)",
-      "Bash(cargo.exe test -p test_client test_quit_after_enqueue_vs_quit_after_enqueue -- --nocapture)",
-      "Bash(powershell.exe:*)",
-      "Bash(cargo.exe check --manifest-path=/mnt/c/Users/blast/Desktop/main/test_client/Cargo.toml)",
-      "Bash(cargo.exe check:*)",
-      "Bash(cargo.exe test:*)",
-      "Bash(cargo.exe build:*)",
-      "Bash(findstr:*)"
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Read(//mnt/c/Users/blast/Desktop/contract/**)",
+      "Read(//mnt/c/Users/blast/Downloads/**)"
     ],
     "deny": [],
     "ask": []

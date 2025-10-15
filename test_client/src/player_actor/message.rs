@@ -1,25 +1,8 @@
 use actix::Message;
 
 use crate::{
-    behaviors::ServerMessage, player_actor::PlayerState, BehaviorResult, WsSink, WsStream,
+    player_actor::PlayerState, protocols::ServerMessage, BehaviorOutcome, WsSink, WsStream,
 };
-
-#[derive(Message)]
-#[rtype(result = "uuid::Uuid")]
-pub struct GetPlayerId;
-
-#[derive(Message)]
-#[rtype(result = "()")]
-
-pub struct SetState(pub PlayerState);
-
-#[derive(Message)]
-#[rtype(result = "()")]
-
-pub struct ConnectionEstablished {
-    pub sink: WsSink,
-    pub stream: WsStream,
-}
 
 #[derive(Message)]
 #[rtype(result = "()")]
@@ -28,15 +11,23 @@ pub struct InternalSendText(pub String);
 
 #[derive(Message)]
 #[rtype(result = "()")]
+
 pub struct InternalClose;
 
 #[derive(Message)]
 #[rtype(result = "()")]
+
 pub struct BehaviorFinished {
-    pub response: BehaviorResult,
+    pub response: BehaviorOutcome,
     pub original_message: ServerMessage,
 }
 
 #[derive(Message)]
 #[rtype(result = "()")]
-pub struct TriggerEnqueueNow;
+pub struct ConnectionEstablished {
+    pub sink: WsSink,
+    pub stream: WsStream,
+}
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct SetState(pub PlayerState);

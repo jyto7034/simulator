@@ -31,6 +31,7 @@ chrono = { version = "0.4.41", features = ["serde"] }
 thiserror = "1.0"
 backoff = { version = "0.4.0", features = ["tokio"] }
 lazy_static = "1.5.0"
+async-stream = "0.3"
 
 metrics = { path = "../metrics" }
 prometheus = { version = "0.14", features = ["process"] }

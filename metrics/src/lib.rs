@@ -136,6 +136,46 @@ lazy_static! {
             "Total players who timed out during loading sessions"
         ))
         .unwrap();
+
+    /// Total number of poisoned candidates removed from queue
+    pub static ref POISONED_CANDIDATES_TOTAL: IntCounter =
+        IntCounter::with_opts(opts!(
+            "poisoned_candidates_total",
+            "Total number of poisoned candidates removed from queue (invalid metadata)"
+        ))
+        .unwrap();
+
+    /// Total times no game server was available (subscriber_count == 0)
+    pub static ref GAME_SERVER_UNAVAILABLE_TOTAL: IntCounter =
+        IntCounter::with_opts(opts!(
+            "game_server_unavailable_total",
+            "Total times no game server was subscribed to battle:request channel"
+        ))
+        .unwrap();
+
+    /// Current game server availability status
+    pub static ref GAME_SERVER_AVAILABLE: IntGauge =
+        IntGauge::with_opts(opts!(
+            "game_server_available",
+            "Game server availability (1=available, 0=unavailable)"
+        ))
+        .unwrap();
+
+    /// Total times TryMatch was skipped due to already running
+    pub static ref TRY_MATCH_SKIPPED_TOTAL: IntCounter =
+        IntCounter::with_opts(opts!(
+            "try_match_skipped_total",
+            "Total times TryMatch was skipped due to in-flight limit"
+        ))
+        .unwrap();
+
+    /// Total times circuit breaker opened
+    pub static ref CIRCUIT_BREAKER_OPEN_TOTAL: IntCounter =
+        IntCounter::with_opts(opts!(
+            "circuit_breaker_open_total",
+            "Total times Redis circuit breaker opened due to failures"
+        ))
+        .unwrap();
 }
 
 // All test and per-mode metrics removed
@@ -179,5 +219,12 @@ pub fn register_custom_metrics(registry: &Registry) -> Result<(), prometheus::Er
     registry.register(Box::new(REDIS_CONNECTION_FAILURES_TOTAL.clone()))?;
     registry.register(Box::new(MATCHMAKING_ERRORS_TOTAL.clone()))?;
     registry.register(Box::new(LOADING_SESSION_TIMEOUT_PLAYERS_TOTAL.clone()))?;
+
+    // Safety improvements metrics
+    registry.register(Box::new(POISONED_CANDIDATES_TOTAL.clone()))?;
+    registry.register(Box::new(GAME_SERVER_UNAVAILABLE_TOTAL.clone()))?;
+    registry.register(Box::new(GAME_SERVER_AVAILABLE.clone()))?;
+    registry.register(Box::new(TRY_MATCH_SKIPPED_TOTAL.clone()))?;
+    registry.register(Box::new(CIRCUIT_BREAKER_OPEN_TOTAL.clone()))?;
     Ok(())
 }

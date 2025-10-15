@@ -1,7 +1,8 @@
 use redis::{aio::ConnectionManager, AsyncCommands, RedisError};
+use serde_json::json;
 use tracing::warn;
 
-/// Redis Stream에 테스트 이벤트를 발행합니다.
+/// Redis Pub/Sub로 테스트 이벤트를 발행합니다.
 ///
 /// # Arguments
 /// * `redis` - Redis 연결
@@ -10,7 +11,7 @@ use tracing::warn;
 /// * `pod_id` - 현재 Match Server의 pod ID
 /// * `fields` - 추가 필드 (key-value 쌍)
 ///
-/// # Stream Key Format
+/// # Channel Format
 /// `events:test:{session_id}`
 ///
 /// # Example
@@ -33,30 +34,23 @@ pub async fn publish_test_event(
     pod_id: &str,
     fields: Vec<(&str, String)>,
 ) -> Result<(), RedisError> {
-    let stream_key = format!("events:test:{}", session_id);
+    let channel = format!("events:test:{}", session_id);
 
-    // XADD events:test:{session_id} * type {event_type} pod_id {pod_id} ...
-    let mut xadd_args: Vec<(&str, String)> = Vec::new();
-    xadd_args.push(("type", event_type.to_string()));
-    xadd_args.push(("pod_id", pod_id.to_string()));
-    xadd_args.extend(fields);
+    // JSON 메시지 구성
+    let mut data = serde_json::Map::new();
+    data.insert("type".to_string(), json!(event_type));
+    data.insert("pod_id".to_string(), json!(pod_id));
+    data.insert("timestamp".to_string(), json!(chrono::Utc::now().to_rfc3339()));
 
-    // Redis cmd로 직접 구성
-    let mut cmd = redis::cmd("XADD");
-    cmd.arg(&stream_key).arg("*"); // * = 자동 ID 생성
-
-    for (key, value) in xadd_args {
-        cmd.arg(key).arg(value);
+    for (key, value) in fields {
+        data.insert(key.to_string(), json!(value));
     }
 
-    // XADD 실행
-    let _: String = cmd.query_async(redis).await?;
+    let message = serde_json::to_string(&data)
+        .map_err(|e| RedisError::from((redis::ErrorKind::TypeError, "JSON serialization failed", e.to_string())))?;
 
-    // 스트림 자동 만료 설정 (1시간)
-    // EXPIRE가 실패해도 무시 (이미 설정되어 있을 수 있음)
-    let _: Result<i32, _> = redis
-        .expire(&stream_key, 3600)
-        .await;
+    // PUBLISH events:test:{session_id} {json_message}
+    let _: i32 = redis.publish(&channel, message).await?;
 
     Ok(())
 }

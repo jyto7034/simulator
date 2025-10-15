@@ -8,7 +8,7 @@ use uuid::Uuid;
 
 use crate::{
     matchmaker::{
-        operations::{notify, try_match::PlayerCandidate},
+        operations::{notify, try_match::PlayerCandidate, with_redis_timeout},
         scripts, MatchmakerDeps,
     },
     protocol::{ErrorCode, ServerMessage},
@@ -42,14 +42,21 @@ async fn invoke_enqueue_script(
     player_id: Uuid,
     timestamp: String,
     metadata: String,
-) -> RedisResult<Vec<i64>> {
-    Script::new(scripts::enqueue_player_script())
-        .key(queue_key)
-        .arg(player_id.to_string())
-        .arg(timestamp)
-        .arg(metadata)
-        .invoke_async(redis)
-        .await
+    timeout_secs: u64,
+) -> Result<Vec<i64>, String> {
+    with_redis_timeout(
+        "enqueue_player_script",
+        timeout_secs,
+        async {
+            Script::new(scripts::enqueue_player_script())
+                .key(queue_key)
+                .arg(player_id.to_string())
+                .arg(timestamp)
+                .arg(metadata)
+                .invoke_async(redis)
+                .await
+        }
+    ).await
 }
 
 pub async fn enqueue(
@@ -95,10 +102,11 @@ pub async fn enqueue(
     let queue_key = format!("queue:{}", hash_tag);
 
     let timestamp = Utc::now().timestamp().to_string();
+    let timeout_secs = settings.redis_operation_timeout_seconds;
 
     let backoff = RETRY_CONFIG
         .read()
-        .unwrap()
+        .await
         .as_ref()
         .expect("Retry config not initialized")
         .clone();
@@ -113,6 +121,7 @@ pub async fn enqueue(
             player_id,
             timestamp.clone(),
             metadata_with_pod.clone(),
+            timeout_secs,
         )
         .await
         {
@@ -172,7 +181,7 @@ pub async fn enqueue(
         redis_events::try_publish_test_event(
             &mut redis,
             &metadata_with_pod,
-            "enqueued",
+            "player.enqueued",
             &pod_id,
             vec![
                 ("player_id", player_id.to_string()),
@@ -186,7 +195,7 @@ pub async fn enqueue(
         redis_events::try_publish_test_event(
             &mut redis,
             &metadata_with_pod,
-            "queue_size_changed",
+            "global.queue_size_changed",
             &pod_id,
             vec![
                 ("size", current_size.to_string()),
@@ -223,6 +232,11 @@ pub async fn re_enqueue_candidates(
         metrics::PLAYERS_REQUEUED_TOTAL.inc_by(candidates.len() as u64);
     }
 
+    let suffix = queue_suffix;
+    let hash_tag = format!("{{{}}}", suffix);
+    let queue_key = format!("queue:{}", hash_tag);
+    let pod_id = std::env::var("POD_ID").unwrap_or_else(|_| "default-pod".to_string());
+
     for candidate in candidates {
         let player_id = match Uuid::parse_str(&candidate.player_id) {
             Ok(id) => id,
@@ -240,6 +254,83 @@ pub async fn re_enqueue_candidates(
             }
         };
 
-        enqueue(queue_suffix, game_mode, player_id, metadata_json, deps).await;
+        let timestamp = Utc::now().timestamp().to_string();
+        let mut redis = deps.redis.clone();
+        let timeout_secs = deps.settings.redis_operation_timeout_seconds;
+
+        // Redis에 re-enqueue
+        match invoke_enqueue_script(
+            &mut redis,
+            queue_key.clone(),
+            player_id,
+            timestamp.clone(),
+            metadata_json.clone(),
+            timeout_secs,
+        )
+        .await
+        {
+            Ok(result) => {
+                let added_flag = result.get(0).copied().unwrap_or_default();
+                let current_size = result.get(1).copied().unwrap_or_default();
+
+                if added_flag == 1 {
+                    info!(
+                        "Player {} re-enqueued for {:?}. queue size = {}",
+                        player_id, game_mode, current_size
+                    );
+
+                    // Publish PlayerReEnqueued event (테스트용)
+                    redis_events::try_publish_test_event(
+                        &mut redis,
+                        &metadata_json,
+                        "player.re_enqueued",
+                        &pod_id,
+                        vec![
+                            ("player_id", player_id.to_string()),
+                            ("queue_size", current_size.to_string()),
+                            ("game_mode", format!("{:?}", game_mode)),
+                            ("reason", "match_failed".to_string()),
+                        ],
+                    )
+                    .await;
+
+                    // Publish queue_size_changed event
+                    redis_events::try_publish_test_event(
+                        &mut redis,
+                        &metadata_json,
+                        "global.queue_size_changed",
+                        &pod_id,
+                        vec![
+                            ("size", current_size.to_string()),
+                            ("game_mode", format!("{:?}", game_mode)),
+                            ("reason", "re_enqueued".to_string()),
+                        ],
+                    )
+                    .await;
+
+                    // Send EnQueued message to player via WebSocket
+                    // notify::send_message_to_player(
+                    //     deps.subscription_addr.clone(),
+                    //     &mut redis,
+                    //     player_id,
+                    //     ServerMessage::EnQueued {
+                    //         pod_id: pod_id.clone(),
+                    //     },
+                    // )
+                    // .await;
+                } else {
+                    warn!(
+                        "Player {} already in queue during re-enqueue {:?}",
+                        player_id, game_mode
+                    );
+                }
+            }
+            Err(e) => {
+                error!(
+                    "Failed to re-enqueue player {} into {}: {}",
+                    player_id, queue_key, e
+                );
+            }
+        }
     }
 }

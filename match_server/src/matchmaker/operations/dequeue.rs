@@ -6,7 +6,7 @@ use uuid::Uuid;
 
 use crate::{
     matchmaker::{
-        operations::notify,
+        operations::{notify, with_redis_timeout},
         scripts::{self},
         MatchmakerDeps,
     },
@@ -18,13 +18,16 @@ async fn invoke_dequeue_script(
     redis: &mut ConnectionManager,
     queue_key: String,
     player_id: Uuid,
-) -> RedisResult<(i64, i64, String)> {
-    let result: (i64, i64, String) = Script::new(scripts::dequeue_player_script())
-        .key(queue_key)
-        .arg(player_id.to_string())
-        .invoke_async(redis)
-        .await?;
-    Ok(result)
+    timeout_secs: u64,
+) -> Result<(i64, i64, String), String> {
+    with_redis_timeout("dequeue_player_script", timeout_secs, async {
+        Script::new(scripts::dequeue_player_script())
+            .key(queue_key)
+            .arg(player_id.to_string())
+            .invoke_async(redis)
+            .await
+    })
+    .await
 }
 
 pub async fn dequeue(
@@ -63,10 +66,11 @@ pub async fn dequeue(
     let suffix = queue_suffix;
     let hash_tag = format!("{{{}}}", suffix);
     let queue_key = format!("queue:{}", hash_tag);
+    let timeout_secs = settings.redis_operation_timeout_seconds;
 
     let backoff = RETRY_CONFIG
         .read()
-        .unwrap()
+        .await
         .as_ref()
         .expect("Retry config not initialized")
         .clone();
@@ -75,12 +79,8 @@ pub async fn dequeue(
     let dequeue_result = loop {
         let mut redis_clone = redis.clone();
 
-        match invoke_dequeue_script(
-            &mut redis_clone,
-            queue_key.clone(),
-            player_id,
-        )
-        .await
+        match invoke_dequeue_script(&mut redis_clone, queue_key.clone(), player_id, timeout_secs)
+            .await
         {
             Ok(res) => break Ok(res),
             Err(err) => {
@@ -131,7 +131,7 @@ pub async fn dequeue(
         redis_events::try_publish_test_event(
             &mut redis,
             &metadata,
-            "dequeued",
+            "player.dequeued",
             &pod_id,
             vec![
                 ("player_id", player_id.to_string()),
@@ -145,7 +145,7 @@ pub async fn dequeue(
         redis_events::try_publish_test_event(
             &mut redis,
             &metadata,
-            "queue_size_changed",
+            "global.queue_size_changed",
             &pod_id,
             vec![
                 ("size", current_size.to_string()),

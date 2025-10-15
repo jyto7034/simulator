@@ -1,111 +1,241 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use crate::{
     behaviors::BehaviorType,
-    observer_actor::{message::EventType, Phase, PhaseCondition},
+    observer_actor::{message::EventType, EventRequirement, Phase, PhaseCondition},
 };
 
 fn build_schedule_for_behavior(behavior: &BehaviorType) -> HashMap<Phase, PhaseCondition> {
     match behavior {
         BehaviorType::Normal => {
-            // Normal: Matching → Finished (MatchFound 받으면 종료)
             let mut schedule = HashMap::new();
+
+            // Enqueuing Phase: PlayerEnqueued 받으면 InQueue로 전환
             schedule.insert(
-                Phase::Matching,
+                Phase::Enqueuing,
                 PhaseCondition {
-                    required_events: HashSet::new(),
-                    transition_event: EventType::MatchFound,
-                    transition_matcher: None,
-                    next_phase: Phase::Finished,
+                    required_events: vec![],
+                    transition_event: EventRequirement::new(EventType::PlayerEnqueued),
+                    next_phase: Phase::InQueue,
                 },
             );
+
+            // InQueue Phase: GlobalQueueSizeChanged 필수, PlayerMatchFound 받으면 Matched로 전환
+            schedule.insert(
+                Phase::InQueue,
+                PhaseCondition {
+                    required_events: vec![EventRequirement::new(EventType::GlobalQueueSizeChanged)],
+                    transition_event: EventRequirement::new(EventType::PlayerMatchFound),
+                    next_phase: Phase::Matched,
+                },
+            );
+
+            // Matched는 종료 상태 (추가 schedule 불필요)
+
             schedule
         }
+        // Re enqueue 되면서 queue_size_changed 이벤트를 다시 받음
+        // schedules 에선 이 상황에 대해 처리해둔게 없어서 re enqueue 시 enqueue 발행이 아니라, re enqueue 라는 메시지를 따로 만들어서 발행시키는게 맞을듯.
         BehaviorType::QuitBeforeMatch => {
-            // 큐 잡히기 전 종료: Matching 단계에서 종료
             let mut schedule = HashMap::new();
+
+            // Enqueuing Phase: PlayerEnqueued 받으면 InQueue로 전환
             schedule.insert(
-                Phase::Matching,
+                Phase::Enqueuing,
                 PhaseCondition {
-                    required_events: HashSet::from([EventType::QueueSizeChanged]),
-                    transition_event: EventType::Error,
-                    transition_matcher: None,
+                    required_events: vec![],
+                    transition_event: EventRequirement::new(EventType::PlayerEnqueued),
+                    next_phase: Phase::InQueue,
+                },
+            );
+
+            // InQueue Phase: GlobalQueueSizeChanged 필수, PlayerDequeued 받으면 Dequeued로 전환
+            schedule.insert(
+                Phase::InQueue,
+                PhaseCondition {
+                    required_events: vec![EventRequirement::new(EventType::GlobalQueueSizeChanged)],
+                    transition_event: EventRequirement::new(EventType::PlayerDequeued),
+                    next_phase: Phase::Dequeued,
+                },
+            );
+
+            // Dequeued Phase: GlobalQueueSizeChanged 받으면 Finished로 전환
+            schedule.insert(
+                Phase::Dequeued,
+                PhaseCondition {
+                    required_events: vec![],
+                    transition_event: EventRequirement::new(EventType::GlobalQueueSizeChanged),
                     next_phase: Phase::Finished,
                 },
             );
+
             schedule
         }
         BehaviorType::QuitAfterEnqueue => {
-            // Enqueue 후 Dequeue: Dequeued 받으면 종료
             let mut schedule = HashMap::new();
+
+            // Enqueuing Phase: PlayerEnqueued 받으면 InQueue로 전환
             schedule.insert(
-                Phase::Matching,
+                Phase::Enqueuing,
                 PhaseCondition {
-                    required_events: HashSet::from([EventType::QueueSizeChanged]),
-                    transition_event: EventType::Dequeued,
-                    transition_matcher: None,
+                    required_events: vec![],
+                    transition_event: EventRequirement::new(EventType::PlayerEnqueued),
+                    next_phase: Phase::InQueue,
+                },
+            );
+
+            // InQueue Phase: GlobalQueueSizeChanged 필수, PlayerDequeued 받으면 Dequeued로 전환
+            schedule.insert(
+                Phase::InQueue,
+                PhaseCondition {
+                    required_events: vec![EventRequirement::new(EventType::GlobalQueueSizeChanged)],
+                    transition_event: EventRequirement::new(EventType::PlayerDequeued),
+                    next_phase: Phase::Dequeued,
+                },
+            );
+
+            // Dequeued Phase: GlobalQueueSizeChanged 받으면 Finished로 전환
+            schedule.insert(
+                Phase::Dequeued,
+                PhaseCondition {
+                    required_events: vec![],
+                    transition_event: EventRequirement::new(EventType::GlobalQueueSizeChanged),
                     next_phase: Phase::Finished,
                 },
             );
+
             schedule
         }
-
-        BehaviorType::Invalid { .. } => {
-            // Invalid: Error 이벤트를 기다리고 Finished로 전환
-            // Error 이벤트는 이제 Redis stream으로도 발행됨
+        // Invalid Enqueue behaviors - Enqueued 후 잘못된 메시지로 인한 에러
+        BehaviorType::InvalidEnqueueUnknownType
+        | BehaviorType::InvalidEnqueueMissingField
+        | BehaviorType::InvalidEnqueueDuplicate => {
             let mut schedule = HashMap::new();
+
+            // Enqueuing Phase: PlayerEnqueued 받으면 InQueue로 전환
             schedule.insert(
-                Phase::Matching,
+                Phase::Enqueuing,
                 PhaseCondition {
-                    required_events: HashSet::new(),
-                    transition_event: EventType::Error,
-                    transition_matcher: None,
+                    required_events: vec![],
+                    transition_event: EventRequirement::new(EventType::PlayerEnqueued),
+                    next_phase: Phase::InQueue,
+                },
+            );
+
+            // InQueue Phase: GlobalQueueSizeChanged, PlayerError 필수, PlayerDequeued 받으면 Dequeued로 전환
+            schedule.insert(
+                Phase::InQueue,
+                PhaseCondition {
+                    required_events: vec![
+                        EventRequirement::new(EventType::GlobalQueueSizeChanged),
+                        EventRequirement::new(EventType::PlayerError),
+                    ],
+                    transition_event: EventRequirement::new(EventType::PlayerDequeued),
+                    next_phase: Phase::Dequeued,
+                },
+            );
+
+            // Dequeued Phase: GlobalQueueSizeChanged 받으면 Finished로 전환
+            schedule.insert(
+                Phase::Dequeued,
+                PhaseCondition {
+                    required_events: vec![],
+                    transition_event: EventRequirement::new(EventType::GlobalQueueSizeChanged),
                     next_phase: Phase::Finished,
                 },
             );
+
+            schedule
+        }
+        // Invalid Dequeue behaviors - Enqueued 후 잘못된 Dequeue 시도로 인한 에러
+        BehaviorType::InvalidDequeueUnknownType
+        | BehaviorType::InvalidDequeueMissingField
+        | BehaviorType::InvalidDequeueWrongPlayerId => {
+            let mut schedule = HashMap::new();
+
+            // Enqueuing Phase: PlayerEnqueued 받으면 InQueue로 전환
+            schedule.insert(
+                Phase::Enqueuing,
+                PhaseCondition {
+                    required_events: vec![],
+                    transition_event: EventRequirement::new(EventType::PlayerEnqueued),
+                    next_phase: Phase::InQueue,
+                },
+            );
+
+            // InQueue Phase: GlobalQueueSizeChanged, PlayerError 필수, PlayerDequeued 받으면 Dequeued로 전환
+            schedule.insert(
+                Phase::InQueue,
+                PhaseCondition {
+                    required_events: vec![
+                        EventRequirement::new(EventType::GlobalQueueSizeChanged),
+                        EventRequirement::new(EventType::PlayerError),
+                    ],
+                    transition_event: EventRequirement::new(EventType::PlayerDequeued),
+                    next_phase: Phase::Dequeued,
+                },
+            );
+
+            // Dequeued Phase: GlobalQueueSizeChanged 받으면 Finished로 전환
+            schedule.insert(
+                Phase::Dequeued,
+                PhaseCondition {
+                    required_events: vec![],
+                    transition_event: EventRequirement::new(EventType::GlobalQueueSizeChanged),
+                    next_phase: Phase::Finished,
+                },
+            );
+
+            schedule
+        }
+        // InvalidDequeueDuplicate - 정상 Dequeue 후 중복 Dequeue 시도
+        BehaviorType::InvalidDequeueDuplicate => {
+            let mut schedule = HashMap::new();
+
+            // Enqueuing Phase: PlayerEnqueued 받으면 InQueue로 전환
+            schedule.insert(
+                Phase::Enqueuing,
+                PhaseCondition {
+                    required_events: vec![],
+                    transition_event: EventRequirement::new(EventType::PlayerEnqueued),
+                    next_phase: Phase::InQueue,
+                },
+            );
+
+            // InQueue Phase: GlobalQueueSizeChanged 필수, PlayerDequeued 받으면 Dequeued로 전환
+            schedule.insert(
+                Phase::InQueue,
+                PhaseCondition {
+                    required_events: vec![EventRequirement::new(EventType::GlobalQueueSizeChanged)],
+                    transition_event: EventRequirement::new(EventType::PlayerDequeued),
+                    next_phase: Phase::Dequeued,
+                },
+            );
+
+            // Dequeued Phase: GlobalQueueSizeChanged 받고, PlayerError 필수, 두 번째 GlobalQueueSizeChanged 받으면 Finished
+            schedule.insert(
+                Phase::Dequeued,
+                PhaseCondition {
+                    required_events: vec![
+                        EventRequirement::new(EventType::GlobalQueueSizeChanged),
+                        EventRequirement::new(EventType::PlayerError),
+                    ],
+                    transition_event: EventRequirement::new(EventType::GlobalQueueSizeChanged),
+                    next_phase: Phase::Finished,
+                },
+            );
+
             schedule
         }
     }
 }
 
-pub fn get_schedule_for_perpetrator(
-    perpetrator_behavior: &BehaviorType,
+pub fn get_schedule_for_normal(
+    normal_behavior: &BehaviorType,
 ) -> HashMap<Phase, PhaseCondition> {
-    build_schedule_for_behavior(perpetrator_behavior)
+    build_schedule_for_behavior(normal_behavior)
 }
 
-pub fn get_schedule_for_victim(victim_behavior: &BehaviorType) -> HashMap<Phase, PhaseCondition> {
-    build_schedule_for_behavior(victim_behavior)
+pub fn get_schedule_for_abnormal(abnormal_behavior: &BehaviorType) -> HashMap<Phase, PhaseCondition> {
+    build_schedule_for_behavior(abnormal_behavior)
 }
-
-/*
-=== 구현된 Behavior들 ===
-
-✅ Normal: 정상 흐름
-✅ QuitBeforeMatch: 연결 후 즉시 종료
-✅ QuitAfterEnqueue: Enqueue 후 Dequeue
-
-✅ Invalid { mode }:
-  - InvalidGameMode: 존재하지 않는 game_mode로 Enqueue
-  - LargeMetadata: 비정상적으로 큰 metadata (1MB)로 Enqueue
-  - MalformedJson: 잘못된 JSON 구조로 전송
-  - IdleToDequeue: Idle 상태에서 Dequeue 시도 (state machine 위반)
-  - UnknownType: 존재하지 않는 메시지 타입 전송
-  - MissingField: 필수 필드 누락된 메시지 전송
-  - DuplicateEnqueue: Enqueued 상태에서 다시 Enqueue
-  - WrongPlayerId: 다른 player_id로 Dequeue 시도
-
-=== 구현 불가능한 Behavior ===
-
-❌ NoHeartbeat (무응답/느린 응답):
-   - tokio-tungstenite가 자동으로 ping/pong 처리
-   - 클라이언트 레벨에서 pong 무시 불가능
-   - 서버 timeout 테스트는 수동으로 연결 끊기로 대체 가능
-
-=== 사용 예시 ===
-
-// Invalid behavior 생성
-BehaviorType::Invalid { mode: InvalidMode::LargeMetadata }
-BehaviorType::Invalid { mode: InvalidMode::IdleToDequeue }
-BehaviorType::Invalid { mode: InvalidMode::DuplicateEnqueue }
-*/

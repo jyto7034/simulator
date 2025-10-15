@@ -1,4 +1,7 @@
-use std::sync::Arc;
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    Arc,
+};
 
 use actix::Addr;
 use redis::aio::ConnectionManager;
@@ -6,6 +9,7 @@ use tokio_util::sync::CancellationToken;
 
 use crate::{
     env::{MatchModeSettings, MatchmakingSettings},
+    matchmaker::circuit_breaker::CircuitBreaker,
     metrics::MetricsCtx,
     subscript::SubScriptionManager,
     GameMode,
@@ -18,6 +22,8 @@ pub struct MatchmakerInner {
     pub sub_manager_addr: Addr<SubScriptionManager>,
     pub metrics: Arc<MetricsCtx>,
     pub shutdown_token: CancellationToken,
+    pub is_matching: Arc<AtomicBool>,
+    pub redis_circuit: Arc<CircuitBreaker>,
 }
 
 impl MatchmakerInner {
@@ -28,6 +34,7 @@ impl MatchmakerInner {
         sub_manager_addr: Addr<SubScriptionManager>,
         metrics: Arc<MetricsCtx>,
         shutdown_token: CancellationToken,
+        redis_circuit: Arc<CircuitBreaker>,
     ) -> Self {
         Self {
             redis,
@@ -36,6 +43,8 @@ impl MatchmakerInner {
             sub_manager_addr,
             metrics,
             shutdown_token,
+            is_matching: Arc::new(AtomicBool::new(false)),
+            redis_circuit,
         }
     }
 

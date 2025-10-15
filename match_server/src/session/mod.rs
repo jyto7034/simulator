@@ -33,6 +33,7 @@ pub struct Session {
     last_heartbeat: Instant,
     cleanup_started: bool,
     client_ip: IpAddr,
+    metadata: Option<String>, // Store metadata for test event publishing
 }
 
 impl Session {
@@ -55,10 +56,15 @@ impl Session {
             last_heartbeat: Instant::now(),
             cleanup_started: false,
             client_ip,
+            metadata: None,
         }
     }
 
-    fn transition_to(&mut self, new_state: SessionState, ctx: &mut ws::WebsocketContext<Self>) -> bool {
+    fn transition_to(
+        &mut self,
+        new_state: SessionState,
+        ctx: &mut ws::WebsocketContext<Self>,
+    ) -> bool {
         // 유효한 상태 전환인지 확인. 만약 유효하지 않다면 Error 상태로 전환 후 error 메시지 전송.
         if !self.state.can_transition_to(new_state) {
             let violation = classify_violation(self.state, new_state);
@@ -74,12 +80,12 @@ impl Session {
 
                 TransitionViolation::Major => {
                     self.state = SessionState::Error;
-                    send_err(ctx, ErrorCode::InternalError, "Invalid state transition");
+                    self.send_error(ctx, ErrorCode::InternalError, "Invalid state transition");
                     return false;
                 }
 
                 TransitionViolation::Critical => {
-                    send_err(ctx, ErrorCode::InternalError, "Critical protocol violation");
+                    self.send_error(ctx, ErrorCode::InternalError, "Critical protocol violation");
                     // 메시지 전송 후 약간 대기 후 우아하게 종료
                     ctx.run_later(Duration::from_millis(100), |_act, ctx| {
                         ctx.close(Some(ws::CloseCode::Protocol.into()));
@@ -131,10 +137,9 @@ impl Actor for Session {
     fn stopping(&mut self, ctx: &mut Self::Context) -> Running {
         info!("Session stopping for player {:#?}", self.player_id);
 
-        // Metrics: WebSocket 연결 감소
-        metrics::ACTIVE_WS_CONNECTIONS.dec();
-
         if self.cleanup_started {
+            // Metrics: WebSocket 연결 감소
+            metrics::ACTIVE_WS_CONNECTIONS.dec();
             return Running::Stop;
         }
 
@@ -156,7 +161,9 @@ impl Actor for Session {
             // Only dequeue if player is still in queue
             // Skip if already dequeued or never enqueued
             let res_match = if let Some(addr) = matchmaker_addr {
-                if current_state == SessionState::InQueue || current_state == SessionState::Dequeuing {
+                if current_state == SessionState::InQueue
+                    || current_state == SessionState::Dequeuing
+                {
                     addr.dequeue(Dequeue {
                         player_id,
                         game_mode,
@@ -192,7 +199,7 @@ impl Actor for Session {
             });
         }
         .into_actor(self)
-        .wait(ctx);
+        .spawn(ctx);
 
         Running::Continue
     }
@@ -209,7 +216,7 @@ impl Session {
         // Rate limiting check
         if !self.app_state.rate_limiter.check(&self.client_ip) {
             warn!("Rate limit exceeded for IP: {}", self.client_ip);
-            send_err(
+            self.send_error(
                 ctx,
                 ErrorCode::RateLimitExceeded,
                 "Too many requests. Please slow down.",
@@ -229,7 +236,7 @@ impl Session {
         let matchmaker = match self.resolve_matchmaker(game_mode) {
             Ok(handle) => handle,
             Err(code) => {
-                send_err(ctx, code, "Unsupported game mode");
+                self.send_error(ctx, code, "Unsupported game mode");
                 return;
             }
         };
@@ -240,16 +247,33 @@ impl Session {
 
         self.player_id = player_id;
         self.game_mode = game_mode;
-        matchmaker.do_send_enqueue(Enqueue {
-            player_id: self.player_id,
-            game_mode: self.game_mode,
-            metadata,
-        });
+        self.metadata = Some(metadata.clone()); // Store metadata for error event publishing
+        let player_id = self.player_id;
+        let game_mode = self.game_mode;
+        let subscript_addr = self.subscript_addr.clone();
+        let ctx_addr = ctx.address();
 
-        self.subscript_addr.do_send(Register {
-            player_id,
-            addr: ctx.address(),
-        });
+        async move {
+            // TODO: Retry 로직
+            if let Err(err) = subscript_addr
+                .send(Register {
+                    player_id,
+                    addr: ctx_addr,
+                })
+                .await
+            {
+                warn!("Failed to register player {}: {:?}", player_id, err);
+                return;
+            }
+
+            matchmaker.do_send_enqueue(Enqueue {
+                player_id: player_id,
+                game_mode: game_mode,
+                metadata,
+            });
+        }
+        .into_actor(self)
+        .spawn(ctx);
     }
 
     fn handle_dequeue(&mut self, ctx: &mut Ctx, player_id: Uuid, game_mode: GameMode) {
@@ -264,14 +288,14 @@ impl Session {
 
         // player_id 검증
         if self.player_id != player_id {
-            send_err(ctx, ErrorCode::WrongSessionId, "Player ID mismatch");
+            self.send_error(ctx, ErrorCode::WrongSessionId, "Player ID mismatch");
             return;
         }
 
         let matchmaker = match self.resolve_matchmaker(game_mode) {
             Ok(handle) => handle,
             Err(code) => {
-                send_err(ctx, code, "Unsupported game mode");
+                self.send_error(ctx, code, "Unsupported game mode");
                 return;
             }
         };
@@ -303,5 +327,36 @@ impl Session {
         let _ = self.matchmaker_addr.set(handle.clone());
 
         Ok(handle)
+    }
+
+    /// Send error to client via WebSocket and publish to Redis event stream for tests
+    fn send_error(&self, ctx: &mut Ctx, code: ErrorCode, message: &str) {
+        // Publish to Redis event stream first (before moving code)
+        if let Some(ref metadata) = self.metadata {
+            let mut redis = self.app_state.redis.clone();
+            let metadata = metadata.clone();
+            let player_id = self.player_id;
+            let pod_id = self.app_state.current_run_id.clone();
+            let error_code_str = format!("{:?}", code); // Use Debug trait to get error code name
+            let error_message = message.to_string();
+
+            actix::spawn(async move {
+                crate::redis_events::try_publish_test_event(
+                    &mut redis,
+                    &metadata,
+                    "player.error",
+                    pod_id.to_string().as_str(),
+                    vec![
+                        ("player_id", player_id.to_string()),
+                        ("code", error_code_str),
+                        ("message", error_message),
+                    ],
+                )
+                .await;
+            });
+        }
+
+        // Send via WebSocket (code is moved here)
+        helper::send_err(ctx, code, message);
     }
 }

@@ -1,4 +1,4 @@
-use actix::{Actor, Addr, MailboxError};
+use actix::{Actor, Addr, Arbiter, MailboxError};
 use redis::aio::ConnectionManager;
 use std::collections::HashMap;
 use tokio_util::sync::CancellationToken;
@@ -15,6 +15,7 @@ use crate::{
     GameMode,
 };
 
+pub mod circuit_breaker;
 pub mod common;
 pub mod messages;
 pub mod normal;
@@ -59,6 +60,7 @@ pub struct MatchmakerDeps {
     pub subscription_addr: Addr<SubScriptionManager>,
     pub metrics: std::sync::Arc<MetricsCtx>,
     pub shutdown_token: CancellationToken,
+    pub redis_circuit: std::sync::Arc<circuit_breaker::CircuitBreaker>,
 }
 
 impl From<&common::MatchmakerInner> for MatchmakerDeps {
@@ -69,6 +71,7 @@ impl From<&common::MatchmakerInner> for MatchmakerDeps {
             subscription_addr: source.sub_manager_addr.clone(),
             metrics: source.metrics.clone(),
             shutdown_token: source.shutdown_token.clone(),
+            redis_circuit: source.redis_circuit.clone(),
         }
     }
 }
@@ -90,28 +93,50 @@ pub fn spawn_matchmaker_for_mode(
         GameMode::None => {
             Err("Unsupported game mode: None".to_string())
         }
-        GameMode::Normal => Ok(MatchmakerAddr::Normal(
-            NormalMatchmaker::new(
-                deps.redis.clone(),
-                deps.settings.clone(),
-                mode_settings,
-                deps.subscription_addr.clone(),
-                deps.metrics.clone(),
-                deps.shutdown_token.clone(),
-            )
-            .start(),
-        )),
-        GameMode::Ranked => Ok(MatchmakerAddr::Ranked(
-            RankedMatchmaker::new(
-                deps.redis.clone(),
-                deps.settings.clone(),
-                mode_settings,
-                deps.subscription_addr.clone(),
-                deps.metrics.clone(),
-                deps.shutdown_token.clone(),
-            )
-            .start(),
-        )),
+        GameMode::Normal => {
+            let redis = deps.redis.clone();
+            let settings = deps.settings.clone();
+            let subscription_addr = deps.subscription_addr.clone();
+            let metrics = deps.metrics.clone();
+            let shutdown_token = deps.shutdown_token.clone();
+            let redis_circuit = deps.redis_circuit.clone();
+
+            let arbiter = Arbiter::new();
+            let addr = NormalMatchmaker::start_in_arbiter(&arbiter.handle(), move |_ctx| {
+                NormalMatchmaker::new(
+                    redis,
+                    settings,
+                    mode_settings,
+                    subscription_addr,
+                    metrics,
+                    shutdown_token,
+                    redis_circuit,
+                )
+            });
+            Ok(MatchmakerAddr::Normal(addr))
+        }
+        GameMode::Ranked => {
+            let redis = deps.redis.clone();
+            let settings = deps.settings.clone();
+            let subscription_addr = deps.subscription_addr.clone();
+            let metrics = deps.metrics.clone();
+            let shutdown_token = deps.shutdown_token.clone();
+            let redis_circuit = deps.redis_circuit.clone();
+
+            let arbiter = Arbiter::new();
+            let addr = RankedMatchmaker::start_in_arbiter(&arbiter.handle(), move |_ctx| {
+                RankedMatchmaker::new(
+                    redis,
+                    settings,
+                    mode_settings,
+                    subscription_addr,
+                    metrics,
+                    shutdown_token,
+                    redis_circuit,
+                )
+            });
+            Ok(MatchmakerAddr::Ranked(addr))
+        }
     }
 }
 

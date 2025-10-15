@@ -43,10 +43,7 @@ pub enum ServerMessage {
 
     /// 최종적으로 매칭이 성사되었고, 게임 서버 접속 정보를 전달합니다.
     #[serde(rename = "match_found")]
-    MatchFound {
-        session_id: Uuid, // dedicated_server의 게임 세션 ID
-        server_address: String,
-    },
+    MatchFound,
 
     /// 에러가 발생했음을 알립니다.
     #[serde(rename = "error")]
@@ -70,6 +67,7 @@ pub enum ErrorCode {
     MatchmakingTimeout,
     PlayerTemporarilyBlocked,
     RateLimitExceeded,
+    InvalidMetadata,
 }
 
 // --- Battle Request Messages ---

@@ -49,10 +49,7 @@ impl Handler<ServerMessage> for Session {
                     warn!("Failed to serialize ServerMessage::DeQueued");
                 }
             }
-            ServerMessage::MatchFound {
-                session_id: _,
-                server_address: _,
-            } => {
+            ServerMessage::MatchFound => {
                 if !self.transition_to(SessionState::Completed, ctx) {
                     return; // State transition failed, stop processing
                 }
@@ -88,7 +85,9 @@ impl StreamHandler<Result<Message, ProtocolError>> for Session {
             Ok(ws::Message::Ping(msg)) => {
                 ctx.pong(&msg);
             }
-            Ok(ws::Message::Pong(_)) => {}
+            Ok(ws::Message::Pong(_)) => {
+                self.last_heartbeat = std::time::Instant::now();
+            }
             Ok(ws::Message::Text(text)) => match serde_json::from_str::<ClientMessage>(&text) {
                 Ok(ClientMessage::Enqueue {
                     player_id,
@@ -105,11 +104,12 @@ impl StreamHandler<Result<Message, ProtocolError>> for Session {
                 }
                 Err(e) => {
                     warn!("Failed to parse client message: {}", e);
-                    send_err(
+                    self.send_error(
                         ctx,
                         ErrorCode::InvalidMessageFormat,
                         "Invalid message format",
                     );
+                    ctx.stop();
                 }
             },
             Ok(ws::Message::Close(reason)) => {

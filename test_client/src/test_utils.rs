@@ -1,8 +1,9 @@
 use anyhow::Result;
+use env::SimulatorConfig;
 
 pub async fn flush_redis_default() -> Result<()> {
     // Read redis config from env (host/port/db)
-    let cfg = env::SimulatorConfig::global();
+    let cfg = SimulatorConfig::global();
     let r = &cfg.database.redis;
     let url = if let Some(pw) = &r.password {
         format!("redis://:{}@{}:{}/{}", pw, r.host, r.port, r.db)

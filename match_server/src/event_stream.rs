@@ -1,14 +1,12 @@
-use actix::{Actor, ActorContext, ActorFutureExt, AsyncContext, Handler, Message, StreamHandler};
+use actix::{Actor, ActorContext, AsyncContext, StreamHandler};
 use actix_web_actors::ws;
 use chrono::Utc;
-use redis::streams::{StreamReadOptions, StreamReadReply};
-use redis::AsyncCommands;
+use futures_util::StreamExt;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::time::Duration;
-use tracing::{debug, error, info};
+use tokio::sync::mpsc;
+use tracing::{debug, error, info, warn};
 use uuid::Uuid;
-
 
 /// WebSocket 메시지로 전송할 이벤트 형식
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -74,148 +72,122 @@ impl StreamFilters {
 
 /// WebSocket 세션 Actor
 pub struct EventStreamSession {
-    /// Redis connection
-    redis: redis::aio::ConnectionManager,
     /// 필터 설정
     filters: StreamFilters,
-    /// 마지막으로 읽은 스트림 ID (각 스트림별)
-    last_ids: HashMap<String, String>,
+    /// 내부 메시지 수신용 채널
+    event_rx: Option<mpsc::UnboundedReceiver<EventStreamMessage>>,
 }
 
 impl EventStreamSession {
     pub fn new(redis: redis::aio::ConnectionManager, filters: StreamFilters) -> Self {
-        Self {
-            redis,
-            filters,
-            last_ids: HashMap::new(),
-        }
-    }
+        let (tx, rx) = mpsc::unbounded_channel();
 
-    /// Redis Stream에서 이벤트 읽기 (업데이트된 last_ids도 반환)
-    async fn read_events(
-        &self,
-    ) -> Result<(Vec<EventStreamMessage>, HashMap<String, String>), String> {
-        let mut events = Vec::new();
-        let mut updated_last_ids = self.last_ids.clone();
+        // Pub/Sub 구독을 별도 tokio 태스크에서 실행
+        if let Some(ref session_id) = filters.session_id {
+            let channel = format!("events:test:{}", session_id);
+            let filters_clone = filters.clone();
 
-        // 구독할 스트림 키 결정
-        let stream_keys = self.get_stream_keys();
+            // ConnectionManager에서 원본 Client를 추출할 수 없으므로
+            // 새 Redis 연결을 생성합니다
+            tokio::spawn(async move {
+                // Redis URL을 환경 변수에서 가져옴
+                let redis_url = std::env::var("REDIS_URL")
+                    .unwrap_or_else(|_| "redis://127.0.0.1:6379".to_string());
 
-        if stream_keys.is_empty() {
-            // 필터가 없으면 모든 이벤트 스트림 읽기 (비효율적이므로 기본 패턴 사용)
-            // 현재는 test session 기반만 지원
-            return Ok((events, updated_last_ids));
-        }
-
-        // 각 스트림에서 이벤트 읽기
-        let mut redis = self.redis.clone();
-        for stream_key in stream_keys {
-            let last_id = updated_last_ids
-                .get(&stream_key)
-                .map(|s| s.as_str())
-                .unwrap_or("0");
-
-            // XREAD COUNT 100 BLOCK 1000 STREAMS {stream_key} {last_id}
-            let opts = StreamReadOptions::default()
-                .count(100)
-                .block(1000); // 1초 블록
-
-            let result: Result<StreamReadReply, redis::RedisError> = redis
-                .xread_options(&[&stream_key], &[last_id], &opts)
-                .await;
-
-            match result {
-                Ok(reply) => {
-                    for stream_key_data in &reply.keys {
-                        for stream_id_data in &stream_key_data.ids {
-                            // 스트림 ID 업데이트
-                            updated_last_ids
-                                .insert(stream_key.clone(), stream_id_data.id.clone());
-
-                            // 이벤트 파싱
-                            if let Some(event) = self.parse_stream_entry(&stream_id_data.map) {
-                                // 필터 적용
-                                if self.filters.matches(&event) {
-                                    events.push(event);
-                                }
-                            }
+                match redis::Client::open(redis_url.as_str()) {
+                    Ok(client) => {
+                        if let Err(e) = Self::subscribe_pubsub(client, channel, filters_clone, tx).await {
+                            error!("Pub/Sub subscription failed: {}", e);
                         }
                     }
+                    Err(e) => {
+                        error!("Failed to create Redis client for Pub/Sub: {}", e);
+                    }
                 }
+            });
+        } else {
+            warn!("No session_id filter provided, Pub/Sub will not subscribe");
+        }
+
+        Self {
+            filters,
+            event_rx: Some(rx),
+        }
+    }
+
+    /// Redis Pub/Sub 구독 (별도 태스크에서 실행)
+    async fn subscribe_pubsub(
+        client: redis::Client,
+        channel: String,
+        filters: StreamFilters,
+        tx: mpsc::UnboundedSender<EventStreamMessage>,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        info!("Starting Pub/Sub subscription on channel: {}", channel);
+
+        // Client에서 비동기 연결 생성 후 PubSub으로 전환
+        let conn = client.get_async_connection().await?;
+        let mut pubsub = conn.into_pubsub();
+        pubsub.subscribe(&channel).await?;
+
+        info!("Successfully subscribed to channel: {}", channel);
+
+        let mut stream = pubsub.on_message();
+
+        // 메시지 수신 루프
+        while let Some(msg) = stream.next().await {
+            let payload: String = match msg.get_payload() {
+                Ok(p) => p,
                 Err(e) => {
-                    if !e.is_timeout() {
-                        error!("Failed to read from Redis stream {}: {}", stream_key, e);
-                    }
-                    // Timeout은 정상 동작 (새 이벤트 없음)
+                    warn!("Failed to get payload: {}", e);
+                    continue;
                 }
-            }
-        }
-
-        Ok((events, updated_last_ids))
-    }
-
-    /// 구독할 스트림 키 목록 반환
-    fn get_stream_keys(&self) -> Vec<String> {
-        let mut keys = Vec::new();
-
-        // session_id 필터가 있으면 해당 스트림만 구독
-        if let Some(ref session_id) = self.filters.session_id {
-            keys.push(format!("events:test:{}", session_id));
-        }
-
-        keys
-    }
-
-    /// Redis Stream 엔트리를 EventStreamMessage로 파싱
-    fn parse_stream_entry(
-        &self,
-        map: &HashMap<String, redis::Value>,
-    ) -> Option<EventStreamMessage> {
-        // "type" 필드 추출
-        let event_type = map
-            .get("type")
-            .and_then(|v| match v {
-                redis::Value::Data(bytes) => String::from_utf8(bytes.clone()).ok(),
-                _ => None,
-            })?
-            .to_string();
-
-        // "player_id" 필드 추출 (선택적)
-        let player_id = map
-            .get("player_id")
-            .and_then(|v| match v {
-                redis::Value::Data(bytes) => String::from_utf8(bytes.clone()).ok(),
-                _ => None,
-            })
-            .and_then(|s| Uuid::parse_str(&s).ok());
-
-        // 나머지 필드들을 data로 변환
-        let mut data = serde_json::Map::new();
-        for (key, value) in map {
-            if key == "type" {
-                continue; // 이미 event_type으로 사용
-            }
-
-            let json_value = match value {
-                redis::Value::Data(bytes) => {
-                    if let Ok(s) = String::from_utf8(bytes.clone()) {
-                        serde_json::Value::String(s)
-                    } else {
-                        continue;
-                    }
-                }
-                redis::Value::Int(i) => serde_json::Value::Number((*i).into()),
-                _ => continue,
             };
 
-            data.insert(key.clone(), json_value);
+            // JSON 파싱
+            let raw_data: serde_json::Value = match serde_json::from_str(&payload) {
+                Ok(d) => d,
+                Err(e) => {
+                    warn!("Failed to parse JSON payload: {}", e);
+                    continue;
+                }
+            };
+
+            // EventStreamMessage 구성
+            if let Some(event) = Self::parse_pubsub_message(&raw_data) {
+                if filters.matches(&event) {
+                    if tx.send(event).is_err() {
+                        info!("Event receiver dropped, stopping Pub/Sub");
+                        break;
+                    }
+                }
+            }
         }
+
+        info!("Pub/Sub subscription ended for channel: {}", channel);
+        Ok(())
+    }
+
+    /// Pub/Sub 메시지를 EventStreamMessage로 파싱
+    fn parse_pubsub_message(data: &serde_json::Value) -> Option<EventStreamMessage> {
+        let event_type = data.get("type")?.as_str()?.to_string();
+
+        let player_id = data
+            .get("player_id")
+            .and_then(|v| v.as_str())
+            .and_then(|s| Uuid::parse_str(s).ok());
+
+        let timestamp = data
+            .get("timestamp")
+            .and_then(|v| v.as_str())
+            .and_then(|s| chrono::DateTime::parse_from_rfc3339(s).ok())
+            .map(|dt| dt.with_timezone(&Utc))
+            .unwrap_or_else(Utc::now);
 
         Some(EventStreamMessage {
             event_type,
             player_id,
-            timestamp: Utc::now(),
-            data: serde_json::Value::Object(data),
+            timestamp,
+            data: data.clone(),
         })
     }
 }
@@ -226,51 +198,32 @@ impl Actor for EventStreamSession {
     fn started(&mut self, ctx: &mut Self::Context) {
         info!("Event stream WebSocket session started");
 
-        // 주기적으로 Redis Stream 폴링
-        ctx.run_interval(Duration::from_millis(100), |act, ctx| {
-            let redis = act.redis.clone();
-            let filters = act.filters.clone();
-            let last_ids = act.last_ids.clone();
-
-            let fut = async move {
-                let temp_session = EventStreamSession {
-                    redis,
-                    filters,
-                    last_ids,
-                };
-                temp_session.read_events().await
-            };
-
-            ctx.spawn(
-                actix::fut::wrap_future::<_, EventStreamSession>(fut).map(
-                    |result, act, ctx| match result {
-                        Ok((events, updated_last_ids)) => {
-                            // last_ids 업데이트
-                            act.last_ids = updated_last_ids;
-
-                            // 이벤트 전송
-                            for event in events {
-                                match serde_json::to_string(&event) {
-                                    Ok(json) => {
-                                        ctx.text(json);
-                                    }
-                                    Err(e) => {
-                                        error!("Failed to serialize event: {}", e);
-                                    }
-                                }
-                            }
-                        }
-                        Err(e) => {
-                            error!("Failed to read events: {}", e);
-                        }
-                    },
-                ),
-            );
-        });
+        // 채널에서 이벤트 수신하여 WebSocket으로 전송
+        if let Some(mut rx) = self.event_rx.take() {
+            ctx.add_stream(async_stream::stream! {
+                while let Some(event) = rx.recv().await {
+                    yield event;
+                }
+            });
+        }
     }
 
     fn stopped(&mut self, _ctx: &mut Self::Context) {
         info!("Event stream WebSocket session stopped");
+    }
+}
+
+/// 내부 이벤트를 WebSocket으로 전송하는 Stream Handler
+impl StreamHandler<EventStreamMessage> for EventStreamSession {
+    fn handle(&mut self, event: EventStreamMessage, ctx: &mut Self::Context) {
+        match serde_json::to_string(&event) {
+            Ok(json) => {
+                ctx.text(json);
+            }
+            Err(e) => {
+                error!("Failed to serialize event: {}", e);
+            }
+        }
     }
 }
 
@@ -293,18 +246,5 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for EventStreamSessio
             }
             _ => {}
         }
-    }
-}
-
-/// Heartbeat 메시지
-#[derive(Message)]
-#[rtype(result = "()")]
-struct Heartbeat;
-
-impl Handler<Heartbeat> for EventStreamSession {
-    type Result = ();
-
-    fn handle(&mut self, _msg: Heartbeat, ctx: &mut Self::Context) {
-        ctx.ping(b"");
     }
 }

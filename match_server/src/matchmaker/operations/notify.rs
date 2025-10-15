@@ -32,7 +32,7 @@ async fn send_direct_message(
 ) {
     let backoff = RETRY_CONFIG
         .read()
-        .unwrap()
+        .await
         .as_ref()
         .expect("Retry config not initialized")
         .clone();
@@ -78,7 +78,7 @@ async fn publish_to_redis_with_retry(
 ) {
     let backoff = RETRY_CONFIG
         .read()
-        .unwrap()
+        .await
         .as_ref()
         .expect("Retry config not initialized")
         .clone();

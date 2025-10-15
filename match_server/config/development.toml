@@ -41,6 +41,8 @@ max_dedicated_server_retries = 5
 dedicated_request_timeout_seconds = 3
 allocation_token_ttl_seconds = 20
 slow_loading_threshold_seconds = 15
+redis_operation_timeout_seconds = 10  # Redis 작업 타임아웃 (초)
+skip_game_server_check = true  # Development 환경에서는 Game Server 없이도 매칭 성공 처리
 
 # 게임 서버 상태 문자열
 [server_status]

@@ -41,6 +41,7 @@ max_dedicated_server_retries = 5
 dedicated_request_timeout_seconds = 5
 allocation_token_ttl_seconds = 20
 slow_loading_threshold_seconds = 20
+redis_operation_timeout_seconds = 10  # Redis 작업 타임아웃 (초)
 
 # 블랙리스트 설정
 [blacklist]

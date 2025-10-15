@@ -3929,6 +3929,7 @@ dependencies = [
  "actix",
  "actix-web",
  "actix-web-actors",
+ "async-stream",
  "async-trait",
  "backoff",
  "chrono",

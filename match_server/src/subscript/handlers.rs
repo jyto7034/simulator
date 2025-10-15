@@ -27,8 +27,15 @@ impl Handler<ForwardServerMessage> for SubScriptionManager {
 
 impl Handler<Register> for SubScriptionManager {
     type Result = ();
-    fn handle(&mut self, msg: Register, _ctx: &mut Context<Self>) -> Self::Result {
-        info!("Player {} registered for notifications.", msg.player_id);
+    fn handle(&mut self, msg: Register, ctx: &mut Context<Self>) -> Self::Result {
+        info!("Player {} registered", msg.player_id);
+        if self.sessions.contains_key(&msg.player_id) {
+            warn!(
+                "Player {} is already registered. Reject request.",
+                msg.player_id
+            );
+            ctx.stop();
+        }
         self.sessions.insert(msg.player_id, msg.addr);
     }
 }

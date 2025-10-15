@@ -2,15 +2,14 @@ use actix::{ActorContext, ActorFutureExt, AsyncContext, Handler, StreamHandler, 
 use futures_util::StreamExt;
 use std::collections::HashSet;
 use tokio_tungstenite::{connect_async, tungstenite};
-use tracing::{debug, error, info, warn};
+use tracing::{error, info, warn};
+use uuid::Uuid;
 
 use crate::observer_actor::{
-    message::{
-        EventType, InternalEvent, ObservationCompleted, PlayerFinishedFromActor,
-        SetSingleScenarioAddr, StartObservation, StopObservation,
-    },
-    EventStreamMessage, ObservationResult, ObserverActor, Phase,
+    message::{EventStreamMessage, EventType, InternalEvent, PlayerFinished, StartObservation},
+    EventRequirement, ObserverActor, Phase,
 };
+use crate::BehaviorOutcome;
 
 impl Handler<StartObservation> for ObserverActor {
     type Result = ();
@@ -18,20 +17,19 @@ impl Handler<StartObservation> for ObserverActor {
     fn handle(&mut self, msg: StartObservation, ctx: &mut Self::Context) {
         info!("[{}] Starting event observation...", self.test_name);
 
-        // 관찰 시작 시, 모든 플레이어를 초기 단계(Matching)로 설정
+        // 관찰 시작 시, 모든 플레이어를 초기 단계(Enqueuing)로 설정
         for player_id in &msg.player_ids {
-            self.players_phase.insert(*player_id, Phase::Matching);
-            self.player_received_events_in_phase
+            self.players_phase.insert(*player_id, Phase::Enqueuing);
+            self.player_satisfied_requirements
                 .insert(*player_id, HashSet::new());
         }
 
-        // 기본 스트림 URL에 선택적으로 kind 필터를 추가(환경 변수로 제어)
-        // Build stream URL with optional filters from env (kind, game_mode, session_id, event_type)
         let mut params: Vec<String> = Vec::new();
 
-        // test_session_id는 항상 포함
+        // session_id 필터 (특정 테스트 세션만 격리)
         params.push(format!("session_id={}", self.test_session_id));
 
+        // 선택적 환경 변수 필터
         if let Ok(kind) = std::env::var("OBSERVER_STREAM_KIND") {
             if !kind.is_empty() {
                 params.push(format!("kind={}", kind));
@@ -42,31 +40,17 @@ impl Handler<StartObservation> for ObserverActor {
                 params.push(format!("game_mode={}", gm));
             }
         }
-        // 환경 변수로도 session_id를 오버라이드할 수 있음 (테스트용)
-        if let Ok(sid) = std::env::var("OBSERVER_FILTER_SESSION_ID") {
-            if !sid.is_empty() {
-                params.push(format!("session_id={}", sid));
-            }
-        }
         if let Ok(et) = std::env::var("OBSERVER_FILTER_EVENT_TYPE") {
             if !et.is_empty() {
                 params.push(format!("event_type={}", et));
             }
         }
-        if let Ok(run_id) = std::env::var("OBSERVER_RUN_ID") {
-            if !run_id.is_empty() {
-                params.push(format!("run_id={}", run_id));
-            }
-        }
-        let url = if params.is_empty() {
-            format!("{}/events/stream", self.match_server_url)
-        } else {
-            format!(
-                "{}/events/stream?{}",
-                self.match_server_url,
-                params.join("&")
-            )
-        };
+
+        let url = format!(
+            "{}/events/stream?{}",
+            self.match_server_url,
+            params.join("&")
+        );
 
         let actor_future = async move {
             match connect_async(&url).await {
@@ -94,68 +78,63 @@ impl Handler<StartObservation> for ObserverActor {
             }
         });
 
-        // 스웜 환경에서 대량 이벤트를 수용하기 위해 메일박스 용량 증가
-        ctx.set_mailbox_capacity(50_000);
-
         ctx.spawn(actor_future);
     }
 }
 
-impl actix::Handler<PlayerFinishedFromActor> for ObserverActor {
+impl actix::Handler<PlayerFinished> for ObserverActor {
     type Result = ();
-    fn handle(&mut self, msg: PlayerFinishedFromActor, ctx: &mut Self::Context) {
-        // 플레이어 이벤트 기반 검증 기능을 살리되
-        // 플레이어의 실패는 테스트 실패로 즉시 처리 되어야함
-        // 처음에 작성해둔 명세가 타이트 하지 않았음, 플레이어의 실패는 의도된 행동이기 때문에 Ok() 로 처리하자고 했는데
-        // 실제로 Ok() 로 처리를 하니 테스트가 timeout 되는 경우가 발생 ( 플레이어 한 쪽이 실패했는데 Failed 가 아닌 Ok() 를 반환해서 다른 한 쪽이 끝날 때까지 대기. )
-        let current_phase = self.players_phase.get(&msg.player_id);
+    fn handle(&mut self, msg: PlayerFinished, ctx: &mut Self::Context) {
+        let player_id = msg.player_id;
 
-        match msg.result {
-            // Player reported a failure - wait for phase validation via events
-            Err(ref failure) => {
-                // Phase 검증: Failed 또는 Finished가 될 때까지 대기
-                match current_phase {
-                    Some(&Phase::Failed) | Some(&Phase::Finished) => {
-                        info!(
-                            "[{}] Player {} failure confirmed via phase validation (phase: {:?})",
-                            self.test_name, msg.player_id, current_phase
-                        );
-                        self.check_all_players_finished(ctx);
-                    }
-                    _ => {
-                        warn!(
-                            "[{}] Player {} reported failure: {:?}, but phase is {:?}, waiting for phase validation via events",
-                            self.test_name, msg.player_id, failure, current_phase
-                        );
-                    }
-                }
+        info!(
+            "Test [{}] Player {} finished with outcome: {:?}",
+            self.test_name, player_id, msg.result
+        );
+
+        // Error outcome이면 실패 처리
+        if matches!(msg.result, BehaviorOutcome::Error(_)) {
+            self.mark_player_failed(
+                player_id,
+                &format!("PlayerActor finished with Error outcome: {:?}", msg.result),
+                ctx,
+            );
+            return;
+        }
+
+        // IntendError는 의도된 에러이므로 즉시 테스트 성공으로 종료
+        if matches!(msg.result, BehaviorOutcome::IntendError) {
+            let duration = self.started_at.elapsed();
+            info!(
+                "✓ Test [{}] Player {} returned IntendError (expected behavior) - completing test immediately. Duration: {:?}",
+                self.test_name, player_id, duration
+            );
+
+            // 즉시 성공 신호 전송
+            if let Some(tx) = self.completion_tx.take() {
+                let _ = tx.send(true);
             }
+            ctx.stop();
+            actix::System::current().stop();
+            return;
+        }
 
-            // Player reported success - wait for phase validation via events
-            Ok(_) => {
-                // Phase 검증: Finished가 될 때까지 대기
-                if current_phase != Some(&Phase::Finished) {
-                    warn!(
-                        "[{}] Player {} reported completion but phase is {:?}, waiting for phase validation via events",
-                        self.test_name, msg.player_id, current_phase
-                    );
-                    return;
-                }
+        // 정상 종료인 경우, phase 상태 확인
+        let current_phase = self.players_phase.get(&player_id);
 
+        // 아직 terminal state가 아니면 Finished로 설정
+        if let Some(phase) = current_phase {
+            if !matches!(phase, Phase::Matched | Phase::Dequeued | Phase::Finished) {
                 info!(
-                    "[{}] Player {} confirmed finished via phase validation",
-                    self.test_name, msg.player_id
+                    "Test [{}] Player {} actor finished before reaching terminal phase, setting to Finished",
+                    self.test_name, player_id
                 );
-                self.check_all_players_finished(ctx);
+                self.players_phase.insert(player_id, Phase::Finished);
             }
         }
-    }
-}
 
-impl actix::Handler<StopObservation> for super::ObserverActor {
-    type Result = ();
-    fn handle(&mut self, _msg: StopObservation, ctx: &mut Self::Context) {
-        ctx.stop();
+        // 모든 플레이어가 완료되었는지 확인
+        self.check_all_players_finished(ctx);
     }
 }
 
@@ -173,24 +152,7 @@ impl StreamHandler<Result<tungstenite::Message, tungstenite::Error>> for Observe
                         ctx.address().do_send(InternalEvent(event));
                     }
                     Err(_e) => {
-                        // events:* 스타일의 상태 이벤트는 값 파싱으로 캐시 갱신만 시도
-                        if let Ok(evt) = serde_json::from_str::<serde_json::Value>(&text) {
-                            if let Some(t) = evt.get("event").and_then(|v| v.as_str()) {
-                                if t == "queue_size_changed" {
-                                    if let (Some(mode), Some(size)) = (
-                                        evt.get("game_mode")
-                                            .and_then(|v| v.as_str())
-                                            .map(|s| s.to_string()),
-                                        evt.get("size").and_then(|v| v.as_i64()),
-                                    ) {
-                                        self.last_queue_size
-                                            .insert(mode, (size, chrono::Utc::now()));
-                                    }
-                                }
-                            }
-                        } else {
-                            error!("Failed to parse event stream message");
-                        }
+                        error!("Failed to parse event stream message");
                     }
                 }
             }
@@ -203,249 +165,320 @@ impl StreamHandler<Result<tungstenite::Message, tungstenite::Error>> for Observe
     }
 }
 
-// 내부 이벤트 메시지를 처리하여 검증 로직을 수행하는 핸들러
+//   1. WebSocket 메시지 (ServerMessage) - /ws/ 엔드포인트
+//   // protocol.rs:30-54
+//   pub enum ServerMessage {
+//       EnQueued { pod_id: String },
+//       DeQueued,
+//       MatchFound { session_id, server_address },
+//       Error { code, message },
+//   }
+//   - 수신: PlayerActor (매칭 WebSocket 연결)
+//   - 목적: 플레이어에게 매칭 결과 즉시 알림
+//   - 전송: session/mod.rs에서 ctx.text() 직접 전송
+
+//   2. Redis Stream 이벤트 - /events/stream 엔드포인트
+//   // event_stream.rs:14-21
+//   pub struct EventStreamMessage {
+//       pub event_type: String,  // "enqueued", "dequeued", "match_found", "error"
+//       pub player_id: Option<Uuid>,
+//       pub timestamp: DateTime<Utc>,
+//       pub data: serde_json::Value,
+//   }
+//   - 수신: ObserverActor (테스트 검증용)
+//   - 목적: 테스트 시나리오의 Phase 검증
+//   - 전송: Redis Stream → EventStreamSession이 WebSocket으로 중계
+
+//   차이점:
+//   - ServerMessage: 플레이어 실시간 통신
+//   - Redis Event: 테스트 관찰/검증 (metadata에 test_session_id 있을 때만 발행)
+
+// Match Server 로부터 온 메시지를 처리하는 핸들러.
 impl Handler<InternalEvent> for ObserverActor {
     type Result = ();
 
     fn handle(&mut self, msg: InternalEvent, ctx: &mut Self::Context) {
         let event = msg.0;
-        self.process_state_event(&event);
-        debug!("[{}] Received event: {:?}", self.test_name, event);
-        if let Some(pid) = event.player_id {
-            if !self.players_phase.contains_key(&pid) {
-                match event.event_type {
-                    EventType::QueueSizeChanged
-                    | EventType::PlayersRequeued
-                    | EventType::ServerMessage
-                    | EventType::Error
-                    | EventType::StateViolation => {}
-                    _ => {
-                        return;
-                    }
-                }
+
+        // event_type 기반으로 scope 구분
+        let is_player_event = matches!(
+            event.event_type,
+            EventType::PlayerEnqueued
+                | EventType::PlayerDequeued
+                | EventType::PlayerMatchFound
+                | EventType::PlayerError
+        );
+
+        if is_player_event {
+            // Player 이벤트는 player_id 필수
+            if let Some(player_id) = event.player_id {
+                self.check_phase_completion(player_id, event, ctx);
+            } else {
+                warn!(
+                    "Test [{}] Received player event without player_id: type={:?}, data={:?}",
+                    self.test_name, event.event_type, event.data
+                );
             }
-        }
-
-        // 링버퍼 append
-        if self.received_events.len() == self.max_events_kept {
-            self.received_events.pop_front();
-        }
-        self.received_events.push_back(event.clone());
-
-        if let Some(player_id) = event.player_id {
-            self.check_phase_completion(player_id, &event, ctx);
         } else {
-            match event.event_type {
-                EventType::QueueSizeChanged | EventType::PlayersRequeued => {
-                    let player_ids: Vec<_> = self.players_phase.keys().cloned().collect();
-                    for player_id in &player_ids {
-                        self.player_received_events_in_phase
-                            .entry(*player_id)
-                            .or_default()
-                            .insert(event.event_type.clone());
-                    }
-                    info!(
-                        "[{}] Global event {:?} broadcasted to {} players",
-                        self.test_name,
-                        event.event_type,
-                        player_ids.len()
-                    );
-
-                    for player_id in player_ids {
-                        self.check_phase_completion(player_id, &event, ctx);
-                    }
-                }
-                EventType::StateViolation => {
-                    // 서버 불변식 위반은 스웜 검증에서 즉시 실패로 처리
-                    let code = event
-                        .data
-                        .get("code")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("unknown");
-                    warn!(
-                        "[{}] State violation observed: {} — failing scenario",
-                        self.test_name, code
-                    );
-                    let keys: Vec<_> = self.players_phase.keys().cloned().collect();
-                    for pid in keys {
-                        self.players_phase
-                            .insert(pid, crate::observer_actor::Phase::Failed);
-                    }
-                    self.check_all_players_finished(ctx);
-                }
-                _ => {}
-            }
+            // Global 이벤트 처리
+            self.handle_global_event(event, ctx);
         }
     }
 }
 
+enum EventKind<'a> {
+    Required(usize, &'a EventRequirement), // idx와 requirement 참조
+    Transition(&'a EventRequirement),      // requirement 참조 (matcher 검증용)
+    Invalid,
+}
+
 impl ObserverActor {
-    /// 플레이어의 현재 단계(Phase)의 완료 조건을 확인하고, 충족 시 다음 단계로 전환합니다.
+    /// 플레이어를 Failed 상태로 전환하고 테스트 종료를 확인합니다.
+    fn mark_player_failed(
+        &mut self,
+        player_id: Uuid,
+        reason: &str,
+        ctx: &mut actix::Context<Self>,
+    ) {
+        warn!(
+            "Test [{}] Player {} marked as Failed: {}",
+            self.test_name, player_id, reason
+        );
+        self.players_phase.insert(player_id, Phase::Failed);
+        self.player_satisfied_requirements
+            .insert(player_id, HashSet::new());
+        self.check_all_players_finished(ctx);
+    }
+
+    // 플레이어의 현재 단계(Phase)의 완료 조건을 확인하고, 충족 시 다음 단계로 전환합니다.
     fn check_phase_completion(
         &mut self,
-        player_id: uuid::Uuid,
-        event: &EventStreamMessage,
+        player_id: Uuid,
+        event: EventStreamMessage,
         ctx: &mut actix::Context<Self>,
     ) {
         let event_type = &event.event_type;
         let data = &event.data;
 
-        // 치명적 에러가 클라이언트에 전달되면 해당 플레이어를 종료로 전환
-        if *event_type == EventType::Error {
-            if let Some(msg) = data.get("message").and_then(|v| v.as_str()) {
-                let m = msg.to_lowercase();
-                if m.contains("failed") && m.contains("attempt") {
-                    self.players_phase.insert(player_id, Phase::Failed);
-                    self.player_received_events_in_phase
-                        .insert(player_id, HashSet::new());
-                    self.check_all_players_finished(ctx);
-                    return;
-                }
-            }
-            // 그 외 에러 메시지는 테스트 상 종료로 간주 (성공/실패 판단은 상위에서 수행)
-            self.players_phase.insert(player_id, Phase::Finished);
-            self.player_received_events_in_phase
-                .insert(player_id, HashSet::new());
-            self.check_all_players_finished(ctx);
-            return;
-        }
-
         let current_phase = match self.players_phase.get(&player_id) {
             Some(phase) => phase.clone(),
             None => {
                 warn!(
-                    "[{}] Received event for untracked player {}",
+                    "Test [{}] Received event for untracked player {}",
                     self.test_name, player_id
                 );
                 return;
             }
         };
 
-        // 현재 단계에서 받은 이벤트로 기록
-        self.player_received_events_in_phase
-            .entry(player_id)
-            .or_default()
-            .insert(event_type.clone());
+        // 현재 페이즈의 조건 가져오기
+        let condition = match self
+            .players_schedule
+            .get(&player_id)
+            .and_then(|schedule| schedule.get(&current_phase))
+        {
+            Some(cond) => cond,
+            None => return,
+        };
 
-        // 현재 단계의 완료 조건 가져오기 - 플레이어별 스케줄에서 찾기
-        if let Some(player_schedule) = self.players_schedule.get(&player_id) {
-            if let Some(condition) = player_schedule.get(&current_phase) {
-                // 전환 이벤트가 발생했는지 확인
-                if *event_type == condition.transition_event {
-                    let received_events = self
-                        .player_received_events_in_phase
-                        .get(&player_id)
-                        .unwrap();
+        // 현재 이벤트가 required_events 에 속한지 확인하여 이벤트의 종류를 알아냄.
+        let event_kind = if let Some((idx, req)) = condition
+            .required_events
+            .iter()
+            .enumerate()
+            .find(|(_, req)| req.event_type == *event_type)
+        {
+            EventKind::Required(idx, req)
+        } else if condition.transition_event.event_type == *event_type {
+            EventKind::Transition(&condition.transition_event)
+        } else {
+            EventKind::Invalid
+        };
 
-                    // 필수 이벤트들을 모두 받았는지 확인
-                    if condition.required_events.is_subset(received_events) {
-                        // Matcher가 존재하면 실행하고, 없으면 통과로 간주
-                        let matcher_passed = condition
-                            .transition_matcher
-                            .as_ref()
-                            .map_or(true, |matcher| matcher(data));
+        // Error Event 도 matches 로 처리함 ( 의도된 Error 일 수 도 있어서. )
+        match event_kind {
+            EventKind::Required(idx, req) => {
+                // matcher 에서 부적합 결과가 나온 경우 실패 처리
+                if !req.matches(event_type, data) {
+                    self.mark_player_failed(
+                        player_id,
+                        &format!(
+                            "failed matcher for required event {:?} in phase {:?}",
+                            event_type, current_phase
+                        ),
+                        ctx,
+                    );
+                    return;
+                }
 
-                        if matcher_passed {
-                            // --- 단계 전환 ---
-                            let next_phase = condition.next_phase.clone();
-                            info!(
-                                "[{}] Player {} completed phase {:?} -> transitioning to {:?}",
-                                self.test_name, player_id, current_phase, next_phase
-                            );
-                            self.players_phase.insert(player_id, next_phase);
-                            self.player_received_events_in_phase
-                                .insert(player_id, HashSet::new()); // 다음 단계를 위해 초기화
-                        } else {
-                            warn!(
-                                "[{}] Player {} failed matcher for event {:?}",
-                                self.test_name, player_id, event_type
-                            );
-                            // 매처 실패 시 Failed 상태로 전환
-                            self.players_phase.insert(player_id, Phase::Failed);
+                // matches 통과한 이벤트 등록
+                self.player_satisfied_requirements
+                    .entry(player_id)
+                    .or_default()
+                    .insert(idx);
+            }
+            EventKind::Transition(req) => {
+                // matcher 에서 부적합 결과가 나온 경우 실패 처리
+                if !req.matches(event_type, data) {
+                    self.mark_player_failed(
+                        player_id,
+                        &format!(
+                            "failed matcher for transition event {:?} in phase {:?}",
+                            event_type, current_phase
+                        ),
+                        ctx,
+                    );
+                    return;
+                }
+
+                let satisfied = self.player_satisfied_requirements.get(&player_id).unwrap();
+
+                // 모든 required_events가 만족되었는지 확인
+                // 만약 만족되지 않았다면 실패 처리
+                let all_required_satisfied =
+                    (0..condition.required_events.len()).all(|idx| satisfied.contains(&idx));
+
+                if all_required_satisfied {
+                    // 단계 전환
+                    let next_phase = condition.next_phase.clone();
+                    info!(
+                        "Test [{}] Player {} completed phase {:?} -> transitioning to {:?}",
+                        self.test_name, player_id, current_phase, next_phase
+                    );
+                    self.players_phase.insert(player_id, next_phase);
+                    self.player_satisfied_requirements
+                        .insert(player_id, HashSet::new());
+                } else {
+                    self.mark_player_failed(
+                        player_id,
+                        &format!(
+                            "received transition event {:?} but not all required events satisfied",
+                            event_type
+                        ),
+                        ctx,
+                    );
+                    return;
+                }
+            }
+            EventKind::Invalid => {
+                // Special case: PlayerReEnqueued는 InQueue phase에서 무시 (정상적인 re-enqueue)
+                if current_phase == Phase::InQueue && *event_type == EventType::PlayerReEnqueued {
+                    info!(
+                        "Test [{}] Player {} received PlayerReEnqueued in InQueue phase (re-enqueued after failed match), ignoring",
+                        self.test_name, player_id
+                    );
+                    return;
+                }
+
+                self.mark_player_failed(
+                    player_id,
+                    &format!(
+                        "received unexpected event {:?} in phase {:?}",
+                        event_type, current_phase
+                    ),
+                    ctx,
+                );
+                return;
+            }
+        }
+
+        self.check_all_players_finished(ctx);
+    }
+
+    fn handle_global_event(&mut self, event: EventStreamMessage, _ctx: &mut actix::Context<Self>) {
+        match event.event_type {
+            EventType::GlobalQueueSizeChanged => {
+                info!(
+                    "Test [{}] Global event: queue_size_changed - {:?}",
+                    self.test_name, event.data
+                );
+
+                // GlobalQueueSizeChanged를 현재 InQueue Phase의 모든 플레이어에게 적용
+                let players_in_queue: Vec<Uuid> = self
+                    .players_phase
+                    .iter()
+                    .filter(|(_, phase)| **phase == Phase::InQueue)
+                    .map(|(player_id, _)| *player_id)
+                    .collect();
+
+                for player_id in players_in_queue {
+                    // 해당 플레이어의 InQueue Phase 조건 확인
+                    if let Some(schedule) = self.players_schedule.get(&player_id) {
+                        if let Some(condition) = schedule.get(&Phase::InQueue) {
+                            // required_events에서 GlobalQueueSizeChanged의 인덱스 찾기
+                            if let Some((idx, _)) = condition
+                                .required_events
+                                .iter()
+                                .enumerate()
+                                .find(|(_, req)| {
+                                    req.event_type == EventType::GlobalQueueSizeChanged
+                                })
+                            {
+                                // player_satisfied_requirements에 등록
+                                self.player_satisfied_requirements
+                                    .entry(player_id)
+                                    .or_default()
+                                    .insert(idx);
+
+                                info!(
+                                    "Test [{}] Player {} satisfied GlobalQueueSizeChanged requirement in InQueue phase",
+                                    self.test_name, player_id
+                                );
+                            }
                         }
                     }
                 }
             }
+            _ => {
+                // Unknown global event
+            }
         }
-
-        // 모든 플레이어가 최종 단계에 도달했는지 확인
-        self.check_all_players_finished(ctx);
     }
 
-    /// 모든 플레이어가 terminal state에 도달했는지 확인합니다.
-    /// - Expected failures: Failed 상태가 예상됨
-    /// - Normal players: Finished 상태가 예상됨
     fn check_all_players_finished(&mut self, ctx: &mut actix::Context<Self>) {
         if self.players_phase.is_empty() {
             return;
         }
 
-        // 1. Check for unexpected failures (failures not in expected_failures set)
-        let unexpected_failures: Vec<_> = self
+        // 실패한 플레이어가 있는지 먼저 확인
+        let has_failed = self
             .players_phase
-            .iter()
-            .filter(|(player_id, phase)| {
-                **phase == Phase::Failed && !self.expected_failures.contains(player_id)
-            })
-            .map(|(id, _)| *id)
-            .collect();
+            .values()
+            .any(|phase| *phase == Phase::Failed);
 
-        if !unexpected_failures.is_empty() {
+        if has_failed {
             warn!(
-                "✗ [{}] Scenario failed - unexpected failures detected: {:?}",
-                self.test_name, unexpected_failures
+                "✗ Test [{}] failed - at least one player is in Failed state.",
+                self.test_name
             );
-
-            // SingleScenarioActor에게 실패 결과 전송
-            if let Some(single_scenario_addr) = &self.single_scenario_addr {
-                let failure_reason = format!(
-                    "Unexpected player failures: {} player(s)",
-                    unexpected_failures.len()
-                );
-                single_scenario_addr.do_send(ObservationCompleted(ObservationResult::Error {
-                    failed_step: 0,
-                    reason: failure_reason,
-                    events: self.received_events.clone().into(),
-                }));
+            // 실패 신호 전송
+            if let Some(tx) = self.completion_tx.take() {
+                let _ = tx.send(false);
             }
             ctx.stop();
+            actix::System::current().stop();
             return;
         }
 
-        // 2. Check if all players reached terminal state
-        // Terminal states:
-        // - Finished (for normal players)
-        // - Failed (only if expected)
-        let all_terminal = self.players_phase.iter().all(|(player_id, phase)| {
-            *phase == Phase::Finished
-                || (*phase == Phase::Failed && self.expected_failures.contains(player_id))
-        });
+        // 모든 플레이어가 Phase 기준으로 완료 (Matched, Dequeued, Finished)
+        let all_phases_finished = self
+            .players_phase
+            .values()
+            .all(|phase| matches!(phase, Phase::Matched | Phase::Dequeued | Phase::Finished));
 
-        if all_terminal {
+        if all_phases_finished {
+            let duration = self.started_at.elapsed();
             info!(
-                "✓ [{}] All players reached terminal state - test complete.",
-                self.test_name
+                "✓ Test [{}] All players finished successfully. Duration: {:?}",
+                self.test_name, duration
             );
-
-            // SingleScenarioActor에게 성공 결과 전송
-            if let Some(single_scenario_addr) = &self.single_scenario_addr {
-                let duration = self.started_at.elapsed();
-
-                single_scenario_addr.do_send(ObservationCompleted(ObservationResult::Success {
-                    events: self.received_events.clone().into(),
-                    duration,
-                }));
+            info!("  - Completed players: {}", self.players_phase.len());
+            // 성공 신호 전송
+            if let Some(tx) = self.completion_tx.take() {
+                let _ = tx.send(true);
             }
             ctx.stop();
+            actix::System::current().stop();
         }
-    }
-}
-
-impl Handler<SetSingleScenarioAddr> for ObserverActor {
-    type Result = ();
-
-    fn handle(&mut self, msg: SetSingleScenarioAddr, _ctx: &mut Self::Context) -> Self::Result {
-        self.single_scenario_addr = Some(msg.addr);
-        info!("[{}] SingleScenarioActor address set", self.test_name);
     }
 }

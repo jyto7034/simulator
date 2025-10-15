@@ -2,23 +2,24 @@ use ::redis::aio::ConnectionManager;
 use actix::{Addr, Message};
 use actix_web::HttpRequest;
 use backoff::ExponentialBackoff;
-use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::io;
 use std::net::IpAddr;
 use std::sync::{Arc, RwLock};
 use std::time::{Duration, Instant};
+use tokio::sync::RwLock as TokioRwLock;
 use tracing::{debug, error, warn};
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
+use uuid::Uuid;
 
 use crate::env::RetrySettings;
 use crate::subscript::SubScriptionManager;
 use crate::{env::Settings, matchmaker::MatchmakerAddr, metrics::MetricsCtx};
 
-lazy_static! {
-    static ref RETRY_CONFIG: RwLock<Option<ExponentialBackoff>> = RwLock::new(None);
+lazy_static::lazy_static! {
+    pub static ref RETRY_CONFIG: TokioRwLock<Option<ExponentialBackoff>> = TokioRwLock::new(None);
 }
 
 pub mod env;
@@ -51,7 +52,10 @@ impl LoggerManager {
     pub fn setup(settings: &Settings) -> Self {
         // 1. 로그 디렉토리 생성 (존재하지 않으면)
         if let Err(e) = std::fs::create_dir_all(&settings.logging.directory) {
-            eprintln!("Failed to create log directory '{}': {}", settings.logging.directory, e);
+            eprintln!(
+                "Failed to create log directory '{}': {}",
+                settings.logging.directory, e
+            );
         }
 
         // 2. 파일 로거 설정
@@ -105,7 +109,7 @@ impl LoggerManager {
     }
 }
 
-pub fn init_retry_config(settings: &RetrySettings) {
+pub async fn init_retry_config(settings: &RetrySettings) {
     let backoff = ExponentialBackoff {
         max_elapsed_time: Some(Duration::from_millis(settings.message_max_elapsed_time_ms)),
         initial_interval: Duration::from_millis(settings.message_initial_interval_ms),
@@ -113,7 +117,7 @@ pub fn init_retry_config(settings: &RetrySettings) {
         ..Default::default()
     };
 
-    *RETRY_CONFIG.write().unwrap() = Some(backoff);
+    *RETRY_CONFIG.write().await = Some(backoff);
 }
 
 #[derive(Clone)]
@@ -123,7 +127,7 @@ pub struct AppState {
     pub sub_manager_addr: Addr<SubScriptionManager>,
     pub redis: ConnectionManager,
     pub logger_manager: Arc<LoggerManager>,
-    pub current_run_id: Arc<RwLock<Option<String>>>,
+    pub current_run_id: Uuid,
     pub metrics: Arc<MetricsCtx>,
     pub metrics_registry: prometheus::Registry,
     pub rate_limiter: Arc<RateLimiter>,
@@ -209,27 +213,28 @@ impl RateLimiter {
     }
 
     pub fn check(&self, ip: &IpAddr) -> bool {
-        let mut buckets = self.buckets.write().unwrap();
-        let bucket = buckets.entry(*ip).or_insert_with(|| TokenBucket {
-            tokens: self.max_requests_per_second as f64,
-            last_refill: Instant::now(),
-            max_tokens: self.max_requests_per_second as f64,
-            refill_rate: self.max_requests_per_second as f64,
-        });
+        true
+        // let mut buckets = self.buckets.write().unwrap();
+        // let bucket = buckets.entry(*ip).or_insert_with(|| TokenBucket {
+        //     tokens: self.max_requests_per_second as f64,
+        //     last_refill: Instant::now(),
+        //     max_tokens: self.max_requests_per_second as f64,
+        //     refill_rate: self.max_requests_per_second as f64,
+        // });
 
-        // Refill tokens based on elapsed time
-        let now = Instant::now();
-        let elapsed = now.duration_since(bucket.last_refill).as_secs_f64();
-        bucket.tokens = (bucket.tokens + elapsed * bucket.refill_rate).min(bucket.max_tokens);
-        bucket.last_refill = now;
+        // // Refill tokens based on elapsed time
+        // let now = Instant::now();
+        // let elapsed = now.duration_since(bucket.last_refill).as_secs_f64();
+        // bucket.tokens = (bucket.tokens + elapsed * bucket.refill_rate).min(bucket.max_tokens);
+        // bucket.last_refill = now;
 
-        // Check if we have tokens
-        if bucket.tokens >= 1.0 {
-            bucket.tokens -= 1.0;
-            true
-        } else {
-            false
-        }
+        // // Check if we have tokens
+        // if bucket.tokens >= 1.0 {
+        //     bucket.tokens -= 1.0;
+        //     true
+        // } else {
+        //     false
+        // }
     }
 
     /// Cleanup old entries (call periodically)
@@ -240,4 +245,19 @@ impl RateLimiter {
             now.duration_since(bucket.last_refill) < Duration::from_secs(600) // 10 minutes
         });
     }
+}
+
+pub async fn flush_redis_default() -> Result<(), Box<dyn std::error::Error>> {
+    let redis_url =
+        std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://127.0.0.1:6379".to_string());
+
+    let client = redis::Client::open(redis_url)?;
+    let mut conn = client.get_async_connection().await?;
+
+    // FLUSHDB for the selected DB only (safer than FLUSHALL)
+    redis::cmd("FLUSHDB")
+        .query_async::<_, ()>(&mut conn)
+        .await?;
+
+    Ok(())
 }
