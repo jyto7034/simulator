@@ -1,0 +1,903 @@
+  2025-10-22T15:48:40.600103Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at test_client\src\lib.rs:71 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.601980Z  INFO  Loading configuration from: "C:\\Users\\blast\\.config\\simulator\\simulator.toml"
+    at env\src\lib.rs:157 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.605484Z  INFO  Starting scenario: Normal vs InvalidDequeueMissingField
+    at test_client\src\scenario_actor\mod.rs:32 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.605546Z  INFO  Starting scenario: Normal vs InvalidDequeueDuplicate
+    at test_client\src\scenario_actor\mod.rs:32 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.605605Z  INFO  Starting scenario: Normal vs InvalidDequeueUnknownType
+    at test_client\src\scenario_actor\mod.rs:32 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.605659Z  INFO  Starting scenario: Normal vs InvalidDequeueWrongPlayerId
+    at test_client\src\scenario_actor\mod.rs:32 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.605703Z  INFO  Generated test_session_id for scenario Normal vs InvalidDequeueMissingField: 3b86ed1a-5b35-4ed8-a2e9-6311cc5ecaca
+    at test_client\src\scenario_actor\mod.rs:35 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.605756Z  INFO  Generated test_session_id for scenario Normal vs InvalidDequeueDuplicate: f3efd01e-777a-4b79-817a-587cc2959732
+    at test_client\src\scenario_actor\mod.rs:35 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.605817Z  INFO  Generated test_session_id for scenario Normal vs InvalidDequeueUnknownType: 8976276f-d488-4f3b-89ce-75f92ee9b027
+    at test_client\src\scenario_actor\mod.rs:35 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.605902Z  INFO  Generated test_session_id for scenario Normal vs InvalidDequeueWrongPlayerId: 7cd7d967-2c94-4031-ade1-44b8b994609b
+    at test_client\src\scenario_actor\mod.rs:35 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.606005Z  INFO  Created players for scenario Normal vs InvalidDequeueUnknownType: normal=354d10e8-06d7-4e3e-aaad-0a539bcfd896, abnormal=5a39e0a8-a2a5-484b-8afa-307f841c9da4, session=8976276f-d488-4f3b-89ce-75f92ee9b027
+    at test_client\src\scenario_actor\mod.rs:88 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.606064Z  INFO  Created players for scenario Normal vs InvalidDequeueMissingField: normal=ceb6eef5-afae-4eaa-9e1a-7b796a93ac95, abnormal=d56af211-fa2a-4aaa-8189-2cff2d0193b7, session=3b86ed1a-5b35-4ed8-a2e9-6311cc5ecaca
+    at test_client\src\scenario_actor\mod.rs:88 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.606116Z  INFO  Created players for scenario Normal vs InvalidDequeueDuplicate: normal=a684cccc-a161-49dc-b806-537695a51d6d, abnormal=8dad45c1-973a-42ac-bb03-7cf7bdafed63, session=f3efd01e-777a-4b79-817a-587cc2959732
+    at test_client\src\scenario_actor\mod.rs:88 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.606166Z  INFO  Created players for scenario Normal vs InvalidDequeueWrongPlayerId: normal=f093d9ec-4214-4132-8312-40ba70491e93, abnormal=3ba29789-5871-4297-a428-4824a6d1b1f8, session=7cd7d967-2c94-4031-ade1-44b8b994609b
+    at test_client\src\scenario_actor\mod.rs:88 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.606219Z  INFO  [Normal vs InvalidDequeueUnknownType] Starting event observation...
+    at test_client\src\observer_actor\handler.rs:18 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.606272Z  INFO  [Normal vs InvalidDequeueMissingField] Starting event observation...
+    at test_client\src\observer_actor\handler.rs:18 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.606328Z  INFO  [Normal vs InvalidDequeueDuplicate] Starting event observation...
+    at test_client\src\observer_actor\handler.rs:18 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.606415Z  INFO  [Normal vs InvalidDequeueWrongPlayerId] Starting event observation...
+    at test_client\src\observer_actor\handler.rs:18 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.609348Z  INFO  [5a39e0a8-a2a5-484b-8afa-307f841c9da4] Connection established
+    at test_client\src\player_actor\handler.rs:181 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.609437Z  INFO  [d56af211-fa2a-4aaa-8189-2cff2d0193b7] Connection established
+    at test_client\src\player_actor\handler.rs:181 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.609542Z  INFO  [5a39e0a8-a2a5-484b-8afa-307f841c9da4] on_connected completed, continuing
+    at test_client\src\player_actor\handler.rs:203 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.609591Z  INFO  [d56af211-fa2a-4aaa-8189-2cff2d0193b7] on_connected completed, continuing
+    at test_client\src\player_actor\handler.rs:203 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.609723Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.609810Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.609864Z  INFO  [f093d9ec-4214-4132-8312-40ba70491e93] Connection established
+    at test_client\src\player_actor\handler.rs:181 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.609960Z  INFO  [354d10e8-06d7-4e3e-aaad-0a539bcfd896] Connection established
+    at test_client\src\player_actor\handler.rs:181 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.610029Z  INFO  [ceb6eef5-afae-4eaa-9e1a-7b796a93ac95] Connection established
+    at test_client\src\player_actor\handler.rs:181 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.610095Z  INFO  [f093d9ec-4214-4132-8312-40ba70491e93] Normal player connected, sending Enqueue
+    at test_client\src\behaviors\normal.rs:18 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.610150Z  INFO  [354d10e8-06d7-4e3e-aaad-0a539bcfd896] Normal player connected, sending Enqueue
+    at test_client\src\behaviors\normal.rs:18 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.610227Z  INFO  [ceb6eef5-afae-4eaa-9e1a-7b796a93ac95] Normal player connected, sending Enqueue
+    at test_client\src\behaviors\normal.rs:18 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.610290Z  INFO  [a684cccc-a161-49dc-b806-537695a51d6d] Connection established
+    at test_client\src\player_actor\handler.rs:181 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.610346Z  INFO  [f093d9ec-4214-4132-8312-40ba70491e93] on_connected completed, continuing
+    at test_client\src\player_actor\handler.rs:203 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.610421Z  INFO  [354d10e8-06d7-4e3e-aaad-0a539bcfd896] on_connected completed, continuing
+    at test_client\src\player_actor\handler.rs:203 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.610495Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.610586Z  INFO  [a684cccc-a161-49dc-b806-537695a51d6d] Normal player connected, sending Enqueue
+    at test_client\src\behaviors\normal.rs:18 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.610668Z  INFO  [ceb6eef5-afae-4eaa-9e1a-7b796a93ac95] on_connected completed, continuing
+    at test_client\src\player_actor\handler.rs:203 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.610732Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.610814Z  INFO  [Normal vs InvalidDequeueWrongPlayerId] Successfully connected to event stream.
+    at test_client\src\observer_actor\handler.rs:53 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.610892Z  INFO  [a684cccc-a161-49dc-b806-537695a51d6d] on_connected completed, continuing
+    at test_client\src\player_actor\handler.rs:203 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.610952Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.611028Z  INFO  [Normal vs InvalidDequeueUnknownType] Successfully connected to event stream.
+    at test_client\src\observer_actor\handler.rs:53 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.611084Z  INFO  [Normal vs InvalidDequeueMissingField] Successfully connected to event stream.
+    at test_client\src\observer_actor\handler.rs:53 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.611149Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.611223Z  INFO  [3ba29789-5871-4297-a428-4824a6d1b1f8] Connection established
+    at test_client\src\player_actor\handler.rs:181 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.611301Z  INFO  [8dad45c1-973a-42ac-bb03-7cf7bdafed63] Connection established
+    at test_client\src\player_actor\handler.rs:181 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.611353Z  INFO  [3ba29789-5871-4297-a428-4824a6d1b1f8] on_connected completed, continuing
+    at test_client\src\player_actor\handler.rs:203 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.611404Z  INFO  [8dad45c1-973a-42ac-bb03-7cf7bdafed63] on_connected completed, continuing
+    at test_client\src\player_actor\handler.rs:203 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.611495Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.611553Z  INFO  [Normal vs InvalidDequeueDuplicate] Successfully connected to event stream.
+    at test_client\src\observer_actor\handler.rs:53 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.611679Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.614375Z  INFO  Test [Normal vs InvalidDequeueUnknownType] Player 5a39e0a8-a2a5-484b-8afa-307f841c9da4 completed phase Enqueuing -> transitioning to InQueue
+    at test_client\src\observer_actor\handler.rs:327 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.614435Z  INFO  Test [Normal vs InvalidDequeueMissingField] Player d56af211-fa2a-4aaa-8189-2cff2d0193b7 completed phase Enqueuing -> transitioning to InQueue
+    at test_client\src\observer_actor\handler.rs:327 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.614489Z  INFO  Test [Normal vs InvalidDequeueWrongPlayerId] Player f093d9ec-4214-4132-8312-40ba70491e93 completed phase Enqueuing -> transitioning to InQueue
+    at test_client\src\observer_actor\handler.rs:327 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.614552Z  INFO  Test [Normal vs InvalidDequeueUnknownType] Player 354d10e8-06d7-4e3e-aaad-0a539bcfd896 completed phase Enqueuing -> transitioning to InQueue
+    at test_client\src\observer_actor\handler.rs:327 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.614817Z  INFO  Test [Normal vs InvalidDequeueDuplicate] Player a684cccc-a161-49dc-b806-537695a51d6d completed phase Enqueuing -> transitioning to InQueue
+    at test_client\src\observer_actor\handler.rs:327 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.614878Z  INFO  Test [Normal vs InvalidDequeueMissingField] Player ceb6eef5-afae-4eaa-9e1a-7b796a93ac95 completed phase Enqueuing -> transitioning to InQueue
+    at test_client\src\observer_actor\handler.rs:327 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.614951Z  INFO  Test [Normal vs InvalidDequeueWrongPlayerId] Player 3ba29789-5871-4297-a428-4824a6d1b1f8 completed phase Enqueuing -> transitioning to InQueue
+    at test_client\src\observer_actor\handler.rs:327 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.615166Z  INFO  Test [Normal vs InvalidDequeueDuplicate] Player 8dad45c1-973a-42ac-bb03-7cf7bdafed63 completed phase Enqueuing -> transitioning to InQueue
+    at test_client\src\observer_actor\handler.rs:327 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.615252Z  INFO  Test [Normal vs InvalidDequeueWrongPlayerId] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("enqueued"), "size": String("3"), "timestamp": String("2025-10-22T15:48:40.614831500+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.615324Z  INFO  Test [Normal vs InvalidDequeueUnknownType] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("enqueued"), "size": String("1"), "timestamp": String("2025-10-22T15:48:40.614793800+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.615374Z  INFO  Test [Normal vs InvalidDequeueWrongPlayerId] Player f093d9ec-4214-4132-8312-40ba70491e93 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.615432Z  INFO  Test [Normal vs InvalidDequeueDuplicate] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("enqueued"), "size": String("6"), "timestamp": String("2025-10-22T15:48:40.614886200+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.615499Z  INFO  Test [Normal vs InvalidDequeueMissingField] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("enqueued"), "size": String("2"), "timestamp": String("2025-10-22T15:48:40.614814500+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.615561Z  INFO  Test [Normal vs InvalidDequeueUnknownType] Player 5a39e0a8-a2a5-484b-8afa-307f841c9da4 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.615627Z  INFO  Test [Normal vs InvalidDequeueWrongPlayerId] Player 3ba29789-5871-4297-a428-4824a6d1b1f8 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.615678Z  INFO  Test [Normal vs InvalidDequeueDuplicate] Player 8dad45c1-973a-42ac-bb03-7cf7bdafed63 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.615724Z  INFO  Test [Normal vs InvalidDequeueMissingField] Player d56af211-fa2a-4aaa-8189-2cff2d0193b7 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.615777Z  INFO  Test [Normal vs InvalidDequeueUnknownType] Player 354d10e8-06d7-4e3e-aaad-0a539bcfd896 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.615835Z  INFO  Test [Normal vs InvalidDequeueDuplicate] Player a684cccc-a161-49dc-b806-537695a51d6d satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.615916Z  INFO  Test [Normal vs InvalidDequeueWrongPlayerId] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("enqueued"), "size": String("7"), "timestamp": String("2025-10-22T15:48:40.614902400+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.615975Z  INFO  Test [Normal vs InvalidDequeueMissingField] Player ceb6eef5-afae-4eaa-9e1a-7b796a93ac95 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.616046Z  INFO  Test [Normal vs InvalidDequeueUnknownType] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("enqueued"), "size": String("4"), "timestamp": String("2025-10-22T15:48:40.614850700+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.616127Z  INFO  Test [Normal vs InvalidDequeueWrongPlayerId] Player f093d9ec-4214-4132-8312-40ba70491e93 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.616214Z  INFO  Test [Normal vs InvalidDequeueMissingField] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("enqueued"), "size": String("5"), "timestamp": String("2025-10-22T15:48:40.614870200+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.616277Z  INFO  Test [Normal vs InvalidDequeueUnknownType] Player 5a39e0a8-a2a5-484b-8afa-307f841c9da4 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.616355Z  INFO  Test [Normal vs InvalidDequeueWrongPlayerId] Player 3ba29789-5871-4297-a428-4824a6d1b1f8 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.616424Z  INFO  Test [Normal vs InvalidDequeueMissingField] Player d56af211-fa2a-4aaa-8189-2cff2d0193b7 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.616483Z  INFO  Test [Normal vs InvalidDequeueUnknownType] Player 354d10e8-06d7-4e3e-aaad-0a539bcfd896 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.616559Z  INFO  Test [Normal vs InvalidDequeueDuplicate] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("enqueued"), "size": String("8"), "timestamp": String("2025-10-22T15:48:40.615876900+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.616617Z  INFO  [5a39e0a8-a2a5-484b-8afa-307f841c9da4] Received message: EnQueued { pod_id: "unknown" }
+    at test_client\src\player_actor\handler.rs:114 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.616675Z  INFO  [f093d9ec-4214-4132-8312-40ba70491e93] Received message: EnQueued { pod_id: "unknown" }
+    at test_client\src\player_actor\handler.rs:114 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.616763Z  INFO  Test [Normal vs InvalidDequeueMissingField] Player ceb6eef5-afae-4eaa-9e1a-7b796a93ac95 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.616821Z  INFO  Test [Normal vs InvalidDequeueDuplicate] Player 8dad45c1-973a-42ac-bb03-7cf7bdafed63 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.616880Z  INFO  [f093d9ec-4214-4132-8312-40ba70491e93] Normal player successfully enqueued
+    at test_client\src\behaviors\normal.rs:75 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.616938Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.616992Z  INFO  [d56af211-fa2a-4aaa-8189-2cff2d0193b7] Received message: EnQueued { pod_id: "unknown" }
+    at test_client\src\player_actor\handler.rs:114 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.617058Z  INFO  Test [Normal vs InvalidDequeueDuplicate] Player a684cccc-a161-49dc-b806-537695a51d6d satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.617110Z  INFO  [f093d9ec-4214-4132-8312-40ba70491e93] Stored pod_id: unknown
+    at test_client\src\player_actor\handler.rs:219 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.617178Z  INFO  [5a39e0a8-a2a5-484b-8afa-307f841c9da4] Player completed with intended error, stopping actor
+    at test_client\src\player_actor\handler.rs:254 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.617297Z  INFO  [ceb6eef5-afae-4eaa-9e1a-7b796a93ac95] Received message: EnQueued { pod_id: "unknown" }
+    at test_client\src\player_actor\handler.rs:114 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.617390Z  INFO  [a684cccc-a161-49dc-b806-537695a51d6d] Received message: EnQueued { pod_id: "unknown" }
+    at test_client\src\player_actor\handler.rs:114 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.617445Z  INFO  [3ba29789-5871-4297-a428-4824a6d1b1f8] Received message: EnQueued { pod_id: "unknown" }
+    at test_client\src\player_actor\handler.rs:114 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.617517Z  INFO  Test [Normal vs InvalidDequeueUnknownType] Player 5a39e0a8-a2a5-484b-8afa-307f841c9da4 finished with outcome: IntendError
+    at test_client\src\observer_actor\handler.rs:73 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.617579Z  INFO  [ceb6eef5-afae-4eaa-9e1a-7b796a93ac95] Normal player successfully enqueued
+    at test_client\src\behaviors\normal.rs:75 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.617669Z  INFO  [a684cccc-a161-49dc-b806-537695a51d6d] Normal player successfully enqueued
+    at test_client\src\behaviors\normal.rs:75 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.617754Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.617842Z  INFO  ✓ Test [Normal vs InvalidDequeueUnknownType] Player 5a39e0a8-a2a5-484b-8afa-307f841c9da4 returned IntendError (expected behavior) - completing test immediately. Duration: 11.6927ms
+    at test_client\src\observer_actor\handler.rs:91 on test_invalid_dequeue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.617917Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.618003Z  INFO  [8dad45c1-973a-42ac-bb03-7cf7bdafed63] Received message: EnQueued { pod_id: "unknown" }
+    at test_client\src\player_actor\handler.rs:114 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.618090Z  INFO  [3ba29789-5871-4297-a428-4824a6d1b1f8] Player completed with intended error, stopping actor
+    at test_client\src\player_actor\handler.rs:254 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.618176Z  INFO  [d56af211-fa2a-4aaa-8189-2cff2d0193b7] Player completed with intended error, stopping actor
+    at test_client\src\player_actor\handler.rs:254 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.618279Z  INFO  [a684cccc-a161-49dc-b806-537695a51d6d] Stored pod_id: unknown
+    at test_client\src\player_actor\handler.rs:219 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.618348Z  INFO  Test [Normal vs InvalidDequeueWrongPlayerId] Player 3ba29789-5871-4297-a428-4824a6d1b1f8 finished with outcome: IntendError
+    at test_client\src\observer_actor\handler.rs:73 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.618534Z  INFO  [ceb6eef5-afae-4eaa-9e1a-7b796a93ac95] Stored pod_id: unknown
+    at test_client\src\player_actor\handler.rs:219 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.618617Z  INFO  ✓ Test [Normal vs InvalidDequeueWrongPlayerId] Player 3ba29789-5871-4297-a428-4824a6d1b1f8 returned IntendError (expected behavior) - completing test immediately. Duration: 12.4409ms
+    at test_client\src\observer_actor\handler.rs:91 on test_invalid_dequeue_wrong_player_id ThreadId(5)
+
+  2025-10-22T15:48:40.618703Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.618909Z  INFO  Test [Normal vs InvalidDequeueMissingField] Player d56af211-fa2a-4aaa-8189-2cff2d0193b7 finished with outcome: IntendError
+    at test_client\src\observer_actor\handler.rs:73 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.618963Z  INFO  [8dad45c1-973a-42ac-bb03-7cf7bdafed63] Stored pod_id: unknown
+    at test_client\src\player_actor\handler.rs:219 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.619100Z  INFO  ✓ Test [Normal vs InvalidDequeueMissingField] Player d56af211-fa2a-4aaa-8189-2cff2d0193b7 returned IntendError (expected behavior) - completing test immediately. Duration: 13.1541ms
+    at test_client\src\observer_actor\handler.rs:91 on test_invalid_dequeue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.620076Z  INFO  Test [Normal vs InvalidDequeueDuplicate] Player 8dad45c1-973a-42ac-bb03-7cf7bdafed63 completed phase InQueue -> transitioning to Dequeued
+    at test_client\src\observer_actor\handler.rs:327 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.620439Z  INFO  Test [Normal vs InvalidDequeueDuplicate] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("dequeued"), "size": String("5"), "timestamp": String("2025-10-22T15:48:40.620114700+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.620519Z  INFO  Test [Normal vs InvalidDequeueDuplicate] Player a684cccc-a161-49dc-b806-537695a51d6d satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.621011Z  INFO  [8dad45c1-973a-42ac-bb03-7cf7bdafed63] Received message: DeQueued
+    at test_client\src\player_actor\handler.rs:114 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.621163Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.621236Z  INFO  [8dad45c1-973a-42ac-bb03-7cf7bdafed63] Player completed with intended error, stopping actor
+    at test_client\src\player_actor\handler.rs:254 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.621390Z  INFO  Test [Normal vs InvalidDequeueDuplicate] Player 8dad45c1-973a-42ac-bb03-7cf7bdafed63 finished with outcome: IntendError
+    at test_client\src\observer_actor\handler.rs:73 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.621458Z  INFO  ✓ Test [Normal vs InvalidDequeueDuplicate] Player 8dad45c1-973a-42ac-bb03-7cf7bdafed63 returned IntendError (expected behavior) - completing test immediately. Duration: 15.6284ms
+    at test_client\src\observer_actor\handler.rs:91 on test_invalid_dequeue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.646905Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at test_client\src\lib.rs:71 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.648769Z  INFO  Loading configuration from: "C:\\Users\\blast\\.config\\simulator\\simulator.toml"
+    at env\src\lib.rs:157 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.657862Z  INFO  Starting scenario: Normal vs InvalidEnqueueDuplicate
+    at test_client\src\scenario_actor\mod.rs:32 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.657928Z  INFO  Starting scenario: Normal vs InvalidEnqueueUnknownType
+    at test_client\src\scenario_actor\mod.rs:32 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.658017Z  INFO  Starting scenario: Normal vs InvalidEnqueueMissingField
+    at test_client\src\scenario_actor\mod.rs:32 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.658099Z  INFO  Generated test_session_id for scenario Normal vs InvalidEnqueueDuplicate: 32f3d2a5-ce53-4c23-be0b-95815d78dc02
+    at test_client\src\scenario_actor\mod.rs:35 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.658157Z  INFO  Generated test_session_id for scenario Normal vs InvalidEnqueueUnknownType: 2a966c7b-a600-45b3-a2ee-a07c5a7f07bb
+    at test_client\src\scenario_actor\mod.rs:35 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.658222Z  INFO  Generated test_session_id for scenario Normal vs InvalidEnqueueMissingField: 39e5ca0f-610a-43da-8e61-8a527c8288e1
+    at test_client\src\scenario_actor\mod.rs:35 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.658357Z  INFO  Created players for scenario Normal vs InvalidEnqueueMissingField: normal=6bd2aac4-cdad-424c-82c9-9ab0faef99f4, abnormal=5c485d0f-776b-4a90-bd0b-55fc6207aaa9, session=39e5ca0f-610a-43da-8e61-8a527c8288e1
+    at test_client\src\scenario_actor\mod.rs:88 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.658433Z  INFO  Created players for scenario Normal vs InvalidEnqueueUnknownType: normal=832f25e2-575b-448e-a2aa-baf0dc6ac485, abnormal=f8d927c1-cbd0-4833-871d-dcd67a40fdc5, session=2a966c7b-a600-45b3-a2ee-a07c5a7f07bb
+    at test_client\src\scenario_actor\mod.rs:88 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.658495Z  INFO  Created players for scenario Normal vs InvalidEnqueueDuplicate: normal=38817fc4-3f8d-488d-81dc-730fa63db489, abnormal=f207e98a-73ee-416b-8810-105b4737f80d, session=32f3d2a5-ce53-4c23-be0b-95815d78dc02
+    at test_client\src\scenario_actor\mod.rs:88 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.658550Z  INFO  [Normal vs InvalidEnqueueMissingField] Starting event observation...
+    at test_client\src\observer_actor\handler.rs:18 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.658598Z  INFO  [Normal vs InvalidEnqueueUnknownType] Starting event observation...
+    at test_client\src\observer_actor\handler.rs:18 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.658652Z  INFO  [Normal vs InvalidEnqueueDuplicate] Starting event observation...
+    at test_client\src\observer_actor\handler.rs:18 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.661333Z  INFO  [Normal vs InvalidEnqueueMissingField] Successfully connected to event stream.
+    at test_client\src\observer_actor\handler.rs:53 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.661408Z  INFO  [Normal vs InvalidEnqueueUnknownType] Successfully connected to event stream.
+    at test_client\src\observer_actor\handler.rs:53 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.661601Z  INFO  [6bd2aac4-cdad-424c-82c9-9ab0faef99f4] Connection established
+    at test_client\src\player_actor\handler.rs:181 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.661722Z  INFO  [f8d927c1-cbd0-4833-871d-dcd67a40fdc5] Connection established
+    at test_client\src\player_actor\handler.rs:181 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.661808Z  INFO  [6bd2aac4-cdad-424c-82c9-9ab0faef99f4] Normal player connected, sending Enqueue
+    at test_client\src\behaviors\normal.rs:18 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.661881Z  INFO  [Normal vs InvalidEnqueueDuplicate] Successfully connected to event stream.
+    at test_client\src\observer_actor\handler.rs:53 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.661962Z  INFO  [f8d927c1-cbd0-4833-871d-dcd67a40fdc5] on_connected completed, continuing
+    at test_client\src\player_actor\handler.rs:203 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.662016Z  INFO  [6bd2aac4-cdad-424c-82c9-9ab0faef99f4] on_connected completed, continuing
+    at test_client\src\player_actor\handler.rs:203 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.662151Z  INFO  [38817fc4-3f8d-488d-81dc-730fa63db489] Connection established
+    at test_client\src\player_actor\handler.rs:181 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.662211Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.662310Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.662397Z  INFO  [38817fc4-3f8d-488d-81dc-730fa63db489] Normal player connected, sending Enqueue
+    at test_client\src\behaviors\normal.rs:18 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.662468Z  INFO  [832f25e2-575b-448e-a2aa-baf0dc6ac485] Connection established
+    at test_client\src\player_actor\handler.rs:181 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.662556Z  INFO  [38817fc4-3f8d-488d-81dc-730fa63db489] on_connected completed, continuing
+    at test_client\src\player_actor\handler.rs:203 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.662617Z  INFO  [5c485d0f-776b-4a90-bd0b-55fc6207aaa9] Connection established
+    at test_client\src\player_actor\handler.rs:181 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.662690Z  INFO  [832f25e2-575b-448e-a2aa-baf0dc6ac485] Normal player connected, sending Enqueue
+    at test_client\src\behaviors\normal.rs:18 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.662770Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.662847Z  INFO  [5c485d0f-776b-4a90-bd0b-55fc6207aaa9] on_connected completed, continuing
+    at test_client\src\player_actor\handler.rs:203 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.662913Z  INFO  [832f25e2-575b-448e-a2aa-baf0dc6ac485] on_connected completed, continuing
+    at test_client\src\player_actor\handler.rs:203 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.663001Z  INFO  [f207e98a-73ee-416b-8810-105b4737f80d] Connection established
+    at test_client\src\player_actor\handler.rs:181 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.663087Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.663161Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.663239Z  INFO  [f207e98a-73ee-416b-8810-105b4737f80d] on_connected completed, continuing
+    at test_client\src\player_actor\handler.rs:203 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.663366Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.664675Z  INFO  Test [Normal vs InvalidEnqueueUnknownType] Player f8d927c1-cbd0-4833-871d-dcd67a40fdc5 completed phase Enqueuing -> transitioning to InQueue
+    at test_client\src\observer_actor\handler.rs:327 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.664761Z  INFO  Test [Normal vs InvalidEnqueueMissingField] Player 6bd2aac4-cdad-424c-82c9-9ab0faef99f4 completed phase Enqueuing -> transitioning to InQueue
+    at test_client\src\observer_actor\handler.rs:327 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.664823Z  INFO  Test [Normal vs InvalidEnqueueUnknownType] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("enqueued"), "size": String("1"), "timestamp": String("2025-10-22T15:48:40.664257200+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.664907Z  INFO  Test [Normal vs InvalidEnqueueUnknownType] Player f8d927c1-cbd0-4833-871d-dcd67a40fdc5 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.665602Z  INFO  [f8d927c1-cbd0-4833-871d-dcd67a40fdc5] Received message: EnQueued { pod_id: "unknown" }
+    at test_client\src\player_actor\handler.rs:114 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.665668Z  INFO  Test [Normal vs InvalidEnqueueMissingField] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("enqueued"), "size": String("2"), "timestamp": String("2025-10-22T15:48:40.665162+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.665776Z  INFO  Test [Normal vs InvalidEnqueueMissingField] Player 6bd2aac4-cdad-424c-82c9-9ab0faef99f4 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.665857Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.665984Z  INFO  Test [Normal vs InvalidEnqueueDuplicate] Player 38817fc4-3f8d-488d-81dc-730fa63db489 completed phase Enqueuing -> transitioning to InQueue
+    at test_client\src\observer_actor\handler.rs:327 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.666073Z  INFO  [f8d927c1-cbd0-4833-871d-dcd67a40fdc5] Player completed with intended error, stopping actor
+    at test_client\src\player_actor\handler.rs:254 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.666157Z  INFO  Test [Normal vs InvalidEnqueueMissingField] Player 5c485d0f-776b-4a90-bd0b-55fc6207aaa9 completed phase Enqueuing -> transitioning to InQueue
+    at test_client\src\observer_actor\handler.rs:327 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.666238Z  INFO  Test [Normal vs InvalidEnqueueUnknownType] Player f8d927c1-cbd0-4833-871d-dcd67a40fdc5 finished with outcome: IntendError
+    at test_client\src\observer_actor\handler.rs:73 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.666339Z  INFO  ✓ Test [Normal vs InvalidEnqueueUnknownType] Player f8d927c1-cbd0-4833-871d-dcd67a40fdc5 returned IntendError (expected behavior) - completing test immediately. Duration: 8.0684ms
+    at test_client\src\observer_actor\handler.rs:91 on test_invalid_enqueue_unknown_type ThreadId(4)
+
+  2025-10-22T15:48:40.666416Z  INFO  Test [Normal vs InvalidEnqueueDuplicate] Player f207e98a-73ee-416b-8810-105b4737f80d completed phase Enqueuing -> transitioning to InQueue
+    at test_client\src\observer_actor\handler.rs:327 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.666679Z  INFO  [6bd2aac4-cdad-424c-82c9-9ab0faef99f4] Received message: EnQueued { pod_id: "unknown" }
+    at test_client\src\player_actor\handler.rs:114 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.666822Z  INFO  [6bd2aac4-cdad-424c-82c9-9ab0faef99f4] Normal player successfully enqueued
+    at test_client\src\behaviors\normal.rs:75 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.666953Z  INFO  Test [Normal vs InvalidEnqueueDuplicate] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("enqueued"), "size": String("3"), "timestamp": String("2025-10-22T15:48:40.666080200+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.667018Z  INFO  [6bd2aac4-cdad-424c-82c9-9ab0faef99f4] Stored pod_id: unknown
+    at test_client\src\player_actor\handler.rs:219 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.667170Z  INFO  Test [Normal vs InvalidEnqueueDuplicate] Player f207e98a-73ee-416b-8810-105b4737f80d satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.667286Z  INFO  Test [Normal vs InvalidEnqueueMissingField] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("enqueued"), "size": String("4"), "timestamp": String("2025-10-22T15:48:40.666110100+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.667361Z  INFO  Test [Normal vs InvalidEnqueueDuplicate] Player 38817fc4-3f8d-488d-81dc-730fa63db489 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.667432Z  INFO  Test [Normal vs InvalidEnqueueMissingField] Player 6bd2aac4-cdad-424c-82c9-9ab0faef99f4 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.667496Z  INFO  Test [Normal vs InvalidEnqueueDuplicate] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("enqueued"), "size": String("6"), "timestamp": String("2025-10-22T15:48:40.666148300+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.667549Z  INFO  Test [Normal vs InvalidEnqueueMissingField] Player 5c485d0f-776b-4a90-bd0b-55fc6207aaa9 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.667626Z  INFO  Test [Normal vs InvalidEnqueueDuplicate] Player f207e98a-73ee-416b-8810-105b4737f80d satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.667713Z  INFO  Test [Normal vs InvalidEnqueueDuplicate] Player 38817fc4-3f8d-488d-81dc-730fa63db489 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.667883Z  INFO  [f207e98a-73ee-416b-8810-105b4737f80d] Received message: EnQueued { pod_id: "unknown" }
+    at test_client\src\player_actor\handler.rs:114 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.668168Z  INFO  [38817fc4-3f8d-488d-81dc-730fa63db489] Received message: EnQueued { pod_id: "unknown" }
+    at test_client\src\player_actor\handler.rs:114 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.668233Z  INFO  [5c485d0f-776b-4a90-bd0b-55fc6207aaa9] Received message: EnQueued { pod_id: "unknown" }
+    at test_client\src\player_actor\handler.rs:114 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.668293Z  INFO  [38817fc4-3f8d-488d-81dc-730fa63db489] Normal player successfully enqueued
+    at test_client\src\behaviors\normal.rs:75 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.668385Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.668467Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.668545Z  INFO  [5c485d0f-776b-4a90-bd0b-55fc6207aaa9] Player completed with intended error, stopping actor
+    at test_client\src\player_actor\handler.rs:254 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.668622Z  INFO  [f207e98a-73ee-416b-8810-105b4737f80d] Player completed with intended error, stopping actor
+    at test_client\src\player_actor\handler.rs:254 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.668688Z  INFO  Test [Normal vs InvalidEnqueueMissingField] Player 5c485d0f-776b-4a90-bd0b-55fc6207aaa9 finished with outcome: IntendError
+    at test_client\src\observer_actor\handler.rs:73 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.668782Z  INFO  ✓ Test [Normal vs InvalidEnqueueMissingField] Player 5c485d0f-776b-4a90-bd0b-55fc6207aaa9 returned IntendError (expected behavior) - completing test immediately. Duration: 10.467ms
+    at test_client\src\observer_actor\handler.rs:91 on test_invalid_enqueue_missing_field ThreadId(3)
+
+  2025-10-22T15:48:40.668870Z  INFO  [38817fc4-3f8d-488d-81dc-730fa63db489] Stored pod_id: unknown
+    at test_client\src\player_actor\handler.rs:219 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.668991Z  INFO  Test [Normal vs InvalidEnqueueDuplicate] Player f207e98a-73ee-416b-8810-105b4737f80d finished with outcome: IntendError
+    at test_client\src\observer_actor\handler.rs:73 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.669095Z  INFO  ✓ Test [Normal vs InvalidEnqueueDuplicate] Player f207e98a-73ee-416b-8810-105b4737f80d returned IntendError (expected behavior) - completing test immediately. Duration: 10.828ms
+    at test_client\src\observer_actor\handler.rs:91 on test_invalid_enqueue_duplicate ThreadId(2)
+
+  2025-10-22T15:48:40.693565Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at test_client\src\lib.rs:71 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.695639Z  INFO  Loading configuration from: "C:\\Users\\blast\\.config\\simulator\\simulator.toml"
+    at env\src\lib.rs:157 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.698888Z  INFO  Starting scenario: Normal vs Normal
+    at test_client\src\scenario_actor\mod.rs:32 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.698981Z  INFO  Generated test_session_id for scenario Normal vs Normal: 0e56bc83-8308-4aa7-8f76-c748fc92471b
+    at test_client\src\scenario_actor\mod.rs:35 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.699201Z  INFO  Created players for scenario Normal vs Normal: normal=19256494-6ef6-4f38-980b-37427976f122, abnormal=f87a16db-5157-4933-b6e0-39187acae801, session=0e56bc83-8308-4aa7-8f76-c748fc92471b
+    at test_client\src\scenario_actor\mod.rs:88 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.699305Z  INFO  [Normal vs Normal] Starting event observation...
+    at test_client\src\observer_actor\handler.rs:18 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.701385Z  INFO  [Normal vs Normal] Successfully connected to event stream.
+    at test_client\src\observer_actor\handler.rs:53 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.701642Z  INFO  [f87a16db-5157-4933-b6e0-39187acae801] Connection established
+    at test_client\src\player_actor\handler.rs:181 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.701762Z  INFO  [f87a16db-5157-4933-b6e0-39187acae801] Normal player connected, sending Enqueue
+    at test_client\src\behaviors\normal.rs:18 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.701943Z  INFO  [f87a16db-5157-4933-b6e0-39187acae801] on_connected completed, continuing
+    at test_client\src\player_actor\handler.rs:203 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.702058Z  INFO  [19256494-6ef6-4f38-980b-37427976f122] Connection established
+    at test_client\src\player_actor\handler.rs:181 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.702143Z  INFO  [19256494-6ef6-4f38-980b-37427976f122] Normal player connected, sending Enqueue
+    at test_client\src\behaviors\normal.rs:18 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.702215Z  INFO  [19256494-6ef6-4f38-980b-37427976f122] on_connected completed, continuing
+    at test_client\src\player_actor\handler.rs:203 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.702345Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.702462Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.703783Z  INFO  Test [Normal vs Normal] Player f87a16db-5157-4933-b6e0-39187acae801 completed phase Enqueuing -> transitioning to InQueue
+    at test_client\src\observer_actor\handler.rs:327 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.703997Z  INFO  [f87a16db-5157-4933-b6e0-39187acae801] Received message: EnQueued { pod_id: "unknown" }
+    at test_client\src\player_actor\handler.rs:114 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.704093Z  INFO  [f87a16db-5157-4933-b6e0-39187acae801] Normal player successfully enqueued
+    at test_client\src\behaviors\normal.rs:75 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.704248Z  INFO  [f87a16db-5157-4933-b6e0-39187acae801] Stored pod_id: unknown
+    at test_client\src\player_actor\handler.rs:219 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.704329Z  INFO  Test [Normal vs Normal] Player 19256494-6ef6-4f38-980b-37427976f122 completed phase Enqueuing -> transitioning to InQueue
+    at test_client\src\observer_actor\handler.rs:327 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.704411Z  INFO  Test [Normal vs Normal] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("enqueued"), "size": String("1"), "timestamp": String("2025-10-22T15:48:40.703395800+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.704470Z  INFO  Test [Normal vs Normal] Player 19256494-6ef6-4f38-980b-37427976f122 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.704523Z  INFO  Test [Normal vs Normal] Player f87a16db-5157-4933-b6e0-39187acae801 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.704577Z  INFO  Test [Normal vs Normal] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("enqueued"), "size": String("2"), "timestamp": String("2025-10-22T15:48:40.703587600+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.704633Z  INFO  Test [Normal vs Normal] Player 19256494-6ef6-4f38-980b-37427976f122 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.704691Z  INFO  Test [Normal vs Normal] Player f87a16db-5157-4933-b6e0-39187acae801 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.704803Z  INFO  [19256494-6ef6-4f38-980b-37427976f122] Received message: EnQueued { pod_id: "unknown" }
+    at test_client\src\player_actor\handler.rs:114 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.704877Z  INFO  [19256494-6ef6-4f38-980b-37427976f122] Normal player successfully enqueued
+    at test_client\src\behaviors\normal.rs:75 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.704942Z  INFO  [19256494-6ef6-4f38-980b-37427976f122] Stored pod_id: unknown
+    at test_client\src\player_actor\handler.rs:219 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.968636Z  INFO  [19256494-6ef6-4f38-980b-37427976f122] Received message: MatchFound { winner_id: "19256494-6ef6-4f38-980b-37427976f122", opponent_id: "f87a16db-5157-4933-b6e0-39187acae801", battle_data: Some(Object {"mode": String("Ranked")}) }
+    at test_client\src\player_actor\handler.rs:114 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.968764Z  INFO  [19256494-6ef6-4f38-980b-37427976f122] Server closed connection: Some(CloseFrame { code: Normal, reason: "" })
+    at test_client\src\player_actor\handler.rs:97 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.968921Z  INFO  [19256494-6ef6-4f38-980b-37427976f122] Normal player match found! Moving to game server...
+    at test_client\src\behaviors\normal.rs:93 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.969022Z  INFO  [19256494-6ef6-4f38-980b-37427976f122] Player completed successfully, stopping actor
+    at test_client\src\player_actor\handler.rs:254 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.969195Z  INFO  Test [Normal vs Normal] Player 19256494-6ef6-4f38-980b-37427976f122 finished with outcome: Complete
+    at test_client\src\observer_actor\handler.rs:73 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.969334Z  INFO  Test [Normal vs Normal] Player 19256494-6ef6-4f38-980b-37427976f122 actor finished before reaching terminal phase, setting to Finished
+    at test_client\src\observer_actor\handler.rs:111 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.969552Z  INFO  [f87a16db-5157-4933-b6e0-39187acae801] Received message: MatchFound { winner_id: "19256494-6ef6-4f38-980b-37427976f122", opponent_id: "19256494-6ef6-4f38-980b-37427976f122", battle_data: Some(Object {"mode": String("Ranked")}) }
+    at test_client\src\player_actor\handler.rs:114 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.969630Z  INFO  [f87a16db-5157-4933-b6e0-39187acae801] Server closed connection: Some(CloseFrame { code: Normal, reason: "" })
+    at test_client\src\player_actor\handler.rs:97 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.969800Z  INFO  Test [Normal vs Normal] Player f87a16db-5157-4933-b6e0-39187acae801 completed phase InQueue -> transitioning to Matched
+    at test_client\src\observer_actor\handler.rs:327 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.969863Z  INFO  ✓ Test [Normal vs Normal] All players finished successfully. Duration: 270.7485ms
+    at test_client\src\observer_actor\handler.rs:454 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.969914Z  INFO    - Completed players: 2
+    at test_client\src\observer_actor\handler.rs:458 on test_normal_vs_normal ThreadId(2)
+
+  2025-10-22T15:48:40.993960Z  INFO  로거 초기화 완료: 콘솔 및 파일(logs/app.log) 출력 활성화.
+    at test_client\src\lib.rs:71 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:40.995691Z  INFO  Loading configuration from: "C:\\Users\\blast\\.config\\simulator\\simulator.toml"
+    at env\src\lib.rs:157 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:40.998951Z  INFO  Starting scenario: Normal vs QuitBeforeMatch
+    at test_client\src\scenario_actor\mod.rs:32 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:40.999019Z  INFO  Starting scenario: Normal vs QuitAfterEnqueue
+    at test_client\src\scenario_actor\mod.rs:32 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:40.999094Z  INFO  Generated test_session_id for scenario Normal vs QuitBeforeMatch: 3447ef1e-31de-4c87-8177-d68fadd9bd4c
+    at test_client\src\scenario_actor\mod.rs:35 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:40.999151Z  INFO  Generated test_session_id for scenario Normal vs QuitAfterEnqueue: 7711d916-000d-4265-bf89-0c217e650ff2
+    at test_client\src\scenario_actor\mod.rs:35 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:40.999306Z  INFO  Created players for scenario Normal vs QuitBeforeMatch: normal=ac23fbc2-6bba-4197-8cf8-7956c4245f32, abnormal=7f80f036-4263-4da8-ae89-32d9f9680122, session=3447ef1e-31de-4c87-8177-d68fadd9bd4c
+    at test_client\src\scenario_actor\mod.rs:88 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:40.999393Z  INFO  Created players for scenario Normal vs QuitAfterEnqueue: normal=d7ab9c68-e54b-4e7b-a55b-ea8173b01dd8, abnormal=ce4b1471-17e1-48e0-ad25-afd838dc0cf7, session=7711d916-000d-4265-bf89-0c217e650ff2
+    at test_client\src\scenario_actor\mod.rs:88 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:40.999446Z  INFO  [Normal vs QuitBeforeMatch] Starting event observation...
+    at test_client\src\observer_actor\handler.rs:18 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:40.999491Z  INFO  [Normal vs QuitAfterEnqueue] Starting event observation...
+    at test_client\src\observer_actor\handler.rs:18 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.001916Z  INFO  [ce4b1471-17e1-48e0-ad25-afd838dc0cf7] Connection established
+    at test_client\src\player_actor\handler.rs:181 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.002066Z  INFO  [ce4b1471-17e1-48e0-ad25-afd838dc0cf7] QuitAfterEnqueue connected, sending Enqueue
+    at test_client\src\behaviors\quit.rs:71 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.002158Z  INFO  [ac23fbc2-6bba-4197-8cf8-7956c4245f32] Connection established
+    at test_client\src\player_actor\handler.rs:181 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.002256Z  INFO  [ce4b1471-17e1-48e0-ad25-afd838dc0cf7] on_connected completed, continuing
+    at test_client\src\player_actor\handler.rs:203 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.002335Z  INFO  [ac23fbc2-6bba-4197-8cf8-7956c4245f32] Normal player connected, sending Enqueue
+    at test_client\src\behaviors\normal.rs:18 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.002432Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.002500Z  INFO  [ac23fbc2-6bba-4197-8cf8-7956c4245f32] on_connected completed, continuing
+    at test_client\src\player_actor\handler.rs:203 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.002640Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.002712Z  INFO  [Normal vs QuitAfterEnqueue] Successfully connected to event stream.
+    at test_client\src\observer_actor\handler.rs:53 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.002828Z  INFO  [Normal vs QuitBeforeMatch] Successfully connected to event stream.
+    at test_client\src\observer_actor\handler.rs:53 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.002887Z  INFO  [d7ab9c68-e54b-4e7b-a55b-ea8173b01dd8] Connection established
+    at test_client\src\player_actor\handler.rs:181 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.002950Z  INFO  [7f80f036-4263-4da8-ae89-32d9f9680122] Connection established
+    at test_client\src\player_actor\handler.rs:181 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.003013Z  INFO  [d7ab9c68-e54b-4e7b-a55b-ea8173b01dd8] Normal player connected, sending Enqueue
+    at test_client\src\behaviors\normal.rs:18 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.003081Z  INFO  [7f80f036-4263-4da8-ae89-32d9f9680122] QuitBeforeMatch connected, sending Enqueue
+    at test_client\src\behaviors\quit.rs:20 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.003129Z  INFO  [d7ab9c68-e54b-4e7b-a55b-ea8173b01dd8] on_connected completed, continuing
+    at test_client\src\player_actor\handler.rs:203 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.003181Z  INFO  [7f80f036-4263-4da8-ae89-32d9f9680122] on_connected completed, continuing
+    at test_client\src\player_actor\handler.rs:203 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.003252Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.003318Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.004786Z  INFO  Test [Normal vs QuitAfterEnqueue] Player ce4b1471-17e1-48e0-ad25-afd838dc0cf7 completed phase Enqueuing -> transitioning to InQueue
+    at test_client\src\observer_actor\handler.rs:327 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.004848Z  INFO  Test [Normal vs QuitBeforeMatch] Player ac23fbc2-6bba-4197-8cf8-7956c4245f32 completed phase Enqueuing -> transitioning to InQueue
+    at test_client\src\observer_actor\handler.rs:327 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.004951Z  INFO  Test [Normal vs QuitAfterEnqueue] Player d7ab9c68-e54b-4e7b-a55b-ea8173b01dd8 completed phase Enqueuing -> transitioning to InQueue
+    at test_client\src\observer_actor\handler.rs:327 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.005116Z  INFO  Test [Normal vs QuitAfterEnqueue] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("enqueued"), "size": String("1"), "timestamp": String("2025-10-22T15:48:41.004628200+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.005171Z  INFO  Test [Normal vs QuitBeforeMatch] Player 7f80f036-4263-4da8-ae89-32d9f9680122 completed phase Enqueuing -> transitioning to InQueue
+    at test_client\src\observer_actor\handler.rs:327 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.005228Z  INFO  Test [Normal vs QuitAfterEnqueue] Player ce4b1471-17e1-48e0-ad25-afd838dc0cf7 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.005278Z  INFO  Test [Normal vs QuitBeforeMatch] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("enqueued"), "size": String("2"), "timestamp": String("2025-10-22T15:48:41.004643100+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.005324Z  INFO  Test [Normal vs QuitAfterEnqueue] Player d7ab9c68-e54b-4e7b-a55b-ea8173b01dd8 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.005379Z  INFO  Test [Normal vs QuitBeforeMatch] Player ac23fbc2-6bba-4197-8cf8-7956c4245f32 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.005438Z  INFO  Test [Normal vs QuitAfterEnqueue] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("enqueued"), "size": String("3"), "timestamp": String("2025-10-22T15:48:41.004655800+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.005491Z  INFO  Test [Normal vs QuitBeforeMatch] Player 7f80f036-4263-4da8-ae89-32d9f9680122 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.005545Z  INFO  Test [Normal vs QuitAfterEnqueue] Player ce4b1471-17e1-48e0-ad25-afd838dc0cf7 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.005596Z  INFO  Test [Normal vs QuitBeforeMatch] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("enqueued"), "size": String("4"), "timestamp": String("2025-10-22T15:48:41.004732200+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.005664Z  INFO  Test [Normal vs QuitAfterEnqueue] Player d7ab9c68-e54b-4e7b-a55b-ea8173b01dd8 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.005722Z  INFO  Test [Normal vs QuitBeforeMatch] Player ac23fbc2-6bba-4197-8cf8-7956c4245f32 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.005795Z  INFO  Test [Normal vs QuitBeforeMatch] Player 7f80f036-4263-4da8-ae89-32d9f9680122 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.005848Z  INFO  [ce4b1471-17e1-48e0-ad25-afd838dc0cf7] Received message: EnQueued { pod_id: "unknown" }
+    at test_client\src\player_actor\handler.rs:114 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.005918Z  INFO  [ac23fbc2-6bba-4197-8cf8-7956c4245f32] Received message: EnQueued { pod_id: "unknown" }
+    at test_client\src\player_actor\handler.rs:114 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.005962Z  INFO  [ce4b1471-17e1-48e0-ad25-afd838dc0cf7] Enqueued, now requesting dequeue...
+    at test_client\src\behaviors\quit.rs:93 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.006002Z  INFO  [ac23fbc2-6bba-4197-8cf8-7956c4245f32] Normal player successfully enqueued
+    at test_client\src\behaviors\normal.rs:75 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.006058Z  INFO  [d7ab9c68-e54b-4e7b-a55b-ea8173b01dd8] Received message: EnQueued { pod_id: "unknown" }
+    at test_client\src\player_actor\handler.rs:114 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.006112Z  INFO  [7f80f036-4263-4da8-ae89-32d9f9680122] Received message: EnQueued { pod_id: "unknown" }
+    at test_client\src\player_actor\handler.rs:114 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.006168Z  INFO  [d7ab9c68-e54b-4e7b-a55b-ea8173b01dd8] Normal player successfully enqueued
+    at test_client\src\behaviors\normal.rs:75 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.006227Z  INFO  [ac23fbc2-6bba-4197-8cf8-7956c4245f32] Stored pod_id: unknown
+    at test_client\src\player_actor\handler.rs:219 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.006277Z  INFO  [d7ab9c68-e54b-4e7b-a55b-ea8173b01dd8] Stored pod_id: unknown
+    at test_client\src\player_actor\handler.rs:219 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.058681Z  INFO  [7f80f036-4263-4da8-ae89-32d9f9680122] Closing WebSocket connection
+    at test_client\src\player_actor\handler.rs:53 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.058807Z  INFO  [7f80f036-4263-4da8-ae89-32d9f9680122] Player completed with intended error, stopping actor
+    at test_client\src\player_actor\handler.rs:254 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.059095Z  INFO  Test [Normal vs QuitBeforeMatch] Player 7f80f036-4263-4da8-ae89-32d9f9680122 finished with outcome: IntendError
+    at test_client\src\observer_actor\handler.rs:73 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.059206Z  INFO  ✓ Test [Normal vs QuitBeforeMatch] Player 7f80f036-4263-4da8-ae89-32d9f9680122 returned IntendError (expected behavior) - completing test immediately. Duration: 59.9537ms
+    at test_client\src\observer_actor\handler.rs:91 on test_normal_vs_quit_before_match ThreadId(3)
+
+  2025-10-22T15:48:41.120710Z  INFO  Message sent Successfully.
+    at test_client\src\player_actor\handler.rs:38 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.120828Z  INFO  [ce4b1471-17e1-48e0-ad25-afd838dc0cf7] Stored pod_id: unknown
+    at test_client\src\player_actor\handler.rs:219 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.121765Z  INFO  Test [Normal vs QuitAfterEnqueue] Player ce4b1471-17e1-48e0-ad25-afd838dc0cf7 completed phase InQueue -> transitioning to Dequeued
+    at test_client\src\observer_actor\handler.rs:327 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.121953Z  INFO  Test [Normal vs QuitAfterEnqueue] Global event: queue_size_changed - Object {"game_mode": String("Ranked"), "pod_id": String("unknown"), "reason": String("dequeued"), "size": String("1"), "timestamp": String("2025-10-22T15:48:41.121423700+00:00"), "type": String("global.queue_size_changed")}
+    at test_client\src\observer_actor\handler.rs:374 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.122028Z  INFO  Test [Normal vs QuitAfterEnqueue] Player d7ab9c68-e54b-4e7b-a55b-ea8173b01dd8 satisfied GlobalQueueSizeChanged requirement in InQueue phase
+    at test_client\src\observer_actor\handler.rs:406 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.122144Z  INFO  [ce4b1471-17e1-48e0-ad25-afd838dc0cf7] Received message: DeQueued
+    at test_client\src\player_actor\handler.rs:114 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.122217Z  INFO  [ce4b1471-17e1-48e0-ad25-afd838dc0cf7] Successfully dequeued after intentional quit!
+    at test_client\src\behaviors\quit.rs:115 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.122286Z  INFO  [ce4b1471-17e1-48e0-ad25-afd838dc0cf7] Player completed with intended error, stopping actor
+    at test_client\src\player_actor\handler.rs:254 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.122413Z  INFO  Test [Normal vs QuitAfterEnqueue] Player ce4b1471-17e1-48e0-ad25-afd838dc0cf7 finished with outcome: IntendError
+    at test_client\src\observer_actor\handler.rs:73 on test_normal_vs_quit_after_enqueue ThreadId(2)
+
+  2025-10-22T15:48:41.122486Z  INFO  ✓ Test [Normal vs QuitAfterEnqueue] Player ce4b1471-17e1-48e0-ad25-afd838dc0cf7 returned IntendError (expected behavior) - completing test immediately. Duration: 123.2459ms
+    at test_client\src\observer_actor\handler.rs:91 on test_normal_vs_quit_after_enqueue ThreadId(2)
+

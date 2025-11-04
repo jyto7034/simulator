@@ -25,7 +25,10 @@ pub struct Scenario {
 
 impl Scenario {
     /// 시나리오를 실행합니다 (ObserverActor + PlayerActor 2개 생성)
-    pub fn run(self, completion_tx: Option<tokio::sync::oneshot::Sender<bool>>) -> Addr<ObserverActor> {
+    pub fn run(
+        self,
+        completion_tx: Option<tokio::sync::oneshot::Sender<bool>>,
+    ) -> Addr<ObserverActor> {
         info!("Starting scenario: {}", self.name);
 
         let test_session_id = Uuid::new_v4().to_string();
@@ -37,8 +40,7 @@ impl Scenario {
         let normal_player_id = Uuid::new_v4();
         let abnormal_player_id = Uuid::new_v4();
 
-        let normal_schedule =
-            schedules::get_schedule_for_normal(&self.normal_behavior);
+        let normal_schedule = schedules::get_schedule_for_normal(&self.normal_behavior);
         let abnormal_schedule = schedules::get_schedule_for_abnormal(&self.abnormal_behavior);
         let mut players_schedule: HashMap<Uuid, HashMap<Phase, PhaseCondition>> = HashMap::new();
 

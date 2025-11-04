@@ -130,7 +130,7 @@ impl StreamHandler<Result<Message, tokio_tungstenite::tungstenite::Error>> for P
                     behavior.on_enqueued(&player_ctx).await
                 }
                 ServerMessage::DeQueued => behavior.on_dequeued(&player_ctx).await,
-                ServerMessage::MatchFound => behavior.on_match_found(&player_ctx).await,
+                ServerMessage::MatchFound { .. } => behavior.on_match_found(&player_ctx).await,
                 ServerMessage::Error { code, message } => {
                     behavior.on_error(&player_ctx, code, message.as_str()).await
                 }
@@ -223,8 +223,11 @@ impl PlayerActor {
                 info!("[{}] Dequeued", self.player_id);
                 self.state = PlayerState::Idle;
             }
-            ServerMessage::MatchFound => {
-                info!("[{}] Match found", self.player_id);
+            ServerMessage::MatchFound { winner_id, opponent_id, .. } => {
+                info!(
+                    "[{}] Match found - opponent: {}, winner: {}",
+                    self.player_id, opponent_id, winner_id
+                );
                 self.state = PlayerState::Matched;
             }
             ServerMessage::Error { code, message } => {

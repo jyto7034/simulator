@@ -230,12 +230,12 @@ fn build_schedule_for_behavior(behavior: &BehaviorType) -> HashMap<Phase, PhaseC
     }
 }
 
-pub fn get_schedule_for_normal(
-    normal_behavior: &BehaviorType,
-) -> HashMap<Phase, PhaseCondition> {
+pub fn get_schedule_for_normal(normal_behavior: &BehaviorType) -> HashMap<Phase, PhaseCondition> {
     build_schedule_for_behavior(normal_behavior)
 }
 
-pub fn get_schedule_for_abnormal(abnormal_behavior: &BehaviorType) -> HashMap<Phase, PhaseCondition> {
+pub fn get_schedule_for_abnormal(
+    abnormal_behavior: &BehaviorType,
+) -> HashMap<Phase, PhaseCondition> {
     build_schedule_for_behavior(abnormal_behavior)
 }

@@ -28,7 +28,12 @@ pub enum ServerMessage {
     #[serde(rename = "dequeued")]
     DeQueued,
     #[serde(rename = "match_found")]
-    MatchFound,
+    MatchFound {
+        winner_id: String,
+        opponent_id: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        battle_data: Option<serde_json::Value>,
+    },
     #[serde(rename = "error")]
     Error { code: ErrorCode, message: String },
 }

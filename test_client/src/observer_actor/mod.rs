@@ -15,12 +15,12 @@ pub mod message;
 // 1. 시나리오의 단계를 정의하는 Enum
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Phase {
-    Enqueuing,  // Enqueue 요청 ~ PlayerEnqueued 대기
-    InQueue,    // PlayerEnqueued 받음, 매칭 대기중
-    Matched,    // PlayerMatchFound 받음 (성공 종료 상태)
-    Dequeued,   // PlayerDequeued 받음 (성공 종료 상태)
-    Finished,   // 테스트 성공 완료
-    Failed,     // 실패한 단계
+    Enqueuing, // Enqueue 요청 ~ PlayerEnqueued 대기
+    InQueue,   // PlayerEnqueued 받음, 매칭 대기중
+    Matched,   // PlayerMatchFound 받음 (성공 종료 상태)
+    Dequeued,  // PlayerDequeued 받음 (성공 종료 상태)
+    Finished,  // 테스트 성공 완료
+    Failed,    // 실패한 단계
 }
 
 // 이벤트와 해당 이벤트의 검증 로직을 묶은 구조체

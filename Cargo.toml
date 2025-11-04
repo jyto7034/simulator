@@ -7,8 +7,6 @@ description = "card backend"
 members = [ 
     "auth_server",
     "core",
-    "dedicated_server",
-    "match_server",
     "client/src-tauri", 
     "test_client",
     "metrics",

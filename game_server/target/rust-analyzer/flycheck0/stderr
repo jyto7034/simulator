@@ -1,0 +1,80 @@
+warning: F:\work\simulator\auth_server\Cargo.toml: unused manifest key: env
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on build directory
+   1.023600400s  INFO prepare_target{force=false package_id=client v0.1.0 (F:\work\simulator\client\src-tauri) target="client"}: cargo::core::compiler::fingerprint: fingerprint error for client v0.1.0 (F:\work\simulator\client\src-tauri)/Check { test: false }/TargetInner { name: "client", doc: true, ..: with_path("F:\\work\\simulator\\client\\src-tauri\\src\\main.rs", Edition2021) }
+   1.023625400s  INFO prepare_target{force=false package_id=client v0.1.0 (F:\work\simulator\client\src-tauri) target="client"}: cargo::core::compiler::fingerprint:     err: failed to read `F:\work\simulator\target\debug\.fingerprint\client-40ade195c21a1409\bin-client`
+
+Caused by:
+    지정된 파일을 찾을 수 없습니다. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_path
+   6: git_filter_source_path
+   7: git_filter_source_path
+   8: git_filter_source_path
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+   1.032910200s  INFO prepare_target{force=false package_id=client v0.1.0 (F:\work\simulator\client\src-tauri) target="client"}: cargo::core::compiler::fingerprint: fingerprint error for client v0.1.0 (F:\work\simulator\client\src-tauri)/Check { test: true }/TargetInner { name: "client", doc: true, ..: with_path("F:\\work\\simulator\\client\\src-tauri\\src\\main.rs", Edition2021) }
+   1.032940800s  INFO prepare_target{force=false package_id=client v0.1.0 (F:\work\simulator\client\src-tauri) target="client"}: cargo::core::compiler::fingerprint:     err: failed to read `F:\work\simulator\target\debug\.fingerprint\client-b65c508b8de29977\test-bin-client`
+
+Caused by:
+    지정된 파일을 찾을 수 없습니다. (os error 2)
+
+Stack backtrace:
+   0: git_midx_writer_dump
+   1: git_midx_writer_dump
+   2: git_midx_writer_dump
+   3: git_midx_writer_dump
+   4: git_filter_source_repo
+   5: git_filter_source_path
+   6: git_filter_source_path
+   7: git_filter_source_path
+   8: git_filter_source_path
+   9: git_filter_source_repo
+  10: git_filter_source_repo
+  11: git_filter_source_repo
+  12: git_filter_source_repo
+  13: git_filter_source_repo
+  14: <unknown>
+  15: <unknown>
+  16: git_midx_writer_dump
+  17: git_filter_source_repo
+  18: git_midx_writer_dump
+  19: BaseThreadInitThunk
+  20: RtlUserThreadStart
+   1.057380400s  INFO prepare_target{force=false package_id=game_core v0.1.0 (F:\work\simulator\core) target="game_core"}: cargo::core::compiler::fingerprint: stale: changed "F:\\work\\simulator\\core\\src\\game\\system\\mod.rs"
+   1.057406500s  INFO prepare_target{force=false package_id=game_core v0.1.0 (F:\work\simulator\core) target="game_core"}: cargo::core::compiler::fingerprint:           (vs) "F:\\work\\simulator\\target\\debug\\.fingerprint\\game_core-221d8c57cdba20fc\\dep-lib-game_core"
+   1.057411900s  INFO prepare_target{force=false package_id=game_core v0.1.0 (F:\work\simulator\core) target="game_core"}: cargo::core::compiler::fingerprint:                FileTime { seconds: 13406478120, nanos: 357964400 } < FileTime { seconds: 13406478130, nanos: 853316300 }
+   1.057684400s  INFO prepare_target{force=false package_id=game_core v0.1.0 (F:\work\simulator\core) target="game_core"}: cargo::core::compiler::fingerprint: fingerprint dirty for game_core v0.1.0 (F:\work\simulator\core)/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("game_core", ["lib"], "F:\\work\\simulator\\core\\src\\lib.rs", Edition2021) }
+   1.057705000s  INFO prepare_target{force=false package_id=game_core v0.1.0 (F:\work\simulator\core) target="game_core"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleItem(ChangedFile { reference: "F:\\work\\simulator\\target\\debug\\.fingerprint\\game_core-221d8c57cdba20fc\\dep-lib-game_core", reference_mtime: FileTime { seconds: 13406478120, nanos: 357964400 }, stale: "F:\\work\\simulator\\core\\src\\game\\system\\mod.rs", stale_mtime: FileTime { seconds: 13406478130, nanos: 853316300 } }))
+   1.074027900s  INFO prepare_target{force=false package_id=game_core v0.1.0 (F:\work\simulator\core) target="game_core"}: cargo::core::compiler::fingerprint: stale: changed "F:\\work\\simulator\\core\\src\\game\\system\\mod.rs"
+   1.074044100s  INFO prepare_target{force=false package_id=game_core v0.1.0 (F:\work\simulator\core) target="game_core"}: cargo::core::compiler::fingerprint:           (vs) "F:\\work\\simulator\\target\\debug\\.fingerprint\\game_core-8e8f7a8213b1fbc6\\dep-test-lib-game_core"
+   1.074047600s  INFO prepare_target{force=false package_id=game_core v0.1.0 (F:\work\simulator\core) target="game_core"}: cargo::core::compiler::fingerprint:                FileTime { seconds: 13406478120, nanos: 358968400 } < FileTime { seconds: 13406478130, nanos: 853316300 }
+   1.074146700s  INFO prepare_target{force=false package_id=game_core v0.1.0 (F:\work\simulator\core) target="game_core"}: cargo::core::compiler::fingerprint: fingerprint dirty for game_core v0.1.0 (F:\work\simulator\core)/Check { test: true }/TargetInner { name_inferred: true, ..: lib_target("game_core", ["lib"], "F:\\work\\simulator\\core\\src\\lib.rs", Edition2021) }
+   1.074159300s  INFO prepare_target{force=false package_id=game_core v0.1.0 (F:\work\simulator\core) target="game_core"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleItem(ChangedFile { reference: "F:\\work\\simulator\\target\\debug\\.fingerprint\\game_core-8e8f7a8213b1fbc6\\dep-test-lib-game_core", reference_mtime: FileTime { seconds: 13406478120, nanos: 358968400 }, stale: "F:\\work\\simulator\\core\\src\\game\\system\\mod.rs", stale_mtime: FileTime { seconds: 13406478130, nanos: 853316300 } }))
+   1.075954800s  INFO prepare_target{force=false package_id=game_core v0.1.0 (F:\work\simulator\core) target="game_core"}: cargo::core::compiler::fingerprint: fingerprint dirty for game_core v0.1.0 (F:\work\simulator\core)/Check { test: false }/TargetInner { name: "game_core", doc: true, ..: with_path("F:\\work\\simulator\\core\\src\\main.rs", Edition2021) }
+   1.075967000s  INFO prepare_target{force=false package_id=game_core v0.1.0 (F:\work\simulator\core) target="game_core"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "game_core" })
+   1.077402100s  INFO prepare_target{force=false package_id=game_core v0.1.0 (F:\work\simulator\core) target="game_core"}: cargo::core::compiler::fingerprint: fingerprint dirty for game_core v0.1.0 (F:\work\simulator\core)/Check { test: true }/TargetInner { name: "game_core", doc: true, ..: with_path("F:\\work\\simulator\\core\\src\\main.rs", Edition2021) }
+   1.077416200s  INFO prepare_target{force=false package_id=game_core v0.1.0 (F:\work\simulator\core) target="game_core"}: cargo::core::compiler::fingerprint:     dirty: FsStatusOutdated(StaleDepFingerprint { name: "game_core" })
+    Checking game_core v0.1.0 (F:\work\simulator\core)
+    Checking client v0.1.0 (F:\work\simulator\client\src-tauri)
+error: could not compile `game_core` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `game_core` (lib test) due to 1 previous error
+error: could not compile `client` (bin "client") due to 1 previous error
+error: could not compile `client` (bin "client" test) due to 1 previous error

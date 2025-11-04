@@ -5,3 +5,33 @@ edition.workspace = true
 description.workspace = true
 
 [dependencies]
+async-trait = "0.1.89"
+tokio = { version = "1.15", features = ["full", "tracing"] }
+tokio-util = "0.7"
+tracing = "0.1.41"
+tracing-appender = "0.2.3"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+actix-web = "4.9.0"
+actix = "=0.13.5"
+actix-web-actors = "4.3.0"
+reqwest = { version = "0.12.12", features = ["json"] }
+uuid = { version = "1.14.0", features = ["v4", "serde"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+futures-util = {version = "0.3", features = ["sink"]}
+futures = "0.3.31"
+redis = { version = "0.22.3", features = ["tokio-comp", "connection-manager"] }
+dotenv = "0.15.0"
+config = {version = "0.15.11", features = ["toml"]}
+jsonwebtoken = "9.3.1"
+chrono = { version = "0.4.41", features = ["serde"] }
+thiserror = "1.0"
+backoff = { version = "0.4.0", features = ["tokio"] }
+lazy_static = "1.5.0"
+async-stream = "0.3"
+
+metrics = { path = "../metrics" }
+prometheus = { version = "0.14", features = ["process"] }
+
+[dev-dependencies]
+tokio-test = "0.4"

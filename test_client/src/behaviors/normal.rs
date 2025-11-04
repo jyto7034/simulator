@@ -15,11 +15,15 @@ pub struct NormalPlayer;
 impl PlayerBehavior for NormalPlayer {
     /// 연결 성공 시 자동으로 Enqueue 메시지 전송
     async fn on_connected(&self, player_context: &PlayerContext) -> BehaviorOutcome {
-        info!("[{}] Normal player connected, sending Enqueue", player_context.player_id);
+        info!(
+            "[{}] Normal player connected, sending Enqueue",
+            player_context.player_id
+        );
 
         let metadata = serde_json::json!({
             "test_session_id": player_context.test_session_id
-        }).to_string();
+        })
+        .to_string();
 
         let msg = ClientMessage::Enqueue {
             player_id: player_context.player_id,
@@ -27,7 +31,9 @@ impl PlayerBehavior for NormalPlayer {
             metadata,
         };
 
-        player_context.addr.do_send(InternalSendText(msg.to_string()));
+        player_context
+            .addr
+            .do_send(InternalSendText(msg.to_string()));
         BehaviorOutcome::Continue
     }
 

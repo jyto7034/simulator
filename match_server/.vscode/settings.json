@@ -1,4 +1,0 @@
-{
-  "Lua.diagnostics.globals": ["ARGV", "KEYS", "redis"],
-  "Lua.diagnostics.disable": ["deprecated"]
-}

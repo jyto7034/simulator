@@ -56,3 +56,4 @@ paste = "1.0.15"
 cargo-llvm-cov = "0.6.16"
 
 serial_test = "3.2.0"
+bevy_ecs = "0.17.2"

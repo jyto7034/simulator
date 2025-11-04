@@ -176,6 +176,54 @@ lazy_static! {
             "Total times Redis circuit breaker opened due to failures"
         ))
         .unwrap();
+
+    /// Total number of matches where both players are in the same pod
+    pub static ref MATCHES_SAME_POD_TOTAL: IntCounter =
+        IntCounter::with_opts(opts!(
+            "matches_same_pod_total",
+            "Total number of matches where both players are in the same pod"
+        ))
+        .unwrap();
+
+    /// Total number of matches across different pods
+    pub static ref MATCHES_CROSS_POD_TOTAL: IntCounter =
+        IntCounter::with_opts(opts!(
+            "matches_cross_pod_total",
+            "Total number of matches across different pods"
+        ))
+        .unwrap();
+
+    /// Total number of battle results sent via local actor message
+    pub static ref BATTLE_RESULTS_LOCAL_TOTAL: IntCounter =
+        IntCounter::with_opts(opts!(
+            "battle_results_local_total",
+            "Total number of battle results sent via local actor message (same pod)"
+        ))
+        .unwrap();
+
+    /// Total number of battle results sent via Redis Pub/Sub
+    pub static ref BATTLE_RESULTS_REMOTE_TOTAL: IntCounter =
+        IntCounter::with_opts(opts!(
+            "battle_results_remote_total",
+            "Total number of battle results sent via Redis Pub/Sub (cross pod)"
+        ))
+        .unwrap();
+
+    /// Total number of messages routed to same-pod players via LoadBalanceActor
+    pub static ref MESSAGES_ROUTED_SAME_POD_TOTAL: IntCounter =
+        IntCounter::with_opts(opts!(
+            "messages_routed_same_pod_total",
+            "Total messages routed to same-pod players via LoadBalanceActor"
+        ))
+        .unwrap();
+
+    /// Total number of messages routed to cross-pod players via Redis Pub/Sub
+    pub static ref MESSAGES_ROUTED_CROSS_POD_TOTAL: IntCounter =
+        IntCounter::with_opts(opts!(
+            "messages_routed_cross_pod_total",
+            "Total messages routed to cross-pod players via Redis Pub/Sub"
+        ))
+        .unwrap();
 }
 
 // All test and per-mode metrics removed
@@ -226,5 +274,14 @@ pub fn register_custom_metrics(registry: &Registry) -> Result<(), prometheus::Er
     registry.register(Box::new(GAME_SERVER_AVAILABLE.clone()))?;
     registry.register(Box::new(TRY_MATCH_SKIPPED_TOTAL.clone()))?;
     registry.register(Box::new(CIRCUIT_BREAKER_OPEN_TOTAL.clone()))?;
+
+    // Pod optimization metrics
+    registry.register(Box::new(MATCHES_SAME_POD_TOTAL.clone()))?;
+    registry.register(Box::new(MATCHES_CROSS_POD_TOTAL.clone()))?;
+    registry.register(Box::new(BATTLE_RESULTS_LOCAL_TOTAL.clone()))?;
+    registry.register(Box::new(BATTLE_RESULTS_REMOTE_TOTAL.clone()))?;
+    registry.register(Box::new(MESSAGES_ROUTED_SAME_POD_TOTAL.clone()))?;
+    registry.register(Box::new(MESSAGES_ROUTED_CROSS_POD_TOTAL.clone()))?;
+
     Ok(())
 }

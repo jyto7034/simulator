@@ -29,23 +29,6 @@ impl Handler<StartObservation> for ObserverActor {
         // session_id 필터 (특정 테스트 세션만 격리)
         params.push(format!("session_id={}", self.test_session_id));
 
-        // 선택적 환경 변수 필터
-        if let Ok(kind) = std::env::var("OBSERVER_STREAM_KIND") {
-            if !kind.is_empty() {
-                params.push(format!("kind={}", kind));
-            }
-        }
-        if let Ok(gm) = std::env::var("OBSERVER_FILTER_GAME_MODE") {
-            if !gm.is_empty() {
-                params.push(format!("game_mode={}", gm));
-            }
-        }
-        if let Ok(et) = std::env::var("OBSERVER_FILTER_EVENT_TYPE") {
-            if !et.is_empty() {
-                params.push(format!("event_type={}", et));
-            }
-        }
-
         let url = format!(
             "{}/events/stream?{}",
             self.match_server_url,
