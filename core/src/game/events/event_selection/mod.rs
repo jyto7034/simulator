@@ -2,15 +2,12 @@ pub mod bonus;
 pub mod random;
 pub mod shop;
 
-use rand::{seq::SliceRandom, SeedableRng};
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    game::events::{
-        event_selection::{bonus::BonusType, random::RandomEventType},
-        EventGenerator,
-    },
-    GeneratorContext,
+use crate::game::{
+    data::shop_data::ShopType,
+    enums::OrdealType,
+    events::{event_selection::bonus::BonusType, EventGenerator, GeneratorContext},
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -20,9 +17,9 @@ pub struct EventSelectionOptions {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum EventOption {
-    Shop,
+    Shop(ShopType),
     Bonus(BonusType),
-    Random(RandomEventType),
+    Random(String), // 랜덤 인카운터 ID
 }
 
 pub struct EventSelectionGenerator;
@@ -31,28 +28,21 @@ impl EventGenerator for EventSelectionGenerator {
     type Output = EventSelectionOptions;
 
     fn generate(&self, ctx: &GeneratorContext) -> Self::Output {
+        use crate::ecs::resources::GameProgression;
+        use rand::SeedableRng;
+
         let mut rng = rand::rngs::StdRng::seed_from_u64(ctx.random_seed);
 
-        // Random 이벤트의 경우 가짓수가 수 십개가 될 수 있음.
-        // 때문에 대책을 세워야함.
-        let pool = vec![
-            EventOption::Shop,
-            EventOption::Bonus(BonusType::Gold),
-            EventOption::Bonus(BonusType::Experience),
-            EventOption::Bonus(BonusType::Item),
-        ];
+        let current_ordeal = ctx
+            .world
+            .get_resource::<GameProgression>()
+            .map(|p| p.current_ordeal)
+            .unwrap_or(OrdealType::Dawn);
 
-        let mut selected = pool
-            .choose_multiple(&mut rng, 3)
-            .cloned()
-            .collect::<Vec<_>>();
+        let pool = ctx.game_data.event_pools.get_pool(current_ordeal);
 
-        EventSelectionOptions {
-            options: [
-                selected.pop().unwrap(),
-                selected.pop().unwrap(),
-                selected.pop().unwrap(),
-            ],
-        }
+        let options = pool.choose_one_from_each(&mut rng);
+
+        EventSelectionOptions { options }
     }
 }

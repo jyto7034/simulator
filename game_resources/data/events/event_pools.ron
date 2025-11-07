@@ -1,0 +1,79 @@
+  EventPoolConfig(
+      dawn: EventPhasePool(
+          // 상점 풀 (이 중 1개 선택)
+          shops: [
+              WeightedEvent(
+                  weight: 80,
+                  event: Shop(Shop),
+              ),
+              WeightedEvent(
+                  weight: 20,
+                  event: Shop(DiscountShop),  // 레어 할인 상점
+              ),
+          ],
+
+          // 보너스 풀 (이 중 1개 선택)
+          bonuses: [
+              WeightedEvent(
+                  weight: 40,
+                  event: Bonus(Gold),
+              ),
+              WeightedEvent(
+                  weight: 30,
+                  event: Bonus(Experience),
+              ),
+              WeightedEvent(
+                  weight: 20,
+                  event: Bonus(Item),
+              ),
+              WeightedEvent(
+                  weight: 10,
+                  event: Bonus(Abnormality),  // 레어
+              ),
+          ],
+
+          // 랜덤 인카운터 풀 (이 중 1개 선택)
+          random_events: [
+              WeightedEvent(
+                  weight: 30,
+                  event: Random("suspicious_box"),
+              ),
+              WeightedEvent(
+                  weight: 25,
+                  event: Random("prayer_shrine"),
+              ),
+              WeightedEvent(
+                  weight: 20,
+                  event: Random("wandering_merchant"),
+              ),
+              WeightedEvent(
+                  weight: 15,
+                  event: Random("cursed_fountain"),
+              ),
+              WeightedEvent(
+                  weight: 10,
+                  event: Random("mysterious_stranger"),
+              ),
+          ],
+      ),
+
+      noon: EventPhasePool(
+          shops: [
+              WeightedEvent(weight: 70, event: Shop(Shop)),
+              WeightedEvent(weight: 30, event: Shop(DiscountShop)),
+          ],
+          bonuses: [
+              WeightedEvent(weight: 50, event: Bonus(Gold)),
+              WeightedEvent(weight: 30, event: Bonus(Experience)),
+              WeightedEvent(weight: 20, event: Bonus(Abnormality)),
+          ],
+          random_events: [
+              WeightedEvent(weight: 35, event: Random("gambler_npc")),
+              WeightedEvent(weight: 30, event: Random("cursed_chest")),
+              WeightedEvent(weight: 20, event: Random("void_portal")),
+              WeightedEvent(weight: 15, event: Random("demon_contract")),
+          ],
+      ),
+
+      // 다른 시련들...
+  )

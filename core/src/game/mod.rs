@@ -1,7 +1,6 @@
-pub mod components;
+pub mod behavior;
+pub mod data;
 pub mod enums;
 pub mod events;
-pub mod ordeal_scheduler;
-pub mod resources;
-pub mod system;
+pub mod managers;
 pub mod world;

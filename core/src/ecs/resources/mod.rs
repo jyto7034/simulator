@@ -1,6 +1,6 @@
 use bevy_ecs::resource::Resource;
 
-use crate::game::enums::OrdealType;
+use crate::game::enums::{MoveTo, OrdealType, PhaseType};
 
 #[derive(Resource)]
 pub struct Enkephalin {
@@ -28,14 +28,25 @@ impl Level {
     }
 }
 
-#[derive(Resource)]
-pub struct CurrentOrdeal {
-    pub ordeal_type: OrdealType,
+/// 게임 진행 상황 (Ordeal, Phase) - 순수 데이터만
+#[derive(Resource, Debug, Clone)]
+pub struct GameProgression {
+    pub current_ordeal: OrdealType,
+    pub current_phase: PhaseType,
 }
 
-impl CurrentOrdeal {
-    pub fn new(ordeal_type: OrdealType) -> Self {
-        Self { ordeal_type }
+impl GameProgression {
+    pub fn new() -> Self {
+        Self {
+            current_ordeal: OrdealType::Dawn,
+            current_phase: PhaseType::I,
+        }
+    }
+}
+
+impl Default for GameProgression {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

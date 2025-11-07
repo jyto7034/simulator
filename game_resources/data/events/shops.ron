@@ -1,0 +1,72 @@
+// 상인 데이터
+// name: 상인 이름
+// uuid: 상인 프로필 사진 식별자
+ShopDatabase(
+    shops: [
+        // 일반 상점 - 아티팩트 상인
+        Shop(
+            name: "아티팩트 상인 라헬",
+            uuid: "550e8400-e29b-41d4-a716-446655440001",
+            items: [
+                Item(
+                    uuid: "650e8400-e29b-41d4-a716-446655440011",
+                    name: "One Sin and Hundreds of Good Deeds",
+                    price: 100,
+                    tier: I,
+                ),
+                Item(
+                    uuid: "650e8400-e29b-41d4-a716-446655440012",
+                    name: "Fairy Festival",
+                    price: 120,
+                    tier: I,
+                ),
+                Item(
+                    uuid: "650e8400-e29b-41d4-a716-446655440013",
+                    name: "Beauty and the Beast",
+                    price: 200,
+                    tier: II,
+                ),
+            ],
+        ),
+
+        // 고급 상점 - E.G.O 무기 상인
+        Shop(
+            name: "E.G.O 무기상 아인",
+            uuid: "550e8400-e29b-41d4-a716-446655440002",
+            items: [
+                Item(
+                    uuid: "650e8400-e29b-41d4-a716-446655440021",
+                    name: "Justitia",
+                    price: 300,
+                    tier: II,
+                ),
+                Item(
+                    uuid: "650e8400-e29b-41d4-a716-446655440022",
+                    name: "Paradise Lost",
+                    price: 500,
+                    tier: III,
+                ),
+            ],
+        ),
+
+        // 방어구 상점
+        Shop(
+            name: "방어구 상인 벤자민",
+            uuid: "550e8400-e29b-41d4-a716-446655440003",
+            items: [
+                Item(
+                    uuid: "650e8400-e29b-41d4-a716-446655440031",
+                    name: "Standard Training E.G.O Suit",
+                    price: 80,
+                    tier: I,
+                ),
+                Item(
+                    uuid: "650e8400-e29b-41d4-a716-446655440032",
+                    name: "Penitence E.G.O Armor",
+                    price: 250,
+                    tier: II,
+                ),
+            ],
+        ),
+    ],
+)

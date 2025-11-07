@@ -1,4 +1,6 @@
-use bevy_ecs::component::Component;
+use bevy_ecs::{bundle::Bundle, component::Component};
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use crate::game::enums::{RiskLevel, Tier};
 
@@ -19,4 +21,22 @@ impl Abnormality {
             tier,
         }
     }
+}
+
+#[derive(Component, Debug, Clone, Serialize, Deserialize)]
+pub struct Player {
+    pub id: Uuid,
+    pub name: String,
+}
+
+#[derive(Component, Clone)]
+pub struct PlayerStats {
+    pub level: u32,
+    pub exp: u32,
+}
+
+/// Player Entity Bundle
+#[derive(Bundle)]
+pub struct PlayerBundle {
+    pub player: Player,
 }

@@ -150,6 +150,29 @@ async fn main() -> std::io::Result<()> {
         default_pod_id
     });
 
+    // TODO: GameData 로드 추가 필요
+    // ============================================================
+    // 1. RON 파일에서 게임 데이터 로드
+    //    use game_core::game::data::{GameData, shop_data::ShopDatabase, event_pools::EventPoolConfig};
+    //
+    //    let shops_ron = include_str!("../../game_resources/data/events/shops.ron");
+    //    let shops: ShopDatabase = ron::de::from_str(shops_ron)
+    //        .expect("Failed to load shops.ron");
+    //
+    //    let event_pools_ron = include_str!("../../game_resources/data/events/event_pools.ron");
+    //    let event_pools: EventPoolConfig = ron::de::from_str(event_pools_ron)
+    //        .expect("Failed to load event_pools.ron");
+    //
+    //    let game_data = Arc::new(GameData { shops, event_pools });
+    //    info!("Game data loaded successfully");
+    //
+    // 2. AppState에 game_data: Arc<GameData> 필드 추가
+    //
+    // 3. PlayerGameActor 생성 시 Arc 클론해서 전달
+    //    let core = GameCore::new(app_state.game_data.clone());
+    // ============================================================
+
+
     spawn_redis_subscribers(
         redis_client.clone(),
         pod_id.clone(),
