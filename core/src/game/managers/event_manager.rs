@@ -1,5 +1,5 @@
 use crate::game::{
-    enums::{OrdealType, PhaseEvent, PhaseEventType, PhaseType},
+    enums::{OrdealOption, OrdealType, PhaseEvent, PhaseEventType, PhaseType, SuppressionOption},
     events::{
         event_selection::EventSelectionGenerator, ordeal_battle::OrdealBattleGenerator,
         suppression::SuppressionGenerator, EventGenerator, GeneratorContext,
@@ -26,17 +26,62 @@ impl EventManager {
             PhaseEventType::EventSelection => {
                 let generator = EventSelectionGenerator;
                 let options = generator.generate(ctx);
-                PhaseEvent::EventSelection(options)
+                let [shop, bonus, random] = options;
+
+                let shop = match shop {
+                    crate::game::enums::GameOption::Shop { shop } => shop,
+                    _ => unreachable!("EventSelection generator must return a Shop option"),
+                };
+                let bonus = match bonus {
+                    crate::game::enums::GameOption::Bonus { bonus } => bonus,
+                    _ => unreachable!("EventSelection generator must return a Bonus option"),
+                };
+                let random = match random {
+                    crate::game::enums::GameOption::Random { event } => event,
+                    _ => unreachable!("EventSelection generator must return a Random option"),
+                };
+
+                PhaseEvent::EventSelection {
+                    shop,
+                    bonus,
+                    random,
+                }
             }
             PhaseEventType::Suppression => {
                 let generator = SuppressionGenerator;
-                let data = generator.generate(ctx);
-                PhaseEvent::Suppression(data)
+                let options = generator.generate(ctx);
+                let candidates = options.map(|option| match option {
+                    crate::game::enums::GameOption::SuppressAbnormality {
+                        abnormality_id,
+                        risk_level,
+                        uuid,
+                    } => SuppressionOption {
+                        abnormality_id,
+                        risk_level,
+                        uuid,
+                    },
+                    _ => unreachable!("Suppression generator must return suppression options"),
+                });
+
+                PhaseEvent::Suppression { candidates }
             }
             PhaseEventType::Ordeal => {
                 let generator = OrdealBattleGenerator;
-                let battle = generator.generate(ctx);
-                PhaseEvent::Ordeal(battle)
+                let options = generator.generate(ctx);
+                let candidates = options.map(|option| match option {
+                    crate::game::enums::GameOption::OrdealBattle {
+                        ordeal_type,
+                        difficulty,
+                        uuid,
+                    } => OrdealOption {
+                        ordeal_type,
+                        difficulty,
+                        uuid,
+                    },
+                    _ => unreachable!("Ordeal generator must return ordeal options"),
+                });
+
+                PhaseEvent::Ordeal { candidates }
             }
         }
     }

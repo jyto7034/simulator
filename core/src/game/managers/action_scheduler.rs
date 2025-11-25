@@ -1,0 +1,300 @@
+use uuid::Uuid;
+
+use crate::{ecs::resources::GameState, game::behavior::PlayerBehavior};
+
+/// ActionScheduler
+///
+/// GameState에 따라 허용되는 행동 목록을 반환
+/// 모든 allowed_actions 로직이 이곳에 집중됨
+pub struct ActionScheduler;
+
+impl ActionScheduler {
+    /// 게임 상태에 따라 허용된 행동 목록 반환
+    ///
+    /// # Arguments
+    /// * `state` - 현재 게임 상태
+    ///
+    /// # Returns
+    /// 허용된 PlayerBehavior 목록
+    pub fn get_allowed_actions(state: &GameState) -> Vec<PlayerBehavior> {
+        match state {
+            GameState::NotStarted => {
+                // 게임 시작 전: StartNewGame만 가능
+                vec![PlayerBehavior::StartNewGame]
+            }
+
+            GameState::WaitingPhaseRequest => {
+                // 게임 시작 후: Phase 데이터 요청만 가능
+                vec![PlayerBehavior::RequestPhaseData]
+            }
+
+            GameState::SelectingEvent => {
+                // Phase 데이터 받음: 이벤트 선택만 가능
+                vec![PlayerBehavior::SelectEvent {
+                    event_id: Uuid::nil(), // 템플릿 (모든 event_id 허용)
+                }]
+            }
+
+            GameState::InShop { .. } => {
+                // 상점 안: 아이템 구매, 리롤, 나가기 가능
+                vec![
+                    PlayerBehavior::PurchaseItem {
+                        item_uuid: Uuid::nil(),
+                        item_category: todo!(),
+                    },
+                    PlayerBehavior::RerollShop,
+                    PlayerBehavior::ExitShop,
+                ]
+            }
+
+            GameState::InRandomEvent { .. } => {
+                // 랜덤 이벤트 안: 선택지 선택, 나가기 가능
+                vec![
+                    PlayerBehavior::SelectEventChoice {
+                        choice_id: String::new(), // 템플릿 (모든 choice_id 허용)
+                    },
+                    PlayerBehavior::ExitRandomEvent,
+                ]
+            }
+
+            GameState::InSuppression { .. } => {
+                // 진압 작업 중: 작업 타입 선택, 나가기 가능
+                // TODO: SelectWorkType, ExitSuppression 추가 후 활성화
+                vec![]
+            }
+
+            GameState::InBattle { .. } => {
+                // 전투 중: 카드 사용, 턴 종료 등
+                // TODO: UseCard, EndTurn 추가 후 활성화
+                vec![]
+            }
+
+            GameState::GameOver => {
+                // 게임 종료: 아무 행동도 불가능
+                vec![]
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_not_started_allows_only_start_game() {
+        let state = GameState::NotStarted;
+        let allowed = ActionScheduler::get_allowed_actions(&state);
+
+        assert_eq!(allowed.len(), 1);
+        assert!(matches!(allowed[0], PlayerBehavior::StartNewGame));
+    }
+
+    #[test]
+    fn test_in_shop_allows_shop_actions() {
+        let state = GameState::InShop {
+            shop_uuid: Uuid::nil(),
+        };
+        let allowed = ActionScheduler::get_allowed_actions(&state);
+
+        assert_eq!(allowed.len(), 3);
+        // PurchaseItem, RerollShop, ExitShop만 허용
+    }
+
+    #[test]
+    fn test_game_over_allows_nothing() {
+        let state = GameState::GameOver;
+        let allowed = ActionScheduler::get_allowed_actions(&state);
+
+        assert!(allowed.is_empty());
+    }
+
+    #[test]
+    fn test_waiting_phase_request_allows_only_request() {
+        let state = GameState::WaitingPhaseRequest;
+        let allowed = ActionScheduler::get_allowed_actions(&state);
+
+        assert_eq!(allowed.len(), 1);
+        assert!(matches!(allowed[0], PlayerBehavior::RequestPhaseData));
+    }
+
+    #[test]
+    fn test_selecting_event_allows_only_select_event() {
+        let state = GameState::SelectingEvent;
+        let allowed = ActionScheduler::get_allowed_actions(&state);
+
+        assert_eq!(allowed.len(), 1);
+        assert!(matches!(allowed[0], PlayerBehavior::SelectEvent { .. }));
+    }
+
+    #[test]
+    fn test_in_random_event_allows_choice_and_exit() {
+        let state = GameState::InRandomEvent {
+            event_uuid: Uuid::nil(),
+        };
+        let allowed = ActionScheduler::get_allowed_actions(&state);
+
+        assert_eq!(allowed.len(), 2);
+
+        // SelectEventChoice와 ExitRandomEvent가 허용되어야 함
+        let has_select_choice = allowed
+            .iter()
+            .any(|a| matches!(a, PlayerBehavior::SelectEventChoice { .. }));
+        let has_exit = allowed
+            .iter()
+            .any(|a| matches!(a, PlayerBehavior::ExitRandomEvent));
+
+        assert!(has_select_choice);
+        assert!(has_exit);
+    }
+
+    #[test]
+    fn test_in_suppression_allows_nothing_for_now() {
+        let state = GameState::InSuppression {
+            abnormality_uuid: Uuid::nil(),
+        };
+        let allowed = ActionScheduler::get_allowed_actions(&state);
+
+        // TODO가 구현되기 전까지는 비어있어야 함
+        assert!(allowed.is_empty());
+    }
+
+    #[test]
+    fn test_in_battle_allows_nothing_for_now() {
+        let state = GameState::InBattle {
+            battle_uuid: Uuid::nil(),
+        };
+        let allowed = ActionScheduler::get_allowed_actions(&state);
+
+        // TODO가 구현되기 전까지는 비어있어야 함
+        assert!(allowed.is_empty());
+    }
+
+    #[test]
+    fn test_state_transition_flow() {
+        // 게임 시작 흐름 검증
+        let state = GameState::NotStarted;
+        let allowed = ActionScheduler::get_allowed_actions(&state);
+        assert_eq!(allowed.len(), 1);
+        assert!(matches!(allowed[0], PlayerBehavior::StartNewGame));
+
+        // Phase 요청
+        let state = GameState::WaitingPhaseRequest;
+        let allowed = ActionScheduler::get_allowed_actions(&state);
+        assert_eq!(allowed.len(), 1);
+        assert!(matches!(allowed[0], PlayerBehavior::RequestPhaseData));
+
+        // 이벤트 선택
+        let state = GameState::SelectingEvent;
+        let allowed = ActionScheduler::get_allowed_actions(&state);
+        assert_eq!(allowed.len(), 1);
+
+        // 상점 진입
+        let state = GameState::InShop {
+            shop_uuid: Uuid::nil(),
+        };
+        let allowed = ActionScheduler::get_allowed_actions(&state);
+        assert_eq!(allowed.len(), 3); // Purchase, Reroll, Exit
+    }
+
+    #[test]
+    fn test_shop_allowed_actions_completeness() {
+        let state = GameState::InShop {
+            shop_uuid: Uuid::nil(),
+        };
+        let allowed = ActionScheduler::get_allowed_actions(&state);
+
+        // 정확히 3개의 행동만 허용
+        assert_eq!(allowed.len(), 3);
+
+        // 각 행동이 존재하는지 확인
+        let has_purchase = allowed
+            .iter()
+            .any(|a| matches!(a, PlayerBehavior::PurchaseItem { .. }));
+        let has_reroll = allowed
+            .iter()
+            .any(|a| matches!(a, PlayerBehavior::RerollShop));
+        let has_exit = allowed
+            .iter()
+            .any(|a| matches!(a, PlayerBehavior::ExitShop));
+
+        assert!(has_purchase);
+        assert!(has_reroll);
+        assert!(has_exit);
+    }
+
+    #[test]
+    fn test_all_game_states_coverage() {
+        // 모든 GameState에 대해 allowed_actions가 정의되어 있는지 확인
+        let states = vec![
+            GameState::NotStarted,
+            GameState::WaitingPhaseRequest,
+            GameState::SelectingEvent,
+            GameState::InShop {
+                shop_uuid: Uuid::nil(),
+            },
+            GameState::InRandomEvent {
+                event_uuid: Uuid::nil(),
+            },
+            GameState::InSuppression {
+                abnormality_uuid: Uuid::nil(),
+            },
+            GameState::InBattle {
+                battle_uuid: Uuid::nil(),
+            },
+            GameState::GameOver,
+        ];
+
+        for state in states {
+            // panic하지 않고 정상적으로 반환되는지 확인
+            let _ = ActionScheduler::get_allowed_actions(&state);
+        }
+    }
+
+    #[test]
+    fn test_action_counts_per_state() {
+        // 각 상태별 허용 행동 개수 검증
+        let test_cases = vec![
+            (GameState::NotStarted, 1),
+            (GameState::WaitingPhaseRequest, 1),
+            (GameState::SelectingEvent, 1),
+            (
+                GameState::InShop {
+                    shop_uuid: Uuid::nil(),
+                },
+                3,
+            ),
+            (
+                GameState::InRandomEvent {
+                    event_uuid: Uuid::nil(),
+                },
+                2,
+            ),
+            (
+                GameState::InSuppression {
+                    abnormality_uuid: Uuid::nil(),
+                },
+                0,
+            ), // TODO
+            (
+                GameState::InBattle {
+                    battle_uuid: Uuid::nil(),
+                },
+                0,
+            ), // TODO
+            (GameState::GameOver, 0),
+        ];
+
+        for (state, expected_count) in test_cases {
+            let allowed = ActionScheduler::get_allowed_actions(&state);
+            assert_eq!(
+                allowed.len(),
+                expected_count,
+                "State {:?} should have {} allowed actions, but got {}",
+                state,
+                expected_count,
+                allowed.len()
+            );
+        }
+    }
+}

@@ -1,0 +1,65 @@
+EquipmentDatabase(
+    items: [
+        // E.G.O 무기상 아인의 상품
+        EquipmentMetadata(
+            id: "justitia",
+            uuid: "650e8400-e29b-41d4-a716-446655440021",
+            name: "Justitia",
+            equipment_type: Weapon,
+            rarity: ALEPH,
+            price: 300,
+        ),
+        EquipmentMetadata(
+            id: "paradise_lost",
+            uuid: "650e8400-e29b-41d4-a716-446655440022",
+            name: "Paradise Lost",
+            equipment_type: Weapon,
+            rarity: ALEPH,
+            price: 500,
+        ),
+
+        // 방어구 상인 벤자민의 상품
+        EquipmentMetadata(
+            id: "standard_suit",
+            uuid: "650e8400-e29b-41d4-a716-446655440031",
+            name: "Standard Training E.G.O Suit",
+            equipment_type: Suit,
+            rarity: TETH,
+            price: 80,
+        ),
+        EquipmentMetadata(
+            id: "penitence_armor",
+            uuid: "650e8400-e29b-41d4-a716-446655440032",
+            name: "Penitence E.G.O Armor",
+            equipment_type: Suit,
+            rarity: WAW,
+            price: 250,
+        ),
+
+        // 추가 장비
+        EquipmentMetadata(
+            id: "fourth_match",
+            uuid: "00000003-0000-0000-0000-000000000003",
+            name: "Fourth Match Flame",
+            equipment_type: Weapon,
+            rarity: HE,
+            price: 120,
+        ),
+        EquipmentMetadata(
+            id: "smile_armor",
+            uuid: "00000002-0000-0000-0000-000000000002",
+            name: "Smile",
+            equipment_type: Suit,
+            rarity: WAW,
+            price: 220,
+        ),
+        EquipmentMetadata(
+            id: "horn_armor",
+            uuid: "a0000003-0000-0000-0000-000000000003",
+            name: "Horn",
+            equipment_type: Suit,
+            rarity: HE,
+            price: 140,
+        ),
+    ]
+)

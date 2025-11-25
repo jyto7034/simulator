@@ -35,7 +35,14 @@
       "Bash(cargo clean:*)",
       "Bash(rustup update:*)",
       "Bash(cat:*)",
-      "Bash(cargo test:*)"
+      "Bash(cargo test:*)",
+      "Bash(curl:*)",
+      "Bash(sh -s -- -y)",
+      "Bash(source \"$HOME/.cargo/env\")",
+      "Bash(sudo -S apt update:*)",
+      "Bash(sudo -S apt install:*)",
+      "Bash(export PATH=\"$HOME/.cargo/bin:$PATH\")",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

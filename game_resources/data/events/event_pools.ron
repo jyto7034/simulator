@@ -1,79 +1,239 @@
-  EventPoolConfig(
-      dawn: EventPhasePool(
-          // 상점 풀 (이 중 1개 선택)
-          shops: [
-              WeightedEvent(
-                  weight: 80,
-                  event: Shop(Shop),
-              ),
-              WeightedEvent(
-                  weight: 20,
-                  event: Shop(DiscountShop),  // 레어 할인 상점
-              ),
-          ],
+// 이벤트 풀 설정
+// 각 시련(Ordeal)별로 가중치 기반 이벤트 풀 정의
+// WeightedEvent는 weight(가중치)와 uuid(이벤트 식별자)만 가짐
+// UUID로 GameData에서 실제 메타데이터를 조회함
+EventPoolConfig(
+    dawn: EventPhasePool(
+        // 상점 풀 (이 중 1개 선택)
+        shops: [
+            WeightedEvent(
+                weight: 80,
+                uuid: "550e8400-e29b-41d4-a716-446655440001",  // 아티팩트 상인 라헬
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "550e8400-e29b-41d4-a716-446655440002",  // E.G.O 무기상 아인 (할인)
+            ),
+        ],
 
-          // 보너스 풀 (이 중 1개 선택)
-          bonuses: [
-              WeightedEvent(
-                  weight: 40,
-                  event: Bonus(Gold),
-              ),
-              WeightedEvent(
-                  weight: 30,
-                  event: Bonus(Experience),
-              ),
-              WeightedEvent(
-                  weight: 20,
-                  event: Bonus(Item),
-              ),
-              WeightedEvent(
-                  weight: 10,
-                  event: Bonus(Abnormality),  // 레어
-              ),
-          ],
+        // 보너스 풀 (이 중 1개 선택)
+        bonuses: [
+            WeightedEvent(
+                weight: 40,
+                uuid: "650e8400-e29b-41d4-a716-446655440101",  // 엔케팔린 보상
+            ),
+            WeightedEvent(
+                weight: 30,
+                uuid: "650e8400-e29b-41d4-a716-446655440102",  // 작업 경험
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440103",  // E.G.O 선물
+            ),
+            WeightedEvent(
+                weight: 10,
+                uuid: "650e8400-e29b-41d4-a716-446655440104",  // 새로운 기물 (레어)
+            ),
+        ],
 
-          // 랜덤 인카운터 풀 (이 중 1개 선택)
-          random_events: [
-              WeightedEvent(
-                  weight: 30,
-                  event: Random("suspicious_box"),
-              ),
-              WeightedEvent(
-                  weight: 25,
-                  event: Random("prayer_shrine"),
-              ),
-              WeightedEvent(
-                  weight: 20,
-                  event: Random("wandering_merchant"),
-              ),
-              WeightedEvent(
-                  weight: 15,
-                  event: Random("cursed_fountain"),
-              ),
-              WeightedEvent(
-                  weight: 10,
-                  event: Random("mysterious_stranger"),
-              ),
-          ],
-      ),
+        // 랜덤 인카운터 풀 (이 중 1개 선택)
+        random_events: [
+            WeightedEvent(
+                weight: 30,
+                uuid: "650e8400-e29b-41d4-a716-446655440201",  // 의심스러운 상자
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "650e8400-e29b-41d4-a716-446655440202",  // 기도 제단
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440203",  // 떠돌이 상인
+            ),
+            WeightedEvent(
+                weight: 15,
+                uuid: "650e8400-e29b-41d4-a716-446655440204",  // 저주받은 분수
+            ),
+            WeightedEvent(
+                weight: 10,
+                uuid: "650e8400-e29b-41d4-a716-446655440205",  // 수상한 이방인
+            ),
+        ],
+    ),
 
-      noon: EventPhasePool(
-          shops: [
-              WeightedEvent(weight: 70, event: Shop(Shop)),
-              WeightedEvent(weight: 30, event: Shop(DiscountShop)),
-          ],
-          bonuses: [
-              WeightedEvent(weight: 50, event: Bonus(Gold)),
-              WeightedEvent(weight: 30, event: Bonus(Experience)),
-              WeightedEvent(weight: 20, event: Bonus(Abnormality)),
-          ],
-          random_events: [
-              WeightedEvent(weight: 35, event: Random("gambler_npc")),
-              WeightedEvent(weight: 30, event: Random("cursed_chest")),
-              WeightedEvent(weight: 20, event: Random("void_portal")),
-              WeightedEvent(weight: 15, event: Random("demon_contract")),
-          ],
-      ),
+    noon: EventPhasePool(
+        shops: [
+            WeightedEvent(
+                weight: 70,
+                uuid: "550e8400-e29b-41d4-a716-446655440003",  // 방어구 상인 벤자민
+            ),
+            WeightedEvent(
+                weight: 30,
+                uuid: "550e8400-e29b-41d4-a716-446655440001",  // 아티팩트 상인 라헬
+            ),
+        ],
+        bonuses: [
+            WeightedEvent(
+                weight: 50,
+                uuid: "650e8400-e29b-41d4-a716-446655440101",  // 엔케팔린 보상
+            ),
+            WeightedEvent(
+                weight: 30,
+                uuid: "650e8400-e29b-41d4-a716-446655440102",  // 작업 경험
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440104",  // 새로운 기물
+            ),
+        ],
+        random_events: [
+            WeightedEvent(
+                weight: 35,
+                uuid: "650e8400-e29b-41d4-a716-446655440206",  // 도박꾼
+            ),
+            WeightedEvent(
+                weight: 30,
+                uuid: "650e8400-e29b-41d4-a716-446655440207",  // 저주받은 상자
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440208",  // 공허의 관문
+            ),
+            WeightedEvent(
+                weight: 15,
+                uuid: "650e8400-e29b-41d4-a716-446655440209",  // 악마의 계약서
+            ),
+        ],
+    ),
 
-      // 다른 시련들...
-  )
+    dusk: EventPhasePool(
+        shops: [
+            WeightedEvent(
+                weight: 60,
+                uuid: "550e8400-e29b-41d4-a716-446655440002",  // E.G.O 무기상 아인
+            ),
+            WeightedEvent(
+                weight: 40,
+                uuid: "550e8400-e29b-41d4-a716-446655440003",  // 방어구 상인 벤자민
+            ),
+        ],
+        bonuses: [
+            WeightedEvent(
+                weight: 45,
+                uuid: "650e8400-e29b-41d4-a716-446655440101",
+            ),
+            WeightedEvent(
+                weight: 35,
+                uuid: "650e8400-e29b-41d4-a716-446655440102",
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440103",
+            ),
+        ],
+        random_events: [
+            WeightedEvent(
+                weight: 30,
+                uuid: "650e8400-e29b-41d4-a716-446655440207",
+            ),
+            WeightedEvent(
+                weight: 30,
+                uuid: "650e8400-e29b-41d4-a716-446655440208",
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "650e8400-e29b-41d4-a716-446655440206",
+            ),
+            WeightedEvent(
+                weight: 15,
+                uuid: "650e8400-e29b-41d4-a716-446655440209",
+            ),
+        ],
+    ),
+
+    midnight: EventPhasePool(
+        shops: [
+            WeightedEvent(
+                weight: 50,
+                uuid: "550e8400-e29b-41d4-a716-446655440001",
+            ),
+            WeightedEvent(
+                weight: 50,
+                uuid: "550e8400-e29b-41d4-a716-446655440002",
+            ),
+        ],
+        bonuses: [
+            WeightedEvent(
+                weight: 40,
+                uuid: "650e8400-e29b-41d4-a716-446655440102",
+            ),
+            WeightedEvent(
+                weight: 35,
+                uuid: "650e8400-e29b-41d4-a716-446655440101",
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "650e8400-e29b-41d4-a716-446655440104",
+            ),
+        ],
+        random_events: [
+            WeightedEvent(
+                weight: 40,
+                uuid: "650e8400-e29b-41d4-a716-446655440208",
+            ),
+            WeightedEvent(
+                weight: 30,
+                uuid: "650e8400-e29b-41d4-a716-446655440209",
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440207",
+            ),
+            WeightedEvent(
+                weight: 10,
+                uuid: "650e8400-e29b-41d4-a716-446655440206",
+            ),
+        ],
+    ),
+
+    white: EventPhasePool(
+        shops: [
+            WeightedEvent(
+                weight: 60,
+                uuid: "550e8400-e29b-41d4-a716-446655440002",  // E.G.O 무기상 아인 (최종 시련)
+            ),
+            WeightedEvent(
+                weight: 40,
+                uuid: "550e8400-e29b-41d4-a716-446655440001",  // 아티팩트 상인 라헬
+            ),
+        ],
+        bonuses: [
+            WeightedEvent(
+                weight: 50,
+                uuid: "650e8400-e29b-41d4-a716-446655440104",
+            ),
+            WeightedEvent(
+                weight: 30,
+                uuid: "650e8400-e29b-41d4-a716-446655440103",
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440102",
+            ),
+        ],
+        random_events: [
+            WeightedEvent(
+                weight: 40,
+                uuid: "650e8400-e29b-41d4-a716-446655440209",
+            ),
+            WeightedEvent(
+                weight: 35,
+                uuid: "650e8400-e29b-41d4-a716-446655440208",
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "650e8400-e29b-41d4-a716-446655440207",
+            ),
+        ],
+    ),
+)

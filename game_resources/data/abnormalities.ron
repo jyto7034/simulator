@@ -1,0 +1,46 @@
+AbnormalityDatabase(
+    items: [
+        AbnormalityMetadata(
+            id: "f-01-02",
+            uuid: "f0102000-0000-0000-0000-000000000001",
+            name: "Scorched Girl",
+            risk_level: HE,
+            price: 150,
+        ),
+        AbnormalityMetadata(
+            id: "o-02-56",
+            uuid: "0b025600-0000-0000-0000-000000000002",
+            name: "Plague Doctor",
+            risk_level: ALEPH,
+            price: 500,
+        ),
+        AbnormalityMetadata(
+            id: "t-09-09",
+            uuid: "10909000-0000-0000-0000-000000000003",
+            name: "Red Shoes",
+            risk_level: WAW,
+            price: 300,
+        ),
+        AbnormalityMetadata(
+            id: "f-05-52",
+            uuid: "f0552000-0000-0000-0000-000000000004",
+            name: "Fragment of the Universe",
+            risk_level: TETH,
+            price: 100,
+        ),
+        AbnormalityMetadata(
+            id: "o-01-45",
+            uuid: "0b014500-0000-0000-0000-000000000005",
+            name: "Spider Bud",
+            risk_level: TETH,
+            price: 80,
+        ),
+        AbnormalityMetadata(
+            id: "f-01-37",
+            uuid: "f0137000-0000-0000-0000-000000000006",
+            name: "Fairy Festival",
+            risk_level: WAW,
+            price: 280,
+        ),
+    ]
+)

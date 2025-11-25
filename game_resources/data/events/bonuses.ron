@@ -1,0 +1,53 @@
+// 보너스 이벤트 메타데이터
+// uuid: 클라이언트가 이미지/설명을 조회하기 위한 고유 식별자
+// type: 보너스 타입 (Enkephalin, Experience, Item, Abnormality)
+// name: 보너스 이름
+// description: 보너스 설명
+// icon: 아이콘 경로
+BonusDatabase(
+    bonuses: [
+        // 엔케팔린 보너스
+        BonusMetadata(
+            bonus_type: Enkephalin,
+            uuid: "650e8400-e29b-41d4-a716-446655440101",
+            name: "엔케팔린 보상",
+            description: "엔케팔린을 획득합니다. 이를 사용하여 상점에서 아이템을 구매할 수 있습니다.",
+            icon: "icons/enkephalin.png",
+            min_amount: 50,
+            max_amount: 150,
+        ),
+
+        // 경험치 보너스
+        BonusMetadata(
+            bonus_type: Experience,
+            uuid: "650e8400-e29b-41d4-a716-446655440102",
+            name: "작업 경험",
+            description: "직원의 경험치를 획득합니다. 레벨이 오르면 능력치가 향상됩니다.",
+            icon: "icons/experience.png",
+            min_amount: 100,
+            max_amount: 300,
+        ),
+
+        // 아이템 보너스
+        BonusMetadata(
+            bonus_type: Item,
+            uuid: "650e8400-e29b-41d4-a716-446655440103",
+            name: "E.G.O 선물",
+            description: "무작위 E.G.O 선물을 획득합니다. 직원에게 장착하여 능력치를 강화할 수 있습니다.",
+            icon: "icons/ego_gift.png",
+            min_amount: 1,
+            max_amount: 1,
+        ),
+
+        // 기물 보너스 (레어)
+        BonusMetadata(
+            bonus_type: Abnormality,
+            uuid: "650e8400-e29b-41d4-a716-446655440104",
+            name: "새로운 기물",
+            description: "새로운 기물을 시설에 수용합니다. 작업을 통해 에너지와 E.G.O를 얻을 수 있습니다.",
+            icon: "icons/abnormality.png",
+            min_amount: 1,
+            max_amount: 1,
+        ),
+    ]
+)

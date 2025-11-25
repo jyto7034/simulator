@@ -4,12 +4,19 @@ use bevy_ecs::entity::Entity;
 use uuid::Uuid;
 
 use crate::ecs::components::Player;
-use crate::ecs::entities::spawn_player;
-use crate::ecs::resources::{Enkephalin, GameProgression};
+use crate::ecs::resources::{
+    CurrentGameContext, CurrentPhaseEvents, Enkephalin, GameProgression, GameState, Inventory,
+    SelectedEvent,
+};
+use crate::ecs::systems::spawn_player;
 use crate::game::behavior::{BehaviorResult, GameError, PlayerBehavior};
 use crate::game::data::GameData;
-use crate::game::enums::PhaseEvent;
+use crate::game::enums::{GameOption, OrdealType, PhaseType, RandomEventAction, ShopAction};
+use crate::game::events::event_selection::bonus::BonusExecutor;
+use crate::game::events::event_selection::random::RandomEventExecutor;
+use crate::game::events::event_selection::shop::ShopExecutor;
 use crate::game::events::GeneratorContext;
+use crate::game::managers::action_scheduler::ActionScheduler;
 use crate::game::managers::event_manager::EventManager;
 
 pub struct GameCore {
@@ -30,6 +37,15 @@ impl GameCore {
         // Resources 등록
         world.insert_resource(Enkephalin::new(0));
         world.insert_resource(GameProgression::new());
+        world.insert_resource(CurrentPhaseEvents::new());
+        world.insert_resource(GameState::NotStarted);
+        world.insert_resource(Inventory::new());
+
+        // CurrentGameContext 초기화 (NotStarted 상태의 allowed_actions 설정)
+        let mut context = CurrentGameContext::new();
+        let initial_actions = ActionScheduler::get_allowed_actions(&GameState::NotStarted);
+        context.set_allowed_actions(initial_actions);
+        world.insert_resource(context);
 
         Self {
             world,
@@ -48,25 +64,66 @@ impl GameCore {
         player_id: Uuid,
         behavior: PlayerBehavior,
     ) -> Result<BehaviorResult, GameError> {
-        let ans = match behavior {
-            PlayerBehavior::StartNewGame => self.handle_start_new_game(player_id),
-            PlayerBehavior::SelectEvent { event_id } => self.handle_select_event(event_id),
-            PlayerBehavior::SuppressAbnormality { abnormality_id } => {
-                self.handle_suppress_abnormality(abnormality_id)
-            }
-            PlayerBehavior::Ordeal { opponent_data } => self.handle_ordeal(opponent_data),
-            PlayerBehavior::AdvancePhase => self.handle_advance_phase(),
-            PlayerBehavior::PurchaseItem { shop_id, item_id } => {
-                self.handle_purchase_item(shop_id, item_id)
-            }
-            PlayerBehavior::SelectBonus { bonus_type } => self.handle_select_bonus(bonus_type),
-        };
+        // 1. 행동 검증 (치팅 방지)
+        // StartNewGame과 RequestPhaseData는 항상 허용
+        let always_allowed = matches!(
+            behavior,
+            PlayerBehavior::StartNewGame | PlayerBehavior::RequestPhaseData
+        );
 
-        Ok(ans)
+        if !always_allowed {
+            let context = self.world.get_resource::<CurrentGameContext>().unwrap();
+            if !context.is_action_allowed(&behavior) {
+                return Err(GameError::InvalidAction);
+            }
+        }
+
+        // 2. 행동 처리
+        match behavior {
+            // 복잡한 행동 → 개별 핸들러
+            PlayerBehavior::StartNewGame => Ok(self.handle_start_new_game(player_id)),
+            PlayerBehavior::RequestPhaseData => Ok(self.handle_request_phase_data()),
+            PlayerBehavior::SelectEvent { event_id } => Ok(self.handle_select_event(event_id)),
+
+            // 상점 관련 행동 → 통합 핸들러
+            PlayerBehavior::PurchaseItem {
+                item_uuid,
+                ..
+            } => self.execute_shop_action(ShopAction::Purchase { item_uuid }),
+            PlayerBehavior::RerollShop => self.execute_shop_action(ShopAction::Reroll),
+            PlayerBehavior::ExitShop => self.execute_shop_action(ShopAction::Exit),
+
+            // 랜덤 이벤트 관련 행동 → 통합 핸들러
+            PlayerBehavior::SelectEventChoice { choice_id } => {
+                self.execute_random_event_action(RandomEventAction::SelectChoice { choice_id })
+            }
+            PlayerBehavior::ExitRandomEvent => {
+                self.execute_random_event_action(RandomEventAction::Exit)
+            }
+        }
     }
 }
 
 impl GameCore {
+    /// 게임 상태 전환
+    ///
+    /// # Arguments
+    /// * `new_state` - 전환할 새로운 상태
+    ///
+    /// # Effects
+    /// 1. GameState Resource 업데이트
+    /// 2. ActionScheduler를 통해 allowed_actions 자동 업데이트
+    fn transition_to(&mut self, new_state: GameState) {
+        // 1. 상태 변경
+        let mut state = self.world.get_resource_mut::<GameState>().unwrap();
+        *state = new_state.clone();
+
+        // 2. allowed_actions 자동 업데이트
+        let allowed = ActionScheduler::get_allowed_actions(&new_state);
+        let mut context = self.world.get_resource_mut::<CurrentGameContext>().unwrap();
+        context.set_allowed_actions(allowed);
+    }
+
     fn initial_player(&mut self, player_id: Uuid) {
         // 기존 플레이어가 있는지 확인
         let player_exists = self
@@ -84,169 +141,302 @@ impl GameCore {
 
 impl GameCore {
     // 플레이어가 게임에 첫 진입을 하였을 때.
+    // 각종 초기화만 수행
     fn handle_start_new_game(&mut self, player_id: Uuid) -> BehaviorResult {
         // 플레이어 생성
         self.initial_player(player_id);
 
-        // 현재 Ordeal, Phase 기반으로 이벤트 생성
-        let progression = self.world.get_resource::<GameProgression>().unwrap();
-        let ordeal = progression.current_ordeal;
-        let phase = progression.current_phase;
+        // 상태 전환: WaitingPhaseRequest (allowed_actions 자동 설정)
+        self.transition_to(GameState::WaitingPhaseRequest);
 
+        BehaviorResult::StartNewGame
+    }
+
+    // 상점 / 랜덤 이벤트 / 보너스 데이터 요청
+    fn handle_request_phase_data(&mut self) -> BehaviorResult {
+        // 1. 현재 Ordeal, Phase 가져오기
+        let (ordeal, phase) = self.get_progression();
+
+        // 2. Context 생성
         let ctx = GeneratorContext::new(&self.world, &self.game_data, self.run_seed);
 
-        let events = EventManager::generate_event(ordeal, phase, &ctx);
+        // 3. EventManager에게 이벤트 생성 요청
+        let phase_event = EventManager::generate_event(ordeal, phase, &ctx);
 
-        if let PhaseEvent::EventSelection(result) = events {
-            BehaviorResult::StartNewGame { result }
-        } else {
-            unreachable!("OrdealScheduler guarantees EventSelection in Phase I")
+        // 4. CurrentPhaseEvents에 각 옵션 추가
+        let mut current_phase_event = self.world.get_resource_mut::<CurrentPhaseEvents>().unwrap();
+        for option in phase_event.options() {
+            current_phase_event.add_event(option);
         }
+
+        // 5. 상태 전환: SelectingEvent (allowed_actions 자동 설정)
+        self.transition_to(GameState::SelectingEvent);
+
+        // 6. BehaviorResult로 반환
+        BehaviorResult::RequestPhaseData(phase_event)
     }
 
-    fn handle_ordeal(&mut self, opponent_data: Player) -> BehaviorResult {
-        // 현재 Ordeal, Phase 가져오기
-        let progression = self.world.get_resource::<GameProgression>().unwrap();
-        let ordeal = progression.current_ordeal;
-        let phase = progression.current_phase;
+    fn handle_select_event(&mut self, selected_event_id: Uuid) -> BehaviorResult {
+        // 1. CurrentPhaseEvents에서 선택된 이벤트 조회 및 제거
+        let mut current_phase_events = self.world.get_resource_mut::<CurrentPhaseEvents>().unwrap();
 
-        // opponent_data를 포함한 Context 생성
-        let ctx = GeneratorContext::with_opponent(
-            &self.world,
-            &self.game_data,
-            self.run_seed,
-            opponent_data,
-        );
+        let event = match current_phase_events.remove_event(selected_event_id) {
+            Some(event) => event,
+            None => {
+                // 이벤트를 찾지 못한 경우 에러 반환
+                panic!("Selected event not found: {}", selected_event_id)
+            }
+        };
 
-        // Ordeal 이벤트 생성 (opponent_data 포함)
-        let _event = EventManager::generate_event(ordeal, phase, &ctx);
+        // 2. 이벤트 타입에 따라 처리 및 상태 전환
+        match &event {
+            GameOption::Shop { shop } => {
+                // 상점을 SelectedEvent 에 저장 (리롤용)
+                self.world
+                    .insert_resource(SelectedEvent::new(event.clone()));
 
-        // TODO: 전투 실행 및 결과 처리
-        todo!("Implement Ordeal battle execution")
-    }
+                // 상태 전환: InShop (allowed_actions 자동 설정)
+                self.transition_to(GameState::InShop {
+                    shop_uuid: shop.uuid,
+                });
 
-    fn handle_select_event(&mut self, event_id: String) -> BehaviorResult {
-        // TODO: event_id로 이벤트 실행 (상점/보너스/랜덤)
-        todo!("Implement event selection: {}", event_id)
-    }
+                BehaviorResult::EventSelected
+            }
 
-    fn handle_suppress_abnormality(&mut self, abnormality_id: String) -> BehaviorResult {
-        // TODO: abnormality_id로 진압 작업 실행
-        todo!("Implement suppression: {}", abnormality_id)
-    }
+            GameOption::Bonus { bonus } => {
+                // 보너스는 즉시 처리
+                // 1. 지급할 양 결정 (min_amount ~ max_amount 범위)
+                // TODO: seed 기반으로 변경
+                let amount = rand::random::<u32>() % (bonus.max_amount - bonus.min_amount + 1)
+                    + bonus.min_amount;
 
-    fn handle_advance_phase(&mut self) -> BehaviorResult {
-        // TODO: Phase 진행 로직
-        // 1. 현재 Phase 확인
-        // 2. 다음 Phase로 이동
-        // 3. 다음 Phase 이벤트 생성 및 반환
-        todo!("Implement phase advancement")
-    }
+                // 2. BonusExecutor 헬퍼 함수 호출
+                let _ = BonusExecutor::grant_bonus(&mut self.world, bonus, amount);
 
-    fn handle_purchase_item(&mut self, shop_id: String, item_id: String) -> BehaviorResult {
-        // TODO: shop_id, item_id로 아이템 구매
-        // 1. 골드 확인
-        // 2. 아이템 구매
-        // 3. 가방에 추가 (또는 티어 업)
-        todo!(
-            "Implement item purchase: shop={}, item={}",
-            shop_id,
-            item_id
-        )
-    }
+                // 3. 상태는 SelectingEvent 유지 (또는 다음 Phase로)
+                // TODO: 보너스 후 자동으로 다음 Phase로 진행?
+                BehaviorResult::EventSelected
+            }
 
-    fn handle_select_bonus(
-        &mut self,
-        bonus_type: crate::game::events::event_selection::bonus::BonusType,
-    ) -> BehaviorResult {
-        // TODO: bonus_type 적용
-        // 1. 보너스 타입에 따라 처리 (Gold, Experience, Item, Abnormality)
-        // 2. 플레이어 상태 업데이트
-        todo!("Implement bonus selection: {:?}", bonus_type)
-    }
-}
+            GameOption::Random { event: event_meta } => {
+                // 상태 전환: InRandomEvent (allowed_actions 자동 설정)
+                self.transition_to(GameState::InRandomEvent {
+                    event_uuid: event_meta.uuid,
+                });
 
-/*
-일단 설계구조를 먼저 잡고 싶어.
-Game Server 에서 API 방식으로 사용하는거라 호출하는 입장에서 복잡하면 안돼.
-그러니 내가 제안한 enum 방식이 적합하다고 생각해.
-물론 이보다 더 좋은 방법이 있으면 내게 말해주고.
+                BehaviorResult::EventSelected
+            }
 
-Game Core 에선 외부에서 사용하기 편하게
-행동을 정의한 enum PlayerBehavior 과
-fn execute() 함수를 제공해.
+            // Suppression: 진압 작업
+            GameOption::SuppressAbnormality {
+                abnormality_id,
+                risk_level,
+                uuid,
+            } => {
+                // 상태 전환: InSuppression (allowed_actions 자동 설정)
+                self.transition_to(GameState::InSuppression {
+                    abnormality_uuid: *uuid,
+                });
 
-    pub enum PlayerBehavior {
-        StartNewGame,
-        SelectEvent(event_id: String),
-        SuppressAbnormality(abnormality_id: String),
-        ...
-    }
+                // TODO: 진압 작업 로직 구현
+                //   - 작업 타입 선택 (본능/통찰/애착/억압)
+                //   - 성공/실패 판정
+                //   - 보상 지급 또는 페널티
+                BehaviorResult::SuppressAbnormality {
+                    suppress_result: format!(
+                        "기물 '{}' 진압 작업 시작 (위험도: {:?})",
+                        abnormality_id, risk_level
+                    ),
+                }
+            }
 
-    pub struct GameCore{
-        world: becvy_ecs::world::World,
-    }
+            // Ordeal: 시련 전투
+            GameOption::OrdealBattle {
+                ordeal_type,
+                difficulty,
+                uuid,
+            } => {
+                // 상태 전환: InBattle (allowed_actions 자동 설정)
+                self.transition_to(GameState::InBattle { battle_uuid: *uuid });
 
-    impl GameCore{
-        pub fn execute(&mut self, behavior: PlayerBehavior) {
-            match behavior {
-                PlayerBehavior::StartNewGame => { ... }
-                PlayerBehavior::SelectEvent(event_id) => { ... }
-                PlayerBehavior::SuppressAbnormality(abnormality_id) => { ... }
-                ...
+                // TODO: 전투 시스템 구현
+                //   - 전투 초기화
+                //   - 전투 진행
+                //   - 승패 판정 및 보상
+                BehaviorResult::Ordeal {
+                    battle_result: format!(
+                        "시련 전투 시작: {:?} (난이도: {})",
+                        ordeal_type, difficulty
+                    ),
+                }
             }
         }
     }
 
-대충 이런 느낌이야.
-Game Server 에선 GameCore 인스턴스를 생성하고 execute() 함수만 호출하면 돼.
-이걸 싱글턴 같은 패턴으로 할까 고민 중이기도 하고. GameServer 특성 상 GameCore 인스턴스가 하나만 있진 않을거라
-관리 구조체를 따로 만들어야하나 싶기도 하고 무튼.
+    // ============================================================
+    // 상점 관련 통합 핸들러
+    // ============================================================
 
-게임 상태에 대해서는 스냅샷 방식을 채택 할 계획이야.
-먼저 첫 접속 시, 게임의 모든 정보가 담긴 스냅샷을 찍어서 json 으로 유저에게 보내.
-이후 플레이어의 행동을 성공적으로 execute 하면 이전 스냅샷에서 변화된 값만 추려서 json 으로 보내는거지.
+    fn execute_shop_action(&mut self, action: ShopAction) -> Result<BehaviorResult, GameError> {
+        match action {
+            ShopAction::Purchase { item_uuid } => {
+                // ShopExecutor 헬퍼 함수 호출
+                ShopExecutor::purchase_item(&mut self.world, &self.game_data, item_uuid)
+            }
 
+            ShopAction::Sell { item_uuid } => {
+                ShopExecutor::sell_tiem(&mut self.world, &self.game_data, item_uuid)
+            }
 
-GameCore 말고도 여러 헬퍼 구조체들이 존재해.
-먼저 게임은 5단계로 나뉘어져 있어. 각 단계는 Ordeal (시련) 라고 불려.
-각 시련은 Dawn, Noon, White, Dusk, Midnight 로 구분돼.
+            ShopAction::Reroll => ShopExecutor::reroll(&mut self.world),
 
-각 시련에는 5~6개의 Phase (단계) 가 존재해.
-각 단계에는 EventSelection (이벤트 선택), Suppression (이상징후 억제), OrdealBattle (시련 전투) 같은 여러 이벤트가 있어.
-#[derive(Clone, Copy, Debug)]
-pub enum PhaseEventType {
-    EventSelection,
-    Suppression,
-    Ordeal,
+            ShopAction::Exit => {
+                // 상태 전환: SelectingEvent로 복귀 (allowed_actions 자동 설정)
+                // TODO: 다음 Phase로 진행해야 하는지, SelectingEvent로 복귀해야 하는지 결정 필요
+                self.transition_to(GameState::SelectingEvent);
+
+                Ok(BehaviorResult::Ok)
+            }
+        }
+    }
+
+    // ============================================================
+    // 랜덤 이벤트 관련 통합 핸들러
+    // ============================================================
+
+    fn execute_random_event_action(
+        &mut self,
+        action: RandomEventAction,
+    ) -> Result<BehaviorResult, GameError> {
+        match action {
+            RandomEventAction::SelectChoice { choice_id } => {
+                // TODO: 현재 이벤트 메타데이터를 어딘가에서 가져와야 함
+                // 임시로 더미 데이터 생성
+                let event = crate::game::data::random_event_data::RandomEventMetadata {
+                    id: choice_id.clone(),
+                    uuid: Uuid::new_v4(),
+                    event_type:
+                        crate::game::events::event_selection::random::RandomEventType::SuspiciousBox,
+                    name: format!("선택지 {} 결과", choice_id),
+                    description: "결과 설명".to_string(),
+                    image: "result.png".to_string(),
+                    risk_level: crate::game::data::random_event_data::EventRiskLevel::Low,
+                };
+
+                // RandomEventExecutor 헬퍼 함수 호출
+                RandomEventExecutor::process_choice(&mut self.world, &event, &choice_id)?;
+
+                Ok(BehaviorResult::RandomEventState { event })
+            }
+
+            RandomEventAction::Exit => {
+                // 상태 전환: SelectingEvent로 복귀 (allowed_actions 자동 설정)
+                // TODO: 다음 Phase로 진행해야 하는지, SelectingEvent로 복귀해야 하는지 결정 필요
+                self.transition_to(GameState::SelectingEvent);
+
+                Ok(BehaviorResult::Ok)
+            }
+        }
+    }
 }
-각 단계는 PhaseSchedule 라는 구조체로 정의할 수 있어.
-pub struct PhaseSchedule {
-    pub phase_number: u8,
-    pub event_type: PhaseEventType,
+
+// ============================================================
+// 테스트 헬퍼 메서드들
+// ============================================================
+
+impl GameCore {
+    /// 현재 게임 상태 조회
+    ///
+    /// # Returns
+    /// 현재 GameState의 복사본
+    pub fn get_state(&self) -> GameState {
+        self.world
+            .get_resource::<GameState>()
+            .cloned()
+            .unwrap_or(GameState::NotStarted)
+    }
+
+    /// 현재 Enkephalin 양 조회
+    ///
+    /// # Returns
+    /// 현재 Enkephalin 양. Resource가 없으면 0 반환
+    pub fn get_enkephalin(&self) -> u32 {
+        self.world
+            .get_resource::<Enkephalin>()
+            .map(|e| e.amount)
+            .unwrap_or(0)
+    }
+
+    /// 현재 게임 진행 상황 조회
+    ///
+    /// # Returns
+    /// (현재 Ordeal, 현재 Phase) 튜플
+    pub fn get_progression(&self) -> (OrdealType, PhaseType) {
+        self.world
+            .get_resource::<GameProgression>()
+            .map(|p| (p.current_ordeal, p.current_phase))
+            .unwrap_or((OrdealType::Dawn, PhaseType::I))
+    }
+
+    /// 현재 Level 조회
+    ///
+    /// # Returns
+    /// 현재 Level. Resource가 없으면 1 반환
+    pub fn get_level(&self) -> u32 {
+        use crate::ecs::resources::Level;
+
+        self.world
+            .get_resource::<Level>()
+            .map(|l| l.level)
+            .unwrap_or(1)
+    }
+
+    /// 현재 승리 횟수 조회
+    ///
+    /// # Returns
+    /// 현재 WinCount. Resource가 없으면 0 반환
+    pub fn get_win_count(&self) -> u32 {
+        use crate::ecs::resources::WinCount;
+
+        self.world
+            .get_resource::<WinCount>()
+            .map(|w| w.count)
+            .unwrap_or(0)
+    }
+
+    /// 현재 Phase의 이벤트 개수 조회
+    ///
+    /// # Returns
+    /// CurrentPhaseEvents에 저장된 이벤트 개수
+    pub fn get_phase_events_count(&self) -> usize {
+        self.world
+            .get_resource::<CurrentPhaseEvents>()
+            .map(|events| events.len())
+            .unwrap_or(0)
+    }
+
+    /// 현재 허용된 행동 목록 조회
+    ///
+    /// # Returns
+    /// 현재 허용된 PlayerBehavior 목록
+    pub fn get_allowed_actions(&self) -> Vec<PlayerBehavior> {
+        self.world
+            .get_resource::<CurrentGameContext>()
+            .map(|ctx| ctx.allowed_actions.clone())
+            .unwrap_or_default()
+    }
+
+    /// 특정 행동이 허용되는지 확인
+    ///
+    /// # Arguments
+    /// * `action` - 확인할 행동
+    ///
+    /// # Returns
+    /// 허용되면 true, 아니면 false
+    pub fn is_action_allowed(&self, action: &PlayerBehavior) -> bool {
+        self.world
+            .get_resource::<CurrentGameContext>()
+            .map(|ctx| ctx.is_action_allowed(action))
+            .unwrap_or(false)
+    }
 }
-OrdealScheduler 구조체는 시련에 따라 적절한 Phase 스케줄을 반환해 ( PhaseSchedule )
-PhaseResolver 구조체는 OrdealScheduler 가 반환한 스케줄을 기반으로 실제 이벤트 발생 기능을 수행해.
-
-발생할 수 있는 이벤트는 다음과 같아.
- - 상점
- - 무료 보너스 (골드/경험치/아이템/기물 등)
- - 랜덤 이벤트 (저점~고점 랜덤 이벤트)
-
-pve 이벤트의 경우 3개의 랜덤 몬스터가 생기고 플레이어가 그 중 하나를 선택하는 방식이야
-
-pvp 이벤트의 경우 match server/redis 에 저장된 ghost 와 전투를 벌이는 방식이야.
-
-
-OrdealScheduler 가 작성해준 스케줄을 따라 PhaseResolver 가 이벤트를 발생시키는 구조이니까.
-지금은 위 3가지 이벤트를 system 으로 구현하면 되겠다.
-근데 3가지 이벤트를 발생시키는 코드를 모두 PhaseResolver 에 작성하면 너무 코드가 비대해지니까
-각 이벤트 별로 모듈을 만들어서 PhaseResolver 가 호출하는 방식으로 하는것도 좋을 것 같아.
-
-
-
-이 구조에 대해서 어떻게 생각해?
-더 나은 대안이 있는지, 현재 설계의 한계점이라든지 너의 생각을 말해줘.
-
-
-*/

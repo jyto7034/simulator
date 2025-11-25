@@ -1,0 +1,63 @@
+ArtifactDatabase(
+    items: [
+        // 아티팩트 상인 라헬의 상품
+        ArtifactMetadata(
+            id: "one_sin",
+            uuid: "650e8400-e29b-41d4-a716-446655440011",
+            name: "One Sin and Hundreds of Good Deeds",
+            description: "A mysterious skull that grants absolution. Revives once upon death.",
+            rarity: WAW,
+            price: 100,
+        ),
+        ArtifactMetadata(
+            id: "fairy_festival",
+            uuid: "650e8400-e29b-41d4-a716-446655440012",
+            name: "Fairy Festival",
+            description: "An invitation to the eternal festival. Increases gold gain.",
+            rarity: WAW,
+            price: 120,
+        ),
+        ArtifactMetadata(
+            id: "beauty_and_beast",
+            uuid: "650e8400-e29b-41d4-a716-446655440013",
+            name: "Beauty and the Beast",
+            description: "A cursed mirror showing true nature. Massively boosts stats but at a cost.",
+            rarity: ALEPH,
+            price: 200,
+        ),
+
+        // 추가 아티팩트
+        ArtifactMetadata(
+            id: "fragment_immortality",
+            uuid: "a0000001-0000-0000-0000-000000000001",
+            name: "Fragment of Immortality",
+            description: "A piece of the Plague Doctor's mask. Grants protection against instant death.",
+            rarity: ALEPH,
+            price: 350,
+        ),
+        ArtifactMetadata(
+            id: "red_ribbon",
+            uuid: "a0000002-0000-0000-0000-000000000002",
+            name: "Red Ribbon",
+            description: "A ribbon stained with blood. Increases movement speed.",
+            rarity: WAW,
+            price: 180,
+        ),
+        ArtifactMetadata(
+            id: "soda",
+            uuid: "a0000003-0000-0000-0000-000000000003",
+            name: "Soda",
+            description: "A can of refreshing soda. Restores HP over time.",
+            rarity: ZAYIN,
+            price: 50,
+        ),
+        ArtifactMetadata(
+            id: "scorched_teddy",
+            uuid: "a0000004-0000-0000-0000-000000000004",
+            name: "Scorched Girl's Teddy Bear",
+            description: "A charred teddy bear. Increases fire resistance.",
+            rarity: HE,
+            price: 120,
+        ),
+    ]
+)

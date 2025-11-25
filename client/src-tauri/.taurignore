@@ -1,5 +1,0 @@
-# Ignore other simulator projects
-../simulator_auth_server/
-../simulator_core/
-../simulator_dedicated_server/
-../simulator_match_server/

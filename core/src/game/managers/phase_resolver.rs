@@ -1,6 +1,9 @@
 use crate::{
     ecs::resources::GameProgression,
-    game::{enums::{OrdealType, PhaseSchedule}, managers::ordeal_scheduler::OrdealScheduler},
+    game::{
+        enums::{OrdealType, PhaseSchedule},
+        managers::ordeal_scheduler::OrdealScheduler,
+    },
 };
 
 pub struct PhaseResolver {

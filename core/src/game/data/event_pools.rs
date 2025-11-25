@@ -1,7 +1,7 @@
 use crate::game::enums::OrdealType;
-use crate::game::events::event_selection::EventOption;
 use rand::{distributions::WeightedIndex, prelude::Distribution};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EventPoolConfig {
@@ -23,7 +23,7 @@ pub struct EventPhasePool {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WeightedEvent {
     pub weight: u32,
-    pub event: EventOption,
+    pub uuid: Uuid, // 이벤트 고유 식별자 (RON에서 지정, GameData 조회용)
 }
 
 impl EventPoolConfig {
@@ -40,32 +40,18 @@ impl EventPoolConfig {
 }
 
 impl EventPhasePool {
-    /// 각 카테고리에서 1개씩 선택 (총 3개)
-    pub fn choose_one_from_each<R: rand::Rng>(&self, rng: &mut R) -> [EventOption; 3] {
-        // 상점 1개 선택
-        let shop = Self::choose_from_pool(&self.shops, rng);
-
-        // 보너스 1개 선택
-        let bonus = Self::choose_from_pool(&self.bonuses, rng);
-
-        // 랜덤 인카운터 1개 선택
-        let random = Self::choose_from_pool(&self.random_events, rng);
-
-        [shop, bonus, random]
-    }
-
-    /// 가중치 기반 1개 선택
-    fn choose_from_pool<R: rand::Rng>(pool: &[WeightedEvent], rng: &mut R) -> EventOption {
+    /// 가중치 기반 UUID 선택 (유틸리티 메서드)
+    ///
+    /// Generator들이 pool에서 UUID를 선택할 때 사용
+    pub fn choose_weighted_uuid<R: rand::Rng>(pool: &[WeightedEvent], rng: &mut R) -> Option<Uuid> {
         if pool.is_empty() {
-            // 폴백: 기본 이벤트
-            use crate::game::data::shop_data::ShopType;
-            return EventOption::Shop(ShopType::Shop);
+            return None;
         }
 
         let weights: Vec<u32> = pool.iter().map(|e| e.weight).collect();
         let dist = WeightedIndex::new(&weights).unwrap();
         let idx = dist.sample(rng);
 
-        pool[idx].event.clone()
+        Some(pool[idx].uuid)
     }
 }

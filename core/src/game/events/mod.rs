@@ -12,18 +12,6 @@ pub trait EventGenerator {
     fn generate(&self, ctx: &GeneratorContext) -> Self::Output;
 }
 
-pub trait EventExecutor {
-    type Input;
-
-    fn execute(&self, ctx: &ExecutorContext, input: Self::Input) -> Result<(), EventError>;
-}
-
-#[derive(Debug)]
-pub enum EventError {
-    InvalidSelection,
-    InsufficientResources,
-}
-
 use crate::ecs::components::Player;
 use crate::game::data::GameData;
 
@@ -70,32 +58,5 @@ impl<'w> GeneratorContext<'w> {
                 ..Default::default()
             },
         }
-    }
-}
-
-pub struct ExecutorContext<'w> {
-    pub world: &'w mut World,
-    pub player_id: &'w str,
-    pub session_id: &'w str,
-    pub timestamp: SystemTime,
-}
-
-impl<'w> ExecutorContext<'w> {
-    pub fn new(world: &'w mut World, player_id: &'w str, session_id: &'w str) -> Self {
-        Self {
-            world,
-            player_id,
-            session_id,
-            timestamp: SystemTime::now(),
-        }
-    }
-
-    /// 편의 메서드: World 접근
-    pub fn world(&self) -> &World {
-        self.world
-    }
-
-    pub fn world_mut(&mut self) -> &mut World {
-        self.world
     }
 }
