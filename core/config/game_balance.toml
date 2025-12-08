@@ -1,0 +1,37 @@
+# 게임 밸런스 설정
+
+[qliphoth.thresholds]
+# 클리포트 임계값 설정
+stable_min = 10
+stable_max = 7
+caution_min = 6
+caution_max = 4
+critical_min = 3
+critical_max = 1
+meltdown = 0
+
+[qliphoth.suppress_chance]
+# 진압 작업 발생 확률 (0~100)
+stable = 0        # 안정 상태: 진압 작업 발생 안 함
+caution = 50      # 주의 상태: 50% 확률로 진압 작업 발생
+critical = 100    # 위험 상태: 강제 진압 (Breach)
+
+[qliphoth.changes]
+# 클리포트 변화량
+battle_cost = 1           # 전투마다 감소량
+suppress_success = 2      # 진압 성공 시 증가량
+suppress_failure = 1      # 진압 실패 시 감소량
+breach_success = 3        # Breach 성공 시 증가량 (하이리스크 하이리턴)
+breach_failure = 2        # Breach 실패 시 감소량
+phase_recovery = 1        # 페이즈 종료 시 자동 회복량
+item_recovery = 2         # 특수 아이템 사용 시 회복량
+
+[qliphoth.reward_multipliers]
+# 보상 배율 (기본값 대비)
+stable = 1.0              # 안정 상태: 기본 보상
+caution_suppress = 1.5    # 주의 상태 진압: 1.5배
+critical_breach = 2.5     # 위험 상태 Breach: 2.5배
+
+# 추후 확장 가능: 다른 게임 밸런스 설정
+# [combat]
+# [progression]

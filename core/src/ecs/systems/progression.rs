@@ -1,5 +1,6 @@
 use crate::ecs::resources::GameProgression;
 use crate::game::enums::{MoveTo, OrdealType, PhaseType};
+use tracing::debug;
 
 /// Phase 진행 (성공 시 새 Phase 반환)
 pub fn advance_phase(progression: &mut GameProgression) -> Option<PhaseType> {
@@ -7,6 +8,12 @@ pub fn advance_phase(progression: &mut GameProgression) -> Option<PhaseType> {
 
     if let Some(next) = progression.current_phase.next() {
         if next.value() <= max_phases {
+            debug!(
+                "Advancing phase: {:?} -> {:?} (max_phases={})",
+                progression.current_phase,
+                next,
+                max_phases
+            );
             progression.current_phase = next;
             return Some(next);
         }
@@ -17,6 +24,10 @@ pub fn advance_phase(progression: &mut GameProgression) -> Option<PhaseType> {
 /// Ordeal 진행 (성공 시 새 Ordeal 반환)
 pub fn advance_ordeal(progression: &mut GameProgression) -> Option<OrdealType> {
     if let Some(next) = progression.current_ordeal.next() {
+        debug!(
+            "Advancing ordeal: {:?} -> {:?}",
+            progression.current_ordeal, next
+        );
         progression.current_ordeal = next;
         progression.current_phase = PhaseType::I;
         return Some(next);

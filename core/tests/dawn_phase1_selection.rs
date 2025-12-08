@@ -11,9 +11,8 @@ use uuid::Uuid;
 // ============================================================
 #[cfg(test)]
 mod shop {
-    use game_core::ecs::resources::GameState;
-
     use super::*;
+    use game_core::{ecs::resources::GameState, game::enums::Category};
 
     /// 통합 테스트: 상점 선택 시나리오
     #[test]
@@ -65,9 +64,9 @@ mod shop {
             _ => panic!("Expected InShop state"),
         }
 
-        // Then: 허용된 행동 확인 (구매, 리롤, 나가기)
+        // Then: 허용된 행동 확인 (구매, 판매, 리롤, 나가기)
         let allowed_actions = game.get_allowed_actions();
-        assert_eq!(allowed_actions.len(), 3);
+        assert_eq!(allowed_actions.len(), 4);
 
         // Then: CurrentPhaseEvents에서 선택된 이벤트가 제거됨
         assert_eq!(game.get_phase_events_count(), 2);
@@ -109,8 +108,7 @@ mod shop {
 
         let shop_uuid = shop_metadata.uuid;
 
-        let first_items: Vec<Uuid> =
-            shop_metadata.visible_items.iter().map(|item| item.uuid()).collect();
+        let first_items: Vec<Uuid> = shop_metadata.visible_items.iter().cloned().collect();
 
         // When: 상점 이벤트 선택
         let result = game.execute(
@@ -132,9 +130,9 @@ mod shop {
             _ => panic!("Expected InShop state"),
         }
 
-        // Then: 허용된 행동 확인 (구매, 리롤, 나가기)
+        // Then: 허용된 행동 확인 (구매, 판매, 리롤, 나가기)
         let allowed_actions = game.get_allowed_actions();
-        assert_eq!(allowed_actions.len(), 3);
+        assert_eq!(allowed_actions.len(), 4);
 
         // Then: CurrentPhaseEvents에서 선택된 이벤트가 제거됨
         assert_eq!(game.get_phase_events_count(), 2);
@@ -151,32 +149,13 @@ mod shop {
 
         // Then: 처음 받은 아이템과 다른지 검증 (UUID 기준)
         if let Ok(BehaviorResult::RerollShop { new_items }) = result {
-            let rerolled: Vec<Uuid> = new_items.iter().map(|item| item.uuid()).collect();
+            let rerolled: Vec<Uuid> = new_items.clone();
             assert_ne!(rerolled, first_items, "Items must be different");
         }
     }
 
-    // TODO: 각 상점의 visiable_items 을 순회하면서 아이템을 구매하는 helper 함수
-    fn purchase_item(player_id: Uuid, game: &mut GameCore, item_uuid: Uuid) -> BehaviorResult {
-        // When: 아이템 구매 시도
-        let result = game.execute(player_id, PlayerBehavior::PurchaseItem { item_uuid });
-
-        // Then: 행동 결과 확인
-        assert!(result.is_ok());
-        assert!(matches!(
-            result.unwrap(),
-            BehaviorResult::PurchaseItem {
-                enkephalin,
-                inventory_metadata,
-                shop_metadata
-            }
-        ));
-
-        todo!()
-    }
-
     #[test]
-    fn test_purchade_item() {
+    fn test_purchase_item() {
         let game_data = create_test_game_data();
         let mut game = GameCore::new(game_data.clone(), 12345);
         let player_id = Uuid::new_v4();
@@ -229,17 +208,89 @@ mod shop {
             _ => panic!("Expected InShop state"),
         }
 
-        // Then: 허용된 행동 확인 (구매, 리롤, 나가기)
+        // Then: 허용된 행동 확인 (구매, 판매, 리롤, 나가기)
         let allowed_actions = game.get_allowed_actions();
-        assert_eq!(allowed_actions.len(), 3);
+        assert_eq!(allowed_actions.len(), 4);
 
         // Then: CurrentPhaseEvents에서 선택된 이벤트가 제거됨
         assert_eq!(game.get_phase_events_count(), 2);
 
-        let items = shop_metadata.visible_items.clone();
-        for item in items {
-            let uuid = item.uuid();
-            purchase_item(player_id, &mut game, uuid);
+        // 테스트용으로 충분한 Enkephalin 지급
+        game.set_enkephalin(10_000);
+
+        let items_with_prices: Vec<(Uuid, u32)> = shop_metadata
+            .visible_items
+            .iter()
+            .filter_map(|uuid| {
+                game_data
+                    .item(uuid)
+                    .map(|item| (*uuid, item.price()))
+            })
+            .collect();
+
+        let mut expected_enkephalin = 10_000u32;
+
+        for (item_uuid, item_price) in items_with_prices {
+            // Given: 구매 전 엔케팔린 확인
+            let enkephalin_before = game.get_enkephalin();
+            assert_eq!(enkephalin_before, expected_enkephalin);
+
+            // When: 아이템 구매
+            let result = game.execute(
+                player_id,
+                PlayerBehavior::PurchaseItem {
+                    item_uuid,
+                    item_category: Category::Artifact,
+                },
+            );
+
+            // Then: 구매 성공
+            assert!(result.is_ok());
+            assert!(matches!(
+                result.as_ref().unwrap(),
+                BehaviorResult::PurchaseItem { .. }
+            ));
+
+            // Then: 반환값 검증
+            let res = result.unwrap();
+            let (returned_enkephalin, inventory_diff) = res.as_purchase_item().unwrap();
+
+            // 1. 반환된 엔케팔린이 예상값과 일치하는지
+            expected_enkephalin -= item_price;
+            assert_eq!(
+                returned_enkephalin, expected_enkephalin,
+                "구매 후 엔케팔린이 예상값과 다릅니다: expected={}, actual={}",
+                expected_enkephalin, returned_enkephalin
+            );
+
+            // 2. 실제 게임 상태의 엔케팔린과 일치하는지
+            let actual_enkephalin = game.get_enkephalin();
+            assert_eq!(
+                actual_enkephalin, returned_enkephalin,
+                "반환된 엔케팔린과 게임 상태의 엔케팔린이 다릅니다"
+            );
+
+            // 3. inventory_diff.added에 구매한 아이템이 포함되어 있는지
+            assert_eq!(
+                inventory_diff.added.len(),
+                1,
+                "구매한 아이템이 1개여야 합니다"
+            );
+            assert_eq!(
+                inventory_diff.added[0].uuid(),
+                item_uuid,
+                "구매한 아이템의 UUID가 일치해야 합니다"
+            );
+
+            // 4. inventory_diff.updated와 removed는 비어있어야 함
+            assert!(
+                inventory_diff.updated.is_empty(),
+                "updated는 비어있어야 합니다"
+            );
+            assert!(
+                inventory_diff.removed.is_empty(),
+                "removed는 비어있어야 합니다"
+            );
         }
     }
 }
@@ -250,6 +301,7 @@ mod shop {
 #[cfg(test)]
 mod bonus {
     use super::*;
+    use game_core::ecs::resources::GameState;
 
     /// 통합 테스트: 보너스 선택 시나리오
     #[test]
@@ -292,18 +344,59 @@ mod bonus {
             },
         );
 
-        // Then: 보너스 선택 성공
+        // Then: 보너스 선택 성공 및 InBonus 상태 진입
         assert!(result.is_ok());
 
         assert!(matches!(result.unwrap(), BehaviorResult::EventSelected));
 
-        // Then: Enkephalin이 증가했는지 확인 (50~100 범위)
+        // Then: 게임 상태가 InBonus로 변경됨
+        match game.get_state() {
+            GameState::InBonus { bonus_uuid: uuid } => {
+                assert_eq!(uuid, bonus_uuid);
+            }
+            _ => panic!("Expected InBonus state"),
+        }
+
+        // Then: 허용된 행동 확인 (ClaimBonus, ExitBonus)
+        let allowed_actions = game.get_allowed_actions();
+        assert_eq!(allowed_actions.len(), 2);
+        assert!(game.is_action_allowed(&PlayerBehavior::ClaimBonus));
+        assert!(game.is_action_allowed(&PlayerBehavior::ExitBonus));
+
+        // 보너스 진입 시점에서는 아직 자원이 지급되지 않음
+        let mid_enkephalin = game.get_enkephalin();
+        assert_eq!(mid_enkephalin, initial_enkephalin);
+
+        // When: 보너스 수령
+        let result = game.execute(player_id, PlayerBehavior::ClaimBonus);
+
+        // Then: 보너스 수령 성공 및 보상 확인
+        assert!(result.is_ok());
+
+        let (returned_enkephalin, inventory_diff) = match result.unwrap() {
+            BehaviorResult::BonusReward {
+                enkephalin,
+                inventory_diff,
+            } => (enkephalin, inventory_diff),
+            other => panic!("Expected BonusReward result, got {:?}", other),
+        };
+
+        // Then: Enkephalin이 증가했는지 확인 (고정값 100)
         let final_enkephalin = game.get_enkephalin();
-        assert!(
-            final_enkephalin >= 50 && final_enkephalin <= 100,
-            "Enkephalin should be between 50 and 100, but got {}",
+        assert_eq!(
+            final_enkephalin, 100,
+            "Enkephalin should be 100, but got {}",
             final_enkephalin
         );
+        assert_eq!(final_enkephalin, returned_enkephalin);
+
+        // 현재는 인벤토리 변화 없음 (향후 BonusType::Item/Abnormality 구현 시 확장)
+        assert!(inventory_diff.added.is_empty());
+        assert!(inventory_diff.updated.is_empty());
+        assert!(inventory_diff.removed.is_empty());
+
+        // Then: 상태가 SelectingEvent로 복귀
+        assert_eq!(game.get_state(), GameState::SelectingEvent);
 
         // Then: CurrentPhaseEvents에서 선택된 이벤트가 제거됨
         assert_eq!(game.get_phase_events_count(), 2);
@@ -346,6 +439,16 @@ mod random_event {
             })
             .expect("Random event option should exist");
 
+        // RandomEvent 가 라우팅할 대상 Bonus 의 uuid
+        let bonus_uuid = phase_event
+            .options()
+            .iter()
+            .find_map(|opt| match opt {
+                GameOption::Bonus { bonus } => Some(bonus.uuid),
+                _ => None,
+            })
+            .expect("Bonus option should exist");
+
         let result = game.execute(
             player_id,
             PlayerBehavior::SelectEvent {
@@ -353,18 +456,18 @@ mod random_event {
             },
         );
 
-        // Then: 랜덤 이벤트 진입 성공
+        // Then: 랜덤 이벤트 선택 성공
         assert!(result.is_ok());
 
         assert!(matches!(result.unwrap(), BehaviorResult::EventSelected));
 
-        // Then: 게임 상태가 InRandomEvent로 변경됨
+        // Then: RandomEvent 가 Bonus 로 라우팅되어 InBonus 상태로 변경됨
         use game_core::ecs::resources::GameState;
         match game.get_state() {
-            GameState::InRandomEvent { event_uuid: uuid } => {
-                assert_eq!(uuid, event_uuid);
+            GameState::InBonus { bonus_uuid: uuid } => {
+                assert_eq!(uuid, bonus_uuid);
             }
-            _ => panic!("Expected InRandomEvent state"),
+            _ => panic!("Expected InBonus state after random event selection"),
         }
 
         // Then: 허용된 행동 확인 (선택지 선택, 나가기)
@@ -434,7 +537,7 @@ mod integration {
 
         // Then: Dawn Phase I 진행 상황 확인
         use game_core::game::enums::{OrdealType, PhaseType};
-        let (ordeal, phase) = game.get_progression();
+        let (ordeal, phase) = game.get_progression().unwrap();
         assert_eq!(ordeal, OrdealType::Dawn);
         assert_eq!(phase, PhaseType::I);
 
@@ -454,7 +557,7 @@ mod integration {
         assert!(has_random, "Should have a Random event option");
     }
 
-    /// 통합 테스트: 잘못된 이벤트 ID 선택 시 에러
+    /// 통합 테스트: 잘못된 이벤트 ID 선택 시 에러 반환
     #[test]
     fn select_invalid_event_id() {
         // Given: 게임 시작 및 Phase 데이터 받음
@@ -470,18 +573,19 @@ mod integration {
         // When: 존재하지 않는 이벤트 ID로 선택 시도
         let invalid_uuid = Uuid::new_v4();
 
-        // Then: 패닉이 발생해야 함 (현재 GameCore 구현 상 panic!())
-        // TODO: 에러 핸들링 개선 후 assert!(result.is_err()) 로 변경
-        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-            game.execute(
-                player_id,
-                PlayerBehavior::SelectEvent {
-                    event_id: invalid_uuid,
-                },
-            )
-        }));
+        let result = game.execute(
+            player_id,
+            PlayerBehavior::SelectEvent {
+                event_id: invalid_uuid,
+            },
+        );
 
-        assert!(result.is_err(), "Should panic on invalid event ID");
+        // Then: panic 대신 GameError::EventNotFound 를 반환해야 함
+        assert!(result.is_err(), "Expected error on invalid event ID");
+        match result.unwrap_err() {
+            game_core::game::behavior::GameError::EventNotFound => {}
+            other => panic!("Expected EventNotFound, got {:?}", other),
+        }
     }
 
     /// 통합 테스트: 허용된 행동 검증
@@ -552,7 +656,7 @@ mod initial_state {
 
         // Then: 초기 진행 상황 확인
         use game_core::game::enums::{OrdealType, PhaseType};
-        let (ordeal, phase) = game.get_progression();
+        let (ordeal, phase) = game.get_progression().unwrap();
         assert_eq!(ordeal, OrdealType::Dawn);
         assert_eq!(phase, PhaseType::I);
     }

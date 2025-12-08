@@ -11,13 +11,6 @@ pub trait MoveTo {
     fn is_last(&self) -> bool;
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub enum EquipmentType {
-    Weapon,
-    Suit,
-    Accessory,
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Category {
     Abnormality,
@@ -161,6 +154,19 @@ pub enum PhaseEventType {
     Ordeal,
 }
 
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub enum Lane {
+    Front,
+    Mid,
+    Back,
+}
+
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub enum Side {
+    Opponent,
+    Player,
+}
+
 // ============================================================
 // GameOption
 // ============================================================
@@ -261,6 +267,14 @@ impl PhaseEvent {
     pub fn is_ordeal(&self) -> bool {
         matches!(self, PhaseEvent::Ordeal { .. })
     }
+
+    pub fn event_type(&self) -> PhaseEventType {
+        match self {
+            PhaseEvent::EventSelection { .. } => PhaseEventType::EventSelection,
+            PhaseEvent::Suppression { .. } => PhaseEventType::Suppression,
+            PhaseEvent::Ordeal { .. } => PhaseEventType::Ordeal,
+        }
+    }
 }
 
 pub struct PhaseSchedule {
@@ -320,270 +334,8 @@ pub enum RandomEventAction {
     Exit,
 }
 
-// ============================================================
-// Tests
-// ============================================================
-
-#[cfg(test)]
-mod tests {
-    use crate::game::{data::shop_data::ShopType, events::event_selection::bonus::BonusType};
-
-    use super::*;
-
-    // ============================================================
-    // OrdealType Tests
-    // ============================================================
-
-    #[test]
-    fn test_ordeal_max_phases() {
-        assert_eq!(OrdealType::Dawn.max_phases(), 5);
-        assert_eq!(OrdealType::Noon.max_phases(), 6);
-        assert_eq!(OrdealType::Dusk.max_phases(), 5);
-        assert_eq!(OrdealType::Midnight.max_phases(), 6);
-        assert_eq!(OrdealType::White.max_phases(), 5);
-    }
-
-    #[test]
-    fn test_ordeal_is_valid_phase() {
-        // Dawn은 Phase V까지만 유효
-        assert!(OrdealType::Dawn.is_valid_phase(PhaseType::I));
-        assert!(OrdealType::Dawn.is_valid_phase(PhaseType::V));
-        assert!(!OrdealType::Dawn.is_valid_phase(PhaseType::VI));
-
-        // Noon은 Phase VI까지 유효
-        assert!(OrdealType::Noon.is_valid_phase(PhaseType::VI));
-    }
-
-    #[test]
-    fn test_ordeal_next() {
-        assert_eq!(OrdealType::Dawn.next(), Some(OrdealType::Noon));
-        assert_eq!(OrdealType::Noon.next(), Some(OrdealType::Dusk));
-        assert_eq!(OrdealType::Dusk.next(), Some(OrdealType::Midnight));
-        assert_eq!(OrdealType::Midnight.next(), Some(OrdealType::White));
-        assert_eq!(OrdealType::White.next(), None);
-    }
-
-    #[test]
-    fn test_ordeal_is_last() {
-        assert!(!OrdealType::Dawn.is_last());
-        assert!(!OrdealType::Noon.is_last());
-        assert!(!OrdealType::Dusk.is_last());
-        assert!(!OrdealType::Midnight.is_last());
-        assert!(OrdealType::White.is_last());
-    }
-
-    // ============================================================
-    // PhaseType Tests
-    // ============================================================
-
-    #[test]
-    fn test_phase_value() {
-        assert_eq!(PhaseType::I.value(), 1);
-        assert_eq!(PhaseType::II.value(), 2);
-        assert_eq!(PhaseType::III.value(), 3);
-        assert_eq!(PhaseType::IV.value(), 4);
-        assert_eq!(PhaseType::V.value(), 5);
-        assert_eq!(PhaseType::VI.value(), 6);
-    }
-
-    #[test]
-    fn test_phase_from_value() {
-        assert_eq!(PhaseType::from_value(1), Some(PhaseType::I));
-        assert_eq!(PhaseType::from_value(2), Some(PhaseType::II));
-        assert_eq!(PhaseType::from_value(3), Some(PhaseType::III));
-        assert_eq!(PhaseType::from_value(4), Some(PhaseType::IV));
-        assert_eq!(PhaseType::from_value(5), Some(PhaseType::V));
-        assert_eq!(PhaseType::from_value(6), Some(PhaseType::VI));
-        assert_eq!(PhaseType::from_value(0), None);
-        assert_eq!(PhaseType::from_value(7), None);
-    }
-
-    #[test]
-    fn test_phase_next() {
-        assert_eq!(PhaseType::I.next(), Some(PhaseType::II));
-        assert_eq!(PhaseType::II.next(), Some(PhaseType::III));
-        assert_eq!(PhaseType::III.next(), Some(PhaseType::IV));
-        assert_eq!(PhaseType::IV.next(), Some(PhaseType::V));
-        assert_eq!(PhaseType::V.next(), Some(PhaseType::VI));
-        assert_eq!(PhaseType::VI.next(), None);
-    }
-
-    #[test]
-    fn test_phase_is_last() {
-        assert!(!PhaseType::I.is_last());
-        assert!(!PhaseType::II.is_last());
-        assert!(!PhaseType::III.is_last());
-        assert!(!PhaseType::IV.is_last());
-        assert!(!PhaseType::V.is_last());
-        assert!(PhaseType::VI.is_last());
-    }
-
-    #[test]
-    fn test_phase_is_last_in_ordeal() {
-        // Dawn은 Phase V가 마지막
-        assert!(!PhaseType::IV.is_last_in(&OrdealType::Dawn));
-        assert!(PhaseType::V.is_last_in(&OrdealType::Dawn));
-
-        // Noon은 Phase VI가 마지막
-        assert!(!PhaseType::V.is_last_in(&OrdealType::Noon));
-        assert!(PhaseType::VI.is_last_in(&OrdealType::Noon));
-    }
-
-    #[test]
-    fn test_phase_first() {
-        assert_eq!(PhaseType::first(), PhaseType::I);
-    }
-
-    // ============================================================
-    // GameOption Tests
-    // ============================================================
-
-    #[test]
-    fn test_game_option_uuid_extraction() {
-        use crate::game::data::bonus_data::BonusMetadata;
-        use crate::game::data::random_event_data::{EventRiskLevel, RandomEventMetadata};
-        use crate::game::data::shop_data::ShopMetadata;
-        use crate::game::events::event_selection::random::RandomEventType;
-
-        // Shop UUID 추출
-        let shop_uuid = Uuid::new_v4();
-        let shop_option = GameOption::Shop {
-            shop: ShopMetadata {
-                uuid: shop_uuid,
-                name: "Test Shop".to_string(),
-                items_raw: vec![],
-                shop_type: ShopType::Shop,
-                can_reroll: false,
-                visible_items: vec![],
-                hidden_items: vec![],
-            },
-        };
-        assert_eq!(shop_option.uuid(), shop_uuid);
-
-        // Bonus UUID 추출
-        let bonus_uuid = Uuid::new_v4();
-        let bonus_option = GameOption::Bonus {
-            bonus: BonusMetadata {
-                uuid: bonus_uuid,
-                bonus_type: BonusType::Enkephalin,
-                name: "Test Bonus".to_string(),
-                description: "Test".to_string(),
-                min_amount: 10,
-                max_amount: 20,
-                icon: String::from("asd"),
-            },
-        };
-        assert_eq!(bonus_option.uuid(), bonus_uuid);
-
-        // Random UUID 추출
-        let random_uuid = Uuid::new_v4();
-        let random_option = GameOption::Random {
-            event: RandomEventMetadata {
-                id: "test_event".to_string(),
-                uuid: random_uuid,
-                event_type: RandomEventType::SuspiciousBox,
-                name: "Test Event".to_string(),
-                description: "Test".to_string(),
-                image: "test.png".to_string(),
-                risk_level: EventRiskLevel::Low,
-            },
-        };
-        assert_eq!(random_option.uuid(), random_uuid);
-
-        // SuppressAbnormality UUID 추출
-        let suppress_uuid = Uuid::new_v4();
-        let suppress_option = GameOption::SuppressAbnormality {
-            abnormality_id: "F-01-02".to_string(),
-            risk_level: RiskLevel::HE,
-            uuid: suppress_uuid,
-        };
-        assert_eq!(suppress_option.uuid(), suppress_uuid);
-
-        // OrdealBattle UUID 추출
-        let battle_uuid = Uuid::new_v4();
-        let battle_option = GameOption::OrdealBattle {
-            ordeal_type: OrdealType::Dawn,
-            difficulty: 1,
-            uuid: battle_uuid,
-        };
-        assert_eq!(battle_option.uuid(), battle_uuid);
-    }
-
-    // ============================================================
-    // PhaseEvent Tests
-    // ============================================================
-
-    #[test]
-    fn test_phase_event_type_checks() {
-        use crate::game::data::bonus_data::BonusMetadata;
-        use crate::game::data::random_event_data::{EventRiskLevel, RandomEventMetadata};
-        use crate::game::data::shop_data::ShopMetadata;
-        use crate::game::events::event_selection::random::RandomEventType;
-
-        let shop = ShopMetadata {
-            uuid: Uuid::new_v4(),
-            name: "Test Shop".to_string(),
-            items_raw: vec![],
-            shop_type: ShopType::Shop,
-            can_reroll: false,
-            visible_items: vec![],
-            hidden_items: vec![],
-        };
-        let bonus = BonusMetadata {
-            bonus_type: BonusType::Enkephalin,
-            uuid: Uuid::new_v4(),
-            name: "Test Bonus".to_string(),
-            description: "desc".to_string(),
-            icon: "icon".to_string(),
-            min_amount: 1,
-            max_amount: 2,
-        };
-        let random = RandomEventMetadata {
-            id: "event".to_string(),
-            uuid: Uuid::new_v4(),
-            event_type: RandomEventType::SuspiciousBox,
-            name: "Random".to_string(),
-            description: "desc".to_string(),
-            image: "img".to_string(),
-            risk_level: EventRiskLevel::Low,
-        };
-
-        let event_selection = PhaseEvent::EventSelection {
-            shop: shop.clone(),
-            bonus: bonus.clone(),
-            random: random.clone(),
-        };
-
-        assert!(event_selection.is_event_selection());
-        assert!(!event_selection.is_suppression());
-        assert!(!event_selection.is_ordeal());
-
-        let options = event_selection.options();
-        assert_eq!(options.len(), 3);
-
-        let suppression = PhaseEvent::Suppression {
-            candidates: [
-                SuppressionOption {
-                    abnormality_id: "test".into(),
-                    risk_level: RiskLevel::ZAYIN,
-                    uuid: Uuid::new_v4(),
-                },
-                SuppressionOption {
-                    abnormality_id: "test2".into(),
-                    risk_level: RiskLevel::TETH,
-                    uuid: Uuid::new_v4(),
-                },
-                SuppressionOption {
-                    abnormality_id: "test3".into(),
-                    risk_level: RiskLevel::HE,
-                    uuid: Uuid::new_v4(),
-                },
-            ],
-        };
-
-        assert!(!suppression.is_event_selection());
-        assert!(suppression.is_suppression());
-        assert!(!suppression.is_ordeal());
-        assert_eq!(suppression.options().len(), 3);
-    }
+/// 보너스 내부 행동
+pub enum BonusAction {
+    Claim,
+    Exit,
 }

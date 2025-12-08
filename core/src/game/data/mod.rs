@@ -1,3 +1,20 @@
+use std::{collections::HashMap, sync::Arc};
+
+use uuid::Uuid;
+
+use crate::game::{
+    data::{
+        abnormality_data::{AbnormalityDatabase, AbnormalityMetadata},
+        artifact_data::{ArtifactDatabase, ArtifactMetadata},
+        bonus_data::BonusDatabase,
+        equipment_data::{EquipmentDatabase, EquipmentMetadata},
+        event_pools::EventPoolConfig,
+        random_event_data::RandomEventDatabase,
+        shop_data::ShopDatabase,
+    },
+    enums::Category,
+};
+
 // 환상체 (기물) 정보
 pub mod abnormality_data;
 
@@ -19,179 +36,215 @@ pub mod random_event_data;
 // 상점 정보
 pub mod shop_data;
 
-use std::{collections::HashMap, sync::Arc};
-use serde::{Deserialize, Serialize};
+pub struct GameDataBase {
+    /// 환상체, 장비, 아티팩트 Raw 데이터를 저장하는 마스터 테이블
+    pub abnormality_data: Arc<AbnormalityDatabase>,
+    pub artifact_data: Arc<ArtifactDatabase>,
+    pub equipment_data: Arc<EquipmentDatabase>,
 
-use abnormality_data::AbnormalityDatabase;
-use artifact_data::ArtifactDatabase;
-use bonus_data::BonusDatabase;
-use equipment_data::EquipmentDatabase;
-use random_event_data::RandomEventDatabase;
-use shop_data::ShopDatabase;
-use uuid::Uuid;
+    /// 마스터 테이블을 참고하여 상인, 랜덤 이벤트, 보너스 등을 구성하여 저장하는 게임 데이터베이스
+    pub shop_data: Arc<ShopDatabase>,
+    pub bonus_data: Arc<BonusDatabase>,
+    pub random_event_data: Arc<RandomEventDatabase>,
 
-use crate::game::data::{
-    abnormality_data::AbnormalityMetadata, artifact_data::ArtifactMetadata,
-    equipment_data::EquipmentMetadata, event_pools::EventPoolConfig,
-};
-
-/// 모든 게임 데이터를 담는 구조체
-///
-/// NOTE: 이 데이터는 game_server에서 로드되어 GameCore에 전달됩니다.
-/// game_server에서 Arc<GameData>로 공유하여 메모리 효율적으로 사용합니다.
-pub struct GameData {
-    pub shops_db: ShopDatabase,
+    /// 이벤트 생성을 위한 가중치 풀 (Ordeal별 이벤트 확률)
     pub event_pools: EventPoolConfig,
-    pub bonuses: BonusDatabase,
-    pub random_events: RandomEventDatabase,
-    pub abnormalities: AbnormalityDatabase,
-    pub equipments: EquipmentDatabase,
-    pub artifacts: ArtifactDatabase,
 
-    pub item_uuid_map: HashMap<Uuid, ItemReference>,
+    /// UUID 기반 아이템 조회 레지스트리
+    pub item_registry: ItemRegistry,
 }
 
-impl GameData {
-    pub fn build_item_uuid_map(&mut self) {
-        // 1. Abnormality DB에서 추가
-        for abnormality in &self.abnormalities.items {
-            let arc_data = Arc::new(abnormality.clone());
-            self.item_uuid_map
-                .insert(abnormality.uuid, ItemReference::Abnormality(arc_data));
-        }
-
-        // 2. Equipment DB에서 추가
-        for equipment in &self.equipments.items {
-            let arc_data = Arc::new(equipment.clone());
-            self.item_uuid_map
-                .insert(equipment.uuid, ItemReference::Equipment(arc_data));
-        }
-
-        // 3. Artifact DB에서 추가
-        for artifact in &self.artifacts.items {
-            let arc_data = Arc::new(artifact.clone());
-            self.item_uuid_map
-                .insert(artifact.uuid, ItemReference::Artifact(arc_data));
-        }
-
-        tracing::info!(
-            "ItemReference UUID Map 구축 완료: {} items",
-            self.item_uuid_map.len()
-        );
-    }
-
-    /// 어떤 타입의 아이템인지 모를 때 사용
-    pub fn get_item_by_uuid(&self, uuid: &Uuid) -> Option<&ItemReference> {
-        self.item_uuid_map.get(uuid)
-    }
-
-    /// UUID로 아이템 가격 조회 (O(1))
-    pub fn get_item_price(&self, uuid: &Uuid) -> Option<u32> {
-        self.get_item_by_uuid(uuid).map(|item| item.price())
-    }
-
-    /// UUID로 아이템 이름 조회 (O(1))
-    pub fn get_item_name(&self, uuid: &Uuid) -> Option<&str> {
-        self.get_item_by_uuid(uuid).map(|item| item.name())
-    }
-
-    // TODO: 아래 3개 함수 굳이 필요한가 싶음. 리팩토링 여지 있음
-
-    /// ShopProduct에서 환상체 데이터 조회 (레거시 - 필요시 사용)
-    pub fn get_abnormality_from_product(
-        &self,
-        id: &str,
-    ) -> Option<&abnormality_data::AbnormalityMetadata> {
-        self.abnormalities.get_by_id(id)
-    }
-
-    /// ShopProduct에서 장비 데이터 조회 (레거시)
-    pub fn get_equipment_from_product(
-        &self,
-        id: &str,
-    ) -> Option<&equipment_data::EquipmentMetadata> {
-        self.equipments.get_by_id(id)
-    }
-
-    /// ShopProduct에서 아티팩트 데이터 조회 (레거시)
-    pub fn get_artifact_from_product(&self, id: &str) -> Option<&artifact_data::ArtifactMetadata> {
-        self.artifacts.get_by_id(id)
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum ItemReference {
-    Abnormality(Arc<AbnormalityMetadata>),
+#[derive(Debug, Clone)]
+pub enum Item {
     Equipment(Arc<EquipmentMetadata>),
     Artifact(Arc<ArtifactMetadata>),
+    Abnormality(Arc<AbnormalityMetadata>),
 }
-impl ItemReference {
-    /// 공통 메타데이터 접근자들
 
-    pub fn uuid(&self) -> Uuid {
-        match self {
-            Self::Abnormality(data) => data.uuid,
-            Self::Equipment(data) => data.uuid,
-            Self::Artifact(data) => data.uuid,
-        }
-    }
+impl Item {
+    // ============================================================
+    // 공통 속성 접근자
+    // ============================================================
 
+    /// 아이템 가격 반환
     pub fn price(&self) -> u32 {
         match self {
-            Self::Abnormality(data) => data.price,
-            Self::Equipment(data) => data.price,
-            Self::Artifact(data) => data.price,
+            Item::Equipment(meta) => meta.price,
+            Item::Artifact(meta) => meta.price,
+            Item::Abnormality(meta) => meta.price,
         }
     }
 
-    pub fn name(&self) -> &str {
+    /// 아이템 UUID 반환
+    pub fn uuid(&self) -> Uuid {
         match self {
-            Self::Abnormality(data) => &data.name,
-            Self::Equipment(data) => &data.name,
-            Self::Artifact(data) => &data.name,
+            Item::Equipment(meta) => meta.uuid,
+            Item::Artifact(meta) => meta.uuid,
+            Item::Abnormality(meta) => meta.uuid,
         }
     }
 
+    /// 아이템 ID 반환
     pub fn id(&self) -> &str {
         match self {
-            Self::Abnormality(data) => &data.id,
-            Self::Equipment(data) => &data.id,
-            Self::Artifact(data) => &data.id,
+            Item::Equipment(meta) => &meta.id,
+            Item::Artifact(meta) => &meta.id,
+            Item::Abnormality(meta) => &meta.id,
         }
     }
 
-    /// 타입 확인 헬퍼
-    pub fn is_abnormality(&self) -> bool {
-        matches!(self, Self::Abnormality(_))
+    /// 아이템 이름 반환
+    pub fn name(&self) -> &str {
+        match self {
+            Item::Equipment(meta) => &meta.name,
+            Item::Artifact(meta) => &meta.name,
+            Item::Abnormality(meta) => &meta.name,
+        }
     }
 
+    // ============================================================
+    // 타입 확인
+    // ============================================================
+
+    /// Equipment 타입인지 확인
     pub fn is_equipment(&self) -> bool {
-        matches!(self, Self::Equipment(_))
+        matches!(self, Item::Equipment(_))
     }
 
+    /// Artifact 타입인지 확인
     pub fn is_artifact(&self) -> bool {
-        matches!(self, Self::Artifact(_))
+        matches!(self, Item::Artifact(_))
     }
 
-    /// 타입별 상세 데이터 접근 (필요시)
-    pub fn as_abnormality(&self) -> Option<&Arc<AbnormalityMetadata>> {
+    /// Abnormality 타입인지 확인
+    pub fn is_abnormality(&self) -> bool {
+        matches!(self, Item::Abnormality(_))
+    }
+
+    // ============================================================
+    // 타입 변환 (참조)
+    // ============================================================
+
+    /// Equipment로 변환 (참조)
+    pub fn as_equipment(&self) -> Option<Arc<EquipmentMetadata>> {
         match self {
-            Self::Abnormality(data) => Some(data),
+            Item::Equipment(meta) => Some(meta.clone()),
             _ => None,
         }
     }
 
-    pub fn as_equipment(&self) -> Option<&Arc<EquipmentMetadata>> {
+    /// Artifact로 변환 (참조)
+    pub fn as_artifact(&self) -> Option<Arc<ArtifactMetadata>> {
         match self {
-            Self::Equipment(data) => Some(data),
+            Item::Artifact(meta) => Some(meta.clone()),
             _ => None,
         }
     }
 
-    pub fn as_artifact(&self) -> Option<&Arc<ArtifactMetadata>> {
+    /// Abnormality로 변환 (참조)
+    pub fn as_abnormality(&self) -> Option<Arc<AbnormalityMetadata>> {
         match self {
-            Self::Artifact(data) => Some(data),
+            Item::Abnormality(meta) => Some(meta.clone()),
             _ => None,
         }
+    }
+
+    // ============================================================
+    // 유틸리티
+    // ============================================================
+
+    /// 아이템 카테고리 반환
+    pub fn category(&self) -> Category {
+        match self {
+            Item::Equipment(_) => Category::Equipment,
+            Item::Artifact(_) => Category::Artifact,
+            Item::Abnormality(_) => Category::Abnormality,
+        }
+    }
+
+    /// Arc 복제 (메모리 효율적)
+    pub fn clone_arc(&self) -> Self {
+        match self {
+            Item::Equipment(meta) => Item::Equipment(Arc::clone(meta)),
+            Item::Artifact(meta) => Item::Artifact(Arc::clone(meta)),
+            Item::Abnormality(meta) => Item::Abnormality(Arc::clone(meta)),
+        }
+    }
+}
+
+/// Uuid -> Item 매핑을 제공하는 전역 레지스트리
+#[derive(Debug, Default)]
+pub struct ItemRegistry {
+    by_uuid: HashMap<Uuid, Item>,
+}
+
+impl ItemRegistry {
+    pub fn new(
+        abnormality_db: &AbnormalityDatabase,
+        artifact_db: &ArtifactDatabase,
+        equipment_db: &EquipmentDatabase,
+    ) -> Self {
+        let mut by_uuid = HashMap::new();
+
+        // 환상체 아이템 등록
+        for meta in &abnormality_db.items {
+            by_uuid.insert(
+                meta.uuid,
+                Item::Abnormality(Arc::new(meta.clone())),
+            );
+        }
+
+        // 아티팩트 아이템 등록
+        for meta in &artifact_db.items {
+            by_uuid.insert(
+                meta.uuid,
+                Item::Artifact(Arc::new(meta.clone())),
+            );
+        }
+
+        // 장비 아이템 등록
+        for meta in &equipment_db.items {
+            by_uuid.insert(
+                meta.uuid,
+                Item::Equipment(Arc::new(meta.clone())),
+            );
+        }
+
+        Self { by_uuid }
+    }
+
+    pub fn get(&self, uuid: &Uuid) -> Option<&Item> {
+        self.by_uuid.get(uuid)
+    }
+}
+
+impl GameDataBase {
+    pub fn new(
+        abnormality_data: Arc<AbnormalityDatabase>,
+        artifact_data: Arc<ArtifactDatabase>,
+        equipment_data: Arc<EquipmentDatabase>,
+        shop_data: Arc<ShopDatabase>,
+        bonus_data: Arc<BonusDatabase>,
+        random_event_data: Arc<RandomEventDatabase>,
+        event_pools: EventPoolConfig,
+    ) -> Self {
+        let item_registry =
+            ItemRegistry::new(&abnormality_data, &artifact_data, &equipment_data);
+
+        Self {
+            abnormality_data,
+            artifact_data,
+            equipment_data,
+            shop_data,
+            bonus_data,
+            random_event_data,
+            event_pools,
+            item_registry,
+        }
+    }
+
+    /// UUID로 아이템 메타데이터 조회
+    pub fn item(&self, uuid: &Uuid) -> Option<&Item> {
+        self.item_registry.get(uuid)
     }
 }

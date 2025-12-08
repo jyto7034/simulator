@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::game::enums::{RiskLevel, Tier};
+pub mod abnormality;
 
 #[derive(Component, Clone)]
 pub struct Abnormality {

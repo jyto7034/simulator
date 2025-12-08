@@ -12,8 +12,7 @@ pub trait EventGenerator {
     fn generate(&self, ctx: &GeneratorContext) -> Self::Output;
 }
 
-use crate::ecs::components::Player;
-use crate::game::data::GameData;
+use crate::{ecs::components::Player, game::data::GameDataBase};
 
 /// 선택적 컨텍스트 필드 그룹
 #[derive(Default)]
@@ -23,7 +22,7 @@ pub struct GeneratorExtras {
 
 pub struct GeneratorContext<'w> {
     pub world: &'w World,
-    pub game_data: &'w GameData,
+    pub game_data: &'w GameDataBase,
     pub random_seed: u64,
     pub timestamp: SystemTime,
     pub extras: GeneratorExtras,
@@ -31,7 +30,7 @@ pub struct GeneratorContext<'w> {
 
 impl<'w> GeneratorContext<'w> {
     /// 기본 GeneratorContext 생성 (extras는 모두 None)
-    pub fn new(world: &'w World, game_data: &'w GameData, random_seed: u64) -> Self {
+    pub fn new(world: &'w World, game_data: &'w GameDataBase, random_seed: u64) -> Self {
         Self {
             world,
             game_data,
@@ -44,7 +43,7 @@ impl<'w> GeneratorContext<'w> {
     /// Ordeal 전투용 Context 생성 (opponent_data 포함)
     pub fn with_opponent(
         world: &'w World,
-        game_data: &'w GameData,
+        game_data: &'w GameDataBase,
         random_seed: u64,
         opponent_data: Player,
     ) -> Self {

@@ -1,6 +1,9 @@
 use uuid::Uuid;
 
-use crate::{ecs::resources::GameState, game::behavior::PlayerBehavior};
+use crate::{
+    ecs::resources::GameState,
+    game::{behavior::PlayerBehavior, enums::Category},
+};
 
 /// ActionScheduler
 ///
@@ -36,25 +39,23 @@ impl ActionScheduler {
             }
 
             GameState::InShop { .. } => {
-                // 상점 안: 아이템 구매, 리롤, 나가기 가능
+                // 상점 안: 아이템 구매, 판매, 리롤, 나가기 가능
                 vec![
                     PlayerBehavior::PurchaseItem {
                         item_uuid: Uuid::nil(),
-                        item_category: todo!(),
+                        item_category: Category::Equipment,
+                    },
+                    PlayerBehavior::SellItem {
+                        item_uuid: Uuid::nil(),
                     },
                     PlayerBehavior::RerollShop,
                     PlayerBehavior::ExitShop,
                 ]
             }
 
-            GameState::InRandomEvent { .. } => {
-                // 랜덤 이벤트 안: 선택지 선택, 나가기 가능
-                vec![
-                    PlayerBehavior::SelectEventChoice {
-                        choice_id: String::new(), // 템플릿 (모든 choice_id 허용)
-                    },
-                    PlayerBehavior::ExitRandomEvent,
-                ]
+            GameState::InBonus { .. } => {
+                // 보너스 안: 보너스 수령 또는 나가기 가능
+                vec![PlayerBehavior::ClaimBonus, PlayerBehavior::ExitBonus]
             }
 
             GameState::InSuppression { .. } => {
@@ -97,8 +98,8 @@ mod tests {
         };
         let allowed = ActionScheduler::get_allowed_actions(&state);
 
-        assert_eq!(allowed.len(), 3);
-        // PurchaseItem, RerollShop, ExitShop만 허용
+        assert_eq!(allowed.len(), 4);
+        // PurchaseItem, SellItem, RerollShop, ExitShop 허용
     }
 
     #[test]
@@ -125,27 +126,6 @@ mod tests {
 
         assert_eq!(allowed.len(), 1);
         assert!(matches!(allowed[0], PlayerBehavior::SelectEvent { .. }));
-    }
-
-    #[test]
-    fn test_in_random_event_allows_choice_and_exit() {
-        let state = GameState::InRandomEvent {
-            event_uuid: Uuid::nil(),
-        };
-        let allowed = ActionScheduler::get_allowed_actions(&state);
-
-        assert_eq!(allowed.len(), 2);
-
-        // SelectEventChoice와 ExitRandomEvent가 허용되어야 함
-        let has_select_choice = allowed
-            .iter()
-            .any(|a| matches!(a, PlayerBehavior::SelectEventChoice { .. }));
-        let has_exit = allowed
-            .iter()
-            .any(|a| matches!(a, PlayerBehavior::ExitRandomEvent));
-
-        assert!(has_select_choice);
-        assert!(has_exit);
     }
 
     #[test]
@@ -194,7 +174,7 @@ mod tests {
             shop_uuid: Uuid::nil(),
         };
         let allowed = ActionScheduler::get_allowed_actions(&state);
-        assert_eq!(allowed.len(), 3); // Purchase, Reroll, Exit
+        assert_eq!(allowed.len(), 4); // Purchase, Sell, Reroll, Exit
     }
 
     #[test]
@@ -204,13 +184,16 @@ mod tests {
         };
         let allowed = ActionScheduler::get_allowed_actions(&state);
 
-        // 정확히 3개의 행동만 허용
-        assert_eq!(allowed.len(), 3);
+        // 정확히 4개의 행동 허용
+        assert_eq!(allowed.len(), 4);
 
         // 각 행동이 존재하는지 확인
         let has_purchase = allowed
             .iter()
             .any(|a| matches!(a, PlayerBehavior::PurchaseItem { .. }));
+        let has_sell = allowed
+            .iter()
+            .any(|a| matches!(a, PlayerBehavior::SellItem { .. }));
         let has_reroll = allowed
             .iter()
             .any(|a| matches!(a, PlayerBehavior::RerollShop));
@@ -219,6 +202,7 @@ mod tests {
             .any(|a| matches!(a, PlayerBehavior::ExitShop));
 
         assert!(has_purchase);
+        assert!(has_sell);
         assert!(has_reroll);
         assert!(has_exit);
     }
@@ -233,8 +217,8 @@ mod tests {
             GameState::InShop {
                 shop_uuid: Uuid::nil(),
             },
-            GameState::InRandomEvent {
-                event_uuid: Uuid::nil(),
+            GameState::InBonus {
+                bonus_uuid: Uuid::nil(),
             },
             GameState::InSuppression {
                 abnormality_uuid: Uuid::nil(),
@@ -262,11 +246,11 @@ mod tests {
                 GameState::InShop {
                     shop_uuid: Uuid::nil(),
                 },
-                3,
+                4,
             ),
             (
-                GameState::InRandomEvent {
-                    event_uuid: Uuid::nil(),
+                GameState::InBonus {
+                    bonus_uuid: Uuid::nil(),
                 },
                 2,
             ),

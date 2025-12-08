@@ -1,27 +1,76 @@
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-/// 랜덤 이벤트 위험도
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum EventRiskLevel {
-    Low,
-    Medium,
-    High,
+use crate::game::{
+    data::{
+        abnormality_data::AbnormalityMetadata, bonus_data::BonusMetadata,
+        shop_data::ShopMetadata, GameDataBase,
+    },
+    enums::RiskLevel,
+    events::event_selection::random::RandomEventType,
+};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum RandomEventInnerMetadata {
+    Shop(Uuid),
+    Bonus(Uuid),
+    Suppress(Uuid),
 }
 
-use crate::game::events::event_selection::random::RandomEventType;
-
-/// 랜덤 이벤트 메타데이터
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RandomEventMetadata {
     pub id: String,
+    pub name: String,
     pub uuid: Uuid,
     pub event_type: RandomEventType,
-    pub name: String,
+    pub risk_level: RiskLevel,
     pub description: String,
     pub image: String,
-    pub risk_level: EventRiskLevel,
+    pub inner_metadata: RandomEventInnerMetadata,
+}
+
+/// RandomEvent 가 실제로 참조하는 도메인 타겟
+#[derive(Debug, Clone)]
+pub enum RandomEventTarget<'a> {
+    Shop(&'a ShopMetadata),
+    Bonus(&'a BonusMetadata),
+    Suppress(&'a AbnormalityMetadata),
+}
+
+impl RandomEventInnerMetadata {
+    /// RandomEventInnerMetadata 를 실제 도메인 메타데이터로 해석
+    pub fn resolve<'a>(
+        &self,
+        data: &'a GameDataBase,
+    ) -> Result<RandomEventTarget<'a>, crate::game::behavior::GameError> {
+        use crate::game::behavior::GameError;
+
+        match self {
+            RandomEventInnerMetadata::Shop(uuid) => {
+                let shop = data
+                    .shop_data
+                    .get_by_uuid(uuid)
+                    .ok_or(GameError::EventNotFound)?;
+                Ok(RandomEventTarget::Shop(shop))
+            }
+            RandomEventInnerMetadata::Bonus(uuid) => {
+                let bonus = data
+                    .bonus_data
+                    .get_by_uuid(uuid)
+                    .ok_or(GameError::EventNotFound)?;
+                Ok(RandomEventTarget::Bonus(bonus))
+            }
+            RandomEventInnerMetadata::Suppress(uuid) => {
+                let abnormality = data
+                    .abnormality_data
+                    .get_by_uuid(uuid)
+                    .ok_or(GameError::EventNotFound)?;
+                Ok(RandomEventTarget::Suppress(abnormality))
+            }
+        }
+    }
 }
 
 /// RON 파일 최상위 구조체

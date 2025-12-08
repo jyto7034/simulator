@@ -5,6 +5,8 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::game::behavior::{GameError, PlayerBehavior};
+use crate::game::data::bonus_data::BonusMetadata;
+use crate::game::data::random_event_data::RandomEventMetadata;
 use crate::game::data::shop_data::ShopMetadata;
 use crate::game::enums::{GameOption, OrdealType, PhaseType};
 
@@ -25,8 +27,8 @@ pub enum GameState {
     SelectingEvent,
     /// 상점 진입
     InShop { shop_uuid: Uuid },
-    /// 랜덤 이벤트 진입
-    InRandomEvent { event_uuid: Uuid },
+    /// 보너스 진입
+    InBonus { bonus_uuid: Uuid },
     /// 진압 작업 진행 중
     InSuppression { abnormality_uuid: Uuid },
     /// 시련 전투 진행 중
@@ -63,6 +65,78 @@ impl Level {
         Self {
             level: initial_level,
         }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum QliphothLevel {
+    Stable,   // 안정 (10-8) - 정상 운영
+    Caution,  // 주의 (7-5) - 경보 발령
+    Critical, // 위기 (4-2) - 비상 사태
+    Meltdown, // 붕괴 (1-0) - 시설 붕괴
+}
+
+/// 클리포드
+#[derive(Resource, Debug, Clone)]
+pub struct Qliphoth {
+    pub level: QliphothLevel,
+    pub amount: u32,
+}
+
+impl Qliphoth {
+    pub fn new() -> Qliphoth {
+        use crate::config::balance;
+        let thresholds = balance::qliphoth_thresholds();
+
+        Self {
+            level: QliphothLevel::Stable,
+            amount: thresholds.stable_min,
+        }
+    }
+
+    pub fn level(&self) -> QliphothLevel {
+        self.level
+    }
+
+    pub fn amount(&self) -> u32 {
+        self.amount
+    }
+
+    /// 클리포트 값 증가
+    pub fn increase(&mut self, amount: u32) {
+        use crate::config::balance;
+        let thresholds = balance::qliphoth_thresholds();
+
+        self.amount = (self.amount + amount).min(thresholds.stable_min);
+        self.update_level();
+    }
+
+    /// 클리포트 값 감소
+    pub fn decrease(&mut self, amount: u32) {
+        self.amount = self.amount.saturating_sub(amount);
+        self.update_level();
+    }
+
+    /// 클리포트 값 설정 (테스트용)
+    pub fn set_amount(&mut self, amount: u32) {
+        use crate::config::balance;
+        let thresholds = balance::qliphoth_thresholds();
+
+        self.amount = amount.min(thresholds.stable_min);
+        self.update_level();
+    }
+
+    /// 현재 클리포트 양에 따라 레벨 업데이트
+    fn update_level(&mut self) {
+        use crate::config::balance;
+        let thresholds = balance::qliphoth_thresholds();
+
+        self.level = match self.amount {
+            x if x >= thresholds.stable_max => QliphothLevel::Stable,
+            x if x >= thresholds.caution_max => QliphothLevel::Caution,
+            x if x >= thresholds.critical_max => QliphothLevel::Critical,
+            _ => QliphothLevel::Meltdown,
+        };
     }
 }
 
@@ -114,14 +188,28 @@ impl SelectedEvent {
     pub fn as_shop(&self) -> Result<&ShopMetadata, GameError> {
         match &self.event {
             GameOption::Shop { shop } => Ok(shop),
-            _ => Err(GameError::InvalidEvent),
+            _ => Err(GameError::EventTypeMismatch),
         }
     }
 
     pub fn as_shop_mut(&mut self) -> Result<&mut ShopMetadata, GameError> {
         match &mut self.event {
             GameOption::Shop { shop } => Ok(shop),
-            _ => Err(GameError::InvalidEvent),
+            _ => Err(GameError::EventTypeMismatch),
+        }
+    }
+
+    pub fn as_bonus(&self) -> Result<&BonusMetadata, GameError> {
+        match &self.event {
+            GameOption::Bonus { bonus } => Ok(bonus),
+            _ => Err(GameError::EventTypeMismatch),
+        }
+    }
+
+    pub fn as_random_event(&self) -> Result<&RandomEventMetadata, GameError> {
+        match &self.event {
+            GameOption::Random { event } => Ok(event),
+            _ => Err(GameError::EventTypeMismatch),
         }
     }
 }
@@ -174,12 +262,12 @@ impl CurrentPhaseEvents {
 /// 현재 플레이어가 수행할 수 있는 행동 목록을 저장
 /// 플레이어의 행동이 이 목록에 없으면 거부됨
 #[derive(Resource, Default)]
-pub struct CurrentGameContext {
+pub struct ActionValidator {
     /// 현재 허용된 행동 목록
     pub allowed_actions: Vec<PlayerBehavior>,
 }
 
-impl CurrentGameContext {
+impl ActionValidator {
     pub fn new() -> Self {
         Self {
             allowed_actions: vec![],
@@ -388,19 +476,19 @@ mod tests {
 
     #[test]
     fn test_current_game_context_new() {
-        let context = CurrentGameContext::new();
+        let context = ActionValidator::new();
         assert_eq!(context.allowed_actions.len(), 0);
     }
 
     #[test]
     fn test_current_game_context_default() {
-        let context = CurrentGameContext::default();
+        let context = ActionValidator::default();
         assert_eq!(context.allowed_actions.len(), 0);
     }
 
     #[test]
     fn test_current_game_context_set_allowed_actions() {
-        let mut context = CurrentGameContext::new();
+        let mut context = ActionValidator::new();
 
         let actions = vec![
             PlayerBehavior::StartNewGame,
@@ -413,7 +501,7 @@ mod tests {
 
     #[test]
     fn test_current_game_context_is_action_allowed() {
-        let mut context = CurrentGameContext::new();
+        let mut context = ActionValidator::new();
 
         let actions = vec![
             PlayerBehavior::StartNewGame,
@@ -434,7 +522,7 @@ mod tests {
 
     #[test]
     fn test_current_game_context_variant_matching() {
-        let mut context = CurrentGameContext::new();
+        let mut context = ActionValidator::new();
 
         // SelectEvent 템플릿을 허용 목록에 추가
         context.set_allowed_actions(vec![PlayerBehavior::SelectEvent {
@@ -453,7 +541,7 @@ mod tests {
 
     #[test]
     fn test_current_game_context_clear() {
-        let mut context = CurrentGameContext::new();
+        let mut context = ActionValidator::new();
 
         context.set_allowed_actions(vec![
             PlayerBehavior::StartNewGame,

@@ -1,24 +1,19 @@
 use bevy_ecs::world::World;
-use serde::{Deserialize, Serialize};
+use tracing::{debug, info, warn};
 use uuid::Uuid;
 
 use crate::{
     ecs::resources::Enkephalin,
     game::{
         behavior::GameError,
-        data::{bonus_data::BonusMetadata, event_pools::EventPhasePool},
+        data::{
+            bonus_data::{BonusMetadata, BonusType},
+            event_pools::EventPhasePool,
+        },
         enums::GameOption,
         events::{EventGenerator, GeneratorContext},
     },
 };
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub enum BonusType {
-    Enkephalin,
-    Experience,
-    Item,
-    Abnormality,
-}
 
 pub struct BonusGenerator;
 
@@ -48,6 +43,10 @@ impl EventGenerator for BonusGenerator {
             Some(uuid) => uuid,
             None => {
                 // 폴백: pool이 비어있으면 기본 보너스 반환
+                warn!(
+                    "Bonus pool is empty for ordeal={:?}, using fallback bonus",
+                    current_ordeal
+                );
                 return GameOption::Bonus {
                     bonus: BonusMetadata {
                         bonus_type: BonusType::Enkephalin,
@@ -55,29 +54,32 @@ impl EventGenerator for BonusGenerator {
                         name: "임시 보너스".to_string(),
                         description: "폴백 보너스".to_string(),
                         icon: "default".to_string(),
-                        min_amount: 0,
-                        max_amount: 0,
+                        amount: 0,
+                        id: String::new(),
                     },
                 };
             }
         };
 
         // 5. GameData에서 Bonus 조회
-        let bonus = match ctx.game_data.bonuses.get_by_uuid(&uuid) {
+        let bonus = match ctx.game_data.bonus_data.get_by_uuid(&uuid) {
             Some(bonus) => bonus.clone(), // BonusMetadata 전체를 clone
             None => {
                 // 폴백: UUID에 해당하는 Bonus가 없으면 기본값
+                warn!("Bonus uuid {:?} not found in GameData, using fallback", uuid);
                 BonusMetadata {
                     bonus_type: BonusType::Enkephalin,
                     uuid,
                     name: "알 수 없는 보너스".to_string(),
                     description: "설명 없음".to_string(),
                     icon: "unknown".to_string(),
-                    min_amount: 0,
-                    max_amount: 0,
+                    amount: 0,
+                    id: String::new(),
                 }
             }
         };
+
+        debug!("Generated bonus event: id={}, uuid={}", bonus.id, bonus.uuid);
 
         // 6. GameOption 생성 (BonusMetadata 전체 데이터 포함)
         GameOption::Bonus { bonus }
@@ -93,19 +95,20 @@ impl BonusExecutor {
     /// # Arguments
     /// * `world` - ECS World
     /// * `bonus` - 보너스 메타데이터
-    /// * `amount` - 지급할 양 (min_amount ~ max_amount 범위)
-    pub fn grant_bonus(
-        world: &mut World,
-        bonus: &BonusMetadata,
-        amount: u32,
-    ) -> Result<(), GameError> {
+    pub fn grant_bonus(world: &mut World, bonus: &BonusMetadata) -> Result<(), GameError> {
+        let amount = bonus.amount;
         match bonus.bonus_type {
             BonusType::Enkephalin => {
                 // Enkephalin 추가
                 let mut enkephalin = world
                     .get_resource_mut::<Enkephalin>()
-                    .ok_or(GameError::InvalidAction)?;
+                    .ok_or(GameError::MissingResource("Enkephalin"))?;
                 enkephalin.amount += amount;
+
+                info!(
+                    "Granted Enkephalin bonus: amount={}, new_total={}",
+                    amount, enkephalin.amount
+                );
             }
             BonusType::Experience => {
                 // TODO: 경험치 추가
