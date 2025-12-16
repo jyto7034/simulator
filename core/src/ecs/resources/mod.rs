@@ -8,7 +8,7 @@ use crate::game::behavior::{GameError, PlayerBehavior};
 use crate::game::data::bonus_data::BonusMetadata;
 use crate::game::data::random_event_data::RandomEventMetadata;
 use crate::game::data::shop_data::ShopMetadata;
-use crate::game::enums::{GameOption, OrdealType, PhaseType};
+use crate::game::enums::{GameOption, OrdealType, PhaseType, Side};
 
 pub mod inventory;
 pub use inventory::*;
@@ -42,6 +42,197 @@ impl Default for GameState {
         Self::NotStarted
     }
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct Position {
+    pub x: i32,
+    pub y: i32,
+}
+
+impl Position {
+    pub fn new(x: i32, y: i32) -> Self {
+        Self { x, y }
+    }
+
+    pub fn manhattan(&self, other: &Position) -> i32 {
+        (self.x - other.x).abs() + (self.y - other.y).abs()
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct UnitPlacement {
+    pub uuid: Uuid,
+    pub side: Side,
+}
+
+#[derive(Resource, Debug, Clone)]
+pub struct Field {
+    pub width: u8,
+    pub height: u8,
+    pub placements: HashMap<Position, UnitPlacement>,
+    pub unit_positions: HashMap<Uuid, Position>,
+}
+
+impl Default for Field {
+    fn default() -> Self {
+        Self::new(3, 3)
+    }
+}
+
+impl Field {
+    pub fn new(width: u8, height: u8) -> Self {
+        Self {
+            width,
+            height,
+            placements: HashMap::new(),
+            unit_positions: HashMap::new(),
+        }
+    }
+
+    pub fn place(&mut self, uuid: Uuid, side: Side, pos: Position) -> Result<(), GameError> {
+        if pos.x < 0 || pos.x >= self.width as i32 || pos.y < 0 || pos.y >= self.height as i32 {
+            return Err(GameError::OutOfBounds);
+        }
+
+        if self.placements.contains_key(&pos) {
+            return Err(GameError::PositionOccupied);
+        }
+
+        if self.unit_positions.contains_key(&uuid) {
+            return Err(GameError::UnitAlreadyPlaced);
+        }
+
+        self.placements.insert(pos, UnitPlacement { uuid, side });
+        self.unit_positions.insert(uuid, pos);
+        Ok(())
+    }
+
+    pub fn remove(&mut self, unit_uuid: Uuid) -> Option<Position> {
+        if let Some(pos) = self.unit_positions.remove(&unit_uuid) {
+            self.placements.remove(&pos);
+            Some(pos)
+        } else {
+            None
+        }
+    }
+
+    pub fn move_unit(&mut self, unit_uuid: Uuid, new_pos: Position) -> Result<(), GameError> {
+        if new_pos.x < 0
+            || new_pos.x >= self.width as i32
+            || new_pos.y < 0
+            || new_pos.y >= self.height as i32
+        {
+            return Err(GameError::OutOfBounds);
+        }
+
+        if self.placements.contains_key(&new_pos) {
+            return Err(GameError::PositionOccupied);
+        }
+
+        let old_pos = self
+            .unit_positions
+            .get(&unit_uuid)
+            .ok_or(GameError::UnitNotFound)?;
+
+        let placement = self
+            .placements
+            .remove(old_pos)
+            .ok_or(GameError::UnitNotFound)?;
+
+        self.placements.insert(new_pos, placement);
+        self.unit_positions.insert(unit_uuid, new_pos);
+        Ok(())
+    }
+
+    pub fn get_position(&self, unit_uuid: Uuid) -> Option<Position> {
+        self.unit_positions.get(&unit_uuid).copied()
+    }
+
+    pub fn get_unit_at(&self, pos: Position) -> Option<Uuid> {
+        self.placements.get(&pos).map(|p| p.uuid)
+    }
+
+    pub fn get_placement_at(&self, pos: Position) -> Option<&UnitPlacement> {
+        self.placements.get(&pos)
+    }
+
+    pub fn find_nearest_enemy(&self, from_uuid: Uuid, from_side: Side) -> Option<Uuid> {
+        let from_pos = self.unit_positions.get(&from_uuid)?;
+        self.find_nearest(from_pos, from_side, true)
+    }
+
+    pub fn find_nearest_ally(&self, from_uuid: Uuid, from_side: Side) -> Option<Uuid> {
+        let from_pos = self.unit_positions.get(&from_uuid)?;
+        self.find_nearest(from_pos, from_side, false)
+    }
+
+    fn find_nearest(&self, from_pos: &Position, from_side: Side, find_enemy: bool) -> Option<Uuid> {
+        let mut nearest: Option<(Uuid, i32)> = None;
+
+        for (pos, placement) in &self.placements {
+            let is_enemy = placement.side != from_side;
+
+            if is_enemy != find_enemy {
+                continue;
+            }
+
+            let distance = from_pos.manhattan(pos);
+
+            match nearest {
+                None => nearest = Some((placement.uuid, distance)),
+                Some((_, best_dist)) if distance < best_dist => {
+                    nearest = Some((placement.uuid, distance));
+                }
+                _ => {}
+            }
+        }
+
+        nearest.map(|(uuid, _)| uuid)
+    }
+
+    pub fn get_units_by_side(&self, side: Side) -> Vec<Uuid> {
+        self.placements
+            .values()
+            .filter(|p| p.side == side)
+            .map(|p| p.uuid)
+            .collect()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.placements.is_empty()
+    }
+
+    pub fn count_by_side(&self, side: Side) -> usize {
+        self.placements.values().filter(|p| p.side == side).count()
+    }
+
+    pub fn get_positions_by_side(&self, side: Side) -> HashMap<Uuid, Position> {
+        self.placements
+            .iter()
+            .filter(|(_, p)| p.side == side)
+            .map(|(pos, p)| (p.uuid, *pos))
+            .collect()
+    }
+
+    pub fn clear(&mut self) {
+        self.placements.clear();
+        self.unit_positions.clear();
+    }
+
+    pub fn clear_side(&mut self, side: Side) {
+        let uuids_to_remove: Vec<Uuid> = self
+            .placements
+            .iter()
+            .filter(|(_, p)| p.side == side)
+            .map(|(_, p)| p.uuid)
+            .collect();
+
+        for uuid in uuids_to_remove {
+            self.remove(uuid);
+        }
+    }
+}
+
 #[derive(Resource, Debug, Serialize, Deserialize)]
 pub struct Enkephalin {
     pub amount: u32,
@@ -303,8 +494,10 @@ impl ActionValidator {
 
 #[cfg(test)]
 mod tests {
+    use crate::game::enums::RiskLevel;
+
     use super::*;
-    use crate::game::enums::{OrdealType, PhaseType};
+    use {OrdealType, PhaseType};
 
     // ============================================================
     // GameState Tests
@@ -406,8 +599,6 @@ mod tests {
 
     #[test]
     fn test_current_phase_events_add_and_get() {
-        use crate::game::enums::{GameOption, RiskLevel};
-
         let mut events = CurrentPhaseEvents::new();
         let uuid = Uuid::new_v4();
 
@@ -428,8 +619,6 @@ mod tests {
 
     #[test]
     fn test_current_phase_events_remove() {
-        use crate::game::enums::{GameOption, RiskLevel};
-
         let mut events = CurrentPhaseEvents::new();
         let uuid = Uuid::new_v4();
 
@@ -450,8 +639,6 @@ mod tests {
 
     #[test]
     fn test_current_phase_events_clear() {
-        use crate::game::enums::{GameOption, RiskLevel};
-
         let mut events = CurrentPhaseEvents::new();
 
         for i in 0..3 {

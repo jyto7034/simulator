@@ -5,15 +5,16 @@ use uuid::Uuid;
 
 use crate::ecs::components::Player;
 use crate::ecs::resources::{
-    ActionValidator, CurrentPhaseEvents, Enkephalin, GameProgression, GameState, Inventory,
+    ActionValidator, CurrentPhaseEvents, Enkephalin, Field, GameProgression, GameState, Inventory,
     InventoryDiffDto, Qliphoth, SelectedEvent,
 };
-use crate::ecs::systems::spawn_player;
+use crate::ecs::systems::{spawn_player, progression};
 use crate::game::behavior::{BehaviorResult, GameError, PlayerBehavior};
 use crate::game::data::{random_event_data::RandomEventTarget, GameDataBase};
 use crate::game::enums::{BonusAction, GameOption, OrdealType, PhaseType, ShopAction};
 use crate::game::events::event_selection::bonus::BonusExecutor;
 use crate::game::events::event_selection::shop::ShopExecutor;
+use crate::game::events::suppression::SuppressionExecutor;
 use crate::game::events::GeneratorContext;
 use crate::game::managers::action_scheduler::ActionScheduler;
 use crate::game::managers::event_manager::EventManager;
@@ -42,6 +43,7 @@ impl GameCore {
         world.insert_resource(GameState::NotStarted);
         world.insert_resource(Inventory::new());
         world.insert_resource(Qliphoth::new());
+        world.insert_resource(Field::new(4, 4));
 
         // CurrentGameContext 초기화 (NotStarted 상태의 allowed_actions 설정)
         let mut context = ActionValidator::new();
@@ -106,6 +108,11 @@ impl GameCore {
             // 보너스 관련 행동
             PlayerBehavior::ClaimBonus => self.execute_bonus_action(BonusAction::Claim),
             PlayerBehavior::ExitBonus => self.execute_bonus_action(BonusAction::Exit),
+
+            // 진압 관련 행동
+            PlayerBehavior::StartSuppression { abnormality_id } => {
+                self.handle_start_suppression(&abnormality_id)
+            }
         }
     }
 }
@@ -393,13 +400,7 @@ impl GameCore {
             // TODO: Reroll 시 자원 소모 ( 엔케팔린 혹은 특정 자원 )
             ShopAction::Reroll => ShopExecutor::reroll(&mut self.world),
 
-            ShopAction::Exit => {
-                // 상태 전환: SelectingEvent로 복귀 (allowed_actions 자동 설정)
-                // TODO: 다음 Phase로 진행해야 하는지, SelectingEvent로 복귀해야 하는지 결정 필요
-                self.transition_to(GameState::SelectingEvent)?;
-
-                Ok(BehaviorResult::Ok)
-            }
+            ShopAction::Exit => self.advance_to_next_phase(),
         }
     }
 
@@ -450,12 +451,66 @@ impl GameCore {
                 })
             }
 
-            BonusAction::Exit => {
-                // 상태 전환: SelectingEvent로 복귀
-                self.transition_to(GameState::SelectingEvent)?;
+            BonusAction::Exit => self.advance_to_next_phase(),
+        }
+    }
+
+    /// Phase 완료 후 다음 Phase로 진행
+    ///
+    /// 이벤트(상점/보너스/랜덤) 완료 후 호출되어 다음 Phase로 전환합니다.
+    fn advance_to_next_phase(&mut self) -> Result<BehaviorResult, GameError> {
+        let mut game_progression = self
+            .world
+            .get_resource_mut::<GameProgression>()
+            .ok_or(GameError::MissingResource("GameProgression"))?;
+
+        let result = progression::advance(&mut game_progression);
+
+        match result {
+            progression::ProgressionResult::NextPhase(next_phase) => {
+                info!("Advanced to next phase: {:?}", next_phase);
+                drop(game_progression);
+                self.transition_to(GameState::WaitingPhaseRequest)?;
+                Ok(BehaviorResult::AdvancePhase {
+                    next_phase_event: format!("{:?}", next_phase),
+                })
+            }
+            progression::ProgressionResult::NextOrdeal(next_ordeal) => {
+                info!("Advanced to next ordeal: {:?}", next_ordeal);
+                drop(game_progression);
+                self.transition_to(GameState::WaitingPhaseRequest)?;
+                Ok(BehaviorResult::AdvancePhase {
+                    next_phase_event: format!("{:?}", next_ordeal),
+                })
+            }
+            progression::ProgressionResult::GameComplete => {
+                info!("Game completed!");
+                drop(game_progression);
+                self.transition_to(GameState::GameOver)?;
                 Ok(BehaviorResult::Ok)
             }
         }
+    }
+
+    // ============================================================
+    // 진압 관련 통합 핸들러
+    // ============================================================
+
+    fn handle_start_suppression(
+        &mut self,
+        abnormality_id: &str,
+    ) -> Result<BehaviorResult, GameError> {
+        info!("Starting suppression for abnormality: {}", abnormality_id);
+
+        let battle_result =
+            SuppressionExecutor::start_battle(&mut self.world, self.game_data.clone(), abnormality_id)?;
+
+        info!(
+            "Suppression battle completed - Winner: {:?}",
+            battle_result.winner
+        );
+
+        self.advance_to_next_phase()
     }
 }
 

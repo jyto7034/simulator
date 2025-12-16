@@ -2,17 +2,15 @@ use std::{collections::HashMap, sync::Arc};
 
 use uuid::Uuid;
 
-use crate::game::{
-    data::{
-        abnormality_data::{AbnormalityDatabase, AbnormalityMetadata},
-        artifact_data::{ArtifactDatabase, ArtifactMetadata},
-        bonus_data::BonusDatabase,
-        equipment_data::{EquipmentDatabase, EquipmentMetadata},
-        event_pools::EventPoolConfig,
-        random_event_data::RandomEventDatabase,
-        shop_data::ShopDatabase,
-    },
-    enums::Category,
+use crate::game::data::{
+    abnormality_data::{AbnormalityDatabase, AbnormalityMetadata},
+    artifact_data::{ArtifactDatabase, ArtifactMetadata},
+    bonus_data::BonusDatabase,
+    equipment_data::{EquipmentDatabase, EquipmentMetadata},
+    event_pools::EventPoolConfig,
+    pve_data::PveEncounterDatabase,
+    random_event_data::RandomEventDatabase,
+    shop_data::ShopDatabase,
 };
 
 // 환상체 (기물) 정보
@@ -30,6 +28,9 @@ pub mod equipment_data;
 // 이벤트 생성을 위한 pools
 pub mod event_pools;
 
+// PvE 전투 데이터
+pub mod pve_data;
+
 // 랜덤 인카운트 이벤트 정보
 pub mod random_event_data;
 
@@ -46,6 +47,9 @@ pub struct GameDataBase {
     pub shop_data: Arc<ShopDatabase>,
     pub bonus_data: Arc<BonusDatabase>,
     pub random_event_data: Arc<RandomEventDatabase>,
+
+    /// PvE 전투(Suppress) 데이터
+    pub pve_data: Arc<PveEncounterDatabase>,
 
     /// 이벤트 생성을 위한 가중치 풀 (Ordeal별 이벤트 확률)
     pub event_pools: EventPoolConfig,
@@ -153,15 +157,6 @@ impl Item {
     // 유틸리티
     // ============================================================
 
-    /// 아이템 카테고리 반환
-    pub fn category(&self) -> Category {
-        match self {
-            Item::Equipment(_) => Category::Equipment,
-            Item::Artifact(_) => Category::Artifact,
-            Item::Abnormality(_) => Category::Abnormality,
-        }
-    }
-
     /// Arc 복제 (메모리 효율적)
     pub fn clone_arc(&self) -> Self {
         match self {
@@ -226,6 +221,7 @@ impl GameDataBase {
         shop_data: Arc<ShopDatabase>,
         bonus_data: Arc<BonusDatabase>,
         random_event_data: Arc<RandomEventDatabase>,
+        pve_data: Arc<PveEncounterDatabase>,
         event_pools: EventPoolConfig,
     ) -> Self {
         let item_registry =
@@ -238,6 +234,7 @@ impl GameDataBase {
             shop_data,
             bonus_data,
             random_event_data,
+            pve_data,
             event_pools,
             item_registry,
         }

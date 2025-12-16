@@ -12,7 +12,7 @@ use uuid::Uuid;
 #[cfg(test)]
 mod shop {
     use super::*;
-    use game_core::{ecs::resources::GameState, game::enums::Category};
+    use game_core::ecs::resources::GameState;
 
     /// 통합 테스트: 상점 선택 시나리오
     #[test]
@@ -221,11 +221,7 @@ mod shop {
         let items_with_prices: Vec<(Uuid, u32)> = shop_metadata
             .visible_items
             .iter()
-            .filter_map(|uuid| {
-                game_data
-                    .item(uuid)
-                    .map(|item| (*uuid, item.price()))
-            })
+            .filter_map(|uuid| game_data.item(uuid).map(|item| (*uuid, item.price())))
             .collect();
 
         let mut expected_enkephalin = 10_000u32;
@@ -236,13 +232,7 @@ mod shop {
             assert_eq!(enkephalin_before, expected_enkephalin);
 
             // When: 아이템 구매
-            let result = game.execute(
-                player_id,
-                PlayerBehavior::PurchaseItem {
-                    item_uuid,
-                    item_category: Category::Artifact,
-                },
-            );
+            let result = game.execute(player_id, PlayerBehavior::PurchaseItem { item_uuid });
 
             // Then: 구매 성공
             assert!(result.is_ok());
@@ -555,6 +545,149 @@ mod integration {
         assert!(has_shop, "Should have a Shop option");
         assert!(has_bonus, "Should have a Bonus option");
         assert!(has_random, "Should have a Random event option");
+
+        // Given: Shop 아이템 구매를 위한 엔케팔린
+        game.set_enkephalin(1000);
+
+        // Then: 1,000 개가 충전되었는지 확인
+        assert_eq!(game.get_enkephalin(), 1000);
+
+        let shop = phase_event.as_event_selection().unwrap().0;
+
+        // When: 상점 선택 행동 수행
+        let result = game.execute(
+            player_id,
+            PlayerBehavior::SelectEvent {
+                event_id: shop.uuid,
+            },
+        );
+
+        // Then: 행동 검증
+        assert!(result.is_ok());
+        assert!(matches!(result.unwrap(), BehaviorResult::EventSelected));
+
+        // When: 아이템 구매
+        let result = game.execute(
+            player_id,
+            PlayerBehavior::PurchaseItem {
+                item_uuid: *shop.visible_items.get(0).unwrap(),
+            },
+        );
+
+        // Then: 구매 검증
+        assert!(matches!(
+            result.unwrap(),
+            BehaviorResult::PurchaseItem { .. }
+        ));
+
+        // ============================================================
+        // Phase I → Phase II 전환
+        // ============================================================
+
+        // When: 상점 나가기 (Phase 진행)
+        let result = game.execute(player_id, PlayerBehavior::ExitShop);
+
+        // Then: Phase 진행 성공
+        assert!(result.is_ok());
+        assert!(matches!(
+            result.unwrap(),
+            BehaviorResult::AdvancePhase { .. }
+        ));
+
+        // Then: 게임 상태가 WaitingPhaseRequest로 변경됨
+        assert_eq!(game.get_state(), GameState::WaitingPhaseRequest);
+
+        // Then: Phase II로 진행됨
+        let (ordeal, phase) = game.get_progression().unwrap();
+        assert_eq!(ordeal, OrdealType::Dawn);
+        assert_eq!(phase, PhaseType::II);
+
+        // ============================================================
+        // Phase II: EventSelection
+        // ============================================================
+
+        // When: Phase 데이터 요청
+        let result = game.execute(player_id, PlayerBehavior::RequestPhaseData);
+        assert!(result.is_ok());
+
+        let phase_event = match result.unwrap() {
+            BehaviorResult::RequestPhaseData(event) => event,
+            _ => panic!("Expected RequestPhaseData result"),
+        };
+
+        // Then: EventSelection 타입
+        assert!(phase_event.is_event_selection());
+
+        // Given: 보너스 선택
+        let bonus = phase_event.as_event_selection().unwrap().1;
+
+        // When: 보너스 선택
+        let result = game.execute(
+            player_id,
+            PlayerBehavior::SelectEvent {
+                event_id: bonus.uuid,
+            },
+        );
+        assert!(result.is_ok());
+
+        // When: 보너스 나가기 (Phase 진행)
+        let result = game.execute(player_id, PlayerBehavior::ExitBonus);
+        assert!(result.is_ok());
+
+        // Then: Phase III로 진행됨
+        let (ordeal, phase) = game.get_progression().unwrap();
+        assert_eq!(ordeal, OrdealType::Dawn);
+        assert_eq!(phase, PhaseType::III);
+
+        // ============================================================
+        // Phase III: Suppression (PvE 전투)
+        // ============================================================
+
+        // When: Phase 데이터 요청
+        let result = game.execute(player_id, PlayerBehavior::RequestPhaseData);
+        assert!(result.is_ok());
+
+        let phase_event = match result.unwrap() {
+            BehaviorResult::RequestPhaseData(event) => event,
+            _ => panic!("Expected RequestPhaseData result"),
+        };
+
+        // Then: Suppression 타입
+        assert!(phase_event.is_suppression());
+
+        // Then: 3개의 진압 선택지
+        let candidates = phase_event.as_suppression().unwrap();
+        assert_eq!(candidates.len(), 3);
+
+        // Given: 첫 번째 진압 대상 선택
+        let suppression_target = &candidates[0];
+
+        // When: 진압 전투 시작
+        let result = game.execute(
+            player_id,
+            PlayerBehavior::StartSuppression {
+                abnormality_id: suppression_target.abnormality_id.clone(),
+            },
+        );
+
+        // Then: 전투 완료 및 Phase 진행
+        assert!(
+            result.is_ok(),
+            "StartSuppression failed: {:?}",
+            result.err()
+        );
+        assert!(matches!(
+            result.unwrap(),
+            BehaviorResult::AdvancePhase { .. }
+        ));
+
+        // Then: Phase IV로 진행됨
+        let (ordeal, phase) = game.get_progression().unwrap();
+        assert_eq!(ordeal, OrdealType::Dawn);
+        assert_eq!(phase, PhaseType::IV);
+
+        // Then: 게임 상태가 WaitingPhaseRequest로 변경됨
+        assert_eq!(game.get_state(), GameState::WaitingPhaseRequest);
     }
 
     /// 통합 테스트: 잘못된 이벤트 ID 선택 시 에러 반환
@@ -624,11 +757,14 @@ mod integration {
             .unwrap();
         assert_eq!(game.get_state(), GameState::SelectingEvent);
 
-        // Then: SelectEvent만 허용됨
+        // Then: SelectEvent, StartSuppression 허용됨
         let allowed = game.get_allowed_actions();
-        assert_eq!(allowed.len(), 1);
+        assert_eq!(allowed.len(), 2);
         assert!(game.is_action_allowed(&PlayerBehavior::SelectEvent {
             event_id: Uuid::new_v4()
+        }));
+        assert!(game.is_action_allowed(&PlayerBehavior::StartSuppression {
+            abnormality_id: String::new()
         }));
         assert!(!game.is_action_allowed(&PlayerBehavior::RequestPhaseData));
     }

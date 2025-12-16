@@ -5,6 +5,7 @@ use game_core::game::data::artifact_data::{ArtifactDatabase, ArtifactMetadata};
 use game_core::game::data::bonus_data::{BonusDatabase, BonusMetadata, BonusType};
 use game_core::game::data::equipment_data::{EquipmentDatabase, EquipmentMetadata, EquipmentType};
 use game_core::game::data::event_pools::{EventPhasePool, EventPoolConfig, WeightedEvent};
+use game_core::game::data::pve_data::{PveEncounter, PveEncounterDatabase, PvePosition, PveUnitData};
 use game_core::game::data::random_event_data::{RandomEventDatabase, RandomEventMetadata};
 use game_core::game::data::shop_data::{ShopDatabase, ShopMetadata, ShopType};
 use game_core::game::data::GameDataBase;
@@ -36,7 +37,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         description: "Test artifact for testing".to_string(),
         rarity: RiskLevel::HE,
         price: 100,
-        modifiers: Vec::new(),
+        triggered_effects: Default::default(),
     };
 
     let artifact2 = ArtifactMetadata {
@@ -46,7 +47,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         description: "Another test artifact".to_string(),
         rarity: RiskLevel::WAW,
         price: 200,
-        modifiers: Vec::new(),
+        triggered_effects: Default::default(),
     };
 
     let artifact3 = ArtifactMetadata {
@@ -56,7 +57,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         description: "Another test artifact".to_string(),
         rarity: RiskLevel::WAW,
         price: 200,
-        modifiers: Vec::new(),
+        triggered_effects: Default::default(),
     };
 
     // 장비 메타데이터
@@ -67,7 +68,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         equipment_type: EquipmentType::Weapon,
         rarity: RiskLevel::HE,
         price: 150,
-        modifiers: Vec::new(),
+        triggered_effects: Default::default(),
     };
 
     let equipment2 = EquipmentMetadata {
@@ -77,7 +78,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         equipment_type: EquipmentType::Suit,
         rarity: RiskLevel::TETH,
         price: 80,
-        modifiers: Vec::new(),
+        triggered_effects: Default::default(),
     };
 
     let equipment3 = EquipmentMetadata {
@@ -87,7 +88,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         equipment_type: EquipmentType::Suit,
         rarity: RiskLevel::TETH,
         price: 80,
-        modifiers: Vec::new(),
+        triggered_effects: Default::default(),
     };
 
     // 환상체 메타데이터
@@ -186,6 +187,45 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
     // 랜덤 이벤트 내부 맵 초기화
     random_events_db.init_map();
 
+    // PvE Encounter 데이터 (Suppression 테스트용)
+    let pve_encounter1 = PveEncounter {
+        id: "pve_test_1".to_string(),
+        abnormality_id: "test_abnorm_1".to_string(),
+        difficulty: 1,
+        risk_level: RiskLevel::ZAYIN,
+        units: vec![PveUnitData {
+            abnormality_id: "test_abnorm_1".to_string(),
+            position: PvePosition { x: 1, y: 1 },
+            tier: game_core::game::enums::Tier::I,
+        }],
+    };
+
+    let pve_encounter2 = PveEncounter {
+        id: "pve_test_2".to_string(),
+        abnormality_id: "test_abnorm_2".to_string(),
+        difficulty: 2,
+        risk_level: RiskLevel::TETH,
+        units: vec![PveUnitData {
+            abnormality_id: "test_abnorm_1".to_string(),
+            position: PvePosition { x: 1, y: 1 },
+            tier: game_core::game::enums::Tier::I,
+        }],
+    };
+
+    let pve_encounter3 = PveEncounter {
+        id: "pve_test_3".to_string(),
+        abnormality_id: "test_abnorm_3".to_string(),
+        difficulty: 3,
+        risk_level: RiskLevel::ZAYIN,
+        units: vec![PveUnitData {
+            abnormality_id: "test_abnorm_1".to_string(),
+            position: PvePosition { x: 1, y: 1 },
+            tier: game_core::game::enums::Tier::I,
+        }],
+    };
+
+    let pve_db = PveEncounterDatabase::new(vec![pve_encounter1, pve_encounter2, pve_encounter3]);
+
     Arc::new(GameDataBase::new(
         Arc::new(abnormalities_db),
         Arc::new(artifacts_db),
@@ -193,6 +233,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         Arc::new(shops_db),
         Arc::new(bonuses_db),
         Arc::new(random_events_db),
+        Arc::new(pve_db),
         event_pools,
     ))
 }
@@ -267,6 +308,7 @@ pub fn load_game_data_from_ron() -> Arc<GameDataBase> {
         Arc::new(shops_db),
         Arc::new(bonuses_db),
         Arc::new(random_events_db),
+        Arc::new(PveEncounterDatabase::new(vec![])),
         event_pools,
     ))
 }

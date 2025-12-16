@@ -1,4 +1,45 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
+
+use crate::game::ability::AbilityId;
+
+/// 트리거 타입
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum TriggerType {
+    /// 상시 적용
+    Permanent,
+    /// 공격 시
+    OnAttack,
+    /// 피격 시
+    OnHit,
+    /// 처치 시
+    OnKill,
+    /// 사망 시
+    OnDeath,
+    /// 전투 시작 시
+    OnBattleStart,
+    /// 아군 사망 시
+    OnAllyDeath,
+}
+
+/// 트리거 발동 시 적용되는 효과
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum Effect {
+    /// 스탯 변경
+    Modifier(StatModifier),
+    /// 추가 데미지 (현재 공격에)
+    BonusDamage { flat: i32, percent: i32 },
+    /// 체력 회복
+    Heal { flat: i32, percent: i32 },
+    /// 버프 적용
+    ApplyBuff { buff_id: String, duration_ms: u64 },
+    /// 어빌리티 실행 (복잡한 로직)
+    Ability(AbilityId),
+}
+
+/// 트리거 기반 효과 맵
+pub type TriggeredEffects = HashMap<TriggerType, Vec<Effect>>;
 
 /// 전역 전투 스탯 ID
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash, Serialize, Deserialize)]
@@ -32,10 +73,13 @@ pub struct StatModifier {
 }
 
 /// 전투에 사용되는 최종 스탯
+/// 아이템, 아티팩트 등 적용된 수치
 #[derive(Debug, Clone, Copy)]
 pub struct UnitStats {
     /// 최대 체력 (전투 시작 기준)
     pub max_health: u32,
+    /// 현재 체력
+    pub current_health: u32,
     /// 기본 공격력
     pub attack: u32,
     /// 기본 방어력 (감쇠 계수에 쓸 값)
@@ -52,12 +96,14 @@ impl UnitStats {
             attack: 0,
             defense: 0,
             attack_interval_ms: 0,
+            current_health: 0,
         }
     }
 
     /// 명시적인 값으로 초기화
     pub fn with_values(
         max_health: u32,
+        current_health: u32,
         attack: u32,
         defense: u32,
         attack_interval_ms: u64,
@@ -67,6 +113,7 @@ impl UnitStats {
             attack,
             defense,
             attack_interval_ms,
+            current_health,
         }
     }
 
@@ -104,9 +151,7 @@ impl UnitStats {
     /// 양수면 느려지고, 음수면 빨라지며 0 이하로는 내려가지 않는다.
     pub fn add_attack_interval_ms(&mut self, delta_ms: i64) {
         if delta_ms >= 0 {
-            self.attack_interval_ms = self
-                .attack_interval_ms
-                .saturating_add(delta_ms as u64);
+            self.attack_interval_ms = self.attack_interval_ms.saturating_add(delta_ms as u64);
         } else {
             let dec = delta_ms.unsigned_abs().min(self.attack_interval_ms);
             self.attack_interval_ms = self.attack_interval_ms.saturating_sub(dec);
@@ -161,6 +206,17 @@ impl UnitStats {
             self.apply_modifier(m);
         }
     }
+
+    /// TriggeredEffects에서 Permanent 트리거의 Modifier 효과만 적용
+    pub fn apply_permanent_effects(&mut self, effects: &TriggeredEffects) {
+        if let Some(permanent_effects) = effects.get(&TriggerType::Permanent) {
+            for effect in permanent_effects {
+                if let Effect::Modifier(modifier) = effect {
+                    self.apply_modifier(*modifier);
+                }
+            }
+        }
+    }
 }
 
 impl Default for UnitStats {
@@ -168,4 +224,3 @@ impl Default for UnitStats {
         Self::new()
     }
 }
-

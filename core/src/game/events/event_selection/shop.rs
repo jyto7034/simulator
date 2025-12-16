@@ -371,7 +371,7 @@ mod tests {
             equipment_type: EquipmentType::Weapon,
             rarity: RiskLevel::HE,
             price,
-            modifiers: Vec::new(),
+            triggered_effects: Default::default(),
         });
         (uuid, equipment)
     }

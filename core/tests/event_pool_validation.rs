@@ -14,6 +14,7 @@ use game_core::game::data::random_event_data::{
     RandomEventDatabase, RandomEventInnerMetadata, RandomEventMetadata,
 };
 use game_core::game::data::shop_data::{ShopDatabase, ShopMetadata, ShopType};
+use game_core::game::data::pve_data::PveEncounterDatabase;
 use game_core::game::data::GameDataBase;
 use game_core::game::enums::{GameOption, OrdealType, RiskLevel};
 use game_core::game::events::event_selection::bonus::BonusGenerator;
@@ -115,6 +116,7 @@ fn create_minimal_game_data() -> Arc<GameDataBase> {
         shop_data,
         bonus_data,
         random_event_data,
+        Arc::new(PveEncounterDatabase::new(vec![])),
         event_pools,
     ))
 }
@@ -204,6 +206,7 @@ fn create_weighted_game_data() -> Arc<GameDataBase> {
         shop_data,
         bonus_data,
         random_event_data,
+        Arc::new(PveEncounterDatabase::new(vec![])),
         event_pools,
     ))
 }

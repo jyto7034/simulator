@@ -11,13 +11,6 @@ pub trait MoveTo {
     fn is_last(&self) -> bool;
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum Category {
-    Abnormality,
-    Equipment,
-    Artifact,
-}
-
 // ============================================================
 // OrdealType
 // ============================================================
@@ -161,7 +154,7 @@ pub enum Lane {
     Back,
 }
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum Side {
     Opponent,
     Player,
@@ -266,6 +259,29 @@ impl PhaseEvent {
 
     pub fn is_ordeal(&self) -> bool {
         matches!(self, PhaseEvent::Ordeal { .. })
+    }
+
+    pub fn as_event_selection(
+        &self,
+    ) -> Option<(&ShopMetadata, &BonusMetadata, &RandomEventMetadata)> {
+        match self {
+            PhaseEvent::EventSelection { shop, bonus, random } => Some((shop, bonus, random)),
+            _ => None,
+        }
+    }
+
+    pub fn as_suppression(&self) -> Option<&[SuppressionOption; 3]> {
+        match self {
+            PhaseEvent::Suppression { candidates } => Some(candidates),
+            _ => None,
+        }
+    }
+
+    pub fn as_ordeal(&self) -> Option<&[OrdealOption; 3]> {
+        match self {
+            PhaseEvent::Ordeal { candidates } => Some(candidates),
+            _ => None,
+        }
     }
 
     pub fn event_type(&self) -> PhaseEventType {

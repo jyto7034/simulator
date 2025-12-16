@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::game::{enums::RiskLevel, stats::StatModifier};
+use crate::game::{enums::RiskLevel, stats::TriggeredEffects};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum EquipmentType {
@@ -20,9 +20,9 @@ pub struct EquipmentMetadata {
     pub equipment_type: EquipmentType,
     pub rarity: RiskLevel,
     pub price: u32,
-    /// 이 장비가 부여하는 스탯 변경 목록
+    /// 트리거 기반 효과 (Permanent = 상시 적용)
     #[serde(default)]
-    pub modifiers: Vec<StatModifier>,
+    pub triggered_effects: TriggeredEffects,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

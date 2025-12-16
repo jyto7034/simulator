@@ -5,7 +5,7 @@ use crate::{
     ecs::resources::InventoryDiffDto,
     game::{
         data::{random_event_data::RandomEventMetadata, shop_data::ShopMetadata},
-        enums::{Category, PhaseEvent},
+        enums::PhaseEvent,
     },
 };
 
@@ -25,10 +25,7 @@ pub enum PlayerBehavior {
     // 상점 관련 행동
     // ============================================================
     /// 아이템 구매
-    PurchaseItem {
-        item_uuid: Uuid,
-        item_category: Category,
-    },
+    PurchaseItem { item_uuid: Uuid },
 
     /// 아이템 판매
     SellItem { item_uuid: Uuid },
@@ -46,10 +43,10 @@ pub enum PlayerBehavior {
     /// 보너스 화면 나가기
     ExitBonus,
     // ============================================================
-    // 진압 관련 행동 (TODO)
+    // 진압 관련 행동
     // ============================================================
-    // SelectWorkType { work_type: WorkType },
-    // ExitSuppression,
+    /// 진압 전투 시작
+    StartSuppression { abnormality_id: String },
 
     // ============================================================
     // 전투 관련 행동 (TODO)
@@ -278,4 +275,13 @@ pub enum GameError {
 
     /// 기물의 전투 스탯이 정의되지 않았거나 잘못된 경우
     InvalidUnitStats(&'static str),
+
+    /// 필드 위치가 범위를 벗어났을 때
+    OutOfBounds,
+    /// 해당 위치에 이미 기물이 배치되어 있을 때
+    PositionOccupied,
+    /// 해당 기물이 이미 필드에 배치되어 있을 때
+    UnitAlreadyPlaced,
+    /// 필드에서 기물을 찾을 수 없을 때
+    UnitNotFound,
 }

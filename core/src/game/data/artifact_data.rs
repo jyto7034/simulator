@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::game::{enums::RiskLevel, stats::StatModifier};
+use crate::game::{enums::RiskLevel, stats::TriggeredEffects};
 
 pub type ArtifactItem = ArtifactMetadata;
 
@@ -13,9 +13,9 @@ pub struct ArtifactMetadata {
     pub description: String,
     pub rarity: RiskLevel,
     pub price: u32,
-    /// 이 아티팩트가 부여하는 스탯 변경 목록 (덱 전체 또는 특정 조건)
+    /// 트리거 기반 효과 (Permanent = 상시 적용)
     #[serde(default)]
-    pub modifiers: Vec<StatModifier>,
+    pub triggered_effects: TriggeredEffects,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -1,9 +1,6 @@
 use uuid::Uuid;
 
-use crate::{
-    ecs::resources::GameState,
-    game::{behavior::PlayerBehavior, enums::Category},
-};
+use crate::{ecs::resources::GameState, game::behavior::PlayerBehavior};
 
 /// ActionScheduler
 ///
@@ -32,10 +29,15 @@ impl ActionScheduler {
             }
 
             GameState::SelectingEvent => {
-                // Phase 데이터 받음: 이벤트 선택만 가능
-                vec![PlayerBehavior::SelectEvent {
-                    event_id: Uuid::nil(), // 템플릿 (모든 event_id 허용)
-                }]
+                // Phase 데이터 받음: 이벤트 선택 또는 진압 시작 가능
+                vec![
+                    PlayerBehavior::SelectEvent {
+                        event_id: Uuid::nil(),
+                    },
+                    PlayerBehavior::StartSuppression {
+                        abnormality_id: String::new(),
+                    },
+                ]
             }
 
             GameState::InShop { .. } => {
@@ -43,7 +45,6 @@ impl ActionScheduler {
                 vec![
                     PlayerBehavior::PurchaseItem {
                         item_uuid: Uuid::nil(),
-                        item_category: Category::Equipment,
                     },
                     PlayerBehavior::SellItem {
                         item_uuid: Uuid::nil(),
@@ -65,7 +66,7 @@ impl ActionScheduler {
             }
 
             GameState::InBattle { .. } => {
-                // 전투 중: 카드 사용, 턴 종료 등
+                // 전투 중: 턴 종료 등
                 // TODO: UseCard, EndTurn 추가 후 활성화
                 vec![]
             }
@@ -120,12 +121,17 @@ mod tests {
     }
 
     #[test]
-    fn test_selecting_event_allows_only_select_event() {
+    fn test_selecting_event_allows_select_event_and_suppression() {
         let state = GameState::SelectingEvent;
         let allowed = ActionScheduler::get_allowed_actions(&state);
 
-        assert_eq!(allowed.len(), 1);
-        assert!(matches!(allowed[0], PlayerBehavior::SelectEvent { .. }));
+        assert_eq!(allowed.len(), 2);
+        assert!(allowed
+            .iter()
+            .any(|a| matches!(a, PlayerBehavior::SelectEvent { .. })));
+        assert!(allowed
+            .iter()
+            .any(|a| matches!(a, PlayerBehavior::StartSuppression { .. })));
     }
 
     #[test]
@@ -167,7 +173,7 @@ mod tests {
         // 이벤트 선택
         let state = GameState::SelectingEvent;
         let allowed = ActionScheduler::get_allowed_actions(&state);
-        assert_eq!(allowed.len(), 1);
+        assert_eq!(allowed.len(), 2);
 
         // 상점 진입
         let state = GameState::InShop {
@@ -241,7 +247,7 @@ mod tests {
         let test_cases = vec![
             (GameState::NotStarted, 1),
             (GameState::WaitingPhaseRequest, 1),
-            (GameState::SelectingEvent, 1),
+            (GameState::SelectingEvent, 2),
             (
                 GameState::InShop {
                     shop_uuid: Uuid::nil(),
