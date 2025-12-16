@@ -180,7 +180,14 @@ impl Field {
 
             match nearest {
                 None => nearest = Some((placement.uuid, distance)),
-                Some((_, best_dist)) if distance < best_dist => {
+                Some((_best_uuid, best_dist)) if distance < best_dist => {
+                    nearest = Some((placement.uuid, distance));
+                }
+                Some((best_uuid, best_dist))
+                    if distance == best_dist
+                        && placement.uuid.as_bytes() < best_uuid.as_bytes() =>
+                {
+                    // 동률이면 더 작은 UUID를 선택 (결정성)
                     nearest = Some((placement.uuid, distance));
                 }
                 _ => {}

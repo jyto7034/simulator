@@ -65,6 +65,73 @@ impl Ord for BattleEvent {
             .time_ms()
             .cmp(&self.time_ms())
             .then_with(|| other.priority().cmp(&self.priority()))
+            .then_with(|| match (self, other) {
+                (
+                    BattleEvent::Attack {
+                        attacker_instance_id: a,
+                        ..
+                    },
+                    BattleEvent::Attack {
+                        attacker_instance_id: b,
+                        ..
+                    },
+                ) => b.as_bytes().cmp(a.as_bytes()),
+                (
+                    BattleEvent::ApplyBuff {
+                        caster_instance_id: a_c,
+                        target_instance_id: a_t,
+                        buff_id: a_b,
+                        ..
+                    },
+                    BattleEvent::ApplyBuff {
+                        caster_instance_id: b_c,
+                        target_instance_id: b_t,
+                        buff_id: b_b,
+                        ..
+                    },
+                ) => b_c
+                    .as_bytes()
+                    .cmp(a_c.as_bytes())
+                    .then_with(|| b_t.as_bytes().cmp(a_t.as_bytes()))
+                    .then_with(|| b_b.as_bytes().cmp(a_b.as_bytes())),
+                (
+                    BattleEvent::BuffTick {
+                        caster_instance_id: a_c,
+                        target_instance_id: a_t,
+                        buff_id: a_b,
+                        ..
+                    },
+                    BattleEvent::BuffTick {
+                        caster_instance_id: b_c,
+                        target_instance_id: b_t,
+                        buff_id: b_b,
+                        ..
+                    },
+                ) => b_c
+                    .as_bytes()
+                    .cmp(a_c.as_bytes())
+                    .then_with(|| b_t.as_bytes().cmp(a_t.as_bytes()))
+                    .then_with(|| b_b.as_bytes().cmp(a_b.as_bytes())),
+                (
+                    BattleEvent::BuffExpire {
+                        caster_instance_id: a_c,
+                        target_instance_id: a_t,
+                        buff_id: a_b,
+                        ..
+                    },
+                    BattleEvent::BuffExpire {
+                        caster_instance_id: b_c,
+                        target_instance_id: b_t,
+                        buff_id: b_b,
+                        ..
+                    },
+                ) => b_c
+                    .as_bytes()
+                    .cmp(a_c.as_bytes())
+                    .then_with(|| b_t.as_bytes().cmp(a_t.as_bytes()))
+                    .then_with(|| b_b.as_bytes().cmp(a_b.as_bytes())),
+                _ => Ordering::Equal,
+            })
     }
 }
 

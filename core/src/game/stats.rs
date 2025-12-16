@@ -156,6 +156,10 @@ impl UnitStats {
             let dec = delta_ms.unsigned_abs().min(self.attack_interval_ms);
             self.attack_interval_ms = self.attack_interval_ms.saturating_sub(dec);
         }
+        // 전투 이벤트 스케줄링이 멈추지 않도록 1ms 이상 유지
+        if self.attack_interval_ms == 0 {
+            self.attack_interval_ms = 1;
+        }
     }
 
     /// 단일 StatModifier를 적용
