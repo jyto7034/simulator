@@ -68,8 +68,8 @@ mod shop {
         let allowed_actions = game.get_allowed_actions();
         assert_eq!(allowed_actions.len(), 4);
 
-        // Then: CurrentPhaseEvents에서 선택된 이벤트가 제거됨
-        assert_eq!(game.get_phase_events_count(), 2);
+        // Then: 한 Phase에서 이벤트는 1개만 선택되므로 남은 선택지는 폐기됨
+        assert_eq!(game.get_phase_events_count(), 0);
     }
 
     /// 통합 테스트: 상점 Reroll
@@ -134,8 +134,8 @@ mod shop {
         let allowed_actions = game.get_allowed_actions();
         assert_eq!(allowed_actions.len(), 4);
 
-        // Then: CurrentPhaseEvents에서 선택된 이벤트가 제거됨
-        assert_eq!(game.get_phase_events_count(), 2);
+        // Then: 한 Phase에서 이벤트는 1개만 선택되므로 남은 선택지는 폐기됨
+        assert_eq!(game.get_phase_events_count(), 0);
 
         // When: Reroll 행동 수행
         let result = game.execute(player_id, PlayerBehavior::RerollShop);
@@ -212,8 +212,8 @@ mod shop {
         let allowed_actions = game.get_allowed_actions();
         assert_eq!(allowed_actions.len(), 4);
 
-        // Then: CurrentPhaseEvents에서 선택된 이벤트가 제거됨
-        assert_eq!(game.get_phase_events_count(), 2);
+        // Then: 한 Phase에서 이벤트는 1개만 선택되므로 남은 선택지는 폐기됨
+        assert_eq!(game.get_phase_events_count(), 0);
 
         // 테스트용으로 충분한 Enkephalin 지급
         game.set_enkephalin(10_000);
@@ -385,11 +385,18 @@ mod bonus {
         assert!(inventory_diff.updated.is_empty());
         assert!(inventory_diff.removed.is_empty());
 
-        // Then: 상태가 SelectingEvent로 복귀
-        assert_eq!(game.get_state(), GameState::SelectingEvent);
+        // Then: 보너스 수령 완료 상태로 전환됨 (Exit에서만 다음 Phase로 진행)
+        assert_eq!(
+            game.get_state(),
+            GameState::InBonusClaimed { bonus_uuid }
+        );
 
-        // Then: CurrentPhaseEvents에서 선택된 이벤트가 제거됨
-        assert_eq!(game.get_phase_events_count(), 2);
+        // Then: Claim은 더 이상 허용되지 않고 Exit만 가능
+        assert!(!game.is_action_allowed(&PlayerBehavior::ClaimBonus));
+        assert!(game.is_action_allowed(&PlayerBehavior::ExitBonus));
+
+        // Then: 한 Phase에서 이벤트는 1개만 선택되므로 남은 선택지는 폐기됨
+        assert_eq!(game.get_phase_events_count(), 0);
     }
 }
 
@@ -464,8 +471,8 @@ mod random_event {
         let allowed_actions = game.get_allowed_actions();
         assert_eq!(allowed_actions.len(), 2);
 
-        // Then: CurrentPhaseEvents에서 선택된 이벤트가 제거됨
-        assert_eq!(game.get_phase_events_count(), 2);
+        // Then: 한 Phase에서 이벤트는 1개만 선택되므로 남은 선택지는 폐기됨
+        assert_eq!(game.get_phase_events_count(), 0);
     }
 }
 

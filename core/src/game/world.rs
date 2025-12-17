@@ -8,7 +8,7 @@ use crate::ecs::resources::{
     ActionValidator, CurrentPhaseEvents, Enkephalin, Field, GameProgression, GameState, Inventory,
     InventoryDiffDto, Qliphoth, SelectedEvent,
 };
-use crate::ecs::systems::{spawn_player, progression};
+use crate::ecs::systems::{progression, spawn_player};
 use crate::game::behavior::{BehaviorResult, GameError, PlayerBehavior};
 use crate::game::data::{random_event_data::RandomEventTarget, GameDataBase};
 use crate::game::enums::{BonusAction, GameOption, OrdealType, PhaseType, ShopAction};
@@ -68,24 +68,16 @@ impl GameCore {
     ) -> Result<BehaviorResult, GameError> {
         debug!("Executing behavior {:?} for player {}", behavior, player_id);
         // 1. 행동 검증 (치팅 방지)
-        // StartNewGame과 RequestPhaseData는 항상 허용
-        let always_allowed = matches!(
-            behavior,
-            PlayerBehavior::StartNewGame | PlayerBehavior::RequestPhaseData
-        );
-
-        if !always_allowed {
-            let context = self
-                .world
-                .get_resource::<ActionValidator>()
-                .ok_or(GameError::MissingResource("ActionValidator"))?;
-            if !context.is_action_allowed(&behavior) {
-                warn!(
-                    "Rejected behavior {:?} for player {} (not allowed in current context)",
-                    behavior, player_id
-                );
-                return Err(GameError::InvalidAction);
-            }
+        let context = self
+            .world
+            .get_resource::<ActionValidator>()
+            .ok_or(GameError::MissingResource("ActionValidator"))?;
+        if !context.is_action_allowed(&behavior) {
+            warn!(
+                "Rejected behavior {:?} for player {} (not allowed in current context)",
+                behavior, player_id
+            );
+            return Err(GameError::InvalidAction);
         }
 
         // 2. 행동 처리
@@ -182,6 +174,12 @@ impl GameCore {
 
     // 상점 / 랜덤 이벤트 / 보너스 데이터 요청
     fn handle_request_phase_data(&mut self) -> Result<BehaviorResult, GameError> {
+        // 이전 Phase의 잔여 선택지/선택 이벤트는 모두 폐기
+        if let Some(mut current_phase_events) = self.world.get_resource_mut::<CurrentPhaseEvents>() {
+            current_phase_events.clear();
+        }
+        let _ = self.world.remove_resource::<SelectedEvent>();
+
         // 1. 현재 Ordeal, Phase 가져오기
         let (ordeal, phase) = self.get_progression()?;
 
@@ -232,6 +230,8 @@ impl GameCore {
                 warn!("Selected event not found: {}", selected_event_id);
                 GameError::EventNotFound
             })?;
+        // 한 Phase에서 이벤트는 1개만 선택되므로 나머지 옵션은 폐기
+        current_phase_events.clear();
 
         self.world
             .insert_resource(SelectedEvent::new(event.clone()));
@@ -368,19 +368,12 @@ impl GameCore {
                 difficulty,
                 uuid,
             } => {
-                // 상태 전환: InBattle (allowed_actions 자동 설정)
-                self.transition_to(GameState::InBattle { battle_uuid: *uuid })?;
-
-                // TODO: 전투 시스템 구현
-                //   - 전투 초기화
-                //   - 전투 진행
-                //   - 승패 판정 및 보상
-                Ok(BehaviorResult::Ordeal {
-                    battle_result: format!(
-                        "시련 전투 시작: {:?} (난이도: {})",
-                        ordeal_type, difficulty
-                    ),
-                })
+                // TODO: 전투 시스템 구현 전까지는 softlock 방지를 위해 즉시 Phase를 진행
+                warn!(
+                    "Ordeal battle not implemented yet (ordeal_type={:?}, difficulty={}, uuid={}); advancing phase",
+                    ordeal_type, difficulty, uuid
+                );
+                self.advance_to_next_phase()
             }
         }
     }
@@ -395,7 +388,7 @@ impl GameCore {
                 ShopExecutor::purchase_item(&mut self.world, &self.game_data, item_uuid)
             }
 
-            ShopAction::Sell { item_uuid } => ShopExecutor::sell_tiem(&mut self.world, item_uuid),
+            ShopAction::Sell { item_uuid } => ShopExecutor::sell_item(&mut self.world, item_uuid),
 
             // TODO: Reroll 시 자원 소모 ( 엔케팔린 혹은 특정 자원 )
             ShopAction::Reroll => ShopExecutor::reroll(&mut self.world),
@@ -441,9 +434,10 @@ impl GameCore {
                     removed: Vec::new(),
                 };
 
-                // 5. 상태 전환: SelectingEvent로 복귀
-                // TODO: 보너스 후 자동으로 다음 Phase로 진행할지 결정
-                self.transition_to(GameState::SelectingEvent)?;
+                // 5. 보너스 수령 완료 상태로 전환 (Exit에서만 Phase 진행)
+                self.transition_to(GameState::InBonusClaimed {
+                    bonus_uuid: bonus.uuid,
+                })?;
 
                 Ok(BehaviorResult::BonusReward {
                     enkephalin,
@@ -459,6 +453,12 @@ impl GameCore {
     ///
     /// 이벤트(상점/보너스/랜덤) 완료 후 호출되어 다음 Phase로 전환합니다.
     fn advance_to_next_phase(&mut self) -> Result<BehaviorResult, GameError> {
+        // Phase가 끝났으므로 선택지/선택 이벤트 리소스는 폐기
+        if let Some(mut current_phase_events) = self.world.get_resource_mut::<CurrentPhaseEvents>() {
+            current_phase_events.clear();
+        }
+        let _ = self.world.remove_resource::<SelectedEvent>();
+
         let mut game_progression = self
             .world
             .get_resource_mut::<GameProgression>()
@@ -500,10 +500,50 @@ impl GameCore {
         &mut self,
         abnormality_id: &str,
     ) -> Result<BehaviorResult, GameError> {
+        match self.get_state() {
+            GameState::InSuppression { abnormality_uuid } => {
+                let selected = self
+                    .world
+                    .get_resource::<SelectedEvent>()
+                    .ok_or(GameError::InvalidAction)?;
+                let (expected_id, expected_uuid) = selected.as_suppression()?;
+                if expected_uuid != abnormality_uuid || expected_id != abnormality_id {
+                    warn!(
+                        "Suppression mismatch: expected (id={}, uuid={}), got (id={}, uuid={})",
+                        expected_id, expected_uuid, abnormality_id, abnormality_uuid
+                    );
+                    return Err(GameError::InvalidAction);
+                }
+            }
+            GameState::SelectingEvent => {
+                let current_phase_events = self
+                    .world
+                    .get_resource::<CurrentPhaseEvents>()
+                    .ok_or(GameError::MissingResource("CurrentPhaseEvents"))?;
+                let allowed = current_phase_events.events.values().any(|option| {
+                    matches!(
+                        option,
+                        GameOption::SuppressAbnormality { abnormality_id: id, .. } if id == abnormality_id
+                    )
+                });
+                if !allowed {
+                    warn!(
+                        "Rejected StartSuppression for abnormality_id={} (not in current candidates)",
+                        abnormality_id
+                    );
+                    return Err(GameError::InvalidAction);
+                }
+            }
+            _ => return Err(GameError::InvalidAction),
+        }
+
         info!("Starting suppression for abnormality: {}", abnormality_id);
 
-        let battle_result =
-            SuppressionExecutor::start_battle(&mut self.world, self.game_data.clone(), abnormality_id)?;
+        let battle_result = SuppressionExecutor::start_battle(
+            &mut self.world,
+            self.game_data.clone(),
+            abnormality_id,
+        )?;
 
         info!(
             "Suppression battle completed - Winner: {:?}",
@@ -557,13 +597,13 @@ impl GameCore {
             .world
             .get_resource::<GameProgression>()
             .map(|p| (p.current_ordeal, p.current_phase))
-            .ok_or(GameError::MissingResource(""))?)
+            .ok_or(GameError::MissingResource("GameProgression"))?)
     }
 
     pub fn get_qliphoth(&self) -> Result<Qliphoth, GameError> {
         self.world
             .get_resource::<Qliphoth>()
-            .ok_or(GameError::MissingResource(""))
+            .ok_or(GameError::MissingResource("Qliphoth"))
             .cloned()
     }
 

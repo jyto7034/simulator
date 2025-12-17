@@ -29,6 +29,8 @@ pub enum GameState {
     InShop { shop_uuid: Uuid },
     /// 보너스 진입
     InBonus { bonus_uuid: Uuid },
+    /// 보너스 수령 완료 (Exit만 가능)
+    InBonusClaimed { bonus_uuid: Uuid },
     /// 진압 작업 진행 중
     InSuppression { abnormality_uuid: Uuid },
     /// 시련 전투 진행 중
@@ -407,6 +409,17 @@ impl SelectedEvent {
     pub fn as_random_event(&self) -> Result<&RandomEventMetadata, GameError> {
         match &self.event {
             GameOption::Random { event } => Ok(event),
+            _ => Err(GameError::EventTypeMismatch),
+        }
+    }
+
+    pub fn as_suppression(&self) -> Result<(&str, Uuid), GameError> {
+        match &self.event {
+            GameOption::SuppressAbnormality {
+                abnormality_id,
+                uuid,
+                ..
+            } => Ok((abnormality_id.as_str(), *uuid)),
             _ => Err(GameError::EventTypeMismatch),
         }
     }

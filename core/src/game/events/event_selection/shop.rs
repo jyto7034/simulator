@@ -258,7 +258,7 @@ impl ShopExecutor {
     ///
     /// # 판매 가격
     /// 아이템 원가의 50%로 판매됩니다.
-    pub fn sell_tiem(world: &mut World, item_uuid: Uuid) -> Result<BehaviorResult, GameError> {
+    pub fn sell_item(world: &mut World, item_uuid: Uuid) -> Result<BehaviorResult, GameError> {
         // ============================================================
         // 1단계: 검증
         // ============================================================
@@ -335,6 +335,10 @@ impl ShopExecutor {
                 removed: vec![item_uuid],
             },
         })
+    }
+
+    pub fn sell_tiem(world: &mut World, item_uuid: Uuid) -> Result<BehaviorResult, GameError> {
+        Self::sell_item(world, item_uuid)
     }
 }
 

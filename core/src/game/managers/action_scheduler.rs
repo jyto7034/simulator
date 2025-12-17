@@ -59,10 +59,17 @@ impl ActionScheduler {
                 vec![PlayerBehavior::ClaimBonus, PlayerBehavior::ExitBonus]
             }
 
+            GameState::InBonusClaimed { .. } => {
+                // 보너스 수령 완료: 나가기만 가능
+                vec![PlayerBehavior::ExitBonus]
+            }
+
             GameState::InSuppression { .. } => {
                 // 진압 작업 중: 작업 타입 선택, 나가기 가능
                 // TODO: SelectWorkType, ExitSuppression 추가 후 활성화
-                vec![]
+                vec![PlayerBehavior::StartSuppression {
+                    abnormality_id: String::new(),
+                }]
             }
 
             GameState::InBattle { .. } => {
@@ -135,14 +142,16 @@ mod tests {
     }
 
     #[test]
-    fn test_in_suppression_allows_nothing_for_now() {
+    fn test_in_suppression_allows_start_suppression() {
         let state = GameState::InSuppression {
             abnormality_uuid: Uuid::nil(),
         };
         let allowed = ActionScheduler::get_allowed_actions(&state);
 
-        // TODO가 구현되기 전까지는 비어있어야 함
-        assert!(allowed.is_empty());
+        assert_eq!(allowed.len(), 1);
+        assert!(allowed
+            .iter()
+            .any(|a| matches!(a, PlayerBehavior::StartSuppression { .. })));
     }
 
     #[test]
@@ -226,6 +235,9 @@ mod tests {
             GameState::InBonus {
                 bonus_uuid: Uuid::nil(),
             },
+            GameState::InBonusClaimed {
+                bonus_uuid: Uuid::nil(),
+            },
             GameState::InSuppression {
                 abnormality_uuid: Uuid::nil(),
             },
@@ -261,11 +273,17 @@ mod tests {
                 2,
             ),
             (
+                GameState::InBonusClaimed {
+                    bonus_uuid: Uuid::nil(),
+                },
+                1,
+            ),
+            (
                 GameState::InSuppression {
                     abnormality_uuid: Uuid::nil(),
                 },
-                0,
-            ), // TODO
+                1,
+            ),
             (
                 GameState::InBattle {
                     battle_uuid: Uuid::nil(),

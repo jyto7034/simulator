@@ -224,6 +224,13 @@ impl Inventory {
             }
         }
     }
+
+    /// 아티팩트 UUID를 이미 소유 중인지 확인
+    ///
+    /// 아티팩트는 귀속 개념으로 제거/판매가 불가능하므로, 중복 소유 여부 확인용으로 사용합니다.
+    pub fn has_artifact(&self, uuid: Uuid) -> bool {
+        self.artifacts.contains_uuid(uuid)
+    }
 }
 
 // ============================================================
@@ -424,6 +431,10 @@ impl ArtifactSlots {
 
         self.slots.push(item);
         Ok(())
+    }
+
+    pub fn contains_uuid(&self, uuid: Uuid) -> bool {
+        self.slots.iter().any(|item| item.uuid == uuid)
     }
 
     pub fn get_item(&self, index: usize) -> Option<&Arc<ArtifactItem>> {
