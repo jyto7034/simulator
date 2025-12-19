@@ -142,4 +142,3 @@ fn qliphoth_caution_uses_probabilistic_suppression() {
         "Caution Qliphoth should either follow schedule or switch to Suppression based on RNG"
     );
 }
-

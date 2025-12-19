@@ -183,26 +183,17 @@ impl ItemRegistry {
 
         // 환상체 아이템 등록
         for meta in &abnormality_db.items {
-            by_uuid.insert(
-                meta.uuid,
-                Item::Abnormality(Arc::new(meta.clone())),
-            );
+            by_uuid.insert(meta.uuid, Item::Abnormality(Arc::new(meta.clone())));
         }
 
         // 아티팩트 아이템 등록
         for meta in &artifact_db.items {
-            by_uuid.insert(
-                meta.uuid,
-                Item::Artifact(Arc::new(meta.clone())),
-            );
+            by_uuid.insert(meta.uuid, Item::Artifact(Arc::new(meta.clone())));
         }
 
         // 장비 아이템 등록
         for meta in &equipment_db.items {
-            by_uuid.insert(
-                meta.uuid,
-                Item::Equipment(Arc::new(meta.clone())),
-            );
+            by_uuid.insert(meta.uuid, Item::Equipment(Arc::new(meta.clone())));
         }
 
         Self { by_uuid }
@@ -224,8 +215,7 @@ impl GameDataBase {
         pve_data: Arc<PveEncounterDatabase>,
         event_pools: EventPoolConfig,
     ) -> Self {
-        let item_registry =
-            ItemRegistry::new(&abnormality_data, &artifact_data, &equipment_data);
+        let item_registry = ItemRegistry::new(&abnormality_data, &artifact_data, &equipment_data);
 
         Self {
             abnormality_data,

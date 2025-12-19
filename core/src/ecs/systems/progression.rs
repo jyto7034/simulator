@@ -10,9 +10,7 @@ pub fn advance_phase(progression: &mut GameProgression) -> Option<PhaseType> {
         if next.value() <= max_phases {
             debug!(
                 "Advancing phase: {:?} -> {:?} (max_phases={})",
-                progression.current_phase,
-                next,
-                max_phases
+                progression.current_phase, next, max_phases
             );
             progression.current_phase = next;
             return Some(next);

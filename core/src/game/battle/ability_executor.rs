@@ -25,6 +25,7 @@ pub struct AbilityRequest {
 /// 어빌리티 실행 결과
 #[derive(Debug, Clone)]
 pub struct AbilityResult {
+    pub executed: bool,
     pub commands: Vec<BattleCommand>,
 }
 
@@ -172,7 +173,10 @@ impl AbilityExecutor {
             let cooldown_key = (request.caster_id, request.ability_id);
             if let Some(&ready_time) = self.cooldowns.get(&cooldown_key) {
                 if request.time_ms < ready_time {
-                    return AbilityResult { commands };
+                    return AbilityResult {
+                        executed: false,
+                        commands,
+                    };
                 }
             }
             // 쿨다운 갱신
@@ -182,12 +186,14 @@ impl AbilityExecutor {
 
         // 각 효과 처리
         for effect in &skill_def.effects {
-            let effect_commands =
-                self.process_effect(effect, caster, request.target_id, units);
+            let effect_commands = self.process_effect(effect, caster, request.target_id, units);
             commands.extend(effect_commands);
         }
 
-        AbilityResult { commands }
+        AbilityResult {
+            executed: true,
+            commands,
+        }
     }
 
     /// 개별 효과 처리
@@ -226,10 +232,11 @@ impl AbilityExecutor {
             AbilityEffect::ExtraAttack { count, target } => {
                 let targets = self.resolve_targets(*target, caster, hinted_target, units);
                 for _ in 0..*count {
-                    for &_target_id in &targets {
-                        // 추가 공격은 새로운 Attack 이벤트로 스케줄
+                    for &target_id in &targets {
+                        // 추가 공격은 1회성 Attack 이벤트로 스케줄
                         commands.push(BattleCommand::ScheduleAttack {
                             attacker_id: caster.id,
+                            target_id: Some(target_id),
                             time_ms: 0, // 즉시 실행
                         });
                     }
@@ -321,7 +328,10 @@ impl AbilityExecutor {
             _ => {}
         }
 
-        AbilityResult { commands }
+        AbilityResult {
+            executed: true,
+            commands,
+        }
     }
 
     /// 쿨다운 초기화

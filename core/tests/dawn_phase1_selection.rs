@@ -386,10 +386,7 @@ mod bonus {
         assert!(inventory_diff.removed.is_empty());
 
         // Then: 보너스 수령 완료 상태로 전환됨 (Exit에서만 다음 Phase로 진행)
-        assert_eq!(
-            game.get_state(),
-            GameState::InBonusClaimed { bonus_uuid }
-        );
+        assert_eq!(game.get_state(), GameState::InBonusClaimed { bonus_uuid });
 
         // Then: Claim은 더 이상 허용되지 않고 Exit만 가능
         assert!(!game.is_action_allowed(&PlayerBehavior::ClaimBonus));

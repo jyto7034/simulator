@@ -5,7 +5,9 @@ use game_core::game::data::artifact_data::{ArtifactDatabase, ArtifactMetadata};
 use game_core::game::data::bonus_data::{BonusDatabase, BonusMetadata, BonusType};
 use game_core::game::data::equipment_data::{EquipmentDatabase, EquipmentMetadata, EquipmentType};
 use game_core::game::data::event_pools::{EventPhasePool, EventPoolConfig, WeightedEvent};
-use game_core::game::data::pve_data::{PveEncounter, PveEncounterDatabase, PvePosition, PveUnitData};
+use game_core::game::data::pve_data::{
+    PveEncounter, PveEncounterDatabase, PvePosition, PveUnitData,
+};
 use game_core::game::data::random_event_data::{RandomEventDatabase, RandomEventMetadata};
 use game_core::game::data::shop_data::{ShopDatabase, ShopMetadata, ShopType};
 use game_core::game::data::GameDataBase;

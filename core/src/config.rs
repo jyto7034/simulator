@@ -32,9 +32,9 @@ pub struct QliphothThresholds {
 /// 진압 작업 발생 확률 설정 (0~100)
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct QliphothSuppressChance {
-    pub stable: u32,    // 안정 상태 (보통 0)
-    pub caution: u32,   // 주의 상태 (보통 30~50)
-    pub critical: u32,  // 위험 상태 (보통 100, 강제)
+    pub stable: u32,   // 안정 상태 (보통 0)
+    pub caution: u32,  // 주의 상태 (보통 30~50)
+    pub critical: u32, // 위험 상태 (보통 100, 강제)
 }
 
 impl QliphothSuppressChance {

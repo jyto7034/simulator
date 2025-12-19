@@ -74,7 +74,7 @@ pub struct StatModifier {
 
 /// 전투에 사용되는 최종 스탯
 /// 아이템, 아티팩트 등 적용된 수치
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct UnitStats {
     /// 최대 체력 (전투 시작 기준)
     pub max_health: u32,

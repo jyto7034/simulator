@@ -4,6 +4,7 @@ use std::collections::{BinaryHeap, HashMap};
 
 use bevy_ecs::world::World;
 use game_core::ecs::resources::{Field, Inventory, Position};
+use game_core::game::battle::buffs::BuffId;
 use game_core::game::battle::enums::BattleEvent;
 use game_core::game::battle::{
     BattleCore, BattleWinner, GrowthId, GrowthStack, OwnedArtifact, OwnedUnit, PlayerDeckInfo,
@@ -28,6 +29,8 @@ mod battle_event_tests {
         let event = BattleEvent::Attack {
             time_ms: 1500,
             attacker_instance_id,
+            target_instance_id: None,
+            schedule_next: true,
         };
         assert_eq!(event.time_ms(), 1500);
     }
@@ -43,14 +46,20 @@ mod battle_event_tests {
         heap.push(BattleEvent::Attack {
             time_ms: 3000,
             attacker_instance_id: id1,
+            target_instance_id: None,
+            schedule_next: true,
         });
         heap.push(BattleEvent::Attack {
             time_ms: 1000,
             attacker_instance_id: id2,
+            target_instance_id: None,
+            schedule_next: true,
         });
         heap.push(BattleEvent::Attack {
             time_ms: 2000,
             attacker_instance_id: id3,
+            target_instance_id: None,
+            schedule_next: true,
         });
 
         // BinaryHeap should pop earliest time first (min-heap behavior via custom Ord)
@@ -64,18 +73,21 @@ mod battle_event_tests {
         let mut heap = BinaryHeap::new();
 
         let id = Uuid::new_v4();
-        let buff_id = Uuid::new_v4();
+        let buff_id = BuffId::from_name("test_buff");
 
         // Same time_ms, different event types
         heap.push(BattleEvent::Attack {
             time_ms: 1000,
             attacker_instance_id: id,
+            target_instance_id: None,
+            schedule_next: true,
         });
         heap.push(BattleEvent::ApplyBuff {
             time_ms: 1000,
             caster_instance_id: id,
             target_instance_id: id,
             buff_id,
+            duration_ms: 1000,
         });
         heap.push(BattleEvent::BuffExpire {
             time_ms: 1000,

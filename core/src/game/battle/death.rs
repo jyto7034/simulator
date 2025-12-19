@@ -2,10 +2,7 @@ use std::collections::{HashSet, VecDeque};
 
 use uuid::Uuid;
 
-use crate::game::{
-    enums::Side,
-    stats::Effect,
-};
+use crate::game::{enums::Side, stats::Effect};
 
 use super::damage::BattleCommand;
 
@@ -86,13 +83,8 @@ impl DeathHandler {
             let on_death_effects = get_on_death_effects(dead.unit_id);
             for effect in on_death_effects {
                 match effect {
-                    Effect::Ability(ability_id) => {
-                        commands.push(BattleCommand::ExecuteAbility {
-                            ability_id,
-                            caster_id: dead.unit_id,
-                            target_id: None,
-                        });
-                    }
+                    // 죽은 유닛은 행동(스킬 시전)을 하지 않는다.
+                    Effect::Ability(_) => {}
                     Effect::Modifier(_modifier) => {
                         // OnDeath Modifier는 보통 의미 없지만 일단 무시
                     }

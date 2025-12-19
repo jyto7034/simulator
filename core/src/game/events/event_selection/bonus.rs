@@ -66,7 +66,10 @@ impl EventGenerator for BonusGenerator {
             Some(bonus) => bonus.clone(), // BonusMetadata 전체를 clone
             None => {
                 // 폴백: UUID에 해당하는 Bonus가 없으면 기본값
-                warn!("Bonus uuid {:?} not found in GameData, using fallback", uuid);
+                warn!(
+                    "Bonus uuid {:?} not found in GameData, using fallback",
+                    uuid
+                );
                 BonusMetadata {
                     bonus_type: BonusType::Enkephalin,
                     uuid,
@@ -79,7 +82,10 @@ impl EventGenerator for BonusGenerator {
             }
         };
 
-        debug!("Generated bonus event: id={}, uuid={}", bonus.id, bonus.uuid);
+        debug!(
+            "Generated bonus event: id={}, uuid={}",
+            bonus.id, bonus.uuid
+        );
 
         // 6. GameOption 생성 (BonusMetadata 전체 데이터 포함)
         GameOption::Bonus { bonus }

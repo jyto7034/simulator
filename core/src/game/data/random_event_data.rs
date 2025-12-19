@@ -5,8 +5,8 @@ use uuid::Uuid;
 
 use crate::game::{
     data::{
-        abnormality_data::AbnormalityMetadata, bonus_data::BonusMetadata,
-        shop_data::ShopMetadata, GameDataBase,
+        abnormality_data::AbnormalityMetadata, bonus_data::BonusMetadata, shop_data::ShopMetadata,
+        GameDataBase,
     },
     enums::RiskLevel,
     events::event_selection::random::RandomEventType,

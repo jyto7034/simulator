@@ -2,6 +2,8 @@ use std::cmp::Ordering;
 
 use uuid::Uuid;
 
+use super::buffs::BuffId;
+
 /// 전투 이벤트
 ///
 /// 모든 unit/caster/target ID는 `instance_id`를 참조합니다.
@@ -11,24 +13,29 @@ pub enum BattleEvent {
     Attack {
         time_ms: u64,
         attacker_instance_id: Uuid,
+        /// Attack 이벤트에 타겟 힌트를 줄 때 사용 (예: ExtraAttack).
+        target_instance_id: Option<Uuid>,
+        /// 자동 공격(반복 스케줄) 여부. false면 1회성 공격으로 처리.
+        schedule_next: bool,
     },
     ApplyBuff {
         time_ms: u64,
         caster_instance_id: Uuid,
         target_instance_id: Uuid,
-        buff_id: Uuid,
+        buff_id: BuffId,
+        duration_ms: u64,
     },
     BuffTick {
         time_ms: u64,
         caster_instance_id: Uuid,
         target_instance_id: Uuid,
-        buff_id: Uuid,
+        buff_id: BuffId,
     },
     BuffExpire {
         time_ms: u64,
         caster_instance_id: Uuid,
         target_instance_id: Uuid,
-        buff_id: Uuid,
+        buff_id: BuffId,
     },
 }
 
@@ -75,25 +82,42 @@ impl Ord for BattleEvent {
                         attacker_instance_id: b,
                         ..
                     },
-                ) => b.as_bytes().cmp(a.as_bytes()),
+                ) => {
+                    let a_t = match self {
+                        BattleEvent::Attack {
+                            target_instance_id, ..
+                        } => target_instance_id.map(|id| *id.as_bytes()),
+                        _ => None,
+                    };
+                    let b_t = match other {
+                        BattleEvent::Attack {
+                            target_instance_id, ..
+                        } => target_instance_id.map(|id| *id.as_bytes()),
+                        _ => None,
+                    };
+                    b.as_bytes().cmp(a.as_bytes()).then_with(|| b_t.cmp(&a_t))
+                }
                 (
                     BattleEvent::ApplyBuff {
                         caster_instance_id: a_c,
                         target_instance_id: a_t,
                         buff_id: a_b,
+                        duration_ms: a_d,
                         ..
                     },
                     BattleEvent::ApplyBuff {
                         caster_instance_id: b_c,
                         target_instance_id: b_t,
                         buff_id: b_b,
+                        duration_ms: b_d,
                         ..
                     },
                 ) => b_c
                     .as_bytes()
                     .cmp(a_c.as_bytes())
                     .then_with(|| b_t.as_bytes().cmp(a_t.as_bytes()))
-                    .then_with(|| b_b.as_bytes().cmp(a_b.as_bytes())),
+                    .then_with(|| b_b.as_u64().cmp(&a_b.as_u64()))
+                    .then_with(|| b_d.cmp(a_d)),
                 (
                     BattleEvent::BuffTick {
                         caster_instance_id: a_c,
@@ -111,7 +135,7 @@ impl Ord for BattleEvent {
                     .as_bytes()
                     .cmp(a_c.as_bytes())
                     .then_with(|| b_t.as_bytes().cmp(a_t.as_bytes()))
-                    .then_with(|| b_b.as_bytes().cmp(a_b.as_bytes())),
+                    .then_with(|| b_b.as_u64().cmp(&a_b.as_u64())),
                 (
                     BattleEvent::BuffExpire {
                         caster_instance_id: a_c,
@@ -129,7 +153,7 @@ impl Ord for BattleEvent {
                     .as_bytes()
                     .cmp(a_c.as_bytes())
                     .then_with(|| b_t.as_bytes().cmp(a_t.as_bytes()))
-                    .then_with(|| b_b.as_bytes().cmp(a_b.as_bytes())),
+                    .then_with(|| b_b.as_u64().cmp(&a_b.as_u64())),
                 _ => Ordering::Equal,
             })
     }

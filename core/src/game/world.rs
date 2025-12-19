@@ -175,7 +175,8 @@ impl GameCore {
     // 상점 / 랜덤 이벤트 / 보너스 데이터 요청
     fn handle_request_phase_data(&mut self) -> Result<BehaviorResult, GameError> {
         // 이전 Phase의 잔여 선택지/선택 이벤트는 모두 폐기
-        if let Some(mut current_phase_events) = self.world.get_resource_mut::<CurrentPhaseEvents>() {
+        if let Some(mut current_phase_events) = self.world.get_resource_mut::<CurrentPhaseEvents>()
+        {
             current_phase_events.clear();
         }
         let _ = self.world.remove_resource::<SelectedEvent>();
@@ -454,7 +455,8 @@ impl GameCore {
     /// 이벤트(상점/보너스/랜덤) 완료 후 호출되어 다음 Phase로 전환합니다.
     fn advance_to_next_phase(&mut self) -> Result<BehaviorResult, GameError> {
         // Phase가 끝났으므로 선택지/선택 이벤트 리소스는 폐기
-        if let Some(mut current_phase_events) = self.world.get_resource_mut::<CurrentPhaseEvents>() {
+        if let Some(mut current_phase_events) = self.world.get_resource_mut::<CurrentPhaseEvents>()
+        {
             current_phase_events.clear();
         }
         let _ = self.world.remove_resource::<SelectedEvent>();

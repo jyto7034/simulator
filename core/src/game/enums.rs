@@ -265,7 +265,11 @@ impl PhaseEvent {
         &self,
     ) -> Option<(&ShopMetadata, &BonusMetadata, &RandomEventMetadata)> {
         match self {
-            PhaseEvent::EventSelection { shop, bonus, random } => Some((shop, bonus, random)),
+            PhaseEvent::EventSelection {
+                shop,
+                bonus,
+                random,
+            } => Some((shop, bonus, random)),
             _ => None,
         }
     }

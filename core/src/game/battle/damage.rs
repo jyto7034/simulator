@@ -1,9 +1,8 @@
 use uuid::Uuid;
 
-use crate::game::{
-    enums::Side,
-    stats::Effect,
-};
+use crate::game::{enums::Side, stats::Effect};
+
+use super::buffs::BuffId;
 
 /// 데미지 요청 - 데미지 계산에 필요한 모든 정보
 #[derive(Debug, Clone)]
@@ -70,7 +69,16 @@ pub enum BattleCommand {
     /// 다음 공격 예약
     ScheduleAttack {
         attacker_id: Uuid,
+        target_id: Option<Uuid>,
+        /// 현재 시각 기준 딜레이(ms)
         time_ms: u64,
+    },
+    /// 버프 적용 요청
+    ApplyBuff {
+        caster_id: Uuid,
+        target_id: Uuid,
+        buff_id: BuffId,
+        duration_ms: u64,
     },
 }
 
@@ -104,6 +112,17 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
                 damage += flat;
                 damage += damage * percent / 100;
             }
+            Effect::ApplyBuff {
+                buff_id,
+                duration_ms,
+            } => {
+                commands.push(BattleCommand::ApplyBuff {
+                    caster_id: request.attacker_id,
+                    target_id: request.target_id,
+                    buff_id: BuffId::from_name(buff_id.as_str()),
+                    duration_ms: *duration_ms,
+                });
+            }
             Effect::Ability(ability_id) => {
                 commands.push(BattleCommand::ExecuteAbility {
                     ability_id: *ability_id,
@@ -128,6 +147,17 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
                     flat: *flat,
                     percent: *percent,
                     source_id: Some(request.target_id),
+                });
+            }
+            Effect::ApplyBuff {
+                buff_id,
+                duration_ms,
+            } => {
+                commands.push(BattleCommand::ApplyBuff {
+                    caster_id: request.target_id,
+                    target_id: request.attacker_id,
+                    buff_id: BuffId::from_name(buff_id.as_str()),
+                    duration_ms: *duration_ms,
                 });
             }
             Effect::Ability(ability_id) => {
@@ -165,10 +195,7 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
 }
 
 /// 데미지 결과를 유닛에 적용 (HP 감소만 처리)
-pub fn apply_damage_to_unit(
-    stats: &mut crate::game::stats::UnitStats,
-    damage: u32,
-) -> (u32, bool) {
+pub fn apply_damage_to_unit(stats: &mut crate::game::stats::UnitStats, damage: u32) -> (u32, bool) {
     stats.current_health = stats.current_health.saturating_sub(damage);
     let killed = stats.current_health == 0;
     (stats.current_health, killed)
