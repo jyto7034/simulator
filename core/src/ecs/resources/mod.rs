@@ -531,15 +531,15 @@ mod tests {
 
     #[test]
     fn test_game_state_transitions() {
-        // NotStarted → WaitingPhaseRequest
+        // Given: NotStarted → WaitingPhaseRequest
         let state = GameState::WaitingPhaseRequest;
         assert_eq!(state, GameState::WaitingPhaseRequest);
 
-        // WaitingPhaseRequest → SelectingEvent
+        // Given: WaitingPhaseRequest → SelectingEvent
         let state = GameState::SelectingEvent;
         assert_eq!(state, GameState::SelectingEvent);
 
-        // SelectingEvent → InShop
+        // Given: SelectingEvent → InShop
         let shop_uuid = Uuid::new_v4();
         let state = GameState::InShop { shop_uuid };
         if let GameState::InShop { shop_uuid: uuid } = state {
@@ -717,11 +717,11 @@ mod tests {
 
         context.set_allowed_actions(actions);
 
-        // 허용된 행동
+        // Then: 허용된 행동
         assert!(context.is_action_allowed(&PlayerBehavior::StartNewGame));
         assert!(context.is_action_allowed(&PlayerBehavior::RequestPhaseData));
 
-        // 허용되지 않은 행동
+        // Then: 허용되지 않은 행동
         assert!(!context.is_action_allowed(&PlayerBehavior::SelectEvent {
             event_id: Uuid::new_v4()
         }));
@@ -731,18 +731,18 @@ mod tests {
     fn test_current_game_context_variant_matching() {
         let mut context = ActionValidator::new();
 
-        // SelectEvent 템플릿을 허용 목록에 추가
+        // Given: SelectEvent 템플릿을 허용 목록에 추가
         context.set_allowed_actions(vec![PlayerBehavior::SelectEvent {
-            event_id: Uuid::nil(), // 템플릿 (모든 UUID 허용)
+            event_id: Uuid::nil(), // NOTE: 템플릿 (모든 UUID 허용)
         }]);
 
-        // 다른 UUID를 가진 SelectEvent도 허용되어야 함 (Variant만 비교)
+        // Then: 다른 UUID를 가진 SelectEvent도 허용되어야 함 (Variant만 비교)
         let different_uuid = Uuid::new_v4();
         assert!(context.is_action_allowed(&PlayerBehavior::SelectEvent {
             event_id: different_uuid
         }));
 
-        // 다른 Variant는 허용되지 않음
+        // Then: 다른 Variant는 허용되지 않음
         assert!(!context.is_action_allowed(&PlayerBehavior::StartNewGame));
     }
 
@@ -761,26 +761,4 @@ mod tests {
         assert_eq!(context.allowed_actions.len(), 0);
     }
 
-    // #[test]
-    // fn test_current_game_context_shop_actions() {
-    //     let mut context = CurrentGameContext::new();
-
-    //     context.set_allowed_actions(vec![
-    //         PlayerBehavior::PurchaseItem {
-    //             item_uuid: Uuid::nil(),
-    //         },
-    //         PlayerBehavior::RerollShop,
-    //         PlayerBehavior::ExitShop,
-    //     ]);
-
-    //     // 모든 상점 행동 허용됨
-    //     assert!(context.is_action_allowed(&PlayerBehavior::PurchaseItem {
-    //         item_uuid: Uuid::new_v4()
-    //     }));
-    //     assert!(context.is_action_allowed(&PlayerBehavior::RerollShop));
-    //     assert!(context.is_action_allowed(&PlayerBehavior::ExitShop));
-
-    //     // 상점 밖 행동은 허용되지 않음
-    //     assert!(!context.is_action_allowed(&PlayerBehavior::RequestPhaseData));
-    // }
 }

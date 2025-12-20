@@ -24,14 +24,14 @@ use uuid::Uuid;
 /// 를 사용합니다.
 #[cfg(test)]
 pub fn create_test_game_data() -> Arc<GameDataBase> {
-    // 고정 UUID (테스트 재현성용)
+    // Given: 고정 UUID (테스트 재현성용)
 
     use game_core::game::data::random_event_data::RandomEventInnerMetadata;
     let shop_uuid = Uuid::parse_str("00000000-0000-0000-0000-000000000001").unwrap();
     let bonus_uuid = Uuid::parse_str("00000000-0000-0000-0000-000000000002").unwrap();
     let event_uuid = Uuid::parse_str("00000000-0000-0000-0000-000000000003").unwrap();
 
-    // 아티팩트 메타데이터
+    // Given: 아티팩트 메타데이터
     let artifact1 = ArtifactMetadata {
         id: "test_artifact_1".to_string(),
         uuid: Uuid::parse_str("a0000001-0000-0000-0000-000000000001").unwrap(),
@@ -62,7 +62,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         triggered_effects: Default::default(),
     };
 
-    // 장비 메타데이터
+    // Given: 장비 메타데이터
     let equipment1 = EquipmentMetadata {
         id: "test_weapon_1".to_string(),
         uuid: Uuid::parse_str("e0000001-0000-0000-0000-000000000001").unwrap(),
@@ -93,7 +93,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         triggered_effects: Default::default(),
     };
 
-    // 환상체 메타데이터
+    // Given: 환상체 메타데이터
     let abnormality1 = AbnormalityMetadata {
         id: "test_abnorm_1".to_string(),
         uuid: Uuid::parse_str("b0000001-0000-0000-0000-000000000001").unwrap(),
@@ -107,8 +107,8 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         abilities: Vec::new(),
     };
 
-    // 상점 메타데이터 (리롤 가능)
-    // visible_items / hidden_items 를 나눠서 reroll 테스트가 의미 있게 동작하도록 구성
+    // Given: 상점 메타데이터 (리롤 가능)
+    // NOTE: visible_items / hidden_items 를 나눠서 reroll 테스트가 의미 있게 동작하도록 구성
     let shop = ShopMetadata {
         id: "test_shop".to_string(),
         name: "Test Rerollable Shop".to_string(),
@@ -124,7 +124,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         ],
     };
 
-    // 보너스 메타데이터 (고정 100 엔케팔린)
+    // Given: 보너스 메타데이터 (고정 100 엔케팔린)
     let bonus = BonusMetadata {
         id: "test_bonus_enkephalin".to_string(),
         bonus_type: BonusType::Enkephalin,
@@ -135,7 +135,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         amount: 100,
     };
 
-    // 랜덤 이벤트 메타데이터
+    // Given: 랜덤 이벤트 메타데이터
     let random_event = RandomEventMetadata {
         id: "test_event".to_string(),
         uuid: event_uuid,
@@ -147,7 +147,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         inner_metadata: RandomEventInnerMetadata::Bonus(bonus_uuid),
     };
 
-    // 이벤트 풀 (Dawn만 설정)
+    // Given: 이벤트 풀 (Dawn만 설정)
     let dawn_pool = EventPhasePool {
         shops: vec![WeightedEvent {
             weight: 1,
@@ -177,7 +177,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         white: empty_pool,
     };
 
-    // 각 Database 생성
+    // Given: 각 Database 생성
     let artifacts_db = ArtifactDatabase::new(vec![artifact1, artifact2, artifact3]);
     let equipments_db = EquipmentDatabase::new(vec![equipment1, equipment2, equipment3]);
     let abnormalities_db = AbnormalityDatabase::new(vec![abnormality1]);
@@ -186,10 +186,10 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
     let bonuses_db = BonusDatabase::new(vec![bonus]);
     let mut random_events_db = RandomEventDatabase::new(vec![random_event]);
 
-    // 랜덤 이벤트 내부 맵 초기화
+    // Given: 랜덤 이벤트 내부 맵 초기화
     random_events_db.init_map();
 
-    // PvE Encounter 데이터 (Suppression 테스트용)
+    // Given: PvE Encounter 데이터 (Suppression 테스트용)
     let pve_encounter1 = PveEncounter {
         id: "pve_test_1".to_string(),
         abnormality_id: "test_abnorm_1".to_string(),
@@ -252,7 +252,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
 /// - 아티팩트 데이터 (artifacts.ron)
 #[allow(dead_code)]
 pub fn load_game_data_from_ron() -> Arc<GameDataBase> {
-    // 1. RON 파일 포함 (컴파일 타임)
+    // Given: RON 파일 include_str! 로 포함 (컴파일 타임)
     let shops_ron = include_str!("../../../game_resources/data/events/shops/base.ron");
     let random_shops_ron = include_str!("../../../game_resources/data/events/shops/random.ron");
     let bonuses_ron = include_str!("../../../game_resources/data/events/bonuses/base.ron");
@@ -265,7 +265,7 @@ pub fn load_game_data_from_ron() -> Arc<GameDataBase> {
     let equipments_ron = include_str!("../../../game_resources/data/equipments/base.ron");
     let artifacts_ron = include_str!("../../../game_resources/data/artifacts/base.ron");
 
-    // 2. RON 역직렬화
+    // When: RON 역직렬화
     let mut shops_db: ShopDatabase =
         ron::de::from_str(shops_ron).expect("Failed to deserialize shops.ron");
     let random_shops_db: ShopDatabase =
@@ -293,13 +293,13 @@ pub fn load_game_data_from_ron() -> Arc<GameDataBase> {
     let artifacts_db: ArtifactDatabase =
         ron::de::from_str(artifacts_ron).expect("Failed to deserialize artifacts.ron");
 
-    // 3. 보조 맵 / lookup 테이블 초기화
+    // When: 보조 맵 / lookup 테이블 초기화
     random_events_db.init_map();
 
-    // 4. 랜덤 이벤트 전용 상점들을 메인 ShopDatabase 에 합침
+    // When: 랜덤 이벤트 전용 상점들을 메인 ShopDatabase 에 합침
     shops_db.shops.extend(random_shops_db.shops);
 
-    // 4. 랜덤 전용 보너스 / 기물 병합
+    // When: 랜덤 전용 보너스 / 기물 병합
     bonuses_db.bonuses.extend(random_bonuses_db.bonuses);
     abnormalities_db.items.extend(random_abnormalities_db.items);
 

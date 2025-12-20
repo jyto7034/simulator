@@ -62,7 +62,7 @@ mod battle_event_tests {
             schedule_next: true,
         });
 
-        // BinaryHeap should pop earliest time first (min-heap behavior via custom Ord)
+        // Then: BinaryHeap은 time_ms가 가장 작은 이벤트부터 pop되어야 함 (custom Ord 기반)
         assert_eq!(heap.pop().unwrap().time_ms(), 1000);
         assert_eq!(heap.pop().unwrap().time_ms(), 2000);
         assert_eq!(heap.pop().unwrap().time_ms(), 3000);
@@ -75,7 +75,7 @@ mod battle_event_tests {
         let id = Uuid::new_v4();
         let buff_id = BuffId::from_name("test_buff");
 
-        // Same time_ms, different event types
+        // Given: 같은 time_ms에 서로 다른 타입의 이벤트가 섞여있음
         heap.push(BattleEvent::Attack {
             time_ms: 1000,
             attacker_instance_id: id,
@@ -102,7 +102,7 @@ mod battle_event_tests {
             buff_id,
         });
 
-        // Priority order: ApplyBuff(1) → BuffTick(2) → Attack(3) → BuffExpire(4)
+        // Then: 우선순위는 ApplyBuff(1) → BuffTick(2) → Attack(3) → BuffExpire(4) 순서여야 함
         let first = heap.pop().unwrap();
         assert!(matches!(first, BattleEvent::ApplyBuff { .. }));
 
@@ -215,7 +215,7 @@ mod unit_stats_tests {
     fn apply_percent_modifier() {
         let mut stats = UnitStats::with_values(100, 100, 100, 100, 1000);
 
-        // +20% attack → 100 * 20 / 100 = +20 → 120
+        // Then: +20% attack → 100 * 20 / 100 = +20 → 120
         stats.apply_modifier(StatModifier {
             stat: StatId::Attack,
             kind: StatModifierKind::Percent,
@@ -223,7 +223,7 @@ mod unit_stats_tests {
         });
         assert_eq!(stats.attack, 120);
 
-        // -10% defense → 100 * (-10) / 100 = -10 → 90
+        // Then: -10% defense → 100 * (-10) / 100 = -10 → 90
         stats.apply_modifier(StatModifier {
             stat: StatId::Defense,
             kind: StatModifierKind::Percent,
@@ -309,9 +309,9 @@ mod battle_core_tests {
         let player = create_empty_deck();
         let opponent = create_empty_deck();
 
-        let battle = BattleCore::new(&player, &opponent, game_data, (3, 3));
+        let _battle = BattleCore::new(&player, &opponent, game_data, (3, 3));
 
-        // BattleCore should be created without panic
+        // Then: BattleCore는 panic 없이 생성되어야 함
         assert!(true);
     }
 
@@ -387,7 +387,7 @@ mod owned_unit_tests {
     fn owned_unit_effective_stats_base_only() {
         let game_data = create_test_game_data();
 
-        // test_abnorm_1 from test data
+        // Given: test_abnorm_1 (테스트 데이터)
         let abnormality = game_data
             .abnormality_data
             .get_by_id("test_abnorm_1")
@@ -404,7 +404,7 @@ mod owned_unit_tests {
             .effective_stats(&game_data, &[])
             .expect("effective_stats should succeed");
 
-        // Check base stats match abnormality metadata
+        // Then: 기본 스탯이 메타데이터와 일치해야 함
         assert_eq!(stats.max_health, abnormality.max_health);
         assert_eq!(stats.attack, abnormality.attack);
         assert_eq!(stats.defense, abnormality.defense);
@@ -434,7 +434,7 @@ mod owned_unit_tests {
             .effective_stats(&game_data, &[])
             .expect("effective_stats should succeed");
 
-        // KillStack adds to attack
+        // Then: KillStack은 공격력에 누적되어야 함
         assert_eq!(stats.attack, abnormality.attack + 15);
     }
 
@@ -471,7 +471,7 @@ mod battle_flow_tests {
             .get_by_id("test_abnorm_1")
             .expect("test_abnorm_1 should exist");
 
-        // Player deck with one unit
+        // Given: 플레이어 덱에 유닛 1개가 존재함
         let player_unit = OwnedUnit {
             base_uuid: abnormality.uuid,
             level: Tier::I,
@@ -488,7 +488,7 @@ mod battle_flow_tests {
             positions: player_positions,
         };
 
-        // Empty opponent deck
+        // Given: 상대 덱은 비어있음
         let opponent = PlayerDeckInfo {
             units: vec![],
             artifacts: vec![],
@@ -497,16 +497,16 @@ mod battle_flow_tests {
 
         let mut battle = BattleCore::new(&player, &opponent, game_data, (3, 3));
 
-        // Setup world with required resources
+        // Given: 전투 실행에 필요한 World 리소스를 준비함
         let mut world = World::new();
         world.insert_resource(Inventory::new());
         world.insert_resource(Field::new(3, 3));
 
-        // Battle should run without panic and return a result
+        // When: 전투를 실행함
         let result = battle.run_battle(&mut world);
         assert!(result.is_ok(), "Battle failed: {:?}", result.err());
 
-        // Player has units, opponent doesn't → Player wins
+        // Then: 플레이어만 유닛을 보유하므로 Player 승리
         let battle_result = result.unwrap();
         assert_eq!(battle_result.winner, BattleWinner::Player);
     }
@@ -520,14 +520,14 @@ mod battle_flow_tests {
             .get_by_id("test_abnorm_1")
             .expect("test_abnorm_1 should exist");
 
-        // Empty player deck
+        // Given: 플레이어 덱은 비어있음
         let player = PlayerDeckInfo {
             units: vec![],
             artifacts: vec![],
             positions: HashMap::new(),
         };
 
-        // Opponent deck with one unit
+        // Given: 상대 덱에 유닛 1개가 존재함
         let opponent_unit = OwnedUnit {
             base_uuid: abnormality.uuid,
             level: Tier::I,
@@ -546,16 +546,16 @@ mod battle_flow_tests {
 
         let mut battle = BattleCore::new(&player, &opponent, game_data, (3, 3));
 
-        // Setup world with required resources
+        // Given: 전투 실행에 필요한 World 리소스를 준비함
         let mut world = World::new();
         world.insert_resource(Inventory::new());
         world.insert_resource(Field::new(3, 3));
 
-        // Battle should run without panic and return a result
+        // When: 전투를 실행함
         let result = battle.run_battle(&mut world);
         assert!(result.is_ok(), "Battle failed: {:?}", result.err());
 
-        // Player has no units, opponent has units → Opponent wins
+        // Then: 상대만 유닛을 보유하므로 Opponent 승리
         let battle_result = result.unwrap();
         assert_eq!(battle_result.winner, BattleWinner::Opponent);
     }
@@ -569,15 +569,14 @@ mod battle_flow_tests {
             .get_by_id("test_abnorm_1")
             .expect("test_abnorm_1 should exist");
 
-        // Create unique UUIDs for runtime (simulating different instances)
+        // Given: runtime instance를 흉내내기 위해 서로 다른 UUID를 준비함
         let player_runtime_uuid = Uuid::new_v4();
         let opponent_runtime_uuid = Uuid::new_v4();
 
-        // Player deck - using abnormality.uuid as base but a different runtime key
-        // Note: This exposes a design issue where base_uuid is used for both lookup and placement
-        // For now, we test with separate decks that don't conflict
+        // NOTE: 현재 구현은 base_uuid를 조회/배치 모두에 사용해서 충돌 가능성이 있음.
+        // NOTE: 여기서는 충돌이 나지 않는 구성으로 전투 타임아웃(무승부)만 검증한다.
 
-        // Player deck with one unit
+        // Given: 플레이어 덱에 유닛 1개가 존재함
         let player_unit = OwnedUnit {
             base_uuid: abnormality.uuid,
             level: Tier::I,
@@ -594,12 +593,8 @@ mod battle_flow_tests {
             positions: player_positions,
         };
 
-        // For opponent, we need a different abnormality to avoid UUID collision
-        // Using the same abnormality but the battle system should handle this
-        // Currently the system uses base_uuid for field placement which causes conflict
-
-        // Empty opponent for now to avoid UUID collision
-        // TODO: Fix battle system to use runtime UUIDs for field placement
+        // Given: base_uuid 충돌을 피하기 위해 상대는 비어있는 덱으로 둔다
+        // TODO: battle system이 field placement에 runtime UUID를 사용하도록 수정 필요
         let opponent = PlayerDeckInfo {
             units: vec![],
             artifacts: vec![],
@@ -608,7 +603,7 @@ mod battle_flow_tests {
 
         let mut battle = BattleCore::new(&player, &opponent, game_data, (3, 3));
 
-        // Setup world with required resources
+        // Given: 전투 실행에 필요한 World 리소스를 준비함
         let mut world = World::new();
         world.insert_resource(Inventory::new());
         world.insert_resource(Field::new(3, 3));
@@ -616,7 +611,7 @@ mod battle_flow_tests {
         let result = battle.run_battle(&mut world);
         assert!(result.is_ok(), "Battle failed: {:?}", result.err());
 
-        // With opponent empty, player wins
+        // Then: 상대 덱이 비어있으므로 Player 승리
         let battle_result = result.unwrap();
         assert_eq!(battle_result.winner, BattleWinner::Player);
     }

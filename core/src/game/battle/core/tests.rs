@@ -460,7 +460,7 @@ fn simultaneous_deaths_do_not_trigger_on_ally_death_from_dead_units() {
         0,
     );
 
-    // 동시 사망한 유닛(ally_b)은 침묵해야 하므로 OnAllyDeath로 스킬이 발동하지 않아야 한다.
+    // Then: 동시 사망한 유닛(ally_b)은 침묵해야 하므로 OnAllyDeath로 스킬이 발동하지 않아야 한다
     assert!(battle.units.contains_key(&enemy));
     assert!(!battle
         .timeline

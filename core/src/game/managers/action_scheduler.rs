@@ -106,8 +106,8 @@ mod tests {
         };
         let allowed = ActionScheduler::get_allowed_actions(&state);
 
+        // Then: PurchaseItem, SellItem, RerollShop, ExitShop 허용
         assert_eq!(allowed.len(), 4);
-        // PurchaseItem, SellItem, RerollShop, ExitShop 허용
     }
 
     #[test]
@@ -161,35 +161,36 @@ mod tests {
         };
         let allowed = ActionScheduler::get_allowed_actions(&state);
 
-        // TODO가 구현되기 전까지는 비어있어야 함
+        // TODO: TODO가 구현되기 전까지는 비어있어야 함
         assert!(allowed.is_empty());
     }
 
     #[test]
     fn test_state_transition_flow() {
-        // 게임 시작 흐름 검증
+        // Given: 게임 시작 흐름 검증
         let state = GameState::NotStarted;
         let allowed = ActionScheduler::get_allowed_actions(&state);
         assert_eq!(allowed.len(), 1);
         assert!(matches!(allowed[0], PlayerBehavior::StartNewGame));
 
-        // Phase 요청
+        // When: Phase 요청
         let state = GameState::WaitingPhaseRequest;
         let allowed = ActionScheduler::get_allowed_actions(&state);
         assert_eq!(allowed.len(), 1);
         assert!(matches!(allowed[0], PlayerBehavior::RequestPhaseData));
 
-        // 이벤트 선택
+        // When: 이벤트 선택
         let state = GameState::SelectingEvent;
         let allowed = ActionScheduler::get_allowed_actions(&state);
         assert_eq!(allowed.len(), 2);
 
-        // 상점 진입
+        // When: 상점 진입
         let state = GameState::InShop {
             shop_uuid: Uuid::nil(),
         };
         let allowed = ActionScheduler::get_allowed_actions(&state);
-        assert_eq!(allowed.len(), 4); // Purchase, Sell, Reroll, Exit
+        // Then: Purchase/Sell/Reroll/Exit
+        assert_eq!(allowed.len(), 4);
     }
 
     #[test]
@@ -199,10 +200,10 @@ mod tests {
         };
         let allowed = ActionScheduler::get_allowed_actions(&state);
 
-        // 정확히 4개의 행동 허용
+        // Then: 정확히 4개의 행동 허용
         assert_eq!(allowed.len(), 4);
 
-        // 각 행동이 존재하는지 확인
+        // Then: 각 행동이 존재해야 함
         let has_purchase = allowed
             .iter()
             .any(|a| matches!(a, PlayerBehavior::PurchaseItem { .. }));
@@ -224,7 +225,7 @@ mod tests {
 
     #[test]
     fn test_all_game_states_coverage() {
-        // 모든 GameState에 대해 allowed_actions가 정의되어 있는지 확인
+        // Then: 모든 GameState에 대해 allowed_actions가 정의되어 있어야 함
         let states = vec![
             GameState::NotStarted,
             GameState::WaitingPhaseRequest,
@@ -248,14 +249,14 @@ mod tests {
         ];
 
         for state in states {
-            // panic하지 않고 정상적으로 반환되는지 확인
+            // Then: panic하지 않고 정상적으로 반환되어야 함
             let _ = ActionScheduler::get_allowed_actions(&state);
         }
     }
 
     #[test]
     fn test_action_counts_per_state() {
-        // 각 상태별 허용 행동 개수 검증
+        // Then: 각 상태별 허용 행동 개수 검증
         let test_cases = vec![
             (GameState::NotStarted, 1),
             (GameState::WaitingPhaseRequest, 1),

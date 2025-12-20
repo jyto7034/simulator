@@ -24,6 +24,11 @@ use crate::{
 // TODO: 상인에게 소지금 개념을 추가하여 플레이어가 마음껏 아이템을 팔 수 없게 해도 좋음.
 pub struct ShopGenerator;
 
+fn fallback_shop_uuid(seed: u64) -> Uuid {
+    // 재현성을 위해 seed 기반으로 결정적 UUID를 생성 (다른 폴백들과 충돌 방지).
+    Uuid::from_u128(0x7a1d_3a09_5b8e_4d7b_8f10_0000_0000_0001u128 ^ ((seed as u128) << 64))
+}
+
 impl EventGenerator for ShopGenerator {
     type Output = GameOption;
 
@@ -57,7 +62,7 @@ impl EventGenerator for ShopGenerator {
                 let shop = ShopMetadata {
                     id: String::new(),
                     name: "임시 상점".to_string(),
-                    uuid: Uuid::nil(),
+                    uuid: fallback_shop_uuid(ctx.random_seed),
                     shop_type: ShopType::Shop,
                     can_reroll: false,
                     visible_items: Vec::new(),
@@ -76,7 +81,7 @@ impl EventGenerator for ShopGenerator {
                 ShopMetadata {
                     id: String::new(),
                     name: "임시 상점".to_string(),
-                    uuid: Uuid::nil(),
+                    uuid,
                     shop_type: ShopType::Shop,
                     can_reroll: false,
                     visible_items: Vec::new(),
@@ -111,6 +116,17 @@ impl ShopExecutor {
 
         if !shop.can_reroll {
             warn!("Reroll requested but current shop does not allow reroll");
+            return Err(GameError::ShopRerollNotAllowed);
+        }
+
+        // 방어 로직:
+        // `hidden_items`는 `#[serde(skip)]`라서 로딩 경로에 따라 비어있을 수 있음.
+        // 빈 hidden_items와 swap하면 visible_items가 비워져 UX가 깨지므로 리롤을 거부한다.
+        if shop.hidden_items.is_empty() {
+            warn!(
+                "Reroll requested but shop has no hidden_items to reroll from (shop_uuid={})",
+                shop.uuid
+            );
             return Err(GameError::ShopRerollNotAllowed);
         }
 
@@ -413,6 +429,37 @@ mod tests {
         world.insert_resource(SelectedEvent::new(GameOption::Shop { shop }));
     }
 
+    #[test]
+    fn test_reroll_rejected_when_hidden_items_empty() {
+        // Given: 리롤이 허용된 상점이지만 hidden_items가 비어있음
+        let mut world = setup_world();
+
+        let visible_item = Uuid::new_v4();
+        let shop_uuid = Uuid::new_v4();
+        let shop = ShopMetadata {
+            id: "test_shop".to_string(),
+            name: "Test Shop".to_string(),
+            uuid: shop_uuid,
+            shop_type: ShopType::Shop,
+            can_reroll: true,
+            visible_items: vec![visible_item],
+            hidden_items: Vec::new(),
+        };
+        world.insert_resource(SelectedEvent::new(GameOption::Shop { shop }));
+
+        // When: 리롤 시도
+        let result = ShopExecutor::reroll(&mut world);
+
+        // Then: 리롤 거부 + 상점 상태(visible_items)가 유지됨
+        assert!(matches!(result, Err(GameError::ShopRerollNotAllowed)));
+
+        let selected = world.get_resource::<SelectedEvent>().unwrap();
+        let shop = selected.as_shop().unwrap();
+        assert_eq!(shop.uuid, shop_uuid);
+        assert_eq!(shop.visible_items, vec![visible_item]);
+        assert!(shop.hidden_items.is_empty());
+    }
+
     // ============================================================
     // sell_tiem 테스트
     // ============================================================
@@ -425,7 +472,7 @@ mod tests {
 
         let (item_uuid, equipment) = create_test_equipment(100);
 
-        // 인벤토리에 아이템 추가
+        // Given: 인벤토리에 아이템 추가
         {
             let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
             inventory
@@ -447,25 +494,25 @@ mod tests {
                 enkephalin,
                 inventory_diff,
             } => {
-                // 판매 가격 = 원가의 50%
+                // Then: 판매 가격 = 원가의 50%
                 assert_eq!(enkephalin, initial_enkephalin + 50);
 
-                // 인벤토리에서 제거됨
+                // Then: 인벤토리에서 제거됨
                 assert_eq!(inventory_diff.removed.len(), 1);
                 assert_eq!(inventory_diff.removed[0], item_uuid);
 
-                // 추가/변경 없음
+                // Then: 추가/변경 없음
                 assert_eq!(inventory_diff.added.len(), 0);
                 assert_eq!(inventory_diff.updated.len(), 0);
             }
             _ => panic!("Expected SellItem result"),
         }
 
-        // Enkephalin 증가 확인
+        // Then: Enkephalin 증가 확인
         let final_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
         assert_eq!(final_enkephalin, initial_enkephalin + 50);
 
-        // 인벤토리에서 아이템 제거 확인
+        // Then: 인벤토리에서 아이템 제거 확인
         let inventory = world.get_resource::<Inventory>().unwrap();
         assert!(inventory.find_item(item_uuid).is_none());
     }
@@ -478,7 +525,7 @@ mod tests {
 
         let (item_uuid, abnormality) = create_test_abnormality(200);
 
-        // 인벤토리에 아이템 추가
+        // Given: 인벤토리에 아이템 추가
         {
             let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
             inventory
@@ -497,7 +544,7 @@ mod tests {
         let final_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
         assert_eq!(final_enkephalin, initial_enkephalin + 100);
 
-        // 인벤토리에서 제거 확인
+        // Then: 인벤토리에서 제거 확인
         let inventory = world.get_resource::<Inventory>().unwrap();
         assert!(inventory.find_item(item_uuid).is_none());
     }
@@ -528,7 +575,7 @@ mod tests {
 
         let (item_uuid, equipment) = create_test_equipment(100);
 
-        // 인벤토리에 아이템 추가
+        // Given: 인벤토리에 아이템 추가
         {
             let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
             inventory
@@ -561,7 +608,7 @@ mod tests {
 
             let (item_uuid, equipment) = create_test_equipment(original_price);
 
-            // 인벤토리에 아이템 추가
+            // Given: 인벤토리에 아이템 추가
             {
                 let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
                 inventory
@@ -599,7 +646,7 @@ mod tests {
         let (uuid2, equipment2) = create_test_equipment(200);
         let (uuid3, abnormality) = create_test_abnormality(300);
 
-        // 인벤토리에 아이템들 추가
+        // Given: 인벤토리에 아이템들 추가
         {
             let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
             inventory.add_item(Item::Equipment(equipment1)).unwrap();
@@ -618,7 +665,7 @@ mod tests {
         let final_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
         assert_eq!(final_enkephalin, initial_enkephalin + 300);
 
-        // 인벤토리가 비어있는지 확인
+        // Then: 인벤토리가 비어있는지 확인
         let inventory = world.get_resource::<Inventory>().unwrap();
         assert!(inventory.find_item(uuid1).is_none());
         assert!(inventory.find_item(uuid2).is_none());
@@ -667,13 +714,13 @@ mod tests {
         let mut world = setup_world();
         setup_shop(&mut world);
 
-        // Enkephalin을 u32::MAX - 10으로 설정
+        // Given: Enkephalin을 u32::MAX - 10으로 설정
         {
             let mut enkephalin = world.get_resource_mut::<Enkephalin>().unwrap();
             enkephalin.amount = u32::MAX - 10;
         }
 
-        // 100 가격의 아이템 추가 (판매 시 50 획득)
+        // Given: 100 가격의 아이템 추가 (판매 시 50 획득)
         let (item_uuid, equipment) = create_test_equipment(100);
         {
             let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
@@ -692,7 +739,7 @@ mod tests {
     fn test_sell_without_enkephalin_resource_panic() {
         // Given: Enkephalin 리소스가 없는 World
         let mut world = World::new();
-        // Enkephalin 리소스를 추가하지 않음!
+        // Given: Enkephalin 리소스를 추가하지 않음
         world.insert_resource(Inventory::new());
         setup_shop(&mut world);
 
@@ -715,7 +762,7 @@ mod tests {
         // Given: Inventory 리소스가 없는 World
         let mut world = World::new();
         world.insert_resource(Enkephalin::new(100));
-        // Inventory 리소스를 추가하지 않음!
+        // Given: Inventory 리소스를 추가하지 않음
         setup_shop(&mut world);
 
         let item_uuid = Uuid::new_v4();
@@ -730,7 +777,7 @@ mod tests {
     fn test_sell_without_shop_state_panic() {
         // Given: SelectedEvent가 없는 World
         let mut world = setup_world();
-        // setup_shop()을 호출하지 않음!
+        // Given: setup_shop()을 호출하지 않음
 
         let (item_uuid, equipment) = create_test_equipment(100);
         {
@@ -765,7 +812,7 @@ mod tests {
         // Given: SelectedEvent가 Shop이 아닌 다른 타입
         let mut world = setup_world();
 
-        // Bonus 이벤트로 설정 (Shop이 아님!)
+        // Given: Bonus 이벤트로 설정 (Shop이 아님)
         use crate::game::data::bonus_data::{BonusMetadata, BonusType};
 
         let bonus = BonusMetadata {
@@ -829,7 +876,7 @@ mod tests {
         let mut world = setup_world();
         setup_shop(&mut world);
 
-        // u32::MAX / 2 보다 작은 가격 설정
+        // Given: u32::MAX / 2 보다 작은 가격 설정
         let max_safe_price = 1_000_000_000u32; // 10억
         let (item_uuid, equipment) = create_test_equipment(max_safe_price);
 
@@ -858,7 +905,7 @@ mod tests {
         let mut world = setup_world();
         setup_shop(&mut world);
 
-        // Enkephalin을 0으로 설정
+        // Given: Enkephalin을 0으로 설정
         {
             let mut enkephalin = world.get_resource_mut::<Enkephalin>().unwrap();
             enkephalin.amount = 0;
@@ -879,6 +926,7 @@ mod tests {
         assert!(result.is_ok());
 
         let final_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
-        assert_eq!(final_enkephalin, 50); // 0 + 50
+        // Then: 0 + 50
+        assert_eq!(final_enkephalin, 50);
     }
 }

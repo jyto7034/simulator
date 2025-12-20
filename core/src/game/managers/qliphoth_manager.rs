@@ -117,18 +117,21 @@ mod tests {
 
         QliphothManager::apply_battle_cost(&mut qliphoth);
 
-        assert_eq!(qliphoth.amount(), initial - 1); // 기본값 battle_cost=1
+        // Then: 기본값 battle_cost=1
+        assert_eq!(qliphoth.amount(), initial - 1);
     }
 
     #[test]
     fn test_suppress_success() {
         let mut qliphoth = Qliphoth::new();
-        qliphoth.set_amount(5); // 중간값으로 설정
+        // Given: 중간값으로 설정
+        qliphoth.set_amount(5);
 
         let initial = qliphoth.amount();
         QliphothManager::apply_suppress_success(&mut qliphoth);
 
-        assert_eq!(qliphoth.amount(), initial + 2); // 기본값 suppress_success=2
+        // Then: 기본값 suppress_success=2
+        assert_eq!(qliphoth.amount(), initial + 2);
     }
 
     #[test]
@@ -138,7 +141,8 @@ mod tests {
 
         QliphothManager::apply_suppress_failure(&mut qliphoth);
 
-        assert_eq!(qliphoth.amount(), initial - 1); // 기본값 suppress_failure=1
+        // Then: 기본값 suppress_failure=1
+        assert_eq!(qliphoth.amount(), initial - 1);
     }
 
     #[test]
@@ -149,7 +153,8 @@ mod tests {
         let initial = qliphoth.amount();
         QliphothManager::apply_breach_success(&mut qliphoth);
 
-        assert_eq!(qliphoth.amount(), initial + 3); // 기본값 breach_success=3
+        // Then: 기본값 breach_success=3
+        assert_eq!(qliphoth.amount(), initial + 3);
     }
 
     #[test]
@@ -159,7 +164,8 @@ mod tests {
 
         QliphothManager::apply_breach_failure(&mut qliphoth);
 
-        assert_eq!(qliphoth.amount(), initial - 2); // 기본값 breach_failure=2
+        // Then: 기본값 breach_failure=2
+        assert_eq!(qliphoth.amount(), initial - 2);
     }
 
     #[test]
@@ -170,6 +176,7 @@ mod tests {
         let initial = qliphoth.amount();
         QliphothManager::apply_phase_recovery(&mut qliphoth);
 
-        assert_eq!(qliphoth.amount(), initial + 1); // 기본값 phase_recovery=1
+        // Then: 기본값 phase_recovery=1
+        assert_eq!(qliphoth.amount(), initial + 1);
     }
 }

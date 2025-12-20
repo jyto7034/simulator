@@ -9,6 +9,7 @@ use crate::{
     ecs::resources::{Field, GameProgression, Inventory, Position},
     game::{
         battle::{BattleCore, BattleResult, GrowthStack, OwnedArtifact, OwnedUnit, PlayerDeckInfo},
+        determinism,
         behavior::GameError,
         data::{pve_data::PveEncounter, GameDataBase},
         enums::{GameOption, OrdealType, PhaseType, RiskLevel, Tier},
@@ -70,25 +71,26 @@ impl EventGenerator for SuppressionGenerator {
 
         let selected: Vec<&PveEncounter> = candidates.into_iter().take(3).collect();
 
-        let make_option = |encounter: Option<&&PveEncounter>| -> GameOption {
+        let make_option = |encounter: Option<&&PveEncounter>, index: u64| -> GameOption {
+            const SUPPRESSION_OPTION_NS: u64 = 0x5355_5050_5253; // "SUPPRS"
             match encounter {
                 Some(e) => GameOption::SuppressAbnormality {
                     abnormality_id: e.abnormality_id.clone(),
                     risk_level: e.risk_level,
-                    uuid: Uuid::new_v4(),
+                    uuid: determinism::uuid_v4_from_seed(ctx.random_seed, SUPPRESSION_OPTION_NS, index),
                 },
                 None => GameOption::SuppressAbnormality {
                     abnormality_id: "fallback".to_string(),
                     risk_level: RiskLevel::TETH,
-                    uuid: Uuid::new_v4(),
+                    uuid: determinism::uuid_v4_from_seed(ctx.random_seed, SUPPRESSION_OPTION_NS, index),
                 },
             }
         };
 
         [
-            make_option(selected.get(0)),
-            make_option(selected.get(1)),
-            make_option(selected.get(2)),
+            make_option(selected.get(0), 0),
+            make_option(selected.get(1), 1),
+            make_option(selected.get(2), 2),
         ]
     }
 }
@@ -153,7 +155,10 @@ impl SuppressionExecutor {
         let mut units = Vec::new();
         let mut positions = HashMap::new();
 
-        for abnormality in inventory.abnormalities.iter() {
+        let mut abnormality_items: Vec<_> = inventory.abnormalities.iter().collect();
+        abnormality_items.sort_by(|a, b| a.uuid.as_bytes().cmp(b.uuid.as_bytes()));
+
+        for abnormality in abnormality_items {
             if let Some(pos) = field.get_position(abnormality.uuid) {
                 units.push(OwnedUnit {
                     base_uuid: abnormality.uuid,
@@ -165,9 +170,9 @@ impl SuppressionExecutor {
             }
         }
 
-        let artifacts: Vec<OwnedArtifact> = inventory
-            .artifacts
-            .get_all_items()
+        let mut artifact_items = inventory.artifacts.get_all_items();
+        artifact_items.sort_by(|a, b| a.uuid.as_bytes().cmp(b.uuid.as_bytes()));
+        let artifacts: Vec<OwnedArtifact> = artifact_items
             .into_iter()
             .map(|a| OwnedArtifact { base_uuid: a.uuid })
             .collect();

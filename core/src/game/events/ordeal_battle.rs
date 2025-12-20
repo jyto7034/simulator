@@ -22,7 +22,8 @@ impl EventGenerator for OrdealBattleGenerator {
             // - opponent.items
             // 등을 활용
         } else {
-            panic!("Ordeal battle requires opponent_data!");
+            // NOTE: Ordeal 스케줄에 의해 호출될 수 있으므로, opponent_data 누락은 패닉이 아니라 폴백으로 처리.
+            tracing::warn!("Ordeal battle generated without opponent_data; using fallback options");
         }
 
         // TODO: 실제 ordeal 메타데이터에서 uuid 조회
@@ -60,9 +61,9 @@ impl OrdealBattleExecutor {
     /// * `ordeal_battle_uuid` - 시련 전투 UUID
     /// * `deck_card_ids` - 플레이어가 선택한 덱 구성
     pub fn start_battle(
-        world: &mut World,
-        ordeal_battle_uuid: Uuid,
-        deck_card_ids: Vec<Uuid>,
+        _world: &mut World,
+        _ordeal_battle_uuid: Uuid,
+        _deck_card_ids: Vec<Uuid>,
     ) -> Result<(), GameError> {
         // TODO: GameData에서 시련 전투 메타데이터 조회 (ordeal_battle_uuid로)
         // TODO: 전투 초기화

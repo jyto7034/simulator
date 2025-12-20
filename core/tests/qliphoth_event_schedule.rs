@@ -56,7 +56,7 @@ fn qliphoth_critical_forces_suppression() {
 
     let qliphoth = qliphoth_for_level(QliphothLevel::Critical);
 
-    // Dawn Phase I 은 스케줄상 EventSelection 이다.
+    // Given: Dawn Phase I 은 스케줄상 EventSelection 이다
     let ordeal = OrdealType::Dawn;
     let phase = PhaseType::I;
     let scheduled = OrdealScheduler::get_phase_event_type(ordeal, phase)
@@ -85,7 +85,7 @@ fn qliphoth_meltdown_forces_suppression_even_on_ordeal_phase() {
 
     let qliphoth = qliphoth_for_level(QliphothLevel::Meltdown);
 
-    // Dawn Phase VI 은 스케줄상 Ordeal 이다.
+    // Given: Dawn Phase VI 은 스케줄상 Ordeal 이다
     let ordeal = OrdealType::Dawn;
     let phase = PhaseType::VI;
     let scheduled = OrdealScheduler::get_phase_event_type(ordeal, phase)
@@ -123,7 +123,7 @@ fn qliphoth_caution_uses_probabilistic_suppression() {
     let seed = 12345_u64;
     let ctx = GeneratorContext::new(&world, &game_data, seed);
 
-    // EventManager 내부에서 사용하는 것과 동일한 RNG 규칙으로 roll 계산
+    // Given: EventManager 내부에서 사용하는 것과 동일한 RNG 규칙으로 roll 계산
     let suppress_chance = balance::qliphoth_suppress_chance();
     let mut rng = rand::rngs::StdRng::seed_from_u64(seed);
     let roll = rng.gen_range(0..100);

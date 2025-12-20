@@ -215,7 +215,7 @@ mod shop {
         // Then: 한 Phase에서 이벤트는 1개만 선택되므로 남은 선택지는 폐기됨
         assert_eq!(game.get_phase_events_count(), 0);
 
-        // 테스트용으로 충분한 Enkephalin 지급
+        // Given: 테스트용으로 충분한 Enkephalin 지급
         game.set_enkephalin(10_000);
 
         let items_with_prices: Vec<(Uuid, u32)> = shop_metadata
@@ -245,7 +245,7 @@ mod shop {
             let res = result.unwrap();
             let (returned_enkephalin, inventory_diff) = res.as_purchase_item().unwrap();
 
-            // 1. 반환된 엔케팔린이 예상값과 일치하는지
+            // Then: 반환된 엔케팔린이 예상값과 일치해야 함
             expected_enkephalin -= item_price;
             assert_eq!(
                 returned_enkephalin, expected_enkephalin,
@@ -253,14 +253,14 @@ mod shop {
                 expected_enkephalin, returned_enkephalin
             );
 
-            // 2. 실제 게임 상태의 엔케팔린과 일치하는지
+            // Then: 실제 게임 상태의 엔케팔린과 일치해야 함
             let actual_enkephalin = game.get_enkephalin();
             assert_eq!(
                 actual_enkephalin, returned_enkephalin,
                 "반환된 엔케팔린과 게임 상태의 엔케팔린이 다릅니다"
             );
 
-            // 3. inventory_diff.added에 구매한 아이템이 포함되어 있는지
+            // Then: inventory_diff.added에 구매한 아이템이 포함되어야 함
             assert_eq!(
                 inventory_diff.added.len(),
                 1,
@@ -272,7 +272,7 @@ mod shop {
                 "구매한 아이템의 UUID가 일치해야 합니다"
             );
 
-            // 4. inventory_diff.updated와 removed는 비어있어야 함
+            // Then: inventory_diff.updated와 removed는 비어있어야 함
             assert!(
                 inventory_diff.updated.is_empty(),
                 "updated는 비어있어야 합니다"
@@ -353,7 +353,7 @@ mod bonus {
         assert!(game.is_action_allowed(&PlayerBehavior::ClaimBonus));
         assert!(game.is_action_allowed(&PlayerBehavior::ExitBonus));
 
-        // 보너스 진입 시점에서는 아직 자원이 지급되지 않음
+        // NOTE: 보너스 진입 시점에서는 아직 자원이 지급되지 않음
         let mid_enkephalin = game.get_enkephalin();
         assert_eq!(mid_enkephalin, initial_enkephalin);
 
@@ -380,7 +380,7 @@ mod bonus {
         );
         assert_eq!(final_enkephalin, returned_enkephalin);
 
-        // 현재는 인벤토리 변화 없음 (향후 BonusType::Item/Abnormality 구현 시 확장)
+        // NOTE: 현재는 인벤토리 변화 없음 (향후 BonusType::Item/Abnormality 구현 시 확장)
         assert!(inventory_diff.added.is_empty());
         assert!(inventory_diff.updated.is_empty());
         assert!(inventory_diff.removed.is_empty());
@@ -433,7 +433,7 @@ mod random_event {
             })
             .expect("Random event option should exist");
 
-        // RandomEvent 가 라우팅할 대상 Bonus 의 uuid
+        // Given: RandomEvent 가 라우팅할 대상 Bonus 의 uuid
         let bonus_uuid = phase_event
             .options()
             .iter()
@@ -825,7 +825,7 @@ mod initial_state {
             _ => panic!("Expected RequestPhaseData result"),
         };
 
-        // Dawn Phase I는 EventSelection이어야 함
+        // Then: Dawn Phase I는 EventSelection이어야 함
         assert!(
             phase_event.is_event_selection(),
             "Dawn Phase I should be EventSelection"

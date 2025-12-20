@@ -34,6 +34,28 @@ pub struct RandomEventData {
 
 pub struct RandomEventGenerator;
 
+fn fallback_random_event_uuid(seed: u64) -> Uuid {
+    // 재현성을 위해 seed 기반으로 결정적 UUID를 생성 (다른 폴백들과 충돌 방지).
+    Uuid::from_u128(0x7a1d_3a09_5b8e_4d7b_8f10_0000_0000_0003u128 ^ ((seed as u128) << 64))
+}
+
+fn pick_fallback_target(ctx: &GeneratorContext) -> (RandomEventType, RandomEventInnerMetadata) {
+    if let Some(bonus) = ctx.game_data.bonus_data.bonuses.first() {
+        return (RandomEventType::Bonus, RandomEventInnerMetadata::Bonus(bonus.uuid));
+    }
+    if let Some(shop) = ctx.game_data.shop_data.shops.first() {
+        return (RandomEventType::Shop, RandomEventInnerMetadata::Shop(shop.uuid));
+    }
+    if let Some(abno) = ctx.game_data.abnormality_data.items.first() {
+        return (
+            RandomEventType::Suppress,
+            RandomEventInnerMetadata::Suppress(abno.uuid),
+        );
+    }
+
+    (RandomEventType::Bonus, RandomEventInnerMetadata::Bonus(Uuid::nil()))
+}
+
 impl EventGenerator for RandomEventGenerator {
     type Output = GameOption;
 
@@ -64,16 +86,17 @@ impl EventGenerator for RandomEventGenerator {
             Some(uuid) => uuid,
             None => {
                 // 폴백: pool이 비어있으면 기본 랜덤 이벤트 반환
+                let (event_type, inner_metadata) = pick_fallback_target(ctx);
                 return GameOption::Random {
                     event: RandomEventMetadata {
                         id: "fallback".to_string(),
-                        uuid: Uuid::nil(),
-                        event_type: RandomEventType::Bonus,
+                        uuid: fallback_random_event_uuid(ctx.random_seed),
+                        event_type,
                         name: "임시 이벤트".to_string(),
                         description: "폴백 이벤트".to_string(),
                         image: "default".to_string(),
                         risk_level: RiskLevel::ALEPH,
-                        inner_metadata: RandomEventInnerMetadata::Bonus(Uuid::nil()),
+                        inner_metadata,
                     },
                 };
             }
@@ -84,15 +107,16 @@ impl EventGenerator for RandomEventGenerator {
             Some(event) => event.clone(), // RandomEventMetadata 전체를 clone
             None => {
                 // 폴백: UUID에 해당하는 RandomEvent가 없으면 기본값
+                let (event_type, inner_metadata) = pick_fallback_target(ctx);
                 RandomEventMetadata {
                     id: format!("unknown_{}", uuid),
                     uuid,
-                    event_type: RandomEventType::Bonus,
+                    event_type,
                     name: "알 수 없는 이벤트".to_string(),
                     description: "설명 없음".to_string(),
                     image: "unknown".to_string(),
                     risk_level: RiskLevel::ALEPH,
-                    inner_metadata: RandomEventInnerMetadata::Bonus(Uuid::nil()),
+                    inner_metadata,
                 }
             }
         };

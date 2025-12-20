@@ -3,7 +3,6 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::game::enums::{RiskLevel, Tier};
-pub mod abnormality;
 
 #[derive(Component, Clone)]
 pub struct Abnormality {
@@ -134,7 +133,7 @@ mod tests {
             name: "Hero".to_string(),
         };
 
-        // JSON 직렬화 테스트
+        // When: JSON 직렬화/역직렬화
         let json = serde_json::to_string(&player).unwrap();
         let deserialized: Player = serde_json::from_str(&json).unwrap();
 
@@ -187,7 +186,7 @@ mod tests {
             })
             .id();
 
-        // Entity가 생성되었는지 확인
+        // Then: Entity가 생성되어 Player를 조회할 수 있음
         let player = world.get::<Player>(entity).unwrap();
         assert_eq!(player.id, player_id);
         assert_eq!(player.name, "Test Hero");

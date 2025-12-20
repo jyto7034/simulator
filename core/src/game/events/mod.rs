@@ -1,4 +1,4 @@
-use std::time::SystemTime;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use bevy_ecs::world::World;
 
@@ -31,11 +31,15 @@ pub struct GeneratorContext<'w> {
 impl<'w> GeneratorContext<'w> {
     /// 기본 GeneratorContext 생성 (extras는 모두 None)
     pub fn new(world: &'w World, game_data: &'w GameDataBase, random_seed: u64) -> Self {
+        // Keep timestamps deterministic for replay/server-sync without risking overflow on platforms
+        // where SystemTime has a bounded range.
+        let timestamp_secs = random_seed & 0xFFFF_FFFF;
         Self {
             world,
             game_data,
             random_seed,
-            timestamp: SystemTime::now(),
+            // Deterministic timestamp for replay/server-sync: derived from seed.
+            timestamp: UNIX_EPOCH + Duration::from_secs(timestamp_secs),
             extras: Default::default(),
         }
     }
@@ -47,11 +51,12 @@ impl<'w> GeneratorContext<'w> {
         random_seed: u64,
         opponent_data: Player,
     ) -> Self {
+        let timestamp_secs = random_seed & 0xFFFF_FFFF;
         Self {
             world,
             game_data,
             random_seed,
-            timestamp: SystemTime::now(),
+            timestamp: UNIX_EPOCH + Duration::from_secs(timestamp_secs),
             extras: GeneratorExtras {
                 opponent_data: Some(opponent_data),
                 ..Default::default()

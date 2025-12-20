@@ -122,6 +122,10 @@ impl OwnedUnit {
             stats.apply_permanent_effects(&origin_artifact.triggered_effects);
         }
 
+        // Growth 스택 / 장비 / 아티팩트는 "영구 스탯"으로 간주하므로,
+        // 최종 max_health 기준으로 전투 시작 HP는 풀피로 맞춘다.
+        stats.current_health = stats.max_health;
+
         Ok(stats)
     }
 }

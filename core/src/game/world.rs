@@ -1,4 +1,3 @@
-use bevy_ecs::entity::Entity;
 use std::sync::Arc;
 use tracing::{debug, info, warn};
 use uuid::Uuid;
@@ -18,11 +17,11 @@ use crate::game::events::suppression::SuppressionExecutor;
 use crate::game::events::GeneratorContext;
 use crate::game::managers::action_scheduler::ActionScheduler;
 use crate::game::managers::event_manager::EventManager;
+use crate::game::{battle::BattleWinner, determinism};
 
 pub struct GameCore {
     world: bevy_ecs::world::World,
     game_data: Arc<GameDataBase>,
-    _player_entity: Option<Entity>,
     run_seed: u64,
 }
 
@@ -56,7 +55,6 @@ impl GameCore {
         Self {
             world,
             game_data,
-            _player_entity: None,
             run_seed,
         }
     }
@@ -184,8 +182,9 @@ impl GameCore {
         // 1. 현재 Ordeal, Phase 가져오기
         let (ordeal, phase) = self.get_progression()?;
 
-        // 2. Context 생성
-        let ctx = GeneratorContext::new(&self.world, &self.game_data, self.run_seed);
+        // 2. Context 생성 (phase 기반 seed로 결정성 보장)
+        let phase_seed = determinism::seed_for_phase(self.run_seed, ordeal, phase);
+        let ctx = GeneratorContext::new(&self.world, &self.game_data, phase_seed);
 
         let qliphoth = self.get_qliphoth()?;
 
@@ -454,6 +453,15 @@ impl GameCore {
     ///
     /// 이벤트(상점/보너스/랜덤) 완료 후 호출되어 다음 Phase로 전환합니다.
     fn advance_to_next_phase(&mut self) -> Result<BehaviorResult, GameError> {
+        // Phase 종료 시 클리포트 자동 회복
+        {
+            // let mut qliphoth = self
+            //     .world
+            //     .get_resource_mut::<Qliphoth>()
+            //     .ok_or(GameError::MissingResource("Qliphoth"))?;
+            // QliphothManager::apply_phase_recovery(&mut qliphoth);
+        }
+
         // Phase가 끝났으므로 선택지/선택 이벤트 리소스는 폐기
         if let Some(mut current_phase_events) = self.world.get_resource_mut::<CurrentPhaseEvents>()
         {
@@ -547,10 +555,31 @@ impl GameCore {
             abnormality_id,
         )?;
 
+        // 진압 작업 성공 시, 해당 몬스터의 드랍템 확률 발생
+
         info!(
             "Suppression battle completed - Winner: {:?}",
             battle_result.winner
         );
+
+        {
+            // 클리포드 감소는 게임 룰이 명확해지고 나서.
+
+            // let mut qliphoth = self
+            //     .world
+            //     .get_resource_mut::<Qliphoth>()
+            //     .ok_or(GameError::MissingResource("Qliphoth"))?;
+            // QliphothManager::apply_battle_cost(&mut qliphoth);
+
+            match battle_result.winner {
+                BattleWinner::Player => {
+                    // QliphothManager::apply_suppress_success(&mut qliphoth)
+                }
+                BattleWinner::Opponent | BattleWinner::Draw => {
+                    // QliphothManager::apply_suppress_failure(&mut qliphoth)
+                }
+            }
+        }
 
         self.advance_to_next_phase()
     }

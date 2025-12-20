@@ -100,7 +100,7 @@ mod tests {
             },
         ];
 
-        // 같은 seed → 같은 결과
+        // Then: 같은 seed → 같은 결과
         let mut rng1 = StdRng::seed_from_u64(12345);
         let result1 = EventPhasePool::choose_weighted_uuid(&items, &mut rng1);
 
@@ -126,7 +126,7 @@ mod tests {
             },
         ];
 
-        // 시나리오: 3번의 선택을 2번 반복
+        // Given: 3번의 선택을 2번 반복하는 시나리오
         let seed = 99999;
 
         let mut rng1 = StdRng::seed_from_u64(seed);
@@ -143,7 +143,7 @@ mod tests {
             EventPhasePool::choose_weighted_uuid(&items, &mut rng2),
         ];
 
-        // 같은 seed → 완전히 동일한 시퀀스
+        // Then: 같은 seed → 완전히 동일한 시퀀스
         assert_eq!(run1, run2);
     }
 
@@ -177,7 +177,7 @@ mod tests {
             },
         };
 
-        // 각 Ordeal에 대해 올바른 풀 반환 확인
+        // Then: 각 Ordeal에 대해 올바른 풀을 반환해야 함
         let _ = config.get_pool(OrdealType::Dawn);
         let _ = config.get_pool(OrdealType::Noon);
         let _ = config.get_pool(OrdealType::Dusk);

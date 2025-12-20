@@ -213,7 +213,7 @@ mod tests {
     fn test_default_config() {
         let config = GameBalanceConfig::default();
 
-        // 임계값 검증
+        // Then: 임계값 검증
         assert_eq!(config.qliphoth.thresholds.stable_min, 10);
         assert_eq!(config.qliphoth.thresholds.stable_max, 7);
         assert_eq!(config.qliphoth.thresholds.caution_min, 6);
@@ -222,7 +222,7 @@ mod tests {
         assert_eq!(config.qliphoth.thresholds.critical_max, 1);
         assert_eq!(config.qliphoth.thresholds.meltdown, 0);
 
-        // 진압 확률 검증
+        // Then: 진압 확률 검증
         assert_eq!(config.qliphoth.suppress_chance.stable, 0);
         assert_eq!(config.qliphoth.suppress_chance.caution, 50);
         assert_eq!(config.qliphoth.suppress_chance.critical, 100);
@@ -250,7 +250,7 @@ mod tests {
 
     #[test]
     fn test_suppress_chance_validation() {
-        // 유효한 값들
+        // Given: 유효한 값들
         let valid = QliphothSuppressChance {
             stable: 0,
             caution: 50,
@@ -258,7 +258,7 @@ mod tests {
         };
         assert!(valid.validate().is_ok());
 
-        // stable > 100
+        // Given: stable > 100
         let invalid_stable = QliphothSuppressChance {
             stable: 101,
             caution: 50,
@@ -266,7 +266,7 @@ mod tests {
         };
         assert!(invalid_stable.validate().is_err());
 
-        // caution > 100
+        // Given: caution > 100
         let invalid_caution = QliphothSuppressChance {
             stable: 0,
             caution: 150,
@@ -274,7 +274,7 @@ mod tests {
         };
         assert!(invalid_caution.validate().is_err());
 
-        // critical > 100
+        // Given: critical > 100
         let invalid_critical = QliphothSuppressChance {
             stable: 0,
             caution: 50,
@@ -285,19 +285,19 @@ mod tests {
 
     #[test]
     fn test_suppress_chance_probability() {
-        // 확률 계산 시뮬레이션
+        // When: 확률 계산 시뮬레이션
         let suppress_chance = QliphothSuppressChance {
             stable: 0,
             caution: 50,
             critical: 100,
         };
 
-        // Stable: 0% - 절대 발생 안 함
+        // Then: Stable은 0%라서 절대 발생하지 않음
         for roll in 0..100 {
             assert!(roll >= suppress_chance.stable);
         }
 
-        // Caution: 50% - 0~49일 때만 발생
+        // Then: Caution은 50%라서 0..49일 때만 발생
         let mut count = 0;
         for roll in 0..100 {
             if roll < suppress_chance.caution {
@@ -306,7 +306,7 @@ mod tests {
         }
         assert_eq!(count, 50); // 정확히 50%
 
-        // Critical: 100% - 항상 발생
+        // Then: Critical은 100%라서 항상 발생
         for roll in 0..100 {
             assert!(roll < suppress_chance.critical);
         }
@@ -317,7 +317,7 @@ mod tests {
         let config = GameBalanceConfig::default();
         let toml_string = toml::to_string_pretty(&config).unwrap();
 
-        // 다시 역직렬화
+        // When: 다시 역직렬화
         let deserialized: GameBalanceConfig = toml::from_str(&toml_string).unwrap();
 
         assert_eq!(

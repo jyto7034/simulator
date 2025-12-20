@@ -61,7 +61,7 @@ mod tests {
     #[test]
     fn test_dawn_schedule_length() {
         let schedule = OrdealScheduler::get_phase_schedule(OrdealType::Dawn);
-        // Dawn은 6개 Phase
+        // Then: Dawn은 6개 Phase
         assert_eq!(schedule.len(), 6);
     }
 
@@ -102,7 +102,7 @@ mod tests {
     fn test_noon_schedule_structure() {
         let schedule = OrdealScheduler::get_phase_schedule(OrdealType::Noon);
 
-        // Noon도 Dawn과 같은 구조
+        // Then: Noon도 Dawn과 같은 구조
         assert_eq!(schedule[2].event_type, PhaseEventType::Suppression);
         assert_eq!(schedule[5].event_type, PhaseEventType::Ordeal);
     }
@@ -114,7 +114,7 @@ mod tests {
     #[test]
     fn test_dusk_schedule_length() {
         let schedule = OrdealScheduler::get_phase_schedule(OrdealType::Dusk);
-        // Dusk는 5개 Phase
+        // Then: Dusk는 5개 Phase
         assert_eq!(schedule.len(), 5);
     }
 
@@ -152,7 +152,7 @@ mod tests {
     fn test_midnight_schedule_structure() {
         let schedule = OrdealScheduler::get_phase_schedule(OrdealType::Midnight);
 
-        // Midnight는 Dusk와 같은 구조
+        // Then: Midnight는 Dusk와 같은 구조
         assert_eq!(schedule[2].event_type, PhaseEventType::Suppression);
         assert_eq!(schedule[4].event_type, PhaseEventType::Ordeal);
     }
@@ -171,7 +171,7 @@ mod tests {
     fn test_white_schedule_structure() {
         let schedule = OrdealScheduler::get_phase_schedule(OrdealType::White);
 
-        // White는 Dawn, Noon과 같은 구조
+        // Then: White는 Dawn, Noon과 같은 구조
         assert_eq!(schedule[2].event_type, PhaseEventType::Suppression);
         assert_eq!(schedule[5].event_type, PhaseEventType::Ordeal);
     }
@@ -214,8 +214,7 @@ mod tests {
 
     #[test]
     fn test_get_phase_event_type_invalid_phase() {
-        // Dawn은 Phase VI까지 있지만, 이 테스트에서는 스케줄에 정의된 Phase만 조회 가능
-        // Dawn의 스케줄은 I~VI까지 정의되어 있으므로, 모두 Some을 반환
+        // NOTE: Dawn은 스케줄이 I~VI까지 정의되어 있어서 Phase VI도 Some을 반환해야 함
         assert!(OrdealScheduler::get_phase_event_type(OrdealType::Dawn, PhaseType::VI).is_some());
     }
 
@@ -225,7 +224,7 @@ mod tests {
 
     #[test]
     fn test_all_ordeals_have_suppression_at_phase_iii() {
-        // 모든 시련은 Phase III에 진압 작업이 있어야 함
+        // Then: 모든 시련은 Phase III에 진압 작업이 있어야 함
         assert_eq!(
             OrdealScheduler::get_phase_event_type(OrdealType::Dawn, PhaseType::III),
             Some(PhaseEventType::Suppression)
@@ -250,7 +249,7 @@ mod tests {
 
     #[test]
     fn test_six_phase_ordeals_have_ordeal_at_phase_vi() {
-        // 6 Phase 시련들은 Phase VI에 시련 전투가 있어야 함
+        // Then: 6 Phase 시련들은 Phase VI에 시련 전투가 있어야 함
         assert_eq!(
             OrdealScheduler::get_phase_event_type(OrdealType::Dawn, PhaseType::VI),
             Some(PhaseEventType::Ordeal)
@@ -267,7 +266,7 @@ mod tests {
 
     #[test]
     fn test_five_phase_ordeals_have_ordeal_at_phase_v() {
-        // 5 Phase 시련들은 Phase V에 시련 전투가 있어야 함
+        // Then: 5 Phase 시련들은 Phase V에 시련 전투가 있어야 함
         assert_eq!(
             OrdealScheduler::get_phase_event_type(OrdealType::Dusk, PhaseType::V),
             Some(PhaseEventType::Ordeal)

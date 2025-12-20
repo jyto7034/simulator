@@ -31,12 +31,12 @@ use uuid::Uuid;
 
 /// 최소 테스트용 GameDataBase 생성
 fn create_minimal_game_data() -> Arc<GameDataBase> {
-    // 고정 UUID (예측 가능한 테스트용)
+    // Given: 고정 UUID (예측 가능한 테스트용)
     let shop_uuid = Uuid::parse_str("00000000-0000-0000-0000-000000000001").unwrap();
     let bonus_uuid = Uuid::parse_str("00000000-0000-0000-0000-000000000002").unwrap();
     let event_uuid = Uuid::parse_str("00000000-0000-0000-0000-000000000003").unwrap();
 
-    // Shop 데이터
+    // Given: Shop 데이터
     let shop = ShopMetadata {
         id: "test_shop".to_string(),
         name: "Test Shop".to_string(),
@@ -47,7 +47,7 @@ fn create_minimal_game_data() -> Arc<GameDataBase> {
         hidden_items: vec![],
     };
 
-    // Bonus 데이터
+    // Given: Bonus 데이터
     let bonus = BonusMetadata {
         id: "test_bonus".to_string(),
         bonus_type: BonusType::Enkephalin,
@@ -58,7 +58,7 @@ fn create_minimal_game_data() -> Arc<GameDataBase> {
         amount: 75,
     };
 
-    // RandomEvent 데이터
+    // Given: RandomEvent 데이터
     let random_event = RandomEventMetadata {
         id: "test_event".to_string(),
         uuid: event_uuid,
@@ -70,7 +70,7 @@ fn create_minimal_game_data() -> Arc<GameDataBase> {
         inner_metadata: RandomEventInnerMetadata::Bonus(Uuid::nil()),
     };
 
-    // 이벤트 풀 (Dawn만 설정)
+    // Given: 이벤트 풀 (Dawn만 설정)
     let dawn_pool = EventPhasePool {
         shops: vec![WeightedEvent {
             weight: 100,
@@ -86,7 +86,7 @@ fn create_minimal_game_data() -> Arc<GameDataBase> {
         }],
     };
 
-    // 빈 풀 (다른 Ordeal용)
+    // Given: 빈 풀 (다른 Ordeal용)
     let empty_pool = EventPhasePool {
         shops: vec![],
         bonuses: vec![],
@@ -101,7 +101,7 @@ fn create_minimal_game_data() -> Arc<GameDataBase> {
         white: empty_pool,
     };
 
-    // GameDataBase 생성
+    // Given: GameDataBase 생성
     let abnormality_data = Arc::new(AbnormalityDatabase::new(vec![]));
     let artifact_data = Arc::new(ArtifactDatabase::new(vec![]));
     let equipment_data = Arc::new(EquipmentDatabase::new(vec![]));
@@ -123,7 +123,7 @@ fn create_minimal_game_data() -> Arc<GameDataBase> {
 
 /// 여러 아이템이 있는 GameDataBase 생성 (가중치 테스트용)
 fn create_weighted_game_data() -> Arc<GameDataBase> {
-    // 3개의 상점 (가중치 다름)
+    // Given: 3개의 상점 (가중치 다름)
     let shop1_uuid = Uuid::parse_str("00000000-0000-0000-0000-000000000011").unwrap();
     let shop2_uuid = Uuid::parse_str("00000000-0000-0000-0000-000000000012").unwrap();
     let shop3_uuid = Uuid::parse_str("00000000-0000-0000-0000-000000000013").unwrap();
@@ -158,7 +158,7 @@ fn create_weighted_game_data() -> Arc<GameDataBase> {
         hidden_items: vec![],
     };
 
-    // 가중치 풀: Common(70%), Rare(25%), Legendary(5%)
+    // Given: 가중치 풀: Common(70%), Rare(25%), Legendary(5%)
     let weighted_pool = EventPhasePool {
         shops: vec![
             WeightedEvent {
@@ -258,7 +258,7 @@ fn test_choose_weighted_uuid_zero_weight() {
     let mut rng = rand::rngs::StdRng::seed_from_u64(12345);
     let result = EventPhasePool::choose_weighted_uuid(&pool, &mut rng);
 
-    // 가중치가 모두 0이면 None 반환
+    // Then: 가중치가 모두 0이면 None 반환
     assert!(result.is_none());
 }
 
@@ -275,7 +275,7 @@ fn test_choose_weighted_uuid_deterministic() {
         },
     ];
 
-    // 같은 seed → 같은 결과
+    // Then: 같은 seed → 같은 결과
     let mut rng1 = rand::rngs::StdRng::seed_from_u64(99999);
     let result1 = EventPhasePool::choose_weighted_uuid(&pool, &mut rng1);
 
@@ -299,7 +299,7 @@ fn test_shop_generator_returns_valid_shop() {
 
     let result = generator.generate(&ctx);
 
-    // GameOption::Shop이어야 함
+    // Then: GameOption::Shop이어야 함
     match result {
         GameOption::Shop { shop } => {
             assert_eq!(shop.name, "Test Shop");
@@ -320,7 +320,7 @@ fn test_shop_generator_uuid_exists_in_database() {
 
     let result = generator.generate(&ctx);
 
-    // UUID가 GameData에 실제로 존재하는지 확인
+    // Then: UUID가 GameData에 실제로 존재해야 함
     match result {
         GameOption::Shop { shop } => {
             let found = game_data.shop_data.get_by_uuid(&shop.uuid);
@@ -336,7 +336,7 @@ fn test_shop_generator_empty_pool_fallback() {
     let game_data = create_minimal_game_data();
     let mut world = bevy_ecs::world::World::new();
 
-    // Noon Pool (비어있음)
+    // Given: Noon Pool (비어있음)
     use game_core::ecs::resources::GameProgression;
     world.insert_resource(GameProgression {
         current_ordeal: OrdealType::Noon,
@@ -348,11 +348,12 @@ fn test_shop_generator_empty_pool_fallback() {
 
     let result = generator.generate(&ctx);
 
-    // 폴백: 빈 풀일 때 임시 상점 반환
+    // Then: 폴백 - 빈 풀일 때 임시 상점 반환
     match result {
         GameOption::Shop { shop } => {
             assert_eq!(shop.name, "임시 상점");
-            assert_eq!(shop.uuid, Uuid::nil());
+            // Then: CurrentPhaseEvents에서 key 충돌을 방지하기 위해 폴백도 고유 UUID를 가져야 함
+            assert_ne!(shop.uuid, Uuid::nil());
         }
         _ => panic!("Expected GameOption::Shop"),
     }
@@ -363,7 +364,7 @@ fn test_shop_generator_weighted_selection() {
     let game_data = create_weighted_game_data();
     let world = bevy_ecs::world::World::new();
 
-    // 100번 시도해서 통계 수집
+    // When: 100번 시도해서 통계 수집
     let mut common_count = 0;
     let mut rare_count = 0;
     let mut legendary_count = 0;
@@ -389,7 +390,7 @@ fn test_shop_generator_weighted_selection() {
         common_count, rare_count, legendary_count
     );
 
-    // 가중치 검증: Common이 가장 많이 나와야 함
+    // Then: 가중치 검증 - Common이 가장 많이 나와야 함
     assert!(
         common_count > rare_count,
         "Common should appear more than Rare"
@@ -496,13 +497,13 @@ fn test_random_event_generator_uuid_exists_in_database() {
 fn test_event_pool_config_get_pool() {
     let game_data = create_minimal_game_data();
 
-    // Dawn pool 가져오기
+    // When: Dawn pool 가져오기
     let dawn_pool = game_data.event_pools.get_pool(OrdealType::Dawn);
     assert_eq!(dawn_pool.shops.len(), 1);
     assert_eq!(dawn_pool.bonuses.len(), 1);
     assert_eq!(dawn_pool.random_events.len(), 1);
 
-    // Noon pool 가져오기 (비어있어야 함)
+    // When: Noon pool 가져오기 (비어있어야 함)
     let noon_pool = game_data.event_pools.get_pool(OrdealType::Noon);
     assert_eq!(noon_pool.shops.len(), 0);
     assert_eq!(noon_pool.bonuses.len(), 0);
@@ -519,7 +520,7 @@ fn test_all_generators_return_data_from_pool() {
     let world = bevy_ecs::world::World::new();
     let ctx = GeneratorContext::new(&world, &game_data, 12345);
 
-    // ShopGenerator
+    // Then: ShopGenerator
     let shop_result = ShopGenerator.generate(&ctx);
     match shop_result {
         GameOption::Shop { shop } => {
@@ -531,7 +532,7 @@ fn test_all_generators_return_data_from_pool() {
         _ => panic!("Expected Shop"),
     }
 
-    // BonusGenerator
+    // Then: BonusGenerator
     let bonus_result = BonusGenerator.generate(&ctx);
     match bonus_result {
         GameOption::Bonus { bonus } => {
@@ -543,7 +544,7 @@ fn test_all_generators_return_data_from_pool() {
         _ => panic!("Expected Bonus"),
     }
 
-    // RandomEventGenerator
+    // Then: RandomEventGenerator
     let event_result = RandomEventGenerator.generate(&ctx);
     match event_result {
         GameOption::Random { event } => {
@@ -563,15 +564,15 @@ fn test_generators_with_same_seed_return_same_results() {
 
     let seed = 99999;
 
-    // 첫 번째 실행
+    // When: 첫 번째 실행
     let ctx1 = GeneratorContext::new(&world, &game_data, seed);
     let shop1 = ShopGenerator.generate(&ctx1);
 
-    // 두 번째 실행 (같은 seed)
+    // When: 두 번째 실행 (같은 seed)
     let ctx2 = GeneratorContext::new(&world, &game_data, seed);
     let shop2 = ShopGenerator.generate(&ctx2);
 
-    // 같은 결과여야 함
+    // Then: 같은 결과여야 함
     match (shop1, shop2) {
         (GameOption::Shop { shop: s1 }, GameOption::Shop { shop: s2 }) => {
             assert_eq!(s1.uuid, s2.uuid);

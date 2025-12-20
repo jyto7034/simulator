@@ -17,6 +17,11 @@ use crate::{
 
 pub struct BonusGenerator;
 
+fn fallback_bonus_uuid(seed: u64) -> Uuid {
+    // 재현성을 위해 seed 기반으로 결정적 UUID를 생성 (다른 폴백들과 충돌 방지).
+    Uuid::from_u128(0x7a1d_3a09_5b8e_4d7b_8f10_0000_0000_0002u128 ^ ((seed as u128) << 64))
+}
+
 impl EventGenerator for BonusGenerator {
     type Output = GameOption;
 
@@ -50,7 +55,7 @@ impl EventGenerator for BonusGenerator {
                 return GameOption::Bonus {
                     bonus: BonusMetadata {
                         bonus_type: BonusType::Enkephalin,
-                        uuid: Uuid::nil(),
+                        uuid: fallback_bonus_uuid(ctx.random_seed),
                         name: "임시 보너스".to_string(),
                         description: "폴백 보너스".to_string(),
                         icon: "default".to_string(),
