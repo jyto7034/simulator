@@ -391,6 +391,7 @@ mod tests {
             equipment_type: EquipmentType::Weapon,
             rarity: RiskLevel::HE,
             price,
+            allow_duplicate_equip: true,
             triggered_effects: Default::default(),
         });
         (uuid, equipment)

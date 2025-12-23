@@ -42,6 +42,7 @@ fn game_data_with_item(uuid: Uuid, triggered_effects: TriggeredEffects) -> Arc<G
         equipment_type: EquipmentType::Weapon,
         rarity: RiskLevel::ZAYIN,
         price: 0,
+        allow_duplicate_equip: true,
         triggered_effects,
     };
 
@@ -75,6 +76,141 @@ fn spawn_stats() -> UnitStats {
 }
 
 #[test]
+fn replayer_strict_mode_flags_on_kill_ability_as_unexpected_decision() {
+    let attacker_id = Uuid::from_u128(0xA);
+    let target_id = Uuid::from_u128(0xB);
+    let base_uuid = Uuid::from_u128(0x1000);
+    let item_uuid = Uuid::from_u128(0x2000);
+
+    let mut triggered_effects: TriggeredEffects = HashMap::new();
+    triggered_effects.insert(
+        TriggerType::OnKill,
+        vec![Effect::Ability(
+            game_core::game::ability::AbilityId::UnknownDistortionStrike,
+        )],
+    );
+
+    let game_data = game_data_with_item(item_uuid, triggered_effects);
+    let replayer = TimelineReplayer::new(
+        game_data,
+        TimelineReplayerConfig {
+            forbid_unexpected_outcomes_for_verified_causes: true,
+            ..TimelineReplayerConfig::default()
+        },
+    );
+
+    // This timeline is consistent with how `BattleCore` records:
+    // - Attack seq is the parent cause for its outcomes (HpChanged/UnitDied).
+    // - OnKill-triggered AbilityCast is recorded under the same parent cause_seq (the Attack seq).
+    let timeline = Timeline {
+        version: TIMELINE_VERSION,
+        entries: vec![
+            TimelineEntry {
+                time_ms: 0,
+                seq: 0,
+                cause_seq: None,
+                event: TimelineEvent::BattleStart {
+                    width: 1,
+                    height: 1,
+                },
+            },
+            TimelineEntry {
+                time_ms: 0,
+                seq: 1,
+                cause_seq: None,
+                event: TimelineEvent::UnitSpawned {
+                    unit_instance_id: attacker_id,
+                    owner: Side::Player,
+                    base_uuid,
+                    position: Position::new(0, 0),
+                    stats: UnitStats::with_values(10, 10, 10, 0, 1000),
+                },
+            },
+            TimelineEntry {
+                time_ms: 0,
+                seq: 2,
+                cause_seq: None,
+                event: TimelineEvent::UnitSpawned {
+                    unit_instance_id: target_id,
+                    owner: Side::Opponent,
+                    base_uuid,
+                    position: Position::new(0, 0),
+                    stats: UnitStats::with_values(10, 10, 0, 0, 1000),
+                },
+            },
+            TimelineEntry {
+                time_ms: 0,
+                seq: 3,
+                cause_seq: None,
+                event: TimelineEvent::ItemSpawned {
+                    item_instance_id: Uuid::from_u128(0xC),
+                    owner: Side::Player,
+                    owner_unit_instance_id: attacker_id,
+                    base_uuid: item_uuid,
+                },
+            },
+            TimelineEntry {
+                time_ms: 100,
+                seq: 4,
+                cause_seq: None,
+                event: TimelineEvent::Attack {
+                    attacker_instance_id: attacker_id,
+                    target_instance_id: target_id,
+                    kind: Some(AttackKind::Triggered),
+                },
+            },
+            TimelineEntry {
+                time_ms: 100,
+                seq: 5,
+                cause_seq: Some(4),
+                event: TimelineEvent::HpChanged {
+                    source_instance_id: Some(attacker_id),
+                    target_instance_id: target_id,
+                    delta: -10,
+                    hp_before: 10,
+                    hp_after: 0,
+                    reason: game_core::game::battle::HpChangeReason::BasicAttack,
+                },
+            },
+            TimelineEntry {
+                time_ms: 100,
+                seq: 6,
+                cause_seq: Some(4),
+                event: TimelineEvent::UnitDied {
+                    unit_instance_id: target_id,
+                    owner: Side::Opponent,
+                    killer_instance_id: Some(attacker_id),
+                },
+            },
+            // OnKill-triggered ability is recorded under the same parent cause_seq.
+            TimelineEntry {
+                time_ms: 100,
+                seq: 7,
+                cause_seq: Some(4),
+                event: TimelineEvent::AbilityCast {
+                    ability_id: game_core::game::ability::AbilityId::UnknownDistortionStrike,
+                    caster_instance_id: attacker_id,
+                    target_instance_id: Some(target_id),
+                },
+            },
+            TimelineEntry {
+                time_ms: 200,
+                seq: 8,
+                cause_seq: None,
+                event: TimelineEvent::BattleEnd {
+                    winner: BattleWinner::Player,
+                },
+            },
+        ],
+    };
+
+    let violations = replayer.replay(&timeline).unwrap_err();
+    assert!(violations
+        .iter()
+        .any(|v| v.kind == TimelineReplayViolationKind::UnexpectedDecision));
+}
+
+#[test]
 fn replayer_requires_expected_ability_cast_decision() {
     let attacker_id = Uuid::from_u128(0xA);
     let target_id = Uuid::from_u128(0xB);
@@ -84,7 +220,9 @@ fn replayer_requires_expected_ability_cast_decision() {
     let mut triggered_effects: TriggeredEffects = HashMap::new();
     triggered_effects.insert(
         TriggerType::OnAttack,
-        vec![Effect::Ability(game_core::game::ability::AbilityId::PlagueMassHeal)],
+        vec![Effect::Ability(
+            game_core::game::ability::AbilityId::PlagueMassHeal,
+        )],
     );
 
     let game_data = game_data_with_item(item_uuid, triggered_effects);
@@ -330,4 +468,3 @@ fn replayer_can_validate_unit_base_uuid_when_enabled() {
         .iter()
         .any(|v| v.kind == TimelineReplayViolationKind::UnknownUnitBaseReference));
 }
-

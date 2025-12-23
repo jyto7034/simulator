@@ -1,16 +1,17 @@
 use uuid::Uuid;
 
-use crate::game::stats::{Effect, TriggerType};
+use crate::game::stats::TriggerType;
 
 use super::{BattleCore, RuntimeArtifact, RuntimeItem, TriggerSource};
+use crate::game::battle::cooldown::{CooldownSource, SourcedEffect};
 
 impl BattleCore {
     pub(super) fn collect_triggers(
         &self,
         source: TriggerSource,
         trigger: TriggerType,
-    ) -> Vec<Effect> {
-        let mut effects = Vec::new();
+    ) -> Vec<SourcedEffect> {
+        let mut effects: Vec<SourcedEffect> = Vec::new();
 
         match source {
             TriggerSource::Artifact { side } => {
@@ -28,7 +29,12 @@ impl BattleCore {
                         .get_by_uuid(&artifact.base_uuid)
                     {
                         if let Some(triggered) = metadata.triggered_effects.get(&trigger) {
-                            effects.extend(triggered.iter().cloned());
+                            effects.extend(triggered.iter().cloned().map(|effect| SourcedEffect {
+                                source: CooldownSource::Artifact {
+                                    artifact_instance_id: artifact.instance_id,
+                                },
+                                effect,
+                            }));
                         }
                     }
                 }
@@ -46,7 +52,12 @@ impl BattleCore {
                         self.game_data.equipment_data.get_by_uuid(&item.base_uuid)
                     {
                         if let Some(triggered) = metadata.triggered_effects.get(&trigger) {
-                            effects.extend(triggered.iter().cloned());
+                            effects.extend(triggered.iter().cloned().map(|effect| SourcedEffect {
+                                source: CooldownSource::Item {
+                                    item_instance_id: item.instance_id,
+                                },
+                                effect,
+                            }));
                         }
                     }
                 }
@@ -60,7 +71,7 @@ impl BattleCore {
         &self,
         unit_instance_id: Uuid,
         trigger: TriggerType,
-    ) -> Vec<Effect> {
+    ) -> Vec<SourcedEffect> {
         let Some(unit) = self.units.get(&unit_instance_id) else {
             return Vec::new();
         };

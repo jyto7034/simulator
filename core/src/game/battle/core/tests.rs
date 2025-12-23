@@ -233,6 +233,9 @@ fn ability_does_not_execute_with_caster_in_graveyard() {
         caster_id,
         None,
         0,
+        crate::game::battle::cooldown::CooldownSource::Unit {
+            unit_instance_id: caster_id,
+        },
     );
 
     assert!(!result.executed);
@@ -295,6 +298,7 @@ fn ability_kill_credits_killer_for_on_kill_triggers() {
             equipment_type: EquipmentType::Weapon,
             rarity: RiskLevel::ZAYIN,
             price: 0,
+            allow_duplicate_equip: true,
             triggered_effects,
         }],
     );
@@ -355,6 +359,9 @@ fn ability_kill_credits_killer_for_on_kill_triggers() {
         caster_id,
         None,
         0,
+        crate::game::battle::cooldown::CooldownSource::Unit {
+            unit_instance_id: caster_id,
+        },
     );
 
     battle.process_commands(result.commands, 0);
@@ -433,6 +440,7 @@ fn simultaneous_deaths_do_not_trigger_on_ally_death_from_dead_units() {
             equipment_type: EquipmentType::Weapon,
             rarity: RiskLevel::ZAYIN,
             price: 0,
+            allow_duplicate_equip: true,
             triggered_effects,
         }],
     );
@@ -650,6 +658,7 @@ fn poison_buff_ticks_as_command_damage() {
             equipment_type: EquipmentType::Weapon,
             rarity: RiskLevel::ZAYIN,
             price: 0,
+            allow_duplicate_equip: true,
             triggered_effects,
         }],
     );
@@ -1207,6 +1216,7 @@ fn on_attack_skill_triggers_and_changes_outcome() {
             equipment_type: EquipmentType::Weapon,
             rarity: RiskLevel::ZAYIN,
             price: 0,
+            allow_duplicate_equip: true,
             triggered_effects,
         }],
     );

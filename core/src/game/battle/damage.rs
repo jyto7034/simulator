@@ -3,6 +3,7 @@ use uuid::Uuid;
 use crate::game::{enums::Side, stats::Effect};
 
 use super::buffs::BuffId;
+use super::cooldown::{CooldownSource, SourcedEffect};
 
 /// 데미지 요청 - 데미지 계산에 필요한 모든 정보
 #[derive(Debug, Clone)]
@@ -52,6 +53,7 @@ pub enum BattleCommand {
         ability_id: crate::game::ability::AbilityId,
         caster_id: Uuid,
         target_id: Option<Uuid>,
+        cooldown_source: CooldownSource,
     },
     /// 스탯 변경 요청
     ApplyModifier {
@@ -90,8 +92,8 @@ pub struct DamageContext<'a> {
     pub target_defense: u32,
     pub target_current_hp: u32,
     pub target_max_hp: u32,
-    pub on_attack_effects: &'a [Effect],
-    pub on_hit_effects: &'a [Effect],
+    pub on_attack_effects: &'a [SourcedEffect],
+    pub on_hit_effects: &'a [SourcedEffect],
 }
 
 /// 데미지 계산 및 결과 생성
@@ -106,8 +108,8 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
     let mut damage: i128 = i128::from(base_damage);
 
     // 2. OnAttack 효과 적용
-    for effect in ctx.on_attack_effects {
-        match effect {
+    for sourced in ctx.on_attack_effects {
+        match &sourced.effect {
             Effect::BonusDamage { flat, percent } => {
                 damage += i128::from(*flat);
                 damage += damage.saturating_mul(i128::from(*percent)) / 100;
@@ -128,6 +130,7 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
                     ability_id: *ability_id,
                     caster_id: request.attacker_id,
                     target_id: Some(request.target_id),
+                    cooldown_source: sourced.source,
                 });
             }
             _ => {}
@@ -135,8 +138,8 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
     }
 
     // 3. OnHit 효과 적용
-    for effect in ctx.on_hit_effects {
-        match effect {
+    for sourced in ctx.on_hit_effects {
+        match &sourced.effect {
             Effect::BonusDamage { flat, percent } => {
                 damage += i128::from(*flat);
                 damage += damage.saturating_mul(i128::from(*percent)) / 100;
@@ -165,6 +168,7 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
                     ability_id: *ability_id,
                     caster_id: request.target_id,
                     target_id: Some(request.attacker_id),
+                    cooldown_source: sourced.source,
                 });
             }
             _ => {}
@@ -207,17 +211,24 @@ mod tests {
 
     #[test]
     fn calculate_damage_clamps_extreme_bonus_damage() {
+        let attacker_id = Uuid::from_u128(0xA);
+        let target_id = Uuid::from_u128(0xB);
         let request = DamageRequest {
             source: DamageSource::BasicAttack,
-            attacker_id: Uuid::from_u128(0xA),
-            target_id: Uuid::from_u128(0xB),
+            attacker_id,
+            target_id,
             base_damage: 1,
             time_ms: 0,
         };
 
-        let effects = [Effect::BonusDamage {
-            flat: i32::MAX,
-            percent: i32::MAX,
+        let effects = [SourcedEffect {
+            source: CooldownSource::Unit {
+                unit_instance_id: attacker_id,
+            },
+            effect: Effect::BonusDamage {
+                flat: i32::MAX,
+                percent: i32::MAX,
+            },
         }];
 
         let ctx = DamageContext {

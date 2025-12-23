@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use uuid::Uuid;
 
@@ -16,8 +16,12 @@ impl BattleCore {
             Side::Opponent => &self.opponent_info,
         };
 
+        let mut seen_artifacts: HashSet<Uuid> = HashSet::new();
         let artifact_base_uuids: Vec<Uuid> = deck.artifacts.iter().map(|a| a.base_uuid).collect();
         for (index, artifact) in deck.artifacts.iter().enumerate() {
+            if !seen_artifacts.insert(artifact.base_uuid) {
+                return Err(GameError::InvalidAction);
+            }
             let instance_id =
                 Self::make_artifact_instance_id(artifact.base_uuid, side, index as u32);
             if self
@@ -86,6 +90,27 @@ impl BattleCore {
                 .is_some()
             {
                 return Err(GameError::InvalidAction);
+            }
+
+            if unit.equipped_items.len() > 1 {
+                let mut counts: HashMap<Uuid, usize> = HashMap::new();
+                for uuid in &unit.equipped_items {
+                    *counts.entry(*uuid).or_default() += 1;
+                }
+                for (uuid, count) in counts {
+                    if count <= 1 {
+                        continue;
+                    }
+                    let allow_duplicate = self
+                        .game_data
+                        .equipment_data
+                        .get_by_uuid(&uuid)
+                        .map(|meta| meta.allow_duplicate_equip)
+                        .unwrap_or(false);
+                    if !allow_duplicate {
+                        return Err(GameError::InvalidAction);
+                    }
+                }
             }
 
             for (index, equipment_uuid) in unit.equipped_items.iter().enumerate() {

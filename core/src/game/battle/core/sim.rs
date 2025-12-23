@@ -97,8 +97,10 @@ impl BattleCore {
 
         const MAX_BATTLE_TIME_MS: u64 = 60_000;
 
+        let mut last_event_time_ms = 0;
         while let Some(event) = self.event_queue.pop() {
             let current_time_ms = event.time_ms();
+            last_event_time_ms = current_time_ms;
 
             if current_time_ms > MAX_BATTLE_TIME_MS {
                 self.record_timeline(
@@ -115,8 +117,14 @@ impl BattleCore {
 
             self.process_event(event, current_time_ms)?;
 
-            let player_alive = self.units.values().any(|u| u.owner == Side::Player);
-            let opponent_alive = self.units.values().any(|u| u.owner == Side::Opponent);
+            let player_alive = self
+                .units
+                .values()
+                .any(|u| u.owner == Side::Player && u.stats.current_health > 0);
+            let opponent_alive = self
+                .units
+                .values()
+                .any(|u| u.owner == Side::Opponent && u.stats.current_health > 0);
 
             let winner = match (player_alive, opponent_alive) {
                 (true, true) => None,
@@ -134,14 +142,25 @@ impl BattleCore {
             }
         }
 
-        self.record_timeline(
-            MAX_BATTLE_TIME_MS,
-            TimelineEvent::BattleEnd {
-                winner: BattleWinner::Draw,
-            },
-        );
+        let player_alive = self
+            .units
+            .values()
+            .any(|u| u.owner == Side::Player && u.stats.current_health > 0);
+        let opponent_alive = self
+            .units
+            .values()
+            .any(|u| u.owner == Side::Opponent && u.stats.current_health > 0);
+        let winner = match (player_alive, opponent_alive) {
+            (true, true) => BattleWinner::Draw,
+            (true, false) => BattleWinner::Player,
+            (false, true) => BattleWinner::Opponent,
+            (false, false) => BattleWinner::Draw,
+        };
+
+        let end_time_ms = last_event_time_ms.min(MAX_BATTLE_TIME_MS);
+        self.record_timeline(end_time_ms, TimelineEvent::BattleEnd { winner });
         Ok(BattleResult {
-            winner: BattleWinner::Draw,
+            winner,
             timeline: self.timeline.clone(),
         })
     }
@@ -299,6 +318,9 @@ impl BattleCore {
                             caster_instance_id,
                             target_hint,
                             time_ms,
+                            crate::game::battle::cooldown::CooldownSource::Unit {
+                                unit_instance_id: caster_instance_id,
+                            },
                         );
 
                         if result.executed {

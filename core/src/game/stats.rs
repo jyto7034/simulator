@@ -89,6 +89,8 @@ pub struct UnitStats {
 }
 
 impl UnitStats {
+    const MAX_HEALTH: u32 = i32::MAX as u32;
+
     /// 모든 값을 0으로 초기화한 기본 스탯 생성
     pub fn new() -> Self {
         Self {
@@ -108,22 +110,29 @@ impl UnitStats {
         defense: u32,
         attack_interval_ms: u64,
     ) -> Self {
+        let max_health = max_health.min(Self::MAX_HEALTH);
         Self {
             max_health,
             attack,
             defense,
             attack_interval_ms,
-            current_health,
+            current_health: current_health.min(max_health),
         }
     }
 
     /// 체력에 델타를 더한다 (음수면 감소, 0 이하로 떨어지지 않도록 보정).
     pub fn add_max_health(&mut self, delta: i32) {
         if delta >= 0 {
-            self.max_health = self.max_health.saturating_add(delta as u32);
+            self.max_health = self
+                .max_health
+                .saturating_add(delta as u32)
+                .min(Self::MAX_HEALTH);
         } else {
             let dec = delta.unsigned_abs().min(self.max_health);
             self.max_health = self.max_health.saturating_sub(dec);
+        }
+        if self.current_health > self.max_health {
+            self.current_health = self.max_health;
         }
     }
 
@@ -169,24 +178,27 @@ impl UnitStats {
             MaxHealth => match modifier.kind {
                 StatModifierKind::Flat => self.add_max_health(modifier.value),
                 StatModifierKind::Percent => {
-                    let base = self.max_health as i32;
-                    let delta = base * modifier.value / 100;
+                    let base = i64::from(self.max_health);
+                    let delta = base.saturating_mul(i64::from(modifier.value)) / 100;
+                    let delta = delta.clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32;
                     self.add_max_health(delta);
                 }
             },
             Attack => match modifier.kind {
                 StatModifierKind::Flat => self.add_attack(modifier.value),
                 StatModifierKind::Percent => {
-                    let base = self.attack as i32;
-                    let delta = base * modifier.value / 100;
+                    let base = i64::from(self.attack);
+                    let delta = base.saturating_mul(i64::from(modifier.value)) / 100;
+                    let delta = delta.clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32;
                     self.add_attack(delta);
                 }
             },
             Defense => match modifier.kind {
                 StatModifierKind::Flat => self.add_defense(modifier.value),
                 StatModifierKind::Percent => {
-                    let base = self.defense as i32;
-                    let delta = base * modifier.value / 100;
+                    let base = i64::from(self.defense);
+                    let delta = base.saturating_mul(i64::from(modifier.value)) / 100;
+                    let delta = delta.clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32;
                     self.add_defense(delta);
                 }
             },
@@ -220,6 +232,33 @@ impl UnitStats {
                 }
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn unit_stats_percent_modifiers_do_not_wrap_on_large_values() {
+        let mut stats = UnitStats::with_values(u32::MAX, u32::MAX, u32::MAX, u32::MAX, 1);
+        assert_eq!(stats.max_health, i32::MAX as u32);
+        assert_eq!(stats.current_health, i32::MAX as u32);
+
+        stats.apply_modifier(StatModifier {
+            stat: StatId::MaxHealth,
+            kind: StatModifierKind::Percent,
+            value: 100,
+        });
+        assert_eq!(stats.max_health, i32::MAX as u32);
+        assert_eq!(stats.current_health, i32::MAX as u32);
+
+        stats.apply_modifier(StatModifier {
+            stat: StatId::Attack,
+            kind: StatModifierKind::Percent,
+            value: 100,
+        });
+        assert_eq!(stats.attack, u32::MAX);
     }
 }
 

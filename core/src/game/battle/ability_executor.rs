@@ -11,6 +11,7 @@ use crate::{
     },
 };
 
+use super::cooldown::CooldownSource;
 use super::damage::BattleCommand;
 
 /// 어빌리티 실행 요청
@@ -20,6 +21,7 @@ pub struct AbilityRequest {
     pub caster_id: Uuid,
     pub target_id: Option<Uuid>,
     pub time_ms: u64,
+    pub cooldown_source: CooldownSource,
 }
 
 /// 어빌리티 실행 결과
@@ -43,8 +45,8 @@ pub struct UnitSnapshot {
 pub struct AbilityExecutor {
     /// 어빌리티 정의 테이블
     skill_defs: HashMap<AbilityId, SkillDef>,
-    /// 쿨다운 테이블 (unit_id, ability_id) -> next_ready_time_ms
-    cooldowns: HashMap<(Uuid, AbilityId), u64>,
+    /// 쿨다운 테이블 (cooldown_source, ability_id) -> next_ready_time_ms
+    cooldowns: HashMap<(CooldownSource, AbilityId), u64>,
 }
 
 impl AbilityExecutor {
@@ -98,8 +100,8 @@ impl AbilityExecutor {
                 id: RedShoesBerserk,
                 trigger: crate::game::ability::AbilityTrigger::OnAttack,
                 cooldown_ms: 0,
-                effects: vec![DirectDamage {
-                    amount: 15,
+                effects: vec![ExtraAttack {
+                    count: 2,
                     target: EnemySingle,
                 }],
             },
@@ -171,7 +173,7 @@ impl AbilityExecutor {
 
         // 쿨다운 체크
         if skill_def.cooldown_ms > 0 {
-            let cooldown_key = (request.caster_id, request.ability_id);
+            let cooldown_key = (request.cooldown_source, request.ability_id);
             if let Some(&ready_time) = self.cooldowns.get(&cooldown_key) {
                 if request.time_ms < ready_time {
                     return AbilityResult {
@@ -338,6 +340,58 @@ impl AbilityExecutor {
     /// 쿨다운 초기화
     pub fn reset_cooldowns(&mut self) {
         self.cooldowns.clear();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use uuid::Uuid;
+
+    use crate::{
+        ecs::resources::Position,
+        game::{
+            ability::AbilityId,
+            battle::{
+                ability_executor::{AbilityExecutor, AbilityRequest, UnitSnapshot},
+                cooldown::CooldownSource,
+            },
+            enums::Side,
+            stats::UnitStats,
+        },
+    };
+
+    #[test]
+    fn cooldowns_are_tracked_per_cooldown_source() {
+        let caster_id = Uuid::from_u128(0xA);
+        let item_instance_id = Uuid::from_u128(0xB);
+
+        let mut executor = AbilityExecutor::new();
+        let caster = UnitSnapshot {
+            id: caster_id,
+            owner: Side::Player,
+            position: Position::new(0, 0),
+            stats: UnitStats::with_values(10, 10, 1, 0, 1000),
+        };
+        let units = vec![caster.clone()];
+
+        let request = AbilityRequest {
+            ability_id: AbilityId::PlagueMassHeal,
+            caster_id,
+            target_id: None,
+            time_ms: 0,
+            cooldown_source: CooldownSource::Unit {
+                unit_instance_id: caster_id,
+            },
+        };
+
+        assert!(executor.execute(&request, &caster, &units).executed);
+        assert!(!executor.execute(&request, &caster, &units).executed);
+
+        let item_request = AbilityRequest {
+            cooldown_source: CooldownSource::Item { item_instance_id },
+            ..request
+        };
+        assert!(executor.execute(&item_request, &caster, &units).executed);
     }
 }
 

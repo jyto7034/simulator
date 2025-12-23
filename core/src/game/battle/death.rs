@@ -2,7 +2,7 @@ use std::collections::{HashSet, VecDeque};
 
 use uuid::Uuid;
 
-use crate::game::{enums::Side, stats::Effect};
+use crate::game::{battle::cooldown::SourcedEffect, enums::Side, stats::Effect};
 
 use super::damage::BattleCommand;
 
@@ -65,9 +65,9 @@ impl DeathHandler {
         mut get_allies: J,
     ) -> DeathProcessResult
     where
-        G: FnMut(Uuid) -> Vec<Effect>,
-        H: FnMut(Uuid) -> Vec<Effect>,
-        I: FnMut(Uuid) -> Vec<Effect>,
+        G: FnMut(Uuid) -> Vec<SourcedEffect>,
+        H: FnMut(Uuid) -> Vec<SourcedEffect>,
+        I: FnMut(Uuid) -> Vec<SourcedEffect>,
         J: FnMut(Uuid, Side) -> Vec<Uuid>,
     {
         let mut units_to_remove = Vec::new();
@@ -81,8 +81,8 @@ impl DeathHandler {
 
             // 1. OnDeath 트리거 (사망 유닛)
             let on_death_effects = get_on_death_effects(dead.unit_id);
-            for effect in on_death_effects {
-                match effect {
+            for sourced in on_death_effects {
+                match sourced.effect {
                     // 죽은 유닛은 행동(스킬 시전)을 하지 않는다.
                     Effect::Ability(_) => {}
                     Effect::Modifier(_modifier) => {
@@ -95,8 +95,8 @@ impl DeathHandler {
             // 2. OnKill 트리거 (킬러)
             if let Some(killer_id) = dead.killer_id {
                 let on_kill_effects = get_on_kill_effects(killer_id);
-                for effect in on_kill_effects {
-                    match effect {
+                for sourced in on_kill_effects {
+                    match sourced.effect {
                         Effect::Modifier(modifier) => {
                             commands.push(BattleCommand::ApplyModifier {
                                 target_id: killer_id,
@@ -108,6 +108,7 @@ impl DeathHandler {
                                 ability_id,
                                 caster_id: killer_id,
                                 target_id: Some(dead.unit_id),
+                                cooldown_source: sourced.source,
                             });
                         }
                         _ => {}
@@ -123,8 +124,8 @@ impl DeathHandler {
                 }
 
                 let on_ally_death_effects = get_on_ally_death_effects(ally_id);
-                for effect in on_ally_death_effects {
-                    match effect {
+                for sourced in on_ally_death_effects {
+                    match sourced.effect {
                         Effect::Modifier(modifier) => {
                             commands.push(BattleCommand::ApplyModifier {
                                 target_id: ally_id,
@@ -136,6 +137,7 @@ impl DeathHandler {
                                 ability_id,
                                 caster_id: ally_id,
                                 target_id: None,
+                                cooldown_source: sourced.source,
                             });
                         }
                         _ => {}

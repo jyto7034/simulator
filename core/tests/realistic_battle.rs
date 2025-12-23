@@ -141,6 +141,7 @@ fn realistic_battle_resonance_autocast_and_poison_tick() {
         equipment_type: EquipmentType::Weapon,
         rarity: RiskLevel::TETH,
         price: 0,
+        allow_duplicate_equip: true,
         triggered_effects: venom_blade_effects,
     }];
 

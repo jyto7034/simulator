@@ -200,6 +200,184 @@ fn validator_rejects_attack_missing_kind() {
 }
 
 #[test]
+fn validator_rejects_unit_died_with_positive_hp() {
+    let unit_id = Uuid::from_u128(0xA);
+    let enemy_id = Uuid::from_u128(0xB);
+    let base_uuid = Uuid::from_u128(0x1000);
+
+    let timeline = Timeline {
+        version: TIMELINE_VERSION,
+        entries: vec![
+            TimelineEntry {
+                time_ms: 0,
+                seq: 0,
+                cause_seq: None,
+                event: TimelineEvent::BattleStart {
+                    width: 1,
+                    height: 1,
+                },
+            },
+            TimelineEntry {
+                time_ms: 0,
+                seq: 1,
+                cause_seq: None,
+                event: TimelineEvent::UnitSpawned {
+                    unit_instance_id: unit_id,
+                    owner: Side::Player,
+                    base_uuid,
+                    position: Position::new(0, 0),
+                    stats: spawn_stats(),
+                },
+            },
+            TimelineEntry {
+                time_ms: 0,
+                seq: 2,
+                cause_seq: None,
+                event: TimelineEvent::UnitSpawned {
+                    unit_instance_id: enemy_id,
+                    owner: Side::Opponent,
+                    base_uuid,
+                    position: Position::new(0, 0),
+                    stats: spawn_stats(),
+                },
+            },
+            TimelineEntry {
+                time_ms: 10,
+                seq: 3,
+                cause_seq: None,
+                event: TimelineEvent::Attack {
+                    attacker_instance_id: enemy_id,
+                    target_instance_id: unit_id,
+                    kind: Some(AttackKind::Triggered),
+                },
+            },
+            TimelineEntry {
+                time_ms: 10,
+                seq: 4,
+                cause_seq: Some(3),
+                event: TimelineEvent::UnitDied {
+                    unit_instance_id: unit_id,
+                    owner: Side::Player,
+                    killer_instance_id: Some(enemy_id),
+                },
+            },
+            TimelineEntry {
+                time_ms: 20,
+                seq: 5,
+                cause_seq: None,
+                event: TimelineEvent::BattleEnd {
+                    winner: BattleWinner::Draw,
+                },
+            },
+        ],
+    };
+
+    let validator = TimelineValidator::new(TimelineValidatorConfig {
+        require_attack_has_basic_hp_change: false,
+        ..TimelineValidatorConfig::default()
+    });
+    let violations = validator.validate(&timeline, None).unwrap_err();
+    assert!(violations
+        .iter()
+        .any(|v| v.kind == TimelineViolationKind::UnitDiedWhileAlive));
+}
+
+#[test]
+fn validator_rejects_buff_applied_by_dead_caster() {
+    let caster_id = Uuid::from_u128(0xA);
+    let attacker_id = Uuid::from_u128(0xB);
+    let base_uuid = Uuid::from_u128(0x1000);
+    let poison = BuffId::from_name("poison");
+
+    let timeline = Timeline {
+        version: TIMELINE_VERSION,
+        entries: vec![
+            TimelineEntry {
+                time_ms: 0,
+                seq: 0,
+                cause_seq: None,
+                event: TimelineEvent::BattleStart {
+                    width: 1,
+                    height: 1,
+                },
+            },
+            TimelineEntry {
+                time_ms: 0,
+                seq: 1,
+                cause_seq: None,
+                event: TimelineEvent::UnitSpawned {
+                    unit_instance_id: caster_id,
+                    owner: Side::Player,
+                    base_uuid,
+                    position: Position::new(0, 0),
+                    stats: spawn_stats(),
+                },
+            },
+            TimelineEntry {
+                time_ms: 0,
+                seq: 2,
+                cause_seq: None,
+                event: TimelineEvent::UnitSpawned {
+                    unit_instance_id: attacker_id,
+                    owner: Side::Opponent,
+                    base_uuid,
+                    position: Position::new(0, 0),
+                    stats: spawn_stats(),
+                },
+            },
+            TimelineEntry {
+                time_ms: 10,
+                seq: 3,
+                cause_seq: None,
+                event: TimelineEvent::Attack {
+                    attacker_instance_id: attacker_id,
+                    target_instance_id: caster_id,
+                    kind: Some(AttackKind::Triggered),
+                },
+            },
+            TimelineEntry {
+                time_ms: 10,
+                seq: 4,
+                cause_seq: Some(3),
+                event: TimelineEvent::HpChanged {
+                    source_instance_id: Some(attacker_id),
+                    target_instance_id: caster_id,
+                    delta: -100,
+                    hp_before: 100,
+                    hp_after: 0,
+                    reason: game_core::game::battle::timeline::HpChangeReason::BasicAttack,
+                },
+            },
+            TimelineEntry {
+                time_ms: 10,
+                seq: 5,
+                cause_seq: Some(3),
+                event: TimelineEvent::BuffApplied {
+                    caster_instance_id: caster_id,
+                    target_instance_id: attacker_id,
+                    buff_id: poison,
+                    duration_ms: 1000,
+                },
+            },
+            TimelineEntry {
+                time_ms: 20,
+                seq: 6,
+                cause_seq: None,
+                event: TimelineEvent::BattleEnd {
+                    winner: BattleWinner::Draw,
+                },
+            },
+        ],
+    };
+
+    let validator = TimelineValidator::new(TimelineValidatorConfig::default());
+    let violations = validator.validate(&timeline, None).unwrap_err();
+    assert!(violations
+        .iter()
+        .any(|v| v.kind == TimelineViolationKind::BuffAppliedByDeadCaster));
+}
+
+#[test]
 fn validator_checks_outcome_causes_without_contiguous_seq() {
     let attacker_id = Uuid::from_u128(0xA);
     let target_id = Uuid::from_u128(0xB);
@@ -331,6 +509,76 @@ fn validator_rejects_timeline_version_mismatch() {
     assert!(violations
         .iter()
         .any(|v| v.kind == TimelineViolationKind::TimelineVersionMismatch));
+}
+
+#[test]
+fn validator_rejects_stat_changed_with_invalid_stats_after() {
+    let unit_instance_id = Uuid::from_u128(0xA);
+    let base_uuid = Uuid::from_u128(0x1000);
+
+    let before = spawn_stats();
+    let mut after = before;
+    after.attack_interval_ms = 0;
+
+    let timeline = Timeline {
+        version: TIMELINE_VERSION,
+        entries: vec![
+            TimelineEntry {
+                time_ms: 0,
+                seq: 0,
+                cause_seq: None,
+                event: TimelineEvent::BattleStart {
+                    width: 1,
+                    height: 1,
+                },
+            },
+            TimelineEntry {
+                time_ms: 0,
+                seq: 1,
+                cause_seq: None,
+                event: TimelineEvent::UnitSpawned {
+                    unit_instance_id,
+                    owner: Side::Player,
+                    base_uuid,
+                    position: Position::new(0, 0),
+                    stats: before,
+                },
+            },
+            TimelineEntry {
+                time_ms: 1,
+                seq: 2,
+                cause_seq: None,
+                event: TimelineEvent::StatChanged {
+                    source_instance_id: None,
+                    target_instance_id: unit_instance_id,
+                    modifier: game_core::game::stats::StatModifier {
+                        stat: game_core::game::stats::StatId::AttackIntervalMs,
+                        kind: game_core::game::stats::StatModifierKind::Flat,
+                        value: -9999,
+                    },
+                    stats_before: before,
+                    stats_after: after,
+                },
+            },
+            TimelineEntry {
+                time_ms: 2,
+                seq: 3,
+                cause_seq: None,
+                event: TimelineEvent::BattleEnd {
+                    winner: BattleWinner::Draw,
+                },
+            },
+        ],
+    };
+
+    let validator = TimelineValidator::new(TimelineValidatorConfig {
+        validate_outcome_cause_seq: false,
+        ..TimelineValidatorConfig::default()
+    });
+    let violations = validator.validate(&timeline, None).unwrap_err();
+    assert!(violations
+        .iter()
+        .any(|v| v.kind == TimelineViolationKind::StatsAfterInvalid));
 }
 
 #[test]
@@ -493,6 +741,180 @@ fn replayer_rejects_buff_tick_without_applied_buff() {
             TimelineEntry {
                 time_ms: 2000,
                 seq: 4,
+                cause_seq: None,
+                event: TimelineEvent::BattleEnd {
+                    winner: BattleWinner::Draw,
+                },
+            },
+        ],
+    };
+
+    let violations = replayer.replay(&timeline).unwrap_err();
+    assert!(violations
+        .iter()
+        .any(|v| v.kind == TimelineReplayViolationKind::InvalidBuffEvent));
+}
+
+#[test]
+fn replayer_rejects_unit_died_with_positive_hp() {
+    let game_data = empty_game_data();
+    let replayer = TimelineReplayer::new(
+        game_data,
+        TimelineReplayerConfig {
+            validate_basic_attack_outcomes: false,
+            validate_ability_outcomes: false,
+            validate_buff_tick_outcomes: false,
+            validate_expected_decisions: false,
+            ..TimelineReplayerConfig::default()
+        },
+    );
+
+    let unit_id = Uuid::from_u128(0xA);
+    let base_uuid = Uuid::from_u128(0x1000);
+
+    let timeline = Timeline {
+        version: TIMELINE_VERSION,
+        entries: vec![
+            TimelineEntry {
+                time_ms: 0,
+                seq: 0,
+                cause_seq: None,
+                event: TimelineEvent::BattleStart {
+                    width: 1,
+                    height: 1,
+                },
+            },
+            TimelineEntry {
+                time_ms: 0,
+                seq: 1,
+                cause_seq: None,
+                event: TimelineEvent::UnitSpawned {
+                    unit_instance_id: unit_id,
+                    owner: Side::Player,
+                    base_uuid,
+                    position: Position::new(0, 0),
+                    stats: spawn_stats(),
+                },
+            },
+            TimelineEntry {
+                time_ms: 10,
+                seq: 2,
+                cause_seq: None,
+                event: TimelineEvent::UnitDied {
+                    unit_instance_id: unit_id,
+                    owner: Side::Player,
+                    killer_instance_id: None,
+                },
+            },
+            TimelineEntry {
+                time_ms: 20,
+                seq: 3,
+                cause_seq: None,
+                event: TimelineEvent::BattleEnd {
+                    winner: BattleWinner::Draw,
+                },
+            },
+        ],
+    };
+
+    let violations = replayer.replay(&timeline).unwrap_err();
+    assert!(violations
+        .iter()
+        .any(|v| v.kind == TimelineReplayViolationKind::OutcomeMismatch));
+}
+
+#[test]
+fn replayer_rejects_buff_applied_by_dead_caster() {
+    let game_data = empty_game_data();
+    let replayer = TimelineReplayer::new(
+        game_data,
+        TimelineReplayerConfig {
+            validate_basic_attack_outcomes: false,
+            validate_ability_outcomes: false,
+            validate_buff_tick_outcomes: false,
+            validate_expected_decisions: false,
+            ..TimelineReplayerConfig::default()
+        },
+    );
+
+    let caster_id = Uuid::from_u128(0xA);
+    let target_id = Uuid::from_u128(0xB);
+    let base_uuid = Uuid::from_u128(0x1000);
+    let poison = BuffId::from_name("poison");
+
+    let timeline = Timeline {
+        version: TIMELINE_VERSION,
+        entries: vec![
+            TimelineEntry {
+                time_ms: 0,
+                seq: 0,
+                cause_seq: None,
+                event: TimelineEvent::BattleStart {
+                    width: 1,
+                    height: 1,
+                },
+            },
+            TimelineEntry {
+                time_ms: 0,
+                seq: 1,
+                cause_seq: None,
+                event: TimelineEvent::UnitSpawned {
+                    unit_instance_id: caster_id,
+                    owner: Side::Player,
+                    base_uuid,
+                    position: Position::new(0, 0),
+                    stats: spawn_stats(),
+                },
+            },
+            TimelineEntry {
+                time_ms: 0,
+                seq: 2,
+                cause_seq: None,
+                event: TimelineEvent::UnitSpawned {
+                    unit_instance_id: target_id,
+                    owner: Side::Opponent,
+                    base_uuid,
+                    position: Position::new(0, 0),
+                    stats: spawn_stats(),
+                },
+            },
+            TimelineEntry {
+                time_ms: 10,
+                seq: 3,
+                cause_seq: None,
+                event: TimelineEvent::HpChanged {
+                    source_instance_id: None,
+                    target_instance_id: caster_id,
+                    delta: -100,
+                    hp_before: 100,
+                    hp_after: 0,
+                    reason: game_core::game::battle::timeline::HpChangeReason::Command,
+                },
+            },
+            TimelineEntry {
+                time_ms: 10,
+                seq: 4,
+                cause_seq: None,
+                event: TimelineEvent::UnitDied {
+                    unit_instance_id: caster_id,
+                    owner: Side::Player,
+                    killer_instance_id: None,
+                },
+            },
+            TimelineEntry {
+                time_ms: 10,
+                seq: 5,
+                cause_seq: None,
+                event: TimelineEvent::BuffApplied {
+                    caster_instance_id: caster_id,
+                    target_instance_id: target_id,
+                    buff_id: poison,
+                    duration_ms: 1000,
+                },
+            },
+            TimelineEntry {
+                time_ms: 20,
+                seq: 6,
                 cause_seq: None,
                 event: TimelineEvent::BattleEnd {
                     winner: BattleWinner::Draw,

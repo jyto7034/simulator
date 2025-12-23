@@ -4,6 +4,7 @@ use crate::game::{
     ability::AbilityId,
     battle::{
         ability_executor::AbilityResult,
+        cooldown::CooldownSource,
         timeline::{HpChangeReason, TimelineEvent},
     },
     stats::TriggerType,
@@ -139,12 +140,14 @@ impl BattleCore {
                     ability_id,
                     caster_id,
                     target_id,
+                    cooldown_source,
                 } => {
                     let result = self.execute_ability_via_executor(
                         ability_id,
                         caster_id,
                         target_id,
                         current_time_ms,
+                        cooldown_source,
                     );
 
                     let cast_seq = result.executed.then(|| {
@@ -296,6 +299,7 @@ impl BattleCore {
         caster_id: Uuid,
         target_id: Option<Uuid>,
         current_time_ms: u64,
+        cooldown_source: CooldownSource,
     ) -> AbilityResult {
         let Some(caster) = self.units.get(&caster_id) else {
             return AbilityResult {
@@ -324,6 +328,7 @@ impl BattleCore {
             caster_id,
             target_id,
             time_ms: current_time_ms,
+            cooldown_source,
         };
 
         self.ability_executor

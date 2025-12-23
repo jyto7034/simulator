@@ -3,6 +3,10 @@ use uuid::Uuid;
 
 use crate::game::{enums::RiskLevel, stats::TriggeredEffects};
 
+fn default_allow_duplicate_equip() -> bool {
+    true
+}
+
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum EquipmentType {
     Weapon,
@@ -20,6 +24,8 @@ pub struct EquipmentMetadata {
     pub equipment_type: EquipmentType,
     pub rarity: RiskLevel,
     pub price: u32,
+    #[serde(default = "default_allow_duplicate_equip")]
+    pub allow_duplicate_equip: bool,
     /// 트리거 기반 효과 (Permanent = 상시 적용)
     #[serde(default)]
     pub triggered_effects: TriggeredEffects,

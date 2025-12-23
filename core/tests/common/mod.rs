@@ -70,6 +70,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         equipment_type: EquipmentType::Weapon,
         rarity: RiskLevel::HE,
         price: 150,
+        allow_duplicate_equip: true,
         triggered_effects: Default::default(),
     };
 
@@ -80,6 +81,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         equipment_type: EquipmentType::Suit,
         rarity: RiskLevel::TETH,
         price: 80,
+        allow_duplicate_equip: true,
         triggered_effects: Default::default(),
     };
 
@@ -90,6 +92,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         equipment_type: EquipmentType::Suit,
         rarity: RiskLevel::TETH,
         price: 80,
+        allow_duplicate_equip: true,
         triggered_effects: Default::default(),
     };
 

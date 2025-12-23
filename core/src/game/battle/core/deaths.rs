@@ -2,13 +2,10 @@ use std::collections::{HashMap, HashSet};
 
 use uuid::Uuid;
 
-use crate::game::{
-    battle::timeline::TimelineEvent,
-    enums::Side,
-    stats::{Effect, TriggerType},
-};
+use crate::game::{battle::timeline::TimelineEvent, enums::Side, stats::TriggerType};
 
 use super::BattleCore;
+use crate::game::battle::cooldown::SourcedEffect;
 
 impl BattleCore {
     pub(super) fn process_pending_deaths(&mut self, current_time_ms: u64) {
@@ -27,7 +24,7 @@ impl BattleCore {
             .collect();
         let pending_unit_set: HashSet<Uuid> = pending_unit_ids.iter().copied().collect();
 
-        let on_death_effects: HashMap<Uuid, Vec<Effect>> = pending_unit_ids
+        let on_death_effects: HashMap<Uuid, Vec<SourcedEffect>> = pending_unit_ids
             .iter()
             .map(|&id| (id, self.collect_all_triggers(id, TriggerType::OnDeath)))
             .collect();
@@ -38,13 +35,13 @@ impl BattleCore {
             .iter()
             .filter_map(|d| d.killer_id)
             .collect();
-        let on_kill_effects: HashMap<Uuid, Vec<Effect>> = killer_ids
+        let on_kill_effects: HashMap<Uuid, Vec<SourcedEffect>> = killer_ids
             .iter()
             .map(|&id| (id, self.collect_all_triggers(id, TriggerType::OnKill)))
             .collect();
 
         let all_unit_ids: Vec<Uuid> = self.units.keys().copied().collect();
-        let on_ally_death_effects: HashMap<Uuid, Vec<Effect>> = all_unit_ids
+        let on_ally_death_effects: HashMap<Uuid, Vec<SourcedEffect>> = all_unit_ids
             .iter()
             .map(|&id| (id, self.collect_all_triggers(id, TriggerType::OnAllyDeath)))
             .collect();

@@ -90,6 +90,7 @@ fn attack_onhit_heal_is_predicted_in_strict_replay() {
         equipment_type: EquipmentType::Accessory,
         rarity: RiskLevel::TETH,
         price: 0,
+        allow_duplicate_equip: true,
         triggered_effects: onhit_heal_effects,
     }];
 

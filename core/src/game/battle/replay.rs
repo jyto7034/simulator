@@ -10,12 +10,13 @@ use crate::game::{
     battle::{
         ability_executor::{AbilityExecutor, AbilityRequest, UnitSnapshot},
         buffs::{self, BuffId},
+        cooldown::{CooldownSource, SourcedEffect},
         damage::{calculate_damage, DamageContext, DamageRequest, DamageSource},
-        timeline::{HpChangeReason, Timeline, TimelineEvent},
+        timeline::{AttackKind, HpChangeReason, Timeline, TimelineEvent},
     },
     data::GameDataBase,
     enums::Side,
-    stats::{Effect, StatModifier, TriggerType, UnitStats},
+    stats::{StatModifier, TriggerType, UnitStats},
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -31,9 +32,11 @@ pub enum TimelineReplayViolationKind {
     AutoCastWithoutFullResonance,
     ExpectedOutcomeMissing,
     ExpectedDecisionMissing,
+    UnexpectedDecision,
     UnexpectedOutcome,
     OutcomeMismatch,
     InvalidBuffEvent,
+    InvalidAutoCastEvent,
 }
 
 #[derive(Debug, Clone)]
@@ -49,6 +52,7 @@ pub struct TimelineReplayerConfig {
     pub validate_ability_outcomes: bool,
     pub validate_buff_tick_outcomes: bool,
     pub validate_autocast_gating: bool,
+    pub validate_autocast_pairing: bool,
     pub validate_expected_decisions: bool,
     pub validate_unit_base_uuid: bool,
     pub forbid_unexpected_outcomes_for_verified_causes: bool,
@@ -61,6 +65,7 @@ impl Default for TimelineReplayerConfig {
             validate_ability_outcomes: true,
             validate_buff_tick_outcomes: true,
             validate_autocast_gating: true,
+            validate_autocast_pairing: true,
             validate_expected_decisions: true,
             validate_unit_base_uuid: false,
             forbid_unexpected_outcomes_for_verified_causes: false,
@@ -71,6 +76,12 @@ impl Default for TimelineReplayerConfig {
 pub struct TimelineReplayer {
     game_data: Arc<GameDataBase>,
     config: TimelineReplayerConfig,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct PendingScheduledAttack {
+    attacker_instance_id: Uuid,
+    earliest_time_ms: u64,
 }
 
 impl TimelineReplayer {
@@ -98,6 +109,9 @@ impl TimelineReplayer {
         let mut expectations: HashMap<u64, Vec<ExpectedOutcome>> = HashMap::new();
         let mut expected_decisions: HashMap<u64, Vec<ExpectedDecision>> = HashMap::new();
         let mut verified_causes: HashMap<u64, VerifiedCauseKind> = HashMap::new();
+        let mut pending_scheduled_attacks: HashMap<u64, Vec<PendingScheduledAttack>> =
+            HashMap::new();
+        let mut expected_autocast_end: HashMap<Uuid, (u64, u64)> = HashMap::new();
 
         for (index, entry) in timeline.entries.iter().enumerate() {
             match &entry.event {
@@ -160,6 +174,42 @@ impl TimelineReplayer {
                     target_instance_id,
                     kind,
                 } => {
+                    if self.config.validate_expected_decisions {
+                        let matched = consume_expected_decision(
+                            &mut expected_decisions,
+                            entry.cause_seq,
+                            entry.time_ms,
+                            &entry.event,
+                        );
+                        let mut matched = matched.is_some();
+                        if !matched
+                            && self.config.forbid_unexpected_outcomes_for_verified_causes
+                            && kind == &Some(AttackKind::Triggered)
+                        {
+                            matched = consume_pending_scheduled_attack(
+                                &mut pending_scheduled_attacks,
+                                entry.cause_seq,
+                                entry.time_ms,
+                                *attacker_instance_id,
+                            );
+                        }
+
+                        if !matched
+                            && self.config.forbid_unexpected_outcomes_for_verified_causes
+                            && entry
+                                .cause_seq
+                                .is_some_and(|cause_seq| verified_causes.contains_key(&cause_seq))
+                        {
+                            violations.push(TimelineReplayViolation {
+                                kind: TimelineReplayViolationKind::UnexpectedDecision,
+                                message: format!(
+                                    "unexpected decision for cause_seq {:?}: {:?}",
+                                    entry.cause_seq, entry.event
+                                ),
+                                entry_index: Some(index),
+                            });
+                        }
+                    }
                     if kind.is_none() {
                         violations.push(TimelineReplayViolation {
                             kind: TimelineReplayViolationKind::AttackKindMissing,
@@ -177,6 +227,7 @@ impl TimelineReplayer {
                             *target_instance_id,
                             &mut expectations,
                             &mut expected_decisions,
+                            &mut pending_scheduled_attacks,
                             self.config.validate_expected_decisions,
                             &mut violations,
                             index,
@@ -206,6 +257,22 @@ impl TimelineReplayer {
                             index,
                         );
                     }
+                    if self.config.validate_autocast_pairing {
+                        let due_time = entry.time_ms.saturating_add(1);
+                        if expected_autocast_end
+                            .insert(*caster_instance_id, (entry.seq, due_time))
+                            .is_some()
+                        {
+                            violations.push(TimelineReplayViolation {
+                                kind: TimelineReplayViolationKind::InvalidAutoCastEvent,
+                                message: format!(
+                                    "AutoCastStart overlaps with an existing pending cast (caster={})",
+                                    caster_instance_id
+                                ),
+                                entry_index: Some(index),
+                            });
+                        }
+                    }
                 }
                 TimelineEvent::AutoCastEnd { caster_instance_id } => {
                     if self.config.validate_autocast_gating {
@@ -216,30 +283,96 @@ impl TimelineReplayer {
                             index,
                         );
                     }
+                    if self.config.validate_autocast_pairing {
+                        match expected_autocast_end.remove(caster_instance_id) {
+                            None => {
+                                violations.push(TimelineReplayViolation {
+                                    kind: TimelineReplayViolationKind::InvalidAutoCastEvent,
+                                    message: format!(
+                                        "AutoCastEnd recorded without a prior AutoCastStart (caster={})",
+                                        caster_instance_id
+                                    ),
+                                    entry_index: Some(index),
+                                });
+                            }
+                            Some((start_seq, due_time)) => {
+                                if entry.cause_seq != Some(start_seq) {
+                                    violations.push(TimelineReplayViolation {
+                                        kind: TimelineReplayViolationKind::InvalidAutoCastEvent,
+                                        message: format!(
+                                            "AutoCastEnd cause_seq mismatch for {}: expected {:?}, got {:?}",
+                                            caster_instance_id,
+                                            Some(start_seq),
+                                            entry.cause_seq
+                                        ),
+                                        entry_index: Some(index),
+                                    });
+                                }
+                                if entry.time_ms != due_time {
+                                    violations.push(TimelineReplayViolation {
+                                        kind: TimelineReplayViolationKind::InvalidAutoCastEvent,
+                                        message: format!(
+                                            "AutoCastEnd timing mismatch for {}: expected {}ms, got {}ms",
+                                            caster_instance_id, due_time, entry.time_ms
+                                        ),
+                                        entry_index: Some(index),
+                                    });
+                                }
+                            }
+                        }
+                    }
                 }
                 TimelineEvent::AbilityCast {
                     ability_id,
                     caster_instance_id,
                     target_instance_id,
                 } => {
+                    let mut matched_cooldown_source = None;
                     if self.config.validate_expected_decisions {
-                        consume_expected_decision(
+                        let matched = consume_expected_decision(
                             &mut expected_decisions,
                             entry.cause_seq,
                             entry.time_ms,
                             &entry.event,
                         );
+                        if let Some(ExpectedDecision::AbilityCast {
+                            cooldown_source, ..
+                        }) = matched.as_ref()
+                        {
+                            matched_cooldown_source = Some(*cooldown_source);
+                        }
+                        if matched.is_none()
+                            && self.config.forbid_unexpected_outcomes_for_verified_causes
+                            && entry
+                                .cause_seq
+                                .is_some_and(|cause_seq| verified_causes.contains_key(&cause_seq))
+                        {
+                            violations.push(TimelineReplayViolation {
+                                kind: TimelineReplayViolationKind::UnexpectedDecision,
+                                message: format!(
+                                    "unexpected decision for cause_seq {:?}: {:?}",
+                                    entry.cause_seq, entry.event
+                                ),
+                                entry_index: Some(index),
+                            });
+                        }
                     }
                     if self.config.validate_ability_outcomes {
                         verified_causes.insert(entry.seq, VerifiedCauseKind::Ability);
+                        let cooldown_source =
+                            matched_cooldown_source.unwrap_or(CooldownSource::Unit {
+                                unit_instance_id: *caster_instance_id,
+                            });
                         state.predict_ability_outcomes(
                             entry.seq,
                             entry.time_ms,
                             *ability_id,
                             *caster_instance_id,
                             *target_instance_id,
+                            cooldown_source,
                             &mut expectations,
                             &mut expected_decisions,
+                            &mut pending_scheduled_attacks,
                             self.config.validate_expected_decisions,
                             &mut violations,
                             index,
@@ -253,12 +386,27 @@ impl TimelineReplayer {
                     duration_ms,
                 } => {
                     if self.config.validate_expected_decisions {
-                        consume_expected_decision(
+                        let matched = consume_expected_decision(
                             &mut expected_decisions,
                             entry.cause_seq,
                             entry.time_ms,
                             &entry.event,
                         );
+                        if matched.is_none()
+                            && self.config.forbid_unexpected_outcomes_for_verified_causes
+                            && entry
+                                .cause_seq
+                                .is_some_and(|cause_seq| verified_causes.contains_key(&cause_seq))
+                        {
+                            violations.push(TimelineReplayViolation {
+                                kind: TimelineReplayViolationKind::UnexpectedDecision,
+                                message: format!(
+                                    "unexpected decision for cause_seq {:?}: {:?}",
+                                    entry.cause_seq, entry.event
+                                ),
+                                entry_index: Some(index),
+                            });
+                        }
                     }
                     state.on_buff_applied(
                         entry.time_ms,
@@ -361,6 +509,19 @@ impl TimelineReplayer {
             }
         }
 
+        if self.config.validate_autocast_pairing {
+            for (caster_instance_id, (start_seq, due_time)) in expected_autocast_end {
+                violations.push(TimelineReplayViolation {
+                    kind: TimelineReplayViolationKind::InvalidAutoCastEvent,
+                    message: format!(
+                        "missing AutoCastEnd for {}: expected at {}ms (cause_seq={})",
+                        caster_instance_id, due_time, start_seq
+                    ),
+                    entry_index: None,
+                });
+            }
+        }
+
         for (cause_seq, remaining) in expectations {
             if remaining.is_empty() {
                 continue;
@@ -425,6 +586,13 @@ enum ExpectedDecision {
         ability_id: crate::game::ability::AbilityId,
         caster_instance_id: Uuid,
         target_instance_id: Option<Uuid>,
+        cooldown_source: CooldownSource,
+    },
+    Attack {
+        time_ms: u64,
+        attacker_instance_id: Uuid,
+        target_instance_id: Uuid,
+        kind: AttackKind,
     },
     BuffApplied {
         time_ms: u64,
@@ -444,6 +612,7 @@ impl ExpectedDecision {
                     ability_id,
                     caster_instance_id,
                     target_instance_id,
+                    ..
                 },
                 TimelineEvent::AbilityCast {
                     ability_id: actual_ability,
@@ -455,6 +624,24 @@ impl ExpectedDecision {
                     && *ability_id == *actual_ability
                     && *caster_instance_id == *actual_caster
                     && *target_instance_id == *actual_target
+            }
+            (
+                ExpectedDecision::Attack {
+                    time_ms: expected_time,
+                    attacker_instance_id,
+                    target_instance_id,
+                    kind,
+                },
+                TimelineEvent::Attack {
+                    attacker_instance_id: actual_attacker,
+                    target_instance_id: actual_target,
+                    kind: actual_kind,
+                },
+            ) => {
+                *expected_time == time_ms
+                    && *attacker_instance_id == *actual_attacker
+                    && *target_instance_id == *actual_target
+                    && Some(*kind) == *actual_kind
             }
             (
                 ExpectedDecision::BuffApplied {
@@ -488,9 +675,19 @@ impl ExpectedDecision {
                 ability_id,
                 caster_instance_id,
                 target_instance_id,
+                cooldown_source,
             } => format!(
-                "AbilityCast(time_ms={}, ability_id={:?}, caster={}, target={:?})",
-                time_ms, ability_id, caster_instance_id, target_instance_id
+                "AbilityCast(time_ms={}, ability_id={:?}, caster={}, target={:?}, cooldown_source={:?})",
+                time_ms, ability_id, caster_instance_id, target_instance_id, cooldown_source
+            ),
+            ExpectedDecision::Attack {
+                time_ms,
+                attacker_instance_id,
+                target_instance_id,
+                kind,
+            } => format!(
+                "Attack(time_ms={}, attacker={}, target={}, kind={:?})",
+                time_ms, attacker_instance_id, target_instance_id, kind
             ),
             ExpectedDecision::BuffApplied {
                 time_ms,
@@ -515,16 +712,38 @@ fn consume_expected_decision(
     parent_cause_seq: Option<u64>,
     time_ms: u64,
     event: &TimelineEvent,
-) {
+) -> Option<ExpectedDecision> {
     let Some(parent) = parent_cause_seq else {
-        return;
+        return None;
     };
     let Some(expected) = expected_decisions.get_mut(&parent) else {
-        return;
+        return None;
     };
     if let Some(pos) = expected.iter().position(|e| e.matches(time_ms, event)) {
-        expected.swap_remove(pos);
+        return Some(expected.remove(pos));
     }
+    None
+}
+
+fn consume_pending_scheduled_attack(
+    pending_attacks: &mut HashMap<u64, Vec<PendingScheduledAttack>>,
+    parent_cause_seq: Option<u64>,
+    time_ms: u64,
+    attacker_instance_id: Uuid,
+) -> bool {
+    let Some(parent) = parent_cause_seq else {
+        return false;
+    };
+    let Some(pending) = pending_attacks.get_mut(&parent) else {
+        return false;
+    };
+    if let Some(pos) = pending.iter().position(|attack| {
+        attack.attacker_instance_id == attacker_instance_id && time_ms >= attack.earliest_time_ms
+    }) {
+        pending.remove(pos);
+        return true;
+    }
+    false
 }
 
 #[derive(Debug, Clone)]
@@ -1041,12 +1260,27 @@ impl ReplayState {
             });
             return;
         }
-        if !self.units.contains_key(&caster_instance_id) {
+        if !self.known_units.contains(&caster_instance_id) {
             violations.push(TimelineReplayViolation {
                 kind: TimelineReplayViolationKind::UnknownUnitReference,
                 message: format!(
                     "BuffApplied references unknown caster {}",
                     caster_instance_id
+                ),
+                entry_index: Some(entry_index),
+            });
+            return;
+        }
+        if !self
+            .units
+            .get(&caster_instance_id)
+            .is_some_and(|u| u.stats.current_health > 0)
+        {
+            violations.push(TimelineReplayViolation {
+                kind: TimelineReplayViolationKind::InvalidBuffEvent,
+                message: format!(
+                    "BuffApplied references caster {} that is not alive at {}ms",
+                    caster_instance_id, time_ms
                 ),
                 entry_index: Some(entry_index),
             });
@@ -1222,6 +1456,7 @@ impl ReplayState {
         target_instance_id: Uuid,
         expectations: &mut HashMap<u64, Vec<ExpectedOutcome>>,
         expected_decisions: &mut HashMap<u64, Vec<ExpectedDecision>>,
+        pending_scheduled_attacks: &mut HashMap<u64, Vec<PendingScheduledAttack>>,
         validate_expected_decisions: bool,
         violations: &mut Vec<TimelineReplayViolation>,
         entry_index: usize,
@@ -1301,6 +1536,7 @@ impl ReplayState {
         }
 
         let mut pending_apply_buffs: Vec<(Uuid, Uuid, BuffId, u64)> = Vec::new();
+        let mut decision_executor = self.ability_executor.clone();
 
         for command in result.triggered_commands {
             match command {
@@ -1325,6 +1561,7 @@ impl ReplayState {
                     ability_id,
                     caster_id,
                     target_id,
+                    cooldown_source,
                 } => {
                     if validate_expected_decisions
                         && shadow
@@ -1334,10 +1571,12 @@ impl ReplayState {
                         && self
                             .would_execute_ability_in_units(
                                 &shadow.units,
+                                &mut decision_executor,
                                 ability_id,
                                 caster_id,
                                 target_id,
                                 time_ms,
+                                cooldown_source,
                             )
                             .unwrap_or(false)
                     {
@@ -1347,6 +1586,7 @@ impl ReplayState {
                                 ability_id,
                                 caster_instance_id: caster_id,
                                 target_instance_id: target_id,
+                                cooldown_source,
                             },
                         );
                     }
@@ -1372,6 +1612,54 @@ impl ReplayState {
                     {
                         expectations.entry(cause_seq).or_default().push(expected);
                     }
+                }
+                BattleCommand::ScheduleAttack {
+                    attacker_id,
+                    target_id,
+                    time_ms: delay_ms,
+                } => {
+                    if !validate_expected_decisions {
+                        continue;
+                    }
+                    if delay_ms != 0 {
+                        if shadow
+                            .units
+                            .get(&attacker_id)
+                            .is_some_and(|u| u.stats.current_health > 0)
+                        {
+                            pending_scheduled_attacks
+                                .entry(cause_seq)
+                                .or_default()
+                                .push(PendingScheduledAttack {
+                                    attacker_instance_id: attacker_id,
+                                    earliest_time_ms: time_ms.saturating_add(delay_ms),
+                                });
+                        }
+                        continue;
+                    }
+                    let Some(target_id) = target_id else {
+                        continue;
+                    };
+                    let Some(attacker) = shadow.units.get(&attacker_id) else {
+                        continue;
+                    };
+                    if attacker.stats.current_health == 0 {
+                        continue;
+                    }
+                    let Some(target) = shadow.units.get(&target_id) else {
+                        continue;
+                    };
+                    if target.stats.current_health == 0 || target.owner == attacker.owner {
+                        continue;
+                    }
+                    expected_decisions.entry(cause_seq).or_default().push(
+                        ExpectedDecision::Attack {
+                            time_ms: time_ms.saturating_add(delay_ms),
+                            attacker_instance_id: attacker_id,
+                            target_instance_id: target_id,
+                            kind: AttackKind::Triggered,
+                        },
+                    );
                 }
                 _ => {}
             }
@@ -1429,8 +1717,10 @@ impl ReplayState {
         ability_id: crate::game::ability::AbilityId,
         caster_instance_id: Uuid,
         target_instance_id: Option<Uuid>,
+        cooldown_source: CooldownSource,
         expectations: &mut HashMap<u64, Vec<ExpectedOutcome>>,
         expected_decisions: &mut HashMap<u64, Vec<ExpectedDecision>>,
+        pending_scheduled_attacks: &mut HashMap<u64, Vec<PendingScheduledAttack>>,
         validate_expected_decisions: bool,
         violations: &mut Vec<TimelineReplayViolation>,
         entry_index: usize,
@@ -1457,6 +1747,7 @@ impl ReplayState {
             caster_id: caster_instance_id,
             target_id: target_instance_id,
             time_ms,
+            cooldown_source,
         };
 
         let result = self
@@ -1475,6 +1766,7 @@ impl ReplayState {
         }
 
         let mut shadow = self.clone_for_shadow();
+        let mut decision_executor = self.ability_executor.clone();
         let mut pending_apply_buffs: Vec<(Uuid, Uuid, BuffId, u64)> = Vec::new();
         for command in result.commands {
             match command {
@@ -1499,6 +1791,7 @@ impl ReplayState {
                     ability_id,
                     caster_id,
                     target_id,
+                    cooldown_source,
                 } => {
                     if validate_expected_decisions
                         && shadow
@@ -1508,10 +1801,12 @@ impl ReplayState {
                         && self
                             .would_execute_ability_in_units(
                                 &shadow.units,
+                                &mut decision_executor,
                                 ability_id,
                                 caster_id,
                                 target_id,
                                 time_ms,
+                                cooldown_source,
                             )
                             .unwrap_or(false)
                     {
@@ -1521,6 +1816,7 @@ impl ReplayState {
                                 ability_id,
                                 caster_instance_id: caster_id,
                                 target_instance_id: target_id,
+                                cooldown_source,
                             },
                         );
                     }
@@ -1546,6 +1842,54 @@ impl ReplayState {
                     {
                         expectations.entry(cause_seq).or_default().push(expected);
                     }
+                }
+                BattleCommand::ScheduleAttack {
+                    attacker_id,
+                    target_id,
+                    time_ms: delay_ms,
+                } => {
+                    if !validate_expected_decisions {
+                        continue;
+                    }
+                    if delay_ms != 0 {
+                        if shadow
+                            .units
+                            .get(&attacker_id)
+                            .is_some_and(|u| u.stats.current_health > 0)
+                        {
+                            pending_scheduled_attacks
+                                .entry(cause_seq)
+                                .or_default()
+                                .push(PendingScheduledAttack {
+                                    attacker_instance_id: attacker_id,
+                                    earliest_time_ms: time_ms.saturating_add(delay_ms),
+                                });
+                        }
+                        continue;
+                    }
+                    let Some(target_id) = target_id else {
+                        continue;
+                    };
+                    let Some(attacker) = shadow.units.get(&attacker_id) else {
+                        continue;
+                    };
+                    if attacker.stats.current_health == 0 {
+                        continue;
+                    }
+                    let Some(target) = shadow.units.get(&target_id) else {
+                        continue;
+                    };
+                    if target.stats.current_health == 0 || target.owner == attacker.owner {
+                        continue;
+                    }
+                    expected_decisions.entry(cause_seq).or_default().push(
+                        ExpectedDecision::Attack {
+                            time_ms: time_ms.saturating_add(delay_ms),
+                            attacker_instance_id: attacker_id,
+                            target_instance_id: target_id,
+                            kind: AttackKind::Triggered,
+                        },
+                    );
                 }
                 _ => {}
             }
@@ -1768,6 +2112,18 @@ impl ReplayState {
             TimelineEvent::UnitDied {
                 unit_instance_id, ..
             } => {
+                if let Some(unit) = self.units.get(unit_instance_id) {
+                    if unit.stats.current_health != 0 {
+                        violations.push(TimelineReplayViolation {
+                            kind: TimelineReplayViolationKind::OutcomeMismatch,
+                            message: format!(
+                                "UnitDied recorded for {} with current_health {} at {}ms",
+                                unit_instance_id, unit.stats.current_health, time_ms
+                            ),
+                            entry_index: Some(entry_index),
+                        });
+                    }
+                }
                 self.units.remove(unit_instance_id);
                 self.buffs
                     .retain(|key, _| key.target_instance_id != *unit_instance_id);
@@ -1832,10 +2188,12 @@ impl ReplayState {
     fn would_execute_ability_in_units(
         &self,
         units: &HashMap<Uuid, RuntimeUnit>,
+        executor: &mut AbilityExecutor,
         ability_id: crate::game::ability::AbilityId,
         caster_id: Uuid,
         target_id: Option<Uuid>,
         time_ms: u64,
+        cooldown_source: CooldownSource,
     ) -> Option<bool> {
         let caster = units.get(&caster_id)?;
         if caster.stats.current_health == 0 {
@@ -1853,9 +2211,9 @@ impl ReplayState {
             caster_id,
             target_id,
             time_ms,
+            cooldown_source,
         };
 
-        let mut executor = self.ability_executor.clone();
         Some(
             executor
                 .execute(&request, &caster_snapshot, &unit_snapshots)
@@ -1863,7 +2221,11 @@ impl ReplayState {
         )
     }
 
-    fn collect_all_triggers(&self, unit_instance_id: Uuid, trigger: TriggerType) -> Vec<Effect> {
+    fn collect_all_triggers(
+        &self,
+        unit_instance_id: Uuid,
+        trigger: TriggerType,
+    ) -> Vec<SourcedEffect> {
         let Some(unit) = self.units.get(&unit_instance_id) else {
             return Vec::new();
         };
@@ -1874,8 +2236,8 @@ impl ReplayState {
         effects
     }
 
-    fn collect_triggers(&self, source: TriggerSource, trigger: TriggerType) -> Vec<Effect> {
-        let mut effects = Vec::new();
+    fn collect_triggers(&self, source: TriggerSource, trigger: TriggerType) -> Vec<SourcedEffect> {
+        let mut effects: Vec<SourcedEffect> = Vec::new();
 
         match source {
             TriggerSource::Artifact { side } => {
@@ -1893,7 +2255,12 @@ impl ReplayState {
                         .get_by_uuid(&artifact.base_uuid)
                     {
                         if let Some(triggered) = metadata.triggered_effects.get(&trigger) {
-                            effects.extend(triggered.iter().cloned());
+                            effects.extend(triggered.iter().cloned().map(|effect| SourcedEffect {
+                                source: CooldownSource::Artifact {
+                                    artifact_instance_id: artifact.instance_id,
+                                },
+                                effect,
+                            }));
                         }
                     }
                 }
@@ -1911,7 +2278,12 @@ impl ReplayState {
                         self.game_data.equipment_data.get_by_uuid(&item.base_uuid)
                     {
                         if let Some(triggered) = metadata.triggered_effects.get(&trigger) {
-                            effects.extend(triggered.iter().cloned());
+                            effects.extend(triggered.iter().cloned().map(|effect| SourcedEffect {
+                                source: CooldownSource::Item {
+                                    item_instance_id: item.instance_id,
+                                },
+                                effect,
+                            }));
                         }
                     }
                 }

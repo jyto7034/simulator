@@ -29,12 +29,18 @@ pub enum TimelineViolationKind {
     NonContiguousSeq,
     TimeWentBackwards,
     AttackKindMissing,
+    AutoCastPairInvalid,
     OutcomeMissingCauseSeq,
     OutcomeCauseSeqOutOfRange,
     OutcomeCauseSeqInFuture,
     OutcomeCauseSeqInvalidType,
     SpawnStatsInvalid,
+    StatsAfterInvalid,
     HpDeltaMismatch,
+    HpBeforeMismatch,
+    StatsBeforeMismatch,
+    UnitDiedWhileAlive,
+    BuffAppliedByDeadCaster,
     UnitSpawnCountMismatch,
     ItemSpawnCountMismatch,
     ArtifactSpawnCountMismatch,
@@ -104,6 +110,7 @@ pub struct TimelineValidatorConfig {
     pub require_contiguous_seq: bool,
     pub require_non_decreasing_time: bool,
     pub validate_outcome_cause_seq: bool,
+    pub require_autocast_pairs: bool,
     pub require_spawn_stats_valid: bool,
     pub require_hp_delta_consistent: bool,
     pub require_attack_has_basic_hp_change: bool,
@@ -121,6 +128,7 @@ impl Default for TimelineValidatorConfig {
             require_contiguous_seq: true,
             require_non_decreasing_time: true,
             validate_outcome_cause_seq: true,
+            require_autocast_pairs: true,
             require_spawn_stats_valid: true,
             require_hp_delta_consistent: true,
             require_attack_has_basic_hp_change: true,
@@ -208,6 +216,10 @@ impl TimelineValidator {
         let extracted = extract_spawns(timeline, &mut violations);
         validate_spawn_counts(extracted.counts, expected_counts, &mut violations);
         validate_reference_spawn_order(timeline, &extracted, &mut violations);
+        validate_stateful_unit_invariants(timeline, &mut violations);
+        if self.config.require_autocast_pairs {
+            validate_autocast_pairs(timeline, &mut violations);
+        }
         validate_attacks(timeline, &extracted, &mut violations, &self.config);
         validate_buffs(timeline, &mut violations);
         validate_deaths(timeline, &extracted, &mut violations, &self.config);
@@ -345,7 +357,9 @@ fn validate_outcome_cause_relations(timeline: &Timeline, violations: &mut Vec<Ti
         let cause_entry = &timeline.entries[cause_index];
         let valid_cause = matches!(
             cause_entry.event,
-            TimelineEvent::Attack { .. } | TimelineEvent::AbilityCast { .. } | TimelineEvent::BuffTick { .. }
+            TimelineEvent::Attack { .. }
+                | TimelineEvent::AbilityCast { .. }
+                | TimelineEvent::BuffTick { .. }
         );
         if !valid_cause {
             violations.push(TimelineViolation {
@@ -360,15 +374,111 @@ fn validate_outcome_cause_relations(timeline: &Timeline, violations: &mut Vec<Ti
     }
 }
 
+fn validate_autocast_pairs(timeline: &Timeline, violations: &mut Vec<TimelineViolation>) {
+    let mut pending_start_by_caster: HashMap<Uuid, (u64, u64, usize)> = HashMap::new();
+    let mut starts_by_seq: HashMap<u64, (Uuid, u64)> = HashMap::new();
+
+    for (index, entry) in timeline.entries.iter().enumerate() {
+        match &entry.event {
+            TimelineEvent::AutoCastStart {
+                caster_instance_id, ..
+            } => {
+                if pending_start_by_caster
+                    .insert(*caster_instance_id, (entry.seq, entry.time_ms, index))
+                    .is_some()
+                {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::AutoCastPairInvalid,
+                        message: format!(
+                            "AutoCastStart overlaps an existing pending cast (caster={})",
+                            caster_instance_id
+                        ),
+                        entry_index: Some(index),
+                    });
+                }
+                starts_by_seq.insert(entry.seq, (*caster_instance_id, entry.time_ms));
+            }
+            TimelineEvent::AutoCastEnd { caster_instance_id } => {
+                let Some(cause_seq) = entry.cause_seq else {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::AutoCastPairInvalid,
+                        message: format!(
+                            "AutoCastEnd is missing cause_seq (caster={})",
+                            caster_instance_id
+                        ),
+                        entry_index: Some(index),
+                    });
+                    continue;
+                };
+
+                let Some((start_caster, start_time_ms)) = starts_by_seq.get(&cause_seq).copied()
+                else {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::AutoCastPairInvalid,
+                        message: format!(
+                            "AutoCastEnd cause_seq {} does not reference an AutoCastStart (caster={})",
+                            cause_seq, caster_instance_id
+                        ),
+                        entry_index: Some(index),
+                    });
+                    continue;
+                };
+
+                if start_caster != *caster_instance_id {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::AutoCastPairInvalid,
+                        message: format!(
+                            "AutoCastEnd caster mismatch: expected {}, got {}",
+                            start_caster, caster_instance_id
+                        ),
+                        entry_index: Some(index),
+                    });
+                }
+
+                let expected_end_time = start_time_ms.saturating_add(1);
+                if entry.time_ms != expected_end_time {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::AutoCastPairInvalid,
+                        message: format!(
+                            "AutoCastEnd timing mismatch for {}: expected {}ms, got {}ms",
+                            caster_instance_id, expected_end_time, entry.time_ms
+                        ),
+                        entry_index: Some(index),
+                    });
+                }
+
+                pending_start_by_caster.remove(caster_instance_id);
+            }
+            _ => {}
+        }
+    }
+
+    for (caster, (start_seq, start_time_ms, start_index)) in pending_start_by_caster {
+        violations.push(TimelineViolation {
+            kind: TimelineViolationKind::AutoCastPairInvalid,
+            message: format!(
+                "missing AutoCastEnd for {} (start_seq={} start_time_ms={})",
+                caster, start_seq, start_time_ms
+            ),
+            entry_index: Some(start_index),
+        });
+    }
+}
+
 fn validate_spawn_stats(stats: &UnitStats) -> Option<String> {
+    validate_unit_stats(stats, "spawned unit")
+}
+
+fn validate_unit_stats(stats: &UnitStats, context: &str) -> Option<String> {
     if stats.current_health > stats.max_health {
         return Some(format!(
-            "spawned unit has current_health {} > max_health {}",
-            stats.current_health, stats.max_health
+            "{context} has current_health {} > max_health {}",
+            stats.current_health,
+            stats.max_health
         ));
     }
     if stats.attack_interval_ms == 0 {
-        return Some("spawned unit has attack_interval_ms == 0".to_string());
+        return Some(format!("{context} has attack_interval_ms == 0"));
     }
     None
 }
@@ -1009,6 +1119,111 @@ fn validate_spawn_counts(
     }
 }
 
+fn validate_stateful_unit_invariants(timeline: &Timeline, violations: &mut Vec<TimelineViolation>) {
+    let mut stats_by_unit: HashMap<Uuid, UnitStats> = HashMap::new();
+
+    for (index, entry) in timeline.entries.iter().enumerate() {
+        match &entry.event {
+            TimelineEvent::UnitSpawned {
+                unit_instance_id,
+                stats,
+                ..
+            } => {
+                stats_by_unit.insert(*unit_instance_id, *stats);
+            }
+            TimelineEvent::HpChanged {
+                target_instance_id,
+                hp_before,
+                hp_after,
+                ..
+            } => {
+                let Some(stats) = stats_by_unit.get_mut(target_instance_id) else {
+                    continue;
+                };
+                if stats.current_health != *hp_before {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::HpBeforeMismatch,
+                        message: format!(
+                            "HpChanged hp_before mismatch for {}: state={}, event={}",
+                            target_instance_id, stats.current_health, hp_before
+                        ),
+                        entry_index: Some(index),
+                    });
+                }
+                stats.current_health = *hp_after;
+            }
+            TimelineEvent::StatChanged {
+                target_instance_id,
+                stats_before,
+                stats_after,
+                ..
+            } => {
+                let Some(stats) = stats_by_unit.get_mut(target_instance_id) else {
+                    continue;
+                };
+                if stats.current_health != stats_before.current_health
+                    || stats.max_health != stats_before.max_health
+                    || stats.attack != stats_before.attack
+                    || stats.defense != stats_before.defense
+                    || stats.attack_interval_ms != stats_before.attack_interval_ms
+                {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::StatsBeforeMismatch,
+                        message: format!(
+                            "StatChanged stats_before mismatch for {}",
+                            target_instance_id
+                        ),
+                        entry_index: Some(index),
+                    });
+                }
+                if let Some(message) = validate_unit_stats(stats_after, "StatChanged stats_after") {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::StatsAfterInvalid,
+                        message,
+                        entry_index: Some(index),
+                    });
+                }
+                *stats = *stats_after;
+            }
+            TimelineEvent::BuffApplied {
+                caster_instance_id, ..
+            } => {
+                let Some(stats) = stats_by_unit.get(caster_instance_id) else {
+                    continue;
+                };
+                if stats.current_health == 0 {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::BuffAppliedByDeadCaster,
+                        message: format!(
+                            "BuffApplied caster {} has current_health=0",
+                            caster_instance_id
+                        ),
+                        entry_index: Some(index),
+                    });
+                }
+            }
+            TimelineEvent::UnitDied {
+                unit_instance_id, ..
+            } => {
+                let Some(stats) = stats_by_unit.get(unit_instance_id) else {
+                    continue;
+                };
+                if stats.current_health != 0 {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::UnitDiedWhileAlive,
+                        message: format!(
+                            "UnitDied recorded for {} with current_health={}",
+                            unit_instance_id, stats.current_health
+                        ),
+                        entry_index: Some(index),
+                    });
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
 fn validate_attacks(
     timeline: &Timeline,
     extracted: &ExtractedSpawns,
@@ -1303,6 +1518,7 @@ fn validate_auto_attack_cadence(
     }
 
     let mut missing_reported: HashSet<Uuid> = HashSet::new();
+    let mut casting_until_ms: HashMap<Uuid, u64> = HashMap::new();
 
     // Iterate grouped by time_ms so we can apply StatChanged in the same tick before
     // computing the next expected attack time.
@@ -1312,7 +1528,11 @@ fn validate_auto_attack_cadence(
 
         // Before processing this tick, check if we have missed an expected auto attack.
         if config.validate_auto_attack_presence {
-            for (&unit_id, &expected_time) in expected_next_auto_attack_time_ms.iter() {
+            let expected_entries: Vec<(Uuid, u64)> = expected_next_auto_attack_time_ms
+                .iter()
+                .map(|(unit_id, time)| (*unit_id, *time))
+                .collect();
+            for (unit_id, expected_time) in expected_entries {
                 if missing_reported.contains(&unit_id) {
                     continue;
                 }
@@ -1321,12 +1541,21 @@ fn validate_auto_attack_cadence(
                     continue;
                 }
 
-                if expected_time.saturating_add(config.auto_attack_timing_tolerance_ms) < time_ms
+                let mut effective_expected_time = expected_time;
+                if let Some(&cast_until) = casting_until_ms.get(&unit_id) {
+                    if effective_expected_time < cast_until {
+                        effective_expected_time = cast_until;
+                        expected_next_auto_attack_time_ms.insert(unit_id, effective_expected_time);
+                    }
+                }
+
+                if effective_expected_time.saturating_add(config.auto_attack_timing_tolerance_ms)
+                    < time_ms
                     && should_expect_auto_attack(
                         extracted,
                         &unit_death_time_ms,
                         unit_id,
-                        expected_time,
+                        effective_expected_time,
                         battle_end_time_ms,
                     )
                 {
@@ -1334,7 +1563,7 @@ fn validate_auto_attack_cadence(
                         kind: TimelineViolationKind::MissingExpectedAutoAttack,
                         message: format!(
                             "missing expected auto attack: unit={} expected_time_ms={} tolerance_ms={}",
-                            unit_id, expected_time, config.auto_attack_timing_tolerance_ms
+                            unit_id, effective_expected_time, config.auto_attack_timing_tolerance_ms
                         ),
                         entry_index: None,
                     });
@@ -1354,6 +1583,14 @@ fn validate_auto_attack_cadence(
                     ..
                 } => {
                     auto_attackers_this_tick.insert(*attacker_instance_id);
+                }
+                TimelineEvent::AutoCastStart {
+                    caster_instance_id, ..
+                } => {
+                    casting_until_ms.insert(*caster_instance_id, time_ms.saturating_add(1));
+                }
+                TimelineEvent::AutoCastEnd { caster_instance_id } => {
+                    casting_until_ms.remove(caster_instance_id);
                 }
                 TimelineEvent::StatChanged {
                     target_instance_id,
@@ -1502,8 +1739,8 @@ fn is_dead_unit_operated_on(
             target_instance_id,
             ..
         } => {
-            (config.forbid_dead_units_as_attackers && *caster_instance_id == dead_unit_id)
-                || (config.forbid_dead_units_as_targets && *target_instance_id == dead_unit_id)
+            let _ = caster_instance_id;
+            config.forbid_dead_units_as_targets && *target_instance_id == dead_unit_id
         }
         TimelineEvent::HpChanged {
             target_instance_id, ..
