@@ -248,20 +248,22 @@ fn realistic_battle_resonance_autocast_and_poison_tick() {
             ..TimelineReplayerConfig::default()
         },
     );
-    replayer.replay(&result.timeline).unwrap_or_else(|violations| {
-        let summary = violations
-            .into_iter()
-            .map(|v| {
-                let index = v
-                    .entry_index
-                    .map(|i| i.to_string())
-                    .unwrap_or_else(|| "-".to_string());
-                format!("[{}] {:?}: {}", index, v.kind, v.message)
-            })
-            .collect::<Vec<_>>()
-            .join("\n");
-        panic!("timeline predictive replay failed:\n{summary}");
-    });
+    replayer
+        .replay(&result.timeline)
+        .unwrap_or_else(|violations| {
+            let summary = violations
+                .into_iter()
+                .map(|v| {
+                    let index = v
+                        .entry_index
+                        .map(|i| i.to_string())
+                        .unwrap_or_else(|| "-".to_string());
+                    format!("[{}] {:?}: {}", index, v.kind, v.message)
+                })
+                .collect::<Vec<_>>()
+                .join("\n");
+            panic!("timeline predictive replay failed:\n{summary}");
+        });
 
     let mut caster_instance_id = None;
     let mut enemy_tank_instance_id = None;

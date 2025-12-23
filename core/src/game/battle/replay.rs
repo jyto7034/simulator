@@ -1,9 +1,11 @@
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::sync::Arc;
 
 use uuid::Uuid;
 
 use crate::ecs::resources::Position;
+use crate::game::battle::damage::BattleCommand;
 use crate::game::{
     battle::{
         ability_executor::{AbilityExecutor, AbilityRequest, UnitSnapshot},
@@ -18,14 +20,20 @@ use crate::game::{
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TimelineReplayViolationKind {
+    TimelineVersionMismatch,
+    AttackKindMissing,
     UnknownUnitReference,
+    UnknownUnitBaseReference,
     UnknownItemReference,
     UnknownArtifactReference,
+    UnknownBuffReference,
     AttackDuringCast,
     AutoCastWithoutFullResonance,
     ExpectedOutcomeMissing,
+    ExpectedDecisionMissing,
     UnexpectedOutcome,
     OutcomeMismatch,
+    InvalidBuffEvent,
 }
 
 #[derive(Debug, Clone)]
@@ -41,6 +49,8 @@ pub struct TimelineReplayerConfig {
     pub validate_ability_outcomes: bool,
     pub validate_buff_tick_outcomes: bool,
     pub validate_autocast_gating: bool,
+    pub validate_expected_decisions: bool,
+    pub validate_unit_base_uuid: bool,
     pub forbid_unexpected_outcomes_for_verified_causes: bool,
 }
 
@@ -51,6 +61,8 @@ impl Default for TimelineReplayerConfig {
             validate_ability_outcomes: true,
             validate_buff_tick_outcomes: true,
             validate_autocast_gating: true,
+            validate_expected_decisions: true,
+            validate_unit_base_uuid: false,
             forbid_unexpected_outcomes_for_verified_causes: false,
         }
     }
@@ -68,8 +80,23 @@ impl TimelineReplayer {
 
     pub fn replay(&self, timeline: &Timeline) -> Result<(), Vec<TimelineReplayViolation>> {
         let mut violations = Vec::new();
+
+        if timeline.version != crate::game::battle::timeline::TIMELINE_VERSION {
+            violations.push(TimelineReplayViolation {
+                kind: TimelineReplayViolationKind::TimelineVersionMismatch,
+                message: format!(
+                    "timeline version mismatch: expected={}, got={}",
+                    crate::game::battle::timeline::TIMELINE_VERSION,
+                    timeline.version
+                ),
+                entry_index: None,
+            });
+            return Err(violations);
+        }
+
         let mut state = ReplayState::new(self.game_data.clone());
         let mut expectations: HashMap<u64, Vec<ExpectedOutcome>> = HashMap::new();
+        let mut expected_decisions: HashMap<u64, Vec<ExpectedDecision>> = HashMap::new();
         let mut verified_causes: HashMap<u64, VerifiedCauseKind> = HashMap::new();
 
         for (index, entry) in timeline.entries.iter().enumerate() {
@@ -82,6 +109,22 @@ impl TimelineReplayer {
                     position,
                     stats,
                 } => {
+                    if self.config.validate_unit_base_uuid
+                        && self
+                            .game_data
+                            .abnormality_data
+                            .get_by_uuid(base_uuid)
+                            .is_none()
+                    {
+                        violations.push(TimelineReplayViolation {
+                            kind: TimelineReplayViolationKind::UnknownUnitBaseReference,
+                            message: format!(
+                                "UnitSpawned references unknown base_uuid {}",
+                                base_uuid
+                            ),
+                            entry_index: Some(index),
+                        });
+                    }
                     state.spawn_unit(*unit_instance_id, *owner, *base_uuid, *position, *stats);
                 }
                 TimelineEvent::ItemSpawned {
@@ -104,13 +147,27 @@ impl TimelineReplayer {
                     owner,
                     base_uuid,
                 } => {
-                    state.spawn_artifact(*artifact_instance_id, *owner, *base_uuid);
+                    state.spawn_artifact(
+                        *artifact_instance_id,
+                        *owner,
+                        *base_uuid,
+                        &mut violations,
+                        index,
+                    );
                 }
                 TimelineEvent::Attack {
                     attacker_instance_id,
                     target_instance_id,
-                    kind: _,
+                    kind,
                 } => {
+                    if kind.is_none() {
+                        violations.push(TimelineReplayViolation {
+                            kind: TimelineReplayViolationKind::AttackKindMissing,
+                            message: "Attack event is missing kind (expected Auto/Triggered)"
+                                .to_string(),
+                            entry_index: Some(index),
+                        });
+                    }
                     if self.config.validate_basic_attack_outcomes {
                         verified_causes.insert(entry.seq, VerifiedCauseKind::Attack);
                         state.predict_attack_outcomes(
@@ -119,6 +176,8 @@ impl TimelineReplayer {
                             *attacker_instance_id,
                             *target_instance_id,
                             &mut expectations,
+                            &mut expected_decisions,
+                            self.config.validate_expected_decisions,
                             &mut violations,
                             index,
                         );
@@ -163,6 +222,14 @@ impl TimelineReplayer {
                     caster_instance_id,
                     target_instance_id,
                 } => {
+                    if self.config.validate_expected_decisions {
+                        consume_expected_decision(
+                            &mut expected_decisions,
+                            entry.cause_seq,
+                            entry.time_ms,
+                            &entry.event,
+                        );
+                    }
                     if self.config.validate_ability_outcomes {
                         verified_causes.insert(entry.seq, VerifiedCauseKind::Ability);
                         state.predict_ability_outcomes(
@@ -172,6 +239,8 @@ impl TimelineReplayer {
                             *caster_instance_id,
                             *target_instance_id,
                             &mut expectations,
+                            &mut expected_decisions,
+                            self.config.validate_expected_decisions,
                             &mut violations,
                             index,
                         );
@@ -183,12 +252,22 @@ impl TimelineReplayer {
                     buff_id,
                     duration_ms,
                 } => {
+                    if self.config.validate_expected_decisions {
+                        consume_expected_decision(
+                            &mut expected_decisions,
+                            entry.cause_seq,
+                            entry.time_ms,
+                            &entry.event,
+                        );
+                    }
                     state.on_buff_applied(
                         entry.time_ms,
                         *caster_instance_id,
                         *target_instance_id,
                         *buff_id,
                         *duration_ms,
+                        &mut violations,
+                        index,
                     );
                 }
                 TimelineEvent::BuffTick {
@@ -205,6 +284,8 @@ impl TimelineReplayer {
                             *target_instance_id,
                             *buff_id,
                             &mut expectations,
+                            &mut expected_decisions,
+                            self.config.validate_expected_decisions,
                             &mut violations,
                             index,
                         );
@@ -228,22 +309,27 @@ impl TimelineReplayer {
                         *caster_instance_id,
                         *target_instance_id,
                         *buff_id,
+                        &mut violations,
+                        index,
                     );
                 }
                 TimelineEvent::HpChanged { .. }
                 | TimelineEvent::StatChanged { .. }
                 | TimelineEvent::UnitDied { .. } => {
                     let cause = entry.cause_seq;
+                    if cause.is_none() {
+                        violations.push(TimelineReplayViolation {
+                            kind: TimelineReplayViolationKind::UnexpectedOutcome,
+                            message: format!("outcome event missing cause_seq: {:?}", entry.event),
+                            entry_index: Some(index),
+                        });
+                    }
                     if let Some(cause_seq) = cause {
                         if let Some(expected) = expectations.get_mut(&cause_seq) {
-                            if let Some(pos) = expected
-                                .iter()
-                                .position(|e| e.matches(&entry.event))
+                            if let Some(pos) = expected.iter().position(|e| e.matches(&entry.event))
                             {
                                 expected.swap_remove(pos);
-                            } else if self
-                                .config
-                                .forbid_unexpected_outcomes_for_verified_causes
+                            } else if self.config.forbid_unexpected_outcomes_for_verified_causes
                                 && verified_causes.contains_key(&cause_seq)
                             {
                                 violations.push(TimelineReplayViolation {
@@ -295,6 +381,28 @@ impl TimelineReplayer {
             }
         }
 
+        if self.config.validate_expected_decisions {
+            for (cause_seq, remaining) in expected_decisions {
+                if remaining.is_empty() {
+                    continue;
+                }
+                if !verified_causes.contains_key(&cause_seq) {
+                    continue;
+                }
+                for expected in remaining {
+                    violations.push(TimelineReplayViolation {
+                        kind: TimelineReplayViolationKind::ExpectedDecisionMissing,
+                        message: format!(
+                            "missing expected decision for cause_seq {}: {}",
+                            cause_seq,
+                            expected.describe()
+                        ),
+                        entry_index: None,
+                    });
+                }
+            }
+        }
+
         if violations.is_empty() {
             Ok(())
         } else {
@@ -308,6 +416,115 @@ enum VerifiedCauseKind {
     Attack,
     Ability,
     BuffTick,
+}
+
+#[derive(Debug, Clone)]
+enum ExpectedDecision {
+    AbilityCast {
+        time_ms: u64,
+        ability_id: crate::game::ability::AbilityId,
+        caster_instance_id: Uuid,
+        target_instance_id: Option<Uuid>,
+    },
+    BuffApplied {
+        time_ms: u64,
+        caster_instance_id: Uuid,
+        target_instance_id: Uuid,
+        buff_id: BuffId,
+        duration_ms: u64,
+    },
+}
+
+impl ExpectedDecision {
+    fn matches(&self, time_ms: u64, event: &TimelineEvent) -> bool {
+        match (self, event) {
+            (
+                ExpectedDecision::AbilityCast {
+                    time_ms: expected_time,
+                    ability_id,
+                    caster_instance_id,
+                    target_instance_id,
+                },
+                TimelineEvent::AbilityCast {
+                    ability_id: actual_ability,
+                    caster_instance_id: actual_caster,
+                    target_instance_id: actual_target,
+                },
+            ) => {
+                *expected_time == time_ms
+                    && *ability_id == *actual_ability
+                    && *caster_instance_id == *actual_caster
+                    && *target_instance_id == *actual_target
+            }
+            (
+                ExpectedDecision::BuffApplied {
+                    time_ms: expected_time,
+                    caster_instance_id,
+                    target_instance_id,
+                    buff_id,
+                    duration_ms,
+                },
+                TimelineEvent::BuffApplied {
+                    caster_instance_id: actual_caster,
+                    target_instance_id: actual_target,
+                    buff_id: actual_buff,
+                    duration_ms: actual_duration,
+                },
+            ) => {
+                *expected_time == time_ms
+                    && *caster_instance_id == *actual_caster
+                    && *target_instance_id == *actual_target
+                    && *buff_id == *actual_buff
+                    && *duration_ms == *actual_duration
+            }
+            _ => false,
+        }
+    }
+
+    fn describe(&self) -> String {
+        match self {
+            ExpectedDecision::AbilityCast {
+                time_ms,
+                ability_id,
+                caster_instance_id,
+                target_instance_id,
+            } => format!(
+                "AbilityCast(time_ms={}, ability_id={:?}, caster={}, target={:?})",
+                time_ms, ability_id, caster_instance_id, target_instance_id
+            ),
+            ExpectedDecision::BuffApplied {
+                time_ms,
+                caster_instance_id,
+                target_instance_id,
+                buff_id,
+                duration_ms,
+            } => format!(
+                "BuffApplied(time_ms={}, caster={}, target={}, buff_id={}, duration_ms={})",
+                time_ms,
+                caster_instance_id,
+                target_instance_id,
+                buff_id.as_u64(),
+                duration_ms
+            ),
+        }
+    }
+}
+
+fn consume_expected_decision(
+    expected_decisions: &mut HashMap<u64, Vec<ExpectedDecision>>,
+    parent_cause_seq: Option<u64>,
+    time_ms: u64,
+    event: &TimelineEvent,
+) {
+    let Some(parent) = parent_cause_seq else {
+        return;
+    };
+    let Some(expected) = expected_decisions.get_mut(&parent) else {
+        return;
+    };
+    if let Some(pos) = expected.iter().position(|e| e.matches(time_ms, event)) {
+        expected.swap_remove(pos);
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -501,6 +718,7 @@ struct ReplayState {
     game_data: Arc<GameDataBase>,
     ability_executor: AbilityExecutor,
     units: HashMap<Uuid, RuntimeUnit>,
+    known_units: HashSet<Uuid>,
     artifacts: HashMap<Uuid, RuntimeArtifact>,
     items: HashMap<Uuid, RuntimeItem>,
     buffs: HashMap<BuffInstanceKey, ActiveBuff>,
@@ -512,6 +730,7 @@ impl ReplayState {
             game_data,
             ability_executor: AbilityExecutor::new(),
             units: HashMap::new(),
+            known_units: HashSet::new(),
             artifacts: HashMap::new(),
             items: HashMap::new(),
             buffs: HashMap::new(),
@@ -526,11 +745,18 @@ impl ReplayState {
         position: Position,
         stats: UnitStats,
     ) {
+        self.known_units.insert(unit_instance_id);
         let (resonance_start, resonance_max, resonance_lock_ms) = self
             .game_data
             .abnormality_data
             .get_by_uuid(&base_uuid)
-            .map(|meta| (meta.resonance_start, meta.resonance_max.max(1), meta.resonance_lock_ms))
+            .map(|meta| {
+                (
+                    meta.resonance_start,
+                    meta.resonance_max.max(1),
+                    meta.resonance_lock_ms,
+                )
+            })
             .unwrap_or((0, 100, 1000));
         let resonance_current = resonance_start.min(resonance_max);
 
@@ -573,6 +799,22 @@ impl ReplayState {
             });
         }
 
+        if self
+            .game_data
+            .equipment_data
+            .get_by_uuid(&base_uuid)
+            .is_none()
+        {
+            violations.push(TimelineReplayViolation {
+                kind: TimelineReplayViolationKind::UnknownItemReference,
+                message: format!(
+                    "item {} references unknown base_uuid {}",
+                    item_instance_id, base_uuid
+                ),
+                entry_index: Some(entry_index),
+            });
+        }
+
         self.items.insert(
             item_instance_id,
             RuntimeItem {
@@ -583,7 +825,30 @@ impl ReplayState {
         );
     }
 
-    fn spawn_artifact(&mut self, artifact_instance_id: Uuid, owner: Side, base_uuid: Uuid) {
+    fn spawn_artifact(
+        &mut self,
+        artifact_instance_id: Uuid,
+        owner: Side,
+        base_uuid: Uuid,
+        violations: &mut Vec<TimelineReplayViolation>,
+        entry_index: usize,
+    ) {
+        if self
+            .game_data
+            .artifact_data
+            .get_by_uuid(&base_uuid)
+            .is_none()
+        {
+            violations.push(TimelineReplayViolation {
+                kind: TimelineReplayViolationKind::UnknownArtifactReference,
+                message: format!(
+                    "artifact {} references unknown base_uuid {}",
+                    artifact_instance_id, base_uuid
+                ),
+                entry_index: Some(entry_index),
+            });
+        }
+
         self.artifacts.insert(
             artifact_instance_id,
             RuntimeArtifact {
@@ -603,11 +868,17 @@ impl ReplayState {
         entry_index: usize,
     ) {
         let (attacker_owner, casting_until_ms) = match self.units.get(&attacker_instance_id) {
-            Some(attacker) => (attacker.owner, attacker.casting_until_ms),
+            Some(attacker) if attacker.stats.current_health > 0 => {
+                (attacker.owner, attacker.casting_until_ms)
+            }
+            Some(_) => return,
             None => {
                 violations.push(TimelineReplayViolation {
                     kind: TimelineReplayViolationKind::UnknownUnitReference,
-                    message: format!("attack references unknown attacker {}", attacker_instance_id),
+                    message: format!(
+                        "attack references unknown attacker {}",
+                        attacker_instance_id
+                    ),
                     entry_index: Some(entry_index),
                 });
                 return;
@@ -625,13 +896,13 @@ impl ReplayState {
             });
         }
 
+        if !self.is_alive_enemy(target_instance_id, attacker_owner) {
+            return;
+        }
+
         if let Some(attacker) = self.units.get_mut(&attacker_instance_id) {
             attacker.current_target = Some(target_instance_id);
             self.add_resonance(attacker_instance_id, 10, time_ms, true);
-        }
-
-        if !self.is_alive_enemy(target_instance_id, attacker_owner) {
-            return;
         }
     }
 
@@ -657,7 +928,10 @@ impl ReplayState {
         else {
             violations.push(TimelineReplayViolation {
                 kind: TimelineReplayViolationKind::UnknownUnitReference,
-                message: format!("AutoCastStart references unknown caster {}", caster_instance_id),
+                message: format!(
+                    "AutoCastStart references unknown caster {}",
+                    caster_instance_id
+                ),
                 entry_index: Some(entry_index),
             });
             return;
@@ -723,7 +997,10 @@ impl ReplayState {
         let Some(caster) = self.units.get_mut(&caster_instance_id) else {
             violations.push(TimelineReplayViolation {
                 kind: TimelineReplayViolationKind::UnknownUnitReference,
-                message: format!("AutoCastEnd references unknown caster {}", caster_instance_id),
+                message: format!(
+                    "AutoCastEnd references unknown caster {}",
+                    caster_instance_id
+                ),
                 entry_index: Some(entry_index),
             });
             return;
@@ -742,14 +1019,48 @@ impl ReplayState {
         target_instance_id: Uuid,
         buff_id: BuffId,
         duration_ms: u64,
+        violations: &mut Vec<TimelineReplayViolation>,
+        entry_index: usize,
     ) {
         let Some(def) = buffs::get(buff_id) else {
+            violations.push(TimelineReplayViolation {
+                kind: TimelineReplayViolationKind::UnknownBuffReference,
+                message: format!(
+                    "BuffApplied references unknown buff_id {}",
+                    buff_id.as_u64()
+                ),
+                entry_index: Some(entry_index),
+            });
             return;
         };
         if duration_ms == 0 {
+            violations.push(TimelineReplayViolation {
+                kind: TimelineReplayViolationKind::InvalidBuffEvent,
+                message: "BuffApplied has duration_ms == 0".to_string(),
+                entry_index: Some(entry_index),
+            });
+            return;
+        }
+        if !self.units.contains_key(&caster_instance_id) {
+            violations.push(TimelineReplayViolation {
+                kind: TimelineReplayViolationKind::UnknownUnitReference,
+                message: format!(
+                    "BuffApplied references unknown caster {}",
+                    caster_instance_id
+                ),
+                entry_index: Some(entry_index),
+            });
             return;
         }
         if !self.units.contains_key(&target_instance_id) {
+            violations.push(TimelineReplayViolation {
+                kind: TimelineReplayViolationKind::UnknownUnitReference,
+                message: format!(
+                    "BuffApplied references unknown target {}",
+                    target_instance_id
+                ),
+                entry_index: Some(entry_index),
+            });
             return;
         }
 
@@ -789,9 +1100,19 @@ impl ReplayState {
         entry_index: usize,
     ) {
         let Some(def) = buffs::get(buff_id) else {
+            violations.push(TimelineReplayViolation {
+                kind: TimelineReplayViolationKind::UnknownBuffReference,
+                message: format!("BuffTick references unknown buff_id {}", buff_id.as_u64()),
+                entry_index: Some(entry_index),
+            });
             return;
         };
         if def.tick_interval_ms == 0 {
+            violations.push(TimelineReplayViolation {
+                kind: TimelineReplayViolationKind::InvalidBuffEvent,
+                message: "BuffTick recorded for buff with tick_interval_ms == 0".to_string(),
+                entry_index: Some(entry_index),
+            });
             return;
         }
 
@@ -801,10 +1122,26 @@ impl ReplayState {
             buff_id,
         };
         let Some(active) = self.buffs.get_mut(&key) else {
+            violations.push(TimelineReplayViolation {
+                kind: TimelineReplayViolationKind::InvalidBuffEvent,
+                message: format!(
+                    "BuffTick recorded without an active BuffApplied (buff_id={})",
+                    buff_id.as_u64()
+                ),
+                entry_index: Some(entry_index),
+            });
             return;
         };
 
         if time_ms >= active.expires_at_ms {
+            violations.push(TimelineReplayViolation {
+                kind: TimelineReplayViolationKind::InvalidBuffEvent,
+                message: format!(
+                    "BuffTick at {}ms is at/after expires_at_ms {}",
+                    time_ms, active.expires_at_ms
+                ),
+                entry_index: Some(entry_index),
+            });
             return;
         }
 
@@ -833,16 +1170,45 @@ impl ReplayState {
         caster_instance_id: Uuid,
         target_instance_id: Uuid,
         buff_id: BuffId,
+        violations: &mut Vec<TimelineReplayViolation>,
+        entry_index: usize,
     ) {
         let key = BuffInstanceKey {
             caster_instance_id,
             target_instance_id,
             buff_id,
         };
+        if buffs::get(buff_id).is_none() {
+            violations.push(TimelineReplayViolation {
+                kind: TimelineReplayViolationKind::UnknownBuffReference,
+                message: format!(
+                    "BuffExpired references unknown buff_id {}",
+                    buff_id.as_u64()
+                ),
+                entry_index: Some(entry_index),
+            });
+            return;
+        }
         let Some(active) = self.buffs.get(&key) else {
+            violations.push(TimelineReplayViolation {
+                kind: TimelineReplayViolationKind::InvalidBuffEvent,
+                message: format!(
+                    "BuffExpired recorded without an active BuffApplied (buff_id={})",
+                    buff_id.as_u64()
+                ),
+                entry_index: Some(entry_index),
+            });
             return;
         };
         if time_ms < active.expires_at_ms {
+            violations.push(TimelineReplayViolation {
+                kind: TimelineReplayViolationKind::InvalidBuffEvent,
+                message: format!(
+                    "BuffExpired at {}ms is before expires_at_ms {}",
+                    time_ms, active.expires_at_ms
+                ),
+                entry_index: Some(entry_index),
+            });
             return;
         }
         self.buffs.remove(&key);
@@ -855,16 +1221,23 @@ impl ReplayState {
         attacker_instance_id: Uuid,
         target_instance_id: Uuid,
         expectations: &mut HashMap<u64, Vec<ExpectedOutcome>>,
+        expected_decisions: &mut HashMap<u64, Vec<ExpectedDecision>>,
+        validate_expected_decisions: bool,
         violations: &mut Vec<TimelineReplayViolation>,
         entry_index: usize,
     ) {
         let (attacker_owner, attacker_attack) = match self.units.get(&attacker_instance_id) {
-            Some(attacker) if attacker.stats.current_health > 0 => (attacker.owner, attacker.stats.attack),
+            Some(attacker) if attacker.stats.current_health > 0 => {
+                (attacker.owner, attacker.stats.attack)
+            }
             Some(_) => return,
             None => {
                 violations.push(TimelineReplayViolation {
                     kind: TimelineReplayViolationKind::UnknownUnitReference,
-                    message: format!("attack references unknown attacker {}", attacker_instance_id),
+                    message: format!(
+                        "attack references unknown attacker {}",
+                        attacker_instance_id
+                    ),
                     entry_index: Some(entry_index),
                 });
                 return;
@@ -894,7 +1267,8 @@ impl ReplayState {
             return;
         }
 
-        let on_attack_effects = self.collect_all_triggers(attacker_instance_id, TriggerType::OnAttack);
+        let on_attack_effects =
+            self.collect_all_triggers(attacker_instance_id, TriggerType::OnAttack);
         let on_hit_effects = self.collect_all_triggers(target_instance_id, TriggerType::OnHit);
 
         let ctx = DamageContext {
@@ -917,30 +1291,133 @@ impl ReplayState {
         };
 
         let result = calculate_damage(&request, &ctx);
-        let hp_before = target_current_hp;
-        let hp_after = target_current_hp.saturating_sub(result.final_damage);
-        let delta = hp_after as i32 - hp_before as i32;
+        let mut shadow = self.clone_for_shadow();
+        if let Some(expected) = shadow.apply_basic_attack_expected(
+            attacker_instance_id,
+            target_instance_id,
+            result.final_damage,
+        ) {
+            expectations.entry(cause_seq).or_default().push(expected);
+        }
 
-        expectations
-            .entry(cause_seq)
-            .or_default()
-            .push(ExpectedOutcome::HpChanged {
-                source_instance_id: Some(attacker_instance_id),
-                target_instance_id,
-                delta,
-                hp_before,
-                hp_after,
-                reason: HpChangeReason::BasicAttack,
-            });
+        let mut pending_apply_buffs: Vec<(Uuid, Uuid, BuffId, u64)> = Vec::new();
 
-        if result.target_killed {
+        for command in result.triggered_commands {
+            match command {
+                BattleCommand::ApplyBuff {
+                    caster_id,
+                    target_id,
+                    buff_id,
+                    duration_ms,
+                } => {
+                    if validate_expected_decisions
+                        && duration_ms > 0
+                        && buffs::get(buff_id).is_some()
+                        && shadow
+                            .units
+                            .get(&caster_id)
+                            .is_some_and(|u| u.stats.current_health > 0)
+                    {
+                        pending_apply_buffs.push((caster_id, target_id, buff_id, duration_ms));
+                    }
+                }
+                BattleCommand::ExecuteAbility {
+                    ability_id,
+                    caster_id,
+                    target_id,
+                } => {
+                    if validate_expected_decisions
+                        && shadow
+                            .units
+                            .get(&caster_id)
+                            .is_some_and(|u| u.stats.current_health > 0)
+                        && self
+                            .would_execute_ability_in_units(
+                                &shadow.units,
+                                ability_id,
+                                caster_id,
+                                target_id,
+                                time_ms,
+                            )
+                            .unwrap_or(false)
+                    {
+                        expected_decisions.entry(cause_seq).or_default().push(
+                            ExpectedDecision::AbilityCast {
+                                time_ms,
+                                ability_id,
+                                caster_instance_id: caster_id,
+                                target_instance_id: target_id,
+                            },
+                        );
+                    }
+                }
+                BattleCommand::ApplyHeal {
+                    target_id,
+                    flat,
+                    percent,
+                    source_id,
+                } => {
+                    if let Some(expected) =
+                        shadow.apply_heal_expected(time_ms, target_id, flat, percent, source_id)
+                    {
+                        expectations.entry(cause_seq).or_default().push(expected);
+                    }
+                }
+                BattleCommand::ApplyModifier {
+                    target_id,
+                    modifier,
+                } => {
+                    if let Some(expected) =
+                        shadow.apply_modifier_expected(time_ms, target_id, modifier)
+                    {
+                        expectations.entry(cause_seq).or_default().push(expected);
+                    }
+                }
+                _ => {}
+            }
+        }
+
+        if validate_expected_decisions {
+            for (caster_id, target_id, buff_id, duration_ms) in pending_apply_buffs {
+                if shadow
+                    .killed_units
+                    .get(&target_id)
+                    .copied()
+                    .unwrap_or(false)
+                {
+                    continue;
+                }
+                if !shadow.units.contains_key(&target_id) {
+                    continue;
+                }
+                expected_decisions.entry(cause_seq).or_default().push(
+                    ExpectedDecision::BuffApplied {
+                        time_ms,
+                        caster_instance_id: caster_id,
+                        target_instance_id: target_id,
+                        buff_id,
+                        duration_ms,
+                    },
+                );
+            }
+        }
+
+        for (unit_id, dead) in shadow.killed_units {
+            if !dead {
+                continue;
+            }
+            let owner = self
+                .units
+                .get(&unit_id)
+                .map(|u| u.owner)
+                .unwrap_or(Side::Opponent);
             expectations
                 .entry(cause_seq)
                 .or_default()
                 .push(ExpectedOutcome::UnitDied {
-                    unit_instance_id: target_instance_id,
-                    owner: target_owner,
-                    killer_instance_id: Some(attacker_instance_id),
+                    unit_instance_id: unit_id,
+                    owner,
+                    killer_instance_id: shadow.killers.get(&unit_id).copied().flatten(),
                 });
         }
     }
@@ -953,13 +1430,18 @@ impl ReplayState {
         caster_instance_id: Uuid,
         target_instance_id: Option<Uuid>,
         expectations: &mut HashMap<u64, Vec<ExpectedOutcome>>,
+        expected_decisions: &mut HashMap<u64, Vec<ExpectedDecision>>,
+        validate_expected_decisions: bool,
         violations: &mut Vec<TimelineReplayViolation>,
         entry_index: usize,
     ) {
         let Some(caster) = self.units.get(&caster_instance_id) else {
             violations.push(TimelineReplayViolation {
                 kind: TimelineReplayViolationKind::UnknownUnitReference,
-                message: format!("AbilityCast references unknown caster {}", caster_instance_id),
+                message: format!(
+                    "AbilityCast references unknown caster {}",
+                    caster_instance_id
+                ),
                 entry_index: Some(entry_index),
             });
             return;
@@ -993,9 +1475,57 @@ impl ReplayState {
         }
 
         let mut shadow = self.clone_for_shadow();
+        let mut pending_apply_buffs: Vec<(Uuid, Uuid, BuffId, u64)> = Vec::new();
         for command in result.commands {
             match command {
-                crate::game::battle::damage::BattleCommand::ApplyHeal {
+                BattleCommand::ApplyBuff {
+                    caster_id,
+                    target_id,
+                    buff_id,
+                    duration_ms,
+                } => {
+                    if validate_expected_decisions
+                        && duration_ms > 0
+                        && buffs::get(buff_id).is_some()
+                        && shadow
+                            .units
+                            .get(&caster_id)
+                            .is_some_and(|u| u.stats.current_health > 0)
+                    {
+                        pending_apply_buffs.push((caster_id, target_id, buff_id, duration_ms));
+                    }
+                }
+                BattleCommand::ExecuteAbility {
+                    ability_id,
+                    caster_id,
+                    target_id,
+                } => {
+                    if validate_expected_decisions
+                        && shadow
+                            .units
+                            .get(&caster_id)
+                            .is_some_and(|u| u.stats.current_health > 0)
+                        && self
+                            .would_execute_ability_in_units(
+                                &shadow.units,
+                                ability_id,
+                                caster_id,
+                                target_id,
+                                time_ms,
+                            )
+                            .unwrap_or(false)
+                    {
+                        expected_decisions.entry(cause_seq).or_default().push(
+                            ExpectedDecision::AbilityCast {
+                                time_ms,
+                                ability_id,
+                                caster_instance_id: caster_id,
+                                target_instance_id: target_id,
+                            },
+                        );
+                    }
+                }
+                BattleCommand::ApplyHeal {
                     target_id,
                     flat,
                     percent,
@@ -1007,12 +1537,42 @@ impl ReplayState {
                         expectations.entry(cause_seq).or_default().push(expected);
                     }
                 }
-                crate::game::battle::damage::BattleCommand::ApplyModifier { target_id, modifier } => {
-                    if let Some(expected) = shadow.apply_modifier_expected(time_ms, target_id, modifier) {
+                BattleCommand::ApplyModifier {
+                    target_id,
+                    modifier,
+                } => {
+                    if let Some(expected) =
+                        shadow.apply_modifier_expected(time_ms, target_id, modifier)
+                    {
                         expectations.entry(cause_seq).or_default().push(expected);
                     }
                 }
                 _ => {}
+            }
+        }
+
+        if validate_expected_decisions {
+            for (caster_id, target_id, buff_id, duration_ms) in pending_apply_buffs {
+                if shadow
+                    .killed_units
+                    .get(&target_id)
+                    .copied()
+                    .unwrap_or(false)
+                {
+                    continue;
+                }
+                if !shadow.units.contains_key(&target_id) {
+                    continue;
+                }
+                expected_decisions.entry(cause_seq).or_default().push(
+                    ExpectedDecision::BuffApplied {
+                        time_ms,
+                        caster_instance_id: caster_id,
+                        target_instance_id: target_id,
+                        buff_id,
+                        duration_ms,
+                    },
+                );
             }
         }
 
@@ -1023,11 +1583,14 @@ impl ReplayState {
                     .get(&unit_id)
                     .map(|u| u.owner)
                     .unwrap_or(Side::Opponent);
-                expectations.entry(cause_seq).or_default().push(ExpectedOutcome::UnitDied {
-                    unit_instance_id: unit_id,
-                    owner,
-                    killer_instance_id: shadow.killers.get(&unit_id).copied().flatten(),
-                });
+                expectations
+                    .entry(cause_seq)
+                    .or_default()
+                    .push(ExpectedOutcome::UnitDied {
+                        unit_instance_id: unit_id,
+                        owner,
+                        killer_instance_id: shadow.killers.get(&unit_id).copied().flatten(),
+                    });
             }
         }
     }
@@ -1040,10 +1603,17 @@ impl ReplayState {
         target_instance_id: Uuid,
         buff_id: BuffId,
         expectations: &mut HashMap<u64, Vec<ExpectedOutcome>>,
-        _violations: &mut Vec<TimelineReplayViolation>,
-        _entry_index: usize,
+        _expected_decisions: &mut HashMap<u64, Vec<ExpectedDecision>>,
+        _validate_expected_decisions: bool,
+        violations: &mut Vec<TimelineReplayViolation>,
+        entry_index: usize,
     ) {
         let Some(def) = buffs::get(buff_id) else {
+            violations.push(TimelineReplayViolation {
+                kind: TimelineReplayViolationKind::UnknownBuffReference,
+                message: format!("BuffTick references unknown buff_id {}", buff_id.as_u64()),
+                entry_index: Some(entry_index),
+            });
             return;
         };
 
@@ -1053,6 +1623,14 @@ impl ReplayState {
             buff_id,
         };
         let Some(active) = self.buffs.get(&key) else {
+            violations.push(TimelineReplayViolation {
+                kind: TimelineReplayViolationKind::InvalidBuffEvent,
+                message: format!(
+                    "BuffTick recorded without an active BuffApplied (buff_id={})",
+                    buff_id.as_u64()
+                ),
+                entry_index: Some(entry_index),
+            });
             return;
         };
 
@@ -1066,9 +1644,13 @@ impl ReplayState {
         }
 
         let mut shadow = self.clone_for_shadow();
-        if let Some(expected) =
-            shadow.apply_heal_expected(time_ms, target_instance_id, -dmg, 0, Some(caster_instance_id))
-        {
+        if let Some(expected) = shadow.apply_heal_expected(
+            time_ms,
+            target_instance_id,
+            -dmg,
+            0,
+            Some(caster_instance_id),
+        ) {
             expectations.entry(cause_seq).or_default().push(expected);
         }
 
@@ -1079,11 +1661,14 @@ impl ReplayState {
                     .get(&unit_id)
                     .map(|u| u.owner)
                     .unwrap_or(Side::Opponent);
-                expectations.entry(cause_seq).or_default().push(ExpectedOutcome::UnitDied {
-                    unit_instance_id: unit_id,
-                    owner,
-                    killer_instance_id: shadow.killers.get(&unit_id).copied().flatten(),
-                });
+                expectations
+                    .entry(cause_seq)
+                    .or_default()
+                    .push(ExpectedOutcome::UnitDied {
+                        unit_instance_id: unit_id,
+                        owner,
+                        killer_instance_id: shadow.killers.get(&unit_id).copied().flatten(),
+                    });
             }
         }
     }
@@ -1104,10 +1689,23 @@ impl ReplayState {
                 delta: _,
                 reason: _,
             } => {
+                if let Some(source_id) = source_instance_id {
+                    if *source_id != *target_instance_id && !self.known_units.contains(source_id) {
+                        violations.push(TimelineReplayViolation {
+                            kind: TimelineReplayViolationKind::UnknownUnitReference,
+                            message: format!("HpChanged references unknown source {}", source_id),
+                            entry_index: Some(entry_index),
+                        });
+                    }
+                }
+
                 let Some(target) = self.units.get_mut(target_instance_id) else {
                     violations.push(TimelineReplayViolation {
                         kind: TimelineReplayViolationKind::UnknownUnitReference,
-                        message: format!("HpChanged references unknown target {}", target_instance_id),
+                        message: format!(
+                            "HpChanged references unknown target {}",
+                            target_instance_id
+                        ),
                         entry_index: Some(entry_index),
                     });
                     return;
@@ -1130,12 +1728,6 @@ impl ReplayState {
                     if gained > 0 {
                         let allow_autocast = *hp_after > 0;
                         self.add_resonance(*target_instance_id, gained, time_ms, allow_autocast);
-                    }
-                }
-
-                if let Some(source_id) = source_instance_id {
-                    if *source_id != *target_instance_id {
-                        let _ = self.units.get(source_id);
                     }
                 }
             }
@@ -1164,7 +1756,10 @@ impl ReplayState {
                 {
                     violations.push(TimelineReplayViolation {
                         kind: TimelineReplayViolationKind::OutcomeMismatch,
-                        message: format!("StatChanged stats_before mismatch for {}", target_instance_id),
+                        message: format!(
+                            "StatChanged stats_before mismatch for {}",
+                            target_instance_id
+                        ),
                         entry_index: Some(entry_index),
                     });
                 }
@@ -1234,12 +1829,47 @@ impl ReplayState {
         unit_snapshots
     }
 
+    fn would_execute_ability_in_units(
+        &self,
+        units: &HashMap<Uuid, RuntimeUnit>,
+        ability_id: crate::game::ability::AbilityId,
+        caster_id: Uuid,
+        target_id: Option<Uuid>,
+        time_ms: u64,
+    ) -> Option<bool> {
+        let caster = units.get(&caster_id)?;
+        if caster.stats.current_health == 0 {
+            return Some(false);
+        }
+        let caster_snapshot = caster.to_snapshot();
+        let mut unit_snapshots: Vec<UnitSnapshot> = units
+            .values()
+            .filter(|u| u.stats.current_health > 0)
+            .map(|u| u.to_snapshot())
+            .collect();
+        unit_snapshots.sort_by(|a, b| a.id.as_bytes().cmp(b.id.as_bytes()));
+        let request = AbilityRequest {
+            ability_id,
+            caster_id,
+            target_id,
+            time_ms,
+        };
+
+        let mut executor = self.ability_executor.clone();
+        Some(
+            executor
+                .execute(&request, &caster_snapshot, &unit_snapshots)
+                .executed,
+        )
+    }
+
     fn collect_all_triggers(&self, unit_instance_id: Uuid, trigger: TriggerType) -> Vec<Effect> {
         let Some(unit) = self.units.get(&unit_instance_id) else {
             return Vec::new();
         };
 
-        let mut effects = self.collect_triggers(TriggerSource::Artifact { side: unit.owner }, trigger);
+        let mut effects =
+            self.collect_triggers(TriggerSource::Artifact { side: unit.owner }, trigger);
         effects.extend(self.collect_triggers(TriggerSource::Item { unit_instance_id }, trigger));
         effects
     }
@@ -1249,12 +1879,19 @@ impl ReplayState {
 
         match source {
             TriggerSource::Artifact { side } => {
-                let mut artifacts: Vec<&RuntimeArtifact> =
-                    self.artifacts.values().filter(|a| a.owner == side).collect();
+                let mut artifacts: Vec<&RuntimeArtifact> = self
+                    .artifacts
+                    .values()
+                    .filter(|a| a.owner == side)
+                    .collect();
                 artifacts.sort_by(|a, b| a.instance_id.as_bytes().cmp(b.instance_id.as_bytes()));
 
                 for artifact in artifacts {
-                    if let Some(metadata) = self.game_data.artifact_data.get_by_uuid(&artifact.base_uuid) {
+                    if let Some(metadata) = self
+                        .game_data
+                        .artifact_data
+                        .get_by_uuid(&artifact.base_uuid)
+                    {
                         if let Some(triggered) = metadata.triggered_effects.get(&trigger) {
                             effects.extend(triggered.iter().cloned());
                         }
@@ -1270,7 +1907,9 @@ impl ReplayState {
                 items.sort_by(|a, b| a.instance_id.as_bytes().cmp(b.instance_id.as_bytes()));
 
                 for item in items {
-                    if let Some(metadata) = self.game_data.equipment_data.get_by_uuid(&item.base_uuid) {
+                    if let Some(metadata) =
+                        self.game_data.equipment_data.get_by_uuid(&item.base_uuid)
+                    {
                         if let Some(triggered) = metadata.triggered_effects.get(&trigger) {
                             effects.extend(triggered.iter().cloned());
                         }
@@ -1309,6 +1948,36 @@ struct ShadowState {
 }
 
 impl ShadowState {
+    fn apply_basic_attack_expected(
+        &mut self,
+        attacker_id: Uuid,
+        target_id: Uuid,
+        final_damage: u32,
+    ) -> Option<ExpectedOutcome> {
+        let unit = self.units.get_mut(&target_id)?;
+        if unit.stats.current_health == 0 {
+            return None;
+        }
+
+        let hp_before = unit.stats.current_health;
+        let hp_after = hp_before.saturating_sub(final_damage);
+        unit.stats.current_health = hp_after;
+
+        if hp_after == 0 {
+            self.killed_units.insert(target_id, true);
+            self.killers.insert(target_id, Some(attacker_id));
+        }
+
+        Some(ExpectedOutcome::HpChanged {
+            source_instance_id: Some(attacker_id),
+            target_instance_id: target_id,
+            delta: hp_after as i32 - hp_before as i32,
+            hp_before,
+            hp_after,
+            reason: HpChangeReason::BasicAttack,
+        })
+    }
+
     fn apply_heal_expected(
         &mut self,
         _time_ms: u64,
@@ -1323,10 +1992,11 @@ impl ShadowState {
         }
 
         let hp_before = unit.stats.current_health;
-        let percent_delta = (unit.stats.max_health as i64) * (percent as i64) / 100;
-        let delta = (flat as i64) + percent_delta;
-        let hp_after = (hp_before as i64 + delta)
-            .clamp(0, unit.stats.max_health as i64) as u32;
+        let percent_delta =
+            (unit.stats.max_health as i128).saturating_mul(i128::from(percent)) / 100;
+        let delta = i128::from(flat) + percent_delta;
+        let hp_after =
+            (i128::from(hp_before) + delta).clamp(0, unit.stats.max_health as i128) as u32;
         unit.stats.current_health = hp_after;
 
         if hp_after == 0 {

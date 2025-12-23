@@ -4,6 +4,7 @@ use uuid::Uuid;
 
 use crate::game::{
     battle::{
+        buffs,
         timeline::{AttackKind, HpChangeReason, Timeline, TimelineEntry, TimelineEvent},
         PlayerDeckInfo,
     },
@@ -11,13 +12,27 @@ use crate::game::{
     stats::UnitStats,
 };
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+struct BasicAttackHpChangeKey {
+    cause_seq: u64,
+    time_ms: u64,
+    attacker_instance_id: Uuid,
+    target_instance_id: Uuid,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TimelineViolationKind {
+    TimelineVersionMismatch,
     MissingEntries,
     MissingBattleStart,
     MissingBattleEnd,
     NonContiguousSeq,
     TimeWentBackwards,
+    AttackKindMissing,
+    OutcomeMissingCauseSeq,
+    OutcomeCauseSeqOutOfRange,
+    OutcomeCauseSeqInFuture,
+    OutcomeCauseSeqInvalidType,
     SpawnStatsInvalid,
     HpDeltaMismatch,
     UnitSpawnCountMismatch,
@@ -27,6 +42,7 @@ pub enum TimelineViolationKind {
     DuplicateItemSpawn,
     DuplicateArtifactSpawn,
     UnknownUnitReference,
+    UnitReferencedBeforeSpawn,
     AttackTargetsSameUnit,
     AttackTargetsAlly,
     AttackMissingBasicHpChanged,
@@ -34,6 +50,10 @@ pub enum TimelineViolationKind {
     DeadUnitActsAfterDeath,
     AutoAttackTooEarly,
     MissingExpectedAutoAttack,
+    UnknownBuffId,
+    BuffAppliedDurationZero,
+    BuffTickInvalid,
+    BuffExpiredInvalid,
 }
 
 #[derive(Debug, Clone)]
@@ -83,6 +103,7 @@ pub struct TimelineValidatorConfig {
     pub require_battle_start_end: bool,
     pub require_contiguous_seq: bool,
     pub require_non_decreasing_time: bool,
+    pub validate_outcome_cause_seq: bool,
     pub require_spawn_stats_valid: bool,
     pub require_hp_delta_consistent: bool,
     pub require_attack_has_basic_hp_change: bool,
@@ -99,6 +120,7 @@ impl Default for TimelineValidatorConfig {
             require_battle_start_end: true,
             require_contiguous_seq: true,
             require_non_decreasing_time: true,
+            validate_outcome_cause_seq: true,
             require_spawn_stats_valid: true,
             require_hp_delta_consistent: true,
             require_attack_has_basic_hp_change: true,
@@ -126,6 +148,19 @@ impl TimelineValidator {
         expected_counts: Option<TimelineExpectedCounts>,
     ) -> Result<(), Vec<TimelineViolation>> {
         let mut violations = Vec::new();
+
+        if timeline.version != crate::game::battle::timeline::TIMELINE_VERSION {
+            violations.push(TimelineViolation {
+                kind: TimelineViolationKind::TimelineVersionMismatch,
+                message: format!(
+                    "timeline version mismatch: expected={}, got={}",
+                    crate::game::battle::timeline::TIMELINE_VERSION,
+                    timeline.version
+                ),
+                entry_index: None,
+            });
+            return Err(violations);
+        }
 
         if timeline.entries.is_empty() {
             violations.push(TimelineViolation {
@@ -165,10 +200,16 @@ impl TimelineValidator {
             self.validate_entry_index_invariants(timeline, index, entry, &mut violations);
         }
 
+        if self.config.validate_outcome_cause_seq {
+            validate_outcome_cause_relations(timeline, &mut violations);
+        }
+
         // Spawn integrity and reference checks.
         let extracted = extract_spawns(timeline, &mut violations);
         validate_spawn_counts(extracted.counts, expected_counts, &mut violations);
+        validate_reference_spawn_order(timeline, &extracted, &mut violations);
         validate_attacks(timeline, &extracted, &mut violations, &self.config);
+        validate_buffs(timeline, &mut violations);
         validate_deaths(timeline, &extracted, &mut violations, &self.config);
         validate_auto_attack_cadence(timeline, &extracted, &mut violations, &self.config);
 
@@ -186,10 +227,18 @@ impl TimelineValidator {
         entry: &TimelineEntry,
         violations: &mut Vec<TimelineViolation>,
     ) {
-        if self.config.require_contiguous_seq && entry.seq as usize != index {
+        if self.config.require_contiguous_seq && entry.seq != index as u64 {
             violations.push(TimelineViolation {
                 kind: TimelineViolationKind::NonContiguousSeq,
                 message: format!("timeline seq {} does not match index {}", entry.seq, index),
+                entry_index: Some(index),
+            });
+        }
+
+        if matches!(&entry.event, TimelineEvent::Attack { kind: None, .. }) {
+            violations.push(TimelineViolation {
+                kind: TimelineViolationKind::AttackKindMissing,
+                message: "Attack event is missing kind (expected Auto/Triggered)".to_string(),
                 entry_index: Some(index),
             });
         }
@@ -228,8 +277,8 @@ impl TimelineValidator {
                 ..
             } = &entry.event
             {
-                let computed = *hp_after as i32 - *hp_before as i32;
-                if computed != *delta {
+                let computed = i64::from(*hp_after) - i64::from(*hp_before);
+                if computed != i64::from(*delta) {
                     violations.push(TimelineViolation {
                         kind: TimelineViolationKind::HpDeltaMismatch,
                         message: format!(
@@ -240,6 +289,73 @@ impl TimelineValidator {
                     });
                 }
             }
+        }
+    }
+}
+
+fn validate_outcome_cause_relations(timeline: &Timeline, violations: &mut Vec<TimelineViolation>) {
+    let mut seq_to_index: HashMap<u64, usize> = HashMap::new();
+    for (index, entry) in timeline.entries.iter().enumerate() {
+        seq_to_index.entry(entry.seq).or_insert(index);
+    }
+
+    for (index, entry) in timeline.entries.iter().enumerate() {
+        if !matches!(
+            entry.event,
+            TimelineEvent::HpChanged { .. }
+                | TimelineEvent::StatChanged { .. }
+                | TimelineEvent::UnitDied { .. }
+        ) {
+            continue;
+        }
+
+        let Some(cause_seq) = entry.cause_seq else {
+            violations.push(TimelineViolation {
+                kind: TimelineViolationKind::OutcomeMissingCauseSeq,
+                message: format!("outcome event missing cause_seq: {:?}", entry.event),
+                entry_index: Some(index),
+            });
+            continue;
+        };
+
+        let Some(&cause_index) = seq_to_index.get(&cause_seq) else {
+            violations.push(TimelineViolation {
+                kind: TimelineViolationKind::OutcomeCauseSeqOutOfRange,
+                message: format!(
+                    "outcome event cause_seq {} does not reference any entry: {:?}",
+                    cause_seq, entry.event
+                ),
+                entry_index: Some(index),
+            });
+            continue;
+        };
+
+        if cause_index >= index {
+            violations.push(TimelineViolation {
+                kind: TimelineViolationKind::OutcomeCauseSeqInFuture,
+                message: format!(
+                    "outcome event cause_seq {} is not before entry index {}: {:?}",
+                    cause_seq, index, entry.event
+                ),
+                entry_index: Some(index),
+            });
+            continue;
+        }
+
+        let cause_entry = &timeline.entries[cause_index];
+        let valid_cause = matches!(
+            cause_entry.event,
+            TimelineEvent::Attack { .. } | TimelineEvent::AbilityCast { .. } | TimelineEvent::BuffTick { .. }
+        );
+        if !valid_cause {
+            violations.push(TimelineViolation {
+                kind: TimelineViolationKind::OutcomeCauseSeqInvalidType,
+                message: format!(
+                    "outcome event cause_seq {} points to non-cause event {:?}",
+                    cause_seq, cause_entry.event
+                ),
+                entry_index: Some(index),
+            });
         }
     }
 }
@@ -259,11 +375,14 @@ fn validate_spawn_stats(stats: &UnitStats) -> Option<String> {
 
 struct ExtractedSpawns {
     counts: TimelineExpectedCounts,
+    unit_spawn_index: HashMap<Uuid, usize>,
     unit_spawn_time_ms: HashMap<Uuid, u64>,
     unit_spawn_stats: HashMap<Uuid, UnitStats>,
     unit_owner_by_instance: HashMap<Uuid, Side>,
     unit_base_by_instance: HashMap<Uuid, Uuid>,
+    item_spawn_index: HashMap<Uuid, usize>,
     item_owner_by_instance: HashMap<Uuid, Side>,
+    artifact_spawn_index: HashMap<Uuid, usize>,
     artifact_owner_by_instance: HashMap<Uuid, Side>,
 }
 
@@ -274,11 +393,14 @@ fn extract_spawns(timeline: &Timeline, violations: &mut Vec<TimelineViolation>) 
             items: 0,
             artifacts: 0,
         },
+        unit_spawn_index: HashMap::new(),
         unit_spawn_time_ms: HashMap::new(),
         unit_spawn_stats: HashMap::new(),
         unit_owner_by_instance: HashMap::new(),
         unit_base_by_instance: HashMap::new(),
+        item_spawn_index: HashMap::new(),
         item_owner_by_instance: HashMap::new(),
+        artifact_spawn_index: HashMap::new(),
         artifact_owner_by_instance: HashMap::new(),
     };
 
@@ -293,9 +415,19 @@ fn extract_spawns(timeline: &Timeline, violations: &mut Vec<TimelineViolation>) 
             } => {
                 extracted.counts.units += 1;
                 extracted
+                    .unit_spawn_index
+                    .entry(unit_instance_id)
+                    .and_modify(|existing| *existing = (*existing).min(index))
+                    .or_insert(index);
+                extracted
                     .unit_spawn_time_ms
-                    .insert(unit_instance_id, entry.time_ms);
-                extracted.unit_spawn_stats.insert(unit_instance_id, stats);
+                    .entry(unit_instance_id)
+                    .and_modify(|existing| *existing = (*existing).min(entry.time_ms))
+                    .or_insert(entry.time_ms);
+                extracted
+                    .unit_spawn_stats
+                    .entry(unit_instance_id)
+                    .or_insert(stats);
                 if extracted
                     .unit_owner_by_instance
                     .insert(unit_instance_id, owner)
@@ -318,6 +450,11 @@ fn extract_spawns(timeline: &Timeline, violations: &mut Vec<TimelineViolation>) 
                 ..
             } => {
                 extracted.counts.items += 1;
+                extracted
+                    .item_spawn_index
+                    .entry(item_instance_id)
+                    .and_modify(|existing| *existing = (*existing).min(index))
+                    .or_insert(index);
                 if extracted
                     .item_owner_by_instance
                     .insert(item_instance_id, owner)
@@ -363,6 +500,11 @@ fn extract_spawns(timeline: &Timeline, violations: &mut Vec<TimelineViolation>) 
                 ..
             } => {
                 extracted.counts.artifacts += 1;
+                extracted
+                    .artifact_spawn_index
+                    .entry(artifact_instance_id)
+                    .and_modify(|existing| *existing = (*existing).min(index))
+                    .or_insert(index);
                 if extracted
                     .artifact_owner_by_instance
                     .insert(artifact_instance_id, owner)
@@ -383,6 +525,447 @@ fn extract_spawns(timeline: &Timeline, violations: &mut Vec<TimelineViolation>) 
     }
 
     extracted
+}
+
+fn validate_reference_spawn_order(
+    timeline: &Timeline,
+    extracted: &ExtractedSpawns,
+    violations: &mut Vec<TimelineViolation>,
+) {
+    for (index, entry) in timeline.entries.iter().enumerate() {
+        let time_ms = entry.time_ms;
+        let entry_desc = format!("{:?}", entry.event);
+        match &entry.event {
+            TimelineEvent::BattleStart { .. }
+            | TimelineEvent::UnitSpawned { .. }
+            | TimelineEvent::ArtifactSpawned { .. }
+            | TimelineEvent::BattleEnd { .. } => {}
+            TimelineEvent::ItemSpawned {
+                owner_unit_instance_id,
+                ..
+            } => {
+                validate_unit_reference_spawned(
+                    extracted,
+                    *owner_unit_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+            }
+            TimelineEvent::Attack {
+                attacker_instance_id,
+                target_instance_id,
+                ..
+            } => {
+                validate_unit_reference_spawned(
+                    extracted,
+                    *attacker_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+                validate_unit_reference_spawned(
+                    extracted,
+                    *target_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+            }
+            TimelineEvent::AutoCastStart {
+                caster_instance_id,
+                target_instance_id,
+                ..
+            } => {
+                validate_unit_reference_spawned(
+                    extracted,
+                    *caster_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+                if let Some(target_id) = target_instance_id {
+                    validate_unit_reference_spawned(
+                        extracted,
+                        *target_id,
+                        index,
+                        time_ms,
+                        &entry_desc,
+                        violations,
+                    );
+                }
+            }
+            TimelineEvent::AutoCastEnd { caster_instance_id } => {
+                validate_unit_reference_spawned(
+                    extracted,
+                    *caster_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+            }
+            TimelineEvent::AbilityCast {
+                caster_instance_id,
+                target_instance_id,
+                ..
+            } => {
+                validate_unit_reference_spawned(
+                    extracted,
+                    *caster_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+                if let Some(target_id) = target_instance_id {
+                    validate_unit_reference_spawned(
+                        extracted,
+                        *target_id,
+                        index,
+                        time_ms,
+                        &entry_desc,
+                        violations,
+                    );
+                }
+            }
+            TimelineEvent::BuffApplied {
+                caster_instance_id,
+                target_instance_id,
+                ..
+            }
+            | TimelineEvent::BuffTick {
+                caster_instance_id,
+                target_instance_id,
+                ..
+            }
+            | TimelineEvent::BuffExpired {
+                caster_instance_id,
+                target_instance_id,
+                ..
+            } => {
+                validate_unit_reference_spawned(
+                    extracted,
+                    *caster_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+                validate_unit_reference_spawned(
+                    extracted,
+                    *target_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+            }
+            TimelineEvent::HpChanged {
+                source_instance_id,
+                target_instance_id,
+                ..
+            } => {
+                if let Some(source_id) = source_instance_id {
+                    validate_unit_reference_spawned(
+                        extracted,
+                        *source_id,
+                        index,
+                        time_ms,
+                        &entry_desc,
+                        violations,
+                    );
+                }
+                validate_unit_reference_spawned(
+                    extracted,
+                    *target_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+            }
+            TimelineEvent::StatChanged {
+                source_instance_id,
+                target_instance_id,
+                ..
+            } => {
+                if let Some(source_id) = source_instance_id {
+                    validate_unit_reference_spawned(
+                        extracted,
+                        *source_id,
+                        index,
+                        time_ms,
+                        &entry_desc,
+                        violations,
+                    );
+                }
+                validate_unit_reference_spawned(
+                    extracted,
+                    *target_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+            }
+            TimelineEvent::UnitDied {
+                unit_instance_id,
+                killer_instance_id,
+                ..
+            } => {
+                validate_unit_reference_spawned(
+                    extracted,
+                    *unit_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+                if let Some(killer_id) = killer_instance_id {
+                    validate_unit_reference_spawned(
+                        extracted,
+                        *killer_id,
+                        index,
+                        time_ms,
+                        &entry_desc,
+                        violations,
+                    );
+                }
+            }
+        }
+    }
+}
+
+fn validate_unit_reference_spawned(
+    extracted: &ExtractedSpawns,
+    unit_id: Uuid,
+    reference_index: usize,
+    reference_time_ms: u64,
+    entry_desc: &str,
+    violations: &mut Vec<TimelineViolation>,
+) {
+    let Some(&spawn_index) = extracted.unit_spawn_index.get(&unit_id) else {
+        violations.push(TimelineViolation {
+            kind: TimelineViolationKind::UnknownUnitReference,
+            message: format!("{entry_desc} references unknown unit {}", unit_id),
+            entry_index: Some(reference_index),
+        });
+        return;
+    };
+    let spawn_time_ms = extracted
+        .unit_spawn_time_ms
+        .get(&unit_id)
+        .copied()
+        .unwrap_or_default();
+
+    if spawn_index > reference_index || spawn_time_ms > reference_time_ms {
+        violations.push(TimelineViolation {
+            kind: TimelineViolationKind::UnitReferencedBeforeSpawn,
+            message: format!(
+                "unit {} referenced before spawn (ref_index={} ref_time_ms={} spawn_index={} spawn_time_ms={})",
+                unit_id, reference_index, reference_time_ms, spawn_index, spawn_time_ms
+            ),
+            entry_index: Some(reference_index),
+        });
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+struct BuffInstanceKey {
+    caster_instance_id: Uuid,
+    target_instance_id: Uuid,
+    buff_id: crate::game::battle::buffs::BuffId,
+}
+
+#[derive(Debug, Clone)]
+struct ActiveBuff {
+    stacks: u8,
+    expires_at_ms: u64,
+    next_tick_ms: Option<u64>,
+}
+
+fn validate_buffs(timeline: &Timeline, violations: &mut Vec<TimelineViolation>) {
+    let mut active_buffs: HashMap<BuffInstanceKey, ActiveBuff> = HashMap::new();
+
+    for (index, entry) in timeline.entries.iter().enumerate() {
+        match entry.event {
+            TimelineEvent::BuffApplied {
+                caster_instance_id,
+                target_instance_id,
+                buff_id,
+                duration_ms,
+            } => {
+                let Some(def) = buffs::get(buff_id) else {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::UnknownBuffId,
+                        message: format!("unknown buff_id {} on BuffApplied", buff_id.as_u64()),
+                        entry_index: Some(index),
+                    });
+                    continue;
+                };
+
+                if duration_ms == 0 {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::BuffAppliedDurationZero,
+                        message: "BuffApplied has duration_ms == 0".to_string(),
+                        entry_index: Some(index),
+                    });
+                    continue;
+                }
+
+                let key = BuffInstanceKey {
+                    caster_instance_id,
+                    target_instance_id,
+                    buff_id,
+                };
+                let expires_at_ms = entry.time_ms.saturating_add(duration_ms);
+                let max_stacks = def.max_stacks.max(1);
+
+                let active = active_buffs.entry(key).or_insert(ActiveBuff {
+                    stacks: 0,
+                    expires_at_ms,
+                    next_tick_ms: None,
+                });
+                active.expires_at_ms = active.expires_at_ms.max(expires_at_ms);
+                active.stacks = active.stacks.saturating_add(1).min(max_stacks);
+
+                if def.tick_interval_ms > 0 && active.next_tick_ms.is_none() {
+                    let next_tick = entry.time_ms.saturating_add(def.tick_interval_ms);
+                    if next_tick < active.expires_at_ms {
+                        active.next_tick_ms = Some(next_tick);
+                    }
+                }
+            }
+            TimelineEvent::BuffTick {
+                caster_instance_id,
+                target_instance_id,
+                buff_id,
+            } => {
+                let Some(def) = buffs::get(buff_id) else {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::UnknownBuffId,
+                        message: format!("unknown buff_id {} on BuffTick", buff_id.as_u64()),
+                        entry_index: Some(index),
+                    });
+                    continue;
+                };
+
+                if def.tick_interval_ms == 0 {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::BuffTickInvalid,
+                        message: "BuffTick recorded for buff with tick_interval_ms == 0"
+                            .to_string(),
+                        entry_index: Some(index),
+                    });
+                    continue;
+                }
+
+                let key = BuffInstanceKey {
+                    caster_instance_id,
+                    target_instance_id,
+                    buff_id,
+                };
+
+                let Some(active) = active_buffs.get_mut(&key) else {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::BuffTickInvalid,
+                        message: format!(
+                            "BuffTick recorded without an active BuffApplied (buff_id={})",
+                            buff_id.as_u64()
+                        ),
+                        entry_index: Some(index),
+                    });
+                    continue;
+                };
+
+                if entry.time_ms >= active.expires_at_ms {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::BuffTickInvalid,
+                        message: format!(
+                            "BuffTick at {}ms is at/after expires_at_ms {}",
+                            entry.time_ms, active.expires_at_ms
+                        ),
+                        entry_index: Some(index),
+                    });
+                    continue;
+                }
+
+                if active.next_tick_ms != Some(entry.time_ms) {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::BuffTickInvalid,
+                        message: format!(
+                            "BuffTick at {}ms does not match expected next_tick_ms {:?}",
+                            entry.time_ms, active.next_tick_ms
+                        ),
+                        entry_index: Some(index),
+                    });
+                }
+
+                let next_tick = entry.time_ms.saturating_add(def.tick_interval_ms);
+                if next_tick < active.expires_at_ms {
+                    active.next_tick_ms = Some(next_tick);
+                } else {
+                    active.next_tick_ms = None;
+                }
+            }
+            TimelineEvent::BuffExpired {
+                caster_instance_id,
+                target_instance_id,
+                buff_id,
+            } => {
+                if buffs::get(buff_id).is_none() {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::UnknownBuffId,
+                        message: format!("unknown buff_id {} on BuffExpired", buff_id.as_u64()),
+                        entry_index: Some(index),
+                    });
+                    continue;
+                }
+
+                let key = BuffInstanceKey {
+                    caster_instance_id,
+                    target_instance_id,
+                    buff_id,
+                };
+                let Some(active) = active_buffs.get(&key) else {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::BuffExpiredInvalid,
+                        message: format!(
+                            "BuffExpired recorded without an active BuffApplied (buff_id={})",
+                            buff_id.as_u64()
+                        ),
+                        entry_index: Some(index),
+                    });
+                    continue;
+                };
+
+                if entry.time_ms < active.expires_at_ms {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::BuffExpiredInvalid,
+                        message: format!(
+                            "BuffExpired at {}ms is before expires_at_ms {}",
+                            entry.time_ms, active.expires_at_ms
+                        ),
+                        entry_index: Some(index),
+                    });
+                    continue;
+                }
+
+                active_buffs.remove(&key);
+            }
+            TimelineEvent::UnitDied {
+                unit_instance_id, ..
+            } => {
+                active_buffs.retain(|key, _| key.target_instance_id != unit_instance_id);
+            }
+            _ => {}
+        }
+    }
 }
 
 fn validate_spawn_counts(
@@ -432,6 +1015,28 @@ fn validate_attacks(
     violations: &mut Vec<TimelineViolation>,
     config: &TimelineValidatorConfig,
 ) {
+    let mut basic_attack_hp_changes: HashSet<BasicAttackHpChangeKey> = HashSet::new();
+    if config.require_attack_has_basic_hp_change {
+        for entry in &timeline.entries {
+            if let TimelineEvent::HpChanged {
+                source_instance_id: Some(source_id),
+                target_instance_id,
+                reason: HpChangeReason::BasicAttack,
+                ..
+            } = entry.event
+            {
+                if let Some(cause_seq) = entry.cause_seq {
+                    basic_attack_hp_changes.insert(BasicAttackHpChangeKey {
+                        cause_seq,
+                        time_ms: entry.time_ms,
+                        attacker_instance_id: source_id,
+                        target_instance_id,
+                    });
+                }
+            }
+        }
+    }
+
     for (index, entry) in timeline.entries.iter().enumerate() {
         let TimelineEvent::Attack {
             attacker_instance_id,
@@ -485,23 +1090,12 @@ fn validate_attacks(
         }
 
         if config.require_attack_has_basic_hp_change {
-            let saw_basic_hp_change =
-                timeline
-                    .entries
-                    .iter()
-                    .any(|hp_entry| match hp_entry.event {
-                        TimelineEvent::HpChanged {
-                            source_instance_id: Some(source_id),
-                            target_instance_id: target_id,
-                            reason: HpChangeReason::BasicAttack,
-                            ..
-                        } => {
-                            hp_entry.time_ms == entry.time_ms
-                                && source_id == attacker_instance_id
-                                && target_id == target_instance_id
-                        }
-                        _ => false,
-                    });
+            let saw_basic_hp_change = basic_attack_hp_changes.contains(&BasicAttackHpChangeKey {
+                cause_seq: entry.seq,
+                time_ms: entry.time_ms,
+                attacker_instance_id,
+                target_instance_id,
+            });
 
             if !saw_basic_hp_change {
                 violations.push(TimelineViolation {
@@ -521,6 +1115,7 @@ fn validate_deaths(
     config: &TimelineValidatorConfig,
 ) {
     let mut died_units: HashSet<Uuid> = HashSet::new();
+    let mut death_index_by_unit: HashMap<Uuid, usize> = HashMap::new();
 
     for (index, entry) in timeline.entries.iter().enumerate() {
         let TimelineEvent::UnitDied {
@@ -530,6 +1125,11 @@ fn validate_deaths(
             continue;
         };
 
+        death_index_by_unit
+            .entry(unit_instance_id)
+            .and_modify(|existing| *existing = (*existing).min(index))
+            .or_insert(index);
+
         if !died_units.insert(unit_instance_id) {
             violations.push(TimelineViolation {
                 kind: TimelineViolationKind::UnitDiedDuplicate,
@@ -537,19 +1137,25 @@ fn validate_deaths(
                 entry_index: Some(index),
             });
         }
+    }
 
-        // Validate post-death references.
-        for later in &timeline.entries[index + 1..] {
-            if is_dead_unit_operated_on(&later.event, unit_instance_id, config) {
-                violations.push(TimelineViolation {
-                    kind: TimelineViolationKind::DeadUnitActsAfterDeath,
-                    message: format!(
-                        "unit {} is referenced after death at time_ms {}",
-                        unit_instance_id, later.time_ms
-                    ),
-                    entry_index: None,
-                });
-                break;
+    // Validate post-death references.
+    for (index, entry) in timeline.entries.iter().enumerate() {
+        if death_index_by_unit.is_empty() {
+            break;
+        }
+        for unit_id in referenced_unit_ids(&entry.event) {
+            if let Some(&death_index) = death_index_by_unit.get(&unit_id) {
+                if death_index < index && is_dead_unit_operated_on(&entry.event, unit_id, config) {
+                    violations.push(TimelineViolation {
+                        kind: TimelineViolationKind::DeadUnitActsAfterDeath,
+                        message: format!(
+                            "unit {} is referenced after death at time_ms {}",
+                            unit_id, entry.time_ms
+                        ),
+                        entry_index: Some(index),
+                    });
+                }
             }
         }
     }
@@ -572,6 +1178,77 @@ fn validate_deaths(
                 entry_index: Some(index),
             });
         }
+    }
+}
+
+fn referenced_unit_ids(event: &TimelineEvent) -> Vec<Uuid> {
+    match event {
+        TimelineEvent::Attack {
+            attacker_instance_id,
+            target_instance_id,
+            ..
+        } => vec![*attacker_instance_id, *target_instance_id],
+        TimelineEvent::AutoCastStart {
+            caster_instance_id,
+            target_instance_id,
+            ..
+        } => target_instance_id
+            .map(|target| vec![*caster_instance_id, target])
+            .unwrap_or_else(|| vec![*caster_instance_id]),
+        TimelineEvent::AutoCastEnd { caster_instance_id } => vec![*caster_instance_id],
+        TimelineEvent::AbilityCast {
+            caster_instance_id,
+            target_instance_id,
+            ..
+        } => target_instance_id
+            .map(|target| vec![*caster_instance_id, target])
+            .unwrap_or_else(|| vec![*caster_instance_id]),
+        TimelineEvent::BuffApplied {
+            caster_instance_id,
+            target_instance_id,
+            ..
+        }
+        | TimelineEvent::BuffTick {
+            caster_instance_id,
+            target_instance_id,
+            ..
+        }
+        | TimelineEvent::BuffExpired {
+            caster_instance_id,
+            target_instance_id,
+            ..
+        } => vec![*caster_instance_id, *target_instance_id],
+        TimelineEvent::HpChanged {
+            source_instance_id,
+            target_instance_id,
+            ..
+        } => source_instance_id
+            .map(|source| vec![source, *target_instance_id])
+            .unwrap_or_else(|| vec![*target_instance_id]),
+        TimelineEvent::StatChanged {
+            source_instance_id,
+            target_instance_id,
+            ..
+        } => source_instance_id
+            .map(|source| vec![source, *target_instance_id])
+            .unwrap_or_else(|| vec![*target_instance_id]),
+        TimelineEvent::UnitDied {
+            unit_instance_id,
+            killer_instance_id,
+            ..
+        } => killer_instance_id
+            .map(|killer| vec![*unit_instance_id, killer])
+            .unwrap_or_else(|| vec![*unit_instance_id]),
+        TimelineEvent::BattleStart { .. }
+        | TimelineEvent::ArtifactSpawned { .. }
+        | TimelineEvent::BattleEnd { .. } => Vec::new(),
+        TimelineEvent::UnitSpawned {
+            unit_instance_id, ..
+        } => vec![*unit_instance_id],
+        TimelineEvent::ItemSpawned {
+            owner_unit_instance_id,
+            ..
+        } => vec![*owner_unit_instance_id],
     }
 }
 

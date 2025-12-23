@@ -760,5 +760,4 @@ mod tests {
         context.clear();
         assert_eq!(context.allowed_actions.len(), 0);
     }
-
 }

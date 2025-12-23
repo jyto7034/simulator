@@ -94,7 +94,7 @@ impl Ord for BattleEvent {
             .then_with(|| other.priority().cmp(&self.priority()))
             .then_with(|| match (self, other) {
                 (
-            BattleEvent::AutoCastStart {
+                    BattleEvent::AutoCastStart {
                         caster_instance_id: a,
                         ..
                     },

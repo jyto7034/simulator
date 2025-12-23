@@ -103,14 +103,14 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
         .attacker_attack
         .saturating_sub(ctx.target_defense)
         .max(1);
-    let mut damage = base_damage as i32;
+    let mut damage: i128 = i128::from(base_damage);
 
     // 2. OnAttack 효과 적용
     for effect in ctx.on_attack_effects {
         match effect {
             Effect::BonusDamage { flat, percent } => {
-                damage += flat;
-                damage += damage * percent / 100;
+                damage += i128::from(*flat);
+                damage += damage.saturating_mul(i128::from(*percent)) / 100;
             }
             Effect::ApplyBuff {
                 buff_id,
@@ -138,8 +138,8 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
     for effect in ctx.on_hit_effects {
         match effect {
             Effect::BonusDamage { flat, percent } => {
-                damage += flat;
-                damage += damage * percent / 100;
+                damage += i128::from(*flat);
+                damage += damage.saturating_mul(i128::from(*percent)) / 100;
             }
             Effect::Heal { flat, percent } => {
                 commands.push(BattleCommand::ApplyHeal {
@@ -172,7 +172,7 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
     }
 
     // 4. 최종 데미지 계산 (최소 0)
-    let final_damage = damage.max(0) as u32;
+    let final_damage = damage.clamp(0, u32::MAX as i128) as u32;
     let target_remaining_hp = ctx.target_current_hp.saturating_sub(final_damage);
     let target_killed = target_remaining_hp == 0;
 
@@ -199,4 +199,39 @@ pub fn apply_damage_to_unit(stats: &mut crate::game::stats::UnitStats, damage: u
     stats.current_health = stats.current_health.saturating_sub(damage);
     let killed = stats.current_health == 0;
     (stats.current_health, killed)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn calculate_damage_clamps_extreme_bonus_damage() {
+        let request = DamageRequest {
+            source: DamageSource::BasicAttack,
+            attacker_id: Uuid::from_u128(0xA),
+            target_id: Uuid::from_u128(0xB),
+            base_damage: 1,
+            time_ms: 0,
+        };
+
+        let effects = [Effect::BonusDamage {
+            flat: i32::MAX,
+            percent: i32::MAX,
+        }];
+
+        let ctx = DamageContext {
+            attacker_side: Side::Player,
+            target_side: Side::Opponent,
+            attacker_attack: 1,
+            target_defense: 0,
+            target_current_hp: 1,
+            target_max_hp: 1,
+            on_attack_effects: &effects,
+            on_hit_effects: &[],
+        };
+
+        let result = calculate_damage(&request, &ctx);
+        assert_eq!(result.final_damage, u32::MAX);
+    }
 }

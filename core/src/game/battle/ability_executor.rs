@@ -39,6 +39,7 @@ pub struct UnitSnapshot {
 }
 
 /// 어빌리티 실행기 - 데이터 드리븐 방식으로 어빌리티 처리
+#[derive(Clone)]
 pub struct AbilityExecutor {
     /// 어빌리티 정의 테이블
     skill_defs: HashMap<AbilityId, SkillDef>,

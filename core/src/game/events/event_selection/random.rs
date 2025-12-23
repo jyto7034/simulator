@@ -41,10 +41,16 @@ fn fallback_random_event_uuid(seed: u64) -> Uuid {
 
 fn pick_fallback_target(ctx: &GeneratorContext) -> (RandomEventType, RandomEventInnerMetadata) {
     if let Some(bonus) = ctx.game_data.bonus_data.bonuses.first() {
-        return (RandomEventType::Bonus, RandomEventInnerMetadata::Bonus(bonus.uuid));
+        return (
+            RandomEventType::Bonus,
+            RandomEventInnerMetadata::Bonus(bonus.uuid),
+        );
     }
     if let Some(shop) = ctx.game_data.shop_data.shops.first() {
-        return (RandomEventType::Shop, RandomEventInnerMetadata::Shop(shop.uuid));
+        return (
+            RandomEventType::Shop,
+            RandomEventInnerMetadata::Shop(shop.uuid),
+        );
     }
     if let Some(abno) = ctx.game_data.abnormality_data.items.first() {
         return (
@@ -53,7 +59,10 @@ fn pick_fallback_target(ctx: &GeneratorContext) -> (RandomEventType, RandomEvent
         );
     }
 
-    (RandomEventType::Bonus, RandomEventInnerMetadata::Bonus(Uuid::nil()))
+    (
+        RandomEventType::Bonus,
+        RandomEventInnerMetadata::Bonus(Uuid::nil()),
+    )
 }
 
 impl EventGenerator for RandomEventGenerator {

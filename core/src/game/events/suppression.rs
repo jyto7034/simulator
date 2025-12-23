@@ -9,9 +9,9 @@ use crate::{
     ecs::resources::{Field, GameProgression, Inventory, Position},
     game::{
         battle::{BattleCore, BattleResult, GrowthStack, OwnedArtifact, OwnedUnit, PlayerDeckInfo},
-        determinism,
         behavior::GameError,
         data::{pve_data::PveEncounter, GameDataBase},
+        determinism,
         enums::{GameOption, OrdealType, PhaseType, RiskLevel, Tier},
         events::EventGenerator,
     },
@@ -77,12 +77,20 @@ impl EventGenerator for SuppressionGenerator {
                 Some(e) => GameOption::SuppressAbnormality {
                     abnormality_id: e.abnormality_id.clone(),
                     risk_level: e.risk_level,
-                    uuid: determinism::uuid_v4_from_seed(ctx.random_seed, SUPPRESSION_OPTION_NS, index),
+                    uuid: determinism::uuid_v4_from_seed(
+                        ctx.random_seed,
+                        SUPPRESSION_OPTION_NS,
+                        index,
+                    ),
                 },
                 None => GameOption::SuppressAbnormality {
                     abnormality_id: "fallback".to_string(),
                     risk_level: RiskLevel::TETH,
-                    uuid: determinism::uuid_v4_from_seed(ctx.random_seed, SUPPRESSION_OPTION_NS, index),
+                    uuid: determinism::uuid_v4_from_seed(
+                        ctx.random_seed,
+                        SUPPRESSION_OPTION_NS,
+                        index,
+                    ),
                 },
             }
         };

@@ -336,12 +336,7 @@ impl BattleCore {
                 cause_seq,
             } => {
                 self.with_recording_parent(cause_seq, |core| {
-                    core.record_timeline(
-                        time_ms,
-                        TimelineEvent::AutoCastEnd {
-                            caster_instance_id,
-                        },
-                    )
+                    core.record_timeline(time_ms, TimelineEvent::AutoCastEnd { caster_instance_id })
                 });
 
                 let Some(caster) = self.units.get_mut(&caster_instance_id) else {

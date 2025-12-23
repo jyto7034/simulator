@@ -204,10 +204,12 @@ impl BattleCore {
                         }
                         let owner = unit.owner;
                         let hp_before = unit.stats.current_health;
-                        let percent_delta = (unit.stats.max_health as i64) * (percent as i64) / 100;
-                        let delta = (flat as i64) + percent_delta;
-                        unit.stats.current_health = (hp_before as i64 + delta)
-                            .clamp(0, unit.stats.max_health as i64)
+                        let percent_delta = (unit.stats.max_health as i128)
+                            .saturating_mul(i128::from(percent))
+                            / 100;
+                        let delta = i128::from(flat) + percent_delta;
+                        unit.stats.current_health = (i128::from(hp_before) + delta)
+                            .clamp(0, unit.stats.max_health as i128)
                             as u32;
 
                         if unit.stats.current_health == 0 {
