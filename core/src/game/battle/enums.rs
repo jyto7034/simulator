@@ -17,6 +17,19 @@ pub enum BattleEvent {
         target_instance_id: Option<Uuid>,
         /// 자동 공격(반복 스케줄) 여부. false면 1회성 공격으로 처리.
         schedule_next: bool,
+        cause_seq: Option<u64>,
+    },
+    /// 공명(=마나) 만땅 시 자동 시전 시작
+    AutoCastStart {
+        time_ms: u64,
+        caster_instance_id: Uuid,
+        cause_seq: Option<u64>,
+    },
+    /// 자동 시전 종료 훅 (공명 리셋/락 적용)
+    AutoCastEnd {
+        time_ms: u64,
+        caster_instance_id: Uuid,
+        cause_seq: Option<u64>,
     },
     ApplyBuff {
         time_ms: u64,
@@ -24,18 +37,21 @@ pub enum BattleEvent {
         target_instance_id: Uuid,
         buff_id: BuffId,
         duration_ms: u64,
+        cause_seq: Option<u64>,
     },
     BuffTick {
         time_ms: u64,
         caster_instance_id: Uuid,
         target_instance_id: Uuid,
         buff_id: BuffId,
+        cause_seq: Option<u64>,
     },
     BuffExpire {
         time_ms: u64,
         caster_instance_id: Uuid,
         target_instance_id: Uuid,
         buff_id: BuffId,
+        cause_seq: Option<u64>,
     },
 }
 
@@ -44,6 +60,8 @@ impl BattleEvent {
     pub fn time_ms(&self) -> u64 {
         match self {
             BattleEvent::Attack { time_ms, .. }
+            | BattleEvent::AutoCastStart { time_ms, .. }
+            | BattleEvent::AutoCastEnd { time_ms, .. }
             | BattleEvent::ApplyBuff { time_ms, .. }
             | BattleEvent::BuffTick { time_ms, .. }
             | BattleEvent::BuffExpire { time_ms, .. } => *time_ms,
@@ -53,11 +71,13 @@ impl BattleEvent {
     /// 같은 시각에 여러 이벤트가 있을 때 우선순위
     fn priority(&self) -> u8 {
         match self {
-            // 버프 틱/적용을 먼저 처리하고, 공격, 만료 순으로 처리
+            // 버프 틱/적용을 먼저 처리하고, 시전 종료, 공격, 시전 시작, 만료 순으로 처리
             BattleEvent::ApplyBuff { .. } => 1,
             BattleEvent::BuffTick { .. } => 2,
-            BattleEvent::Attack { .. } => 3,
-            BattleEvent::BuffExpire { .. } => 4,
+            BattleEvent::AutoCastEnd { .. } => 3,
+            BattleEvent::Attack { .. } => 4,
+            BattleEvent::AutoCastStart { .. } => 5,
+            BattleEvent::BuffExpire { .. } => 6,
         }
     }
 }
@@ -73,6 +93,26 @@ impl Ord for BattleEvent {
             .cmp(&self.time_ms())
             .then_with(|| other.priority().cmp(&self.priority()))
             .then_with(|| match (self, other) {
+                (
+            BattleEvent::AutoCastStart {
+                        caster_instance_id: a,
+                        ..
+                    },
+                    BattleEvent::AutoCastStart {
+                        caster_instance_id: b,
+                        ..
+                    },
+                )
+                | (
+                    BattleEvent::AutoCastEnd {
+                        caster_instance_id: a,
+                        ..
+                    },
+                    BattleEvent::AutoCastEnd {
+                        caster_instance_id: b,
+                        ..
+                    },
+                ) => b.as_bytes().cmp(a.as_bytes()),
                 (
                     BattleEvent::Attack {
                         attacker_instance_id: a,

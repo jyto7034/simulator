@@ -101,6 +101,9 @@ fn battle_does_not_use_world_inventory_for_artifacts() {
                 attack: 1,
                 defense: 0,
                 attack_interval_ms: 1000,
+                resonance_start: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
                 abilities: vec![],
             },
             AbnormalityMetadata {
@@ -113,6 +116,9 @@ fn battle_does_not_use_world_inventory_for_artifacts() {
                 attack: 1,
                 defense: 0,
                 attack_interval_ms: 1000,
+                resonance_start: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
                 abilities: vec![],
             },
         ],
@@ -163,6 +169,9 @@ fn ability_does_not_execute_with_caster_in_graveyard() {
                 attack: 1,
                 defense: 0,
                 attack_interval_ms: 1000,
+                resonance_start: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
                 abilities: vec![],
             },
             AbnormalityMetadata {
@@ -175,6 +184,9 @@ fn ability_does_not_execute_with_caster_in_graveyard() {
                 attack: 1,
                 defense: 0,
                 attack_interval_ms: 1000,
+                resonance_start: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
                 abilities: vec![],
             },
         ],
@@ -197,6 +209,12 @@ fn ability_does_not_execute_with_caster_in_graveyard() {
             stats: UnitStats::with_values(10, 10, 1, 0, 1000),
             position: Position::new(1, 0),
             current_target: None,
+            resonance_current: 0,
+            resonance_max: 100,
+            resonance_lock_ms: 1000,
+            resonance_gain_locked_until_ms: 0,
+            casting_until_ms: 0,
+            pending_cast: false,
         },
     );
 
@@ -249,6 +267,9 @@ fn ability_kill_credits_killer_for_on_kill_triggers() {
                 attack: 1,
                 defense: 0,
                 attack_interval_ms: 1000,
+                resonance_start: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
                 abilities: vec![],
             },
             AbnormalityMetadata {
@@ -261,6 +282,9 @@ fn ability_kill_credits_killer_for_on_kill_triggers() {
                 attack: 1,
                 defense: 0,
                 attack_interval_ms: 1000,
+                resonance_start: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
                 abilities: vec![],
             },
         ],
@@ -291,6 +315,12 @@ fn ability_kill_credits_killer_for_on_kill_triggers() {
             stats: UnitStats::with_values(10, 10, 1, 0, 1000),
             position: Position::new(0, 0),
             current_target: None,
+            resonance_current: 0,
+            resonance_max: 100,
+            resonance_lock_ms: 1000,
+            resonance_gain_locked_until_ms: 0,
+            casting_until_ms: 0,
+            pending_cast: false,
         },
     );
     battle.items.insert(
@@ -311,6 +341,12 @@ fn ability_kill_credits_killer_for_on_kill_triggers() {
             stats: UnitStats::with_values(10, 10, 1, 0, 1000),
             position: Position::new(1, 0),
             current_target: None,
+            resonance_current: 0,
+            resonance_max: 100,
+            resonance_lock_ms: 1000,
+            resonance_gain_locked_until_ms: 0,
+            casting_until_ms: 0,
+            pending_cast: false,
         },
     );
 
@@ -354,6 +390,9 @@ fn simultaneous_deaths_do_not_trigger_on_ally_death_from_dead_units() {
                 attack: 1,
                 defense: 0,
                 attack_interval_ms: 1000,
+                resonance_start: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
                 abilities: vec![],
             },
             AbnormalityMetadata {
@@ -366,6 +405,9 @@ fn simultaneous_deaths_do_not_trigger_on_ally_death_from_dead_units() {
                 attack: 1,
                 defense: 0,
                 attack_interval_ms: 1000,
+                resonance_start: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
                 abilities: vec![],
             },
             AbnormalityMetadata {
@@ -378,6 +420,9 @@ fn simultaneous_deaths_do_not_trigger_on_ally_death_from_dead_units() {
                 attack: 1,
                 defense: 0,
                 attack_interval_ms: 1000,
+                resonance_start: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
                 abilities: vec![],
             },
         ],
@@ -408,6 +453,12 @@ fn simultaneous_deaths_do_not_trigger_on_ally_death_from_dead_units() {
             stats: UnitStats::with_values(10, 10, 1, 0, 1000),
             position: Position::new(0, 0),
             current_target: None,
+            resonance_current: 0,
+            resonance_max: 100,
+            resonance_lock_ms: 1000,
+            resonance_gain_locked_until_ms: 0,
+            casting_until_ms: 0,
+            pending_cast: false,
         },
     );
     battle.units.insert(
@@ -419,6 +470,12 @@ fn simultaneous_deaths_do_not_trigger_on_ally_death_from_dead_units() {
             stats: UnitStats::with_values(10, 10, 1, 0, 1000),
             position: Position::new(1, 0),
             current_target: None,
+            resonance_current: 0,
+            resonance_max: 100,
+            resonance_lock_ms: 1000,
+            resonance_gain_locked_until_ms: 0,
+            casting_until_ms: 0,
+            pending_cast: false,
         },
     );
     battle.items.insert(
@@ -439,6 +496,12 @@ fn simultaneous_deaths_do_not_trigger_on_ally_death_from_dead_units() {
             stats: UnitStats::with_values(10, 10, 1, 0, 1000),
             position: Position::new(2, 0),
             current_target: None,
+            resonance_current: 0,
+            resonance_max: 100,
+            resonance_lock_ms: 1000,
+            resonance_gain_locked_until_ms: 0,
+            casting_until_ms: 0,
+            pending_cast: false,
         },
     );
 
@@ -484,6 +547,9 @@ fn apply_heal_percent_affects_current_health() {
             attack: 1,
             defense: 0,
             attack_interval_ms: 1000,
+            resonance_start: 0,
+            resonance_max: 100,
+            resonance_lock_ms: 1000,
             abilities: vec![],
         }],
         vec![],
@@ -505,6 +571,12 @@ fn apply_heal_percent_affects_current_health() {
             stats: UnitStats::with_values(20, 10, 1, 0, 1000),
             position: Position::new(0, 0),
             current_target: None,
+            resonance_current: 0,
+            resonance_max: 100,
+            resonance_lock_ms: 1000,
+            resonance_gain_locked_until_ms: 0,
+            casting_until_ms: 0,
+            pending_cast: false,
         },
     );
 
@@ -550,6 +622,9 @@ fn poison_buff_ticks_as_command_damage() {
                 attack: 1,
                 defense: 0,
                 attack_interval_ms: 1000,
+                resonance_start: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
                 abilities: vec![],
             },
             AbnormalityMetadata {
@@ -562,6 +637,9 @@ fn poison_buff_ticks_as_command_damage() {
                 attack: 1,
                 defense: 0,
                 attack_interval_ms: 1000,
+                resonance_start: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
                 abilities: vec![],
             },
         ],
@@ -617,6 +695,337 @@ fn poison_buff_ticks_as_command_damage() {
 }
 
 #[test]
+fn resonance_gains_on_attack_and_damage() {
+    let attacker_instance_id = Uuid::from_u128(100);
+    let target_instance_id = Uuid::from_u128(200);
+    let attacker_base_uuid = Uuid::from_u128(1);
+    let target_base_uuid = Uuid::from_u128(2);
+
+    let game_data = minimal_game_data(
+        vec![
+            AbnormalityMetadata {
+                id: "attacker".to_string(),
+                uuid: attacker_base_uuid,
+                name: "attacker".to_string(),
+                risk_level: RiskLevel::ZAYIN,
+                price: 0,
+                max_health: 200,
+                attack: 50,
+                defense: 0,
+                attack_interval_ms: 1000,
+                resonance_start: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
+                abilities: vec![],
+            },
+            AbnormalityMetadata {
+                id: "target".to_string(),
+                uuid: target_base_uuid,
+                name: "target".to_string(),
+                risk_level: RiskLevel::ZAYIN,
+                price: 0,
+                max_health: 200,
+                attack: 0,
+                defense: 0,
+                attack_interval_ms: 1000,
+                resonance_start: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
+                abilities: vec![],
+            },
+        ],
+        vec![],
+    );
+
+    let empty_deck = PlayerDeckInfo {
+        units: vec![],
+        artifacts: vec![],
+        positions: Default::default(),
+    };
+    let mut battle = BattleCore::new(&empty_deck, &empty_deck, game_data, (3, 3));
+
+    battle.units.insert(
+        attacker_instance_id,
+        RuntimeUnit {
+            instance_id: attacker_instance_id,
+            owner: Side::Player,
+            base_uuid: attacker_base_uuid,
+            stats: UnitStats::with_values(200, 200, 50, 0, 1000),
+            position: Position::new(0, 0),
+            current_target: Some(target_instance_id),
+            resonance_current: 0,
+            resonance_max: 100,
+            resonance_lock_ms: 1000,
+            resonance_gain_locked_until_ms: 0,
+            casting_until_ms: 0,
+            pending_cast: false,
+        },
+    );
+    battle.units.insert(
+        target_instance_id,
+        RuntimeUnit {
+            instance_id: target_instance_id,
+            owner: Side::Opponent,
+            base_uuid: target_base_uuid,
+            stats: UnitStats::with_values(200, 200, 0, 0, 1000),
+            position: Position::new(1, 0),
+            current_target: None,
+            resonance_current: 0,
+            resonance_max: 100,
+            resonance_lock_ms: 1000,
+            resonance_gain_locked_until_ms: 0,
+            casting_until_ms: 0,
+            pending_cast: false,
+        },
+    );
+
+    battle.apply_attack(attacker_instance_id, 0);
+
+    assert_eq!(
+        battle
+            .units
+            .get(&attacker_instance_id)
+            .unwrap()
+            .resonance_current,
+        10
+    );
+    assert_eq!(
+        battle
+            .units
+            .get(&target_instance_id)
+            .unwrap()
+            .resonance_current,
+        5
+    );
+}
+
+#[test]
+fn autocast_triggers_after_attack_when_resonance_full() {
+    let attacker_instance_id = Uuid::from_u128(300);
+    let target_instance_id = Uuid::from_u128(400);
+    let attacker_base_uuid = Uuid::from_u128(10);
+    let target_base_uuid = Uuid::from_u128(11);
+
+    let game_data = minimal_game_data(
+        vec![
+            AbnormalityMetadata {
+                id: "caster".to_string(),
+                uuid: attacker_base_uuid,
+                name: "caster".to_string(),
+                risk_level: RiskLevel::ZAYIN,
+                price: 0,
+                max_health: 100,
+                attack: 10,
+                defense: 0,
+                attack_interval_ms: 1000,
+                resonance_start: 90,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
+                abilities: vec![crate::game::ability::AbilityId::UnknownDistortionStrike],
+            },
+            AbnormalityMetadata {
+                id: "target".to_string(),
+                uuid: target_base_uuid,
+                name: "target".to_string(),
+                risk_level: RiskLevel::ZAYIN,
+                price: 0,
+                max_health: 200,
+                attack: 0,
+                defense: 0,
+                attack_interval_ms: 1000,
+                resonance_start: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
+                abilities: vec![],
+            },
+        ],
+        vec![],
+    );
+
+    let empty_deck = PlayerDeckInfo {
+        units: vec![],
+        artifacts: vec![],
+        positions: Default::default(),
+    };
+    let mut battle = BattleCore::new(&empty_deck, &empty_deck, game_data, (3, 3));
+
+    battle.units.insert(
+        attacker_instance_id,
+        RuntimeUnit {
+            instance_id: attacker_instance_id,
+            owner: Side::Player,
+            base_uuid: attacker_base_uuid,
+            stats: UnitStats::with_values(100, 100, 10, 0, 1000),
+            position: Position::new(0, 0),
+            current_target: None,
+            resonance_current: 90,
+            resonance_max: 100,
+            resonance_lock_ms: 1000,
+            resonance_gain_locked_until_ms: 0,
+            casting_until_ms: 0,
+            pending_cast: false,
+        },
+    );
+    battle.units.insert(
+        target_instance_id,
+        RuntimeUnit {
+            instance_id: target_instance_id,
+            owner: Side::Opponent,
+            base_uuid: target_base_uuid,
+            stats: UnitStats::with_values(200, 200, 0, 0, 1000),
+            position: Position::new(1, 0),
+            current_target: None,
+            resonance_current: 0,
+            resonance_max: 100,
+            resonance_lock_ms: 1000,
+            resonance_gain_locked_until_ms: 0,
+            casting_until_ms: 0,
+            pending_cast: false,
+        },
+    );
+
+    battle
+        .event_queue
+        .push(crate::game::battle::enums::BattleEvent::Attack {
+            time_ms: 0,
+            attacker_instance_id,
+            target_instance_id: Some(target_instance_id),
+            schedule_next: false,
+            cause_seq: None,
+        });
+
+    while let Some(event) = battle.event_queue.pop() {
+        let t = event.time_ms();
+        battle.process_event(event, t).unwrap();
+    }
+
+    let mut saw_attack = false;
+    let mut saw_cast = false;
+    for entry in &battle.timeline.entries {
+        match entry.event {
+            TimelineEvent::Attack { .. } => saw_attack = true,
+            TimelineEvent::AbilityCast { .. } if saw_attack => saw_cast = true,
+            _ => {}
+        }
+    }
+    assert!(saw_attack);
+    assert!(saw_cast);
+
+    assert_eq!(
+        battle
+            .units
+            .get(&attacker_instance_id)
+            .unwrap()
+            .resonance_current,
+        0
+    );
+    assert_eq!(
+        battle
+            .units
+            .get(&attacker_instance_id)
+            .unwrap()
+            .resonance_gain_locked_until_ms,
+        1001
+    );
+}
+
+#[test]
+fn resonance_full_on_killing_blow_does_not_schedule_autocast() {
+    let attacker_instance_id = Uuid::from_u128(500);
+    let target_instance_id = Uuid::from_u128(600);
+    let attacker_base_uuid = Uuid::from_u128(21);
+    let target_base_uuid = Uuid::from_u128(22);
+
+    let game_data = minimal_game_data(
+        vec![
+            AbnormalityMetadata {
+                id: "attacker".to_string(),
+                uuid: attacker_base_uuid,
+                name: "attacker".to_string(),
+                risk_level: RiskLevel::ZAYIN,
+                price: 0,
+                max_health: 10,
+                attack: 50,
+                defense: 0,
+                attack_interval_ms: 1000,
+                resonance_start: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
+                abilities: vec![],
+            },
+            AbnormalityMetadata {
+                id: "target".to_string(),
+                uuid: target_base_uuid,
+                name: "target".to_string(),
+                risk_level: RiskLevel::ZAYIN,
+                price: 0,
+                max_health: 50,
+                attack: 0,
+                defense: 0,
+                attack_interval_ms: 1000,
+                resonance_start: 95,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
+                abilities: vec![crate::game::ability::AbilityId::UnknownDistortionStrike],
+            },
+        ],
+        vec![],
+    );
+
+    let empty_deck = PlayerDeckInfo {
+        units: vec![],
+        artifacts: vec![],
+        positions: Default::default(),
+    };
+    let mut battle = BattleCore::new(&empty_deck, &empty_deck, game_data, (3, 3));
+
+    battle.units.insert(
+        attacker_instance_id,
+        RuntimeUnit {
+            instance_id: attacker_instance_id,
+            owner: Side::Player,
+            base_uuid: attacker_base_uuid,
+            stats: UnitStats::with_values(10, 10, 50, 0, 1000),
+            position: Position::new(0, 0),
+            current_target: Some(target_instance_id),
+            resonance_current: 0,
+            resonance_max: 100,
+            resonance_lock_ms: 1000,
+            resonance_gain_locked_until_ms: 0,
+            casting_until_ms: 0,
+            pending_cast: false,
+        },
+    );
+    battle.units.insert(
+        target_instance_id,
+        RuntimeUnit {
+            instance_id: target_instance_id,
+            owner: Side::Opponent,
+            base_uuid: target_base_uuid,
+            stats: UnitStats::with_values(50, 50, 0, 0, 1000),
+            position: Position::new(1, 0),
+            current_target: None,
+            resonance_current: 95,
+            resonance_max: 100,
+            resonance_lock_ms: 1000,
+            resonance_gain_locked_until_ms: 0,
+            casting_until_ms: 0,
+            pending_cast: false,
+        },
+    );
+
+    battle.apply_attack(attacker_instance_id, 0);
+
+    // Target is dead; even if it would have hit full resonance on this hit, no autocast should be scheduled.
+    assert!(!battle.event_queue.iter().any(|e| matches!(
+        e,
+        crate::game::battle::enums::BattleEvent::AutoCastStart {
+            caster_instance_id, ..
+        } if *caster_instance_id == target_instance_id
+    )));
+}
+
+#[test]
 fn basic_attack_kills_and_player_wins() {
     let mut world = World::new();
 
@@ -635,6 +1044,9 @@ fn basic_attack_kills_and_player_wins() {
                 attack: 100,
                 defense: 0,
                 attack_interval_ms: 1,
+                resonance_start: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
                 abilities: vec![],
             },
             AbnormalityMetadata {
@@ -647,6 +1059,9 @@ fn basic_attack_kills_and_player_wins() {
                 attack: 0,
                 defense: 0,
                 attack_interval_ms: 1000,
+                resonance_start: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
                 abilities: vec![],
             },
         ],
@@ -764,6 +1179,9 @@ fn on_attack_skill_triggers_and_changes_outcome() {
                 attack: 1,
                 defense: 0,
                 attack_interval_ms: 5000,
+                resonance_start: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
                 abilities: vec![],
             },
             AbnormalityMetadata {
@@ -776,6 +1194,9 @@ fn on_attack_skill_triggers_and_changes_outcome() {
                 attack: 1,
                 defense: 0,
                 attack_interval_ms: 1000,
+                resonance_start: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 1000,
                 abilities: vec![],
             },
         ],

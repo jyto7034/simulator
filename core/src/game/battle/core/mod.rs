@@ -58,6 +58,12 @@ struct RuntimeUnit {
     stats: UnitStats,
     position: Position,
     current_target: Option<Uuid>,
+    resonance_current: u32,
+    resonance_max: u32,
+    resonance_lock_ms: u64,
+    resonance_gain_locked_until_ms: u64,
+    casting_until_ms: u64,
+    pending_cast: bool,
 }
 
 impl RuntimeUnit {
@@ -105,6 +111,7 @@ pub struct BattleCore {
 
     timeline: Timeline,
     timeline_seq: u64,
+    recording_cause_stack: Vec<u64>,
 
     death_handler: DeathHandler,
     ability_executor: AbilityExecutor,
@@ -130,8 +137,73 @@ impl BattleCore {
             game_data,
             timeline: Timeline::new(),
             timeline_seq: 0,
+            recording_cause_stack: Vec::new(),
             death_handler: DeathHandler::new(),
             ability_executor: AbilityExecutor::new(),
+        }
+    }
+
+    fn can_gain_resonance(unit: &RuntimeUnit, now_ms: u64) -> bool {
+        now_ms >= unit.resonance_gain_locked_until_ms && now_ms >= unit.casting_until_ms
+    }
+
+    fn add_resonance(
+        &mut self,
+        unit_instance_id: Uuid,
+        amount: u32,
+        now_ms: u64,
+        allow_autocast_when_full: bool,
+    ) {
+        if amount == 0 {
+            return;
+        }
+
+        let Some(unit) = self.units.get_mut(&unit_instance_id) else {
+            return;
+        };
+
+        if unit.stats.current_health == 0 {
+            return;
+        }
+
+        if !Self::can_gain_resonance(unit, now_ms) {
+            return;
+        }
+
+        let max = unit.resonance_max.max(1);
+        let before = unit.resonance_current.min(max);
+        let after = before.saturating_add(amount).min(max);
+        unit.resonance_current = after;
+
+        if allow_autocast_when_full && before < max && after == max {
+            unit.pending_cast = true;
+        }
+    }
+
+    fn schedule_pending_autocasts(&mut self, now_ms: u64) {
+        let mut casters: Vec<Uuid> = self
+            .units
+            .iter()
+            .filter_map(|(id, unit)| {
+                if unit.pending_cast && unit.stats.current_health > 0 {
+                    Some(*id)
+                } else {
+                    None
+                }
+            })
+            .collect();
+
+        casters.sort_by(|a, b| a.as_bytes().cmp(b.as_bytes()));
+
+        for caster_instance_id in casters {
+            if let Some(unit) = self.units.get_mut(&caster_instance_id) {
+                unit.pending_cast = false;
+            }
+            self.event_queue.push(BattleEvent::AutoCastStart {
+                time_ms: now_ms,
+                caster_instance_id,
+                cause_seq: self.recording_cause_seq(),
+            });
         }
     }
 }

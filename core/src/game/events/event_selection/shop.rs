@@ -409,6 +409,9 @@ mod tests {
             attack: 30,
             defense: 5,
             attack_interval_ms: 1500,
+            resonance_start: 0,
+            resonance_max: 100,
+            resonance_lock_ms: 1000,
             abilities: Vec::new(),
         });
         (uuid, abnormality)

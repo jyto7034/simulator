@@ -10,12 +10,21 @@ use crate::{
     ecs::resources::Position,
     game::{
         ability::AbilityId,
+        battle::buffs::BuffId,
         enums::Side,
         stats::{StatModifier, UnitStats},
     },
 };
 
-pub const TIMELINE_VERSION: u32 = 1;
+pub const TIMELINE_VERSION: u32 = 2;
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub enum AttackKind {
+    /// Scheduled auto attack (attack interval based).
+    Auto,
+    /// Triggered/one-off attack (e.g., ability extra attack).
+    Triggered,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Timeline {
@@ -74,6 +83,8 @@ impl Default for Timeline {
 pub struct TimelineEntry {
     pub time_ms: u64,
     pub seq: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cause_seq: Option<u64>,
     pub event: TimelineEvent,
 }
 
@@ -105,11 +116,37 @@ pub enum TimelineEvent {
     Attack {
         attacker_instance_id: Uuid,
         target_instance_id: Uuid,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        kind: Option<AttackKind>,
+    },
+    AutoCastStart {
+        caster_instance_id: Uuid,
+        ability_id: Option<AbilityId>,
+        target_instance_id: Option<Uuid>,
+    },
+    AutoCastEnd {
+        caster_instance_id: Uuid,
     },
     AbilityCast {
         ability_id: AbilityId,
         caster_instance_id: Uuid,
         target_instance_id: Option<Uuid>,
+    },
+    BuffApplied {
+        caster_instance_id: Uuid,
+        target_instance_id: Uuid,
+        buff_id: BuffId,
+        duration_ms: u64,
+    },
+    BuffTick {
+        caster_instance_id: Uuid,
+        target_instance_id: Uuid,
+        buff_id: BuffId,
+    },
+    BuffExpired {
+        caster_instance_id: Uuid,
+        target_instance_id: Uuid,
+        buff_id: BuffId,
     },
     HpChanged {
         source_instance_id: Option<Uuid>,

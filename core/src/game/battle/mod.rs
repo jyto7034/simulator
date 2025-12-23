@@ -4,6 +4,8 @@ pub mod damage;
 pub mod death;
 pub mod enums;
 pub mod timeline;
+pub mod validation;
+pub mod replay;
 
 mod core;
 mod types;

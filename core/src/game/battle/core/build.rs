@@ -50,6 +50,19 @@ impl BattleCore {
                 .ok_or(GameError::UnitNotFound)?;
 
             let unit_instance_id = Self::make_instance_id(unit.base_uuid, side, 0);
+            let (resonance_start, resonance_max, resonance_lock_ms) = self
+                .game_data
+                .abnormality_data
+                .get_by_uuid(&unit.base_uuid)
+                .map(|meta| {
+                    (
+                        meta.resonance_start,
+                        meta.resonance_max.max(1),
+                        meta.resonance_lock_ms,
+                    )
+                })
+                .unwrap_or((0, 100, 1000));
+            let resonance_current = resonance_start.min(resonance_max);
 
             if self
                 .units
@@ -62,6 +75,12 @@ impl BattleCore {
                         stats,
                         position,
                         current_target: None,
+                        resonance_current,
+                        resonance_max,
+                        resonance_lock_ms,
+                        resonance_gain_locked_until_ms: 0,
+                        casting_until_ms: 0,
+                        pending_cast: false,
                     },
                 )
                 .is_some()

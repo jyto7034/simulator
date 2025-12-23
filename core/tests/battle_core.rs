@@ -31,6 +31,7 @@ mod battle_event_tests {
             attacker_instance_id,
             target_instance_id: None,
             schedule_next: true,
+            cause_seq: None,
         };
         assert_eq!(event.time_ms(), 1500);
     }
@@ -48,18 +49,21 @@ mod battle_event_tests {
             attacker_instance_id: id1,
             target_instance_id: None,
             schedule_next: true,
+            cause_seq: None,
         });
         heap.push(BattleEvent::Attack {
             time_ms: 1000,
             attacker_instance_id: id2,
             target_instance_id: None,
             schedule_next: true,
+            cause_seq: None,
         });
         heap.push(BattleEvent::Attack {
             time_ms: 2000,
             attacker_instance_id: id3,
             target_instance_id: None,
             schedule_next: true,
+            cause_seq: None,
         });
 
         // Then: BinaryHeap은 time_ms가 가장 작은 이벤트부터 pop되어야 함 (custom Ord 기반)
@@ -81,6 +85,7 @@ mod battle_event_tests {
             attacker_instance_id: id,
             target_instance_id: None,
             schedule_next: true,
+            cause_seq: None,
         });
         heap.push(BattleEvent::ApplyBuff {
             time_ms: 1000,
@@ -88,18 +93,21 @@ mod battle_event_tests {
             target_instance_id: id,
             buff_id,
             duration_ms: 1000,
+            cause_seq: None,
         });
         heap.push(BattleEvent::BuffExpire {
             time_ms: 1000,
             caster_instance_id: id,
             target_instance_id: id,
             buff_id,
+            cause_seq: None,
         });
         heap.push(BattleEvent::BuffTick {
             time_ms: 1000,
             caster_instance_id: id,
             target_instance_id: id,
             buff_id,
+            cause_seq: None,
         });
 
         // Then: 우선순위는 ApplyBuff(1) → BuffTick(2) → Attack(3) → BuffExpire(4) 순서여야 함
@@ -568,6 +576,22 @@ mod battle_flow_tests {
             .abnormality_data
             .get_by_id("test_abnorm_1")
             .expect("test_abnorm_1 should exist");
+
+        /*
+
+        1. 공명 만땅 판정 시점이 공격/피격 처리 “도중”에 나올 텐데, 스킬 시전은 그 이벤트(공격/피격) 처리가
+            완전히 끝난 직후(= 데미지/사망 처리까지 끝난 뒤) 맞죠?
+         2. 채널링 중에는 기본 공격만 막히면 된다고 했는데, 채널링 중 공명 획득은 허용할까요? (허용하면 만땅이
+            또 찍힐 수 있어서 “추가 시전 예약”을 막는 플래그가 필요)
+         3. 피격 공명 회복은 “hp 감소시킬 때의 10%”라고 했으니, 오버킬은 실제 감소한 HP 기준(예: hp 30 남았는
+            데 dmg 100이면 3만 회복)으로 보면 될까요?
+         4. “공명 만땅이면 자동 발동”인데, 여러 스킬 중 어떤 걸 쓸지 기본 규칙을 정해야 해요. 아래 제안 중 어
+            떤 게 좋나요?
+             - (A) 유닛은 “자동시전 스킬”을 1개만 가진다(auto_ability_id)
+             - (B) AbilityTrigger::OnResonanceFull인 스킬들 중 우선순위(priority) 높은 것
+             - (C) 위(B) + 쿨다운/조건을 만족하는 것 중에서, 동률이면 결정적 타이브레이크(AbilityId 정렬)
+
+               */
 
         // Given: runtime instance를 흉내내기 위해 서로 다른 UUID를 준비함
         let player_runtime_uuid = Uuid::new_v4();

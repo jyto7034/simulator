@@ -24,6 +24,7 @@ impl BattleCore {
         self.ability_executor.reset_cooldowns();
         self.timeline = crate::game::battle::timeline::Timeline::new();
         self.timeline_seq = 0;
+        self.recording_cause_stack.clear();
 
         self.build_runtime_units_from_decks(Side::Player)?;
         self.build_runtime_units_from_decks(Side::Opponent)?;
@@ -152,23 +153,40 @@ impl BattleCore {
                 attacker_instance_id: unit.instance_id,
                 target_instance_id: None,
                 schedule_next: true,
+                cause_seq: None,
             });
         }
     }
 
-    fn process_event(&mut self, event: BattleEvent, current_time_ms: u64) -> Result<(), GameError> {
+    pub(super) fn process_event(
+        &mut self,
+        event: BattleEvent,
+        current_time_ms: u64,
+    ) -> Result<(), GameError> {
         match event {
             BattleEvent::Attack {
                 attacker_instance_id,
                 time_ms,
                 target_instance_id,
                 schedule_next,
+                cause_seq,
             } => {
                 let Some(attacker) = self.units.get(&attacker_instance_id) else {
                     return Ok(());
                 };
 
                 if attacker.stats.current_health == 0 {
+                    return Ok(());
+                }
+
+                if current_time_ms < attacker.casting_until_ms {
+                    self.event_queue.push(BattleEvent::Attack {
+                        time_ms: attacker.casting_until_ms,
+                        attacker_instance_id,
+                        target_instance_id,
+                        schedule_next,
+                        cause_seq,
+                    });
                     return Ok(());
                 }
 
@@ -182,21 +200,36 @@ impl BattleCore {
                     .or(persisted_target)
                     .or_else(|| self.find_nearest_alive_enemy(attacker_instance_id, owner));
 
-                if let Some(target_id) = target {
+                let attack_seq = if let Some(target_id) = target {
                     if let Some(attacker) = self.units.get_mut(&attacker_instance_id) {
                         attacker.current_target = Some(target_id);
                     }
 
-                    self.record_timeline(
-                        time_ms,
-                        TimelineEvent::Attack {
-                            attacker_instance_id,
-                            target_instance_id: target_id,
-                        },
-                    );
-                }
+                    Some(self.with_recording_parent(cause_seq, |core| {
+                        core.record_timeline(
+                            time_ms,
+                            TimelineEvent::Attack {
+                                attacker_instance_id,
+                                target_instance_id: target_id,
+                                kind: Some(if schedule_next {
+                                    crate::game::battle::timeline::AttackKind::Auto
+                                } else {
+                                    crate::game::battle::timeline::AttackKind::Triggered
+                                }),
+                            },
+                        )
+                    }))
+                } else {
+                    None
+                };
 
-                self.apply_attack(attacker_instance_id, time_ms);
+                if let Some(attack_seq) = attack_seq {
+                    self.with_recording_cause(attack_seq, |core| {
+                        core.apply_attack(attacker_instance_id, time_ms);
+                    });
+                } else {
+                    self.apply_attack(attacker_instance_id, time_ms);
+                }
 
                 if schedule_next {
                     let Some(attacker) = self.units.get(&attacker_instance_id) else {
@@ -212,8 +245,114 @@ impl BattleCore {
                         attacker_instance_id,
                         target_instance_id: None,
                         schedule_next: true,
+                        cause_seq: None,
                     });
                 }
+
+                Ok(())
+            }
+            BattleEvent::AutoCastStart {
+                time_ms,
+                caster_instance_id,
+                cause_seq,
+            } => {
+                let (caster_owner, caster_base_uuid, caster_current_target) = {
+                    let Some(caster) = self.units.get(&caster_instance_id) else {
+                        return Ok(());
+                    };
+                    if caster.stats.current_health == 0 {
+                        return Ok(());
+                    }
+                    (caster.owner, caster.base_uuid, caster.current_target)
+                };
+
+                let ability_id = self
+                    .game_data
+                    .abnormality_data
+                    .get_by_uuid(&caster_base_uuid)
+                    .and_then(|meta| meta.abilities.first().copied());
+
+                // Instant cast is modeled as [time_ms, time_ms + 1) to block resonance gain.
+                let cast_end_ms = time_ms.saturating_add(1);
+                if let Some(caster) = self.units.get_mut(&caster_instance_id) {
+                    caster.casting_until_ms = cast_end_ms;
+                }
+
+                let target_hint =
+                    caster_current_target.filter(|id| self.is_alive_enemy(*id, caster_owner));
+
+                let start_seq = self.with_recording_parent(cause_seq, |core| {
+                    core.record_timeline(
+                        time_ms,
+                        TimelineEvent::AutoCastStart {
+                            caster_instance_id,
+                            ability_id,
+                            target_instance_id: target_hint,
+                        },
+                    )
+                });
+
+                self.with_recording_cause(start_seq, |core| {
+                    if let Some(ability_id) = ability_id {
+                        let result = core.execute_ability_via_executor(
+                            ability_id,
+                            caster_instance_id,
+                            target_hint,
+                            time_ms,
+                        );
+
+                        if result.executed {
+                            let cast_seq = core.record_timeline(
+                                time_ms,
+                                TimelineEvent::AbilityCast {
+                                    ability_id,
+                                    caster_instance_id,
+                                    target_instance_id: target_hint,
+                                },
+                            );
+
+                            if !result.commands.is_empty() {
+                                core.with_recording_cause(cast_seq, |core| {
+                                    core.process_commands(result.commands, time_ms);
+                                });
+                            }
+                        }
+
+                        core.schedule_pending_autocasts(time_ms);
+                    }
+
+                    core.event_queue.push(BattleEvent::AutoCastEnd {
+                        time_ms: cast_end_ms,
+                        caster_instance_id,
+                        cause_seq: Some(start_seq),
+                    });
+                });
+
+                Ok(())
+            }
+            BattleEvent::AutoCastEnd {
+                time_ms,
+                caster_instance_id,
+                cause_seq,
+            } => {
+                self.with_recording_parent(cause_seq, |core| {
+                    core.record_timeline(
+                        time_ms,
+                        TimelineEvent::AutoCastEnd {
+                            caster_instance_id,
+                        },
+                    )
+                });
+
+                let Some(caster) = self.units.get_mut(&caster_instance_id) else {
+                    return Ok(());
+                };
+
+                caster.resonance_current = 0;
+                caster.resonance_gain_locked_until_ms =
+                    time_ms.saturating_add(caster.resonance_lock_ms);
+                caster.casting_until_ms = 0;
+                caster.pending_cast = false;
 
                 Ok(())
             }
@@ -223,6 +362,7 @@ impl BattleCore {
                 target_instance_id,
                 buff_id,
                 duration_ms,
+                cause_seq,
             } => {
                 let Some(def) = buffs::get(buff_id) else {
                     return Ok(());
@@ -235,6 +375,18 @@ impl BattleCore {
                 if !self.units.contains_key(&target_instance_id) {
                     return Ok(());
                 }
+
+                let applied_seq = self.with_recording_parent(cause_seq, |core| {
+                    core.record_timeline(
+                        time_ms,
+                        TimelineEvent::BuffApplied {
+                            caster_instance_id,
+                            target_instance_id,
+                            buff_id,
+                            duration_ms,
+                        },
+                    )
+                });
 
                 let key = super::BuffInstanceKey {
                     caster_instance_id,
@@ -263,6 +415,7 @@ impl BattleCore {
                             caster_instance_id,
                             target_instance_id,
                             buff_id,
+                            cause_seq: Some(applied_seq),
                         });
                     }
                 }
@@ -273,6 +426,7 @@ impl BattleCore {
                         caster_instance_id,
                         target_instance_id,
                         buff_id,
+                        cause_seq: Some(applied_seq),
                     });
                 }
 
@@ -283,6 +437,7 @@ impl BattleCore {
                 caster_instance_id,
                 target_instance_id,
                 buff_id,
+                cause_seq,
             } => {
                 let Some(def) = buffs::get(buff_id) else {
                     return Ok(());
@@ -313,20 +468,34 @@ impl BattleCore {
                     (active.stacks, active.expires_at_ms)
                 };
 
+                let tick_seq = self.with_recording_parent(cause_seq, |core| {
+                    core.record_timeline(
+                        time_ms,
+                        TimelineEvent::BuffTick {
+                            caster_instance_id,
+                            target_instance_id,
+                            buff_id,
+                        },
+                    )
+                });
+
                 match def.kind {
                     buffs::BuffKind::PeriodicDamage { damage_per_tick } => {
                         let stacks = stacks.max(1) as i32;
                         let dmg = (damage_per_tick as i32).saturating_mul(stacks);
                         if dmg > 0 {
-                            self.process_commands(
-                                vec![crate::game::battle::damage::BattleCommand::ApplyHeal {
-                                    target_id: target_instance_id,
-                                    flat: -dmg,
-                                    percent: 0,
-                                    source_id: Some(caster_instance_id),
-                                }],
-                                time_ms,
-                            );
+                            self.with_recording_cause(tick_seq, |core| {
+                                core.process_commands(
+                                    vec![crate::game::battle::damage::BattleCommand::ApplyHeal {
+                                        target_id: target_instance_id,
+                                        flat: -dmg,
+                                        percent: 0,
+                                        source_id: Some(caster_instance_id),
+                                    }],
+                                    time_ms,
+                                );
+                                core.schedule_pending_autocasts(time_ms);
+                            });
                         }
                     }
                 }
@@ -340,6 +509,7 @@ impl BattleCore {
                             caster_instance_id,
                             target_instance_id,
                             buff_id,
+                            cause_seq: Some(tick_seq),
                         });
                     } else {
                         active.next_tick_ms = None;
@@ -353,6 +523,7 @@ impl BattleCore {
                 caster_instance_id,
                 target_instance_id,
                 buff_id,
+                cause_seq,
             } => {
                 let key = super::BuffInstanceKey {
                     caster_instance_id,
@@ -367,6 +538,17 @@ impl BattleCore {
                 if time_ms < active.expires_at_ms {
                     return Ok(());
                 }
+
+                self.with_recording_parent(cause_seq, |core| {
+                    core.record_timeline(
+                        time_ms,
+                        TimelineEvent::BuffExpired {
+                            caster_instance_id,
+                            target_instance_id,
+                            buff_id,
+                        },
+                    )
+                });
 
                 self.buffs.remove(&key);
                 Ok(())
