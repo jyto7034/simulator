@@ -3,6 +3,7 @@ use std::cmp::Ordering;
 use uuid::Uuid;
 
 use super::buffs::BuffId;
+use super::timeline::TimelineCause;
 
 /// 전투 이벤트
 ///
@@ -17,19 +18,19 @@ pub enum BattleEvent {
         target_instance_id: Option<Uuid>,
         /// 자동 공격(반복 스케줄) 여부. false면 1회성 공격으로 처리.
         schedule_next: bool,
-        cause_seq: Option<u64>,
+        cause: TimelineCause,
     },
     /// 공명(=마나) 만땅 시 자동 시전 시작
     AutoCastStart {
         time_ms: u64,
         caster_instance_id: Uuid,
-        cause_seq: Option<u64>,
+        cause: TimelineCause,
     },
     /// 자동 시전 종료 훅 (공명 리셋/락 적용)
     AutoCastEnd {
         time_ms: u64,
         caster_instance_id: Uuid,
-        cause_seq: Option<u64>,
+        cause: TimelineCause,
     },
     ApplyBuff {
         time_ms: u64,
@@ -37,21 +38,21 @@ pub enum BattleEvent {
         target_instance_id: Uuid,
         buff_id: BuffId,
         duration_ms: u64,
-        cause_seq: Option<u64>,
+        cause: TimelineCause,
     },
     BuffTick {
         time_ms: u64,
         caster_instance_id: Uuid,
         target_instance_id: Uuid,
         buff_id: BuffId,
-        cause_seq: Option<u64>,
+        cause: TimelineCause,
     },
     BuffExpire {
         time_ms: u64,
         caster_instance_id: Uuid,
         target_instance_id: Uuid,
         buff_id: BuffId,
-        cause_seq: Option<u64>,
+        cause: TimelineCause,
     },
 }
 

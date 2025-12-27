@@ -125,6 +125,12 @@ impl MoveTo for PhaseType {
 // ============================================================
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug, Serialize, Deserialize)]
+pub enum ZoneType {
+    Inventory,
+    Field,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Serialize, Deserialize)]
 pub enum RiskLevel {
     ZAYIN,
     TETH,

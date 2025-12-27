@@ -1,6 +1,9 @@
 use uuid::Uuid;
 
-use crate::{ecs::resources::GameState, game::behavior::PlayerBehavior};
+use crate::{
+    ecs::resources::{GameState, Position},
+    game::behavior::PlayerBehavior,
+};
 
 /// ActionScheduler
 ///
@@ -25,7 +28,17 @@ impl ActionScheduler {
 
             GameState::WaitingPhaseRequest => {
                 // 게임 시작 후: Phase 데이터 요청만 가능
-                vec![PlayerBehavior::RequestPhaseData]
+                vec![
+                    PlayerBehavior::RequestPhaseData,
+                    PlayerBehavior::EquipItem {
+                        item_uuid: Uuid::nil(),
+                        target_unit: Uuid::nil(),
+                    },
+                    PlayerBehavior::MoveUnit {
+                        target_unit_uuid: Uuid::nil(),
+                        dest_pos: Position::new(0, 0),
+                    },
+                ]
             }
 
             GameState::SelectingEvent => {
@@ -36,6 +49,14 @@ impl ActionScheduler {
                     },
                     PlayerBehavior::StartSuppression {
                         abnormality_id: String::new(),
+                    },
+                    PlayerBehavior::EquipItem {
+                        item_uuid: Uuid::nil(),
+                        target_unit: Uuid::nil(),
+                    },
+                    PlayerBehavior::MoveUnit {
+                        target_unit_uuid: Uuid::nil(),
+                        dest_pos: Position::new(0, 0),
                     },
                 ]
             }
@@ -123,8 +144,14 @@ mod tests {
         let state = GameState::WaitingPhaseRequest;
         let allowed = ActionScheduler::get_allowed_actions(&state);
 
-        assert_eq!(allowed.len(), 1);
-        assert!(matches!(allowed[0], PlayerBehavior::RequestPhaseData));
+        assert_eq!(allowed.len(), 3);
+        assert!(allowed
+            .iter()
+            .any(|a| matches!(a, PlayerBehavior::RequestPhaseData)));
+        assert!(allowed.iter().any(|a| matches!(a, PlayerBehavior::EquipItem { .. })));
+        assert!(allowed
+            .iter()
+            .any(|a| matches!(a, PlayerBehavior::MoveUnit { .. })));
     }
 
     #[test]
@@ -132,13 +159,17 @@ mod tests {
         let state = GameState::SelectingEvent;
         let allowed = ActionScheduler::get_allowed_actions(&state);
 
-        assert_eq!(allowed.len(), 2);
+        assert_eq!(allowed.len(), 4);
         assert!(allowed
             .iter()
             .any(|a| matches!(a, PlayerBehavior::SelectEvent { .. })));
         assert!(allowed
             .iter()
             .any(|a| matches!(a, PlayerBehavior::StartSuppression { .. })));
+        assert!(allowed.iter().any(|a| matches!(a, PlayerBehavior::EquipItem { .. })));
+        assert!(allowed
+            .iter()
+            .any(|a| matches!(a, PlayerBehavior::MoveUnit { .. })));
     }
 
     #[test]
@@ -176,13 +207,19 @@ mod tests {
         // When: Phase 요청
         let state = GameState::WaitingPhaseRequest;
         let allowed = ActionScheduler::get_allowed_actions(&state);
-        assert_eq!(allowed.len(), 1);
-        assert!(matches!(allowed[0], PlayerBehavior::RequestPhaseData));
+        assert_eq!(allowed.len(), 3);
+        assert!(allowed
+            .iter()
+            .any(|a| matches!(a, PlayerBehavior::RequestPhaseData)));
+        assert!(allowed.iter().any(|a| matches!(a, PlayerBehavior::EquipItem { .. })));
+        assert!(allowed
+            .iter()
+            .any(|a| matches!(a, PlayerBehavior::MoveUnit { .. })));
 
         // When: 이벤트 선택
         let state = GameState::SelectingEvent;
         let allowed = ActionScheduler::get_allowed_actions(&state);
-        assert_eq!(allowed.len(), 2);
+        assert_eq!(allowed.len(), 4);
 
         // When: 상점 진입
         let state = GameState::InShop {
@@ -259,8 +296,8 @@ mod tests {
         // Then: 각 상태별 허용 행동 개수 검증
         let test_cases = vec![
             (GameState::NotStarted, 1),
-            (GameState::WaitingPhaseRequest, 1),
-            (GameState::SelectingEvent, 2),
+            (GameState::WaitingPhaseRequest, 3),
+            (GameState::SelectingEvent, 4),
             (
                 GameState::InShop {
                     shop_uuid: Uuid::nil(),

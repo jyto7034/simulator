@@ -5,17 +5,14 @@ use uuid::Uuid;
 
 use crate::{
     ecs::resources::Position,
-    game::{behavior::GameError, data::GameDataBase, enums::Tier, stats::UnitStats},
+    game::{
+        behavior::GameError,
+        data::GameDataBase,
+        enums::{Side, Tier},
+        growth::{GrowthId, GrowthStack},
+        stats::UnitStats,
+    },
 };
-
-use super::Timeline;
-
-#[derive(Clone)]
-pub struct PlayerDeckInfo {
-    pub units: Vec<OwnedUnit>,
-    pub artifacts: Vec<OwnedArtifact>,
-    pub positions: HashMap<Uuid, Position>,
-}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum BattleWinner {
@@ -24,12 +21,21 @@ pub enum BattleWinner {
     Draw,
 }
 
-pub struct BattleResult {
-    pub winner: BattleWinner,
-    pub timeline: Timeline,
+#[derive(Clone)]
+pub struct PlayerDeckInfo {
+    pub units: Vec<OwnedUnit>,
+    pub artifacts: Vec<OwnedArtifact>,
+    pub positions: HashMap<Uuid, Position>,
 }
 
-pub struct Event {}
+/// 어빌리티 실행에 필요한 유닛 정보
+#[derive(Debug, Clone)]
+pub struct UnitSnapshot {
+    pub id: Uuid,
+    pub owner: Side,
+    pub position: Position,
+    pub stats: UnitStats,
+}
 
 #[derive(Debug, Clone)]
 pub struct OwnedArtifact {
@@ -49,26 +55,6 @@ pub struct OwnedUnit {
     pub equipped_items: Vec<Uuid>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum GrowthId {
-    KillStack,
-    PveWinStack,
-    QuestRewardStack,
-}
-
-#[derive(Debug, Clone, Default)]
-pub struct GrowthStack {
-    pub stacks: HashMap<GrowthId, i32>,
-}
-
-impl GrowthStack {
-    pub fn new() -> Self {
-        Self {
-            stacks: HashMap::new(),
-        }
-    }
-}
-
 impl OwnedUnit {
     pub fn effective_stats(
         &self,
@@ -80,7 +66,7 @@ impl OwnedUnit {
             .get_by_uuid(&self.base_uuid)
             .ok_or(GameError::MissingResource("AbnormalityMetadata"))?;
 
-        if origin.attack_interval_ms == 0 {
+        if origin.basic_attack.interval_ms == 0 {
             return Err(GameError::InvalidUnitStats(
                 "attack_interval_ms must be > 0",
             ));
@@ -91,9 +77,10 @@ impl OwnedUnit {
             origin.max_health,
             origin.attack,
             origin.defense,
-            origin.attack_interval_ms,
+            origin.basic_attack.interval_ms,
         );
 
+        // 성장형 스택 적용
         for (stat_id, value) in &self.growth_stacks.stacks {
             match stat_id {
                 GrowthId::KillStack => {
@@ -104,6 +91,7 @@ impl OwnedUnit {
             }
         }
 
+        // 아이템 스탯 적용
         for item_uuid in &self.equipped_items {
             let origin_item = game_data
                 .equipment_data
@@ -113,6 +101,7 @@ impl OwnedUnit {
             stats.apply_permanent_effects(&origin_item.triggered_effects);
         }
 
+        // 아티팩트 스탯 적용
         for artifact_uuid in artifacts {
             let origin_artifact = game_data
                 .artifact_data

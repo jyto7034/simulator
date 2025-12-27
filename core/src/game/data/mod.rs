@@ -10,6 +10,7 @@ use crate::game::data::{
     event_pools::EventPoolConfig,
     pve_data::PveEncounterDatabase,
     random_event_data::RandomEventDatabase,
+    skill_data::SkillDatabase,
     shop_data::ShopDatabase,
 };
 
@@ -34,6 +35,9 @@ pub mod pve_data;
 // 랜덤 인카운트 이벤트 정보
 pub mod random_event_data;
 
+// 스킬 정보
+pub mod skill_data;
+
 // 상점 정보
 pub mod shop_data;
 
@@ -50,6 +54,9 @@ pub struct GameDataBase {
 
     /// PvE 전투(Suppress) 데이터
     pub pve_data: Arc<PveEncounterDatabase>,
+
+    /// 스킬 메타데이터 DB
+    pub skill_data: Arc<SkillDatabase>,
 
     /// 이벤트 생성을 위한 가중치 풀 (Ordeal별 이벤트 확률)
     pub event_pools: EventPoolConfig,
@@ -213,6 +220,7 @@ impl GameDataBase {
         bonus_data: Arc<BonusDatabase>,
         random_event_data: Arc<RandomEventDatabase>,
         pve_data: Arc<PveEncounterDatabase>,
+        skill_data: Arc<SkillDatabase>,
         event_pools: EventPoolConfig,
     ) -> Self {
         let item_registry = ItemRegistry::new(&abnormality_data, &artifact_data, &equipment_data);
@@ -225,6 +233,7 @@ impl GameDataBase {
             bonus_data,
             random_event_data,
             pve_data,
+            skill_data,
             event_pools,
             item_registry,
         }

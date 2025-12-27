@@ -11,6 +11,7 @@ use crate::game::data::shop_data::ShopMetadata;
 use crate::game::enums::{GameOption, OrdealType, PhaseType, Side};
 
 pub mod inventory;
+pub mod item_slot;
 pub use inventory::*;
 
 /// 게임의 명시적인 상태
@@ -759,5 +760,54 @@ mod tests {
 
         context.clear();
         assert_eq!(context.allowed_actions.len(), 0);
+    }
+
+    #[test]
+    fn test_field_move_unit_success() {
+        use crate::game::enums::Side;
+
+        let unit_uuid = Uuid::new_v4();
+        let mut field = Field::new(3, 3);
+        field
+            .place(unit_uuid, Side::Player, Position::new(0, 0))
+            .unwrap();
+
+        field.move_unit(unit_uuid, Position::new(2, 1)).unwrap();
+
+        assert_eq!(field.get_position(unit_uuid), Some(Position::new(2, 1)));
+        assert_eq!(field.get_unit_at(Position::new(0, 0)), None);
+        assert_eq!(field.get_unit_at(Position::new(2, 1)), Some(unit_uuid));
+    }
+
+    #[test]
+    fn test_field_move_unit_rejects_occupied_destination() {
+        use crate::game::enums::Side;
+
+        let unit1 = Uuid::new_v4();
+        let unit2 = Uuid::new_v4();
+        let mut field = Field::new(3, 3);
+        field
+            .place(unit1, Side::Player, Position::new(0, 0))
+            .unwrap();
+        field
+            .place(unit2, Side::Player, Position::new(1, 1))
+            .unwrap();
+
+        let err = field.move_unit(unit1, Position::new(1, 1)).unwrap_err();
+        assert!(matches!(err, GameError::PositionOccupied));
+    }
+
+    #[test]
+    fn test_field_move_unit_rejects_out_of_bounds() {
+        use crate::game::enums::Side;
+
+        let unit_uuid = Uuid::new_v4();
+        let mut field = Field::new(3, 3);
+        field
+            .place(unit_uuid, Side::Player, Position::new(0, 0))
+            .unwrap();
+
+        let err = field.move_unit(unit_uuid, Position::new(99, 0)).unwrap_err();
+        assert!(matches!(err, GameError::OutOfBounds));
     }
 }

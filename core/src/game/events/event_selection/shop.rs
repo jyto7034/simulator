@@ -2,6 +2,7 @@ use bevy_ecs::world::World;
 use tracing::{debug, info, warn};
 use uuid::Uuid;
 
+use crate::game::managers::uuid_manager::UuidManager;
 use crate::{
     ecs::resources::{Enkephalin, Inventory, InventoryDiffDto, InventoryItemDto, SelectedEvent},
     game::{
@@ -242,14 +243,25 @@ impl ShopExecutor {
         };
 
         // 2-3. 인벤토리에 아이템 추가
-        let mut inventory = world
-            .get_resource_mut::<Inventory>()
-            .ok_or(GameError::MissingResource("Inventory"))?;
+        let owned_uuid = match &item {
+            crate::game::data::Item::Equipment(_) => {
+                let mut uuid_manager = world
+                    .get_resource_mut::<UuidManager>()
+                    .ok_or(GameError::MissingResource("UuidManager"))?;
+                uuid_manager.next_owned_equipment()
+            }
+            _ => item.uuid(),
+        };
 
-        inventory.add_item(item.clone())?;
+        {
+            let mut inventory = world
+                .get_resource_mut::<Inventory>()
+                .ok_or(GameError::MissingResource("Inventory"))?;
+            inventory.add_item_owned(owned_uuid, item.clone())?;
+        }
 
-        // 2-4. 인벤토리 변화 DTO 생성
-        let item_dto = InventoryItemDto::from_item(&item);
+        // 2-4. 인벤토리 변화 DTO 생성 (소유 인스턴스 UUID 포함)
+        let item_dto = InventoryItemDto::from_item_with_uuid(&item, owned_uuid);
 
         info!(
             "Item purchased successfully: item_uuid={}, remaining_enkephalin={}",
@@ -284,6 +296,16 @@ impl ShopExecutor {
             let inventory = world
                 .get_resource::<Inventory>()
                 .ok_or(GameError::MissingResource("Inventory"))?;
+
+            if let Some(owned_equipment) = inventory.equipments.get_item(&item_uuid) {
+                if owned_equipment.equipped_to.is_some() {
+                    warn!(
+                        "Rejected sell request: equipped item cannot be sold (item_uuid={})",
+                        item_uuid
+                    );
+                    return Err(GameError::InvalidAction);
+                }
+            }
 
             let item = inventory
                 .find_item(item_uuid)
@@ -366,11 +388,12 @@ impl ShopExecutor {
 mod tests {
     use super::*;
     use crate::game::data::{
-        abnormality_data::AbnormalityMetadata,
+        abnormality_data::{AbnormalityMetadata, BasicAttackDef, MovementDef, ResonanceDef},
         equipment_data::{EquipmentMetadata, EquipmentType},
         Item,
     };
     use crate::game::enums::RiskLevel;
+    use crate::game::managers::uuid_manager::UuidManager;
     use std::sync::Arc;
 
     /// 테스트용 World 생성 헬퍼
@@ -378,7 +401,22 @@ mod tests {
         let mut world = World::new();
         world.insert_resource(Enkephalin::new(100));
         world.insert_resource(Inventory::new());
+        world.insert_resource(UuidManager::new(123));
         world
+    }
+
+    fn add_owned_item(world: &mut World, item: Item) -> Uuid {
+        let owned_uuid = match &item {
+            Item::Equipment(_) => {
+                let mut uuid_manager = world.get_resource_mut::<UuidManager>().unwrap();
+                uuid_manager.next_owned_equipment()
+            }
+            _ => item.uuid(),
+        };
+
+        let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
+        inventory.add_item_owned(owned_uuid, item).unwrap();
+        owned_uuid
     }
 
     /// 테스트용 Equipment 생성 헬퍼
@@ -409,11 +447,21 @@ mod tests {
             max_health: 100,
             attack: 30,
             defense: 5,
-            attack_interval_ms: 1500,
-            resonance_start: 0,
-            resonance_max: 100,
-            resonance_lock_ms: 1000,
-            abilities: Vec::new(),
+            movement: MovementDef {
+                speed_units_per_ms: 3000,
+            },
+            basic_attack: BasicAttackDef {
+                range_tiles: 1,
+                interval_ms: 1500,
+                windup_ms: 0,
+                delivery: crate::game::ability::DeliveryDef::Instant,
+            },
+            resonance: ResonanceDef {
+                start: 0,
+                max: 100,
+                gain_lock_ms: 1000,
+            },
+            skill_id: None,
         });
         (uuid, abnormality)
     }
@@ -474,15 +522,8 @@ mod tests {
         let mut world = setup_world();
         setup_shop(&mut world);
 
-        let (item_uuid, equipment) = create_test_equipment(100);
-
-        // Given: 인벤토리에 아이템 추가
-        {
-            let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
-            inventory
-                .add_item(Item::Equipment(equipment.clone()))
-                .unwrap();
-        }
+        let (_base_uuid, equipment) = create_test_equipment(100);
+        let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
 
         let initial_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
 
@@ -528,14 +569,7 @@ mod tests {
         setup_shop(&mut world);
 
         let (item_uuid, abnormality) = create_test_abnormality(200);
-
-        // Given: 인벤토리에 아이템 추가
-        {
-            let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
-            inventory
-                .add_item(Item::Abnormality(abnormality.clone()))
-                .unwrap();
-        }
+        let _ = add_owned_item(&mut world, Item::Abnormality(abnormality.clone()));
 
         let initial_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
 
@@ -577,15 +611,8 @@ mod tests {
         // Given: 상점 안에 있지 않음 (SelectedEvent 없음)
         let mut world = setup_world();
 
-        let (item_uuid, equipment) = create_test_equipment(100);
-
-        // Given: 인벤토리에 아이템 추가
-        {
-            let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
-            inventory
-                .add_item(Item::Equipment(equipment.clone()))
-                .unwrap();
-        }
+        let (_base_uuid, equipment) = create_test_equipment(100);
+        let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
 
         // When: 상점 밖에서 판매 시도
         let result = ShopExecutor::sell_tiem(&mut world, item_uuid);
@@ -610,15 +637,8 @@ mod tests {
             let mut world = setup_world();
             setup_shop(&mut world);
 
-            let (item_uuid, equipment) = create_test_equipment(original_price);
-
-            // Given: 인벤토리에 아이템 추가
-            {
-                let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
-                inventory
-                    .add_item(Item::Equipment(equipment.clone()))
-                    .unwrap();
-            }
+            let (_base_uuid, equipment) = create_test_equipment(original_price);
+            let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
 
             let initial_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
 
@@ -646,17 +666,14 @@ mod tests {
         let mut world = setup_world();
         setup_shop(&mut world);
 
-        let (uuid1, equipment1) = create_test_equipment(100);
-        let (uuid2, equipment2) = create_test_equipment(200);
-        let (uuid3, abnormality) = create_test_abnormality(300);
+        let (_uuid1, equipment1) = create_test_equipment(100);
+        let (_uuid2, equipment2) = create_test_equipment(200);
+        let (_uuid3, abnormality) = create_test_abnormality(300);
 
         // Given: 인벤토리에 아이템들 추가
-        {
-            let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
-            inventory.add_item(Item::Equipment(equipment1)).unwrap();
-            inventory.add_item(Item::Equipment(equipment2)).unwrap();
-            inventory.add_item(Item::Abnormality(abnormality)).unwrap();
-        }
+        let uuid1 = add_owned_item(&mut world, Item::Equipment(equipment1));
+        let uuid2 = add_owned_item(&mut world, Item::Equipment(equipment2));
+        let uuid3 = add_owned_item(&mut world, Item::Abnormality(abnormality));
 
         let initial_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
 
@@ -682,14 +699,8 @@ mod tests {
         let mut world = setup_world();
         setup_shop(&mut world);
 
-        let (item_uuid, equipment) = create_test_equipment(100);
-
-        {
-            let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
-            inventory
-                .add_item(Item::Equipment(equipment.clone()))
-                .unwrap();
-        }
+        let (_base_uuid, equipment) = create_test_equipment(100);
+        let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
 
         // When: 첫 번째 판매 성공
         let result1 = ShopExecutor::sell_tiem(&mut world, item_uuid);
@@ -725,13 +736,8 @@ mod tests {
         }
 
         // Given: 100 가격의 아이템 추가 (판매 시 50 획득)
-        let (item_uuid, equipment) = create_test_equipment(100);
-        {
-            let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
-            inventory
-                .add_item(Item::Equipment(equipment.clone()))
-                .unwrap();
-        }
+        let (_base_uuid, equipment) = create_test_equipment(100);
+        let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
 
         // When: 판매 시도 (u32::MAX - 10 + 50 = 오버플로우)
         // Then: Debug 모드에서 패닉 발생 (expected)
@@ -747,13 +753,15 @@ mod tests {
         world.insert_resource(Inventory::new());
         setup_shop(&mut world);
 
-        let (item_uuid, equipment) = create_test_equipment(100);
-        {
+        let (_base_uuid, equipment) = create_test_equipment(100);
+        let item_uuid = {
+            let owned_uuid = Uuid::from_u128(1);
             let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
             inventory
-                .add_item(Item::Equipment(equipment.clone()))
+                .add_item_owned(owned_uuid, Item::Equipment(equipment.clone()))
                 .unwrap();
-        }
+            owned_uuid
+        };
 
         // When: Enkephalin 리소스 없이 판매 시도
         // Then: unwrap()으로 인한 패닉 발생 (expected)
@@ -783,13 +791,8 @@ mod tests {
         let mut world = setup_world();
         // Given: setup_shop()을 호출하지 않음
 
-        let (item_uuid, equipment) = create_test_equipment(100);
-        {
-            let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
-            inventory
-                .add_item(Item::Equipment(equipment.clone()))
-                .unwrap();
-        }
+        let (_base_uuid, equipment) = create_test_equipment(100);
+        let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
 
         // When: 상점 상태 없이 판매 시도
         // Then: unwrap()으로 인한 패닉 발생 (expected)
@@ -830,13 +833,8 @@ mod tests {
         };
         world.insert_resource(SelectedEvent::new(GameOption::Bonus { bonus }));
 
-        let (item_uuid, equipment) = create_test_equipment(100);
-        {
-            let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
-            inventory
-                .add_item(Item::Equipment(equipment.clone()))
-                .unwrap();
-        }
+        let (_base_uuid, equipment) = create_test_equipment(100);
+        let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
 
         // When: Bonus 이벤트 상태에서 판매 시도
         // Then: as_shop() 실패로 unwrap() 패닉 발생 (expected)
@@ -853,14 +851,8 @@ mod tests {
         let mut world = setup_world();
         setup_shop(&mut world);
 
-        let (item_uuid, equipment) = create_test_equipment(1);
-
-        {
-            let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
-            inventory
-                .add_item(Item::Equipment(equipment.clone()))
-                .unwrap();
-        }
+        let (_base_uuid, equipment) = create_test_equipment(1);
+        let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
 
         let initial_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
 
@@ -882,14 +874,8 @@ mod tests {
 
         // Given: u32::MAX / 2 보다 작은 가격 설정
         let max_safe_price = 1_000_000_000u32; // 10억
-        let (item_uuid, equipment) = create_test_equipment(max_safe_price);
-
-        {
-            let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
-            inventory
-                .add_item(Item::Equipment(equipment.clone()))
-                .unwrap();
-        }
+        let (_base_uuid, equipment) = create_test_equipment(max_safe_price);
+        let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
 
         let initial_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
 
@@ -915,13 +901,8 @@ mod tests {
             enkephalin.amount = 0;
         }
 
-        let (item_uuid, equipment) = create_test_equipment(100);
-        {
-            let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
-            inventory
-                .add_item(Item::Equipment(equipment.clone()))
-                .unwrap();
-        }
+        let (_base_uuid, equipment) = create_test_equipment(100);
+        let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
 
         // When: 판매
         let result = ShopExecutor::sell_tiem(&mut world, item_uuid);

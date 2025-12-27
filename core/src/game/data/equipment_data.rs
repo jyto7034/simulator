@@ -7,7 +7,7 @@ fn default_allow_duplicate_equip() -> bool {
     true
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum EquipmentType {
     Weapon,
     Suit,

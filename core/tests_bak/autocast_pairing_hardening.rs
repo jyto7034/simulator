@@ -1,3 +1,5 @@
+#![cfg(feature = "timeline_checks")]
+
 use std::sync::Arc;
 
 use game_core::ecs::resources::Position;

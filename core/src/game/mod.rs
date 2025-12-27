@@ -5,6 +5,7 @@ pub mod data;
 pub mod determinism;
 pub mod enums;
 pub mod events;
+pub mod growth;
 pub mod managers;
 pub mod stats;
 pub mod world;

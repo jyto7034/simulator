@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::game::ability::AbilityId;
+use crate::game::ability::SkillId;
 
 /// 트리거 타입
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -35,7 +35,7 @@ pub enum Effect {
     /// 버프 적용
     ApplyBuff { buff_id: String, duration_ms: u64 },
     /// 어빌리티 실행 (복잡한 로직)
-    Ability(AbilityId),
+    Skill(SkillId),
 }
 
 /// 트리거 기반 효과 맵
@@ -52,6 +52,8 @@ pub enum StatId {
     Defense,
     /// 공격 주기(ms). 작을수록 빠름.
     AttackIntervalMs,
+    /// 이동 속도 (tile_units/ms)
+    MoveSpeedUnitsPerMs,
 }
 
 /// 스탯 변경 타입
@@ -86,6 +88,8 @@ pub struct UnitStats {
     pub defense: u32,
     /// 공격 주기(ms). 작을수록 빠름.
     pub attack_interval_ms: u64,
+    /// 이동 속도 (tile_units/ms)
+    pub move_speed_units_per_ms: u32,
 }
 
 impl UnitStats {
@@ -99,6 +103,7 @@ impl UnitStats {
             defense: 0,
             attack_interval_ms: 0,
             current_health: 0,
+            move_speed_units_per_ms: 0,
         }
     }
 
@@ -117,6 +122,7 @@ impl UnitStats {
             defense,
             attack_interval_ms,
             current_health: current_health.min(max_health),
+            move_speed_units_per_ms: 0,
         }
     }
 
@@ -171,6 +177,18 @@ impl UnitStats {
         }
     }
 
+    pub fn add_move_speed_units_per_ms(&mut self, delta: i32) {
+        if delta >= 0 {
+            self.move_speed_units_per_ms = self.move_speed_units_per_ms.saturating_add(delta as u32);
+        } else {
+            let dec = delta.unsigned_abs().min(self.move_speed_units_per_ms);
+            self.move_speed_units_per_ms = self.move_speed_units_per_ms.saturating_sub(dec);
+        }
+        if self.move_speed_units_per_ms == 0 {
+            self.move_speed_units_per_ms = 1;
+        }
+    }
+
     /// 단일 StatModifier를 적용
     pub fn apply_modifier(&mut self, modifier: StatModifier) {
         use StatId::*;
@@ -208,6 +226,15 @@ impl UnitStats {
                     let base = self.attack_interval_ms as i64;
                     let delta = base * (modifier.value as i64) / 100;
                     self.add_attack_interval_ms(delta);
+                }
+            },
+            MoveSpeedUnitsPerMs => match modifier.kind {
+                StatModifierKind::Flat => self.add_move_speed_units_per_ms(modifier.value),
+                StatModifierKind::Percent => {
+                    let base = i64::from(self.move_speed_units_per_ms);
+                    let delta = base.saturating_mul(i64::from(modifier.value)) / 100;
+                    let delta = delta.clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32;
+                    self.add_move_speed_units_per_ms(delta);
                 }
             },
         }

@@ -266,11 +266,51 @@ mod shop {
                 1,
                 "구매한 아이템이 1개여야 합니다"
             );
-            assert_eq!(
-                inventory_diff.added[0].uuid(),
-                item_uuid,
-                "구매한 아이템의 UUID가 일치해야 합니다"
-            );
+
+            let owned_uuid = inventory_diff.added[0].uuid();
+            let expected_item = game_data
+                .item(&item_uuid)
+                .expect("shop item must exist in registry");
+
+            match (&inventory_diff.added[0], expected_item) {
+                (
+                    game_core::ecs::resources::InventoryItemDto::Equipment(dto),
+                    game_core::game::data::Item::Equipment(meta),
+                ) => {
+                    assert_ne!(
+                        owned_uuid, item_uuid,
+                        "장비는 base_uuid와 별도의 owned_uuid로 소유되어야 합니다"
+                    );
+                    assert_eq!(dto.id, meta.id);
+                    assert_eq!(dto.name, meta.name);
+                    assert_eq!(dto.price, meta.price);
+                }
+                (
+                    game_core::ecs::resources::InventoryItemDto::Abnormality(dto),
+                    game_core::game::data::Item::Abnormality(meta),
+                ) => {
+                    assert_eq!(
+                        owned_uuid, item_uuid,
+                        "환상체는 현재 base_uuid를 owned_uuid로 사용합니다"
+                    );
+                    assert_eq!(dto.id, meta.id);
+                    assert_eq!(dto.name, meta.name);
+                    assert_eq!(dto.price, meta.price);
+                }
+                (
+                    game_core::ecs::resources::InventoryItemDto::Artifact(dto),
+                    game_core::game::data::Item::Artifact(meta),
+                ) => {
+                    assert_eq!(
+                        owned_uuid, item_uuid,
+                        "아티팩트는 현재 base_uuid를 owned_uuid로 사용합니다"
+                    );
+                    assert_eq!(dto.id, meta.id);
+                    assert_eq!(dto.name, meta.name);
+                    assert_eq!(dto.price, meta.price);
+                }
+                other => panic!("Unexpected purchased item mapping: {:?}", other),
+            }
 
             // Then: inventory_diff.updated와 removed는 비어있어야 함
             assert!(
@@ -730,7 +770,7 @@ mod integration {
     /// 각 상태에서 올바른 행동만 허용되는지 확인
     #[test]
     fn allowed_actions_validation() {
-        use game_core::ecs::resources::GameState;
+        use game_core::ecs::resources::{GameState, Position};
 
         // Given: 게임 시작
         let game_data = create_test_game_data();
@@ -752,8 +792,20 @@ mod integration {
 
         // Then: RequestPhaseData만 허용됨
         let allowed = game.get_allowed_actions();
-        assert_eq!(allowed.len(), 1);
+        assert_eq!(allowed.len(), 4);
         assert!(game.is_action_allowed(&PlayerBehavior::RequestPhaseData));
+        assert!(game.is_action_allowed(&PlayerBehavior::EquipItem {
+            item_uuid: Uuid::new_v4(),
+            target_unit: Uuid::new_v4(),
+        }));
+        assert!(game.is_action_allowed(&PlayerBehavior::UnEquipItem {
+            item_uuid: Uuid::new_v4(),
+            target_unit: Uuid::new_v4(),
+        }));
+        assert!(game.is_action_allowed(&PlayerBehavior::MoveUnit {
+            target_unit_uuid: Uuid::new_v4(),
+            dest_pos: Position::new(0, 0)
+        }));
         assert!(!game.is_action_allowed(&PlayerBehavior::StartNewGame));
 
         // When: Phase 데이터 요청 후 SelectingEvent 상태
@@ -763,12 +815,24 @@ mod integration {
 
         // Then: SelectEvent, StartSuppression 허용됨
         let allowed = game.get_allowed_actions();
-        assert_eq!(allowed.len(), 2);
+        assert_eq!(allowed.len(), 5);
         assert!(game.is_action_allowed(&PlayerBehavior::SelectEvent {
             event_id: Uuid::new_v4()
         }));
         assert!(game.is_action_allowed(&PlayerBehavior::StartSuppression {
             abnormality_id: String::new()
+        }));
+        assert!(game.is_action_allowed(&PlayerBehavior::EquipItem {
+            item_uuid: Uuid::new_v4(),
+            target_unit: Uuid::new_v4(),
+        }));
+        assert!(game.is_action_allowed(&PlayerBehavior::UnEquipItem {
+            item_uuid: Uuid::new_v4(),
+            target_unit: Uuid::new_v4(),
+        }));
+        assert!(game.is_action_allowed(&PlayerBehavior::MoveUnit {
+            target_unit_uuid: Uuid::new_v4(),
+            dest_pos: Position::new(0, 0)
         }));
         assert!(!game.is_action_allowed(&PlayerBehavior::RequestPhaseData));
     }

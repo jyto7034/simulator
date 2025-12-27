@@ -1,11 +1,3 @@
-mod build;
-mod commands;
-mod deaths;
-mod ids;
-mod recording;
-mod sim;
-mod triggers;
-
 use std::{
     collections::{BinaryHeap, HashMap},
     sync::Arc,
@@ -13,18 +5,21 @@ use std::{
 
 use uuid::Uuid;
 
+pub mod sim;
+
 use crate::{
     ecs::resources::{Field, Position},
-    game::{data::GameDataBase, enums::Side, stats::UnitStats},
-};
-
-use super::{
-    ability_executor::{AbilityExecutor, UnitSnapshot},
-    buffs::BuffId,
-    death::DeathHandler,
-    enums::BattleEvent,
-    timeline::Timeline,
-    types::PlayerDeckInfo,
+    game::{
+        battle::{
+            buffs::BuffId,
+            enums::BattleEvent,
+            timeline::{Timeline, TimelineCause},
+            types::{PlayerDeckInfo, UnitSnapshot},
+        },
+        data::GameDataBase,
+        enums::Side,
+        stats::UnitStats,
+    },
 };
 
 /// 전투 중 사용되는 아티팩트 런타임 표현
@@ -62,20 +57,8 @@ struct RuntimeUnit {
     resonance_max: u32,
     resonance_lock_ms: u64,
     resonance_gain_locked_until_ms: u64,
-    casting_until_ms: u64,
+    next_action_time: u64,
     pending_cast: bool,
-}
-
-impl RuntimeUnit {
-    /// UnitSnapshot 생성
-    fn to_snapshot(&self) -> UnitSnapshot {
-        UnitSnapshot {
-            id: self.instance_id,
-            owner: self.owner,
-            position: self.position,
-            stats: self.stats,
-        }
-    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -109,12 +92,9 @@ pub struct BattleCore {
 
     game_data: Arc<GameDataBase>,
 
-    timeline: Timeline,
-    timeline_seq: u64,
-    recording_cause_stack: Vec<u64>,
-
-    death_handler: DeathHandler,
-    ability_executor: AbilityExecutor,
+    pub timeline: Timeline,
+    pub timeline_seq: u64,
+    pub recording_cause_stack: Vec<TimelineCause>,
 }
 
 impl BattleCore {
@@ -138,13 +118,11 @@ impl BattleCore {
             timeline: Timeline::new(),
             timeline_seq: 0,
             recording_cause_stack: Vec::new(),
-            death_handler: DeathHandler::new(),
-            ability_executor: AbilityExecutor::new(),
         }
     }
 
     fn can_gain_resonance(unit: &RuntimeUnit, now_ms: u64) -> bool {
-        now_ms >= unit.resonance_gain_locked_until_ms && now_ms >= unit.casting_until_ms
+        now_ms >= unit.resonance_gain_locked_until_ms && now_ms >= unit.next_action_time
     }
 
     fn add_resonance(
@@ -202,11 +180,8 @@ impl BattleCore {
             self.event_queue.push(BattleEvent::AutoCastStart {
                 time_ms: now_ms,
                 caster_instance_id,
-                cause_seq: self.recording_cause_seq(),
+                cause: self.recording_cause().unwrap_or_default(),
             });
         }
     }
 }
-
-#[cfg(test)]
-mod tests;

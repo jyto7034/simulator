@@ -10,7 +10,9 @@ use crate::game::{
         equipment_data::EquipmentItem, Item,
     },
     enums::RiskLevel,
+    growth::GrowthStack,
 };
+use crate::ecs::resources::item_slot::ItemSlot;
 
 #[derive(Debug, Clone)]
 pub enum InventoryMetadata {
@@ -33,9 +35,9 @@ pub struct EquipmentItemDto {
 }
 
 impl EquipmentItemDto {
-    pub fn from_metadata(meta: &EquipmentItem) -> Self {
+    pub fn from_owned(instance_uuid: Uuid, meta: &EquipmentItem) -> Self {
         Self {
-            uuid: meta.uuid,
+            uuid: instance_uuid,
             id: meta.id.clone(),
             name: meta.name.clone(),
             rarity: meta.rarity,
@@ -96,10 +98,10 @@ pub enum InventoryItemDto {
 }
 
 impl InventoryItemDto {
-    pub fn from_item(item: &Item) -> Self {
+    pub fn from_item_with_uuid(item: &Item, uuid: Uuid) -> Self {
         match item {
             Item::Equipment(meta) => {
-                InventoryItemDto::Equipment(EquipmentItemDto::from_metadata(meta.as_ref()))
+                InventoryItemDto::Equipment(EquipmentItemDto::from_owned(uuid, meta.as_ref()))
             }
             Item::Abnormality(meta) => {
                 InventoryItemDto::Abnormality(AbnormalityItemDto::from_metadata(meta.as_ref()))
@@ -161,12 +163,12 @@ impl Inventory {
 
     /// UUID로 아이템 찾기 (조회만, 제거하지 않음)
     pub fn find_item(&self, uuid: Uuid) -> Option<Item> {
-        // Equipment에서 찾기
+        // Equipment는 "소유 인스턴스 UUID"로 조회
         if let Some(item) = self.equipments.get_item(&uuid) {
-            return Some(Item::Equipment(Arc::clone(item)));
+            return Some(Item::Equipment(Arc::clone(&item.meta)));
         }
 
-        // Abnormality에서 찾기
+        // Abnormality는 base_uuid == owned_uuid로 취급 (중복 소유를 허용하지 않음)
         if let Some(item) = self.abnormalities.get_item(&uuid) {
             return Some(Item::Abnormality(Arc::clone(item)));
         }
@@ -178,9 +180,9 @@ impl Inventory {
 
     /// UUID로 아이템 제거
     pub fn remove_item(&mut self, uuid: Uuid) -> Option<Item> {
-        // Equipment에서 제거 시도
+        // Equipment는 "소유 인스턴스 UUID"로 제거
         if let Some(item) = self.equipments.remove_item(uuid) {
-            return Some(Item::Equipment(item));
+            return Some(Item::Equipment(item.meta));
         }
 
         // Abnormality에서 제거 시도
@@ -193,7 +195,11 @@ impl Inventory {
         None
     }
 
-    pub fn add_item(&mut self, item: Item) -> Result<(), GameError> {
+    /// 아이템을 소유 인스턴스로 추가합니다.
+    ///
+    /// - Equipment: `owned_uuid`는 별도의 인스턴스 UUID여야 합니다(중복 소유 지원).
+    /// - Abnormality/Artifact: 현재는 `meta.uuid`를 그대로 owned_uuid로 사용합니다.
+    pub fn add_item_owned(&mut self, owned_uuid: Uuid, item: Item) -> Result<(), GameError> {
         match item {
             Item::Abnormality(data) => {
                 if let Err(err) = self.abnormalities.add_item(data) {
@@ -205,7 +211,7 @@ impl Inventory {
                 }
             }
             Item::Equipment(data) => {
-                if let Err(err) = self.equipments.add_item(data) {
+                if let Err(err) = self.equipments.add_item(OwnedEquipment::new(owned_uuid, data)) {
                     tracing::warn!("Failed to add equipment to inventory: {}", err);
                     Err(GameError::InventoryFull)
                 } else {
@@ -239,7 +245,7 @@ impl Inventory {
 
 #[derive(Debug, Clone)]
 pub struct AbnormalityInventory {
-    items: HashMap<Uuid, Arc<AbnormalityMetadata>>,
+    items: HashMap<Uuid, OwnedAbnormality>,
     max_slots: usize,
 }
 
@@ -279,19 +285,39 @@ impl AbnormalityInventory {
             ));
         }
 
-        self.items.insert(item.uuid, item);
+        self.items.insert(item.uuid, OwnedAbnormality::new(item));
         Ok(())
     }
 
     pub fn remove_item(&mut self, uuid: Uuid) -> Option<Arc<AbnormalityMetadata>> {
-        self.items.remove(&uuid)
+        self.items.remove(&uuid).map(|owned| owned.meta)
     }
 
     pub fn get_item(&self, uuid: &Uuid) -> Option<&Arc<AbnormalityMetadata>> {
+        self.items.get(uuid).map(|owned| &owned.meta)
+    }
+
+    pub fn get_growth_stacks(&self, uuid: &Uuid) -> Option<&GrowthStack> {
+        self.items.get(uuid).map(|owned| &owned.growth_stacks)
+    }
+
+    pub fn get_growth_stacks_mut(&mut self, uuid: &Uuid) -> Option<&mut GrowthStack> {
+        self.items.get_mut(uuid).map(|owned| &mut owned.growth_stacks)
+    }
+
+    pub fn get_owned(&self, uuid: &Uuid) -> Option<&OwnedAbnormality> {
         self.items.get(uuid)
     }
 
+    pub fn get_owned_mut(&mut self, uuid: &Uuid) -> Option<&mut OwnedAbnormality> {
+        self.items.get_mut(uuid)
+    }
+
     pub fn iter(&self) -> impl Iterator<Item = &Arc<AbnormalityMetadata>> {
+        self.items.values().map(|owned| &owned.meta)
+    }
+
+    pub fn iter_owned(&self) -> impl Iterator<Item = &OwnedAbnormality> {
         self.items.values()
     }
 
@@ -308,13 +334,30 @@ impl AbnormalityInventory {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct OwnedAbnormality {
+    pub meta: Arc<AbnormalityMetadata>,
+    pub growth_stacks: GrowthStack,
+    pub item_slot: ItemSlot,
+}
+
+impl OwnedAbnormality {
+    pub fn new(meta: Arc<AbnormalityMetadata>) -> Self {
+        Self {
+            meta,
+            growth_stacks: GrowthStack::new(),
+            item_slot: ItemSlot::default(),
+        }
+    }
+}
+
 // ============================================================
 // 장비 인벤토리
 // ============================================================
 
 #[derive(Debug, Clone)]
 pub struct EquipmentInventory {
-    items: HashMap<Uuid, Arc<EquipmentItem>>,
+    items: HashMap<Uuid, OwnedEquipment>,
     max_slots: usize,
 }
 
@@ -345,7 +388,7 @@ impl EquipmentInventory {
     }
 
     /// 장비 추가 (슬롯 제한 있음)
-    pub fn add_item(&mut self, item: Arc<EquipmentItem>) -> Result<(), String> {
+    pub fn add_item(&mut self, item: OwnedEquipment) -> Result<(), String> {
         if !self.can_add_item() {
             return Err(format!(
                 "장비 인벤토리가 가득 찼습니다 ({}/{})",
@@ -354,19 +397,30 @@ impl EquipmentInventory {
             ));
         }
 
-        self.items.insert(item.uuid, item);
+        if self.items.contains_key(&item.instance_uuid) {
+            return Err(format!(
+                "이미 존재하는 소유 장비 UUID 입니다 (uuid={})",
+                item.instance_uuid
+            ));
+        }
+
+        self.items.insert(item.instance_uuid, item);
         Ok(())
     }
 
-    pub fn remove_item(&mut self, uuid: Uuid) -> Option<Arc<EquipmentItem>> {
+    pub fn remove_item(&mut self, uuid: Uuid) -> Option<OwnedEquipment> {
         self.items.remove(&uuid)
     }
 
-    pub fn get_item(&self, uuid: &Uuid) -> Option<&Arc<EquipmentItem>> {
+    pub fn get_item(&self, uuid: &Uuid) -> Option<&OwnedEquipment> {
         self.items.get(uuid)
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = &Arc<EquipmentItem>> {
+    pub fn get_item_mut(&mut self, uuid: &Uuid) -> Option<&mut OwnedEquipment> {
+        self.items.get_mut(uuid)
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = &OwnedEquipment> {
         self.items.values()
     }
 
@@ -380,6 +434,23 @@ impl EquipmentInventory {
 
     pub fn max_slots(&self) -> usize {
         self.max_slots
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct OwnedEquipment {
+    pub instance_uuid: Uuid,
+    pub meta: Arc<EquipmentItem>,
+    pub equipped_to: Option<Uuid>,
+}
+
+impl OwnedEquipment {
+    pub fn new(instance_uuid: Uuid, meta: Arc<EquipmentItem>) -> Self {
+        Self {
+            instance_uuid,
+            meta,
+            equipped_to: None,
+        }
     }
 }
 

@@ -9,14 +9,55 @@ use uuid::Uuid;
 use crate::{
     ecs::resources::Position,
     game::{
-        ability::AbilityId,
-        battle::buffs::BuffId,
+        battle::{buffs::BuffId, types::BattleWinner},
         enums::Side,
         stats::{StatModifier, UnitStats},
     },
 };
 
-pub const TIMELINE_VERSION: u32 = 2;
+pub const TIMELINE_VERSION: u32 = 3;
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[serde(rename_all = "snake_case")]
+pub enum TimelineRootCause {
+    /// Timeline root entries created during battle initialization (spawns, start markers, etc).
+    Init,
+    /// Timeline root entries emitted by scheduled periodic systems (e.g., auto-attacks).
+    Period,
+    /// Timeline root entries emitted by the engine/system when there is no meaningful parent seq.
+    System,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[serde(tag = "cause_type", rename_all = "snake_case")]
+pub enum TimelineCause {
+    Parent { seq: u64 },
+    Root { kind: TimelineRootCause },
+}
+
+impl TimelineCause {
+    pub fn parent_seq(&self) -> Option<u64> {
+        match self {
+            Self::Parent { seq } => Some(*seq),
+            Self::Root { .. } => None,
+        }
+    }
+
+    pub fn root_kind(&self) -> Option<TimelineRootCause> {
+        match self {
+            Self::Parent { .. } => None,
+            Self::Root { kind } => Some(*kind),
+        }
+    }
+}
+
+impl Default for TimelineCause {
+    fn default() -> Self {
+        Self::Root {
+            kind: TimelineRootCause::System,
+        }
+    }
+}
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum AttackKind {
@@ -83,9 +124,16 @@ impl Default for Timeline {
 pub struct TimelineEntry {
     pub time_ms: u64,
     pub seq: u64,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub cause_seq: Option<u64>,
+    #[serde(default)]
+    pub cause: TimelineCause,
     pub event: TimelineEvent,
+}
+
+impl TimelineEntry {
+    /// Compatibility helper: returns the parent seq if this entry has a parent.
+    pub fn cause_seq(&self) -> Option<u64> {
+        self.cause.parent_seq()
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -121,14 +169,14 @@ pub enum TimelineEvent {
     },
     AutoCastStart {
         caster_instance_id: Uuid,
-        ability_id: Option<AbilityId>,
+        // ability_id: Option<AbilityId>,
         target_instance_id: Option<Uuid>,
     },
     AutoCastEnd {
         caster_instance_id: Uuid,
     },
     AbilityCast {
-        ability_id: AbilityId,
+        // ability_id: AbilityId,
         caster_instance_id: Uuid,
         target_instance_id: Option<Uuid>,
     },
@@ -169,7 +217,7 @@ pub enum TimelineEvent {
         killer_instance_id: Option<Uuid>,
     },
     BattleEnd {
-        winner: super::BattleWinner,
+        winner: BattleWinner,
     },
 }
 

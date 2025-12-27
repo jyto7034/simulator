@@ -1,3 +1,5 @@
+#![cfg(feature = "timeline_checks")]
+
 use std::{collections::HashMap, sync::Arc};
 
 use bevy_ecs::world::World;

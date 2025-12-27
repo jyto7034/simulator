@@ -2,37 +2,63 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    ecs::resources::InventoryDiffDto,
+    ecs::resources::{InventoryDiffDto, Position},
     game::{
         data::{random_event_data::RandomEventMetadata, shop_data::ShopMetadata},
-        enums::PhaseEvent,
+        enums::{PhaseEvent, ZoneType},
     },
 };
 
 /// GameServer에서 GameCore로 전달되는 플레이어 행동
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum PlayerBehavior {
+    // ============================================================
+    // 게임 관련 행동
+    // ============================================================
     /// 새 게임 시작
     StartNewGame,
-
+    // 아이템 장착 해제
+    UnEquipItem {
+        item_uuid: Uuid,
+        target_unit: Uuid,
+    },
+    /// 아이템 장착
+    EquipItem {
+        item_uuid: Uuid,
+        target_unit: Uuid,
+    },
+    /// 기물 배치 이동 (편성 변경)
+    MoveUnit {
+        target_unit_uuid: Uuid,
+        dest_pos: Position,
+    },
+    /// 배낭 <-> 필드 이동
+    TransferUnit {
+        target_unit_uuid: Uuid,
+        dest_zone: ZoneType,
+    },
+    // ============================================================
+    // 이벤트 관련 행동
+    // ============================================================
     /// 현재 페이즈 데이터 요청
     RequestPhaseData,
-
     /// 이벤트 선택 (상점/보너스/랜덤)
-    SelectEvent { event_id: Uuid },
-
+    SelectEvent {
+        event_id: Uuid,
+    },
     // ============================================================
     // 상점 관련 행동
     // ============================================================
     /// 아이템 구매
-    PurchaseItem { item_uuid: Uuid },
-
+    PurchaseItem {
+        item_uuid: Uuid,
+    },
     /// 아이템 판매
-    SellItem { item_uuid: Uuid },
-
+    SellItem {
+        item_uuid: Uuid,
+    },
     /// 상점 리롤 (새로운 아이템으로 교체)
     RerollShop,
-
     /// 상점 나가기
     ExitShop,
     // ============================================================
@@ -46,7 +72,9 @@ pub enum PlayerBehavior {
     // 진압 관련 행동
     // ============================================================
     /// 진압 전투 시작
-    StartSuppression { abnormality_id: String },
+    StartSuppression {
+        abnormality_id: String,
+    },
     // ============================================================
     // 전투 관련 행동 (TODO)
     // ============================================================
@@ -71,6 +99,15 @@ pub enum BehaviorResult {
 
     /// 이벤트 선택 완료 (추가 메타데이터 없음)
     EventSelected,
+
+    // 아이템 장착 해제
+    UnEquipItem,
+    /// 아이템 장착
+    EquipItem,
+    /// 기물 배치 이동 (편성 변경)
+    MoveUnit,
+    /// 배낭 <-> 필드 이동
+    TransferUnit,
 
     /// 상점 상태 업데이트 (예: 리롤 이후)
     ShopState {

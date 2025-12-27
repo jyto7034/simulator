@@ -3,21 +3,24 @@ use tracing::{debug, info, warn};
 use uuid::Uuid;
 
 use crate::ecs::components::Player;
+use crate::ecs::resources::item_slot::EquippedRef;
 use crate::ecs::resources::{
     ActionValidator, CurrentPhaseEvents, Enkephalin, Field, GameProgression, GameState, Inventory,
-    InventoryDiffDto, Qliphoth, SelectedEvent,
+    InventoryDiffDto, Position, Qliphoth, SelectedEvent,
 };
 use crate::ecs::systems::{progression, spawn_player};
 use crate::game::behavior::{BehaviorResult, GameError, PlayerBehavior};
 use crate::game::data::{random_event_data::RandomEventTarget, GameDataBase};
-use crate::game::enums::{BonusAction, GameOption, OrdealType, PhaseType, ShopAction};
+use crate::game::enums::{BonusAction, GameOption, OrdealType, PhaseType, ShopAction, ZoneType};
 use crate::game::events::event_selection::bonus::BonusExecutor;
 use crate::game::events::event_selection::shop::ShopExecutor;
 use crate::game::events::suppression::SuppressionExecutor;
 use crate::game::events::GeneratorContext;
 use crate::game::managers::action_scheduler::ActionScheduler;
 use crate::game::managers::event_manager::EventManager;
-use crate::game::{battle::BattleWinner, determinism};
+use crate::game::managers::uuid_manager::UuidManager;
+// use crate::game::{battle::BattleWinner, determinism};
+use crate::game::determinism;
 
 pub struct GameCore {
     world: bevy_ecs::world::World,
@@ -34,6 +37,8 @@ impl GameCore {
         info!("Initializing GameCore with run_seed={}", run_seed);
 
         let mut world = bevy_ecs::world::World::new();
+
+        world.insert_resource(UuidManager::new(run_seed));
 
         // Resources 등록
         world.insert_resource(Enkephalin::new(0));
@@ -84,9 +89,25 @@ impl GameCore {
             PlayerBehavior::StartNewGame => self.handle_start_new_game(player_id),
             PlayerBehavior::RequestPhaseData => self.handle_request_phase_data(),
             PlayerBehavior::SelectEvent { event_id } => self.handle_select_event(event_id),
+            PlayerBehavior::EquipItem {
+                item_uuid,
+                target_unit,
+            } => self.handle_equip_item(item_uuid, target_unit),
+            PlayerBehavior::UnEquipItem {
+                item_uuid,
+                target_unit,
+            } => self.handle_unequip_item(item_uuid, target_unit),
+            PlayerBehavior::MoveUnit {
+                target_unit_uuid,
+                dest_pos: dest_type,
+            } => self.handle_move_unit(target_unit_uuid, dest_type),
+            PlayerBehavior::TransferUnit {
+                target_unit_uuid,
+                dest_zone,
+            } => self.handle_tranfer_unit(target_unit_uuid, dest_zone),
 
             // 상점 관련 행동
-            PlayerBehavior::PurchaseItem { item_uuid, .. } => {
+            PlayerBehavior::PurchaseItem { item_uuid } => {
                 self.execute_shop_action(ShopAction::Purchase { item_uuid })
             }
             PlayerBehavior::SellItem { item_uuid } => {
@@ -378,6 +399,107 @@ impl GameCore {
         }
     }
 
+    fn handle_equip_item(
+        &mut self,
+        item_uuid: Uuid,
+        target_unit: Uuid,
+    ) -> Result<BehaviorResult, GameError> {
+        let mut inventory = self
+            .world
+            .get_resource_mut::<Inventory>()
+            .ok_or(GameError::MissingResource("Inventory"))?;
+
+        // 1. 인벤토리에서 아이템 정보 불러오기
+        let (base_uuid, equipment_type, allow_duplicate, equipped_to) = {
+            let owned_equipment = inventory
+                .equipments
+                .get_item(&item_uuid)
+                .ok_or(GameError::InventoryItemNotFound)?;
+            (
+                owned_equipment.meta.uuid,
+                owned_equipment.meta.equipment_type,
+                owned_equipment.meta.allow_duplicate_equip,
+                owned_equipment.equipped_to,
+            )
+        };
+
+        if equipped_to.is_some() {
+            return Err(GameError::InvalidAction);
+        }
+
+        // 2. 유닛의 장착 슬롯 로직에 위임 (귀속/중복 룰 포함)
+        {
+            let owned_abnormality = inventory
+                .abnormalities
+                .get_owned_mut(&target_unit)
+                .ok_or(GameError::UnitNotFound)?;
+            owned_abnormality
+                .item_slot
+                .equip(
+                    EquippedRef {
+                        instance_uuid: item_uuid,
+                        base_uuid,
+                        equipment_type,
+                    },
+                    allow_duplicate,
+                )
+                .map_err(|_| GameError::InvalidAction)?;
+        }
+
+        // 3. 유효한 아이템인지 확인 후, 장착
+        let owned_equipment = inventory
+            .equipments
+            .get_item_mut(&item_uuid)
+            .ok_or(GameError::InventoryItemNotFound)?;
+        owned_equipment.equipped_to = Some(target_unit);
+
+        Ok(BehaviorResult::EquipItem)
+    }
+
+    fn handle_unequip_item(
+        &mut self,
+        _item_uuid: Uuid,
+        _target_unit: Uuid,
+    ) -> Result<BehaviorResult, GameError> {
+        // 기본 룰: 아이템은 귀속이며 일반 해제는 불가 (해제 아이템으로만 가능)
+        Err(GameError::InvalidAction)
+    }
+    fn handle_tranfer_unit(
+        &mut self,
+        target_unit_uuid: Uuid,
+        _dest_zone: ZoneType,
+    ) -> Result<BehaviorResult, GameError> {
+        let field = self
+            .world
+            .get_resource::<Field>()
+            .ok_or(GameError::MissingResource("Field"))?;
+
+        let _from = field
+            .get_position(target_unit_uuid)
+            .ok_or(GameError::UnitNotFound)?;
+
+        Ok(BehaviorResult::TransferUnit)
+    }
+
+    fn handle_move_unit(
+        &mut self,
+        target_unit_uuid: Uuid,
+        dest_type: Position,
+    ) -> Result<BehaviorResult, GameError> {
+        let mut field = self
+            .world
+            .get_resource_mut::<Field>()
+            .ok_or(GameError::MissingResource("Field"))?;
+
+        let _from = field
+            .get_position(target_unit_uuid)
+            .ok_or(GameError::UnitNotFound)?;
+
+        field.move_unit(target_unit_uuid, dest_type)?;
+
+        Ok(BehaviorResult::MoveUnit)
+    }
+
     // ============================================================
     // 상점 관련 통합 핸들러
     // ============================================================
@@ -388,6 +510,7 @@ impl GameCore {
                 ShopExecutor::purchase_item(&mut self.world, &self.game_data, item_uuid)
             }
 
+            // 환상체 판매 시, 장착 중인 아이템 해제됨.
             ShopAction::Sell { item_uuid } => ShopExecutor::sell_item(&mut self.world, item_uuid),
 
             // TODO: Reroll 시 자원 소모 ( 엔케팔린 혹은 특정 자원 )
@@ -557,29 +680,29 @@ impl GameCore {
 
         // 진압 작업 성공 시, 해당 몬스터의 드랍템 확률 발생
 
-        info!(
-            "Suppression battle completed - Winner: {:?}",
-            battle_result.winner
-        );
+        // info!(
+        //     "Suppression battle completed - Winner: {:?}",
+        //     battle_result.winner
+        // );
 
-        {
-            // 클리포드 감소는 게임 룰이 명확해지고 나서.
+        // {
+        //     // 클리포드 감소는 게임 룰이 명확해지고 나서.
 
-            // let mut qliphoth = self
-            //     .world
-            //     .get_resource_mut::<Qliphoth>()
-            //     .ok_or(GameError::MissingResource("Qliphoth"))?;
-            // QliphothManager::apply_battle_cost(&mut qliphoth);
+        //     // let mut qliphoth = self
+        //     //     .world
+        //     //     .get_resource_mut::<Qliphoth>()
+        //     //     .ok_or(GameError::MissingResource("Qliphoth"))?;
+        //     // QliphothManager::apply_battle_cost(&mut qliphoth);
 
-            match battle_result.winner {
-                BattleWinner::Player => {
-                    // QliphothManager::apply_suppress_success(&mut qliphoth)
-                }
-                BattleWinner::Opponent | BattleWinner::Draw => {
-                    // QliphothManager::apply_suppress_failure(&mut qliphoth)
-                }
-            }
-        }
+        //     match battle_result.winner {
+        //         BattleWinner::Player => {
+        //             // QliphothManager::apply_suppress_success(&mut qliphoth)
+        //         }
+        //         BattleWinner::Opponent | BattleWinner::Draw => {
+        //             // QliphothManager::apply_suppress_failure(&mut qliphoth)
+        //         }
+        //     }
+        // }
 
         self.advance_to_next_phase()
     }
