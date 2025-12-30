@@ -1,19 +1,23 @@
-use std::{collections::HashMap, sync::Arc};
+use std::sync::Arc;
 
 use bevy_ecs::world::World;
 use serde::{Deserialize, Serialize};
-use tracing::{debug, info, warn};
+use tracing::{info, warn};
 use uuid::Uuid;
 
 use crate::{
-    ecs::resources::{Field, GameProgression, Inventory, Position},
+    ecs::resources::{Field, GameProgression, Inventory},
     game::{
-        // battle::{BattleCore, BattleResult, GrowthStack, OwnedArtifact, OwnedUnit, PlayerDeckInfo},
+        battle::{
+            core::BattleCore,
+            types::{BattleResult, OwnedArtifact, OwnedUnit, PlayerDeckInfo},
+        },
         behavior::GameError,
         data::{pve_data::PveEncounter, GameDataBase},
         determinism,
-        enums::{GameOption, OrdealType, PhaseType, RiskLevel, Tier},
+        enums::{GameOption, OrdealType, PhaseType, RiskLevel, Side, Tier},
         events::EventGenerator,
+        growth::GrowthStack,
     },
 };
 
@@ -117,8 +121,8 @@ impl SuppressionExecutor {
         world: &mut World,
         game_data: Arc<GameDataBase>,
         abnormality_id: &str,
-    ) -> Result<(), GameError> {
-        // ) -> Result<BattleResult, GameError> {
+        movement_seed: u64,
+    ) -> Result<BattleResult, GameError> {
         info!(
             "Starting suppression battle for abnormality: {}",
             abnormality_id
@@ -126,35 +130,31 @@ impl SuppressionExecutor {
 
         // 1. Player 덱 정보 구성
         let player_deck = Self::build_player_deck(world)?;
-        // debug!(
-        //     "Player deck built: {} units, {} artifacts",
-        //     player_deck.units.len(),
-        //     player_deck.artifacts.len()
-        // );
 
         // 2. Opponent 덱 정보 구성 (PvE 데이터에서 로드)
         let opponent_deck = Self::build_opponent_deck(&game_data, abnormality_id)?;
-        // debug!(
-        //     "Opponent deck built: {} units from encounter '{}'",
-        //     opponent_deck.units.len(),
-        //     abnormality_id
-        // );
 
         // 3. BattleCore 생성 및 전투 실행
-        let field_size = (3, 3);
-        // let mut battle = BattleCore::new(&player_deck, &opponent_deck, game_data, field_size);
-
-        // let result = battle.run_battle(world)?;
+        let field = world
+            .get_resource::<Field>()
+            .ok_or(GameError::MissingResource("Field"))?;
+        let field_size = (field.width, field.height);
+        let mut battle = BattleCore::new(
+            &player_deck,
+            &opponent_deck,
+            game_data,
+            field_size,
+            movement_seed,
+        );
+        let result = battle.run_battle(world)?;
 
         info!("Suppression battle completed");
 
-        // Ok(result)
-        Ok(())
+        Ok(result)
     }
 
     /// Player 덱 정보 구성
-    // fn build_player_deck(world: &World) -> Result<PlayerDeckInfo, GameError> {
-    fn build_player_deck(world: &World) -> Result<(), GameError> {
+    fn build_player_deck(world: &World) -> Result<PlayerDeckInfo, GameError> {
         let field = world
             .get_resource::<Field>()
             .ok_or(GameError::MissingResource("Field"))?;
@@ -163,50 +163,50 @@ impl SuppressionExecutor {
             .get_resource::<Inventory>()
             .ok_or(GameError::MissingResource("Inventory"))?;
 
-        // let mut units = Vec::new();
-        // let mut positions = HashMap::new();
+        let mut placements: Vec<(Uuid, crate::ecs::resources::Position)> = field
+            .get_positions_by_side(Side::Player)
+            .into_iter()
+            .collect();
+        placements.sort_by(|a, b| a.0.as_bytes().cmp(b.0.as_bytes()));
 
-        let mut abnormality_items: Vec<_> = inventory.abnormalities.iter_owned().collect();
-        abnormality_items.sort_by(|a, b| a.meta.uuid.as_bytes().cmp(b.meta.uuid.as_bytes()));
+        let mut units: Vec<OwnedUnit> = Vec::new();
+        let mut positions = std::collections::HashMap::new();
 
-        Ok(())
+        for (unit_uuid, pos) in placements {
+            let owned = inventory
+                .abnormalities
+                .get_owned(&unit_uuid)
+                .ok_or(GameError::UnitNotFound)?;
+            let equipped_items: Vec<Uuid> = owned.item_slot.iter().map(|r| r.base_uuid).collect();
 
-        // for abnormality in abnormality_items {
-        //     let unit_uuid = abnormality.meta.uuid;
-        //     if let Some(pos) = field.get_position(unit_uuid) {
-        //         let equipped_items: Vec<Uuid> =
-        //             abnormality.item_slot.iter().map(|r| r.base_uuid).collect();
+            units.push(OwnedUnit {
+                base_uuid: unit_uuid,
+                level: Tier::I,
+                growth_stacks: owned.growth_stacks.clone(),
+                equipped_items,
+            });
+            positions.insert(unit_uuid, pos);
+        }
 
-        //         units.push(OwnedUnit {
-        //             base_uuid: unit_uuid,
-        //             level: Tier::I,
-        //             growth_stacks: abnormality.growth_stacks.clone(),
-        //             equipped_items,
-        //         });
-        //         positions.insert(unit_uuid, pos);
-        //     }
-        // }
+        let mut artifact_items = inventory.artifacts.get_all_items();
+        artifact_items.sort_by(|a, b| a.uuid.as_bytes().cmp(b.uuid.as_bytes()));
+        let artifacts: Vec<OwnedArtifact> = artifact_items
+            .into_iter()
+            .map(|a| OwnedArtifact { base_uuid: a.uuid })
+            .collect();
 
-        // let mut artifact_items = inventory.artifacts.get_all_items();
-        // artifact_items.sort_by(|a, b| a.uuid.as_bytes().cmp(b.uuid.as_bytes()));
-        // let artifacts: Vec<OwnedArtifact> = artifact_items
-        //     .into_iter()
-        //     .map(|a| OwnedArtifact { base_uuid: a.uuid })
-        //     .collect();
-
-        // Ok(PlayerDeckInfo {
-        //     units,
-        //     artifacts,
-        //     positions,
-        // })
+        Ok(PlayerDeckInfo {
+            units,
+            artifacts,
+            positions,
+        })
     }
 
     /// Opponent 덱 정보 구성 (PvE 데이터에서)
     fn build_opponent_deck(
         game_data: &GameDataBase,
         abnormality_id: &str,
-    ) -> Result<(), GameError> {
-        // ) -> Result<PlayerDeckInfo, GameError> {
+    ) -> Result<PlayerDeckInfo, GameError> {
         let encounter = game_data
             .pve_data
             .get_by_abnormality_id(abnormality_id)
@@ -218,38 +218,39 @@ impl SuppressionExecutor {
                 GameError::MissingResource("PveEncounter")
             })?;
 
-        // let mut units = Vec::new();
-        // let mut positions = HashMap::new();
+        let mut units = Vec::new();
+        let mut positions = std::collections::HashMap::new();
 
-        // for pve_unit in &encounter.units {
-        //     let abnormality_meta = game_data
-        //         .abnormality_data
-        //         .get_by_id(&pve_unit.abnormality_id)
-        //         .ok_or_else(|| {
-        //             warn!(
-        //                 "Abnormality metadata not found: {}",
-        //                 pve_unit.abnormality_id
-        //             );
-        //             GameError::MissingResource("AbnormalityMetadata")
-        //         })?;
+        for pve_unit in &encounter.units {
+            let abnormality_meta = game_data
+                .abnormality_data
+                .get_by_id(&pve_unit.abnormality_id)
+                .ok_or_else(|| {
+                    warn!(
+                        "Abnormality metadata not found: {}",
+                        pve_unit.abnormality_id
+                    );
+                    GameError::MissingResource("AbnormalityMetadata")
+                })?;
 
-        //     units.push(OwnedUnit {
-        //         base_uuid: abnormality_meta.uuid,
-        //         level: pve_unit.tier,
-        //         growth_stacks: GrowthStack::new(),
-        //         equipped_items: vec![],
-        //     });
+            units.push(OwnedUnit {
+                base_uuid: abnormality_meta.uuid,
+                level: pve_unit.tier,
+                growth_stacks: GrowthStack::new(),
+                equipped_items: vec![],
+            });
 
-        //     positions.insert(abnormality_meta.uuid, Position::from(pve_unit.position));
-        // }
+            positions.insert(
+                abnormality_meta.uuid,
+                crate::ecs::resources::Position::from(pve_unit.position),
+            );
+        }
 
-        // Ok(PlayerDeckInfo {
-        //     units,
-        //     artifacts: vec![],
-        //     positions,
-        // })
-
-        Ok(())
+        Ok(PlayerDeckInfo {
+            units,
+            artifacts: vec![],
+            positions,
+        })
     }
 
     /// 진압 작업 수행 (기존 메서드 - 향후 확장용)

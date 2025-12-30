@@ -6,6 +6,7 @@ use uuid::Uuid;
 use crate::{
     ecs::resources::Position,
     game::{
+        battle::timeline::Timeline,
         behavior::GameError,
         data::GameDataBase,
         enums::{Side, Tier},
@@ -13,6 +14,11 @@ use crate::{
         stats::UnitStats,
     },
 };
+
+pub struct BattleResult {
+    pub winner: BattleWinner,
+    pub timeline: Timeline,
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum BattleWinner {

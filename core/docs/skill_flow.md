@@ -56,7 +56,7 @@
 공통:
 - `range_tiles: u8`
 - `focus_time_ms: u32` (0 가능)
-- `cast_delay_after_resonance_full_ms: u32 = 10`
+- `cast_delay_ms: u32 = 10` (공명 만땅 후 시도까지의 대기)
 - `delivery`:
   - `Instant`
   - `Projectile { speed_units_per_ms: u32 }`
@@ -98,7 +98,8 @@
 3. `ready_at_ms`에 도달하면 “시전 가능 여부”를 평가하고, 가능하면 `SkillFocusing` 또는 `SkillExecuting`으로 진입한다.
 
 결정론:
-- `ready_at_ms`는 고정값(10ms)이며 jitter를 두지 않는다.
+- `ready_at_ms`는 `now_ms + cast_delay_ms`로 정의하며, 기본값은 10ms이다.
+- `cast_delay_ms`에는 jitter를 두지 않는다.
 
 ---
 
@@ -112,6 +113,7 @@
    - `dist_cheb(caster_tile, enemy_tile) <= range_tiles`
 2. 후보가 없다면:
    - 시전을 보류하고 `SkillArmed`를 유지한다. (다음 tick에 재평가)
+   - **적을 찾는 행동(추적/이동)을 우선 수행한다.**
 3. 후보가 있다면 타겟을 선택한다:
    - `dist_cheb` 최소, 동률 `enemy_uuid` 오름차순
 4. `focus_time_ms > 0`:
@@ -126,9 +128,16 @@
    - 간단히: “적이 사거리 내에 1명 이상 존재”를 시전 조건으로 둔다.
 2. 조건을 만족하지 않으면:
    - `SkillArmed` 유지(다음 tick 재평가)
+   - **적을 찾는 행동(추적/이동)을 우선 수행한다.**
 3. 조건을 만족하면:
    - `focus_time_ms > 0`이면 `SkillFocusing` 진입
    - 아니면 `SkillExecuting` 진입
+
+### 6.3 스킬 우선순위(기본 공격 대비)
+
+- `now_ms >= ready_at_ms`인 `SkillArmed` 유닛은 **스킬 시도/집중이 기본 공격보다 우선**이다.
+  - 즉, 같은 tick에서 “스킬이 시전 가능”이면 기본 공격은 시작하지 않는다.
+  - 스킬이 시전 불가능(후보/조건 불충족)이라면 기본 공격/이동은 정상 규칙으로 진행할 수 있다.
 
 ---
 
@@ -228,4 +237,3 @@
 - 미지정 스킬의 “시전 가능 조건”:
   - 적 1명 이상 사거리 내 vs 빈 지점 시전 허용 여부
 - 스킬이 기본 공격을 대체하는지(공명 최대 시 무조건 스킬 우선인지), 또는 우선순위 규칙
-

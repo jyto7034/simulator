@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, sync::Arc};
 use uuid::Uuid;
 
+use crate::ecs::resources::item_slot::ItemSlot;
 use crate::game::{
     behavior::GameError,
     data::{
@@ -12,7 +13,6 @@ use crate::game::{
     enums::RiskLevel,
     growth::GrowthStack,
 };
-use crate::ecs::resources::item_slot::ItemSlot;
 
 #[derive(Debug, Clone)]
 pub enum InventoryMetadata {
@@ -211,7 +211,10 @@ impl Inventory {
                 }
             }
             Item::Equipment(data) => {
-                if let Err(err) = self.equipments.add_item(OwnedEquipment::new(owned_uuid, data)) {
+                if let Err(err) = self
+                    .equipments
+                    .add_item(OwnedEquipment::new(owned_uuid, data))
+                {
                     tracing::warn!("Failed to add equipment to inventory: {}", err);
                     Err(GameError::InventoryFull)
                 } else {
@@ -302,7 +305,9 @@ impl AbnormalityInventory {
     }
 
     pub fn get_growth_stacks_mut(&mut self, uuid: &Uuid) -> Option<&mut GrowthStack> {
-        self.items.get_mut(uuid).map(|owned| &mut owned.growth_stacks)
+        self.items
+            .get_mut(uuid)
+            .map(|owned| &mut owned.growth_stacks)
     }
 
     pub fn get_owned(&self, uuid: &Uuid) -> Option<&OwnedAbnormality> {

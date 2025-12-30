@@ -148,7 +148,9 @@ mod tests {
         assert!(allowed
             .iter()
             .any(|a| matches!(a, PlayerBehavior::RequestPhaseData)));
-        assert!(allowed.iter().any(|a| matches!(a, PlayerBehavior::EquipItem { .. })));
+        assert!(allowed
+            .iter()
+            .any(|a| matches!(a, PlayerBehavior::EquipItem { .. })));
         assert!(allowed
             .iter()
             .any(|a| matches!(a, PlayerBehavior::MoveUnit { .. })));
@@ -166,7 +168,9 @@ mod tests {
         assert!(allowed
             .iter()
             .any(|a| matches!(a, PlayerBehavior::StartSuppression { .. })));
-        assert!(allowed.iter().any(|a| matches!(a, PlayerBehavior::EquipItem { .. })));
+        assert!(allowed
+            .iter()
+            .any(|a| matches!(a, PlayerBehavior::EquipItem { .. })));
         assert!(allowed
             .iter()
             .any(|a| matches!(a, PlayerBehavior::MoveUnit { .. })));
@@ -211,7 +215,9 @@ mod tests {
         assert!(allowed
             .iter()
             .any(|a| matches!(a, PlayerBehavior::RequestPhaseData)));
-        assert!(allowed.iter().any(|a| matches!(a, PlayerBehavior::EquipItem { .. })));
+        assert!(allowed
+            .iter()
+            .any(|a| matches!(a, PlayerBehavior::EquipItem { .. })));
         assert!(allowed
             .iter()
             .any(|a| matches!(a, PlayerBehavior::MoveUnit { .. })));

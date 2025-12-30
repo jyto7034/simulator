@@ -60,6 +60,10 @@ impl Position {
     pub fn manhattan(&self, other: &Position) -> i32 {
         (self.x - other.x).abs() + (self.y - other.y).abs()
     }
+
+    pub fn chebyshev(&self, other: &Position) -> i32 {
+        (self.x - other.x).abs().max((self.y - other.y).abs())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -179,7 +183,7 @@ impl Field {
                 continue;
             }
 
-            let distance = from_pos.manhattan(pos);
+            let distance = from_pos.chebyshev(pos);
 
             match nearest {
                 None => nearest = Some((placement.uuid, distance)),
@@ -807,7 +811,9 @@ mod tests {
             .place(unit_uuid, Side::Player, Position::new(0, 0))
             .unwrap();
 
-        let err = field.move_unit(unit_uuid, Position::new(99, 0)).unwrap_err();
+        let err = field
+            .move_unit(unit_uuid, Position::new(99, 0))
+            .unwrap_err();
         assert!(matches!(err, GameError::OutOfBounds));
     }
 }

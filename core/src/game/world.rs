@@ -676,14 +676,14 @@ impl GameCore {
             &mut self.world,
             self.game_data.clone(),
             abnormality_id,
+            self.run_seed,
         )?;
 
         // 진압 작업 성공 시, 해당 몬스터의 드랍템 확률 발생
-
-        // info!(
-        //     "Suppression battle completed - Winner: {:?}",
-        //     battle_result.winner
-        // );
+        info!(
+            "Suppression battle completed - Winner: {:?}",
+            battle_result.winner
+        );
 
         // {
         //     // 클리포드 감소는 게임 룰이 명확해지고 나서.

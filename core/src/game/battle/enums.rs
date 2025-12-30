@@ -20,6 +20,17 @@ pub enum BattleEvent {
         schedule_next: bool,
         cause: TimelineCause,
     },
+    /// Projectile impact for ranged basic attacks / delayed hits.
+    ///
+    /// This is a time-based event that should be processed before other same-tick effects
+    /// (e.g. heals/buffs) to keep hit resolution deterministic.
+    ProjectileHit {
+        time_ms: u64,
+        projectile_id: Uuid,
+        attacker_instance_id: Uuid,
+        target_instance_id: Uuid,
+        cause: TimelineCause,
+    },
     /// 공명(=마나) 만땅 시 자동 시전 시작
     AutoCastStart {
         time_ms: u64,
@@ -54,6 +65,13 @@ pub enum BattleEvent {
         buff_id: BuffId,
         cause: TimelineCause,
     },
+    /// Recompute movement intents (Acquire/WaitRepath) at `time_ms`.
+    MovementIntent { time_ms: u64 },
+    /// Attempt to advance a moving unit by a single tile step at `time_ms`.
+    MoveStep {
+        time_ms: u64,
+        unit_instance_id: Uuid,
+    },
 }
 
 impl BattleEvent {
@@ -61,17 +79,22 @@ impl BattleEvent {
     pub fn time_ms(&self) -> u64 {
         match self {
             BattleEvent::Attack { time_ms, .. }
+            | BattleEvent::ProjectileHit { time_ms, .. }
             | BattleEvent::AutoCastStart { time_ms, .. }
             | BattleEvent::AutoCastEnd { time_ms, .. }
             | BattleEvent::ApplyBuff { time_ms, .. }
             | BattleEvent::BuffTick { time_ms, .. }
-            | BattleEvent::BuffExpire { time_ms, .. } => *time_ms,
+            | BattleEvent::BuffExpire { time_ms, .. }
+            | BattleEvent::MovementIntent { time_ms }
+            | BattleEvent::MoveStep { time_ms, .. } => *time_ms,
         }
     }
 
     /// 같은 시각에 여러 이벤트가 있을 때 우선순위
     fn priority(&self) -> u8 {
         match self {
+            // Hits first (e.g. projectile impacts) for deterministic resolution.
+            BattleEvent::ProjectileHit { .. } => 0,
             // 버프 틱/적용을 먼저 처리하고, 시전 종료, 공격, 시전 시작, 만료 순으로 처리
             BattleEvent::ApplyBuff { .. } => 1,
             BattleEvent::BuffTick { .. } => 2,
@@ -79,6 +102,9 @@ impl BattleEvent {
             BattleEvent::Attack { .. } => 4,
             BattleEvent::AutoCastStart { .. } => 5,
             BattleEvent::BuffExpire { .. } => 6,
+            // Movement runs after combat resolution within the same `time_ms` bucket.
+            BattleEvent::MovementIntent { .. } => 7,
+            BattleEvent::MoveStep { .. } => 8,
         }
     }
 }
@@ -139,6 +165,24 @@ impl Ord for BattleEvent {
                     b.as_bytes().cmp(a.as_bytes()).then_with(|| b_t.cmp(&a_t))
                 }
                 (
+                    BattleEvent::ProjectileHit {
+                        projectile_id: a_p,
+                        attacker_instance_id: a_a,
+                        target_instance_id: a_t,
+                        ..
+                    },
+                    BattleEvent::ProjectileHit {
+                        projectile_id: b_p,
+                        attacker_instance_id: b_a,
+                        target_instance_id: b_t,
+                        ..
+                    },
+                ) => b_p
+                    .as_bytes()
+                    .cmp(a_p.as_bytes())
+                    .then_with(|| b_a.as_bytes().cmp(a_a.as_bytes()))
+                    .then_with(|| b_t.as_bytes().cmp(a_t.as_bytes())),
+                (
                     BattleEvent::ApplyBuff {
                         caster_instance_id: a_c,
                         target_instance_id: a_t,
@@ -195,6 +239,16 @@ impl Ord for BattleEvent {
                     .cmp(a_c.as_bytes())
                     .then_with(|| b_t.as_bytes().cmp(a_t.as_bytes()))
                     .then_with(|| b_b.as_u64().cmp(&a_b.as_u64())),
+                (
+                    BattleEvent::MoveStep {
+                        unit_instance_id: a,
+                        ..
+                    },
+                    BattleEvent::MoveStep {
+                        unit_instance_id: b,
+                        ..
+                    },
+                ) => b.as_bytes().cmp(a.as_bytes()),
                 _ => Ordering::Equal,
             })
     }

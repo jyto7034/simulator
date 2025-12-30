@@ -33,4 +33,3 @@ impl SkillDatabase {
         self.by_id.get(id)
     }
 }
-

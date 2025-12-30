@@ -9,13 +9,14 @@ use uuid::Uuid;
 use crate::{
     ecs::resources::Position,
     game::{
+        ability::SkillId,
         battle::{buffs::BuffId, types::BattleWinner},
         enums::Side,
         stats::{StatModifier, UnitStats},
     },
 };
 
-pub const TIMELINE_VERSION: u32 = 3;
+pub const TIMELINE_VERSION: u32 = 4;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
 #[serde(rename_all = "snake_case")]
@@ -161,6 +162,11 @@ pub enum TimelineEvent {
         position: Position,
         stats: UnitStats,
     },
+    UnitMoved {
+        unit_instance_id: Uuid,
+        from: Position,
+        to: Position,
+    },
     Attack {
         attacker_instance_id: Uuid,
         target_instance_id: Uuid,
@@ -169,14 +175,14 @@ pub enum TimelineEvent {
     },
     AutoCastStart {
         caster_instance_id: Uuid,
-        // ability_id: Option<AbilityId>,
+        skill_id: Option<SkillId>,
         target_instance_id: Option<Uuid>,
     },
     AutoCastEnd {
         caster_instance_id: Uuid,
     },
     AbilityCast {
-        // ability_id: AbilityId,
+        skill_id: SkillId,
         caster_instance_id: Uuid,
         target_instance_id: Option<Uuid>,
     },

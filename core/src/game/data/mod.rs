@@ -10,8 +10,8 @@ use crate::game::data::{
     event_pools::EventPoolConfig,
     pve_data::PveEncounterDatabase,
     random_event_data::RandomEventDatabase,
-    skill_data::SkillDatabase,
     shop_data::ShopDatabase,
+    skill_data::SkillDatabase,
 };
 
 // 환상체 (기물) 정보

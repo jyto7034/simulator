@@ -179,7 +179,8 @@ impl UnitStats {
 
     pub fn add_move_speed_units_per_ms(&mut self, delta: i32) {
         if delta >= 0 {
-            self.move_speed_units_per_ms = self.move_speed_units_per_ms.saturating_add(delta as u32);
+            self.move_speed_units_per_ms =
+                self.move_speed_units_per_ms.saturating_add(delta as u32);
         } else {
             let dec = delta.unsigned_abs().min(self.move_speed_units_per_ms);
             self.move_speed_units_per_ms = self.move_speed_units_per_ms.saturating_sub(dec);
