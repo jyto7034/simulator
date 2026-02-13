@@ -10,13 +10,24 @@ use crate::{
     ecs::resources::Position,
     game::{
         ability::SkillId,
+        battle::ids::UnitInstanceId,
         battle::{buffs::BuffId, types::BattleWinner},
         enums::Side,
         stats::{StatModifier, UnitStats},
     },
 };
 
-pub const TIMELINE_VERSION: u32 = 4;
+pub const TIMELINE_VERSION: u32 = 8;
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum MovementStopReason {
+    TargetAcquired,
+    HardCC,
+    WaitRepath,
+    Arrived,
+    InvalidState,
+}
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
 #[serde(rename_all = "snake_case")]
@@ -137,6 +148,13 @@ impl TimelineEntry {
     }
 }
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(tag = "type")]
+pub enum SkillCastTarget {
+    Unit { unit_instance_id: UnitInstanceId },
+    Tile { position: Position },
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum TimelineEvent {
@@ -152,75 +170,116 @@ pub enum TimelineEvent {
     ItemSpawned {
         item_instance_id: Uuid,
         owner: Side,
-        owner_unit_instance_id: Uuid,
+        owner_unit_instance_id: UnitInstanceId,
         base_uuid: Uuid,
     },
     UnitSpawned {
-        unit_instance_id: Uuid,
+        unit_instance_id: UnitInstanceId,
         owner: Side,
         base_uuid: Uuid,
         position: Position,
         stats: UnitStats,
     },
     UnitMoved {
-        unit_instance_id: Uuid,
+        unit_instance_id: UnitInstanceId,
         from: Position,
         to: Position,
     },
+    MovementStopped {
+        unit_instance_id: UnitInstanceId,
+        reason: MovementStopReason,
+        position: Position,
+        pos_x_units: i64,
+        pos_y_units: i64,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        until_ms: Option<u64>,
+    },
+    /// Legacy: used in older timelines for attack start events.
+    /// Prefer `AttackStart` / `AttackResolve` / `AttackMiss`.
     Attack {
-        attacker_instance_id: Uuid,
-        target_instance_id: Uuid,
+        attacker_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         kind: Option<AttackKind>,
     },
+    AttackStart {
+        attacker_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        kind: Option<AttackKind>,
+    },
+    AttackResolve {
+        attacker_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        kind: Option<AttackKind>,
+    },
+    AttackMiss {
+        attacker_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        kind: Option<AttackKind>,
+    },
+    ProjectileMiss {
+        projectile_id: Uuid,
+        attacker_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
+    },
     AutoCastStart {
-        caster_instance_id: Uuid,
+        caster_instance_id: UnitInstanceId,
         skill_id: Option<SkillId>,
-        target_instance_id: Option<Uuid>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        target: Option<SkillCastTarget>,
     },
     AutoCastEnd {
-        caster_instance_id: Uuid,
+        caster_instance_id: UnitInstanceId,
     },
     AbilityCast {
         skill_id: SkillId,
-        caster_instance_id: Uuid,
-        target_instance_id: Option<Uuid>,
+        caster_instance_id: UnitInstanceId,
+        target_instance_id: Option<UnitInstanceId>,
     },
     BuffApplied {
-        caster_instance_id: Uuid,
-        target_instance_id: Uuid,
+        caster_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
         buff_id: BuffId,
         duration_ms: u64,
     },
     BuffTick {
-        caster_instance_id: Uuid,
-        target_instance_id: Uuid,
+        caster_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
         buff_id: BuffId,
     },
     BuffExpired {
-        caster_instance_id: Uuid,
-        target_instance_id: Uuid,
+        caster_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
         buff_id: BuffId,
     },
     HpChanged {
-        source_instance_id: Option<Uuid>,
-        target_instance_id: Uuid,
+        source_instance_id: Option<UnitInstanceId>,
+        target_instance_id: UnitInstanceId,
         delta: i32,
         hp_before: u32,
         hp_after: u32,
         reason: HpChangeReason,
     },
     StatChanged {
-        source_instance_id: Option<Uuid>,
-        target_instance_id: Uuid,
+        source_instance_id: Option<UnitInstanceId>,
+        target_instance_id: UnitInstanceId,
         modifier: StatModifier,
         stats_before: UnitStats,
         stats_after: UnitStats,
     },
+    ResonanceChanged {
+        unit_instance_id: UnitInstanceId,
+        before: u32,
+        after: u32,
+        max: u32,
+    },
     UnitDied {
-        unit_instance_id: Uuid,
+        unit_instance_id: UnitInstanceId,
         owner: Side,
-        killer_instance_id: Option<Uuid>,
+        killer_instance_id: Option<UnitInstanceId>,
     },
     BattleEnd {
         winner: BattleWinner,

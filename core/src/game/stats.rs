@@ -288,6 +288,19 @@ mod tests {
         });
         assert_eq!(stats.attack, u32::MAX);
     }
+
+    #[test]
+    fn attack_interval_never_reaches_zero() {
+        let mut stats = UnitStats::with_values(10, 10, 1, 0, 1);
+        stats.add_attack_interval_ms(-1000);
+        assert_eq!(stats.attack_interval_ms, 1);
+
+        stats.add_attack_interval_ms(0);
+        assert_eq!(stats.attack_interval_ms, 1);
+
+        stats.add_attack_interval_ms(10);
+        assert_eq!(stats.attack_interval_ms, 11);
+    }
 }
 
 impl Default for UnitStats {

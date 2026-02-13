@@ -200,3 +200,84 @@ impl ItemSlot {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use uuid::Uuid;
+
+    fn equipped(instance: u128, base: u128, equipment_type: EquipmentType) -> EquippedRef {
+        EquippedRef {
+            instance_uuid: Uuid::from_u128(instance),
+            base_uuid: Uuid::from_u128(base),
+            equipment_type,
+        }
+    }
+
+    #[test]
+    fn by_type_equip_rejects_occupied_slot() {
+        let mut slot = ItemSlot::new(SlotLayoutKind::ByType);
+        assert_eq!(slot.layout_kind(), SlotLayoutKind::ByType);
+        assert!(slot.is_empty());
+
+        slot.equip(equipped(1, 10, EquipmentType::Weapon), true)
+            .unwrap();
+        assert_eq!(slot.len(), 1);
+
+        let err = slot
+            .equip(equipped(2, 11, EquipmentType::Weapon), true)
+            .unwrap_err();
+        assert!(matches!(err, ItemSlotError::SlotOccupied));
+        assert_eq!(slot.len(), 1);
+    }
+
+    #[test]
+    fn duplicate_base_can_be_disallowed_across_slots() {
+        let mut slot = ItemSlot::new(SlotLayoutKind::ByType);
+        slot.equip(equipped(1, 10, EquipmentType::Weapon), true)
+            .unwrap();
+
+        let err = slot
+            .equip(equipped(2, 10, EquipmentType::Suit), false)
+            .unwrap_err();
+        assert!(matches!(err, ItemSlotError::DuplicateBaseDisallowed));
+    }
+
+    #[test]
+    fn any3_limits_to_three_items_and_keeps_insertion_order() {
+        let mut slot = ItemSlot::new(SlotLayoutKind::Any3);
+        assert_eq!(slot.layout_kind(), SlotLayoutKind::Any3);
+
+        let a = equipped(1, 10, EquipmentType::Weapon);
+        let b = equipped(2, 11, EquipmentType::Suit);
+        let c = equipped(3, 12, EquipmentType::Accessory);
+        slot.equip(a, true).unwrap();
+        slot.equip(b, true).unwrap();
+        slot.equip(c, true).unwrap();
+
+        let err = slot
+            .equip(equipped(4, 13, EquipmentType::Weapon), true)
+            .unwrap_err();
+        assert!(matches!(err, ItemSlotError::SlotFull));
+
+        let bases: Vec<Uuid> = slot.iter().map(|r| r.base_uuid).collect();
+        assert_eq!(bases, vec![a.base_uuid, b.base_uuid, c.base_uuid]);
+    }
+
+    #[test]
+    fn switch_layout_moves_equipped_items() {
+        let mut slot = ItemSlot::new(SlotLayoutKind::ByType);
+        let weapon = equipped(1, 10, EquipmentType::Weapon);
+        let suit = equipped(2, 11, EquipmentType::Suit);
+        slot.equip(weapon, true).unwrap();
+        slot.equip(suit, true).unwrap();
+
+        slot.switch_layout(SlotLayoutKind::Any3).unwrap();
+        assert_eq!(slot.layout_kind(), SlotLayoutKind::Any3);
+        assert_eq!(slot.len(), 2);
+
+        // ByType iter order is Weapon -> Suit -> Accessory, and Any3 preserves insertion order.
+        let items: Vec<EquippedRef> = slot.iter().copied().collect();
+        assert_eq!(items, vec![weapon, suit]);
+    }
+}

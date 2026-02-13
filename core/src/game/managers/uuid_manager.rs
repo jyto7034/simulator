@@ -17,6 +17,7 @@ pub struct UuidManager {
 
 impl UuidManager {
     pub const NS_OWNED_EQUIPMENT: u64 = 0x4f57_4e44_4551_5549; // "OWNDEQUI"
+    pub const NS_OWNED_ABNORMALITY: u64 = 0x4f57_4e44_4142_4e4f; // "OWNDABNO"
 
     pub fn new(run_seed: u64) -> Self {
         Self {
@@ -34,5 +35,9 @@ impl UuidManager {
 
     pub fn next_owned_equipment(&mut self) -> Uuid {
         self.next(Self::NS_OWNED_EQUIPMENT)
+    }
+
+    pub fn next_owned_abnormality(&mut self) -> Uuid {
+        self.next(Self::NS_OWNED_ABNORMALITY)
     }
 }

@@ -1,5 +1,6 @@
 use uuid::Uuid;
 
+use crate::game::battle::ids::UnitInstanceId;
 use crate::game::enums::Side;
 
 use super::BattleCore;
@@ -12,14 +13,14 @@ impl BattleCore {
         }
     }
 
-    pub(super) fn make_instance_id(base_uuid: Uuid, side: Side, salt: u32) -> Uuid {
+    pub(super) fn make_instance_id(base_uuid: Uuid, side: Side, salt: u32) -> UnitInstanceId {
         let mut bytes = *base_uuid.as_bytes();
         bytes[0] ^= Self::side_tag(side);
         bytes[1] ^= (salt & 0xFF) as u8;
         bytes[2] ^= ((salt >> 8) & 0xFF) as u8;
         bytes[3] ^= ((salt >> 16) & 0xFF) as u8;
         bytes[4] ^= ((salt >> 24) & 0xFF) as u8;
-        Uuid::from_bytes(bytes)
+        UnitInstanceId(Uuid::from_bytes(bytes))
     }
 
     pub(super) fn make_artifact_instance_id(base_uuid: Uuid, side: Side, salt: u32) -> Uuid {
@@ -35,7 +36,7 @@ impl BattleCore {
     pub(super) fn make_item_instance_id(
         equipment_uuid: Uuid,
         side: Side,
-        owner_unit_instance: Uuid,
+        owner_unit_instance: UnitInstanceId,
         salt: u32,
     ) -> Uuid {
         let mut bytes = *equipment_uuid.as_bytes();

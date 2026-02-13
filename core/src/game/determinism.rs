@@ -1,6 +1,11 @@
 use uuid::Uuid;
 
-use crate::game::enums::{OrdealType, PhaseType};
+use crate::game::{
+    battle::ids::UnitInstanceId,
+    enums::{OrdealType, PhaseType},
+};
+
+const REPATH_JITTER_MOD_MS: u64 = 17;
 
 fn splitmix64(mut x: u64) -> u64 {
     x = x.wrapping_add(0x9E37_79B9_7F4A_7C15);
@@ -8,6 +13,18 @@ fn splitmix64(mut x: u64) -> u64 {
     z = (z ^ (z >> 30)).wrapping_mul(0xBF58_476D_1CE4_E5B9);
     z = (z ^ (z >> 27)).wrapping_mul(0x94D0_49BB_1331_11EB);
     z ^ (z >> 31)
+}
+
+pub fn repath_jitter_ms(run_seed: u64, unit_id: UnitInstanceId, repath_counter: u32) -> u64 {
+    let mut b = [0u8; 8];
+    b.copy_from_slice(&unit_id.as_bytes()[..8]);
+    let unit_tag = u64::from_be_bytes(b);
+
+    let x = run_seed
+        ^ unit_tag.rotate_left(17)
+        ^ (repath_counter as u64).wrapping_mul(0xD1B5_4A32_D192_ED03);
+
+    splitmix64(x) % REPATH_JITTER_MOD_MS
 }
 
 fn ordeal_tag(ordeal: OrdealType) -> u64 {
@@ -60,5 +77,17 @@ mod tests {
         let c = uuid_v4_from_seed(123, 0x5355_5052, 1);
         assert_eq!(a, b);
         assert_ne!(a, c);
+    }
+
+    #[test]
+    fn repath_jitter_ms_is_deterministic_and_bounded() {
+        let unit_id: UnitInstanceId = Uuid::from_u128(1).into();
+        let a = repath_jitter_ms(123, unit_id, 0);
+        let b = repath_jitter_ms(123, unit_id, 0);
+        let c = repath_jitter_ms(123, unit_id, 1);
+
+        assert_eq!(a, b);
+        assert!(a < super::REPATH_JITTER_MOD_MS);
+        assert!(c < super::REPATH_JITTER_MOD_MS);
     }
 }

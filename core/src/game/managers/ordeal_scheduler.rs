@@ -276,4 +276,20 @@ mod tests {
             Some(PhaseEventType::Ordeal)
         );
     }
+
+    #[test]
+    fn ordeal_type_max_phases_matches_scheduler_length() {
+        for ordeal in [
+            OrdealType::Dawn,
+            OrdealType::Noon,
+            OrdealType::Dusk,
+            OrdealType::Midnight,
+            OrdealType::White,
+        ] {
+            assert_eq!(
+                OrdealScheduler::get_phase_schedule(ordeal).len() as u8,
+                ordeal.max_phases()
+            );
+        }
+    }
 }

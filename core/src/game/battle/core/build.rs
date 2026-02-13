@@ -1,12 +1,12 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 use uuid::Uuid;
 
-use crate::ecs::resources::Position;
-use crate::game::{
-    battle::core::{BattleCore, RuntimeArtifact, RuntimeItem, RuntimeUnit},
-    behavior::GameError,
-    enums::Side,
+use crate::game::{behavior::GameError, enums::Side};
+
+use super::{
+    movement::{ActionState, TILE_UNITS_PER_TILE},
+    BattleCore, RuntimeArtifact, RuntimeItem, RuntimeUnit,
 };
 
 impl BattleCore {
@@ -40,11 +40,11 @@ impl BattleCore {
 
         let artifact_base_uuids: Vec<Uuid> = deck.artifacts.iter().map(|a| a.base_uuid).collect();
         for (idx, unit) in deck.units.iter().enumerate() {
-            let stats = unit.effective_stats(&self.game_data, &artifact_base_uuids)?;
+            let mut stats = unit.effective_stats(&self.game_data, &artifact_base_uuids)?;
 
             let position = deck
                 .positions
-                .get(&unit.base_uuid)
+                .get(&unit.owned_uuid)
                 .copied()
                 .ok_or(GameError::UnitNotFound)?;
 
@@ -68,6 +68,7 @@ impl BattleCore {
                 .get_by_uuid(&unit.base_uuid)
                 .map(|meta| meta.movement.speed_units_per_ms)
                 .unwrap_or(3000);
+            stats.move_speed_units_per_ms = move_speed_units_per_ms.max(1);
 
             if self
                 .units
@@ -78,30 +79,29 @@ impl BattleCore {
                         owner: side,
                         base_uuid: unit.base_uuid,
                         stats,
-                        position,
+                        pos_x_units: (position.x as i64).saturating_mul(TILE_UNITS_PER_TILE as i64),
+                        pos_y_units: (position.y as i64).saturating_mul(TILE_UNITS_PER_TILE as i64),
+                        move_epoch: 0,
+                        action_state: ActionState::Idle,
+                        action_locks: Default::default(),
                         current_target: None,
+                        next_basic_attack_ms: 0,
+                        pending_basic_attack: false,
                         resonance_current,
                         resonance_max,
                         resonance_lock_ms,
-                        resonance_gain_locked_until_ms: 0,
                         next_action_time: 0,
                         pending_cast: false,
                         pending_cast_cause: None,
-                        move_state: super::MoveState::Acquire,
-                        soft_until_ms: None,
-                        move_progress_units: 0,
-                        move_last_update_ms: 0,
-                        move_speed_units_per_ms,
-                        move_next_step_ms: None,
-                        reserved_destination: None,
-                        move_path: Vec::new(),
-                        repath_counter: 0,
+                        pending_autocast: None,
                     },
                 )
                 .is_some()
             {
                 return Err(GameError::InvalidAction);
             }
+
+            self.battlefield.place(instance_id, position)?;
 
             for (idx, equipment_uuid) in unit.equipped_items.iter().enumerate() {
                 let item_instance_id =
@@ -122,20 +122,11 @@ impl BattleCore {
     }
 
     pub(super) fn build_runtime_field(&mut self) -> Result<(), GameError> {
-        self.movement_field =
-            super::RuntimeField::new(self.movement_field.width, self.movement_field.height);
-
-        // Validate: all units are in-bounds and no two units share the same tile at spawn.
-        let mut occupied: HashMap<Position, Uuid> = HashMap::new();
-        for unit in self.units.values() {
-            if !self.movement_field.in_bounds(unit.position) {
-                return Err(GameError::OutOfBounds);
-            }
-            if occupied.insert(unit.position, unit.instance_id).is_some() {
-                return Err(GameError::PositionOccupied);
+        for unit_id in self.units.keys().copied().collect::<Vec<_>>() {
+            if self.battlefield.position_of(unit_id).is_none() {
+                return Err(GameError::UnitNotFound);
             }
         }
-
         Ok(())
     }
 }

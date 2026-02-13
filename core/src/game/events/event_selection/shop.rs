@@ -132,6 +132,8 @@ impl ShopExecutor {
         }
 
         shop.reroll_items();
+        // TODO 반영: 리롤은 1회만 허용한다.
+        shop.can_reroll = false;
         debug!("Shop items rerolled (shop_uuid={})", shop.uuid);
 
         let new_items = shop.visible_items.clone();
@@ -250,6 +252,12 @@ impl ShopExecutor {
                     .ok_or(GameError::MissingResource("UuidManager"))?;
                 uuid_manager.next_owned_equipment()
             }
+            crate::game::data::Item::Abnormality(_) => {
+                let mut uuid_manager = world
+                    .get_resource_mut::<UuidManager>()
+                    .ok_or(GameError::MissingResource("UuidManager"))?;
+                uuid_manager.next_owned_abnormality()
+            }
             _ => item.uuid(),
         };
 
@@ -356,7 +364,10 @@ impl ShopExecutor {
                 .get_resource_mut::<Enkephalin>()
                 .ok_or(GameError::MissingResource("Enkephalin"))?;
 
-            enkephalin.amount += sell_price;
+            enkephalin.amount = enkephalin
+                .amount
+                .checked_add(sell_price)
+                .ok_or(GameError::InvalidAction)?;
             enkephalin.amount
         };
 
@@ -410,6 +421,10 @@ mod tests {
             Item::Equipment(_) => {
                 let mut uuid_manager = world.get_resource_mut::<UuidManager>().unwrap();
                 uuid_manager.next_owned_equipment()
+            }
+            Item::Abnormality(_) => {
+                let mut uuid_manager = world.get_resource_mut::<UuidManager>().unwrap();
+                uuid_manager.next_owned_abnormality()
             }
             _ => item.uuid(),
         };
@@ -568,13 +583,13 @@ mod tests {
         let mut world = setup_world();
         setup_shop(&mut world);
 
-        let (item_uuid, abnormality) = create_test_abnormality(200);
-        let _ = add_owned_item(&mut world, Item::Abnormality(abnormality.clone()));
+        let (_base_uuid, abnormality) = create_test_abnormality(200);
+        let owned_uuid = add_owned_item(&mut world, Item::Abnormality(abnormality.clone()));
 
         let initial_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
 
         // When: 아이템 판매
-        let result = ShopExecutor::sell_tiem(&mut world, item_uuid);
+        let result = ShopExecutor::sell_tiem(&mut world, owned_uuid);
 
         // Then: 성공, 판매 가격 = 200 * 50% = 100
         assert!(result.is_ok());
@@ -584,7 +599,7 @@ mod tests {
 
         // Then: 인벤토리에서 제거 확인
         let inventory = world.get_resource::<Inventory>().unwrap();
-        assert!(inventory.find_item(item_uuid).is_none());
+        assert!(inventory.find_item(owned_uuid).is_none());
     }
 
     #[test]
@@ -718,13 +733,11 @@ mod tests {
     }
 
     // ============================================================
-    // Panic 테스트 (should_panic)
+    // 오류 처리 테스트 (no should_panic)
     // ============================================================
 
     #[test]
-    #[should_panic(expected = "attempt to add with overflow")]
-    #[cfg(debug_assertions)] // debug 모드에서만 오버플로우 패닉 발생
-    fn test_sell_enkephalin_overflow_panic() {
+    fn test_sell_enkephalin_overflow_is_rejected() {
         // Given: Enkephalin이 거의 u32::MAX에 가까움
         let mut world = setup_world();
         setup_shop(&mut world);
@@ -740,13 +753,13 @@ mod tests {
         let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
 
         // When: 판매 시도 (u32::MAX - 10 + 50 = 오버플로우)
-        // Then: Debug 모드에서 패닉 발생 (expected)
-        let _ = ShopExecutor::sell_tiem(&mut world, item_uuid);
+        // Then: 오버플로우는 에러로 처리되어야 함
+        let err = ShopExecutor::sell_tiem(&mut world, item_uuid).unwrap_err();
+        assert!(matches!(err, GameError::InvalidAction));
     }
 
     #[test]
-    #[should_panic(expected = "MissingResource")]
-    fn test_sell_without_enkephalin_resource_panic() {
+    fn test_sell_without_enkephalin_resource_returns_error() {
         // Given: Enkephalin 리소스가 없는 World
         let mut world = World::new();
         // Given: Enkephalin 리소스를 추가하지 않음
@@ -764,13 +777,13 @@ mod tests {
         };
 
         // When: Enkephalin 리소스 없이 판매 시도
-        // Then: unwrap()으로 인한 패닉 발생 (expected)
-        ShopExecutor::sell_tiem(&mut world, item_uuid).unwrap();
+        // Then: 명시적 에러 반환
+        let err = ShopExecutor::sell_tiem(&mut world, item_uuid).unwrap_err();
+        assert!(matches!(err, GameError::MissingResource("Enkephalin")));
     }
 
     #[test]
-    #[should_panic(expected = "MissingResource")]
-    fn test_sell_without_inventory_resource_panic() {
+    fn test_sell_without_inventory_resource_returns_error() {
         // Given: Inventory 리소스가 없는 World
         let mut world = World::new();
         world.insert_resource(Enkephalin::new(100));
@@ -780,13 +793,13 @@ mod tests {
         let item_uuid = Uuid::new_v4();
 
         // When: Inventory 리소스 없이 판매 시도
-        // Then: unwrap()으로 인한 패닉 발생 (expected)
-        ShopExecutor::sell_tiem(&mut world, item_uuid).unwrap();
+        // Then: 명시적 에러 반환
+        let err = ShopExecutor::sell_tiem(&mut world, item_uuid).unwrap_err();
+        assert!(matches!(err, GameError::MissingResource("Inventory")));
     }
 
     #[test]
-    #[should_panic(expected = "NotInShopState")]
-    fn test_sell_without_shop_state_panic() {
+    fn test_sell_without_shop_state_returns_error() {
         // Given: SelectedEvent가 없는 World
         let mut world = setup_world();
         // Given: setup_shop()을 호출하지 않음
@@ -795,13 +808,13 @@ mod tests {
         let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
 
         // When: 상점 상태 없이 판매 시도
-        // Then: unwrap()으로 인한 패닉 발생 (expected)
-        ShopExecutor::sell_tiem(&mut world, item_uuid).unwrap();
+        // Then: 명시적 에러 반환
+        let err = ShopExecutor::sell_tiem(&mut world, item_uuid).unwrap_err();
+        assert!(matches!(err, GameError::NotInShopState));
     }
 
     #[test]
-    #[should_panic(expected = "InventoryItemNotFound")]
-    fn test_sell_nonexistent_item_panic() {
+    fn test_sell_nonexistent_item_returns_error() {
         // Given: 존재하지 않는 아이템 UUID
         let mut world = setup_world();
         setup_shop(&mut world);
@@ -809,13 +822,13 @@ mod tests {
         let nonexistent_uuid = Uuid::new_v4();
 
         // When: 존재하지 않는 아이템 판매 시도
-        // Then: unwrap()으로 인한 패닉 발생 (expected)
-        ShopExecutor::sell_tiem(&mut world, nonexistent_uuid).unwrap();
+        // Then: 명시적 에러 반환
+        let err = ShopExecutor::sell_tiem(&mut world, nonexistent_uuid).unwrap_err();
+        assert!(matches!(err, GameError::InventoryItemNotFound));
     }
 
     #[test]
-    #[should_panic(expected = "EventTypeMismatch")]
-    fn test_sell_with_wrong_event_type_panic() {
+    fn test_sell_with_wrong_event_type_returns_error() {
         // Given: SelectedEvent가 Shop이 아닌 다른 타입
         let mut world = setup_world();
 
@@ -837,8 +850,9 @@ mod tests {
         let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
 
         // When: Bonus 이벤트 상태에서 판매 시도
-        // Then: as_shop() 실패로 unwrap() 패닉 발생 (expected)
-        ShopExecutor::sell_tiem(&mut world, item_uuid).unwrap();
+        // Then: 명시적 에러 반환
+        let err = ShopExecutor::sell_tiem(&mut world, item_uuid).unwrap_err();
+        assert!(matches!(err, GameError::EventTypeMismatch));
     }
 
     // ============================================================

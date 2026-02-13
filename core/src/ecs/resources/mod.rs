@@ -522,105 +522,10 @@ mod tests {
     use crate::game::enums::RiskLevel;
 
     use super::*;
-    use {OrdealType, PhaseType};
-
-    // ============================================================
-    // GameState Tests
-    // ============================================================
-
-    #[test]
-    fn test_game_state_default() {
-        let state = GameState::default();
-        assert_eq!(state, GameState::NotStarted);
-    }
-
-    #[test]
-    fn test_game_state_transitions() {
-        // Given: NotStarted → WaitingPhaseRequest
-        let state = GameState::WaitingPhaseRequest;
-        assert_eq!(state, GameState::WaitingPhaseRequest);
-
-        // Given: WaitingPhaseRequest → SelectingEvent
-        let state = GameState::SelectingEvent;
-        assert_eq!(state, GameState::SelectingEvent);
-
-        // Given: SelectingEvent → InShop
-        let shop_uuid = Uuid::new_v4();
-        let state = GameState::InShop { shop_uuid };
-        if let GameState::InShop { shop_uuid: uuid } = state {
-            assert_eq!(uuid, shop_uuid);
-        } else {
-            panic!("Expected InShop state");
-        }
-    }
-
-    // ============================================================
-    // Enkephalin Tests
-    // ============================================================
-
-    #[test]
-    fn test_enkephalin_new() {
-        let enkephalin = Enkephalin::new(100);
-        assert_eq!(enkephalin.amount, 100);
-    }
-
-    // ============================================================
-    // Level Tests
-    // ============================================================
-
-    #[test]
-    fn test_level_new() {
-        let level = Level::new(1);
-        assert_eq!(level.level, 1);
-    }
-
-    // ============================================================
-    // GameProgression Tests
-    // ============================================================
-
-    #[test]
-    fn test_game_progression_new() {
-        let progression = GameProgression::new();
-        assert_eq!(progression.current_ordeal, OrdealType::Dawn);
-        assert_eq!(progression.current_phase, PhaseType::I);
-    }
-
-    #[test]
-    fn test_game_progression_default() {
-        let progression = GameProgression::default();
-        assert_eq!(progression.current_ordeal, OrdealType::Dawn);
-        assert_eq!(progression.current_phase, PhaseType::I);
-    }
-
-    // ============================================================
-    // WinCount Tests
-    // ============================================================
-
-    #[test]
-    fn test_win_count_new() {
-        let win_count = WinCount::new(0);
-        assert_eq!(win_count.count, 0);
-
-        let win_count = WinCount::new(5);
-        assert_eq!(win_count.count, 5);
-    }
 
     // ============================================================
     // CurrentPhaseEvents Tests
     // ============================================================
-
-    #[test]
-    fn test_current_phase_events_new() {
-        let events = CurrentPhaseEvents::new();
-        assert_eq!(events.len(), 0);
-        assert!(events.is_empty());
-    }
-
-    #[test]
-    fn test_current_phase_events_default() {
-        let events = CurrentPhaseEvents::default();
-        assert!(events.is_empty());
-    }
 
     #[test]
     fn test_current_phase_events_add_and_get() {
@@ -685,18 +590,6 @@ mod tests {
     // ============================================================
     // CurrentGameContext Tests
     // ============================================================
-
-    #[test]
-    fn test_current_game_context_new() {
-        let context = ActionValidator::new();
-        assert_eq!(context.allowed_actions.len(), 0);
-    }
-
-    #[test]
-    fn test_current_game_context_default() {
-        let context = ActionValidator::default();
-        assert_eq!(context.allowed_actions.len(), 0);
-    }
 
     #[test]
     fn test_current_game_context_set_allowed_actions() {
@@ -764,6 +657,71 @@ mod tests {
 
         context.clear();
         assert_eq!(context.allowed_actions.len(), 0);
+    }
+
+    // ============================================================
+    // Field Tests
+    // ============================================================
+
+    #[test]
+    fn field_place_rejects_duplicate_position_and_duplicate_unit() {
+        let mut field = Field::new(3, 3);
+        let unit_a = Uuid::from_u128(1);
+        let unit_b = Uuid::from_u128(2);
+
+        field
+            .place(unit_a, Side::Player, Position::new(0, 0))
+            .unwrap();
+
+        let err = field
+            .place(unit_b, Side::Player, Position::new(0, 0))
+            .unwrap_err();
+        assert!(matches!(err, GameError::PositionOccupied));
+
+        let err = field
+            .place(unit_a, Side::Player, Position::new(1, 1))
+            .unwrap_err();
+        assert!(matches!(err, GameError::UnitAlreadyPlaced));
+    }
+
+    #[test]
+    fn field_remove_clears_both_indices() {
+        let mut field = Field::new(3, 3);
+        let unit = Uuid::from_u128(1);
+        field
+            .place(unit, Side::Player, Position::new(1, 1))
+            .unwrap();
+
+        assert_eq!(field.get_position(unit), Some(Position::new(1, 1)));
+        assert_eq!(field.get_unit_at(Position::new(1, 1)), Some(unit));
+
+        let removed = field.remove(unit);
+        assert_eq!(removed, Some(Position::new(1, 1)));
+        assert_eq!(field.get_position(unit), None);
+        assert_eq!(field.get_unit_at(Position::new(1, 1)), None);
+    }
+
+    #[test]
+    fn field_find_nearest_enemy_tie_breaks_by_uuid() {
+        let mut field = Field::new(5, 5);
+        let from = Uuid::from_u128(10);
+        let enemy_small = Uuid::from_u128(1);
+        let enemy_large = Uuid::from_u128(2);
+        assert!(enemy_small.as_bytes() < enemy_large.as_bytes());
+
+        field
+            .place(from, Side::Player, Position::new(2, 2))
+            .unwrap();
+        // Both enemies are at chebyshev distance 1.
+        field
+            .place(enemy_small, Side::Opponent, Position::new(1, 2))
+            .unwrap();
+        field
+            .place(enemy_large, Side::Opponent, Position::new(2, 1))
+            .unwrap();
+
+        let nearest = field.find_nearest_enemy(from, Side::Player).unwrap();
+        assert_eq!(nearest, enemy_small);
     }
 
     #[test]

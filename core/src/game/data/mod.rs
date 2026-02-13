@@ -244,3 +244,118 @@ impl GameDataBase {
         self.item_registry.get(uuid)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::game::data::{
+        abnormality_data::AbnormalityMetadata,
+        artifact_data::ArtifactMetadata,
+        equipment_data::{EquipmentMetadata, EquipmentType},
+        event_pools::{EventPhasePool, EventPoolConfig},
+    };
+    use crate::game::enums::RiskLevel;
+    use std::collections::HashMap;
+
+    fn empty_event_pools() -> EventPoolConfig {
+        let pool = EventPhasePool {
+            shops: vec![],
+            bonuses: vec![],
+            random_events: vec![],
+        };
+        EventPoolConfig {
+            dawn: pool.clone(),
+            noon: pool.clone(),
+            dusk: pool.clone(),
+            midnight: pool.clone(),
+            white: pool,
+        }
+    }
+
+    #[test]
+    fn item_registry_returns_items_by_uuid_across_categories() {
+        let abno_uuid = Uuid::from_u128(1);
+        let art_uuid = Uuid::from_u128(2);
+        let equip_uuid = Uuid::from_u128(3);
+
+        let abno = AbnormalityMetadata {
+            id: "abno".to_string(),
+            uuid: abno_uuid,
+            name: "Abno".to_string(),
+            risk_level: RiskLevel::ZAYIN,
+            price: 10,
+            max_health: 10,
+            attack: 1,
+            defense: 1,
+            movement: Default::default(),
+            basic_attack: Default::default(),
+            resonance: Default::default(),
+            skill_id: None,
+        };
+
+        let artifact = ArtifactMetadata {
+            id: "art".to_string(),
+            uuid: art_uuid,
+            name: "Art".to_string(),
+            description: "desc".to_string(),
+            rarity: RiskLevel::ZAYIN,
+            price: 20,
+            triggered_effects: HashMap::new(),
+        };
+
+        let equipment = EquipmentMetadata {
+            id: "equip".to_string(),
+            uuid: equip_uuid,
+            name: "Equip".to_string(),
+            equipment_type: EquipmentType::Weapon,
+            rarity: RiskLevel::ZAYIN,
+            price: 30,
+            allow_duplicate_equip: true,
+            triggered_effects: HashMap::new(),
+        };
+
+        let game_data = GameDataBase::new(
+            Arc::new(AbnormalityDatabase::new(vec![abno])),
+            Arc::new(ArtifactDatabase::new(vec![artifact])),
+            Arc::new(EquipmentDatabase::new(vec![equipment])),
+            Arc::new(ShopDatabase::new(vec![])),
+            Arc::new(BonusDatabase::new(vec![])),
+            Arc::new(RandomEventDatabase::new(vec![])),
+            Arc::new(PveEncounterDatabase::new(vec![])),
+            Arc::new(SkillDatabase::new(vec![])),
+            empty_event_pools(),
+        );
+
+        assert!(matches!(
+            game_data.item(&abno_uuid),
+            Some(Item::Abnormality(_))
+        ));
+        assert!(matches!(game_data.item(&art_uuid), Some(Item::Artifact(_))));
+        assert!(matches!(
+            game_data.item(&equip_uuid),
+            Some(Item::Equipment(_))
+        ));
+        assert!(game_data.item(&Uuid::from_u128(999)).is_none());
+    }
+
+    #[test]
+    fn item_accessors_reflect_metadata() {
+        let uuid = Uuid::from_u128(1);
+        let equipment = EquipmentMetadata {
+            id: "equip".to_string(),
+            uuid,
+            name: "Equip".to_string(),
+            equipment_type: EquipmentType::Weapon,
+            rarity: RiskLevel::ZAYIN,
+            price: 123,
+            allow_duplicate_equip: true,
+            triggered_effects: HashMap::new(),
+        };
+        let item = Item::Equipment(Arc::new(equipment));
+
+        assert_eq!(item.uuid(), uuid);
+        assert_eq!(item.id(), "equip");
+        assert_eq!(item.name(), "Equip");
+        assert_eq!(item.price(), 123);
+    }
+}

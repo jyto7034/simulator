@@ -56,9 +56,9 @@ pub struct AbnormalityItemDto {
 }
 
 impl AbnormalityItemDto {
-    pub fn from_metadata(meta: &AbnormalityMetadata) -> Self {
+    pub fn from_owned(instance_uuid: Uuid, meta: &AbnormalityMetadata) -> Self {
         Self {
-            uuid: meta.uuid,
+            uuid: instance_uuid,
             id: meta.id.clone(),
             name: meta.name.clone(),
             risk_level: meta.risk_level,
@@ -104,7 +104,7 @@ impl InventoryItemDto {
                 InventoryItemDto::Equipment(EquipmentItemDto::from_owned(uuid, meta.as_ref()))
             }
             Item::Abnormality(meta) => {
-                InventoryItemDto::Abnormality(AbnormalityItemDto::from_metadata(meta.as_ref()))
+                InventoryItemDto::Abnormality(AbnormalityItemDto::from_owned(uuid, meta.as_ref()))
             }
             Item::Artifact(meta) => {
                 InventoryItemDto::Artifact(ArtifactItemDto::from_metadata(meta.as_ref()))
@@ -168,13 +168,11 @@ impl Inventory {
             return Some(Item::Equipment(Arc::clone(&item.meta)));
         }
 
-        // Abnormality는 base_uuid == owned_uuid로 취급 (중복 소유를 허용하지 않음)
+        // Abnormality는 "소유 인스턴스 UUID"로 조회
         if let Some(item) = self.abnormalities.get_item(&uuid) {
             return Some(Item::Abnormality(Arc::clone(item)));
         }
 
-        // Artifact는 UUID로 직접 찾을 수 없음 (index 기반)
-        // TODO: ArtifactSlots에 find_by_uuid 추가 필요
         None
     }
 
@@ -198,11 +196,12 @@ impl Inventory {
     /// 아이템을 소유 인스턴스로 추가합니다.
     ///
     /// - Equipment: `owned_uuid`는 별도의 인스턴스 UUID여야 합니다(중복 소유 지원).
-    /// - Abnormality/Artifact: 현재는 `meta.uuid`를 그대로 owned_uuid로 사용합니다.
+    /// - Abnormality: `owned_uuid`는 별도의 인스턴스 UUID여야 합니다(중복 소유 지원).
+    /// - Artifact: 현재는 `meta.uuid`를 그대로 owned_uuid로 사용합니다.
     pub fn add_item_owned(&mut self, owned_uuid: Uuid, item: Item) -> Result<(), GameError> {
         match item {
             Item::Abnormality(data) => {
-                if let Err(err) = self.abnormalities.add_item(data) {
+                if let Err(err) = self.abnormalities.add_item(owned_uuid, data) {
                     tracing::warn!("Failed to add abnormality to inventory: {}", err);
                     Err(GameError::InventoryFull)
                 } else {
@@ -279,7 +278,11 @@ impl AbnormalityInventory {
     }
 
     /// 환상체 추가 (슬롯 제한 있음)
-    pub fn add_item(&mut self, item: Arc<AbnormalityMetadata>) -> Result<(), String> {
+    pub fn add_item(
+        &mut self,
+        instance_uuid: Uuid,
+        item: Arc<AbnormalityMetadata>,
+    ) -> Result<(), String> {
         if !self.can_add_item() {
             return Err(format!(
                 "환상체 인벤토리가 가득 찼습니다 ({}/{})",
@@ -288,7 +291,36 @@ impl AbnormalityInventory {
             ));
         }
 
-        self.items.insert(item.uuid, OwnedAbnormality::new(item));
+        if self.items.contains_key(&instance_uuid) {
+            return Err(format!(
+                "이미 존재하는 소유 환상체 UUID 입니다 (uuid={})",
+                instance_uuid
+            ));
+        }
+
+        self.items
+            .insert(instance_uuid, OwnedAbnormality::new(instance_uuid, item));
+        Ok(())
+    }
+
+    /// 환상체 추가 (슬롯 제한 무시)
+    ///
+    /// 보너스 등 특수 규칙으로 "인벤토리(벤치) 슬롯이 가득 찼을 때"
+    /// 필드에 즉시 배치하며 소유 목록에는 포함시켜야 하는 경우에 사용합니다.
+    pub fn add_item_ignore_capacity(
+        &mut self,
+        instance_uuid: Uuid,
+        item: Arc<AbnormalityMetadata>,
+    ) -> Result<(), String> {
+        if self.items.contains_key(&instance_uuid) {
+            return Err(format!(
+                "이미 존재하는 소유 환상체 UUID 입니다 (uuid={})",
+                instance_uuid
+            ));
+        }
+
+        self.items
+            .insert(instance_uuid, OwnedAbnormality::new(instance_uuid, item));
         Ok(())
     }
 
@@ -341,14 +373,16 @@ impl AbnormalityInventory {
 
 #[derive(Debug, Clone)]
 pub struct OwnedAbnormality {
+    pub instance_uuid: Uuid,
     pub meta: Arc<AbnormalityMetadata>,
     pub growth_stacks: GrowthStack,
     pub item_slot: ItemSlot,
 }
 
 impl OwnedAbnormality {
-    pub fn new(meta: Arc<AbnormalityMetadata>) -> Self {
+    pub fn new(instance_uuid: Uuid, meta: Arc<AbnormalityMetadata>) -> Self {
         Self {
+            instance_uuid,
             meta,
             growth_stacks: GrowthStack::new(),
             item_slot: ItemSlot::default(),
@@ -535,5 +569,194 @@ impl ArtifactSlots {
 
     pub fn max_slots(&self) -> usize {
         self.max_slots
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::game::data::{
+        abnormality_data::{AbnormalityMetadata, BasicAttackDef, MovementDef, ResonanceDef},
+        artifact_data::ArtifactMetadata,
+        equipment_data::{EquipmentMetadata, EquipmentType},
+        Item,
+    };
+    use std::collections::HashMap;
+
+    fn equipment_meta(uuid: u128, equipment_type: EquipmentType) -> Arc<EquipmentMetadata> {
+        Arc::new(EquipmentMetadata {
+            id: format!("equip_{uuid}"),
+            uuid: Uuid::from_u128(uuid),
+            name: "Equip".to_string(),
+            equipment_type,
+            rarity: RiskLevel::ZAYIN,
+            price: 1,
+            allow_duplicate_equip: true,
+            triggered_effects: HashMap::new(),
+        })
+    }
+
+    fn abnormality_meta(uuid: u128) -> Arc<AbnormalityMetadata> {
+        Arc::new(AbnormalityMetadata {
+            id: format!("abno_{uuid}"),
+            uuid: Uuid::from_u128(uuid),
+            name: "Abno".to_string(),
+            risk_level: RiskLevel::ZAYIN,
+            price: 1,
+            max_health: 10,
+            attack: 2,
+            defense: 1,
+            movement: MovementDef::default(),
+            basic_attack: BasicAttackDef::default(),
+            resonance: ResonanceDef::default(),
+            skill_id: None,
+        })
+    }
+
+    fn artifact_meta(uuid: u128) -> Arc<ArtifactMetadata> {
+        Arc::new(ArtifactMetadata {
+            id: format!("art_{uuid}"),
+            uuid: Uuid::from_u128(uuid),
+            name: "Art".to_string(),
+            description: "desc".to_string(),
+            rarity: RiskLevel::ZAYIN,
+            price: 1,
+            triggered_effects: HashMap::new(),
+        })
+    }
+
+    #[test]
+    fn inventory_add_find_and_remove_equipment_and_abnormality() {
+        let mut inv = Inventory::new();
+
+        let equip_owned_uuid = Uuid::from_u128(100);
+        let equip = Item::Equipment(equipment_meta(1, EquipmentType::Weapon));
+        inv.add_item_owned(equip_owned_uuid, equip).unwrap();
+
+        let found = inv.find_item(equip_owned_uuid).unwrap();
+        assert!(matches!(found, Item::Equipment(_)));
+
+        let removed = inv.remove_item(equip_owned_uuid).unwrap();
+        assert!(matches!(removed, Item::Equipment(_)));
+        assert!(inv.find_item(equip_owned_uuid).is_none());
+
+        let abno_owned_uuid = Uuid::from_u128(200);
+        let abno = Item::Abnormality(abnormality_meta(2));
+        inv.add_item_owned(abno_owned_uuid, abno).unwrap();
+
+        let found = inv.find_item(abno_owned_uuid).unwrap();
+        assert!(matches!(found, Item::Abnormality(_)));
+
+        let removed = inv.remove_item(abno_owned_uuid).unwrap();
+        assert!(matches!(removed, Item::Abnormality(_)));
+        assert!(inv.find_item(abno_owned_uuid).is_none());
+    }
+
+    #[test]
+    fn inventory_artifact_is_added_to_slots_and_is_not_removable_by_uuid() {
+        let mut inv = Inventory::new();
+        let artifact = Item::Artifact(artifact_meta(10));
+
+        // owned_uuid is ignored for artifacts (meta.uuid is used).
+        inv.add_item_owned(Uuid::from_u128(999), artifact).unwrap();
+
+        assert!(inv.has_artifact(Uuid::from_u128(10)));
+        assert!(inv.find_item(Uuid::from_u128(10)).is_none());
+        assert!(inv.remove_item(Uuid::from_u128(10)).is_none());
+    }
+
+    #[test]
+    fn abnormality_inventory_rejects_duplicates_and_full_inventory() {
+        let mut inv = AbnormalityInventory::with_max_slots(2);
+        let owned_uuid = Uuid::from_u128(1);
+
+        inv.add_item(owned_uuid, abnormality_meta(1)).unwrap();
+
+        let err = inv.add_item(owned_uuid, abnormality_meta(2)).unwrap_err();
+        assert!(err.contains("이미 존재"));
+
+        inv.add_item(Uuid::from_u128(2), abnormality_meta(3))
+            .unwrap();
+
+        let err = inv
+            .add_item(Uuid::from_u128(3), abnormality_meta(4))
+            .unwrap_err();
+        assert!(err.contains("가득"));
+    }
+
+    #[test]
+    fn equipment_inventory_rejects_duplicates_and_full_inventory() {
+        let mut inv = EquipmentInventory::with_max_slots(2);
+        let owned_uuid = Uuid::from_u128(1);
+        inv.add_item(OwnedEquipment::new(
+            owned_uuid,
+            equipment_meta(1, EquipmentType::Weapon),
+        ))
+        .unwrap();
+
+        let err = inv
+            .add_item(OwnedEquipment::new(
+                owned_uuid,
+                equipment_meta(2, EquipmentType::Suit),
+            ))
+            .unwrap_err();
+        assert!(err.contains("이미 존재"));
+
+        inv.add_item(OwnedEquipment::new(
+            Uuid::from_u128(2),
+            equipment_meta(3, EquipmentType::Accessory),
+        ))
+        .unwrap();
+
+        let err = inv
+            .add_item(OwnedEquipment::new(
+                Uuid::from_u128(3),
+                equipment_meta(4, EquipmentType::Suit),
+            ))
+            .unwrap_err();
+        assert!(err.contains("가득"));
+    }
+
+    #[test]
+    fn artifact_slots_limit_capacity_and_detect_contains_uuid() {
+        let mut slots = ArtifactSlots::with_max_slots(1);
+        let a = artifact_meta(1);
+        let b = artifact_meta(2);
+
+        slots.add_item(Arc::clone(&a)).unwrap();
+        assert!(slots.contains_uuid(a.uuid));
+        assert!(!slots.contains_uuid(b.uuid));
+
+        let err = slots.add_item(b).unwrap_err();
+        assert!(err.contains("가득"));
+    }
+
+    #[test]
+    fn inventory_add_item_owned_maps_full_to_game_error() {
+        let inv = Inventory {
+            abnormalities: AbnormalityInventory::with_max_slots(0),
+            equipments: EquipmentInventory::with_max_slots(0),
+            artifacts: ArtifactSlots::with_max_slots(0),
+        };
+        let mut inv = inv;
+
+        assert!(matches!(
+            inv.add_item_owned(Uuid::from_u128(1), Item::Abnormality(abnormality_meta(1)))
+                .unwrap_err(),
+            GameError::InventoryFull
+        ));
+        assert!(matches!(
+            inv.add_item_owned(
+                Uuid::from_u128(2),
+                Item::Equipment(equipment_meta(1, EquipmentType::Weapon))
+            )
+            .unwrap_err(),
+            GameError::InventoryFull
+        ));
+        assert!(matches!(
+            inv.add_item_owned(Uuid::from_u128(3), Item::Artifact(artifact_meta(1)))
+                .unwrap_err(),
+            GameError::InventoryFull
+        ));
     }
 }

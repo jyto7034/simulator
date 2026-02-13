@@ -2,66 +2,83 @@ use std::cmp::Ordering;
 
 use uuid::Uuid;
 
+use crate::game::{ability::SkillId, enums::Side};
+
 use super::buffs::BuffId;
-use super::timeline::TimelineCause;
+use super::ids::UnitInstanceId;
+use super::timeline::{AttackKind, SkillCastTarget, TimelineCause};
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ProjectilePayload {
+    BasicAttack,
+    Skill {
+        skill_id: SkillId,
+        caster_owner: Side,
+        cast_target: Option<SkillCastTarget>,
+    },
+}
 
 /// 전투 이벤트
 ///
 /// 모든 unit/caster/target ID는 `instance_id`를 참조합니다.
 /// `base_uuid`(메타데이터 참조용)와 혼동하지 않도록 주의하세요.
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum BattleEvent {
-    Attack {
+    AttackStart {
         time_ms: u64,
-        attacker_instance_id: Uuid,
+        attacker_instance_id: UnitInstanceId,
         /// Attack 이벤트에 타겟 힌트를 줄 때 사용 (예: ExtraAttack).
-        target_instance_id: Option<Uuid>,
+        target_instance_id: Option<UnitInstanceId>,
         /// 자동 공격(반복 스케줄) 여부. false면 1회성 공격으로 처리.
         schedule_next: bool,
         cause: TimelineCause,
     },
-    /// Projectile impact for ranged basic attacks / delayed hits.
-    ///
-    /// This is a time-based event that should be processed before other same-tick effects
-    /// (e.g. heals/buffs) to keep hit resolution deterministic.
+    AttackResolve {
+        time_ms: u64,
+        attacker_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
+        kind: AttackKind,
+        cause: TimelineCause,
+    },
     ProjectileHit {
         time_ms: u64,
         projectile_id: Uuid,
-        attacker_instance_id: Uuid,
-        target_instance_id: Uuid,
+        attacker_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
+        payload: ProjectilePayload,
         cause: TimelineCause,
     },
     /// 공명(=마나) 만땅 시 자동 시전 시작
     AutoCastStart {
         time_ms: u64,
-        caster_instance_id: Uuid,
+        caster_instance_id: UnitInstanceId,
         cause: TimelineCause,
     },
     /// 자동 시전 종료 훅 (공명 리셋/락 적용)
     AutoCastEnd {
         time_ms: u64,
-        caster_instance_id: Uuid,
+        caster_instance_id: UnitInstanceId,
         cause: TimelineCause,
     },
     ApplyBuff {
         time_ms: u64,
-        caster_instance_id: Uuid,
-        target_instance_id: Uuid,
+        caster_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
         buff_id: BuffId,
         duration_ms: u64,
         cause: TimelineCause,
     },
     BuffTick {
         time_ms: u64,
-        caster_instance_id: Uuid,
-        target_instance_id: Uuid,
+        caster_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
         buff_id: BuffId,
         cause: TimelineCause,
     },
     BuffExpire {
         time_ms: u64,
-        caster_instance_id: Uuid,
-        target_instance_id: Uuid,
+        caster_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
         buff_id: BuffId,
         cause: TimelineCause,
     },
@@ -70,7 +87,8 @@ pub enum BattleEvent {
     /// Attempt to advance a moving unit by a single tile step at `time_ms`.
     MoveStep {
         time_ms: u64,
-        unit_instance_id: Uuid,
+        unit_instance_id: UnitInstanceId,
+        expected_move_epoch: u32,
     },
 }
 
@@ -78,7 +96,8 @@ impl BattleEvent {
     /// 이벤트 발생 시간(ms)
     pub fn time_ms(&self) -> u64 {
         match self {
-            BattleEvent::Attack { time_ms, .. }
+            BattleEvent::AttackStart { time_ms, .. }
+            | BattleEvent::AttackResolve { time_ms, .. }
             | BattleEvent::ProjectileHit { time_ms, .. }
             | BattleEvent::AutoCastStart { time_ms, .. }
             | BattleEvent::AutoCastEnd { time_ms, .. }
@@ -99,12 +118,12 @@ impl BattleEvent {
             BattleEvent::ApplyBuff { .. } => 1,
             BattleEvent::BuffTick { .. } => 2,
             BattleEvent::AutoCastEnd { .. } => 3,
-            BattleEvent::Attack { .. } => 4,
-            BattleEvent::AutoCastStart { .. } => 5,
-            BattleEvent::BuffExpire { .. } => 6,
-            // Movement runs after combat resolution within the same `time_ms` bucket.
-            BattleEvent::MovementIntent { .. } => 7,
-            BattleEvent::MoveStep { .. } => 8,
+            BattleEvent::AttackStart { .. } => 4,
+            BattleEvent::AttackResolve { .. } => 5,
+            BattleEvent::AutoCastStart { .. } => 6,
+            BattleEvent::BuffExpire { .. } => 7,
+            BattleEvent::MovementIntent { .. } => 8,
+            BattleEvent::MoveStep { .. } => 9,
         }
     }
 }
@@ -141,23 +160,23 @@ impl Ord for BattleEvent {
                     },
                 ) => b.as_bytes().cmp(a.as_bytes()),
                 (
-                    BattleEvent::Attack {
+                    BattleEvent::AttackStart {
                         attacker_instance_id: a,
                         ..
                     },
-                    BattleEvent::Attack {
+                    BattleEvent::AttackStart {
                         attacker_instance_id: b,
                         ..
                     },
                 ) => {
                     let a_t = match self {
-                        BattleEvent::Attack {
+                        BattleEvent::AttackStart {
                             target_instance_id, ..
                         } => target_instance_id.map(|id| *id.as_bytes()),
                         _ => None,
                     };
                     let b_t = match other {
-                        BattleEvent::Attack {
+                        BattleEvent::AttackStart {
                             target_instance_id, ..
                         } => target_instance_id.map(|id| *id.as_bytes()),
                         _ => None,
@@ -165,23 +184,94 @@ impl Ord for BattleEvent {
                     b.as_bytes().cmp(a.as_bytes()).then_with(|| b_t.cmp(&a_t))
                 }
                 (
+                    BattleEvent::AttackResolve {
+                        attacker_instance_id: a,
+                        target_instance_id: a_t,
+                        ..
+                    },
+                    BattleEvent::AttackResolve {
+                        attacker_instance_id: b,
+                        target_instance_id: b_t,
+                        ..
+                    },
+                ) => b
+                    .as_bytes()
+                    .cmp(a.as_bytes())
+                    .then_with(|| b_t.as_bytes().cmp(a_t.as_bytes())),
+                (
                     BattleEvent::ProjectileHit {
                         projectile_id: a_p,
                         attacker_instance_id: a_a,
                         target_instance_id: a_t,
+                        payload: a_payload,
                         ..
                     },
                     BattleEvent::ProjectileHit {
                         projectile_id: b_p,
                         attacker_instance_id: b_a,
                         target_instance_id: b_t,
+                        payload: b_payload,
                         ..
                     },
                 ) => b_p
                     .as_bytes()
                     .cmp(a_p.as_bytes())
                     .then_with(|| b_a.as_bytes().cmp(a_a.as_bytes()))
-                    .then_with(|| b_t.as_bytes().cmp(a_t.as_bytes())),
+                    .then_with(|| b_t.as_bytes().cmp(a_t.as_bytes()))
+                    .then_with(|| match (a_payload, b_payload) {
+                        (ProjectilePayload::BasicAttack, ProjectilePayload::BasicAttack) => {
+                            Ordering::Equal
+                        }
+                        (ProjectilePayload::BasicAttack, ProjectilePayload::Skill { .. }) => {
+                            Ordering::Less
+                        }
+                        (ProjectilePayload::Skill { .. }, ProjectilePayload::BasicAttack) => {
+                            Ordering::Greater
+                        }
+                        (
+                            ProjectilePayload::Skill {
+                                skill_id: a_id,
+                                caster_owner: a_owner,
+                                cast_target: a_target,
+                            },
+                            ProjectilePayload::Skill {
+                                skill_id: b_id,
+                                caster_owner: b_owner,
+                                cast_target: b_target,
+                            },
+                        ) => b_id
+                            .cmp(a_id)
+                            .then_with(|| {
+                                // Side doesn't implement Ord; compare tags to keep deterministic.
+                                let a_tag = match a_owner {
+                                    Side::Player => 1u8,
+                                    Side::Opponent => 2u8,
+                                };
+                                let b_tag = match b_owner {
+                                    Side::Player => 1u8,
+                                    Side::Opponent => 2u8,
+                                };
+                                b_tag.cmp(&a_tag)
+                            })
+                            .then_with(|| {
+                                fn target_key(
+                                    target: &Option<SkillCastTarget>,
+                                ) -> (u8, u8, [u8; 16], i32, i32) {
+                                    match target {
+                                        None => (0, 0, [0u8; 16], 0, 0),
+                                        Some(SkillCastTarget::Unit { unit_instance_id }) => {
+                                            (1, 0, *unit_instance_id.as_bytes(), 0, 0)
+                                        }
+                                        Some(SkillCastTarget::Tile { position }) => {
+                                            (1, 1, [0u8; 16], position.y, position.x)
+                                        }
+                                    }
+                                }
+                                let a_key = target_key(a_target);
+                                let b_key = target_key(b_target);
+                                b_key.cmp(&a_key)
+                            }),
+                    }),
                 (
                     BattleEvent::ApplyBuff {
                         caster_instance_id: a_c,
@@ -242,13 +332,15 @@ impl Ord for BattleEvent {
                 (
                     BattleEvent::MoveStep {
                         unit_instance_id: a,
+                        expected_move_epoch: a_e,
                         ..
                     },
                     BattleEvent::MoveStep {
                         unit_instance_id: b,
+                        expected_move_epoch: b_e,
                         ..
                     },
-                ) => b.as_bytes().cmp(a.as_bytes()),
+                ) => b.as_bytes().cmp(a.as_bytes()).then_with(|| b_e.cmp(a_e)),
                 _ => Ordering::Equal,
             })
     }
@@ -257,5 +349,94 @@ impl Ord for BattleEvent {
 impl PartialOrd for BattleEvent {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::game::battle::timeline::{TimelineCause, TimelineRootCause};
+    use std::collections::BinaryHeap;
+    use uuid::Uuid;
+
+    #[test]
+    fn battle_event_heap_orders_by_time_then_priority_then_ids() {
+        let cause = TimelineCause::Root {
+            kind: TimelineRootCause::System,
+        };
+
+        let attacker_early: UnitInstanceId = Uuid::from_u128(1).into();
+        let attacker_late: UnitInstanceId = Uuid::from_u128(2).into();
+
+        let caster_small: UnitInstanceId = Uuid::from_u128(3).into();
+        let caster_large: UnitInstanceId = Uuid::from_u128(4).into();
+        assert!(caster_small.as_bytes() < caster_large.as_bytes());
+
+        let mut heap = BinaryHeap::new();
+
+        heap.push(BattleEvent::AttackStart {
+            time_ms: 9,
+            attacker_instance_id: attacker_early,
+            target_instance_id: None,
+            schedule_next: false,
+            cause,
+        });
+
+        heap.push(BattleEvent::AttackStart {
+            time_ms: 10,
+            attacker_instance_id: attacker_late,
+            target_instance_id: None,
+            schedule_next: false,
+            cause,
+        });
+
+        heap.push(BattleEvent::ProjectileHit {
+            time_ms: 10,
+            projectile_id: Uuid::from_u128(10),
+            attacker_instance_id: attacker_late,
+            target_instance_id: attacker_early,
+            payload: ProjectilePayload::BasicAttack,
+            cause,
+        });
+
+        heap.push(BattleEvent::AutoCastStart {
+            time_ms: 10,
+            caster_instance_id: caster_large,
+            cause,
+        });
+        heap.push(BattleEvent::AutoCastStart {
+            time_ms: 10,
+            caster_instance_id: caster_small,
+            cause,
+        });
+
+        let mut popped = Vec::new();
+        while let Some(ev) = heap.pop() {
+            popped.push(ev);
+        }
+
+        assert!(matches!(
+            popped[0],
+            BattleEvent::AttackStart { time_ms: 9, .. }
+        ));
+        assert!(matches!(popped[1], BattleEvent::ProjectileHit { .. }));
+        assert!(matches!(
+            popped[2],
+            BattleEvent::AttackStart { time_ms: 10, .. }
+        ));
+        assert!(matches!(
+            popped[3],
+            BattleEvent::AutoCastStart {
+                caster_instance_id,
+                ..
+            } if caster_instance_id == caster_small
+        ));
+        assert!(matches!(
+            popped[4],
+            BattleEvent::AutoCastStart {
+                caster_instance_id,
+                ..
+            } if caster_instance_id == caster_large
+        ));
     }
 }

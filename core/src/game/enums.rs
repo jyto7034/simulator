@@ -27,11 +27,12 @@ pub enum OrdealType {
 impl OrdealType {
     pub const fn max_phases(&self) -> u8 {
         match self {
-            Self::Dawn => 5,
+            // Keep in sync with `OrdealScheduler::get_phase_schedule`.
+            Self::Dawn => 6,
             Self::Noon => 6,
             Self::Dusk => 5,
-            Self::Midnight => 6,
-            Self::White => 5,
+            Self::Midnight => 5,
+            Self::White => 6,
         }
     }
 
@@ -300,6 +301,43 @@ impl PhaseEvent {
             PhaseEvent::Suppression { .. } => PhaseEventType::Suppression,
             PhaseEvent::Ordeal { .. } => PhaseEventType::Ordeal,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn phase_type_value_roundtrip_and_next() {
+        assert_eq!(PhaseType::I.value(), 1);
+        assert_eq!(PhaseType::VI.value(), 6);
+
+        for value in 1..=6 {
+            let phase = PhaseType::from_value(value).unwrap();
+            assert_eq!(phase.value(), value);
+        }
+        assert!(PhaseType::from_value(0).is_none());
+        assert!(PhaseType::from_value(7).is_none());
+
+        assert_eq!(PhaseType::I.next(), Some(PhaseType::II));
+        assert_eq!(PhaseType::VI.next(), None);
+        assert!(PhaseType::VI.is_last());
+        assert!(!PhaseType::V.is_last());
+    }
+
+    #[test]
+    fn ordeal_type_phase_validation_and_progression() {
+        assert_eq!(OrdealType::Dawn.max_phases(), 6);
+        assert_eq!(OrdealType::Noon.max_phases(), 6);
+
+        assert!(OrdealType::Dawn.is_valid_phase(PhaseType::V));
+        assert!(OrdealType::Dawn.is_valid_phase(PhaseType::VI));
+
+        assert_eq!(OrdealType::Dawn.next(), Some(OrdealType::Noon));
+        assert_eq!(OrdealType::White.next(), None);
+        assert!(OrdealType::White.is_last());
+        assert!(!OrdealType::Midnight.is_last());
     }
 }
 

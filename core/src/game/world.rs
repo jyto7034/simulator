@@ -6,16 +6,18 @@ use crate::ecs::components::Player;
 use crate::ecs::resources::item_slot::EquippedRef;
 use crate::ecs::resources::{
     ActionValidator, CurrentPhaseEvents, Enkephalin, Field, GameProgression, GameState, Inventory,
-    InventoryDiffDto, Position, Qliphoth, SelectedEvent,
+    Position, Qliphoth, SelectedEvent,
 };
 use crate::ecs::systems::{progression, spawn_player};
 use crate::game::behavior::{BehaviorResult, GameError, PlayerBehavior};
 use crate::game::data::{random_event_data::RandomEventTarget, GameDataBase};
-use crate::game::enums::{BonusAction, GameOption, OrdealType, PhaseType, ShopAction, ZoneType};
+use crate::game::enums::{
+    BonusAction, GameOption, OrdealType, PhaseEvent, PhaseType, ShopAction, ZoneType,
+};
 use crate::game::events::event_selection::bonus::BonusExecutor;
 use crate::game::events::event_selection::shop::ShopExecutor;
 use crate::game::events::suppression::SuppressionExecutor;
-use crate::game::events::GeneratorContext;
+use crate::game::events::{suppression::SuppressionGenerator, EventGenerator, GeneratorContext};
 use crate::game::managers::action_scheduler::ActionScheduler;
 use crate::game::managers::event_manager::EventManager;
 use crate::game::managers::uuid_manager::UuidManager;
@@ -254,12 +256,11 @@ impl GameCore {
         // 한 Phase에서 이벤트는 1개만 선택되므로 나머지 옵션은 폐기
         current_phase_events.clear();
 
-        self.world
-            .insert_resource(SelectedEvent::new(event.clone()));
-
         // 2. 이벤트 타입에 따라 처리 및 상태 전환
         match &event {
             GameOption::Shop { shop } => {
+                self.world
+                    .insert_resource(SelectedEvent::new(event.clone()));
                 // 상태 전환: InShop (allowed_actions 자동 설정)
                 self.transition_to(GameState::InShop {
                     shop_uuid: shop.uuid,
@@ -271,6 +272,8 @@ impl GameCore {
             }
 
             GameOption::Bonus { bonus } => {
+                self.world
+                    .insert_resource(SelectedEvent::new(event.clone()));
                 // 상태 전환: InBonus (allowed_actions 자동 설정)
                 self.transition_to(GameState::InBonus {
                     bonus_uuid: bonus.uuid,
@@ -285,19 +288,19 @@ impl GameCore {
 
             GameOption::Random { event } => {
                 // Random 이벤트는 inner_metadata 를 통해 실제 대상(Shop/Bonus/Suppress)로 라우팅
-                let target = event.inner_metadata.resolve(&self.game_data)?;
+                // - Shop/Bonus: 해당 스테이지로 즉시 진입
+                // - Suppress(PvE): 3개 후보를 생성해 "진압 선택 스테이지"로 즉시 진입
+                // - resolve 실패 시: 에러 대신 안전한 fallback으로 라우팅
+                let resolved = event.inner_metadata.resolve(&self.game_data);
 
-                match target {
-                    RandomEventTarget::Shop(shop_meta) => {
+                match resolved {
+                    Ok(RandomEventTarget::Shop(shop_meta)) => {
                         let shop = shop_meta.clone();
 
-                        // SelectedEvent 를 Shop 기반으로 교체
                         self.world
                             .insert_resource(SelectedEvent::new(GameOption::Shop {
                                 shop: shop.clone(),
                             }));
-
-                        // 상태 전환: InShop
                         self.transition_to(GameState::InShop {
                             shop_uuid: shop.uuid,
                         })?;
@@ -306,17 +309,15 @@ impl GameCore {
                             "Random event '{}' routed to shop: id={}, uuid={}",
                             event.id, shop.id, shop.uuid
                         );
-
                         Ok(BehaviorResult::EventSelected)
                     }
-                    RandomEventTarget::Bonus(bonus_meta) => {
+                    Ok(RandomEventTarget::Bonus(bonus_meta)) => {
                         let bonus = bonus_meta.clone();
 
                         self.world
                             .insert_resource(SelectedEvent::new(GameOption::Bonus {
                                 bonus: bonus.clone(),
                             }));
-
                         self.transition_to(GameState::InBonus {
                             bonus_uuid: bonus.uuid,
                         })?;
@@ -325,37 +326,103 @@ impl GameCore {
                             "Random event '{}' routed to bonus: id={}, uuid={}",
                             event.id, bonus.id, bonus.uuid
                         );
-
                         Ok(BehaviorResult::EventSelected)
                     }
-                    RandomEventTarget::Suppress(abno_meta) => {
-                        let abnormality_id = abno_meta.id.clone();
-                        let risk_level = abno_meta.risk_level;
-                        let uuid = abno_meta.uuid;
+                    Ok(RandomEventTarget::Suppress(_abno_meta)) => {
+                        // PvE 스테이지: 3개 진압 후보 생성 후 SelectingEvent로 진입
+                        let (ordeal, phase) = self.get_progression()?;
+                        let seed = determinism::seed_for_phase(self.run_seed, ordeal, phase)
+                            ^ u64::from_be_bytes(event.uuid.as_bytes()[..8].try_into().unwrap());
+                        let ctx = GeneratorContext::new(&self.world, &self.game_data, seed);
 
-                        self.world.insert_resource(SelectedEvent::new(
+                        let generator = SuppressionGenerator;
+                        let options = generator.generate(&ctx);
+                        let candidates = options.map(|opt| match opt {
                             GameOption::SuppressAbnormality {
-                                abnormality_id: abnormality_id.clone(),
+                                abnormality_id,
+                                risk_level,
+                                uuid,
+                            } => crate::game::enums::SuppressionOption {
+                                abnormality_id,
                                 risk_level,
                                 uuid,
                             },
-                        ));
+                            _ => {
+                                unreachable!("SuppressionGenerator must return suppression options")
+                            }
+                        });
 
-                        self.transition_to(GameState::InSuppression {
-                            abnormality_uuid: uuid,
-                        })?;
+                        // CurrentPhaseEvents에 후보를 저장(이후 StartSuppression 검증에 사용)
+                        {
+                            let mut current_phase_events = self
+                                .world
+                                .get_resource_mut::<CurrentPhaseEvents>()
+                                .ok_or(GameError::MissingResource("CurrentPhaseEvents"))?;
+                            current_phase_events.clear();
+                            for option in candidates.clone() {
+                                current_phase_events.add_event(option.into());
+                            }
+                        }
+                        let _ = self.world.remove_resource::<SelectedEvent>();
+                        self.transition_to(GameState::SelectingEvent)?;
 
                         info!(
-                            "Random event '{}' routed to suppression: abnormality_id={}, uuid={}",
-                            event.id, abnormality_id, uuid
+                            "Random event '{}' routed to suppression selection (3 candidates)",
+                            event.id
                         );
 
-                        Ok(BehaviorResult::SuppressAbnormality {
-                            suppress_result: format!(
-                                "기물 '{}' 진압 작업 시작 (위험도: {:?})",
-                                abnormality_id, risk_level
-                            ),
-                        })
+                        // NOTE: 기존 프로토콜을 최대한 재사용하기 위해 PhaseEvent를 반환한다.
+                        Ok(BehaviorResult::RequestPhaseData(PhaseEvent::Suppression {
+                            candidates,
+                        }))
+                    }
+                    Err(err) => {
+                        warn!(
+                            "Random event '{}' resolution failed ({:?}); routing to fallback",
+                            event.id, err
+                        );
+                        // fallback: 보너스(있으면) → 상점(있으면) → 에러 없는 더미 보너스
+                        if let Some(bonus) = self.game_data.bonus_data.bonuses.first() {
+                            let bonus = bonus.clone();
+                            self.world
+                                .insert_resource(SelectedEvent::new(GameOption::Bonus {
+                                    bonus: bonus.clone(),
+                                }));
+                            self.transition_to(GameState::InBonus {
+                                bonus_uuid: bonus.uuid,
+                            })?;
+                            return Ok(BehaviorResult::EventSelected);
+                        }
+                        if let Some(shop) = self.game_data.shop_data.shops.first() {
+                            let shop = shop.clone();
+                            self.world
+                                .insert_resource(SelectedEvent::new(GameOption::Shop {
+                                    shop: shop.clone(),
+                                }));
+                            self.transition_to(GameState::InShop {
+                                shop_uuid: shop.uuid,
+                            })?;
+                            return Ok(BehaviorResult::EventSelected);
+                        }
+
+                        // 최종 폴백: 0 엔케팔린 보너스 스테이지
+                        let bonus = crate::game::data::bonus_data::BonusMetadata {
+                            id: "fallback".to_string(),
+                            bonus_type: crate::game::data::bonus_data::BonusType::Enkephalin,
+                            uuid: Uuid::nil(),
+                            name: "임시 보너스".to_string(),
+                            description: "폴백 보너스".to_string(),
+                            icon: "default".to_string(),
+                            amount: 0,
+                        };
+                        self.world
+                            .insert_resource(SelectedEvent::new(GameOption::Bonus {
+                                bonus: bonus.clone(),
+                            }));
+                        self.transition_to(GameState::InBonus {
+                            bonus_uuid: bonus.uuid,
+                        })?;
+                        Ok(BehaviorResult::EventSelected)
                     }
                 }
             }
@@ -541,7 +608,14 @@ impl GameCore {
                     "Applying bonus '{}' (uuid={}) with amount={}",
                     bonus.id, bonus.uuid, bonus.amount
                 );
-                BonusExecutor::grant_bonus(&mut self.world, &bonus)?;
+                let seed = {
+                    let (ordeal, phase) = self.get_progression()?;
+                    determinism::seed_for_phase(self.run_seed, ordeal, phase)
+                        ^ u64::from_be_bytes(bonus.uuid.as_bytes()[..8].try_into().unwrap())
+                };
+
+                let inventory_diff =
+                    BonusExecutor::grant_bonus(&mut self.world, &self.game_data, &bonus, seed)?;
 
                 // 4. 현재 Enkephalin 및 인벤토리 변경 사항을 BehaviorResult로 반환
                 let enkephalin = self
@@ -549,13 +623,6 @@ impl GameCore {
                     .get_resource::<Enkephalin>()
                     .map(|e| e.amount)
                     .unwrap_or(0);
-
-                // TODO: BonusType::Item / Abnormality 지원 시 실제 diff 구성
-                let inventory_diff = InventoryDiffDto {
-                    added: Vec::new(),
-                    updated: Vec::new(),
-                    removed: Vec::new(),
-                };
 
                 // 5. 보너스 수령 완료 상태로 전환 (Exit에서만 Phase 진행)
                 self.transition_to(GameState::InBonusClaimed {
@@ -821,5 +888,72 @@ impl GameCore {
             .get_resource::<ActionValidator>()
             .map(|ctx| ctx.is_action_allowed(action))
             .unwrap_or(false)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::game::data::{
+        abnormality_data::AbnormalityDatabase, artifact_data::ArtifactDatabase,
+        bonus_data::BonusDatabase, equipment_data::EquipmentDatabase, event_pools::EventPhasePool,
+        event_pools::EventPoolConfig, pve_data::PveEncounterDatabase,
+        random_event_data::RandomEventDatabase, shop_data::ShopDatabase, skill_data::SkillDatabase,
+        GameDataBase,
+    };
+    use std::sync::Arc;
+
+    fn empty_game_data() -> Arc<GameDataBase> {
+        let pool = EventPhasePool {
+            shops: vec![],
+            bonuses: vec![],
+            random_events: vec![],
+        };
+        let event_pools = EventPoolConfig {
+            dawn: pool.clone(),
+            noon: pool.clone(),
+            dusk: pool.clone(),
+            midnight: pool.clone(),
+            white: pool,
+        };
+
+        Arc::new(GameDataBase::new(
+            Arc::new(AbnormalityDatabase::new(vec![])),
+            Arc::new(ArtifactDatabase::new(vec![])),
+            Arc::new(EquipmentDatabase::new(vec![])),
+            Arc::new(ShopDatabase::new(vec![])),
+            Arc::new(BonusDatabase::new(vec![])),
+            Arc::new(RandomEventDatabase::new(vec![])),
+            Arc::new(PveEncounterDatabase::new(vec![])),
+            Arc::new(SkillDatabase::new(vec![])),
+            event_pools,
+        ))
+    }
+
+    #[test]
+    fn game_core_rejects_disallowed_actions_and_updates_allowed_actions_on_state_transition() {
+        let mut core = GameCore::new(empty_game_data(), 123);
+        let player_id = Uuid::from_u128(1);
+
+        assert!(matches!(core.get_state(), GameState::NotStarted));
+        assert!(core.is_action_allowed(&PlayerBehavior::StartNewGame));
+        assert!(!core.is_action_allowed(&PlayerBehavior::RequestPhaseData));
+
+        let err = core
+            .execute(player_id, PlayerBehavior::RequestPhaseData)
+            .unwrap_err();
+        assert!(matches!(err, GameError::InvalidAction));
+
+        let res = core
+            .execute(player_id, PlayerBehavior::StartNewGame)
+            .unwrap();
+        assert!(res.is_start_new_game());
+        assert!(matches!(core.get_state(), GameState::WaitingPhaseRequest));
+
+        assert!(core.is_action_allowed(&PlayerBehavior::RequestPhaseData));
+        assert!(core.is_action_allowed(&PlayerBehavior::EquipItem {
+            item_uuid: Uuid::nil(),
+            target_unit: Uuid::nil(),
+        }));
     }
 }

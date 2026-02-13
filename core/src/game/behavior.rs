@@ -321,3 +321,33 @@ pub enum GameError {
     /// 필드에서 기물을 찾을 수 없을 때
     UnitNotFound,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::ecs::resources::InventoryDiffDto;
+
+    #[test]
+    fn behavior_result_helpers_match_variants() {
+        assert!(BehaviorResult::StartNewGame.is_start_new_game());
+        assert!(BehaviorResult::EventSelected.is_event_selected());
+        assert!(BehaviorResult::Ok.is_ok());
+
+        let sell = BehaviorResult::SellItem {
+            enkephalin: 123,
+            inventory_diff: InventoryDiffDto::default(),
+        };
+        assert!(sell.is_sell_item());
+        let (remaining, diff) = sell.as_sell_item().unwrap();
+        assert_eq!(remaining, 123);
+        assert!(diff.added.is_empty());
+
+        let purchase = BehaviorResult::PurchaseItem {
+            enkephalin: 7,
+            inventory_diff: InventoryDiffDto::default(),
+        };
+        let (remaining, diff) = purchase.as_purchase_item().unwrap();
+        assert_eq!(remaining, 7);
+        assert!(diff.removed.is_empty());
+    }
+}

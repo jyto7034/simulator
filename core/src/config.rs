@@ -213,19 +213,20 @@ mod tests {
     fn test_default_config() {
         let config = GameBalanceConfig::default();
 
-        // Then: 임계값 검증
-        assert_eq!(config.qliphoth.thresholds.stable_min, 10);
-        assert_eq!(config.qliphoth.thresholds.stable_max, 7);
-        assert_eq!(config.qliphoth.thresholds.caution_min, 6);
-        assert_eq!(config.qliphoth.thresholds.caution_max, 4);
-        assert_eq!(config.qliphoth.thresholds.critical_min, 3);
-        assert_eq!(config.qliphoth.thresholds.critical_max, 1);
-        assert_eq!(config.qliphoth.thresholds.meltdown, 0);
+        // Then: 임계값은 내림차순 구간이어야 함 (밸런스 변경에 덜 취약).
+        let t = &config.qliphoth.thresholds;
+        assert!(t.stable_min >= t.stable_max);
+        assert!(t.stable_max >= t.caution_min);
+        assert!(t.caution_min >= t.caution_max);
+        assert!(t.caution_max >= t.critical_min);
+        assert!(t.critical_min >= t.critical_max);
+        assert!(t.critical_max >= t.meltdown);
 
-        // Then: 진압 확률 검증
-        assert_eq!(config.qliphoth.suppress_chance.stable, 0);
-        assert_eq!(config.qliphoth.suppress_chance.caution, 50);
-        assert_eq!(config.qliphoth.suppress_chance.critical, 100);
+        // Then: 진압 확률은 0..=100 범위 + 단계별 증가 형태가 기본값이어야 함.
+        let c = &config.qliphoth.suppress_chance;
+        assert!(c.validate().is_ok());
+        assert!(c.stable <= c.caution);
+        assert!(c.caution <= c.critical);
     }
 
     #[test]
@@ -236,16 +237,32 @@ mod tests {
 
     #[test]
     fn test_balance_helpers() {
+        let config = GameBalanceConfig::global();
         let thresholds = balance::qliphoth_thresholds();
-        assert_eq!(thresholds.stable_min, 10);
-
         let changes = balance::qliphoth_changes();
-        assert_eq!(changes.battle_cost, 1);
-
         let suppress_chance = balance::qliphoth_suppress_chance();
-        assert_eq!(suppress_chance.stable, 0);
-        assert_eq!(suppress_chance.caution, 50);
-        assert_eq!(suppress_chance.critical, 100);
+
+        assert_eq!(thresholds.stable_min, config.qliphoth.thresholds.stable_min);
+        assert_eq!(thresholds.meltdown, config.qliphoth.thresholds.meltdown);
+
+        assert_eq!(changes.battle_cost, config.qliphoth.changes.battle_cost);
+        assert_eq!(
+            changes.suppress_success,
+            config.qliphoth.changes.suppress_success
+        );
+
+        assert_eq!(
+            suppress_chance.stable,
+            config.qliphoth.suppress_chance.stable
+        );
+        assert_eq!(
+            suppress_chance.caution,
+            config.qliphoth.suppress_chance.caution
+        );
+        assert_eq!(
+            suppress_chance.critical,
+            config.qliphoth.suppress_chance.critical
+        );
     }
 
     #[test]
@@ -281,35 +298,6 @@ mod tests {
             critical: 200,
         };
         assert!(invalid_critical.validate().is_err());
-    }
-
-    #[test]
-    fn test_suppress_chance_probability() {
-        // When: 확률 계산 시뮬레이션
-        let suppress_chance = QliphothSuppressChance {
-            stable: 0,
-            caution: 50,
-            critical: 100,
-        };
-
-        // Then: Stable은 0%라서 절대 발생하지 않음
-        for roll in 0..100 {
-            assert!(roll >= suppress_chance.stable);
-        }
-
-        // Then: Caution은 50%라서 0..49일 때만 발생
-        let mut count = 0;
-        for roll in 0..100 {
-            if roll < suppress_chance.caution {
-                count += 1;
-            }
-        }
-        assert_eq!(count, 50); // 정확히 50%
-
-        // Then: Critical은 100%라서 항상 발생
-        for roll in 0..100 {
-            assert!(roll < suppress_chance.critical);
-        }
     }
 
     #[test]

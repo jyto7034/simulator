@@ -12,6 +12,7 @@ use crate::{
         battle::{
             buffs::BuffId,
             cooldown::CooldownSource,
+            ids::UnitInstanceId,
             timeline::{AttackKind, HpChangeReason, TimelineEvent},
         },
         data::GameDataBase,
@@ -20,67 +21,65 @@ use crate::{
     },
 };
 
-// NOTE: Movement refactor in progress. Replay execution/ability plumbing is temporarily stubbed
-// to allow compiling and iterating on movement logic.
 #[derive(Debug, Clone)]
-struct AbilityExecutor;
+pub struct AbilityExecutor;
 
 #[derive(Debug, Clone, Copy)]
-struct PendingScheduledAttack {
-    attacker_instance_id: Uuid,
-    earliest_time_ms: u64,
+pub struct PendingScheduledAttack {
+    pub attacker_instance_id: UnitInstanceId,
+    pub earliest_time_ms: u64,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum VerifiedCauseKind {
+pub enum VerifiedCauseKind {
     Attack,
     Ability,
     BuffTick,
 }
 
 #[derive(Debug, Clone)]
-enum ExpectedDecision {
+pub enum ExpectedDecision {
     AbilityCast {
         time_ms: u64,
-        ability_id: SkillId,
-        caster_instance_id: Uuid,
-        target_instance_id: Option<Uuid>,
+        skill_id: SkillId,
+        caster_instance_id: UnitInstanceId,
+        target_instance_id: Option<UnitInstanceId>,
         cooldown_source: CooldownSource,
     },
     Attack {
         time_ms: u64,
-        attacker_instance_id: Uuid,
-        target_instance_id: Uuid,
+        attacker_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
         kind: AttackKind,
     },
     BuffApplied {
         time_ms: u64,
-        caster_instance_id: Uuid,
-        target_instance_id: Uuid,
+        caster_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
         buff_id: BuffId,
         duration_ms: u64,
     },
 }
 
 impl ExpectedDecision {
-    fn matches(&self, time_ms: u64, event: &TimelineEvent) -> bool {
+    pub fn matches(&self, time_ms: u64, event: &TimelineEvent) -> bool {
         match (self, event) {
             (
                 ExpectedDecision::AbilityCast {
                     time_ms: expected_time,
-                    ability_id,
+                    skill_id,
                     caster_instance_id,
                     target_instance_id,
                     ..
                 },
                 TimelineEvent::AbilityCast {
-                    skill_id: actual_ability,
+                    skill_id: actual_skill,
                     caster_instance_id: actual_caster,
                     target_instance_id: actual_target,
                 },
             ) => {
                 *expected_time == time_ms
-                    && *ability_id == *actual_ability
+                    && *skill_id == *actual_skill
                     && *caster_instance_id == *actual_caster
                     && *target_instance_id == *actual_target
             }
@@ -92,6 +91,11 @@ impl ExpectedDecision {
                     kind,
                 },
                 TimelineEvent::Attack {
+                    attacker_instance_id: actual_attacker,
+                    target_instance_id: actual_target,
+                    kind: actual_kind,
+                }
+                | TimelineEvent::AttackStart {
                     attacker_instance_id: actual_attacker,
                     target_instance_id: actual_target,
                     kind: actual_kind,
@@ -127,17 +131,17 @@ impl ExpectedDecision {
         }
     }
 
-    fn describe(&self) -> String {
+    pub fn describe(&self) -> String {
         match self {
             ExpectedDecision::AbilityCast {
                 time_ms,
-                ability_id,
+                skill_id,
                 caster_instance_id,
                 target_instance_id,
                 cooldown_source,
             } => format!(
-                "AbilityCast(time_ms={}, ability_id={:?}, caster={}, target={:?}, cooldown_source={:?})",
-                time_ms, ability_id, caster_instance_id, target_instance_id, cooldown_source
+                "AbilityCast(time_ms={}, skill_id={:?}, caster={}, target={:?}, cooldown_source={:?})",
+                time_ms, skill_id, caster_instance_id, target_instance_id, cooldown_source
             ),
             ExpectedDecision::Attack {
                 time_ms,
@@ -167,31 +171,31 @@ impl ExpectedDecision {
 }
 
 #[derive(Debug, Clone)]
-enum ExpectedOutcome {
+pub enum ExpectedOutcome {
     HpChanged {
-        source_instance_id: Option<Uuid>,
-        target_instance_id: Uuid,
+        source_instance_id: Option<UnitInstanceId>,
+        target_instance_id: UnitInstanceId,
         delta: i32,
         hp_before: u32,
         hp_after: u32,
         reason: HpChangeReason,
     },
     StatChanged {
-        source_instance_id: Option<Uuid>,
-        target_instance_id: Uuid,
+        source_instance_id: Option<UnitInstanceId>,
+        target_instance_id: UnitInstanceId,
         modifier: StatModifier,
         stats_before: UnitStats,
         stats_after: UnitStats,
     },
     UnitDied {
-        unit_instance_id: Uuid,
+        unit_instance_id: UnitInstanceId,
         owner: Side,
-        killer_instance_id: Option<Uuid>,
+        killer_instance_id: Option<UnitInstanceId>,
     },
 }
 
 impl ExpectedOutcome {
-    fn matches(&self, event: &TimelineEvent) -> bool {
+    pub fn matches(&self, event: &TimelineEvent) -> bool {
         match (self, event) {
             (
                 ExpectedOutcome::HpChanged {
@@ -270,7 +274,7 @@ impl ExpectedOutcome {
         }
     }
 
-    fn describe(&self) -> String {
+    pub fn describe(&self) -> String {
         match self {
             ExpectedOutcome::HpChanged {
                 source_instance_id,
@@ -304,61 +308,125 @@ impl ExpectedOutcome {
 }
 
 #[derive(Debug, Clone)]
-struct RuntimeUnit {
-    instance_id: Uuid,
-    owner: Side,
-    base_uuid: Uuid,
-    stats: UnitStats,
-    position: Position,
-    current_target: Option<Uuid>,
-    resonance_current: u32,
-    resonance_max: u32,
-    resonance_lock_ms: u64,
-    resonance_gain_locked_until_ms: u64,
-    casting_until_ms: u64,
-    pending_cast: bool,
+pub struct RuntimeUnit {
+    pub instance_id: UnitInstanceId,
+    pub owner: Side,
+    pub base_uuid: Uuid,
+    pub stats: UnitStats,
+    pub position: Position,
+    pub current_target: Option<UnitInstanceId>,
+    pub resonance_current: u32,
+    pub resonance_max: u32,
+    pub resonance_lock_ms: u64,
+    pub resonance_gain_locked_until_ms: u64,
+    pub casting_until_ms: u64,
+    pub pending_cast: bool,
 }
 
 #[derive(Debug, Clone)]
-struct RuntimeArtifact {
-    instance_id: Uuid,
-    owner: Side,
-    base_uuid: Uuid,
+pub struct RuntimeArtifact {
+    pub instance_id: Uuid,
+    pub owner: Side,
+    pub base_uuid: Uuid,
 }
 
 #[derive(Debug, Clone)]
-struct RuntimeItem {
-    instance_id: Uuid,
-    owner_unit_instance: Uuid,
-    base_uuid: Uuid,
+pub struct RuntimeItem {
+    pub instance_id: Uuid,
+    pub owner_unit_instance: UnitInstanceId,
+    pub base_uuid: Uuid,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-struct BuffInstanceKey {
-    caster_instance_id: Uuid,
-    target_instance_id: Uuid,
-    buff_id: BuffId,
+pub struct BuffInstanceKey {
+    pub caster_instance_id: UnitInstanceId,
+    pub target_instance_id: UnitInstanceId,
+    pub buff_id: BuffId,
 }
 
 #[derive(Debug, Clone)]
-struct ActiveBuff {
-    stacks: u8,
-    expires_at_ms: u64,
-    next_tick_ms: Option<u64>,
+pub struct ActiveBuff {
+    pub stacks: u8,
+    pub expires_at_ms: u64,
+    pub next_tick_ms: Option<u64>,
 }
 
 #[derive(Debug, Clone, Copy)]
-enum TriggerSource {
+pub enum TriggerSource {
     Artifact { side: Side },
-    Item { unit_instance_id: Uuid },
+    Item { unit_instance_id: UnitInstanceId },
 }
 
-struct ReplayState {
-    game_data: Arc<GameDataBase>,
-    ability_executor: AbilityExecutor,
-    units: HashMap<Uuid, RuntimeUnit>,
-    known_units: HashSet<Uuid>,
-    artifacts: HashMap<Uuid, RuntimeArtifact>,
-    items: HashMap<Uuid, RuntimeItem>,
-    buffs: HashMap<BuffInstanceKey, ActiveBuff>,
+pub struct ReplayState {
+    pub game_data: Arc<GameDataBase>,
+    pub units: HashMap<UnitInstanceId, RuntimeUnit>,
+    pub known_units: HashSet<UnitInstanceId>,
+    pub artifacts: HashMap<Uuid, RuntimeArtifact>,
+    pub items: HashMap<Uuid, RuntimeItem>,
+    pub buffs: HashMap<BuffInstanceKey, ActiveBuff>,
+}
+
+impl ReplayState {
+    pub fn new(game_data: Arc<GameDataBase>) -> Self {
+        Self {
+            game_data,
+            units: HashMap::new(),
+            known_units: HashSet::new(),
+            artifacts: HashMap::new(),
+            items: HashMap::new(),
+            buffs: HashMap::new(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TimelineReplayViolationKind {
+    TimelineVersionMismatch,
+    AttackKindMissing,
+    UnknownUnitReference,
+    UnknownUnitBaseReference,
+    UnknownItemReference,
+    UnknownArtifactReference,
+    UnknownBuffReference,
+    AttackDuringCast,
+    AutoCastWithoutFullResonance,
+    ExpectedOutcomeMissing,
+    ExpectedDecisionMissing,
+    UnexpectedDecision,
+    UnexpectedOutcome,
+    OutcomeMismatch,
+    InvalidBuffEvent,
+    InvalidAutoCastEvent,
+}
+
+#[derive(Debug, Clone)]
+pub struct TimelineReplayViolation {
+    pub kind: TimelineReplayViolationKind,
+    pub message: String,
+    pub entry_index: Option<usize>,
+}
+
+#[derive(Debug, Clone)]
+pub struct TimelineReplayerConfig {
+    pub validate_ability_outcomes: bool,
+    pub validate_buff_tick_outcomes: bool,
+    pub validate_autocast_gating: bool,
+    pub validate_autocast_pairing: bool,
+    pub validate_expected_decisions: bool,
+    pub validate_unit_base_uuid: bool,
+    pub forbid_unexpected_outcomes_for_verified_causes: bool,
+}
+
+impl Default for TimelineReplayerConfig {
+    fn default() -> Self {
+        Self {
+            validate_ability_outcomes: true,
+            validate_buff_tick_outcomes: true,
+            validate_autocast_gating: true,
+            validate_autocast_pairing: true,
+            validate_expected_decisions: true,
+            validate_unit_base_uuid: false,
+            forbid_unexpected_outcomes_for_verified_causes: false,
+        }
+    }
 }

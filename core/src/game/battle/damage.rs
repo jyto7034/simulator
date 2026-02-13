@@ -1,4 +1,4 @@
-use uuid::Uuid;
+use crate::game::battle::ids::UnitInstanceId;
 
 use crate::game::ability::SkillId;
 use crate::game::{enums::Side, stats::Effect};
@@ -10,8 +10,8 @@ use super::cooldown::{CooldownSource, SourcedEffect};
 #[derive(Debug, Clone)]
 pub struct DamageRequest {
     pub source: DamageSource,
-    pub attacker_id: Uuid,
-    pub target_id: Uuid,
+    pub attacker_id: UnitInstanceId,
+    pub target_id: UnitInstanceId,
     pub base_damage: u32,
     pub time_ms: u64,
 }
@@ -32,8 +32,8 @@ pub enum DamageSource {
 /// 데미지 계산 결과
 #[derive(Debug, Clone)]
 pub struct DamageResult {
-    pub attacker_id: Uuid,
-    pub target_id: Uuid,
+    pub attacker_id: UnitInstanceId,
+    pub target_id: UnitInstanceId,
     pub final_damage: u32,
     pub target_killed: bool,
     pub target_remaining_hp: u32,
@@ -46,40 +46,40 @@ pub struct DamageResult {
 pub enum BattleCommand {
     /// 유닛 사망 처리 요청
     UnitDied {
-        unit_id: Uuid,
-        killer_id: Option<Uuid>,
+        unit_id: UnitInstanceId,
+        killer_id: Option<UnitInstanceId>,
     },
     /// 스킬 실행 요청 (SkillDef 기반)
     CastSkill {
         skill_id: SkillId,
-        caster_id: Uuid,
-        target_id: Option<Uuid>,
+        caster_id: UnitInstanceId,
+        target_id: Option<UnitInstanceId>,
         cooldown_source: CooldownSource,
     },
     /// 스탯 변경 요청
     ApplyModifier {
-        target_id: Uuid,
+        target_id: UnitInstanceId,
         modifier: crate::game::stats::StatModifier,
     },
     /// 힐 적용 요청
     ApplyHeal {
-        target_id: Uuid,
+        target_id: UnitInstanceId,
         flat: i32,
         percent: i32,
         /// 커맨드를 유발한 주체 (킬 크레딧/트리거용). 없으면 환경/미상.
-        source_id: Option<Uuid>,
+        source_id: Option<UnitInstanceId>,
     },
     /// 다음 공격 예약
     ScheduleAttack {
-        attacker_id: Uuid,
-        target_id: Option<Uuid>,
+        attacker_id: UnitInstanceId,
+        target_id: Option<UnitInstanceId>,
         /// 현재 시각 기준 딜레이(ms)
         time_ms: u64,
     },
     /// 버프 적용 요청
     ApplyBuff {
-        caster_id: Uuid,
-        target_id: Uuid,
+        caster_id: UnitInstanceId,
+        target_id: UnitInstanceId,
         buff_id: BuffId,
         duration_ms: u64,
     },
@@ -213,11 +213,12 @@ pub fn apply_damage_to_unit(stats: &mut crate::game::stats::UnitStats, damage: u
 #[cfg(test)]
 mod tests {
     use super::*;
+    use uuid::Uuid;
 
     #[test]
     fn calculate_damage_clamps_extreme_bonus_damage() {
-        let attacker_id = Uuid::from_u128(0xA);
-        let target_id = Uuid::from_u128(0xB);
+        let attacker_id: UnitInstanceId = Uuid::from_u128(0xA).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(0xB).into();
         let request = DamageRequest {
             source: DamageSource::BasicAttack,
             attacker_id,
@@ -253,8 +254,8 @@ mod tests {
 
     #[test]
     fn calculate_damage_uses_request_base_damage_instead_of_ctx_attack() {
-        let attacker_id = Uuid::from_u128(0xA);
-        let target_id = Uuid::from_u128(0xB);
+        let attacker_id: UnitInstanceId = Uuid::from_u128(0xA).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(0xB).into();
         let request = DamageRequest {
             source: DamageSource::BasicAttack,
             attacker_id,
@@ -280,8 +281,8 @@ mod tests {
 
     #[test]
     fn calculate_damage_allows_zero_for_non_basic_sources() {
-        let attacker_id = Uuid::from_u128(0xA);
-        let target_id = Uuid::from_u128(0xB);
+        let attacker_id: UnitInstanceId = Uuid::from_u128(0xA).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(0xB).into();
         let request = DamageRequest {
             source: DamageSource::Ability,
             attacker_id,
@@ -303,5 +304,95 @@ mod tests {
 
         let result = calculate_damage(&request, &ctx);
         assert_eq!(result.final_damage, 0);
+    }
+
+    #[test]
+    fn calculate_damage_emits_commands_for_triggered_effects_with_sources() {
+        let attacker_id: UnitInstanceId = Uuid::from_u128(0xA).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(0xB).into();
+        let request = DamageRequest {
+            source: DamageSource::BasicAttack,
+            attacker_id,
+            target_id,
+            base_damage: 10,
+            time_ms: 0,
+        };
+
+        let item_source = CooldownSource::Item {
+            item_instance_id: Uuid::from_u128(0xC),
+        };
+        let on_attack = [
+            SourcedEffect {
+                source: item_source,
+                effect: Effect::ApplyBuff {
+                    buff_id: "poison".to_string(),
+                    duration_ms: 123,
+                },
+            },
+            SourcedEffect {
+                source: item_source,
+                effect: Effect::Skill("skill_on_attack".to_string()),
+            },
+        ];
+
+        let on_hit = [SourcedEffect {
+            source: CooldownSource::Unit {
+                unit_instance_id: attacker_id,
+            },
+            effect: Effect::Skill("skill_on_hit".to_string()),
+        }];
+
+        let ctx = DamageContext {
+            attacker_side: Side::Player,
+            target_side: Side::Opponent,
+            attacker_attack: 1,
+            target_defense: 0,
+            target_current_hp: 100,
+            target_max_hp: 100,
+            on_attack_effects: &on_attack,
+            on_hit_effects: &on_hit,
+        };
+
+        let result = calculate_damage(&request, &ctx);
+        assert_eq!(result.final_damage, 10);
+
+        assert!(result.triggered_commands.iter().any(|c| matches!(
+            c,
+            BattleCommand::ApplyBuff {
+                caster_id,
+                target_id: t_id,
+                buff_id,
+                duration_ms,
+            } if *caster_id == attacker_id
+                && *t_id == target_id
+                && *duration_ms == 123
+                && buff_id.as_u64() == BuffId::from_name("poison").as_u64()
+        )));
+
+        assert!(result.triggered_commands.iter().any(|c| matches!(
+            c,
+            BattleCommand::CastSkill {
+                skill_id,
+                caster_id,
+                target_id: Some(t),
+                cooldown_source,
+            } if skill_id == "skill_on_attack"
+                && *caster_id == attacker_id
+                && *t == target_id
+                && *cooldown_source == item_source
+        )));
+
+        // OnHit Skill is cast by the target (e.g., thornmail-style effects).
+        assert!(result.triggered_commands.iter().any(|c| matches!(
+            c,
+            BattleCommand::CastSkill {
+                skill_id,
+                caster_id,
+                target_id: Some(t),
+                ..
+            } if skill_id == "skill_on_hit"
+                && *caster_id == target_id
+                && *t == attacker_id
+        )));
     }
 }

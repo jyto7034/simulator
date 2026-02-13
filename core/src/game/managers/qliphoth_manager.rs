@@ -114,11 +114,14 @@ mod tests {
     fn test_battle_cost() {
         let mut qliphoth = Qliphoth::new();
         let initial = qliphoth.amount();
+        let changes = balance::qliphoth_changes();
 
         QliphothManager::apply_battle_cost(&mut qliphoth);
 
-        // Then: 기본값 battle_cost=1
-        assert_eq!(qliphoth.amount(), initial - 1);
+        assert_eq!(
+            qliphoth.amount(),
+            initial.saturating_sub(changes.battle_cost)
+        );
     }
 
     #[test]
@@ -128,21 +131,28 @@ mod tests {
         qliphoth.set_amount(5);
 
         let initial = qliphoth.amount();
+        let changes = balance::qliphoth_changes();
+        let thresholds = balance::qliphoth_thresholds();
         QliphothManager::apply_suppress_success(&mut qliphoth);
 
-        // Then: 기본값 suppress_success=2
-        assert_eq!(qliphoth.amount(), initial + 2);
+        assert_eq!(
+            qliphoth.amount(),
+            (initial.saturating_add(changes.suppress_success)).min(thresholds.stable_min)
+        );
     }
 
     #[test]
     fn test_suppress_failure() {
         let mut qliphoth = Qliphoth::new();
         let initial = qliphoth.amount();
+        let changes = balance::qliphoth_changes();
 
         QliphothManager::apply_suppress_failure(&mut qliphoth);
 
-        // Then: 기본값 suppress_failure=1
-        assert_eq!(qliphoth.amount(), initial - 1);
+        assert_eq!(
+            qliphoth.amount(),
+            initial.saturating_sub(changes.suppress_failure)
+        );
     }
 
     #[test]
@@ -151,21 +161,28 @@ mod tests {
         qliphoth.set_amount(5);
 
         let initial = qliphoth.amount();
+        let changes = balance::qliphoth_changes();
+        let thresholds = balance::qliphoth_thresholds();
         QliphothManager::apply_breach_success(&mut qliphoth);
 
-        // Then: 기본값 breach_success=3
-        assert_eq!(qliphoth.amount(), initial + 3);
+        assert_eq!(
+            qliphoth.amount(),
+            (initial.saturating_add(changes.breach_success)).min(thresholds.stable_min)
+        );
     }
 
     #[test]
     fn test_breach_failure() {
         let mut qliphoth = Qliphoth::new();
         let initial = qliphoth.amount();
+        let changes = balance::qliphoth_changes();
 
         QliphothManager::apply_breach_failure(&mut qliphoth);
 
-        // Then: 기본값 breach_failure=2
-        assert_eq!(qliphoth.amount(), initial - 2);
+        assert_eq!(
+            qliphoth.amount(),
+            initial.saturating_sub(changes.breach_failure)
+        );
     }
 
     #[test]
@@ -174,9 +191,13 @@ mod tests {
         qliphoth.set_amount(5);
 
         let initial = qliphoth.amount();
+        let changes = balance::qliphoth_changes();
+        let thresholds = balance::qliphoth_thresholds();
         QliphothManager::apply_phase_recovery(&mut qliphoth);
 
-        // Then: 기본값 phase_recovery=1
-        assert_eq!(qliphoth.amount(), initial + 1);
+        assert_eq!(
+            qliphoth.amount(),
+            (initial.saturating_add(changes.phase_recovery)).min(thresholds.stable_min)
+        );
     }
 }

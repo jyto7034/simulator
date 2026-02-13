@@ -39,6 +39,10 @@ pub struct BuffDef {
     pub kind: BuffKind,
     pub tick_interval_ms: u64,
     pub max_stacks: u8,
+    // TODO: Decide re-apply semantics per buff:
+    // - Stack policy: add/replace/ignore.
+    // - Duration policy: extend(max/add) vs refresh(reset remaining).
+    // - Tick policy: keep cadence vs reset next_tick on re-apply.
 }
 
 static REGISTRY: Lazy<HashMap<BuffId, BuffDef>> = Lazy::new(|| {
@@ -74,4 +78,36 @@ static REGISTRY: Lazy<HashMap<BuffId, BuffDef>> = Lazy::new(|| {
 
 pub fn get(buff_id: BuffId) -> Option<&'static BuffDef> {
     REGISTRY.get(&buff_id)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn buff_id_is_deterministic_for_same_name() {
+        assert_eq!(BuffId::from_name("poison"), BuffId::from_name("poison"));
+        assert_ne!(BuffId::from_name("poison"), BuffId::from_name("stun"));
+    }
+
+    #[test]
+    fn registry_contains_known_buffs_and_limits_hard_cc_to_single_stack() {
+        let poison = get(BuffId::from_name("poison")).unwrap();
+        assert_eq!(poison.name, "poison");
+        assert!(matches!(poison.kind, BuffKind::PeriodicDamage { .. }));
+        assert_eq!(poison.max_stacks, 10);
+        assert_eq!(poison.tick_interval_ms, 1000);
+
+        let stun = get(BuffId::from_name("stun")).unwrap();
+        assert_eq!(stun.name, "stun");
+        assert!(matches!(stun.kind, BuffKind::Stun));
+        assert_eq!(stun.max_stacks, 1);
+
+        let freeze = get(BuffId::from_name("freeze")).unwrap();
+        assert_eq!(freeze.name, "freeze");
+        assert!(matches!(freeze.kind, BuffKind::Freeze));
+        assert_eq!(freeze.max_stacks, 1);
+
+        assert!(get(BuffId::from_name("unknown_buff")).is_none());
+    }
 }

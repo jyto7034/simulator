@@ -180,7 +180,8 @@ impl SuppressionExecutor {
             let equipped_items: Vec<Uuid> = owned.item_slot.iter().map(|r| r.base_uuid).collect();
 
             units.push(OwnedUnit {
-                base_uuid: unit_uuid,
+                owned_uuid: unit_uuid,
+                base_uuid: owned.meta.uuid,
                 level: Tier::I,
                 growth_stacks: owned.growth_stacks.clone(),
                 equipped_items,
@@ -207,6 +208,8 @@ impl SuppressionExecutor {
         game_data: &GameDataBase,
         abnormality_id: &str,
     ) -> Result<PlayerDeckInfo, GameError> {
+        const PVE_OWNED_ABNORMALITY_NS: u64 = 0x5056_454f_574e_44u64; // "PVEOWND"
+
         let encounter = game_data
             .pve_data
             .get_by_abnormality_id(abnormality_id)
@@ -221,7 +224,7 @@ impl SuppressionExecutor {
         let mut units = Vec::new();
         let mut positions = std::collections::HashMap::new();
 
-        for pve_unit in &encounter.units {
+        for (idx, pve_unit) in encounter.units.iter().enumerate() {
             let abnormality_meta = game_data
                 .abnormality_data
                 .get_by_id(&pve_unit.abnormality_id)
@@ -233,7 +236,17 @@ impl SuppressionExecutor {
                     GameError::MissingResource("AbnormalityMetadata")
                 })?;
 
+            let mut bytes = [0u8; 8];
+            bytes.copy_from_slice(&abnormality_meta.uuid.as_bytes()[..8]);
+            let seed = u64::from_be_bytes(bytes);
+            let owned_uuid = crate::game::determinism::uuid_v4_from_seed(
+                seed,
+                PVE_OWNED_ABNORMALITY_NS,
+                idx as u64,
+            );
+
             units.push(OwnedUnit {
+                owned_uuid,
                 base_uuid: abnormality_meta.uuid,
                 level: pve_unit.tier,
                 growth_stacks: GrowthStack::new(),
@@ -241,7 +254,7 @@ impl SuppressionExecutor {
             });
 
             positions.insert(
-                abnormality_meta.uuid,
+                owned_uuid,
                 crate::ecs::resources::Position::from(pve_unit.position),
             );
         }
@@ -272,5 +285,156 @@ impl SuppressionExecutor {
         // TODO: 결과를 World에 반영 (Resource, Component 업데이트)
 
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::ecs::resources::GameProgression;
+    use crate::game::data::{
+        abnormality_data::AbnormalityDatabase, artifact_data::ArtifactDatabase,
+        bonus_data::BonusDatabase, equipment_data::EquipmentDatabase, event_pools::EventPhasePool,
+        event_pools::EventPoolConfig, pve_data::PveEncounterDatabase,
+        random_event_data::RandomEventDatabase, shop_data::ShopDatabase, skill_data::SkillDatabase,
+        GameDataBase,
+    };
+    use crate::game::enums::{OrdealType, PhaseType, RiskLevel};
+    use crate::game::events::GeneratorContext;
+    use std::collections::HashSet;
+    use std::sync::Arc;
+
+    fn empty_event_pools() -> EventPoolConfig {
+        let pool = EventPhasePool {
+            shops: vec![],
+            bonuses: vec![],
+            random_events: vec![],
+        };
+        EventPoolConfig {
+            dawn: pool.clone(),
+            noon: pool.clone(),
+            dusk: pool.clone(),
+            midnight: pool.clone(),
+            white: pool,
+        }
+    }
+
+    fn game_data_with_pve(encounters: Vec<PveEncounter>) -> Arc<GameDataBase> {
+        Arc::new(GameDataBase::new(
+            Arc::new(AbnormalityDatabase::new(vec![])),
+            Arc::new(ArtifactDatabase::new(vec![])),
+            Arc::new(EquipmentDatabase::new(vec![])),
+            Arc::new(ShopDatabase::new(vec![])),
+            Arc::new(BonusDatabase::new(vec![])),
+            Arc::new(RandomEventDatabase::new(vec![])),
+            Arc::new(PveEncounterDatabase::new(encounters)),
+            Arc::new(SkillDatabase::new(vec![])),
+            empty_event_pools(),
+        ))
+    }
+
+    fn pve_encounter(id: &str, abnormality_id: &str, risk_level: RiskLevel) -> PveEncounter {
+        PveEncounter {
+            id: id.to_string(),
+            abnormality_id: abnormality_id.to_string(),
+            difficulty: 1,
+            risk_level,
+            units: vec![crate::game::data::pve_data::PveUnitData {
+                abnormality_id: abnormality_id.to_string(),
+                position: crate::game::data::pve_data::PvePosition { x: 0, y: 0 },
+                tier: crate::game::enums::Tier::I,
+            }],
+        }
+    }
+
+    #[test]
+    fn suppression_generator_filters_candidates_by_ordeal_risk_level() {
+        // Given: Noon은 TETH/HE만 후보로 허용한다.
+        let game_data = game_data_with_pve(vec![
+            pve_encounter("zayin_1", "z1", RiskLevel::ZAYIN),
+            pve_encounter("teth_1", "t1", RiskLevel::TETH),
+            pve_encounter("teth_2", "t2", RiskLevel::TETH),
+            pve_encounter("he_1", "h1", RiskLevel::HE),
+            pve_encounter("waw_1", "w1", RiskLevel::WAW),
+        ]);
+
+        let mut world = World::new();
+        world.insert_resource(GameProgression {
+            current_ordeal: OrdealType::Noon,
+            current_phase: PhaseType::I,
+        });
+
+        // When: 동일 seed로 Suppression 후보 3개를 생성한다.
+        let ctx = GeneratorContext::new(&world, game_data.as_ref(), 123);
+        let generator = SuppressionGenerator;
+        let options = generator.generate(&ctx);
+
+        // Then: 결과는 3개이며, risk_level은 TETH/HE만 포함해야 한다.
+        let allowed = [RiskLevel::TETH, RiskLevel::HE];
+        let mut abnormality_ids = HashSet::new();
+        for opt in options.iter() {
+            let (abnormality_id, risk_level) = match opt {
+                GameOption::SuppressAbnormality {
+                    abnormality_id,
+                    risk_level,
+                    ..
+                } => (abnormality_id.as_str(), *risk_level),
+                other => panic!("expected SuppressAbnormality, got {other:?}"),
+            };
+
+            assert!(
+                allowed.contains(&risk_level),
+                "Noon에서는 TETH/HE만 허용되어야 한다 (got={risk_level:?})"
+            );
+            assert_ne!(
+                abnormality_id, "fallback",
+                "충분한 후보가 있는 경우 fallback 후보가 생성되면 안 된다"
+            );
+            abnormality_ids.insert(abnormality_id.to_string());
+        }
+        assert_eq!(
+            abnormality_ids.len(),
+            3,
+            "후보 3개의 abnormality_id는 중복되면 안 된다"
+        );
+    }
+
+    #[test]
+    fn suppression_generator_is_deterministic_for_same_seed() {
+        // Given: Dawn은 ZAYIN/TETH를 허용한다(충분한 후보를 준비).
+        let game_data = game_data_with_pve(vec![
+            pve_encounter("zayin_1", "z1", RiskLevel::ZAYIN),
+            pve_encounter("zayin_2", "z2", RiskLevel::ZAYIN),
+            pve_encounter("teth_1", "t1", RiskLevel::TETH),
+            pve_encounter("teth_2", "t2", RiskLevel::TETH),
+        ]);
+
+        let mut world = World::new();
+        world.insert_resource(GameProgression {
+            current_ordeal: OrdealType::Dawn,
+            current_phase: PhaseType::I,
+        });
+
+        // When: 같은 seed로 두 번 생성한다.
+        let generator = SuppressionGenerator;
+        let ctx1 = GeneratorContext::new(&world, game_data.as_ref(), 777);
+        let ctx2 = GeneratorContext::new(&world, game_data.as_ref(), 777);
+
+        let a = generator.generate(&ctx1);
+        let b = generator.generate(&ctx2);
+
+        // Then: uuid/abnormality_id/risk_level 조합이 완전히 동일해야 한다.
+        let normalize = |opt: &GameOption| match opt {
+            GameOption::SuppressAbnormality {
+                abnormality_id,
+                risk_level,
+                uuid,
+            } => (abnormality_id.clone(), *risk_level, *uuid),
+            other => panic!("expected SuppressAbnormality, got {other:?}"),
+        };
+
+        let a_norm: Vec<_> = a.iter().map(normalize).collect();
+        let b_norm: Vec<_> = b.iter().map(normalize).collect();
+        assert_eq!(a_norm, b_norm);
     }
 }

@@ -1,5 +1,6 @@
 use uuid::Uuid;
 
+use crate::ecs::resources::Position;
 use crate::game::ability::DeliveryDef;
 use crate::game::battle::core::BattleCore;
 use crate::game::battle::damage::{
@@ -7,12 +8,14 @@ use crate::game::battle::damage::{
     DamageResult, DamageSource,
 };
 use crate::game::battle::enums::BattleEvent;
+use crate::game::battle::enums::ProjectilePayload;
+use crate::game::battle::ids::UnitInstanceId;
 use crate::game::battle::timeline::{HpChangeReason, TimelineCause, TimelineEvent};
 use crate::game::determinism;
 use crate::game::enums::Side;
 use crate::game::stats::TriggerType;
 
-const TILE_UNITS_PER_TILE: u64 = 1_000_000;
+use super::movement::{ActionState, TILE_UNITS_PER_TILE};
 
 fn projectile_flight_ms(distance_units: u64, speed_units_per_ms: u32) -> u64 {
     if distance_units == 0 {
@@ -27,12 +30,55 @@ fn projectile_flight_ms(distance_units: u64, speed_units_per_ms: u32) -> u64 {
 }
 
 impl BattleCore {
+    pub(super) fn schedule_projectile_hit_event(
+        &mut self,
+        fired_at_ms: u64,
+        attacker_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
+        attacker_pos: Position,
+        target_pos: Position,
+        speed_units_per_ms: u32,
+        payload: ProjectilePayload,
+    ) {
+        // TODO: 추후 config 로 빼야함.
+        const PROJECTILE_NS: u64 = 0x5052_4F4A_4543_544Cu64; // "PROJECTL"
+
+        let dist_tiles = attacker_pos.chebyshev(&target_pos).max(0) as u64;
+        let distance_units = dist_tiles.saturating_mul(TILE_UNITS_PER_TILE);
+        let flight_ms = projectile_flight_ms(distance_units, speed_units_per_ms);
+        let impact_ms = fired_at_ms.saturating_add(flight_ms);
+
+        let seed = self
+            .recording_cause()
+            .and_then(|cause| cause.parent_seq())
+            .unwrap_or_else(|| {
+                let mut bytes = [0u8; 8];
+                bytes.copy_from_slice(&attacker_instance_id.as_bytes()[..8]);
+                fired_at_ms ^ u64::from_be_bytes(bytes)
+            });
+        let projectile_seq = self.projectile_seq;
+        self.projectile_seq = self.projectile_seq.wrapping_add(1);
+        let projectile_id = determinism::uuid_v4_from_seed(seed, PROJECTILE_NS, projectile_seq);
+
+        self.projectiles
+            .insert(projectile_id, super::ProjectileRecord { fired_at_ms });
+
+        self.event_queue.push(BattleEvent::ProjectileHit {
+            time_ms: impact_ms,
+            projectile_id,
+            attacker_instance_id,
+            target_instance_id,
+            payload,
+            cause: self.recording_cause().unwrap_or_default(),
+        });
+    }
+
     fn calculate_basic_attack_damage_snapshot(
         &mut self,
-        attacker_instance_id: Uuid,
+        attacker_instance_id: UnitInstanceId,
         attacker_owner: Side,
         attacker_attack: u32,
-        target_instance_id: Uuid,
+        target_instance_id: UnitInstanceId,
         target_owner: Side,
         target_defense: u32,
         target_current_hp: u32,
@@ -67,8 +113,8 @@ impl BattleCore {
 
     fn apply_damage_and_record(
         &mut self,
-        source_instance_id: Option<Uuid>,
-        target_instance_id: Uuid,
+        source_instance_id: Option<UnitInstanceId>,
+        target_instance_id: UnitInstanceId,
         damage: u32,
         time_ms: u64,
         reason: HpChangeReason,
@@ -77,7 +123,7 @@ impl BattleCore {
             let Some(target) = self.units.get(&target_instance_id) else {
                 return;
             };
-            if target.stats.current_health == 0 {
+            if target.is_dead() {
                 return;
             }
             (target.owner, target.stats.current_health)
@@ -103,7 +149,7 @@ impl BattleCore {
             },
         );
 
-        if hp_after < hp_before {
+        if hp_after < hp_before && matches!(reason, HpChangeReason::BasicAttack) {
             let gained = (hp_before - hp_after) / 10;
             if gained > 0 {
                 self.add_resonance(target_instance_id, gained, time_ms, hp_after > 0);
@@ -111,11 +157,16 @@ impl BattleCore {
         }
 
         if hp_after == 0 {
-            if let Some(target) = self.units.get(&target_instance_id) {
-                self.graveyard
-                    .insert(target_instance_id, target.to_snapshot());
+            if let Some(target) = self.units.get_mut(&target_instance_id) {
+                target.move_epoch = target.move_epoch.wrapping_add(1);
+                target.action_state = ActionState::Idle;
             }
-            self.handle_unit_died_for_movement(target_instance_id, time_ms);
+            if let Some(position) = self.battlefield.remove(target_instance_id) {
+                if let Some(target) = self.units.get(&target_instance_id) {
+                    self.graveyard
+                        .insert(target_instance_id, target.to_snapshot(position));
+                }
+            }
             self.record_timeline(
                 time_ms,
                 TimelineEvent::UnitDied {
@@ -129,8 +180,8 @@ impl BattleCore {
 
     fn apply_hp_delta_and_record(
         &mut self,
-        source_instance_id: Option<Uuid>,
-        target_instance_id: Uuid,
+        source_instance_id: Option<UnitInstanceId>,
+        target_instance_id: UnitInstanceId,
         delta: i32,
         time_ms: u64,
         reason: HpChangeReason,
@@ -143,7 +194,7 @@ impl BattleCore {
             let Some(target) = self.units.get(&target_instance_id) else {
                 return;
             };
-            if target.stats.current_health == 0 {
+            if target.is_dead() {
                 return;
             }
             (
@@ -179,7 +230,7 @@ impl BattleCore {
             },
         );
 
-        if hp_after < hp_before {
+        if hp_after < hp_before && matches!(reason, HpChangeReason::BasicAttack) {
             let gained = (hp_before - hp_after) / 10;
             if gained > 0 {
                 self.add_resonance(target_instance_id, gained, time_ms, hp_after > 0);
@@ -187,11 +238,12 @@ impl BattleCore {
         }
 
         if hp_after == 0 {
-            if let Some(target) = self.units.get(&target_instance_id) {
-                self.graveyard
-                    .insert(target_instance_id, target.to_snapshot());
+            if let Some(position) = self.battlefield.remove(target_instance_id) {
+                if let Some(target) = self.units.get(&target_instance_id) {
+                    self.graveyard
+                        .insert(target_instance_id, target.to_snapshot(position));
+                }
             }
-            self.handle_unit_died_for_movement(target_instance_id, time_ms);
             self.record_timeline(
                 time_ms,
                 TimelineEvent::UnitDied {
@@ -207,18 +259,62 @@ impl BattleCore {
         &mut self,
         time_ms: u64,
         projectile_id: Uuid,
-        attacker_instance_id: Uuid,
-        target_instance_id: Uuid,
+        attacker_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
+        payload: ProjectilePayload,
     ) {
         if self.projectiles.remove(&projectile_id).is_none() {
             return;
         };
 
+        match payload {
+            ProjectilePayload::BasicAttack => {
+                let target_alive = self
+                    .units
+                    .get(&target_instance_id)
+                    .is_some_and(|t| !t.is_dead());
+                if !target_alive {
+                    self.record_timeline(
+                        time_ms,
+                        TimelineEvent::ProjectileMiss {
+                            projectile_id,
+                            attacker_instance_id,
+                            target_instance_id,
+                        },
+                    );
+                    return;
+                }
+            }
+            ProjectilePayload::Skill {
+                skill_id,
+                cast_target,
+                ..
+            } => {
+                let Some(skill) = self.game_data.skill_data.get_by_id(&skill_id).cloned() else {
+                    return;
+                };
+
+                let targets = self.resolve_skill_targets_at_execute(
+                    attacker_instance_id,
+                    &skill,
+                    cast_target,
+                );
+                let commands =
+                    Self::build_skill_effect_commands(attacker_instance_id, &skill, &targets);
+
+                if !commands.is_empty() {
+                    self.process_commands(commands, time_ms);
+                }
+                self.schedule_pending_autocasts(time_ms);
+                return;
+            }
+        }
+
         let (target_owner, target_defense, target_current_hp, target_max_hp) = {
             let Some(target) = self.units.get(&target_instance_id) else {
                 return;
             };
-            if target.stats.current_health == 0 {
+            if target.is_dead() {
                 return;
             }
             (
@@ -231,7 +327,7 @@ impl BattleCore {
 
         let attacker_live = matches!(
             self.units.get(&attacker_instance_id),
-            Some(unit) if unit.stats.current_health > 0
+            Some(unit) if !unit.is_dead()
         );
 
         let attacker_attack = if let Some(unit) = self.units.get(&attacker_instance_id) {
@@ -287,7 +383,6 @@ impl BattleCore {
 
         let result = calculate_damage(&request, &ctx);
 
-        // Resonance gain: 10% of actual HP decrease dealt.
         let dealt = target_current_hp.saturating_sub(result.target_remaining_hp);
         let gained = dealt / 10;
         if gained > 0 {
@@ -309,45 +404,47 @@ impl BattleCore {
         self.schedule_pending_autocasts(time_ms);
     }
 
-    pub(super) fn apply_attack(&mut self, attacker_instance_id: Uuid, current_time_ms: u64) {
-        let (attacker_owner, attacker_base_uuid, attacker_attack, attacker_pos, target_id) = {
+    pub(super) fn resolve_basic_attack(
+        &mut self,
+        attacker_instance_id: UnitInstanceId,
+        target_id: UnitInstanceId,
+        current_time_ms: u64,
+    ) -> bool {
+        let (attacker_owner, attacker_base_uuid, attacker_attack) = {
             let Some(attacker) = self.units.get(&attacker_instance_id) else {
-                return;
+                return false;
             };
-            if attacker.stats.current_health == 0 {
-                return;
+            if attacker.is_dead() {
+                return false;
             }
-            let Some(target_id) = attacker.current_target else {
-                return;
-            };
-            (
-                attacker.owner,
-                attacker.base_uuid,
-                attacker.stats.attack,
-                attacker.position,
-                target_id,
-            )
+            (attacker.owner, attacker.base_uuid, attacker.stats.attack)
         };
 
-        let (target_owner, target_defense, target_current_hp, target_max_hp, target_pos) = {
+        let (target_owner, target_defense, target_current_hp, target_max_hp) = {
             let Some(target) = self.units.get(&target_id) else {
-                return;
+                return false;
             };
-            if target.stats.current_health == 0 {
-                return;
+            if target.is_dead() {
+                return false;
             }
             (
                 target.owner,
                 target.stats.defense,
                 target.stats.current_health,
                 target.stats.max_health,
-                target.position,
             )
         };
 
         if target_owner == attacker_owner {
-            return;
+            return false;
         }
+
+        let Some(attacker_pos) = self.battlefield.position_of(attacker_instance_id) else {
+            return false;
+        };
+        let Some(target_pos) = self.battlefield.position_of(target_id) else {
+            return false;
+        };
 
         let basic = self
             .game_data
@@ -358,12 +455,12 @@ impl BattleCore {
 
         // 사거리 체크(스펙: chebyshev)
         if attacker_pos.chebyshev(&target_pos) > basic.range_tiles as i32 {
-            return;
+            return false;
         }
 
         match basic.delivery {
             DeliveryDef::Instant => {
-                // Immediate resonance gain on attack start.
+                // Immediate resonance gain on attack release.
                 self.add_resonance(attacker_instance_id, 10, current_time_ms, true);
 
                 let result = self.calculate_basic_attack_damage_snapshot(
@@ -398,50 +495,21 @@ impl BattleCore {
                 }
 
                 self.schedule_pending_autocasts(current_time_ms);
+                true
             }
 
             DeliveryDef::Projectile { speed_units_per_ms } => {
-                // Immediate resonance gain on attack start (fire moment).
                 self.add_resonance(attacker_instance_id, 10, current_time_ms, true);
-
-                // 추후 config 로 빼야함.
-                const PROJECTILE_NS: u64 = 0x5052_4F4A_4543_544Cu64; // "PROJECTL"
-
-                let dist_tiles = attacker_pos.chebyshev(&target_pos).max(0) as u64;
-                let distance_units = dist_tiles.saturating_mul(TILE_UNITS_PER_TILE);
-                let flight_ms = projectile_flight_ms(distance_units, speed_units_per_ms);
-                let impact_ms = current_time_ms.saturating_add(flight_ms);
-
-                let seed = self
-                    .recording_cause()
-                    .and_then(|cause| cause.parent_seq())
-                    .unwrap_or_else(|| {
-                        let mut bytes = [0u8; 8];
-                        bytes.copy_from_slice(&attacker_instance_id.as_bytes()[..8]);
-                        current_time_ms ^ u64::from_be_bytes(bytes)
-                    });
-                let projectile_seq = self.projectile_seq;
-                self.projectile_seq = self.projectile_seq.wrapping_add(1);
-                let projectile_id =
-                    determinism::uuid_v4_from_seed(seed, PROJECTILE_NS, projectile_seq);
-
-                self.projectiles.insert(
-                    projectile_id,
-                    super::ProjectileRecord {
-                        fired_at_ms: current_time_ms,
-                    },
-                );
-
-                self.event_queue.push(BattleEvent::ProjectileHit {
-                    time_ms: impact_ms,
-                    projectile_id,
+                self.schedule_projectile_hit_event(
+                    current_time_ms,
                     attacker_instance_id,
-                    target_instance_id: target_id,
-                    cause: self.recording_cause().unwrap_or_default(),
-                });
-
-                // Fire moment only records that a projectile was fired; all resolution happens
-                // at impact.
+                    target_id,
+                    attacker_pos,
+                    target_pos,
+                    speed_units_per_ms,
+                    ProjectilePayload::BasicAttack,
+                );
+                true
             }
         }
     }
@@ -462,7 +530,7 @@ impl BattleCore {
                     let Some(target) = self.units.get_mut(&target_id) else {
                         continue;
                     };
-                    if target.stats.current_health == 0 {
+                    if target.is_dead() {
                         continue;
                     }
 
@@ -488,7 +556,7 @@ impl BattleCore {
                     source_id,
                 } => {
                     let max_health = match self.units.get(&target_id) {
-                        Some(unit) if unit.stats.current_health > 0 => unit.stats.max_health.max(1),
+                        Some(unit) if !unit.is_dead() => unit.stats.max_health.max(1),
                         _ => continue,
                     };
 
@@ -509,7 +577,7 @@ impl BattleCore {
                     target_id,
                     time_ms,
                 } => {
-                    self.event_queue.push(BattleEvent::Attack {
+                    self.event_queue.push(BattleEvent::AttackStart {
                         time_ms: current_time_ms.saturating_add(time_ms),
                         attacker_instance_id: attacker_id,
                         target_instance_id: target_id,
@@ -540,6 +608,25 @@ impl BattleCore {
 #[cfg(test)]
 mod tests {
     use super::projectile_flight_ms;
+    use crate::ecs::resources::Position;
+    use crate::game::battle::core::movement::ActionState;
+    use crate::game::battle::core::ProjectileRecord;
+    use crate::game::battle::core::types::RuntimeUnit;
+    use crate::game::battle::enums::ProjectilePayload;
+    use crate::game::battle::timeline::{HpChangeReason, Timeline};
+    use crate::game::battle::types::PlayerDeckInfo;
+    use crate::game::data::{
+        abnormality_data::AbnormalityDatabase, artifact_data::ArtifactDatabase,
+        bonus_data::BonusDatabase, equipment_data::EquipmentDatabase,
+        pve_data::PveEncounterDatabase, random_event_data::RandomEventDatabase,
+        shop_data::ShopDatabase, skill_data::SkillDatabase, GameDataBase,
+    };
+    use crate::game::enums::Side;
+    use crate::game::stats::UnitStats;
+    use std::collections::HashMap;
+    use std::path::PathBuf;
+    use std::sync::Arc;
+    use uuid::Uuid;
 
     #[test]
     fn projectile_flight_ms_is_zero_when_speed_is_zero() {
@@ -559,5 +646,191 @@ mod tests {
         assert_eq!(projectile_flight_ms(1_000_000, 3_000), 334);
         assert_eq!(projectile_flight_ms(1_000_000, 2_000_000), 1);
         assert_eq!(projectile_flight_ms(2_000_000, 2_000_000), 1);
+    }
+
+    fn empty_game_data() -> Arc<GameDataBase> {
+        Arc::new(GameDataBase::new(
+            Arc::new(AbnormalityDatabase::new(vec![])),
+            Arc::new(ArtifactDatabase::new(vec![])),
+            Arc::new(EquipmentDatabase::new(vec![])),
+            Arc::new(ShopDatabase::new(vec![])),
+            Arc::new(BonusDatabase::new(vec![])),
+            Arc::new(RandomEventDatabase::new(vec![])),
+            Arc::new(PveEncounterDatabase::new(vec![])),
+            Arc::new(SkillDatabase::new(vec![])),
+            crate::game::data::event_pools::EventPoolConfig {
+                dawn: crate::game::data::event_pools::EventPhasePool {
+                    shops: vec![],
+                    bonuses: vec![],
+                    random_events: vec![],
+                },
+                noon: crate::game::data::event_pools::EventPhasePool {
+                    shops: vec![],
+                    bonuses: vec![],
+                    random_events: vec![],
+                },
+                dusk: crate::game::data::event_pools::EventPhasePool {
+                    shops: vec![],
+                    bonuses: vec![],
+                    random_events: vec![],
+                },
+                midnight: crate::game::data::event_pools::EventPhasePool {
+                    shops: vec![],
+                    bonuses: vec![],
+                    random_events: vec![],
+                },
+                white: crate::game::data::event_pools::EventPhasePool {
+                    shops: vec![],
+                    bonuses: vec![],
+                    random_events: vec![],
+                },
+            },
+        ))
+    }
+
+    fn write_timeline_export(name: &str, timeline: &Timeline) -> PathBuf {
+        let out_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("timeline_exports");
+        std::fs::create_dir_all(&out_dir).expect("create timeline_exports directory");
+        let out_path = out_dir.join(format!("{name}.json"));
+        timeline
+            .write_pretty_json(&out_path)
+            .expect("write timeline json");
+        out_path
+    }
+
+    #[test]
+    fn apply_projectile_hit_is_idempotent_for_same_projectile_id() {
+        let empty_deck = PlayerDeckInfo {
+            units: vec![],
+            artifacts: vec![],
+            positions: HashMap::new(),
+        };
+        let mut core =
+            super::BattleCore::new(&empty_deck, &empty_deck, empty_game_data(), (4, 4), 1);
+
+        let attacker_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(1));
+        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(2));
+
+        let mut attacker_stats = UnitStats::with_values(100, 100, 10, 0, 1000);
+        attacker_stats.move_speed_units_per_ms = 1;
+        let mut target_stats = UnitStats::with_values(100, 100, 0, 0, 1000);
+        target_stats.move_speed_units_per_ms = 1;
+
+        core.units.insert(
+            attacker_id,
+            RuntimeUnit {
+                instance_id: attacker_id,
+                owner: Side::Player,
+                base_uuid: Uuid::nil(),
+                stats: attacker_stats,
+                pos_x_units: 0,
+                pos_y_units: 0,
+                move_epoch: 0,
+                action_state: ActionState::Idle,
+                action_locks: Default::default(),
+                current_target: None,
+                next_basic_attack_ms: 0,
+                pending_basic_attack: false,
+                resonance_current: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 0,
+                next_action_time: 0,
+                pending_cast: false,
+                pending_cast_cause: None,
+                pending_autocast: None,
+            },
+        );
+
+        core.units.insert(
+            target_id,
+            RuntimeUnit {
+                instance_id: target_id,
+                owner: Side::Opponent,
+                base_uuid: Uuid::nil(),
+                stats: target_stats,
+                pos_x_units: 0,
+                pos_y_units: 0,
+                move_epoch: 0,
+                action_state: ActionState::Idle,
+                action_locks: Default::default(),
+                current_target: None,
+                next_basic_attack_ms: 0,
+                pending_basic_attack: false,
+                resonance_current: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 0,
+                next_action_time: 0,
+                pending_cast: false,
+                pending_cast_cause: None,
+                pending_autocast: None,
+            },
+        );
+
+        core.battlefield
+            .place(attacker_id, Position::new(0, 0))
+            .unwrap();
+        core.battlefield
+            .place(target_id, Position::new(1, 0))
+            .unwrap();
+
+        let projectile_id = Uuid::from_u128(0xAAAA);
+        core.projectiles
+            .insert(projectile_id, ProjectileRecord { fired_at_ms: 0 });
+
+        core.apply_projectile_hit(
+            10,
+            projectile_id,
+            attacker_id,
+            target_id,
+            ProjectilePayload::BasicAttack,
+        );
+
+        let hp_after_first = core
+            .units
+            .get(&target_id)
+            .map(|u| u.stats.current_health)
+            .unwrap();
+
+        core.apply_projectile_hit(
+            10,
+            projectile_id,
+            attacker_id,
+            target_id,
+            ProjectilePayload::BasicAttack,
+        );
+
+        let hp_after_second = core
+            .units
+            .get(&target_id)
+            .map(|u| u.stats.current_health)
+            .unwrap();
+
+        assert_eq!(hp_after_first, hp_after_second);
+
+        let hits = core
+            .timeline
+            .entries
+            .iter()
+            .filter(|entry| match &entry.event {
+                crate::game::battle::timeline::TimelineEvent::HpChanged {
+                    source_instance_id,
+                    target_instance_id,
+                    reason,
+                    ..
+                } if *source_instance_id == Some(attacker_id)
+                    && *target_instance_id == target_id
+                    && *reason == HpChangeReason::BasicAttack =>
+                {
+                    true
+                }
+                _ => false,
+            })
+            .count();
+        assert_eq!(hits, 1);
+
+        write_timeline_export(
+            "apply_projectile_hit_is_idempotent_for_same_projectile_id",
+            &core.timeline,
+        );
     }
 }

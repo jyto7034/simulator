@@ -1,9 +1,8 @@
-use uuid::Uuid;
-
+use crate::game::battle::cooldown::{CooldownSource, SourcedEffect};
+use crate::game::battle::ids::UnitInstanceId;
 use crate::game::stats::TriggerType;
 
 use super::{BattleCore, RuntimeArtifact, RuntimeItem, TriggerSource};
-use crate::game::battle::cooldown::{CooldownSource, SourcedEffect};
 
 impl BattleCore {
     pub(super) fn collect_triggers(
@@ -69,7 +68,7 @@ impl BattleCore {
 
     pub(super) fn collect_all_triggers(
         &self,
-        unit_instance_id: Uuid,
+        unit_instance_id: UnitInstanceId,
         trigger: TriggerType,
     ) -> Vec<SourcedEffect> {
         let Some(unit) = self.units.get(&unit_instance_id) else {
@@ -81,5 +80,350 @@ impl BattleCore {
         effects.extend(self.collect_triggers(TriggerSource::Item { unit_instance_id }, trigger));
 
         effects
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::game::battle::core::types::{RuntimeArtifact, RuntimeItem, RuntimeUnit};
+    use crate::game::battle::timeline::{TimelineCause, TimelineRootCause};
+    use crate::game::battle::types::PlayerDeckInfo;
+    use crate::game::data::{
+        abnormality_data::AbnormalityDatabase, artifact_data::ArtifactDatabase,
+        bonus_data::BonusDatabase, equipment_data::EquipmentDatabase, event_pools::EventPhasePool,
+        event_pools::EventPoolConfig, pve_data::PveEncounterDatabase,
+        random_event_data::RandomEventDatabase, shop_data::ShopDatabase, skill_data::SkillDatabase,
+        GameDataBase,
+    };
+    use crate::game::enums::Side;
+    use crate::game::stats::{Effect, StatId, StatModifier, StatModifierKind, UnitStats};
+    use std::collections::{HashMap, HashSet};
+    use std::sync::Arc;
+    use uuid::Uuid;
+
+    fn empty_deck() -> PlayerDeckInfo {
+        PlayerDeckInfo {
+            units: vec![],
+            artifacts: vec![],
+            positions: HashMap::new(),
+        }
+    }
+
+    fn game_data_with(
+        artifacts: Vec<crate::game::data::artifact_data::ArtifactMetadata>,
+        equipments: Vec<crate::game::data::equipment_data::EquipmentMetadata>,
+    ) -> Arc<GameDataBase> {
+        let pool = EventPhasePool {
+            shops: vec![],
+            bonuses: vec![],
+            random_events: vec![],
+        };
+        let event_pools = EventPoolConfig {
+            dawn: pool.clone(),
+            noon: pool.clone(),
+            dusk: pool.clone(),
+            midnight: pool.clone(),
+            white: pool,
+        };
+
+        Arc::new(GameDataBase::new(
+            Arc::new(AbnormalityDatabase::new(vec![])),
+            Arc::new(ArtifactDatabase::new(artifacts)),
+            Arc::new(EquipmentDatabase::new(equipments)),
+            Arc::new(ShopDatabase::new(vec![])),
+            Arc::new(BonusDatabase::new(vec![])),
+            Arc::new(RandomEventDatabase::new(vec![])),
+            Arc::new(PveEncounterDatabase::new(vec![])),
+            Arc::new(SkillDatabase::new(vec![])),
+            event_pools,
+        ))
+    }
+
+    fn new_core(game_data: Arc<GameDataBase>) -> BattleCore {
+        let deck = empty_deck();
+        BattleCore::new(&deck, &deck, game_data, (4, 4), 123)
+    }
+
+    fn runtime_unit(id: u128, owner: Side) -> RuntimeUnit {
+        RuntimeUnit {
+            instance_id: UnitInstanceId::from(Uuid::from_u128(id)),
+            owner,
+            base_uuid: Uuid::nil(),
+            stats: UnitStats::with_values(10, 10, 1, 0, 1),
+            pos_x_units: 0,
+            pos_y_units: 0,
+            move_epoch: 0,
+            action_state: crate::game::battle::core::movement::ActionState::Idle,
+            action_locks: Default::default(),
+            current_target: None,
+            next_basic_attack_ms: 0,
+            pending_basic_attack: false,
+            resonance_current: 0,
+            resonance_max: 100,
+            resonance_lock_ms: 0,
+            next_action_time: 0,
+            pending_cast: false,
+            pending_cast_cause: None,
+            pending_autocast: None,
+        }
+    }
+
+    #[test]
+    fn collect_triggers_sorts_artifacts_by_instance_id_and_includes_sources() {
+        let base_a = Uuid::from_u128(100);
+        let base_b = Uuid::from_u128(101);
+
+        let mut effects_a = HashMap::new();
+        effects_a.insert(
+            TriggerType::OnAttack,
+            vec![Effect::Modifier(StatModifier {
+                stat: StatId::Attack,
+                kind: StatModifierKind::Flat,
+                value: 1,
+            })],
+        );
+
+        let mut effects_b = HashMap::new();
+        effects_b.insert(
+            TriggerType::OnAttack,
+            vec![Effect::Skill("skill_b".to_string())],
+        );
+
+        let game_data = game_data_with(
+            vec![
+                crate::game::data::artifact_data::ArtifactMetadata {
+                    id: "a".to_string(),
+                    uuid: base_a,
+                    name: "A".to_string(),
+                    description: "".to_string(),
+                    rarity: crate::game::enums::RiskLevel::ZAYIN,
+                    price: 0,
+                    triggered_effects: effects_a,
+                },
+                crate::game::data::artifact_data::ArtifactMetadata {
+                    id: "b".to_string(),
+                    uuid: base_b,
+                    name: "B".to_string(),
+                    description: "".to_string(),
+                    rarity: crate::game::enums::RiskLevel::ZAYIN,
+                    price: 0,
+                    triggered_effects: effects_b,
+                },
+            ],
+            vec![],
+        );
+
+        let mut core = new_core(game_data);
+
+        let instance_small = Uuid::from_u128(1);
+        let instance_large = Uuid::from_u128(2);
+        core.artifacts.insert(
+            instance_large,
+            RuntimeArtifact {
+                instance_id: instance_large,
+                owner: Side::Player,
+                base_uuid: base_b,
+            },
+        );
+        core.artifacts.insert(
+            instance_small,
+            RuntimeArtifact {
+                instance_id: instance_small,
+                owner: Side::Player,
+                base_uuid: base_a,
+            },
+        );
+        core.artifacts.insert(
+            Uuid::from_u128(3),
+            RuntimeArtifact {
+                instance_id: Uuid::from_u128(3),
+                owner: Side::Opponent,
+                base_uuid: base_a,
+            },
+        );
+
+        let out = core.collect_triggers(
+            TriggerSource::Artifact { side: Side::Player },
+            TriggerType::OnAttack,
+        );
+        assert_eq!(out.len(), 2);
+
+        assert!(matches!(
+            out[0],
+            SourcedEffect {
+                source: CooldownSource::Artifact {
+                    artifact_instance_id,
+                },
+                effect: Effect::Modifier(_),
+            } if artifact_instance_id == instance_small
+        ));
+        assert!(matches!(
+            out[1],
+            SourcedEffect {
+                source: CooldownSource::Artifact {
+                    artifact_instance_id,
+                },
+                effect: Effect::Skill(ref id),
+            } if artifact_instance_id == instance_large && id == "skill_b"
+        ));
+    }
+
+    #[test]
+    fn collect_triggers_sorts_items_by_instance_id_and_includes_sources() {
+        let base_item = Uuid::from_u128(200);
+        let mut triggered = HashMap::new();
+        triggered.insert(
+            TriggerType::OnHit,
+            vec![Effect::Skill("on_hit_skill".to_string())],
+        );
+        let equipment = crate::game::data::equipment_data::EquipmentMetadata {
+            id: "e".to_string(),
+            uuid: base_item,
+            name: "E".to_string(),
+            equipment_type: crate::game::data::equipment_data::EquipmentType::Weapon,
+            rarity: crate::game::enums::RiskLevel::ZAYIN,
+            price: 0,
+            allow_duplicate_equip: true,
+            triggered_effects: triggered,
+        };
+
+        let game_data = game_data_with(vec![], vec![equipment]);
+        let mut core = new_core(game_data);
+
+        let unit_id: UnitInstanceId = Uuid::from_u128(10).into();
+        let item_small = Uuid::from_u128(1);
+        let item_large = Uuid::from_u128(2);
+        core.items.insert(
+            item_large,
+            RuntimeItem {
+                instance_id: item_large,
+                owner: Side::Player,
+                owner_unit_instance: unit_id,
+                base_uuid: base_item,
+            },
+        );
+        core.items.insert(
+            item_small,
+            RuntimeItem {
+                instance_id: item_small,
+                owner: Side::Player,
+                owner_unit_instance: unit_id,
+                base_uuid: base_item,
+            },
+        );
+
+        let out = core.collect_triggers(
+            TriggerSource::Item {
+                unit_instance_id: unit_id,
+            },
+            TriggerType::OnHit,
+        );
+        assert_eq!(out.len(), 2);
+
+        assert!(matches!(
+            out[0],
+            SourcedEffect {
+                source: CooldownSource::Item { item_instance_id },
+                effect: Effect::Skill(ref id),
+            } if item_instance_id == item_small && id == "on_hit_skill"
+        ));
+        assert!(matches!(
+            out[1],
+            SourcedEffect {
+                source: CooldownSource::Item { item_instance_id },
+                effect: Effect::Skill(ref id),
+            } if item_instance_id == item_large && id == "on_hit_skill"
+        ));
+    }
+
+    #[test]
+    fn collect_all_triggers_includes_owner_artifacts_and_unit_items() {
+        let base_art = Uuid::from_u128(300);
+        let base_item = Uuid::from_u128(400);
+
+        let mut art_effects = HashMap::new();
+        art_effects.insert(
+            TriggerType::OnBattleStart,
+            vec![Effect::Skill("art_start".to_string())],
+        );
+        let mut item_effects = HashMap::new();
+        item_effects.insert(
+            TriggerType::OnBattleStart,
+            vec![Effect::Skill("item_start".to_string())],
+        );
+
+        let game_data = game_data_with(
+            vec![crate::game::data::artifact_data::ArtifactMetadata {
+                id: "a".to_string(),
+                uuid: base_art,
+                name: "A".to_string(),
+                description: "".to_string(),
+                rarity: crate::game::enums::RiskLevel::ZAYIN,
+                price: 0,
+                triggered_effects: art_effects,
+            }],
+            vec![crate::game::data::equipment_data::EquipmentMetadata {
+                id: "e".to_string(),
+                uuid: base_item,
+                name: "E".to_string(),
+                equipment_type: crate::game::data::equipment_data::EquipmentType::Weapon,
+                rarity: crate::game::enums::RiskLevel::ZAYIN,
+                price: 0,
+                allow_duplicate_equip: true,
+                triggered_effects: item_effects,
+            }],
+        );
+
+        let mut core = new_core(game_data);
+
+        let unit_id: UnitInstanceId = Uuid::from_u128(1).into();
+        core.units.insert(unit_id, runtime_unit(1, Side::Player));
+
+        core.artifacts.insert(
+            Uuid::from_u128(10),
+            RuntimeArtifact {
+                instance_id: Uuid::from_u128(10),
+                owner: Side::Player,
+                base_uuid: base_art,
+            },
+        );
+        core.items.insert(
+            Uuid::from_u128(11),
+            RuntimeItem {
+                instance_id: Uuid::from_u128(11),
+                owner: Side::Player,
+                owner_unit_instance: unit_id,
+                base_uuid: base_item,
+            },
+        );
+
+        core.recording_cause_stack.push(TimelineCause::Root {
+            kind: TimelineRootCause::System,
+        });
+        let out = core.collect_all_triggers(unit_id, TriggerType::OnBattleStart);
+        assert_eq!(out.len(), 2);
+
+        let mut seen = HashSet::new();
+        for effect in out {
+            match effect {
+                SourcedEffect {
+                    source: CooldownSource::Artifact { .. },
+                    effect: Effect::Skill(id),
+                } => {
+                    assert_eq!(id, "art_start");
+                    seen.insert("art");
+                }
+                SourcedEffect {
+                    source: CooldownSource::Item { .. },
+                    effect: Effect::Skill(id),
+                } => {
+                    assert_eq!(id, "item_start");
+                    seen.insert("item");
+                }
+                other => panic!("unexpected effect: {other:?}"),
+            }
+        }
+        assert_eq!(seen.len(), 2);
     }
 }
