@@ -10,7 +10,9 @@ use crate::game::battle::damage::{
 use crate::game::battle::enums::BattleEvent;
 use crate::game::battle::enums::ProjectilePayload;
 use crate::game::battle::ids::UnitInstanceId;
-use crate::game::battle::timeline::{HpChangeReason, TimelineCause, TimelineEvent};
+use crate::game::battle::timeline::{
+    HpChangeReason, MovementStopReason, TimelineCause, TimelineEvent,
+};
 use crate::game::determinism;
 use crate::game::enums::Side;
 use crate::game::stats::TriggerType;
@@ -161,6 +163,12 @@ impl BattleCore {
                 target.move_epoch = target.move_epoch.wrapping_add(1);
                 target.action_state = ActionState::Idle;
             }
+            self.record_movement_stopped(
+                time_ms,
+                target_instance_id,
+                MovementStopReason::InvalidState,
+                None,
+            );
             if let Some(position) = self.battlefield.remove(target_instance_id) {
                 if let Some(target) = self.units.get(&target_instance_id) {
                     self.graveyard
@@ -238,6 +246,12 @@ impl BattleCore {
         }
 
         if hp_after == 0 {
+            self.record_movement_stopped(
+                time_ms,
+                target_instance_id,
+                MovementStopReason::InvalidState,
+                None,
+            );
             if let Some(position) = self.battlefield.remove(target_instance_id) {
                 if let Some(target) = self.units.get(&target_instance_id) {
                     self.graveyard

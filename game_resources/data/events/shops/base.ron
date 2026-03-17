@@ -1,0 +1,50 @@
+// 상인 데이터
+// id: 상인 식별자
+// name: 상인 이름
+// uuid: 상인 프로필 사진 식별자
+// shop_type: 상점 타입 (Shop, DiscountShop)
+// visible_items: RON에서 로드하는 초기 아이템 목록 (UUID로 참조)
+// can_reroll: 리롤 가능 여부
+ShopDatabase(
+    shops: [
+        // 일반 상점 - 아티팩트 상인
+        ShopMetadata(
+            id: "rachel_shop",
+            name: "아티팩트 상인 라헬",
+            uuid: "550e8400-e29b-41d4-a716-446655440001",
+            shop_type: Shop,
+            visible_items: [
+                "650e8400-e29b-41d4-a716-446655440011", // one_sin
+                "650e8400-e29b-41d4-a716-446655440012", // fairy_festival
+                "650e8400-e29b-41d4-a716-446655440013", // beauty_and_beast
+            ],
+            can_reroll: true,
+        ),
+
+        // 할인 상점 - E.G.O 무기 상인
+        ShopMetadata(
+            id: "ain_shop",
+            name: "E.G.O 무기상 아인",
+            uuid: "550e8400-e29b-41d4-a716-446655440002",
+            shop_type: DiscountShop,
+            visible_items: [
+                "650e8400-e29b-41d4-a716-446655440021", // justitia
+                "650e8400-e29b-41d4-a716-446655440022", // paradise_lost
+            ],
+            can_reroll: false,
+        ),
+
+        // 일반 상점 - 방어구 상점
+        ShopMetadata(
+            id: "benjamin_shop",
+            name: "방어구 상인 벤자민",
+            uuid: "550e8400-e29b-41d4-a716-446655440003",
+            shop_type: Shop,
+            visible_items: [
+                "650e8400-e29b-41d4-a716-446655440031", // standard_suit
+                "650e8400-e29b-41d4-a716-446655440032", // penitence_armor
+            ],
+            can_reroll: true,
+        ),
+    ],
+)

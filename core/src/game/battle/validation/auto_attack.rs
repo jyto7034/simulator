@@ -115,12 +115,7 @@ pub(super) fn validate_auto_attack_cadence(
         while tick_end < timeline.entries.len() && timeline.entries[tick_end].time_ms == time_ms {
             let entry = &timeline.entries[tick_end];
             match &entry.event {
-                TimelineEvent::Attack {
-                    attacker_instance_id,
-                    kind: Some(AttackKind::Auto),
-                    ..
-                }
-                | TimelineEvent::AttackStart {
+                TimelineEvent::AttackStart {
                     attacker_instance_id,
                     kind: Some(AttackKind::Auto),
                     ..

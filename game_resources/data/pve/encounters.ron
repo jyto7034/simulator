@@ -1,0 +1,113 @@
+PveEncounterDatabase(
+    encounters: [
+        // Scorched Girl (HE) - 단일 유닛
+        PveEncounter(
+            id: "suppress_scorched_girl",
+            abnormality_id: "f-01-02",
+            difficulty: 2,
+            risk_level: HE,
+            units: [
+                PveUnitData(
+                    abnormality_id: "f-01-02",
+                    position: (x: 1, y: 0),
+                    tier: I,
+                ),
+            ],
+        ),
+
+        // Plague Doctor (ALEPH) - 본체 + 소환수
+        PveEncounter(
+            id: "suppress_plague_doctor",
+            abnormality_id: "o-02-56",
+            difficulty: 5,
+            risk_level: ALEPH,
+            units: [
+                PveUnitData(
+                    abnormality_id: "o-02-56",
+                    position: (x: 1, y: 0),
+                    tier: II,
+                ),
+                PveUnitData(
+                    abnormality_id: "o-01-45",
+                    position: (x: 0, y: 1),
+                    tier: I,
+                ),
+                PveUnitData(
+                    abnormality_id: "o-01-45",
+                    position: (x: 2, y: 1),
+                    tier: I,
+                ),
+            ],
+        ),
+
+        // Red Shoes (WAW) - 빠른 단일 유닛
+        PveEncounter(
+            id: "suppress_red_shoes",
+            abnormality_id: "t-09-09",
+            difficulty: 3,
+            risk_level: WAW,
+            units: [
+                PveUnitData(
+                    abnormality_id: "t-09-09",
+                    position: (x: 1, y: 0),
+                    tier: I,
+                ),
+            ],
+        ),
+
+        // Fragment of the Universe (TETH) - 초보자용
+        PveEncounter(
+            id: "suppress_fragment_universe",
+            abnormality_id: "f-05-52",
+            difficulty: 1,
+            risk_level: TETH,
+            units: [
+                PveUnitData(
+                    abnormality_id: "f-05-52",
+                    position: (x: 1, y: 0),
+                    tier: I,
+                ),
+            ],
+        ),
+
+        // Spider Bud (TETH) - 초보자용
+        PveEncounter(
+            id: "suppress_spider_bud",
+            abnormality_id: "o-01-45",
+            difficulty: 1,
+            risk_level: TETH,
+            units: [
+                PveUnitData(
+                    abnormality_id: "o-01-45",
+                    position: (x: 1, y: 0),
+                    tier: I,
+                ),
+            ],
+        ),
+
+        // Fairy Festival (WAW) - 다수 유닛
+        PveEncounter(
+            id: "suppress_fairy_festival",
+            abnormality_id: "f-01-37",
+            difficulty: 4,
+            risk_level: WAW,
+            units: [
+                PveUnitData(
+                    abnormality_id: "f-01-37",
+                    position: (x: 1, y: 0),
+                    tier: II,
+                ),
+                PveUnitData(
+                    abnormality_id: "f-05-52",
+                    position: (x: 0, y: 1),
+                    tier: I,
+                ),
+                PveUnitData(
+                    abnormality_id: "f-05-52",
+                    position: (x: 2, y: 1),
+                    tier: I,
+                ),
+            ],
+        ),
+    ]
+)

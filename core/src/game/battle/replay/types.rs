@@ -90,12 +90,7 @@ impl ExpectedDecision {
                     target_instance_id,
                     kind,
                 },
-                TimelineEvent::Attack {
-                    attacker_instance_id: actual_attacker,
-                    target_instance_id: actual_target,
-                    kind: actual_kind,
-                }
-                | TimelineEvent::AttackStart {
+                TimelineEvent::AttackStart {
                     attacker_instance_id: actual_attacker,
                     target_instance_id: actual_target,
                     kind: actual_kind,

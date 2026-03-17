@@ -269,12 +269,7 @@ pub(super) fn validate_reference_spawn_order(
                     violations,
                 );
             }
-            TimelineEvent::Attack {
-                attacker_instance_id,
-                target_instance_id,
-                ..
-            }
-            | TimelineEvent::AttackStart {
+            TimelineEvent::AttackStart {
                 attacker_instance_id,
                 target_instance_id,
                 ..

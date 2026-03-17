@@ -402,8 +402,7 @@ impl BattleCore {
                 continue;
             };
             let range_tiles = self.basic_attack_range_tiles(base_uuid);
-            let target =
-                self.choose_attack_target_in_range(owner, attacker_pos, range_tiles);
+            let target = self.choose_attack_target_in_range(owner, attacker_pos, range_tiles);
             let Some(target_id) = target else {
                 continue;
             };
@@ -590,21 +589,28 @@ impl BattleCore {
                 schedule_next,
                 cause,
             } => {
-                let (is_dead, can_attack, lock_until, owner, base_uuid, current_target, interval_ms) =
-                    {
-                        let Some(attacker) = self.units.get(&attacker_instance_id) else {
-                            return Ok(());
-                        };
-                        (
-                            attacker.is_dead(),
-                            attacker.action_locks.can_basic_attack(current_time_ms),
-                            attacker.action_locks.basic_attack_until_ms,
-                            attacker.owner,
-                            attacker.base_uuid,
-                            attacker.current_target,
-                            attacker.stats.attack_interval_ms.max(1),
-                        )
+                let (
+                    is_dead,
+                    can_attack,
+                    lock_until,
+                    owner,
+                    base_uuid,
+                    current_target,
+                    interval_ms,
+                ) = {
+                    let Some(attacker) = self.units.get(&attacker_instance_id) else {
+                        return Ok(());
                     };
+                    (
+                        attacker.is_dead(),
+                        attacker.action_locks.can_basic_attack(current_time_ms),
+                        attacker.action_locks.basic_attack_until_ms,
+                        attacker.owner,
+                        attacker.base_uuid,
+                        attacker.current_target,
+                        attacker.stats.attack_interval_ms.max(1),
+                    )
+                };
                 if is_dead {
                     return Ok(());
                 }
@@ -635,9 +641,9 @@ impl BattleCore {
 
                 let hinted_target = target_instance_id.filter(|id| in_range(*id));
                 let persisted_target = current_target.filter(|id| in_range(*id));
-                let target = hinted_target
-                    .or(persisted_target)
-                    .or_else(|| self.choose_attack_target_in_range(owner, attacker_pos, range_tiles));
+                let target = hinted_target.or(persisted_target).or_else(|| {
+                    self.choose_attack_target_in_range(owner, attacker_pos, range_tiles)
+                });
 
                 if target.is_none() {
                     if schedule_next {
@@ -646,6 +652,8 @@ impl BattleCore {
                             attacker.next_basic_attack_ms = time_ms;
                         }
                     }
+                    self.event_queue
+                        .push(BattleEvent::MovementIntent { time_ms });
                     return Ok(());
                 }
 
@@ -1208,7 +1216,6 @@ impl BattleCore {
                     cause: TimelineCause::Parent { seq: applied_seq },
                 });
 
-                // Hard CC: lock actions (and movement planning) until buff expiration.
                 if is_hard_cc {
                     let lock_until = effective_expires_at_ms.saturating_add(1);
                     if let Some(unit) = self.units.get_mut(&target_instance_id) {
@@ -1218,7 +1225,6 @@ impl BattleCore {
                         unit.action_locks.lock_resonance_gain_until(lock_until);
                     }
 
-                    // If the unit was moving, stop immediately and invalidate scheduled MoveStep events.
                     let was_moving = self
                         .units
                         .get(&target_instance_id)

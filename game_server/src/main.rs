@@ -172,7 +172,6 @@ async fn main() -> std::io::Result<()> {
     //    let core = GameCore::new(app_state.game_data.clone());
     // ============================================================
 
-
     spawn_redis_subscribers(
         redis_client.clone(),
         pod_id.clone(),

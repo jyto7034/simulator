@@ -8,9 +8,10 @@ use game_core::ecs::resources::Position;
 use game_core::game::ability::DeliveryDef;
 use game_core::game::battle::core::movement::TILE_UNITS_PER_TILE;
 use game_core::game::battle::core::BattleCore;
+use game_core::game::battle::ids::UnitInstanceId;
 use game_core::game::battle::replay::{types::TimelineReplayerConfig, TimelineReplayer};
-use game_core::game::battle::timeline::{HpChangeReason, TimelineEvent};
-use game_core::game::battle::types::{OwnedUnit, PlayerDeckInfo};
+use game_core::game::battle::timeline::{HpChangeReason, TimelineCause, TimelineEvent};
+use game_core::game::battle::types::{BattleWinner, OwnedUnit, PlayerDeckInfo};
 use game_core::game::battle::validation::{
     TimelineExpectedCounts, TimelineValidator, TimelineValidatorConfig,
 };
@@ -27,7 +28,6 @@ use game_core::game::data::{
 };
 use game_core::game::enums::{RiskLevel, Side, Tier};
 use game_core::game::growth::GrowthStack;
-use game_core::game::battle::ids::UnitInstanceId;
 use uuid::Uuid;
 
 fn deck_single_unit(owned_uuid: Uuid, base_uuid: Uuid, pos: Position) -> PlayerDeckInfo {
@@ -133,9 +133,7 @@ fn find_unit_instance_id(
                 owner: entry_owner,
                 base_uuid: entry_base_uuid,
                 ..
-            } if *entry_owner == owner && *entry_base_uuid == base_uuid => {
-                Some(*unit_instance_id)
-            }
+            } if *entry_owner == owner && *entry_base_uuid == base_uuid => Some(*unit_instance_id),
             _ => None,
         })
         .expect("missing UnitSpawned for requested unit")
@@ -211,7 +209,13 @@ fn ranged_basic_attack_projectile_hits_after_flight_time_and_damages_target() {
     let opponent = deck_single_unit(target_owned, target_base_uuid, target_pos);
 
     // When: run the battle.
-    let mut battle = BattleCore::new(&player, &opponent, game_data.clone(), common::BOARD_SIZE, 12345);
+    let mut battle = BattleCore::new(
+        &player,
+        &opponent,
+        game_data.clone(),
+        common::BOARD_SIZE,
+        12345,
+    );
     let mut world = World::new();
     let result = battle.run_battle(&mut world).unwrap();
 
@@ -366,7 +370,13 @@ fn ranged_attack_resolve_records_miss_when_target_moves_out_of_range() {
     ]);
     let opponent = deck_with_units(vec![(target_owned, target_base_uuid, Position::new(1, 1))]);
 
-    let mut battle = BattleCore::new(&player, &opponent, game_data.clone(), common::BOARD_SIZE, 4242);
+    let mut battle = BattleCore::new(
+        &player,
+        &opponent,
+        game_data.clone(),
+        common::BOARD_SIZE,
+        4242,
+    );
     let mut world = World::new();
     let result = battle.run_battle(&mut world).unwrap();
 
@@ -378,7 +388,7 @@ fn ranged_attack_resolve_records_miss_when_target_moves_out_of_range() {
     let attacker_id = find_unit_instance_id(&result.timeline, Side::Player, attacker_base_uuid);
     let target_id = find_unit_instance_id(&result.timeline, Side::Opponent, target_base_uuid);
 
-    let miss_time = result
+    let miss_cause = result
         .timeline
         .entries
         .iter()
@@ -388,28 +398,37 @@ fn ranged_attack_resolve_records_miss_when_target_moves_out_of_range() {
                 target_instance_id,
                 ..
             } if *attacker_instance_id == attacker_id && *target_instance_id == target_id => {
-                Some(entry.time_ms)
+                Some(entry.cause)
             }
             _ => None,
         })
         .expect("missing AttackMiss when target moved out of range");
 
-    let hit_at_miss_time = result.timeline.entries.iter().any(|entry| match &entry.event {
-        TimelineEvent::HpChanged {
-            source_instance_id,
-            target_instance_id,
-            ..
-        } if *source_instance_id == Some(attacker_id)
-            && *target_instance_id == target_id
-            && entry.time_ms == miss_time =>
-        {
-            true
-        }
-        _ => false,
-    });
+    let miss_parent_seq = match miss_cause {
+        TimelineCause::Parent { seq } => seq,
+        _ => panic!("AttackMiss should have parent cause"),
+    };
+
+    let hit_for_same_attack = result
+        .timeline
+        .entries
+        .iter()
+        .any(|entry| match &entry.event {
+            TimelineEvent::HpChanged {
+                source_instance_id,
+                target_instance_id,
+                ..
+            } if *source_instance_id == Some(attacker_id)
+                && *target_instance_id == target_id
+                && matches!(entry.cause, TimelineCause::Parent { seq } if seq == miss_parent_seq) =>
+            {
+                true
+            }
+            _ => false,
+        });
     assert!(
-        !hit_at_miss_time,
-        "AttackMiss time should not apply damage"
+        !hit_for_same_attack,
+        "AttackMiss should not apply damage for the same attack"
     );
 }
 
@@ -478,7 +497,13 @@ fn projectile_misses_when_target_dies_before_impact() {
     ]);
     let opponent = deck_with_units(vec![(target_owned, target_base_uuid, Position::new(3, 0))]);
 
-    let mut battle = BattleCore::new(&player, &opponent, game_data.clone(), common::BOARD_SIZE, 2024);
+    let mut battle = BattleCore::new(
+        &player,
+        &opponent,
+        game_data.clone(),
+        common::BOARD_SIZE,
+        2024,
+    );
     let mut world = World::new();
     let result = battle.run_battle(&mut world).unwrap();
 
@@ -490,31 +515,43 @@ fn projectile_misses_when_target_dies_before_impact() {
     let attacker_id = find_unit_instance_id(&result.timeline, Side::Player, attacker_base_uuid);
     let target_id = find_unit_instance_id(&result.timeline, Side::Opponent, target_base_uuid);
 
-    let has_projectile_miss = result.timeline.entries.iter().any(|entry| match &entry.event {
-        TimelineEvent::ProjectileMiss {
-            attacker_instance_id,
-            target_instance_id,
-            ..
-        } if *attacker_instance_id == attacker_id && *target_instance_id == target_id => true,
-        _ => false,
-    });
-    assert!(has_projectile_miss, "expected ProjectileMiss when target dies");
+    let target_death_time = result
+        .timeline
+        .entries
+        .iter()
+        .find_map(|entry| match &entry.event {
+            TimelineEvent::UnitDied {
+                unit_instance_id, ..
+            } if *unit_instance_id == target_id => Some(entry.time_ms),
+            _ => None,
+        })
+        .expect("target should die before projectile impact");
 
-    let has_attacker_hit = result.timeline.entries.iter().any(|entry| match &entry.event {
-        TimelineEvent::HpChanged {
-            source_instance_id,
-            ..
-        } if *source_instance_id == Some(attacker_id) => true,
-        _ => false,
-    });
+    let attacker_hit_after_death = result
+        .timeline
+        .entries
+        .iter()
+        .any(|entry| match &entry.event {
+            TimelineEvent::HpChanged {
+                source_instance_id,
+                target_instance_id,
+                ..
+            } if *source_instance_id == Some(attacker_id)
+                && *target_instance_id == target_id
+                && entry.time_ms >= target_death_time =>
+            {
+                true
+            }
+            _ => false,
+        });
     assert!(
-        !has_attacker_hit,
+        !attacker_hit_after_death,
         "attacker projectile should not apply damage after target death"
     );
 }
 
 #[test]
-fn projectile_hit_applies_base_damage_when_attacker_dead_before_impact() {
+fn projectile_does_not_hit_after_attacker_death_when_battle_ends() {
     let attacker_base_uuid = Uuid::from_u128(0x1200_0001);
     let target_base_uuid = Uuid::from_u128(0x2300_0001);
 
@@ -558,12 +595,18 @@ fn projectile_hit_applies_base_damage_when_attacker_dead_before_impact() {
     let player = deck_single_unit(attacker_owned, attacker_base_uuid, Position::new(0, 0));
     let opponent = deck_single_unit(target_owned, target_base_uuid, Position::new(3, 0));
 
-    let mut battle = BattleCore::new(&player, &opponent, game_data.clone(), common::BOARD_SIZE, 777);
+    let mut battle = BattleCore::new(
+        &player,
+        &opponent,
+        game_data.clone(),
+        common::BOARD_SIZE,
+        777,
+    );
     let mut world = World::new();
     let result = battle.run_battle(&mut world).unwrap();
 
     common::write_timeline_export(
-        "projectile_hit_applies_base_damage_when_attacker_dead_before_impact",
+        "projectile_does_not_hit_after_attacker_death_when_battle_ends",
         &result.timeline,
     );
 
@@ -582,32 +625,28 @@ fn projectile_hit_applies_base_damage_when_attacker_dead_before_impact() {
         })
         .expect("attacker should die before projectile impact");
 
-    let (impact_time, delta) = result
+    let attacker_hit_after_death = result
         .timeline
         .entries
         .iter()
-        .find_map(|entry| match &entry.event {
+        .any(|entry| match &entry.event {
             TimelineEvent::HpChanged {
                 source_instance_id,
                 target_instance_id,
-                delta,
-                reason,
                 ..
             } if *source_instance_id == Some(attacker_id)
                 && *target_instance_id == target_id
-                && *reason == HpChangeReason::BasicAttack =>
+                && entry.time_ms >= attacker_death_time =>
             {
-                Some((entry.time_ms, *delta))
+                true
             }
-            _ => None,
-        })
-        .expect("expected projectile hit damage");
+            _ => false,
+        });
 
     assert!(
-        attacker_death_time < impact_time,
-        "attacker should be dead before impact"
+        !attacker_hit_after_death,
+        "projectile hit should not be recorded after attacker death"
     );
-    assert_eq!(delta, -5);
 }
 
 #[test]
@@ -660,7 +699,13 @@ fn projectile_speed_zero_hits_same_tick_as_attack_resolve() {
         Position::new(2, 0),
     );
 
-    let mut battle = BattleCore::new(&player, &opponent, game_data.clone(), common::BOARD_SIZE, 9001);
+    let mut battle = BattleCore::new(
+        &player,
+        &opponent,
+        game_data.clone(),
+        common::BOARD_SIZE,
+        9001,
+    );
     let mut world = World::new();
     let result = battle.run_battle(&mut world).unwrap();
 
@@ -712,6 +757,347 @@ fn projectile_speed_zero_hits_same_tick_as_attack_resolve() {
 }
 
 #[test]
+fn ranged_vs_melee_simple_ranged_wins() {
+    let ranged_base_uuid = Uuid::from_u128(0x1400_0001);
+    let melee_base_uuid = Uuid::from_u128(0x2500_0001);
+
+    let ranged = abnormality_with_basic_attack(
+        "ranged",
+        ranged_base_uuid,
+        50,
+        20,
+        0,
+        1_000,
+        BasicAttackDef {
+            range_tiles: 4,
+            interval_ms: 1000,
+            windup_ms: 0,
+            delivery: DeliveryDef::Projectile {
+                speed_units_per_ms: 1_000_000,
+            },
+        },
+    );
+
+    let melee = abnormality_with_basic_attack(
+        "melee",
+        melee_base_uuid,
+        40,
+        3,
+        0,
+        1_000,
+        BasicAttackDef {
+            range_tiles: 1,
+            interval_ms: 1000,
+            windup_ms: 0,
+            delivery: DeliveryDef::Instant,
+        },
+    );
+
+    let game_data = game_data_from_abnormalities(vec![ranged, melee]);
+
+    let ranged_owned = Uuid::from_u128(0xA300_0001);
+    let melee_owned = Uuid::from_u128(0xB300_0001);
+
+    let player = deck_single_unit(ranged_owned, ranged_base_uuid, Position::new(0, 0));
+    let opponent = deck_single_unit(melee_owned, melee_base_uuid, Position::new(5, 0));
+
+    let mut battle = BattleCore::new(
+        &player,
+        &opponent,
+        game_data.clone(),
+        common::BOARD_SIZE,
+        2025,
+    );
+    let mut world = World::new();
+    let result = battle.run_battle(&mut world).unwrap();
+
+    common::write_timeline_export("ranged_vs_melee_simple_ranged_wins", &result.timeline);
+
+    assert_eq!(result.winner, BattleWinner::Player);
+
+    let attacker_id = find_unit_instance_id(&result.timeline, Side::Player, ranged_base_uuid);
+    let target_id = find_unit_instance_id(&result.timeline, Side::Opponent, melee_base_uuid);
+
+    let has_ranged_hit = result
+        .timeline
+        .entries
+        .iter()
+        .any(|entry| match &entry.event {
+            TimelineEvent::HpChanged {
+                source_instance_id,
+                target_instance_id,
+                reason,
+                ..
+            } if *source_instance_id == Some(attacker_id)
+                && *target_instance_id == target_id
+                && *reason == HpChangeReason::BasicAttack =>
+            {
+                true
+            }
+            _ => false,
+        });
+    assert!(has_ranged_hit, "expected ranged attacker to hit target");
+}
+
+#[test]
+fn ranged_vs_ranged_both_sides_land_hits_player_wins() {
+    let player_base_uuid = Uuid::from_u128(0x1500_0001);
+    let opponent_base_uuid = Uuid::from_u128(0x2600_0001);
+
+    let player_unit = abnormality_with_basic_attack(
+        "ranged_player",
+        player_base_uuid,
+        40,
+        8,
+        0,
+        3_000,
+        BasicAttackDef {
+            range_tiles: 4,
+            interval_ms: 1,
+            windup_ms: 0,
+            delivery: DeliveryDef::Projectile {
+                speed_units_per_ms: 3_000,
+            },
+        },
+    );
+
+    let opponent_unit = abnormality_with_basic_attack(
+        "ranged_opponent",
+        opponent_base_uuid,
+        40,
+        5,
+        0,
+        3_000,
+        BasicAttackDef {
+            range_tiles: 4,
+            interval_ms: 1,
+            windup_ms: 0,
+            delivery: DeliveryDef::Projectile {
+                speed_units_per_ms: 3_000,
+            },
+        },
+    );
+
+    let game_data = game_data_from_abnormalities(vec![player_unit, opponent_unit]);
+
+    let player_owned = Uuid::from_u128(0xA400_0001);
+    let opponent_owned = Uuid::from_u128(0xB400_0001);
+
+    let player = deck_single_unit(player_owned, player_base_uuid, Position::new(0, 0));
+    let opponent = deck_single_unit(opponent_owned, opponent_base_uuid, Position::new(3, 0));
+
+    let mut battle = BattleCore::new(
+        &player,
+        &opponent,
+        game_data.clone(),
+        common::BOARD_SIZE,
+        2026,
+    );
+    let mut world = World::new();
+    let result = battle.run_battle(&mut world).unwrap();
+
+    common::write_timeline_export(
+        "ranged_vs_ranged_both_sides_land_hits_player_wins",
+        &result.timeline,
+    );
+
+    assert_eq!(result.winner, BattleWinner::Player);
+
+    let player_id = find_unit_instance_id(&result.timeline, Side::Player, player_base_uuid);
+    let opponent_id = find_unit_instance_id(&result.timeline, Side::Opponent, opponent_base_uuid);
+
+    let player_hit = result
+        .timeline
+        .entries
+        .iter()
+        .any(|entry| match &entry.event {
+            TimelineEvent::HpChanged {
+                source_instance_id,
+                target_instance_id,
+                reason,
+                ..
+            } if *source_instance_id == Some(player_id)
+                && *target_instance_id == opponent_id
+                && *reason == HpChangeReason::BasicAttack =>
+            {
+                true
+            }
+            _ => false,
+        });
+    assert!(player_hit, "expected player ranged unit to hit opponent");
+
+    let opponent_hit = result
+        .timeline
+        .entries
+        .iter()
+        .any(|entry| match &entry.event {
+            TimelineEvent::HpChanged {
+                source_instance_id,
+                target_instance_id,
+                reason,
+                ..
+            } if *source_instance_id == Some(opponent_id)
+                && *target_instance_id == player_id
+                && *reason == HpChangeReason::BasicAttack =>
+            {
+                true
+            }
+            _ => false,
+        });
+    assert!(opponent_hit, "expected opponent ranged unit to hit player");
+}
+
+#[test]
+fn tft_like_field_6v6_mixed_melee_ranged_battle() {
+    let move_speed_units_per_ms = 1_200;
+
+    let make_melee = |id: &str, uuid: Uuid, hp: u32, attack: u32| {
+        abnormality_with_basic_attack(
+            id,
+            uuid,
+            hp,
+            attack,
+            2,
+            move_speed_units_per_ms,
+            BasicAttackDef {
+                range_tiles: 1,
+                interval_ms: 1_500,
+                windup_ms: 0,
+                delivery: DeliveryDef::Instant,
+            },
+        )
+    };
+
+    let make_ranged = |id: &str, uuid: Uuid, hp: u32, attack: u32| {
+        abnormality_with_basic_attack(
+            id,
+            uuid,
+            hp,
+            attack,
+            1,
+            move_speed_units_per_ms,
+            BasicAttackDef {
+                range_tiles: 3,
+                interval_ms: 1_700,
+                windup_ms: 200,
+                delivery: DeliveryDef::Projectile {
+                    speed_units_per_ms: 3_000_000,
+                },
+            },
+        )
+    };
+
+    let player_melee_uuids = [
+        Uuid::from_u128(0x1600_0001),
+        Uuid::from_u128(0x1600_0002),
+        Uuid::from_u128(0x1600_0003),
+    ];
+    let player_ranged_uuids = [
+        Uuid::from_u128(0x1600_0011),
+        Uuid::from_u128(0x1600_0012),
+        Uuid::from_u128(0x1600_0013),
+    ];
+    let opponent_melee_uuids = [
+        Uuid::from_u128(0x2600_0001),
+        Uuid::from_u128(0x2600_0002),
+        Uuid::from_u128(0x2600_0003),
+    ];
+    let opponent_ranged_uuids = [
+        Uuid::from_u128(0x2600_0011),
+        Uuid::from_u128(0x2600_0012),
+        Uuid::from_u128(0x2600_0013),
+    ];
+
+    let mut units = Vec::new();
+    for (i, uuid) in player_melee_uuids.iter().enumerate() {
+        units.push(make_melee(&format!("p_melee_{i}"), *uuid, 55, 12));
+    }
+    for (i, uuid) in player_ranged_uuids.iter().enumerate() {
+        units.push(make_ranged(&format!("p_ranged_{i}"), *uuid, 45, 10));
+    }
+    for (i, uuid) in opponent_melee_uuids.iter().enumerate() {
+        units.push(make_melee(&format!("o_melee_{i}"), *uuid, 55, 12));
+    }
+    for (i, uuid) in opponent_ranged_uuids.iter().enumerate() {
+        units.push(make_ranged(&format!("o_ranged_{i}"), *uuid, 45, 10));
+    }
+
+    let game_data = game_data_from_abnormalities(units);
+
+    let mut player_units = Vec::new();
+    let mut opponent_units = Vec::new();
+
+    let player_owned = [
+        Uuid::from_u128(0xA500_0001),
+        Uuid::from_u128(0xA500_0002),
+        Uuid::from_u128(0xA500_0003),
+        Uuid::from_u128(0xA500_0011),
+        Uuid::from_u128(0xA500_0012),
+        Uuid::from_u128(0xA500_0013),
+    ];
+    let opponent_owned = [
+        Uuid::from_u128(0xB500_0001),
+        Uuid::from_u128(0xB500_0002),
+        Uuid::from_u128(0xB500_0003),
+        Uuid::from_u128(0xB500_0011),
+        Uuid::from_u128(0xB500_0012),
+        Uuid::from_u128(0xB500_0013),
+    ];
+
+    let player_positions = [
+        Position::new(1, 6),
+        Position::new(3, 6),
+        Position::new(5, 6),
+        Position::new(0, 7),
+        Position::new(2, 7),
+        Position::new(4, 7),
+    ];
+    let opponent_positions = [
+        Position::new(1, 1),
+        Position::new(3, 1),
+        Position::new(5, 1),
+        Position::new(0, 0),
+        Position::new(2, 0),
+        Position::new(4, 0),
+    ];
+
+    for i in 0..3 {
+        player_units.push((player_owned[i], player_melee_uuids[i], player_positions[i]));
+        opponent_units.push((opponent_owned[i], opponent_melee_uuids[i], opponent_positions[i]));
+    }
+    for i in 0..3 {
+        player_units.push((
+            player_owned[i + 3],
+            player_ranged_uuids[i],
+            player_positions[i + 3],
+        ));
+        opponent_units.push((
+            opponent_owned[i + 3],
+            opponent_ranged_uuids[i],
+            opponent_positions[i + 3],
+        ));
+    }
+
+    let player = deck_with_units(player_units);
+    let opponent = deck_with_units(opponent_units);
+
+    let mut battle = BattleCore::new(&player, &opponent, game_data.clone(), common::BOARD_SIZE, 3030);
+    let mut world = World::new();
+    let result = battle.run_battle(&mut world).unwrap();
+
+    common::write_timeline_export("tft_like_field_6v6_mixed_melee_ranged_battle", &result.timeline);
+
+    assert_ne!(result.winner, BattleWinner::Draw);
+    let deaths = result
+        .timeline
+        .entries
+        .iter()
+        .filter(|e| matches!(e.event, TimelineEvent::UnitDied { .. }))
+        .count();
+    assert!(deaths > 0, "expected at least one unit to die");
+}
+
+#[test]
 fn chebyshev_range_allows_diagonal_in_range() {
     let attacker_base_uuid = Uuid::from_u128(0x1400_0001);
     let target_base_uuid = Uuid::from_u128(0x2500_0001);
@@ -759,42 +1145,56 @@ fn chebyshev_range_allows_diagonal_in_range() {
         Position::new(2, 2),
     );
 
-    let mut battle = BattleCore::new(&player, &opponent, game_data.clone(), common::BOARD_SIZE, 555);
+    let mut battle = BattleCore::new(
+        &player,
+        &opponent,
+        game_data.clone(),
+        common::BOARD_SIZE,
+        555,
+    );
     let mut world = World::new();
     let result = battle.run_battle(&mut world).unwrap();
 
-    common::write_timeline_export(
-        "chebyshev_range_allows_diagonal_in_range",
-        &result.timeline,
-    );
+    common::write_timeline_export("chebyshev_range_allows_diagonal_in_range", &result.timeline);
 
     let attacker_id = find_unit_instance_id(&result.timeline, Side::Player, attacker_base_uuid);
     let target_id = find_unit_instance_id(&result.timeline, Side::Opponent, target_base_uuid);
 
-    let has_hit = result.timeline.entries.iter().any(|entry| match &entry.event {
-        TimelineEvent::HpChanged {
-            source_instance_id,
-            target_instance_id,
-            reason,
-            ..
-        } if *source_instance_id == Some(attacker_id)
-            && *target_instance_id == target_id
-            && *reason == HpChangeReason::BasicAttack =>
-        {
-            true
-        }
-        _ => false,
-    });
-    assert!(has_hit, "diagonal target should be in range under chebyshev");
+    let has_hit = result
+        .timeline
+        .entries
+        .iter()
+        .any(|entry| match &entry.event {
+            TimelineEvent::HpChanged {
+                source_instance_id,
+                target_instance_id,
+                reason,
+                ..
+            } if *source_instance_id == Some(attacker_id)
+                && *target_instance_id == target_id
+                && *reason == HpChangeReason::BasicAttack =>
+            {
+                true
+            }
+            _ => false,
+        });
+    assert!(
+        has_hit,
+        "diagonal target should be in range under chebyshev"
+    );
 
-    let has_miss = result.timeline.entries.iter().any(|entry| match &entry.event {
-        TimelineEvent::AttackMiss {
-            attacker_instance_id,
-            target_instance_id,
-            ..
-        } if *attacker_instance_id == attacker_id && *target_instance_id == target_id => true,
-        _ => false,
-    });
+    let has_miss = result
+        .timeline
+        .entries
+        .iter()
+        .any(|entry| match &entry.event {
+            TimelineEvent::AttackMiss {
+                attacker_instance_id,
+                target_instance_id,
+                ..
+            } if *attacker_instance_id == attacker_id && *target_instance_id == target_id => true,
+            _ => false,
+        });
     assert!(!has_miss, "diagonal in-range attack should not miss");
 }
 
@@ -846,14 +1246,17 @@ fn windup_locks_basic_attack_until_resolve() {
         Position::new(1, 0),
     );
 
-    let mut battle = BattleCore::new(&player, &opponent, game_data.clone(), common::BOARD_SIZE, 31337);
+    let mut battle = BattleCore::new(
+        &player,
+        &opponent,
+        game_data.clone(),
+        common::BOARD_SIZE,
+        31337,
+    );
     let mut world = World::new();
     let result = battle.run_battle(&mut world).unwrap();
 
-    common::write_timeline_export(
-        "windup_locks_basic_attack_until_resolve",
-        &result.timeline,
-    );
+    common::write_timeline_export("windup_locks_basic_attack_until_resolve", &result.timeline);
 
     let attacker_id = find_unit_instance_id(&result.timeline, Side::Player, attacker_base_uuid);
 

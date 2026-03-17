@@ -83,12 +83,7 @@ pub(super) fn validate_deaths(
 
 fn referenced_unit_ids(event: &TimelineEvent) -> Vec<UnitInstanceId> {
     match event {
-        TimelineEvent::Attack {
-            attacker_instance_id,
-            target_instance_id,
-            ..
-        }
-        | TimelineEvent::AttackStart {
+        TimelineEvent::AttackStart {
             attacker_instance_id,
             target_instance_id,
             ..
@@ -191,12 +186,7 @@ fn is_dead_unit_operated_on(
     config: &TimelineValidatorConfig,
 ) -> bool {
     match event {
-        TimelineEvent::Attack {
-            attacker_instance_id,
-            target_instance_id,
-            ..
-        }
-        | TimelineEvent::AttackStart {
+        TimelineEvent::AttackStart {
             attacker_instance_id,
             target_instance_id,
             ..

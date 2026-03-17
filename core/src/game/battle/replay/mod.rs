@@ -165,12 +165,7 @@ impl TimelineReplayer {
                     // Movement is validated in `battle::validation`; replay focuses on cause/outcome links.
                 }
 
-                TimelineEvent::Attack {
-                    attacker_instance_id,
-                    target_instance_id,
-                    kind,
-                }
-                | TimelineEvent::AttackStart {
+                TimelineEvent::AttackStart {
                     attacker_instance_id,
                     target_instance_id,
                     kind,
@@ -269,8 +264,7 @@ impl TimelineReplayer {
                         let parent_event = &timeline.entries[parent_index].event;
                         let valid_parent = matches!(
                             parent_event,
-                            TimelineEvent::Attack { .. }
-                                | TimelineEvent::AttackStart { .. }
+                            TimelineEvent::AttackStart { .. }
                                 | TimelineEvent::AttackResolve { .. }
                                 | TimelineEvent::AttackMiss { .. }
                                 | TimelineEvent::AbilityCast { .. }
@@ -461,7 +455,6 @@ impl TimelineReplayer {
                     if !matches!(
                         timeline.entries[parent_index].event,
                         TimelineEvent::AutoCastStart { .. }
-                            | TimelineEvent::Attack { .. }
                             | TimelineEvent::AttackStart { .. }
                             | TimelineEvent::AttackResolve { .. }
                             | TimelineEvent::BuffTick { .. }
@@ -721,8 +714,7 @@ impl TimelineReplayer {
 
                     let valid_cause = matches!(
                         timeline.entries[cause_index].event,
-                        TimelineEvent::Attack { .. }
-                            | TimelineEvent::AttackStart { .. }
+                        TimelineEvent::AttackStart { .. }
                             | TimelineEvent::AttackResolve { .. }
                             | TimelineEvent::AbilityCast { .. }
                             | TimelineEvent::BuffTick { .. }
@@ -779,8 +771,7 @@ impl TimelineReplayer {
 
                     let valid_cause = matches!(
                         timeline.entries[cause_index].event,
-                        TimelineEvent::Attack { .. }
-                            | TimelineEvent::AttackStart { .. }
+                        TimelineEvent::AttackStart { .. }
                             | TimelineEvent::AttackResolve { .. }
                             | TimelineEvent::AbilityCast { .. }
                             | TimelineEvent::BuffTick { .. }

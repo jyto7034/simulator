@@ -1,0 +1,16 @@
+[package]
+name = "client_meta_builder"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+ron = "0.5"
+uuid = { version = "1", features = ["serde"] }
+
+# Uses sqlx to create/populate a SQLite DB.
+# Note: this crate is a build-time tool; runtime uses Unity-side SQLite.
+tokio = { version = "1.15", features = ["macros", "rt-multi-thread"] }
+sqlx = { version = "0.8", features = ["runtime-tokio", "sqlite"] }

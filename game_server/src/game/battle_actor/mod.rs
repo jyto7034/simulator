@@ -1,9 +1,6 @@
 use tracing::info;
 
-use crate::{
-    matchmaking::matchmaker::operations::try_match::PlayerCandidate,
-    GameMode,
-};
+use crate::{matchmaking::matchmaker::operations::try_match::PlayerCandidate, GameMode};
 
 pub mod messages;
 pub mod simulator;

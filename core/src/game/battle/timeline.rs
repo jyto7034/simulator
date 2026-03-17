@@ -142,7 +142,6 @@ pub struct TimelineEntry {
 }
 
 impl TimelineEntry {
-    /// Compatibility helper: returns the parent seq if this entry has a parent.
     pub fn cause_seq(&self) -> Option<u64> {
         self.cause.parent_seq()
     }
@@ -193,14 +192,6 @@ pub enum TimelineEvent {
         pos_y_units: i64,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         until_ms: Option<u64>,
-    },
-    /// Legacy: used in older timelines for attack start events.
-    /// Prefer `AttackStart` / `AttackResolve` / `AttackMiss`.
-    Attack {
-        attacker_instance_id: UnitInstanceId,
-        target_instance_id: UnitInstanceId,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        kind: Option<AttackKind>,
     },
     AttackStart {
         attacker_instance_id: UnitInstanceId,

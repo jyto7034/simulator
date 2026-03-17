@@ -223,7 +223,11 @@ impl PlayerActor {
                 info!("[{}] Dequeued", self.player_id);
                 self.state = PlayerState::Idle;
             }
-            ServerMessage::MatchFound { winner_id, opponent_id, .. } => {
+            ServerMessage::MatchFound {
+                winner_id,
+                opponent_id,
+                ..
+            } => {
                 info!(
                     "[{}] Match found - opponent: {}, winner: {}",
                     self.player_id, opponent_id, winner_id

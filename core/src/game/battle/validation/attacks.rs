@@ -12,12 +12,7 @@ pub(super) fn validate_attacks(
 ) {
     for (index, entry) in timeline.entries.iter().enumerate() {
         let (attacker_instance_id, target_instance_id) = match &entry.event {
-            TimelineEvent::Attack {
-                attacker_instance_id,
-                target_instance_id,
-                ..
-            }
-            | TimelineEvent::AttackStart {
+            TimelineEvent::AttackStart {
                 attacker_instance_id,
                 target_instance_id,
                 ..

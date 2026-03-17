@@ -9,7 +9,11 @@ use uuid::Uuid;
 
 use crate::{
     matchmaking::matchmaker::{
-        operations::{notify::{self, MessageRoutingDeps}, try_match::PlayerCandidate, with_redis_timeout},
+        operations::{
+            notify::{self, MessageRoutingDeps},
+            try_match::PlayerCandidate,
+            with_redis_timeout,
+        },
         scripts, MatchmakerDeps,
     },
     shared::protocol::{ErrorCode, ServerMessage},
@@ -202,7 +206,9 @@ pub async fn enqueue(
         )
         .await;
 
-        ServerMessage::EnQueued { pod_id: pod_id.to_string() }
+        ServerMessage::EnQueued {
+            pod_id: pod_id.to_string(),
+        }
     } else {
         warn!("Player {} already in queue {:?}", player_id, game_mode);
 

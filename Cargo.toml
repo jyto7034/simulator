@@ -10,7 +10,8 @@ members = [
     "test_client",
     "metrics",
     "game_server",
-    "env"
+    "env",
+    "tools/client_meta_builder"
 ]
 
 resolver = "2"

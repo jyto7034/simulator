@@ -139,8 +139,7 @@ impl TimelineValidator {
         if self.config.require_attack_kind
             && matches!(
                 &entry.event,
-                TimelineEvent::Attack { kind: None, .. }
-                    | TimelineEvent::AttackStart { kind: None, .. }
+                TimelineEvent::AttackStart { kind: None, .. }
                     | TimelineEvent::AttackResolve { kind: None, .. }
                     | TimelineEvent::AttackMiss { kind: None, .. }
             )

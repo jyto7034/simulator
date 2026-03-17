@@ -1,0 +1,84 @@
+ClientMetaDb(
+  version: "dev",
+
+  units: [
+    (
+      base_uuid: "00000000-0000-0000-0000-0000c0a57e01",
+      prefab: "Replay/Units/UnitPlaceholder",
+    ),
+    (
+      base_uuid: "00000000-0000-0000-0000-0000c0a57e02",
+      prefab: "Replay/Units/UnitPlaceholder",
+    ),
+  ],
+
+  skills: [
+    (
+      skill_id: "poison_skill",
+    ),
+  ],
+
+  buffs: [
+    (
+      buff_key: "poison",
+    ),
+  ],
+
+  equipments: [],
+  artifacts: [],
+)
+// ClientMetaDb(
+//   version: "dev",
+
+//   // base_uuid -> prefab/VFX (all addresses are Addressables strings)
+//   units: [
+//     // (
+//     //   base_uuid: "f0102000-0000-0000-0000-000000000001",
+//     //   prefab: "Units/f-01-02/Prefab",
+//     //   spawn_vfx: Some("Vfx/Units/f-01-02/Spawn"),
+//     //   death_vfx: Some("Vfx/Units/f-01-02/Death"),
+//     //   basic_projectile: Some("Vfx/Projectiles/Basic"),
+//     //   basic_hit_vfx: Some("Vfx/Hits/Basic"),
+//     // ),
+//   ],
+
+//   // skill_id -> cast/projectile/hit
+//   skills: [
+//     // (
+//     //   skill_id: "scorched_explosion",
+//     //   cast_anim: Some("Anim/Units/ScorchedGirl/Cast"),
+//     //   cast_vfx: Some("Vfx/Skills/scorched_explosion/Cast"),
+//     //   projectile: Some("Vfx/Skills/scorched_explosion/Projectile"),
+//     //   hit_vfx: Some("Vfx/Skills/scorched_explosion/Hit"),
+//     // ),
+//   ],
+
+//   // buff_key -> apply/tick/aura/expire
+//   buffs: [
+//     // (
+//     //   buff_key: "poison",
+//     //   apply_vfx: Some("Vfx/Buffs/poison/Apply"),
+//     //   tick_vfx: Some("Vfx/Buffs/poison/Tick"),
+//     //   aura_vfx: Some("Vfx/Buffs/poison/Aura"),
+//     //   expire_vfx: Some("Vfx/Buffs/poison/Expire"),
+//     // ),
+//   ],
+
+//   equipments: [
+//     // (
+//     //   base_uuid: "650e8400-e29b-41d4-a716-446655440021",
+//     //   prefab: Some("Items/Equipments/justitia/Prefab"),
+//     //   spawn_vfx: Some("Vfx/Items/justitia/Spawn"),
+//     //   icon: Some("Icons/Equipments/justitia"),
+//     // ),
+//   ],
+
+//   artifacts: [
+//     // (
+//     //   base_uuid: "650e8400-e29b-41d4-a716-446655440011",
+//     //   prefab: Some("Items/Artifacts/one_sin/Prefab"),
+//     //   spawn_vfx: Some("Vfx/Artifacts/one_sin/Spawn"),
+//     //   icon: Some("Icons/Artifacts/one_sin"),
+//     // ),
+//   ],
+// )

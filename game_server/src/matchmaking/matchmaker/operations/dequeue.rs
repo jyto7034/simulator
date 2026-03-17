@@ -8,7 +8,11 @@ use uuid::Uuid;
 
 use crate::{
     matchmaking::matchmaker::{
-        operations::{notify::{self, MessageRoutingDeps}, try_match::PlayerCandidate, with_redis_timeout},
+        operations::{
+            notify::{self, MessageRoutingDeps},
+            try_match::PlayerCandidate,
+            with_redis_timeout,
+        },
         MatchmakerDeps,
     },
     shared::protocol::{ErrorCode, ServerMessage},
