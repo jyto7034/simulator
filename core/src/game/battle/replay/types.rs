@@ -94,6 +94,7 @@ impl ExpectedDecision {
                     attacker_instance_id: actual_attacker,
                     target_instance_id: actual_target,
                     kind: actual_kind,
+                    ..
                 },
             ) => {
                 *expected_time == time_ms

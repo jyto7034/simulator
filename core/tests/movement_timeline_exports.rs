@@ -154,7 +154,13 @@ fn movement_detours_around_static_blockers_exports_timeline() {
     );
 
     let mut world = World::new();
-    let mut battle = BattleCore::new(&player_deck, &opponent_deck, game_data, common::BOARD_SIZE, 123);
+    let mut battle = BattleCore::new(
+        &player_deck,
+        &opponent_deck,
+        game_data,
+        common::BOARD_SIZE,
+        123,
+    );
     let result = battle.run_battle(&mut world).expect("battle runs");
 
     assert!(any_unit_moved(&result.timeline));
@@ -208,7 +214,13 @@ fn movement_unreachable_when_all_in_range_tiles_blocked_exports_timeline() {
     );
 
     let mut world = World::new();
-    let mut battle = BattleCore::new(&player_deck, &opponent_deck, game_data, common::BOARD_SIZE, 999);
+    let mut battle = BattleCore::new(
+        &player_deck,
+        &opponent_deck,
+        game_data,
+        common::BOARD_SIZE,
+        999,
+    );
     let result = battle.run_battle(&mut world).expect("battle runs");
 
     assert!(!any_unit_moved(&result.timeline));
@@ -218,10 +230,11 @@ fn movement_unreachable_when_all_in_range_tiles_blocked_exports_timeline() {
 }
 
 #[test]
-fn movement_collision_triggers_wait_repath_exports_timeline() {
+fn movement_collision_uses_local_step_reservations_without_forced_wait_repath() {
     // Scenario:
-    // - Two movers attempt to step into the same merge tile at the same time.
-    // - One mover should abort to WaitRepath, producing MovementStopped(wait_repath).
+    // - Two movers converge toward the same corridor.
+    // - With step-local reservations, both should be able to progress without
+    //   globally reserving the whole destination path and forcing an early WaitRepath.
     let mover_base = Uuid::from_u128(0xD200_0001);
     let enemy_base = Uuid::from_u128(0xD200_0002);
     let blocker_base = Uuid::from_u128(0xD200_00FF);
@@ -307,15 +320,24 @@ fn movement_collision_triggers_wait_repath_exports_timeline() {
     );
 
     let mut world = World::new();
-    let mut battle = BattleCore::new(&player_deck, &opponent_deck, game_data, common::BOARD_SIZE, 4242);
+    let mut battle = BattleCore::new(
+        &player_deck,
+        &opponent_deck,
+        game_data,
+        common::BOARD_SIZE,
+        4242,
+    );
     let result = battle.run_battle(&mut world).expect("battle runs");
 
     assert!(any_unit_moved(&result.timeline));
-    assert!(any_movement_stopped_reason(
-        &result.timeline,
-        MovementStopReason::WaitRepath
-    ));
+    assert!(
+        !any_movement_stopped_reason(&result.timeline, MovementStopReason::WaitRepath),
+        "step-local reservations should avoid early wait_repath in this corridor case"
+    );
 
-    let path = export_timeline("movement_collision_wait_repath", &result.timeline);
+    let path = export_timeline(
+        "movement_collision_local_step_reservations",
+        &result.timeline,
+    );
     println!("wrote timeline: {}", path.display());
 }

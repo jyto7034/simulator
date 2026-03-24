@@ -8,16 +8,17 @@ pub enum SkillKind {
     Untargeted,
 }
 
+impl Default for SkillKind {
+    fn default() -> Self {
+        Self::Targeted
+    }
+}
+
 /// 집중(focus) 동안 허용되는 행동.
-///
-/// - 기본값은 "아무것도 허용하지 않음"(= 하드 락)으로 둔다.
-/// - 런타임에서 실제로 "언제까지 락인지"는 `ActionLocks`가 관리한다.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct FocusPermissions {
-    /// 집중 동안 이동 허용
     #[serde(default)]
     pub allows_move: bool,
-    /// 집중 동안 기본 공격 "시작" 허용
     #[serde(default)]
     pub allows_basic_attack: bool,
 }
@@ -34,6 +35,8 @@ impl Default for FocusPermissions {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum UnitTargetRule {
     Nearest,
+    CurrentTarget,
+    LowestHealthEnemy,
 }
 
 impl Default for UnitTargetRule {
@@ -42,39 +45,32 @@ impl Default for UnitTargetRule {
     }
 }
 
-/// - 이 값은 "이번 캐스트에서 선택된 타겟"이 아니라, 스킬의 타겟팅/적용 규칙(메타데이터)이다.
-/// - 실제 선택 결과(예: 특정 유닛/타일)는 타임라인/캐스트 컨텍스트가 가진다.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SkillTarget {
-    /// 자신에게만 적용
     SelfUnit,
-    /// 단일 적에게 적용 (타겟 선택 규칙 포함)
     EnemySingle {
         #[serde(default)]
         rule: UnitTargetRule,
     },
-    /// 아군 전체에게 적용(범위는 스킬 정의가 결정)
-    Allies { area: SkillArea },
-    /// 적군 전체에게 적용(범위는 스킬 정의가 결정)
-    Enemies { area: SkillArea },
+    Allies {
+        area: SkillArea,
+    },
+    Enemies {
+        area: SkillArea,
+    },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SkillArea {
-    /// 전장 전체
     All,
-    /// caster 타일 기준 chebyshev 반경
     RadiusChebyshev { radius_tiles: u8 },
+    Line { length_tiles: u8 },
 }
 
 impl Default for SkillArea {
     fn default() -> Self {
         Self::All
     }
-}
-
-fn default_skill_target() -> SkillTarget {
-    SkillTarget::SelfUnit
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -89,36 +85,91 @@ impl Default for DeliveryDef {
     }
 }
 
-fn default_cast_delay_ms() -> u32 {
-    10
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct SkillPresentationDef {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cast_state: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub projectile_vfx_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub impact_vfx_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub target_anchor: Option<String>,
+}
+
+fn default_step_id() -> String {
+    "step".to_string()
+}
+
+fn default_step_range_tiles() -> u8 {
+    1
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SkillStepDef {
+    #[serde(default = "default_step_id")]
+    pub id: String,
+    #[serde(default)]
+    pub delay_ms: u32,
+    #[serde(default = "default_step_range_tiles")]
+    pub range_tiles: u8,
+    pub target: SkillTarget,
+    #[serde(default)]
+    pub delivery: DeliveryDef,
+    #[serde(default)]
+    pub effects: Vec<SkillEffectDef>,
+    #[serde(default)]
+    pub presentation: SkillPresentationDef,
+}
+
+fn default_skill_name() -> String {
+    "Unnamed Skill".to_string()
 }
 
 /// 데이터 기반 스킬 정의 (RON 로드 대상)
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SkillDef {
     pub id: SkillId,
+    #[serde(default = "default_skill_name")]
+    pub name: String,
+    #[serde(default)]
     pub kind: SkillKind,
-    #[serde(default = "default_skill_target")]
-    pub target: SkillTarget,
-    pub range_tiles: u8,
-    #[serde(default = "default_cast_delay_ms")]
-    pub cast_delay_ms: u32,
     #[serde(default)]
     pub focus_time_ms: u32,
     #[serde(default)]
     pub focus_permissions: FocusPermissions,
-    pub delivery: DeliveryDef,
     #[serde(default)]
-    pub effects: Vec<SkillEffectDef>,
+    pub steps: Vec<SkillStepDef>,
 }
 
 /// 스킬 효과(초안): 구현 단계에서 커맨드/시스템으로 매핑될 수 있는 데이터 표현
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum SkillEffectDef {
-    Damage { amount: i32 },
-    Heal { amount: i32 },
-    ApplyBuff { buff_id: String, duration_ms: u32 },
-    ExtraAttack { count: u8 },
+    Damage {
+        amount: i32,
+    },
+    Heal {
+        amount: i32,
+    },
+    ModifyResonance {
+        amount: i32,
+    },
+    ModifyStats {
+        modifier: crate::game::stats::StatModifier,
+    },
+    ApplyBuff {
+        buff_id: String,
+        duration_ms: u32,
+    },
+    ExtraAttack {
+        count: u8,
+    },
+}
+
+impl SkillDef {
+    pub fn first_step(&self) -> Option<&SkillStepDef> {
+        self.steps.first()
+    }
 }
 
 #[cfg(test)]
@@ -133,20 +184,39 @@ mod tests {
     }
 
     #[test]
-    fn skill_def_ron_deserialization_applies_defaults() {
-        let def: SkillDef =
-            ron::de::from_str(r#"(id:"s1", kind:Targeted, range_tiles:1, delivery:Instant)"#)
-                .unwrap();
+    fn skill_def_ron_deserialization_reads_step_based_schema() {
+        let def: SkillDef = ron::de::from_str(
+            r#"
+            (
+                id:"s1",
+                name:"Test Skill",
+                focus_time_ms:200,
+                steps:[
+                    (
+                        id:"hit",
+                        range_tiles:3,
+                        target:EnemySingle(rule:Nearest),
+                        delivery:Instant,
+                        effects:[Damage(amount:10)],
+                    ),
+                ],
+            )
+            "#,
+        )
+        .unwrap();
 
         assert_eq!(def.id, "s1");
+        assert_eq!(def.name, "Test Skill");
         assert_eq!(def.kind, SkillKind::Targeted);
-        assert_eq!(def.target, SkillTarget::SelfUnit);
-        assert_eq!(def.range_tiles, 1);
-        assert_eq!(def.cast_delay_ms, 10);
-        assert_eq!(def.focus_time_ms, 0);
-        assert_eq!(def.focus_permissions, FocusPermissions::default());
-        assert!(matches!(def.delivery, DeliveryDef::Instant));
-        assert!(def.effects.is_empty());
+        assert_eq!(def.focus_time_ms, 200);
+        assert_eq!(def.steps.len(), 1);
+        assert_eq!(def.steps[0].id, "hit");
+        assert_eq!(def.steps[0].range_tiles, 3);
+        assert!(matches!(
+            def.steps[0].target,
+            SkillTarget::EnemySingle { .. }
+        ));
+        assert!(matches!(def.steps[0].delivery, DeliveryDef::Instant));
     }
 
     #[test]

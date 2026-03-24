@@ -32,6 +32,43 @@ fn projectile_flight_ms(distance_units: u64, speed_units_per_ms: u32) -> u64 {
 }
 
 impl BattleCore {
+    fn finalize_unit_death(
+        &mut self,
+        source_instance_id: Option<UnitInstanceId>,
+        target_instance_id: UnitInstanceId,
+        target_owner: Side,
+        time_ms: u64,
+    ) {
+        let interrupted = self.interrupt_movement(
+            time_ms,
+            target_instance_id,
+            MovementStopReason::Died,
+            None,
+            ActionState::Dead,
+        );
+        if !interrupted {
+            if let Some(target) = self.units.get_mut(&target_instance_id) {
+                target.move_epoch = target.move_epoch.wrapping_add(1);
+                target.action_state = ActionState::Dead;
+            }
+        }
+
+        if let Some(position) = self.battlefield.remove(target_instance_id) {
+            if let Some(target) = self.units.get(&target_instance_id) {
+                self.graveyard
+                    .insert(target_instance_id, target.to_snapshot(position));
+            }
+        }
+        self.record_timeline(
+            time_ms,
+            TimelineEvent::UnitDied {
+                unit_instance_id: target_instance_id,
+                owner: target_owner,
+                killer_instance_id: source_instance_id,
+            },
+        );
+    }
+
     pub(super) fn schedule_projectile_hit_event(
         &mut self,
         fired_at_ms: u64,
@@ -159,29 +196,11 @@ impl BattleCore {
         }
 
         if hp_after == 0 {
-            if let Some(target) = self.units.get_mut(&target_instance_id) {
-                target.move_epoch = target.move_epoch.wrapping_add(1);
-                target.action_state = ActionState::Idle;
-            }
-            self.record_movement_stopped(
-                time_ms,
+            self.finalize_unit_death(
+                source_instance_id,
                 target_instance_id,
-                MovementStopReason::InvalidState,
-                None,
-            );
-            if let Some(position) = self.battlefield.remove(target_instance_id) {
-                if let Some(target) = self.units.get(&target_instance_id) {
-                    self.graveyard
-                        .insert(target_instance_id, target.to_snapshot(position));
-                }
-            }
-            self.record_timeline(
+                target_owner,
                 time_ms,
-                TimelineEvent::UnitDied {
-                    unit_instance_id: target_instance_id,
-                    owner: target_owner,
-                    killer_instance_id: source_instance_id,
-                },
             );
         }
     }
@@ -246,25 +265,11 @@ impl BattleCore {
         }
 
         if hp_after == 0 {
-            self.record_movement_stopped(
-                time_ms,
+            self.finalize_unit_death(
+                source_instance_id,
                 target_instance_id,
-                MovementStopReason::InvalidState,
-                None,
-            );
-            if let Some(position) = self.battlefield.remove(target_instance_id) {
-                if let Some(target) = self.units.get(&target_instance_id) {
-                    self.graveyard
-                        .insert(target_instance_id, target.to_snapshot(position));
-                }
-            }
-            self.record_timeline(
+                target_owner,
                 time_ms,
-                TimelineEvent::UnitDied {
-                    unit_instance_id: target_instance_id,
-                    owner: target_owner,
-                    killer_instance_id: source_instance_id,
-                },
             );
         }
     }
@@ -299,22 +304,22 @@ impl BattleCore {
                     return;
                 }
             }
-            ProjectilePayload::Skill {
+            ProjectilePayload::SkillStep {
                 skill_id,
+                step_id,
                 cast_target,
-                ..
             } => {
                 let Some(skill) = self.game_data.skill_data.get_by_id(&skill_id).cloned() else {
                     return;
                 };
 
-                let targets = self.resolve_skill_targets_at_execute(
-                    attacker_instance_id,
-                    &skill,
-                    cast_target,
-                );
+                let Some(step) = Self::resolve_skill_step_by_id(&skill, &step_id) else {
+                    return;
+                };
+                let targets =
+                    self.resolve_skill_step_targets(attacker_instance_id, step, cast_target);
                 let commands =
-                    Self::build_skill_effect_commands(attacker_instance_id, &skill, &targets);
+                    Self::build_skill_step_commands(attacker_instance_id, step, &targets);
 
                 if !commands.is_empty() {
                     self.process_commands(commands, time_ms);
@@ -586,6 +591,18 @@ impl BattleCore {
                         HpChangeReason::Command,
                     );
                 }
+                BattleCommand::ModifyResonance {
+                    target_id,
+                    amount,
+                    allow_autocast_when_full,
+                } => {
+                    self.modify_resonance(
+                        target_id,
+                        amount,
+                        current_time_ms,
+                        allow_autocast_when_full,
+                    );
+                }
                 BattleCommand::ScheduleAttack {
                     attacker_id,
                     target_id,
@@ -623,11 +640,13 @@ impl BattleCore {
 mod tests {
     use super::projectile_flight_ms;
     use crate::ecs::resources::Position;
-    use crate::game::battle::core::movement::ActionState;
-    use crate::game::battle::core::ProjectileRecord;
+    use crate::game::battle::core::movement::{ActionState, MovementState};
     use crate::game::battle::core::types::RuntimeUnit;
+    use crate::game::battle::core::ProjectileRecord;
     use crate::game::battle::enums::ProjectilePayload;
-    use crate::game::battle::timeline::{HpChangeReason, Timeline};
+    use crate::game::battle::timeline::{
+        HpChangeReason, MovementStopReason, Timeline, TimelineEvent,
+    };
     use crate::game::battle::types::PlayerDeckInfo;
     use crate::game::data::{
         abnormality_data::AbnormalityDatabase, artifact_data::ArtifactDatabase,
@@ -751,7 +770,7 @@ mod tests {
                 next_action_time: 0,
                 pending_cast: false,
                 pending_cast_cause: None,
-                pending_autocast: None,
+                pending_skill_cast: None,
             },
         );
 
@@ -776,7 +795,7 @@ mod tests {
                 next_action_time: 0,
                 pending_cast: false,
                 pending_cast_cause: None,
-                pending_autocast: None,
+                pending_skill_cast: None,
             },
         );
 
@@ -846,5 +865,84 @@ mod tests {
             "apply_projectile_hit_is_idempotent_for_same_projectile_id",
             &core.timeline,
         );
+    }
+
+    #[test]
+    fn apply_hp_delta_records_died_stop_with_latest_continuous_position() {
+        let empty_deck = PlayerDeckInfo {
+            units: vec![],
+            artifacts: vec![],
+            positions: HashMap::new(),
+        };
+        let mut core =
+            super::BattleCore::new(&empty_deck, &empty_deck, empty_game_data(), (4, 4), 1);
+
+        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(3));
+        let mut target_stats = UnitStats::with_values(100, 100, 0, 0, 1000);
+        target_stats.move_speed_units_per_ms = 10;
+
+        let mut movement = MovementState::new_at(Position::new(0, 0), 100);
+        movement.target_x_units = 100;
+        movement.target_y_units = 0;
+        movement.last_update_ms = 100;
+
+        core.units.insert(
+            target_id,
+            RuntimeUnit {
+                instance_id: target_id,
+                owner: Side::Opponent,
+                base_uuid: Uuid::nil(),
+                stats: target_stats,
+                pos_x_units: 0,
+                pos_y_units: 0,
+                move_epoch: 0,
+                action_state: ActionState::Moving(movement),
+                action_locks: Default::default(),
+                current_target: None,
+                next_basic_attack_ms: 0,
+                pending_basic_attack: false,
+                resonance_current: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 0,
+                next_action_time: 0,
+                pending_cast: false,
+                pending_cast_cause: None,
+                pending_skill_cast: None,
+            },
+        );
+        core.battlefield
+            .place(target_id, Position::new(0, 0))
+            .unwrap();
+
+        core.apply_hp_delta_and_record(None, target_id, -999, 105, HpChangeReason::Command);
+
+        let target = core
+            .units
+            .get(&target_id)
+            .expect("target should remain in units map");
+        assert_eq!(target.stats.current_health, 0);
+        assert_eq!(target.pos_x_units, 50);
+        assert!(matches!(target.action_state, ActionState::Dead));
+
+        let stop_entry = core
+            .timeline
+            .entries
+            .iter()
+            .find(|entry| matches!(entry.event, TimelineEvent::MovementStopped { .. }))
+            .expect("missing MovementStopped");
+
+        match &stop_entry.event {
+            TimelineEvent::MovementStopped {
+                reason,
+                pos_x_units,
+                pos_y_units,
+                ..
+            } => {
+                assert_eq!(*reason, MovementStopReason::Died);
+                assert_eq!(*pos_x_units, 50);
+                assert_eq!(*pos_y_units, 0);
+            }
+            _ => unreachable!("expected MovementStopped"),
+        }
     }
 }

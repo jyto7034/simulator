@@ -364,6 +364,30 @@ pub(super) fn validate_reference_spawn_order(
                     );
                 }
             }
+            TimelineEvent::AbilityStepTriggered {
+                caster_instance_id,
+                target_instance_id,
+                ..
+            } => {
+                validate_unit_reference_spawned(
+                    extracted,
+                    *caster_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+                if let Some(target_id) = target_instance_id {
+                    validate_unit_reference_spawned(
+                        extracted,
+                        *target_id,
+                        index,
+                        time_ms,
+                        &entry_desc,
+                        violations,
+                    );
+                }
+            }
             TimelineEvent::BuffApplied {
                 caster_instance_id,
                 target_instance_id,

@@ -89,9 +89,9 @@ pub(super) enum TriggerSource {
 }
 
 #[derive(Debug, Clone)]
-pub(super) struct PendingAutoCast {
+pub(super) struct PendingSkillCast {
     pub(super) skill_id: SkillId,
-    pub(super) start_target: Option<SkillCastTarget>,
+    pub(super) cast_target: Option<SkillCastTarget>,
 }
 
 pub struct RuntimeUnit {
@@ -105,9 +105,7 @@ pub struct RuntimeUnit {
     pub action_state: ActionState,
     pub action_locks: ActionLocks,
     pub current_target: Option<UnitInstanceId>,
-    /// Next time this unit is eligible to start a basic attack (auto cadence).
     pub next_basic_attack_ms: u64,
-    /// Auto attack is ready but waiting for a target to enter range.
     pub pending_basic_attack: bool,
     pub resonance_current: u32,
     pub resonance_max: u32,
@@ -115,7 +113,7 @@ pub struct RuntimeUnit {
     pub next_action_time: u64,
     pub pending_cast: bool,
     pub pending_cast_cause: Option<TimelineCause>,
-    pub(super) pending_autocast: Option<PendingAutoCast>,
+    pub(super) pending_skill_cast: Option<PendingSkillCast>,
 }
 
 impl RuntimeUnit {

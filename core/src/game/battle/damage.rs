@@ -69,6 +69,12 @@ pub enum BattleCommand {
         /// 커맨드를 유발한 주체 (킬 크레딧/트리거용). 없으면 환경/미상.
         source_id: Option<UnitInstanceId>,
     },
+    /// 공명 변경 요청
+    ModifyResonance {
+        target_id: UnitInstanceId,
+        amount: i32,
+        allow_autocast_when_full: bool,
+    },
     /// 다음 공격 예약
     ScheduleAttack {
         attacker_id: UnitInstanceId,

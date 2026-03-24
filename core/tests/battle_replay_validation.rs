@@ -6,11 +6,15 @@ use std::sync::Arc;
 use bevy_ecs::world::World;
 use game_core::ecs::resources::Position;
 use game_core::game::ability::{
-    DeliveryDef, SkillDef, SkillEffectDef, SkillKind, SkillTarget, UnitTargetRule,
+    DeliveryDef, SkillDef, SkillEffectDef, SkillKind, SkillPresentationDef, SkillStepDef,
+    SkillTarget, UnitTargetRule,
 };
+use game_core::game::battle::buffs::BuffId;
 use game_core::game::battle::core::BattleCore;
 use game_core::game::battle::replay::{types::TimelineReplayerConfig, TimelineReplayer};
-use game_core::game::battle::timeline::{TimelineCause, TimelineEvent, TimelineRootCause};
+use game_core::game::battle::timeline::{
+    HpChangeReason, TimelineCause, TimelineEvent, TimelineRootCause,
+};
 use game_core::game::battle::types::{OwnedUnit, PlayerDeckInfo};
 use game_core::game::battle::validation::{
     TimelineExpectedCounts, TimelineValidator, TimelineValidatorConfig, TimelineViolationKind,
@@ -76,7 +80,13 @@ fn battle_timeline_replays_and_validates() {
     let opponent = deck_single_unit(opponent_unit, base_uuid, Position::new(3, 3));
 
     // When: 전투를 실행해서 서버-권위 타임라인을 생성한다.
-    let mut battle = BattleCore::new(&player, &opponent, game_data.clone(), common::BOARD_SIZE, 12345);
+    let mut battle = BattleCore::new(
+        &player,
+        &opponent,
+        game_data.clone(),
+        common::BOARD_SIZE,
+        12345,
+    );
     let mut world = World::new();
     let result = battle.run_battle(&mut world).unwrap();
 
@@ -157,18 +167,23 @@ fn battle_timeline_with_autocast_and_buff_tick_replays_and_validates() {
 
     let skills = SkillDatabase::new(vec![SkillDef {
         id: "poison_skill".to_string(),
+        name: "poison_skill".to_string(),
         kind: SkillKind::Targeted,
-        target: SkillTarget::EnemySingle {
-            rule: UnitTargetRule::Nearest,
-        },
-        range_tiles: 1,
-        cast_delay_ms: 0,
         focus_time_ms: 200,
         focus_permissions: Default::default(),
-        delivery: DeliveryDef::Instant,
-        effects: vec![SkillEffectDef::ApplyBuff {
-            buff_id: "poison".to_string(),
-            duration_ms: 5_000,
+        steps: vec![SkillStepDef {
+            id: "step_01".to_string(),
+            delay_ms: 0,
+            range_tiles: 1,
+            target: SkillTarget::EnemySingle {
+                rule: UnitTargetRule::Nearest,
+            },
+            delivery: DeliveryDef::Instant,
+            effects: vec![SkillEffectDef::ApplyBuff {
+                buff_id: "poison".to_string(),
+                duration_ms: 5_000,
+            }],
+            presentation: SkillPresentationDef::default(),
         }],
     }]);
 
@@ -190,7 +205,13 @@ fn battle_timeline_with_autocast_and_buff_tick_replays_and_validates() {
     let opponent = deck_single_unit(opponent_owned, target_base_uuid, Position::new(0, 1));
 
     // When: 전투를 실행한다.
-    let mut battle = BattleCore::new(&player, &opponent, game_data.clone(), common::BOARD_SIZE, 999);
+    let mut battle = BattleCore::new(
+        &player,
+        &opponent,
+        game_data.clone(),
+        common::BOARD_SIZE,
+        999,
+    );
     let mut world = World::new();
     let result = battle.run_battle(&mut world).unwrap();
 
@@ -199,22 +220,224 @@ fn battle_timeline_with_autocast_and_buff_tick_replays_and_validates() {
         &result.timeline,
     );
 
-    // Then: 최소 1회 오토캐스트/버프틱이 타임라인에 존재해야 한다.
-    let has_autocast = result
+    let poison_id = BuffId::from_name("poison");
+
+    let caster_unit_id = result
         .timeline
         .entries
         .iter()
-        .any(|e| matches!(e.event, TimelineEvent::AutoCastStart { .. }));
-    assert!(has_autocast, "오토캐스트가 최소 1회 발생해야 한다");
+        .find_map(|entry| match &entry.event {
+            TimelineEvent::UnitSpawned {
+                unit_instance_id,
+                base_uuid,
+                ..
+            } if *base_uuid == caster_base_uuid => Some(*unit_instance_id),
+            _ => None,
+        })
+        .expect("missing caster spawn");
 
-    // TODO: Add assertions for same-buff re-apply semantics (stack vs refresh, tick parent linkage).
-
-    let has_buff_tick = result
+    let target_unit_id = result
         .timeline
         .entries
         .iter()
-        .any(|e| matches!(e.event, TimelineEvent::BuffTick { .. }));
-    assert!(has_buff_tick, "poison 버프틱이 최소 1회 발생해야 한다");
+        .find_map(|entry| match &entry.event {
+            TimelineEvent::UnitSpawned {
+                unit_instance_id,
+                base_uuid,
+                ..
+            } if *base_uuid == target_base_uuid => Some(*unit_instance_id),
+            _ => None,
+        })
+        .expect("missing target spawn");
+
+    let autocast_start = result
+        .timeline
+        .entries
+        .iter()
+        .find(|entry| {
+            matches!(
+                entry.event,
+                TimelineEvent::AutoCastStart {
+                    caster_instance_id,
+                    ..
+                } if caster_instance_id == caster_unit_id
+            )
+        })
+        .expect("오토캐스트 시작 이벤트가 있어야 한다");
+
+    let ability_cast = result
+        .timeline
+        .entries
+        .iter()
+        .find(|entry| {
+            matches!(
+                entry.event,
+                TimelineEvent::AbilityCast {
+                    ref skill_id,
+                    caster_instance_id: actual_caster,
+                    target_instance_id: Some(actual_target),
+                } if skill_id == "poison_skill"
+                    && actual_caster == caster_unit_id
+                    && actual_target == target_unit_id
+            )
+        })
+        .expect("AbilityCast(poison_skill)가 있어야 한다");
+
+    assert_eq!(
+        ability_cast.cause,
+        TimelineCause::Parent {
+            seq: autocast_start.seq
+        },
+        "AbilityCast는 AutoCastStart의 자식이어야 한다"
+    );
+
+    let buff_applied = result
+        .timeline
+        .entries
+        .iter()
+        .find(|entry| {
+            matches!(
+                entry.event,
+                TimelineEvent::BuffApplied {
+                    caster_instance_id: actual_caster,
+                    target_instance_id: actual_target,
+                    buff_id,
+                    ..
+                } if actual_caster == caster_unit_id
+                    && actual_target == target_unit_id
+                    && buff_id == poison_id
+            )
+        })
+        .expect("poison BuffApplied가 있어야 한다");
+
+    let step_triggered = result
+        .timeline
+        .entries
+        .iter()
+        .find(|entry| {
+            matches!(
+                &entry.event,
+                TimelineEvent::AbilityStepTriggered {
+                    skill_id,
+                    caster_instance_id,
+                    target_instance_id,
+                    ..
+                } if skill_id == "poison_skill"
+                    && *caster_instance_id == caster_unit_id
+                    && *target_instance_id == Some(target_unit_id)
+            )
+        })
+        .expect("poison AbilityStepTriggered가 있어야 한다");
+
+    assert_eq!(
+        buff_applied.cause,
+        TimelineCause::Parent {
+            seq: step_triggered.seq
+        },
+        "BuffApplied는 AbilityStepTriggered의 자식이어야 한다"
+    );
+
+    let buff_ticks: Vec<_> = result
+        .timeline
+        .entries
+        .iter()
+        .filter(|entry| {
+            matches!(
+                entry.event,
+                TimelineEvent::BuffTick {
+                    caster_instance_id: actual_caster,
+                    target_instance_id: actual_target,
+                    buff_id,
+                } if actual_caster == caster_unit_id
+                    && actual_target == target_unit_id
+                    && buff_id == poison_id
+            )
+        })
+        .collect();
+    assert_eq!(
+        buff_ticks.len(),
+        1,
+        "poison buff tick은 1회만 발생해야 한다"
+    );
+
+    assert_eq!(
+        buff_ticks[0].cause,
+        TimelineCause::Parent {
+            seq: buff_applied.seq
+        },
+        "첫 BuffTick은 BuffApplied의 자식이어야 한다"
+    );
+
+    let tick_damage = result
+        .timeline
+        .entries
+        .iter()
+        .find(|entry| {
+            matches!(
+                entry.event,
+                TimelineEvent::HpChanged {
+                    source_instance_id: Some(actual_source),
+                    target_instance_id: actual_target,
+                    reason: HpChangeReason::Command,
+                    ..
+                } if actual_source == caster_unit_id && actual_target == target_unit_id
+            )
+        })
+        .expect("poison tick으로 인한 HpChanged가 있어야 한다");
+
+    assert_eq!(
+        tick_damage.cause,
+        TimelineCause::Parent {
+            seq: buff_ticks[0].seq
+        },
+        "버프 틱 데미지는 BuffTick의 자식이어야 한다"
+    );
+
+    let unit_died = result
+        .timeline
+        .entries
+        .iter()
+        .find(|entry| {
+            matches!(
+                entry.event,
+                TimelineEvent::UnitDied {
+                    unit_instance_id: actual_target,
+                    killer_instance_id: Some(actual_killer),
+                    ..
+                } if actual_target == target_unit_id && actual_killer == caster_unit_id
+            )
+        })
+        .expect("poison tick으로 타겟이 사망해야 한다");
+
+    assert_eq!(
+        unit_died.cause,
+        TimelineCause::Parent {
+            seq: buff_ticks[0].seq
+        },
+        "UnitDied는 치명적인 BuffTick의 자식이어야 한다"
+    );
+
+    let autocast_end = result
+        .timeline
+        .entries
+        .iter()
+        .find(|entry| {
+            matches!(
+                entry.event,
+                TimelineEvent::AutoCastEnd {
+                    caster_instance_id: actual_caster,
+                } if actual_caster == caster_unit_id
+            )
+        })
+        .expect("AutoCastEnd가 있어야 한다");
+
+    assert_eq!(
+        autocast_end.cause,
+        TimelineCause::Parent {
+            seq: autocast_start.seq
+        },
+        "AutoCastEnd는 같은 AutoCastStart의 자식이어야 한다"
+    );
 
     // Then: Replay/Validation이 모두 통과해야 한다.
     let mut replay_config = TimelineReplayerConfig::default();
@@ -238,7 +461,13 @@ fn tampered_timeline_missing_parent_on_hp_changed_is_rejected_by_validation() {
     let player = deck_single_unit(Uuid::from_u128(1), base_uuid, Position::new(0, 0));
     let opponent = deck_single_unit(Uuid::from_u128(2), base_uuid, Position::new(3, 3));
 
-    let mut battle = BattleCore::new(&player, &opponent, game_data.clone(), common::BOARD_SIZE, 12345);
+    let mut battle = BattleCore::new(
+        &player,
+        &opponent,
+        game_data.clone(),
+        common::BOARD_SIZE,
+        12345,
+    );
     let mut world = World::new();
     let result = battle.run_battle(&mut world).unwrap();
 

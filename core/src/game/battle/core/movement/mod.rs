@@ -80,7 +80,9 @@ pub enum ActionState {
 #[derive(Debug, Clone)]
 pub struct EnemyChasePlan {
     pub enemy_id: UnitInstanceId,
+    pub enemy_pos: Position,
     pub chase_dist: u32,
+    pub best_dest: Position,
     pub dest_candidates: Vec<Position>,
 }
 

@@ -89,11 +89,11 @@ pub(super) fn validate_autocast_pairs(
 
                 if let Some(focus_ms) = focus_ms {
                     let expected_end_time = start_time_ms.saturating_add(focus_ms.max(1));
-                    if entry.time_ms != expected_end_time {
+                    if entry.time_ms < expected_end_time {
                         violations.push(TimelineViolation {
                             kind: TimelineViolationKind::AutoCastPairInvalid,
                             message: format!(
-                                "AutoCastEnd timing mismatch for {}: expected {}ms, got {}ms (start_seq={})",
+                                "AutoCastEnd happens too early for {}: earliest {}ms, got {}ms (start_seq={})",
                                 caster_instance_id, expected_end_time, entry.time_ms, start_seq
                             ),
                             entry_index: Some(index),

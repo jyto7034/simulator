@@ -122,6 +122,13 @@ fn referenced_unit_ids(event: &TimelineEvent) -> Vec<UnitInstanceId> {
         } => target_instance_id
             .map(|target| vec![*caster_instance_id, target])
             .unwrap_or_else(|| vec![*caster_instance_id]),
+        TimelineEvent::AbilityStepTriggered {
+            caster_instance_id,
+            target_instance_id,
+            ..
+        } => target_instance_id
+            .map(|target| vec![*caster_instance_id, target])
+            .unwrap_or_else(|| vec![*caster_instance_id]),
         TimelineEvent::BuffApplied {
             caster_instance_id,
             target_instance_id,
@@ -228,6 +235,15 @@ fn is_dead_unit_operated_on(
             config.forbid_dead_units_as_attackers && *caster_instance_id == dead_unit_id
         }
         TimelineEvent::AbilityCast {
+            caster_instance_id,
+            target_instance_id,
+            ..
+        } => {
+            (config.forbid_dead_units_as_attackers && *caster_instance_id == dead_unit_id)
+                || (config.forbid_dead_units_as_targets
+                    && target_instance_id.is_some_and(|t| t == dead_unit_id))
+        }
+        TimelineEvent::AbilityStepTriggered {
             caster_instance_id,
             target_instance_id,
             ..

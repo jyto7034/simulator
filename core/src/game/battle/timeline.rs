@@ -17,15 +17,21 @@ use crate::{
     },
 };
 
-pub const TIMELINE_VERSION: u32 = 8;
+pub const TIMELINE_VERSION: u32 = 11;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum MovementStopReason {
     TargetAcquired,
+    AttackStarted,
+    CastStarted,
     HardCC,
     WaitRepath,
+    /// Logical arrival: the destination tile is now occupied.
+    /// The accompanying continuous coordinates remain the actual simulation-space
+    /// stop position and are not snapped for presentation.
     Arrived,
+    Died,
     InvalidState,
 }
 
@@ -77,6 +83,13 @@ pub enum AttackKind {
     Auto,
     /// Triggered/one-off attack (e.g., ability extra attack).
     Triggered,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum AttackDelivery {
+    Instant,
+    Projectile,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -187,7 +200,11 @@ pub enum TimelineEvent {
     MovementStopped {
         unit_instance_id: UnitInstanceId,
         reason: MovementStopReason,
+        /// The currently occupied logical tile when movement stopped.
         position: Position,
+        /// The actual continuous simulation-space stop position.
+        /// For `Arrived`, this intentionally remains the simulation result rather than
+        /// a presentation-space settle point.
         pos_x_units: i64,
         pos_y_units: i64,
         #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -198,18 +215,24 @@ pub enum TimelineEvent {
         target_instance_id: UnitInstanceId,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         kind: Option<AttackKind>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        delivery: Option<AttackDelivery>,
     },
     AttackResolve {
         attacker_instance_id: UnitInstanceId,
         target_instance_id: UnitInstanceId,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         kind: Option<AttackKind>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        delivery: Option<AttackDelivery>,
     },
     AttackMiss {
         attacker_instance_id: UnitInstanceId,
         target_instance_id: UnitInstanceId,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         kind: Option<AttackKind>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        delivery: Option<AttackDelivery>,
     },
     ProjectileMiss {
         projectile_id: Uuid,
@@ -227,6 +250,12 @@ pub enum TimelineEvent {
     },
     AbilityCast {
         skill_id: SkillId,
+        caster_instance_id: UnitInstanceId,
+        target_instance_id: Option<UnitInstanceId>,
+    },
+    AbilityStepTriggered {
+        skill_id: SkillId,
+        step_id: String,
         caster_instance_id: UnitInstanceId,
         target_instance_id: Option<UnitInstanceId>,
     },

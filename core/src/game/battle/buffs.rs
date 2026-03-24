@@ -32,6 +32,12 @@ pub enum BuffKind {
     Silence,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BuffReapplyPolicy {
+    StackRefreshDurationKeepCadence,
+    RefreshDuration,
+}
+
 #[derive(Debug, Clone, Copy)]
 pub struct BuffDef {
     pub id: BuffId,
@@ -39,10 +45,7 @@ pub struct BuffDef {
     pub kind: BuffKind,
     pub tick_interval_ms: u64,
     pub max_stacks: u8,
-    // TODO: Decide re-apply semantics per buff:
-    // - Stack policy: add/replace/ignore.
-    // - Duration policy: extend(max/add) vs refresh(reset remaining).
-    // - Tick policy: keep cadence vs reset next_tick on re-apply.
+    pub reapply_policy: BuffReapplyPolicy,
 }
 
 static REGISTRY: Lazy<HashMap<BuffId, BuffDef>> = Lazy::new(|| {
@@ -52,6 +55,7 @@ static REGISTRY: Lazy<HashMap<BuffId, BuffDef>> = Lazy::new(|| {
         kind: BuffKind::PeriodicDamage { damage_per_tick: 2 },
         tick_interval_ms: 1000,
         max_stacks: 10,
+        reapply_policy: BuffReapplyPolicy::StackRefreshDurationKeepCadence,
     };
 
     let stun = BuffDef {
@@ -60,6 +64,7 @@ static REGISTRY: Lazy<HashMap<BuffId, BuffDef>> = Lazy::new(|| {
         kind: BuffKind::Stun,
         tick_interval_ms: 0,
         max_stacks: 1,
+        reapply_policy: BuffReapplyPolicy::RefreshDuration,
     };
 
     let freeze = BuffDef {
@@ -68,9 +73,19 @@ static REGISTRY: Lazy<HashMap<BuffId, BuffDef>> = Lazy::new(|| {
         kind: BuffKind::Freeze,
         tick_interval_ms: 0,
         max_stacks: 1,
+        reapply_policy: BuffReapplyPolicy::RefreshDuration,
     };
 
-    [poison, stun, freeze]
+    let silence = BuffDef {
+        id: BuffId::from_name("silence"),
+        name: "silence",
+        kind: BuffKind::Silence,
+        tick_interval_ms: 0,
+        max_stacks: 1,
+        reapply_policy: BuffReapplyPolicy::RefreshDuration,
+    };
+
+    [poison, stun, freeze, silence]
         .into_iter()
         .map(|def| (def.id, def))
         .collect()
@@ -97,6 +112,10 @@ mod tests {
         assert!(matches!(poison.kind, BuffKind::PeriodicDamage { .. }));
         assert_eq!(poison.max_stacks, 10);
         assert_eq!(poison.tick_interval_ms, 1000);
+        assert_eq!(
+            poison.reapply_policy,
+            BuffReapplyPolicy::StackRefreshDurationKeepCadence
+        );
 
         let stun = get(BuffId::from_name("stun")).unwrap();
         assert_eq!(stun.name, "stun");
@@ -107,6 +126,11 @@ mod tests {
         assert_eq!(freeze.name, "freeze");
         assert!(matches!(freeze.kind, BuffKind::Freeze));
         assert_eq!(freeze.max_stacks, 1);
+
+        let silence = get(BuffId::from_name("silence")).unwrap();
+        assert_eq!(silence.name, "silence");
+        assert!(matches!(silence.kind, BuffKind::Silence));
+        assert_eq!(silence.max_stacks, 1);
 
         assert!(get(BuffId::from_name("unknown_buff")).is_none());
     }

@@ -147,8 +147,79 @@ impl BattleCore {
         );
     }
 
+    fn modify_resonance(
+        &mut self,
+        unit_instance_id: UnitInstanceId,
+        delta: i32,
+        now_ms: u64,
+        allow_autocast_when_full: bool,
+    ) {
+        if delta == 0 {
+            return;
+        }
+
+        if delta > 0 {
+            self.add_resonance(
+                unit_instance_id,
+                delta as u32,
+                now_ms,
+                allow_autocast_when_full,
+            );
+            return;
+        }
+
+        let (before, after, max) = {
+            let Some(unit) = self.units.get_mut(&unit_instance_id) else {
+                return;
+            };
+
+            if unit.is_dead() {
+                return;
+            }
+
+            let max = unit.resonance_max.max(1);
+            let before = unit.resonance_current.min(max);
+            let dec = delta.unsigned_abs().min(before);
+            let after = before.saturating_sub(dec);
+            if before == after {
+                return;
+            }
+
+            unit.resonance_current = after;
+            (before, after, max)
+        };
+
+        self.record_timeline(
+            now_ms,
+            TimelineEvent::ResonanceChanged {
+                unit_instance_id,
+                before,
+                after,
+                max,
+            },
+        );
+    }
+
+    fn has_buff_kind(
+        &self,
+        unit_instance_id: UnitInstanceId,
+        kind: crate::game::battle::buffs::BuffKind,
+    ) -> bool {
+        self.buffs.iter().any(|(key, _)| {
+            key.target_instance_id == unit_instance_id
+                && crate::game::battle::buffs::get(key.buff_id).is_some_and(|def| def.kind == kind)
+        })
+    }
+
     fn schedule_pending_autocast_for(&mut self, caster_instance_id: UnitInstanceId, now_ms: u64) {
         let fallback = self.recording_cause().unwrap_or_default();
+
+        if self.has_buff_kind(
+            caster_instance_id,
+            crate::game::battle::buffs::BuffKind::Silence,
+        ) {
+            return;
+        }
 
         let Some((cause, should_schedule)) = self.units.get_mut(&caster_instance_id).map(|unit| {
             if !unit.pending_cast {
@@ -207,16 +278,31 @@ impl BattleCore {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::ecs::resources::Position;
+    use crate::game::ability::{
+        DeliveryDef, SkillArea, SkillDef, SkillEffectDef, SkillKind, SkillPresentationDef,
+        SkillStepDef, SkillTarget, UnitTargetRule,
+    };
+    use crate::game::battle::buffs::BuffId;
     use crate::game::battle::core::movement::ActionState;
     use crate::game::battle::core::types::RuntimeUnit;
+    use crate::game::battle::damage::BattleCommand;
+    use crate::game::battle::enums::BattleEvent;
+    use crate::game::battle::timeline::{TimelineCause, TimelineEvent};
     use crate::game::data::{
-        abnormality_data::AbnormalityDatabase, artifact_data::ArtifactDatabase,
-        bonus_data::BonusDatabase, equipment_data::EquipmentDatabase,
-        pve_data::PveEncounterDatabase, random_event_data::RandomEventDatabase,
-        shop_data::ShopDatabase, skill_data::SkillDatabase,
+        abnormality_data::{AbnormalityDatabase, AbnormalityMetadata},
+        artifact_data::ArtifactDatabase,
+        bonus_data::BonusDatabase,
+        equipment_data::EquipmentDatabase,
+        pve_data::PveEncounterDatabase,
+        random_event_data::RandomEventDatabase,
+        shop_data::ShopDatabase,
+        skill_data::SkillDatabase,
+        GameDataBase,
     };
     use crate::game::enums::Side;
     use crate::game::stats::UnitStats;
+    use crate::game::stats::{StatId, StatModifier, StatModifierKind};
     use std::collections::HashMap;
 
     fn empty_deck() -> PlayerDeckInfo {
@@ -279,8 +365,67 @@ mod tests {
             next_action_time: 0,
             pending_cast: false,
             pending_cast_cause: None,
-            pending_autocast: None,
+            pending_skill_cast: None,
         }
+    }
+
+    fn single_step_skill(
+        id: &str,
+        target: SkillTarget,
+        range_tiles: u8,
+        focus_time_ms: u32,
+        delivery: DeliveryDef,
+        effects: Vec<SkillEffectDef>,
+    ) -> SkillDef {
+        SkillDef {
+            id: id.to_string(),
+            name: id.to_string(),
+            kind: SkillKind::Targeted,
+            focus_time_ms,
+            focus_permissions: Default::default(),
+            steps: vec![SkillStepDef {
+                id: "step_01".to_string(),
+                delay_ms: 0,
+                range_tiles,
+                target,
+                delivery,
+                effects,
+                presentation: SkillPresentationDef::default(),
+            }],
+        }
+    }
+
+    fn core_with_skill_data(
+        abnormalities: Vec<AbnormalityMetadata>,
+        skills: Vec<SkillDef>,
+    ) -> BattleCore {
+        let deck = empty_deck();
+        let pool = crate::game::data::event_pools::EventPhasePool {
+            shops: vec![],
+            bonuses: vec![],
+            random_events: vec![],
+        };
+        let event_pools = crate::game::data::event_pools::EventPoolConfig {
+            dawn: pool.clone(),
+            noon: pool.clone(),
+            dusk: pool.clone(),
+            midnight: pool.clone(),
+            white: pool,
+        };
+
+        let game_data = Arc::new(GameDataBase::new(
+            Arc::new(AbnormalityDatabase::new(abnormalities)),
+            Arc::new(ArtifactDatabase::new(vec![])),
+            Arc::new(EquipmentDatabase::new(vec![])),
+            Arc::new(ShopDatabase::new(vec![])),
+            Arc::new(BonusDatabase::new(vec![])),
+            Arc::new(RandomEventDatabase::new(vec![])),
+            Arc::new(PveEncounterDatabase::new(vec![])),
+            Arc::new(SkillDatabase::new(skills)),
+            event_pools,
+        ));
+
+        BattleCore::new(&deck, &deck, game_data, (6, 6), 123)
     }
 
     #[test]
@@ -386,5 +531,733 @@ mod tests {
         core.units.get_mut(&unit_id).unwrap().stats.current_health = 0;
         core.schedule_pending_autocasts(300);
         assert!(core.event_queue.is_empty());
+    }
+
+    #[test]
+    fn pending_basic_attack_retargets_when_persisted_target_is_out_of_range() {
+        let mut core = new_core();
+        let attacker_id: UnitInstanceId = Uuid::from_u128(1).into();
+        let locked_target_id: UnitInstanceId = Uuid::from_u128(2).into();
+        let nearer_enemy_id: UnitInstanceId = Uuid::from_u128(3).into();
+
+        let mut attacker = runtime_unit(attacker_id, Side::Player);
+        attacker.pending_basic_attack = true;
+        attacker.current_target = Some(locked_target_id);
+
+        core.units.insert(attacker_id, attacker);
+        core.units.insert(
+            locked_target_id,
+            runtime_unit(locked_target_id, Side::Opponent),
+        );
+        core.units.insert(
+            nearer_enemy_id,
+            runtime_unit(nearer_enemy_id, Side::Opponent),
+        );
+
+        core.battlefield
+            .place(attacker_id, Position::new(0, 0))
+            .unwrap();
+        core.battlefield
+            .place(locked_target_id, Position::new(3, 0))
+            .unwrap();
+        core.battlefield
+            .place(nearer_enemy_id, Position::new(1, 0))
+            .unwrap();
+
+        core.try_start_pending_basic_attacks(0);
+
+        assert!(!core.units.get(&attacker_id).unwrap().pending_basic_attack);
+
+        let event = core.event_queue.pop().expect("expected attack start");
+        assert!(matches!(
+            event,
+            BattleEvent::AttackStart {
+                attacker_instance_id,
+                target_instance_id: Some(target_instance_id),
+                schedule_next: true,
+                ..
+            } if attacker_instance_id == attacker_id && target_instance_id == nearer_enemy_id
+        ));
+        assert!(core.event_queue.is_empty());
+    }
+
+    #[test]
+    fn movement_intent_clears_out_of_range_target_and_can_pick_new_in_range_target() {
+        let mut core = new_core();
+        let attacker_id: UnitInstanceId = Uuid::from_u128(11).into();
+        let locked_target_id: UnitInstanceId = Uuid::from_u128(12).into();
+        let nearer_enemy_id: UnitInstanceId = Uuid::from_u128(13).into();
+
+        let mut attacker = runtime_unit(attacker_id, Side::Player);
+        attacker.current_target = Some(locked_target_id);
+
+        core.units.insert(attacker_id, attacker);
+        core.units.insert(
+            locked_target_id,
+            runtime_unit(locked_target_id, Side::Opponent),
+        );
+        core.units.insert(
+            nearer_enemy_id,
+            runtime_unit(nearer_enemy_id, Side::Opponent),
+        );
+
+        core.battlefield
+            .place(attacker_id, Position::new(0, 0))
+            .unwrap();
+        core.battlefield
+            .place(locked_target_id, Position::new(3, 0))
+            .unwrap();
+        core.battlefield
+            .place(nearer_enemy_id, Position::new(1, 1))
+            .unwrap();
+
+        core.compute_movement_intents(0);
+
+        let attacker = core.units.get(&attacker_id).unwrap();
+        assert_eq!(attacker.current_target, Some(nearer_enemy_id));
+        assert!(matches!(attacker.action_state, ActionState::Idle));
+    }
+
+    #[test]
+    fn movement_intent_enters_wait_repath_when_no_attack_tile_is_available() {
+        let mut core = new_core();
+        let attacker_id: UnitInstanceId = Uuid::from_u128(14).into();
+        let enemy_id: UnitInstanceId = Uuid::from_u128(15).into();
+
+        core.units
+            .insert(attacker_id, runtime_unit(attacker_id, Side::Player));
+        core.units
+            .insert(enemy_id, runtime_unit(enemy_id, Side::Opponent));
+
+        core.battlefield
+            .place(attacker_id, Position::new(0, 0))
+            .unwrap();
+        core.battlefield
+            .place(enemy_id, Position::new(2, 2))
+            .unwrap();
+
+        for raw_id in 16_u128..24 {
+            let blocker_id: UnitInstanceId = Uuid::from_u128(raw_id).into();
+            core.units
+                .insert(blocker_id, runtime_unit(blocker_id, Side::Player));
+        }
+
+        let blocker_positions = [
+            Position::new(1, 1),
+            Position::new(1, 2),
+            Position::new(1, 3),
+            Position::new(2, 1),
+            Position::new(2, 3),
+            Position::new(3, 1),
+            Position::new(3, 2),
+            Position::new(3, 3),
+        ];
+        for (offset, pos) in blocker_positions.into_iter().enumerate() {
+            let blocker_id: UnitInstanceId = Uuid::from_u128(16 + offset as u128).into();
+            core.battlefield.place(blocker_id, pos).unwrap();
+        }
+
+        core.compute_movement_intents(100);
+
+        let until_ms = match core.units.get(&attacker_id).unwrap().action_state {
+            ActionState::WaitRepath { until_ms, .. } => until_ms,
+            ref other => panic!("expected WaitRepath, got {other:?}"),
+        };
+        assert!(until_ms > 100);
+        assert!(core.event_queue.iter().any(|event| matches!(
+            event,
+            BattleEvent::MovementIntent { time_ms } if *time_ms == until_ms
+        )));
+    }
+
+    #[test]
+    fn attack_start_keeps_persisted_target_when_it_is_still_in_range() {
+        let mut core = new_core();
+        let attacker_id: UnitInstanceId = Uuid::from_u128(31).into();
+        let locked_target_id: UnitInstanceId = Uuid::from_u128(32).into();
+        let nearer_enemy_id: UnitInstanceId = Uuid::from_u128(33).into();
+
+        let mut attacker = runtime_unit(attacker_id, Side::Player);
+        attacker.current_target = Some(locked_target_id);
+
+        core.units.insert(attacker_id, attacker);
+        core.units.insert(
+            locked_target_id,
+            runtime_unit(locked_target_id, Side::Opponent),
+        );
+        core.units.insert(
+            nearer_enemy_id,
+            runtime_unit(nearer_enemy_id, Side::Opponent),
+        );
+
+        core.battlefield
+            .place(attacker_id, Position::new(0, 0))
+            .unwrap();
+        core.battlefield
+            .place(locked_target_id, Position::new(1, 0))
+            .unwrap();
+        core.battlefield
+            .place(nearer_enemy_id, Position::new(1, 1))
+            .unwrap();
+
+        core.process_event(
+            BattleEvent::AttackStart {
+                time_ms: 0,
+                attacker_instance_id: attacker_id,
+                target_instance_id: None,
+                schedule_next: true,
+                cause: TimelineCause::default(),
+            },
+            0,
+        )
+        .unwrap();
+
+        assert_eq!(
+            core.units.get(&attacker_id).unwrap().current_target,
+            Some(locked_target_id)
+        );
+    }
+
+    #[test]
+    fn hard_cc_clears_locked_target_and_reacquires_after_release() {
+        let mut core = new_core();
+        let attacker_id: UnitInstanceId = Uuid::from_u128(21).into();
+        let old_target_id: UnitInstanceId = Uuid::from_u128(22).into();
+        let new_target_id: UnitInstanceId = Uuid::from_u128(23).into();
+
+        let mut attacker = runtime_unit(attacker_id, Side::Player);
+        attacker.current_target = Some(old_target_id);
+
+        core.units.insert(attacker_id, attacker);
+        core.units
+            .insert(old_target_id, runtime_unit(old_target_id, Side::Opponent));
+        core.units
+            .insert(new_target_id, runtime_unit(new_target_id, Side::Opponent));
+
+        core.battlefield
+            .place(attacker_id, Position::new(0, 0))
+            .unwrap();
+        core.battlefield
+            .place(old_target_id, Position::new(3, 0))
+            .unwrap();
+        core.battlefield
+            .place(new_target_id, Position::new(1, 0))
+            .unwrap();
+
+        core.process_event(
+            BattleEvent::ApplyBuff {
+                time_ms: 0,
+                caster_instance_id: new_target_id,
+                target_instance_id: attacker_id,
+                buff_id: BuffId::from_name("stun"),
+                duration_ms: 50,
+                cause: TimelineCause::default(),
+            },
+            0,
+        )
+        .unwrap();
+
+        assert_eq!(core.units.get(&attacker_id).unwrap().current_target, None);
+
+        core.process_event(
+            BattleEvent::AttackStart {
+                time_ms: 51,
+                attacker_instance_id: attacker_id,
+                target_instance_id: None,
+                schedule_next: true,
+                cause: TimelineCause::default(),
+            },
+            51,
+        )
+        .unwrap();
+
+        assert_eq!(
+            core.units.get(&attacker_id).unwrap().current_target,
+            Some(new_target_id)
+        );
+    }
+
+    #[test]
+    fn current_target_skill_rule_prefers_locked_target() {
+        let mut core = new_core();
+        let caster_id: UnitInstanceId = Uuid::from_u128(41).into();
+        let locked_target_id: UnitInstanceId = Uuid::from_u128(42).into();
+        let other_target_id: UnitInstanceId = Uuid::from_u128(43).into();
+
+        let mut caster = runtime_unit(caster_id, Side::Player);
+        caster.current_target = Some(locked_target_id);
+        core.units.insert(caster_id, caster);
+        core.units.insert(
+            locked_target_id,
+            runtime_unit(locked_target_id, Side::Opponent),
+        );
+        core.units.insert(
+            other_target_id,
+            runtime_unit(other_target_id, Side::Opponent),
+        );
+
+        core.battlefield
+            .place(caster_id, Position::new(0, 0))
+            .unwrap();
+        core.battlefield
+            .place(locked_target_id, Position::new(1, 0))
+            .unwrap();
+        core.battlefield
+            .place(other_target_id, Position::new(1, 1))
+            .unwrap();
+
+        let skill = single_step_skill(
+            "current_target",
+            SkillTarget::EnemySingle {
+                rule: UnitTargetRule::CurrentTarget,
+            },
+            2,
+            0,
+            DeliveryDef::Instant,
+            vec![],
+        );
+
+        let target = core.resolve_skill_targets_at_start(
+            &skill,
+            caster_id,
+            Side::Player,
+            Position::new(0, 0),
+        );
+
+        assert!(matches!(
+            target,
+            Some(crate::game::battle::timeline::SkillCastTarget::Unit { unit_instance_id })
+                if unit_instance_id == locked_target_id
+        ));
+    }
+
+    #[test]
+    fn lowest_health_enemy_skill_rule_prefers_weaker_target() {
+        let mut core = new_core();
+        let caster_id: UnitInstanceId = Uuid::from_u128(51).into();
+        let tank_id: UnitInstanceId = Uuid::from_u128(52).into();
+        let weak_id: UnitInstanceId = Uuid::from_u128(53).into();
+
+        core.units
+            .insert(caster_id, runtime_unit(caster_id, Side::Player));
+        let mut tank = runtime_unit(tank_id, Side::Opponent);
+        tank.stats.current_health = 20;
+        let mut weak = runtime_unit(weak_id, Side::Opponent);
+        weak.stats.current_health = 5;
+        core.units.insert(tank_id, tank);
+        core.units.insert(weak_id, weak);
+
+        core.battlefield
+            .place(caster_id, Position::new(0, 0))
+            .unwrap();
+        core.battlefield
+            .place(tank_id, Position::new(1, 0))
+            .unwrap();
+        core.battlefield
+            .place(weak_id, Position::new(1, 1))
+            .unwrap();
+
+        let skill = single_step_skill(
+            "lowest_health",
+            SkillTarget::EnemySingle {
+                rule: UnitTargetRule::LowestHealthEnemy,
+            },
+            2,
+            0,
+            DeliveryDef::Instant,
+            vec![],
+        );
+
+        let target = core.resolve_skill_targets_at_start(
+            &skill,
+            caster_id,
+            Side::Player,
+            Position::new(0, 0),
+        );
+
+        assert!(matches!(
+            target,
+            Some(crate::game::battle::timeline::SkillCastTarget::Unit { unit_instance_id })
+                if unit_instance_id == weak_id
+        ));
+    }
+
+    #[test]
+    fn line_enemy_area_hits_units_along_anchor_direction() {
+        let mut core = new_core();
+        let caster_id: UnitInstanceId = Uuid::from_u128(61).into();
+        let enemy_front_id: UnitInstanceId = Uuid::from_u128(62).into();
+        let enemy_back_id: UnitInstanceId = Uuid::from_u128(63).into();
+        let enemy_offline_id: UnitInstanceId = Uuid::from_u128(64).into();
+
+        core.units
+            .insert(caster_id, runtime_unit(caster_id, Side::Player));
+        core.units
+            .insert(enemy_front_id, runtime_unit(enemy_front_id, Side::Opponent));
+        core.units
+            .insert(enemy_back_id, runtime_unit(enemy_back_id, Side::Opponent));
+        core.units.insert(
+            enemy_offline_id,
+            runtime_unit(enemy_offline_id, Side::Opponent),
+        );
+
+        let caster_pos = Position::new(1, 1);
+        core.battlefield.place(caster_id, caster_pos).unwrap();
+        core.battlefield
+            .place(enemy_front_id, Position::new(2, 1))
+            .unwrap();
+        core.battlefield
+            .place(enemy_back_id, Position::new(3, 1))
+            .unwrap();
+        core.battlefield
+            .place(enemy_offline_id, Position::new(2, 2))
+            .unwrap();
+
+        let skill = single_step_skill(
+            "line",
+            SkillTarget::Enemies {
+                area: SkillArea::Line { length_tiles: 3 },
+            },
+            3,
+            0,
+            DeliveryDef::Instant,
+            vec![],
+        );
+
+        let start_target =
+            core.resolve_skill_targets_at_start(&skill, caster_id, Side::Player, caster_pos);
+        let targets =
+            core.resolve_skill_step_targets(caster_id, skill.first_step().unwrap(), start_target);
+
+        assert!(targets.contains(&enemy_front_id));
+        assert!(targets.contains(&enemy_back_id));
+        assert!(!targets.contains(&enemy_offline_id));
+    }
+
+    #[test]
+    fn targeted_execute_keeps_locked_target_when_target_leaves_range() {
+        let mut core = new_core();
+        let caster_id: UnitInstanceId = Uuid::from_u128(65).into();
+        let locked_target_id: UnitInstanceId = Uuid::from_u128(66).into();
+        let other_target_id: UnitInstanceId = Uuid::from_u128(67).into();
+
+        let mut caster = runtime_unit(caster_id, Side::Player);
+        caster.current_target = Some(locked_target_id);
+        core.units.insert(caster_id, caster);
+        core.units.insert(
+            locked_target_id,
+            runtime_unit(locked_target_id, Side::Opponent),
+        );
+        core.units.insert(
+            other_target_id,
+            runtime_unit(other_target_id, Side::Opponent),
+        );
+
+        let caster_pos = Position::new(0, 0);
+        core.battlefield.place(caster_id, caster_pos).unwrap();
+        core.battlefield
+            .place(locked_target_id, Position::new(1, 0))
+            .unwrap();
+        core.battlefield
+            .place(other_target_id, Position::new(1, 1))
+            .unwrap();
+
+        let skill = single_step_skill(
+            "locked_target_execute",
+            SkillTarget::EnemySingle {
+                rule: UnitTargetRule::CurrentTarget,
+            },
+            2,
+            50,
+            DeliveryDef::Instant,
+            vec![],
+        );
+
+        let start_target =
+            core.resolve_skill_targets_at_start(&skill, caster_id, Side::Player, caster_pos);
+        core.battlefield
+            .move_unit(locked_target_id, Position::new(3, 3))
+            .unwrap();
+
+        let targets =
+            core.resolve_skill_step_targets(caster_id, skill.first_step().unwrap(), start_target);
+        assert_eq!(targets, vec![locked_target_id]);
+    }
+
+    #[test]
+    fn targeted_execute_does_not_reacquire_when_locked_target_dies() {
+        let mut core = new_core();
+        let caster_id: UnitInstanceId = Uuid::from_u128(68).into();
+        let locked_target_id: UnitInstanceId = Uuid::from_u128(69).into();
+        let other_target_id: UnitInstanceId = Uuid::from_u128(70).into();
+
+        let mut caster = runtime_unit(caster_id, Side::Player);
+        caster.current_target = Some(locked_target_id);
+        core.units.insert(caster_id, caster);
+        core.units.insert(
+            locked_target_id,
+            runtime_unit(locked_target_id, Side::Opponent),
+        );
+        core.units.insert(
+            other_target_id,
+            runtime_unit(other_target_id, Side::Opponent),
+        );
+
+        let caster_pos = Position::new(0, 0);
+        core.battlefield.place(caster_id, caster_pos).unwrap();
+        core.battlefield
+            .place(locked_target_id, Position::new(1, 0))
+            .unwrap();
+        core.battlefield
+            .place(other_target_id, Position::new(1, 1))
+            .unwrap();
+
+        let skill = single_step_skill(
+            "locked_target_death",
+            SkillTarget::EnemySingle {
+                rule: UnitTargetRule::CurrentTarget,
+            },
+            2,
+            50,
+            DeliveryDef::Instant,
+            vec![],
+        );
+
+        let start_target =
+            core.resolve_skill_targets_at_start(&skill, caster_id, Side::Player, caster_pos);
+        core.battlefield.remove(locked_target_id);
+        core.units
+            .get_mut(&locked_target_id)
+            .unwrap()
+            .stats
+            .current_health = 0;
+
+        let targets =
+            core.resolve_skill_step_targets(caster_id, skill.first_step().unwrap(), start_target);
+        assert!(targets.is_empty());
+    }
+
+    #[test]
+    fn process_commands_applies_stat_modifier_and_resonance_delta() {
+        let mut core = new_core();
+        let target_id: UnitInstanceId = Uuid::from_u128(71).into();
+        let mut unit = runtime_unit(target_id, Side::Player);
+        unit.resonance_current = 50;
+        core.units.insert(target_id, unit);
+
+        core.process_commands(
+            vec![
+                BattleCommand::ApplyModifier {
+                    target_id,
+                    modifier: StatModifier {
+                        stat: StatId::Attack,
+                        kind: StatModifierKind::Flat,
+                        value: 7,
+                    },
+                },
+                BattleCommand::ModifyResonance {
+                    target_id,
+                    amount: -20,
+                    allow_autocast_when_full: false,
+                },
+            ],
+            100,
+        );
+
+        let unit = core.units.get(&target_id).unwrap();
+        assert_eq!(unit.stats.attack, 8);
+        assert_eq!(unit.resonance_current, 30);
+    }
+
+    #[test]
+    fn silence_blocks_pending_autocast_until_expire() {
+        let caster_base_uuid = Uuid::from_u128(0x9001);
+        let skill = single_step_skill(
+            "silence_test_skill",
+            SkillTarget::SelfUnit,
+            1,
+            0,
+            DeliveryDef::Instant,
+            vec![SkillEffectDef::ModifyResonance { amount: -10 }],
+        );
+        let abnormality = AbnormalityMetadata {
+            id: "caster".to_string(),
+            uuid: caster_base_uuid,
+            name: "caster".to_string(),
+            risk_level: crate::game::enums::RiskLevel::ZAYIN,
+            price: 0,
+            max_health: 10,
+            attack: 1,
+            defense: 0,
+            movement: Default::default(),
+            basic_attack: Default::default(),
+            resonance: Default::default(),
+            skill_id: Some(skill.id.clone()),
+        };
+
+        let mut core = core_with_skill_data(vec![abnormality], vec![skill]);
+        let caster_id: UnitInstanceId = Uuid::from_u128(81).into();
+        let mut caster = runtime_unit(caster_id, Side::Player);
+        caster.base_uuid = caster_base_uuid;
+        caster.pending_cast = true;
+        core.units.insert(caster_id, caster);
+
+        core.process_event(
+            BattleEvent::ApplyBuff {
+                time_ms: 0,
+                caster_instance_id: caster_id,
+                target_instance_id: caster_id,
+                buff_id: BuffId::from_name("silence"),
+                duration_ms: 10,
+                cause: TimelineCause::default(),
+            },
+            0,
+        )
+        .unwrap();
+
+        core.schedule_pending_autocasts(0);
+        assert!(!core
+            .event_queue
+            .iter()
+            .any(|event| matches!(event, BattleEvent::AutoCastStart { .. })));
+
+        core.process_event(
+            BattleEvent::BuffExpire {
+                time_ms: 10,
+                caster_instance_id: caster_id,
+                target_instance_id: caster_id,
+                buff_id: BuffId::from_name("silence"),
+                cause: TimelineCause::default(),
+            },
+            10,
+        )
+        .unwrap();
+
+        assert!(core.event_queue.iter().any(|event| matches!(
+            event,
+            BattleEvent::AutoCastStart {
+                time_ms: 11,
+                caster_instance_id,
+                ..
+            } if *caster_instance_id == caster_id
+        )));
+    }
+
+    #[test]
+    fn hard_cc_delays_autocast_completion_until_lock_release() {
+        let caster_base_uuid = Uuid::from_u128(0x9002);
+        let skill = single_step_skill(
+            "delayed_cast_skill",
+            SkillTarget::SelfUnit,
+            1,
+            5,
+            DeliveryDef::Instant,
+            vec![SkillEffectDef::ModifyResonance { amount: -10 }],
+        );
+        let abnormality = AbnormalityMetadata {
+            id: "caster".to_string(),
+            uuid: caster_base_uuid,
+            name: "caster".to_string(),
+            risk_level: crate::game::enums::RiskLevel::ZAYIN,
+            price: 0,
+            max_health: 10,
+            attack: 1,
+            defense: 0,
+            movement: Default::default(),
+            basic_attack: Default::default(),
+            resonance: Default::default(),
+            skill_id: Some(skill.id.clone()),
+        };
+
+        let mut core = core_with_skill_data(vec![abnormality], vec![skill]);
+        let caster_id: UnitInstanceId = Uuid::from_u128(82).into();
+        let mut caster = runtime_unit(caster_id, Side::Player);
+        caster.base_uuid = caster_base_uuid;
+        caster.resonance_current = 100;
+        core.units.insert(caster_id, caster);
+        core.battlefield
+            .place(caster_id, Position::new(0, 0))
+            .unwrap();
+
+        core.process_event(
+            BattleEvent::AutoCastStart {
+                time_ms: 0,
+                caster_instance_id: caster_id,
+                cause: TimelineCause::default(),
+            },
+            0,
+        )
+        .unwrap();
+
+        let scheduled_end = core
+            .event_queue
+            .pop()
+            .expect("missing scheduled AutoCastEnd");
+        let end_cause = match scheduled_end {
+            BattleEvent::AutoCastEnd {
+                time_ms,
+                caster_instance_id,
+                cause,
+            } => {
+                assert_eq!(time_ms, 5);
+                assert_eq!(caster_instance_id, caster_id);
+                cause
+            }
+            other => panic!("expected AutoCastEnd, got {other:?}"),
+        };
+
+        core.process_event(
+            BattleEvent::ApplyBuff {
+                time_ms: 1,
+                caster_instance_id: caster_id,
+                target_instance_id: caster_id,
+                buff_id: BuffId::from_name("stun"),
+                duration_ms: 10,
+                cause: TimelineCause::default(),
+            },
+            1,
+        )
+        .unwrap();
+
+        core.process_event(
+            BattleEvent::AutoCastEnd {
+                time_ms: 5,
+                caster_instance_id: caster_id,
+                cause: end_cause,
+            },
+            5,
+        )
+        .unwrap();
+
+        assert!(!core
+            .timeline
+            .entries
+            .iter()
+            .any(|entry| matches!(entry.event, TimelineEvent::AbilityCast { .. })));
+
+        let buff_expire = core.event_queue.pop().expect("missing BuffExpire");
+        assert!(matches!(
+            buff_expire,
+            BattleEvent::BuffExpire { time_ms: 11, .. }
+        ));
+        core.process_event(buff_expire, 11).unwrap();
+
+        let delayed_end = core.event_queue.pop().expect("missing delayed AutoCastEnd");
+        assert!(matches!(
+            delayed_end,
+            BattleEvent::AutoCastEnd { time_ms: 12, .. }
+        ));
+        core.process_event(delayed_end, 12).unwrap();
+
+        assert!(core.timeline.entries.iter().any(|entry| {
+            entry.time_ms == 12
+                && matches!(
+                    entry.event,
+                    TimelineEvent::AbilityCast {
+                        caster_instance_id,
+                        ..
+                    } if caster_instance_id == caster_id
+                )
+        }));
     }
 }

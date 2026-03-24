@@ -15,6 +15,38 @@ use crate::{
 };
 
 impl BattleCore {
+    pub(in crate::game::battle::core) fn interrupt_movement(
+        &mut self,
+        now_ms: u64,
+        unit_id: UnitInstanceId,
+        reason: MovementStopReason,
+        until_ms: Option<u64>,
+        next_state: ActionState,
+    ) -> bool {
+        let movement_kind = match self.units.get(&unit_id).map(|unit| &unit.action_state) {
+            Some(ActionState::Moving(_)) => 1,
+            Some(ActionState::WaitRepath { .. }) => 2,
+            _ => 0,
+        };
+
+        if movement_kind == 0 {
+            return false;
+        }
+
+        if movement_kind == 1 {
+            self.update_move_position_to(unit_id, now_ms);
+        }
+
+        self.battlefield.cancel_reservation(unit_id);
+        if let Some(unit) = self.units.get_mut(&unit_id) {
+            unit.move_epoch = unit.move_epoch.wrapping_add(1);
+            unit.action_state = next_state;
+        }
+
+        self.record_movement_stopped(now_ms, unit_id, reason, until_ms);
+        true
+    }
+
     pub(in crate::game::battle::core) fn record_movement_stopped(
         &mut self,
         time_ms: u64,
@@ -53,9 +85,6 @@ impl BattleCore {
         let Some(unit) = self.units.get_mut(&unit_instance_id) else {
             return;
         };
-        if unit.is_dead() {
-            return;
-        }
         let speed_units_per_ms = unit.stats.move_speed_units_per_ms.max(1);
         let ActionState::Moving(state) = &mut unit.action_state else {
             return;
@@ -112,17 +141,30 @@ impl BattleCore {
         }
 
         let range_tiles = self.basic_attack_range_tiles(unit.base_uuid);
-        let Some(target_id) = self.choose_attack_target_in_range(unit.owner, tile, range_tiles)
-        else {
-            return false;
+        let target_id = if let Some(target_id) =
+            self.persisted_target_in_range(unit.owner, unit.current_target, tile, range_tiles)
+        {
+            target_id
+        } else {
+            let Some(target_id) = self.choose_attack_target_in_range(unit.owner, tile, range_tiles)
+            else {
+                if let Some(unit) = self.units.get_mut(&unit_id) {
+                    unit.current_target = None;
+                }
+                return false;
+            };
+            target_id
         };
 
-        self.record_movement_stopped(now_ms, unit_id, MovementStopReason::TargetAcquired, None);
-        self.battlefield.cancel_reservation(unit_id);
+        self.interrupt_movement(
+            now_ms,
+            unit_id,
+            MovementStopReason::TargetAcquired,
+            None,
+            ActionState::Idle,
+        );
         if let Some(unit) = self.units.get_mut(&unit_id) {
             unit.current_target = Some(target_id);
-            unit.move_epoch = unit.move_epoch.wrapping_add(1);
-            unit.action_state = ActionState::Idle;
         }
         self.event_queue
             .push(BattleEvent::MovementIntent { time_ms: now_ms });
@@ -166,26 +208,23 @@ impl BattleCore {
         const REPATH_BASE_DELAY_MS: u64 = 100;
 
         let abort_to_idle = |core: &mut BattleCore, unit_id: UnitInstanceId| {
-            core.battlefield.cancel_reservation(unit_id);
-            if let Some(unit) = core.units.get_mut(&unit_id) {
-                unit.move_epoch = unit.move_epoch.wrapping_add(1);
-                unit.action_state = ActionState::Idle;
-            }
-            core.record_movement_stopped(now_ms, unit_id, MovementStopReason::InvalidState, None);
+            core.interrupt_movement(
+                now_ms,
+                unit_id,
+                MovementStopReason::InvalidState,
+                None,
+                ActionState::Idle,
+            );
             core.event_queue
                 .push(BattleEvent::MovementIntent { time_ms: now_ms });
         };
 
         let abort_to_wait_repath = |core: &mut BattleCore, unit_id: UnitInstanceId| {
-            core.battlefield.cancel_reservation(unit_id);
-
-            let Some(unit) = core.units.get_mut(&unit_id) else {
-                return;
-            };
-
-            let repath_counter = match &unit.action_state {
-                ActionState::Moving(state) => state.repath_counter.wrapping_add(1),
-                ActionState::WaitRepath { repath_counter, .. } => repath_counter.wrapping_add(1),
+            let repath_counter = match core.units.get(&unit_id).map(|unit| &unit.action_state) {
+                Some(ActionState::Moving(state)) => state.repath_counter.wrapping_add(1),
+                Some(ActionState::WaitRepath { repath_counter, .. }) => {
+                    repath_counter.wrapping_add(1)
+                }
                 _ => 1,
             };
 
@@ -193,17 +232,16 @@ impl BattleCore {
             let until_ms = now_ms
                 .saturating_add(REPATH_BASE_DELAY_MS)
                 .saturating_add(jitter_ms);
-            unit.action_state = ActionState::WaitRepath {
+            let next_state = ActionState::WaitRepath {
                 until_ms,
                 repath_counter,
             };
-            unit.move_epoch = unit.move_epoch.wrapping_add(1);
-
-            core.record_movement_stopped(
+            core.interrupt_movement(
                 now_ms,
                 unit_id,
                 MovementStopReason::WaitRepath,
                 Some(until_ms),
+                next_state,
             );
             core.event_queue
                 .push(BattleEvent::MovementIntent { time_ms: until_ms });
@@ -349,6 +387,7 @@ impl BattleCore {
             if let Some(reserver) = cancel_soft_reservation_of {
                 self.battlefield.cancel_reservation(reserver);
             }
+            self.battlefield.cancel_reservation(unit_id);
 
             self.record_timeline(
                 now_ms,
@@ -364,6 +403,8 @@ impl BattleCore {
             }
 
             let mut next_step_ms: Option<u64> = None;
+            let mut should_interrupt_as_arrived = false;
+            let mut next_step_to_reserve: Option<Position> = None;
 
             if let Some(unit) = self.units.get_mut(&unit_id) {
                 if let ActionState::Moving(state) = &mut unit.action_state {
@@ -376,19 +417,26 @@ impl BattleCore {
                     let arrived =
                         state.reserved_destination == Some(to) || cursor + 1 >= state.path.len();
                     if arrived {
-                        self.battlefield.cancel_reservation(unit_id);
-                        unit.move_epoch = unit.move_epoch.wrapping_add(1);
-                        unit.action_state = ActionState::Idle;
-                        self.record_movement_stopped(
-                            now_ms,
-                            unit_id,
-                            MovementStopReason::Arrived,
-                            None,
-                        );
-                        self.event_queue
-                            .push(BattleEvent::MovementIntent { time_ms: now_ms });
+                        should_interrupt_as_arrived = true;
                     } else {
-                        state.step_to = state.path[cursor + 1];
+                        next_step_to_reserve = Some(state.path[cursor + 1]);
+                    }
+                }
+            }
+
+            if let Some(next_step) = next_step_to_reserve {
+                if self
+                    .battlefield
+                    .reserve(unit_id, next_step, now_ms)
+                    .is_err()
+                {
+                    abort_to_wait_repath(self, unit_id);
+                    continue;
+                }
+
+                if let Some(unit) = self.units.get_mut(&unit_id) {
+                    if let ActionState::Moving(state) = &mut unit.action_state {
+                        state.step_to = next_step;
                         let (target_x, target_y) =
                             boundary_target_units(state.step_from, state.step_to);
                         state.target_x_units = target_x;
@@ -407,6 +455,18 @@ impl BattleCore {
                 }
             }
 
+            if should_interrupt_as_arrived {
+                self.interrupt_movement(
+                    now_ms,
+                    unit_id,
+                    MovementStopReason::Arrived,
+                    None,
+                    ActionState::Idle,
+                );
+                self.event_queue
+                    .push(BattleEvent::MovementIntent { time_ms: now_ms });
+            }
+
             if let Some(ms) = next_step_ms {
                 self.schedule_move_step_at(unit_id, ms);
             }
@@ -417,7 +477,7 @@ impl BattleCore {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::game::battle::core::movement::MovementState;
+    use crate::game::battle::core::movement::{MovementState, HALF_TILE_UNITS};
     use crate::game::battle::core::types::RuntimeUnit;
     use crate::game::battle::types::PlayerDeckInfo;
     use crate::game::data::{
@@ -518,7 +578,7 @@ mod tests {
                 next_action_time: 0,
                 pending_cast: false,
                 pending_cast_cause: None,
-                pending_autocast: None,
+                pending_skill_cast: None,
             },
         );
 
@@ -536,5 +596,275 @@ mod tests {
         core.update_move_position_to(unit_id, 110);
         let unit = core.units.get(&unit_id).unwrap();
         assert_eq!(unit.pos_x_units, 100);
+    }
+
+    #[test]
+    fn interrupt_movement_updates_continuous_position_before_recording_stop() {
+        let mut core = new_core();
+
+        let unit_id: UnitInstanceId = Uuid::from_u128(2).into();
+        let mut stats = UnitStats::with_values(10, 10, 1, 0, 1);
+        stats.move_speed_units_per_ms = 10;
+
+        let mut movement = MovementState::new_at(Position::new(0, 0), 100);
+        movement.target_x_units = 100;
+        movement.target_y_units = 0;
+        movement.last_update_ms = 100;
+
+        core.units.insert(
+            unit_id,
+            RuntimeUnit {
+                instance_id: unit_id,
+                owner: Side::Player,
+                base_uuid: Uuid::nil(),
+                stats,
+                pos_x_units: 0,
+                pos_y_units: 0,
+                move_epoch: 0,
+                action_state: ActionState::Moving(movement),
+                action_locks: Default::default(),
+                current_target: None,
+                next_basic_attack_ms: 0,
+                pending_basic_attack: false,
+                resonance_current: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 0,
+                next_action_time: 0,
+                pending_cast: false,
+                pending_cast_cause: None,
+                pending_skill_cast: None,
+            },
+        );
+        core.battlefield
+            .place(unit_id, Position::new(0, 0))
+            .unwrap();
+
+        assert!(core.interrupt_movement(
+            105,
+            unit_id,
+            MovementStopReason::Died,
+            None,
+            ActionState::Dead,
+        ));
+
+        let unit = core.units.get(&unit_id).unwrap();
+        assert_eq!(unit.pos_x_units, 50);
+        assert!(matches!(unit.action_state, ActionState::Dead));
+
+        let stop_entry = core
+            .timeline
+            .entries
+            .iter()
+            .find(|entry| matches!(entry.event, TimelineEvent::MovementStopped { .. }))
+            .expect("missing MovementStopped");
+
+        match stop_entry.event {
+            TimelineEvent::MovementStopped {
+                reason,
+                pos_x_units,
+                pos_y_units,
+                ..
+            } => {
+                assert_eq!(reason, MovementStopReason::Died);
+                assert_eq!(pos_x_units, 50);
+                assert_eq!(pos_y_units, 0);
+            }
+            _ => unreachable!("expected MovementStopped"),
+        }
+    }
+
+    #[test]
+    fn arrived_keeps_actual_continuous_stop_position_while_advancing_logical_tile() {
+        let mut core = new_core();
+
+        let unit_id: UnitInstanceId = Uuid::from_u128(4).into();
+        let from = Position::new(0, 0);
+        let to = Position::new(1, 0);
+
+        let mut stats = UnitStats::with_values(10, 10, 1, 0, 1);
+        stats.move_speed_units_per_ms = 10_000;
+
+        let mut movement = MovementState::new_at(from, 100);
+        movement.path = vec![from, to];
+        movement.reserved_destination = Some(to);
+        movement.step_from = from;
+        movement.step_to = to;
+        movement.target_x_units = HALF_TILE_UNITS as i64;
+        movement.target_y_units = 0;
+        movement.last_update_ms = 100;
+        movement.step_started_at_ms = 100;
+        movement.step_ends_at_ms = 150;
+
+        core.units.insert(
+            unit_id,
+            RuntimeUnit {
+                instance_id: unit_id,
+                owner: Side::Player,
+                base_uuid: Uuid::nil(),
+                stats,
+                pos_x_units: 0,
+                pos_y_units: 0,
+                move_epoch: 0,
+                action_state: ActionState::Moving(movement),
+                action_locks: Default::default(),
+                current_target: None,
+                next_basic_attack_ms: 0,
+                pending_basic_attack: false,
+                resonance_current: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 0,
+                next_action_time: 0,
+                pending_cast: false,
+                pending_cast_cause: None,
+                pending_skill_cast: None,
+            },
+        );
+        core.battlefield.place(unit_id, from).unwrap();
+
+        core.handle_move_steps_at(150, vec![(unit_id, 0)]);
+
+        let unit = core.units.get(&unit_id).unwrap();
+        assert_eq!(unit.pos_x_units, HALF_TILE_UNITS as i64);
+        assert!(matches!(unit.action_state, ActionState::Idle));
+        assert_eq!(core.battlefield.position_of(unit_id), Some(to));
+
+        let stop_entry = core
+            .timeline
+            .entries
+            .iter()
+            .find(|entry| {
+                matches!(
+                    entry.event,
+                    TimelineEvent::MovementStopped {
+                        reason: MovementStopReason::Arrived,
+                        ..
+                    }
+                )
+            })
+            .expect("missing Arrived MovementStopped");
+
+        match stop_entry.event {
+            TimelineEvent::MovementStopped {
+                reason,
+                position,
+                pos_x_units,
+                pos_y_units,
+                ..
+            } => {
+                assert_eq!(reason, MovementStopReason::Arrived);
+                assert_eq!(position, to);
+                assert_eq!(pos_x_units, HALF_TILE_UNITS as i64);
+                assert_eq!(pos_y_units, 0);
+            }
+            _ => unreachable!("expected Arrived MovementStopped"),
+        }
+    }
+
+    #[test]
+    fn moving_unit_retargets_to_nearer_enemy_when_locked_target_is_out_of_range() {
+        let mut core = new_core();
+
+        let unit_id: UnitInstanceId = Uuid::from_u128(5).into();
+        let locked_target_id: UnitInstanceId = Uuid::from_u128(6).into();
+        let nearer_enemy_id: UnitInstanceId = Uuid::from_u128(7).into();
+        let tile = Position::new(1, 0);
+
+        let mut movement = MovementState::new_at(Position::new(0, 0), 100);
+        movement.path = vec![Position::new(0, 0), tile, Position::new(2, 0)];
+        movement.step_from = Position::new(0, 0);
+        movement.step_to = tile;
+
+        core.units.insert(
+            unit_id,
+            RuntimeUnit {
+                instance_id: unit_id,
+                owner: Side::Player,
+                base_uuid: Uuid::nil(),
+                stats: UnitStats::with_values(10, 10, 1, 0, 1),
+                pos_x_units: 0,
+                pos_y_units: 0,
+                move_epoch: 0,
+                action_state: ActionState::Moving(movement),
+                action_locks: Default::default(),
+                current_target: Some(locked_target_id),
+                next_basic_attack_ms: 0,
+                pending_basic_attack: false,
+                resonance_current: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 0,
+                next_action_time: 0,
+                pending_cast: false,
+                pending_cast_cause: None,
+                pending_skill_cast: None,
+            },
+        );
+        core.units.insert(
+            locked_target_id,
+            RuntimeUnit {
+                instance_id: locked_target_id,
+                owner: Side::Opponent,
+                base_uuid: Uuid::nil(),
+                stats: UnitStats::with_values(10, 10, 1, 0, 1),
+                pos_x_units: 0,
+                pos_y_units: 0,
+                move_epoch: 0,
+                action_state: ActionState::Idle,
+                action_locks: Default::default(),
+                current_target: None,
+                next_basic_attack_ms: 0,
+                pending_basic_attack: false,
+                resonance_current: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 0,
+                next_action_time: 0,
+                pending_cast: false,
+                pending_cast_cause: None,
+                pending_skill_cast: None,
+            },
+        );
+        core.units.insert(
+            nearer_enemy_id,
+            RuntimeUnit {
+                instance_id: nearer_enemy_id,
+                owner: Side::Opponent,
+                base_uuid: Uuid::nil(),
+                stats: UnitStats::with_values(10, 10, 1, 0, 1),
+                pos_x_units: 0,
+                pos_y_units: 0,
+                move_epoch: 0,
+                action_state: ActionState::Idle,
+                action_locks: Default::default(),
+                current_target: None,
+                next_basic_attack_ms: 0,
+                pending_basic_attack: false,
+                resonance_current: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 0,
+                next_action_time: 0,
+                pending_cast: false,
+                pending_cast_cause: None,
+                pending_skill_cast: None,
+            },
+        );
+
+        core.battlefield.place(unit_id, tile).unwrap();
+        core.battlefield
+            .place(locked_target_id, Position::new(3, 0))
+            .unwrap();
+        core.battlefield
+            .place(nearer_enemy_id, Position::new(2, 0))
+            .unwrap();
+
+        let stopped = core.stop_moving_unit_on_target_in_range_at_tile(100, unit_id, tile);
+
+        assert!(stopped);
+        assert_eq!(
+            core.units.get(&unit_id).unwrap().current_target,
+            Some(nearer_enemy_id)
+        );
+        assert!(matches!(
+            core.units.get(&unit_id).unwrap().action_state,
+            ActionState::Idle
+        ));
     }
 }

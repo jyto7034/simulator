@@ -16,7 +16,10 @@ use game_core::game::battle::validation::{
     TimelineExpectedCounts, TimelineValidator, TimelineValidatorConfig,
 };
 use game_core::game::data::{
-    abnormality_data::{AbnormalityDatabase, AbnormalityMetadata, BasicAttackDef, MovementDef},
+    abnormality_data::{
+        AbnormalityDatabase, AbnormalityMetadata, BasicAttackDef, MovementDef,
+        DEFAULT_INSTANT_BASIC_ATTACK_WINDUP_MS,
+    },
     artifact_data::ArtifactDatabase,
     bonus_data::BonusDatabase,
     equipment_data::EquipmentDatabase,
@@ -465,7 +468,7 @@ fn projectile_misses_when_target_dies_before_impact() {
         BasicAttackDef {
             range_tiles: 4,
             interval_ms: 2,
-            windup_ms: 0,
+            windup_ms: 1,
             delivery: DeliveryDef::Instant,
         },
     );
@@ -582,7 +585,7 @@ fn projectile_does_not_hit_after_attacker_death_when_battle_ends() {
         BasicAttackDef {
             range_tiles: 4,
             interval_ms: 2,
-            windup_ms: 0,
+            windup_ms: 1,
             delivery: DeliveryDef::Instant,
         },
     );
@@ -1063,7 +1066,11 @@ fn tft_like_field_6v6_mixed_melee_ranged_battle() {
 
     for i in 0..3 {
         player_units.push((player_owned[i], player_melee_uuids[i], player_positions[i]));
-        opponent_units.push((opponent_owned[i], opponent_melee_uuids[i], opponent_positions[i]));
+        opponent_units.push((
+            opponent_owned[i],
+            opponent_melee_uuids[i],
+            opponent_positions[i],
+        ));
     }
     for i in 0..3 {
         player_units.push((
@@ -1081,11 +1088,20 @@ fn tft_like_field_6v6_mixed_melee_ranged_battle() {
     let player = deck_with_units(player_units);
     let opponent = deck_with_units(opponent_units);
 
-    let mut battle = BattleCore::new(&player, &opponent, game_data.clone(), common::BOARD_SIZE, 3030);
+    let mut battle = BattleCore::new(
+        &player,
+        &opponent,
+        game_data.clone(),
+        common::BOARD_SIZE,
+        3030,
+    );
     let mut world = World::new();
     let result = battle.run_battle(&mut world).unwrap();
 
-    common::write_timeline_export("tft_like_field_6v6_mixed_melee_ranged_battle", &result.timeline);
+    common::write_timeline_export(
+        "tft_like_field_6v6_mixed_melee_ranged_battle",
+        &result.timeline,
+    );
 
     assert_ne!(result.winner, BattleWinner::Draw);
     let deaths = result
@@ -1095,6 +1111,82 @@ fn tft_like_field_6v6_mixed_melee_ranged_battle() {
         .filter(|e| matches!(e.event, TimelineEvent::UnitDied { .. }))
         .count();
     assert!(deaths > 0, "expected at least one unit to die");
+
+    let opponent_frontliner_instance_id = result
+        .timeline
+        .entries
+        .iter()
+        .find_map(|entry| match &entry.event {
+            TimelineEvent::UnitSpawned {
+                unit_instance_id,
+                owner,
+                base_uuid,
+                ..
+            } if *owner == Side::Opponent && *base_uuid == opponent_melee_uuids[0] => {
+                Some(*unit_instance_id)
+            }
+            _ => None,
+        })
+        .expect("expected opponent frontline instance id");
+
+    let first_move = result
+        .timeline
+        .entries
+        .iter()
+        .find_map(|entry| match &entry.event {
+            TimelineEvent::UnitMoved {
+                unit_instance_id,
+                from,
+                to,
+            } if *unit_instance_id == opponent_frontliner_instance_id => Some((*from, *to)),
+            _ => None,
+        })
+        .expect("expected opponent frontline to move");
+
+    assert!(
+        first_move.1.y >= first_move.0.y,
+        "opponent frontline should not take an immediate backward detour: {:?} -> {:?}",
+        first_move.0,
+        first_move.1
+    );
+
+    let opponent_center_melee_instance_id = result
+        .timeline
+        .entries
+        .iter()
+        .find_map(|entry| match &entry.event {
+            TimelineEvent::UnitSpawned {
+                unit_instance_id,
+                owner,
+                base_uuid,
+                ..
+            } if *owner == Side::Opponent && *base_uuid == opponent_melee_uuids[1] => {
+                Some(*unit_instance_id)
+            }
+            _ => None,
+        })
+        .expect("expected opponent center melee instance id");
+
+    let center_first_move = result
+        .timeline
+        .entries
+        .iter()
+        .find_map(|entry| match &entry.event {
+            TimelineEvent::UnitMoved {
+                unit_instance_id,
+                from,
+                to,
+            } if *unit_instance_id == opponent_center_melee_instance_id => Some((*from, *to)),
+            _ => None,
+        })
+        .expect("expected opponent center melee to move");
+
+    assert!(
+        center_first_move.1.y >= center_first_move.0.y,
+        "opponent center melee should not take an immediate backward detour: {:?} -> {:?}",
+        center_first_move.0,
+        center_first_move.1
+    );
 }
 
 #[test]
@@ -1285,4 +1377,169 @@ fn windup_locks_basic_attack_until_resolve() {
             "AttackStart should be delayed until windup completes"
         );
     }
+}
+
+#[test]
+fn instant_basic_attack_without_explicit_windup_uses_default_melee_windup() {
+    let attacker_base_uuid = Uuid::from_u128(0x1600_0001);
+    let target_base_uuid = Uuid::from_u128(0x2700_0001);
+
+    let attacker = abnormality_with_basic_attack(
+        "attacker",
+        attacker_base_uuid,
+        100,
+        10,
+        0,
+        3_000,
+        BasicAttackDef {
+            range_tiles: 1,
+            interval_ms: 1_000,
+            windup_ms: 0,
+            delivery: DeliveryDef::Instant,
+        },
+    );
+
+    let target = abnormality_with_basic_attack(
+        "target",
+        target_base_uuid,
+        100,
+        1,
+        0,
+        3_000,
+        BasicAttackDef {
+            range_tiles: 1,
+            interval_ms: 60_000,
+            windup_ms: 0,
+            delivery: DeliveryDef::Instant,
+        },
+    );
+
+    let game_data = game_data_from_abnormalities(vec![attacker, target]);
+    let player = deck_single_unit(
+        Uuid::from_u128(0xA600_0001),
+        attacker_base_uuid,
+        Position::new(0, 0),
+    );
+    let opponent = deck_single_unit(
+        Uuid::from_u128(0xB600_0001),
+        target_base_uuid,
+        Position::new(1, 0),
+    );
+
+    let mut battle = BattleCore::new(&player, &opponent, game_data, common::BOARD_SIZE, 20260319);
+    let mut world = World::new();
+    let result = battle.run_battle(&mut world).unwrap();
+
+    let attack_start_time = result
+        .timeline
+        .entries
+        .iter()
+        .find_map(|entry| match entry.event {
+            TimelineEvent::AttackStart {
+                kind: Some(game_core::game::battle::timeline::AttackKind::Auto),
+                ..
+            } => Some(entry.time_ms),
+            _ => None,
+        })
+        .expect("missing AttackStart");
+
+    let attack_resolve_time = result
+        .timeline
+        .entries
+        .iter()
+        .find_map(|entry| match entry.event {
+            TimelineEvent::AttackResolve {
+                kind: Some(game_core::game::battle::timeline::AttackKind::Auto),
+                ..
+            } => Some(entry.time_ms),
+            _ => None,
+        })
+        .expect("missing AttackResolve");
+
+    assert_eq!(
+        attack_resolve_time.saturating_sub(attack_start_time),
+        DEFAULT_INSTANT_BASIC_ATTACK_WINDUP_MS as u64
+    );
+}
+
+#[test]
+fn projectile_basic_attack_with_zero_windup_stays_instant_at_start() {
+    let attacker_base_uuid = Uuid::from_u128(0x1600_0002);
+    let target_base_uuid = Uuid::from_u128(0x2700_0002);
+
+    let attacker = abnormality_with_basic_attack(
+        "attacker",
+        attacker_base_uuid,
+        100,
+        10,
+        0,
+        3_000,
+        BasicAttackDef {
+            range_tiles: 3,
+            interval_ms: 1_000,
+            windup_ms: 0,
+            delivery: DeliveryDef::Projectile {
+                speed_units_per_ms: TILE_UNITS_PER_TILE as u32,
+            },
+        },
+    );
+
+    let target = abnormality_with_basic_attack(
+        "target",
+        target_base_uuid,
+        100,
+        1,
+        0,
+        3_000,
+        BasicAttackDef {
+            range_tiles: 1,
+            interval_ms: 60_000,
+            windup_ms: 0,
+            delivery: DeliveryDef::Instant,
+        },
+    );
+
+    let game_data = game_data_from_abnormalities(vec![attacker, target]);
+    let player = deck_single_unit(
+        Uuid::from_u128(0xA600_0002),
+        attacker_base_uuid,
+        Position::new(0, 0),
+    );
+    let opponent = deck_single_unit(
+        Uuid::from_u128(0xB600_0002),
+        target_base_uuid,
+        Position::new(3, 0),
+    );
+
+    let mut battle = BattleCore::new(&player, &opponent, game_data, common::BOARD_SIZE, 20260320);
+    let mut world = World::new();
+    let result = battle.run_battle(&mut world).unwrap();
+
+    let attack_start_time = result
+        .timeline
+        .entries
+        .iter()
+        .find_map(|entry| match entry.event {
+            TimelineEvent::AttackStart {
+                kind: Some(game_core::game::battle::timeline::AttackKind::Auto),
+                ..
+            } => Some(entry.time_ms),
+            _ => None,
+        })
+        .expect("missing AttackStart");
+
+    let attack_resolve_time = result
+        .timeline
+        .entries
+        .iter()
+        .find_map(|entry| match entry.event {
+            TimelineEvent::AttackResolve {
+                kind: Some(game_core::game::battle::timeline::AttackKind::Auto),
+                ..
+            } => Some(entry.time_ms),
+            _ => None,
+        })
+        .expect("missing AttackResolve");
+
+    assert_eq!(attack_resolve_time, attack_start_time);
 }

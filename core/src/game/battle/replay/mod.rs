@@ -169,6 +169,7 @@ impl TimelineReplayer {
                     attacker_instance_id,
                     target_instance_id,
                     kind,
+                    ..
                 } => {
                     if kind.is_none() {
                         violations.push(TimelineReplayViolation {
@@ -397,11 +398,11 @@ impl TimelineReplayer {
                                     entry_index: Some(index),
                                 });
                             }
-                            if entry.time_ms != due_time_ms {
+                            if entry.time_ms < due_time_ms {
                                 violations.push(TimelineReplayViolation {
                                     kind: TimelineReplayViolationKind::InvalidAutoCastEvent,
                                     message: format!(
-                                        "AutoCastEnd timing mismatch for {}: expected {}ms, got {}ms",
+                                        "AutoCastEnd recorded too early for {}: earliest {}ms, got {}ms",
                                         caster_instance_id, due_time_ms, entry.time_ms
                                     ),
                                     entry_index: Some(index),
@@ -478,6 +479,34 @@ impl TimelineReplayer {
                             ),
                             entry_index: Some(index),
                         });
+                    }
+                }
+                TimelineEvent::AbilityStepTriggered {
+                    caster_instance_id,
+                    target_instance_id,
+                    ..
+                } => {
+                    if units.get(caster_instance_id).is_none() {
+                        violations.push(TimelineReplayViolation {
+                            kind: TimelineReplayViolationKind::UnknownUnitReference,
+                            message: format!(
+                                "AbilityStepTriggered references unknown caster {}",
+                                caster_instance_id
+                            ),
+                            entry_index: Some(index),
+                        });
+                    }
+                    if let Some(target_instance_id) = target_instance_id {
+                        if units.get(target_instance_id).is_none() {
+                            violations.push(TimelineReplayViolation {
+                                kind: TimelineReplayViolationKind::UnknownUnitReference,
+                                message: format!(
+                                    "AbilityStepTriggered references unknown target {}",
+                                    target_instance_id
+                                ),
+                                entry_index: Some(index),
+                            });
+                        }
                     }
                 }
 

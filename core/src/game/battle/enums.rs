@@ -2,7 +2,7 @@ use std::cmp::Ordering;
 
 use uuid::Uuid;
 
-use crate::game::{ability::SkillId, enums::Side};
+use crate::game::ability::SkillId;
 
 use super::buffs::BuffId;
 use super::ids::UnitInstanceId;
@@ -11,9 +11,9 @@ use super::timeline::{AttackKind, SkillCastTarget, TimelineCause};
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ProjectilePayload {
     BasicAttack,
-    Skill {
+    SkillStep {
         skill_id: SkillId,
-        caster_owner: Side,
+        step_id: String,
         cast_target: Option<SkillCastTarget>,
     },
 }
@@ -60,6 +60,14 @@ pub enum BattleEvent {
         caster_instance_id: UnitInstanceId,
         cause: TimelineCause,
     },
+    SkillStep {
+        time_ms: u64,
+        caster_instance_id: UnitInstanceId,
+        skill_id: SkillId,
+        step_id: String,
+        cast_target: Option<SkillCastTarget>,
+        cause: TimelineCause,
+    },
     ApplyBuff {
         time_ms: u64,
         caster_instance_id: UnitInstanceId,
@@ -101,6 +109,7 @@ impl BattleEvent {
             | BattleEvent::ProjectileHit { time_ms, .. }
             | BattleEvent::AutoCastStart { time_ms, .. }
             | BattleEvent::AutoCastEnd { time_ms, .. }
+            | BattleEvent::SkillStep { time_ms, .. }
             | BattleEvent::ApplyBuff { time_ms, .. }
             | BattleEvent::BuffTick { time_ms, .. }
             | BattleEvent::BuffExpire { time_ms, .. }
@@ -118,12 +127,13 @@ impl BattleEvent {
             BattleEvent::ApplyBuff { .. } => 1,
             BattleEvent::BuffTick { .. } => 2,
             BattleEvent::AutoCastEnd { .. } => 3,
-            BattleEvent::AttackStart { .. } => 4,
-            BattleEvent::AttackResolve { .. } => 5,
-            BattleEvent::AutoCastStart { .. } => 6,
-            BattleEvent::BuffExpire { .. } => 7,
-            BattleEvent::MovementIntent { .. } => 8,
-            BattleEvent::MoveStep { .. } => 9,
+            BattleEvent::SkillStep { .. } => 4,
+            BattleEvent::AttackStart { .. } => 5,
+            BattleEvent::AttackResolve { .. } => 6,
+            BattleEvent::AutoCastStart { .. } => 7,
+            BattleEvent::BuffExpire { .. } => 8,
+            BattleEvent::MovementIntent { .. } => 9,
+            BattleEvent::MoveStep { .. } => 10,
         }
     }
 }
@@ -155,6 +165,16 @@ impl Ord for BattleEvent {
                         ..
                     },
                     BattleEvent::AutoCastEnd {
+                        caster_instance_id: b,
+                        ..
+                    },
+                )
+                | (
+                    BattleEvent::SkillStep {
+                        caster_instance_id: a,
+                        ..
+                    },
+                    BattleEvent::SkillStep {
                         caster_instance_id: b,
                         ..
                     },
@@ -222,37 +242,26 @@ impl Ord for BattleEvent {
                         (ProjectilePayload::BasicAttack, ProjectilePayload::BasicAttack) => {
                             Ordering::Equal
                         }
-                        (ProjectilePayload::BasicAttack, ProjectilePayload::Skill { .. }) => {
+                        (ProjectilePayload::BasicAttack, ProjectilePayload::SkillStep { .. }) => {
                             Ordering::Less
                         }
-                        (ProjectilePayload::Skill { .. }, ProjectilePayload::BasicAttack) => {
+                        (ProjectilePayload::SkillStep { .. }, ProjectilePayload::BasicAttack) => {
                             Ordering::Greater
                         }
                         (
-                            ProjectilePayload::Skill {
+                            ProjectilePayload::SkillStep {
                                 skill_id: a_id,
-                                caster_owner: a_owner,
+                                step_id: a_step,
                                 cast_target: a_target,
                             },
-                            ProjectilePayload::Skill {
+                            ProjectilePayload::SkillStep {
                                 skill_id: b_id,
-                                caster_owner: b_owner,
+                                step_id: b_step,
                                 cast_target: b_target,
                             },
                         ) => b_id
                             .cmp(a_id)
-                            .then_with(|| {
-                                // Side doesn't implement Ord; compare tags to keep deterministic.
-                                let a_tag = match a_owner {
-                                    Side::Player => 1u8,
-                                    Side::Opponent => 2u8,
-                                };
-                                let b_tag = match b_owner {
-                                    Side::Player => 1u8,
-                                    Side::Opponent => 2u8,
-                                };
-                                b_tag.cmp(&a_tag)
-                            })
+                            .then_with(|| b_step.cmp(a_step))
                             .then_with(|| {
                                 fn target_key(
                                     target: &Option<SkillCastTarget>,

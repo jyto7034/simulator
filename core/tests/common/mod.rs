@@ -7,7 +7,9 @@ pub const BOARD_SIZE: (u8, u8) = (BOARD_WIDTH, BOARD_HEIGHT);
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use game_core::game::ability::{DeliveryDef, SkillDef, SkillKind};
+use game_core::game::ability::{
+    DeliveryDef, SkillDef, SkillKind, SkillPresentationDef, SkillStepDef, SkillTarget,
+};
 use game_core::game::battle::timeline::Timeline;
 use game_core::game::data::abnormality_data::{AbnormalityDatabase, AbnormalityMetadata};
 use game_core::game::data::artifact_data::{ArtifactDatabase, ArtifactMetadata};
@@ -123,14 +125,19 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
     let skill_id = "test_skill".to_string();
     let skills_db = SkillDatabase::new(vec![SkillDef {
         id: skill_id.clone(),
+        name: "test_skill".to_string(),
         kind: SkillKind::Targeted,
-        target: game_core::game::ability::SkillTarget::SelfUnit,
-        range_tiles: 1,
-        cast_delay_ms: 10,
         focus_time_ms: 0,
         focus_permissions: Default::default(),
-        delivery: DeliveryDef::Instant,
-        effects: vec![],
+        steps: vec![SkillStepDef {
+            id: "step_01".to_string(),
+            delay_ms: 0,
+            range_tiles: 1,
+            target: SkillTarget::SelfUnit,
+            delivery: DeliveryDef::Instant,
+            effects: vec![],
+            presentation: SkillPresentationDef::default(),
+        }],
     }]);
 
     let abnormality1 = AbnormalityMetadata {

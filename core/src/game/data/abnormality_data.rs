@@ -19,8 +19,10 @@ fn default_attack_range_tiles() -> u8 {
     1
 }
 
+pub const DEFAULT_INSTANT_BASIC_ATTACK_WINDUP_MS: u32 = 200;
+
 fn default_attack_windup_ms() -> u32 {
-    0
+    DEFAULT_INSTANT_BASIC_ATTACK_WINDUP_MS
 }
 
 fn default_basic_attack_interval_ms() -> u64 {
@@ -69,6 +71,15 @@ impl Default for BasicAttackDef {
             interval_ms: default_basic_attack_interval_ms(),
             windup_ms: default_attack_windup_ms(),
             delivery: default_attack_delivery(),
+        }
+    }
+}
+
+impl BasicAttackDef {
+    pub fn effective_windup_ms(&self) -> u32 {
+        match self.delivery {
+            DeliveryDef::Instant if self.windup_ms == 0 => DEFAULT_INSTANT_BASIC_ATTACK_WINDUP_MS,
+            _ => self.windup_ms,
         }
     }
 }

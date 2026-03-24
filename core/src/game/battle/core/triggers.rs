@@ -165,7 +165,7 @@ mod tests {
             next_action_time: 0,
             pending_cast: false,
             pending_cast_cause: None,
-            pending_autocast: None,
+            pending_skill_cast: None,
         }
     }
 
