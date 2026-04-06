@@ -1,14 +1,18 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use bevy_ecs::resource::Resource;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::game::behavior::{GameError, PlayerBehavior};
-use crate::game::data::bonus_data::BonusMetadata;
-use crate::game::data::random_event_data::RandomEventMetadata;
-use crate::game::data::shop_data::ShopMetadata;
-use crate::game::enums::{GameOption, OrdealType, PhaseType, Side};
+use crate::game::data::shop_data::{ShopMetadata, ShopType};
+use crate::game::enums::{
+    BonusEventOption, GameOption, OrdealType, PhaseType, RewardMode, ShopEventOption, Side,
+    SuppressionOption,
+};
+use crate::game::{
+    battle::{timeline::Timeline, types::BattleWinner},
+    behavior::{ActionKind, GameError, PlayerBehavior},
+};
 
 pub mod inventory;
 pub mod item_slot;
@@ -18,9 +22,10 @@ pub use inventory::*;
 ///
 /// 현재 게임이 어떤 단계에 있는지 명확하게 표현
 /// ActionScheduler가 이 상태를 보고 allowed_actions를 결정함
-#[derive(Resource, Debug, Clone, PartialEq)]
+#[derive(Resource, Debug, Clone, PartialEq, Default)]
 pub enum GameState {
     /// 게임 시작 전
+    #[default]
     NotStarted,
     /// 게임 시작 후, Phase 데이터 요청 대기 중
     WaitingPhaseRequest,
@@ -34,16 +39,12 @@ pub enum GameState {
     InBonusClaimed { bonus_uuid: Uuid },
     /// 진압 작업 진행 중
     InSuppression { abnormality_uuid: Uuid },
+    /// 진압 전투 리플레이 진행 중
+    InSuppressionReplay { abnormality_uuid: Uuid },
     /// 시련 전투 진행 중
     InBattle { battle_uuid: Uuid },
     /// 게임 종료
     GameOver,
-}
-
-impl Default for GameState {
-    fn default() -> Self {
-        Self::NotStarted
-    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -345,6 +346,12 @@ impl Qliphoth {
     }
 }
 
+impl Default for Qliphoth {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 /// 게임 진행 상황 (Ordeal, Phase) - 순수 데이터만
 #[derive(Resource, Debug, Clone)]
 pub struct GameProgression {
@@ -380,51 +387,153 @@ impl WinCount {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct ShopSessionState {
+    pub id: String,
+    pub name: String,
+    pub uuid: Uuid,
+    pub shop_type: ShopType,
+    pub can_reroll: bool,
+    pub visible_items: Vec<Uuid>,
+    pub hidden_items: Vec<Uuid>,
+}
+
+impl ShopSessionState {
+    pub fn remove_visible_item(&mut self, uuid: Uuid) -> Result<(), GameError> {
+        let pos = self
+            .visible_items
+            .iter()
+            .position(|item| *item == uuid)
+            .ok_or(GameError::ShopItemNotFound)?;
+        self.visible_items.remove(pos);
+        Ok(())
+    }
+
+    pub fn reroll_items(&mut self) {
+        std::mem::swap(&mut self.hidden_items, &mut self.visible_items);
+    }
+}
+
+impl From<&ShopMetadata> for ShopSessionState {
+    fn from(value: &ShopMetadata) -> Self {
+        Self {
+            id: value.id.clone(),
+            name: value.name.clone(),
+            uuid: value.uuid,
+            shop_type: value.shop_type,
+            can_reroll: value.can_reroll,
+            visible_items: value.visible_items.clone(),
+            hidden_items: value.hidden_items.clone(),
+        }
+    }
+}
+
+impl From<ShopMetadata> for ShopSessionState {
+    fn from(value: ShopMetadata) -> Self {
+        Self::from(&value)
+    }
+}
+
+impl From<&ShopEventOption> for ShopSessionState {
+    fn from(value: &ShopEventOption) -> Self {
+        Self {
+            id: value.id.clone(),
+            name: value.name.clone(),
+            uuid: value.uuid,
+            shop_type: value.shop_type,
+            can_reroll: value.can_reroll,
+            visible_items: value.visible_items.clone(),
+            hidden_items: Vec::new(),
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct RewardSessionState {
+    pub stage_uuid: Uuid,
+    pub mode: RewardMode,
+    pub rewards: Vec<BonusEventOption>,
+    pub selected_reward_uuid: Option<Uuid>,
+}
+
+impl RewardSessionState {
+    pub fn get_selected_reward(&self) -> Option<&BonusEventOption> {
+        self.selected_reward_uuid
+            .and_then(|uuid| self.rewards.iter().find(|reward| reward.uuid == uuid))
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct SuppressionBattleState {
+    pub abnormality_id: String,
+    pub encounter_id: String,
+    pub abnormality_uuid: Uuid,
+    pub winner: BattleWinner,
+    pub timeline: Timeline,
+    pub reward_mode: RewardMode,
+    pub rewards: Vec<BonusEventOption>,
+}
+
+#[derive(Debug, Clone)]
+pub enum SelectedEventState {
+    Shop(ShopSessionState),
+    Reward(RewardSessionState),
+    Suppression(SuppressionOption),
+    SuppressionBattle(SuppressionBattleState),
+}
+
 #[derive(Resource)]
 pub struct SelectedEvent {
-    pub event: GameOption,
+    pub event: SelectedEventState,
 }
 
 impl SelectedEvent {
-    pub fn new(event: GameOption) -> Self {
+    pub fn new(event: SelectedEventState) -> Self {
         Self { event }
     }
 
-    pub fn as_shop(&self) -> Result<&ShopMetadata, GameError> {
+    pub fn as_shop(&self) -> Result<&ShopSessionState, GameError> {
         match &self.event {
-            GameOption::Shop { shop } => Ok(shop),
+            SelectedEventState::Shop(shop) => Ok(shop),
             _ => Err(GameError::EventTypeMismatch),
         }
     }
 
-    pub fn as_shop_mut(&mut self) -> Result<&mut ShopMetadata, GameError> {
+    pub fn as_shop_mut(&mut self) -> Result<&mut ShopSessionState, GameError> {
         match &mut self.event {
-            GameOption::Shop { shop } => Ok(shop),
+            SelectedEventState::Shop(shop) => Ok(shop),
             _ => Err(GameError::EventTypeMismatch),
         }
     }
 
-    pub fn as_bonus(&self) -> Result<&BonusMetadata, GameError> {
+    pub fn as_reward(&self) -> Result<&RewardSessionState, GameError> {
         match &self.event {
-            GameOption::Bonus { bonus } => Ok(bonus),
+            SelectedEventState::Reward(reward) => Ok(reward),
             _ => Err(GameError::EventTypeMismatch),
         }
     }
 
-    pub fn as_random_event(&self) -> Result<&RandomEventMetadata, GameError> {
-        match &self.event {
-            GameOption::Random { event } => Ok(event),
+    pub fn as_reward_mut(&mut self) -> Result<&mut RewardSessionState, GameError> {
+        match &mut self.event {
+            SelectedEventState::Reward(reward) => Ok(reward),
             _ => Err(GameError::EventTypeMismatch),
         }
     }
 
-    pub fn as_suppression(&self) -> Result<(&str, Uuid), GameError> {
+    pub fn as_suppression(&self) -> Result<(&str, &str, Uuid), GameError> {
         match &self.event {
-            GameOption::SuppressAbnormality {
-                abnormality_id,
-                uuid,
-                ..
-            } => Ok((abnormality_id.as_str(), *uuid)),
+            SelectedEventState::Suppression(option) => Ok((
+                option.abnormality_id.as_str(),
+                option.encounter_id.as_str(),
+                option.uuid,
+            )),
+            _ => Err(GameError::EventTypeMismatch),
+        }
+    }
+
+    pub fn as_suppression_battle(&self) -> Result<&SuppressionBattleState, GameError> {
+        match &self.event {
+            SelectedEventState::SuppressionBattle(battle) => Ok(battle),
             _ => Err(GameError::EventTypeMismatch),
         }
     }
@@ -475,36 +584,41 @@ impl CurrentPhaseEvents {
 
 /// 현재 게임 컨텍스트 (치팅 방지용)
 ///
-/// 현재 플레이어가 수행할 수 있는 행동 목록을 저장
-/// 플레이어의 행동이 이 목록에 없으면 거부됨
+/// 현재 상태에서 허용되는 액션 capability를 저장
+/// 실제 payload 유효성은 각 액션 validator가 별도로 검사한다.
 #[derive(Resource, Default)]
 pub struct ActionValidator {
-    /// 현재 허용된 행동 목록
-    pub allowed_actions: Vec<PlayerBehavior>,
+    /// 현재 허용된 액션 종류
+    allowed_actions: HashSet<ActionKind>,
 }
 
 impl ActionValidator {
     pub fn new() -> Self {
         Self {
-            allowed_actions: vec![],
+            allowed_actions: HashSet::new(),
         }
     }
 
     /// 허용된 행동 설정
-    pub fn set_allowed_actions(&mut self, actions: Vec<PlayerBehavior>) {
-        self.allowed_actions = actions;
+    pub fn set_allowed_actions(&mut self, actions: Vec<ActionKind>) {
+        self.allowed_actions = actions.into_iter().collect();
     }
 
-    /// 특정 행동이 허용되는지 확인 (Variant만 비교)
+    /// 특정 액션 종류가 허용되는지 확인
+    pub fn is_kind_allowed(&self, action: ActionKind) -> bool {
+        self.allowed_actions.contains(&action)
+    }
+
+    /// 특정 행동이 허용되는지 확인
     pub fn is_action_allowed(&self, action: &PlayerBehavior) -> bool {
-        self.allowed_actions
-            .iter()
-            .any(|allowed| Self::same_variant(allowed, action))
+        self.is_kind_allowed(action.kind())
     }
 
-    /// 두 PlayerBehavior가 같은 Variant인지 확인
-    fn same_variant(a: &PlayerBehavior, b: &PlayerBehavior) -> bool {
-        std::mem::discriminant(a) == std::mem::discriminant(b)
+    /// 현재 허용된 액션 종류를 정렬된 형태로 반환
+    pub fn allowed_actions(&self) -> Vec<ActionKind> {
+        let mut actions = self.allowed_actions.iter().copied().collect::<Vec<_>>();
+        actions.sort();
+        actions
     }
 
     /// 모든 허용 행동 클리어
@@ -534,6 +648,7 @@ mod tests {
 
         let option = GameOption::SuppressAbnormality {
             abnormality_id: "F-01-02".to_string(),
+            encounter_id: "encounter_1".to_string(),
             risk_level: RiskLevel::HE,
             uuid,
         };
@@ -554,6 +669,7 @@ mod tests {
 
         let option = GameOption::SuppressAbnormality {
             abnormality_id: "F-01-02".to_string(),
+            encounter_id: "encounter_1".to_string(),
             risk_level: RiskLevel::HE,
             uuid,
         };
@@ -574,6 +690,7 @@ mod tests {
         for i in 0..3 {
             let option = GameOption::SuppressAbnormality {
                 abnormality_id: format!("F-01-0{}", i),
+                encounter_id: format!("encounter_{i}"),
                 risk_level: RiskLevel::ZAYIN,
                 uuid: Uuid::new_v4(),
             };
@@ -595,23 +712,17 @@ mod tests {
     fn test_current_game_context_set_allowed_actions() {
         let mut context = ActionValidator::new();
 
-        let actions = vec![
-            PlayerBehavior::StartNewGame,
-            PlayerBehavior::RequestPhaseData,
-        ];
+        let actions = vec![ActionKind::StartNewGame, ActionKind::RequestPhaseData];
 
         context.set_allowed_actions(actions.clone());
-        assert_eq!(context.allowed_actions.len(), 2);
+        assert_eq!(context.allowed_actions().len(), 2);
     }
 
     #[test]
     fn test_current_game_context_is_action_allowed() {
         let mut context = ActionValidator::new();
 
-        let actions = vec![
-            PlayerBehavior::StartNewGame,
-            PlayerBehavior::RequestPhaseData,
-        ];
+        let actions = vec![ActionKind::StartNewGame, ActionKind::RequestPhaseData];
 
         context.set_allowed_actions(actions);
 
@@ -629,12 +740,10 @@ mod tests {
     fn test_current_game_context_variant_matching() {
         let mut context = ActionValidator::new();
 
-        // Given: SelectEvent 템플릿을 허용 목록에 추가
-        context.set_allowed_actions(vec![PlayerBehavior::SelectEvent {
-            event_id: Uuid::nil(), // NOTE: 템플릿 (모든 UUID 허용)
-        }]);
+        // Given: SelectEvent capability를 허용 목록에 추가
+        context.set_allowed_actions(vec![ActionKind::SelectEvent]);
 
-        // Then: 다른 UUID를 가진 SelectEvent도 허용되어야 함 (Variant만 비교)
+        // Then: 다른 UUID를 가진 SelectEvent도 허용되어야 함
         let different_uuid = Uuid::new_v4();
         assert!(context.is_action_allowed(&PlayerBehavior::SelectEvent {
             event_id: different_uuid
@@ -648,15 +757,12 @@ mod tests {
     fn test_current_game_context_clear() {
         let mut context = ActionValidator::new();
 
-        context.set_allowed_actions(vec![
-            PlayerBehavior::StartNewGame,
-            PlayerBehavior::RequestPhaseData,
-        ]);
+        context.set_allowed_actions(vec![ActionKind::StartNewGame, ActionKind::RequestPhaseData]);
 
-        assert_eq!(context.allowed_actions.len(), 2);
+        assert_eq!(context.allowed_actions().len(), 2);
 
         context.clear();
-        assert_eq!(context.allowed_actions.len(), 0);
+        assert_eq!(context.allowed_actions().len(), 0);
     }
 
     // ============================================================

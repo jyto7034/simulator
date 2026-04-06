@@ -81,13 +81,8 @@ impl DeathHandler {
             // 1. OnDeath 트리거 (사망 유닛)
             let on_death_effects = get_on_death_effects(dead.unit_id);
             for sourced in on_death_effects {
-                match sourced.effect {
-                    // 죽은 유닛은 행동(스킬 시전)을 하지 않는다.
-                    Effect::Skill(_) => {}
-                    Effect::Modifier(_modifier) => {
-                        // OnDeath Modifier는 보통 의미 없지만 일단 무시
-                    }
-                    _ => {}
+                if let Effect::Modifier(_modifier) = sourced.effect {
+                    // OnDeath Modifier는 보통 의미 없지만 일단 무시
                 }
             }
 
@@ -95,22 +90,11 @@ impl DeathHandler {
             if let Some(killer_id) = dead.killer_id {
                 let on_kill_effects = get_on_kill_effects(killer_id);
                 for sourced in on_kill_effects {
-                    match sourced.effect {
-                        Effect::Modifier(modifier) => {
-                            commands.push(BattleCommand::ApplyModifier {
-                                target_id: killer_id,
-                                modifier,
-                            });
-                        }
-                        Effect::Skill(skill_id) => {
-                            commands.push(BattleCommand::CastSkill {
-                                skill_id,
-                                caster_id: killer_id,
-                                target_id: Some(dead.unit_id),
-                                cooldown_source: sourced.source,
-                            });
-                        }
-                        _ => {}
+                    if let Effect::Modifier(modifier) = sourced.effect {
+                        commands.push(BattleCommand::ApplyModifier {
+                            target_id: killer_id,
+                            modifier,
+                        });
                     }
                 }
             }
@@ -125,22 +109,11 @@ impl DeathHandler {
 
                 let on_ally_death_effects = get_on_ally_death_effects(ally_id);
                 for sourced in on_ally_death_effects {
-                    match sourced.effect {
-                        Effect::Modifier(modifier) => {
-                            commands.push(BattleCommand::ApplyModifier {
-                                target_id: ally_id,
-                                modifier,
-                            });
-                        }
-                        Effect::Skill(skill_id) => {
-                            commands.push(BattleCommand::CastSkill {
-                                skill_id,
-                                caster_id: ally_id,
-                                target_id: None,
-                                cooldown_source: sourced.source,
-                            });
-                        }
-                        _ => {}
+                    if let Effect::Modifier(modifier) = sourced.effect {
+                        commands.push(BattleCommand::ApplyModifier {
+                            target_id: ally_id,
+                            modifier,
+                        });
                     }
                 }
             }
@@ -171,7 +144,7 @@ impl Default for DeathHandler {
 mod tests {
     use super::*;
     use crate::game::battle::cooldown::CooldownSource;
-    use crate::game::stats::{StatId, StatModifier, StatModifierKind};
+    use crate::game::stats::{StatId, StatModifier, StatModifierKind, TriggerEffectTarget};
     use uuid::Uuid;
 
     #[test]
@@ -195,38 +168,20 @@ mod tests {
         });
 
         let result = handler.process_all_deaths(
+            |_unit_id| vec![],
             |unit_id| {
-                if unit_id == dead_id {
+                if unit_id == killer_id {
                     vec![SourcedEffect {
                         source: CooldownSource::Unit {
                             unit_instance_id: unit_id,
                         },
-                        effect: Effect::Skill("dead_unit_skill".to_string()),
+                        target: TriggerEffectTarget::SelfUnit,
+                        effect: Effect::Modifier(StatModifier {
+                            stat: StatId::Attack,
+                            kind: StatModifierKind::Flat,
+                            value: 7,
+                        }),
                     }]
-                } else {
-                    vec![]
-                }
-            },
-            |unit_id| {
-                if unit_id == killer_id {
-                    vec![
-                        SourcedEffect {
-                            source: CooldownSource::Unit {
-                                unit_instance_id: unit_id,
-                            },
-                            effect: Effect::Modifier(StatModifier {
-                                stat: StatId::Attack,
-                                kind: StatModifierKind::Flat,
-                                value: 7,
-                            }),
-                        },
-                        SourcedEffect {
-                            source: CooldownSource::Unit {
-                                unit_instance_id: unit_id,
-                            },
-                            effect: Effect::Skill("killer_skill".to_string()),
-                        },
-                    ]
                 } else {
                     vec![]
                 }
@@ -246,6 +201,7 @@ mod tests {
                     source: CooldownSource::Unit {
                         unit_instance_id: unit_id,
                     },
+                    target: TriggerEffectTarget::SelfUnit,
                     effect: Effect::Modifier(StatModifier {
                         stat: StatId::Defense,
                         kind: StatModifierKind::Flat,
@@ -263,23 +219,12 @@ mod tests {
 
         assert_eq!(result.units_to_remove, vec![dead_id]);
 
-        // OnDeath Skill should be ignored (dead unit can't cast).
-        assert!(!result.commands.iter().any(
-            |c| matches!(c, BattleCommand::CastSkill { caster_id, .. } if *caster_id == dead_id)
-        ));
-
-        // Killer commands should include modifier and cast.
+        // Killer commands should include modifier.
         assert!(
             result
                 .commands
                 .iter()
                 .any(|c| matches!(c, BattleCommand::ApplyModifier { target_id, modifier } if *target_id == killer_id && modifier.stat == StatId::Attack))
-        );
-        assert!(
-            result
-                .commands
-                .iter()
-                .any(|c| matches!(c, BattleCommand::CastSkill { caster_id, skill_id, .. } if *caster_id == killer_id && skill_id == "killer_skill"))
         );
 
         // Ally on-ally-death effects should be ordered by ally id (ascending bytes).

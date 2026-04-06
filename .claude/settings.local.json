@@ -42,7 +42,10 @@
       "Bash(sudo -S apt update:*)",
       "Bash(sudo -S apt install:*)",
       "Bash(export PATH=\"$HOME/.cargo/bin:$PATH\")",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "mcp__figma__whoami",
+      "mcp__figma__create_new_file",
+      "mcp__figma__use_figma"
     ],
     "deny": [],
     "ask": []

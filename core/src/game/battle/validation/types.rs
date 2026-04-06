@@ -50,21 +50,11 @@ pub struct TimelineViolation {
     pub entry_index: Option<usize>,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Default)]
 pub struct TimelineExpectedCounts {
     pub units: usize,
     pub items: usize,
     pub artifacts: usize,
-}
-
-impl Default for TimelineExpectedCounts {
-    fn default() -> Self {
-        Self {
-            units: 0,
-            items: 0,
-            artifacts: 0,
-        }
-    }
 }
 
 impl TimelineExpectedCounts {

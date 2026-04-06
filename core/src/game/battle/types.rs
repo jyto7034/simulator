@@ -106,7 +106,15 @@ impl OwnedUnit {
                 .get_by_uuid(item_uuid)
                 .ok_or(GameError::MissingResource(""))?;
 
-            stats.apply_permanent_effects(&origin_item.triggered_effects);
+            stats
+                .apply_permanent_effects(&origin_item.triggered_effects)
+                .map_err(|err| match err {
+                    GameError::InvalidStaticData(message) => GameError::InvalidStaticData(format!(
+                        "equipment '{}' invalid Permanent effect: {}",
+                        origin_item.id, message
+                    )),
+                    other => other,
+                })?;
         }
 
         // 아티팩트 스탯 적용
@@ -116,7 +124,15 @@ impl OwnedUnit {
                 .get_by_uuid(artifact_uuid)
                 .ok_or(GameError::MissingResource(""))?;
 
-            stats.apply_permanent_effects(&origin_artifact.triggered_effects);
+            stats
+                .apply_permanent_effects(&origin_artifact.triggered_effects)
+                .map_err(|err| match err {
+                    GameError::InvalidStaticData(message) => GameError::InvalidStaticData(format!(
+                        "artifact '{}' invalid Permanent effect: {}",
+                        origin_artifact.id, message
+                    )),
+                    other => other,
+                })?;
         }
 
         // Growth 스택 / 장비 / 아티팩트는 "영구 스탯"으로 간주하므로,
@@ -143,7 +159,10 @@ mod tests {
         GameDataBase,
     };
     use crate::game::enums::RiskLevel;
-    use crate::game::stats::{Effect, StatId, StatModifier, StatModifierKind, TriggerType};
+    use crate::game::stats::{
+        Effect, StatId, StatModifier, StatModifierKind, TriggerEffectTarget, TriggerType,
+        TriggeredEffect,
+    };
     use std::collections::HashMap;
     use std::sync::Arc;
 
@@ -183,14 +202,14 @@ mod tests {
             skill_id: None,
         };
 
-        let mut item_triggers: HashMap<TriggerType, Vec<Effect>> = HashMap::new();
+        let mut item_triggers: HashMap<TriggerType, Vec<TriggeredEffect>> = HashMap::new();
         item_triggers.insert(
             TriggerType::Permanent,
-            vec![Effect::Modifier(StatModifier {
+            vec![TriggeredEffect::legacy(Effect::Modifier(StatModifier {
                 stat: StatId::Attack,
                 kind: StatModifierKind::Flat,
                 value: 7,
-            })],
+            }))],
         );
         let item = EquipmentMetadata {
             id: "item".to_string(),
@@ -201,16 +220,17 @@ mod tests {
             price: 0,
             allow_duplicate_equip: true,
             triggered_effects: item_triggers,
+            ability_activations: vec![],
         };
 
-        let mut artifact_triggers: HashMap<TriggerType, Vec<Effect>> = HashMap::new();
+        let mut artifact_triggers: HashMap<TriggerType, Vec<TriggeredEffect>> = HashMap::new();
         artifact_triggers.insert(
             TriggerType::Permanent,
-            vec![Effect::Modifier(StatModifier {
+            vec![TriggeredEffect::legacy(Effect::Modifier(StatModifier {
                 stat: StatId::Defense,
                 kind: StatModifierKind::Flat,
                 value: 3,
-            })],
+            }))],
         );
         let artifact = ArtifactMetadata {
             id: "artifact".to_string(),
@@ -220,19 +240,20 @@ mod tests {
             rarity: RiskLevel::ZAYIN,
             price: 0,
             triggered_effects: artifact_triggers,
+            ability_activations: vec![],
         };
 
-        let game_data = GameDataBase::new(
-            Arc::new(AbnormalityDatabase::new(vec![abno])),
-            Arc::new(ArtifactDatabase::new(vec![artifact])),
-            Arc::new(EquipmentDatabase::new(vec![item])),
-            Arc::new(ShopDatabase::new(vec![])),
-            Arc::new(BonusDatabase::new(vec![])),
-            Arc::new(RandomEventDatabase::new(vec![])),
-            Arc::new(PveEncounterDatabase::new(vec![])),
-            Arc::new(SkillDatabase::new(vec![])),
-            empty_event_pools(),
-        );
+        let game_data = GameDataBase::new(crate::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![abno])),
+            artifact_data: Arc::new(ArtifactDatabase::new(vec![artifact])),
+            equipment_data: Arc::new(EquipmentDatabase::new(vec![item])),
+            shop_data: Arc::new(ShopDatabase::new(vec![])),
+            bonus_data: Arc::new(BonusDatabase::new(vec![])),
+            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
+            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
+            skill_data: Arc::new(SkillDatabase::new(vec![])),
+            event_pools: empty_event_pools(),
+        });
 
         let mut growth = GrowthStack::new();
         growth.add(GrowthId::KillStack, 2);
@@ -255,17 +276,17 @@ mod tests {
 
     #[test]
     fn effective_stats_errors_when_abnormality_missing() {
-        let game_data = GameDataBase::new(
-            Arc::new(AbnormalityDatabase::new(vec![])),
-            Arc::new(ArtifactDatabase::new(vec![])),
-            Arc::new(EquipmentDatabase::new(vec![])),
-            Arc::new(ShopDatabase::new(vec![])),
-            Arc::new(BonusDatabase::new(vec![])),
-            Arc::new(RandomEventDatabase::new(vec![])),
-            Arc::new(PveEncounterDatabase::new(vec![])),
-            Arc::new(SkillDatabase::new(vec![])),
-            empty_event_pools(),
-        );
+        let game_data = GameDataBase::new(crate::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![])),
+            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
+            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
+            shop_data: Arc::new(ShopDatabase::new(vec![])),
+            bonus_data: Arc::new(BonusDatabase::new(vec![])),
+            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
+            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
+            skill_data: Arc::new(SkillDatabase::new(vec![])),
+            event_pools: empty_event_pools(),
+        });
 
         let unit = OwnedUnit {
             owned_uuid: Uuid::from_u128(10),
@@ -301,17 +322,17 @@ mod tests {
         };
         abno.basic_attack.interval_ms = 0;
 
-        let game_data = GameDataBase::new(
-            Arc::new(AbnormalityDatabase::new(vec![abno])),
-            Arc::new(ArtifactDatabase::new(vec![])),
-            Arc::new(EquipmentDatabase::new(vec![])),
-            Arc::new(ShopDatabase::new(vec![])),
-            Arc::new(BonusDatabase::new(vec![])),
-            Arc::new(RandomEventDatabase::new(vec![])),
-            Arc::new(PveEncounterDatabase::new(vec![])),
-            Arc::new(SkillDatabase::new(vec![])),
-            empty_event_pools(),
-        );
+        let game_data = GameDataBase::new(crate::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![abno])),
+            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
+            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
+            shop_data: Arc::new(ShopDatabase::new(vec![])),
+            bonus_data: Arc::new(BonusDatabase::new(vec![])),
+            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
+            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
+            skill_data: Arc::new(SkillDatabase::new(vec![])),
+            event_pools: empty_event_pools(),
+        });
 
         let unit = OwnedUnit {
             owned_uuid: Uuid::from_u128(10),
@@ -323,5 +344,74 @@ mod tests {
 
         let err = unit.effective_stats(&game_data, &[]).unwrap_err();
         assert!(matches!(err, GameError::InvalidUnitStats(_)));
+    }
+
+    #[test]
+    fn effective_stats_rejects_invalid_permanent_targeting() {
+        let abno_uuid = Uuid::from_u128(1);
+        let artifact_uuid = Uuid::from_u128(2);
+
+        let abno = AbnormalityMetadata {
+            id: "abno".to_string(),
+            uuid: abno_uuid,
+            name: "Abno".to_string(),
+            risk_level: RiskLevel::ZAYIN,
+            price: 0,
+            max_health: 100,
+            attack: 10,
+            defense: 5,
+            movement: Default::default(),
+            basic_attack: Default::default(),
+            resonance: Default::default(),
+            skill_id: None,
+        };
+
+        let mut artifact_triggers: HashMap<TriggerType, Vec<TriggeredEffect>> = HashMap::new();
+        artifact_triggers.insert(
+            TriggerType::Permanent,
+            vec![TriggeredEffect::targeted(
+                TriggerEffectTarget::CounterpartUnit,
+                Effect::Modifier(StatModifier {
+                    stat: StatId::Defense,
+                    kind: StatModifierKind::Flat,
+                    value: 3,
+                }),
+            )],
+        );
+        let artifact = ArtifactMetadata {
+            id: "artifact".to_string(),
+            uuid: artifact_uuid,
+            name: "Artifact".to_string(),
+            description: "".to_string(),
+            rarity: RiskLevel::ZAYIN,
+            price: 0,
+            triggered_effects: artifact_triggers,
+            ability_activations: vec![],
+        };
+
+        let game_data = GameDataBase::new(crate::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![abno])),
+            artifact_data: Arc::new(ArtifactDatabase::new(vec![artifact])),
+            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
+            shop_data: Arc::new(ShopDatabase::new(vec![])),
+            bonus_data: Arc::new(BonusDatabase::new(vec![])),
+            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
+            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
+            skill_data: Arc::new(SkillDatabase::new(vec![])),
+            event_pools: empty_event_pools(),
+        });
+
+        let unit = OwnedUnit {
+            owned_uuid: Uuid::from_u128(10),
+            base_uuid: abno_uuid,
+            level: Tier::I,
+            growth_stacks: GrowthStack::new(),
+            equipped_items: vec![],
+        };
+
+        assert!(matches!(
+            unit.effective_stats(&game_data, &[artifact_uuid]),
+            Err(GameError::InvalidStaticData(_))
+        ));
     }
 }

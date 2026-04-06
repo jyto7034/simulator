@@ -7,12 +7,8 @@ use crate::{
     ecs::resources::{Enkephalin, Inventory, InventoryDiffDto, InventoryItemDto, SelectedEvent},
     game::{
         behavior::{BehaviorResult, GameError},
-        data::{
-            event_pools::EventPhasePool,
-            shop_data::{ShopMetadata, ShopType},
-            GameDataBase,
-        },
-        enums::GameOption,
+        data::{event_pools::EventPhasePool, GameDataBase},
+        enums::{GameOption, ShopEventOption},
         events::{EventGenerator, GeneratorContext},
     },
 };
@@ -24,11 +20,6 @@ use crate::{
 // 각 종류마다 고유한 Npc 를 가짐. ( 상인의 갯수가 너무 많으면 리소스가 더 많이 발생하니 중복 허용함. )
 // TODO: 상인에게 소지금 개념을 추가하여 플레이어가 마음껏 아이템을 팔 수 없게 해도 좋음.
 pub struct ShopGenerator;
-
-fn fallback_shop_uuid(seed: u64) -> Uuid {
-    // 재현성을 위해 seed 기반으로 결정적 UUID를 생성 (다른 폴백들과 충돌 방지).
-    Uuid::from_u128(0x7a1d_3a09_5b8e_4d7b_8f10_0000_0000_0001u128 ^ ((seed as u128) << 64))
-}
 
 impl EventGenerator for ShopGenerator {
     type Output = GameOption;
@@ -52,49 +43,28 @@ impl EventGenerator for ShopGenerator {
         let mut rng = rand::rngs::StdRng::seed_from_u64(ctx.random_seed);
 
         // 4. pool에서 가중치 기반 UUID 선택
-        let uuid = match EventPhasePool::choose_weighted_uuid(pool, &mut rng) {
-            Some(uuid) => uuid,
-            None => {
-                // 폴백: pool이 비어있으면 임시 Shop 반환
-                warn!(
-                    "Shop pool is empty for ordeal={:?}, using fallback shop",
-                    current_ordeal
-                );
-                let shop = ShopMetadata {
-                    id: String::new(),
-                    name: "임시 상점".to_string(),
-                    uuid: fallback_shop_uuid(ctx.random_seed),
-                    shop_type: ShopType::Shop,
-                    can_reroll: false,
-                    visible_items: Vec::new(),
-                    hidden_items: Vec::new(),
-                };
-                return GameOption::Shop { shop };
-            }
-        };
+        let uuid = EventPhasePool::choose_weighted_uuid(pool, &mut rng).unwrap_or_else(|| {
+            panic!("Shop pool is empty for ordeal={current_ordeal:?}; static event data is invalid")
+        });
 
         // 5. GameData에서 Shop 조회
-        let shop = match ctx.game_data.shop_data.get_by_uuid(&uuid) {
-            Some(shop) => shop.clone(), // Shop 전체를 clone
-            None => {
-                // 폴백: UUID에 해당하는 Shop이 없으면 기본값
-                warn!("Shop uuid {:?} not found in GameData, using fallback", uuid);
-                ShopMetadata {
-                    id: String::new(),
-                    name: "임시 상점".to_string(),
-                    uuid,
-                    shop_type: ShopType::Shop,
-                    can_reroll: false,
-                    visible_items: Vec::new(),
-                    hidden_items: Vec::new(),
-                }
-            }
-        };
+        let shop = ctx
+            .game_data
+            .shop_data
+            .get_by_uuid(&uuid)
+            .unwrap_or_else(|| {
+                panic!(
+                    "Shop uuid {uuid} selected from ordeal={current_ordeal:?} pool is missing from GameData"
+                )
+            })
+            .clone();
 
         info!("Generated shop event: id={}, uuid={}", shop.id, shop.uuid);
 
         // 7. GameOption 생성 (Shop 전체 데이터 포함)
-        GameOption::Shop { shop }
+        GameOption::Shop {
+            shop: ShopEventOption::from(shop),
+        }
     }
 }
 
@@ -121,8 +91,8 @@ impl ShopExecutor {
         }
 
         // 방어 로직:
-        // `hidden_items`는 `#[serde(skip)]`라서 로딩 경로에 따라 비어있을 수 있음.
-        // 빈 hidden_items와 swap하면 visible_items가 비워져 UX가 깨지므로 리롤을 거부한다.
+        // 런타임 상점은 로드 단계에서 visible/hidden으로 이미 분리되어 있어야 한다.
+        // hidden_items가 비어 있으면 실제로 더 교체할 재고가 없는 상태이므로 리롤을 거부한다.
         if shop.hidden_items.is_empty() {
             warn!(
                 "Reroll requested but shop has no hidden_items to reroll from (shop_uuid={})",
@@ -165,7 +135,7 @@ impl ShopExecutor {
             let shop = selected_event.as_shop()?;
 
             // 치팅 방지: 해당 상점의 visible_items 에 존재하는지 확인
-            if !shop.visible_items.iter().any(|id| *id == item_uuid) {
+            if !shop.visible_items.contains(&item_uuid) {
                 warn!(
                     "Item uuid {} not found in visible_items of shop '{}'",
                     item_uuid, shop.id
@@ -176,7 +146,7 @@ impl ShopExecutor {
             // 전역 ItemRegistry 를 통해 실제 아이템 메타데이터 조회
             let item = game_data
                 .item(&item_uuid)
-                .cloned()
+                .map(crate::game::data::ItemRef::to_owned_item)
                 .ok_or(GameError::ShopItemNotFound)?;
             let price = item.price();
 
@@ -208,6 +178,13 @@ impl ShopExecutor {
             let inventory = world
                 .get_resource::<Inventory>()
                 .ok_or(GameError::MissingResource("Inventory"))?;
+
+            if let crate::game::data::Item::Artifact(meta) = &item {
+                if inventory.has_artifact(meta.uuid) {
+                    warn!("Artifact already owned: item_uuid={}", item_uuid);
+                    return Err(GameError::AlreadyOwnedArtifact);
+                }
+            }
 
             if !inventory.can_add_item(&item) {
                 warn!("Inventory full: cannot add item (item_uuid={})", item_uuid);
@@ -398,14 +375,18 @@ impl ShopExecutor {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::ecs::resources::{SelectedEventState, ShopSessionState};
     use crate::game::data::{
         abnormality_data::{AbnormalityMetadata, BasicAttackDef, MovementDef, ResonanceDef},
+        artifact_data::ArtifactMetadata,
         equipment_data::{EquipmentMetadata, EquipmentType},
+        shop_data::{ShopMetadata, ShopType},
         Item,
     };
-    use crate::game::enums::RiskLevel;
+    use crate::game::enums::{BonusEventOption, RiskLevel};
     use crate::game::managers::uuid_manager::UuidManager;
     use std::sync::Arc;
+    use uuid::Uuid;
 
     /// 테스트용 World 생성 헬퍼
     fn setup_world() -> World {
@@ -446,6 +427,7 @@ mod tests {
             price,
             allow_duplicate_equip: true,
             triggered_effects: Default::default(),
+            ability_activations: vec![],
         });
         (uuid, equipment)
     }
@@ -481,6 +463,21 @@ mod tests {
         (uuid, abnormality)
     }
 
+    fn create_test_artifact(price: u32) -> (Uuid, Arc<ArtifactMetadata>) {
+        let uuid = Uuid::new_v4();
+        let artifact = Arc::new(ArtifactMetadata {
+            id: "test_artifact".to_string(),
+            uuid,
+            name: "Test Artifact".to_string(),
+            description: "Artifact".to_string(),
+            rarity: RiskLevel::HE,
+            price,
+            triggered_effects: Default::default(),
+            ability_activations: vec![],
+        });
+        (uuid, artifact)
+    }
+
     /// 테스트용 상점 설정 헬퍼
     fn setup_shop(world: &mut World) {
         let shop = ShopMetadata {
@@ -493,7 +490,9 @@ mod tests {
             hidden_items: Vec::new(),
         };
 
-        world.insert_resource(SelectedEvent::new(GameOption::Shop { shop }));
+        world.insert_resource(SelectedEvent::new(SelectedEventState::Shop(
+            ShopSessionState::from(shop),
+        )));
     }
 
     #[test]
@@ -512,7 +511,9 @@ mod tests {
             visible_items: vec![visible_item],
             hidden_items: Vec::new(),
         };
-        world.insert_resource(SelectedEvent::new(GameOption::Shop { shop }));
+        world.insert_resource(SelectedEvent::new(SelectedEventState::Shop(
+            ShopSessionState::from(shop),
+        )));
 
         // When: 리롤 시도
         let result = ShopExecutor::reroll(&mut world);
@@ -525,6 +526,82 @@ mod tests {
         assert_eq!(shop.uuid, shop_uuid);
         assert_eq!(shop.visible_items, vec![visible_item]);
         assert!(shop.hidden_items.is_empty());
+    }
+
+    #[test]
+    fn test_purchase_duplicate_artifact_is_rejected_before_shop_mutation() {
+        let mut world = setup_world();
+        let (artifact_uuid, artifact) = create_test_artifact(20);
+        add_owned_item(&mut world, Item::Artifact(artifact.clone()));
+
+        let shop = ShopMetadata {
+            id: "artifact_shop".to_string(),
+            name: "Artifact Shop".to_string(),
+            uuid: Uuid::new_v4(),
+            shop_type: ShopType::Shop,
+            can_reroll: false,
+            visible_items: vec![artifact_uuid],
+            hidden_items: Vec::new(),
+        };
+        world.insert_resource(SelectedEvent::new(SelectedEventState::Shop(
+            ShopSessionState::from(shop),
+        )));
+
+        let game_data = GameDataBase::new(crate::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(
+                crate::game::data::abnormality_data::AbnormalityDatabase::new(vec![]),
+            ),
+            artifact_data: Arc::new(crate::game::data::artifact_data::ArtifactDatabase::new(
+                vec![(*artifact).clone()],
+            )),
+            equipment_data: Arc::new(crate::game::data::equipment_data::EquipmentDatabase::new(
+                vec![],
+            )),
+            shop_data: Arc::new(crate::game::data::shop_data::ShopDatabase::new(vec![])),
+            bonus_data: Arc::new(crate::game::data::bonus_data::BonusDatabase::new(vec![])),
+            random_event_data: Arc::new(
+                crate::game::data::random_event_data::RandomEventDatabase::new(vec![]),
+            ),
+            pve_data: Arc::new(crate::game::data::pve_data::PveEncounterDatabase::new(
+                vec![],
+            )),
+            skill_data: Arc::new(crate::game::data::skill_data::SkillDatabase::new(vec![])),
+            event_pools: crate::game::data::event_pools::EventPoolConfig {
+                dawn: crate::game::data::event_pools::EventPhasePool {
+                    shops: vec![],
+                    bonuses: vec![],
+                    random_events: vec![],
+                },
+                noon: crate::game::data::event_pools::EventPhasePool {
+                    shops: vec![],
+                    bonuses: vec![],
+                    random_events: vec![],
+                },
+                dusk: crate::game::data::event_pools::EventPhasePool {
+                    shops: vec![],
+                    bonuses: vec![],
+                    random_events: vec![],
+                },
+                midnight: crate::game::data::event_pools::EventPhasePool {
+                    shops: vec![],
+                    bonuses: vec![],
+                    random_events: vec![],
+                },
+                white: crate::game::data::event_pools::EventPhasePool {
+                    shops: vec![],
+                    bonuses: vec![],
+                    random_events: vec![],
+                },
+            },
+        });
+
+        let err = ShopExecutor::purchase_item(&mut world, &game_data, artifact_uuid).unwrap_err();
+        assert!(matches!(err, GameError::AlreadyOwnedArtifact));
+
+        let selected = world.get_resource::<SelectedEvent>().unwrap();
+        let shop = selected.as_shop().unwrap();
+        assert_eq!(shop.visible_items, vec![artifact_uuid]);
+        assert_eq!(world.get_resource::<Enkephalin>().unwrap().amount, 100);
     }
 
     // ============================================================
@@ -833,9 +910,9 @@ mod tests {
         let mut world = setup_world();
 
         // Given: Bonus 이벤트로 설정 (Shop이 아님)
-        use crate::game::data::bonus_data::{BonusMetadata, BonusType};
+        use crate::game::data::bonus_data::BonusType;
 
-        let bonus = BonusMetadata {
+        let bonus = BonusEventOption {
             id: "test_bonus".to_string(),
             uuid: Uuid::new_v4(),
             bonus_type: BonusType::Enkephalin,
@@ -844,7 +921,14 @@ mod tests {
             icon: "test_icon.png".to_string(),
             amount: 30,
         };
-        world.insert_resource(SelectedEvent::new(GameOption::Bonus { bonus }));
+        world.insert_resource(SelectedEvent::new(SelectedEventState::Reward(
+            crate::ecs::resources::RewardSessionState {
+                stage_uuid: bonus.uuid,
+                mode: crate::game::enums::RewardMode::ClaimAll,
+                rewards: vec![bonus],
+                selected_reward_uuid: None,
+            },
+        )));
 
         let (_base_uuid, equipment) = create_test_equipment(100);
         let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));

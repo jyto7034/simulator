@@ -14,7 +14,7 @@ impl LoggerManager {
     pub fn setup() -> Self {
         // 1. 로그 디렉토리 생성 (존재하지 않으면)
         if let Err(e) = std::fs::create_dir_all("./logs") {
-            eprintln!("Failed to create log directory '{}': {}", "./", e);
+            eprintln!("Failed to create log directory './': {}", e);
         }
 
         // 2. 파일 로거 설정

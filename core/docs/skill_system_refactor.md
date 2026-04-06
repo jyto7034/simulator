@@ -41,9 +41,33 @@ Limitations:
 - `delay_ms`
 - `range_tiles`
 - `target: SkillTarget`
+- `targeting: StepTargetingMode`
+- `when: SkillStepCondition`
+- `repeat: SkillStepRepeat`
 - `delivery: DeliveryDef`
 - `effects: Vec<SkillEffectDef>`
 - `presentation: SkillPresentationDef`
+
+### StepTargetingMode
+
+- `ReuseCastTarget`
+  - use the cast context selected at `AutoCastStart`
+  - keeps delayed steps/projectiles tied to the original target or anchor
+- `RetargetOnStep`
+  - resolve a fresh target/anchor when the step actually executes
+  - allows combinations like `SelfUnit -> EnemySingle`
+
+### SkillStepCondition
+
+- `Always`
+- `IfPreviousStepDealtDamage`
+- `IfCasterHasBuff { buff_id, min_stacks }`
+
+### SkillStepRepeat
+
+- `Once`
+- `Times { count }`
+- `ByBuffStacks { unit, buff_id, max? }`
 
 ### SkillPresentationDef
 
@@ -64,7 +88,10 @@ Runtime does not need to fully consume this yet, but the data shape should exist
    - record `AbilityCast`
    - enqueue one runtime event per step at `cast_end_ms + step.delay_ms`
 3. `SkillStep`
-   - resolve targets for that step using stored cast context
+   - resolve the step target context
+   - evaluate `when`
+   - evaluate `repeat`
+   - resolve targets for each iteration using either the stored cast context or step-time retargeting
    - if delivery is `Instant`, apply commands immediately
    - if delivery is `Projectile`, spawn projectile hit event with step payload
 
@@ -75,16 +102,33 @@ Runtime does not need to fully consume this yet, but the data shape should exist
 - `skill_id`
 - `cast_target`
 
-For now, one shared cast target is enough. More advanced per-step contexts can be added later if needed.
+The cast stores one shared initial cast target, but each step can now choose whether to:
+
+- reuse that cast target
+- retarget at step execution time
+
+This keeps delayed/projectile steps deterministic by default, while allowing step chains that need a fresh single-target resolution.
 
 ## Target Resolution Rules
 
-- single-target steps reuse the stored cast target when valid
+- single-target steps can either reuse the stored cast target or retarget on execution
 - if a single-target step has no valid cast target, it resolves to no targets
 - area steps can use tile or unit anchor from the stored cast target
 - if no anchor exists, they fall back to caster position
 
-This keeps step behavior deterministic and avoids retargeting to unrelated enemies during execution.
+This keeps default behavior deterministic, while letting explicitly opted-in steps reacquire a fresh target when needed.
+
+## Execution State
+
+Each cast keeps runtime execution state so later steps can reference the previous resolved step result.
+
+Current tracked result signals:
+
+- whether the previous step hit
+- whether the previous step dealt damage
+- how many targets/effects were resolved
+
+Projectile-delivered steps update this state at impact time, not at fire time.
 
 ## Timeline Impact
 
@@ -108,7 +152,7 @@ Add:
 
 Update projectile payload:
 
-- `ProjectilePayload::SkillStep { skill_id, step_id, cast_target }`
+- `ProjectilePayload::SkillStep { cast_seq, step_index, skill_id, step_id, step_target }`
 
 ## Data Migration
 
@@ -126,6 +170,8 @@ Add or update tests for:
 - single-step projectile skill
 - two-step mixed-target skill
 - two-step mixed-delivery skill
+- hit-gated follow-up step
+- buff-stack-based repeated step
 - `.ron` deserialization using new schema
 
 ## Initial Scope

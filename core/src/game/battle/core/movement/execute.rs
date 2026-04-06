@@ -121,7 +121,7 @@ impl BattleCore {
         let dist_x = (target_x_units - pos_x_units).unsigned_abs();
         let dist_y = (target_y_units - pos_y_units).unsigned_abs();
         let dist_units = dist_x.max(dist_y);
-        ((dist_units + speed_units_per_ms - 1) / speed_units_per_ms).max(1)
+        dist_units.div_ceil(speed_units_per_ms).max(1)
     }
 
     fn stop_moving_unit_on_target_in_range_at_tile(
@@ -515,17 +515,17 @@ mod tests {
             white: pool,
         };
 
-        Arc::new(GameDataBase::new(
-            Arc::new(AbnormalityDatabase::new(vec![])),
-            Arc::new(ArtifactDatabase::new(vec![])),
-            Arc::new(EquipmentDatabase::new(vec![])),
-            Arc::new(ShopDatabase::new(vec![])),
-            Arc::new(BonusDatabase::new(vec![])),
-            Arc::new(RandomEventDatabase::new(vec![])),
-            Arc::new(PveEncounterDatabase::new(vec![])),
-            Arc::new(SkillDatabase::new(vec![])),
+        Arc::new(GameDataBase::new(crate::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![])),
+            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
+            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
+            shop_data: Arc::new(ShopDatabase::new(vec![])),
+            bonus_data: Arc::new(BonusDatabase::new(vec![])),
+            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
+            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
+            skill_data: Arc::new(SkillDatabase::new(vec![])),
             event_pools,
-        ))
+        }))
     }
 
     fn new_core() -> BattleCore {

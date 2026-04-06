@@ -1372,17 +1372,17 @@ mod tests {
             white: pool,
         };
 
-        Arc::new(GameDataBase::new(
-            Arc::new(AbnormalityDatabase::new(vec![])),
-            Arc::new(ArtifactDatabase::new(vec![])),
-            Arc::new(EquipmentDatabase::new(vec![])),
-            Arc::new(ShopDatabase::new(vec![])),
-            Arc::new(BonusDatabase::new(vec![])),
-            Arc::new(RandomEventDatabase::new(vec![])),
-            Arc::new(PveEncounterDatabase::new(vec![])),
-            Arc::new(SkillDatabase::new(vec![])),
+        Arc::new(GameDataBase::new(crate::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![])),
+            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
+            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
+            shop_data: Arc::new(ShopDatabase::new(vec![])),
+            bonus_data: Arc::new(BonusDatabase::new(vec![])),
+            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
+            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
+            skill_data: Arc::new(SkillDatabase::new(vec![])),
             event_pools,
-        ))
+        }))
     }
 
     fn empty_deck() -> PlayerDeckInfo {

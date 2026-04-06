@@ -10,11 +10,14 @@ ArtifactDatabase(
             price: 100,
             triggered_effects: {
                 Permanent: [
-                    Modifier(StatModifier(
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
                         stat: Defense,
                         kind: Flat,
                         value: 10,
                     )),
+                    ),
                 ],
             },
         ),
@@ -22,10 +25,21 @@ ArtifactDatabase(
             id: "fairy_festival",
             uuid: "650e8400-e29b-41d4-a716-446655440012",
             name: "Fairy Festival",
-            description: "An invitation to the eternal festival. Increases gold gain.",
+            description: "An invitation to the eternal festival. Gently bolsters the whole team's vitality.",
             rarity: WAW,
             price: 120,
-            triggered_effects: {},
+            triggered_effects: {
+                Permanent: [
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                        stat: MaxHealth,
+                        kind: Percent,
+                        value: 10,
+                    )),
+                    ),
+                ],
+            },
         ),
         ArtifactMetadata(
             id: "beauty_and_beast",
@@ -36,21 +50,25 @@ ArtifactDatabase(
             price: 200,
             triggered_effects: {
                 Permanent: [
-                    Modifier(StatModifier(
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
                         stat: Attack,
                         kind: Percent,
                         value: 20,
                     )),
-                    Modifier(StatModifier(
+                    ),
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
                         stat: MaxHealth,
                         kind: Percent,
                         value: 15,
                     )),
+                    ),
                 ],
             },
         ),
-
-        // 추가 아티팩트
         ArtifactMetadata(
             id: "fragment_immortality",
             uuid: "a0000001-0000-0000-0000-000000000001",
@@ -60,11 +78,22 @@ ArtifactDatabase(
             price: 350,
             triggered_effects: {
                 Permanent: [
-                    Modifier(StatModifier(
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
                         stat: MaxHealth,
                         kind: Flat,
                         value: 200,
                     )),
+                    ),
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                        stat: Defense,
+                        kind: Flat,
+                        value: 12,
+                    )),
+                    ),
                 ],
             },
         ),
@@ -77,39 +106,24 @@ ArtifactDatabase(
             price: 180,
             triggered_effects: {
                 Permanent: [
-                    Modifier(StatModifier(
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
                         stat: MoveSpeedUnitsPerMs,
                         kind: Flat,
                         value: 500,
                     )),
+                    ),
                 ],
             },
-        ),
-        ArtifactMetadata(
-            id: "soda",
-            uuid: "a0000003-0000-0000-0000-000000000003",
-            name: "Soda",
-            description: "A can of refreshing soda. Restores HP over time.",
-            rarity: ZAYIN,
-            price: 50,
-            triggered_effects: {
-                Permanent: [
-                    Modifier(StatModifier(
-                        stat: MaxHealth,
-                        kind: Flat,
-                        value: 50,
-                    )),
-                ],
-            },
-        ),
-        ArtifactMetadata(
-            id: "scorched_teddy",
-            uuid: "a0000004-0000-0000-0000-000000000004",
-            name: "Scorched Girl's Teddy Bear",
-            description: "A charred teddy bear. Increases fire resistance.",
-            rarity: HE,
-            price: 120,
-            triggered_effects: {},
+            ability_activations: [
+                (
+                    ability_id: "red_ribbon_haste",
+                    activation: TriggerProc(
+                        trigger: OnBattleStart,
+                    ),
+                ),
+            ],
         ),
     ]
 )

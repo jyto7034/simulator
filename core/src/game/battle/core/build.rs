@@ -68,14 +68,14 @@ impl BattleCore {
                 .get_by_uuid(&unit.base_uuid)
                 .map(|meta| meta.movement.speed_units_per_ms)
                 .unwrap_or(3000);
-            stats.move_speed_units_per_ms = move_speed_units_per_ms.max(1);
+            stats.move_speed_units_per_ms = move_speed_units_per_ms;
 
             if self
                 .units
                 .insert(
                     instance_id,
                     RuntimeUnit {
-                        instance_id: instance_id,
+                        instance_id,
                         owner: side,
                         base_uuid: unit.base_uuid,
                         stats,

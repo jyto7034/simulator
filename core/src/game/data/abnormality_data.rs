@@ -1,7 +1,13 @@
+use std::{collections::HashMap, sync::OnceLock};
+
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::game::{ability::DeliveryDef, enums::RiskLevel};
+use crate::game::{
+    ability::DeliveryDef,
+    data::{build_string_index, build_uuid_index, once_lock_with},
+    enums::RiskLevel,
+};
 
 fn default_resonance_start() -> u32 {
     0
@@ -138,18 +144,84 @@ pub struct AbnormalityMetadata {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AbnormalityDatabase {
     pub items: Vec<AbnormalityMetadata>,
+    #[serde(skip)]
+    by_id: OnceLock<HashMap<String, usize>>,
+    #[serde(skip)]
+    by_uuid: OnceLock<HashMap<Uuid, usize>>,
 }
 
 impl AbnormalityDatabase {
     pub fn new(items: Vec<AbnormalityMetadata>) -> Self {
-        Self { items }
+        let by_id = once_lock_with(build_string_index(&items, "abnormality id", |item| {
+            &item.id
+        }));
+        let by_uuid = once_lock_with(build_uuid_index(&items, "abnormality uuid", |item| {
+            item.uuid
+        }));
+
+        Self {
+            items,
+            by_id,
+            by_uuid,
+        }
+    }
+
+    fn by_id(&self) -> &HashMap<String, usize> {
+        self.by_id
+            .get_or_init(|| build_string_index(&self.items, "abnormality id", |item| &item.id))
+    }
+
+    fn by_uuid(&self) -> &HashMap<Uuid, usize> {
+        self.by_uuid
+            .get_or_init(|| build_uuid_index(&self.items, "abnormality uuid", |item| item.uuid))
+    }
+
+    pub(crate) fn validate_indexes(&self) {
+        let _ = self.by_id();
+        let _ = self.by_uuid();
     }
 
     pub fn get_by_id(&self, id: &str) -> Option<&AbnormalityMetadata> {
-        self.items.iter().find(|item| item.id == id)
+        self.by_id()
+            .get(id)
+            .and_then(|&index| self.items.get(index))
     }
 
     pub fn get_by_uuid(&self, uuid: &Uuid) -> Option<&AbnormalityMetadata> {
-        self.items.iter().find(|item| item.uuid == *uuid)
+        self.by_uuid()
+            .get(uuid)
+            .and_then(|&index| self.items.get(index))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::game::enums::RiskLevel;
+
+    fn abnormality(id: &str, uuid: Uuid) -> AbnormalityMetadata {
+        AbnormalityMetadata {
+            id: id.to_string(),
+            uuid,
+            name: id.to_string(),
+            risk_level: RiskLevel::ZAYIN,
+            price: 10,
+            max_health: 10,
+            attack: 1,
+            defense: 1,
+            movement: Default::default(),
+            basic_attack: Default::default(),
+            resonance: Default::default(),
+            skill_id: None,
+        }
+    }
+
+    #[test]
+    #[should_panic(expected = "duplicate abnormality id 'dup'")]
+    fn new_panics_on_duplicate_ids() {
+        let _ = AbnormalityDatabase::new(vec![
+            abnormality("dup", Uuid::from_u128(1)),
+            abnormality("dup", Uuid::from_u128(2)),
+        ]);
     }
 }

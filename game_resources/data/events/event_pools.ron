@@ -7,12 +7,16 @@ EventPoolConfig(
         // 상점 풀 (이 중 1개 선택)
         shops: [
             WeightedEvent(
-                weight: 80,
+                weight: 60,
                 uuid: "550e8400-e29b-41d4-a716-446655440001",  // 아티팩트 상인 라헬
             ),
             WeightedEvent(
                 weight: 20,
                 uuid: "550e8400-e29b-41d4-a716-446655440002",  // E.G.O 무기상 아인 (할인)
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "550e8400-e29b-41d4-a716-446655440004",  // 악세서리 상인 네짜흐
             ),
         ],
 
@@ -64,12 +68,16 @@ EventPoolConfig(
     noon: EventPhasePool(
         shops: [
             WeightedEvent(
-                weight: 70,
+                weight: 50,
                 uuid: "550e8400-e29b-41d4-a716-446655440003",  // 방어구 상인 벤자민
             ),
             WeightedEvent(
-                weight: 30,
+                weight: 25,
                 uuid: "550e8400-e29b-41d4-a716-446655440001",  // 아티팩트 상인 라헬
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "550e8400-e29b-41d4-a716-446655440004",  // 악세서리 상인 네짜흐
             ),
         ],
         bonuses: [
@@ -109,12 +117,16 @@ EventPoolConfig(
     dusk: EventPhasePool(
         shops: [
             WeightedEvent(
-                weight: 60,
+                weight: 40,
                 uuid: "550e8400-e29b-41d4-a716-446655440002",  // E.G.O 무기상 아인
             ),
             WeightedEvent(
-                weight: 40,
+                weight: 35,
                 uuid: "550e8400-e29b-41d4-a716-446655440003",  // 방어구 상인 벤자민
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "550e8400-e29b-41d4-a716-446655440004",  // 악세서리 상인 네짜흐
             ),
         ],
         bonuses: [
@@ -154,12 +166,16 @@ EventPoolConfig(
     midnight: EventPhasePool(
         shops: [
             WeightedEvent(
-                weight: 50,
+                weight: 40,
                 uuid: "550e8400-e29b-41d4-a716-446655440001",
             ),
             WeightedEvent(
-                weight: 50,
+                weight: 35,
                 uuid: "550e8400-e29b-41d4-a716-446655440002",
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "550e8400-e29b-41d4-a716-446655440004",
             ),
         ],
         bonuses: [
@@ -199,12 +215,16 @@ EventPoolConfig(
     white: EventPhasePool(
         shops: [
             WeightedEvent(
-                weight: 60,
+                weight: 45,
                 uuid: "550e8400-e29b-41d4-a716-446655440002",  // E.G.O 무기상 아인 (최종 시련)
             ),
             WeightedEvent(
-                weight: 40,
+                weight: 30,
                 uuid: "550e8400-e29b-41d4-a716-446655440001",  // 아티팩트 상인 라헬
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "550e8400-e29b-41d4-a716-446655440004",  // 악세서리 상인 네짜흐
             ),
         ],
         bonuses: [

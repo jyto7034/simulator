@@ -2,6 +2,7 @@ use ::redis::aio::ConnectionManager;
 use actix::{Addr, Message};
 use actix_web::HttpRequest;
 use backoff::ExponentialBackoff;
+use game_core::game::data::GameDataBase;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::io;
@@ -134,6 +135,7 @@ pub struct AppState {
     pub redis: ConnectionManager,
     pub logger_manager: Arc<LoggerManager>,
     pub current_run_id: Uuid,
+    pub game_data: Arc<GameDataBase>,
     pub metrics: Arc<MetricsCtx>,
     pub metrics_registry: prometheus::Registry,
     pub rate_limiter: Arc<RateLimiter>,

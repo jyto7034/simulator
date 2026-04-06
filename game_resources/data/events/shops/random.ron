@@ -2,7 +2,7 @@
 // RandomEventInnerMetadata::Shop(Uuid) 에서만 참조되는 상점들
 ShopDatabase(
     shops: [
-        ShopMetadata(
+        (
             id: "random_event_shop_1",
             name: "수상한 떠돌이 상인",
             uuid: "750e8400-e29b-41d4-a716-446655440301",
@@ -10,7 +10,7 @@ ShopDatabase(
             // 랜덤 이벤트에서만 진입하는 상점이라 EventPoolConfig.shops 에는 포함되지 않음
             visible_items: [
                 // Soda (저위험 아티팩트)
-                "a0000003-0000-0000-0000-000000000003",
+                "00000004-0000-0000-0000-000000000004",
                 // Fourth Match Flame (무기)
                 "00000003-0000-0000-0000-000000000003",
             ],
@@ -18,4 +18,3 @@ ShopDatabase(
         ),
     ],
 )
-

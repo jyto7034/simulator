@@ -1,8 +1,14 @@
+use std::{collections::HashMap, sync::OnceLock};
+
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 use tracing::info;
 use uuid::Uuid;
 
-use crate::game::behavior::GameError;
+use crate::game::{
+    behavior::GameError,
+    data::{build_string_index, build_uuid_index, once_lock_with},
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ShopType {
@@ -11,6 +17,7 @@ pub enum ShopType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(try_from = "ShopMetadataRaw")]
 pub struct ShopMetadata {
     pub id: String,
     pub name: String,
@@ -19,7 +26,7 @@ pub struct ShopMetadata {
     pub can_reroll: bool,
     pub visible_items: Vec<Uuid>,
 
-    #[serde(skip)]
+    #[serde(skip_serializing)]
     pub hidden_items: Vec<Uuid>,
 }
 
@@ -43,23 +50,144 @@ impl ShopMetadata {
     }
 }
 
+#[derive(Debug, Clone, Deserialize)]
+struct ShopMetadataRaw {
+    id: String,
+    name: String,
+    uuid: Uuid,
+    shop_type: ShopType,
+    can_reroll: bool,
+    #[serde(default)]
+    visible_items: Vec<Uuid>,
+    #[serde(default)]
+    hidden_items: Vec<Uuid>,
+    #[serde(default)]
+    stock_items: Vec<Uuid>,
+}
+
+impl TryFrom<ShopMetadataRaw> for ShopMetadata {
+    type Error = String;
+
+    fn try_from(raw: ShopMetadataRaw) -> Result<Self, Self::Error> {
+        let ShopMetadataRaw {
+            id,
+            name,
+            uuid,
+            shop_type,
+            can_reroll,
+            visible_items,
+            hidden_items,
+            stock_items,
+        } = raw;
+
+        if !stock_items.is_empty() && !hidden_items.is_empty() {
+            return Err(format!(
+                "shop '{}' cannot define both hidden_items and stock_items",
+                id
+            ));
+        }
+
+        let hidden_items = if !stock_items.is_empty() {
+            let mut stock_seen = HashSet::new();
+            for item_uuid in &stock_items {
+                if !stock_seen.insert(*item_uuid) {
+                    return Err(format!(
+                        "shop '{}' has duplicate stock item uuid {}",
+                        id, item_uuid
+                    ));
+                }
+            }
+
+            let mut visible_seen = HashSet::new();
+            for item_uuid in &visible_items {
+                if !visible_seen.insert(*item_uuid) {
+                    return Err(format!(
+                        "shop '{}' has duplicate visible item uuid {}",
+                        id, item_uuid
+                    ));
+                }
+                if !stock_seen.contains(item_uuid) {
+                    return Err(format!(
+                        "shop '{}' has visible item {} missing from stock_items",
+                        id, item_uuid
+                    ));
+                }
+            }
+
+            let visible_lookup = visible_items.iter().copied().collect::<HashSet<_>>();
+            stock_items
+                .into_iter()
+                .filter(|item_uuid| !visible_lookup.contains(item_uuid))
+                .collect()
+        } else {
+            if can_reroll && hidden_items.is_empty() {
+                return Err(format!(
+                    "rerollable shop '{}' must define stock_items or hidden_items",
+                    id
+                ));
+            }
+            hidden_items
+        };
+
+        Ok(ShopMetadata {
+            id,
+            name,
+            uuid,
+            shop_type,
+            can_reroll,
+            visible_items,
+            hidden_items,
+        })
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ShopDatabase {
     pub shops: Vec<ShopMetadata>,
+    #[serde(skip)]
+    by_id: OnceLock<HashMap<String, usize>>,
+    #[serde(skip)]
+    by_uuid: OnceLock<HashMap<Uuid, usize>>,
 }
 
 impl ShopDatabase {
     pub fn new(shops: Vec<ShopMetadata>) -> Self {
         info!("Shop: {:?}", shops);
-        Self { shops }
+        let by_id = once_lock_with(build_string_index(&shops, "shop id", |item| &item.id));
+        let by_uuid = once_lock_with(build_uuid_index(&shops, "shop uuid", |item| item.uuid));
+
+        Self {
+            shops,
+            by_id,
+            by_uuid,
+        }
+    }
+
+    fn by_id(&self) -> &HashMap<String, usize> {
+        self.by_id
+            .get_or_init(|| build_string_index(&self.shops, "shop id", |item| &item.id))
+    }
+
+    fn by_uuid(&self) -> &HashMap<Uuid, usize> {
+        self.by_uuid
+            .get_or_init(|| build_uuid_index(&self.shops, "shop uuid", |item| item.uuid))
+    }
+
+    pub(crate) fn validate_indexes(&self) {
+        let _ = self.by_id();
+        let _ = self.by_uuid();
     }
 
     pub fn get_by_id(&self, id: &str) -> Option<&ShopMetadata> {
-        self.shops.iter().find(|item| item.id == id)
+        self.by_id()
+            .get(id)
+            .and_then(|&index| self.shops.get(index))
     }
 
     pub fn get_by_uuid(&self, uuid: &Uuid) -> Option<&ShopMetadata> {
-        self.shops.iter().find(|item| item.uuid == *uuid)
+        self.by_uuid()
+            .get(uuid)
+            .and_then(|&index| self.shops.get(index))
     }
 }
 
@@ -101,5 +229,69 @@ mod tests {
         shop.reroll_items();
         assert_eq!(shop.visible_items, vec![b]);
         assert_eq!(shop.hidden_items, vec![a]);
+    }
+
+    #[test]
+    fn deserializing_rerollable_shop_with_stock_items_builds_hidden_items() {
+        let db: ShopDatabase = ron::de::from_str(
+            r#"
+            ShopDatabase(
+                shops: [
+                    (
+                        id: "shop",
+                        name: "Shop",
+                        uuid: "00000000-0000-0000-0000-000000000001",
+                        shop_type: Shop,
+                        can_reroll: true,
+                        visible_items: [
+                            "00000000-0000-0000-0000-000000000010",
+                        ],
+                        stock_items: [
+                            "00000000-0000-0000-0000-000000000010",
+                            "00000000-0000-0000-0000-000000000011",
+                            "00000000-0000-0000-0000-000000000012",
+                        ],
+                    ),
+                ],
+            )
+            "#,
+        )
+        .expect("shop should deserialize");
+
+        let shop = db.shops.first().expect("shop should exist");
+        assert_eq!(shop.visible_items, vec![Uuid::from_u128(0x10)]);
+        assert_eq!(
+            shop.hidden_items,
+            vec![Uuid::from_u128(0x11), Uuid::from_u128(0x12)]
+        );
+    }
+
+    #[test]
+    fn deserializing_rerollable_shop_without_stock_items_is_rejected() {
+        let err = ron::de::from_str::<ShopDatabase>(
+            r#"
+            ShopDatabase(
+                shops: [
+                    (
+                        id: "shop",
+                        name: "Shop",
+                        uuid: "00000000-0000-0000-0000-000000000001",
+                        shop_type: Shop,
+                        can_reroll: true,
+                        visible_items: [
+                            "00000000-0000-0000-0000-000000000010",
+                        ],
+                    ),
+                ],
+            )
+            "#,
+        )
+        .expect_err("rerollable shop without stock should fail");
+
+        assert!(
+            err.to_string()
+                .contains("must define stock_items or hidden_items"),
+            "unexpected error: {err}"
+        );
     }
 }

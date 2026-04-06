@@ -2,8 +2,11 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::game::data::{
-    bonus_data::BonusMetadata, random_event_data::RandomEventMetadata, shop_data::ShopMetadata,
+    bonus_data::{BonusMetadata, BonusType},
+    random_event_data::{RandomEventInnerMetadata, RandomEventMetadata},
+    shop_data::{ShopMetadata, ShopType},
 };
+use crate::game::events::event_selection::random::RandomEventType;
 
 pub trait MoveTo {
     type Output;
@@ -167,6 +170,105 @@ pub enum Side {
     Player,
 }
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub enum RewardMode {
+    ClaimAll,
+    ChooseOne,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct ShopEventOption {
+    pub id: String,
+    pub name: String,
+    pub uuid: Uuid,
+    pub shop_type: ShopType,
+    pub can_reroll: bool,
+    pub visible_items: Vec<Uuid>,
+}
+
+impl From<&ShopMetadata> for ShopEventOption {
+    fn from(value: &ShopMetadata) -> Self {
+        Self {
+            id: value.id.clone(),
+            name: value.name.clone(),
+            uuid: value.uuid,
+            shop_type: value.shop_type,
+            can_reroll: value.can_reroll,
+            visible_items: value.visible_items.clone(),
+        }
+    }
+}
+
+impl From<ShopMetadata> for ShopEventOption {
+    fn from(value: ShopMetadata) -> Self {
+        Self::from(&value)
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct BonusEventOption {
+    pub id: String,
+    pub bonus_type: BonusType,
+    pub uuid: Uuid,
+    pub name: String,
+    pub description: String,
+    pub icon: String,
+    pub amount: u32,
+}
+
+impl From<&BonusMetadata> for BonusEventOption {
+    fn from(value: &BonusMetadata) -> Self {
+        Self {
+            id: value.id.clone(),
+            bonus_type: value.bonus_type,
+            uuid: value.uuid,
+            name: value.name.clone(),
+            description: value.description.clone(),
+            icon: value.icon.clone(),
+            amount: value.amount,
+        }
+    }
+}
+
+impl From<BonusMetadata> for BonusEventOption {
+    fn from(value: BonusMetadata) -> Self {
+        Self::from(&value)
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct RandomEventOption {
+    pub id: String,
+    pub name: String,
+    pub uuid: Uuid,
+    pub event_type: RandomEventType,
+    pub risk_level: RiskLevel,
+    pub description: String,
+    pub image: String,
+    pub inner_metadata: RandomEventInnerMetadata,
+}
+
+impl From<&RandomEventMetadata> for RandomEventOption {
+    fn from(value: &RandomEventMetadata) -> Self {
+        Self {
+            id: value.id.clone(),
+            name: value.name.clone(),
+            uuid: value.uuid,
+            event_type: value.event_type.clone(),
+            risk_level: value.risk_level,
+            description: value.description.clone(),
+            image: value.image.clone(),
+            inner_metadata: value.inner_metadata.clone(),
+        }
+    }
+}
+
+impl From<RandomEventMetadata> for RandomEventOption {
+    fn from(value: RandomEventMetadata) -> Self {
+        Self::from(&value)
+    }
+}
+
 // ============================================================
 // GameOption
 // ============================================================
@@ -175,18 +277,19 @@ pub enum Side {
 pub enum GameOption {
     // EventSelection 옵션들
     Shop {
-        shop: ShopMetadata, // 상점 전체 데이터 (이름, 아이템 목록, uuid 등 모두 포함)
+        shop: ShopEventOption,
     },
     Bonus {
-        bonus: BonusMetadata, // 보너스 전체 데이터 (타입, 이름, 설명, 수량 범위 등 모두 포함)
+        bonus: BonusEventOption,
     },
     Random {
-        event: RandomEventMetadata, // 랜덤 이벤트 전체 데이터 (이름, 설명, 이미지, 위험도 등 모두 포함)
+        event: RandomEventOption,
     },
 
     // Suppression 옵션들
     SuppressAbnormality {
         abnormality_id: String,
+        encounter_id: String,
         risk_level: RiskLevel,
         uuid: Uuid, // TODO: Abnormality 전체 메타데이터로 변경 예정
     },
@@ -219,9 +322,9 @@ impl GameOption {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum PhaseEvent {
     EventSelection {
-        shop: ShopMetadata,
-        bonus: BonusMetadata,
-        random: RandomEventMetadata,
+        shop: ShopEventOption,
+        bonus: BonusEventOption,
+        random: RandomEventOption,
     },
     Suppression {
         candidates: [SuppressionOption; 3],
@@ -270,7 +373,7 @@ impl PhaseEvent {
 
     pub fn as_event_selection(
         &self,
-    ) -> Option<(&ShopMetadata, &BonusMetadata, &RandomEventMetadata)> {
+    ) -> Option<(&ShopEventOption, &BonusEventOption, &RandomEventOption)> {
         match self {
             PhaseEvent::EventSelection {
                 shop,
@@ -349,6 +452,7 @@ pub struct PhaseSchedule {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SuppressionOption {
     pub abnormality_id: String,
+    pub encounter_id: String,
     pub risk_level: RiskLevel,
     pub uuid: Uuid,
 }
@@ -357,6 +461,7 @@ impl From<SuppressionOption> for GameOption {
     fn from(option: SuppressionOption) -> Self {
         GameOption::SuppressAbnormality {
             abnormality_id: option.abnormality_id,
+            encounter_id: option.encounter_id,
             risk_level: option.risk_level,
             uuid: option.uuid,
         }

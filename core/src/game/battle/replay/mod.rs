@@ -107,7 +107,7 @@ impl TimelineReplayer {
                         // validator handles dupes; keep replay lenient.
                     }
 
-                    if units.get(owner_unit_instance_id).is_none() {
+                    if !units.contains_key(owner_unit_instance_id) {
                         violations.push(TimelineReplayViolation {
                             kind: TimelineReplayViolationKind::UnknownUnitReference,
                             message: format!(
@@ -180,7 +180,7 @@ impl TimelineReplayer {
                         });
                     }
 
-                    if units.get(attacker_instance_id).is_none() {
+                    if !units.contains_key(attacker_instance_id) {
                         violations.push(TimelineReplayViolation {
                             kind: TimelineReplayViolationKind::UnknownUnitReference,
                             message: format!(
@@ -190,7 +190,7 @@ impl TimelineReplayer {
                             entry_index: Some(index),
                         });
                     }
-                    if units.get(target_instance_id).is_none() {
+                    if !units.contains_key(target_instance_id) {
                         violations.push(TimelineReplayViolation {
                             kind: TimelineReplayViolationKind::UnknownUnitReference,
                             message: format!(
@@ -225,7 +225,7 @@ impl TimelineReplayer {
                     skill_id,
                     ..
                 } => {
-                    if units.get(caster_instance_id).is_none() {
+                    if !units.contains_key(caster_instance_id) {
                         violations.push(TimelineReplayViolation {
                             kind: TimelineReplayViolationKind::UnknownUnitReference,
                             message: format!(
@@ -332,20 +332,19 @@ impl TimelineReplayer {
                         entry.time_ms.saturating_add(1)
                     };
 
-                    if self.config.validate_autocast_pairing {
-                        if expected_autocast_end
+                    if self.config.validate_autocast_pairing
+                        && expected_autocast_end
                             .insert(*caster_instance_id, (entry.seq, cast_end_ms))
                             .is_some()
-                        {
-                            violations.push(TimelineReplayViolation {
-                                kind: TimelineReplayViolationKind::InvalidAutoCastEvent,
-                                message: format!(
-                                    "AutoCastStart overlaps with an existing pending cast (caster={})",
-                                    caster_instance_id
-                                ),
-                                entry_index: Some(index),
-                            });
-                        }
+                    {
+                        violations.push(TimelineReplayViolation {
+                            kind: TimelineReplayViolationKind::InvalidAutoCastEvent,
+                            message: format!(
+                                "AutoCastStart overlaps with an existing pending cast (caster={})",
+                                caster_instance_id
+                            ),
+                            entry_index: Some(index),
+                        });
                     }
 
                     // If focus disallows basic attacks, enforce an attack lock window.
@@ -412,11 +411,40 @@ impl TimelineReplayer {
                     }
                 }
 
+                TimelineEvent::TriggeredAbilityProc {
+                    caster_instance_id,
+                    target_instance_id,
+                    ..
+                } => {
+                    if !units.contains_key(caster_instance_id) {
+                        violations.push(TimelineReplayViolation {
+                            kind: TimelineReplayViolationKind::UnknownUnitReference,
+                            message: format!(
+                                "TriggeredAbilityProc references unknown caster {}",
+                                caster_instance_id
+                            ),
+                            entry_index: Some(index),
+                        });
+                    }
+                    if let Some(target_instance_id) = target_instance_id {
+                        if !units.contains_key(target_instance_id) {
+                            violations.push(TimelineReplayViolation {
+                                kind: TimelineReplayViolationKind::UnknownUnitReference,
+                                message: format!(
+                                    "TriggeredAbilityProc references unknown target {}",
+                                    target_instance_id
+                                ),
+                                entry_index: Some(index),
+                            });
+                        }
+                    }
+                }
+
                 TimelineEvent::AbilityCast {
                     caster_instance_id, ..
                 } => {
                     // AbilityCast may be produced by auto-cast (unit) or by proc skills
-                    // (items/artifacts) once `CastSkill` is implemented.
+                    // (items/artifacts).
                     let TimelineCause::Parent { seq: parent_seq } = entry.cause else {
                         violations.push(TimelineReplayViolation {
                             kind: TimelineReplayViolationKind::UnexpectedDecision,
@@ -456,6 +484,7 @@ impl TimelineReplayer {
                     if !matches!(
                         timeline.entries[parent_index].event,
                         TimelineEvent::AutoCastStart { .. }
+                            | TimelineEvent::TriggeredAbilityProc { .. }
                             | TimelineEvent::AttackStart { .. }
                             | TimelineEvent::AttackResolve { .. }
                             | TimelineEvent::BuffTick { .. }
@@ -470,7 +499,7 @@ impl TimelineReplayer {
                         });
                     }
 
-                    if units.get(caster_instance_id).is_none() {
+                    if !units.contains_key(caster_instance_id) {
                         violations.push(TimelineReplayViolation {
                             kind: TimelineReplayViolationKind::UnknownUnitReference,
                             message: format!(
@@ -486,7 +515,7 @@ impl TimelineReplayer {
                     target_instance_id,
                     ..
                 } => {
-                    if units.get(caster_instance_id).is_none() {
+                    if !units.contains_key(caster_instance_id) {
                         violations.push(TimelineReplayViolation {
                             kind: TimelineReplayViolationKind::UnknownUnitReference,
                             message: format!(
@@ -497,7 +526,7 @@ impl TimelineReplayer {
                         });
                     }
                     if let Some(target_instance_id) = target_instance_id {
-                        if units.get(target_instance_id).is_none() {
+                        if !units.contains_key(target_instance_id) {
                             violations.push(TimelineReplayViolation {
                                 kind: TimelineReplayViolationKind::UnknownUnitReference,
                                 message: format!(
@@ -535,7 +564,7 @@ impl TimelineReplayer {
                         });
                     }
 
-                    if units.get(caster_instance_id).is_none() {
+                    if !units.contains_key(caster_instance_id) {
                         violations.push(TimelineReplayViolation {
                             kind: TimelineReplayViolationKind::UnknownUnitReference,
                             message: format!(
@@ -545,7 +574,7 @@ impl TimelineReplayer {
                             entry_index: Some(index),
                         });
                     }
-                    if units.get(target_instance_id).is_none() {
+                    if !units.contains_key(target_instance_id) {
                         violations.push(TimelineReplayViolation {
                             kind: TimelineReplayViolationKind::UnknownUnitReference,
                             message: format!(
@@ -746,6 +775,8 @@ impl TimelineReplayer {
                         TimelineEvent::AttackStart { .. }
                             | TimelineEvent::AttackResolve { .. }
                             | TimelineEvent::AbilityCast { .. }
+                            | TimelineEvent::AbilityStepTriggered { .. }
+                            | TimelineEvent::TriggeredAbilityProc { .. }
                             | TimelineEvent::BuffTick { .. }
                     );
                     if !valid_cause {
@@ -803,6 +834,8 @@ impl TimelineReplayer {
                         TimelineEvent::AttackStart { .. }
                             | TimelineEvent::AttackResolve { .. }
                             | TimelineEvent::AbilityCast { .. }
+                            | TimelineEvent::AbilityStepTriggered { .. }
+                            | TimelineEvent::TriggeredAbilityProc { .. }
                             | TimelineEvent::BuffTick { .. }
                     );
                     if !valid_cause {

@@ -8,6 +8,43 @@ pub struct GameBalanceConfig {
     pub qliphoth: QliphothConfig,
 }
 
+impl Default for GameBalanceConfig {
+    fn default() -> Self {
+        Self {
+            qliphoth: QliphothConfig {
+                thresholds: QliphothThresholds {
+                    stable_min: 10,
+                    stable_max: 7,
+                    caution_min: 6,
+                    caution_max: 4,
+                    critical_min: 3,
+                    critical_max: 1,
+                    meltdown: 0,
+                },
+                suppress_chance: QliphothSuppressChance {
+                    stable: 0,
+                    caution: 50,
+                    critical: 100,
+                },
+                changes: QliphothChanges {
+                    battle_cost: 1,
+                    suppress_success: 2,
+                    suppress_failure: 1,
+                    breach_success: 3,
+                    breach_failure: 2,
+                    phase_recovery: 1,
+                    item_recovery: 2,
+                },
+                reward_multipliers: QliphothRewardMultipliers {
+                    stable: 1.0,
+                    caution_suppress: 1.5,
+                    critical_breach: 2.5,
+                },
+            },
+        }
+    }
+}
+
 /// 클리포트 시스템 설정
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct QliphothConfig {
@@ -136,42 +173,6 @@ impl GameBalanceConfig {
         // 3. 컴파일 타임에 포함된 경로 사용 (fallback)
         // include_str!로 임베드된 설정을 사용
         Err("Config file not found, using embedded defaults".into())
-    }
-
-    /// 기본 설정값
-    pub fn default() -> Self {
-        Self {
-            qliphoth: QliphothConfig {
-                thresholds: QliphothThresholds {
-                    stable_min: 10,
-                    stable_max: 7,
-                    caution_min: 6,
-                    caution_max: 4,
-                    critical_min: 3,
-                    critical_max: 1,
-                    meltdown: 0,
-                },
-                suppress_chance: QliphothSuppressChance {
-                    stable: 0,
-                    caution: 50,
-                    critical: 100,
-                },
-                changes: QliphothChanges {
-                    battle_cost: 1,
-                    suppress_success: 2,
-                    suppress_failure: 1,
-                    breach_success: 3,
-                    breach_failure: 2,
-                    phase_recovery: 1,
-                    item_recovery: 2,
-                },
-                reward_multipliers: QliphothRewardMultipliers {
-                    stable: 1.0,
-                    caution_suppress: 1.5,
-                    critical_breach: 2.5,
-                },
-            },
-        }
     }
 }
 

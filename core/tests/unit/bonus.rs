@@ -1,15 +1,13 @@
 use game_core::ecs::resources::GameState;
-use game_core::game::behavior::{BehaviorResult, GameError, PlayerBehavior};
+use game_core::game::behavior::{ActionKind, BehaviorResult, GameError, PlayerBehavior};
 use game_core::game::enums::{GameOption, PhaseEvent};
 use game_core::game::world::GameCore;
 use uuid::Uuid;
 
 use crate::common::create_test_game_data;
 
-fn contains_behavior_variant(haystack: &[PlayerBehavior], needle: &PlayerBehavior) -> bool {
-    // NOTE: enum의 "variant"만 비교(필드 값 무시)하며, ActionValidator 정책과 맞춘다.
-    let needle = std::mem::discriminant(needle);
-    haystack.iter().any(|b| std::mem::discriminant(b) == needle)
+fn contains_action_kind(haystack: &[ActionKind], needle: ActionKind) -> bool {
+    haystack.contains(&needle)
 }
 
 fn start_game_and_request_phase(game: &mut GameCore, player_id: Uuid) -> PhaseEvent {
@@ -19,7 +17,7 @@ fn start_game_and_request_phase(game: &mut GameCore, player_id: Uuid) -> PhaseEv
         .execute(player_id, PlayerBehavior::RequestPhaseData)
         .unwrap()
     {
-        BehaviorResult::RequestPhaseData(event) => event,
+        BehaviorResult::RequestPhaseData(event) => *event,
         other => panic!("expected RequestPhaseData, got {other:?}"),
     }
 }
@@ -68,17 +66,17 @@ fn select_bonus_option_transitions_and_allows_bonus_actions() {
 
     // Then: 허용 행동 목록에 Claim/Exit이 포함된다(variant 기준).
     let allowed_actions = game.get_allowed_actions();
-    assert!(contains_behavior_variant(
+    assert!(contains_action_kind(
         &allowed_actions,
-        &PlayerBehavior::ClaimBonus
+        ActionKind::ClaimBonus
     ));
-    assert!(contains_behavior_variant(
+    assert!(contains_action_kind(
         &allowed_actions,
-        &PlayerBehavior::ExitBonus
+        ActionKind::ExitBonus
     ));
-    assert!(!contains_behavior_variant(
+    assert!(!contains_action_kind(
         &allowed_actions,
-        &PlayerBehavior::ExitShop
+        ActionKind::ExitShop
     ));
 }
 

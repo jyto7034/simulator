@@ -15,7 +15,7 @@ use tracing::warn;
 /// `events:test:{session_id}`
 ///
 /// # Example
-/// ```rust
+/// ```ignore
 /// publish_test_event(
 ///     &mut redis,
 ///     "abc-123",

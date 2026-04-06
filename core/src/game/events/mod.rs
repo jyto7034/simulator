@@ -59,7 +59,6 @@ impl<'w> GeneratorContext<'w> {
             timestamp: UNIX_EPOCH + Duration::from_secs(timestamp_secs),
             extras: GeneratorExtras {
                 opponent_data: Some(opponent_data),
-                ..Default::default()
             },
         }
     }

@@ -8,7 +8,8 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use game_core::game::ability::{
-    DeliveryDef, SkillDef, SkillKind, SkillPresentationDef, SkillStepDef, SkillTarget,
+    DeliveryDef, SkillCastTargetingDef, SkillDef, SkillKind, SkillPresentationDef, SkillStepDef,
+    SkillTarget, StepTargetingMode,
 };
 use game_core::game::battle::timeline::Timeline;
 use game_core::game::data::abnormality_data::{AbnormalityDatabase, AbnormalityMetadata};
@@ -25,7 +26,7 @@ use game_core::game::data::random_event_data::{
 use game_core::game::data::shop_data::{ShopDatabase, ShopMetadata, ShopType};
 use game_core::game::data::skill_data::SkillDatabase;
 use game_core::game::data::GameDataBase;
-use game_core::game::enums::RiskLevel;
+use game_core::game::enums::{RewardMode, RiskLevel};
 use game_core::game::events::event_selection::random::RandomEventType;
 use uuid::Uuid;
 
@@ -35,8 +36,14 @@ pub fn timeline_exports_dir() -> PathBuf {
 
 pub fn write_timeline_export(name: &str, timeline: &Timeline) -> PathBuf {
     let out_dir = timeline_exports_dir();
-    std::fs::create_dir_all(&out_dir).expect("create timeline_exports directory");
     let out_path = out_dir.join(format!("{name}.json"));
+    let parent_dir = out_path.parent().unwrap_or_else(|| {
+        panic!(
+            "timeline export path must have parent: {}",
+            out_path.display()
+        )
+    });
+    std::fs::create_dir_all(parent_dir).expect("create timeline_exports directory");
     timeline
         .write_pretty_json(&out_path)
         .expect("write timeline json");
@@ -60,15 +67,17 @@ pub fn empty_event_pools() -> EventPoolConfig {
 
 pub fn empty_game_data() -> Arc<GameDataBase> {
     Arc::new(GameDataBase::new(
-        Arc::new(AbnormalityDatabase::new(vec![])),
-        Arc::new(ArtifactDatabase::new(vec![])),
-        Arc::new(EquipmentDatabase::new(vec![])),
-        Arc::new(ShopDatabase::new(vec![])),
-        Arc::new(BonusDatabase::new(vec![])),
-        Arc::new(RandomEventDatabase::new(vec![])),
-        Arc::new(PveEncounterDatabase::new(vec![])),
-        Arc::new(SkillDatabase::new(vec![])),
-        empty_event_pools(),
+        game_core::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![])),
+            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
+            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
+            shop_data: Arc::new(ShopDatabase::new(vec![])),
+            bonus_data: Arc::new(BonusDatabase::new(vec![])),
+            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
+            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
+            skill_data: Arc::new(SkillDatabase::new(vec![])),
+            event_pools: empty_event_pools(),
+        },
     ))
 }
 
@@ -90,6 +99,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         rarity: RiskLevel::HE,
         price: 100,
         triggered_effects: Default::default(),
+        ability_activations: vec![],
     };
     let artifact2 = ArtifactMetadata {
         id: "test_artifact_2".to_string(),
@@ -99,6 +109,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         rarity: RiskLevel::WAW,
         price: 200,
         triggered_effects: Default::default(),
+        ability_activations: vec![],
     };
 
     let equipment1 = EquipmentMetadata {
@@ -110,16 +121,18 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         price: 150,
         allow_duplicate_equip: true,
         triggered_effects: Default::default(),
+        ability_activations: vec![],
     };
     let equipment2 = EquipmentMetadata {
-        id: "test_suit_1".to_string(),
+        id: "test_armor_1".to_string(),
         uuid: Uuid::from_u128(0xE000_0002),
-        name: "Test Suit".to_string(),
-        equipment_type: EquipmentType::Suit,
+        name: "Test Armor".to_string(),
+        equipment_type: EquipmentType::Armor,
         rarity: RiskLevel::TETH,
         price: 80,
         allow_duplicate_equip: true,
         triggered_effects: Default::default(),
+        ability_activations: vec![],
     };
 
     let skill_id = "test_skill".to_string();
@@ -127,6 +140,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         id: skill_id.clone(),
         name: "test_skill".to_string(),
         kind: SkillKind::Targeted,
+        cast_targeting: SkillCastTargetingDef::FirstStepTarget,
         focus_time_ms: 0,
         focus_permissions: Default::default(),
         steps: vec![SkillStepDef {
@@ -134,6 +148,9 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
             delay_ms: 0,
             range_tiles: 1,
             target: SkillTarget::SelfUnit,
+            targeting: StepTargetingMode::ReuseCastTarget,
+            when: Default::default(),
+            repeat: Default::default(),
             delivery: DeliveryDef::Instant,
             effects: vec![],
             presentation: SkillPresentationDef::default(),
@@ -153,6 +170,34 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         basic_attack: Default::default(),
         resonance: Default::default(),
         skill_id: Some(skill_id),
+    };
+    let abnormality2 = AbnormalityMetadata {
+        id: "test_abnorm_2".to_string(),
+        uuid: Uuid::from_u128(0xB000_0002),
+        name: "Test Abnormality 2".to_string(),
+        risk_level: RiskLevel::TETH,
+        price: 90,
+        max_health: 80,
+        attack: 20,
+        defense: 4,
+        movement: Default::default(),
+        basic_attack: Default::default(),
+        resonance: Default::default(),
+        skill_id: None,
+    };
+    let abnormality3 = AbnormalityMetadata {
+        id: "test_abnorm_3".to_string(),
+        uuid: Uuid::from_u128(0xB000_0003),
+        name: "Test Abnormality 3".to_string(),
+        risk_level: RiskLevel::ZAYIN,
+        price: 70,
+        max_health: 70,
+        attack: 18,
+        defense: 3,
+        movement: Default::default(),
+        basic_attack: Default::default(),
+        resonance: Default::default(),
+        skill_id: None,
     };
 
     let shop = ShopMetadata {
@@ -205,36 +250,70 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
 
     let artifacts_db = ArtifactDatabase::new(vec![artifact1, artifact2]);
     let equipments_db = EquipmentDatabase::new(vec![equipment1, equipment2]);
-    let abnormalities_db = AbnormalityDatabase::new(vec![abnormality1]);
+    let abnormalities_db = AbnormalityDatabase::new(vec![
+        abnormality1.clone(),
+        abnormality2.clone(),
+        abnormality3.clone(),
+    ]);
     let shops_db = ShopDatabase::new(vec![shop]);
     let bonuses_db = BonusDatabase::new(vec![bonus]);
 
-    let mut random_events_db = RandomEventDatabase::new(vec![random_event]);
-    random_events_db.init_map();
+    let random_events_db = RandomEventDatabase::new(vec![random_event]);
 
-    let pve_encounter = PveEncounter {
-        id: "pve_test_1".to_string(),
-        abnormality_id: "test_abnorm_1".to_string(),
-        difficulty: 1,
-        risk_level: RiskLevel::ZAYIN,
-        units: vec![PveUnitData {
-            abnormality_id: "test_abnorm_1".to_string(),
-            position: PvePosition { x: 1, y: 1 },
-            tier: game_core::game::enums::Tier::I,
-        }],
-    };
-    let pve_db = PveEncounterDatabase::new(vec![pve_encounter]);
+    let pve_db = PveEncounterDatabase::new(vec![
+        PveEncounter {
+            id: "pve_test_1".to_string(),
+            abnormality_id: abnormality1.id.clone(),
+            difficulty: 1,
+            risk_level: RiskLevel::ZAYIN,
+            reward_mode: RewardMode::ChooseOne,
+            reward_bonus_uuids: vec![bonus_uuid],
+            units: vec![PveUnitData {
+                abnormality_id: abnormality1.id.clone(),
+                position: PvePosition { x: 1, y: 1 },
+                tier: game_core::game::enums::Tier::I,
+            }],
+        },
+        PveEncounter {
+            id: "pve_test_2".to_string(),
+            abnormality_id: abnormality2.id.clone(),
+            difficulty: 1,
+            risk_level: RiskLevel::TETH,
+            reward_mode: RewardMode::ChooseOne,
+            reward_bonus_uuids: vec![bonus_uuid],
+            units: vec![PveUnitData {
+                abnormality_id: abnormality2.id.clone(),
+                position: PvePosition { x: 2, y: 1 },
+                tier: game_core::game::enums::Tier::I,
+            }],
+        },
+        PveEncounter {
+            id: "pve_test_3".to_string(),
+            abnormality_id: abnormality3.id.clone(),
+            difficulty: 1,
+            risk_level: RiskLevel::ZAYIN,
+            reward_mode: RewardMode::ChooseOne,
+            reward_bonus_uuids: vec![bonus_uuid],
+            units: vec![PveUnitData {
+                abnormality_id: abnormality3.id.clone(),
+                position: PvePosition { x: 3, y: 1 },
+                tier: game_core::game::enums::Tier::I,
+            }],
+        },
+    ]);
 
     Arc::new(GameDataBase::new(
-        Arc::new(abnormalities_db),
-        Arc::new(artifacts_db),
-        Arc::new(equipments_db),
-        Arc::new(shops_db),
-        Arc::new(bonuses_db),
-        Arc::new(random_events_db),
-        Arc::new(pve_db),
-        Arc::new(skills_db),
-        event_pools,
+        game_core::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(abnormalities_db),
+            artifact_data: Arc::new(artifacts_db),
+            equipment_data: Arc::new(equipments_db),
+            shop_data: Arc::new(shops_db),
+            bonus_data: Arc::new(bonuses_db),
+            random_event_data: Arc::new(random_events_db),
+            pve_data: Arc::new(pve_db),
+            skill_data: Arc::new(skills_db),
+            event_pools,
+        },
     ))
 }
 
@@ -247,8 +326,7 @@ pub fn create_test_game_data_with_random_event(
     let base = create_test_game_data();
     let base = base.as_ref();
 
-    let mut random_events_db = RandomEventDatabase::new(vec![random_event.clone()]);
-    random_events_db.init_map();
+    let random_events_db = RandomEventDatabase::new(vec![random_event.clone()]);
 
     let mut event_pools = base.event_pools.clone();
     event_pools.dawn.random_events = vec![WeightedEvent {
@@ -257,15 +335,17 @@ pub fn create_test_game_data_with_random_event(
     }];
 
     Arc::new(GameDataBase::new(
-        Arc::clone(&base.abnormality_data),
-        Arc::clone(&base.artifact_data),
-        Arc::clone(&base.equipment_data),
-        Arc::clone(&base.shop_data),
-        Arc::clone(&base.bonus_data),
-        Arc::new(random_events_db),
-        Arc::clone(&base.pve_data),
-        Arc::clone(&base.skill_data),
-        event_pools,
+        game_core::game::data::GameDataBaseParts {
+            abnormality_data: Arc::clone(&base.abnormality_data),
+            artifact_data: Arc::clone(&base.artifact_data),
+            equipment_data: Arc::clone(&base.equipment_data),
+            shop_data: Arc::clone(&base.shop_data),
+            bonus_data: Arc::clone(&base.bonus_data),
+            random_event_data: Arc::new(random_events_db),
+            pve_data: Arc::clone(&base.pve_data),
+            skill_data: Arc::clone(&base.skill_data),
+            event_pools,
+        },
     ))
 }
 
@@ -307,7 +387,7 @@ pub fn load_game_data_from_ron() -> Arc<GameDataBase> {
     let random_bonuses_db: BonusDatabase =
         ron::de::from_str(random_bonuses_ron).expect("Failed to deserialize random_bonuses.ron");
 
-    let mut random_events_db: RandomEventDatabase =
+    let random_events_db: RandomEventDatabase =
         ron::de::from_str(random_events_ron).expect("Failed to deserialize random_events.ron");
 
     let event_pools: EventPoolConfig =
@@ -324,15 +404,11 @@ pub fn load_game_data_from_ron() -> Arc<GameDataBase> {
     let artifacts_db: ArtifactDatabase =
         ron::de::from_str(artifacts_ron).expect("Failed to deserialize artifacts.ron");
 
-    let mut skill_db: SkillDatabase =
+    let skill_db: SkillDatabase =
         ron::de::from_str(skills_ron).expect("Failed to deserialize skills.ron");
 
     let pve_db: PveEncounterDatabase =
         ron::de::from_str(pve_ron).expect("Failed to deserialize pve encounters.ron");
-
-    // When: 보조 맵 / lookup 테이블 초기화
-    random_events_db.init_map();
-    skill_db.init_map();
 
     // When: 랜덤 이벤트 전용 상점들을 메인 ShopDatabase 에 합침
     shops_db.shops.extend(random_shops_db.shops);
@@ -342,14 +418,16 @@ pub fn load_game_data_from_ron() -> Arc<GameDataBase> {
     abnormalities_db.items.extend(random_abnormalities_db.items);
 
     Arc::new(GameDataBase::new(
-        Arc::new(abnormalities_db),
-        Arc::new(artifacts_db),
-        Arc::new(equipments_db),
-        Arc::new(shops_db),
-        Arc::new(bonuses_db),
-        Arc::new(random_events_db),
-        Arc::new(pve_db),
-        Arc::new(skill_db),
-        event_pools,
+        game_core::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(abnormalities_db),
+            artifact_data: Arc::new(artifacts_db),
+            equipment_data: Arc::new(equipments_db),
+            shop_data: Arc::new(shops_db),
+            bonus_data: Arc::new(bonuses_db),
+            random_event_data: Arc::new(random_events_db),
+            pve_data: Arc::new(pve_db),
+            skill_data: Arc::new(skill_db),
+            event_pools,
+        },
     ))
 }

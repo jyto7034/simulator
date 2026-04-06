@@ -5,7 +5,10 @@ use tracing::{debug, error, info, warn};
 use uuid::Uuid;
 
 use crate::{
-    game::load_balance_actor::{messages::RouteToPlayer, LoadBalanceActor},
+    game::{
+        load_balance_actor::{messages::RouteToGamePlayer, LoadBalanceActor},
+        player_game_actor::state::legacy_server_message_to_unity,
+    },
     matchmaking::{
         matchmaker::{operations::try_match::PlayerCandidate, MatchmakerDeps},
         subscript::{messages::ForwardServerMessage, SubScriptionManager},
@@ -117,10 +120,9 @@ async fn route_to_same_pod(
     deps: &MessageRoutingDeps,
 ) {
     if let Some(lb_addr) = &deps.load_balance_addr {
-        // 비동기 전송 (do_send, 에러 무시)
-        lb_addr.do_send(RouteToPlayer {
+        lb_addr.do_send(RouteToGamePlayer {
             player_id: player_uuid,
-            message: message.clone(),
+            message: legacy_server_message_to_unity(message.clone()),
         });
 
         // 메트릭

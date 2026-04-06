@@ -32,9 +32,7 @@ impl BfsMap {
 
     pub fn reconstruct_path_to(&self, dest: Position) -> Option<Vec<Position>> {
         let dest_idx = self.idx(dest)?;
-        if self.dist[dest_idx].is_none() {
-            return None;
-        }
+        self.dist[dest_idx]?;
 
         let mut current = dest;
         let mut out = Vec::new();

@@ -6,6 +6,7 @@ use crate::{
         ability::SkillId,
         battle::{
             buffs::BuffId,
+            cooldown::CooldownSource,
             core::movement::{ActionState, MovementState},
             ids::UnitInstanceId,
             timeline::{SkillCastTarget, TimelineCause},
@@ -17,25 +18,13 @@ use crate::{
 };
 
 #[derive(Debug, Clone)]
-pub struct ProjectileRecord {
-    pub(super) fired_at_ms: u64,
-}
+pub struct ProjectileRecord;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct ActionLocks {
     pub movement_until_ms: u64,
     pub basic_attack_until_ms: u64,
     pub resonance_gain_until_ms: u64,
-}
-
-impl Default for ActionLocks {
-    fn default() -> Self {
-        Self {
-            movement_until_ms: 0,
-            basic_attack_until_ms: 0,
-            resonance_gain_until_ms: 0,
-        }
-    }
 }
 
 impl ActionLocks {
@@ -92,6 +81,62 @@ pub(super) enum TriggerSource {
 pub(super) struct PendingSkillCast {
     pub(super) skill_id: SkillId,
     pub(super) cast_target: Option<SkillCastTarget>,
+}
+
+#[derive(Debug, Clone, Default)]
+pub(super) struct SkillStepResult {
+    pub(super) resolved_target_count: usize,
+    pub(super) damage_target_count: usize,
+    pub(super) applied_effect_count: usize,
+    pub(super) scheduled_attack_count: usize,
+}
+
+impl SkillStepResult {
+    pub(super) fn merge(&mut self, other: &Self) {
+        self.resolved_target_count = self
+            .resolved_target_count
+            .saturating_add(other.resolved_target_count);
+        self.damage_target_count = self
+            .damage_target_count
+            .saturating_add(other.damage_target_count);
+        self.applied_effect_count = self
+            .applied_effect_count
+            .saturating_add(other.applied_effect_count);
+        self.scheduled_attack_count = self
+            .scheduled_attack_count
+            .saturating_add(other.scheduled_attack_count);
+    }
+
+    pub(super) fn dealt_damage(&self) -> bool {
+        self.damage_target_count > 0
+    }
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct ResolvedSkillStep {
+    pub(super) step_index: usize,
+    pub(super) result: SkillStepResult,
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct ActiveSkillCast {
+    pub(super) caster_owner: Side,
+    pub(super) anchor_position: Position,
+    pub(super) allow_dead_caster: bool,
+    pub(super) last_resolved_step: Option<ResolvedSkillStep>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub(super) struct AbilityProcKey {
+    pub(super) source: CooldownSource,
+    pub(super) ability_id: SkillId,
+    pub(super) binding_index: usize,
+}
+
+#[derive(Debug, Clone, Default)]
+pub(super) struct AbilityProcState {
+    pub(super) trigger_count: u32,
+    pub(super) next_ready_ms: u64,
 }
 
 pub struct RuntimeUnit {

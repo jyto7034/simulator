@@ -3,26 +3,34 @@
 // name: 상인 이름
 // uuid: 상인 프로필 사진 식별자
 // shop_type: 상점 타입 (Shop, DiscountShop)
-// visible_items: RON에서 로드하는 초기 아이템 목록 (UUID로 참조)
+// visible_items: 처음 진열되는 아이템 목록
+// stock_items: 상점이 보유한 전체 재고 목록 (visible_items 포함)
 // can_reroll: 리롤 가능 여부
 ShopDatabase(
     shops: [
         // 일반 상점 - 아티팩트 상인
-        ShopMetadata(
+        (
             id: "rachel_shop",
             name: "아티팩트 상인 라헬",
             uuid: "550e8400-e29b-41d4-a716-446655440001",
             shop_type: Shop,
             visible_items: [
                 "650e8400-e29b-41d4-a716-446655440011", // one_sin
+                "650e8400-e29b-41d4-a716-446655440013", // beauty_and_beast
+                "a0000002-0000-0000-0000-000000000002", // red_ribbon
+            ],
+            stock_items: [
+                "650e8400-e29b-41d4-a716-446655440011", // one_sin
                 "650e8400-e29b-41d4-a716-446655440012", // fairy_festival
                 "650e8400-e29b-41d4-a716-446655440013", // beauty_and_beast
+                "a0000001-0000-0000-0000-000000000001", // fragment_immortality
+                "a0000002-0000-0000-0000-000000000002", // red_ribbon
             ],
             can_reroll: true,
         ),
 
         // 할인 상점 - E.G.O 무기 상인
-        ShopMetadata(
+        (
             id: "ain_shop",
             name: "E.G.O 무기상 아인",
             uuid: "550e8400-e29b-41d4-a716-446655440002",
@@ -31,18 +39,46 @@ ShopDatabase(
                 "650e8400-e29b-41d4-a716-446655440021", // justitia
                 "650e8400-e29b-41d4-a716-446655440022", // paradise_lost
             ],
+            stock_items: [
+                "650e8400-e29b-41d4-a716-446655440021", // justitia
+                "650e8400-e29b-41d4-a716-446655440022", // paradise_lost
+                "00000003-0000-0000-0000-000000000003", // fourth_match
+            ],
             can_reroll: false,
         ),
 
-        // 일반 상점 - 방어구 상점
-        ShopMetadata(
+        // 일반 상점 - 방어구 상인
+        (
             id: "benjamin_shop",
             name: "방어구 상인 벤자민",
             uuid: "550e8400-e29b-41d4-a716-446655440003",
             shop_type: Shop,
             visible_items: [
-                "650e8400-e29b-41d4-a716-446655440031", // standard_suit
+                "650e8400-e29b-41d4-a716-446655440031", // standard_armor
                 "650e8400-e29b-41d4-a716-446655440032", // penitence_armor
+            ],
+            stock_items: [
+                "650e8400-e29b-41d4-a716-446655440031", // standard_armor
+                "650e8400-e29b-41d4-a716-446655440032", // penitence_armor
+                "00000002-0000-0000-0000-000000000002", // smile_armor
+            ],
+            can_reroll: true,
+        ),
+
+        // 일반 상점 - 악세서리 상인
+        (
+            id: "netzach_shop",
+            name: "악세서리 상인 네짜흐",
+            uuid: "550e8400-e29b-41d4-a716-446655440004",
+            shop_type: Shop,
+            visible_items: [
+                "650e8400-e29b-41d4-a716-446655440041", // crimson_goggles
+                "650e8400-e29b-41d4-a716-446655440042", // resonance_pendant
+            ],
+            stock_items: [
+                "650e8400-e29b-41d4-a716-446655440041", // crimson_goggles
+                "650e8400-e29b-41d4-a716-446655440042", // resonance_pendant
+                "650e8400-e29b-41d4-a716-446655440043", // time_dial
             ],
             can_reroll: true,
         ),

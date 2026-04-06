@@ -4,7 +4,7 @@ use crate::game::data::equipment_data::EquipmentType;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SlotLayoutKind {
-    /// Weapon/Suit/Accessory 1개씩
+    /// Weapon/Armor/Accessory 1개씩
     ByType,
     /// 타입 무시, 총 3개
     Any3,
@@ -36,7 +36,7 @@ pub struct ItemSlot {
 enum SlotLayout {
     ByType {
         weapon: Option<EquippedRef>,
-        suit: Option<EquippedRef>,
+        armor: Option<EquippedRef>,
         accessory: Option<EquippedRef>,
     },
     Any3 {
@@ -55,7 +55,7 @@ impl ItemSlot {
         let layout = match kind {
             SlotLayoutKind::ByType => SlotLayout::ByType {
                 weapon: None,
-                suit: None,
+                armor: None,
                 accessory: None,
             },
             SlotLayoutKind::Any3 => SlotLayout::Any3 { items: Vec::new() },
@@ -75,9 +75,11 @@ impl ItemSlot {
         match &self.layout {
             SlotLayout::ByType {
                 weapon,
-                suit,
+                armor,
                 accessory,
-            } => weapon.is_some() as usize + suit.is_some() as usize + accessory.is_some() as usize,
+            } => {
+                weapon.is_some() as usize + armor.is_some() as usize + accessory.is_some() as usize
+            }
             SlotLayout::Any3 { items } => items.len(),
         }
     }
@@ -106,12 +108,12 @@ impl ItemSlot {
         match &mut self.layout {
             SlotLayout::ByType {
                 weapon,
-                suit,
+                armor,
                 accessory,
             } => {
                 let target = match item.equipment_type {
                     EquipmentType::Weapon => weapon,
-                    EquipmentType::Suit => suit,
+                    EquipmentType::Armor => armor,
                     EquipmentType::Accessory => accessory,
                 };
 
@@ -137,14 +139,14 @@ impl ItemSlot {
         match &mut self.layout {
             SlotLayout::ByType {
                 weapon,
-                suit,
+                armor,
                 accessory,
             } => {
                 let mut removed = Vec::new();
                 if let Some(item) = weapon.take() {
                     removed.push(item);
                 }
-                if let Some(item) = suit.take() {
+                if let Some(item) = armor.take() {
                     removed.push(item);
                 }
                 if let Some(item) = accessory.take() {
@@ -161,9 +163,9 @@ impl ItemSlot {
         match &self.layout {
             SlotLayout::ByType {
                 weapon,
-                suit,
+                armor,
                 accessory,
-            } => Box::new(weapon.iter().chain(suit.iter()).chain(accessory.iter())),
+            } => Box::new(weapon.iter().chain(armor.iter()).chain(accessory.iter())),
             SlotLayout::Any3 { items } => Box::new(items.iter()),
         }
     }
@@ -238,7 +240,7 @@ mod tests {
             .unwrap();
 
         let err = slot
-            .equip(equipped(2, 10, EquipmentType::Suit), false)
+            .equip(equipped(2, 10, EquipmentType::Armor), false)
             .unwrap_err();
         assert!(matches!(err, ItemSlotError::DuplicateBaseDisallowed));
     }
@@ -249,7 +251,7 @@ mod tests {
         assert_eq!(slot.layout_kind(), SlotLayoutKind::Any3);
 
         let a = equipped(1, 10, EquipmentType::Weapon);
-        let b = equipped(2, 11, EquipmentType::Suit);
+        let b = equipped(2, 11, EquipmentType::Armor);
         let c = equipped(3, 12, EquipmentType::Accessory);
         slot.equip(a, true).unwrap();
         slot.equip(b, true).unwrap();
@@ -268,16 +270,16 @@ mod tests {
     fn switch_layout_moves_equipped_items() {
         let mut slot = ItemSlot::new(SlotLayoutKind::ByType);
         let weapon = equipped(1, 10, EquipmentType::Weapon);
-        let suit = equipped(2, 11, EquipmentType::Suit);
+        let armor = equipped(2, 11, EquipmentType::Armor);
         slot.equip(weapon, true).unwrap();
-        slot.equip(suit, true).unwrap();
+        slot.equip(armor, true).unwrap();
 
         slot.switch_layout(SlotLayoutKind::Any3).unwrap();
         assert_eq!(slot.layout_kind(), SlotLayoutKind::Any3);
         assert_eq!(slot.len(), 2);
 
-        // ByType iter order is Weapon -> Suit -> Accessory, and Any3 preserves insertion order.
+        // ByType iter order is Weapon -> Armor -> Accessory, and Any3 preserves insertion order.
         let items: Vec<EquippedRef> = slot.iter().copied().collect();
-        assert_eq!(items, vec![weapon, suit]);
+        assert_eq!(items, vec![weapon, armor]);
     }
 }

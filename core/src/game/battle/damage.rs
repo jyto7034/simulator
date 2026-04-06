@@ -1,6 +1,8 @@
 use crate::game::battle::ids::UnitInstanceId;
 
 use crate::game::ability::SkillId;
+#[cfg(test)]
+use crate::game::stats::TriggerEffectTarget;
 use crate::game::{enums::Side, stats::Effect};
 
 use super::buffs::BuffId;
@@ -49,12 +51,16 @@ pub enum BattleCommand {
         unit_id: UnitInstanceId,
         killer_id: Option<UnitInstanceId>,
     },
-    /// 스킬 실행 요청 (SkillDef 기반)
-    CastSkill {
+    TriggerAbility {
         skill_id: SkillId,
         caster_id: UnitInstanceId,
         target_id: Option<UnitInstanceId>,
-        cooldown_source: CooldownSource,
+        activation_source: CooldownSource,
+        binding_index: usize,
+        proc_chance_percent: u8,
+        internal_cooldown_ms: u64,
+        max_triggers_per_battle: Option<u32>,
+        allow_dead_caster: bool,
     },
     /// 스탯 변경 요청
     ApplyModifier {
@@ -125,25 +131,6 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
                 damage += i128::from(*flat);
                 damage += damage.saturating_mul(i128::from(*percent)) / 100;
             }
-            Effect::ApplyBuff {
-                buff_id,
-                duration_ms,
-            } => {
-                commands.push(BattleCommand::ApplyBuff {
-                    caster_id: request.attacker_id,
-                    target_id: request.target_id,
-                    buff_id: BuffId::from_name(buff_id.as_str()),
-                    duration_ms: *duration_ms,
-                });
-            }
-            Effect::Skill(skill_id) => {
-                commands.push(BattleCommand::CastSkill {
-                    skill_id: skill_id.clone(),
-                    caster_id: request.attacker_id,
-                    target_id: Some(request.target_id),
-                    cooldown_source: sourced.source,
-                });
-            }
             _ => {}
         }
     }
@@ -154,33 +141,6 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
             Effect::BonusDamage { flat, percent } => {
                 damage += i128::from(*flat);
                 damage += damage.saturating_mul(i128::from(*percent)) / 100;
-            }
-            Effect::Heal { flat, percent } => {
-                commands.push(BattleCommand::ApplyHeal {
-                    target_id: request.target_id,
-                    flat: *flat,
-                    percent: *percent,
-                    source_id: Some(request.target_id),
-                });
-            }
-            Effect::ApplyBuff {
-                buff_id,
-                duration_ms,
-            } => {
-                commands.push(BattleCommand::ApplyBuff {
-                    caster_id: request.target_id,
-                    target_id: request.attacker_id,
-                    buff_id: BuffId::from_name(buff_id.as_str()),
-                    duration_ms: *duration_ms,
-                });
-            }
-            Effect::Skill(skill_id) => {
-                commands.push(BattleCommand::CastSkill {
-                    skill_id: skill_id.clone(),
-                    caster_id: request.target_id,
-                    target_id: Some(request.attacker_id),
-                    cooldown_source: sourced.source,
-                });
             }
             _ => {}
         }
@@ -237,6 +197,7 @@ mod tests {
             source: CooldownSource::Unit {
                 unit_instance_id: attacker_id,
             },
+            target: TriggerEffectTarget::SelfUnit,
             effect: Effect::BonusDamage {
                 flat: i32::MAX,
                 percent: i32::MAX,
@@ -313,7 +274,7 @@ mod tests {
     }
 
     #[test]
-    fn calculate_damage_emits_commands_for_triggered_effects_with_sources() {
+    fn calculate_damage_only_uses_bonus_damage_from_trigger_effects() {
         let attacker_id: UnitInstanceId = Uuid::from_u128(0xA).into();
         let target_id: UnitInstanceId = Uuid::from_u128(0xB).into();
         let request = DamageRequest {
@@ -327,25 +288,24 @@ mod tests {
         let item_source = CooldownSource::Item {
             item_instance_id: Uuid::from_u128(0xC),
         };
-        let on_attack = [
-            SourcedEffect {
-                source: item_source,
-                effect: Effect::ApplyBuff {
-                    buff_id: "poison".to_string(),
-                    duration_ms: 123,
-                },
+        let on_attack = [SourcedEffect {
+            source: item_source,
+            target: TriggerEffectTarget::SelfUnit,
+            effect: Effect::ApplyBuff {
+                buff_id: "poison".to_string(),
+                duration_ms: 123,
             },
-            SourcedEffect {
-                source: item_source,
-                effect: Effect::Skill("skill_on_attack".to_string()),
-            },
-        ];
+        }];
 
         let on_hit = [SourcedEffect {
             source: CooldownSource::Unit {
                 unit_instance_id: attacker_id,
             },
-            effect: Effect::Skill("skill_on_hit".to_string()),
+            target: TriggerEffectTarget::SelfUnit,
+            effect: Effect::BonusDamage {
+                flat: 5,
+                percent: 0,
+            },
         }];
 
         let ctx = DamageContext {
@@ -360,45 +320,10 @@ mod tests {
         };
 
         let result = calculate_damage(&request, &ctx);
-        assert_eq!(result.final_damage, 10);
-
-        assert!(result.triggered_commands.iter().any(|c| matches!(
+        assert_eq!(result.final_damage, 15);
+        assert!(!result.triggered_commands.iter().any(|c| matches!(
             c,
-            BattleCommand::ApplyBuff {
-                caster_id,
-                target_id: t_id,
-                buff_id,
-                duration_ms,
-            } if *caster_id == attacker_id
-                && *t_id == target_id
-                && *duration_ms == 123
-                && buff_id.as_u64() == BuffId::from_name("poison").as_u64()
-        )));
-
-        assert!(result.triggered_commands.iter().any(|c| matches!(
-            c,
-            BattleCommand::CastSkill {
-                skill_id,
-                caster_id,
-                target_id: Some(t),
-                cooldown_source,
-            } if skill_id == "skill_on_attack"
-                && *caster_id == attacker_id
-                && *t == target_id
-                && *cooldown_source == item_source
-        )));
-
-        // OnHit Skill is cast by the target (e.g., thornmail-style effects).
-        assert!(result.triggered_commands.iter().any(|c| matches!(
-            c,
-            BattleCommand::CastSkill {
-                skill_id,
-                caster_id,
-                target_id: Some(t),
-                ..
-            } if skill_id == "skill_on_hit"
-                && *caster_id == target_id
-                && *t == attacker_id
+            BattleCommand::ApplyBuff { .. } | BattleCommand::ApplyHeal { .. }
         )));
     }
 }

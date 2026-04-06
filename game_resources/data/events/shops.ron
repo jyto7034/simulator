@@ -13,8 +13,8 @@ ShopDatabase(
             shop_type: Shop,
             visible_items: [
                 Artifact("one_sin"),
-                Artifact("fairy_festival"),
                 Artifact("beauty_and_beast"),
+                Artifact("red_ribbon"),
             ],
             can_reroll: true,
         ),
@@ -31,14 +31,26 @@ ShopDatabase(
             can_reroll: false,
         ),
 
-        // 일반 상점 - 방어구 상점
+        // 일반 상점 - 방어구 상인
         ShopMetadata(
             name: "방어구 상인 벤자민",
             uuid: "550e8400-e29b-41d4-a716-446655440003",
             shop_type: Shop,
             visible_items: [
-                Equipment("standard_suit"),
+                Equipment("standard_armor"),
                 Equipment("penitence_armor"),
+            ],
+            can_reroll: true,
+        ),
+
+        // 일반 상점 - 악세서리 상인
+        ShopMetadata(
+            name: "악세서리 상인 네짜흐",
+            uuid: "550e8400-e29b-41d4-a716-446655440004",
+            shop_type: Shop,
+            visible_items: [
+                Equipment("crimson_goggles"),
+                Equipment("resonance_pendant"),
             ],
             can_reroll: true,
         ),

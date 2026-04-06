@@ -1,4 +1,5 @@
-use crate::game::battle::cooldown::{CooldownSource, SourcedEffect};
+use crate::game::ability::AbilityActivationDef;
+use crate::game::battle::cooldown::{CooldownSource, SourcedAbilityActivation, SourcedEffect};
 use crate::game::battle::ids::UnitInstanceId;
 use crate::game::stats::TriggerType;
 
@@ -28,11 +29,15 @@ impl BattleCore {
                         .get_by_uuid(&artifact.base_uuid)
                     {
                         if let Some(triggered) = metadata.triggered_effects.get(&trigger) {
-                            effects.extend(triggered.iter().cloned().map(|effect| SourcedEffect {
-                                source: CooldownSource::Artifact {
-                                    artifact_instance_id: artifact.instance_id,
-                                },
-                                effect,
+                            effects.extend(triggered.iter().cloned().map(|triggered_effect| {
+                                let (target, effect) = triggered_effect.into_parts();
+                                SourcedEffect {
+                                    source: CooldownSource::Artifact {
+                                        artifact_instance_id: artifact.instance_id,
+                                    },
+                                    target,
+                                    effect,
+                                }
                             }));
                         }
                     }
@@ -51,11 +56,15 @@ impl BattleCore {
                         self.game_data.equipment_data.get_by_uuid(&item.base_uuid)
                     {
                         if let Some(triggered) = metadata.triggered_effects.get(&trigger) {
-                            effects.extend(triggered.iter().cloned().map(|effect| SourcedEffect {
-                                source: CooldownSource::Item {
-                                    item_instance_id: item.instance_id,
-                                },
-                                effect,
+                            effects.extend(triggered.iter().cloned().map(|triggered_effect| {
+                                let (target, effect) = triggered_effect.into_parts();
+                                SourcedEffect {
+                                    source: CooldownSource::Item {
+                                        item_instance_id: item.instance_id,
+                                    },
+                                    target,
+                                    effect,
+                                }
                             }));
                         }
                     }
@@ -81,6 +90,109 @@ impl BattleCore {
 
         effects
     }
+
+    pub(super) fn collect_trigger_activations(
+        &self,
+        source: TriggerSource,
+        trigger: TriggerType,
+    ) -> Vec<SourcedAbilityActivation> {
+        let mut activations = Vec::new();
+
+        match source {
+            TriggerSource::Artifact { side } => {
+                let mut artifacts: Vec<&RuntimeArtifact> = self
+                    .artifacts
+                    .values()
+                    .filter(|a| a.owner == side)
+                    .collect();
+                artifacts.sort_by(|a, b| a.instance_id.as_bytes().cmp(b.instance_id.as_bytes()));
+
+                for artifact in artifacts {
+                    if let Some(metadata) = self
+                        .game_data
+                        .artifact_data
+                        .get_by_uuid(&artifact.base_uuid)
+                    {
+                        activations.extend(
+                            metadata
+                                .ability_activations
+                                .iter()
+                                .enumerate()
+                                .filter(|binding| {
+                                    matches!(
+                                        &binding.1.activation,
+                                        AbilityActivationDef::TriggerProc { trigger: activation_trigger, .. }
+                                        if *activation_trigger == trigger
+                                    )
+                                })
+                                .map(|(binding_index, binding)| SourcedAbilityActivation {
+                                    source: CooldownSource::Artifact {
+                                        artifact_instance_id: artifact.instance_id,
+                                    },
+                                    binding: binding.clone(),
+                                    binding_index,
+                                }),
+                        );
+                    }
+                }
+            }
+            TriggerSource::Item { unit_instance_id } => {
+                let mut items: Vec<&RuntimeItem> = self
+                    .items
+                    .values()
+                    .filter(|i| i.owner_unit_instance == unit_instance_id)
+                    .collect();
+                items.sort_by(|a, b| a.instance_id.as_bytes().cmp(b.instance_id.as_bytes()));
+
+                for item in items {
+                    if let Some(metadata) =
+                        self.game_data.equipment_data.get_by_uuid(&item.base_uuid)
+                    {
+                        activations.extend(
+                            metadata
+                                .ability_activations
+                                .iter()
+                                .enumerate()
+                                .filter(|binding| {
+                                    matches!(
+                                        &binding.1.activation,
+                                        AbilityActivationDef::TriggerProc { trigger: activation_trigger, .. }
+                                        if *activation_trigger == trigger
+                                    )
+                                })
+                                .map(|(binding_index, binding)| SourcedAbilityActivation {
+                                    source: CooldownSource::Item {
+                                        item_instance_id: item.instance_id,
+                                    },
+                                    binding: binding.clone(),
+                                    binding_index,
+                                }),
+                        );
+                    }
+                }
+            }
+        }
+
+        activations
+    }
+
+    pub(super) fn collect_all_trigger_activations(
+        &self,
+        unit_instance_id: UnitInstanceId,
+        trigger: TriggerType,
+    ) -> Vec<SourcedAbilityActivation> {
+        let Some(unit) = self.units.get(&unit_instance_id) else {
+            return Vec::new();
+        };
+
+        let mut activations =
+            self.collect_trigger_activations(TriggerSource::Artifact { side: unit.owner }, trigger);
+        activations.extend(
+            self.collect_trigger_activations(TriggerSource::Item { unit_instance_id }, trigger),
+        );
+
+        activations
+    }
 }
 
 #[cfg(test)]
@@ -97,7 +209,10 @@ mod tests {
         GameDataBase,
     };
     use crate::game::enums::Side;
-    use crate::game::stats::{Effect, StatId, StatModifier, StatModifierKind, UnitStats};
+    use crate::game::stats::{
+        Effect, StatId, StatModifier, StatModifierKind, TriggerEffectTarget, TriggeredEffect,
+        UnitStats,
+    };
     use std::collections::{HashMap, HashSet};
     use std::sync::Arc;
     use uuid::Uuid;
@@ -127,17 +242,17 @@ mod tests {
             white: pool,
         };
 
-        Arc::new(GameDataBase::new(
-            Arc::new(AbnormalityDatabase::new(vec![])),
-            Arc::new(ArtifactDatabase::new(artifacts)),
-            Arc::new(EquipmentDatabase::new(equipments)),
-            Arc::new(ShopDatabase::new(vec![])),
-            Arc::new(BonusDatabase::new(vec![])),
-            Arc::new(RandomEventDatabase::new(vec![])),
-            Arc::new(PveEncounterDatabase::new(vec![])),
-            Arc::new(SkillDatabase::new(vec![])),
+        Arc::new(GameDataBase::new(crate::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![])),
+            artifact_data: Arc::new(ArtifactDatabase::new(artifacts)),
+            equipment_data: Arc::new(EquipmentDatabase::new(equipments)),
+            shop_data: Arc::new(ShopDatabase::new(vec![])),
+            bonus_data: Arc::new(BonusDatabase::new(vec![])),
+            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
+            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
+            skill_data: Arc::new(SkillDatabase::new(vec![])),
             event_pools,
-        ))
+        }))
     }
 
     fn new_core(game_data: Arc<GameDataBase>) -> BattleCore {
@@ -177,17 +292,20 @@ mod tests {
         let mut effects_a = HashMap::new();
         effects_a.insert(
             TriggerType::OnAttack,
-            vec![Effect::Modifier(StatModifier {
+            vec![TriggeredEffect::legacy(Effect::Modifier(StatModifier {
                 stat: StatId::Attack,
                 kind: StatModifierKind::Flat,
                 value: 1,
-            })],
+            }))],
         );
 
         let mut effects_b = HashMap::new();
         effects_b.insert(
             TriggerType::OnAttack,
-            vec![Effect::Skill("skill_b".to_string())],
+            vec![TriggeredEffect::legacy(Effect::ApplyBuff {
+                buff_id: "skill_b".to_string(),
+                duration_ms: 100,
+            })],
         );
 
         let game_data = game_data_with(
@@ -200,6 +318,7 @@ mod tests {
                     rarity: crate::game::enums::RiskLevel::ZAYIN,
                     price: 0,
                     triggered_effects: effects_a,
+                    ability_activations: vec![],
                 },
                 crate::game::data::artifact_data::ArtifactMetadata {
                     id: "b".to_string(),
@@ -209,6 +328,7 @@ mod tests {
                     rarity: crate::game::enums::RiskLevel::ZAYIN,
                     price: 0,
                     triggered_effects: effects_b,
+                    ability_activations: vec![],
                 },
             ],
             vec![],
@@ -255,6 +375,7 @@ mod tests {
                 source: CooldownSource::Artifact {
                     artifact_instance_id,
                 },
+                target: TriggerEffectTarget::SelfUnit,
                 effect: Effect::Modifier(_),
             } if artifact_instance_id == instance_small
         ));
@@ -264,8 +385,14 @@ mod tests {
                 source: CooldownSource::Artifact {
                     artifact_instance_id,
                 },
-                effect: Effect::Skill(ref id),
-            } if artifact_instance_id == instance_large && id == "skill_b"
+                target: TriggerEffectTarget::SelfUnit,
+                effect: Effect::ApplyBuff {
+                    ref buff_id,
+                    duration_ms,
+                },
+            } if artifact_instance_id == instance_large
+                && buff_id == "skill_b"
+                && duration_ms == 100
         ));
     }
 
@@ -275,7 +402,10 @@ mod tests {
         let mut triggered = HashMap::new();
         triggered.insert(
             TriggerType::OnHit,
-            vec![Effect::Skill("on_hit_skill".to_string())],
+            vec![TriggeredEffect::legacy(Effect::ApplyBuff {
+                buff_id: "on_hit_buff".to_string(),
+                duration_ms: 50,
+            })],
         );
         let equipment = crate::game::data::equipment_data::EquipmentMetadata {
             id: "e".to_string(),
@@ -286,6 +416,7 @@ mod tests {
             price: 0,
             allow_duplicate_equip: true,
             triggered_effects: triggered,
+            ability_activations: vec![],
         };
 
         let game_data = game_data_with(vec![], vec![equipment]);
@@ -325,15 +456,27 @@ mod tests {
             out[0],
             SourcedEffect {
                 source: CooldownSource::Item { item_instance_id },
-                effect: Effect::Skill(ref id),
-            } if item_instance_id == item_small && id == "on_hit_skill"
+                target: TriggerEffectTarget::SelfUnit,
+                effect: Effect::ApplyBuff {
+                    ref buff_id,
+                    duration_ms,
+                },
+            } if item_instance_id == item_small
+                && buff_id == "on_hit_buff"
+                && duration_ms == 50
         ));
         assert!(matches!(
             out[1],
             SourcedEffect {
                 source: CooldownSource::Item { item_instance_id },
-                effect: Effect::Skill(ref id),
-            } if item_instance_id == item_large && id == "on_hit_skill"
+                target: TriggerEffectTarget::SelfUnit,
+                effect: Effect::ApplyBuff {
+                    ref buff_id,
+                    duration_ms,
+                },
+            } if item_instance_id == item_large
+                && buff_id == "on_hit_buff"
+                && duration_ms == 50
         ));
     }
 
@@ -345,12 +488,18 @@ mod tests {
         let mut art_effects = HashMap::new();
         art_effects.insert(
             TriggerType::OnBattleStart,
-            vec![Effect::Skill("art_start".to_string())],
+            vec![TriggeredEffect::legacy(Effect::ApplyBuff {
+                buff_id: "art_start".to_string(),
+                duration_ms: 1,
+            })],
         );
         let mut item_effects = HashMap::new();
         item_effects.insert(
             TriggerType::OnBattleStart,
-            vec![Effect::Skill("item_start".to_string())],
+            vec![TriggeredEffect::legacy(Effect::ApplyBuff {
+                buff_id: "item_start".to_string(),
+                duration_ms: 1,
+            })],
         );
 
         let game_data = game_data_with(
@@ -362,6 +511,7 @@ mod tests {
                 rarity: crate::game::enums::RiskLevel::ZAYIN,
                 price: 0,
                 triggered_effects: art_effects,
+                ability_activations: vec![],
             }],
             vec![crate::game::data::equipment_data::EquipmentMetadata {
                 id: "e".to_string(),
@@ -372,6 +522,7 @@ mod tests {
                 price: 0,
                 allow_duplicate_equip: true,
                 triggered_effects: item_effects,
+                ability_activations: vec![],
             }],
         );
 
@@ -409,14 +560,24 @@ mod tests {
             match effect {
                 SourcedEffect {
                     source: CooldownSource::Artifact { .. },
-                    effect: Effect::Skill(id),
+                    target: TriggerEffectTarget::SelfUnit,
+                    effect:
+                        Effect::ApplyBuff {
+                            buff_id: id,
+                            duration_ms: 1,
+                        },
                 } => {
                     assert_eq!(id, "art_start");
                     seen.insert("art");
                 }
                 SourcedEffect {
                     source: CooldownSource::Item { .. },
-                    effect: Effect::Skill(id),
+                    target: TriggerEffectTarget::SelfUnit,
+                    effect:
+                        Effect::ApplyBuff {
+                            buff_id: id,
+                            duration_ms: 1,
+                        },
                 } => {
                     assert_eq!(id, "item_start");
                     seen.insert("item");

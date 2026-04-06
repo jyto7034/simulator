@@ -6,8 +6,9 @@ use std::sync::Arc;
 use bevy_ecs::world::World;
 use game_core::ecs::resources::Position;
 use game_core::game::ability::{
-    DeliveryDef, SkillDef, SkillEffectDef, SkillKind, SkillPresentationDef, SkillStepDef,
-    SkillTarget, UnitTargetRule,
+    AbilityActivationBinding, AbilityActivationDef, DeliveryDef, SkillCastTargetingDef, SkillDef,
+    SkillEffectDef, SkillKind, SkillPresentationDef, SkillStepDef, SkillTarget, StepTargetingMode,
+    UnitTargetRule,
 };
 use game_core::game::battle::buffs::BuffId;
 use game_core::game::battle::core::BattleCore;
@@ -21,9 +22,9 @@ use game_core::game::battle::validation::{
 };
 use game_core::game::data::{
     abnormality_data::{AbnormalityDatabase, AbnormalityMetadata, BasicAttackDef, ResonanceDef},
-    artifact_data::ArtifactDatabase,
+    artifact_data::{ArtifactDatabase, ArtifactMetadata},
     bonus_data::BonusDatabase,
-    equipment_data::EquipmentDatabase,
+    equipment_data::{EquipmentDatabase, EquipmentMetadata, EquipmentType},
     event_pools::{EventPhasePool, EventPoolConfig},
     pve_data::PveEncounterDatabase,
     random_event_data::RandomEventDatabase,
@@ -31,8 +32,9 @@ use game_core::game::data::{
     skill_data::SkillDatabase,
     GameDataBase,
 };
-use game_core::game::enums::{RiskLevel, Tier};
+use game_core::game::enums::{RiskLevel, Side, Tier};
 use game_core::game::growth::GrowthStack;
+use game_core::game::stats::TriggerType;
 use uuid::Uuid;
 
 fn empty_event_pools() -> EventPoolConfig {
@@ -64,6 +66,335 @@ fn deck_single_unit(owned_uuid: Uuid, base_uuid: Uuid, pos: Position) -> PlayerD
         artifacts: vec![],
         positions,
     }
+}
+
+struct PoisonAutocastScenario {
+    caster_attack_interval_ms: u64,
+    caster_resonance_max: u32,
+    caster_resonance_gain_lock_ms: u64,
+    target_attack_interval_ms: u64,
+    target_max_health: u32,
+}
+
+struct PoisonAutocastResult {
+    game_data: Arc<GameDataBase>,
+    player: PlayerDeckInfo,
+    opponent: PlayerDeckInfo,
+    timeline: game_core::game::battle::timeline::Timeline,
+    caster_base_uuid: Uuid,
+    target_base_uuid: Uuid,
+    poison_id: BuffId,
+}
+
+fn run_poison_autocast_scenario(spec: PoisonAutocastScenario) -> PoisonAutocastResult {
+    let caster_base_uuid = Uuid::from_u128(0xC0A5_7E01);
+    let target_base_uuid = Uuid::from_u128(0xC0A5_7E02);
+
+    let caster = AbnormalityMetadata {
+        id: "caster".to_string(),
+        uuid: caster_base_uuid,
+        name: "Caster".to_string(),
+        risk_level: RiskLevel::ZAYIN,
+        price: 0,
+        max_health: 9999,
+        attack: 1,
+        defense: 9999,
+        movement: Default::default(),
+        basic_attack: BasicAttackDef {
+            range_tiles: 1,
+            interval_ms: spec.caster_attack_interval_ms,
+            windup_ms: 0,
+            delivery: DeliveryDef::Instant,
+        },
+        resonance: ResonanceDef {
+            start: 0,
+            max: spec.caster_resonance_max,
+            gain_lock_ms: spec.caster_resonance_gain_lock_ms,
+        },
+        skill_id: Some("poison_skill".to_string()),
+    };
+
+    let target = AbnormalityMetadata {
+        id: "target".to_string(),
+        uuid: target_base_uuid,
+        name: "Target".to_string(),
+        risk_level: RiskLevel::ZAYIN,
+        price: 0,
+        max_health: spec.target_max_health,
+        attack: 1,
+        defense: 9999,
+        movement: Default::default(),
+        basic_attack: BasicAttackDef {
+            range_tiles: 1,
+            interval_ms: spec.target_attack_interval_ms,
+            windup_ms: 0,
+            delivery: DeliveryDef::Instant,
+        },
+        resonance: ResonanceDef {
+            start: 0,
+            max: 100,
+            gain_lock_ms: 0,
+        },
+        skill_id: None,
+    };
+
+    let skills = SkillDatabase::new(vec![SkillDef {
+        id: "poison_skill".to_string(),
+        name: "poison_skill".to_string(),
+        kind: SkillKind::Targeted,
+        cast_targeting: SkillCastTargetingDef::FirstStepTarget,
+        focus_time_ms: 200,
+        focus_permissions: Default::default(),
+        steps: vec![SkillStepDef {
+            id: "step_01".to_string(),
+            delay_ms: 0,
+            range_tiles: 1,
+            target: SkillTarget::EnemySingle {
+                rule: UnitTargetRule::Nearest,
+            },
+            targeting: StepTargetingMode::ReuseCastTarget,
+            when: Default::default(),
+            repeat: Default::default(),
+            delivery: DeliveryDef::Instant,
+            effects: vec![SkillEffectDef::ApplyBuff {
+                buff_id: "poison".to_string(),
+                duration_ms: 5_000,
+            }],
+            presentation: SkillPresentationDef::default(),
+        }],
+    }]);
+
+    let game_data = Arc::new(GameDataBase::new(
+        game_core::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![caster, target])),
+            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
+            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
+            shop_data: Arc::new(ShopDatabase::new(vec![])),
+            bonus_data: Arc::new(BonusDatabase::new(vec![])),
+            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
+            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
+            skill_data: Arc::new(skills),
+            event_pools: empty_event_pools(),
+        },
+    ));
+
+    let player = deck_single_unit(
+        Uuid::from_u128(0xDADA_0001),
+        caster_base_uuid,
+        Position::new(0, 0),
+    );
+    let opponent = deck_single_unit(
+        Uuid::from_u128(0xDADA_0002),
+        target_base_uuid,
+        Position::new(0, 1),
+    );
+
+    let mut battle = BattleCore::new(
+        &player,
+        &opponent,
+        game_data.clone(),
+        common::BOARD_SIZE,
+        999,
+    );
+    let mut world = World::new();
+    let result = battle.run_battle(&mut world).unwrap();
+
+    PoisonAutocastResult {
+        game_data,
+        player,
+        opponent,
+        timeline: result.timeline,
+        caster_base_uuid,
+        target_base_uuid,
+        poison_id: BuffId::from_name("poison"),
+    }
+}
+
+fn find_spawned_unit_id(
+    timeline: &game_core::game::battle::timeline::Timeline,
+    base_uuid: Uuid,
+    owner: Side,
+) -> Uuid {
+    timeline
+        .entries
+        .iter()
+        .find_map(|entry| match &entry.event {
+            TimelineEvent::UnitSpawned {
+                unit_instance_id,
+                base_uuid: actual_base_uuid,
+                owner: actual_owner,
+                ..
+            } if *actual_base_uuid == base_uuid && *actual_owner == owner => {
+                Some(unit_instance_id.as_uuid())
+            }
+            _ => None,
+        })
+        .expect("missing spawned unit")
+}
+
+#[test]
+fn on_battle_start_triggered_ability_is_replayable_and_parented_via_proc_event() {
+    let caster_base_uuid = Uuid::from_u128(0x5100);
+    let target_base_uuid = Uuid::from_u128(0x5200);
+    let artifact_uuid = Uuid::from_u128(0x5300);
+
+    let caster = AbnormalityMetadata {
+        id: "caster".to_string(),
+        uuid: caster_base_uuid,
+        name: "Caster".to_string(),
+        risk_level: RiskLevel::ZAYIN,
+        price: 0,
+        max_health: 100,
+        attack: 10,
+        defense: 0,
+        movement: Default::default(),
+        basic_attack: BasicAttackDef::default(),
+        resonance: ResonanceDef::default(),
+        skill_id: None,
+    };
+    let target = AbnormalityMetadata {
+        id: "target".to_string(),
+        uuid: target_base_uuid,
+        name: "Target".to_string(),
+        risk_level: RiskLevel::ZAYIN,
+        price: 0,
+        max_health: 100,
+        attack: 1,
+        defense: 0,
+        movement: Default::default(),
+        basic_attack: BasicAttackDef::default(),
+        resonance: ResonanceDef::default(),
+        skill_id: None,
+    };
+
+    let artifact = ArtifactMetadata {
+        id: "opening_artifact".to_string(),
+        uuid: artifact_uuid,
+        name: "Opening Artifact".to_string(),
+        description: "proc".to_string(),
+        rarity: RiskLevel::ZAYIN,
+        price: 0,
+        triggered_effects: HashMap::new(),
+        ability_activations: vec![AbilityActivationBinding {
+            ability_id: "opening_proc".to_string(),
+            activation: AbilityActivationDef::TriggerProc {
+                trigger: TriggerType::OnBattleStart,
+                proc_chance_percent: 100,
+                internal_cooldown_ms: 0,
+                max_triggers_per_battle: Some(1),
+            },
+        }],
+    };
+
+    let skills = SkillDatabase::new(vec![SkillDef {
+        id: "opening_proc".to_string(),
+        name: "Opening Proc".to_string(),
+        kind: SkillKind::Targeted,
+        cast_targeting: SkillCastTargetingDef::Explicit {
+            range_tiles: 3,
+            target: SkillTarget::EnemySingle {
+                rule: UnitTargetRule::Nearest,
+            },
+        },
+        focus_time_ms: 0,
+        focus_permissions: Default::default(),
+        steps: vec![SkillStepDef {
+            id: "hit".to_string(),
+            delay_ms: 0,
+            range_tiles: 3,
+            target: SkillTarget::EnemySingle {
+                rule: UnitTargetRule::Nearest,
+            },
+            targeting: StepTargetingMode::ReuseCastTarget,
+            when: Default::default(),
+            repeat: Default::default(),
+            delivery: DeliveryDef::Instant,
+            effects: vec![SkillEffectDef::Damage { amount: 7 }],
+            presentation: SkillPresentationDef::default(),
+        }],
+    }]);
+
+    let game_data = Arc::new(GameDataBase::new(
+        game_core::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![caster, target])),
+            artifact_data: Arc::new(ArtifactDatabase::new(vec![artifact])),
+            equipment_data: Arc::new(EquipmentDatabase::new(vec![EquipmentMetadata {
+                id: "noop".to_string(),
+                uuid: Uuid::from_u128(0x5400),
+                name: "noop".to_string(),
+                equipment_type: EquipmentType::Weapon,
+                rarity: RiskLevel::ZAYIN,
+                price: 0,
+                allow_duplicate_equip: true,
+                triggered_effects: HashMap::new(),
+                ability_activations: vec![],
+            }])),
+            shop_data: Arc::new(ShopDatabase::new(vec![])),
+            bonus_data: Arc::new(BonusDatabase::new(vec![])),
+            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
+            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
+            skill_data: Arc::new(skills),
+            event_pools: empty_event_pools(),
+        },
+    ));
+
+    let mut player = deck_single_unit(
+        Uuid::from_u128(0x5501),
+        caster_base_uuid,
+        Position::new(0, 0),
+    );
+    player
+        .artifacts
+        .push(game_core::game::battle::types::OwnedArtifact {
+            base_uuid: artifact_uuid,
+        });
+    let opponent = deck_single_unit(
+        Uuid::from_u128(0x5502),
+        target_base_uuid,
+        Position::new(0, 1),
+    );
+
+    let mut battle = BattleCore::new(&player, &opponent, game_data.clone(), common::BOARD_SIZE, 7);
+    let mut world = World::new();
+    let result = battle.run_battle(&mut world).unwrap();
+
+    let proc_entry = result
+        .timeline
+        .entries
+        .iter()
+        .find(|entry| matches!(entry.event, TimelineEvent::TriggeredAbilityProc { .. }))
+        .expect("missing TriggeredAbilityProc");
+    let ability_cast = result
+        .timeline
+        .entries
+        .iter()
+        .find(|entry| matches!(entry.event, TimelineEvent::AbilityCast { ref skill_id, .. } if skill_id == "opening_proc"))
+        .expect("missing opening_proc AbilityCast");
+
+    assert_eq!(
+        ability_cast.cause,
+        TimelineCause::Parent {
+            seq: proc_entry.seq
+        }
+    );
+
+    let replay = TimelineReplayer::new(game_data.clone(), TimelineReplayerConfig::default());
+    replay
+        .replay(&result.timeline)
+        .expect("timeline should replay");
+
+    let validator = TimelineValidator::new(TimelineValidatorConfig::default());
+    assert!(validator
+        .validate(
+            &result.timeline,
+            Some(TimelineExpectedCounts {
+                units: 2,
+                items: 0,
+                artifacts: 1,
+            }),
+            None,
+        )
+        .is_ok());
 }
 
 #[test]
@@ -107,148 +438,60 @@ fn battle_timeline_replays_and_validates() {
 
 #[test]
 fn battle_timeline_with_autocast_and_buff_tick_replays_and_validates() {
-    // Given: 오토캐스트 + 버프틱이 반드시 발생하는 결정적 스펙을 구성한다.
-    // - 기본 공격은 데미지를 거의 주지 않도록(방어력 매우 큼)
-    // - 공명 max=20(기본 공격 2번이면 가득 참) → 오토캐스트 트리거
-    // - 스킬은 적 1명에게 poison 버프(주기 피해 2) 부여
-    // - 타겟 HP=2 → 첫 poison tick에서 사망(전투가 짧게 끝남)
-    let caster_base_uuid = Uuid::from_u128(0xC0A5_7E01);
-    let target_base_uuid = Uuid::from_u128(0xC0A5_7E02);
-
-    let caster = AbnormalityMetadata {
-        id: "caster".to_string(),
-        uuid: caster_base_uuid,
-        name: "Caster".to_string(),
-        risk_level: RiskLevel::ZAYIN,
-        price: 0,
-        max_health: 9999,
-        attack: 1,
-        defense: 9999,
-        movement: Default::default(),
-        basic_attack: BasicAttackDef {
-            range_tiles: 1,
-            interval_ms: 300,
-            windup_ms: 0,
-            delivery: DeliveryDef::Instant,
-        },
-        resonance: ResonanceDef {
-            start: 0,
-            max: 20,
-            gain_lock_ms: 0,
-        },
-        skill_id: Some("poison_skill".to_string()),
-    };
-
-    let target = AbnormalityMetadata {
-        id: "target".to_string(),
-        uuid: target_base_uuid,
-        name: "Target".to_string(),
-        risk_level: RiskLevel::ZAYIN,
-        price: 0,
-        // NOTE: 기본 공격(최소 1 데미지) + poison tick(2 데미지)이 발생해도
-        // tick 시점까지 살아있도록 테스트 전용 HP를 충분히 준다.
-        max_health: 7,
-        attack: 1,
-        defense: 9999,
-        movement: Default::default(),
-        basic_attack: BasicAttackDef {
-            range_tiles: 1,
-            interval_ms: 300,
-            windup_ms: 0,
-            delivery: DeliveryDef::Instant,
-        },
-        resonance: ResonanceDef {
-            start: 0,
-            max: 100,
-            gain_lock_ms: 0,
-        },
-        skill_id: None,
-    };
-
-    let skills = SkillDatabase::new(vec![SkillDef {
-        id: "poison_skill".to_string(),
-        name: "poison_skill".to_string(),
-        kind: SkillKind::Targeted,
-        focus_time_ms: 200,
-        focus_permissions: Default::default(),
-        steps: vec![SkillStepDef {
-            id: "step_01".to_string(),
-            delay_ms: 0,
-            range_tiles: 1,
-            target: SkillTarget::EnemySingle {
-                rule: UnitTargetRule::Nearest,
-            },
-            delivery: DeliveryDef::Instant,
-            effects: vec![SkillEffectDef::ApplyBuff {
-                buff_id: "poison".to_string(),
-                duration_ms: 5_000,
-            }],
-            presentation: SkillPresentationDef::default(),
-        }],
-    }]);
-
-    let game_data = Arc::new(GameDataBase::new(
-        Arc::new(AbnormalityDatabase::new(vec![caster, target])),
-        Arc::new(ArtifactDatabase::new(vec![])),
-        Arc::new(EquipmentDatabase::new(vec![])),
-        Arc::new(ShopDatabase::new(vec![])),
-        Arc::new(BonusDatabase::new(vec![])),
-        Arc::new(RandomEventDatabase::new(vec![])),
-        Arc::new(PveEncounterDatabase::new(vec![])),
-        Arc::new(skills),
-        empty_event_pools(),
-    ));
-
-    let player_owned = Uuid::from_u128(0xDADA_0001);
-    let opponent_owned = Uuid::from_u128(0xDADA_0002);
-    let player = deck_single_unit(player_owned, caster_base_uuid, Position::new(0, 0));
-    let opponent = deck_single_unit(opponent_owned, target_base_uuid, Position::new(0, 1));
-
-    // When: 전투를 실행한다.
-    let mut battle = BattleCore::new(
-        &player,
-        &opponent,
-        game_data.clone(),
-        common::BOARD_SIZE,
-        999,
-    );
-    let mut world = World::new();
-    let result = battle.run_battle(&mut world).unwrap();
+    let result = run_poison_autocast_scenario(PoisonAutocastScenario {
+        caster_attack_interval_ms: 1_500,
+        caster_resonance_max: 10,
+        caster_resonance_gain_lock_ms: 5_000,
+        target_attack_interval_ms: 5_000,
+        target_max_health: 3,
+    });
 
     common::write_timeline_export(
         "battle_timeline_with_autocast_and_buff_tick",
         &result.timeline,
     );
 
-    let poison_id = BuffId::from_name("poison");
-
-    let caster_unit_id = result
+    assert!(result
         .timeline
         .entries
         .iter()
-        .find_map(|entry| match &entry.event {
-            TimelineEvent::UnitSpawned {
-                unit_instance_id,
-                base_uuid,
-                ..
-            } if *base_uuid == caster_base_uuid => Some(*unit_instance_id),
-            _ => None,
-        })
-        .expect("missing caster spawn");
-
-    let target_unit_id = result
+        .any(|entry| { matches!(entry.event, TimelineEvent::AutoCastStart { .. }) }));
+    assert!(result
         .timeline
         .entries
         .iter()
-        .find_map(|entry| match &entry.event {
-            TimelineEvent::UnitSpawned {
-                unit_instance_id,
-                base_uuid,
-                ..
-            } if *base_uuid == target_base_uuid => Some(*unit_instance_id),
-            _ => None,
-        })
-        .expect("missing target spawn");
+        .any(|entry| { matches!(entry.event, TimelineEvent::BuffTick { .. }) }));
+
+    let mut replay_config = TimelineReplayerConfig::default();
+    replay_config.validate_unit_base_uuid = true;
+    TimelineReplayer::new(result.game_data.clone(), replay_config)
+        .replay(&result.timeline)
+        .unwrap();
+
+    let expected = TimelineExpectedCounts::from_decks(&result.player, &result.opponent);
+    TimelineValidator::new(TimelineValidatorConfig::default())
+        .validate(
+            &result.timeline,
+            Some(expected),
+            Some(result.game_data.as_ref()),
+        )
+        .unwrap();
+}
+
+#[test]
+fn autocast_poison_skill_records_expected_parent_chain() {
+    let result = run_poison_autocast_scenario(PoisonAutocastScenario {
+        caster_attack_interval_ms: 300,
+        caster_resonance_max: 20,
+        caster_resonance_gain_lock_ms: 0,
+        target_attack_interval_ms: 700,
+        target_max_health: 20,
+    });
+
+    let caster_unit_id =
+        find_spawned_unit_id(&result.timeline, result.caster_base_uuid, Side::Player);
+    let target_unit_id =
+        find_spawned_unit_id(&result.timeline, result.target_base_uuid, Side::Opponent);
 
     let autocast_start = result
         .timeline
@@ -260,7 +503,7 @@ fn battle_timeline_with_autocast_and_buff_tick_replays_and_validates() {
                 TimelineEvent::AutoCastStart {
                     caster_instance_id,
                     ..
-                } if caster_instance_id == caster_unit_id
+                } if caster_instance_id.as_uuid() == caster_unit_id
             )
         })
         .expect("오토캐스트 시작 이벤트가 있어야 한다");
@@ -277,8 +520,8 @@ fn battle_timeline_with_autocast_and_buff_tick_replays_and_validates() {
                     caster_instance_id: actual_caster,
                     target_instance_id: Some(actual_target),
                 } if skill_id == "poison_skill"
-                    && actual_caster == caster_unit_id
-                    && actual_target == target_unit_id
+                    && actual_caster.as_uuid() == caster_unit_id
+                    && actual_target.as_uuid() == target_unit_id
             )
         })
         .expect("AbilityCast(poison_skill)가 있어야 한다");
@@ -287,28 +530,8 @@ fn battle_timeline_with_autocast_and_buff_tick_replays_and_validates() {
         ability_cast.cause,
         TimelineCause::Parent {
             seq: autocast_start.seq
-        },
-        "AbilityCast는 AutoCastStart의 자식이어야 한다"
+        }
     );
-
-    let buff_applied = result
-        .timeline
-        .entries
-        .iter()
-        .find(|entry| {
-            matches!(
-                entry.event,
-                TimelineEvent::BuffApplied {
-                    caster_instance_id: actual_caster,
-                    target_instance_id: actual_target,
-                    buff_id,
-                    ..
-                } if actual_caster == caster_unit_id
-                    && actual_target == target_unit_id
-                    && buff_id == poison_id
-            )
-        })
-        .expect("poison BuffApplied가 있어야 한다");
 
     let step_triggered = result
         .timeline
@@ -323,19 +546,100 @@ fn battle_timeline_with_autocast_and_buff_tick_replays_and_validates() {
                     target_instance_id,
                     ..
                 } if skill_id == "poison_skill"
-                    && *caster_instance_id == caster_unit_id
-                    && *target_instance_id == Some(target_unit_id)
+                    && caster_instance_id.as_uuid() == caster_unit_id
+                    && *target_instance_id == Some(target_unit_id.into())
             )
         })
         .expect("poison AbilityStepTriggered가 있어야 한다");
 
     assert_eq!(
+        step_triggered.cause,
+        TimelineCause::Parent {
+            seq: ability_cast.seq
+        }
+    );
+
+    let buff_applied = result
+        .timeline
+        .entries
+        .iter()
+        .find(|entry| {
+            matches!(
+                entry.event,
+                TimelineEvent::BuffApplied {
+                    caster_instance_id: actual_caster,
+                    target_instance_id: actual_target,
+                    buff_id,
+                    ..
+                } if actual_caster.as_uuid() == caster_unit_id
+                    && actual_target.as_uuid() == target_unit_id
+                    && buff_id == result.poison_id
+            )
+        })
+        .expect("poison BuffApplied가 있어야 한다");
+
+    assert_eq!(
         buff_applied.cause,
         TimelineCause::Parent {
             seq: step_triggered.seq
-        },
-        "BuffApplied는 AbilityStepTriggered의 자식이어야 한다"
+        }
     );
+
+    let autocast_end = result
+        .timeline
+        .entries
+        .iter()
+        .find(|entry| {
+            matches!(
+                entry.event,
+                TimelineEvent::AutoCastEnd {
+                    caster_instance_id: actual_caster,
+                } if actual_caster.as_uuid() == caster_unit_id
+            )
+        })
+        .expect("AutoCastEnd가 있어야 한다");
+
+    assert_eq!(
+        autocast_end.cause,
+        TimelineCause::Parent {
+            seq: autocast_start.seq
+        }
+    );
+}
+
+#[test]
+fn poison_buff_tick_and_fatal_death_record_expected_parent_chain() {
+    let result = run_poison_autocast_scenario(PoisonAutocastScenario {
+        caster_attack_interval_ms: 1_500,
+        caster_resonance_max: 10,
+        caster_resonance_gain_lock_ms: 5_000,
+        target_attack_interval_ms: 5_000,
+        target_max_health: 3,
+    });
+
+    let caster_unit_id =
+        find_spawned_unit_id(&result.timeline, result.caster_base_uuid, Side::Player);
+    let target_unit_id =
+        find_spawned_unit_id(&result.timeline, result.target_base_uuid, Side::Opponent);
+
+    let buff_applied = result
+        .timeline
+        .entries
+        .iter()
+        .find(|entry| {
+            matches!(
+                entry.event,
+                TimelineEvent::BuffApplied {
+                    caster_instance_id: actual_caster,
+                    target_instance_id: actual_target,
+                    buff_id,
+                    ..
+                } if actual_caster.as_uuid() == caster_unit_id
+                    && actual_target.as_uuid() == target_unit_id
+                    && buff_id == result.poison_id
+            )
+        })
+        .expect("poison BuffApplied가 있어야 한다");
 
     let buff_ticks: Vec<_> = result
         .timeline
@@ -348,9 +652,9 @@ fn battle_timeline_with_autocast_and_buff_tick_replays_and_validates() {
                     caster_instance_id: actual_caster,
                     target_instance_id: actual_target,
                     buff_id,
-                } if actual_caster == caster_unit_id
-                    && actual_target == target_unit_id
-                    && buff_id == poison_id
+                } if actual_caster.as_uuid() == caster_unit_id
+                    && actual_target.as_uuid() == target_unit_id
+                    && buff_id == result.poison_id
             )
         })
         .collect();
@@ -359,13 +663,11 @@ fn battle_timeline_with_autocast_and_buff_tick_replays_and_validates() {
         1,
         "poison buff tick은 1회만 발생해야 한다"
     );
-
     assert_eq!(
         buff_ticks[0].cause,
         TimelineCause::Parent {
             seq: buff_applied.seq
-        },
-        "첫 BuffTick은 BuffApplied의 자식이어야 한다"
+        }
     );
 
     let tick_damage = result
@@ -380,7 +682,8 @@ fn battle_timeline_with_autocast_and_buff_tick_replays_and_validates() {
                     target_instance_id: actual_target,
                     reason: HpChangeReason::Command,
                     ..
-                } if actual_source == caster_unit_id && actual_target == target_unit_id
+                } if actual_source.as_uuid() == caster_unit_id
+                    && actual_target.as_uuid() == target_unit_id
             )
         })
         .expect("poison tick으로 인한 HpChanged가 있어야 한다");
@@ -389,8 +692,7 @@ fn battle_timeline_with_autocast_and_buff_tick_replays_and_validates() {
         tick_damage.cause,
         TimelineCause::Parent {
             seq: buff_ticks[0].seq
-        },
-        "버프 틱 데미지는 BuffTick의 자식이어야 한다"
+        }
     );
 
     let unit_died = result
@@ -404,7 +706,8 @@ fn battle_timeline_with_autocast_and_buff_tick_replays_and_validates() {
                     unit_instance_id: actual_target,
                     killer_instance_id: Some(actual_killer),
                     ..
-                } if actual_target == target_unit_id && actual_killer == caster_unit_id
+                } if actual_target.as_uuid() == target_unit_id
+                    && actual_killer.as_uuid() == caster_unit_id
             )
         })
         .expect("poison tick으로 타겟이 사망해야 한다");
@@ -413,43 +716,8 @@ fn battle_timeline_with_autocast_and_buff_tick_replays_and_validates() {
         unit_died.cause,
         TimelineCause::Parent {
             seq: buff_ticks[0].seq
-        },
-        "UnitDied는 치명적인 BuffTick의 자식이어야 한다"
+        }
     );
-
-    let autocast_end = result
-        .timeline
-        .entries
-        .iter()
-        .find(|entry| {
-            matches!(
-                entry.event,
-                TimelineEvent::AutoCastEnd {
-                    caster_instance_id: actual_caster,
-                } if actual_caster == caster_unit_id
-            )
-        })
-        .expect("AutoCastEnd가 있어야 한다");
-
-    assert_eq!(
-        autocast_end.cause,
-        TimelineCause::Parent {
-            seq: autocast_start.seq
-        },
-        "AutoCastEnd는 같은 AutoCastStart의 자식이어야 한다"
-    );
-
-    // Then: Replay/Validation이 모두 통과해야 한다.
-    let mut replay_config = TimelineReplayerConfig::default();
-    replay_config.validate_unit_base_uuid = true;
-    TimelineReplayer::new(game_data.clone(), replay_config)
-        .replay(&result.timeline)
-        .unwrap();
-
-    let expected = TimelineExpectedCounts::from_decks(&player, &opponent);
-    TimelineValidator::new(TimelineValidatorConfig::default())
-        .validate(&result.timeline, Some(expected), Some(game_data.as_ref()))
-        .unwrap();
 }
 
 #[test]

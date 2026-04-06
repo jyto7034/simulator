@@ -1,6 +1,6 @@
 use game_core::ecs::resources::GameState;
 use game_core::ecs::resources::InventoryItemDto;
-use game_core::game::behavior::{BehaviorResult, GameError, PlayerBehavior};
+use game_core::game::behavior::{ActionKind, BehaviorResult, GameError, PlayerBehavior};
 use game_core::game::enums::{GameOption, PhaseEvent};
 use game_core::game::world::GameCore;
 use std::collections::HashSet;
@@ -8,10 +8,8 @@ use uuid::Uuid;
 
 use crate::common::create_test_game_data;
 
-fn contains_behavior_variant(haystack: &[PlayerBehavior], needle: &PlayerBehavior) -> bool {
-    // NOTE: enum의 "variant"만 비교(필드 값 무시)하며, ActionValidator 정책과 맞춘다.
-    let needle = std::mem::discriminant(needle);
-    haystack.iter().any(|b| std::mem::discriminant(b) == needle)
+fn contains_action_kind(haystack: &[ActionKind], needle: ActionKind) -> bool {
+    haystack.contains(&needle)
 }
 
 fn start_game_and_request_phase(game: &mut GameCore, player_id: Uuid) -> PhaseEvent {
@@ -21,7 +19,7 @@ fn start_game_and_request_phase(game: &mut GameCore, player_id: Uuid) -> PhaseEv
         .execute(player_id, PlayerBehavior::RequestPhaseData)
         .unwrap()
     {
-        BehaviorResult::RequestPhaseData(event) => event,
+        BehaviorResult::RequestPhaseData(event) => *event,
         other => panic!("expected RequestPhaseData, got {other:?}"),
     }
 }
@@ -31,7 +29,7 @@ fn request_phase(game: &mut GameCore, player_id: Uuid) -> PhaseEvent {
         .execute(player_id, PlayerBehavior::RequestPhaseData)
         .unwrap()
     {
-        BehaviorResult::RequestPhaseData(event) => event,
+        BehaviorResult::RequestPhaseData(event) => *event,
         other => panic!("expected RequestPhaseData, got {other:?}"),
     }
 }
@@ -95,31 +93,19 @@ fn select_shop_option_transitions_and_allows_shop_actions() {
 
     // Then: 허용 행동 목록에 상점 행동들이 포함된다(variant 기준).
     let allowed_actions = game.get_allowed_actions();
-    assert!(contains_behavior_variant(
+    assert!(contains_action_kind(
         &allowed_actions,
-        &PlayerBehavior::PurchaseItem {
-            item_uuid: Uuid::nil()
-        }
+        ActionKind::PurchaseItem
     ));
-    assert!(contains_behavior_variant(
+    assert!(contains_action_kind(&allowed_actions, ActionKind::SellItem));
+    assert!(contains_action_kind(
         &allowed_actions,
-        &PlayerBehavior::SellItem {
-            item_uuid: Uuid::nil()
-        }
+        ActionKind::RerollShop
     ));
-    assert!(contains_behavior_variant(
+    assert!(contains_action_kind(&allowed_actions, ActionKind::ExitShop));
+    assert!(!contains_action_kind(
         &allowed_actions,
-        &PlayerBehavior::RerollShop
-    ));
-    assert!(contains_behavior_variant(
-        &allowed_actions,
-        &PlayerBehavior::ExitShop
-    ));
-    assert!(!contains_behavior_variant(
-        &allowed_actions,
-        &PlayerBehavior::SelectEvent {
-            event_id: Uuid::nil()
-        }
+        ActionKind::SelectEvent
     ));
 
     // Then: 이벤트 1개를 선택했으므로 Phase 선택지는 비워진다.
@@ -208,10 +194,15 @@ fn reroll_shop_swaps_visible_to_hidden_and_is_one_shot() {
         _ => unreachable!("EventSelection phase expected"),
     };
 
-    // Given: Phase 스냅샷에서 초기 visible/hidden 목록을 캡처한다.
+    // Given: 응답 스냅샷의 visible과, 정적 상점 정의의 hidden 목록을 캡처한다.
     let shop_uuid = shop_metadata.uuid;
     let first_visible: Vec<Uuid> = shop_metadata.visible_items.clone();
-    let first_hidden: Vec<Uuid> = shop_metadata.hidden_items.clone();
+    let first_hidden: Vec<Uuid> = game_data
+        .shop_data
+        .get_by_uuid(&shop_uuid)
+        .expect("shop exists in game data")
+        .hidden_items
+        .clone();
     assert!(!first_hidden.is_empty());
 
     // When: 상점에 진입한다.
@@ -262,7 +253,13 @@ fn purchase_item_rejects_hidden_item_uuid() {
     assert_eq!(shop_metadata.uuid, shop_uuid);
 
     // When: 현재 visible이 아닌(hidden) 아이템 구매를 시도한다.
-    let hidden_item_uuid = *shop_metadata.hidden_items.first().expect("has hidden");
+    let hidden_item_uuid = *game_data
+        .shop_data
+        .get_by_uuid(&shop_uuid)
+        .expect("shop exists in game data")
+        .hidden_items
+        .first()
+        .expect("has hidden");
     let err = game
         .execute(
             player_id,
@@ -365,10 +362,9 @@ fn purchase_after_reroll_can_buy_abnormality_and_uses_distinct_owned_uuid() {
         .iter()
         .copied()
         .find(|uuid| {
-            matches!(
-                game_data.item(uuid),
-                Some(game_core::game::data::Item::Abnormality(_))
-            )
+            game_data
+                .item(uuid)
+                .is_some_and(|item| item.is_abnormality())
         })
         .expect("rerolled shop should include an abnormality");
 
@@ -433,10 +429,9 @@ fn purchase_equipment_then_sell_updates_enkephalin_and_prevents_double_sell() {
     let _shop_uuid = select_shop_from_phase_event(&mut game, player_id, &phase_event);
 
     let equipment_base_uuid = find_shop_visible_item_uuid(&phase_event, |uuid| {
-        matches!(
-            game_data.item(&uuid),
-            Some(game_core::game::data::Item::Equipment(_))
-        )
+        game_data
+            .item(&uuid)
+            .is_some_and(|item| item.is_equipment())
     });
 
     let price = game_data
@@ -514,21 +509,15 @@ fn equipped_item_cannot_be_sold_when_reentering_shop() {
         .iter()
         .copied()
         .find(|uuid| {
-            matches!(
-                game_data.item(uuid),
-                Some(game_core::game::data::Item::Abnormality(_))
-            )
+            game_data
+                .item(uuid)
+                .is_some_and(|item| item.is_abnormality())
         })
         .expect("rerolled shop should include an abnormality");
     let equip_base_uuid = new_items
         .iter()
         .copied()
-        .find(|uuid| {
-            matches!(
-                game_data.item(uuid),
-                Some(game_core::game::data::Item::Equipment(_))
-            )
-        })
+        .find(|uuid| game_data.item(uuid).is_some_and(|item| item.is_equipment()))
         .expect("rerolled shop should include an equipment");
 
     let abno_price = game_data.item(&abno_base_uuid).unwrap().price();

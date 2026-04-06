@@ -8,9 +8,21 @@ use tracing::{error, info, warn};
 use uuid::Uuid;
 
 use crate::{
-    game::load_balance_actor::{messages::RouteToPlayer, LoadBalanceActor},
+    game::{
+        load_balance_actor::{messages::RouteToGamePlayer, LoadBalanceActor},
+        player_game_actor::state::legacy_server_message_to_unity,
+    },
     shared::{circuit_breaker::CircuitBreaker, protocol::ServerMessage},
 };
+
+#[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
+struct MatchResultPayload {
+    player_id: Uuid,
+    winner_id: String,
+    opponent_id: String,
+    #[serde(default)]
+    battle_data: Option<serde_json::Value>,
+}
 
 pub async fn spawn_redis_subscribers(
     redis_client: RedisClient,
@@ -310,16 +322,15 @@ async fn handle_game_message(payload: String, load_balance_addr: &Addr<LoadBalan
     info!("Cross-pod message received for player {}", player_uuid);
 
     // LoadBalanceActor를 통해 PlayerGameActor에 라우팅
-    load_balance_addr.do_send(RouteToPlayer {
+    load_balance_addr.do_send(RouteToGamePlayer {
         player_id: player_uuid,
-        message: parsed.message,
+        message: legacy_server_message_to_unity(parsed.message),
     });
 }
 
 /// 매칭 결과 메시지 처리 (배틀 결과 포함)
 async fn handle_match_result_message(payload: String, load_balance_addr: &Addr<LoadBalanceActor>) {
-    // JSON 파싱
-    let result: MatchResult = match serde_json::from_str(&payload) {
+    let result: MatchResultPayload = match serde_json::from_str(&payload) {
         Ok(r) => r,
         Err(e) => {
             error!("Failed to parse MatchResult: {}", e);
@@ -330,20 +341,12 @@ async fn handle_match_result_message(payload: String, load_balance_addr: &Addr<L
     info!("Match result received for player {}", result.player_id);
 
     // LoadBalanceActor를 통해 PlayerGameActor에 라우팅
-    // TODO: MatchResult에서 battle 정보를 추출해서 ServerMessage에 포함
-    load_balance_addr.do_send(RouteToPlayer {
+    load_balance_addr.do_send(RouteToGamePlayer {
         player_id: result.player_id,
-        message: ServerMessage::MatchFound {
-            winner_id: "TODO".to_string(),
-            opponent_id: "TODO".to_string(),
-            battle_data: None,
-        },
+        message: legacy_server_message_to_unity(ServerMessage::MatchFound {
+            winner_id: result.winner_id,
+            opponent_id: result.opponent_id,
+            battle_data: result.battle_data,
+        }),
     });
-}
-
-// 메시지 타입 정의
-// TODO: battle_result 정보를 포함하도록 확장 필요
-#[derive(serde::Deserialize)]
-struct MatchResult {
-    player_id: Uuid,
 }

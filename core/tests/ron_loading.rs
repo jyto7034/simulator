@@ -24,19 +24,59 @@ fn load_game_data_from_ron_reads_step_based_skill_schema() {
         .skill_data
         .get_by_id("white_night_pale_benediction")
         .expect("WhiteNight skill should exist in RON data");
-    assert_eq!(white_night.steps.len(), 2);
-    assert_eq!(white_night.steps[0].id, "ally_blessing");
-    assert_eq!(white_night.steps[1].id, "enemy_judgement");
+    assert_eq!(white_night.steps.len(), 3);
+    assert_eq!(white_night.steps[0].id, "ally_salvation");
+    assert_eq!(white_night.steps[1].id, "ally_blessing");
+    assert_eq!(white_night.steps[2].id, "enemy_judgement");
 
     let mountain = game_data
         .abnormality_data
         .get_by_id("t-01-75_mountain")
         .expect("Mountain of Smiling Bodies abnormality should exist in RON data");
-    assert_eq!(mountain.skill_id.as_deref(), Some("mountain_mass_consumption"));
+    assert_eq!(
+        mountain.skill_id.as_deref(),
+        Some("mountain_mass_consumption")
+    );
 
     let one_sin = game_data
         .abnormality_data
         .get_by_id("o-03-03_one_sin")
         .expect("One Sin abnormality should exist in RON data");
     assert_eq!(one_sin.skill_id.as_deref(), Some("one_sin_penitence"));
+
+    let one_sin_skill = game_data
+        .skill_data
+        .get_by_id("one_sin_penitence")
+        .expect("One Sin skill should exist in RON data");
+    assert_eq!(one_sin_skill.steps.len(), 2);
+    assert_eq!(one_sin_skill.steps[0].id, "penitence_judgement");
+    assert_eq!(one_sin_skill.steps[1].id, "penitence_absolution");
+    assert_eq!(
+        one_sin_skill.steps[0]
+            .presentation
+            .projectile_vfx_id
+            .as_deref(),
+        Some("one_sin_penitence_judgement")
+    );
+    assert_eq!(
+        one_sin_skill.steps[1].presentation.impact_vfx_id.as_deref(),
+        Some("one_sin_penitence_absolution")
+    );
+    assert_eq!(
+        one_sin_skill.steps[0].presentation.target_anchor.as_deref(),
+        Some("Head")
+    );
+
+    assert_eq!(
+        white_night.steps[0].presentation.impact_vfx_id.as_deref(),
+        Some("white_night_pale_benediction_salvation")
+    );
+    assert_eq!(
+        white_night.steps[1].presentation.cast_state.as_deref(),
+        Some("Cast")
+    );
+    assert_eq!(
+        white_night.steps[2].presentation.target_anchor.as_deref(),
+        Some("Head")
+    );
 }

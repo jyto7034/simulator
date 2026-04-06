@@ -12,9 +12,11 @@ use super::timeline::{AttackKind, SkillCastTarget, TimelineCause};
 pub enum ProjectilePayload {
     BasicAttack,
     SkillStep {
+        cast_seq: u64,
+        step_index: usize,
         skill_id: SkillId,
         step_id: String,
-        cast_target: Option<SkillCastTarget>,
+        step_target: Option<SkillCastTarget>,
     },
 }
 
@@ -62,6 +64,8 @@ pub enum BattleEvent {
     },
     SkillStep {
         time_ms: u64,
+        cast_seq: u64,
+        step_index: usize,
         caster_instance_id: UnitInstanceId,
         skill_id: SkillId,
         step_id: String,
@@ -168,17 +172,25 @@ impl Ord for BattleEvent {
                         caster_instance_id: b,
                         ..
                     },
-                )
-                | (
+                ) => b.as_bytes().cmp(a.as_bytes()),
+                (
                     BattleEvent::SkillStep {
+                        cast_seq: a_cast,
+                        step_index: a_step,
                         caster_instance_id: a,
                         ..
                     },
                     BattleEvent::SkillStep {
+                        cast_seq: b_cast,
+                        step_index: b_step,
                         caster_instance_id: b,
                         ..
                     },
-                ) => b.as_bytes().cmp(a.as_bytes()),
+                ) => b
+                    .as_bytes()
+                    .cmp(a.as_bytes())
+                    .then_with(|| b_cast.cmp(a_cast))
+                    .then_with(|| b_step.cmp(a_step)),
                 (
                     BattleEvent::AttackStart {
                         attacker_instance_id: a,
@@ -250,18 +262,24 @@ impl Ord for BattleEvent {
                         }
                         (
                             ProjectilePayload::SkillStep {
+                                cast_seq: a_cast_seq,
+                                step_index: a_step_index,
                                 skill_id: a_id,
                                 step_id: a_step,
-                                cast_target: a_target,
+                                step_target: a_target,
                             },
                             ProjectilePayload::SkillStep {
+                                cast_seq: b_cast_seq,
+                                step_index: b_step_index,
                                 skill_id: b_id,
                                 step_id: b_step,
-                                cast_target: b_target,
+                                step_target: b_target,
                             },
                         ) => b_id
                             .cmp(a_id)
                             .then_with(|| b_step.cmp(a_step))
+                            .then_with(|| b_cast_seq.cmp(a_cast_seq))
+                            .then_with(|| b_step_index.cmp(a_step_index))
                             .then_with(|| {
                                 fn target_key(
                                     target: &Option<SkillCastTarget>,

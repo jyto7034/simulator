@@ -25,8 +25,8 @@ pub mod triggers;
 pub mod types;
 
 use self::types::{
-    ActiveBuff, BuffInstanceKey, ProjectileRecord, RuntimeArtifact, RuntimeItem, RuntimeUnit,
-    TriggerSource,
+    AbilityProcKey, AbilityProcState, ActiveBuff, ActiveSkillCast, BuffInstanceKey,
+    ProjectileRecord, RuntimeArtifact, RuntimeItem, RuntimeUnit, TriggerSource,
 };
 
 pub struct BattleCore {
@@ -41,6 +41,8 @@ pub struct BattleCore {
     graveyard: HashMap<UnitInstanceId, UnitSnapshot>,
 
     buffs: HashMap<BuffInstanceKey, ActiveBuff>,
+    active_skill_casts: HashMap<u64, ActiveSkillCast>,
+    ability_proc_states: HashMap<AbilityProcKey, AbilityProcState>,
 
     projectiles: HashMap<Uuid, ProjectileRecord>,
     pub battlefield: Battlefield,
@@ -71,6 +73,8 @@ impl BattleCore {
             items: HashMap::new(),
             graveyard: HashMap::new(),
             buffs: HashMap::new(),
+            active_skill_casts: HashMap::new(),
+            ability_proc_states: HashMap::new(),
             projectiles: HashMap::new(),
             battlefield: Battlefield::new(field_size.0, field_size.1),
             game_data,
@@ -280,8 +284,8 @@ mod tests {
     use super::*;
     use crate::ecs::resources::Position;
     use crate::game::ability::{
-        DeliveryDef, SkillArea, SkillDef, SkillEffectDef, SkillKind, SkillPresentationDef,
-        SkillStepDef, SkillTarget, UnitTargetRule,
+        DeliveryDef, SkillArea, SkillCastTargetingDef, SkillDef, SkillEffectDef, SkillKind,
+        SkillPresentationDef, SkillStepDef, SkillTarget, StepTargetingMode, UnitTargetRule,
     };
     use crate::game::battle::buffs::BuffId;
     use crate::game::battle::core::movement::ActionState;
@@ -327,17 +331,17 @@ mod tests {
             white: pool,
         };
 
-        Arc::new(GameDataBase::new(
-            Arc::new(AbnormalityDatabase::new(vec![])),
-            Arc::new(ArtifactDatabase::new(vec![])),
-            Arc::new(EquipmentDatabase::new(vec![])),
-            Arc::new(ShopDatabase::new(vec![])),
-            Arc::new(BonusDatabase::new(vec![])),
-            Arc::new(RandomEventDatabase::new(vec![])),
-            Arc::new(PveEncounterDatabase::new(vec![])),
-            Arc::new(SkillDatabase::new(vec![])),
+        Arc::new(GameDataBase::new(crate::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![])),
+            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
+            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
+            shop_data: Arc::new(ShopDatabase::new(vec![])),
+            bonus_data: Arc::new(BonusDatabase::new(vec![])),
+            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
+            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
+            skill_data: Arc::new(SkillDatabase::new(vec![])),
             event_pools,
-        ))
+        }))
     }
 
     fn new_core() -> BattleCore {
@@ -381,6 +385,7 @@ mod tests {
             id: id.to_string(),
             name: id.to_string(),
             kind: SkillKind::Targeted,
+            cast_targeting: SkillCastTargetingDef::FirstStepTarget,
             focus_time_ms,
             focus_permissions: Default::default(),
             steps: vec![SkillStepDef {
@@ -388,6 +393,9 @@ mod tests {
                 delay_ms: 0,
                 range_tiles,
                 target,
+                targeting: StepTargetingMode::ReuseCastTarget,
+                when: Default::default(),
+                repeat: Default::default(),
                 delivery,
                 effects,
                 presentation: SkillPresentationDef::default(),
@@ -413,17 +421,17 @@ mod tests {
             white: pool,
         };
 
-        let game_data = Arc::new(GameDataBase::new(
-            Arc::new(AbnormalityDatabase::new(abnormalities)),
-            Arc::new(ArtifactDatabase::new(vec![])),
-            Arc::new(EquipmentDatabase::new(vec![])),
-            Arc::new(ShopDatabase::new(vec![])),
-            Arc::new(BonusDatabase::new(vec![])),
-            Arc::new(RandomEventDatabase::new(vec![])),
-            Arc::new(PveEncounterDatabase::new(vec![])),
-            Arc::new(SkillDatabase::new(skills)),
+        let game_data = Arc::new(GameDataBase::new(crate::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(AbnormalityDatabase::new(abnormalities)),
+            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
+            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
+            shop_data: Arc::new(ShopDatabase::new(vec![])),
+            bonus_data: Arc::new(BonusDatabase::new(vec![])),
+            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
+            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
+            skill_data: Arc::new(SkillDatabase::new(skills)),
             event_pools,
-        ));
+        }));
 
         BattleCore::new(&deck, &deck, game_data, (6, 6), 123)
     }
@@ -611,9 +619,34 @@ mod tests {
             .place(nearer_enemy_id, Position::new(1, 1))
             .unwrap();
 
+        println!(
+            "debug movement target test: can_move={}, pos={:?}, range={}, locked_in_range={:?}, nearer_in_range={:?}",
+            core.units
+                .get(&attacker_id)
+                .unwrap()
+                .action_locks
+                .can_move(0),
+            core.battlefield.position_of(attacker_id),
+            core.basic_attack_range_tiles(core.units.get(&attacker_id).unwrap().base_uuid),
+            core.persisted_target_in_range(
+                Side::Player,
+                Some(locked_target_id),
+                Position::new(0, 0),
+                core.basic_attack_range_tiles(core.units.get(&attacker_id).unwrap().base_uuid),
+            ),
+            core.choose_attack_target_in_range(
+                Side::Player,
+                Position::new(0, 0),
+                core.basic_attack_range_tiles(core.units.get(&attacker_id).unwrap().base_uuid),
+            )
+        );
         core.compute_movement_intents(0);
 
         let attacker = core.units.get(&attacker_id).unwrap();
+        println!(
+            "debug movement target test after: target={:?}, state={:?}",
+            attacker.current_target, attacker.action_state
+        );
         assert_eq!(attacker.current_target, Some(nearer_enemy_id));
         assert!(matches!(attacker.action_state, ActionState::Idle));
     }
@@ -657,8 +690,27 @@ mod tests {
             core.battlefield.place(blocker_id, pos).unwrap();
         }
 
+        println!(
+            "debug wait repath: can_move={}, pos={:?}, range={}, in_range={:?}",
+            core.units
+                .get(&attacker_id)
+                .unwrap()
+                .action_locks
+                .can_move(100),
+            core.battlefield.position_of(attacker_id),
+            core.basic_attack_range_tiles(core.units.get(&attacker_id).unwrap().base_uuid),
+            core.choose_attack_target_in_range(
+                Side::Player,
+                Position::new(0, 0),
+                core.basic_attack_range_tiles(core.units.get(&attacker_id).unwrap().base_uuid),
+            )
+        );
         core.compute_movement_intents(100);
 
+        println!(
+            "debug wait repath after: state={:?}",
+            core.units.get(&attacker_id).unwrap().action_state
+        );
         let until_ms = match core.units.get(&attacker_id).unwrap().action_state {
             ActionState::WaitRepath { until_ms, .. } => until_ms,
             ref other => panic!("expected WaitRepath, got {other:?}"),
@@ -817,12 +869,8 @@ mod tests {
             vec![],
         );
 
-        let target = core.resolve_skill_targets_at_start(
-            &skill,
-            caster_id,
-            Side::Player,
-            Position::new(0, 0),
-        );
+        let target =
+            core.resolve_skill_cast_target(&skill, caster_id, Side::Player, Position::new(0, 0));
 
         assert!(matches!(
             target,
@@ -868,12 +916,8 @@ mod tests {
             vec![],
         );
 
-        let target = core.resolve_skill_targets_at_start(
-            &skill,
-            caster_id,
-            Side::Player,
-            Position::new(0, 0),
-        );
+        let target =
+            core.resolve_skill_cast_target(&skill, caster_id, Side::Player, Position::new(0, 0));
 
         assert!(matches!(
             target,
@@ -925,9 +969,13 @@ mod tests {
         );
 
         let start_target =
-            core.resolve_skill_targets_at_start(&skill, caster_id, Side::Player, caster_pos);
-        let targets =
-            core.resolve_skill_step_targets(caster_id, skill.first_step().unwrap(), start_target);
+            core.resolve_skill_cast_target(&skill, caster_id, Side::Player, caster_pos);
+        let targets = core.resolve_skill_step_targets(
+            0,
+            caster_id,
+            skill.first_step().unwrap(),
+            start_target,
+        );
 
         assert!(targets.contains(&enemy_front_id));
         assert!(targets.contains(&enemy_back_id));
@@ -974,13 +1022,17 @@ mod tests {
         );
 
         let start_target =
-            core.resolve_skill_targets_at_start(&skill, caster_id, Side::Player, caster_pos);
+            core.resolve_skill_cast_target(&skill, caster_id, Side::Player, caster_pos);
         core.battlefield
             .move_unit(locked_target_id, Position::new(3, 3))
             .unwrap();
 
-        let targets =
-            core.resolve_skill_step_targets(caster_id, skill.first_step().unwrap(), start_target);
+        let targets = core.resolve_skill_step_targets(
+            0,
+            caster_id,
+            skill.first_step().unwrap(),
+            start_target,
+        );
         assert_eq!(targets, vec![locked_target_id]);
     }
 
@@ -1024,7 +1076,7 @@ mod tests {
         );
 
         let start_target =
-            core.resolve_skill_targets_at_start(&skill, caster_id, Side::Player, caster_pos);
+            core.resolve_skill_cast_target(&skill, caster_id, Side::Player, caster_pos);
         core.battlefield.remove(locked_target_id);
         core.units
             .get_mut(&locked_target_id)
@@ -1032,8 +1084,12 @@ mod tests {
             .stats
             .current_health = 0;
 
-        let targets =
-            core.resolve_skill_step_targets(caster_id, skill.first_step().unwrap(), start_target);
+        let targets = core.resolve_skill_step_targets(
+            0,
+            caster_id,
+            skill.first_step().unwrap(),
+            start_target,
+        );
         assert!(targets.is_empty());
     }
 
@@ -1257,6 +1313,122 @@ mod tests {
                         caster_instance_id,
                         ..
                     } if caster_instance_id == caster_id
+                )
+        }));
+    }
+
+    #[test]
+    fn autocast_completion_resets_auto_attack_cycle_to_full_interval() {
+        let caster_base_uuid = Uuid::from_u128(0x9003);
+        let skill = single_step_skill(
+            "recovery_cast_skill",
+            SkillTarget::SelfUnit,
+            1,
+            5,
+            DeliveryDef::Instant,
+            vec![SkillEffectDef::ModifyResonance { amount: -10 }],
+        );
+        let abnormality = AbnormalityMetadata {
+            id: "caster".to_string(),
+            uuid: caster_base_uuid,
+            name: "caster".to_string(),
+            risk_level: crate::game::enums::RiskLevel::ZAYIN,
+            price: 0,
+            max_health: 10,
+            attack: 1,
+            defense: 0,
+            movement: Default::default(),
+            basic_attack: Default::default(),
+            resonance: Default::default(),
+            skill_id: Some(skill.id.clone()),
+        };
+
+        let mut core = core_with_skill_data(vec![abnormality], vec![skill]);
+        let caster_id: UnitInstanceId = Uuid::from_u128(83).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(84).into();
+
+        let mut caster = runtime_unit(caster_id, Side::Player);
+        caster.base_uuid = caster_base_uuid;
+        caster.stats.attack_interval_ms = 10;
+        core.units.insert(caster_id, caster);
+        core.battlefield
+            .place(caster_id, Position::new(0, 0))
+            .unwrap();
+
+        core.units
+            .insert(target_id, runtime_unit(target_id, Side::Opponent));
+        core.battlefield
+            .place(target_id, Position::new(1, 0))
+            .unwrap();
+
+        core.process_event(
+            BattleEvent::AutoCastStart {
+                time_ms: 0,
+                caster_instance_id: caster_id,
+                cause: TimelineCause::default(),
+            },
+            0,
+        )
+        .unwrap();
+
+        let scheduled_end = core
+            .event_queue
+            .pop()
+            .expect("missing scheduled AutoCastEnd");
+        let end_cause = match scheduled_end {
+            BattleEvent::AutoCastEnd {
+                time_ms,
+                caster_instance_id,
+                cause,
+            } => {
+                assert_eq!(time_ms, 5);
+                assert_eq!(caster_instance_id, caster_id);
+                cause
+            }
+            other => panic!("expected AutoCastEnd, got {other:?}"),
+        };
+
+        core.process_event(
+            BattleEvent::AutoCastEnd {
+                time_ms: 5,
+                caster_instance_id: caster_id,
+                cause: end_cause,
+            },
+            5,
+        )
+        .unwrap();
+
+        core.process_event(
+            BattleEvent::AttackStart {
+                time_ms: 5,
+                attacker_instance_id: caster_id,
+                target_instance_id: Some(target_id),
+                schedule_next: true,
+                cause: TimelineCause::Root {
+                    kind: crate::game::battle::timeline::TimelineRootCause::Period,
+                },
+            },
+            5,
+        )
+        .unwrap();
+
+        assert!(core.event_queue.iter().any(|event| matches!(
+            event,
+            BattleEvent::AttackStart {
+                time_ms: 15,
+                attacker_instance_id,
+                schedule_next: true,
+                ..
+            } if *attacker_instance_id == caster_id
+        )));
+        assert!(!core.timeline.entries.iter().any(|entry| {
+            entry.time_ms == 5
+                && matches!(
+                    entry.event,
+                    TimelineEvent::AttackStart {
+                        attacker_instance_id,
+                        ..
+                    } if attacker_instance_id == caster_id
                 )
         }));
     }

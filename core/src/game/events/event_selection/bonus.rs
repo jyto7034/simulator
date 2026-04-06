@@ -1,28 +1,18 @@
 use bevy_ecs::world::World;
 use tracing::{debug, info, warn};
-use uuid::Uuid;
 
 use crate::{
     ecs::resources::{Enkephalin, Field, Inventory, InventoryDiffDto, InventoryItemDto},
     game::{
         behavior::GameError,
-        data::{
-            bonus_data::{BonusMetadata, BonusType},
-            event_pools::EventPhasePool,
-            GameDataBase,
-        },
-        enums::{GameOption, Side},
+        data::{bonus_data::BonusType, event_pools::EventPhasePool, GameDataBase},
+        enums::{BonusEventOption, GameOption, Side},
         events::{EventGenerator, GeneratorContext},
         managers::uuid_manager::UuidManager,
     },
 };
 
 pub struct BonusGenerator;
-
-fn fallback_bonus_uuid(seed: u64) -> Uuid {
-    // 재현성을 위해 seed 기반으로 결정적 UUID를 생성 (다른 폴백들과 충돌 방지).
-    Uuid::from_u128(0x7a1d_3a09_5b8e_4d7b_8f10_0000_0000_0002u128 ^ ((seed as u128) << 64))
-}
 
 impl EventGenerator for BonusGenerator {
     type Output = GameOption;
@@ -46,48 +36,23 @@ impl EventGenerator for BonusGenerator {
         let mut rng = rand::rngs::StdRng::seed_from_u64(ctx.random_seed);
 
         // 4. pool에서 가중치 기반 UUID 선택
-        let uuid = match EventPhasePool::choose_weighted_uuid(pool, &mut rng) {
-            Some(uuid) => uuid,
-            None => {
-                // 폴백: pool이 비어있으면 기본 보너스 반환
-                warn!(
-                    "Bonus pool is empty for ordeal={:?}, using fallback bonus",
-                    current_ordeal
-                );
-                return GameOption::Bonus {
-                    bonus: BonusMetadata {
-                        bonus_type: BonusType::Enkephalin,
-                        uuid: fallback_bonus_uuid(ctx.random_seed),
-                        name: "임시 보너스".to_string(),
-                        description: "폴백 보너스".to_string(),
-                        icon: "default".to_string(),
-                        amount: 0,
-                        id: String::new(),
-                    },
-                };
-            }
-        };
+        let uuid = EventPhasePool::choose_weighted_uuid(pool, &mut rng).unwrap_or_else(|| {
+            panic!(
+                "Bonus pool is empty for ordeal={current_ordeal:?}; static event data is invalid"
+            )
+        });
 
         // 5. GameData에서 Bonus 조회
-        let bonus = match ctx.game_data.bonus_data.get_by_uuid(&uuid) {
-            Some(bonus) => bonus.clone(), // BonusMetadata 전체를 clone
-            None => {
-                // 폴백: UUID에 해당하는 Bonus가 없으면 기본값
-                warn!(
-                    "Bonus uuid {:?} not found in GameData, using fallback",
-                    uuid
-                );
-                BonusMetadata {
-                    bonus_type: BonusType::Enkephalin,
-                    uuid,
-                    name: "알 수 없는 보너스".to_string(),
-                    description: "설명 없음".to_string(),
-                    icon: "unknown".to_string(),
-                    amount: 0,
-                    id: String::new(),
-                }
-            }
-        };
+        let bonus = ctx
+            .game_data
+            .bonus_data
+            .get_by_uuid(&uuid)
+            .unwrap_or_else(|| {
+                panic!(
+                    "Bonus uuid {uuid} selected from ordeal={current_ordeal:?} pool is missing from GameData"
+                )
+            })
+            .clone();
 
         debug!(
             "Generated bonus event: id={}, uuid={}",
@@ -95,7 +60,9 @@ impl EventGenerator for BonusGenerator {
         );
 
         // 6. GameOption 생성 (BonusMetadata 전체 데이터 포함)
-        GameOption::Bonus { bonus }
+        GameOption::Bonus {
+            bonus: BonusEventOption::from(bonus),
+        }
     }
 }
 
@@ -113,7 +80,7 @@ impl BonusExecutor {
     pub fn grant_bonus(
         world: &mut World,
         game_data: &GameDataBase,
-        bonus: &BonusMetadata,
+        bonus: &BonusEventOption,
         seed: u64,
     ) -> Result<InventoryDiffDto, GameError> {
         use rand::{Rng, SeedableRng};
@@ -127,7 +94,10 @@ impl BonusExecutor {
                 let mut enkephalin = world
                     .get_resource_mut::<Enkephalin>()
                     .ok_or(GameError::MissingResource("Enkephalin"))?;
-                enkephalin.amount += amount;
+                enkephalin.amount = enkephalin
+                    .amount
+                    .checked_add(amount)
+                    .ok_or(GameError::InvalidAction)?;
 
                 info!(
                     "Granted Enkephalin bonus: amount={}, new_total={}",
@@ -153,7 +123,7 @@ impl BonusExecutor {
                 let item = game_data
                     .item(&base_uuid)
                     .ok_or(GameError::InvalidAction)?
-                    .clone_arc();
+                    .to_owned_item();
 
                 // 용량 체크 (실제로 추가하기 전에)
                 {
@@ -201,7 +171,7 @@ impl BonusExecutor {
                     let item = game_data
                         .item(&base_uuid)
                         .ok_or(GameError::InvalidAction)?
-                        .clone_arc();
+                        .to_owned_item();
 
                     let owned_uuid = {
                         let mut uuid_manager = world
@@ -287,7 +257,7 @@ mod tests {
     use crate::game::data::{
         abnormality_data::AbnormalityDatabase,
         artifact_data::ArtifactDatabase,
-        bonus_data::BonusDatabase,
+        bonus_data::{BonusDatabase, BonusMetadata},
         equipment_data::{EquipmentDatabase, EquipmentMetadata, EquipmentType},
         event_pools::{EventPhasePool, EventPoolConfig},
         pve_data::PveEncounterDatabase,
@@ -299,6 +269,7 @@ mod tests {
     use crate::game::stats::TriggeredEffects;
     use std::collections::HashMap;
     use std::sync::Arc;
+    use uuid::Uuid;
 
     fn empty_event_pools() -> EventPoolConfig {
         let pool = EventPhasePool {
@@ -325,6 +296,7 @@ mod tests {
             price: 1,
             allow_duplicate_equip: true,
             triggered_effects: TriggeredEffects::default(),
+            ability_activations: vec![],
         };
 
         let abnormality = crate::game::data::abnormality_data::AbnormalityMetadata {
@@ -350,19 +322,20 @@ mod tests {
             rarity: RiskLevel::ZAYIN,
             price: 1,
             triggered_effects: HashMap::new(),
+            ability_activations: vec![],
         };
 
-        GameDataBase::new(
-            Arc::new(AbnormalityDatabase::new(vec![abnormality])),
-            Arc::new(ArtifactDatabase::new(vec![artifact])),
-            Arc::new(EquipmentDatabase::new(vec![equipment])),
-            Arc::new(ShopDatabase::new(vec![])),
-            Arc::new(BonusDatabase::new(vec![])),
-            Arc::new(RandomEventDatabase::new(vec![])),
-            Arc::new(PveEncounterDatabase::new(vec![])),
-            Arc::new(SkillDatabase::new(vec![])),
-            empty_event_pools(),
-        )
+        GameDataBase::new(crate::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![abnormality])),
+            artifact_data: Arc::new(ArtifactDatabase::new(vec![artifact])),
+            equipment_data: Arc::new(EquipmentDatabase::new(vec![equipment])),
+            shop_data: Arc::new(ShopDatabase::new(vec![])),
+            bonus_data: Arc::new(BonusDatabase::new(vec![])),
+            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
+            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
+            skill_data: Arc::new(SkillDatabase::new(vec![])),
+            event_pools: empty_event_pools(),
+        })
     }
 
     fn world_with_limits(equip_slots: usize, abno_slots: usize, field_w: u8, field_h: u8) -> World {
@@ -383,7 +356,7 @@ mod tests {
         // Given: 장비 1개가 존재하는 GameData와, 장비 슬롯 1개짜리 인벤토리
         let game_data = minimal_game_data();
         let mut world = world_with_limits(1, 10, 1, 1);
-        let bonus = BonusMetadata {
+        let bonus = BonusEventOption::from(BonusMetadata {
             id: "item_bonus".to_string(),
             bonus_type: BonusType::Item,
             uuid: Uuid::from_u128(100),
@@ -391,7 +364,7 @@ mod tests {
             description: "desc".to_string(),
             icon: "icon".to_string(),
             amount: 1,
-        };
+        });
 
         // When: 1회 지급
         let diff = BonusExecutor::grant_bonus(&mut world, &game_data, &bonus, 1).unwrap();
@@ -410,7 +383,7 @@ mod tests {
         // Given: 기물 1개가 존재하는 GameData와, 기물 인벤 1칸 + 1x1 필드
         let game_data = minimal_game_data();
         let mut world = world_with_limits(10, 1, 1, 1);
-        let bonus = BonusMetadata {
+        let bonus = BonusEventOption::from(BonusMetadata {
             id: "abno_bonus".to_string(),
             bonus_type: BonusType::Abnormality,
             uuid: Uuid::from_u128(101),
@@ -418,7 +391,7 @@ mod tests {
             description: "desc".to_string(),
             icon: "icon".to_string(),
             amount: 1,
-        };
+        });
 
         // When: 1회 지급 (인벤토리 우선)
         let diff = BonusExecutor::grant_bonus(&mut world, &game_data, &bonus, 1).unwrap();
@@ -449,5 +422,28 @@ mod tests {
         let err = BonusExecutor::grant_bonus(&mut world, &game_data, &bonus, 1).unwrap_err();
         // Then: 더 이상 둘 곳이 없으므로 실패한다.
         assert!(matches!(err, GameError::InventoryFull));
+    }
+
+    #[test]
+    fn enkephalin_bonus_rejects_overflow() {
+        let game_data = minimal_game_data();
+        let mut world = world_with_limits(10, 10, 1, 1);
+        let bonus = BonusEventOption::from(BonusMetadata {
+            id: "enke_bonus".to_string(),
+            bonus_type: BonusType::Enkephalin,
+            uuid: Uuid::from_u128(102),
+            name: "Energy".to_string(),
+            description: "desc".to_string(),
+            icon: "icon".to_string(),
+            amount: 50,
+        });
+
+        {
+            let mut enkephalin = world.get_resource_mut::<Enkephalin>().unwrap();
+            enkephalin.amount = u32::MAX - 10;
+        }
+
+        let err = BonusExecutor::grant_bonus(&mut world, &game_data, &bonus, 1).unwrap_err();
+        assert!(matches!(err, GameError::InvalidAction));
     }
 }

@@ -130,10 +130,12 @@ impl EventManager {
                 let candidates = options.map(|option| match option {
                     GameOption::SuppressAbnormality {
                         abnormality_id,
+                        encounter_id,
                         risk_level,
                         uuid,
                     } => SuppressionOption {
                         abnormality_id,
+                        encounter_id,
                         risk_level,
                         uuid,
                     },

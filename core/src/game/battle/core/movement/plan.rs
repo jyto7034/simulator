@@ -176,6 +176,9 @@ impl BattleCore {
             if !unit.action_locks.can_move(now_ms) {
                 continue;
             }
+            if unit.stats.move_speed_units_per_ms == 0 {
+                continue;
+            }
 
             let Some(start_pos) = self.battlefield.position_of(unit_id) else {
                 continue;
@@ -234,9 +237,7 @@ impl BattleCore {
                     if u.is_dead() || u.owner == owner {
                         None
                     } else {
-                        let Some(pos) = self.battlefield.position_of(u.instance_id) else {
-                            return None;
-                        };
+                        let pos = self.battlefield.position_of(u.instance_id)?;
                         Some((u.instance_id, pos))
                     }
                 })
@@ -305,7 +306,7 @@ impl BattleCore {
             let speed_units_per_ms = self
                 .units
                 .get(&unit_id)
-                .map(|u| u.stats.move_speed_units_per_ms.max(1))
+                .map(|u| u.stats.move_speed_units_per_ms)
                 .unwrap_or(1)
                 .max(1);
 
@@ -331,7 +332,7 @@ impl BattleCore {
             let dist_y = (target_y - pos_y).unsigned_abs();
             let dist_units = dist_x.max(dist_y);
             let denom = speed_units_per_ms as u64;
-            let dt_ms = ((dist_units + denom - 1) / denom).max(1);
+            let dt_ms = dist_units.div_ceil(denom).max(1);
             let step_ends_at_ms = now_ms.saturating_add(dt_ms);
             movement.step_started_at_ms = now_ms;
             movement.step_ends_at_ms = step_ends_at_ms;

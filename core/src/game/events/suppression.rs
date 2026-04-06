@@ -15,7 +15,9 @@ use crate::{
         behavior::GameError,
         data::{pve_data::PveEncounter, GameDataBase},
         determinism,
-        enums::{GameOption, OrdealType, PhaseType, RiskLevel, Side, Tier},
+        enums::{
+            BonusEventOption, GameOption, OrdealType, PhaseType, RewardMode, RiskLevel, Side, Tier,
+        },
         events::EventGenerator,
         growth::GrowthStack,
     },
@@ -74,35 +76,30 @@ impl EventGenerator for SuppressionGenerator {
         candidates.shuffle(&mut rng);
 
         let selected: Vec<&PveEncounter> = candidates.into_iter().take(3).collect();
+        assert!(
+            selected.len() >= 3,
+            "not enough suppression encounters for ordeal {:?}: need 3, got {}",
+            current_ordeal,
+            selected.len()
+        );
 
-        let make_option = |encounter: Option<&&PveEncounter>, index: u64| -> GameOption {
+        let make_option = |encounter: &&PveEncounter, index: u64| -> GameOption {
             const SUPPRESSION_OPTION_NS: u64 = 0x5355_5050_5253; // "SUPPRS"
-            match encounter {
-                Some(e) => GameOption::SuppressAbnormality {
-                    abnormality_id: e.abnormality_id.clone(),
-                    risk_level: e.risk_level,
-                    uuid: determinism::uuid_v4_from_seed(
-                        ctx.random_seed,
-                        SUPPRESSION_OPTION_NS,
-                        index,
-                    ),
-                },
-                None => GameOption::SuppressAbnormality {
-                    abnormality_id: "fallback".to_string(),
-                    risk_level: RiskLevel::TETH,
-                    uuid: determinism::uuid_v4_from_seed(
-                        ctx.random_seed,
-                        SUPPRESSION_OPTION_NS,
-                        index,
-                    ),
-                },
+            GameOption::SuppressAbnormality {
+                abnormality_id: encounter.abnormality_id.clone(),
+                encounter_id: encounter.id.clone(),
+                risk_level: encounter.risk_level,
+                uuid: determinism::uuid_v4_from_seed(ctx.random_seed, SUPPRESSION_OPTION_NS, index),
             }
         };
 
         [
-            make_option(selected.get(0), 0),
-            make_option(selected.get(1), 1),
-            make_option(selected.get(2), 2),
+            make_option(
+                selected.first().expect("missing suppression candidate 0"),
+                0,
+            ),
+            make_option(selected.get(1).expect("missing suppression candidate 1"), 1),
+            make_option(selected.get(2).expect("missing suppression candidate 2"), 2),
         ]
     }
 }
@@ -117,22 +114,24 @@ impl SuppressionExecutor {
     /// * `world` - ECS World
     /// * `game_data` - 게임 데이터베이스
     /// * `abnormality_id` - 진압 대상 환상체 ID
+    /// * `encounter_id` - 실제로 선택된 PvE encounter ID
     pub fn start_battle(
         world: &mut World,
         game_data: Arc<GameDataBase>,
         abnormality_id: &str,
+        encounter_id: &str,
         movement_seed: u64,
     ) -> Result<BattleResult, GameError> {
         info!(
-            "Starting suppression battle for abnormality: {}",
-            abnormality_id
+            "Starting suppression battle for abnormality={} encounter={}",
+            abnormality_id, encounter_id
         );
 
         // 1. Player 덱 정보 구성
         let player_deck = Self::build_player_deck(world)?;
 
         // 2. Opponent 덱 정보 구성 (PvE 데이터에서 로드)
-        let opponent_deck = Self::build_opponent_deck(&game_data, abnormality_id)?;
+        let opponent_deck = Self::build_opponent_deck(&game_data, encounter_id)?;
 
         // 3. BattleCore 생성 및 전투 실행
         let field = world
@@ -151,6 +150,28 @@ impl SuppressionExecutor {
         info!("Suppression battle completed");
 
         Ok(result)
+    }
+
+    pub fn resolve_rewards(
+        game_data: &GameDataBase,
+        encounter_id: &str,
+    ) -> Result<(RewardMode, Vec<BonusEventOption>), GameError> {
+        let encounter = game_data
+            .pve_data
+            .get_by_id(encounter_id)
+            .ok_or(GameError::MissingResource("PveEncounter"))?;
+
+        let mut rewards = Vec::with_capacity(encounter.reward_bonus_uuids.len());
+        for bonus_uuid in &encounter.reward_bonus_uuids {
+            let bonus = game_data
+                .bonus_data
+                .get_by_uuid(bonus_uuid)
+                .map(BonusEventOption::from)
+                .ok_or(GameError::EventNotFound)?;
+            rewards.push(bonus);
+        }
+
+        Ok((encounter.reward_mode, rewards))
     }
 
     /// Player 덱 정보 구성
@@ -206,20 +227,14 @@ impl SuppressionExecutor {
     /// Opponent 덱 정보 구성 (PvE 데이터에서)
     fn build_opponent_deck(
         game_data: &GameDataBase,
-        abnormality_id: &str,
+        encounter_id: &str,
     ) -> Result<PlayerDeckInfo, GameError> {
-        const PVE_OWNED_ABNORMALITY_NS: u64 = 0x5056_454f_574e_44u64; // "PVEOWND"
+        const PVE_OWNED_ABNORMALITY_NS: u64 = 0x0050_5645_4f57_4e44_u64; // "PVEOWND"
 
-        let encounter = game_data
-            .pve_data
-            .get_by_abnormality_id(abnormality_id)
-            .ok_or_else(|| {
-                warn!(
-                    "PvE encounter not found for abnormality: {}",
-                    abnormality_id
-                );
-                GameError::MissingResource("PveEncounter")
-            })?;
+        let encounter = game_data.pve_data.get_by_id(encounter_id).ok_or_else(|| {
+            warn!("PvE encounter not found: {}", encounter_id);
+            GameError::MissingResource("PveEncounter")
+        })?;
 
         let mut units = Vec::new();
         let mut positions = std::collections::HashMap::new();
@@ -299,7 +314,7 @@ mod tests {
         random_event_data::RandomEventDatabase, shop_data::ShopDatabase, skill_data::SkillDatabase,
         GameDataBase,
     };
-    use crate::game::enums::{OrdealType, PhaseType, RiskLevel};
+    use crate::game::enums::{OrdealType, PhaseType, RewardMode, RiskLevel};
     use crate::game::events::GeneratorContext;
     use std::collections::HashSet;
     use std::sync::Arc;
@@ -320,17 +335,17 @@ mod tests {
     }
 
     fn game_data_with_pve(encounters: Vec<PveEncounter>) -> Arc<GameDataBase> {
-        Arc::new(GameDataBase::new(
-            Arc::new(AbnormalityDatabase::new(vec![])),
-            Arc::new(ArtifactDatabase::new(vec![])),
-            Arc::new(EquipmentDatabase::new(vec![])),
-            Arc::new(ShopDatabase::new(vec![])),
-            Arc::new(BonusDatabase::new(vec![])),
-            Arc::new(RandomEventDatabase::new(vec![])),
-            Arc::new(PveEncounterDatabase::new(encounters)),
-            Arc::new(SkillDatabase::new(vec![])),
-            empty_event_pools(),
-        ))
+        Arc::new(GameDataBase::new(crate::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![])),
+            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
+            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
+            shop_data: Arc::new(ShopDatabase::new(vec![])),
+            bonus_data: Arc::new(BonusDatabase::new(vec![])),
+            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
+            pve_data: Arc::new(PveEncounterDatabase::new(encounters)),
+            skill_data: Arc::new(SkillDatabase::new(vec![])),
+            event_pools: empty_event_pools(),
+        }))
     }
 
     fn pve_encounter(id: &str, abnormality_id: &str, risk_level: RiskLevel) -> PveEncounter {
@@ -339,6 +354,8 @@ mod tests {
             abnormality_id: abnormality_id.to_string(),
             difficulty: 1,
             risk_level,
+            reward_mode: RewardMode::ClaimAll,
+            reward_bonus_uuids: vec![],
             units: vec![crate::game::data::pve_data::PveUnitData {
                 abnormality_id: abnormality_id.to_string(),
                 position: crate::game::data::pve_data::PvePosition { x: 0, y: 0 },
@@ -427,9 +444,15 @@ mod tests {
         let normalize = |opt: &GameOption| match opt {
             GameOption::SuppressAbnormality {
                 abnormality_id,
+                encounter_id,
                 risk_level,
                 uuid,
-            } => (abnormality_id.clone(), *risk_level, *uuid),
+            } => (
+                abnormality_id.clone(),
+                encounter_id.clone(),
+                *risk_level,
+                *uuid,
+            ),
             other => panic!("expected SuppressAbnormality, got {other:?}"),
         };
 

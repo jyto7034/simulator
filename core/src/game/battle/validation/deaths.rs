@@ -115,6 +115,13 @@ fn referenced_unit_ids(event: &TimelineEvent) -> Vec<UnitInstanceId> {
             ids
         }
         TimelineEvent::AutoCastEnd { caster_instance_id } => vec![*caster_instance_id],
+        TimelineEvent::TriggeredAbilityProc {
+            caster_instance_id,
+            target_instance_id,
+            ..
+        } => target_instance_id
+            .map(|target| vec![*caster_instance_id, target])
+            .unwrap_or_else(|| vec![*caster_instance_id]),
         TimelineEvent::AbilityCast {
             caster_instance_id,
             target_instance_id,
@@ -233,6 +240,15 @@ fn is_dead_unit_operated_on(
         }
         TimelineEvent::AutoCastEnd { caster_instance_id } => {
             config.forbid_dead_units_as_attackers && *caster_instance_id == dead_unit_id
+        }
+        TimelineEvent::TriggeredAbilityProc {
+            caster_instance_id,
+            target_instance_id,
+            ..
+        } => {
+            (config.forbid_dead_units_as_attackers && *caster_instance_id == dead_unit_id)
+                || (config.forbid_dead_units_as_targets
+                    && target_instance_id.is_some_and(|t| t == dead_unit_id))
         }
         TimelineEvent::AbilityCast {
             caster_instance_id,

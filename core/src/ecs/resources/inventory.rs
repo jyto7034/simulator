@@ -157,7 +157,9 @@ impl Inventory {
         match item {
             Item::Abnormality(_) => self.abnormalities.can_add_item(),
             Item::Equipment(_) => self.equipments.can_add_item(),
-            Item::Artifact(_) => self.artifacts.can_add_item(),
+            Item::Artifact(meta) => {
+                self.artifacts.can_add_item() && !self.artifacts.contains_uuid(meta.uuid)
+            }
         }
     }
 
@@ -223,8 +225,11 @@ impl Inventory {
             }
             Item::Artifact(data) => {
                 if let Err(err) = self.artifacts.add_item(data) {
-                    tracing::warn!("Failed to add artifact to slots: {}", err);
-                    Err(GameError::InventoryFull)
+                    tracing::warn!("Failed to add artifact to slots: {:?}", err);
+                    match err {
+                        ArtifactSlotError::Full => Err(GameError::InventoryFull),
+                        ArtifactSlotError::DuplicateUuid(_) => Err(GameError::AlreadyOwnedArtifact),
+                    }
                 } else {
                     tracing::debug!("Added artifact item to slots");
                     Ok(())
@@ -503,6 +508,12 @@ pub struct ArtifactSlots {
     max_slots: usize,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ArtifactSlotError {
+    Full,
+    DuplicateUuid(Uuid),
+}
+
 impl Default for ArtifactSlots {
     fn default() -> Self {
         Self::new()
@@ -530,13 +541,13 @@ impl ArtifactSlots {
     }
 
     /// 아티팩트 추가 (슬롯 제한 있음)
-    pub fn add_item(&mut self, item: Arc<ArtifactItem>) -> Result<(), String> {
+    pub fn add_item(&mut self, item: Arc<ArtifactItem>) -> Result<(), ArtifactSlotError> {
+        if self.contains_uuid(item.uuid) {
+            return Err(ArtifactSlotError::DuplicateUuid(item.uuid));
+        }
+
         if !self.can_add_item() {
-            return Err(format!(
-                "아티팩트 슬롯이 가득 찼습니다 ({}/{})",
-                self.slots.len(),
-                self.max_slots
-            ));
+            return Err(ArtifactSlotError::Full);
         }
 
         self.slots.push(item);
@@ -552,7 +563,7 @@ impl ArtifactSlots {
     }
 
     pub fn get_all_items(&self) -> Vec<Arc<ArtifactItem>> {
-        self.slots.iter().cloned().collect()
+        self.slots.to_vec()
     }
 
     pub fn iter(&self) -> impl Iterator<Item = &Arc<ArtifactItem>> {
@@ -593,6 +604,7 @@ mod tests {
             price: 1,
             allow_duplicate_equip: true,
             triggered_effects: HashMap::new(),
+            ability_activations: vec![],
         })
     }
 
@@ -622,6 +634,7 @@ mod tests {
             rarity: RiskLevel::ZAYIN,
             price: 1,
             triggered_effects: HashMap::new(),
+            ability_activations: vec![],
         })
     }
 
@@ -697,7 +710,7 @@ mod tests {
         let err = inv
             .add_item(OwnedEquipment::new(
                 owned_uuid,
-                equipment_meta(2, EquipmentType::Suit),
+                equipment_meta(2, EquipmentType::Armor),
             ))
             .unwrap_err();
         assert!(err.contains("이미 존재"));
@@ -711,24 +724,44 @@ mod tests {
         let err = inv
             .add_item(OwnedEquipment::new(
                 Uuid::from_u128(3),
-                equipment_meta(4, EquipmentType::Suit),
+                equipment_meta(4, EquipmentType::Armor),
             ))
             .unwrap_err();
         assert!(err.contains("가득"));
     }
 
     #[test]
-    fn artifact_slots_limit_capacity_and_detect_contains_uuid() {
+    fn artifact_slots_limit_capacity_and_reject_duplicates() {
         let mut slots = ArtifactSlots::with_max_slots(1);
         let a = artifact_meta(1);
+        let duplicate = artifact_meta(1);
         let b = artifact_meta(2);
 
         slots.add_item(Arc::clone(&a)).unwrap();
         assert!(slots.contains_uuid(a.uuid));
         assert!(!slots.contains_uuid(b.uuid));
 
-        let err = slots.add_item(b).unwrap_err();
-        assert!(err.contains("가득"));
+        let duplicate_err = slots.add_item(duplicate).unwrap_err();
+        assert!(matches!(
+            duplicate_err,
+            ArtifactSlotError::DuplicateUuid(uuid) if uuid == a.uuid
+        ));
+
+        let full_err = slots.add_item(b).unwrap_err();
+        assert!(matches!(full_err, ArtifactSlotError::Full));
+    }
+
+    #[test]
+    fn inventory_rejects_duplicate_artifact_uuid() {
+        let mut inv = Inventory::new();
+        let artifact = Item::Artifact(artifact_meta(10));
+        inv.add_item_owned(Uuid::from_u128(1), artifact.clone())
+            .unwrap();
+
+        let err = inv
+            .add_item_owned(Uuid::from_u128(2), artifact)
+            .unwrap_err();
+        assert!(matches!(err, GameError::AlreadyOwnedArtifact));
     }
 
     #[test]

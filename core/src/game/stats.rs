@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::game::ability::SkillId;
+use crate::game::behavior::GameError;
 
 /// 트리거 타입
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -23,6 +23,25 @@ pub enum TriggerType {
     OnAllyDeath,
 }
 
+/// 트리거 효과의 적용 대상.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
+pub enum TriggerEffectTarget {
+    /// 트리거를 발생시킨 유닛 자신.
+    #[default]
+    SelfUnit,
+    /// 현재 트리거와 직접 연결된 상대 유닛.
+    /// - OnAttack: 공격 대상
+    /// - OnHit: 공격자
+    /// - OnKill: 처치된 유닛
+    /// - OnDeath: 킬러(있다면)
+    /// - OnAllyDeath: 사망한 아군
+    CounterpartUnit,
+    /// 같은 편의 살아있는 모든 유닛.
+    AllAllies,
+    /// 반대 편의 살아있는 모든 유닛.
+    AllEnemies,
+}
+
 /// 트리거 발동 시 적용되는 효과
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Effect {
@@ -34,12 +53,46 @@ pub enum Effect {
     Heal { flat: i32, percent: i32 },
     /// 버프 적용
     ApplyBuff { buff_id: String, duration_ms: u64 },
-    /// 어빌리티 실행 (복잡한 로직)
-    Skill(SkillId),
+}
+
+/// 트리거 효과 정의.
+///
+/// 레거시 RON의 `Modifier(...)`, `Heal(...)` 같은 표기도 계속 지원하고,
+/// 새 문법에서는 `target: ...`을 명시할 수 있다.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TriggeredEffect {
+    #[serde(default)]
+    pub target: TriggerEffectTarget,
+    pub effect: Effect,
+}
+
+impl TriggeredEffect {
+    pub fn legacy(effect: Effect) -> Self {
+        Self {
+            target: TriggerEffectTarget::SelfUnit,
+            effect,
+        }
+    }
+
+    pub fn targeted(target: TriggerEffectTarget, effect: Effect) -> Self {
+        Self { target, effect }
+    }
+
+    pub fn target(&self) -> TriggerEffectTarget {
+        self.target
+    }
+
+    pub fn effect(&self) -> &Effect {
+        &self.effect
+    }
+
+    pub fn into_parts(self) -> (TriggerEffectTarget, Effect) {
+        (self.target, self.effect)
+    }
 }
 
 /// 트리거 기반 효과 맵
-pub type TriggeredEffects = HashMap<TriggerType, Vec<Effect>>;
+pub type TriggeredEffects = HashMap<TriggerType, Vec<TriggeredEffect>>;
 
 /// 전역 전투 스탯 ID
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash, Serialize, Deserialize)]
@@ -122,7 +175,8 @@ impl UnitStats {
             defense,
             attack_interval_ms,
             current_health: current_health.min(max_health),
-            move_speed_units_per_ms: 0,
+            // 테스트/기본 생성 경로는 기본적으로 이동 가능한 유닛을 만든다.
+            move_speed_units_per_ms: 1,
         }
     }
 
@@ -184,9 +238,6 @@ impl UnitStats {
         } else {
             let dec = delta.unsigned_abs().min(self.move_speed_units_per_ms);
             self.move_speed_units_per_ms = self.move_speed_units_per_ms.saturating_sub(dec);
-        }
-        if self.move_speed_units_per_ms == 0 {
-            self.move_speed_units_per_ms = 1;
         }
     }
 
@@ -251,15 +302,37 @@ impl UnitStats {
         }
     }
 
-    /// TriggeredEffects에서 Permanent 트리거의 Modifier 효과만 적용
-    pub fn apply_permanent_effects(&mut self, effects: &TriggeredEffects) {
+    /// TriggeredEffects에서 Permanent 트리거를 적용한다.
+    ///
+    /// Permanent는 전투 시작 전 고정 스탯 계산에 반영되므로,
+    /// 지원하지 않는 target/effect 조합은 조용히 무시하지 않고 에러로 처리한다.
+    pub fn apply_permanent_effects(&mut self, effects: &TriggeredEffects) -> Result<(), GameError> {
         if let Some(permanent_effects) = effects.get(&TriggerType::Permanent) {
             for effect in permanent_effects {
-                if let Effect::Modifier(modifier) = effect {
-                    self.apply_modifier(*modifier);
+                match (effect.target(), effect.effect()) {
+                    (
+                        TriggerEffectTarget::SelfUnit | TriggerEffectTarget::AllAllies,
+                        Effect::Modifier(modifier),
+                    ) => {
+                        self.apply_modifier(*modifier);
+                    }
+                    (target, Effect::Modifier(_)) => {
+                        return Err(GameError::InvalidStaticData(format!(
+                            "Permanent triggered effect does not support target {:?}",
+                            target
+                        )));
+                    }
+                    (target, other) => {
+                        return Err(GameError::InvalidStaticData(format!(
+                            "Permanent triggered effect must be Modifier on SelfUnit/AllAllies, got target={:?} effect={:?}",
+                            target, other
+                        )));
+                    }
                 }
             }
         }
+
+        Ok(())
     }
 }
 
@@ -300,6 +373,18 @@ mod tests {
 
         stats.add_attack_interval_ms(10);
         assert_eq!(stats.attack_interval_ms, 11);
+    }
+
+    #[test]
+    fn move_speed_modifiers_can_reduce_speed_to_zero() {
+        let mut stats = UnitStats::with_values(10, 10, 1, 0, 1);
+        assert_eq!(stats.move_speed_units_per_ms, 1);
+
+        stats.add_move_speed_units_per_ms(-1);
+        assert_eq!(stats.move_speed_units_per_ms, 0);
+
+        stats.add_move_speed_units_per_ms(3);
+        assert_eq!(stats.move_speed_units_per_ms, 3);
     }
 }
 

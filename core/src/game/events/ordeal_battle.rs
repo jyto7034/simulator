@@ -28,7 +28,7 @@ impl EventGenerator for OrdealBattleGenerator {
 
         // TODO: 실제 ordeal 메타데이터에서 uuid 조회
         // 지금은 임시로 고정 uuid 사용
-        let options = [
+        [
             GameOption::OrdealBattle {
                 ordeal_type: OrdealType::Dawn,
                 difficulty: 1,
@@ -44,9 +44,7 @@ impl EventGenerator for OrdealBattleGenerator {
                 difficulty: 3,
                 uuid: Uuid::parse_str("850e8400-e29b-41d4-a716-446655440003").unwrap(),
             },
-        ];
-
-        options
+        ]
     }
 }
 

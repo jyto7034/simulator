@@ -9,7 +9,8 @@ use uuid::Uuid;
 use crate::{
     ecs::resources::Position,
     game::{
-        ability::SkillId,
+        ability::{SkillId, SkillPresentationDef},
+        battle::cooldown::CooldownSource,
         battle::ids::UnitInstanceId,
         battle::{buffs::BuffId, types::BattleWinner},
         enums::Side,
@@ -17,7 +18,7 @@ use crate::{
     },
 };
 
-pub const TIMELINE_VERSION: u32 = 11;
+pub const TIMELINE_VERSION: u32 = 12;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
@@ -248,6 +249,14 @@ pub enum TimelineEvent {
     AutoCastEnd {
         caster_instance_id: UnitInstanceId,
     },
+    TriggeredAbilityProc {
+        skill_id: SkillId,
+        caster_instance_id: UnitInstanceId,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        target_instance_id: Option<UnitInstanceId>,
+        activation_source: CooldownSource,
+        binding_index: usize,
+    },
     AbilityCast {
         skill_id: SkillId,
         caster_instance_id: UnitInstanceId,
@@ -258,6 +267,8 @@ pub enum TimelineEvent {
         step_id: String,
         caster_instance_id: UnitInstanceId,
         target_instance_id: Option<UnitInstanceId>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        presentation: Option<SkillPresentationDef>,
     },
     BuffApplied {
         caster_instance_id: UnitInstanceId,

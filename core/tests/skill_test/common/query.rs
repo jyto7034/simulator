@@ -1,0 +1,218 @@
+use game_core::{
+    ecs::resources::Position,
+    game::{
+        battle::{
+            ids::UnitInstanceId,
+            timeline::{Timeline, TimelineEntry, TimelineEvent},
+        },
+        enums::Side,
+    },
+};
+
+pub fn find_unit_spawn_at(
+    timeline: &Timeline,
+    position: Position,
+    owner: Option<Side>,
+) -> Option<&TimelineEntry> {
+    timeline.entries.iter().find(|entry| {
+        matches!(
+            &entry.event,
+            TimelineEvent::UnitSpawned {
+                position: entry_position,
+                owner: entry_owner,
+                ..
+            } if *entry_position == position && owner.is_none_or(|expected| expected == *entry_owner)
+        )
+    })
+}
+
+pub fn find_unit_instance_at(
+    timeline: &Timeline,
+    position: Position,
+    owner: Option<Side>,
+) -> Option<UnitInstanceId> {
+    find_unit_spawn_at(timeline, position, owner).and_then(|entry| match entry.event {
+        TimelineEvent::UnitSpawned {
+            unit_instance_id, ..
+        } => Some(unit_instance_id),
+        _ => None,
+    })
+}
+
+pub fn find_first_ability_cast<'a>(
+    timeline: &'a Timeline,
+    caster_instance_id: UnitInstanceId,
+    skill_id: &str,
+) -> Option<&'a TimelineEntry> {
+    timeline.entries.iter().find(|entry| {
+        matches!(
+            &entry.event,
+            TimelineEvent::AbilityCast {
+                skill_id: actual_skill_id,
+                caster_instance_id: actual_caster_id,
+                ..
+            } if actual_skill_id == skill_id && *actual_caster_id == caster_instance_id
+        )
+    })
+}
+
+pub fn descendants_of(timeline: &Timeline, parent_seq: u64) -> Vec<&TimelineEntry> {
+    timeline
+        .entries
+        .iter()
+        .filter(|entry| entry.cause.parent_seq() == Some(parent_seq))
+        .collect()
+}
+
+pub fn step_entries_for_cast(timeline: &Timeline, cast_seq: u64) -> Vec<&TimelineEntry> {
+    timeline
+        .entries
+        .iter()
+        .filter(|entry| {
+            matches!(entry.event, TimelineEvent::AbilityStepTriggered { .. })
+                && entry.cause.parent_seq() == Some(cast_seq)
+        })
+        .collect()
+}
+
+pub fn focused_timeline_for_cast(timeline: &Timeline, cast_seq: u64) -> Timeline {
+    let mut relevant_seqs = vec![cast_seq];
+
+    for entry in &timeline.entries {
+        if entry
+            .cause
+            .parent_seq()
+            .is_some_and(|parent_seq| relevant_seqs.contains(&parent_seq))
+        {
+            relevant_seqs.push(entry.seq);
+        }
+    }
+
+    let max_relevant_time_ms = timeline
+        .entries
+        .iter()
+        .filter(|entry| relevant_seqs.contains(&entry.seq))
+        .map(|entry| entry.time_ms)
+        .max()
+        .unwrap_or_default();
+
+    Timeline {
+        version: timeline.version,
+        entries: timeline
+            .entries
+            .iter()
+            .filter(|entry| entry.time_ms <= max_relevant_time_ms)
+            .cloned()
+            .collect(),
+    }
+}
+
+pub fn hp_changes_for_unit(
+    timeline: &Timeline,
+    unit_instance_id: UnitInstanceId,
+) -> Vec<&TimelineEntry> {
+    timeline
+        .entries
+        .iter()
+        .filter(|entry| {
+            matches!(
+                entry.event,
+                TimelineEvent::HpChanged {
+                    target_instance_id: changed_unit,
+                    ..
+                } if changed_unit == unit_instance_id
+            )
+        })
+        .collect()
+}
+
+pub fn hp_changes_caused_by(timeline: &Timeline, parent_seq: u64) -> Vec<&TimelineEntry> {
+    timeline
+        .entries
+        .iter()
+        .filter(|entry| {
+            entry.cause.parent_seq() == Some(parent_seq)
+                && matches!(entry.event, TimelineEvent::HpChanged { .. })
+        })
+        .collect()
+}
+
+pub fn stat_changes_caused_by(timeline: &Timeline, parent_seq: u64) -> Vec<&TimelineEntry> {
+    timeline
+        .entries
+        .iter()
+        .filter(|entry| {
+            entry.cause.parent_seq() == Some(parent_seq)
+                && matches!(entry.event, TimelineEvent::StatChanged { .. })
+        })
+        .collect()
+}
+
+pub fn buffs_applied_by(timeline: &Timeline, parent_seq: u64) -> Vec<&TimelineEntry> {
+    timeline
+        .entries
+        .iter()
+        .filter(|entry| {
+            entry.cause.parent_seq() == Some(parent_seq)
+                && matches!(entry.event, TimelineEvent::BuffApplied { .. })
+        })
+        .collect()
+}
+
+pub fn attack_starts_caused_by(timeline: &Timeline, parent_seq: u64) -> Vec<&TimelineEntry> {
+    timeline
+        .entries
+        .iter()
+        .filter(|entry| {
+            entry.cause.parent_seq() == Some(parent_seq)
+                && matches!(entry.event, TimelineEvent::AttackStart { .. })
+        })
+        .collect()
+}
+
+pub fn step_ids<'a>(entries: &'a [&'a TimelineEntry]) -> Vec<&'a str> {
+    entries
+        .iter()
+        .filter_map(|entry| match &entry.event {
+            TimelineEvent::AbilityStepTriggered { step_id, .. } => Some(step_id.as_str()),
+            _ => None,
+        })
+        .collect()
+}
+
+pub fn target_unit_ids(entries: &[&TimelineEntry]) -> Vec<UnitInstanceId> {
+    entries
+        .iter()
+        .filter_map(|entry| match entry.event {
+            TimelineEvent::HpChanged {
+                target_instance_id, ..
+            }
+            | TimelineEvent::StatChanged {
+                target_instance_id, ..
+            }
+            | TimelineEvent::BuffApplied {
+                target_instance_id, ..
+            }
+            | TimelineEvent::AttackStart {
+                target_instance_id, ..
+            }
+            | TimelineEvent::AttackResolve {
+                target_instance_id, ..
+            }
+            | TimelineEvent::AttackMiss {
+                target_instance_id, ..
+            } => Some(target_instance_id),
+            _ => None,
+        })
+        .collect()
+}
+
+pub fn hp_deltas(entries: &[&TimelineEntry]) -> Vec<i32> {
+    entries
+        .iter()
+        .filter_map(|entry| match entry.event {
+            TimelineEvent::HpChanged { delta, .. } => Some(delta),
+            _ => None,
+        })
+        .collect()
+}

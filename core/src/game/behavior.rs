@@ -4,10 +4,32 @@ use uuid::Uuid;
 use crate::{
     ecs::resources::{InventoryDiffDto, Position},
     game::{
-        data::{random_event_data::RandomEventMetadata, shop_data::ShopMetadata},
-        enums::{PhaseEvent, ZoneType},
+        battle::{timeline::Timeline, types::BattleWinner},
+        enums::{
+            BonusEventOption, PhaseEvent, RandomEventOption, RewardMode, ShopEventOption, ZoneType,
+        },
     },
 };
+
+/// 상태 게이트에서 사용하는 payload-less 액션 capability
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+pub enum ActionKind {
+    StartNewGame,
+    UnEquipItem,
+    EquipItem,
+    MoveUnit,
+    TransferUnit,
+    RequestPhaseData,
+    SelectEvent,
+    PurchaseItem,
+    SellItem,
+    RerollShop,
+    ExitShop,
+    ClaimBonus,
+    ExitBonus,
+    StartSuppression,
+    FinishSuppressionReplay,
+}
 
 /// GameServer에서 GameCore로 전달되는 플레이어 행동
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -75,11 +97,35 @@ pub enum PlayerBehavior {
     StartSuppression {
         abnormality_id: String,
     },
+    /// 진압 전투 리플레이 종료
+    FinishSuppressionReplay,
     // ============================================================
     // 전투 관련 행동 (TODO)
     // ============================================================
     // UseCard { card_uuid: Uuid },
     // EndTurn,
+}
+
+impl PlayerBehavior {
+    pub fn kind(&self) -> ActionKind {
+        match self {
+            PlayerBehavior::StartNewGame => ActionKind::StartNewGame,
+            PlayerBehavior::UnEquipItem { .. } => ActionKind::UnEquipItem,
+            PlayerBehavior::EquipItem { .. } => ActionKind::EquipItem,
+            PlayerBehavior::MoveUnit { .. } => ActionKind::MoveUnit,
+            PlayerBehavior::TransferUnit { .. } => ActionKind::TransferUnit,
+            PlayerBehavior::RequestPhaseData => ActionKind::RequestPhaseData,
+            PlayerBehavior::SelectEvent { .. } => ActionKind::SelectEvent,
+            PlayerBehavior::PurchaseItem { .. } => ActionKind::PurchaseItem,
+            PlayerBehavior::SellItem { .. } => ActionKind::SellItem,
+            PlayerBehavior::RerollShop => ActionKind::RerollShop,
+            PlayerBehavior::ExitShop => ActionKind::ExitShop,
+            PlayerBehavior::ClaimBonus => ActionKind::ClaimBonus,
+            PlayerBehavior::ExitBonus => ActionKind::ExitBonus,
+            PlayerBehavior::StartSuppression { .. } => ActionKind::StartSuppression,
+            PlayerBehavior::FinishSuppressionReplay => ActionKind::FinishSuppressionReplay,
+        }
+    }
 }
 
 /// BehaviorResult 는 변경된 모든 값을 넘길 의무가 있음
@@ -88,14 +134,15 @@ pub enum PlayerBehavior {
 /// 2. 아이템은 어디에 저장되는지
 /// 3. 남은 자원은 얼마인지
 /// 4. 해당 아이템이 어디서 제거되는지,
-/// 등. 클라이언트는 해당 값들을 반영만 하게끔 해야함.  
+///
+/// 등. 클라이언트는 해당 값들을 반영만 하게끔 해야함.
 #[derive(Debug, Serialize, Deserialize)]
 pub enum BehaviorResult {
     /// 새 게임 시작
     StartNewGame,
 
     /// 페이즈 데이터 요청 → PhaseEvent 반환 (3개의 GameOption 포함)
-    RequestPhaseData(PhaseEvent),
+    RequestPhaseData(Box<PhaseEvent>),
 
     /// 이벤트 선택 완료 (추가 메타데이터 없음)
     EventSelected,
@@ -111,7 +158,7 @@ pub enum BehaviorResult {
 
     /// 상점 상태 업데이트 (예: 리롤 이후)
     ShopState {
-        shop: ShopMetadata,
+        shop: ShopEventOption,
     },
 
     RerollShop {
@@ -132,7 +179,7 @@ pub enum BehaviorResult {
 
     /// 랜덤 이벤트 상태/결과 업데이트
     RandomEventState {
-        event: RandomEventMetadata,
+        event: RandomEventOption,
     },
     /// 보너스 결과 (자원 및 인벤토리 변경)
     BonusReward {
@@ -142,8 +189,15 @@ pub enum BehaviorResult {
 
     /// 진압 작업 → 진압 결과
     SuppressAbnormality {
-        // TODO: 진압 성공/실패, 보상 등
-        suppress_result: String,
+        winner: BattleWinner,
+        timeline: Timeline,
+    },
+
+    /// 보상 선택/수령 단계 상태
+    RewardState {
+        mode: RewardMode,
+        rewards: Vec<BonusEventOption>,
+        selected_reward_uuid: Option<Uuid>,
     },
 
     /// 시련 전투 → 전투 결과
@@ -200,13 +254,13 @@ impl BehaviorResult {
     /// RequestPhaseData → PhaseEvent 참조 반환
     pub fn as_request_phase_data(&self) -> Option<&PhaseEvent> {
         match self {
-            BehaviorResult::RequestPhaseData(event) => Some(event),
+            BehaviorResult::RequestPhaseData(event) => Some(event.as_ref()),
             _ => None,
         }
     }
 
-    /// ShopState → ShopMetadata 참조 반환
-    pub fn as_shop_state(&self) -> Option<&ShopMetadata> {
+    /// ShopState → ShopEventOption 참조 반환
+    pub fn as_shop_state(&self) -> Option<&ShopEventOption> {
         match self {
             BehaviorResult::ShopState { shop } => Some(shop),
             _ => None,
@@ -232,8 +286,8 @@ impl BehaviorResult {
         }
     }
 
-    /// RandomEventState → RandomEventMetadata 참조 반환
-    pub fn as_random_event_state(&self) -> Option<&RandomEventMetadata> {
+    /// RandomEventState → RandomEventOption 참조 반환
+    pub fn as_random_event_state(&self) -> Option<&RandomEventOption> {
         match self {
             BehaviorResult::RandomEventState { event } => Some(event),
             _ => None,
@@ -251,10 +305,22 @@ impl BehaviorResult {
         }
     }
 
-    /// SuppressAbnormality → 진압 결과 문자열 참조 반환
-    pub fn as_suppress_abnormality(&self) -> Option<&str> {
+    /// SuppressAbnormality → (승자, 전투 타임라인) 반환
+    pub fn as_suppress_abnormality(&self) -> Option<(BattleWinner, &Timeline)> {
         match self {
-            BehaviorResult::SuppressAbnormality { suppress_result } => Some(suppress_result),
+            BehaviorResult::SuppressAbnormality { winner, timeline } => Some((*winner, timeline)),
+            _ => None,
+        }
+    }
+
+    /// RewardState → (모드, 보상 목록, 현재 선택 보상 UUID) 반환
+    pub fn as_reward_state(&self) -> Option<(RewardMode, &[BonusEventOption], Option<Uuid>)> {
+        match self {
+            BehaviorResult::RewardState {
+                mode,
+                rewards,
+                selected_reward_uuid,
+            } => Some((*mode, rewards.as_slice(), *selected_reward_uuid)),
             _ => None,
         }
     }
@@ -299,6 +365,8 @@ pub enum GameError {
     InventoryFull,
     /// 인벤토리에서 아이템을 찾을 수 없을 때
     InventoryItemNotFound,
+    /// 유일해야 하는 아티팩트를 이미 보유 중일 때
+    AlreadyOwnedArtifact,
 
     /// 구매/행동에 필요한 자원이 부족할 때
     InsufficientResources,
@@ -311,6 +379,8 @@ pub enum GameError {
 
     /// 기물의 전투 스탯이 정의되지 않았거나 잘못된 경우
     InvalidUnitStats(&'static str),
+    /// RON 등 정적 데이터가 현재 엔진 계약을 위반할 때
+    InvalidStaticData(String),
 
     /// 필드 위치가 범위를 벗어났을 때
     OutOfBounds,
@@ -326,6 +396,11 @@ pub enum GameError {
 mod tests {
     use super::*;
     use crate::ecs::resources::InventoryDiffDto;
+    use crate::game::{
+        data::{random_event_data::RandomEventInnerMetadata, shop_data::ShopType},
+        enums::RiskLevel,
+        events::event_selection::random::RandomEventType,
+    };
 
     #[test]
     fn behavior_result_helpers_match_variants() {
@@ -349,5 +424,31 @@ mod tests {
         let (remaining, diff) = purchase.as_purchase_item().unwrap();
         assert_eq!(remaining, 7);
         assert!(diff.removed.is_empty());
+
+        let shop = ShopEventOption {
+            id: "shop".to_string(),
+            name: "Shop".to_string(),
+            uuid: Uuid::nil(),
+            shop_type: ShopType::Shop,
+            can_reroll: true,
+            visible_items: vec![Uuid::nil()],
+        };
+        let shop_state = BehaviorResult::ShopState { shop: shop.clone() };
+        assert_eq!(shop_state.as_shop_state(), Some(&shop));
+
+        let random = RandomEventOption {
+            id: "random".to_string(),
+            name: "Random".to_string(),
+            uuid: Uuid::nil(),
+            event_type: RandomEventType::Bonus,
+            risk_level: RiskLevel::HE,
+            description: "desc".to_string(),
+            image: "img".to_string(),
+            inner_metadata: RandomEventInnerMetadata::Bonus(Uuid::nil()),
+        };
+        let random_state = BehaviorResult::RandomEventState {
+            event: random.clone(),
+        };
+        assert_eq!(random_state.as_random_event_state(), Some(&random));
     }
 }
