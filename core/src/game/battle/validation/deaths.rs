@@ -178,6 +178,9 @@ fn referenced_unit_ids(event: &TimelineEvent) -> Vec<UnitInstanceId> {
         TimelineEvent::UnitMoved {
             unit_instance_id, ..
         }
+        | TimelineEvent::MovementSegmentStarted {
+            unit_instance_id, ..
+        }
         | TimelineEvent::MovementStopped {
             unit_instance_id, ..
         } => vec![*unit_instance_id],
@@ -287,6 +290,9 @@ fn is_dead_unit_operated_on(
             unit_instance_id, ..
         } => config.forbid_dead_units_as_targets && *unit_instance_id == dead_unit_id,
         TimelineEvent::UnitMoved {
+            unit_instance_id, ..
+        }
+        | TimelineEvent::MovementSegmentStarted {
             unit_instance_id, ..
         }
         | TimelineEvent::MovementStopped {

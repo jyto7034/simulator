@@ -890,7 +890,7 @@ movement interpolation이 안정화되면,
 
 1차 적용 대상:
 
-- projectile hit / miss
+- skill projectile hit / miss
 - 원형 AoE
 - blast / proximity
 
@@ -908,12 +908,31 @@ movement interpolation이 안정화되면,
 - 현재 요구사항이 "아슬아슬하게 빗나가는 연출"을 포함하기 때문이다
 - projectile/AoE는 continuous 효과가 가장 직관적으로 보인다
 
+중요한 전제:
+
+- basic attack은 근거리 / 원거리 모두 `발사되면 반드시 맞는 유도 판정`으로 유지한다
+- 즉 basic attack은 continuous 좌표를 쓰더라도
+  hit / miss 자체를 dodge 기반 continuous 판정으로 바꾸지 않는다
+- continuous hit / miss는 스킬 쪽에만 도입한다
+
+스킬 projectile 규칙은 LoL식으로 나눈다.
+
+- 타겟팅 스킬 projectile
+  - point-and-click / 지정 대상 추적형
+  - homing projectile
+  - 보통 miss를 만들지 않는다
+- 비타겟팅 스킬 projectile
+  - line shot / aimed shot / skillshot
+  - non-homing projectile
+  - continuous hit / miss 판정을 적용한다
+
 권장 순서:
 
-1. projectile origin을 타일 중심이 아니라 현재 continuous 좌표로 변경
-2. projectile hitbox와 unit circle hitbox 기반 collision 추가
-3. 원형 AoE를 tile overlap이 아니라 circle distance 기반으로 전환
-4. cone/line/sweep는 마지막 단계로 미룬다
+1. basic attack은 homing contract 유지, launch/flight origin만 continuous화
+2. targeted skill projectile의 homing contract를 정식 타입/판정으로 분리
+3. untargeted skill projectile에 projectile hitbox와 unit circle hitbox 기반 continuous hit / miss 추가
+4. 원형 AoE를 tile overlap이 아니라 circle distance 기반으로 전환
+5. cone/line/sweep는 마지막 단계로 미룬다
 
 1차 코드 진입점:
 
@@ -943,7 +962,8 @@ deterministic reconstruction이 중요하다.
 
 - opening melee engage
 - dense frontline collapse
-- projectile가 유닛 옆을 스치며 miss하는 케이스
+- 비타겟팅 skill projectile가 유닛 옆을 스치며 miss하는 케이스
+- 타겟팅 skill projectile는 움직이는 target을 계속 추적해 hit하는 케이스
 - circular AoE가 두 유닛 중 하나만 맞는 경계 케이스
 
 #### Step 5.8. 구현 순서 요약

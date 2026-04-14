@@ -400,21 +400,43 @@ impl BattleCore {
         earliest
     }
 
+    fn advance_toward_target_by_dt(
+        start_x_units: i64,
+        start_y_units: i64,
+        target_x_units: i64,
+        target_y_units: i64,
+        speed_units_per_ms: u32,
+        dt_ms: u64,
+    ) -> (i64, i64) {
+        let cap = (speed_units_per_ms.max(1) as i64).saturating_mul(dt_ms as i64);
+        let dx = target_x_units.saturating_sub(start_x_units);
+        let dy = target_y_units.saturating_sub(start_y_units);
+        let step_x = if dx >= 0 { dx.min(cap) } else { dx.max(-cap) };
+        let step_y = if dy >= 0 { dy.min(cap) } else { dy.max(-cap) };
+
+        (
+            start_x_units.saturating_add(step_x),
+            start_y_units.saturating_add(step_y),
+        )
+    }
+
     pub(in crate::game::battle::core) fn schedule_current_move_step(
         &mut self,
         unit_id: UnitInstanceId,
         now_ms: u64,
     ) -> Option<u64> {
         let sample = self.sample_motion_segment_at(unit_id, now_ms)?;
-        let (base_uuid, target_x_units, target_y_units, speed_units_per_ms) = {
+        let (base_uuid, full_target_x_units, full_target_y_units, speed_units_per_ms) = {
             let unit = self.units.get(&unit_id)?;
             let ActionState::Moving(state) = &unit.action_state else {
                 return None;
             };
+            let (full_target_x_units, full_target_y_units) =
+                boundary_target_units(state.step_from, state.step_to);
             (
                 unit.base_uuid,
-                state.target_x_units,
-                state.target_y_units,
+                full_target_x_units,
+                full_target_y_units,
                 unit.stats.move_speed_units_per_ms.max(1),
             )
         };
@@ -422,46 +444,99 @@ impl BattleCore {
         let boundary_dt_ms = Self::time_to_reach_target_ms(
             sample.pos_x_units,
             sample.pos_y_units,
-            target_x_units,
-            target_y_units,
+            full_target_x_units,
+            full_target_y_units,
             speed_units_per_ms,
         );
 
         let policy = self.basic_attack_range_policy(base_uuid);
-        if policy.use_continuous_range {
-            if let Some(range_dt_ms) = self
-                .earliest_instant_range_enter_dt_for_moving_unit(
-                    unit_id,
-                    now_ms,
-                    boundary_dt_ms,
-                    policy.instant_melee_reach_units,
-                )
-                .filter(|dt| *dt > 0 && *dt < boundary_dt_ms)
-            {
-                let end_ms = now_ms.saturating_add(range_dt_ms);
-                if let Some(unit) = self.units.get_mut(&unit_id) {
-                    if let ActionState::Moving(state) = &mut unit.action_state {
-                        state.step_started_at_ms = now_ms;
-                        state.step_ends_at_ms = end_ms;
-                        state.step_end_kind = MovementSegmentEndKind::RangeEnter;
-                        return Some(end_ms);
-                    }
+        let (end_ms, end_kind, segment_target_x_units, segment_target_y_units) =
+            if policy.use_continuous_range {
+                if let Some(range_dt_ms) = self
+                    .earliest_instant_range_enter_dt_for_moving_unit(
+                        unit_id,
+                        now_ms,
+                        boundary_dt_ms,
+                        policy.instant_melee_reach_units,
+                    )
+                    .filter(|dt| *dt > 0 && *dt < boundary_dt_ms)
+                {
+                    let (segment_target_x_units, segment_target_y_units) =
+                        Self::advance_toward_target_by_dt(
+                            sample.pos_x_units,
+                            sample.pos_y_units,
+                            full_target_x_units,
+                            full_target_y_units,
+                            speed_units_per_ms,
+                            range_dt_ms,
+                        );
+                    (
+                        now_ms.saturating_add(range_dt_ms),
+                        MovementSegmentEndKind::RangeEnter,
+                        segment_target_x_units,
+                        segment_target_y_units,
+                    )
+                } else {
+                    (
+                        now_ms.saturating_add(boundary_dt_ms.max(1)),
+                        MovementSegmentEndKind::Boundary,
+                        full_target_x_units,
+                        full_target_y_units,
+                    )
                 }
-                return None;
-            }
-        }
+            } else {
+                (
+                    now_ms.saturating_add(boundary_dt_ms.max(1)),
+                    MovementSegmentEndKind::Boundary,
+                    full_target_x_units,
+                    full_target_y_units,
+                )
+            };
 
-        let end_ms = now_ms.saturating_add(boundary_dt_ms.max(1));
         if let Some(unit) = self.units.get_mut(&unit_id) {
             if let ActionState::Moving(state) = &mut unit.action_state {
+                state.step_start_x_units = sample.pos_x_units;
+                state.step_start_y_units = sample.pos_y_units;
+                state.target_x_units = segment_target_x_units;
+                state.target_y_units = segment_target_y_units;
                 state.step_started_at_ms = now_ms;
                 state.step_ends_at_ms = end_ms;
-                state.step_end_kind = MovementSegmentEndKind::Boundary;
-                return Some(end_ms);
+                state.step_end_kind = end_kind;
+            } else {
+                return None;
             }
+        } else {
+            return None;
         }
 
-        None
+        let Some(segment) = self
+            .units
+            .get(&unit_id)
+            .and_then(|unit| match &unit.action_state {
+                ActionState::Moving(state) => Some(state.current_segment()),
+                _ => None,
+            })
+        else {
+            return None;
+        };
+
+        self.record_timeline(
+            now_ms,
+            TimelineEvent::MovementSegmentStarted {
+                unit_instance_id: unit_id,
+                from: segment.from_tile,
+                to: segment.to_tile,
+                start_x_units: segment.start.x_units,
+                start_y_units: segment.start.y_units,
+                target_x_units: segment.target.x_units,
+                target_y_units: segment.target.y_units,
+                started_at_ms: segment.started_at_ms,
+                ends_at_ms: segment.ends_at_ms,
+                end_kind: segment.end_kind,
+            },
+        );
+
+        Some(end_ms)
     }
 
     fn stop_moving_unit_on_target_in_range(
@@ -3208,5 +3283,199 @@ mod tests {
             )),
             "friendly congestion on next-step reservation should block, not wait_repath"
         );
+    }
+    #[test]
+    fn schedule_current_move_step_records_movement_segment_started() {
+        let mut core = new_core();
+
+        let mover_id: UnitInstanceId = Uuid::from_u128(12).into();
+        let from = Position::new(2, 3);
+        let to = Position::new(2, 2);
+
+        let mut movement = MovementState::new_at(from, 100);
+        movement.path = vec![from, to];
+        movement.step_from = from;
+        movement.step_to = to;
+        movement.target_x_units = 2_000_000;
+        movement.target_y_units = 2_500_000;
+        movement.last_update_ms = 100;
+
+        let mut stats = UnitStats::with_values(10, 10, 1, 0, 1);
+        stats.move_speed_units_per_ms = 10_000;
+
+        core.units.insert(
+            mover_id,
+            RuntimeUnit {
+                instance_id: mover_id,
+                owner: Side::Player,
+                base_uuid: Uuid::nil(),
+                stats,
+                pos_x_units: 2_000_000,
+                pos_y_units: 3_000_000,
+                move_epoch: 0,
+                action_state: ActionState::Moving(movement),
+                action_locks: Default::default(),
+                current_target: None,
+                next_basic_attack_ms: 0,
+                pending_basic_attack: false,
+                resonance_current: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 0,
+                next_action_time: 0,
+                pending_cast: false,
+                pending_cast_cause: None,
+                pending_skill_cast: None,
+            },
+        );
+        place_unit(&mut core, mover_id, from);
+
+        let scheduled_ms = core.schedule_current_move_step(mover_id, 100).unwrap();
+        assert_eq!(scheduled_ms, 150);
+
+        let segment_entry = core
+            .timeline
+            .entries
+            .iter()
+            .find(|entry| {
+                matches!(
+                    entry.event,
+                    TimelineEvent::MovementSegmentStarted {
+                        unit_instance_id,
+                        ..
+                    } if unit_instance_id == mover_id
+                )
+            })
+            .expect("missing MovementSegmentStarted");
+
+        match segment_entry.event {
+            TimelineEvent::MovementSegmentStarted {
+                from: seg_from,
+                to: seg_to,
+                start_x_units,
+                start_y_units,
+                target_x_units,
+                target_y_units,
+                started_at_ms,
+                ends_at_ms,
+                end_kind,
+                ..
+            } => {
+                assert_eq!(seg_from, from);
+                assert_eq!(seg_to, to);
+                assert_eq!(start_x_units, 2_000_000);
+                assert_eq!(start_y_units, 3_000_000);
+                assert_eq!(target_x_units, 2_000_000);
+                assert_eq!(target_y_units, 2_500_000);
+                assert_eq!(started_at_ms, 100);
+                assert_eq!(ends_at_ms, 150);
+                assert_eq!(end_kind, MovementSegmentEndKind::Boundary);
+            }
+            _ => unreachable!("expected MovementSegmentStarted"),
+        }
+    }
+
+    #[test]
+    fn range_enter_segment_records_actual_stop_position_instead_of_boundary_target() {
+        let mut core = new_core();
+
+        let attacker_id: UnitInstanceId = Uuid::from_u128(120).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(121).into();
+        let from = Position::new(0, 3);
+        let toward = Position::new(0, 2);
+
+        let mut attacker_stats = UnitStats::with_values(10, 10, 1, 0, 1);
+        attacker_stats.move_speed_units_per_ms = 10_000;
+
+        let mut movement = MovementState::new_at(from, 100);
+        movement.path = vec![from, toward];
+        movement.step_from = from;
+        movement.step_to = toward;
+        movement.target_x_units = 0;
+        movement.target_y_units = 2_500_000;
+        movement.last_update_ms = 100;
+
+        core.units.insert(
+            attacker_id,
+            RuntimeUnit {
+                instance_id: attacker_id,
+                owner: Side::Player,
+                base_uuid: Uuid::nil(),
+                stats: attacker_stats,
+                pos_x_units: 0,
+                pos_y_units: 3_000_000,
+                move_epoch: 0,
+                action_state: ActionState::Moving(movement),
+                action_locks: Default::default(),
+                current_target: Some(target_id),
+                next_basic_attack_ms: 0,
+                pending_basic_attack: false,
+                resonance_current: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 0,
+                next_action_time: 0,
+                pending_cast: false,
+                pending_cast_cause: None,
+                pending_skill_cast: None,
+            },
+        );
+        core.units.insert(
+            target_id,
+            RuntimeUnit {
+                instance_id: target_id,
+                owner: Side::Opponent,
+                base_uuid: Uuid::nil(),
+                stats: UnitStats::with_values(10, 10, 1, 0, 1),
+                pos_x_units: 0,
+                pos_y_units: 1_600_000,
+                move_epoch: 0,
+                action_state: ActionState::Idle,
+                action_locks: Default::default(),
+                current_target: None,
+                next_basic_attack_ms: 0,
+                pending_basic_attack: false,
+                resonance_current: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 0,
+                next_action_time: 0,
+                pending_cast: false,
+                pending_cast_cause: None,
+                pending_skill_cast: None,
+            },
+        );
+
+        place_unit(&mut core, attacker_id, from);
+        place_unit(&mut core, target_id, Position::new(0, 2));
+        core.units.get_mut(&target_id).unwrap().pos_y_units = 1_600_000;
+
+        let scheduled_ms = core.schedule_current_move_step(attacker_id, 100).unwrap();
+        assert_eq!(scheduled_ms, 140);
+
+        let segment_entry = core
+            .timeline
+            .entries
+            .iter()
+            .find(|entry| {
+                matches!(
+                    entry.event,
+                    TimelineEvent::MovementSegmentStarted {
+                        unit_instance_id,
+                        ..
+                    } if unit_instance_id == attacker_id
+                )
+            })
+            .expect("missing MovementSegmentStarted");
+
+        match segment_entry.event {
+            TimelineEvent::MovementSegmentStarted {
+                target_y_units,
+                end_kind,
+                ..
+            } => {
+                assert_eq!(end_kind, MovementSegmentEndKind::RangeEnter);
+                assert_eq!(target_y_units, 2_600_000);
+                assert_ne!(target_y_units, 2_500_000);
+            }
+            _ => unreachable!("expected MovementSegmentStarted"),
+        }
     }
 }

@@ -28,6 +28,12 @@ pub(super) fn positions_from_event(event: &TimelineEvent) -> Vec<(Position, &'st
         TimelineEvent::UnitMoved { from, to, .. } => {
             vec![(*from, "UnitMoved.from"), (*to, "UnitMoved.to")]
         }
+        TimelineEvent::MovementSegmentStarted { from, to, .. } => {
+            vec![
+                (*from, "MovementSegmentStarted.from"),
+                (*to, "MovementSegmentStarted.to"),
+            ]
+        }
         TimelineEvent::MovementStopped { position, .. } => {
             vec![(*position, "MovementStopped.position")]
         }

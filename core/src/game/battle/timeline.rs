@@ -11,6 +11,7 @@ use crate::{
     game::{
         ability::{SkillId, SkillPresentationDef},
         battle::cooldown::CooldownSource,
+        battle::core::movement::MovementSegmentEndKind,
         battle::ids::UnitInstanceId,
         battle::{buffs::BuffId, types::BattleWinner},
         enums::Side,
@@ -18,7 +19,7 @@ use crate::{
     },
 };
 
-pub const TIMELINE_VERSION: u32 = 12;
+pub const TIMELINE_VERSION: u32 = 13;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
@@ -197,6 +198,18 @@ pub enum TimelineEvent {
         unit_instance_id: UnitInstanceId,
         from: Position,
         to: Position,
+    },
+    MovementSegmentStarted {
+        unit_instance_id: UnitInstanceId,
+        from: Position,
+        to: Position,
+        start_x_units: i64,
+        start_y_units: i64,
+        target_x_units: i64,
+        target_y_units: i64,
+        started_at_ms: u64,
+        ends_at_ms: u64,
+        end_kind: MovementSegmentEndKind,
     },
     MovementStopped {
         unit_instance_id: UnitInstanceId,

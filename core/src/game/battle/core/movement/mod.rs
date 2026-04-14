@@ -2,6 +2,7 @@ use crate::{
     ecs::resources::Position,
     game::battle::{enums::BattleEvent, ids::UnitInstanceId},
 };
+use serde::{Deserialize, Serialize};
 
 use super::BattleCore;
 pub const TILE_UNITS_PER_TILE: u64 = 1_000_000;
@@ -33,9 +34,37 @@ pub(super) fn boundary_target_units(from: Position, to: Position) -> (i64, i64) 
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ContinuousPosition {
+    pub x_units: i64,
+    pub y_units: i64,
+}
+
+impl ContinuousPosition {
+    pub const fn new(x_units: i64, y_units: i64) -> Self {
+        Self { x_units, y_units }
+    }
+
+    pub fn tile_center(tile: Position) -> Self {
+        let (x_units, y_units) = tile_center_units(tile);
+        Self { x_units, y_units }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum MovementSegmentEndKind {
     Boundary,
     RangeEnter,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct MovementSegment {
+    pub from_tile: Position,
+    pub to_tile: Position,
+    pub start: ContinuousPosition,
+    pub target: ContinuousPosition,
+    pub started_at_ms: u64,
+    pub ends_at_ms: u64,
+    pub end_kind: MovementSegmentEndKind,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -58,6 +87,8 @@ pub struct MovementState {
 
     pub step_from: Position,
     pub step_to: Position,
+    pub step_start_x_units: i64,
+    pub step_start_y_units: i64,
     pub target_x_units: i64,
     pub target_y_units: i64,
     pub step_started_at_ms: u64,
@@ -77,11 +108,25 @@ impl MovementState {
             last_update_ms: now_ms,
             step_from: pos,
             step_to: pos,
+            step_start_x_units: tile_center_units(pos).0,
+            step_start_y_units: tile_center_units(pos).1,
             target_x_units: tile_center_units(pos).0,
             target_y_units: tile_center_units(pos).1,
             step_started_at_ms: now_ms,
             step_ends_at_ms: now_ms,
             step_end_kind: MovementSegmentEndKind::Boundary,
+        }
+    }
+
+    pub fn current_segment(&self) -> MovementSegment {
+        MovementSegment {
+            from_tile: self.step_from,
+            to_tile: self.step_to,
+            start: ContinuousPosition::new(self.step_start_x_units, self.step_start_y_units),
+            target: ContinuousPosition::new(self.target_x_units, self.target_y_units),
+            started_at_ms: self.step_started_at_ms,
+            ends_at_ms: self.step_ends_at_ms,
+            end_kind: self.step_end_kind,
         }
     }
 }
@@ -289,7 +334,31 @@ mod tests {
         assert_eq!(state.step_end_kind, MovementSegmentEndKind::Boundary);
 
         let (cx, cy) = tile_center_units(pos);
+        assert_eq!(state.step_start_x_units, cx);
+        assert_eq!(state.step_start_y_units, cy);
         assert_eq!(state.target_x_units, cx);
         assert_eq!(state.target_y_units, cy);
+    }
+
+    #[test]
+    fn movement_state_exposes_current_segment() {
+        let pos = Position::new(1, 1);
+        let mut state = MovementState::new_at(pos, 123);
+        state.step_to = Position::new(1, 0);
+        state.step_start_x_units = 1_000_000;
+        state.step_start_y_units = 1_000_000;
+        state.target_x_units = 1_000_000;
+        state.target_y_units = 500_000;
+        state.step_ends_at_ms = 173;
+        state.step_end_kind = MovementSegmentEndKind::RangeEnter;
+
+        let segment = state.current_segment();
+        assert_eq!(segment.from_tile, pos);
+        assert_eq!(segment.to_tile, Position::new(1, 0));
+        assert_eq!(segment.start, ContinuousPosition::new(1_000_000, 1_000_000));
+        assert_eq!(segment.target, ContinuousPosition::new(1_000_000, 500_000));
+        assert_eq!(segment.started_at_ms, 123);
+        assert_eq!(segment.ends_at_ms, 173);
+        assert_eq!(segment.end_kind, MovementSegmentEndKind::RangeEnter);
     }
 }

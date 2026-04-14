@@ -161,7 +161,9 @@ impl TimelineReplayer {
                     }
                 }
 
-                TimelineEvent::UnitMoved { .. } | TimelineEvent::MovementStopped { .. } => {
+                TimelineEvent::UnitMoved { .. }
+                | TimelineEvent::MovementSegmentStarted { .. }
+                | TimelineEvent::MovementStopped { .. } => {
                     // Movement is validated in `battle::validation`; replay focuses on cause/outcome links.
                 }
 

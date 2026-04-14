@@ -12,6 +12,7 @@ use crate::{
         battle::{
             buffs::BuffId,
             cooldown::CooldownSource,
+            core::movement::{ContinuousPosition, MovementSegmentEndKind},
             ids::UnitInstanceId,
             timeline::{AttackKind, HpChangeReason, TimelineEvent},
         },
@@ -424,5 +425,207 @@ impl Default for TimelineReplayerConfig {
             validate_unit_base_uuid: false,
             forbid_unexpected_outcomes_for_verified_causes: false,
         }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ReplayMovementSegment {
+    pub unit_instance_id: UnitInstanceId,
+    pub from: Position,
+    pub to: Position,
+    pub start: ContinuousPosition,
+    pub target: ContinuousPosition,
+    pub started_at_ms: u64,
+    pub ends_at_ms: u64,
+    pub end_kind: MovementSegmentEndKind,
+}
+
+impl ReplayMovementSegment {
+    pub fn from_timeline_event(event: &TimelineEvent) -> Option<Self> {
+        let TimelineEvent::MovementSegmentStarted {
+            unit_instance_id,
+            from,
+            to,
+            start_x_units,
+            start_y_units,
+            target_x_units,
+            target_y_units,
+            started_at_ms,
+            ends_at_ms,
+            end_kind,
+        } = event
+        else {
+            return None;
+        };
+
+        Some(Self {
+            unit_instance_id: *unit_instance_id,
+            from: *from,
+            to: *to,
+            start: ContinuousPosition::new(*start_x_units, *start_y_units),
+            target: ContinuousPosition::new(*target_x_units, *target_y_units),
+            started_at_ms: *started_at_ms,
+            ends_at_ms: *ends_at_ms,
+            end_kind: *end_kind,
+        })
+    }
+
+    pub fn sample_position_at(&self, time_ms: u64) -> ContinuousPosition {
+        if self.ends_at_ms <= self.started_at_ms || time_ms <= self.started_at_ms {
+            return self.start;
+        }
+        if time_ms >= self.ends_at_ms {
+            return self.target;
+        }
+
+        let elapsed = (time_ms - self.started_at_ms) as i128;
+        let duration = (self.ends_at_ms - self.started_at_ms) as i128;
+
+        let lerp_axis = |start: i64, target: i64| -> i64 {
+            let delta = i128::from(target) - i128::from(start);
+            let value = i128::from(start) + delta.saturating_mul(elapsed) / duration;
+            value as i64
+        };
+
+        ContinuousPosition::new(
+            lerp_axis(self.start.x_units, self.target.x_units),
+            lerp_axis(self.start.y_units, self.target.y_units),
+        )
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ReplayUnitSpatialState {
+    pub logical_position: Position,
+    pub settled_position: ContinuousPosition,
+    pub active_segment: Option<ReplayMovementSegment>,
+}
+
+impl ReplayUnitSpatialState {
+    pub fn new_spawned(position: Position) -> Self {
+        Self {
+            logical_position: position,
+            settled_position: ContinuousPosition::tile_center(position),
+            active_segment: None,
+        }
+    }
+
+    pub fn apply_event(&mut self, event: &TimelineEvent) {
+        match event {
+            TimelineEvent::UnitMoved { to, .. } => {
+                self.logical_position = *to;
+                if self.active_segment.is_none() {
+                    self.settled_position = ContinuousPosition::tile_center(*to);
+                }
+            }
+            TimelineEvent::MovementSegmentStarted { to, .. } => {
+                if let Some(segment) = ReplayMovementSegment::from_timeline_event(event) {
+                    self.logical_position = *to;
+                    self.active_segment = Some(segment);
+                }
+            }
+            TimelineEvent::MovementStopped {
+                position,
+                pos_x_units,
+                pos_y_units,
+                ..
+            } => {
+                self.logical_position = *position;
+                self.settled_position = ContinuousPosition::new(*pos_x_units, *pos_y_units);
+                self.active_segment = None;
+            }
+            _ => {}
+        }
+    }
+
+    pub fn sample_position_at(&self, time_ms: u64) -> ContinuousPosition {
+        self.active_segment
+            .map(|segment| segment.sample_position_at(time_ms))
+            .unwrap_or(self.settled_position)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn replay_movement_segment_samples_linearly() {
+        let segment = ReplayMovementSegment {
+            unit_instance_id: Uuid::from_u128(1).into(),
+            from: Position::new(2, 3),
+            to: Position::new(2, 2),
+            start: ContinuousPosition::new(2_000_000, 3_000_000),
+            target: ContinuousPosition::new(2_000_000, 2_500_000),
+            started_at_ms: 100,
+            ends_at_ms: 150,
+            end_kind: MovementSegmentEndKind::Boundary,
+        };
+
+        assert_eq!(
+            segment.sample_position_at(100),
+            ContinuousPosition::new(2_000_000, 3_000_000)
+        );
+        assert_eq!(
+            segment.sample_position_at(125),
+            ContinuousPosition::new(2_000_000, 2_750_000)
+        );
+        assert_eq!(
+            segment.sample_position_at(150),
+            ContinuousPosition::new(2_000_000, 2_500_000)
+        );
+    }
+
+    #[test]
+    fn replay_unit_spatial_state_uses_segment_then_stop_snapshot() {
+        let mut state = ReplayUnitSpatialState::new_spawned(Position::new(2, 3));
+        state.apply_event(&TimelineEvent::MovementSegmentStarted {
+            unit_instance_id: Uuid::from_u128(2).into(),
+            from: Position::new(2, 3),
+            to: Position::new(2, 2),
+            start_x_units: 2_000_000,
+            start_y_units: 3_000_000,
+            target_x_units: 2_000_000,
+            target_y_units: 2_500_000,
+            started_at_ms: 100,
+            ends_at_ms: 150,
+            end_kind: MovementSegmentEndKind::Boundary,
+        });
+
+        assert_eq!(
+            state.sample_position_at(125),
+            ContinuousPosition::new(2_000_000, 2_750_000)
+        );
+
+        state.apply_event(&TimelineEvent::MovementStopped {
+            unit_instance_id: Uuid::from_u128(2).into(),
+            reason: crate::game::battle::timeline::MovementStopReason::Arrived,
+            position: Position::new(2, 2),
+            pos_x_units: 2_000_000,
+            pos_y_units: 2_500_000,
+            until_ms: None,
+        });
+
+        assert_eq!(state.logical_position, Position::new(2, 2));
+        assert_eq!(
+            state.sample_position_at(151),
+            ContinuousPosition::new(2_000_000, 2_500_000)
+        );
+        assert!(state.active_segment.is_none());
+    }
+
+    #[test]
+    fn replay_unit_spatial_state_falls_back_to_tile_center_without_segment() {
+        let mut state = ReplayUnitSpatialState::new_spawned(Position::new(1, 1));
+        state.apply_event(&TimelineEvent::UnitMoved {
+            unit_instance_id: Uuid::from_u128(3).into(),
+            from: Position::new(1, 1),
+            to: Position::new(1, 2),
+        });
+
+        assert_eq!(
+            state.sample_position_at(0),
+            ContinuousPosition::tile_center(Position::new(1, 2))
+        );
     }
 }

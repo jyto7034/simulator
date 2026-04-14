@@ -73,7 +73,11 @@
 - 남은 작업은 새로운 movement policy 추가가 아니라
   broader export safety를 필요할 때 다시 확인하는 유지보수다
 - 다음 큰 단계는 orchestrator를 더 뜯는 것이 아니라
-  `continuous spatial layer` 준비다
+  `continuous spatial layer` 구현이다
+- 현재 continuous layer는
+  - core: `MovementSegmentStarted` + replay sampling helper까지 구현됨
+  - Unity: explicit segment replay refactor 진행 중
+  - projectile / AoE: 아직 구현 전이며, 평타는 homing 유지가 전제됨
 
 ## Next Patch Target
 
@@ -81,9 +85,15 @@
 
 1. 새로운 repro가 나올 때만
    대표 export와 scenario test를 기준으로 regression 여부를 확인한다
-2. continuous layer는 아직 별도 phase로 진행하고,
+2. continuous layer는 별도 phase로 진행하고,
    orchestrator decision layer에는 원칙적으로 새 policy를 더 넣지 않는다
-3. 다만 새로운 unwanted drift가 확인되면
+3. 현재 direct next step은
+   skill projectile / AoE의 continuous spatial contract를
+   `basic attack homing 유지` 전제 아래 구체화하는 것이다
+4. 그 다음은
+   Unity `BattleTimelineReplayer`와 projectile sampling을
+   같은 continuous contract로 묶는 것이다
+5. 다만 새로운 unwanted drift가 확인되면
    scenario test를 먼저 추가한 뒤 소폭 수정한다
 
 주의:
@@ -94,9 +104,10 @@
 - 그 구간은 tile-adjacent 이후 continuous boundary-to-boundary closure가
   닫히는 시간으로 이해해야 한다
 
-즉 다음 AI는 `continuous spatial layer` 구현으로 바로 들어가면 안 된다.
-먼저 `movement/execute.rs`, `movement/plan.rs`, `movement/orchestrator.rs`, `sim.rs`에서
-현재 target lifecycle 계약을 더 닫아야 한다.
+즉 다음 AI는 orchestrator를 다시 확장하는 것이 아니라,
+continuous replay / spatial layer 구현을 이어가면 된다.
+다만 평타는 근/원거리 모두 homing이므로,
+continuous hit / miss는 skill projectile / AoE 쪽에만 도입한다.
 
 ## Do Not Change Yet
 
@@ -154,6 +165,10 @@
 - `src/game/battle/core/sim.rs`
   - `select_basic_attack_target()`
   - attack-start target lifecycle 정렬 상태 확인용
+- `Assets/Scripts/Replay/Playback/BattleTimelineReplayer.cs`
+  - `UnitTrack.has_explicit_segments`
+  - `build_tracks_from_timeline()`
+  - `sample_track_position()`의 legacy / segment 분리
 
 ## Current Recommended Strategy
 
@@ -162,7 +177,7 @@
 1. 현재 orchestrator decision layer는 마감된 것으로 간주
 2. 새로운 repro가 생기면 scenario test를 먼저 추가
 3. 진짜 unwanted drift일 때만 planner / execute 경계를 소폭 수정
-4. 별도 phase에서 continuous segment timeline 설계로 이동
+4. 별도 phase에서 continuous segment timeline / replay 구현을 진행
 
 ## Current Problem Statement
 
@@ -3343,6 +3358,320 @@
   별도 phase로 continuous 작업을 시작할 수 있다
 - 다음 AI는 movement interpolation부터 시작하고,
   projectile / AoE는 그 다음 단계로 미루는 것이 권장된다
+
+검증:
+
+- 문서 정리 작업이므로 별도 테스트 없음
+
+### Patch 66
+
+상태:
+
+- continuous spatial layer의 첫 코드 단계를 시작
+- 아직 replayer interpolation은 넣지 않았고,
+  core가 movement segment를 authoritative하게 기록하는 기반만 추가
+
+문제:
+
+- 기존 core는 내부적으로 continuous 좌표를 쓰고 있었지만,
+  `MovementState`가 segment start를 정식 데이터로 들고 있지 않았다
+- 또 timeline에는 `MovementStopped` stop snapshot만 강하게 드러나서
+  replayer가 movement 중간 segment를 복원할 근거가 부족했다
+
+변경 내용:
+
+- `src/game/battle/core/movement/mod.rs`
+  - `ContinuousPosition` 추가
+  - `MovementSegment` 추가
+  - `MovementState`에
+    `step_start_x_units`, `step_start_y_units` 추가
+  - `MovementState::current_segment()` 추가
+- `src/game/battle/core/movement/execute.rs`
+  - `schedule_current_move_step()`가
+    step start / target / time window를 authoritative segment로 기록
+  - 새 timeline event `MovementSegmentStarted`를 기록
+- `src/game/battle/timeline.rs`
+  - `TimelineEvent::MovementSegmentStarted` 추가
+  - timeline version을 `13`으로 증가
+- validation / replay
+  - 새 movement segment 이벤트를 무시/허용하도록 관련 match 보정
+
+의미:
+
+- 이제 continuous layer는 문서상 계획만이 아니라
+  실제 코드에서 `movement segment`를 정식 데이터로 다루기 시작했다
+- 다음 단계의 replayer interpolation은
+  이 `MovementSegmentStarted` 이벤트를 읽는 방식으로 구현할 수 있다
+- decision layer나 타일 authority는 전혀 바꾸지 않았다
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib movement_state_exposes_current_segment`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib schedule_current_move_step_records_movement_segment_started`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test battle_ranged_attack`
+
+### Patch 67
+
+상태:
+
+- core 안에 segment-aware replay interpolation helper를 추가
+- 아직 실제 Unity/renderer를 바꾸진 않았고,
+  외부 replayer가 바로 재사용할 수 있는 contract만 먼저 제공
+
+문제:
+
+- `Patch 66`으로 timeline에 `MovementSegmentStarted`는 들어가기 시작했지만,
+  그걸 읽어서 실제 좌표를 샘플링하는 공통 helper가 없었다
+- 이 상태에서는 외부 replayer가 매번 segment parsing / interpolation 로직을
+  중복 구현해야 한다
+
+변경 내용:
+
+- `src/game/battle/replay/types.rs`
+  - `ReplayMovementSegment` 추가
+  - `ReplayUnitSpatialState` 추가
+  - `ReplayMovementSegment::from_timeline_event()` 추가
+  - `ReplayMovementSegment::sample_position_at()` 추가
+  - `ReplayUnitSpatialState::apply_event()` /
+    `sample_position_at()` 추가
+- 테스트 추가:
+  - `replay_movement_segment_samples_linearly`
+  - `replay_unit_spatial_state_uses_segment_then_stop_snapshot`
+  - `replay_unit_spatial_state_falls_back_to_tile_center_without_segment`
+
+의미:
+
+- 이제 external replayer는
+  `MovementSegmentStarted -> active segment -> sample_position_at(time_ms)`
+  계약을 그대로 재사용할 수 있다
+- legacy timeline에서는 `UnitMoved` 기반 tile-center fallback도 유지된다
+- 즉 continuous layer의 다음 단계는
+  새 movement math를 만드는 것이 아니라
+  이 helper를 실제 visualizer/replayer에 연결하는 작업이다
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib replay_movement_segment_samples_linearly`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib replay_unit_spatial_state_uses_segment_then_stop_snapshot`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib replay_unit_spatial_state_falls_back_to_tile_center_without_segment`
+
+### Patch 68
+
+상태:
+
+- Unity timeline schema와 replay playback이
+  `MovementSegmentStarted`를 읽는 쪽으로 연결됨
+- 이제 new export는 tile hop + final snap이 아니라
+  explicit segment interpolation을 사용할 준비가 됨
+
+문제:
+
+- core 쪽 `Patch 66~67`만으로는
+  Unity replayer가 여전히 `UnitMoved`와 `MovementStopped`만 읽고 있었기 때문에,
+  실제 시각 표현은 예전과 같은
+  "타일 중심 hop -> 마지막 stop snapshot" 모델에 머물렀다
+
+변경 내용:
+
+- Unity project
+  - `Assets/Scripts/BattleTimeline/Schema/Enums.cs`
+    - `MovementSegmentEndKind` 추가
+  - `Assets/Scripts/BattleTimeline/Schema/Events/TimelineEvents.cs`
+    - `MovementSegmentStartedEvent` 추가
+  - `Assets/Scripts/BattleTimeline/Schema/Converters/TimelineEventJsonConverter.cs`
+    - `MovementSegmentStarted` 역직렬화 추가
+  - `Assets/Scripts/Replay/Playback/BattleTimelineReplayer.cs`
+    - `MoveKeyframe`에 explicit segment window / target 추가
+    - `build_tracks_from_timeline()`가
+      `MovementSegmentStartedEvent`를 track 시작점으로 기록
+    - `sample_track_position()`가
+      explicit segment가 있으면 inferred start 대신
+      `started_at_ms -> ends_at_ms` 구간을 직접 선형 보간
+
+의미:
+
+- old export는 여전히 `UnitMoved` 기반 fallback으로 재생된다
+- new export는 `MovementSegmentStarted`를 우선 사용해서
+  movement 중간 위치를 더 자연스럽게 복원한다
+- projectile / skill target sampling도
+  같은 `try_sample_unit_world_position()` 경로를 타기 때문에
+  새 segment interpolation의 이득을 같이 받는다
+
+검증:
+
+- Unity editor compile/runtime 확인은 아직 별도 필요
+- core 쪽 helper/unit test는 `Patch 67` 기준 통과
+
+### Patch 69
+
+상태:
+
+- Unity replay 쪽의 `legacy track + explicit segment track` 혼재 문제를
+  별도 리팩토링 계획 문서로 정리
+
+문제:
+
+- `MovementSegmentStarted`를 붙인 뒤
+  Unity replayer가 old `UnitMoved` 기반 경로와
+  new segment 기반 경로를 동시에 타고 있어,
+  dense battle에서 sudden speedup이 발생할 수 있음
+- 이건 단일 버그 수정이 아니라
+  `BattleTimelineReplayer` 구조 자체를
+  `legacy mode / segment mode`로 분리해야 하는 문제다
+
+변경 내용:
+
+- Unity project docs
+  - `Assets/Docs/battle_timeline_replayer_continuous_refactor_plan.md` 추가
+  - 포함 내용:
+    - 현재 문제 구조
+    - 목표 아키텍처
+    - explicit segment mode / legacy fallback mode
+    - 단계별 리팩토링 순서
+    - immediate next patch 목표
+    - 검증 기준 / 금지할 임시방편
+
+의미:
+
+- 이제 Unity replay 쪽도
+  "다음에 뭘 고쳐야 하는가"가 문서만으로 이어받을 수 있는 상태가 됨
+- 다음 patch는 이 문서를 기준으로
+  Unity `BattleTimelineReplayer`를
+  explicit segment authoritative 구조로 리팩토링하는 것
+
+### Patch 70
+
+상태:
+
+- Unity replay continuous refactor의 1차 구조 분리를 시작
+- sudden speedup의 직접 원인인
+  `legacy UnitMoved keyframe path`와
+  `MovementSegmentStarted explicit path`의 동시 활성화를 끊기 시작함
+
+문제:
+
+- 기존 Unity replayer는 new timeline을 읽더라도
+  unit movement track 내부에서
+  `UnitMoved`와 `MovementSegmentStarted`를 모두 movement key처럼 취급했다
+- 그래서 같은 이동 구간이
+  legacy inference와 explicit segment interpolation에 의해
+  중복 보간될 수 있었다
+
+변경 내용:
+
+- Unity project
+  - `Assets/Scripts/Replay/Playback/BattleTimelineReplayer.cs`
+    - `UnitTrack.has_explicit_segments` 추가
+    - timeline pre-pass로
+      `MovementSegmentStarted`를 가진 unit을 먼저 식별
+    - explicit segment unit은
+      `UnitMoved`를 movement keyframe으로 추가하지 않도록 변경
+    - `sample_track_position()`를
+      `sample_segment_track_position()`와
+      `sample_legacy_track_position()` dispatch 구조로 분리
+
+의미:
+
+- explicit segment timeline에서는
+  `MovementSegmentStarted`가 movement interpolation의 단일 source of truth에 가까워짐
+- `UnitMoved`는 explicit segment unit에서
+  logical tile update / facing 보조 이벤트 쪽으로 역할이 축소됨
+- sudden speedup 문제를 easing이나 임의 speed clamp로 덮지 않고,
+  track model 분리로 접근하기 시작했다
+
+검증:
+
+- Unity editor runtime 재확인은 별도 필요
+- 이번 단계는 구조 리팩토링과 handoff 정리 중심
+
+### Patch 71
+
+상태:
+
+- `MovementSegmentStarted`의 target 좌표 계약을 수정
+- `RangeEnter`로 조기 종료되는 movement segment가
+  full boundary target이 아니라
+  실제 stop position을 timeline에 내보내도록 정리
+
+문제:
+
+- 기존 core는 `schedule_current_move_step()`에서
+  `RangeEnter`로 segment end time을 앞당기더라도,
+  `MovementSegmentStarted.target_x_units / target_y_units`에는
+  여전히 full boundary target을 기록했다
+- runtime 적분은 실제 속도만큼만 움직이므로 server state는 맞았지만,
+  replay / Unity interpolation은
+  `started_at_ms -> ends_at_ms` 동안 boundary까지 선형 보간하게 되어
+  sudden speedup과 overlap처럼 보이는 시각 문제가 생길 수 있었다
+
+변경 내용:
+
+- `core/src/game/battle/core/movement/execute.rs`
+  - `schedule_current_move_step()`가
+    `step_from/step_to` 기준 full boundary target을 매번 다시 계산
+  - `RangeEnter` 선택 시에는
+    해당 `dt_ms` 동안 실제 이동 가능한 위치를 계산해서
+    현재 scheduled segment의 target으로 저장
+  - 즉 `MovementState.target_*`는
+    이제 "현재 scheduled segment endpoint" 의미를 가진다
+    (`Boundary`면 경계점, `RangeEnter`면 조기 정지 좌표)
+- regression test 추가:
+  - `range_enter_segment_records_actual_stop_position_instead_of_boundary_target`
+
+의미:
+
+- `MovementSegmentStarted`는 이제 replay/visualizer가
+  그대로 보간해도 되는 explicit segment contract가 된다
+- Unity replayer 쪽 sudden speedup 문제를
+  presentation hack이 아니라 core segment semantics 수정으로 바로잡기 시작했다
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib range_enter_segment_records_actual_stop_position_instead_of_boundary_target`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib movement_state_exposes_current_segment`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test battle_ranged_attack`
+
+### Patch 72
+
+상태:
+
+- continuous spatial layer의 projectile / AoE 방향을 사용자 요구사항 기준으로 재고정
+- 평타와 스킬 projectile의 contract를 분리
+
+변경 내용:
+
+- `core/docs/movement_orchestrator_plan.md`
+  - continuous hit / miss 1차 대상에서
+    `basic attack projectile`를 제외
+  - `basic attack`은 근/원거리 모두
+    `발사되면 반드시 맞는 homing 판정`으로 유지한다고 명시
+  - skill projectile를
+    - targeted / homing
+    - untargeted / non-homing
+    으로 나눠 continuous 판정 우선순위를 다시 정리
+  - validation 대표 시나리오도
+    non-homing skill projectile miss / targeted skill projectile hit 기준으로 갱신
+- `core/docs/movement_orchestrator_execution.md`
+  - current snapshot / next patch target에
+    `평타 homing 유지, continuous hit/miss는 skill projectile / AoE만`이라는 제약 추가
+
+의미:
+
+- 다음 continuous 구현은
+  "projectile 전부를 continuous hit/miss로 바꾼다"가 아니라
+  "basic attack homing 유지 + skill spatial logic만 continuous화" 기준으로 진행해야 한다
+- 이건 presentation tweak가 아니라
+  전투 규칙과 밸런스 해석을 고정하는 중요한 contract 변경이다
+
+검증:
+
+- 문서 업데이트 작업이므로 별도 테스트 없음
+  `UnitTrack.has_explicit_segments`,
+  `sample_track_position()` 분리,
+  `UnitMoved`의 logical-only 역할화로 가는 것이 맞다
 
 검증:
 

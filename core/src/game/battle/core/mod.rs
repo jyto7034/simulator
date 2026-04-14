@@ -21,6 +21,7 @@ pub mod commands;
 pub mod ids;
 pub mod movement;
 pub mod sim;
+pub mod spatial;
 pub mod triggers;
 pub mod types;
 

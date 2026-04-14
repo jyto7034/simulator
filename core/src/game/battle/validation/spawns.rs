@@ -257,6 +257,9 @@ pub(super) fn validate_reference_spawn_order(
             TimelineEvent::UnitMoved {
                 unit_instance_id, ..
             }
+            | TimelineEvent::MovementSegmentStarted {
+                unit_instance_id, ..
+            }
             | TimelineEvent::MovementStopped {
                 unit_instance_id, ..
             } => {
