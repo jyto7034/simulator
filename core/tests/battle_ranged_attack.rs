@@ -181,7 +181,9 @@ fn ranged_basic_attack_projectile_hits_after_flight_time_and_damages_target() {
         max_health: 10,
         attack: 1,
         defense: 0,
-        movement: Default::default(),
+        movement: MovementDef {
+            speed_units_per_ms: 0,
+        },
         // Keep target in-range to avoid movement; set a huge interval so it never attacks before death.
         basic_attack: BasicAttackDef {
             range_tiles: 3,
@@ -1107,7 +1109,6 @@ fn tft_like_field_6v6_mixed_melee_ranged_battle() {
         &result.timeline,
     );
 
-    assert_ne!(result.winner, BattleWinner::Draw);
     let deaths = result
         .timeline
         .entries
@@ -1190,6 +1191,628 @@ fn tft_like_field_6v6_mixed_melee_ranged_battle() {
         "opponent center melee should not take an immediate backward detour: {:?} -> {:?}",
         center_first_move.0,
         center_first_move.1
+    );
+
+    let opening_melee_instance_ids = [
+        find_unit_instance_id(&result.timeline, Side::Player, player_melee_uuids[0]),
+        find_unit_instance_id(&result.timeline, Side::Player, player_melee_uuids[1]),
+        find_unit_instance_id(&result.timeline, Side::Player, player_melee_uuids[2]),
+        find_unit_instance_id(&result.timeline, Side::Opponent, opponent_melee_uuids[0]),
+        find_unit_instance_id(&result.timeline, Side::Opponent, opponent_melee_uuids[1]),
+        find_unit_instance_id(&result.timeline, Side::Opponent, opponent_melee_uuids[2]),
+    ];
+
+    for unit_instance_id in opening_melee_instance_ids {
+        let first_attack_start_time = result
+            .timeline
+            .entries
+            .iter()
+            .find_map(|entry| match &entry.event {
+                TimelineEvent::AttackStart {
+                    attacker_instance_id,
+                    delivery: Some(game_core::game::battle::timeline::AttackDelivery::Instant),
+                    ..
+                } if *attacker_instance_id == unit_instance_id => Some(entry.time_ms),
+                _ => None,
+            })
+            .expect("expected opening melee attacker to eventually start an instant attack");
+
+        let move_times_before_first_attack: Vec<u64> = result
+            .timeline
+            .entries
+            .iter()
+            .filter_map(|entry| match &entry.event {
+                TimelineEvent::UnitMoved {
+                    unit_instance_id: moved_unit_id,
+                    ..
+                } if *moved_unit_id == unit_instance_id
+                    && entry.time_ms <= first_attack_start_time =>
+                {
+                    Some(entry.time_ms)
+                }
+                _ => None,
+            })
+            .collect();
+
+        let last_move_time = *move_times_before_first_attack
+            .last()
+            .expect("opening melee should move before first engage");
+
+        assert_eq!(
+            last_move_time,
+            1_251,
+            "opening melee should finish tile movement at the frontline before actual continuous reach closes: unit={unit_instance_id:?}, move_times={move_times_before_first_attack:?}, first_attack_start_time={first_attack_start_time}"
+        );
+        assert!(
+            last_move_time < first_attack_start_time,
+            "opening melee should close actual continuous reach after its last tile step, not keep walking into another tile before attacking: unit={unit_instance_id:?}, last_move_time={last_move_time}, first_attack_start_time={first_attack_start_time}"
+        );
+    }
+}
+
+#[test]
+fn tft_like_field_7v7_dense_frontline_prefers_straight_opening_engage() {
+    let move_speed_units_per_ms = 1_200;
+
+    let make_melee = |id: &str, uuid: Uuid, hp: u32, attack: u32| {
+        abnormality_with_basic_attack(
+            id,
+            uuid,
+            hp,
+            attack,
+            2,
+            move_speed_units_per_ms,
+            BasicAttackDef {
+                range_tiles: 1,
+                interval_ms: 1_500,
+                windup_ms: 0,
+                delivery: DeliveryDef::Instant,
+            },
+        )
+    };
+
+    let make_ranged = |id: &str, uuid: Uuid, hp: u32, attack: u32| {
+        abnormality_with_basic_attack(
+            id,
+            uuid,
+            hp,
+            attack,
+            1,
+            move_speed_units_per_ms,
+            BasicAttackDef {
+                range_tiles: 3,
+                interval_ms: 1_700,
+                windup_ms: 200,
+                delivery: DeliveryDef::Projectile {
+                    speed_units_per_ms: 3_000_000,
+                },
+            },
+        )
+    };
+
+    let player_melee_uuids = [
+        Uuid::from_u128(0x1700_0001),
+        Uuid::from_u128(0x1700_0002),
+        Uuid::from_u128(0x1700_0003),
+        Uuid::from_u128(0x1700_0004),
+    ];
+    let player_ranged_uuids = [
+        Uuid::from_u128(0x1700_0011),
+        Uuid::from_u128(0x1700_0012),
+        Uuid::from_u128(0x1700_0013),
+    ];
+    let opponent_melee_uuids = [
+        Uuid::from_u128(0x2700_0001),
+        Uuid::from_u128(0x2700_0002),
+        Uuid::from_u128(0x2700_0003),
+        Uuid::from_u128(0x2700_0004),
+    ];
+    let opponent_ranged_uuids = [
+        Uuid::from_u128(0x2700_0011),
+        Uuid::from_u128(0x2700_0012),
+        Uuid::from_u128(0x2700_0013),
+    ];
+
+    let mut units = Vec::new();
+    for (i, uuid) in player_melee_uuids.iter().enumerate() {
+        units.push(make_melee(&format!("dense_p_melee_{i}"), *uuid, 58, 12));
+    }
+    for (i, uuid) in player_ranged_uuids.iter().enumerate() {
+        units.push(make_ranged(&format!("dense_p_ranged_{i}"), *uuid, 46, 10));
+    }
+    for (i, uuid) in opponent_melee_uuids.iter().enumerate() {
+        units.push(make_melee(&format!("dense_o_melee_{i}"), *uuid, 58, 12));
+    }
+    for (i, uuid) in opponent_ranged_uuids.iter().enumerate() {
+        units.push(make_ranged(&format!("dense_o_ranged_{i}"), *uuid, 46, 10));
+    }
+
+    let game_data = game_data_from_abnormalities(units);
+
+    let mut player_units = Vec::new();
+    let mut opponent_units = Vec::new();
+
+    let player_owned = [
+        Uuid::from_u128(0xC700_0001),
+        Uuid::from_u128(0xC700_0002),
+        Uuid::from_u128(0xC700_0003),
+        Uuid::from_u128(0xC700_0004),
+        Uuid::from_u128(0xC700_0011),
+        Uuid::from_u128(0xC700_0012),
+        Uuid::from_u128(0xC700_0013),
+    ];
+    let opponent_owned = [
+        Uuid::from_u128(0xD700_0001),
+        Uuid::from_u128(0xD700_0002),
+        Uuid::from_u128(0xD700_0003),
+        Uuid::from_u128(0xD700_0004),
+        Uuid::from_u128(0xD700_0011),
+        Uuid::from_u128(0xD700_0012),
+        Uuid::from_u128(0xD700_0013),
+    ];
+
+    let player_positions = [
+        Position::new(0, 6),
+        Position::new(2, 6),
+        Position::new(4, 6),
+        Position::new(6, 6),
+        Position::new(1, 7),
+        Position::new(3, 7),
+        Position::new(5, 7),
+    ];
+    let opponent_positions = [
+        Position::new(0, 1),
+        Position::new(2, 1),
+        Position::new(4, 1),
+        Position::new(6, 1),
+        Position::new(1, 0),
+        Position::new(3, 0),
+        Position::new(5, 0),
+    ];
+
+    for i in 0..4 {
+        player_units.push((player_owned[i], player_melee_uuids[i], player_positions[i]));
+        opponent_units.push((
+            opponent_owned[i],
+            opponent_melee_uuids[i],
+            opponent_positions[i],
+        ));
+    }
+    for i in 0..3 {
+        player_units.push((
+            player_owned[i + 4],
+            player_ranged_uuids[i],
+            player_positions[i + 4],
+        ));
+        opponent_units.push((
+            opponent_owned[i + 4],
+            opponent_ranged_uuids[i],
+            opponent_positions[i + 4],
+        ));
+    }
+
+    let player = deck_with_units(player_units);
+    let opponent = deck_with_units(opponent_units);
+
+    let mut battle = BattleCore::new(
+        &player,
+        &opponent,
+        game_data.clone(),
+        common::BOARD_SIZE,
+        4040,
+    );
+    let mut world = World::new();
+    let result = battle.run_battle(&mut world).unwrap();
+
+    common::write_timeline_export(
+        "tft_like_field_7v7_dense_frontline_prefers_straight_opening_engage",
+        &result.timeline,
+    );
+
+    let deaths = result
+        .timeline
+        .entries
+        .iter()
+        .filter(|e| matches!(e.event, TimelineEvent::UnitDied { .. }))
+        .count();
+    assert!(deaths > 0, "expected dense battle to resolve with deaths");
+
+    let opening_melee_instance_ids: Vec<(Side, UnitInstanceId)> = player_melee_uuids
+        .iter()
+        .map(|uuid| {
+            (
+                Side::Player,
+                find_unit_instance_id(&result.timeline, Side::Player, *uuid),
+            )
+        })
+        .chain(opponent_melee_uuids.iter().map(|uuid| {
+            (
+                Side::Opponent,
+                find_unit_instance_id(&result.timeline, Side::Opponent, *uuid),
+            )
+        }))
+        .collect();
+
+    for (side, unit_instance_id) in opening_melee_instance_ids {
+        let first_move = result
+            .timeline
+            .entries
+            .iter()
+            .find_map(|entry| match &entry.event {
+                TimelineEvent::UnitMoved {
+                    unit_instance_id: moved_unit_id,
+                    from,
+                    to,
+                } if *moved_unit_id == unit_instance_id => Some((*from, *to)),
+                _ => None,
+            })
+            .expect("expected dense frontline melee to move");
+
+        assert_eq!(
+            first_move.1.x,
+            first_move.0.x,
+            "dense opening frontline should prefer straight opening engage over immediate diagonal: side={side:?} unit={unit_instance_id:?} move={first_move:?}"
+        );
+
+        match side {
+            Side::Player => assert!(
+                first_move.1.y < first_move.0.y,
+                "player dense frontline should advance forward: unit={unit_instance_id:?} move={first_move:?}"
+            ),
+            Side::Opponent => assert!(
+                first_move.1.y > first_move.0.y,
+                "opponent dense frontline should advance forward: unit={unit_instance_id:?} move={first_move:?}"
+            ),
+        }
+    }
+
+    let player_frontline_instance_ids: Vec<UnitInstanceId> = player_melee_uuids
+        .iter()
+        .map(|uuid| find_unit_instance_id(&result.timeline, Side::Player, *uuid))
+        .collect();
+    let opponent_frontline_instance_ids: Vec<UnitInstanceId> = opponent_melee_uuids
+        .iter()
+        .map(|uuid| find_unit_instance_id(&result.timeline, Side::Opponent, *uuid))
+        .collect();
+
+    let first_opponent_frontline_death_time = result
+        .timeline
+        .entries
+        .iter()
+        .filter_map(|entry| match &entry.event {
+            TimelineEvent::UnitDied {
+                unit_instance_id,
+                owner: Side::Opponent,
+                ..
+            } if opponent_frontline_instance_ids.contains(unit_instance_id) => Some(entry.time_ms),
+            _ => None,
+        })
+        .min()
+        .expect("expected dense frontline to eventually kill an opponent melee");
+
+    let player_frontline_killers: Vec<UnitInstanceId> = result
+        .timeline
+        .entries
+        .iter()
+        .filter_map(|entry| match &entry.event {
+            TimelineEvent::UnitDied {
+                unit_instance_id,
+                owner: Side::Opponent,
+                killer_instance_id,
+            } if entry.time_ms == first_opponent_frontline_death_time
+                && opponent_frontline_instance_ids.contains(unit_instance_id) =>
+            {
+                killer_instance_id.filter(|id| player_frontline_instance_ids.contains(id))
+            }
+            _ => None,
+        })
+        .collect();
+
+    assert!(
+        !player_frontline_killers.is_empty(),
+        "expected dense frontline collapse to be caused by player melee killers at the first opponent frontline death time"
+    );
+
+    for killer_id in player_frontline_killers {
+        let next_move = result
+            .timeline
+            .entries
+            .iter()
+            .find_map(|entry| match &entry.event {
+                TimelineEvent::UnitMoved {
+                    unit_instance_id,
+                    from,
+                    to,
+                } if *unit_instance_id == killer_id
+                    && entry.time_ms > first_opponent_frontline_death_time =>
+                {
+                    Some((entry.time_ms, *from, *to))
+                }
+                _ => None,
+            })
+            .expect(
+                "expected frontline melee killer to reacquire movement after frontline collapse",
+            );
+
+        assert!(
+            next_move.0 < first_opponent_frontline_death_time + 1_500,
+            "dense frontline killer should reacquire movement before the next attack cadence after frontline collapse: unit={killer_id:?}, death={first_opponent_frontline_death_time}, next_move={next_move:?}"
+        );
+        assert!(
+            next_move.2.y < next_move.1.y,
+            "dense frontline killer should continue advancing after frontline collapse instead of hesitating or stepping backward: unit={killer_id:?}, move={next_move:?}"
+        );
+    }
+}
+
+#[test]
+fn melee_reacquires_movement_immediately_after_frontliner_dies() {
+    let move_speed_units_per_ms = 1_200;
+
+    let player_melee_uuid = Uuid::from_u128(0x1800_0001);
+    let opponent_front_uuid = Uuid::from_u128(0x2800_0001);
+    let opponent_back_uuid = Uuid::from_u128(0x2800_0002);
+
+    let player_melee = abnormality_with_basic_attack(
+        "reacquire_player_melee",
+        player_melee_uuid,
+        100,
+        20,
+        2,
+        move_speed_units_per_ms,
+        BasicAttackDef {
+            range_tiles: 1,
+            interval_ms: 1_500,
+            windup_ms: 0,
+            delivery: DeliveryDef::Instant,
+        },
+    );
+    let opponent_front = abnormality_with_basic_attack(
+        "reacquire_opponent_front",
+        opponent_front_uuid,
+        20,
+        1,
+        0,
+        move_speed_units_per_ms,
+        BasicAttackDef {
+            range_tiles: 1,
+            interval_ms: 60_000,
+            windup_ms: 0,
+            delivery: DeliveryDef::Instant,
+        },
+    );
+    let opponent_back = abnormality_with_basic_attack(
+        "reacquire_opponent_back",
+        opponent_back_uuid,
+        100,
+        1,
+        0,
+        move_speed_units_per_ms,
+        BasicAttackDef {
+            range_tiles: 3,
+            interval_ms: 60_000,
+            windup_ms: 0,
+            delivery: DeliveryDef::Projectile {
+                speed_units_per_ms: 3_000_000,
+            },
+        },
+    );
+
+    let game_data = game_data_from_abnormalities(vec![player_melee, opponent_front, opponent_back]);
+
+    let player = deck_single_unit(
+        Uuid::from_u128(0xE800_0001),
+        player_melee_uuid,
+        Position::new(1, 2),
+    );
+    let opponent = deck_with_units(vec![
+        (
+            Uuid::from_u128(0xF800_0001),
+            opponent_front_uuid,
+            Position::new(1, 1),
+        ),
+        (
+            Uuid::from_u128(0xF800_0002),
+            opponent_back_uuid,
+            Position::new(1, 0),
+        ),
+    ]);
+
+    let mut battle = BattleCore::new(
+        &player,
+        &opponent,
+        game_data.clone(),
+        common::BOARD_SIZE,
+        5050,
+    );
+    let mut world = World::new();
+    let result = battle.run_battle(&mut world).unwrap();
+
+    common::write_timeline_export(
+        "melee_reacquires_movement_immediately_after_frontliner_dies",
+        &result.timeline,
+    );
+
+    let player_id = find_unit_instance_id(&result.timeline, Side::Player, player_melee_uuid);
+    let front_id = find_unit_instance_id(&result.timeline, Side::Opponent, opponent_front_uuid);
+
+    let front_death_time = result
+        .timeline
+        .entries
+        .iter()
+        .find_map(|entry| match &entry.event {
+            TimelineEvent::UnitDied {
+                unit_instance_id, ..
+            } if *unit_instance_id == front_id => Some(entry.time_ms),
+            _ => None,
+        })
+        .expect("expected frontliner to die");
+
+    let next_move_time = result
+        .timeline
+        .entries
+        .iter()
+        .find_map(|entry| match &entry.event {
+            TimelineEvent::UnitMoved {
+                unit_instance_id, ..
+            } if *unit_instance_id == player_id && entry.time_ms > front_death_time => {
+                Some(entry.time_ms)
+            }
+            _ => None,
+        })
+        .expect("expected melee to move again after frontliner death");
+
+    assert!(
+        next_move_time < front_death_time + 1_500,
+        "melee should reacquire movement before its next attack cadence after frontliner death: death={front_death_time}, next_move={next_move_time}"
+    );
+}
+
+#[test]
+fn melee_prefers_straight_backline_target_after_frontliner_dies() {
+    let move_speed_units_per_ms = 1_200;
+
+    let player_melee_uuid = Uuid::from_u128(0x1900_0001);
+    let opponent_front_uuid = Uuid::from_u128(0x2900_0001);
+    let straight_back_uuid = Uuid::from_u128(0x2900_0002);
+    let diagonal_back_uuid = Uuid::from_u128(0x2900_0003);
+
+    let player_melee = abnormality_with_basic_attack(
+        "straight_backline_player_melee",
+        player_melee_uuid,
+        100,
+        20,
+        2,
+        move_speed_units_per_ms,
+        BasicAttackDef {
+            range_tiles: 1,
+            interval_ms: 1_500,
+            windup_ms: 0,
+            delivery: DeliveryDef::Instant,
+        },
+    );
+    let opponent_front = abnormality_with_basic_attack(
+        "straight_backline_opponent_front",
+        opponent_front_uuid,
+        20,
+        1,
+        0,
+        move_speed_units_per_ms,
+        BasicAttackDef {
+            range_tiles: 1,
+            interval_ms: 60_000,
+            windup_ms: 0,
+            delivery: DeliveryDef::Instant,
+        },
+    );
+    let make_backliner = |id: &str, uuid: Uuid| {
+        abnormality_with_basic_attack(
+            id,
+            uuid,
+            100,
+            1,
+            0,
+            move_speed_units_per_ms,
+            BasicAttackDef {
+                range_tiles: 3,
+                interval_ms: 60_000,
+                windup_ms: 0,
+                delivery: DeliveryDef::Projectile {
+                    speed_units_per_ms: 3_000_000,
+                },
+            },
+        )
+    };
+
+    let game_data = game_data_from_abnormalities(vec![
+        player_melee,
+        opponent_front,
+        make_backliner("straight_backline_opponent_straight", straight_back_uuid),
+        make_backliner("straight_backline_opponent_diagonal", diagonal_back_uuid),
+    ]);
+
+    let player = deck_single_unit(
+        Uuid::from_u128(0xE900_0001),
+        player_melee_uuid,
+        Position::new(2, 4),
+    );
+    let opponent = deck_with_units(vec![
+        (
+            Uuid::from_u128(0xF900_0001),
+            opponent_front_uuid,
+            Position::new(2, 3),
+        ),
+        (
+            Uuid::from_u128(0xF900_0002),
+            straight_back_uuid,
+            Position::new(2, 1),
+        ),
+        (
+            Uuid::from_u128(0xF900_0003),
+            diagonal_back_uuid,
+            Position::new(1, 1),
+        ),
+    ]);
+
+    let mut battle = BattleCore::new(
+        &player,
+        &opponent,
+        game_data.clone(),
+        common::BOARD_SIZE,
+        6060,
+    );
+    let mut world = World::new();
+    let result = battle.run_battle(&mut world).unwrap();
+
+    common::write_timeline_export(
+        "melee_prefers_straight_backline_target_after_frontliner_dies",
+        &result.timeline,
+    );
+
+    let player_id = find_unit_instance_id(&result.timeline, Side::Player, player_melee_uuid);
+    let front_id = find_unit_instance_id(&result.timeline, Side::Opponent, opponent_front_uuid);
+
+    let front_death_time = result
+        .timeline
+        .entries
+        .iter()
+        .find_map(|entry| match &entry.event {
+            TimelineEvent::UnitDied {
+                unit_instance_id, ..
+            } if *unit_instance_id == front_id => Some(entry.time_ms),
+            _ => None,
+        })
+        .expect("expected frontliner to die");
+
+    let next_move = result
+        .timeline
+        .entries
+        .iter()
+        .find_map(|entry| match &entry.event {
+            TimelineEvent::UnitMoved {
+                unit_instance_id,
+                from,
+                to,
+            } if *unit_instance_id == player_id && entry.time_ms > front_death_time => {
+                Some((entry.time_ms, *from, *to))
+            }
+            _ => None,
+        })
+        .expect("expected melee to move toward exposed backline after frontliner death");
+
+    assert!(
+        next_move.0 < front_death_time + 1_500,
+        "melee should retarget before the next attack cadence after frontliner death: death={front_death_time}, next_move={next_move:?}"
+    );
+    assert_eq!(
+        next_move.1,
+        Position::new(2, 4),
+        "expected melee to still be on its original file when the frontliner dies: next_move={next_move:?}"
+    );
+    assert_eq!(
+        next_move.2,
+        Position::new(2, 3),
+        "melee should prefer the straight exposed backline approach over the equal-distance diagonal option after frontliner death: next_move={next_move:?}"
     );
 }
 

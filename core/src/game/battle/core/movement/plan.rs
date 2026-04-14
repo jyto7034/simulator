@@ -6,22 +6,169 @@ use crate::{
     game::{
         ability::DeliveryDef,
         battle::{
-            battlefield::bfs::BfsMap,
-            core::{
-                movement::{boundary_target_units, tile_center_units},
-                BattleCore,
-            },
-            ids::UnitInstanceId,
+            battlefield::bfs::BfsMap, core::BattleCore, ids::UnitInstanceId,
             timeline::AttackDelivery,
         },
-        determinism,
         enums::Side,
     },
 };
 
-use super::{ActionState, EnemyChasePlan, MovementState};
+use super::{EnemyChasePlan, TILE_UNITS_PER_TILE};
+
+pub(in crate::game::battle::core) const INSTANT_BASIC_ATTACK_MELEE_REACH_UNITS: i64 =
+    TILE_UNITS_PER_TILE as i64;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(in crate::game::battle::core) struct BasicAttackRangePolicy {
+    pub delivery: AttackDelivery,
+    pub range_tiles: u8,
+    pub instant_melee_reach_units: i64,
+    pub use_continuous_range: bool,
+}
 
 impl BattleCore {
+    pub(in crate::game::battle::core) fn enemy_target_range_tiles(
+        &self,
+        unit_id: UnitInstanceId,
+    ) -> u8 {
+        self.units
+            .get(&unit_id)
+            .map(|unit| self.basic_attack_range_tiles(unit.base_uuid))
+            .unwrap_or(u8::MAX)
+    }
+
+    pub(in crate::game::battle::core) fn compare_enemy_target_range_preference(
+        &self,
+        a: UnitInstanceId,
+        b: UnitInstanceId,
+    ) -> Ordering {
+        self.enemy_target_range_tiles(a)
+            .cmp(&self.enemy_target_range_tiles(b))
+    }
+
+    pub(in crate::game::battle::core) fn compare_enemy_target_preference(
+        &self,
+        a: UnitInstanceId,
+        b: UnitInstanceId,
+    ) -> Ordering {
+        self.compare_enemy_target_range_preference(a, b)
+            .then_with(|| a.as_bytes().cmp(b.as_bytes()))
+    }
+
+    pub(in crate::game::battle::core) fn compare_in_range_target_preference(
+        &self,
+        owner: Side,
+        attacker_pos: Position,
+        a_id: UnitInstanceId,
+        a_pos: Position,
+        b_id: UnitInstanceId,
+        b_pos: Position,
+    ) -> Ordering {
+        self.compare_enemy_target_range_preference(a_id, b_id)
+            .then_with(|| {
+                Self::compare_plan_preference(owner, attacker_pos, a_pos, b_pos, a_pos, b_pos)
+            })
+            .then_with(|| a_id.as_bytes().cmp(b_id.as_bytes()))
+    }
+
+    pub(in crate::game::battle::core) fn basic_attack_range_policy(
+        &self,
+        unit_base_uuid: Uuid,
+    ) -> BasicAttackRangePolicy {
+        BasicAttackRangePolicy {
+            delivery: self.basic_attack_delivery(unit_base_uuid),
+            range_tiles: self.basic_attack_range_tiles(unit_base_uuid),
+            instant_melee_reach_units: INSTANT_BASIC_ATTACK_MELEE_REACH_UNITS,
+            use_continuous_range: self.basic_attack_delivery(unit_base_uuid)
+                == AttackDelivery::Instant
+                && self.basic_attack_range_tiles(unit_base_uuid) <= 1,
+        }
+    }
+
+    fn basic_attack_target_distance_key(
+        &self,
+        attacker_instance_id: UnitInstanceId,
+        target_id: UnitInstanceId,
+        policy: BasicAttackRangePolicy,
+    ) -> Option<u128> {
+        if policy.use_continuous_range {
+            let attacker = self.units.get(&attacker_instance_id)?;
+            let target = self.units.get(&target_id)?;
+            let dx = i128::from(attacker.pos_x_units) - i128::from(target.pos_x_units);
+            let dy = i128::from(attacker.pos_y_units) - i128::from(target.pos_y_units);
+            Some((dx * dx + dy * dy) as u128)
+        } else {
+            let attacker_pos = self.battlefield.position_of(attacker_instance_id)?;
+            let target_pos = self.battlefield.position_of(target_id)?;
+            Some(attacker_pos.chebyshev(&target_pos).max(0) as u128)
+        }
+    }
+
+    pub(in crate::game::battle::core) fn is_basic_attack_target_in_range(
+        &self,
+        attacker_instance_id: UnitInstanceId,
+        target_id: UnitInstanceId,
+    ) -> bool {
+        let Some(attacker) = self.units.get(&attacker_instance_id) else {
+            return false;
+        };
+        let policy = self.basic_attack_range_policy(attacker.base_uuid);
+        self.is_basic_attack_target_in_range_with_policy(attacker_instance_id, target_id, policy)
+    }
+
+    pub(in crate::game::battle::core) fn persisted_target_in_tile_range_for_continuous_melee(
+        &self,
+        attacker_instance_id: UnitInstanceId,
+        current_target: Option<UnitInstanceId>,
+    ) -> Option<UnitInstanceId> {
+        let attacker = self.units.get(&attacker_instance_id)?;
+        let policy = self.basic_attack_range_policy(attacker.base_uuid);
+        if !policy.use_continuous_range {
+            return None;
+        }
+
+        let attacker_pos = self.battlefield.position_of(attacker_instance_id)?;
+        self.persisted_target_if_alive(attacker.owner, current_target)
+            .filter(|id| {
+                self.battlefield.position_of(*id).is_some_and(|target_pos| {
+                    attacker_pos.chebyshev(&target_pos) <= i32::from(policy.range_tiles)
+                })
+            })
+    }
+
+    pub(in crate::game::battle::core) fn choose_attack_target_in_tile_range_for_continuous_melee(
+        &self,
+        attacker_instance_id: UnitInstanceId,
+    ) -> Option<UnitInstanceId> {
+        let attacker = self.units.get(&attacker_instance_id)?;
+        let policy = self.basic_attack_range_policy(attacker.base_uuid);
+        if !policy.use_continuous_range {
+            return None;
+        }
+
+        let attacker_pos = self.battlefield.position_of(attacker_instance_id)?;
+        self.choose_enemy_target_in_tile_range(attacker.owner, attacker_pos, policy.range_tiles)
+    }
+
+    fn is_basic_attack_target_in_range_with_policy(
+        &self,
+        attacker_instance_id: UnitInstanceId,
+        target_id: UnitInstanceId,
+        policy: BasicAttackRangePolicy,
+    ) -> bool {
+        if policy.use_continuous_range {
+            self.basic_attack_target_distance_key(attacker_instance_id, target_id, policy)
+                .is_some_and(|distance_sq| {
+                    let reach_sq =
+                        u128::from(policy.instant_melee_reach_units.unsigned_abs()).pow(2);
+                    distance_sq <= reach_sq
+                })
+        } else {
+            self.basic_attack_target_distance_key(attacker_instance_id, target_id, policy)
+                .is_some_and(|distance_tiles| distance_tiles <= u128::from(policy.range_tiles))
+        }
+    }
+
     fn compare_destination_preference(
         owner: Side,
         mover_start: Position,
@@ -36,17 +183,17 @@ impl BattleCore {
 
         forward_cmp
             .then_with(|| a.chebyshev(&enemy_pos).cmp(&b.chebyshev(&enemy_pos)))
-            .then_with(|| (a.x - enemy_pos.x).abs().cmp(&(b.x - enemy_pos.x).abs()))
             .then_with(|| {
                 (a.x - mover_start.x)
                     .abs()
                     .cmp(&(b.x - mover_start.x).abs())
             })
+            .then_with(|| (a.x - enemy_pos.x).abs().cmp(&(b.x - enemy_pos.x).abs()))
             .then_with(|| a.x.cmp(&b.x))
             .then_with(|| a.y.cmp(&b.y))
     }
 
-    fn compare_plan_preference(
+    pub(in crate::game::battle::core) fn compare_plan_preference(
         owner: Side,
         mover_start: Position,
         enemy_a: Position,
@@ -75,14 +222,14 @@ impl BattleCore {
                     .cmp(&best_dest_b.chebyshev(&enemy_b))
             })
             .then_with(|| {
-                (best_dest_a.x - enemy_a.x)
-                    .abs()
-                    .cmp(&(best_dest_b.x - enemy_b.x).abs())
-            })
-            .then_with(|| {
                 (best_dest_a.x - mover_start.x)
                     .abs()
                     .cmp(&(best_dest_b.x - mover_start.x).abs())
+            })
+            .then_with(|| {
+                (best_dest_a.x - enemy_a.x)
+                    .abs()
+                    .cmp(&(best_dest_b.x - enemy_b.x).abs())
             })
             .then_with(|| best_dest_a.x.cmp(&best_dest_b.x))
             .then_with(|| best_dest_a.y.cmp(&best_dest_b.y))
@@ -90,11 +237,16 @@ impl BattleCore {
 
     pub fn choose_attack_target_in_range(
         &self,
-        attacker_owner: Side,
-        attacker_pos: Position,
-        range_tiles: u8,
+        attacker_instance_id: UnitInstanceId,
     ) -> Option<UnitInstanceId> {
-        let mut best: Option<(i32, UnitInstanceId)> = None;
+        let Some(attacker) = self.units.get(&attacker_instance_id) else {
+            return None;
+        };
+        let attacker_owner = attacker.owner;
+        let attacker_pos = self.battlefield.position_of(attacker_instance_id);
+        let policy = self.basic_attack_range_policy(attacker.base_uuid);
+
+        let mut best: Option<(u128, UnitInstanceId)> = None;
         for unit in self.units.values() {
             if unit.is_dead() {
                 continue;
@@ -104,21 +256,101 @@ impl BattleCore {
                 continue;
             }
 
+            if !self.is_basic_attack_target_in_range_with_policy(
+                attacker_instance_id,
+                unit.instance_id,
+                policy,
+            ) {
+                continue;
+            }
+
+            let Some(distance_key) = self.basic_attack_target_distance_key(
+                attacker_instance_id,
+                unit.instance_id,
+                policy,
+            ) else {
+                continue;
+            };
+
+            match best {
+                None => best = Some((distance_key, unit.instance_id)),
+                Some((best_d, _)) if distance_key < best_d => {
+                    best = Some((distance_key, unit.instance_id))
+                }
+                Some((best_d, best_id))
+                    if distance_key == best_d
+                        && match (
+                            attacker_pos,
+                            self.battlefield.position_of(unit.instance_id),
+                            self.battlefield.position_of(best_id),
+                        ) {
+                            (Some(attacker_pos), Some(unit_pos), Some(best_pos)) => self
+                                .compare_in_range_target_preference(
+                                    attacker_owner,
+                                    attacker_pos,
+                                    unit.instance_id,
+                                    unit_pos,
+                                    best_id,
+                                    best_pos,
+                                )
+                                .is_lt(),
+                            _ => self
+                                .compare_enemy_target_preference(unit.instance_id, best_id)
+                                .is_lt(),
+                        } =>
+                {
+                    best = Some((distance_key, unit.instance_id))
+                }
+                _ => {}
+            }
+        }
+
+        best.map(|(_, id)| id)
+    }
+
+    pub(in crate::game::battle::core) fn choose_enemy_target_in_tile_range(
+        &self,
+        attacker_owner: Side,
+        attacker_pos: Position,
+        range_tiles: u8,
+    ) -> Option<UnitInstanceId> {
+        let mut best: Option<(i32, UnitInstanceId)> = None;
+        for unit in self.units.values() {
+            if unit.is_dead() || unit.owner == attacker_owner {
+                continue;
+            }
+
             let Some(unit_pos) = self.battlefield.position_of(unit.instance_id) else {
                 continue;
             };
-            let d = attacker_pos.chebyshev(&unit_pos);
-            if d > range_tiles as i32 {
+            let distance = attacker_pos.chebyshev(&unit_pos);
+            if distance > range_tiles as i32 {
                 continue;
             }
 
             match best {
-                None => best = Some((d, unit.instance_id)),
-                Some((best_d, _)) if d < best_d => best = Some((d, unit.instance_id)),
-                Some((best_d, best_id))
-                    if d == best_d && unit.instance_id.as_bytes() < best_id.as_bytes() =>
+                None => best = Some((distance, unit.instance_id)),
+                Some((best_distance, _)) if distance < best_distance => {
+                    best = Some((distance, unit.instance_id))
+                }
+                Some((best_distance, best_id))
+                    if distance == best_distance
+                        && self
+                            .battlefield
+                            .position_of(best_id)
+                            .is_some_and(|best_pos| {
+                                self.compare_in_range_target_preference(
+                                    attacker_owner,
+                                    attacker_pos,
+                                    unit.instance_id,
+                                    unit_pos,
+                                    best_id,
+                                    best_pos,
+                                )
+                                .is_lt()
+                            }) =>
                 {
-                    best = Some((d, unit.instance_id))
+                    best = Some((distance, unit.instance_id))
                 }
                 _ => {}
             }
@@ -146,203 +378,6 @@ impl BattleCore {
         {
             DeliveryDef::Instant => AttackDelivery::Instant,
             DeliveryDef::Projectile { .. } => AttackDelivery::Projectile,
-        }
-    }
-
-    pub fn compute_movement_intents(&mut self, now_ms: u64) {
-        let mut unit_ids: Vec<UnitInstanceId> = self.units.keys().copied().collect();
-        unit_ids.sort_by(|a, b| a.as_bytes().cmp(b.as_bytes()));
-
-        for unit_id in unit_ids {
-            let Some(unit) = self.units.get(&unit_id) else {
-                continue;
-            };
-
-            let repath_counter = match &unit.action_state {
-                ActionState::Idle => 0,
-                ActionState::WaitRepath {
-                    until_ms,
-                    repath_counter,
-                } => {
-                    if *until_ms > now_ms {
-                        continue;
-                    }
-                    *repath_counter
-                }
-                _ => continue,
-            };
-
-            // Hard CC / action locks: do not plan movement while locked.
-            if !unit.action_locks.can_move(now_ms) {
-                continue;
-            }
-            if unit.stats.move_speed_units_per_ms == 0 {
-                continue;
-            }
-
-            let Some(start_pos) = self.battlefield.position_of(unit_id) else {
-                continue;
-            };
-
-            let (owner, base_uuid, current_target) =
-                (unit.owner, unit.base_uuid, unit.current_target);
-
-            self.battlefield.cancel_reservation(unit_id);
-
-            let range_tiles = self.basic_attack_range_tiles(base_uuid);
-
-            if let Some(target_id) =
-                self.persisted_target_in_range(owner, current_target, start_pos, range_tiles)
-            {
-                if let Some(unit) = self.units.get_mut(&unit_id) {
-                    unit.current_target = Some(target_id);
-                    unit.action_state = ActionState::Idle;
-                }
-                continue;
-            }
-
-            if let Some(target_id) =
-                self.choose_attack_target_in_range(owner, start_pos, range_tiles)
-            {
-                if let Some(unit) = self.units.get_mut(&unit_id) {
-                    unit.current_target = Some(target_id);
-                    unit.action_state = ActionState::Idle;
-                }
-                continue;
-            }
-
-            if let Some(unit) = self.units.get_mut(&unit_id) {
-                unit.current_target = None;
-            }
-
-            let battlefield = &self.battlefield;
-            let bfs = match battlefield.bfs_map_8_for_side(start_pos, owner, |pos, tile| {
-                if tile.occupant().is_some() {
-                    return false;
-                }
-                if tile.reservation().is_some() && battlefield.reservation_blocks_for(unit_id, pos)
-                {
-                    return false;
-                }
-                true
-            }) {
-                Ok(v) => v,
-                Err(_) => continue,
-            };
-
-            let mut enemies: Vec<(UnitInstanceId, Position)> = self
-                .units
-                .values()
-                .filter_map(|u| {
-                    if u.is_dead() || u.owner == owner {
-                        None
-                    } else {
-                        let pos = self.battlefield.position_of(u.instance_id)?;
-                        Some((u.instance_id, pos))
-                    }
-                })
-                .collect();
-            enemies.sort_by(|a, b| a.0.as_bytes().cmp(b.0.as_bytes()));
-
-            let plans = self.formulate_enemy_chase_plan(
-                &bfs,
-                owner,
-                start_pos,
-                enemies,
-                range_tiles,
-                |field, pos| {
-                    field
-                        .idx(pos)
-                        .ok()
-                        .is_some_and(|idx| field.is_empty_tile(idx))
-                },
-            );
-
-            let mut reserved: Option<(UnitInstanceId, Position, Vec<Position>)> = None;
-            for plan in plans {
-                for dest in plan.dest_candidates {
-                    let Some(path) = bfs.reconstruct_path_to(dest) else {
-                        continue;
-                    };
-                    if path.len() < 2 {
-                        continue;
-                    }
-
-                    let first_step = path[1];
-                    if self
-                        .battlefield
-                        .reserve(unit_id, first_step, now_ms)
-                        .is_ok()
-                    {
-                        reserved = Some((plan.enemy_id, dest, path));
-                        break;
-                    }
-                }
-                if reserved.is_some() {
-                    break;
-                }
-            }
-
-            let Some((enemy_id, dest, path)) = reserved else {
-                const REPATH_BASE_DELAY_MS: u64 = 100;
-
-                let until_ms = now_ms.saturating_add(REPATH_BASE_DELAY_MS).saturating_add(
-                    determinism::repath_jitter_ms(
-                        self.seed,
-                        unit_id,
-                        repath_counter.wrapping_add(1),
-                    ),
-                );
-                if let Some(unit) = self.units.get_mut(&unit_id) {
-                    unit.action_state = ActionState::WaitRepath {
-                        until_ms,
-                        repath_counter: repath_counter.wrapping_add(1),
-                    };
-                }
-                self.schedule_movement_intent(until_ms);
-                continue;
-            };
-
-            let speed_units_per_ms = self
-                .units
-                .get(&unit_id)
-                .map(|u| u.stats.move_speed_units_per_ms)
-                .unwrap_or(1)
-                .max(1);
-
-            let mut movement = MovementState::new_at(start_pos, now_ms);
-            movement.path = path;
-            movement.reserved_destination = Some(dest);
-            movement.repath_counter = repath_counter;
-            movement.step_from = start_pos;
-            movement.step_to = movement.path[1];
-
-            // Move towards the boundary between `step_from` and `step_to` (occupancy switches at that boundary).
-            let (target_x, target_y) = boundary_target_units(movement.step_from, movement.step_to);
-            movement.target_x_units = target_x;
-            movement.target_y_units = target_y;
-
-            let (pos_x, pos_y) = self
-                .units
-                .get(&unit_id)
-                .map(|u| (u.pos_x_units, u.pos_y_units))
-                .unwrap_or_else(|| tile_center_units(start_pos));
-
-            let dist_x = (target_x - pos_x).unsigned_abs();
-            let dist_y = (target_y - pos_y).unsigned_abs();
-            let dist_units = dist_x.max(dist_y);
-            let denom = speed_units_per_ms as u64;
-            let dt_ms = dist_units.div_ceil(denom).max(1);
-            let step_ends_at_ms = now_ms.saturating_add(dt_ms);
-            movement.step_started_at_ms = now_ms;
-            movement.step_ends_at_ms = step_ends_at_ms;
-
-            if let Some(unit) = self.units.get_mut(&unit_id) {
-                unit.current_target = Some(enemy_id);
-                unit.move_epoch = unit.move_epoch.wrapping_add(1);
-                unit.action_state = ActionState::Moving(movement);
-            }
-            self.schedule_move_step_at(unit_id, step_ends_at_ms);
         }
     }
 
@@ -415,6 +450,7 @@ impl BattleCore {
         out.sort_by(|a, b| {
             a.chase_dist
                 .cmp(&b.chase_dist)
+                .then_with(|| self.compare_enemy_target_range_preference(a.enemy_id, b.enemy_id))
                 .then_with(|| {
                     Self::compare_plan_preference(
                         owner,

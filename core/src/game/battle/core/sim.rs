@@ -477,26 +477,27 @@ impl BattleCore {
         };
 
         match rule {
-            UnitTargetRule::CurrentTarget => self
-                .units
-                .get(&caster_instance_id)
-                .and_then(|caster| {
-                    self.persisted_target_in_range(
-                        caster_owner,
-                        caster.current_target,
-                        caster_pos,
-                        range_tiles,
-                    )
-                })
-                .or_else(|| {
-                    self.choose_skill_target_by_rule(
-                        caster_instance_id,
-                        caster_owner,
-                        caster_pos,
-                        range_tiles,
-                        UnitTargetRule::Nearest,
-                    )
-                }),
+            UnitTargetRule::CurrentTarget => {
+                self.units
+                    .get(&caster_instance_id)
+                    .and_then(|caster| {
+                        caster.current_target.filter(|id| {
+                            self.is_alive_enemy(*id, caster_owner)
+                                && self.battlefield.position_of(*id).is_some_and(|pos| {
+                                    caster_pos.chebyshev(&pos) <= range_tiles as i32
+                                })
+                        })
+                    })
+                    .or_else(|| {
+                        self.choose_skill_target_by_rule(
+                            caster_instance_id,
+                            caster_owner,
+                            caster_pos,
+                            range_tiles,
+                            UnitTargetRule::Nearest,
+                        )
+                    })
+            }
             UnitTargetRule::LowestHealthEnemy => {
                 let mut best: Option<(u32, i32, UnitInstanceId)> = None;
                 for unit in self.units.values() {
@@ -531,7 +532,7 @@ impl BattleCore {
                 best.map(|(_, _, id)| id)
             }
             UnitTargetRule::Nearest => {
-                self.choose_attack_target_in_range(caster_owner, caster_pos, range_tiles)
+                self.choose_enemy_target_in_tile_range(caster_owner, caster_pos, range_tiles)
             }
         }
         .filter(|id| in_range(*id))
@@ -860,17 +861,29 @@ impl BattleCore {
 
     pub(in crate::game::battle::core) fn persisted_target_in_range(
         &self,
-        owner: Side,
+        attacker_instance_id: UnitInstanceId,
         current_target: Option<UnitInstanceId>,
-        attacker_pos: Position,
-        range_tiles: u8,
     ) -> Option<UnitInstanceId> {
-        self.persisted_target_if_alive(owner, current_target)
-            .filter(|id| {
-                self.battlefield
-                    .position_of(*id)
-                    .is_some_and(|pos| attacker_pos.chebyshev(&pos) <= range_tiles as i32)
-            })
+        let attacker = self.units.get(&attacker_instance_id)?;
+        self.persisted_target_if_alive(attacker.owner, current_target)
+            .filter(|id| self.is_basic_attack_target_in_range(attacker_instance_id, *id))
+    }
+
+    pub(in crate::game::battle::core) fn select_basic_attack_target(
+        &self,
+        attacker_instance_id: UnitInstanceId,
+        current_target: Option<UnitInstanceId>,
+        hinted_target: Option<UnitInstanceId>,
+    ) -> Option<UnitInstanceId> {
+        let attacker = self.units.get(&attacker_instance_id)?;
+        let in_range = |id: UnitInstanceId| {
+            self.is_alive_enemy(id, attacker.owner)
+                && self.is_basic_attack_target_in_range(attacker_instance_id, id)
+        };
+
+        self.persisted_target_in_range(attacker_instance_id, current_target)
+            .or_else(|| hinted_target.filter(|id| in_range(*id)))
+            .or_else(|| self.choose_attack_target_in_range(attacker_instance_id))
     }
 
     pub(super) fn try_start_pending_basic_attacks(&mut self, now_ms: u64) {
@@ -885,8 +898,6 @@ impl BattleCore {
             let next_ready_ms = unit.next_basic_attack_ms;
             let can_attack = unit.action_locks.can_basic_attack(now_ms);
             let lock_until = unit.action_locks.basic_attack_until_ms;
-            let owner = unit.owner;
-            let base_uuid = unit.base_uuid;
             if unit.is_dead() || !pending || now_ms < next_ready_ms {
                 continue;
             }
@@ -907,13 +918,7 @@ impl BattleCore {
                 continue;
             }
 
-            let Some(attacker_pos) = self.battlefield.position_of(unit_id) else {
-                continue;
-            };
-            let range_tiles = self.basic_attack_range_tiles(base_uuid);
-            let target = self
-                .persisted_target_in_range(owner, unit.current_target, attacker_pos, range_tiles)
-                .or_else(|| self.choose_attack_target_in_range(owner, attacker_pos, range_tiles));
+            let target = self.select_basic_attack_target(unit_id, unit.current_target, None);
             let Some(target_id) = target else {
                 if let Some(unit) = self.units.get_mut(&unit_id) {
                     unit.current_target = None;
@@ -1284,7 +1289,6 @@ impl BattleCore {
                     next_ready_ms,
                     can_attack,
                     lock_until,
-                    owner,
                     base_uuid,
                     current_target,
                     interval_ms,
@@ -1297,7 +1301,6 @@ impl BattleCore {
                         attacker.next_basic_attack_ms,
                         attacker.action_locks.can_basic_attack(current_time_ms),
                         attacker.action_locks.basic_attack_until_ms,
-                        attacker.owner,
                         attacker.base_uuid,
                         attacker.current_target,
                         attacker.stats.attack_interval_ms.max(1),
@@ -1334,32 +1337,16 @@ impl BattleCore {
                     return Ok(());
                 }
 
-                let Some(attacker_pos) = self.battlefield.position_of(attacker_instance_id) else {
-                    return Ok(());
-                };
-                let range_tiles = self.basic_attack_range_tiles(base_uuid);
-                let in_range = |id: UnitInstanceId| {
-                    self.is_alive_enemy(id, owner)
-                        && self
-                            .battlefield
-                            .position_of(id)
-                            .is_some_and(|pos| attacker_pos.chebyshev(&pos) <= range_tiles as i32)
-                };
-
-                let persisted_target = self.persisted_target_in_range(
-                    owner,
-                    current_target,
-                    attacker_pos,
-                    range_tiles,
-                );
                 let hinted_target = if schedule_next {
                     None
                 } else {
-                    target_instance_id.filter(|id| in_range(*id))
+                    target_instance_id
                 };
-                let target = hinted_target.or(persisted_target).or_else(|| {
-                    self.choose_attack_target_in_range(owner, attacker_pos, range_tiles)
-                });
+                let target = self.select_basic_attack_target(
+                    attacker_instance_id,
+                    current_target,
+                    hinted_target,
+                );
 
                 if target.is_none() {
                     if let Some(attacker) = self.units.get_mut(&attacker_instance_id) {

@@ -288,7 +288,7 @@ mod tests {
         SkillPresentationDef, SkillStepDef, SkillTarget, StepTargetingMode, UnitTargetRule,
     };
     use crate::game::battle::buffs::BuffId;
-    use crate::game::battle::core::movement::ActionState;
+    use crate::game::battle::core::movement::{ActionState, TILE_UNITS_PER_TILE};
     use crate::game::battle::core::types::RuntimeUnit;
     use crate::game::battle::damage::BattleCommand;
     use crate::game::battle::enums::BattleEvent;
@@ -371,6 +371,52 @@ mod tests {
             pending_cast_cause: None,
             pending_skill_cast: None,
         }
+    }
+
+    fn runtime_unit_with_base(
+        unit_id: UnitInstanceId,
+        owner: Side,
+        base_uuid: Uuid,
+    ) -> RuntimeUnit {
+        let mut unit = runtime_unit(unit_id, owner);
+        unit.base_uuid = base_uuid;
+        unit
+    }
+
+    fn place_unit(core: &mut BattleCore, unit_id: UnitInstanceId, pos: Position) {
+        core.battlefield.place(unit_id, pos).unwrap();
+        let unit = core.units.get_mut(&unit_id).unwrap();
+        unit.pos_x_units = (pos.x as i64) * TILE_UNITS_PER_TILE as i64;
+        unit.pos_y_units = (pos.y as i64) * TILE_UNITS_PER_TILE as i64;
+    }
+
+    fn abnormality_with_basic_attack(
+        base_uuid: Uuid,
+        delivery: DeliveryDef,
+        range_tiles: u8,
+    ) -> AbnormalityMetadata {
+        AbnormalityMetadata {
+            id: format!("abnormality-{base_uuid}"),
+            uuid: base_uuid,
+            name: "test".to_string(),
+            risk_level: crate::game::enums::RiskLevel::ZAYIN,
+            price: 1,
+            max_health: 10,
+            attack: 1,
+            defense: 0,
+            movement: Default::default(),
+            basic_attack: crate::game::data::abnormality_data::BasicAttackDef {
+                range_tiles,
+                delivery,
+                ..Default::default()
+            },
+            resonance: Default::default(),
+            skill_id: None,
+        }
+    }
+
+    fn core_with_abnormalities(abnormalities: Vec<AbnormalityMetadata>) -> BattleCore {
+        core_with_skill_data(abnormalities, vec![])
     }
 
     fn single_step_skill(
@@ -562,15 +608,62 @@ mod tests {
             runtime_unit(nearer_enemy_id, Side::Opponent),
         );
 
-        core.battlefield
-            .place(attacker_id, Position::new(0, 0))
-            .unwrap();
-        core.battlefield
-            .place(locked_target_id, Position::new(3, 0))
-            .unwrap();
-        core.battlefield
-            .place(nearer_enemy_id, Position::new(1, 0))
-            .unwrap();
+        place_unit(&mut core, attacker_id, Position::new(0, 0));
+        place_unit(&mut core, locked_target_id, Position::new(3, 0));
+        place_unit(&mut core, nearer_enemy_id, Position::new(1, 0));
+
+        core.try_start_pending_basic_attacks(0);
+
+        assert!(!core.units.get(&attacker_id).unwrap().pending_basic_attack);
+
+        let event = core.event_queue.pop().expect("expected attack start");
+        assert!(matches!(
+            event,
+            BattleEvent::AttackStart {
+                attacker_instance_id,
+                target_instance_id: Some(target_instance_id),
+                schedule_next: true,
+                ..
+            } if attacker_instance_id == attacker_id && target_instance_id == nearer_enemy_id
+        ));
+        assert!(core.event_queue.is_empty());
+    }
+
+    #[test]
+    fn pending_basic_attack_retargets_when_persisted_target_is_dead() {
+        let attacker_base_uuid = Uuid::from_u128(0xAA03);
+        let mut core = core_with_abnormalities(vec![abnormality_with_basic_attack(
+            attacker_base_uuid,
+            DeliveryDef::Instant,
+            2,
+        )]);
+        let attacker_id: UnitInstanceId = Uuid::from_u128(4).into();
+        let locked_target_id: UnitInstanceId = Uuid::from_u128(5).into();
+        let nearer_enemy_id: UnitInstanceId = Uuid::from_u128(6).into();
+
+        let mut attacker = runtime_unit_with_base(attacker_id, Side::Player, attacker_base_uuid);
+        attacker.pending_basic_attack = true;
+        attacker.current_target = Some(locked_target_id);
+
+        core.units.insert(attacker_id, attacker);
+        core.units.insert(
+            locked_target_id,
+            runtime_unit(locked_target_id, Side::Opponent),
+        );
+        core.units.insert(
+            nearer_enemy_id,
+            runtime_unit(nearer_enemy_id, Side::Opponent),
+        );
+
+        core.units
+            .get_mut(&locked_target_id)
+            .unwrap()
+            .stats
+            .current_health = 0;
+
+        place_unit(&mut core, attacker_id, Position::new(0, 0));
+        place_unit(&mut core, locked_target_id, Position::new(1, 0));
+        place_unit(&mut core, nearer_enemy_id, Position::new(1, 1));
 
         core.try_start_pending_basic_attacks(0);
 
@@ -609,50 +702,18 @@ mod tests {
             runtime_unit(nearer_enemy_id, Side::Opponent),
         );
 
-        core.battlefield
-            .place(attacker_id, Position::new(0, 0))
-            .unwrap();
-        core.battlefield
-            .place(locked_target_id, Position::new(3, 0))
-            .unwrap();
-        core.battlefield
-            .place(nearer_enemy_id, Position::new(1, 1))
-            .unwrap();
-
-        println!(
-            "debug movement target test: can_move={}, pos={:?}, range={}, locked_in_range={:?}, nearer_in_range={:?}",
-            core.units
-                .get(&attacker_id)
-                .unwrap()
-                .action_locks
-                .can_move(0),
-            core.battlefield.position_of(attacker_id),
-            core.basic_attack_range_tiles(core.units.get(&attacker_id).unwrap().base_uuid),
-            core.persisted_target_in_range(
-                Side::Player,
-                Some(locked_target_id),
-                Position::new(0, 0),
-                core.basic_attack_range_tiles(core.units.get(&attacker_id).unwrap().base_uuid),
-            ),
-            core.choose_attack_target_in_range(
-                Side::Player,
-                Position::new(0, 0),
-                core.basic_attack_range_tiles(core.units.get(&attacker_id).unwrap().base_uuid),
-            )
-        );
+        place_unit(&mut core, attacker_id, Position::new(0, 0));
+        place_unit(&mut core, locked_target_id, Position::new(3, 0));
+        place_unit(&mut core, nearer_enemy_id, Position::new(1, 0));
         core.compute_movement_intents(0);
 
         let attacker = core.units.get(&attacker_id).unwrap();
-        println!(
-            "debug movement target test after: target={:?}, state={:?}",
-            attacker.current_target, attacker.action_state
-        );
         assert_eq!(attacker.current_target, Some(nearer_enemy_id));
         assert!(matches!(attacker.action_state, ActionState::Idle));
     }
 
     #[test]
-    fn movement_intent_enters_wait_repath_when_no_attack_tile_is_available() {
+    fn movement_intent_retries_from_idle_when_attack_ring_is_currently_blocked() {
         let mut core = new_core();
         let attacker_id: UnitInstanceId = Uuid::from_u128(14).into();
         let enemy_id: UnitInstanceId = Uuid::from_u128(15).into();
@@ -662,12 +723,8 @@ mod tests {
         core.units
             .insert(enemy_id, runtime_unit(enemy_id, Side::Opponent));
 
-        core.battlefield
-            .place(attacker_id, Position::new(0, 0))
-            .unwrap();
-        core.battlefield
-            .place(enemy_id, Position::new(2, 2))
-            .unwrap();
+        place_unit(&mut core, attacker_id, Position::new(0, 0));
+        place_unit(&mut core, enemy_id, Position::new(2, 2));
 
         for raw_id in 16_u128..24 {
             let blocker_id: UnitInstanceId = Uuid::from_u128(raw_id).into();
@@ -687,39 +744,291 @@ mod tests {
         ];
         for (offset, pos) in blocker_positions.into_iter().enumerate() {
             let blocker_id: UnitInstanceId = Uuid::from_u128(16 + offset as u128).into();
-            core.battlefield.place(blocker_id, pos).unwrap();
+            place_unit(&mut core, blocker_id, pos);
         }
-
-        println!(
-            "debug wait repath: can_move={}, pos={:?}, range={}, in_range={:?}",
-            core.units
-                .get(&attacker_id)
-                .unwrap()
-                .action_locks
-                .can_move(100),
-            core.battlefield.position_of(attacker_id),
-            core.basic_attack_range_tiles(core.units.get(&attacker_id).unwrap().base_uuid),
-            core.choose_attack_target_in_range(
-                Side::Player,
-                Position::new(0, 0),
-                core.basic_attack_range_tiles(core.units.get(&attacker_id).unwrap().base_uuid),
-            )
-        );
         core.compute_movement_intents(100);
-
-        println!(
-            "debug wait repath after: state={:?}",
-            core.units.get(&attacker_id).unwrap().action_state
-        );
-        let until_ms = match core.units.get(&attacker_id).unwrap().action_state {
-            ActionState::WaitRepath { until_ms, .. } => until_ms,
-            ref other => panic!("expected WaitRepath, got {other:?}"),
-        };
-        assert!(until_ms > 100);
+        assert!(matches!(
+            core.units.get(&attacker_id).unwrap().action_state,
+            ActionState::Blocked { until_ms: 130, .. }
+        ));
         assert!(core.event_queue.iter().any(|event| matches!(
             event,
-            BattleEvent::MovementIntent { time_ms } if *time_ms == until_ms
+            BattleEvent::MovementIntent { time_ms } if *time_ms == 130
         )));
+    }
+
+    #[test]
+    fn movement_intent_prefers_forward_step_over_equal_diagonal_option() {
+        let mut core = new_core();
+        let attacker_id: UnitInstanceId = Uuid::from_u128(141).into();
+        let enemy_id: UnitInstanceId = Uuid::from_u128(142).into();
+
+        core.units
+            .insert(attacker_id, runtime_unit(attacker_id, Side::Player));
+        core.units
+            .insert(enemy_id, runtime_unit(enemy_id, Side::Opponent));
+
+        place_unit(&mut core, attacker_id, Position::new(1, 3));
+        place_unit(&mut core, enemy_id, Position::new(0, 1));
+
+        core.compute_movement_intents(0);
+
+        let attacker = core.units.get(&attacker_id).unwrap();
+        let ActionState::Moving(state) = &attacker.action_state else {
+            panic!("expected movement state, got {:?}", attacker.action_state);
+        };
+
+        assert_eq!(state.step_to, Position::new(1, 2));
+    }
+
+    #[test]
+    fn movement_intent_prefers_straight_follow_up_over_equal_lateral_attack_tile() {
+        let mut core = core_with_abnormalities(vec![abnormality_with_basic_attack(
+            Uuid::from_u128(0xB001),
+            DeliveryDef::Instant,
+            1,
+        )]);
+        let attacker_id: UnitInstanceId = Uuid::from_u128(143).into();
+        let enemy_id: UnitInstanceId = Uuid::from_u128(144).into();
+
+        let mut attacker =
+            runtime_unit_with_base(attacker_id, Side::Player, Uuid::from_u128(0xB001));
+        attacker.current_target = Some(enemy_id);
+
+        core.units.insert(attacker_id, attacker);
+        core.units
+            .insert(enemy_id, runtime_unit(enemy_id, Side::Opponent));
+
+        place_unit(&mut core, attacker_id, Position::new(1, 4));
+        place_unit(&mut core, enemy_id, Position::new(0, 1));
+
+        core.compute_movement_intents(0);
+
+        let attacker = core.units.get(&attacker_id).unwrap();
+        let ActionState::Moving(state) = &attacker.action_state else {
+            panic!("expected movement state, got {:?}", attacker.action_state);
+        };
+
+        assert_eq!(state.step_to, Position::new(1, 3));
+        assert_eq!(state.path.get(2).copied(), Some(Position::new(1, 2)));
+        assert_eq!(state.reserved_destination, Some(Position::new(1, 2)));
+    }
+
+    #[test]
+    fn movement_intent_prefers_direct_enemy_tile_engage_approach_when_adjacent_continuous_melee() {
+        let attacker_base_uuid = Uuid::from_u128(0xB002);
+        let mut core = core_with_abnormalities(vec![abnormality_with_basic_attack(
+            attacker_base_uuid,
+            DeliveryDef::Instant,
+            1,
+        )]);
+        let attacker_id: UnitInstanceId = Uuid::from_u128(145).into();
+        let enemy_id: UnitInstanceId = Uuid::from_u128(146).into();
+
+        let mut attacker = runtime_unit_with_base(attacker_id, Side::Player, attacker_base_uuid);
+        attacker.current_target = Some(enemy_id);
+
+        let enemy = runtime_unit_with_base(enemy_id, Side::Opponent, attacker_base_uuid);
+
+        core.units.insert(attacker_id, attacker);
+        core.units.insert(enemy_id, enemy);
+
+        place_unit(&mut core, attacker_id, Position::new(1, 3));
+        place_unit(&mut core, enemy_id, Position::new(1, 4));
+        core.units.get_mut(&attacker_id).unwrap().pos_y_units = 2_500_000;
+        core.units.get_mut(&enemy_id).unwrap().pos_y_units = 4_500_000;
+
+        core.compute_movement_intents(0);
+
+        let attacker = core.units.get(&attacker_id).unwrap();
+        let ActionState::Moving(state) = &attacker.action_state else {
+            panic!("expected movement state, got {:?}", attacker.action_state);
+        };
+
+        assert_eq!(state.step_to, Position::new(1, 4));
+        assert_eq!(state.path, vec![Position::new(1, 3), Position::new(1, 4)]);
+        assert_eq!(state.reserved_destination, Some(Position::new(1, 4)));
+    }
+
+    #[test]
+    fn movement_intent_repositions_when_locked_target_only_has_lateral_entry() {
+        let mut core = new_core();
+        let attacker_id: UnitInstanceId = Uuid::from_u128(151).into();
+        let enemy_id: UnitInstanceId = Uuid::from_u128(152).into();
+        let blocker_id: UnitInstanceId = Uuid::from_u128(153).into();
+
+        let mut attacker = runtime_unit(attacker_id, Side::Player);
+        attacker.current_target = Some(enemy_id);
+
+        core.units.insert(attacker_id, attacker);
+        core.units
+            .insert(enemy_id, runtime_unit(enemy_id, Side::Opponent));
+        core.units
+            .insert(blocker_id, runtime_unit(blocker_id, Side::Player));
+
+        place_unit(&mut core, attacker_id, Position::new(1, 3));
+        place_unit(&mut core, enemy_id, Position::new(1, 1));
+        place_unit(&mut core, blocker_id, Position::new(1, 2));
+
+        core.compute_movement_intents(100);
+
+        let attacker = core.units.get(&attacker_id).unwrap();
+        assert_eq!(attacker.current_target, Some(enemy_id));
+        let ActionState::Moving(state) = &attacker.action_state else {
+            panic!(
+                "expected repositioning movement, got {:?}",
+                attacker.action_state
+            );
+        };
+        assert_ne!(state.step_to, Position::new(1, 2));
+    }
+
+    #[test]
+    fn movement_intent_retargets_when_only_other_enemy_is_open() {
+        let mut core = new_core();
+        let attacker_id: UnitInstanceId = Uuid::from_u128(161).into();
+        let locked_target_id: UnitInstanceId = Uuid::from_u128(162).into();
+        let alternate_enemy_id: UnitInstanceId = Uuid::from_u128(163).into();
+
+        let mut attacker = runtime_unit(attacker_id, Side::Player);
+        attacker.current_target = Some(locked_target_id);
+        core.units.insert(attacker_id, attacker);
+
+        core.units.insert(
+            locked_target_id,
+            runtime_unit(locked_target_id, Side::Opponent),
+        );
+        core.units.insert(
+            alternate_enemy_id,
+            runtime_unit(alternate_enemy_id, Side::Opponent),
+        );
+
+        place_unit(&mut core, attacker_id, Position::new(1, 3));
+        place_unit(&mut core, locked_target_id, Position::new(1, 0));
+        place_unit(&mut core, alternate_enemy_id, Position::new(3, 1));
+
+        for (raw_id, pos) in [
+            (170_u128, Position::new(0, 0)),
+            (171_u128, Position::new(0, 1)),
+            (172_u128, Position::new(1, 1)),
+            (173_u128, Position::new(2, 0)),
+            (174_u128, Position::new(2, 1)),
+        ] {
+            let blocker_id: UnitInstanceId = Uuid::from_u128(raw_id).into();
+            core.units
+                .insert(blocker_id, runtime_unit(blocker_id, Side::Player));
+            place_unit(&mut core, blocker_id, pos);
+        }
+
+        core.compute_movement_intents(100);
+
+        let attacker = core.units.get(&attacker_id).unwrap();
+        assert_eq!(attacker.current_target, Some(alternate_enemy_id));
+        assert!(
+            matches!(attacker.action_state, ActionState::Moving(_)),
+            "unexpected attacker state: {:?}",
+            attacker.action_state
+        );
+    }
+
+    #[test]
+    fn movement_intent_repositions_when_forward_slot_is_claimed_and_only_lateral_remains() {
+        let mut core = new_core();
+        let claimer_id: UnitInstanceId = Uuid::from_u128(180).into();
+        let attacker_id: UnitInstanceId = Uuid::from_u128(181).into();
+        let locked_target_id: UnitInstanceId = Uuid::from_u128(182).into();
+        let claimer_target_id: UnitInstanceId = Uuid::from_u128(183).into();
+        let blocker_id: UnitInstanceId = Uuid::from_u128(184).into();
+
+        core.units
+            .insert(claimer_id, runtime_unit(claimer_id, Side::Player));
+        core.units
+            .insert(blocker_id, runtime_unit(blocker_id, Side::Player));
+
+        let mut attacker = runtime_unit(attacker_id, Side::Player);
+        attacker.current_target = Some(locked_target_id);
+        core.units.insert(attacker_id, attacker);
+
+        core.units.insert(
+            locked_target_id,
+            runtime_unit(locked_target_id, Side::Opponent),
+        );
+        core.units.insert(
+            claimer_target_id,
+            runtime_unit(claimer_target_id, Side::Opponent),
+        );
+
+        place_unit(&mut core, claimer_id, Position::new(2, 3));
+        place_unit(&mut core, attacker_id, Position::new(1, 3));
+        place_unit(&mut core, locked_target_id, Position::new(1, 0));
+        place_unit(&mut core, claimer_target_id, Position::new(1, 1));
+        place_unit(&mut core, blocker_id, Position::new(2, 2));
+
+        core.compute_movement_intents(100);
+
+        let claimer = core.units.get(&claimer_id).unwrap();
+        let ActionState::Moving(claimer_move) = &claimer.action_state else {
+            panic!(
+                "expected claimer to move first, got {:?}",
+                claimer.action_state
+            );
+        };
+        assert_eq!(claimer_move.step_to, Position::new(1, 2));
+
+        let attacker = core.units.get(&attacker_id).unwrap();
+        assert_eq!(attacker.current_target, Some(claimer_target_id));
+        let ActionState::Moving(state) = &attacker.action_state else {
+            panic!(
+                "expected repositioning move after forward slot claim, got {:?}",
+                attacker.action_state
+            );
+        };
+        assert_ne!(state.step_to, Position::new(1, 2));
+    }
+
+    #[test]
+    fn movement_intent_prioritizes_holding_unit_over_fresh_idle_competitor() {
+        let mut core = new_core();
+        let holder_id: UnitInstanceId = Uuid::from_u128(200).into();
+        let idle_competitor_id: UnitInstanceId = Uuid::from_u128(199).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(201).into();
+
+        let mut holder = runtime_unit(holder_id, Side::Player);
+        holder.current_target = Some(target_id);
+        holder.action_state = ActionState::Holding {
+            until_ms: 100,
+            repath_counter: 2,
+        };
+        core.units.insert(holder_id, holder);
+        core.units.insert(
+            idle_competitor_id,
+            runtime_unit(idle_competitor_id, Side::Player),
+        );
+        core.units
+            .insert(target_id, runtime_unit(target_id, Side::Opponent));
+
+        place_unit(&mut core, holder_id, Position::new(1, 3));
+        place_unit(&mut core, idle_competitor_id, Position::new(2, 3));
+        place_unit(&mut core, target_id, Position::new(1, 1));
+
+        core.compute_movement_intents(100);
+
+        let holder = core.units.get(&holder_id).unwrap();
+        let ActionState::Moving(holder_move) = &holder.action_state else {
+            panic!(
+                "expected holding unit to move, got {:?}",
+                holder.action_state
+            );
+        };
+        assert_eq!(holder_move.step_to, Position::new(1, 2));
+
+        let idle_competitor = core.units.get(&idle_competitor_id).unwrap();
+        assert!(matches!(
+            idle_competitor.action_state,
+            ActionState::Holding { until_ms: 120, .. }
+                | ActionState::Yielding { until_ms: 110, .. }
+                | ActionState::Moving(_)
+        ));
     }
 
     #[test]
@@ -742,15 +1051,9 @@ mod tests {
             runtime_unit(nearer_enemy_id, Side::Opponent),
         );
 
-        core.battlefield
-            .place(attacker_id, Position::new(0, 0))
-            .unwrap();
-        core.battlefield
-            .place(locked_target_id, Position::new(1, 0))
-            .unwrap();
-        core.battlefield
-            .place(nearer_enemy_id, Position::new(1, 1))
-            .unwrap();
+        place_unit(&mut core, attacker_id, Position::new(0, 0));
+        place_unit(&mut core, locked_target_id, Position::new(1, 0));
+        place_unit(&mut core, nearer_enemy_id, Position::new(1, 1));
 
         core.process_event(
             BattleEvent::AttackStart {
@@ -771,6 +1074,445 @@ mod tests {
     }
 
     #[test]
+    fn attack_start_hint_does_not_override_persisted_target_when_it_is_still_in_range() {
+        let mut core = new_core();
+        let attacker_id: UnitInstanceId = Uuid::from_u128(34).into();
+        let locked_target_id: UnitInstanceId = Uuid::from_u128(35).into();
+        let hinted_target_id: UnitInstanceId = Uuid::from_u128(36).into();
+
+        let mut attacker = runtime_unit(attacker_id, Side::Player);
+        attacker.current_target = Some(locked_target_id);
+
+        core.units.insert(attacker_id, attacker);
+        core.units.insert(
+            locked_target_id,
+            runtime_unit(locked_target_id, Side::Opponent),
+        );
+        core.units.insert(
+            hinted_target_id,
+            runtime_unit(hinted_target_id, Side::Opponent),
+        );
+
+        place_unit(&mut core, attacker_id, Position::new(0, 0));
+        place_unit(&mut core, locked_target_id, Position::new(1, 0));
+        place_unit(&mut core, hinted_target_id, Position::new(1, 1));
+
+        core.process_event(
+            BattleEvent::AttackStart {
+                time_ms: 0,
+                attacker_instance_id: attacker_id,
+                target_instance_id: Some(hinted_target_id),
+                schedule_next: false,
+                cause: TimelineCause::default(),
+            },
+            0,
+        )
+        .unwrap();
+
+        assert_eq!(
+            core.units.get(&attacker_id).unwrap().current_target,
+            Some(locked_target_id)
+        );
+    }
+
+    #[test]
+    fn attack_start_retargets_to_nearest_in_range_when_persisted_target_is_dead() {
+        let attacker_base_uuid = Uuid::from_u128(0xAA04);
+        let mut core = core_with_abnormalities(vec![abnormality_with_basic_attack(
+            attacker_base_uuid,
+            DeliveryDef::Instant,
+            2,
+        )]);
+        let attacker_id: UnitInstanceId = Uuid::from_u128(37).into();
+        let dead_target_id: UnitInstanceId = Uuid::from_u128(38).into();
+        let nearer_enemy_id: UnitInstanceId = Uuid::from_u128(39).into();
+
+        let mut attacker = runtime_unit_with_base(attacker_id, Side::Player, attacker_base_uuid);
+        attacker.current_target = Some(dead_target_id);
+
+        core.units.insert(attacker_id, attacker);
+        core.units
+            .insert(dead_target_id, runtime_unit(dead_target_id, Side::Opponent));
+        core.units.insert(
+            nearer_enemy_id,
+            runtime_unit(nearer_enemy_id, Side::Opponent),
+        );
+
+        core.units
+            .get_mut(&dead_target_id)
+            .unwrap()
+            .stats
+            .current_health = 0;
+
+        place_unit(&mut core, attacker_id, Position::new(0, 0));
+        place_unit(&mut core, dead_target_id, Position::new(1, 0));
+        place_unit(&mut core, nearer_enemy_id, Position::new(1, 1));
+
+        core.process_event(
+            BattleEvent::AttackStart {
+                time_ms: 0,
+                attacker_instance_id: attacker_id,
+                target_instance_id: None,
+                schedule_next: true,
+                cause: TimelineCause::default(),
+            },
+            0,
+        )
+        .unwrap();
+
+        assert_eq!(
+            core.units.get(&attacker_id).unwrap().current_target,
+            Some(nearer_enemy_id)
+        );
+    }
+
+    #[test]
+    fn attack_start_prefers_straight_enemy_over_equal_range_diagonal_enemy() {
+        let attacker_base_uuid = Uuid::from_u128(0xAA13);
+        let enemy_base_uuid = Uuid::from_u128(0xAA14);
+        let mut core = core_with_abnormalities(vec![
+            abnormality_with_basic_attack(attacker_base_uuid, DeliveryDef::Instant, 1),
+            abnormality_with_basic_attack(enemy_base_uuid, DeliveryDef::Instant, 1),
+        ]);
+        let attacker_id: UnitInstanceId = Uuid::from_u128(40).into();
+        let diagonal_enemy_id: UnitInstanceId = Uuid::from_u128(41).into();
+        let straight_enemy_id: UnitInstanceId = Uuid::from_u128(42).into();
+
+        core.units.insert(
+            attacker_id,
+            runtime_unit_with_base(attacker_id, Side::Player, attacker_base_uuid),
+        );
+        core.units.insert(
+            diagonal_enemy_id,
+            runtime_unit_with_base(diagonal_enemy_id, Side::Opponent, enemy_base_uuid),
+        );
+        core.units.insert(
+            straight_enemy_id,
+            runtime_unit_with_base(straight_enemy_id, Side::Opponent, enemy_base_uuid),
+        );
+
+        place_unit(&mut core, attacker_id, Position::new(2, 2));
+        place_unit(&mut core, diagonal_enemy_id, Position::new(1, 1));
+        place_unit(&mut core, straight_enemy_id, Position::new(2, 1));
+
+        core.process_event(
+            BattleEvent::AttackStart {
+                time_ms: 0,
+                attacker_instance_id: attacker_id,
+                target_instance_id: None,
+                schedule_next: true,
+                cause: TimelineCause::default(),
+            },
+            0,
+        )
+        .unwrap();
+
+        assert_eq!(
+            core.units.get(&attacker_id).unwrap().current_target,
+            Some(straight_enemy_id)
+        );
+    }
+
+    #[test]
+    fn choose_attack_target_in_range_prefers_melee_enemy_when_distance_is_equal() {
+        let attacker_base_uuid = Uuid::from_u128(0xAA05);
+        let melee_enemy_base_uuid = Uuid::from_u128(0xAA06);
+        let ranged_enemy_base_uuid = Uuid::from_u128(0xAA07);
+        let mut core = core_with_abnormalities(vec![
+            abnormality_with_basic_attack(
+                attacker_base_uuid,
+                DeliveryDef::Projectile {
+                    speed_units_per_ms: 1_000,
+                },
+                3,
+            ),
+            abnormality_with_basic_attack(melee_enemy_base_uuid, DeliveryDef::Instant, 1),
+            abnormality_with_basic_attack(
+                ranged_enemy_base_uuid,
+                DeliveryDef::Projectile {
+                    speed_units_per_ms: 1_000,
+                },
+                3,
+            ),
+        ]);
+        let attacker_id: UnitInstanceId = Uuid::from_u128(80).into();
+        let melee_enemy_id: UnitInstanceId = Uuid::from_u128(81).into();
+        let ranged_enemy_id: UnitInstanceId = Uuid::from_u128(82).into();
+
+        core.units.insert(
+            attacker_id,
+            runtime_unit_with_base(attacker_id, Side::Player, attacker_base_uuid),
+        );
+        core.units.insert(
+            melee_enemy_id,
+            runtime_unit_with_base(melee_enemy_id, Side::Opponent, melee_enemy_base_uuid),
+        );
+        core.units.insert(
+            ranged_enemy_id,
+            runtime_unit_with_base(ranged_enemy_id, Side::Opponent, ranged_enemy_base_uuid),
+        );
+
+        place_unit(&mut core, attacker_id, Position::new(0, 0));
+        place_unit(&mut core, melee_enemy_id, Position::new(1, 0));
+        place_unit(&mut core, ranged_enemy_id, Position::new(0, 1));
+
+        assert_eq!(
+            core.choose_attack_target_in_range(attacker_id),
+            Some(melee_enemy_id)
+        );
+    }
+
+    #[test]
+    fn choose_attack_target_in_range_prefers_straight_enemy_over_equal_range_diagonal_enemy() {
+        let attacker_base_uuid = Uuid::from_u128(0xAA10);
+        let enemy_base_uuid = Uuid::from_u128(0xAA11);
+        let mut core = core_with_abnormalities(vec![
+            abnormality_with_basic_attack(attacker_base_uuid, DeliveryDef::Instant, 1),
+            abnormality_with_basic_attack(enemy_base_uuid, DeliveryDef::Instant, 1),
+        ]);
+        let attacker_id: UnitInstanceId = Uuid::from_u128(91).into();
+        let diagonal_enemy_id: UnitInstanceId = Uuid::from_u128(92).into();
+        let straight_enemy_id: UnitInstanceId = Uuid::from_u128(93).into();
+
+        core.units.insert(
+            attacker_id,
+            runtime_unit_with_base(attacker_id, Side::Player, attacker_base_uuid),
+        );
+        core.units.insert(
+            diagonal_enemy_id,
+            runtime_unit_with_base(diagonal_enemy_id, Side::Opponent, enemy_base_uuid),
+        );
+        core.units.insert(
+            straight_enemy_id,
+            runtime_unit_with_base(straight_enemy_id, Side::Opponent, enemy_base_uuid),
+        );
+
+        place_unit(&mut core, attacker_id, Position::new(2, 2));
+        place_unit(&mut core, diagonal_enemy_id, Position::new(1, 1));
+        place_unit(&mut core, straight_enemy_id, Position::new(2, 1));
+
+        assert_eq!(
+            core.choose_attack_target_in_range(attacker_id),
+            Some(straight_enemy_id)
+        );
+    }
+
+    #[test]
+    fn choose_enemy_target_in_tile_range_prefers_melee_enemy_when_distance_is_equal() {
+        let melee_enemy_base_uuid = Uuid::from_u128(0xAA08);
+        let ranged_enemy_base_uuid = Uuid::from_u128(0xAA09);
+        let mut core = core_with_abnormalities(vec![
+            abnormality_with_basic_attack(melee_enemy_base_uuid, DeliveryDef::Instant, 1),
+            abnormality_with_basic_attack(
+                ranged_enemy_base_uuid,
+                DeliveryDef::Projectile {
+                    speed_units_per_ms: 1_000,
+                },
+                3,
+            ),
+        ]);
+        let melee_enemy_id: UnitInstanceId = Uuid::from_u128(83).into();
+        let ranged_enemy_id: UnitInstanceId = Uuid::from_u128(84).into();
+
+        core.units.insert(
+            melee_enemy_id,
+            runtime_unit_with_base(melee_enemy_id, Side::Opponent, melee_enemy_base_uuid),
+        );
+        core.units.insert(
+            ranged_enemy_id,
+            runtime_unit_with_base(ranged_enemy_id, Side::Opponent, ranged_enemy_base_uuid),
+        );
+
+        place_unit(&mut core, melee_enemy_id, Position::new(1, 0));
+        place_unit(&mut core, ranged_enemy_id, Position::new(0, 1));
+
+        assert_eq!(
+            core.choose_enemy_target_in_tile_range(Side::Player, Position::new(0, 0), 3),
+            Some(melee_enemy_id)
+        );
+    }
+
+    #[test]
+    fn choose_enemy_target_in_tile_range_prefers_straight_enemy_over_equal_range_diagonal_enemy() {
+        let enemy_base_uuid = Uuid::from_u128(0xAA12);
+        let mut core = core_with_abnormalities(vec![abnormality_with_basic_attack(
+            enemy_base_uuid,
+            DeliveryDef::Instant,
+            1,
+        )]);
+        let diagonal_enemy_id: UnitInstanceId = Uuid::from_u128(94).into();
+        let straight_enemy_id: UnitInstanceId = Uuid::from_u128(95).into();
+
+        core.units.insert(
+            diagonal_enemy_id,
+            runtime_unit_with_base(diagonal_enemy_id, Side::Opponent, enemy_base_uuid),
+        );
+        core.units.insert(
+            straight_enemy_id,
+            runtime_unit_with_base(straight_enemy_id, Side::Opponent, enemy_base_uuid),
+        );
+
+        place_unit(&mut core, diagonal_enemy_id, Position::new(1, 1));
+        place_unit(&mut core, straight_enemy_id, Position::new(2, 1));
+
+        assert_eq!(
+            core.choose_enemy_target_in_tile_range(Side::Player, Position::new(2, 2), 1),
+            Some(straight_enemy_id)
+        );
+    }
+
+    #[test]
+    fn movement_intent_prefers_melee_enemy_when_chase_distance_is_equal() {
+        let attacker_base_uuid = Uuid::from_u128(0xAA0A);
+        let melee_enemy_base_uuid = Uuid::from_u128(0xAA0B);
+        let ranged_enemy_base_uuid = Uuid::from_u128(0xAA0C);
+        let mut core = core_with_abnormalities(vec![
+            abnormality_with_basic_attack(attacker_base_uuid, DeliveryDef::Instant, 1),
+            abnormality_with_basic_attack(melee_enemy_base_uuid, DeliveryDef::Instant, 1),
+            abnormality_with_basic_attack(
+                ranged_enemy_base_uuid,
+                DeliveryDef::Projectile {
+                    speed_units_per_ms: 1_000,
+                },
+                3,
+            ),
+        ]);
+        let attacker_id: UnitInstanceId = Uuid::from_u128(85).into();
+        let melee_enemy_id: UnitInstanceId = Uuid::from_u128(86).into();
+        let ranged_enemy_id: UnitInstanceId = Uuid::from_u128(87).into();
+
+        core.units.insert(
+            attacker_id,
+            runtime_unit_with_base(attacker_id, Side::Player, attacker_base_uuid),
+        );
+        core.units.insert(
+            melee_enemy_id,
+            runtime_unit_with_base(melee_enemy_id, Side::Opponent, melee_enemy_base_uuid),
+        );
+        core.units.insert(
+            ranged_enemy_id,
+            runtime_unit_with_base(ranged_enemy_id, Side::Opponent, ranged_enemy_base_uuid),
+        );
+
+        place_unit(&mut core, attacker_id, Position::new(1, 3));
+        place_unit(&mut core, melee_enemy_id, Position::new(0, 1));
+        place_unit(&mut core, ranged_enemy_id, Position::new(2, 1));
+
+        core.compute_movement_intents(100);
+
+        let attacker = core.units.get(&attacker_id).unwrap();
+        assert_eq!(attacker.current_target, Some(melee_enemy_id));
+    }
+
+    #[test]
+    fn movement_intent_prefers_straight_enemy_over_equal_range_diagonal_enemy() {
+        let attacker_base_uuid = Uuid::from_u128(0xAA0D);
+        let enemy_base_uuid = Uuid::from_u128(0xAA0E);
+        let mut core = core_with_abnormalities(vec![
+            abnormality_with_basic_attack(attacker_base_uuid, DeliveryDef::Instant, 1),
+            abnormality_with_basic_attack(enemy_base_uuid, DeliveryDef::Instant, 1),
+        ]);
+        let attacker_id: UnitInstanceId = Uuid::from_u128(88).into();
+        let diagonal_enemy_id: UnitInstanceId = Uuid::from_u128(89).into();
+        let straight_enemy_id: UnitInstanceId = Uuid::from_u128(90).into();
+
+        core.units.insert(
+            attacker_id,
+            runtime_unit_with_base(attacker_id, Side::Player, attacker_base_uuid),
+        );
+        core.units.insert(
+            diagonal_enemy_id,
+            runtime_unit_with_base(diagonal_enemy_id, Side::Opponent, enemy_base_uuid),
+        );
+        core.units.insert(
+            straight_enemy_id,
+            runtime_unit_with_base(straight_enemy_id, Side::Opponent, enemy_base_uuid),
+        );
+
+        place_unit(&mut core, attacker_id, Position::new(5, 5));
+        place_unit(&mut core, diagonal_enemy_id, Position::new(4, 2));
+        place_unit(&mut core, straight_enemy_id, Position::new(5, 2));
+
+        core.compute_movement_intents(100);
+
+        let attacker = core.units.get(&attacker_id).unwrap();
+        assert_eq!(attacker.current_target, Some(straight_enemy_id));
+        let ActionState::Moving(state) = &attacker.action_state else {
+            panic!("expected movement state, got {:?}", attacker.action_state);
+        };
+        assert_eq!(state.step_to, Position::new(5, 4));
+    }
+
+    #[test]
+    fn instant_basic_attack_uses_continuous_range_for_selection_and_resolve() {
+        let attacker_base_uuid = Uuid::from_u128(0xAA01);
+        let mut core = core_with_abnormalities(vec![abnormality_with_basic_attack(
+            attacker_base_uuid,
+            DeliveryDef::Instant,
+            1,
+        )]);
+        let attacker_id: UnitInstanceId = Uuid::from_u128(61).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(62).into();
+
+        core.units.insert(
+            attacker_id,
+            runtime_unit_with_base(attacker_id, Side::Player, attacker_base_uuid),
+        );
+        core.units
+            .insert(target_id, runtime_unit(target_id, Side::Opponent));
+
+        place_unit(&mut core, attacker_id, Position::new(0, 0));
+        place_unit(&mut core, target_id, Position::new(1, 1));
+
+        assert_eq!(core.choose_attack_target_in_range(attacker_id), None);
+        assert!(!core.resolve_basic_attack(attacker_id, target_id, 0));
+
+        let attacker = core.units.get_mut(&attacker_id).unwrap();
+        attacker.pos_x_units = TILE_UNITS_PER_TILE as i64;
+        attacker.pos_y_units = TILE_UNITS_PER_TILE as i64;
+
+        assert_eq!(
+            core.choose_attack_target_in_range(attacker_id),
+            Some(target_id)
+        );
+        assert!(core.resolve_basic_attack(attacker_id, target_id, 1));
+    }
+
+    #[test]
+    fn projectile_basic_attack_keeps_tile_range_behavior() {
+        let attacker_base_uuid = Uuid::from_u128(0xAA02);
+        let mut core = core_with_abnormalities(vec![abnormality_with_basic_attack(
+            attacker_base_uuid,
+            DeliveryDef::Projectile {
+                speed_units_per_ms: 1_000,
+            },
+            1,
+        )]);
+        let attacker_id: UnitInstanceId = Uuid::from_u128(71).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(72).into();
+
+        core.units.insert(
+            attacker_id,
+            runtime_unit_with_base(attacker_id, Side::Player, attacker_base_uuid),
+        );
+        core.units
+            .insert(target_id, runtime_unit(target_id, Side::Opponent));
+
+        place_unit(&mut core, attacker_id, Position::new(0, 0));
+        place_unit(&mut core, target_id, Position::new(1, 1));
+
+        let attacker = core.units.get_mut(&attacker_id).unwrap();
+        attacker.pos_x_units = -(TILE_UNITS_PER_TILE as i64);
+        attacker.pos_y_units = -(TILE_UNITS_PER_TILE as i64);
+
+        assert_eq!(
+            core.choose_attack_target_in_range(attacker_id),
+            Some(target_id)
+        );
+        assert!(core.resolve_basic_attack(attacker_id, target_id, 0));
+    }
+
+    #[test]
     fn hard_cc_clears_locked_target_and_reacquires_after_release() {
         let mut core = new_core();
         let attacker_id: UnitInstanceId = Uuid::from_u128(21).into();
@@ -786,15 +1528,9 @@ mod tests {
         core.units
             .insert(new_target_id, runtime_unit(new_target_id, Side::Opponent));
 
-        core.battlefield
-            .place(attacker_id, Position::new(0, 0))
-            .unwrap();
-        core.battlefield
-            .place(old_target_id, Position::new(3, 0))
-            .unwrap();
-        core.battlefield
-            .place(new_target_id, Position::new(1, 0))
-            .unwrap();
+        place_unit(&mut core, attacker_id, Position::new(0, 0));
+        place_unit(&mut core, old_target_id, Position::new(3, 0));
+        place_unit(&mut core, new_target_id, Position::new(1, 0));
 
         core.process_event(
             BattleEvent::ApplyBuff {
@@ -848,15 +1584,9 @@ mod tests {
             runtime_unit(other_target_id, Side::Opponent),
         );
 
-        core.battlefield
-            .place(caster_id, Position::new(0, 0))
-            .unwrap();
-        core.battlefield
-            .place(locked_target_id, Position::new(1, 0))
-            .unwrap();
-        core.battlefield
-            .place(other_target_id, Position::new(1, 1))
-            .unwrap();
+        place_unit(&mut core, caster_id, Position::new(0, 0));
+        place_unit(&mut core, locked_target_id, Position::new(1, 0));
+        place_unit(&mut core, other_target_id, Position::new(1, 1));
 
         let skill = single_step_skill(
             "current_target",

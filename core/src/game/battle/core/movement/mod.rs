@@ -6,8 +6,13 @@ use crate::{
 use super::BattleCore;
 pub const TILE_UNITS_PER_TILE: u64 = 1_000_000;
 pub const HALF_TILE_UNITS: u64 = TILE_UNITS_PER_TILE / 2;
+pub const REPATH_BASE_DELAY_MS: u64 = 100;
+pub const YIELD_RETRY_DELAY_MS: u64 = 10;
+pub const BLOCKED_RETRY_DELAY_MS: u64 = 30;
+pub const HOLD_RETRY_DELAY_MS: u64 = 20;
 
 mod execute;
+mod orchestrator;
 mod plan;
 
 pub(super) fn tile_center_units(tile: Position) -> (i64, i64) {
@@ -27,12 +32,28 @@ pub(super) fn boundary_target_units(from: Position, to: Position) -> (i64, i64) 
     )
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MovementSegmentEndKind {
+    Boundary,
+    RangeEnter,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct PlannedContinuation {
+    pub step: Position,
+    pub owner_priority: u8,
+    pub claim_priority: Option<u8>,
+    pub retry_budget: u8,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MovementState {
     pub path: Vec<Position>,
     pub reserved_destination: Option<Position>,
+    pub planned_continuation: Option<PlannedContinuation>,
     pub path_cursor: u32,
     pub repath_counter: u32,
+    pub orchestrator_priority: u8,
     pub last_update_ms: u64,
 
     pub step_from: Position,
@@ -41,6 +62,7 @@ pub struct MovementState {
     pub target_y_units: i64,
     pub step_started_at_ms: u64,
     pub step_ends_at_ms: u64,
+    pub step_end_kind: MovementSegmentEndKind,
 }
 
 impl MovementState {
@@ -48,8 +70,10 @@ impl MovementState {
         Self {
             path: vec![pos],
             reserved_destination: None,
+            planned_continuation: None,
             path_cursor: 0,
             repath_counter: 0,
+            orchestrator_priority: u8::MAX,
             last_update_ms: now_ms,
             step_from: pos,
             step_to: pos,
@@ -57,6 +81,7 @@ impl MovementState {
             target_y_units: tile_center_units(pos).1,
             step_started_at_ms: now_ms,
             step_ends_at_ms: now_ms,
+            step_end_kind: MovementSegmentEndKind::Boundary,
         }
     }
 }
@@ -65,6 +90,18 @@ impl MovementState {
 pub enum ActionState {
     Idle,
     Moving(MovementState),
+    Holding {
+        until_ms: u64,
+        repath_counter: u32,
+    },
+    Yielding {
+        until_ms: u64,
+        repath_counter: u32,
+    },
+    Blocked {
+        until_ms: u64,
+        repath_counter: u32,
+    },
     WaitRepath {
         until_ms: u64,
         repath_counter: u32,
@@ -87,6 +124,96 @@ pub struct EnemyChasePlan {
 }
 
 impl BattleCore {
+    pub(in crate::game::battle::core) fn next_wait_repath_until_ms(
+        &self,
+        now_ms: u64,
+        unit_instance_id: UnitInstanceId,
+        repath_counter: u32,
+    ) -> u64 {
+        now_ms.saturating_add(REPATH_BASE_DELAY_MS).saturating_add(
+            crate::game::determinism::repath_jitter_ms(self.seed, unit_instance_id, repath_counter),
+        )
+    }
+
+    pub(in crate::game::battle::core) fn enter_wait_repath(
+        &mut self,
+        unit_instance_id: UnitInstanceId,
+        until_ms: u64,
+        repath_counter: u32,
+    ) {
+        self.battlefield.cancel_reservation(unit_instance_id);
+        if let Some(unit) = self.units.get_mut(&unit_instance_id) {
+            unit.current_target = None;
+            unit.move_epoch = unit.move_epoch.wrapping_add(1);
+            unit.action_state = ActionState::WaitRepath {
+                until_ms,
+                repath_counter,
+            };
+        }
+        self.schedule_movement_intent(until_ms);
+    }
+
+    pub(in crate::game::battle::core) fn enter_yield(
+        &mut self,
+        now_ms: u64,
+        unit_instance_id: UnitInstanceId,
+        retry_delay_ms: u64,
+        repath_counter: u32,
+    ) {
+        if matches!(
+            self.units.get(&unit_instance_id).map(|u| &u.action_state),
+            Some(ActionState::Moving(_))
+        ) {
+            self.update_move_position_to(unit_instance_id, now_ms);
+        }
+
+        self.battlefield.cancel_reservation(unit_instance_id);
+        if let Some(unit) = self.units.get_mut(&unit_instance_id) {
+            unit.move_epoch = unit.move_epoch.wrapping_add(1);
+            unit.action_state = ActionState::Yielding {
+                until_ms: now_ms.saturating_add(retry_delay_ms),
+                repath_counter,
+            };
+        }
+        self.schedule_movement_intent(now_ms.saturating_add(retry_delay_ms));
+    }
+
+    pub(in crate::game::battle::core) fn enter_blocked(
+        &mut self,
+        now_ms: u64,
+        unit_instance_id: UnitInstanceId,
+        retry_delay_ms: u64,
+        repath_counter: u32,
+    ) {
+        self.battlefield.cancel_reservation(unit_instance_id);
+        if let Some(unit) = self.units.get_mut(&unit_instance_id) {
+            unit.move_epoch = unit.move_epoch.wrapping_add(1);
+            unit.action_state = ActionState::Blocked {
+                until_ms: now_ms.saturating_add(retry_delay_ms),
+                repath_counter,
+            };
+        }
+        self.schedule_movement_intent(now_ms.saturating_add(retry_delay_ms));
+    }
+
+    pub(in crate::game::battle::core) fn enter_hold(
+        &mut self,
+        now_ms: u64,
+        unit_instance_id: UnitInstanceId,
+        retry_delay_ms: u64,
+        repath_counter: u32,
+    ) {
+        self.battlefield.cancel_reservation(unit_instance_id);
+        if let Some(unit) = self.units.get_mut(&unit_instance_id) {
+            unit.move_epoch = unit.move_epoch.wrapping_add(1);
+            unit.action_state = ActionState::Holding {
+                until_ms: now_ms.saturating_add(retry_delay_ms),
+                repath_counter,
+            };
+        }
+        self.schedule_movement_intent(now_ms.saturating_add(retry_delay_ms));
+    }
+
     pub(in crate::game::battle) fn schedule_move_step_at(
         &mut self,
         unit_instance_id: UnitInstanceId,
@@ -151,12 +278,15 @@ mod tests {
         let pos = Position::new(1, 1);
         let state = MovementState::new_at(pos, 123);
         assert_eq!(state.path, vec![pos]);
+        assert_eq!(state.reserved_destination, None);
+        assert_eq!(state.planned_continuation, None);
         assert_eq!(state.path_cursor, 0);
         assert_eq!(state.last_update_ms, 123);
         assert_eq!(state.step_from, pos);
         assert_eq!(state.step_to, pos);
         assert_eq!(state.step_started_at_ms, 123);
         assert_eq!(state.step_ends_at_ms, 123);
+        assert_eq!(state.step_end_kind, MovementSegmentEndKind::Boundary);
 
         let (cx, cy) = tile_center_units(pos);
         assert_eq!(state.target_x_units, cx);

@@ -327,6 +327,11 @@ impl BattleCore {
                 core.process_commands(death_commands, time_ms);
             });
         }
+
+        // Death changes both occupancy and target validity globally.
+        // Re-run movement selection in the same tick so melee units do not
+        // wait for their next attack cadence before advancing again.
+        self.schedule_movement_intent(time_ms);
     }
 
     pub(super) fn schedule_projectile_hit_event(&mut self, launch: ProjectileLaunch) {
@@ -777,13 +782,6 @@ impl BattleCore {
             return false;
         }
 
-        let Some(attacker_pos) = self.battlefield.position_of(attacker_instance_id) else {
-            return false;
-        };
-        let Some(target_pos) = self.battlefield.position_of(target_id) else {
-            return false;
-        };
-
         let basic = self
             .game_data
             .abnormality_data
@@ -791,8 +789,7 @@ impl BattleCore {
             .map(|m| m.basic_attack.clone())
             .unwrap_or_default();
 
-        // 사거리 체크(스펙: chebyshev)
-        if attacker_pos.chebyshev(&target_pos) > basic.range_tiles as i32 {
+        if !self.is_basic_attack_target_in_range(attacker_instance_id, target_id) {
             return false;
         }
 
@@ -858,6 +855,12 @@ impl BattleCore {
             }
 
             DeliveryDef::Projectile { speed_units_per_ms } => {
+                let Some(attacker_pos) = self.battlefield.position_of(attacker_instance_id) else {
+                    return false;
+                };
+                let Some(target_pos) = self.battlefield.position_of(target_id) else {
+                    return false;
+                };
                 self.add_resonance(attacker_instance_id, 10, current_time_ms, true);
                 self.schedule_projectile_hit_event(ProjectileLaunch {
                     fired_at_ms: current_time_ms,
