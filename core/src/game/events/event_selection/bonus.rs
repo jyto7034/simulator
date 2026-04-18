@@ -17,7 +17,7 @@ pub struct BonusGenerator;
 impl EventGenerator for BonusGenerator {
     type Output = GameOption;
 
-    fn generate(&self, ctx: &GeneratorContext) -> Self::Output {
+    fn generate(&self, ctx: &GeneratorContext) -> Result<Self::Output, GameError> {
         use crate::ecs::resources::GameProgression;
         use crate::game::enums::OrdealType;
         use rand::SeedableRng;
@@ -36,22 +36,22 @@ impl EventGenerator for BonusGenerator {
         let mut rng = rand::rngs::StdRng::seed_from_u64(ctx.random_seed);
 
         // 4. pool에서 가중치 기반 UUID 선택
-        let uuid = EventPhasePool::choose_weighted_uuid(pool, &mut rng).unwrap_or_else(|| {
-            panic!(
-                "Bonus pool is empty for ordeal={current_ordeal:?}; static event data is invalid"
-            )
-        });
+        let uuid = EventPhasePool::choose_weighted_uuid(pool, &mut rng).ok_or_else(|| {
+            GameError::InvalidStaticData(format!(
+                "bonus pool is empty for ordeal={current_ordeal:?}"
+            ))
+        })?;
 
         // 5. GameData에서 Bonus 조회
         let bonus = ctx
             .game_data
             .bonus_data
             .get_by_uuid(&uuid)
-            .unwrap_or_else(|| {
-                panic!(
-                    "Bonus uuid {uuid} selected from ordeal={current_ordeal:?} pool is missing from GameData"
-                )
-            })
+            .ok_or_else(|| {
+                GameError::InvalidStaticData(format!(
+                    "bonus uuid {uuid} selected from ordeal={current_ordeal:?} pool is missing from GameData"
+                ))
+            })?
             .clone();
 
         debug!(
@@ -60,9 +60,9 @@ impl EventGenerator for BonusGenerator {
         );
 
         // 6. GameOption 생성 (BonusMetadata 전체 데이터 포함)
-        GameOption::Bonus {
+        Ok(GameOption::Bonus {
             bonus: BonusEventOption::from(bonus),
-        }
+        })
     }
 }
 

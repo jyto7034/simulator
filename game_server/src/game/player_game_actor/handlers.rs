@@ -1,11 +1,13 @@
 use actix::{ActorContext, AsyncContext, Handler};
 use serde_json::{json, Value};
 
+use tracing::info;
+
 use crate::{
     game::player_game_actor::{
         messages::{
             AttachSession, CommandExecutionResult, DetachSession, ExecutePlayerBehavior,
-            ForceDisconnect, PushServerMessage,
+            ForceDisconnect, PushServerMessage, QuitPlayerActor,
         },
         state::{
             behavior_result_to_command_result, compress_timeline_payload,
@@ -88,6 +90,25 @@ impl Handler<PushServerMessage> for PlayerGameActor {
 
     fn handle(&mut self, msg: PushServerMessage, _ctx: &mut Self::Context) -> Self::Result {
         self.push_to_active_socket(msg.message);
+    }
+}
+
+impl Handler<QuitPlayerActor> for PlayerGameActor {
+    type Result = ();
+
+    fn handle(&mut self, _msg: QuitPlayerActor, ctx: &mut Self::Context) -> Self::Result {
+        info!(
+            "PlayerGameActor quitting on client request: player {}",
+            self.player_id
+        );
+        if let Some(timer) = self.disconnect_timer.take() {
+            ctx.cancel_future(timer);
+        }
+        self.active_session_id = None;
+        self.socket = None;
+        self.session_control = None;
+        // stopped() 에서 LoadBalance Deregister 가 호출됨 → 다음 접속 시 새 Actor 생성.
+        ctx.stop();
     }
 }
 

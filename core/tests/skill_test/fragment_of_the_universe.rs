@@ -3,8 +3,9 @@ use std::collections::HashSet;
 use game_core::{ecs::resources::Position, game::enums::Side};
 
 use super::{
-    hp_changes_caused_by, passive_dummy_patch, run_abnormality_scenario, scenario_from_board,
-    skill_dummy_board_legend, step_ids, target_unit_ids, BoardEntry, PlacedUnitKind,
+    damage_hp_changes_caused_by, hp_deltas, passive_dummy_patch, run_abnormality_scenario,
+    scenario_from_board, skill_dummy_board_legend, step_ids, target_unit_ids, BoardEntry,
+    PlacedUnitKind,
 };
 
 #[test]
@@ -50,10 +51,11 @@ fn fragment_of_the_universe_nova_hits_the_enemy_cluster_but_not_distant_targets(
     let steps = result.first_cast_steps("fragment_universe_nova");
     assert_eq!(step_ids(&steps), vec!["nova"]);
 
-    let hp_changes = hp_changes_caused_by(result.timeline(), steps[0].seq);
+    let hp_changes = damage_hp_changes_caused_by(result.timeline(), steps[0].seq);
     let damaged_targets: HashSet<_> = target_unit_ids(&hp_changes).into_iter().collect();
     assert_eq!(hp_changes.len(), 3);
     assert_eq!(damaged_targets, cluster_targets);
+    assert_eq!(hp_deltas(&hp_changes), vec![-35, -35, -35]);
     assert!(
         !damaged_targets.contains(&distant_enemy),
         "distant enemy should stay outside Fragment Nova"

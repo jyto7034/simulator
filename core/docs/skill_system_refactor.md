@@ -154,6 +154,70 @@ Update projectile payload:
 
 - `ProjectilePayload::SkillStep { cast_seq, step_index, skill_id, step_id, step_target }`
 
+## Spatial Delivery Roadmap
+
+The initial step-based refactor modeled only `Instant` and `Projectile` delivery at
+the whole-step level. The continuous spatial layer extends this with a stricter
+delivery/effect split.
+
+### Delivery vs Effect
+
+- delivery decides how the step reaches contact
+- effect decides what happens after contact
+
+This allows compositions like:
+
+1. `step 1`: projectile direct hit
+2. `step 2`: impact-position explosion
+3. `step 3`: persistent ground zone or follow-up debuff
+
+### Projectile Delivery Contract
+
+Basic attacks are excluded from this model. They remain homing and guaranteed-hit.
+
+Skill projectile delivery is split as follows:
+
+- targeted projectile
+  - homing
+  - point-and-click style
+- untargeted projectile
+  - fixed / non-homing
+  - first-hit continuous collision
+
+Planned collision data:
+
+- `SkillProjectileCollisionDef`
+  - `radius_units`
+  - `hit_targets`
+  - `piercing`
+  - `max_hits`
+
+### Area Delivery Contract
+
+Explicit area delivery supports both instant blasts and persistent zones.
+
+Planned area data:
+
+- `SkillAreaDeliveryDef`
+  - `shape`
+    - `Circle`
+    - `Rectangle`
+  - `hit_targets`
+  - `duration_ms`
+  - `tick_interval_ms`
+
+### Impact Context
+
+Projectile / area delivery should expose runtime impact context so later steps can
+reuse it deterministically.
+
+Required context:
+
+- first-hit unit id
+- impact position
+- impact time
+- persistent area instance id
+
 ## Data Migration
 
 Old data is not preserved.

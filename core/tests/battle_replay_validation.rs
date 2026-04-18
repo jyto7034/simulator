@@ -12,7 +12,10 @@ use game_core::game::ability::{
 };
 use game_core::game::battle::buffs::BuffId;
 use game_core::game::battle::core::BattleCore;
-use game_core::game::battle::replay::{types::TimelineReplayerConfig, TimelineReplayer};
+use game_core::game::battle::replay::{
+    types::{TimelineReplayViolationKind, TimelineReplayerConfig},
+    TimelineReplayer,
+};
 use game_core::game::battle::timeline::{
     HpChangeReason, TimelineCause, TimelineEvent, TimelineRootCause,
 };
@@ -765,5 +768,37 @@ fn tampered_timeline_missing_parent_on_hp_changed_is_rejected_by_validation() {
         err.iter()
             .any(|v| v.kind == TimelineViolationKind::OutcomeMissingParent),
         "HpChanged는 기본적으로 Parent cause가 강제되어야 한다"
+    );
+}
+
+#[test]
+fn tampered_timeline_duplicate_seq_is_rejected_by_replay() {
+    let game_data = common::create_test_game_data();
+
+    let base_uuid = game_data.abnormality_data.items[0].uuid;
+    let player = deck_single_unit(Uuid::from_u128(11), base_uuid, Position::new(0, 0));
+    let opponent = deck_single_unit(Uuid::from_u128(12), base_uuid, Position::new(3, 3));
+
+    let mut battle = BattleCore::new(
+        &player,
+        &opponent,
+        game_data.clone(),
+        common::BOARD_SIZE,
+        12345,
+    );
+    let mut world = World::new();
+    let result = battle.run_battle(&mut world).unwrap();
+
+    let mut tampered = result.timeline.clone();
+    tampered.entries[1].seq = tampered.entries[0].seq;
+
+    let err = TimelineReplayer::new(game_data, TimelineReplayerConfig::default())
+        .replay(&tampered)
+        .unwrap_err();
+
+    assert!(
+        err.iter()
+            .any(|v| v.kind == TimelineReplayViolationKind::DuplicateSeq),
+        "replay should reject duplicate seq before resolving parent/cause links"
     );
 }

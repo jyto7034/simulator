@@ -37,9 +37,9 @@ pub enum WorkType {
 pub struct SuppressionGenerator;
 
 impl EventGenerator for SuppressionGenerator {
-    type Output = [GameOption; 3];
+    type Output = Vec<GameOption>;
 
-    fn generate(&self, ctx: &super::GeneratorContext) -> Self::Output {
+    fn generate(&self, ctx: &super::GeneratorContext) -> Result<Self::Output, GameError> {
         use rand::seq::SliceRandom;
         use rand::SeedableRng;
 
@@ -76,12 +76,12 @@ impl EventGenerator for SuppressionGenerator {
         candidates.shuffle(&mut rng);
 
         let selected: Vec<&PveEncounter> = candidates.into_iter().take(3).collect();
-        assert!(
-            selected.len() >= 3,
-            "not enough suppression encounters for ordeal {:?}: need 3, got {}",
-            current_ordeal,
-            selected.len()
-        );
+        if selected.is_empty() {
+            return Err(GameError::InvalidStaticData(format!(
+                "not enough suppression encounters for ordeal {:?}: need at least 1, got 0",
+                current_ordeal
+            )));
+        }
 
         let make_option = |encounter: &&PveEncounter, index: u64| -> GameOption {
             const SUPPRESSION_OPTION_NS: u64 = 0x5355_5050_5253; // "SUPPRS"
@@ -93,14 +93,11 @@ impl EventGenerator for SuppressionGenerator {
             }
         };
 
-        [
-            make_option(
-                selected.first().expect("missing suppression candidate 0"),
-                0,
-            ),
-            make_option(selected.get(1).expect("missing suppression candidate 1"), 1),
-            make_option(selected.get(2).expect("missing suppression candidate 2"), 2),
-        ]
+        Ok(selected
+            .iter()
+            .enumerate()
+            .map(|(index, encounter)| make_option(encounter, index as u64))
+            .collect())
     }
 }
 
@@ -384,7 +381,9 @@ mod tests {
         // When: 동일 seed로 Suppression 후보 3개를 생성한다.
         let ctx = GeneratorContext::new(&world, game_data.as_ref(), 123);
         let generator = SuppressionGenerator;
-        let options = generator.generate(&ctx);
+        let options = generator
+            .generate(&ctx)
+            .expect("suppression generation should succeed");
 
         // Then: 결과는 3개이며, risk_level은 TETH/HE만 포함해야 한다.
         let allowed = [RiskLevel::TETH, RiskLevel::HE];
@@ -437,8 +436,12 @@ mod tests {
         let ctx1 = GeneratorContext::new(&world, game_data.as_ref(), 777);
         let ctx2 = GeneratorContext::new(&world, game_data.as_ref(), 777);
 
-        let a = generator.generate(&ctx1);
-        let b = generator.generate(&ctx2);
+        let a = generator
+            .generate(&ctx1)
+            .expect("suppression generation should succeed");
+        let b = generator
+            .generate(&ctx2)
+            .expect("suppression generation should succeed");
 
         // Then: uuid/abnormality_id/risk_level 조합이 완전히 동일해야 한다.
         let normalize = |opt: &GameOption| match opt {
@@ -459,5 +462,37 @@ mod tests {
         let a_norm: Vec<_> = a.iter().map(normalize).collect();
         let b_norm: Vec<_> = b.iter().map(normalize).collect();
         assert_eq!(a_norm, b_norm);
+    }
+
+    #[test]
+    fn suppression_generator_allows_fewer_than_three_candidates_when_data_is_sparse() {
+        let game_data = game_data_with_pve(vec![
+            pve_encounter("aleph_only", "a1", RiskLevel::ALEPH),
+            pve_encounter("waw_only", "w1", RiskLevel::WAW),
+        ]);
+
+        let mut world = World::new();
+        world.insert_resource(GameProgression {
+            current_ordeal: OrdealType::White,
+            current_phase: PhaseType::III,
+        });
+
+        let ctx = GeneratorContext::new(&world, game_data.as_ref(), 999);
+        let generator = SuppressionGenerator;
+        let options = generator
+            .generate(&ctx)
+            .expect("white ordeal should allow a sparse candidate list");
+
+        assert_eq!(options.len(), 1);
+        let GameOption::SuppressAbnormality {
+            abnormality_id,
+            risk_level,
+            ..
+        } = &options[0]
+        else {
+            panic!("expected a suppression option");
+        };
+        assert_eq!(abnormality_id, "a1");
+        assert_eq!(*risk_level, RiskLevel::ALEPH);
     }
 }

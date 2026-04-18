@@ -8,7 +8,7 @@ use crate::game::{
     behavior::GameError,
     data::{
         abnormality_data::AbnormalityMetadata, artifact_data::ArtifactItem,
-        equipment_data::EquipmentItem, Item,
+        equipment_data::{EquipmentItem, EquipmentType}, Item,
     },
     enums::RiskLevel,
     growth::GrowthStack,
@@ -31,6 +31,7 @@ pub struct EquipmentItemDto {
     pub id: String,
     pub name: String,
     pub rarity: RiskLevel,
+    pub equipment_type: EquipmentType,
     pub price: u32,
 }
 
@@ -41,6 +42,7 @@ impl EquipmentItemDto {
             id: meta.id.clone(),
             name: meta.name.clone(),
             rarity: meta.rarity,
+            equipment_type: meta.equipment_type,
             price: meta.price,
         }
     }

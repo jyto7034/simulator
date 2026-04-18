@@ -9,10 +9,13 @@ pub mod suppression;
 pub trait EventGenerator {
     type Output;
 
-    fn generate(&self, ctx: &GeneratorContext) -> Self::Output;
+    fn generate(&self, ctx: &GeneratorContext) -> Result<Self::Output, GameError>;
 }
 
-use crate::{ecs::components::Player, game::data::GameDataBase};
+use crate::{
+    ecs::components::Player,
+    game::{behavior::GameError, data::GameDataBase},
+};
 
 /// 선택적 컨텍스트 필드 그룹
 #[derive(Default)]

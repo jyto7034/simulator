@@ -1,8 +1,11 @@
-use game_core::{ecs::resources::Position, game::enums::Side};
+use game_core::{
+    ecs::resources::Position,
+    game::{battle::timeline::AttackKind, enums::Side},
+};
 
 use super::{
-    attack_starts_caused_by, passive_dummy_patch, run_abnormality_scenario, scenario_from_board,
-    skill_dummy_board_legend, step_ids, target_unit_ids,
+    attack_kinds, attack_starts_caused_by, passive_dummy_patch, run_abnormality_scenario,
+    scenario_from_board, skill_dummy_board_legend, step_ids, target_unit_ids,
 };
 
 #[test]
@@ -33,8 +36,16 @@ fn punishing_bird_rapid_peck_emits_one_opening_attack_and_two_flurry_attacks() {
     let opening_attacks = attack_starts_caused_by(result.timeline(), steps[0].seq);
     assert_eq!(opening_attacks.len(), 1);
     assert_eq!(target_unit_ids(&opening_attacks), vec![enemy]);
+    assert_eq!(
+        attack_kinds(&opening_attacks),
+        vec![Some(AttackKind::Triggered)]
+    );
 
     let flurry_attacks = attack_starts_caused_by(result.timeline(), steps[1].seq);
     assert_eq!(flurry_attacks.len(), 2);
     assert_eq!(target_unit_ids(&flurry_attacks), vec![enemy, enemy]);
+    assert_eq!(
+        attack_kinds(&flurry_attacks),
+        vec![Some(AttackKind::Triggered), Some(AttackKind::Triggered)]
+    );
 }

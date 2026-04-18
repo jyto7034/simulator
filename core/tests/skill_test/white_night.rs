@@ -1,11 +1,17 @@
 use std::collections::HashSet;
 
-use game_core::ecs::resources::Position;
-use game_core::game::enums::Side;
+use game_core::{
+    ecs::resources::Position,
+    game::{
+        enums::Side,
+        stats::{StatId, StatModifierKind},
+    },
+};
 
 use super::{
-    hp_changes_caused_by, passive_dummy_patch, run_abnormality_scenario, scenario_from_board,
-    skill_dummy_board_legend, stat_changes_caused_by, step_ids, target_unit_ids, BoardEntry,
+    damage_hp_changes_caused_by, healing_hp_changes_caused_by, hp_deltas, passive_dummy_patch,
+    run_abnormality_scenario, scenario_from_board, skill_dummy_board_legend,
+    stat_changes_caused_by, stat_modifier_summaries, step_ids, target_unit_ids, BoardEntry,
     PlacedUnitKind, RuntimeStartPatch, UnitPatch,
 };
 
@@ -29,6 +35,7 @@ fn white_night_heals_and_buffs_allies_before_judging_enemies() {
         UnitPatch {
             runtime_start: RuntimeStartPatch {
                 current_health: Some(280),
+                ..Default::default()
             },
             ..Default::default()
         },
@@ -78,10 +85,20 @@ fn white_night_heals_and_buffs_allies_before_judging_enemies() {
     );
 
     assert_eq!(
-        target_unit_ids(&hp_changes_caused_by(result.timeline(), steps[0].seq))
-            .into_iter()
-            .collect::<HashSet<_>>(),
+        target_unit_ids(&healing_hp_changes_caused_by(
+            result.timeline(),
+            steps[0].seq
+        ))
+        .into_iter()
+        .collect::<HashSet<_>>(),
         ally_targets
+    );
+    assert_eq!(
+        hp_deltas(&healing_hp_changes_caused_by(
+            result.timeline(),
+            steps[0].seq
+        )),
+        vec![55, 55, 55]
     );
     assert_eq!(
         target_unit_ids(&stat_changes_caused_by(result.timeline(), steps[1].seq))
@@ -90,9 +107,23 @@ fn white_night_heals_and_buffs_allies_before_judging_enemies() {
         ally_targets
     );
     assert_eq!(
-        target_unit_ids(&hp_changes_caused_by(result.timeline(), steps[2].seq))
-            .into_iter()
-            .collect::<HashSet<_>>(),
+        stat_modifier_summaries(&stat_changes_caused_by(result.timeline(), steps[1].seq)),
+        vec![(StatId::Attack, StatModifierKind::Percent, 20); 3]
+    );
+    assert_eq!(
+        target_unit_ids(&damage_hp_changes_caused_by(
+            result.timeline(),
+            steps[2].seq
+        ))
+        .into_iter()
+        .collect::<HashSet<_>>(),
         enemy_targets
+    );
+    assert_eq!(
+        hp_deltas(&damage_hp_changes_caused_by(
+            result.timeline(),
+            steps[2].seq
+        )),
+        vec![-28, -28, -28]
     );
 }

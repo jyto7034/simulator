@@ -4,8 +4,9 @@ use game_core::ecs::resources::Position;
 use game_core::game::enums::Side;
 
 use super::{
-    hp_changes_caused_by, passive_dummy_patch, run_abnormality_scenario, scenario_from_board,
-    skill_dummy_board_legend, step_ids, target_unit_ids, RuntimeStartPatch, UnitPatch,
+    healing_hp_changes_caused_by, hp_deltas, passive_dummy_patch, run_abnormality_scenario,
+    scenario_from_board, skill_dummy_board_legend, step_ids, target_unit_ids, RuntimeStartPatch,
+    UnitPatch,
 };
 
 #[test]
@@ -19,6 +20,7 @@ fn plague_doctor_mass_heal_restores_allies_in_radius_and_ignores_enemies() {
         UnitPatch {
             runtime_start: RuntimeStartPatch {
                 current_health: Some(180),
+                ..Default::default()
             },
             ..Default::default()
         },
@@ -54,10 +56,11 @@ fn plague_doctor_mass_heal_restores_allies_in_radius_and_ignores_enemies() {
     let steps = result.first_cast_steps("plague_mass_heal");
     assert_eq!(step_ids(&steps), vec!["mass_heal"]);
 
-    let heals = hp_changes_caused_by(result.timeline(), steps[0].seq);
+    let heals = healing_hp_changes_caused_by(result.timeline(), steps[0].seq);
     let healed_targets: HashSet<_> = target_unit_ids(&heals).into_iter().collect();
     assert_eq!(heals.len(), 3);
     assert_eq!(healed_targets, ally_targets);
+    assert_eq!(hp_deltas(&heals), vec![40, 40, 40]);
     assert!(
         !healed_targets.contains(&enemy),
         "enemy should not receive Plague Doctor's heal"

@@ -1,12 +1,17 @@
 use std::collections::HashSet;
 
-use game_core::ecs::resources::Position;
-use game_core::game::enums::Side;
+use game_core::{
+    ecs::resources::Position,
+    game::{
+        enums::Side,
+        stats::{StatId, StatModifierKind},
+    },
+};
 
 use super::{
-    hp_changes_caused_by, passive_dummy_patch, run_abnormality_scenario, scenario_from_board,
-    skill_dummy_board_legend, stat_changes_caused_by, step_ids, target_unit_ids, RuntimeStartPatch,
-    UnitPatch,
+    healing_hp_changes_caused_by, hp_deltas, passive_dummy_patch, run_abnormality_scenario,
+    scenario_from_board, skill_dummy_board_legend, stat_changes_caused_by, stat_modifier_summaries,
+    step_ids, target_unit_ids, RuntimeStartPatch, UnitPatch,
 };
 
 #[test]
@@ -20,6 +25,7 @@ fn fairy_festival_blessing_heals_and_buffs_all_allies_in_range_but_not_enemies()
         UnitPatch {
             runtime_start: RuntimeStartPatch {
                 current_health: Some(150),
+                ..Default::default()
             },
             ..Default::default()
         },
@@ -56,15 +62,20 @@ fn fairy_festival_blessing_heals_and_buffs_all_allies_in_range_but_not_enemies()
     let steps = result.first_cast_steps("fairy_festival_blessing");
     assert_eq!(step_ids(&steps), vec!["fairy_bless"]);
 
-    let heals = hp_changes_caused_by(result.timeline(), steps[0].seq);
+    let heals = healing_hp_changes_caused_by(result.timeline(), steps[0].seq);
     let healed_targets: HashSet<_> = target_unit_ids(&heals).into_iter().collect();
     assert_eq!(heals.len(), 3);
     assert_eq!(healed_targets, ally_targets);
+    assert_eq!(hp_deltas(&heals), vec![20, 20, 20]);
 
     let buffs = stat_changes_caused_by(result.timeline(), steps[0].seq);
     let buffed_targets: HashSet<_> = target_unit_ids(&buffs).into_iter().collect();
     assert_eq!(buffs.len(), 3);
     assert_eq!(buffed_targets, ally_targets);
+    assert_eq!(
+        stat_modifier_summaries(&buffs),
+        vec![(StatId::Attack, StatModifierKind::Percent, 15); 3]
+    );
     assert!(
         !buffed_targets.contains(&enemy),
         "enemy should not receive Fairy Festival's buff"

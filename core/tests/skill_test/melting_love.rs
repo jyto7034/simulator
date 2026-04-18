@@ -1,12 +1,14 @@
 use std::collections::HashSet;
 
-use game_core::ecs::resources::Position;
-use game_core::game::enums::Side;
+use game_core::{
+    ecs::resources::Position,
+    game::{battle::buffs::BuffId, enums::Side},
+};
 
 use super::{
-    buffs_applied_by, hp_changes_caused_by, passive_dummy_patch, run_abnormality_scenario,
-    scenario_from_board, skill_dummy_board_legend, step_ids, target_unit_ids, BoardEntry,
-    PlacedUnitKind,
+    buff_ids, buffs_applied_by, damage_hp_changes_caused_by, hp_deltas, passive_dummy_patch,
+    run_abnormality_scenario, scenario_from_board, skill_dummy_board_legend, step_ids,
+    target_unit_ids, BoardEntry, PlacedUnitKind,
 };
 
 #[test]
@@ -56,23 +58,51 @@ fn melting_love_orb_marks_the_lowest_health_enemy_and_spread_hits_the_whole_clus
     assert_eq!(step_ids(&steps), vec!["slime_orb", "slime_spread"]);
 
     assert_eq!(
-        target_unit_ids(&hp_changes_caused_by(result.timeline(), steps[0].seq)),
+        target_unit_ids(&damage_hp_changes_caused_by(
+            result.timeline(),
+            steps[0].seq
+        )),
         vec![primary_target]
+    );
+    assert_eq!(
+        hp_deltas(&damage_hp_changes_caused_by(
+            result.timeline(),
+            steps[0].seq
+        )),
+        vec![-24]
     );
     assert_eq!(
         target_unit_ids(&buffs_applied_by(result.timeline(), steps[0].seq)),
         vec![primary_target]
     );
     assert_eq!(
-        target_unit_ids(&hp_changes_caused_by(result.timeline(), steps[1].seq))
-            .into_iter()
-            .collect::<HashSet<_>>(),
+        buff_ids(&buffs_applied_by(result.timeline(), steps[0].seq)),
+        vec![BuffId::from_name("poison")]
+    );
+    assert_eq!(
+        target_unit_ids(&damage_hp_changes_caused_by(
+            result.timeline(),
+            steps[1].seq
+        ))
+        .into_iter()
+        .collect::<HashSet<_>>(),
         spread_targets
+    );
+    assert_eq!(
+        hp_deltas(&damage_hp_changes_caused_by(
+            result.timeline(),
+            steps[1].seq
+        )),
+        vec![-16, -16, -16]
     );
     assert_eq!(
         target_unit_ids(&buffs_applied_by(result.timeline(), steps[1].seq))
             .into_iter()
             .collect::<HashSet<_>>(),
         spread_targets
+    );
+    assert_eq!(
+        buff_ids(&buffs_applied_by(result.timeline(), steps[1].seq)),
+        vec![BuffId::from_name("poison"); 3]
     );
 }

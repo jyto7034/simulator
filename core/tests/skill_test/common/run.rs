@@ -70,22 +70,62 @@ fn apply_runtime_start_patch(
     position: Position,
     patch: &RuntimeStartPatch,
 ) -> Result<(), String> {
-    let Some(current_health) = patch.current_health else {
-        return Ok(());
-    };
-
     let unit_id = battle
         .battlefield
         .occupant(position)
         .map_err(|error| format!("failed to inspect position {:?}: {:?}", position, error))?
         .ok_or_else(|| format!("no unit placed at {:?}", position))?;
+    let current_target_id = if let Some(target_position) = patch.current_target_position {
+        Some(
+            battle
+                .battlefield
+                .occupant(target_position)
+                .map_err(|error| {
+                    format!(
+                        "failed to inspect current_target position {:?}: {:?}",
+                        target_position, error
+                    )
+                })?
+                .ok_or_else(|| {
+                    format!(
+                        "no unit placed at current_target position {:?}",
+                        target_position
+                    )
+                })?,
+        )
+    } else {
+        None
+    };
 
     let unit = battle
         .units
         .get_mut(&unit_id)
         .ok_or_else(|| format!("runtime unit missing for {:?}", position))?;
 
-    unit.stats.current_health = current_health.min(unit.stats.max_health);
+    if let Some(current_health) = patch.current_health {
+        unit.stats.current_health = current_health.min(unit.stats.max_health);
+    }
+
+    if let Some(resonance_current) = patch.resonance_current {
+        unit.resonance_current = resonance_current.min(unit.resonance_max.max(1));
+    }
+
+    if let Some(target_id) = current_target_id {
+        unit.current_target = Some(target_id);
+    }
+
+    if let Some(until_ms) = patch.movement_lock_until_ms {
+        unit.action_locks.lock_movement_until(until_ms);
+    }
+
+    if let Some(until_ms) = patch.basic_attack_lock_until_ms {
+        unit.action_locks.lock_basic_attack_until(until_ms);
+    }
+
+    if let Some(until_ms) = patch.resonance_gain_lock_until_ms {
+        unit.action_locks.lock_resonance_gain_until(until_ms);
+    }
+
     Ok(())
 }
 

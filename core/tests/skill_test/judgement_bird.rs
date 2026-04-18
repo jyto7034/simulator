@@ -1,12 +1,15 @@
 use game_core::{
     ecs::resources::Position,
-    game::{battle::timeline::TimelineEvent, enums::Side},
+    game::{
+        battle::{buffs::BuffId, timeline::TimelineEvent},
+        enums::Side,
+    },
 };
 
 use super::{
-    buffs_applied_by, hp_changes_caused_by, passive_dummy_patch, run_abnormality_scenario,
-    scenario_from_board, skill_dummy_board_legend, step_ids, target_unit_ids, BoardEntry,
-    PlacedUnitKind,
+    buff_ids, buffs_applied_by, damage_hp_changes_caused_by, hp_deltas, passive_dummy_patch,
+    run_abnormality_scenario, scenario_from_board, skill_dummy_board_legend, step_ids,
+    target_unit_ids, BoardEntry, PlacedUnitKind,
 };
 
 #[test]
@@ -51,15 +54,39 @@ fn judgement_bird_weighs_the_lowest_health_enemy_then_delivers_the_final_verdict
     let steps = result.first_cast_steps("judgement_bird_scales");
     assert_eq!(step_ids(&steps), vec!["weigh_sins", "final_verdict"]);
     assert_eq!(
-        target_unit_ids(&hp_changes_caused_by(result.timeline(), steps[0].seq)),
+        target_unit_ids(&damage_hp_changes_caused_by(
+            result.timeline(),
+            steps[0].seq
+        )),
         vec![low_hp_enemy]
+    );
+    assert_eq!(
+        hp_deltas(&damage_hp_changes_caused_by(
+            result.timeline(),
+            steps[0].seq
+        )),
+        vec![-20]
     );
     assert_eq!(
         target_unit_ids(&buffs_applied_by(result.timeline(), steps[0].seq)),
         vec![low_hp_enemy]
     );
     assert_eq!(
-        target_unit_ids(&hp_changes_caused_by(result.timeline(), steps[1].seq)),
+        buff_ids(&buffs_applied_by(result.timeline(), steps[0].seq)),
+        vec![BuffId::from_name("stun")]
+    );
+    assert_eq!(
+        target_unit_ids(&damage_hp_changes_caused_by(
+            result.timeline(),
+            steps[1].seq
+        )),
         vec![low_hp_enemy]
+    );
+    assert_eq!(
+        hp_deltas(&damage_hp_changes_caused_by(
+            result.timeline(),
+            steps[1].seq
+        )),
+        vec![-65]
     );
 }

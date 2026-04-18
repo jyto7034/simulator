@@ -381,6 +381,8 @@ pub enum GameError {
     InvalidUnitStats(&'static str),
     /// RON 등 정적 데이터가 현재 엔진 계약을 위반할 때
     InvalidStaticData(String),
+    /// 아직 구현되지 않은 핵심 게임 루프/콘텐츠를 호출했을 때
+    NotImplemented(&'static str),
 
     /// 필드 위치가 범위를 벗어났을 때
     OutOfBounds,

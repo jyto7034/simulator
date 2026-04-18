@@ -89,6 +89,18 @@ impl From<GameError> for PlayerGameActorError {
                 "Unit is already placed on the field".into(),
             ),
             GameError::UnitNotFound => ("unit_not_found", "Unit was not found".into()),
+            GameError::AlreadyOwnedArtifact => (
+                "already_owned_artifact",
+                "Artifact is already owned and cannot be acquired again".into(),
+            ),
+            GameError::InvalidStaticData(message) => (
+                "invalid_static_data",
+                format!("Invalid static data: {message}"),
+            ),
+            GameError::NotImplemented(feature) => (
+                "not_implemented",
+                format!("Feature is not implemented: {feature}"),
+            ),
         };
 
         Self { code, message }

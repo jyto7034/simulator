@@ -10,9 +10,17 @@ use crate::game::{
 pub struct OrdealBattleGenerator;
 
 impl EventGenerator for OrdealBattleGenerator {
-    type Output = [GameOption; 3];
+    type Output = Vec<GameOption>;
 
-    fn generate(&self, ctx: &super::GeneratorContext) -> Self::Output {
+    fn generate(&self, ctx: &super::GeneratorContext) -> Result<Self::Output, GameError> {
+        use crate::ecs::resources::GameProgression;
+
+        let current_ordeal = ctx
+            .world
+            .get_resource::<GameProgression>()
+            .map(|p| p.current_ordeal)
+            .unwrap_or(OrdealType::Dawn);
+
         if let Some(opponent) = &ctx.extras.opponent_data {
             println!("Generating Ordeal battle against: {}", opponent.name);
 
@@ -28,23 +36,27 @@ impl EventGenerator for OrdealBattleGenerator {
 
         // TODO: 실제 ordeal 메타데이터에서 uuid 조회
         // 지금은 임시로 고정 uuid 사용
-        [
-            GameOption::OrdealBattle {
-                ordeal_type: OrdealType::Dawn,
-                difficulty: 1,
-                uuid: Uuid::parse_str("850e8400-e29b-41d4-a716-446655440001").unwrap(),
+        Ok(vec![GameOption::OrdealBattle {
+            ordeal_type: current_ordeal,
+            difficulty: 1,
+            uuid: match current_ordeal {
+                OrdealType::Dawn => {
+                    Uuid::parse_str("850e8400-e29b-41d4-a716-446655440001").unwrap()
+                }
+                OrdealType::Noon => {
+                    Uuid::parse_str("850e8400-e29b-41d4-a716-446655440002").unwrap()
+                }
+                OrdealType::Dusk => {
+                    Uuid::parse_str("850e8400-e29b-41d4-a716-446655440003").unwrap()
+                }
+                OrdealType::Midnight => {
+                    Uuid::parse_str("850e8400-e29b-41d4-a716-446655440004").unwrap()
+                }
+                OrdealType::White => {
+                    Uuid::parse_str("850e8400-e29b-41d4-a716-446655440005").unwrap()
+                }
             },
-            GameOption::OrdealBattle {
-                ordeal_type: OrdealType::Noon,
-                difficulty: 2,
-                uuid: Uuid::parse_str("850e8400-e29b-41d4-a716-446655440002").unwrap(),
-            },
-            GameOption::OrdealBattle {
-                ordeal_type: OrdealType::Dusk,
-                difficulty: 3,
-                uuid: Uuid::parse_str("850e8400-e29b-41d4-a716-446655440003").unwrap(),
-            },
-        ]
+        }])
     }
 }
 

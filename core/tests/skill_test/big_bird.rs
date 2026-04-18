@@ -11,18 +11,18 @@ use game_core::{
 };
 
 use super::{
-    buffs_applied_by, hp_changes_caused_by, passive_dummy_patch, run_abnormality_scenario,
-    scenario_from_board, skill_dummy_board_legend, step_ids, target_unit_ids, BoardEntry,
-    PlacedUnitKind, StaticUnitPatch, UnitPatch,
+    buff_ids, buffs_applied_by, damage_hp_changes_caused_by, hp_deltas, passive_dummy_patch,
+    run_abnormality_scenario, scenario_from_board, skill_dummy_board_legend, step_ids,
+    target_unit_ids, BoardEntry, PlacedUnitKind, StaticUnitPatch, UnitPatch,
 };
 
 #[test]
 // 목적:
-// Big Bird의 Dark Lamp가 Chebyshev 반경 1칸의 적에게 silence를 적용하고,
-// 이어지는 burst 피해도 대각선을 포함한 동일한 범위에만 들어가는지 확인한다.
+// Big Bird의 Dark Lamp가 "시전자 중심"이 아니라 "선택된 적 중심"으로 anchor를 잡고,
+// 그 적 주변 클러스터에만 silence/burst를 적용하는지 확인한다.
 fn big_bird_silences_and_bursts_only_enemies_within_chebyshev_radius_one() {
     let mut legend = skill_dummy_board_legend();
-    for symbol in ['E', 'F', 'G', 'X'] {
+    for symbol in ['F', 'G', 'H', 'X'] {
         legend
             .units
             .insert(symbol, BoardEntry::Opponent(PlacedUnitKind::SkillDummy));
@@ -32,16 +32,15 @@ fn big_bird_silences_and_bursts_only_enemies_within_chebyshev_radius_one() {
     let board = r#"
         . . . . . . .
         . . . . . . .
-        . D! C F! . . .
-        . . E! G! . X! .
+        . . C F! G! . .
+        . . . . H! X! .
     "#;
 
     let result = run_abnormality_scenario("o-02-40_big_bird", scenario_from_board(board, &legend));
-    let adjacent_targets: HashSet<_> = [
-        Position::new(1, 2),
+    let anchored_cluster_targets: HashSet<_> = [
         Position::new(3, 2),
-        Position::new(2, 3),
-        Position::new(3, 3),
+        Position::new(4, 2),
+        Position::new(4, 3),
     ]
     .into_iter()
     .map(|position| {
@@ -61,16 +60,29 @@ fn big_bird_silences_and_bursts_only_enemies_within_chebyshev_radius_one() {
         target_unit_ids(&buffs_applied_by(result.timeline(), steps[0].seq))
             .into_iter()
             .collect();
-    assert_eq!(silence_targets, adjacent_targets);
+    assert_eq!(silence_targets, anchored_cluster_targets);
+    assert_eq!(
+        buff_ids(&buffs_applied_by(result.timeline(), steps[0].seq)),
+        vec![BuffId::from_name("silence"); 3]
+    );
 
-    let burst_targets: HashSet<_> =
-        target_unit_ids(&hp_changes_caused_by(result.timeline(), steps[1].seq))
-            .into_iter()
-            .collect();
-    assert_eq!(burst_targets, adjacent_targets);
+    let burst_targets: HashSet<_> = target_unit_ids(&damage_hp_changes_caused_by(
+        result.timeline(),
+        steps[1].seq,
+    ))
+    .into_iter()
+    .collect();
+    assert_eq!(burst_targets, anchored_cluster_targets);
+    assert_eq!(
+        hp_deltas(&damage_hp_changes_caused_by(
+            result.timeline(),
+            steps[1].seq
+        )),
+        vec![-70, -70, -70]
+    );
     assert!(
         !burst_targets.contains(&distant_enemy),
-        "distant enemy should stay outside Dark Lamp radius"
+        "distant enemy should stay outside the anchored Dark Lamp burst"
     );
 }
 

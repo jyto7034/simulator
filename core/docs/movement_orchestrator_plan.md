@@ -934,6 +934,49 @@ movement interpolation이 안정화되면,
 4. 원형 AoE를 tile overlap이 아니라 circle distance 기반으로 전환
 5. cone/line/sweep는 마지막 단계로 미룬다
 
+추가 계약:
+
+- 스킬 projectile의 "충돌"과 "효과"는 같은 것이 아니다
+- projectile delivery는
+  - 경로
+  - 충돌 대상
+  - 충돌 시 소멸 여부
+  - 최대 충돌 수
+  를 결정한다
+- 실제 데미지/효과는 여전히 `SkillStep`이 적용한다
+- 따라서 "1 step direct hit -> 2 step explosion -> 3 step debuff" 같은 구성이 가능해야 한다
+
+이를 위해 다음 데이터 모델을 준비한다.
+
+- `SkillProjectileCollisionDef`
+  - `radius_units`
+  - `hit_targets`
+  - `piercing`
+  - `max_hits`
+- `SkillAreaDeliveryDef`
+  - `shape`
+    - `Circle`
+    - `Rectangle`
+  - `hit_targets`
+  - `duration_ms`
+  - `tick_interval_ms`
+
+그리고 runtime은 projectile / area impact context를 step 간에 전달할 수 있어야 한다.
+
+- first-hit target
+- impact position
+- impact time
+- persistent area instance id
+
+즉 장기적으로는
+`delivery decides contact`
+`step decides effect`
+모델로 간다.
+
+구체적인 runtime 분리 계획은
+`core/docs/skill_spatial_runtime_refactor_plan.md`
+를 source of truth로 둔다.
+
 1차 코드 진입점:
 
 - projectile 생성/업데이트 로직

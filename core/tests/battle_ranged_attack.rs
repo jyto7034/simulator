@@ -166,6 +166,7 @@ fn ranged_basic_attack_projectile_hits_after_flight_time_and_damages_target() {
             windup_ms: 0,
             delivery: DeliveryDef::Projectile {
                 speed_units_per_ms: 3_000,
+                collision: Default::default(),
             },
         },
         resonance: Default::default(),
@@ -333,6 +334,7 @@ fn ranged_attack_resolve_records_miss_when_target_moves_out_of_range() {
             windup_ms: 5,
             delivery: DeliveryDef::Projectile {
                 speed_units_per_ms: 1_000,
+                collision: Default::default(),
             },
         },
     );
@@ -460,6 +462,7 @@ fn projectile_misses_when_target_dies_before_impact() {
             windup_ms: 0,
             delivery: DeliveryDef::Projectile {
                 speed_units_per_ms: 100_000,
+                collision: Default::default(),
             },
         },
     );
@@ -577,6 +580,7 @@ fn projectile_does_not_hit_after_attacker_death_when_battle_ends() {
             windup_ms: 0,
             delivery: DeliveryDef::Projectile {
                 speed_units_per_ms: 100_000,
+                collision: Default::default(),
             },
         },
     );
@@ -676,6 +680,7 @@ fn projectile_speed_zero_hits_same_tick_as_attack_resolve() {
             windup_ms: 0,
             delivery: DeliveryDef::Projectile {
                 speed_units_per_ms: 0,
+                collision: Default::default(),
             },
         },
     );
@@ -783,6 +788,7 @@ fn ranged_vs_melee_simple_ranged_wins() {
             windup_ms: 0,
             delivery: DeliveryDef::Projectile {
                 speed_units_per_ms: 1_000_000,
+                collision: Default::default(),
             },
         },
     );
@@ -866,6 +872,7 @@ fn ranged_vs_ranged_both_sides_land_hits_player_wins() {
             windup_ms: 0,
             delivery: DeliveryDef::Projectile {
                 speed_units_per_ms: 3_000,
+                collision: Default::default(),
             },
         },
     );
@@ -883,6 +890,7 @@ fn ranged_vs_ranged_both_sides_land_hits_player_wins() {
             windup_ms: 0,
             delivery: DeliveryDef::Projectile {
                 speed_units_per_ms: 3_000,
+                collision: Default::default(),
             },
         },
     );
@@ -991,6 +999,7 @@ fn tft_like_field_6v6_mixed_melee_ranged_battle() {
                 windup_ms: 200,
                 delivery: DeliveryDef::Projectile {
                     speed_units_per_ms: 3_000_000,
+                    collision: Default::default(),
                 },
             },
         )
@@ -1285,6 +1294,7 @@ fn tft_like_field_7v7_dense_frontline_prefers_straight_opening_engage() {
                 windup_ms: 200,
                 delivery: DeliveryDef::Projectile {
                     speed_units_per_ms: 3_000_000,
+                    collision: Default::default(),
                 },
             },
         )
@@ -1594,6 +1604,7 @@ fn melee_reacquires_movement_immediately_after_frontliner_dies() {
             windup_ms: 0,
             delivery: DeliveryDef::Projectile {
                 speed_units_per_ms: 3_000_000,
+                collision: Default::default(),
             },
         },
     );
@@ -1719,6 +1730,7 @@ fn melee_prefers_straight_backline_target_after_frontliner_dies() {
                 windup_ms: 0,
                 delivery: DeliveryDef::Projectile {
                     speed_units_per_ms: 3_000_000,
+                    collision: Default::default(),
                 },
             },
         )
@@ -2107,6 +2119,7 @@ fn projectile_basic_attack_with_zero_windup_stays_instant_at_start() {
             windup_ms: 0,
             delivery: DeliveryDef::Projectile {
                 speed_units_per_ms: TILE_UNITS_PER_TILE as u32,
+                collision: Default::default(),
             },
         },
     );

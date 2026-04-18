@@ -4,8 +4,9 @@ use game_core::{
 };
 
 use super::{
-    hp_changes_caused_by, passive_dummy_patch, run_abnormality_scenario, scenario_from_board,
-    skill_dummy_board_legend, step_ids, target_unit_ids, BoardEntry, PlacedUnitKind,
+    damage_hp_changes_caused_by, hp_deltas, passive_dummy_patch, run_abnormality_scenario,
+    scenario_from_board, skill_dummy_board_legend, step_ids, target_unit_ids, BoardEntry,
+    PlacedUnitKind,
 };
 
 #[test]
@@ -49,9 +50,10 @@ fn random_event_abnormality_targets_the_nearest_enemy_for_distortion_strike() {
     let steps = result.first_cast_steps("unknown_distortion_strike");
     assert_eq!(step_ids(&steps), vec!["strike"]);
 
-    let hp_changes = hp_changes_caused_by(result.timeline(), steps[0].seq);
+    let hp_changes = damage_hp_changes_caused_by(result.timeline(), steps[0].seq);
     assert_eq!(hp_changes.len(), 1);
     assert_eq!(target_unit_ids(&hp_changes), vec![near_enemy]);
+    assert_eq!(hp_deltas(&hp_changes), vec![-60]);
     assert!(
         !target_unit_ids(&hp_changes).contains(&far_enemy),
         "far enemy should not be hit by Distortion Strike"

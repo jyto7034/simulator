@@ -378,6 +378,7 @@ impl BattleCore {
         {
             DeliveryDef::Instant => AttackDelivery::Instant,
             DeliveryDef::Projectile { .. } => AttackDelivery::Projectile,
+            DeliveryDef::Area { .. } => AttackDelivery::Instant,
         }
     }
 

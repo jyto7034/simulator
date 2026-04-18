@@ -14,6 +14,7 @@
 
 - `docs/movement_orchestrator_plan.md`
 - `docs/movement_flow.md`
+- `docs/active_projectile_runtime_plan.md`
 
 관련 코드 진입점:
 
@@ -28,7 +29,7 @@
 
 - `MovementOrchestrator`의 큰 뼈대는 이미 들어갔고,
   orchestrator decision layer는 사실상 마감됐으며,
-  지금은 broader contract 유지보수와 종료 기록 단계다
+  현재 active work는 `live skill spatial data migration / optional shape refinement`다
 
 이미 끝난 것:
 
@@ -50,9 +51,19 @@
 1. broader replay/export 유지보수
    - 새로운 battle shape나 신규 bug report가 나올 때만
      drift / unnecessary walk / retarget overswap를 다시 점검하면 됨
-2. continuous layer 착수 전 handoff 정리
-   - 다음 단계가 orchestrator 추가 수정이 아니라
-     continuous spatial layer 준비라는 점을 명확히 적어둘 필요가 있음
+2. skill spatial runtime migration
+   - `ProjectilePayload::SkillStep` 중심 path 제거는 완료됨
+   - skill projectile / area delivery는 이제
+     `SkillProjectileImpact / SkillAreaTick / SkillImpactContext` 중심 path로 통일됨
+   - `pierce / max_hits` behavioral runtime도 완료됨
+   - persistent area `EveryTick / OncePerArea / OnEnter` tick policy도 완료됨
+   - `despawn_on_hit` legacy 해석 축소도 완료됨
+   - 남은 직접 구현 대상은
+     필요 시 area shape/rotation expressiveness refinement와
+     추가 live `.ron` migration 확대
+   - 다만 남아 있는 `Instant` step 대부분은
+     single-target direct hit / self buff / extra attack처럼
+     의도된 non-spatial step로 본다
 
 현재 분리된 것:
 
@@ -73,11 +84,36 @@
 - 남은 작업은 새로운 movement policy 추가가 아니라
   broader export safety를 필요할 때 다시 확인하는 유지보수다
 - 다음 큰 단계는 orchestrator를 더 뜯는 것이 아니라
-  `continuous spatial layer` 구현이다
+  `continuous spatial layer` 중에서도
+  `skill spatial runtime` 구현이다
 - 현재 continuous layer는
   - core: `MovementSegmentStarted` + replay sampling helper까지 구현됨
   - Unity: explicit segment replay refactor 진행 중
-  - projectile / AoE: 아직 구현 전이며, 평타는 homing 유지가 전제됨
+  - projectile / AoE:
+    untargeted fixed projectile active runtime + reevaluation slice,
+    instant area circle/rectangle,
+    persistent area tick/expire slice,
+    targeted homing skill projectile `SkillProjectileImpact` 통일,
+    `piercing / max_hits` behavioral runtime,
+    persistent area `EveryTick / OncePerArea / OnEnter` tick policy까지 구현됨
+  - area shape expressiveness는
+    `Circle / Line / Box / Rectangle / Cone`까지 올라옴
+  - legacy `ProjectilePayload::SkillStep` skill path는 제거됨
+  - `despawn_on_hit`은 이제 compatibility-only optional field다
+  - 현재 active migration 대상은
+    추가 live `.ron` skill migration과
+    필요 시 line/pivot orientation expressiveness refinement다
+  - 남은 `Instant` step은 전부 옮길 대상이 아니라
+    spatial semantics가 실제로 더 명확해지는 step만
+    선별적으로 마이그레이션하는 방향이 맞다
+  - 권장 우선순위는
+    현재 spatial runtime regression을 유지한 채,
+    필요 시 `Rectangle/Cone`을 넘는 orientation 표현력만 확장하는 것이다
+  - `Area` delivery는
+    `shape + hit_targets + duration/tick`뿐 아니라
+    `anchor source (CastTarget / ImpactContext / Caster)`까지
+    명시적으로 가지는 방향으로 정리한다
+  - 평타는 homing 유지가 전제됨
 
 ## Next Patch Target
 
@@ -85,15 +121,18 @@
 
 1. 새로운 repro가 나올 때만
    대표 export와 scenario test를 기준으로 regression 여부를 확인한다
-2. continuous layer는 별도 phase로 진행하고,
-   orchestrator decision layer에는 원칙적으로 새 policy를 더 넣지 않는다
+2. orchestrator decision layer에는 원칙적으로 새 policy를 더 넣지 않는다
 3. 현재 direct next step은
-   skill projectile / AoE의 continuous spatial contract를
-   `basic attack homing 유지` 전제 아래 구체화하는 것이다
-4. 그 다음은
-   Unity `BattleTimelineReplayer`와 projectile sampling을
-   같은 continuous contract로 묶는 것이다
-5. 다만 새로운 unwanted drift가 확인되면
+   추가 live `.ron` skill을 `Projectile/Area` spatial delivery로 옮겨
+   실제 데이터에서 모델을 더 검증하는 것이다
+   - fixed projectile active runtime 자체는 완료로 본다
+   - targeted homing projectile active runtime 전환은 현재 direct target이 아니다
+   - 단, 남은 `Instant` step 대부분은 intentional non-spatial이므로
+     먼저 content audit / regression으로 그 경계를 고정하는 편이 낫다
+4. 필요 시
+   area shape/rotation expressiveness가 모자랄 때만
+   line/cone/pivot 표현력을 더 확장한다
+5. 새로운 unwanted drift가 확인되면
    scenario test를 먼저 추가한 뒤 소폭 수정한다
 
 주의:
@@ -105,7 +144,8 @@
   닫히는 시간으로 이해해야 한다
 
 즉 다음 AI는 orchestrator를 다시 확장하는 것이 아니라,
-continuous replay / spatial layer 구현을 이어가면 된다.
+`skill spatial runtime`을 유지한 채
+실제 skill data migration과 선택적 shape refinement를 이어가면 된다.
 다만 평타는 근/원거리 모두 homing이므로,
 continuous hit / miss는 skill projectile / AoE 쪽에만 도입한다.
 
@@ -3669,6 +3709,264 @@ continuous hit / miss는 skill projectile / AoE 쪽에만 도입한다.
 검증:
 
 - 문서 업데이트 작업이므로 별도 테스트 없음
+
+### Patch 73
+
+상태:
+
+- projectile / AoE continuous 구현의 첫 코드 단계로,
+  projectile contract를 `homing / fixed`로 분리할 수 있는 core 타입 기반을 추가
+- 이 단계에서는 평타 behavior를 바꾸지 않고,
+  basic attack homing contract를 그대로 유지했다
+
+변경 내용:
+
+- `core/src/game/battle/core/types.rs`
+  - `ProjectileGuidance` 추가
+    - `Homing`
+    - `Fixed`
+  - `ProjectileRecord`를 empty marker에서
+    launch metadata를 가진 정식 record로 확장
+    - `fired_at_ms`
+    - `attacker_instance_id`
+    - `target_instance_id`
+    - `start`
+    - `aim`
+    - `speed_units_per_ms`
+    - `guidance`
+- `core/src/game/battle/core/commands.rs`
+  - `ProjectileLaunch`에
+    `attacker_origin`, `target_aim`, `guidance` 추가
+  - `schedule_projectile_hit_event()`가
+    projectile record에 launch metadata를 저장하도록 변경
+  - basic attack projectile launch는
+    현재 continuous 좌표 기준 origin/aim을 담되,
+    guidance는 항상 `Homing`으로 저장
+  - `unit_continuous_position_or_tile_center()` helper 추가
+- `core/src/game/battle/core/sim.rs`
+  - skill projectile launch 시
+    `SkillKind::Targeted`면 `Homing`,
+    `SkillKind::Untargeted`면 `Fixed` guidance를 부여
+  - caster origin / target aim도 continuous 좌표로 저장
+
+의미:
+
+- 아직 projectile hit / miss behavior 자체는 바꾸지 않았다
+- 대신 core가 이제
+  - basic attack homing projectile
+  - targeted skill homing projectile
+  - untargeted skill fixed projectile
+  를 구분하는 contract를 가진다
+- 다음 단계에서 non-homing skill projectile에만
+  continuous hit / miss를 도입할 수 있는 기반이 마련됐다
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib schedule_projectile_hit_event_stores_homing_launch_metadata`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib apply_projectile_hit_is_idempotent_for_same_projectile_id`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test battle_ranged_attack`
+
+### Patch 74
+
+상태:
+
+- skill spatial logic의 다음 단계로,
+  projectile / area delivery contract를 step/effect 분리 관점에서 다시 고정
+- runtime wiring 전에 데이터 스키마를 먼저 안정화
+
+변경 내용:
+
+- `core/src/game/ability.rs`
+  - future runtime wiring을 위한 delivery 스키마 타입 추가
+    - `SkillHitTargetFilter`
+    - `SkillProjectileCollisionDef`
+    - `SkillAreaShapeDef`
+    - `SkillAreaDeliveryDef`
+  - 이 단계에서는 기존 `DeliveryDef` runtime behavior를 바꾸지 않음
+  - 관련 RON deserialization test 추가
+- `core/docs/movement_orchestrator_plan.md`
+  - projectile collision / explicit area delivery / impact context를
+    continuous phase의 다음 contract로 문서화
+- `core/docs/skill_system_refactor.md`
+  - step-based skill system에
+    `delivery decides contact, step decides effect` 모델을 추가 문서화
+
+의미:
+
+- 다음 runtime 구현은 "projectile가 맞으면 곧바로 효과 적용" 같은 단일 모델이 아니라
+  "delivery가 충돌/경로를 만들고, step이 그 impact context를 받아 효과를 적용"하는
+  장기 구조로 가야 한다
+- 이로써 다음 단계에서
+  - first-hit projectile
+  - explosion follow-up
+  - persistent ground zone
+  를 같은 step system 안에서 묶을 수 있다
+
+검증:
+
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib skill_projectile_collision_def_uses_expected_defaults`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib skill_projectile_collision_def_reads_explicit_values`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib skill_area_delivery_def_supports_circle_and_persistent_ticks`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib skill_area_delivery_def_supports_rectangles`
+
+### Patch 75
+
+상태:
+
+- skill spatial logic를 "조금씩 if 추가"로 밀지 않고,
+  projectile / area / impact context를 하나의 runtime 모델로 재설계하는 방향을 문서로 고정
+
+변경 내용:
+
+- `core/docs/skill_spatial_runtime_refactor_plan.md` 신설
+  - 현재 `ProjectilePayload::SkillStep` 기반 runtime의 한계 정리
+  - 장기 목표를
+    - `ProjectileRuntime`
+    - `AreaRuntime`
+    - `SkillImpactContext`
+    - `SkillProjectileImpact / SkillAreaTick / SkillAreaExpire`
+    로 분리해 정의
+  - basic attack은 계속 별도 homing path로 유지한다는 점을 명시
+  - migration strategy를
+    1. runtime 타입/이벤트 추가
+    2. untargeted projectile first-hit
+    3. instant area
+    4. persistent area
+    5. legacy `ProjectilePayload::SkillStep` 축소
+    순으로 정리
+- `core/docs/movement_orchestrator_plan.md`
+  - spatial delivery source-of-truth 문서를 새 계획 문서로 연결
+
+의미:
+
+- 다음 단계는 작은 보정이 아니라
+  skill spatial runtime을 `delivery objects + impact context` 모델로 옮기는 리팩토링이다
+- 이는 untargeted projectile / instant area / persistent area를
+  같은 step system 안에서 장기적으로 수용하기 위한 준비다
+
+검증:
+
+- 문서 정리 작업이므로 별도 테스트 없음
+
+### Patch 76
+
+상태:
+
+- skill spatial runtime 리팩토링의 첫 코드 단계로,
+  impact context / active area / future delivery events를 core runtime에 미리 올림
+- 이 단계에서는 behavior migration 없이 event/type contract만 추가
+
+변경 내용:
+
+- `core/src/game/battle/core/types.rs`
+  - `SkillDeliveryId`, `AreaInstanceId`
+  - `SkillImpactContext`
+  - `AreaRuntime`
+  - `ActiveSkillCast.last_impact_context`
+  - `ActiveSkillCast.active_area_ids`
+    추가
+- `core/src/game/battle/core/mod.rs`
+  - `active_areas`
+  - `area_seq`
+    runtime state 추가
+- `core/src/game/battle/enums.rs`
+  - future spatial delivery events 추가
+    - `SkillProjectileImpact`
+    - `SkillAreaTick`
+    - `SkillAreaExpire`
+  - priority / ordering 계약에 포함
+- `core/src/game/battle/core/sim.rs`
+  - battle reset 시 `active_areas`, `area_seq`도 초기화
+  - 새 spatial delivery event는 아직 no-op stub으로 예약
+  - `ActiveSkillCast` 생성 시 새 spatial context 필드 초기화
+
+의미:
+
+- 다음 단계부터는 legacy `ProjectilePayload::SkillStep`만으로
+  spatial delivery를 늘리는 대신,
+  새 runtime state와 event 모델로 점진 이전할 수 있다
+- 즉 이번 패치는 behavior fix가 아니라
+  long-term runtime migration을 위한 skeleton 추가다
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib skill_impact_context_preserves_first_hit_and_spawned_area`
+
+### Patch 77
+
+상태:
+
+- skill spatial runtime migration의 다음 단계로,
+  `DeliveryDef` 자체를 projectile/area 장기 구조에 맞게 확장
+- 아직 projectile/area behavior migration은 시작하지 않고,
+  schema와 executor match shape를 먼저 정리
+
+변경 내용:
+
+- `core/src/game/ability.rs`
+  - `DeliveryDef::Projectile`에
+    `collision: SkillProjectileCollisionDef` 추가
+  - `DeliveryDef::Area { area: SkillAreaDeliveryDef }` 추가
+  - backward-compatible RON deserialization test 추가
+    - projectile collision omitted -> default
+    - explicit area delivery parse
+- `core/src/game/battle/core/sim.rs`
+  - `DeliveryDef::Projectile { speed_units_per_ms, .. }`로 정리
+  - `DeliveryDef::Area`는 현 단계에서 legacy target resolution 기반으로
+    instant-like effect application fallback을 제공
+    (behavior migration 전의 안전한 schema bridge)
+- test constructor들
+  - `DeliveryDef::Projectile` 생성부에 default collision 필드 추가
+
+의미:
+
+- 이제 skill data schema는
+  - instant
+  - projectile + collision config
+  - area delivery
+  를 한 enum에서 표현할 수 있다
+- 다음 단계에서 untargeted projectile first-hit / instant area runtime을
+  schema 변경 없이 바로 붙일 수 있다
+
+검증:
+
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib delivery_def_projectile_ron_defaults_collision_when_omitted`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib delivery_def_area_ron_reads_explicit_area_delivery`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test battle_ranged_attack`
+
+### Patch 78
+
+상태:
+
+- handoff snapshot을 현재 phase에 맞게 재정렬
+- 다음 AI가 문서 첫 화면만 보고도
+  `오케스트라 아님, skill spatial runtime migration이 현재 active work`
+  라는 점을 즉시 알 수 있게 정리
+
+변경 내용:
+
+- `Current State Snapshot`
+  - active work를 `skill spatial runtime migration`으로 갱신
+- `Current Verdict`
+  - continuous layer의 현재 직접 구현 대상이
+    `untargeted projectile -> instant area -> persistent area`
+    라는 점을 명시
+- `Next Patch Target`
+  - direct next step을
+    `SkillProjectileImpact + SkillImpactContext`
+    기반 untargeted projectile migration으로 갱신
+
+의미:
+
+- 이제 handoff 문서만 읽어도
+  movement/orchestrator를 다시 만질 필요가 없고,
+  skill spatial runtime이 바로 다음 작업이라는 점이 분명해졌다
+
+검증:
+
+- 문서 정리 작업이므로 별도 테스트 없음
   `UnitTrack.has_explicit_segments`,
   `sample_track_position()` 분리,
   `UnitMoved`의 logical-only 역할화로 가는 것이 맞다
@@ -3676,3 +3974,750 @@ continuous hit / miss는 skill projectile / AoE 쪽에만 도입한다.
 검증:
 
 - 문서 정리 작업이므로 별도 테스트 없음
+
+### Patch 79
+
+상태:
+
+- `skill spatial runtime migration`의 첫 vertical slice로
+  `untargeted fixed projectile`를
+  legacy `ProjectilePayload::SkillStep` impact path에서 분리
+- 이제 fixed skillshot은
+  `SkillProjectileImpact` + `SkillImpactContext`를 통해
+  contact와 effect를 나눠 처리한다
+
+변경 내용:
+
+- `core/src/game/battle/core/types.rs`
+  - `ActiveSkillCast`에 `caster_instance_id` 추가
+- `core/src/game/battle/core/movement/execute.rs`
+  - `SampledMotionSegment` / `sample_motion_segment_at()`을
+    core runtime 전반에서 재사용할 수 있게 승격
+- `core/src/game/battle/core/commands.rs`
+  - `SkillProjectileImpactLaunch` 추가
+  - fixed projectile first-hit / miss 계산 helper 추가
+  - `schedule_skill_projectile_impact_event()` 추가
+  - `apply_skill_projectile_impact()` 추가
+- `core/src/game/battle/core/sim.rs`
+  - `SkillKind::Untargeted` + `DeliveryDef::Projectile`는
+    이제 legacy `ProjectileHit` 대신 `SkillProjectileImpact`를 스케줄
+  - `SkillProjectileImpact` event를 실제로 consume해서
+    impact context 저장 + step effect 적용
+- `core/tests/skill_refactor_validation.rs`
+  - blocker-first hit battle test 추가
+  - miss 후 previous-step result가 0으로 기록되는 battle test 추가
+
+의미:
+
+- 이제 untargeted skill projectile는
+  "cast target을 미리 정한 단일 대상 projectile"가 아니라
+  "경로상 first hit이 contact를 결정하는 delivery"로 동작한다
+- miss도 impact event로 정규화되므로
+  `IfPreviousStepDealtDamage` 같은 후속 step 조건이 올바르게 동작한다
+- 다음 active migration 대상은 `instant area runtime`이다
+
+현재 제한:
+
+- 이 slice는 first-hit / miss만 구현한다
+- `pierce`, `max_hits`, persistent area는 아직 미구현
+- targeted homing skill projectile은 아직 legacy `ProjectileHit` path를 유지한다
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test skill_refactor_validation untargeted_projectile_hits_first_blocker_before_cast_target -- --exact`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test skill_refactor_validation untargeted_projectile_miss_still_updates_previous_step_result -- --exact`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test skill_refactor_validation`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test battle_ranged_attack`
+
+### Patch 80
+
+요약:
+
+- `instant area runtime`에 앞서
+  `Area` delivery의 중심(anchor)을 runtime 추론이 아니라
+  explicit data contract로 고정했다
+
+변경 내용:
+
+- `core/src/game/ability.rs`
+  - `SkillAreaAnchorSource`
+    - `CastTarget`
+    - `ImpactContext`
+    - `Caster`
+    추가
+  - `SkillAreaDeliveryDef.anchor` 추가
+  - backward-compatible default는 `CastTarget`
+- 상단 handoff snapshot 갱신
+  - 다음 active target인 `instant area runtime`이
+    `AreaAnchor`를 기준으로 구현되어야 함을 명시
+- `core/docs/skill_spatial_runtime_refactor_plan.md`
+  - second runtime slice가
+    `shape + explicit anchor source`를 함께 가진다는 점 반영
+
+의미:
+
+- direct area step과 impact-follow-up explosion을
+  동일한 `DeliveryDef::Area`로 표현하면서도
+  runtime이 cast target / impact context / caster를
+  추론하지 않아도 된다
+- 이는 instant area / persistent area 구현에서
+  임시 분기 대신 data-driven anchor resolution으로 가기 위한
+  장기 방향 정리다
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib skill_area_delivery_def_supports_circle_and_persistent_ticks`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib skill_area_delivery_def_supports_rectangles`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib skill_area_delivery_def_defaults_anchor_to_cast_target`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib delivery_def_area_ron_reads_explicit_area_delivery`
+
+### Patch 81
+
+요약:
+
+- `DeliveryDef::Area`의 instant circle/rectangle를
+  legacy `resolve_skill_step_targets()` bridge에서 분리하고,
+  continuous overlap runtime으로 연결했다
+
+변경 내용:
+
+- `core/src/game/battle/core/commands.rs`
+  - `skill_delivery_accepts_unit()` 공용화
+  - `sample_unit_position_at()` 추가
+- `core/src/game/battle/core/spatial.rs`
+  - `rectangle_contains_point_from_origin()` 추가
+- `core/src/game/battle/core/sim.rs`
+  - `resolve_area_anchor_position()` 추가
+  - `resolve_area_direction_hint()` 추가
+  - `resolve_instant_area_targets()` 추가
+  - `DeliveryDef::Area`는
+    `duration_ms == 0`인 경우 새 runtime overlap path를 사용
+  - instant area도 `SkillImpactContext`를 갱신해서
+    follow-up step이 impact anchor를 재사용할 수 있게 정리
+- `core/src/game/battle/core/mod.rs`
+  - instant circle area target set test 추가
+  - instant rectangle direction test 추가
+  - impact-context anchor test 추가
+
+의미:
+
+- direct area step은
+  `CastTarget` anchor 기준으로 즉시 overlap target set을 만들 수 있다
+- rectangle은 `caster -> anchor` 축으로 뻗는 전방 직사각형으로 판정된다
+- impact-follow-up explosion도 `ImpactContext` anchor로
+  동일한 `Area` delivery를 재사용할 수 있다
+- `DeliveryDef::Area`의 geometry는 이제
+  legacy tile-area target resolution이 아니라
+  continuous shape overlap이 결정한다
+
+현재 제한:
+
+- `duration_ms > 0`인 persistent area는 아직 legacy bridge를 유지한다
+- `SkillAreaTick / SkillAreaExpire` runtime은 다음 slice다
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib rectangle_contains_point_from_origin_respects_axis_and_width`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib instant_circle_area_delivery_hits_only_units_inside_radius`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib instant_rectangle_area_delivery_uses_caster_to_anchor_direction`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib instant_area_delivery_can_anchor_on_previous_impact_context`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test skill_refactor_validation`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test battle_ranged_attack`
+
+### Patch 82
+
+요약:
+
+- `persistent area runtime`을
+  `SkillAreaTick / SkillAreaExpire` 기반 lifecycle로 연결했다
+
+변경 내용:
+
+- `core/src/game/battle/core/types.rs`
+  - `AreaRuntime`에
+    `origin`, `direction_hint` 추가
+  - rectangle persistent zone도 spawn 시점 geometry를 고정 유지하도록 정리
+- `core/src/game/battle/core/sim.rs`
+  - `resolve_area_geometry()` / `collect_area_targets_at()` 추가
+  - `register_persistent_area()` 추가
+  - `apply_skill_area_tick()` 추가
+  - `expire_skill_area()` 추가
+  - `DeliveryDef::Area`
+    - `duration_ms == 0` => instant area overlap path
+    - `duration_ms > 0` => persistent area runtime spawn path
+  - `SkillAreaTick` / `SkillAreaExpire`를 실제 consume하도록 연결
+- `core/src/game/battle/core/mod.rs`
+  - `persistent_area_ticks_immediately_then_repeats_until_expire` 추가
+
+의미:
+
+- 장판은 생성 즉시 1회 판정하고,
+  이후 `tick_interval_ms`마다 반복 적용된다
+- `Circle` / `Rectangle` persistent area 모두
+  spawn 시점의 anchor/geometry를 고정해서 tick 동안 재사용한다
+- `ImpactContext` anchor를 쓰는 장판도
+  projectile-hit 후 follow-up zone으로 같은 delivery 모델을 재사용할 수 있다
+
+현재 제한:
+
+- persistent area의 per-tick re-hit policy는 단순 반복 판정이다
+- `already_hit_units` 같은 tick memory 옵션은 아직 없다
+- `pierce`, `max_hits`는 아직 behavioral runtime에 연결되지 않았다
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib persistent_area_ticks_immediately_then_repeats_until_expire`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test skill_refactor_validation`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test battle_ranged_attack`
+
+### Patch 83
+
+요약:
+
+- handoff 문서 상단을 현재 skill spatial runtime 진행 상태에 맞게 보강했다
+
+변경 내용:
+
+- `Current State Snapshot`
+  - `instant area`, `persistent area`를 미완료처럼 읽히는 표현 제거
+  - 남은 직접 구현 대상을
+    `targeted homing skill projectile` 통일과
+    `pierce / max_hits` behavioral runtime으로 재정리
+- `Current Verdict`
+  - 권장 우선순위를
+    `targeted homing skill projectile` 통일
+    -> `pierce / max_hits` behavioral runtime
+    순으로 명시
+- `Next Patch Target`
+  - 다음 AI가 바로
+    `targeted homing skill projectile` migration slice부터 시작하도록
+    우선순위를 명확히 못 박음
+
+의미:
+
+- 다음 AI가 문서 상단만 읽어도
+  오케스트라와 area runtime이 이미 완료됐고,
+  현재 메인 작업이
+  `targeted homing skill projectile` 통일이라는 점을
+  즉시 파악할 수 있다
+- `pierce / max_hits`는 그 다음 단계라는 점이
+  handoff 수준에서 명시됐다
+
+### Patch 84
+
+요약:
+
+- `targeted homing skill projectile`도
+  `SkillProjectileImpact + SkillImpactContext` 경로로 통일했다
+
+변경 내용:
+
+- `SkillProjectileImpactLaunch`를
+  `guidance`, `target_unit_id`, `travel_time_ms`를 가진 공용 launch로 확장
+- `SkillKind::Targeted`의 homing projectile step은
+  더 이상 legacy `ProjectilePayload::SkillStep`를 싣지 않고
+  `SkillProjectileImpact`를 발행
+- homing impact는
+  기존 travel timing을 유지하면서
+  impact 시점의 현재 타겟 위치를 `impact_position`으로 사용
+- impact 처리 후 `last_impact_context`를 저장하고,
+  follow-up `AreaAnchorSource::ImpactContext` step이 이를 재사용할 수 있게 함
+- battle-level 회귀 테스트로
+  targeted homing projectile 뒤의 impact-centered area follow-up을 고정
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test skill_refactor_validation`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test battle_ranged_attack`
+
+현재 상태:
+
+- orchestrator: done / maintenance
+- movement continuous replay: phase 1 done
+- skill spatial runtime:
+  - untargeted fixed projectile: done
+  - targeted homing projectile: done
+  - instant area: done
+  - persistent area: done
+- next direct target:
+  - `pierce / max_hits` behavioral runtime
+
+### Patch 85
+
+요약:
+
+- skill projectile collision에 explicit `piercing`을 추가하고,
+  `max_hits`까지 실제 behavioral runtime으로 연결했다
+
+변경 내용:
+
+- `SkillProjectileCollisionDef`에 `piercing: bool` 추가
+- fixed / untargeted projectile runtime은 이제
+  경로상 다중 충돌을 수집할 수 있음
+- `max_hits`가 있으면 해당 횟수까지만 impact event를 발행
+- 같은 projectile는 동일 유닛을 한 번만 맞힌다
+- `piercing = false`면 기존처럼 첫 충돌 후 종료
+- 하위 호환을 위해 현재는 `!despawn_on_hit`도 관통으로 해석한다
+- battle-level 회귀 테스트로
+  `piercing + max_hits=2` skillshot이 앞의 두 유닛까지만 맞는지 고정
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib skill_projectile_collision_def_uses_expected_defaults`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib skill_projectile_collision_def_reads_explicit_values`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test skill_refactor_validation`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test battle_ranged_attack`
+
+현재 상태:
+
+- orchestrator: done / maintenance
+- movement continuous replay: phase 1 done
+- skill spatial runtime:
+  - untargeted fixed projectile: done
+  - targeted homing projectile: done
+  - instant area: done
+  - persistent area: done
+  - `piercing / max_hits`: done
+- next direct target:
+  - optional area tick memory / re-hit policy refinement
+  - optional projectile collision mode cleanup (`despawn_on_hit` legacy 축소)
+
+### Patch 86
+
+요약:
+
+- persistent area의 re-hit policy를
+  `EveryTick / OncePerArea / OnEnter` 데이터 계약으로 올렸다
+
+변경 내용:
+
+- `SkillAreaDeliveryDef`에 `tick_policy` 추가
+- `persistent area` runtime이 이제 정책별로 대상 집합을 다르게 해석
+  - `EveryTick`: 현재처럼 매 tick 반복 적용
+  - `OncePerArea`: area lifetime 동안 같은 유닛은 한 번만 적용
+  - `OnEnter`: zone에 새로 들어온 유닛에게만 적용
+- battle-level 회귀 테스트로
+  `OncePerArea`, `OnEnter` 동작을 고정
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib skill_area_delivery_def_supports_circle_and_persistent_ticks`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib persistent_area_ticks_immediately_then_repeats_until_expire`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib persistent_area_once_per_area_hits_target_only_once`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib persistent_area_on_enter_only_hits_when_unit_enters_zone`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test skill_refactor_validation`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test battle_ranged_attack`
+
+현재 상태:
+
+- orchestrator: done / maintenance
+- movement continuous replay: phase 1 done
+- skill spatial runtime:
+  - untargeted fixed projectile: done
+  - targeted homing projectile: done
+  - instant area: done
+  - persistent area: done
+  - `piercing / max_hits`: done
+  - area tick policy (`EveryTick / OncePerArea / OnEnter`): done
+- next direct target:
+  - optional projectile collision mode cleanup (`despawn_on_hit` legacy 축소)
+  - optional area shape/rotation expressiveness refinement
+
+### Patch 87
+
+요약:
+
+- projectile collision contract를 `piercing` 중심으로 정리하고,
+  `despawn_on_hit`을 compatibility-only optional field로 축소했다
+
+변경 내용:
+
+- `SkillProjectileCollisionDef.despawn_on_hit`을 `Option<bool>`로 내려
+  새 schema 기본값이 더 이상 runtime semantics를 직접 결정하지 않게 함
+- fixed projectile runtime은 이제
+  `piercing || despawn_on_hit == Some(false)`일 때만 legacy 관통을 허용
+- 새 runtime/문서는 `piercing + max_hits + same-target-once`를
+  authoritative collision contract로 본다
+- battle-level 회귀 테스트로
+  legacy `despawn_on_hit:false` RON도 여전히 관통 동작을 유지하는지 고정
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib skill_projectile_collision_def_uses_expected_defaults`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib skill_projectile_collision_def_reads_explicit_values`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test skill_refactor_validation`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test battle_ranged_attack`
+
+현재 상태:
+
+- orchestrator: done / maintenance
+- movement continuous replay: phase 1 done
+- skill spatial runtime:
+  - untargeted fixed projectile: done
+  - targeted homing projectile: done
+  - instant area: done
+  - persistent area: done
+  - `piercing / max_hits`: done
+  - area tick policy (`EveryTick / OncePerArea / OnEnter`): done
+  - `despawn_on_hit` legacy 축소: done
+- next direct target:
+  - optional area shape/rotation expressiveness refinement
+
+### Patch 88
+
+요약:
+
+- instant / persistent area runtime에 `Cone` shape를 추가해
+  `Circle/Rectangle` 다음 단계의 shape expressiveness를 넓혔다
+
+변경 내용:
+
+- `SkillAreaShapeDef`에 `Cone { angle_degrees, length_units }` 추가
+- runtime은 `caster-origin + caster->anchor direction`을 기준으로
+  cone overlap을 판정한다
+- `Circle/Rectangle`와 같은 `AreaAnchorSource` / `hit_targets` / persistent tick path를 그대로 재사용한다
+- spatial utility에 cone 판정 함수와 회귀 테스트 추가
+- instant cone area battle-level 회귀 테스트로
+  전방 + 대각 포함, off-cone 제외를 고정
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib skill_area_delivery_def_supports_cones`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib cone_contains_point_from_origin_respects_angle_and_length`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib instant_cone_area_delivery_uses_caster_to_anchor_direction`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test skill_refactor_validation`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test battle_ranged_attack`
+
+현재 상태:
+
+- orchestrator: done / maintenance
+- movement continuous replay: phase 1 done
+- skill spatial runtime:
+  - untargeted fixed projectile: done
+  - targeted homing projectile: done
+  - instant area: done
+  - persistent area: done
+  - `piercing / max_hits`: done
+  - area tick policy (`EveryTick / OncePerArea / OnEnter`): done
+  - `despawn_on_hit` legacy 축소: done
+  - `Box` / `Cone` shape support: done
+  - `include_caster` explicit area contract: done
+- next direct target:
+  - optional line/pivot orientation expressiveness refinement
+
+### Patch 89
+
+요약:
+
+- 실제 `.ron` 스킬들의 대표 area step들을 새 spatial area delivery 모델로 마이그레이션했다
+
+변경 내용:
+
+- `queen_of_hatred_magical_beam`
+  - `Instant + Enemies(Line)`에서
+  - `Area(Rectangle, CastTarget anchor)` 기반 line-shot으로 전환
+- `melting_love_slime_infection.slime_spread`
+  - `Instant + RadiusChebyshev`에서
+  - `Area(Box, ImpactContext anchor)` 기반 impact-centered spread로 전환
+- 추가 live migration:
+  - `plague_mass_heal.mass_heal`
+  - `fragment_universe_nova.nova`
+  - `fairy_festival_blessing.fairy_bless`
+  - `big_bird_dark_lamp.(lamp_gaze, lamp_burst)`
+  - `mountain_mass_consumption.consume_burst`
+  - `white_night_pale_benediction.(ally_salvation, ally_blessing, enemy_judgement)`
+  를 `Area(Box, CastTarget anchor)` 기반 overlap delivery로 전환
+- `include_caster`를 `SkillAreaDeliveryDef`에 추가해서
+  self-inclusive ally area와 self-exclusive enemy area의 의미를 데이터에서 명시하도록 정리
+- `ron_loading` 테스트로
+  실제 base.ron이 새 `DeliveryDef::Area` shape/anchor를 읽는지 고정
+- 기존 battle-level skill test가 그대로 통과하는지 검증
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test ron_loading`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test skill_refactor_validation`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test battle_ranged_attack`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test skill_test_suite`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib instant_box_area_delivery_is_centered_on_anchor`
+
+현재 상태:
+
+- orchestrator: done / maintenance
+- movement continuous replay: phase 1 done
+- skill spatial runtime:
+  - untargeted fixed projectile: done
+  - targeted homing projectile: done
+  - instant area: done
+  - persistent area: done
+  - `piercing / max_hits`: done
+  - area tick policy (`EveryTick / OncePerArea / OnEnter`): done
+  - `despawn_on_hit` legacy 축소: done
+  - `Box` / `Cone` shape support: done
+  - `include_caster` explicit area contract: done
+  - representative live `.ron` migrations: broadened across real skills
+- next direct target:
+  - migrate more live `.ron` skills onto `Projectile/Area` spatial delivery where it buys clarity
+  - optional pivot orientation expressiveness refinement
+
+### Patch 92
+
+요약:
+
+- 선형 빔 계열을 `Rectangle(width ~= 1 tile)`로 흉내내던 상태에서
+  `Line`을 first-class area shape로 올리고
+  `queen_of_hatred_magical_beam`을 그 모델로 마이그레이션했다
+
+변경 내용:
+
+- `SkillAreaShapeDef::Line { length_units }` 추가
+- runtime overlap이 `Line`을
+  `caster -> anchor` 방향의 얇은 선형 판정으로 해석하도록 확장
+- `queen_of_hatred_magical_beam.(beam_trace, beam_overdrive)`를
+  `Area(Line, CastTarget)`로 변경
+- 관련 unit/ron loading/documentation 갱신
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib skill_area_delivery_def_supports_lines`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib line_contains_point_from_origin_respects_segment_and_radius`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib instant_line_area_delivery_uses_caster_to_anchor_direction`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test ron_loading`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test skill_test_suite`
+
+### Patch 91
+
+요약:
+
+- 남아 있던 마지막 legacy skill projectile 경로를 제거해서
+  skill projectile delivery를 `SkillProjectileImpact`로 완전히 통일했다
+
+변경 내용:
+
+- `DeliveryDef::Projectile`의 skill branch는 이제
+  guidance가 `Fixed`든 `Homing`이든 모두
+  `schedule_skill_projectile_impact_event(...)`만 사용
+- `ProjectileHit`는 다시 basic attack 전용 경로가 됨
+- `apply_projectile_hit()`에서
+  `ProjectilePayload::SkillStep` 분기를 제거
+- handoff 문서도
+  `skill spatial runtime migration`이 사실상 마감됐고
+  다음 직접 작업이 live `.ron` migration / 선택적 shape refinement라는 상태로 갱신
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test skill_refactor_validation`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test battle_ranged_attack`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test skill_test_suite`
+
+### Patch 90
+
+요약:
+
+- live `.ron` migration 중 `RadiusChebyshev` 계열 step이 단순 `Circle`로 근사되면서
+  일부 real skill test가 깨지는 문제를
+  `Box + include_caster` 데이터 계약으로 바로잡았다
+
+변경 내용:
+
+- `SkillAreaShapeDef::Box`를 centered axis-aligned area로 추가
+  - 기존 `RadiusChebyshev(radius_tiles: N)`의 의미를
+    continuous runtime 안에서 더 정확하게 보존
+- `SkillAreaDeliveryDef.include_caster`를 추가
+  - `Allies` area가 self-inclusive인지
+    self-exclusive인지를 데이터에서 명시
+- live `.ron` migration 보정:
+  - `plague_mass_heal.mass_heal` -> `Area(Box, CastTarget, include_caster=true)`
+  - `fairy_festival_blessing.fairy_bless` -> same
+  - `white_night_pale_benediction.(ally_salvation, ally_blessing)` -> same
+  - `white_night_pale_benediction.enemy_judgement`는 `include_caster=false` 유지
+  - `fragment_universe_nova`, `big_bird_dark_lamp`, `mountain_mass_consumption`,
+    `melting_love_slime_infection.slime_spread`도 `Box` 기반으로 정리
+- regression test 보강:
+  - `instant_box_area_delivery_is_centered_on_anchor`
+  - `skill_area_delivery_def_defaults_include_caster_to_false`
+  - `ron_loading`
+  - `skill_test_suite`
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib skill_area_delivery_def_defaults_include_caster_to_false`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib instant_box_area_delivery_is_centered_on_anchor`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test ron_loading`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test skill_test_suite`
+
+현재 상태:
+
+- orchestrator: done / maintenance
+- movement continuous replay: phase 1 done
+- skill spatial runtime:
+  - untargeted fixed projectile: done
+  - targeted homing projectile: done
+  - instant area: done
+  - persistent area: done
+  - `Box / Rectangle / Cone` shape support: done
+  - `include_caster` explicit area contract: done
+  - `piercing / max_hits`: done
+  - area tick policy (`EveryTick / OncePerArea / OnEnter`): done
+  - `despawn_on_hit` legacy 축소: done
+- next direct target:
+  - migrate more live `.ron` skills onto `Projectile/Area` spatial delivery where it buys clarity
+  - optional line/pivot orientation expressiveness refinement
+
+### Patch 93
+
+요약:
+
+- live skill spatial migration이 blanket conversion 단계가 아니라
+  selective migration / content audit 단계라는 점을
+  handoff 문서와 테스트로 명확히 고정했다
+
+변경 내용:
+
+- `ron_loading`에 아래 regression을 추가
+  - area target step은 반드시 `DeliveryDef::Area`를 사용
+  - `projectile_vfx_id`가 있는 step은 반드시 `DeliveryDef::Projectile`를 사용
+  - 남아 있는 `Instant` step은 area target / projectile semantics를 가지지 않는
+    intentional non-spatial step임을 검증
+- 상단 `Current Verdict`, `Next Patch Target`도
+  남은 `Instant`를 전부 spatial delivery로 옮길 필요는 없고
+  선별적 migration이 맞다는 방향으로 갱신
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test ron_loading`
+
+현재 상태:
+
+- skill spatial runtime의 엔진 구현은 사실상 마감
+- 다음 단계는
+  실제 spatial semantics가 있는 live skill만 골라 추가 마이그레이션하거나,
+  새 skill requirement가 생길 때 orientation 표현력을 확장하는 것이다
+
+### Patch 94
+
+요약:
+
+- `sim.rs`에 뭉쳐 있던 skill spatial runtime helper를
+  `skill_runtime/` 모듈로 분리하는 1차 구조 정리를 시작했다
+
+변경 내용:
+
+- `core/src/game/battle/core/skill_runtime/` 추가
+  - `cast.rs`
+    - `update_skill_cast_step_result`
+    - `update_skill_cast_impact_context`
+    - `choose_skill_target_by_rule`
+    - `resolve_skill_anchor_position`
+    - `resolve_skill_step_targets`
+  - `area.rs`
+    - area geometry resolution
+    - instant area target collection
+    - persistent area register / tick / expire
+- `sim.rs`에서는 위 helper 본문을 제거하고
+  event loop / step dispatch 역할에 더 집중하게 정리
+- 이번 패치는 behavior 변경이 아니라
+  skill runtime을 후속 분해하기 위한 구조 정리 단계다
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --lib persistent_area_ticks_immediately_then_repeats_until_expire -- --exact`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test skill_refactor_validation`
+
+현재 상태:
+
+- skill spatial runtime behavior는 유지된 채
+  `sim.rs` 비대화 해소를 위한 첫 모듈 분리가 시작됨
+- 다음 구조 정리 후보는
+  projectile launch / impact scheduling과
+  step effect application bridge를 `skill_runtime/`으로 더 이동하는 것이다
+
+### Patch 95
+
+요약:
+
+- `sim.rs`와 `commands.rs`에 남아 있던 skill projectile launch / impact scheduling 책임을
+  `skill_runtime/projectile.rs`로 이동시켜
+  `sim.rs`를 event dispatch에 더 가깝게 정리했다
+
+변경 내용:
+
+- `core/src/game/battle/core/skill_runtime/projectile.rs` 추가
+  - `SkillProjectileImpactLaunch`
+  - fixed / homing projectile impact scheduling
+  - `dispatch_skill_projectile_delivery`
+  - `apply_skill_projectile_impact`
+- `sim.rs`
+  - `DeliveryDef::Projectile` branch가
+    세부 launch 계산 대신 `dispatch_skill_projectile_delivery(...)`만 호출하도록 축소
+- `commands.rs`
+  - skill projectile 전용 helper 제거
+  - basic attack projectile 쪽 helper만 유지
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test skill_refactor_validation`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test battle_ranged_attack`
+
+현재 상태:
+
+- `skill_runtime/` 분리가
+  - `cast.rs`
+  - `area.rs`
+  - `projectile.rs`
+  까지 진행됨
+- `sim.rs`는 battle loop / event dispatch 중심으로 더 가까워졌고,
+  구조 정리를 더 진행한다면 다음 후보는
+  `build_skill_step_commands(...)`와 step effect bridge 쪽이다
+
+### Patch 96
+
+요약:
+
+- `active projectile runtime` 2차 리팩토링의 Phase A skeleton을 codebase에 올렸다
+- 아직 projectile behavior는 launch-time scheduling 그대로 두고,
+  다음 단계 fixed projectile migration을 위한 state/event contract만 추가했다
+
+변경 내용:
+
+- `core/src/game/battle/core/types.rs`
+  - `ActiveProjectileRuntime` 추가
+- `core/src/game/battle/core/mod.rs`
+  - `active_projectiles` runtime state 추가
+- `core/src/game/battle/enums.rs`
+  - `BattleEvent::SkillProjectileAdvance` 추가
+  - queue priority / tie-break 반영
+- `core/src/game/battle/core/skill_runtime/projectile.rs`
+  - `advance_skill_projectile(...)` skeleton 추가
+- `core/src/game/battle/core/sim.rs`
+  - battle reset 시 `active_projectiles` 초기화
+  - `SkillProjectileAdvance` event consume 추가
+
+검증:
+
+- `cargo fmt --manifest-path /mnt/f/work/simulator/core/Cargo.toml`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test skill_refactor_validation`
+- `cargo test --manifest-path /mnt/f/work/simulator/core/Cargo.toml --test battle_ranged_attack`
+
+현재 상태:
+
+- active projectile runtime은 이제 문서-only 계획이 아니라 code skeleton이 들어간 상태다
+- next direct target은
+  `untargeted fixed projectile` launch를
+  `ActiveProjectileRuntime + SkillProjectileAdvance` path로 실제 전환하는 것이다

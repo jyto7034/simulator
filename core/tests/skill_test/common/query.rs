@@ -2,10 +2,12 @@ use game_core::{
     ecs::resources::Position,
     game::{
         battle::{
+            buffs::BuffId,
             ids::UnitInstanceId,
-            timeline::{Timeline, TimelineEntry, TimelineEvent},
+            timeline::{AttackKind, Timeline, TimelineEntry, TimelineEvent},
         },
         enums::Side,
+        stats::{StatId, StatModifierKind},
     },
 };
 
@@ -137,6 +139,30 @@ pub fn hp_changes_caused_by(timeline: &Timeline, parent_seq: u64) -> Vec<&Timeli
         .collect()
 }
 
+pub fn damage_hp_changes_caused_by(timeline: &Timeline, parent_seq: u64) -> Vec<&TimelineEntry> {
+    hp_changes_caused_by(timeline, parent_seq)
+        .into_iter()
+        .filter(|entry| {
+            matches!(
+                entry.event,
+                TimelineEvent::HpChanged { delta, .. } if delta < 0
+            )
+        })
+        .collect()
+}
+
+pub fn healing_hp_changes_caused_by(timeline: &Timeline, parent_seq: u64) -> Vec<&TimelineEntry> {
+    hp_changes_caused_by(timeline, parent_seq)
+        .into_iter()
+        .filter(|entry| {
+            matches!(
+                entry.event,
+                TimelineEvent::HpChanged { delta, .. } if delta > 0
+            )
+        })
+        .collect()
+}
+
 pub fn stat_changes_caused_by(timeline: &Timeline, parent_seq: u64) -> Vec<&TimelineEntry> {
     timeline
         .entries
@@ -159,6 +185,16 @@ pub fn buffs_applied_by(timeline: &Timeline, parent_seq: u64) -> Vec<&TimelineEn
         .collect()
 }
 
+pub fn buff_ids(entries: &[&TimelineEntry]) -> Vec<BuffId> {
+    entries
+        .iter()
+        .filter_map(|entry| match entry.event {
+            TimelineEvent::BuffApplied { buff_id, .. } => Some(buff_id),
+            _ => None,
+        })
+        .collect()
+}
+
 pub fn attack_starts_caused_by(timeline: &Timeline, parent_seq: u64) -> Vec<&TimelineEntry> {
     timeline
         .entries
@@ -166,6 +202,30 @@ pub fn attack_starts_caused_by(timeline: &Timeline, parent_seq: u64) -> Vec<&Tim
         .filter(|entry| {
             entry.cause.parent_seq() == Some(parent_seq)
                 && matches!(entry.event, TimelineEvent::AttackStart { .. })
+        })
+        .collect()
+}
+
+pub fn attack_kinds(entries: &[&TimelineEntry]) -> Vec<Option<AttackKind>> {
+    entries
+        .iter()
+        .filter_map(|entry| match entry.event {
+            TimelineEvent::AttackStart { kind, .. }
+            | TimelineEvent::AttackResolve { kind, .. }
+            | TimelineEvent::AttackMiss { kind, .. } => Some(kind),
+            _ => None,
+        })
+        .collect()
+}
+
+pub fn stat_modifier_summaries(entries: &[&TimelineEntry]) -> Vec<(StatId, StatModifierKind, i32)> {
+    entries
+        .iter()
+        .filter_map(|entry| match entry.event {
+            TimelineEvent::StatChanged { modifier, .. } => {
+                Some((modifier.stat, modifier.kind, modifier.value))
+            }
+            _ => None,
         })
         .collect()
 }

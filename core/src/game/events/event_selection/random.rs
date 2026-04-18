@@ -32,7 +32,10 @@ pub struct RandomEventGenerator;
 impl EventGenerator for RandomEventGenerator {
     type Output = GameOption;
 
-    fn generate(&self, ctx: &GeneratorContext) -> Self::Output {
+    fn generate(
+        &self,
+        ctx: &GeneratorContext,
+    ) -> Result<Self::Output, crate::game::behavior::GameError> {
         use crate::ecs::resources::GameProgression;
         use crate::game::enums::OrdealType;
         use rand::SeedableRng;
@@ -55,27 +58,27 @@ impl EventGenerator for RandomEventGenerator {
         let mut rng = rand::rngs::StdRng::seed_from_u64(ctx.random_seed);
 
         // 4. pool에서 가중치 기반 UUID 선택
-        let uuid = EventPhasePool::choose_weighted_uuid(pool, &mut rng).unwrap_or_else(|| {
-            panic!(
-                "Random event pool is empty for ordeal={current_ordeal:?}; static event data is invalid"
-            )
-        });
+        let uuid = EventPhasePool::choose_weighted_uuid(pool, &mut rng).ok_or_else(|| {
+            crate::game::behavior::GameError::InvalidStaticData(format!(
+                "random event pool is empty for ordeal={current_ordeal:?}"
+            ))
+        })?;
 
         // 5. GameData에서 RandomEvent 조회
         let event = ctx
             .game_data
             .random_event_data
             .get_by_uuid(&uuid)
-            .unwrap_or_else(|| {
-                panic!(
-                    "Random event uuid {uuid} selected from ordeal={current_ordeal:?} pool is missing from GameData"
-                )
-            })
+            .ok_or_else(|| {
+                crate::game::behavior::GameError::InvalidStaticData(format!(
+                    "random event uuid {uuid} selected from ordeal={current_ordeal:?} pool is missing from GameData"
+                ))
+            })?
             .clone();
 
         // 6. GameOption 생성 (RandomEventMetadata 전체 데이터 포함)
-        GameOption::Random {
+        Ok(GameOption::Random {
             event: RandomEventOption::from(event),
-        }
+        })
     }
 }

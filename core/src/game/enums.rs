@@ -327,10 +327,10 @@ pub enum PhaseEvent {
         random: RandomEventOption,
     },
     Suppression {
-        candidates: [SuppressionOption; 3],
+        candidates: Vec<SuppressionOption>,
     },
     Ordeal {
-        candidates: [OrdealOption; 3],
+        candidates: Vec<OrdealOption>,
     },
 }
 
@@ -384,16 +384,16 @@ impl PhaseEvent {
         }
     }
 
-    pub fn as_suppression(&self) -> Option<&[SuppressionOption; 3]> {
+    pub fn as_suppression(&self) -> Option<&[SuppressionOption]> {
         match self {
-            PhaseEvent::Suppression { candidates } => Some(candidates),
+            PhaseEvent::Suppression { candidates } => Some(candidates.as_slice()),
             _ => None,
         }
     }
 
-    pub fn as_ordeal(&self) -> Option<&[OrdealOption; 3]> {
+    pub fn as_ordeal(&self) -> Option<&[OrdealOption]> {
         match self {
-            PhaseEvent::Ordeal { candidates } => Some(candidates),
+            PhaseEvent::Ordeal { candidates } => Some(candidates.as_slice()),
             _ => None,
         }
     }

@@ -1,7 +1,7 @@
 # 서버 설정
 [server]
 bind_address = "0.0.0.0"
-port = 8080
+port = 8081
 log_level = "info" # 로그 레벨
 # metrics_auth_token = "secret-token-here"  # Optional: enable for metrics endpoint auth
 

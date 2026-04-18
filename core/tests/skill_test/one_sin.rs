@@ -4,8 +4,9 @@ use game_core::{
 };
 
 use super::{
-    hp_changes_caused_by, run_abnormality_scenario, scenario_from_board, skill_dummy_board_legend,
-    step_ids, target_unit_ids, BoardEntry, RuntimeStartPatch, StaticUnitPatch, UnitPatch,
+    damage_hp_changes_caused_by, healing_hp_changes_caused_by, hp_deltas, run_abnormality_scenario,
+    scenario_from_board, skill_dummy_board_legend, step_ids, target_unit_ids, BoardEntry,
+    RuntimeStartPatch, StaticUnitPatch, UnitPatch,
 };
 
 #[test]
@@ -22,6 +23,7 @@ fn one_sin_targets_the_lowest_health_enemy_and_heals_self_after_landing_judgemen
         UnitPatch {
             runtime_start: RuntimeStartPatch {
                 current_health: Some(100),
+                ..Default::default()
             },
             ..Default::default()
         },
@@ -31,6 +33,7 @@ fn one_sin_targets_the_lowest_health_enemy_and_heals_self_after_landing_judgemen
         UnitPatch {
             runtime_start: RuntimeStartPatch {
                 current_health: Some(1_200),
+                ..Default::default()
             },
             static_patch: StaticUnitPatch {
                 movement: Some(game_core::game::data::abnormality_data::MovementDef {
@@ -45,6 +48,7 @@ fn one_sin_targets_the_lowest_health_enemy_and_heals_self_after_landing_judgemen
         UnitPatch {
             runtime_start: RuntimeStartPatch {
                 current_health: Some(1_800),
+                ..Default::default()
             },
             static_patch: StaticUnitPatch {
                 movement: Some(game_core::game::data::abnormality_data::MovementDef {
@@ -83,11 +87,31 @@ fn one_sin_targets_the_lowest_health_enemy_and_heals_self_after_landing_judgemen
     );
 
     assert_eq!(
-        target_unit_ids(&hp_changes_caused_by(result.timeline(), steps[0].seq)),
+        target_unit_ids(&damage_hp_changes_caused_by(
+            result.timeline(),
+            steps[0].seq
+        )),
         vec![low_hp_enemy]
     );
     assert_eq!(
-        target_unit_ids(&hp_changes_caused_by(result.timeline(), steps[1].seq)),
+        hp_deltas(&damage_hp_changes_caused_by(
+            result.timeline(),
+            steps[0].seq
+        )),
+        vec![-38]
+    );
+    assert_eq!(
+        target_unit_ids(&healing_hp_changes_caused_by(
+            result.timeline(),
+            steps[1].seq
+        )),
         vec![caster]
+    );
+    assert_eq!(
+        hp_deltas(&healing_hp_changes_caused_by(
+            result.timeline(),
+            steps[1].seq
+        )),
+        vec![18]
     );
 }

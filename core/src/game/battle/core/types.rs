@@ -1,13 +1,18 @@
+use std::collections::BTreeMap;
+
 use uuid::Uuid;
 
 use crate::{
     ecs::resources::Position,
     game::{
-        ability::SkillId,
+        ability::{
+            SkillAreaShapeDef, SkillAreaTickPolicy, SkillHitTargetFilter, SkillId,
+            SkillProjectileCollisionDef,
+        },
         battle::{
             buffs::BuffId,
             cooldown::CooldownSource,
-            core::movement::{ActionState, MovementState},
+            core::movement::{ActionState, ContinuousPosition, MovementState},
             ids::UnitInstanceId,
             timeline::{SkillCastTarget, TimelineCause},
             types::UnitSnapshot,
@@ -17,8 +22,84 @@ use crate::{
     },
 };
 
-#[derive(Debug, Clone)]
-pub struct ProjectileRecord;
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ProjectileGuidance {
+    Homing,
+    Fixed,
+}
+
+pub type SkillDeliveryId = Uuid;
+pub type AreaInstanceId = Uuid;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ProjectileRecord {
+    pub fired_at_ms: u64,
+    pub attacker_instance_id: UnitInstanceId,
+    pub target_instance_id: UnitInstanceId,
+    pub start: ContinuousPosition,
+    pub aim: ContinuousPosition,
+    pub speed_units_per_ms: u32,
+    pub guidance: ProjectileGuidance,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ActiveProjectileRuntime {
+    pub delivery_id: SkillDeliveryId,
+    pub cast_seq: u64,
+    pub step_index: usize,
+    pub skill_id: SkillId,
+    pub step_id: String,
+    pub caster_instance_id: UnitInstanceId,
+    pub caster_owner: Side,
+    pub spawned_at_ms: u64,
+    pub start: ContinuousPosition,
+    pub current_position: ContinuousPosition,
+    pub aim: ContinuousPosition,
+    pub speed_units_per_ms: u32,
+    pub guidance: ProjectileGuidance,
+    pub target_unit_id: Option<UnitInstanceId>,
+    pub collision: SkillProjectileCollisionDef,
+    pub hit_unit_ids: Vec<UnitInstanceId>,
+    pub last_reevaluation_ms: Option<u64>,
+    pub next_reevaluation_ms: u64,
+    pub max_travel_ms: u64,
+    pub cause: TimelineCause,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SkillImpactContext {
+    pub delivery_id: SkillDeliveryId,
+    pub impact_time_ms: u64,
+    pub impact_position: ContinuousPosition,
+    pub direction_hint: Option<ContinuousPosition>,
+    pub first_hit_unit_id: Option<UnitInstanceId>,
+    pub hit_unit_ids: Vec<UnitInstanceId>,
+    pub spawned_area_id: Option<AreaInstanceId>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AreaRuntime {
+    pub area_id: AreaInstanceId,
+    pub cast_seq: u64,
+    pub step_index: usize,
+    pub skill_id: SkillId,
+    pub step_id: String,
+    pub caster_instance_id: UnitInstanceId,
+    pub caster_owner: Side,
+    pub origin: ContinuousPosition,
+    pub center: ContinuousPosition,
+    pub direction_hint: ContinuousPosition,
+    pub shape: SkillAreaShapeDef,
+    pub hit_targets: SkillHitTargetFilter,
+    pub include_caster: bool,
+    pub tick_policy: SkillAreaTickPolicy,
+    pub spawned_at_ms: u64,
+    pub expires_at_ms: u64,
+    pub tick_interval_ms: Option<u32>,
+    pub next_tick_ms: Option<u64>,
+    pub hit_unit_ids: Vec<UnitInstanceId>,
+    pub previous_tick_unit_ids: Vec<UnitInstanceId>,
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct ActionLocks {
@@ -86,7 +167,7 @@ pub(super) struct PendingSkillCast {
 #[derive(Debug, Clone, Default)]
 pub(super) struct SkillStepResult {
     pub(super) resolved_target_count: usize,
-    pub(super) damage_target_count: usize,
+    pub(super) actual_damage_target_count: usize,
     pub(super) applied_effect_count: usize,
     pub(super) scheduled_attack_count: usize,
 }
@@ -96,9 +177,9 @@ impl SkillStepResult {
         self.resolved_target_count = self
             .resolved_target_count
             .saturating_add(other.resolved_target_count);
-        self.damage_target_count = self
-            .damage_target_count
-            .saturating_add(other.damage_target_count);
+        self.actual_damage_target_count = self
+            .actual_damage_target_count
+            .saturating_add(other.actual_damage_target_count);
         self.applied_effect_count = self
             .applied_effect_count
             .saturating_add(other.applied_effect_count);
@@ -108,22 +189,119 @@ impl SkillStepResult {
     }
 
     pub(super) fn dealt_damage(&self) -> bool {
-        self.damage_target_count > 0
+        self.actual_damage_target_count > 0
     }
 }
 
 #[derive(Debug, Clone)]
-pub(super) struct ResolvedSkillStep {
-    pub(super) step_index: usize,
+pub(super) struct SkillStepProgress {
     pub(super) result: SkillStepResult,
+    pub(super) started: bool,
+    pub(super) pending_delivery_count: usize,
+}
+
+impl SkillStepProgress {
+    pub(super) fn is_terminal(&self) -> bool {
+        self.started && self.pending_delivery_count == 0
+    }
+}
+
+#[derive(Debug, Clone)]
+pub(super) struct DeferredSkillStep {
+    pub(super) caster_instance_id: UnitInstanceId,
+    pub(super) skill_id: SkillId,
+    pub(super) step_id: String,
+    pub(super) cast_target: Option<SkillCastTarget>,
+    pub(super) cause: TimelineCause,
+}
+
+#[derive(Debug, Clone, Copy, Default)]
+pub(super) struct CommandExecutionSummary {
+    pub(super) actual_damage_target_count: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct SkillStepDebugResult {
+    pub resolved_target_count: usize,
+    pub actual_damage_target_count: usize,
+    pub applied_effect_count: usize,
+    pub scheduled_attack_count: usize,
+}
+
+impl From<&SkillStepResult> for SkillStepDebugResult {
+    fn from(value: &SkillStepResult) -> Self {
+        Self {
+            resolved_target_count: value.resolved_target_count,
+            actual_damage_target_count: value.actual_damage_target_count,
+            applied_effect_count: value.applied_effect_count,
+            scheduled_attack_count: value.scheduled_attack_count,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SkillStepDebugProgress {
+    pub result: SkillStepDebugResult,
+    pub started: bool,
+    pub pending_delivery_count: usize,
+    pub terminal: bool,
+}
+
+impl From<&SkillStepProgress> for SkillStepDebugProgress {
+    fn from(value: &SkillStepProgress) -> Self {
+        Self {
+            result: SkillStepDebugResult::from(&value.result),
+            started: value.started,
+            pending_delivery_count: value.pending_delivery_count,
+            terminal: value.is_terminal(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ActiveSkillCastDebugState {
+    pub total_steps: usize,
+    pub step_progress: BTreeMap<usize, SkillStepDebugProgress>,
+    pub deferred_step_indices: Vec<usize>,
+    pub has_impact_context: bool,
+    pub active_area_count: usize,
 }
 
 #[derive(Debug, Clone)]
 pub(super) struct ActiveSkillCast {
+    #[allow(dead_code)]
+    pub(super) caster_instance_id: UnitInstanceId,
     pub(super) caster_owner: Side,
     pub(super) anchor_position: Position,
+    pub(super) cast_target_anchor_position: Option<Position>,
     pub(super) allow_dead_caster: bool,
-    pub(super) last_resolved_step: Option<ResolvedSkillStep>,
+    pub(super) total_steps: usize,
+    pub(super) step_progress: BTreeMap<usize, SkillStepProgress>,
+    pub(super) deferred_steps: BTreeMap<usize, DeferredSkillStep>,
+    pub(super) impact_contexts_by_step: BTreeMap<usize, SkillImpactContext>,
+    // Reserved for the spatial delivery runtime migration.
+    #[allow(dead_code)]
+    pub(super) last_impact_context: Option<SkillImpactContext>,
+    // Reserved for the spatial delivery runtime migration.
+    #[allow(dead_code)]
+    pub(super) active_area_ids: Vec<AreaInstanceId>,
+}
+
+impl From<&ActiveSkillCast> for ActiveSkillCastDebugState {
+    fn from(value: &ActiveSkillCast) -> Self {
+        Self {
+            total_steps: value.total_steps,
+            step_progress: value
+                .step_progress
+                .iter()
+                .map(|(index, progress)| (*index, SkillStepDebugProgress::from(progress)))
+                .collect(),
+            deferred_step_indices: value.deferred_steps.keys().copied().collect(),
+            has_impact_context: !value.impact_contexts_by_step.is_empty()
+                || value.last_impact_context.is_some(),
+            active_area_count: value.active_area_ids.len(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -224,5 +402,29 @@ mod tests {
         locks.lock_resonance_gain_until(25);
         assert!(!locks.can_gain_resonance(29));
         assert!(locks.can_gain_resonance(30));
+    }
+
+    #[test]
+    fn skill_impact_context_preserves_first_hit_and_spawned_area() {
+        let delivery_id = Uuid::from_u128(0xAA);
+        let first_hit_unit_id: UnitInstanceId = Uuid::from_u128(0xBB).into();
+        let area_id = Uuid::from_u128(0xCC);
+        let context = SkillImpactContext {
+            delivery_id,
+            impact_time_ms: 123,
+            impact_position: ContinuousPosition::new(10, 20),
+            direction_hint: Some(ContinuousPosition::new(30, 40)),
+            first_hit_unit_id: Some(first_hit_unit_id),
+            hit_unit_ids: vec![first_hit_unit_id],
+            spawned_area_id: Some(area_id),
+        };
+
+        assert_eq!(context.delivery_id, delivery_id);
+        assert_eq!(context.first_hit_unit_id, Some(first_hit_unit_id));
+        assert_eq!(context.spawned_area_id, Some(area_id));
+        assert_eq!(
+            context.direction_hint,
+            Some(ContinuousPosition::new(30, 40))
+        );
     }
 }

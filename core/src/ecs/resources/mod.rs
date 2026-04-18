@@ -115,6 +115,10 @@ impl Field {
         Ok(())
     }
 
+    pub fn has_unit_on_side(&self, side: Side) -> bool {
+        self.placements.values().any(|placement| placement.side == side)
+    }
+
     pub fn remove(&mut self, unit_uuid: Uuid) -> Option<Position> {
         if let Some(pos) = self.unit_positions.remove(&unit_uuid) {
             self.placements.remove(&pos);
@@ -626,6 +630,12 @@ impl ActionValidator {
         self.allowed_actions.clear();
     }
 }
+
+/// StartNewGame 직후 부여되는 초기 보너스가 아직 ExitBonus 되지 않았음을 표시.
+/// ExitBonus 처리 시 이 리소스가 있으면 Phase 진행을 하지 않고 바로
+/// WaitingPhaseRequest 로 전이한다.
+#[derive(Resource, Default)]
+pub struct StarterBonusPending;
 
 // ============================================================
 // Tests

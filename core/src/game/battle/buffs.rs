@@ -95,6 +95,10 @@ pub fn get(buff_id: BuffId) -> Option<&'static BuffDef> {
     REGISTRY.get(&buff_id)
 }
 
+pub fn contains_name(name: &str) -> bool {
+    get(BuffId::from_name(name)).is_some()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

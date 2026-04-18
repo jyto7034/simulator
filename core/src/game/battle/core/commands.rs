@@ -1,7 +1,7 @@
 use uuid::Uuid;
 
 use crate::ecs::resources::Position;
-use crate::game::ability::DeliveryDef;
+use crate::game::ability::{DeliveryDef, SkillHitTargetFilter};
 use crate::game::battle::cooldown::{SourcedAbilityActivation, SourcedEffect};
 use crate::game::battle::core::BattleCore;
 use crate::game::battle::damage::{
@@ -18,7 +18,10 @@ use crate::game::determinism;
 use crate::game::enums::Side;
 use crate::game::stats::{Effect, TriggerEffectTarget, TriggerType};
 
-use super::movement::{ActionState, TILE_UNITS_PER_TILE};
+use super::{
+    movement::{ActionState, ContinuousPosition, TILE_UNITS_PER_TILE},
+    types::{CommandExecutionSummary, ProjectileGuidance},
+};
 
 #[derive(Debug, Clone)]
 pub(super) struct ProjectileLaunch {
@@ -27,7 +30,10 @@ pub(super) struct ProjectileLaunch {
     pub(super) target_instance_id: UnitInstanceId,
     pub(super) attacker_pos: Position,
     pub(super) target_pos: Position,
+    pub(super) attacker_origin: ContinuousPosition,
+    pub(super) target_aim: ContinuousPosition,
     pub(super) speed_units_per_ms: u32,
+    pub(super) guidance: ProjectileGuidance,
     pub(super) payload: ProjectilePayload,
 }
 
@@ -72,7 +78,27 @@ fn projectile_flight_ms(distance_units: u64, speed_units_per_ms: u32) -> u64 {
     distance_units.saturating_add(speed_units_per_ms.saturating_sub(1)) / speed_units_per_ms
 }
 
+pub(super) fn projectile_flight_ms_for_delivery(
+    distance_units: u64,
+    speed_units_per_ms: u32,
+) -> u64 {
+    projectile_flight_ms(distance_units, speed_units_per_ms)
+}
+
 impl BattleCore {
+    pub(super) fn unit_continuous_position_or_tile_center(
+        &self,
+        unit_instance_id: UnitInstanceId,
+    ) -> Option<ContinuousPosition> {
+        if let Some(unit) = self.units.get(&unit_instance_id) {
+            return Some(ContinuousPosition::new(unit.pos_x_units, unit.pos_y_units));
+        }
+
+        self.graveyard
+            .get(&unit_instance_id)
+            .map(|snapshot| ContinuousPosition::tile_center(snapshot.position))
+    }
+
     pub(super) fn activation_commands_from_bindings(
         bindings: Vec<SourcedAbilityActivation>,
         caster_id: UnitInstanceId,
@@ -355,8 +381,18 @@ impl BattleCore {
         self.projectile_seq = self.projectile_seq.wrapping_add(1);
         let projectile_id = determinism::uuid_v4_from_seed(seed, PROJECTILE_NS, projectile_seq);
 
-        self.projectiles
-            .insert(projectile_id, super::ProjectileRecord);
+        self.projectiles.insert(
+            projectile_id,
+            super::ProjectileRecord {
+                fired_at_ms: launch.fired_at_ms,
+                attacker_instance_id: launch.attacker_instance_id,
+                target_instance_id: launch.target_instance_id,
+                start: launch.attacker_origin,
+                aim: launch.target_aim,
+                speed_units_per_ms: launch.speed_units_per_ms,
+                guidance: launch.guidance,
+            },
+        );
 
         self.event_queue.push(BattleEvent::ProjectileHit {
             time_ms: impact_ms,
@@ -366,6 +402,42 @@ impl BattleCore {
             payload: launch.payload,
             cause: self.recording_cause().unwrap_or_default(),
         });
+    }
+
+    pub(super) fn skill_delivery_accepts_unit(
+        &self,
+        caster_owner: Side,
+        caster_instance_id: UnitInstanceId,
+        target_id: UnitInstanceId,
+        hit_targets: SkillHitTargetFilter,
+        include_caster: bool,
+    ) -> bool {
+        if target_id == caster_instance_id && !include_caster {
+            return false;
+        }
+
+        let Some(target) = self.units.get(&target_id) else {
+            return false;
+        };
+        if target.is_dead() {
+            return false;
+        }
+
+        match hit_targets {
+            SkillHitTargetFilter::Allies => target.owner == caster_owner,
+            SkillHitTargetFilter::Enemies => target.owner != caster_owner,
+            SkillHitTargetFilter::Any => true,
+        }
+    }
+
+    pub(super) fn sample_unit_position_at(
+        &self,
+        unit_instance_id: UnitInstanceId,
+        time_ms: u64,
+    ) -> Option<ContinuousPosition> {
+        self.sample_motion_segment_at(unit_instance_id, time_ms)
+            .map(|sample| sample.position_at(time_ms))
+            .or_else(|| self.unit_continuous_position_or_tile_center(unit_instance_id))
     }
 
     fn calculate_basic_attack_damage_snapshot(
@@ -587,36 +659,6 @@ impl BattleCore {
                     );
                     return;
                 }
-            }
-            ProjectilePayload::SkillStep {
-                cast_seq,
-                step_index,
-                skill_id,
-                step_id,
-                step_target,
-            } => {
-                let Some(skill) = self.game_data.skill_data.get_by_id(&skill_id).cloned() else {
-                    return;
-                };
-
-                let Some(step) = Self::resolve_skill_step_by_id(&skill, &step_id) else {
-                    return;
-                };
-                let targets = self.resolve_skill_step_targets(
-                    cast_seq,
-                    attacker_instance_id,
-                    step,
-                    step_target,
-                );
-                let (commands, result) =
-                    Self::build_skill_step_commands(attacker_instance_id, step, &targets);
-
-                if !commands.is_empty() {
-                    self.process_commands(commands, time_ms);
-                }
-                self.update_skill_cast_step_result(cast_seq, step_index, result);
-                self.schedule_pending_autocasts(time_ms);
-                return;
             }
         }
 
@@ -854,7 +896,9 @@ impl BattleCore {
                 true
             }
 
-            DeliveryDef::Projectile { speed_units_per_ms } => {
+            DeliveryDef::Projectile {
+                speed_units_per_ms, ..
+            } => {
                 let Some(attacker_pos) = self.battlefield.position_of(attacker_instance_id) else {
                     return false;
                 };
@@ -868,15 +912,87 @@ impl BattleCore {
                     target_instance_id: target_id,
                     attacker_pos,
                     target_pos,
+                    attacker_origin: self
+                        .unit_continuous_position_or_tile_center(attacker_instance_id)
+                        .unwrap_or_else(|| ContinuousPosition::tile_center(attacker_pos)),
+                    target_aim: self
+                        .unit_continuous_position_or_tile_center(target_id)
+                        .unwrap_or_else(|| ContinuousPosition::tile_center(target_pos)),
                     speed_units_per_ms,
+                    guidance: ProjectileGuidance::Homing,
                     payload: ProjectilePayload::BasicAttack,
                 });
+                true
+            }
+            DeliveryDef::Area { .. } => {
+                // Basic attacks never use area delivery. Treat unexpected data
+                // defensively as an instant hit path rather than introducing a
+                // separate basic-attack spatial model.
+                self.add_resonance(attacker_instance_id, 10, current_time_ms, true);
+
+                let result =
+                    self.calculate_basic_attack_damage_snapshot(BasicAttackDamageSnapshot {
+                        attacker: AttackSourceSnapshot {
+                            instance_id: attacker_instance_id,
+                            owner: attacker_owner,
+                            attack: attacker_attack,
+                        },
+                        target: AttackTargetSnapshot {
+                            instance_id: target_id,
+                            owner: target_owner,
+                            defense: target_defense,
+                            current_hp: target_current_hp,
+                            max_hp: target_max_hp,
+                        },
+                        time_ms: current_time_ms,
+                    });
+
+                let dealt = target_current_hp.saturating_sub(result.target_remaining_hp);
+                let gained = dealt / 10;
+                if gained > 0 {
+                    self.add_resonance(attacker_instance_id, gained, current_time_ms, true);
+                }
+
+                self.apply_damage_and_record(
+                    Some(attacker_instance_id),
+                    target_id,
+                    result.final_damage,
+                    current_time_ms,
+                    HpChangeReason::BasicAttack,
+                );
+
+                if !result.triggered_commands.is_empty() {
+                    self.process_commands(result.triggered_commands, current_time_ms);
+                }
+                let mut trigger_ability_commands = Self::activation_commands_from_bindings(
+                    self.collect_all_trigger_activations(
+                        attacker_instance_id,
+                        TriggerType::OnAttack,
+                    ),
+                    attacker_instance_id,
+                    Some(target_id),
+                );
+                trigger_ability_commands.extend(Self::activation_commands_from_bindings(
+                    self.collect_all_trigger_activations(target_id, TriggerType::OnHit),
+                    target_id,
+                    Some(attacker_instance_id),
+                ));
+                if !trigger_ability_commands.is_empty() {
+                    self.process_commands(trigger_ability_commands, current_time_ms);
+                }
+
+                self.schedule_pending_autocasts(current_time_ms);
                 true
             }
         }
     }
 
-    pub(super) fn process_commands(&mut self, commands: Vec<BattleCommand>, current_time_ms: u64) {
+    pub(super) fn process_commands(
+        &mut self,
+        commands: Vec<BattleCommand>,
+        current_time_ms: u64,
+    ) -> CommandExecutionSummary {
+        let mut summary = CommandExecutionSummary::default();
         for command in commands {
             match command {
                 BattleCommand::UnitDied { .. } => {
@@ -969,6 +1085,11 @@ impl BattleCore {
                     let percent_delta = (i64::from(max_health) * i64::from(percent)) / 100;
                     let delta_i64 = i64::from(flat).saturating_add(percent_delta);
                     let delta = delta_i64.clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32;
+                    let hp_before = self
+                        .units
+                        .get(&target_id)
+                        .map(|unit| unit.stats.current_health)
+                        .unwrap_or(0);
 
                     self.apply_hp_delta_and_record(
                         source_id,
@@ -977,6 +1098,16 @@ impl BattleCore {
                         current_time_ms,
                         HpChangeReason::Command,
                     );
+
+                    let hp_after = self
+                        .units
+                        .get(&target_id)
+                        .map(|unit| unit.stats.current_health)
+                        .unwrap_or(hp_before);
+                    if hp_after < hp_before {
+                        summary.actual_damage_target_count =
+                            summary.actual_damage_target_count.saturating_add(1);
+                    }
                 }
                 BattleCommand::ModifyResonance {
                     target_id,
@@ -1020,6 +1151,7 @@ impl BattleCore {
                 }
             }
         }
+        summary
     }
 }
 
@@ -1031,8 +1163,9 @@ mod tests {
         AbilityActivationBinding, AbilityActivationDef, DeliveryDef, SkillCastTargetingDef,
         SkillDef, SkillStepDef, SkillTarget, StepTargetingMode, UnitTargetRule,
     };
+    use crate::game::battle::core::movement::ContinuousPosition;
     use crate::game::battle::core::movement::{ActionState, MovementState};
-    use crate::game::battle::core::types::RuntimeUnit;
+    use crate::game::battle::core::types::{ProjectileGuidance, RuntimeUnit};
     use crate::game::battle::core::ProjectileRecord;
     use crate::game::battle::enums::ProjectilePayload;
     use crate::game::battle::timeline::{
@@ -1075,6 +1208,45 @@ mod tests {
         assert_eq!(projectile_flight_ms(1_000_000, 3_000), 334);
         assert_eq!(projectile_flight_ms(1_000_000, 2_000_000), 1);
         assert_eq!(projectile_flight_ms(2_000_000, 2_000_000), 1);
+    }
+
+    #[test]
+    fn schedule_projectile_hit_event_stores_homing_launch_metadata() {
+        let empty_deck = PlayerDeckInfo {
+            units: vec![],
+            artifacts: vec![],
+            positions: HashMap::new(),
+        };
+        let mut core =
+            super::BattleCore::new(&empty_deck, &empty_deck, empty_game_data(), (4, 4), 1);
+
+        let attacker_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(41));
+        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(42));
+
+        core.schedule_projectile_hit_event(super::ProjectileLaunch {
+            fired_at_ms: 100,
+            attacker_instance_id: attacker_id,
+            target_instance_id: target_id,
+            attacker_pos: Position::new(0, 0),
+            target_pos: Position::new(2, 0),
+            attacker_origin: ContinuousPosition::new(100, 200),
+            target_aim: ContinuousPosition::new(900, 200),
+            speed_units_per_ms: 1000,
+            guidance: ProjectileGuidance::Homing,
+            payload: ProjectilePayload::BasicAttack,
+        });
+
+        let stored = core
+            .projectiles
+            .values()
+            .next()
+            .copied()
+            .expect("missing projectile record");
+        assert_eq!(stored.attacker_instance_id, attacker_id);
+        assert_eq!(stored.target_instance_id, target_id);
+        assert_eq!(stored.start, ContinuousPosition::new(100, 200));
+        assert_eq!(stored.aim, ContinuousPosition::new(900, 200));
+        assert_eq!(stored.guidance, ProjectileGuidance::Homing);
     }
 
     fn empty_game_data() -> Arc<GameDataBase> {
@@ -1435,7 +1607,18 @@ mod tests {
             .unwrap();
 
         let projectile_id = Uuid::from_u128(0xAAAA);
-        core.projectiles.insert(projectile_id, ProjectileRecord);
+        core.projectiles.insert(
+            projectile_id,
+            ProjectileRecord {
+                fired_at_ms: 0,
+                attacker_instance_id: attacker_id,
+                target_instance_id: target_id,
+                start: ContinuousPosition::new(0, 0),
+                aim: ContinuousPosition::new(1_000_000, 0),
+                speed_units_per_ms: 1_000,
+                guidance: ProjectileGuidance::Homing,
+            },
+        );
 
         core.apply_projectile_hit(
             10,

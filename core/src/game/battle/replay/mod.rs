@@ -46,6 +46,17 @@ impl TimelineReplayer {
 
         let mut seq_to_index: HashMap<u64, usize> = HashMap::new();
         for (index, entry) in timeline.entries.iter().enumerate() {
+            if let Some(first_index) = seq_to_index.get(&entry.seq).copied() {
+                violations.push(TimelineReplayViolation {
+                    kind: TimelineReplayViolationKind::DuplicateSeq,
+                    message: format!(
+                        "duplicate seq {} at index {} (first seen at index {})",
+                        entry.seq, index, first_index
+                    ),
+                    entry_index: Some(index),
+                });
+                continue;
+            }
             seq_to_index.insert(entry.seq, index);
         }
 

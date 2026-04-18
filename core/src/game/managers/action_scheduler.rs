@@ -19,6 +19,7 @@ impl ActionScheduler {
                 vec![
                     ActionKind::RequestPhaseData,
                     ActionKind::EquipItem,
+                    ActionKind::TransferUnit,
                     ActionKind::MoveUnit,
                 ]
             }
@@ -28,6 +29,7 @@ impl ActionScheduler {
                     ActionKind::SelectEvent,
                     ActionKind::StartSuppression,
                     ActionKind::EquipItem,
+                    ActionKind::TransferUnit,
                     ActionKind::MoveUnit,
                 ]
             }
@@ -104,9 +106,10 @@ mod tests {
         let state = GameState::WaitingPhaseRequest;
         let allowed = ActionScheduler::get_allowed_actions(&state);
 
-        assert_eq!(allowed.len(), 3);
+        assert_eq!(allowed.len(), 4);
         assert!(allowed.contains(&ActionKind::RequestPhaseData));
         assert!(allowed.contains(&ActionKind::EquipItem));
+        assert!(allowed.contains(&ActionKind::TransferUnit));
         assert!(allowed.contains(&ActionKind::MoveUnit));
     }
 
@@ -115,9 +118,10 @@ mod tests {
         let state = GameState::SelectingEvent;
         let allowed = ActionScheduler::get_allowed_actions(&state);
 
-        assert_eq!(allowed.len(), 4);
+        assert_eq!(allowed.len(), 5);
         assert!(allowed.contains(&ActionKind::SelectEvent));
         assert!(allowed.contains(&ActionKind::StartSuppression));
+        assert!(allowed.contains(&ActionKind::TransferUnit));
         assert!(allowed.contains(&ActionKind::EquipItem));
         assert!(allowed.contains(&ActionKind::MoveUnit));
     }
@@ -163,16 +167,18 @@ mod tests {
 
         let state = GameState::WaitingPhaseRequest;
         let allowed = ActionScheduler::get_allowed_actions(&state);
-        assert_eq!(allowed.len(), 3);
+        assert_eq!(allowed.len(), 4);
         assert!(allowed.contains(&ActionKind::RequestPhaseData));
         assert!(allowed.contains(&ActionKind::EquipItem));
+        assert!(allowed.contains(&ActionKind::TransferUnit));
         assert!(allowed.contains(&ActionKind::MoveUnit));
 
         let state = GameState::SelectingEvent;
         let allowed = ActionScheduler::get_allowed_actions(&state);
-        assert_eq!(allowed.len(), 4);
+        assert_eq!(allowed.len(), 5);
         assert!(allowed.contains(&ActionKind::SelectEvent));
         assert!(allowed.contains(&ActionKind::StartSuppression));
+        assert!(allowed.contains(&ActionKind::TransferUnit));
 
         let state = GameState::InShop {
             shop_uuid: Uuid::nil(),
@@ -231,8 +237,8 @@ mod tests {
     fn test_action_counts_per_state() {
         let test_cases = vec![
             (GameState::NotStarted, 1),
-            (GameState::WaitingPhaseRequest, 3),
-            (GameState::SelectingEvent, 4),
+            (GameState::WaitingPhaseRequest, 4),
+            (GameState::SelectingEvent, 5),
             (
                 GameState::InShop {
                     shop_uuid: Uuid::nil(),

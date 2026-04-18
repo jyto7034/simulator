@@ -19,6 +19,8 @@ pub enum PlayerGameClientMessage {
         behavior: PlayerBehaviorRequest,
     },
     Ping,
+    /// 플레이어 의도적 종료: Actor 즉시 중지 + 다음 접속 시 새로운 게임으로 시작.
+    Quit,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -178,3 +180,9 @@ pub struct ExecutePlayerBehavior {
 pub struct PushServerMessage {
     pub message: PlayerGameServerMessage,
 }
+
+/// 클라이언트 의도적 Quit 로 인한 Actor 종료 요청.
+/// 재접속 TTL 건너뛰고 즉시 중지 + LoadBalance 등록에서 제거.
+#[derive(Message)]
+#[rtype(result = "()")]
+pub struct QuitPlayerActor;

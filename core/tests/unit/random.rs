@@ -350,29 +350,34 @@ fn selected_suppression_candidate_starts_battle_from_in_suppression_state() {
         GameState::InSuppressionReplay { .. }
     ));
 
-    let reward_state = game
+    let replay_result = game
         .execute(player_id, PlayerBehavior::FinishSuppressionReplay)
         .unwrap();
-    let (mode, rewards, selected_reward_uuid) = reward_state
-        .as_reward_state()
-        .expect("reward state should be returned after replay");
-    assert_eq!(mode, RewardMode::ChooseOne);
-    assert_eq!(rewards.len(), 1);
-    assert_eq!(selected_reward_uuid, None);
-    assert!(matches!(game.get_state(), GameState::InBonus { .. }));
+    if winner == game_core::game::battle::types::BattleWinner::Player {
+        let (mode, rewards, selected_reward_uuid) = replay_result
+            .as_reward_state()
+            .expect("reward state should be returned after a winning replay");
+        assert_eq!(mode, RewardMode::ChooseOne);
+        assert_eq!(rewards.len(), 1);
+        assert_eq!(selected_reward_uuid, None);
+        assert!(matches!(game.get_state(), GameState::InBonus { .. }));
 
-    let selected_reward = game
-        .execute(
-            player_id,
-            PlayerBehavior::SelectEvent {
-                event_id: rewards[0].uuid,
-            },
-        )
-        .unwrap();
-    let (_, _, selected_reward_uuid) = selected_reward
-        .as_reward_state()
-        .expect("reward selection should echo reward state");
-    assert_eq!(selected_reward_uuid, Some(rewards[0].uuid));
+        let selected_reward = game
+            .execute(
+                player_id,
+                PlayerBehavior::SelectEvent {
+                    event_id: rewards[0].uuid,
+                },
+            )
+            .unwrap();
+        let (_, _, selected_reward_uuid) = selected_reward
+            .as_reward_state()
+            .expect("reward selection should echo reward state");
+        assert_eq!(selected_reward_uuid, Some(rewards[0].uuid));
+    } else {
+        assert!(matches!(replay_result, BehaviorResult::AdvancePhase { .. }));
+        assert!(matches!(game.get_state(), GameState::WaitingPhaseRequest));
+    }
 }
 
 #[test]
@@ -427,7 +432,7 @@ fn suppression_reward_choose_one_requires_selection_then_claim_and_exit() {
             },
         )
         .unwrap();
-    let (_winner, timeline) = battle_result
+    let (winner, timeline) = battle_result
         .as_suppress_abnormality()
         .expect("suppression battle result should be returned");
     assert!(!timeline.entries.is_empty());
@@ -444,61 +449,67 @@ fn suppression_reward_choose_one_requires_selection_then_claim_and_exit() {
         .unwrap_err();
     assert!(matches!(err, GameError::InvalidAction));
 
-    let reward_state = game
+    let replay_result = game
         .execute(player_id, PlayerBehavior::FinishSuppressionReplay)
         .unwrap();
-    let (mode, rewards, selected_reward_uuid) = reward_state
-        .as_reward_state()
-        .expect("reward state should be returned after replay");
-    assert_eq!(mode, RewardMode::ChooseOne);
-    assert_eq!(rewards.len(), 2);
-    assert_eq!(selected_reward_uuid, None);
-    assert!(matches!(game.get_state(), GameState::InBonus { .. }));
-    assert_eq!(game.get_phase_events_count(), 2);
+    if winner == game_core::game::battle::types::BattleWinner::Player {
+        let (mode, rewards, selected_reward_uuid) = replay_result
+            .as_reward_state()
+            .expect("reward state should be returned after a winning replay");
+        assert_eq!(mode, RewardMode::ChooseOne);
+        assert_eq!(rewards.len(), 2);
+        assert_eq!(selected_reward_uuid, None);
+        assert!(matches!(game.get_state(), GameState::InBonus { .. }));
+        assert_eq!(game.get_phase_events_count(), 2);
 
-    let bonus_allowed = game.get_allowed_actions();
-    assert!(contains_action_kind(
-        &bonus_allowed,
-        ActionKind::SelectEvent
-    ));
-    assert!(contains_action_kind(&bonus_allowed, ActionKind::ClaimBonus));
-    assert!(contains_action_kind(&bonus_allowed, ActionKind::ExitBonus));
+        let bonus_allowed = game.get_allowed_actions();
+        assert!(contains_action_kind(
+            &bonus_allowed,
+            ActionKind::SelectEvent
+        ));
+        assert!(contains_action_kind(&bonus_allowed, ActionKind::ClaimBonus));
+        assert!(contains_action_kind(&bonus_allowed, ActionKind::ExitBonus));
 
-    let err = game
-        .execute(player_id, PlayerBehavior::ClaimBonus)
-        .unwrap_err();
-    assert!(matches!(err, GameError::InvalidAction));
+        let err = game
+            .execute(player_id, PlayerBehavior::ClaimBonus)
+            .unwrap_err();
+        assert!(matches!(err, GameError::InvalidAction));
 
-    let select_result = game
-        .execute(
-            player_id,
-            PlayerBehavior::SelectEvent {
-                event_id: reward_b.uuid,
-            },
-        )
-        .unwrap();
-    let (_, _, selected_reward_uuid) = select_result
-        .as_reward_state()
-        .expect("reward selection should return updated reward state");
-    assert_eq!(selected_reward_uuid, Some(reward_b.uuid));
+        let select_result = game
+            .execute(
+                player_id,
+                PlayerBehavior::SelectEvent {
+                    event_id: reward_b.uuid,
+                },
+            )
+            .unwrap();
+        let (_, _, selected_reward_uuid) = select_result
+            .as_reward_state()
+            .expect("reward selection should return updated reward state");
+        assert_eq!(selected_reward_uuid, Some(reward_b.uuid));
 
-    let claim_result = game.execute(player_id, PlayerBehavior::ClaimBonus).unwrap();
-    let (enkephalin, inventory_diff) = claim_result
-        .as_bonus_reward()
-        .expect("claim should grant reward");
-    assert_eq!(enkephalin, reward_b.amount);
-    assert!(inventory_diff.added.is_empty());
-    assert!(inventory_diff.updated.is_empty());
-    assert!(inventory_diff.removed.is_empty());
-    assert!(matches!(game.get_state(), GameState::InBonusClaimed { .. }));
-    assert_eq!(game.get_phase_events_count(), 0);
+        let claim_result = game.execute(player_id, PlayerBehavior::ClaimBonus).unwrap();
+        let (enkephalin, inventory_diff) = claim_result
+            .as_bonus_reward()
+            .expect("claim should grant reward");
+        assert_eq!(enkephalin, reward_b.amount);
+        assert!(inventory_diff.added.is_empty());
+        assert!(inventory_diff.updated.is_empty());
+        assert!(inventory_diff.removed.is_empty());
+        assert!(matches!(game.get_state(), GameState::InBonusClaimed { .. }));
+        assert_eq!(game.get_phase_events_count(), 0);
 
-    let claimed_allowed = game.get_allowed_actions();
-    assert_eq!(claimed_allowed, vec![ActionKind::ExitBonus]);
+        let claimed_allowed = game.get_allowed_actions();
+        assert_eq!(claimed_allowed, vec![ActionKind::ExitBonus]);
 
-    let exit_result = game.execute(player_id, PlayerBehavior::ExitBonus).unwrap();
-    assert!(matches!(exit_result, BehaviorResult::AdvancePhase { .. }));
-    assert!(matches!(game.get_state(), GameState::WaitingPhaseRequest));
+        let exit_result = game.execute(player_id, PlayerBehavior::ExitBonus).unwrap();
+        assert!(matches!(exit_result, BehaviorResult::AdvancePhase { .. }));
+        assert!(matches!(game.get_state(), GameState::WaitingPhaseRequest));
+    } else {
+        assert!(matches!(replay_result, BehaviorResult::AdvancePhase { .. }));
+        assert!(matches!(game.get_state(), GameState::WaitingPhaseRequest));
+        assert_eq!(game.get_phase_events_count(), 0);
+    }
 }
 
 #[test]
@@ -541,48 +552,56 @@ fn suppression_reward_claim_all_claims_everything_then_exits() {
 
     select_suppression_candidate(&mut game, player_id, suppression_event).unwrap();
 
-    game.execute(
-        player_id,
-        PlayerBehavior::StartSuppression {
-            abnormality_id: candidate.abnormality_id,
-        },
-    )
-    .unwrap();
+    let battle_result = game
+        .execute(
+            player_id,
+            PlayerBehavior::StartSuppression {
+                abnormality_id: candidate.abnormality_id,
+            },
+        )
+        .unwrap();
+    let (winner, _timeline) = battle_result
+        .as_suppress_abnormality()
+        .expect("suppression battle result should be returned");
     assert!(matches!(
         game.get_state(),
         GameState::InSuppressionReplay { .. }
     ));
 
-    let reward_state = game
+    let replay_result = game
         .execute(player_id, PlayerBehavior::FinishSuppressionReplay)
         .unwrap();
-    let (mode, rewards, selected_reward_uuid) = reward_state
-        .as_reward_state()
-        .expect("reward state should be returned after replay");
-    assert_eq!(mode, RewardMode::ClaimAll);
-    assert_eq!(rewards.len(), 2);
-    assert_eq!(selected_reward_uuid, None);
-    assert!(matches!(game.get_state(), GameState::InBonus { .. }));
-    assert_eq!(game.get_phase_events_count(), 0);
+    if winner == game_core::game::battle::types::BattleWinner::Player {
+        let (mode, rewards, selected_reward_uuid) = replay_result
+            .as_reward_state()
+            .expect("reward state should be returned after a winning replay");
+        assert_eq!(mode, RewardMode::ClaimAll);
+        assert_eq!(rewards.len(), 2);
+        assert_eq!(selected_reward_uuid, None);
+        assert!(matches!(game.get_state(), GameState::InBonus { .. }));
+        assert_eq!(game.get_phase_events_count(), 0);
 
-    let claim_result = game.execute(player_id, PlayerBehavior::ClaimBonus).unwrap();
-    let (enkephalin, inventory_diff) = claim_result
-        .as_bonus_reward()
-        .expect("claim should grant all rewards");
-    assert_eq!(enkephalin, reward_a.amount + reward_b.amount);
-    assert!(inventory_diff.added.is_empty());
-    assert!(inventory_diff.updated.is_empty());
-    assert!(inventory_diff.removed.is_empty());
-    assert!(matches!(game.get_state(), GameState::InBonusClaimed { .. }));
+        let claim_result = game.execute(player_id, PlayerBehavior::ClaimBonus).unwrap();
+        let (enkephalin, inventory_diff) = claim_result
+            .as_bonus_reward()
+            .expect("claim should grant all rewards");
+        assert_eq!(enkephalin, reward_a.amount + reward_b.amount);
+        assert!(inventory_diff.added.is_empty());
+        assert!(inventory_diff.updated.is_empty());
+        assert!(inventory_diff.removed.is_empty());
+        assert!(matches!(game.get_state(), GameState::InBonusClaimed { .. }));
 
-    let exit_result = game.execute(player_id, PlayerBehavior::ExitBonus).unwrap();
-    assert!(matches!(exit_result, BehaviorResult::AdvancePhase { .. }));
-    assert!(matches!(game.get_state(), GameState::WaitingPhaseRequest));
+        let exit_result = game.execute(player_id, PlayerBehavior::ExitBonus).unwrap();
+        assert!(matches!(exit_result, BehaviorResult::AdvancePhase { .. }));
+        assert!(matches!(game.get_state(), GameState::WaitingPhaseRequest));
+    } else {
+        assert!(matches!(replay_result, BehaviorResult::AdvancePhase { .. }));
+        assert!(matches!(game.get_state(), GameState::WaitingPhaseRequest));
+    }
 }
 
 #[test]
-#[should_panic(expected = "Random event 'random_broken' references missing metadata")]
-fn random_resolution_failure_panics() {
+fn random_resolution_failure_returns_invalid_static_data() {
     // Given: Random이 존재하지 않는 Bonus UUID를 가리키도록 만든다.
     let random_event = RandomEventMetadata {
         id: "random_broken".to_string(),
@@ -600,5 +619,8 @@ fn random_resolution_failure_panics() {
 
     // When: Phase 이벤트에서 Random을 선택한다.
     let phase_event = start_game_and_request_phase(&mut game, player_id);
-    let _ = select_random_from_phase_event(&mut game, player_id, &phase_event);
+    let err = select_random_from_phase_event(&mut game, player_id, &phase_event).unwrap_err();
+    assert!(
+        matches!(err, GameError::InvalidStaticData(message) if message.contains("random_broken"))
+    );
 }

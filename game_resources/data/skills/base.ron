@@ -29,7 +29,12 @@ SkillDatabase(
                     delay_ms: 0,
                     range_tiles: 3,
                     target: Allies(area: RadiusChebyshev(radius_tiles: 3)),
-                    delivery: Instant,
+                    delivery: Area(area: (
+                        shape: Box(width_units: 6000000, height_units: 6000000),
+                        anchor: CastTarget,
+                        hit_targets: Allies,
+                        include_caster: true,
+                    )),
                     effects: [
                         Heal(amount: 40),
                     ],
@@ -65,7 +70,11 @@ SkillDatabase(
                     delay_ms: 0,
                     range_tiles: 2,
                     target: Enemies(area: RadiusChebyshev(radius_tiles: 2)),
-                    delivery: Instant,
+                    delivery: Area(area: (
+                        shape: Box(width_units: 4000000, height_units: 4000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
                     effects: [
                         Damage(amount: 35),
                     ],
@@ -101,7 +110,12 @@ SkillDatabase(
                     delay_ms: 0,
                     range_tiles: 3,
                     target: Allies(area: RadiusChebyshev(radius_tiles: 3)),
-                    delivery: Instant,
+                    delivery: Area(area: (
+                        shape: Box(width_units: 6000000, height_units: 6000000),
+                        anchor: CastTarget,
+                        hit_targets: Allies,
+                        include_caster: true,
+                    )),
                     effects: [
                         Heal(amount: 20),
                         ModifyStats(
@@ -214,7 +228,11 @@ SkillDatabase(
                     delay_ms: 0,
                     range_tiles: 1,
                     target: Enemies(area: RadiusChebyshev(radius_tiles: 1)),
-                    delivery: Instant,
+                    delivery: Area(area: (
+                        shape: Box(width_units: 2000000, height_units: 2000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
                     effects: [
                         ApplyBuff(buff_id: "silence", duration_ms: 1200),
                     ],
@@ -229,7 +247,11 @@ SkillDatabase(
                     delay_ms: 90,
                     range_tiles: 1,
                     target: Enemies(area: RadiusChebyshev(radius_tiles: 1)),
-                    delivery: Instant,
+                    delivery: Area(area: (
+                        shape: Box(width_units: 2000000, height_units: 2000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
                     effects: [
                         Damage(amount: 70),
                     ],
@@ -293,7 +315,11 @@ SkillDatabase(
                     delay_ms: 0,
                     range_tiles: 5,
                     target: Enemies(area: Line(length_tiles: 5)),
-                    delivery: Instant,
+                    delivery: Area(area: (
+                        shape: Line(length_units: 5000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
                     effects: [
                         Damage(amount: 32),
                     ],
@@ -309,7 +335,11 @@ SkillDatabase(
                     range_tiles: 5,
                     target: Enemies(area: Line(length_tiles: 5)),
                     repeat: Times(count: 2),
-                    delivery: Instant,
+                    delivery: Area(area: (
+                        shape: Line(length_units: 5000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
                     effects: [
                         Damage(amount: 28),
                     ],
@@ -374,7 +404,11 @@ SkillDatabase(
                     delay_ms: 0,
                     range_tiles: 1,
                     target: Enemies(area: RadiusChebyshev(radius_tiles: 1)),
-                    delivery: Instant,
+                    delivery: Area(area: (
+                        shape: Box(width_units: 2000000, height_units: 2000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
                     effects: [
                         Damage(amount: 95),
                     ],
@@ -452,7 +486,11 @@ SkillDatabase(
                     range_tiles: 4,
                     target: Enemies(area: RadiusChebyshev(radius_tiles: 1)),
                     when: IfPreviousStepDealtDamage,
-                    delivery: Instant,
+                    delivery: Area(area: (
+                        shape: Box(width_units: 2000000, height_units: 2000000),
+                        anchor: ImpactContext,
+                        hit_targets: Enemies,
+                    )),
                     effects: [
                         Damage(amount: 16),
                         ApplyBuff(buff_id: "poison", duration_ms: 3000),
@@ -538,7 +576,12 @@ SkillDatabase(
                     delay_ms: 0,
                     range_tiles: 3,
                     target: Allies(area: RadiusChebyshev(radius_tiles: 3)),
-                    delivery: Instant,
+                    delivery: Area(area: (
+                        shape: Box(width_units: 6000000, height_units: 6000000),
+                        anchor: CastTarget,
+                        hit_targets: Allies,
+                        include_caster: true,
+                    )),
                     effects: [
                         Heal(amount: 55),
                     ],
@@ -553,7 +596,12 @@ SkillDatabase(
                     delay_ms: 40,
                     range_tiles: 3,
                     target: Allies(area: RadiusChebyshev(radius_tiles: 3)),
-                    delivery: Instant,
+                    delivery: Area(area: (
+                        shape: Box(width_units: 6000000, height_units: 6000000),
+                        anchor: CastTarget,
+                        hit_targets: Allies,
+                        include_caster: true,
+                    )),
                     effects: [
                         ModifyStats(
                             modifier: (
@@ -574,7 +622,11 @@ SkillDatabase(
                     delay_ms: 140,
                     range_tiles: 3,
                     target: Enemies(area: RadiusChebyshev(radius_tiles: 3)),
-                    delivery: Instant,
+                    delivery: Area(area: (
+                        shape: Box(width_units: 6000000, height_units: 6000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
                     effects: [
                         Damage(amount: 28),
                     ],

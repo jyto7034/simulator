@@ -1,9 +1,15 @@
-use game_core::{ecs::resources::Position, game::enums::Side};
+use game_core::{
+    ecs::resources::Position,
+    game::{
+        enums::Side,
+        stats::{StatId, StatModifierKind},
+    },
+};
 
 use super::{
-    hp_changes_caused_by, passive_dummy_patch, run_abnormality_scenario, scenario_from_board,
-    skill_dummy_board_legend, stat_changes_caused_by, step_ids, target_unit_ids, RuntimeStartPatch,
-    UnitPatch,
+    damage_hp_changes_caused_by, hp_deltas, passive_dummy_patch, run_abnormality_scenario,
+    scenario_from_board, skill_dummy_board_legend, stat_changes_caused_by, stat_modifier_summaries,
+    step_ids, target_unit_ids, RuntimeStartPatch, UnitPatch,
 };
 
 #[test]
@@ -17,6 +23,7 @@ fn nothing_there_goodbye_tears_open_then_adapts_and_finishes_twice() {
         UnitPatch {
             runtime_start: RuntimeStartPatch {
                 current_health: Some(430),
+                ..Default::default()
             },
             ..Default::default()
         },
@@ -42,15 +49,39 @@ fn nothing_there_goodbye_tears_open_then_adapts_and_finishes_twice() {
         vec!["tear_open", "mimic_adaptation", "goodbye_finish"]
     );
     assert_eq!(
-        target_unit_ids(&hp_changes_caused_by(result.timeline(), steps[0].seq)),
+        target_unit_ids(&damage_hp_changes_caused_by(
+            result.timeline(),
+            steps[0].seq
+        )),
         vec![enemy]
+    );
+    assert_eq!(
+        hp_deltas(&damage_hp_changes_caused_by(
+            result.timeline(),
+            steps[0].seq
+        )),
+        vec![-62]
     );
     assert_eq!(
         target_unit_ids(&stat_changes_caused_by(result.timeline(), steps[1].seq)),
         vec![caster]
     );
     assert_eq!(
-        target_unit_ids(&hp_changes_caused_by(result.timeline(), steps[2].seq)),
+        stat_modifier_summaries(&stat_changes_caused_by(result.timeline(), steps[1].seq)),
+        vec![(StatId::Attack, StatModifierKind::Percent, 18)]
+    );
+    assert_eq!(
+        target_unit_ids(&damage_hp_changes_caused_by(
+            result.timeline(),
+            steps[2].seq
+        )),
         vec![enemy, enemy]
+    );
+    assert_eq!(
+        hp_deltas(&damage_hp_changes_caused_by(
+            result.timeline(),
+            steps[2].seq
+        )),
+        vec![-58, -58]
     );
 }

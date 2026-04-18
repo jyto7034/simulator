@@ -18,7 +18,7 @@ use crate::{
         player_game_actor::{
             messages::{
                 AttachSession, DetachSession, ExecutePlayerBehavior, ForceDisconnect,
-                PlayerGameClientMessage, PlayerGameServerMessage,
+                PlayerGameClientMessage, PlayerGameServerMessage, QuitPlayerActor,
             },
             state::PlayerGameActorError,
             PlayerGameActor,
@@ -275,6 +275,14 @@ impl StreamHandler<Result<Message, ProtocolError>> for PlayerGameSession {
                     }
                     Ok(PlayerGameClientMessage::Ping) => {
                         Self::send_json(ctx, &PlayerGameServerMessage::Pong);
+                    }
+                    Ok(PlayerGameClientMessage::Quit) => {
+                        if let Some(actor) = self.player_actor.take() {
+                            actor.do_send(QuitPlayerActor);
+                        }
+                        self.player_id = None;
+                        ctx.close(Some(ws::CloseCode::Normal.into()));
+                        ctx.stop();
                     }
                     Err(error) => {
                         self.send_error(ctx, None, "invalid_message_format", error.to_string());

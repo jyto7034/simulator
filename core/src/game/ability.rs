@@ -55,13 +55,233 @@ pub enum SkillArea {
     },
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub enum DeliveryDef {
     #[default]
     Instant,
     Projectile {
         speed_units_per_ms: u32,
+        #[serde(default)]
+        collision: SkillProjectileCollisionDef,
     },
+    Area {
+        area: SkillAreaDeliveryDef,
+    },
+}
+
+/// Continuous collision filter for skill projectile / area delivery.
+///
+/// This is intentionally kept separate from `SkillTarget`:
+/// - `SkillTarget` answers "who is the step trying to affect?"
+/// - `SkillHitTargetFilter` answers "who can this spatial delivery collide with?"
+///
+/// Runtime wiring is introduced in a later phase; for now this type fixes the
+/// data contract for projectile/AoE continuous delivery.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub enum SkillHitTargetFilter {
+    Allies,
+    #[default]
+    Enemies,
+    Any,
+}
+
+fn default_projectile_collision_radius_units() -> u32 {
+    125_000
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(untagged)]
+enum LegacyBoolOrOption {
+    Bool(bool),
+    Option(Option<bool>),
+}
+
+fn deserialize_nonzero_option_u8<'de, D>(deserializer: D) -> Result<Option<u8>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let value = Option::<u8>::deserialize(deserializer)?;
+    match value {
+        Some(0) => Err(serde::de::Error::custom("expected non-zero max_hits")),
+        other => Ok(other),
+    }
+}
+
+fn deserialize_nonzero_option_u32<'de, D>(deserializer: D) -> Result<Option<u32>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let value = Option::<u32>::deserialize(deserializer)?;
+    match value {
+        Some(0) => Err(serde::de::Error::custom(
+            "expected non-zero tick_interval_ms",
+        )),
+        other => Ok(other),
+    }
+}
+
+fn deserialize_legacy_despawn_on_hit<'de, D>(deserializer: D) -> Result<Option<bool>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let legacy = LegacyBoolOrOption::deserialize(deserializer)?;
+    Ok(match legacy {
+        LegacyBoolOrOption::Bool(value) => Some(value),
+        LegacyBoolOrOption::Option(value) => value,
+    })
+}
+
+/// Continuous collision contract for a skill projectile.
+///
+/// This applies to skill-delivered projectiles only. Basic attacks remain
+/// homing and guaranteed-hit by battle rule.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SkillProjectileCollisionDef {
+    #[serde(default = "default_projectile_collision_radius_units")]
+    pub radius_units: u32,
+    #[serde(default)]
+    pub hit_targets: SkillHitTargetFilter,
+    #[serde(default)]
+    pub piercing: bool,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "deserialize_legacy_despawn_on_hit"
+    )]
+    pub despawn_on_hit: Option<bool>,
+    #[serde(default, deserialize_with = "deserialize_nonzero_option_u8")]
+    pub max_hits: Option<u8>,
+}
+
+impl Default for SkillProjectileCollisionDef {
+    fn default() -> Self {
+        Self {
+            radius_units: default_projectile_collision_radius_units(),
+            hit_targets: SkillHitTargetFilter::Enemies,
+            piercing: false,
+            despawn_on_hit: None,
+            max_hits: None,
+        }
+    }
+}
+
+impl SkillProjectileCollisionDef {
+    pub fn validate_runtime_contract(&self) {
+        assert_ne!(
+            self.max_hits,
+            Some(0),
+            "SkillProjectileCollisionDef.max_hits must be non-zero"
+        );
+    }
+
+    pub fn validate_homing_runtime_contract(&self) {
+        assert_eq!(
+            self.radius_units,
+            default_projectile_collision_radius_units(),
+            "targeted homing projectile does not support custom collision radius"
+        );
+        assert_eq!(
+            self.hit_targets,
+            SkillHitTargetFilter::Enemies,
+            "targeted homing projectile requires the default enemy hit filter"
+        );
+        assert!(
+            !self.piercing,
+            "targeted homing projectile does not support piercing"
+        );
+        assert!(
+            self.despawn_on_hit.is_none() || self.despawn_on_hit == Some(true),
+            "targeted homing projectile does not support despawn_on_hit overrides"
+        );
+        assert_eq!(
+            self.max_hits, None,
+            "targeted homing projectile does not support max_hits"
+        );
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SkillAreaShapeDef {
+    Circle {
+        radius_units: u32,
+    },
+    Line {
+        length_units: u32,
+    },
+    Box {
+        width_units: u32,
+        height_units: u32,
+    },
+    Rectangle {
+        width_units: u32,
+        length_units: u32,
+    },
+    Cone {
+        angle_degrees: u16,
+        length_units: u32,
+    },
+}
+
+/// Where an explicit area delivery should be anchored.
+///
+/// This removes runtime guesswork between:
+/// - direct cast-targeted blasts
+/// - impact-follow-up explosions
+/// - self-centered pulses / ground zones
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub enum SkillAreaAnchorSource {
+    #[default]
+    CastTarget,
+    ImpactContext,
+    Caster,
+    // For directional shapes, start the sweep at the cast target instead of the caster.
+    CastTargetStart,
+    // For directional shapes, start the sweep at the last projectile/area impact point.
+    ImpactContextStart,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub enum SkillAreaTickPolicy {
+    #[default]
+    EveryTick,
+    OncePerArea,
+    OnEnter,
+}
+
+/// Continuous delivery contract for an explicit area instance such as an
+/// instant blast, line sweep, or persistent ground zone.
+///
+/// This type is added ahead of runtime wiring so the `.ron` data model can be
+/// stabilized before the battle executor consumes it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SkillAreaDeliveryDef {
+    pub shape: SkillAreaShapeDef,
+    #[serde(default)]
+    pub anchor: SkillAreaAnchorSource,
+    #[serde(default)]
+    pub hit_targets: SkillHitTargetFilter,
+    #[serde(default)]
+    pub include_caster: bool,
+    #[serde(default)]
+    pub tick_policy: SkillAreaTickPolicy,
+    #[serde(default)]
+    pub duration_ms: u32,
+    #[serde(default, deserialize_with = "deserialize_nonzero_option_u32")]
+    pub tick_interval_ms: Option<u32>,
+}
+
+impl SkillAreaDeliveryDef {
+    pub fn validate_runtime_contract(&self) {
+        assert_ne!(
+            self.tick_interval_ms,
+            Some(0),
+            "SkillAreaDeliveryDef.tick_interval_ms must be non-zero"
+        );
+        assert!(
+            self.duration_ms == 0 || self.tick_interval_ms.is_some(),
+            "persistent skill area requires tick_interval_ms"
+        );
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
@@ -434,6 +654,341 @@ mod tests {
                     rule: UnitTargetRule::LowestHealthEnemy,
                 },
             ))
+        );
+    }
+
+    #[test]
+    fn skill_projectile_collision_def_uses_expected_defaults() {
+        let collision: SkillProjectileCollisionDef = ron::de::from_str("()").unwrap();
+        assert_eq!(
+            collision,
+            SkillProjectileCollisionDef {
+                radius_units: 125_000,
+                hit_targets: SkillHitTargetFilter::Enemies,
+                piercing: false,
+                despawn_on_hit: None,
+                max_hits: None,
+            }
+        );
+    }
+
+    #[test]
+    fn skill_projectile_collision_def_reads_explicit_values() {
+        let collision: SkillProjectileCollisionDef = ron::de::from_str(
+            r#"
+            (
+                radius_units:250000,
+                hit_targets:Any,
+                piercing:true,
+                despawn_on_hit:false,
+                max_hits:Some(3),
+            )
+            "#,
+        )
+        .unwrap();
+
+        assert_eq!(
+            collision,
+            SkillProjectileCollisionDef {
+                radius_units: 250_000,
+                hit_targets: SkillHitTargetFilter::Any,
+                piercing: true,
+                despawn_on_hit: Some(false),
+                max_hits: Some(3),
+            }
+        );
+    }
+
+    #[test]
+    fn delivery_def_projectile_ron_defaults_collision_when_omitted() {
+        let delivery: DeliveryDef = ron::de::from_str(
+            r#"
+            Projectile(
+                speed_units_per_ms:6000,
+            )
+            "#,
+        )
+        .unwrap();
+
+        assert_eq!(
+            delivery,
+            DeliveryDef::Projectile {
+                speed_units_per_ms: 6_000,
+                collision: SkillProjectileCollisionDef::default(),
+            }
+        );
+    }
+
+    #[test]
+    fn skill_area_delivery_def_supports_circle_and_persistent_ticks() {
+        let area: SkillAreaDeliveryDef = ron::de::from_str(
+            r#"
+            (
+                shape:Circle(radius_units:400000),
+                hit_targets:Enemies,
+                tick_policy:OnEnter,
+                duration_ms:3000,
+                tick_interval_ms:Some(500),
+            )
+            "#,
+        )
+        .unwrap();
+
+        assert_eq!(
+            area,
+            SkillAreaDeliveryDef {
+                shape: SkillAreaShapeDef::Circle {
+                    radius_units: 400_000,
+                },
+                anchor: SkillAreaAnchorSource::CastTarget,
+                hit_targets: SkillHitTargetFilter::Enemies,
+                include_caster: false,
+                tick_policy: SkillAreaTickPolicy::OnEnter,
+                duration_ms: 3_000,
+                tick_interval_ms: Some(500),
+            }
+        );
+    }
+
+    #[test]
+    fn skill_area_delivery_def_supports_rectangles() {
+        let area: SkillAreaDeliveryDef = ron::de::from_str(
+            r#"
+            (
+                shape:Rectangle(width_units:600000,length_units:1600000),
+                hit_targets:Allies,
+            )
+            "#,
+        )
+        .unwrap();
+
+        assert_eq!(
+            area,
+            SkillAreaDeliveryDef {
+                shape: SkillAreaShapeDef::Rectangle {
+                    width_units: 600_000,
+                    length_units: 1_600_000,
+                },
+                anchor: SkillAreaAnchorSource::CastTarget,
+                hit_targets: SkillHitTargetFilter::Allies,
+                include_caster: false,
+                tick_policy: SkillAreaTickPolicy::EveryTick,
+                duration_ms: 0,
+                tick_interval_ms: None,
+            }
+        );
+    }
+
+    #[test]
+    fn skill_area_delivery_def_supports_centered_boxes() {
+        let area: SkillAreaDeliveryDef = ron::de::from_str(
+            r#"
+            (
+                shape:Box(width_units:2000000,height_units:2000000),
+                hit_targets:Enemies,
+            )
+            "#,
+        )
+        .unwrap();
+
+        assert_eq!(
+            area,
+            SkillAreaDeliveryDef {
+                shape: SkillAreaShapeDef::Box {
+                    width_units: 2_000_000,
+                    height_units: 2_000_000,
+                },
+                anchor: SkillAreaAnchorSource::CastTarget,
+                hit_targets: SkillHitTargetFilter::Enemies,
+                include_caster: false,
+                tick_policy: SkillAreaTickPolicy::EveryTick,
+                duration_ms: 0,
+                tick_interval_ms: None,
+            }
+        );
+    }
+
+    #[test]
+    fn skill_area_delivery_def_supports_lines() {
+        let area: SkillAreaDeliveryDef = ron::de::from_str(
+            r#"
+            (
+                shape:Line(length_units:2400000),
+                hit_targets:Enemies,
+            )
+            "#,
+        )
+        .unwrap();
+
+        assert_eq!(
+            area,
+            SkillAreaDeliveryDef {
+                shape: SkillAreaShapeDef::Line {
+                    length_units: 2_400_000,
+                },
+                anchor: SkillAreaAnchorSource::CastTarget,
+                hit_targets: SkillHitTargetFilter::Enemies,
+                include_caster: false,
+                tick_policy: SkillAreaTickPolicy::EveryTick,
+                duration_ms: 0,
+                tick_interval_ms: None,
+            }
+        );
+    }
+
+    #[test]
+    fn skill_area_delivery_def_supports_cones() {
+        let area: SkillAreaDeliveryDef = ron::de::from_str(
+            r#"
+            (
+                shape:Cone(angle_degrees:60,length_units:1800000),
+                anchor:Caster,
+                hit_targets:Enemies,
+            )
+            "#,
+        )
+        .unwrap();
+
+        assert_eq!(
+            area,
+            SkillAreaDeliveryDef {
+                shape: SkillAreaShapeDef::Cone {
+                    angle_degrees: 60,
+                    length_units: 1_800_000,
+                },
+                anchor: SkillAreaAnchorSource::Caster,
+                hit_targets: SkillHitTargetFilter::Enemies,
+                include_caster: false,
+                tick_policy: SkillAreaTickPolicy::EveryTick,
+                duration_ms: 0,
+                tick_interval_ms: None,
+            }
+        );
+    }
+
+    #[test]
+    fn delivery_def_area_ron_reads_explicit_area_delivery() {
+        let delivery: DeliveryDef = ron::de::from_str(
+            r#"
+            Area(
+                area:(
+                    shape:Rectangle(width_units:600000,length_units:1600000),
+                    anchor:ImpactContext,
+                    hit_targets:Enemies,
+                    include_caster:true,
+                    tick_policy:OncePerArea,
+                    duration_ms:2500,
+                    tick_interval_ms:Some(500),
+                ),
+            )
+            "#,
+        )
+        .unwrap();
+
+        assert_eq!(
+            delivery,
+            DeliveryDef::Area {
+                area: SkillAreaDeliveryDef {
+                    shape: SkillAreaShapeDef::Rectangle {
+                        width_units: 600_000,
+                        length_units: 1_600_000,
+                    },
+                    anchor: SkillAreaAnchorSource::ImpactContext,
+                    hit_targets: SkillHitTargetFilter::Enemies,
+                    include_caster: true,
+                    tick_policy: SkillAreaTickPolicy::OncePerArea,
+                    duration_ms: 2_500,
+                    tick_interval_ms: Some(500),
+                },
+            }
+        );
+    }
+
+    #[test]
+    fn skill_area_delivery_def_defaults_anchor_to_cast_target() {
+        let area: SkillAreaDeliveryDef = ron::de::from_str(
+            r#"
+            (
+                shape:Circle(radius_units:250000),
+            )
+            "#,
+        )
+        .unwrap();
+
+        assert_eq!(
+            area,
+            SkillAreaDeliveryDef {
+                shape: SkillAreaShapeDef::Circle {
+                    radius_units: 250_000,
+                },
+                anchor: SkillAreaAnchorSource::CastTarget,
+                hit_targets: SkillHitTargetFilter::Enemies,
+                include_caster: false,
+                tick_policy: SkillAreaTickPolicy::EveryTick,
+                duration_ms: 0,
+                tick_interval_ms: None,
+            }
+        );
+    }
+
+    #[test]
+    fn skill_area_delivery_def_defaults_include_caster_to_false() {
+        let area: SkillAreaDeliveryDef = ron::de::from_str(
+            r#"
+            (
+                shape:Circle(radius_units:250000),
+            )
+            "#,
+        )
+        .unwrap();
+
+        assert!(!area.include_caster);
+    }
+
+    #[test]
+    fn projectile_collision_ron_rejects_zero_max_hits() {
+        let err = ron::de::from_str::<SkillProjectileCollisionDef>(
+            r#"(radius_units:125000, max_hits:Some(0))"#,
+        )
+        .expect_err("max_hits == 0 must be rejected");
+
+        assert!(err.to_string().contains("non-zero max_hits"));
+    }
+
+    #[test]
+    fn area_delivery_ron_rejects_zero_tick_interval() {
+        let err = ron::de::from_str::<SkillAreaDeliveryDef>(
+            r#"
+            (
+                shape:Circle(radius_units:125000),
+                duration_ms:1000,
+                tick_interval_ms:Some(0),
+            )
+            "#,
+        )
+        .expect_err("tick_interval_ms == 0 must be rejected");
+
+        assert!(err.to_string().contains("non-zero tick_interval_ms"));
+    }
+
+    #[test]
+    fn persistent_area_requires_tick_interval_in_runtime_contract() {
+        let area = SkillAreaDeliveryDef {
+            shape: SkillAreaShapeDef::Circle {
+                radius_units: 125_000,
+            },
+            anchor: SkillAreaAnchorSource::CastTarget,
+            hit_targets: SkillHitTargetFilter::Enemies,
+            include_caster: false,
+            tick_policy: SkillAreaTickPolicy::OnEnter,
+            duration_ms: 1_000,
+            tick_interval_ms: None,
+        };
+
+        let result = std::panic::catch_unwind(|| area.validate_runtime_contract());
+        assert!(
+            result.is_err(),
+            "persistent areas without tick_interval_ms must be rejected"
         );
     }
 }

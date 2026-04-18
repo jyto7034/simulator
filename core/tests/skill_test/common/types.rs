@@ -1,5 +1,8 @@
-use game_core::game::data::abnormality_data::{
-    AbnormalityMetadata, BasicAttackDef, MovementDef, ResonanceDef,
+use game_core::{
+    ecs::resources::Position,
+    game::data::abnormality_data::{
+        AbnormalityMetadata, BasicAttackDef, MovementDef, ResonanceDef,
+    },
 };
 use uuid::Uuid;
 
@@ -78,16 +81,41 @@ impl StaticUnitPatch {
 #[derive(Debug, Clone, Default)]
 pub struct RuntimeStartPatch {
     pub current_health: Option<u32>,
+    pub resonance_current: Option<u32>,
+    pub current_target_position: Option<Position>,
+    pub movement_lock_until_ms: Option<u64>,
+    pub basic_attack_lock_until_ms: Option<u64>,
+    pub resonance_gain_lock_until_ms: Option<u64>,
 }
 
 impl RuntimeStartPatch {
     pub fn is_empty(&self) -> bool {
         self.current_health.is_none()
+            && self.resonance_current.is_none()
+            && self.current_target_position.is_none()
+            && self.movement_lock_until_ms.is_none()
+            && self.basic_attack_lock_until_ms.is_none()
+            && self.resonance_gain_lock_until_ms.is_none()
     }
 
     pub(crate) fn merge_from(&mut self, other: &Self) {
         if other.current_health.is_some() {
             self.current_health = other.current_health;
+        }
+        if other.resonance_current.is_some() {
+            self.resonance_current = other.resonance_current;
+        }
+        if other.current_target_position.is_some() {
+            self.current_target_position = other.current_target_position;
+        }
+        if other.movement_lock_until_ms.is_some() {
+            self.movement_lock_until_ms = other.movement_lock_until_ms;
+        }
+        if other.basic_attack_lock_until_ms.is_some() {
+            self.basic_attack_lock_until_ms = other.basic_attack_lock_until_ms;
+        }
+        if other.resonance_gain_lock_until_ms.is_some() {
+            self.resonance_gain_lock_until_ms = other.resonance_gain_lock_until_ms;
         }
     }
 }
@@ -188,6 +216,7 @@ impl From<TestUnitOverrides> for UnitPatch {
             },
             runtime_start: RuntimeStartPatch {
                 current_health: value.current_health_after_start,
+                ..Default::default()
             },
         }
     }

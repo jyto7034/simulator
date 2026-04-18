@@ -5,6 +5,7 @@ use crate::{
     config::balance,
     ecs::resources::{Qliphoth, QliphothLevel},
     game::{
+        behavior::GameError,
         enums::{
             GameOption, OrdealOption, OrdealType, PhaseEvent, PhaseEventType, PhaseType,
             SuppressionOption,
@@ -90,7 +91,7 @@ impl EventManager {
         ordeal: OrdealType,
         phase: PhaseType,
         ctx: &GeneratorContext,
-    ) -> PhaseEvent {
+    ) -> Result<PhaseEvent, GameError> {
         // 1. Qliphoth 레벨에 따라 이벤트 타입 결정
         let event_type = Self::determine_event_type(&qliphoth, ordeal, phase, ctx);
 
@@ -102,7 +103,7 @@ impl EventManager {
         match event_type {
             PhaseEventType::EventSelection => {
                 let generator = EventSelectionGenerator;
-                let options = generator.generate(ctx);
+                let options = generator.generate(ctx)?;
                 let [shop, bonus, random] = options;
 
                 let shop = match shop {
@@ -118,49 +119,55 @@ impl EventManager {
                     _ => unreachable!("EventSelection generator must return a Random option"),
                 };
 
-                PhaseEvent::EventSelection {
+                Ok(PhaseEvent::EventSelection {
                     shop,
                     bonus,
                     random,
-                }
+                })
             }
             PhaseEventType::Suppression => {
                 let generator = SuppressionGenerator;
-                let options = generator.generate(ctx);
-                let candidates = options.map(|option| match option {
-                    GameOption::SuppressAbnormality {
-                        abnormality_id,
-                        encounter_id,
-                        risk_level,
-                        uuid,
-                    } => SuppressionOption {
-                        abnormality_id,
-                        encounter_id,
-                        risk_level,
-                        uuid,
-                    },
-                    _ => unreachable!("Suppression generator must return suppression options"),
-                });
+                let options = generator.generate(ctx)?;
+                let candidates = options
+                    .into_iter()
+                    .map(|option| match option {
+                        GameOption::SuppressAbnormality {
+                            abnormality_id,
+                            encounter_id,
+                            risk_level,
+                            uuid,
+                        } => SuppressionOption {
+                            abnormality_id,
+                            encounter_id,
+                            risk_level,
+                            uuid,
+                        },
+                        _ => unreachable!("Suppression generator must return suppression options"),
+                    })
+                    .collect();
 
-                PhaseEvent::Suppression { candidates }
+                Ok(PhaseEvent::Suppression { candidates })
             }
             PhaseEventType::Ordeal => {
                 let generator = OrdealBattleGenerator;
-                let options = generator.generate(ctx);
-                let candidates = options.map(|option| match option {
-                    GameOption::OrdealBattle {
-                        ordeal_type,
-                        difficulty,
-                        uuid,
-                    } => OrdealOption {
-                        ordeal_type,
-                        difficulty,
-                        uuid,
-                    },
-                    _ => unreachable!("Ordeal generator must return ordeal options"),
-                });
+                let options = generator.generate(ctx)?;
+                let candidates = options
+                    .into_iter()
+                    .map(|option| match option {
+                        GameOption::OrdealBattle {
+                            ordeal_type,
+                            difficulty,
+                            uuid,
+                        } => OrdealOption {
+                            ordeal_type,
+                            difficulty,
+                            uuid,
+                        },
+                        _ => unreachable!("Ordeal generator must return ordeal options"),
+                    })
+                    .collect();
 
-                PhaseEvent::Ordeal { candidates }
+                Ok(PhaseEvent::Ordeal { candidates })
             }
         }
     }

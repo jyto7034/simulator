@@ -1,10 +1,13 @@
 use game_core::{
     ecs::resources::Position,
-    game::{battle::timeline::TimelineEvent, enums::Side},
+    game::{
+        battle::{buffs::BuffId, timeline::TimelineEvent},
+        enums::Side,
+    },
 };
 
 use super::{
-    buffs_applied_by, passive_dummy_patch, run_abnormality_scenario, scenario_from_board,
+    buff_ids, buffs_applied_by, passive_dummy_patch, run_abnormality_scenario, scenario_from_board,
     skill_dummy_board_legend, step_ids, target_unit_ids, BoardEntry, PlacedUnitKind,
 };
 
@@ -45,6 +48,7 @@ fn spider_bud_applies_poison_only_to_the_nearest_enemy() {
     let buffs = buffs_applied_by(result.timeline(), steps[0].seq);
     assert_eq!(buffs.len(), 1);
     assert_eq!(target_unit_ids(&buffs), vec![near_enemy]);
+    assert_eq!(buff_ids(&buffs), vec![BuffId::from_name("poison")]);
 }
 
 /*

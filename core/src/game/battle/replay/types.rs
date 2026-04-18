@@ -379,6 +379,7 @@ impl ReplayState {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TimelineReplayViolationKind {
     TimelineVersionMismatch,
+    DuplicateSeq,
     AttackKindMissing,
     UnknownUnitReference,
     UnknownUnitBaseReference,

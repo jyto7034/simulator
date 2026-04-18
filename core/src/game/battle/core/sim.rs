@@ -5,13 +5,13 @@ use crate::{
     ecs::resources::Position,
     game::{
         ability::{
-            DeliveryDef, SkillArea, SkillDef, SkillEffectDef, SkillStepCondition, SkillStepDef,
-            SkillStepRepeat, SkillTarget, SkillUnitReference, StepTargetingMode, UnitTargetRule,
+            DeliveryDef, SkillDef, SkillEffectDef, SkillStepCondition, SkillStepDef,
+            SkillStepRepeat, SkillTarget, SkillUnitReference, StepTargetingMode,
         },
         battle::{
             cooldown::CooldownSource,
             damage::BattleCommand,
-            enums::{BattleEvent, ProjectilePayload},
+            enums::BattleEvent,
             ids::UnitInstanceId,
             timeline::{
                 AttackKind, SkillCastTarget, Timeline, TimelineCause, TimelineEvent,
@@ -28,6 +28,7 @@ use crate::{
 
 use super::{
     movement::ActionState,
+    skill_runtime::cast::PreviousStepDamageGate,
     types::{AbilityProcKey, PendingSkillCast, SkillStepResult},
     ActiveBuff, BattleCore, BuffInstanceKey,
 };
@@ -175,6 +176,13 @@ impl BattleCore {
             Some(SkillCastTarget::Unit { unit_instance_id }) => Some(unit_instance_id),
             _ => None,
         };
+        let cast_target_anchor_position = match cast_target {
+            Some(SkillCastTarget::Tile { position }) => Some(position),
+            Some(SkillCastTarget::Unit { unit_instance_id }) => {
+                self.battlefield.position_of(unit_instance_id)
+            }
+            None => None,
+        };
 
         let ability_seq = self.with_recording_context(cause, |core| {
             core.record_timeline(
@@ -190,10 +198,17 @@ impl BattleCore {
         self.active_skill_casts.insert(
             ability_seq,
             super::types::ActiveSkillCast {
+                caster_instance_id,
                 caster_owner,
                 anchor_position: caster_pos,
+                cast_target_anchor_position,
                 allow_dead_caster,
-                last_resolved_step: None,
+                total_steps: skill.steps.len(),
+                step_progress: Default::default(),
+                deferred_steps: Default::default(),
+                impact_contexts_by_step: Default::default(),
+                last_impact_context: None,
+                active_area_ids: Vec::new(),
             },
         );
 
@@ -278,7 +293,7 @@ impl BattleCore {
         }
     }
 
-    fn resolve_skill_step_context(
+    pub(in crate::game::battle::core) fn resolve_skill_step_context(
         &self,
         cast_seq: u64,
         caster_instance_id: UnitInstanceId,
@@ -287,6 +302,10 @@ impl BattleCore {
     ) -> Option<SkillCastTarget> {
         let (caster_owner, caster_pos) =
             self.resolve_cast_origin_context(Some(cast_seq), caster_instance_id, false)?;
+        let cast_target_anchor_position = self
+            .active_skill_casts
+            .get(&cast_seq)
+            .and_then(|cast_state| cast_state.cast_target_anchor_position);
 
         match step.targeting {
             StepTargetingMode::ReuseCastTarget => match &step.target {
@@ -301,17 +320,16 @@ impl BattleCore {
                     }
                     _ => None,
                 },
-                SkillTarget::Allies { .. } | SkillTarget::Enemies { .. } => {
-                    let position = match cast_target {
-                        Some(SkillCastTarget::Tile { position }) => position,
-                        Some(SkillCastTarget::Unit { unit_instance_id }) => self
-                            .battlefield
-                            .position_of(unit_instance_id)
-                            .unwrap_or(caster_pos),
-                        None => caster_pos,
-                    };
-                    Some(SkillCastTarget::Tile { position })
-                }
+                SkillTarget::Allies { .. } | SkillTarget::Enemies { .. } => match cast_target {
+                    Some(SkillCastTarget::Unit { unit_instance_id }) => {
+                        Some(SkillCastTarget::Unit { unit_instance_id })
+                    }
+                    Some(SkillCastTarget::Tile { position }) => {
+                        Some(SkillCastTarget::Tile { position })
+                    }
+                    None => cast_target_anchor_position
+                        .map(|position| SkillCastTarget::Tile { position }),
+                },
             },
             StepTargetingMode::RetargetOnStep => self.resolve_skill_target_definition(
                 caster_instance_id,
@@ -323,7 +341,7 @@ impl BattleCore {
         }
     }
 
-    fn resolve_cast_origin_context(
+    pub(in crate::game::battle::core) fn resolve_cast_origin_context(
         &self,
         cast_seq: Option<u64>,
         caster_instance_id: UnitInstanceId,
@@ -383,17 +401,16 @@ impl BattleCore {
     fn evaluate_step_condition(
         &self,
         cast_seq: u64,
+        step_index: usize,
         caster_instance_id: UnitInstanceId,
         step_target: Option<SkillCastTarget>,
         condition: &SkillStepCondition,
-    ) -> bool {
+    ) -> PreviousStepDamageGate {
         match condition {
-            SkillStepCondition::Always => true,
-            SkillStepCondition::IfPreviousStepDealtDamage => self
-                .active_skill_casts
-                .get(&cast_seq)
-                .and_then(|cast| cast.last_resolved_step.as_ref())
-                .is_some_and(|resolved| resolved.result.dealt_damage()),
+            SkillStepCondition::Always => PreviousStepDamageGate::Satisfied,
+            SkillStepCondition::IfPreviousStepDealtDamage => {
+                self.previous_step_damage_gate(cast_seq, step_index)
+            }
             SkillStepCondition::IfCasterHasBuff {
                 buff_id,
                 min_stacks,
@@ -408,7 +425,9 @@ impl BattleCore {
                         unit_id,
                         crate::game::battle::buffs::BuffId::from_name(buff_id),
                     ) >= *min_stacks
-                }),
+                })
+                .then_some(PreviousStepDamageGate::Satisfied)
+                .unwrap_or(PreviousStepDamageGate::Unsatisfied),
         }
     }
 
@@ -440,131 +459,6 @@ impl BattleCore {
         }
     }
 
-    pub(super) fn update_skill_cast_step_result(
-        &mut self,
-        cast_seq: u64,
-        step_index: usize,
-        result: SkillStepResult,
-    ) {
-        let Some(cast_state) = self.active_skill_casts.get_mut(&cast_seq) else {
-            return;
-        };
-
-        match &mut cast_state.last_resolved_step {
-            Some(resolved) if resolved.step_index == step_index => {
-                resolved.result.merge(&result);
-            }
-            Some(resolved) if resolved.step_index > step_index => {}
-            _ => {
-                cast_state.last_resolved_step =
-                    Some(super::types::ResolvedSkillStep { step_index, result });
-            }
-        }
-    }
-
-    fn choose_skill_target_by_rule(
-        &self,
-        caster_instance_id: UnitInstanceId,
-        caster_owner: Side,
-        caster_pos: Position,
-        range_tiles: u8,
-        rule: UnitTargetRule,
-    ) -> Option<UnitInstanceId> {
-        let in_range = |unit_id: UnitInstanceId| {
-            self.battlefield
-                .position_of(unit_id)
-                .is_some_and(|pos| caster_pos.chebyshev(&pos) <= range_tiles as i32)
-        };
-
-        match rule {
-            UnitTargetRule::CurrentTarget => {
-                self.units
-                    .get(&caster_instance_id)
-                    .and_then(|caster| {
-                        caster.current_target.filter(|id| {
-                            self.is_alive_enemy(*id, caster_owner)
-                                && self.battlefield.position_of(*id).is_some_and(|pos| {
-                                    caster_pos.chebyshev(&pos) <= range_tiles as i32
-                                })
-                        })
-                    })
-                    .or_else(|| {
-                        self.choose_skill_target_by_rule(
-                            caster_instance_id,
-                            caster_owner,
-                            caster_pos,
-                            range_tiles,
-                            UnitTargetRule::Nearest,
-                        )
-                    })
-            }
-            UnitTargetRule::LowestHealthEnemy => {
-                let mut best: Option<(u32, i32, UnitInstanceId)> = None;
-                for unit in self.units.values() {
-                    if unit.is_dead() || unit.owner == caster_owner {
-                        continue;
-                    }
-                    let Some(unit_pos) = self.battlefield.position_of(unit.instance_id) else {
-                        continue;
-                    };
-                    let distance = caster_pos.chebyshev(&unit_pos);
-                    if distance > range_tiles as i32 {
-                        continue;
-                    }
-
-                    match best {
-                        None => {
-                            best = Some((unit.stats.current_health, distance, unit.instance_id))
-                        }
-                        Some((best_hp, best_distance, best_id))
-                            if unit.stats.current_health < best_hp
-                                || (unit.stats.current_health == best_hp
-                                    && distance < best_distance)
-                                || (unit.stats.current_health == best_hp
-                                    && distance == best_distance
-                                    && unit.instance_id.as_bytes() < best_id.as_bytes()) =>
-                        {
-                            best = Some((unit.stats.current_health, distance, unit.instance_id));
-                        }
-                        _ => {}
-                    }
-                }
-                best.map(|(_, _, id)| id)
-            }
-            UnitTargetRule::Nearest => {
-                self.choose_enemy_target_in_tile_range(caster_owner, caster_pos, range_tiles)
-            }
-        }
-        .filter(|id| in_range(*id))
-    }
-
-    fn resolve_skill_anchor_position(
-        &self,
-        caster_instance_id: UnitInstanceId,
-        caster_owner: Side,
-        caster_pos: Position,
-        area: &SkillArea,
-        range_tiles: u8,
-        wants_allies: bool,
-    ) -> Option<Position> {
-        match area {
-            SkillArea::All | SkillArea::RadiusChebyshev { .. } => Some(caster_pos),
-            SkillArea::Line { .. } => {
-                if wants_allies {
-                    Some(caster_pos)
-                } else {
-                    self.choose_skill_target_by_rule(
-                        caster_instance_id,
-                        caster_owner,
-                        caster_pos,
-                        range_tiles,
-                        UnitTargetRule::Nearest,
-                    )
-                    .and_then(|id| self.battlefield.position_of(id))
-                }
-            }
-        }
-    }
     fn compute_winner(&self) -> Option<BattleWinner> {
         let mut player_alive = false;
         let mut opponent_alive = false;
@@ -632,6 +526,7 @@ impl BattleCore {
         input: Vec<BattleEvent>,
         movement_intent: &mut bool,
         move_steps: &mut Vec<(UnitInstanceId, u32)>,
+        projectile_advances: &mut Vec<BattleEvent>,
         combat: &mut Vec<BattleEvent>,
     ) {
         for event in input {
@@ -644,6 +539,7 @@ impl BattleCore {
                 } => {
                     move_steps.push((unit_instance_id, expected_move_epoch));
                 }
+                BattleEvent::SkillProjectileAdvance { .. } => projectile_advances.push(event),
                 other => combat.push(other),
             }
         }
@@ -669,10 +565,13 @@ impl BattleCore {
         self.active_skill_casts.clear();
         self.ability_proc_states.clear();
         self.projectiles.clear();
+        self.active_projectiles.clear();
+        self.active_areas.clear();
         self.battlefield.clear();
         self.timeline = Timeline::new();
         self.timeline_seq = 0;
         self.projectile_seq = 0;
+        self.area_seq = 0;
         self.recording_cause_stack.clear();
         self.event_queue.clear();
 
@@ -792,46 +691,76 @@ impl BattleCore {
 
             let mut movement_intent = false;
             let mut move_steps: Vec<(UnitInstanceId, u32)> = Vec::new();
+            let mut projectile_advances: Vec<BattleEvent> = Vec::new();
             let mut combat: Vec<BattleEvent> = Vec::new();
 
-            self.split_bucket(bucket, &mut movement_intent, &mut move_steps, &mut combat);
+            self.split_bucket(
+                bucket,
+                &mut movement_intent,
+                &mut move_steps,
+                &mut projectile_advances,
+                &mut combat,
+            );
 
             loop {
-                combat.sort_by(|a, b| b.cmp(a));
-                for event in combat.drain(..) {
-                    self.process_event(event, current_time_ms)?;
+                if !combat.is_empty() {
+                    combat.sort_by(|a, b| b.cmp(a));
+                    for event in combat.drain(..) {
+                        self.process_event(event, current_time_ms)?;
+                    }
+                } else if movement_intent {
+                    self.compute_movement_intents(current_time_ms);
+                    self.try_start_pending_basic_attacks(current_time_ms);
+                    movement_intent = false;
+                } else if !move_steps.is_empty() {
+                    self.handle_move_steps_at(current_time_ms, std::mem::take(&mut move_steps));
+                    self.post_move_retarget_at(current_time_ms);
+                    self.try_start_pending_basic_attacks(current_time_ms);
+                } else if !projectile_advances.is_empty() {
+                    projectile_advances.sort_by(|a, b| b.cmp(a));
+                    for event in projectile_advances.drain(..) {
+                        self.process_event(event, current_time_ms)?;
+                    }
+                } else {
+                    let mut new_bucket: Vec<BattleEvent> = Vec::new();
+                    while matches!(self.event_queue.peek(), Some(e) if e.time_ms() == current_time_ms)
+                    {
+                        new_bucket.push(self.event_queue.pop().unwrap());
+                    }
+
+                    if new_bucket.is_empty() {
+                        break;
+                    }
+
+                    self.split_bucket(
+                        new_bucket,
+                        &mut movement_intent,
+                        &mut move_steps,
+                        &mut projectile_advances,
+                        &mut combat,
+                    );
+                    continue;
                 }
 
                 let mut new_bucket: Vec<BattleEvent> = Vec::new();
                 while matches!(self.event_queue.peek(), Some(e) if e.time_ms() == current_time_ms) {
                     new_bucket.push(self.event_queue.pop().unwrap());
                 }
-
-                if new_bucket.is_empty() {
-                    break;
-                }
-
                 self.split_bucket(
                     new_bucket,
                     &mut movement_intent,
                     &mut move_steps,
+                    &mut projectile_advances,
                     &mut combat,
                 );
+
+                if let Some(winner) = self.compute_winner() {
+                    return Ok(self.finish_battle(current_time_ms, winner));
+                }
             }
 
             if let Some(winner) = self.compute_winner() {
                 return Ok(self.finish_battle(current_time_ms, winner));
-            }
-
-            if movement_intent {
-                self.compute_movement_intents(current_time_ms);
-                self.try_start_pending_basic_attacks(current_time_ms);
-            }
-
-            if !move_steps.is_empty() {
-                self.handle_move_steps_at(current_time_ms, move_steps);
-                self.post_move_retarget_at(current_time_ms);
-                self.try_start_pending_basic_attacks(current_time_ms);
             }
 
             if let Some(winner) = self.compute_winner() {
@@ -844,7 +773,11 @@ impl BattleCore {
         Ok(self.finish_battle(end_time_ms, winner))
     }
 
-    fn is_alive_enemy(&self, unit_id: UnitInstanceId, owner: Side) -> bool {
+    pub(in crate::game::battle::core) fn is_alive_enemy(
+        &self,
+        unit_id: UnitInstanceId,
+        owner: Side,
+    ) -> bool {
         match self.units.get(&unit_id) {
             Some(unit) => unit.owner != owner && !unit.is_dead(),
             None => false,
@@ -943,84 +876,6 @@ impl BattleCore {
         }
     }
 
-    pub(super) fn resolve_skill_step_targets(
-        &self,
-        cast_seq: u64,
-        caster_instance_id: UnitInstanceId,
-        step: &SkillStepDef,
-        step_target: Option<SkillCastTarget>,
-    ) -> Vec<UnitInstanceId> {
-        let Some((caster_owner, caster_pos)) =
-            self.resolve_cast_origin_context(Some(cast_seq), caster_instance_id, false)
-        else {
-            return Vec::new();
-        };
-
-        let mut targets: Vec<UnitInstanceId> = Vec::new();
-
-        match &step.target {
-            SkillTarget::SelfUnit => targets.push(caster_instance_id),
-            SkillTarget::EnemySingle { .. } => {
-                if let Some(SkillCastTarget::Unit { unit_instance_id }) = step_target {
-                    if self.is_alive_enemy(unit_instance_id, caster_owner) {
-                        targets.push(unit_instance_id);
-                    }
-                }
-            }
-            SkillTarget::Allies { area } | SkillTarget::Enemies { area } => {
-                let wants_allies = matches!(step.target, SkillTarget::Allies { .. });
-                let anchor = match step_target {
-                    Some(SkillCastTarget::Tile { position }) => position,
-                    Some(SkillCastTarget::Unit { unit_instance_id }) => self
-                        .battlefield
-                        .position_of(unit_instance_id)
-                        .unwrap_or(caster_pos),
-                    _ => caster_pos,
-                };
-
-                for unit in self.units.values() {
-                    if unit.is_dead() {
-                        continue;
-                    }
-
-                    let is_ally = unit.owner == caster_owner;
-                    if wants_allies != is_ally {
-                        continue;
-                    }
-
-                    let Some(pos) = self.battlefield.position_of(unit.instance_id) else {
-                        continue;
-                    };
-
-                    match area {
-                        SkillArea::All => {}
-                        SkillArea::RadiusChebyshev { radius_tiles } => {
-                            if anchor.chebyshev(&pos) > *radius_tiles as i32 {
-                                continue;
-                            }
-                        }
-                        SkillArea::Line { length_tiles } => {
-                            if !Self::is_point_on_skill_line(
-                                caster_pos,
-                                anchor,
-                                pos,
-                                *length_tiles as i32,
-                                caster_owner,
-                            ) {
-                                continue;
-                            }
-                        }
-                    }
-
-                    targets.push(unit.instance_id);
-                }
-            }
-        }
-
-        targets.sort_by(|a, b| a.as_bytes().cmp(b.as_bytes()));
-        targets
-    }
-
     pub(super) fn build_skill_step_commands(
         caster_instance_id: UnitInstanceId,
         step: &SkillStepDef,
@@ -1041,6 +896,9 @@ impl BattleCore {
         for effect in &step.effects {
             match effect {
                 SkillEffectDef::Damage { amount } => {
+                    if *amount == 0 {
+                        continue;
+                    }
                     let flat = amount.saturating_mul(-1);
                     for target_id in targets {
                         commands.push(BattleCommand::ApplyHeal {
@@ -1051,8 +909,6 @@ impl BattleCore {
                         });
                     }
                     if !targets.is_empty() {
-                        result.damage_target_count =
-                            result.damage_target_count.saturating_add(targets.len());
                         result.applied_effect_count =
                             result.applied_effect_count.saturating_add(targets.len());
                     }
@@ -1137,11 +993,18 @@ impl BattleCore {
         (commands, result)
     }
 
-    pub(super) fn resolve_skill_step_by_id<'a>(
+    pub(super) fn resolve_skill_step<'a>(
         skill: &'a SkillDef,
+        step_index: usize,
         step_id: &str,
     ) -> Option<&'a SkillStepDef> {
-        skill.steps.iter().find(|step| step.id == step_id)
+        let step = skill.steps.get(step_index)?;
+        debug_assert_eq!(
+            step.id, step_id,
+            "skill step invariant broken: index {} resolved to '{}' but event carried '{}'",
+            step_index, step.id, step_id
+        );
+        Some(step)
     }
 
     fn execute_skill_step(&mut self, execution: SkillStepExecution<'_>) {
@@ -1151,13 +1014,37 @@ impl BattleCore {
             execution.step,
             execution.cast_target,
         );
-        if !self.evaluate_step_condition(
+        match self.evaluate_step_condition(
             execution.cast_seq,
+            execution.step_index,
             execution.caster_instance_id,
             step_target,
             &execution.step.when,
         ) {
-            return;
+            PreviousStepDamageGate::Satisfied => {}
+            PreviousStepDamageGate::Unsatisfied => {
+                self.finalize_skill_step(
+                    execution.cast_seq,
+                    execution.step_index,
+                    SkillStepResult::default(),
+                    execution.time_ms,
+                );
+                return;
+            }
+            PreviousStepDamageGate::Pending => {
+                self.defer_skill_step(
+                    execution.cast_seq,
+                    execution.step_index,
+                    super::types::DeferredSkillStep {
+                        caster_instance_id: execution.caster_instance_id,
+                        skill_id: execution.skill.id.clone(),
+                        step_id: execution.step.id.clone(),
+                        cast_target: execution.cast_target,
+                        cause: execution.cause,
+                    },
+                );
+                return;
+            }
         }
 
         let repeat_count = self.evaluate_step_repeat_count(
@@ -1166,6 +1053,12 @@ impl BattleCore {
             &execution.step.repeat,
         );
         if repeat_count == 0 {
+            self.finalize_skill_step(
+                execution.cast_seq,
+                execution.step_index,
+                SkillStepResult::default(),
+                execution.time_ms,
+            );
             return;
         }
 
@@ -1212,18 +1105,119 @@ impl BattleCore {
                         &targets,
                     );
                     if !commands.is_empty() {
-                        core.process_commands(commands, execution.time_ms);
+                        let summary = core.process_commands(commands, execution.time_ms);
+                        aggregated_result.actual_damage_target_count = aggregated_result
+                            .actual_damage_target_count
+                            .saturating_add(summary.actual_damage_target_count);
                     }
                     aggregated_result.merge(&result);
                 }
 
-                core.update_skill_cast_step_result(
+                core.finalize_skill_step(
                     execution.cast_seq,
                     execution.step_index,
                     aggregated_result,
+                    execution.time_ms,
                 );
             }
-            DeliveryDef::Projectile { speed_units_per_ms } => {
+            DeliveryDef::Projectile {
+                speed_units_per_ms,
+                collision,
+            } => {
+                let launched_count = core.dispatch_skill_projectile_delivery(
+                    execution.time_ms,
+                    execution.cast_seq,
+                    execution.step_index,
+                    execution.caster_instance_id,
+                    execution.skill,
+                    execution.step,
+                    execution.cast_target,
+                    *speed_units_per_ms,
+                    *collision,
+                    repeat_count,
+                );
+                if launched_count == 0 {
+                    core.finalize_skill_step(
+                        execution.cast_seq,
+                        execution.step_index,
+                        SkillStepResult::default(),
+                        execution.time_ms,
+                    );
+                } else {
+                    core.begin_skill_step_delivery(
+                        execution.cast_seq,
+                        execution.step_index,
+                        launched_count,
+                    );
+                }
+            }
+            DeliveryDef::Area { area } => {
+                if area.duration_ms == 0 {
+                    let mut aggregated_result = SkillStepResult::default();
+
+                    for _ in 0..repeat_count {
+                        let iteration_target = core.resolve_skill_step_context(
+                            execution.cast_seq,
+                            execution.caster_instance_id,
+                            execution.step,
+                            execution.cast_target,
+                        );
+                        let Some((impact_position, direction_hint, targets)) = core
+                            .resolve_instant_area_targets(
+                                execution.time_ms,
+                                execution.cast_seq,
+                                execution.step_index,
+                                execution.caster_instance_id,
+                                iteration_target,
+                                area,
+                            )
+                        else {
+                            continue;
+                        };
+
+                        let delivery_id = core.allocate_skill_area_delivery_id(
+                            execution.cast_seq,
+                            execution.caster_instance_id,
+                            execution.time_ms,
+                        );
+                        core.update_skill_cast_impact_context(
+                            execution.cast_seq,
+                            execution.step_index,
+                            super::types::SkillImpactContext {
+                                delivery_id,
+                                impact_time_ms: execution.time_ms,
+                                impact_position,
+                                direction_hint: Some(direction_hint),
+                                first_hit_unit_id: targets.first().copied(),
+                                hit_unit_ids: targets.clone(),
+                                spawned_area_id: None,
+                            },
+                        );
+
+                        let (commands, result) = Self::build_skill_step_commands(
+                            execution.caster_instance_id,
+                            execution.step,
+                            &targets,
+                        );
+                        if !commands.is_empty() {
+                            let summary = core.process_commands(commands, execution.time_ms);
+                            aggregated_result.actual_damage_target_count = aggregated_result
+                                .actual_damage_target_count
+                                .saturating_add(summary.actual_damage_target_count);
+                        }
+                        aggregated_result.merge(&result);
+                    }
+
+                    core.finalize_skill_step(
+                        execution.cast_seq,
+                        execution.step_index,
+                        aggregated_result,
+                        execution.time_ms,
+                    );
+                    return;
+                }
+
+                let mut spawned_areas = 0usize;
                 for _ in 0..repeat_count {
                     let iteration_target = core.resolve_skill_step_context(
                         execution.cast_seq,
@@ -1231,41 +1225,32 @@ impl BattleCore {
                         execution.step,
                         execution.cast_target,
                     );
-                    let Some((_, caster_pos)) = core.resolve_cast_origin_context(
-                        Some(execution.cast_seq),
+                    if core.register_persistent_area(
+                        execution.time_ms,
+                        execution.cast_seq,
+                        execution.step_index,
                         execution.caster_instance_id,
-                        false,
-                    ) else {
-                        return;
-                    };
-                    let (event_target_id, target_pos) = match iteration_target {
-                        Some(SkillCastTarget::Unit { unit_instance_id }) => (
-                            unit_instance_id,
-                            core.battlefield.position_of(unit_instance_id),
-                        ),
-                        Some(SkillCastTarget::Tile { position }) => {
-                            (execution.caster_instance_id, Some(position))
-                        }
-                        None => (execution.caster_instance_id, None),
-                    };
-                    let Some(target_pos) = target_pos else {
-                        continue;
-                    };
-                    core.schedule_projectile_hit_event(super::commands::ProjectileLaunch {
-                        fired_at_ms: execution.time_ms,
-                        attacker_instance_id: execution.caster_instance_id,
-                        target_instance_id: event_target_id,
-                        attacker_pos: caster_pos,
-                        target_pos,
-                        speed_units_per_ms: *speed_units_per_ms,
-                        payload: ProjectilePayload::SkillStep {
-                            cast_seq: execution.cast_seq,
-                            step_index: execution.step_index,
-                            skill_id: execution.skill.id.clone(),
-                            step_id: execution.step.id.clone(),
-                            step_target: iteration_target,
-                        },
-                    });
+                        execution.skill.id.clone(),
+                        execution.step.id.clone(),
+                        iteration_target,
+                        *area,
+                    ) {
+                        spawned_areas = spawned_areas.saturating_add(1);
+                    }
+                }
+                if spawned_areas == 0 {
+                    core.finalize_skill_step(
+                        execution.cast_seq,
+                        execution.step_index,
+                        SkillStepResult::default(),
+                        execution.time_ms,
+                    );
+                } else {
+                    core.begin_skill_step_delivery(
+                        execution.cast_seq,
+                        execution.step_index,
+                        spawned_areas,
+                    );
                 }
             }
         });
@@ -1511,6 +1496,54 @@ impl BattleCore {
 
                 Ok(())
             }
+            BattleEvent::SkillProjectileImpact {
+                time_ms,
+                delivery_id,
+                cast_seq,
+                step_index,
+                skill_id,
+                step_id,
+                caster_instance_id,
+                impact_position,
+                first_hit_unit_id,
+                terminal,
+                cause,
+            } => {
+                self.with_recording_context(cause, |core| {
+                    core.apply_skill_projectile_impact(
+                        time_ms,
+                        delivery_id,
+                        cast_seq,
+                        step_index,
+                        skill_id,
+                        step_id,
+                        caster_instance_id,
+                        impact_position,
+                        first_hit_unit_id,
+                        terminal,
+                    );
+                });
+
+                Ok(())
+            }
+            BattleEvent::SkillProjectileAdvance {
+                time_ms,
+                delivery_id,
+                ..
+            } => {
+                self.advance_skill_projectile(time_ms, delivery_id);
+                Ok(())
+            }
+            BattleEvent::SkillAreaTick {
+                time_ms, area_id, ..
+            } => {
+                self.apply_skill_area_tick(time_ms, area_id);
+                Ok(())
+            }
+            BattleEvent::SkillAreaExpire { area_id, .. } => {
+                self.expire_skill_area(area_id);
+                Ok(())
+            }
             BattleEvent::AutoCastStart {
                 time_ms,
                 caster_instance_id,
@@ -1617,6 +1650,13 @@ impl BattleCore {
                     }
                 }
 
+                // Current rule: autocast may begin even when no valid cast target is found.
+                // We still enter focus/recovery and spend resonance at AutoCastEnd so
+                // "bad timing" remains a possible AI failure mode.
+                //
+                // Revisit only if playtests show this feels excessively punishing:
+                // the alternative contract is to abort before PendingSkillCast is stored
+                // and preserve resonance when target resolution returns None.
                 let target = self.resolve_skill_cast_target(
                     &skill,
                     caster_instance_id,
@@ -1698,6 +1738,10 @@ impl BattleCore {
                 let recovery_ends_at =
                     time_ms.saturating_add(caster.stats.attack_interval_ms.max(1));
                 caster.next_basic_attack_ms = caster.next_basic_attack_ms.max(recovery_ends_at);
+                // Intentionally consumes resonance even if the pending cast had no target and
+                // invoke_ability became a functional no-op. Keep this coupled with the
+                // AutoCastStart rule above so the "whiff still spends" behavior stays explicit
+                // in code until we decide otherwise from playtest feedback.
                 caster.resonance_current = 0;
                 caster
                     .action_locks
@@ -1722,7 +1766,8 @@ impl BattleCore {
                 let Some(skill) = self.game_data.skill_data.get_by_id(&skill_id).cloned() else {
                     return Ok(());
                 };
-                let Some(step) = Self::resolve_skill_step_by_id(&skill, &step_id).cloned() else {
+                let Some(step) = Self::resolve_skill_step(&skill, step_index, &step_id).cloned()
+                else {
                     return Ok(());
                 };
 
@@ -1999,7 +2044,7 @@ impl BattleCore {
         }
     }
 
-    fn is_point_on_skill_line(
+    pub(in crate::game::battle::core) fn is_point_on_skill_line(
         caster_pos: Position,
         anchor: Position,
         candidate: Position,

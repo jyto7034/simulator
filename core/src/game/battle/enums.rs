@@ -5,19 +5,13 @@ use uuid::Uuid;
 use crate::game::ability::SkillId;
 
 use super::buffs::BuffId;
+use super::core::movement::ContinuousPosition;
 use super::ids::UnitInstanceId;
 use super::timeline::{AttackKind, SkillCastTarget, TimelineCause};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ProjectilePayload {
     BasicAttack,
-    SkillStep {
-        cast_seq: u64,
-        step_index: usize,
-        skill_id: SkillId,
-        step_id: String,
-        step_target: Option<SkillCastTarget>,
-    },
 }
 
 /// 전투 이벤트
@@ -48,6 +42,43 @@ pub enum BattleEvent {
         attacker_instance_id: UnitInstanceId,
         target_instance_id: UnitInstanceId,
         payload: ProjectilePayload,
+        cause: TimelineCause,
+    },
+    SkillProjectileImpact {
+        time_ms: u64,
+        delivery_id: Uuid,
+        cast_seq: u64,
+        step_index: usize,
+        skill_id: SkillId,
+        step_id: String,
+        caster_instance_id: UnitInstanceId,
+        impact_position: ContinuousPosition,
+        first_hit_unit_id: Option<UnitInstanceId>,
+        terminal: bool,
+        cause: TimelineCause,
+    },
+    SkillProjectileAdvance {
+        time_ms: u64,
+        delivery_id: Uuid,
+        cause: TimelineCause,
+    },
+    SkillAreaTick {
+        time_ms: u64,
+        area_id: Uuid,
+        cast_seq: u64,
+        step_index: usize,
+        skill_id: SkillId,
+        step_id: String,
+        center: ContinuousPosition,
+        cause: TimelineCause,
+    },
+    SkillAreaExpire {
+        time_ms: u64,
+        area_id: Uuid,
+        cast_seq: u64,
+        step_index: usize,
+        skill_id: SkillId,
+        step_id: String,
         cause: TimelineCause,
     },
     /// 공명(=마나) 만땅 시 자동 시전 시작
@@ -111,6 +142,10 @@ impl BattleEvent {
             BattleEvent::AttackStart { time_ms, .. }
             | BattleEvent::AttackResolve { time_ms, .. }
             | BattleEvent::ProjectileHit { time_ms, .. }
+            | BattleEvent::SkillProjectileAdvance { time_ms, .. }
+            | BattleEvent::SkillProjectileImpact { time_ms, .. }
+            | BattleEvent::SkillAreaTick { time_ms, .. }
+            | BattleEvent::SkillAreaExpire { time_ms, .. }
             | BattleEvent::AutoCastStart { time_ms, .. }
             | BattleEvent::AutoCastEnd { time_ms, .. }
             | BattleEvent::SkillStep { time_ms, .. }
@@ -127,17 +162,21 @@ impl BattleEvent {
         match self {
             // Hits first (e.g. projectile impacts) for deterministic resolution.
             BattleEvent::ProjectileHit { .. } => 0,
+            BattleEvent::SkillProjectileAdvance { .. } => 1,
+            BattleEvent::SkillProjectileImpact { .. } => 2,
+            BattleEvent::SkillAreaTick { .. } => 3,
             // 버프 틱/적용을 먼저 처리하고, 시전 종료, 공격, 시전 시작, 만료 순으로 처리
-            BattleEvent::ApplyBuff { .. } => 1,
-            BattleEvent::BuffTick { .. } => 2,
-            BattleEvent::AutoCastEnd { .. } => 3,
-            BattleEvent::SkillStep { .. } => 4,
-            BattleEvent::AttackStart { .. } => 5,
-            BattleEvent::AttackResolve { .. } => 6,
-            BattleEvent::AutoCastStart { .. } => 7,
-            BattleEvent::BuffExpire { .. } => 8,
-            BattleEvent::MovementIntent { .. } => 9,
-            BattleEvent::MoveStep { .. } => 10,
+            BattleEvent::ApplyBuff { .. } => 4,
+            BattleEvent::BuffTick { .. } => 5,
+            BattleEvent::AutoCastEnd { .. } => 6,
+            BattleEvent::SkillStep { .. } => 7,
+            BattleEvent::AttackStart { .. } => 8,
+            BattleEvent::AttackResolve { .. } => 9,
+            BattleEvent::AutoCastStart { .. } => 10,
+            BattleEvent::BuffExpire { .. } => 11,
+            BattleEvent::SkillAreaExpire { .. } => 12,
+            BattleEvent::MovementIntent { .. } => 13,
+            BattleEvent::MoveStep { .. } => 14,
         }
     }
 }
@@ -153,6 +192,59 @@ impl Ord for BattleEvent {
             .cmp(&self.time_ms())
             .then_with(|| other.priority().cmp(&self.priority()))
             .then_with(|| match (self, other) {
+                (
+                    BattleEvent::SkillProjectileAdvance {
+                        delivery_id: a_d, ..
+                    },
+                    BattleEvent::SkillProjectileAdvance {
+                        delivery_id: b_d, ..
+                    },
+                ) => b_d.as_bytes().cmp(a_d.as_bytes()),
+                (
+                    BattleEvent::SkillProjectileImpact {
+                        delivery_id: a_d,
+                        first_hit_unit_id: a_t,
+                        ..
+                    },
+                    BattleEvent::SkillProjectileImpact {
+                        delivery_id: b_d,
+                        first_hit_unit_id: b_t,
+                        ..
+                    },
+                ) => b_d.as_bytes().cmp(a_d.as_bytes()).then_with(|| {
+                    b_t.map(|id| *id.as_bytes())
+                        .cmp(&a_t.map(|id| *id.as_bytes()))
+                }),
+                (
+                    BattleEvent::SkillAreaTick {
+                        area_id: a_area,
+                        step_index: a_step,
+                        ..
+                    },
+                    BattleEvent::SkillAreaTick {
+                        area_id: b_area,
+                        step_index: b_step,
+                        ..
+                    },
+                ) => b_area
+                    .as_bytes()
+                    .cmp(a_area.as_bytes())
+                    .then_with(|| b_step.cmp(a_step)),
+                (
+                    BattleEvent::SkillAreaExpire {
+                        area_id: a_area,
+                        step_index: a_step,
+                        ..
+                    },
+                    BattleEvent::SkillAreaExpire {
+                        area_id: b_area,
+                        step_index: b_step,
+                        ..
+                    },
+                ) => b_area
+                    .as_bytes()
+                    .cmp(a_area.as_bytes())
+                    .then_with(|| b_step.cmp(a_step)),
                 (
                     BattleEvent::AutoCastStart {
                         caster_instance_id: a,
@@ -235,70 +327,19 @@ impl Ord for BattleEvent {
                         projectile_id: a_p,
                         attacker_instance_id: a_a,
                         target_instance_id: a_t,
-                        payload: a_payload,
                         ..
                     },
                     BattleEvent::ProjectileHit {
                         projectile_id: b_p,
                         attacker_instance_id: b_a,
                         target_instance_id: b_t,
-                        payload: b_payload,
                         ..
                     },
                 ) => b_p
                     .as_bytes()
                     .cmp(a_p.as_bytes())
                     .then_with(|| b_a.as_bytes().cmp(a_a.as_bytes()))
-                    .then_with(|| b_t.as_bytes().cmp(a_t.as_bytes()))
-                    .then_with(|| match (a_payload, b_payload) {
-                        (ProjectilePayload::BasicAttack, ProjectilePayload::BasicAttack) => {
-                            Ordering::Equal
-                        }
-                        (ProjectilePayload::BasicAttack, ProjectilePayload::SkillStep { .. }) => {
-                            Ordering::Less
-                        }
-                        (ProjectilePayload::SkillStep { .. }, ProjectilePayload::BasicAttack) => {
-                            Ordering::Greater
-                        }
-                        (
-                            ProjectilePayload::SkillStep {
-                                cast_seq: a_cast_seq,
-                                step_index: a_step_index,
-                                skill_id: a_id,
-                                step_id: a_step,
-                                step_target: a_target,
-                            },
-                            ProjectilePayload::SkillStep {
-                                cast_seq: b_cast_seq,
-                                step_index: b_step_index,
-                                skill_id: b_id,
-                                step_id: b_step,
-                                step_target: b_target,
-                            },
-                        ) => b_id
-                            .cmp(a_id)
-                            .then_with(|| b_step.cmp(a_step))
-                            .then_with(|| b_cast_seq.cmp(a_cast_seq))
-                            .then_with(|| b_step_index.cmp(a_step_index))
-                            .then_with(|| {
-                                fn target_key(
-                                    target: &Option<SkillCastTarget>,
-                                ) -> (u8, u8, [u8; 16], i32, i32) {
-                                    match target {
-                                        None => (0, 0, [0u8; 16], 0, 0),
-                                        Some(SkillCastTarget::Unit { unit_instance_id }) => {
-                                            (1, 0, *unit_instance_id.as_bytes(), 0, 0)
-                                        }
-                                        Some(SkillCastTarget::Tile { position }) => {
-                                            (1, 1, [0u8; 16], position.y, position.x)
-                                        }
-                                    }
-                                }
-                                let a_key = target_key(a_target);
-                                let b_key = target_key(b_target);
-                                b_key.cmp(&a_key)
-                            }),
-                    }),
+                    .then_with(|| b_t.as_bytes().cmp(a_t.as_bytes())),
                 (
                     BattleEvent::ApplyBuff {
                         caster_instance_id: a_c,
@@ -425,6 +466,11 @@ mod tests {
             payload: ProjectilePayload::BasicAttack,
             cause,
         });
+        heap.push(BattleEvent::SkillProjectileAdvance {
+            time_ms: 10,
+            delivery_id: Uuid::from_u128(11),
+            cause,
+        });
 
         heap.push(BattleEvent::AutoCastStart {
             time_ms: 10,
@@ -449,17 +495,21 @@ mod tests {
         assert!(matches!(popped[1], BattleEvent::ProjectileHit { .. }));
         assert!(matches!(
             popped[2],
-            BattleEvent::AttackStart { time_ms: 10, .. }
+            BattleEvent::SkillProjectileAdvance { .. }
         ));
         assert!(matches!(
             popped[3],
+            BattleEvent::AttackStart { time_ms: 10, .. }
+        ));
+        assert!(matches!(
+            popped[4],
             BattleEvent::AutoCastStart {
                 caster_instance_id,
                 ..
             } if caster_instance_id == caster_small
         ));
         assert!(matches!(
-            popped[4],
+            popped[5],
             BattleEvent::AutoCastStart {
                 caster_instance_id,
                 ..

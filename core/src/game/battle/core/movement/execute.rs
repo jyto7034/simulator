@@ -17,12 +17,30 @@ use crate::{
 };
 
 #[derive(Debug, Clone, Copy)]
-struct SampledMotionSegment {
+pub(in crate::game::battle::core) struct SampledMotionSegment {
+    sampled_at_ms: u64,
     pos_x_units: i64,
     pos_y_units: i64,
     vel_x_units_per_ms: i64,
     vel_y_units_per_ms: i64,
     moving_until_ms: Option<u64>,
+}
+
+impl SampledMotionSegment {
+    pub(in crate::game::battle::core) fn position_at(
+        self,
+        time_ms: u64,
+    ) -> super::ContinuousPosition {
+        let moving_until_ms = self.moving_until_ms.unwrap_or(time_ms);
+        let effective_time_ms = time_ms.min(moving_until_ms);
+        let dt_ms = effective_time_ms.saturating_sub(self.sampled_at_ms) as i64;
+        super::ContinuousPosition::new(
+            self.pos_x_units
+                .saturating_add(self.vel_x_units_per_ms.saturating_mul(dt_ms)),
+            self.pos_y_units
+                .saturating_add(self.vel_y_units_per_ms.saturating_mul(dt_ms)),
+        )
+    }
 }
 
 enum ReadyMoveAttempt {
@@ -205,7 +223,7 @@ impl BattleCore {
         dist_units.div_ceil(speed_units_per_ms).max(1)
     }
 
-    fn sample_motion_segment_at(
+    pub(in crate::game::battle::core) fn sample_motion_segment_at(
         &self,
         unit_instance_id: UnitInstanceId,
         now_ms: u64,
@@ -239,6 +257,7 @@ impl BattleCore {
                 ));
 
                 Some(SampledMotionSegment {
+                    sampled_at_ms: now_ms,
                     pos_x_units,
                     pos_y_units,
                     vel_x_units_per_ms: remaining_dx.signum().saturating_mul(speed_units_per_ms),
@@ -253,6 +272,7 @@ impl BattleCore {
                 })
             }
             _ => Some(SampledMotionSegment {
+                sampled_at_ms: now_ms,
                 pos_x_units,
                 pos_y_units,
                 vel_x_units_per_ms: 0,

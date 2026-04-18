@@ -1,5 +1,9 @@
 mod common;
 
+use game_core::game::ability::{
+    DeliveryDef, SkillAreaAnchorSource, SkillAreaShapeDef, SkillTarget,
+};
+
 #[test]
 fn load_game_data_from_ron_reads_step_based_skill_schema() {
     let game_data = common::load_game_data_from_ron();
@@ -67,6 +71,74 @@ fn load_game_data_from_ron_reads_step_based_skill_schema() {
         Some("Head")
     );
 
+    let queen = game_data
+        .skill_data
+        .get_by_id("queen_of_hatred_magical_beam")
+        .expect("Queen skill should exist in RON data");
+    assert!(matches!(
+        queen.steps[0].delivery,
+        DeliveryDef::Area {
+            area: game_core::game::ability::SkillAreaDeliveryDef {
+                shape: SkillAreaShapeDef::Line {
+                    length_units: 5_000_000,
+                },
+                anchor: SkillAreaAnchorSource::CastTarget,
+                ..
+            }
+        }
+    ));
+
+    let melting_love = game_data
+        .skill_data
+        .get_by_id("melting_love_slime_infection")
+        .expect("Melting Love skill should exist in RON data");
+    assert!(matches!(
+        melting_love.steps[1].delivery,
+        DeliveryDef::Area {
+            area: game_core::game::ability::SkillAreaDeliveryDef {
+                shape: SkillAreaShapeDef::Box {
+                    width_units: 2_000_000,
+                    height_units: 2_000_000,
+                },
+                anchor: SkillAreaAnchorSource::ImpactContext,
+                ..
+            }
+        }
+    ));
+
+    let white_night = game_data
+        .skill_data
+        .get_by_id("white_night_pale_benediction")
+        .expect("WhiteNight skill should exist in RON data");
+    assert!(matches!(
+        white_night.steps[0].delivery,
+        DeliveryDef::Area {
+            area: game_core::game::ability::SkillAreaDeliveryDef {
+                shape: SkillAreaShapeDef::Box {
+                    width_units: 6_000_000,
+                    height_units: 6_000_000,
+                },
+                anchor: SkillAreaAnchorSource::CastTarget,
+                include_caster: true,
+                ..
+            }
+        }
+    ));
+    assert!(matches!(
+        white_night.steps[2].delivery,
+        DeliveryDef::Area {
+            area: game_core::game::ability::SkillAreaDeliveryDef {
+                shape: SkillAreaShapeDef::Box {
+                    width_units: 6_000_000,
+                    height_units: 6_000_000,
+                },
+                anchor: SkillAreaAnchorSource::CastTarget,
+                include_caster: false,
+                ..
+            }
+        }
+    ));
+
     assert_eq!(
         white_night.steps[0].presentation.impact_vfx_id.as_deref(),
         Some("white_night_pale_benediction_salvation")
@@ -79,4 +151,179 @@ fn load_game_data_from_ron_reads_step_based_skill_schema() {
         white_night.steps[2].presentation.target_anchor.as_deref(),
         Some("Head")
     );
+
+    let plague = game_data
+        .skill_data
+        .get_by_id("plague_mass_heal")
+        .expect("Plague skill should exist in RON data");
+    assert!(matches!(
+        plague.steps[0].delivery,
+        DeliveryDef::Area {
+            area: game_core::game::ability::SkillAreaDeliveryDef {
+                shape: SkillAreaShapeDef::Box {
+                    width_units: 6_000_000,
+                    height_units: 6_000_000,
+                },
+                anchor: SkillAreaAnchorSource::CastTarget,
+                include_caster: true,
+                ..
+            }
+        }
+    ));
+
+    let fragment = game_data
+        .skill_data
+        .get_by_id("fragment_universe_nova")
+        .expect("Fragment skill should exist in RON data");
+    assert!(matches!(
+        fragment.steps[0].delivery,
+        DeliveryDef::Area {
+            area: game_core::game::ability::SkillAreaDeliveryDef {
+                shape: SkillAreaShapeDef::Box {
+                    width_units: 4_000_000,
+                    height_units: 4_000_000,
+                },
+                anchor: SkillAreaAnchorSource::CastTarget,
+                ..
+            }
+        }
+    ));
+
+    let fairy = game_data
+        .skill_data
+        .get_by_id("fairy_festival_blessing")
+        .expect("Fairy skill should exist in RON data");
+    assert!(matches!(
+        fairy.steps[0].delivery,
+        DeliveryDef::Area {
+            area: game_core::game::ability::SkillAreaDeliveryDef {
+                shape: SkillAreaShapeDef::Box {
+                    width_units: 6_000_000,
+                    height_units: 6_000_000,
+                },
+                anchor: SkillAreaAnchorSource::CastTarget,
+                include_caster: true,
+                ..
+            }
+        }
+    ));
+
+    let dark_lamp = game_data
+        .skill_data
+        .get_by_id("big_bird_dark_lamp")
+        .expect("Dark Lamp skill should exist in RON data");
+    assert!(matches!(
+        dark_lamp.steps[0].delivery,
+        DeliveryDef::Area {
+            area: game_core::game::ability::SkillAreaDeliveryDef {
+                shape: SkillAreaShapeDef::Box {
+                    width_units: 2_000_000,
+                    height_units: 2_000_000,
+                },
+                anchor: SkillAreaAnchorSource::CastTarget,
+                ..
+            }
+        }
+    ));
+    assert!(matches!(
+        dark_lamp.steps[1].delivery,
+        DeliveryDef::Area {
+            area: game_core::game::ability::SkillAreaDeliveryDef {
+                shape: SkillAreaShapeDef::Box {
+                    width_units: 2_000_000,
+                    height_units: 2_000_000,
+                },
+                anchor: SkillAreaAnchorSource::CastTarget,
+                ..
+            }
+        }
+    ));
+
+    let mountain_skill = game_data
+        .skill_data
+        .get_by_id("mountain_mass_consumption")
+        .expect("Mountain skill should exist in RON data");
+    assert!(matches!(
+        mountain_skill.steps[0].delivery,
+        DeliveryDef::Area {
+            area: game_core::game::ability::SkillAreaDeliveryDef {
+                shape: SkillAreaShapeDef::Box {
+                    width_units: 2_000_000,
+                    height_units: 2_000_000,
+                },
+                anchor: SkillAreaAnchorSource::CastTarget,
+                ..
+            }
+        }
+    ));
+}
+
+#[test]
+fn live_skill_area_targets_use_area_delivery() {
+    let game_data = common::load_game_data_from_ron();
+
+    for skill in game_data.skill_data.skills.iter() {
+        for step in &skill.steps {
+            let expects_spatial_area = matches!(
+                step.target,
+                SkillTarget::Allies { .. } | SkillTarget::Enemies { .. }
+            );
+            if expects_spatial_area {
+                assert!(
+                    matches!(step.delivery, DeliveryDef::Area { .. }),
+                    "skill `{}` step `{}` targets an area but still uses {:?}",
+                    skill.id,
+                    step.id,
+                    step.delivery
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn projectile_vfx_steps_use_projectile_delivery() {
+    let game_data = common::load_game_data_from_ron();
+
+    for skill in game_data.skill_data.skills.iter() {
+        for step in &skill.steps {
+            if step.presentation.projectile_vfx_id.is_some() {
+                assert!(
+                    matches!(step.delivery, DeliveryDef::Projectile { .. }),
+                    "skill `{}` step `{}` declares projectile_vfx_id but uses {:?}",
+                    skill.id,
+                    step.id,
+                    step.delivery
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn remaining_instant_steps_are_intentionally_non_spatial() {
+    let game_data = common::load_game_data_from_ron();
+
+    for skill in game_data.skill_data.skills.iter() {
+        for step in &skill.steps {
+            if matches!(step.delivery, DeliveryDef::Instant) {
+                assert!(
+                    !matches!(
+                        step.target,
+                        SkillTarget::Allies { .. } | SkillTarget::Enemies { .. }
+                    ),
+                    "skill `{}` step `{}` still uses Instant for area target {:?}",
+                    skill.id,
+                    step.id,
+                    step.target
+                );
+                assert!(
+                    step.presentation.projectile_vfx_id.is_none(),
+                    "skill `{}` step `{}` still uses Instant despite projectile_vfx_id",
+                    skill.id,
+                    step.id
+                );
+            }
+        }
+    }
 }
