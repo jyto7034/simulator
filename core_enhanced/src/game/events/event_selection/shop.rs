@@ -1,0 +1,1023 @@
+use bevy_ecs::world::World;
+use tracing::{debug, info, warn};
+use uuid::Uuid;
+
+use crate::game::managers::uuid_manager::UuidManager;
+use crate::{
+    ecs::resources::{Enkephalin, Inventory, InventoryDiffDto, InventoryItemDto, SelectedEvent},
+    game::{
+        behavior::{BehaviorResult, GameError},
+        data::{event_pools::EventPhasePool, GameDataBase},
+        enums::{GameOption, ShopEventOption},
+        events::{EventGenerator, GeneratorContext},
+    },
+};
+
+// 상인에도 등급이 존재함.
+// 레벨에 비례하여 등급이 높은 상인이 등장할 수 있음.
+// 아이템 종류마다 상인이 존재함.
+// 아티팩트, 기물, 무기, 방어구 등등
+// 각 종류마다 고유한 Npc 를 가짐. ( 상인의 갯수가 너무 많으면 리소스가 더 많이 발생하니 중복 허용함. )
+// TODO: 상인에게 소지금 개념을 추가하여 플레이어가 마음껏 아이템을 팔 수 없게 해도 좋음.
+pub struct ShopGenerator;
+
+impl EventGenerator for ShopGenerator {
+    type Output = GameOption;
+
+    fn generate(&self, ctx: &GeneratorContext) -> Result<Self::Output, GameError> {
+        use crate::ecs::resources::GameProgression;
+        use crate::game::determinism;
+        use crate::game::enums::OrdealType;
+        use rand::SeedableRng;
+
+        // 1. 현재 Ordeal 가져오기
+        let current_ordeal = ctx
+            .world
+            .get_resource::<GameProgression>()
+            .map(|p| p.current_ordeal)
+            .unwrap_or(OrdealType::Dawn);
+
+        // 2. Shop pool 가져오기
+        let pool = &ctx.game_data.event_pools.get_pool(current_ordeal).shops;
+
+        // 3. RNG 생성
+        let mut rng = rand::rngs::StdRng::seed_from_u64(determinism::seed_with_namespace(
+            ctx.random_seed,
+            0x5348_4F50,
+        ));
+
+        // 4. pool에서 가중치 기반 UUID 선택
+        let uuid = EventPhasePool::choose_weighted_uuid(pool, &mut rng).ok_or_else(|| {
+            GameError::InvalidStaticData(format!(
+                "shop pool is empty for ordeal={current_ordeal:?}"
+            ))
+        })?;
+
+        // 5. GameData에서 Shop 조회
+        let shop = ctx
+            .game_data
+            .shop_data
+            .get_by_uuid(&uuid)
+            .ok_or_else(|| {
+                GameError::InvalidStaticData(format!(
+                    "shop uuid {uuid} selected from ordeal={current_ordeal:?} pool is missing from GameData"
+                ))
+            })?
+            .clone();
+
+        info!("Generated shop event: id={}, uuid={}", shop.id, shop.uuid);
+
+        // 7. GameOption 생성 (Shop 전체 데이터 포함)
+        Ok(GameOption::Shop {
+            shop: ShopEventOption::from(shop),
+        })
+    }
+}
+
+/// 상점 비즈니스 로직 헬퍼
+pub struct ShopExecutor;
+
+impl ShopExecutor {
+    /// 상점 새로고침
+    ///
+    /// # Arguments
+    /// * `world` - ECS World (Enkephalin, Inventory 등 접근)
+    pub fn reroll(world: &mut World) -> Result<BehaviorResult, GameError> {
+        // 1. Selected_Event 에서 현재 상점 정보를 가져옴.
+        let mut selected = world
+            .get_resource_mut::<SelectedEvent>()
+            .ok_or(GameError::NotInShopState)?;
+
+        // 2. shop 정보 가져오기
+        let shop = selected.as_shop_mut()?;
+
+        if !shop.can_reroll {
+            warn!("Reroll requested but current shop does not allow reroll");
+            return Err(GameError::ShopRerollNotAllowed);
+        }
+
+        // 방어 로직:
+        // 런타임 상점은 로드 단계에서 visible/hidden으로 이미 분리되어 있어야 한다.
+        // hidden_items가 비어 있으면 실제로 더 교체할 재고가 없는 상태이므로 리롤을 거부한다.
+        if shop.hidden_items.is_empty() {
+            warn!(
+                "Reroll requested but shop has no hidden_items to reroll from (shop_uuid={})",
+                shop.uuid
+            );
+            return Err(GameError::ShopRerollNotAllowed);
+        }
+
+        shop.reroll_items();
+        // TODO 반영: 리롤은 1회만 허용한다.
+        shop.can_reroll = false;
+        debug!("Shop items rerolled (shop_uuid={})", shop.uuid);
+
+        let new_items = shop.visible_items.clone();
+
+        Ok(BehaviorResult::RerollShop { new_items })
+    }
+
+    /// 아이템 구매
+    ///
+    /// # Arguments
+    /// * `world` - ECS World (Enkephalin, Inventory 등 접근)
+    /// * `game_data` - 정적 게임 데이터베이스 (아이템 메타데이터 조회용)
+    /// * `item_uuid` - 구매할 아이템 UUID
+    pub fn purchase_item(
+        world: &mut World,
+        game_data: &GameDataBase,
+        item_uuid: Uuid,
+    ) -> Result<BehaviorResult, GameError> {
+        // ============================================================
+        // 1단계: 검증
+        // ============================================================
+
+        // 1-1. 상점에서 아이템 조회 (UUID가 현재 상점에 노출되어 있는지 확인)
+        let (item, price) = {
+            let selected_event = world
+                .get_resource::<SelectedEvent>()
+                .ok_or(GameError::NotInShopState)?;
+
+            let shop = selected_event.as_shop()?;
+
+            // 치팅 방지: 해당 상점의 visible_items 에 존재하는지 확인
+            if !shop.visible_items.contains(&item_uuid) {
+                warn!(
+                    "Item uuid {} not found in visible_items of shop '{}'",
+                    item_uuid, shop.id
+                );
+                return Err(GameError::ShopItemNotFound);
+            }
+
+            // 전역 ItemRegistry 를 통해 실제 아이템 메타데이터 조회
+            let item = game_data
+                .item(&item_uuid)
+                .map(crate::game::data::ItemRef::to_owned_item)
+                .ok_or(GameError::ShopItemNotFound)?;
+            let price = item.price();
+
+            debug!(
+                "Found item in shop: item_uuid={}, price={}",
+                item_uuid, price
+            );
+
+            (item, price)
+        };
+
+        // 1-2. Enkephalin 잔액 확인
+        {
+            let enkephalin = world
+                .get_resource::<Enkephalin>()
+                .ok_or(GameError::MissingResource("Enkephalin"))?;
+
+            if enkephalin.amount < price {
+                warn!(
+                    "Insufficient Enkephalin: have={}, price={} (item_uuid={})",
+                    enkephalin.amount, price, item_uuid
+                );
+                return Err(GameError::InsufficientResources);
+            }
+        }
+
+        // 1-3. 인벤토리 공간 확인
+        {
+            let inventory = world
+                .get_resource::<Inventory>()
+                .ok_or(GameError::MissingResource("Inventory"))?;
+
+            if let crate::game::data::Item::Artifact(meta) = &item {
+                if inventory.has_artifact(meta.uuid) {
+                    warn!("Artifact already owned: item_uuid={}", item_uuid);
+                    return Err(GameError::AlreadyOwnedArtifact);
+                }
+            }
+
+            if !inventory.can_add_item(&item) {
+                warn!("Inventory full: cannot add item (item_uuid={})", item_uuid);
+                return Err(GameError::InventoryFull);
+            }
+        }
+
+        // ============================================================
+        // 2단계: 실행 (모든 검증 통과 후)
+        // ============================================================
+
+        // 2-1. 상점에서 아이템 제거 (visible_items 에서만 제거)
+        {
+            let mut selected_event = world
+                .get_resource_mut::<SelectedEvent>()
+                .ok_or(GameError::NotInShopState)?;
+
+            let shop = selected_event.as_shop_mut()?;
+            shop.remove_visible_item(item_uuid)?;
+
+            info!(
+                "Removed purchased item from shop: item_uuid={}, price={}",
+                item_uuid, price
+            );
+        }
+
+        // 2-2. Enkephalin 차감
+        let remaining_enkephalin = {
+            let mut enkephalin = world
+                .get_resource_mut::<Enkephalin>()
+                .ok_or(GameError::MissingResource("Enkephalin"))?;
+
+            enkephalin.amount -= price;
+            enkephalin.amount
+        };
+
+        // 2-3. 인벤토리에 아이템 추가
+        let owned_uuid = match &item {
+            crate::game::data::Item::Equipment(_) => {
+                let mut uuid_manager = world
+                    .get_resource_mut::<UuidManager>()
+                    .ok_or(GameError::MissingResource("UuidManager"))?;
+                uuid_manager.next_owned_equipment()
+            }
+            crate::game::data::Item::Abnormality(_) => {
+                let mut uuid_manager = world
+                    .get_resource_mut::<UuidManager>()
+                    .ok_or(GameError::MissingResource("UuidManager"))?;
+                uuid_manager.next_owned_abnormality()
+            }
+            _ => item.uuid(),
+        };
+
+        {
+            let mut inventory = world
+                .get_resource_mut::<Inventory>()
+                .ok_or(GameError::MissingResource("Inventory"))?;
+            inventory.add_item_owned(owned_uuid, item.clone())?;
+        }
+
+        // 2-4. 인벤토리 변화 DTO 생성 (소유 인스턴스 UUID 포함)
+        let item_dto = InventoryItemDto::from_item_with_uuid(&item, owned_uuid);
+
+        info!(
+            "Item purchased successfully: item_uuid={}, remaining_enkephalin={}",
+            item_uuid, remaining_enkephalin
+        );
+
+        Ok(BehaviorResult::PurchaseItem {
+            enkephalin: remaining_enkephalin,
+            inventory_diff: InventoryDiffDto {
+                added: vec![item_dto],
+                updated: Vec::new(),
+                removed: Vec::new(),
+            },
+        })
+    }
+
+    /// 아이템 판매
+    ///
+    /// # Arguments
+    /// * `world` - ECS World (Enkephalin, Inventory 등 접근)
+    /// * `item_uuid` - 판매할 아이템 UUID
+    ///
+    /// # 판매 가격
+    /// 아이템 원가의 50%로 판매됩니다.
+    pub fn sell_item(world: &mut World, item_uuid: Uuid) -> Result<BehaviorResult, GameError> {
+        // ============================================================
+        // 1단계: 검증
+        // ============================================================
+
+        // 1-1. 인벤토리에서 아이템 조회 (제거하지 않음)
+        let sell_price = {
+            let inventory = world
+                .get_resource::<Inventory>()
+                .ok_or(GameError::MissingResource("Inventory"))?;
+
+            if let Some(owned_equipment) = inventory.equipments.get_item(&item_uuid) {
+                if owned_equipment.equipped_to.is_some() {
+                    warn!(
+                        "Rejected sell request: equipped item cannot be sold (item_uuid={})",
+                        item_uuid
+                    );
+                    return Err(GameError::InvalidAction);
+                }
+            }
+
+            let item = inventory
+                .find_item(item_uuid)
+                .ok_or(GameError::InventoryItemNotFound)?;
+
+            // 판매 가격 = 원가의 50%
+            let original_price = item.price();
+            let sell_price = original_price / 2;
+
+            debug!(
+                "Found item in inventory: item_uuid={}, original_price={}, sell_price={}",
+                item_uuid, original_price, sell_price
+            );
+
+            sell_price
+        };
+
+        // 1-2. 상점 상태 확인 (상점 안에 있는지)
+        {
+            let _selected_event = world
+                .get_resource::<SelectedEvent>()
+                .ok_or(GameError::NotInShopState)?;
+
+            // 상점이 맞는지 확인
+            let _shop = _selected_event.as_shop()?;
+        }
+
+        // ============================================================
+        // 2단계: 실행 (모든 검증 통과 후)
+        // ============================================================
+
+        // 2-1. 인벤토리에서 아이템 제거
+        {
+            let mut inventory = world
+                .get_resource_mut::<Inventory>()
+                .ok_or(GameError::MissingResource("Inventory"))?;
+
+            inventory
+                .remove_item(item_uuid)
+                .ok_or(GameError::InventoryItemNotFound)?;
+
+            info!("Removed item from inventory: item_uuid={}", item_uuid);
+        }
+
+        // 2-2. Enkephalin 증가
+        let remaining_enkephalin = {
+            let mut enkephalin = world
+                .get_resource_mut::<Enkephalin>()
+                .ok_or(GameError::MissingResource("Enkephalin"))?;
+
+            enkephalin.amount = enkephalin
+                .amount
+                .checked_add(sell_price)
+                .ok_or(GameError::InvalidAction)?;
+            enkephalin.amount
+        };
+
+        info!(
+            "Item sold successfully: item_uuid={}, sell_price={}, remaining_enkephalin={}",
+            item_uuid, sell_price, remaining_enkephalin
+        );
+
+        Ok(BehaviorResult::SellItem {
+            enkephalin: remaining_enkephalin,
+            inventory_diff: InventoryDiffDto {
+                added: Vec::new(),
+                updated: Vec::new(),
+                removed: vec![item_uuid],
+            },
+        })
+    }
+
+    pub fn sell_tiem(world: &mut World, item_uuid: Uuid) -> Result<BehaviorResult, GameError> {
+        Self::sell_item(world, item_uuid)
+    }
+}
+
+// ============================================================
+// Tests
+// ============================================================
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::ecs::resources::{SelectedEventState, ShopSessionState};
+    use crate::game::data::{
+        abnormality_data::{AbnormalityMetadata, BasicAttackDef, MovementDef, ResonanceDef},
+        artifact_data::ArtifactMetadata,
+        equipment_data::{EquipmentMetadata, EquipmentType},
+        shop_data::{ShopMetadata, ShopType},
+        Item,
+    };
+    use crate::game::enums::{BonusEventOption, RiskLevel};
+    use crate::game::managers::uuid_manager::UuidManager;
+    use std::sync::Arc;
+    use uuid::Uuid;
+
+    /// 테스트용 World 생성 헬퍼
+    fn setup_world() -> World {
+        let mut world = World::new();
+        world.insert_resource(Enkephalin::new(100));
+        world.insert_resource(Inventory::new());
+        world.insert_resource(UuidManager::new(123));
+        world
+    }
+
+    fn add_owned_item(world: &mut World, item: Item) -> Uuid {
+        let owned_uuid = match &item {
+            Item::Equipment(_) => {
+                let mut uuid_manager = world.get_resource_mut::<UuidManager>().unwrap();
+                uuid_manager.next_owned_equipment()
+            }
+            Item::Abnormality(_) => {
+                let mut uuid_manager = world.get_resource_mut::<UuidManager>().unwrap();
+                uuid_manager.next_owned_abnormality()
+            }
+            _ => item.uuid(),
+        };
+
+        let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
+        inventory.add_item_owned(owned_uuid, item).unwrap();
+        owned_uuid
+    }
+
+    /// 테스트용 Equipment 생성 헬퍼
+    fn create_test_equipment(price: u32) -> (Uuid, Arc<EquipmentMetadata>) {
+        let uuid = Uuid::new_v4();
+        let equipment = Arc::new(EquipmentMetadata {
+            id: "test_weapon".to_string(),
+            uuid,
+            name: "Test Weapon".to_string(),
+            equipment_type: EquipmentType::Weapon,
+            rarity: RiskLevel::HE,
+            price,
+            allow_duplicate_equip: true,
+            triggered_effects: Default::default(),
+            ability_activations: vec![],
+        });
+        (uuid, equipment)
+    }
+
+    /// 테스트용 Abnormality 생성 헬퍼
+    fn create_test_abnormality(price: u32) -> (Uuid, Arc<AbnormalityMetadata>) {
+        let uuid = Uuid::new_v4();
+        let abnormality = Arc::new(AbnormalityMetadata {
+            id: "test_abnormality".to_string(),
+            uuid,
+            name: "Test Abnormality".to_string(),
+            risk_level: RiskLevel::WAW,
+            price,
+            max_health: 100,
+            attack: 30,
+            defense: 5,
+            magic_resist: 0,
+            movement: MovementDef {
+                speed_units_per_ms: 3000,
+            },
+            basic_attack: BasicAttackDef {
+                range_units: 1.0,
+                interval_ms: 1500,
+                windup_ms: 0,
+                delivery: crate::game::ability::DeliveryDef::Instant,
+            },
+            resonance: ResonanceDef {
+                start: 0,
+                max: 100,
+                gain_lock_ms: 1000,
+            },
+            skill_id: None,
+        });
+        (uuid, abnormality)
+    }
+
+    fn create_test_artifact(price: u32) -> (Uuid, Arc<ArtifactMetadata>) {
+        let uuid = Uuid::new_v4();
+        let artifact = Arc::new(ArtifactMetadata {
+            id: "test_artifact".to_string(),
+            uuid,
+            name: "Test Artifact".to_string(),
+            description: "Artifact".to_string(),
+            rarity: RiskLevel::HE,
+            price,
+            triggered_effects: Default::default(),
+            ability_activations: vec![],
+        });
+        (uuid, artifact)
+    }
+
+    /// 테스트용 상점 설정 헬퍼
+    fn setup_shop(world: &mut World) {
+        let shop = ShopMetadata {
+            id: "test_shop".to_string(),
+            name: "Test Shop".to_string(),
+            uuid: Uuid::new_v4(),
+            shop_type: ShopType::Shop,
+            can_reroll: false,
+            visible_items: Vec::new(),
+            hidden_items: Vec::new(),
+        };
+
+        world.insert_resource(SelectedEvent::new(SelectedEventState::Shop(
+            ShopSessionState::from(shop),
+        )));
+    }
+
+    #[test]
+    fn test_reroll_rejected_when_hidden_items_empty() {
+        // Given: 리롤이 허용된 상점이지만 hidden_items가 비어있음
+        let mut world = setup_world();
+
+        let visible_item = Uuid::new_v4();
+        let shop_uuid = Uuid::new_v4();
+        let shop = ShopMetadata {
+            id: "test_shop".to_string(),
+            name: "Test Shop".to_string(),
+            uuid: shop_uuid,
+            shop_type: ShopType::Shop,
+            can_reroll: true,
+            visible_items: vec![visible_item],
+            hidden_items: Vec::new(),
+        };
+        world.insert_resource(SelectedEvent::new(SelectedEventState::Shop(
+            ShopSessionState::from(shop),
+        )));
+
+        // When: 리롤 시도
+        let result = ShopExecutor::reroll(&mut world);
+
+        // Then: 리롤 거부 + 상점 상태(visible_items)가 유지됨
+        assert!(matches!(result, Err(GameError::ShopRerollNotAllowed)));
+
+        let selected = world.get_resource::<SelectedEvent>().unwrap();
+        let shop = selected.as_shop().unwrap();
+        assert_eq!(shop.uuid, shop_uuid);
+        assert_eq!(shop.visible_items, vec![visible_item]);
+        assert!(shop.hidden_items.is_empty());
+    }
+
+    #[test]
+    fn test_purchase_duplicate_artifact_is_rejected_before_shop_mutation() {
+        let mut world = setup_world();
+        let (artifact_uuid, artifact) = create_test_artifact(20);
+        add_owned_item(&mut world, Item::Artifact(artifact.clone()));
+
+        let shop = ShopMetadata {
+            id: "artifact_shop".to_string(),
+            name: "Artifact Shop".to_string(),
+            uuid: Uuid::new_v4(),
+            shop_type: ShopType::Shop,
+            can_reroll: false,
+            visible_items: vec![artifact_uuid],
+            hidden_items: Vec::new(),
+        };
+        world.insert_resource(SelectedEvent::new(SelectedEventState::Shop(
+            ShopSessionState::from(shop),
+        )));
+
+        let game_data = GameDataBase::new(crate::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(
+                crate::game::data::abnormality_data::AbnormalityDatabase::new(vec![]),
+            ),
+            artifact_data: Arc::new(crate::game::data::artifact_data::ArtifactDatabase::new(
+                vec![(*artifact).clone()],
+            )),
+            equipment_data: Arc::new(crate::game::data::equipment_data::EquipmentDatabase::new(
+                vec![],
+            )),
+            shop_data: Arc::new(crate::game::data::shop_data::ShopDatabase::new(vec![])),
+            bonus_data: Arc::new(crate::game::data::bonus_data::BonusDatabase::new(vec![])),
+            random_event_data: Arc::new(
+                crate::game::data::random_event_data::RandomEventDatabase::new(vec![]),
+            ),
+            pve_data: Arc::new(crate::game::data::pve_data::PveEncounterDatabase::new(
+                vec![],
+            )),
+            skill_data: Arc::new(crate::game::data::skill_data::SkillDatabase::new(vec![])),
+            event_pools: crate::game::data::event_pools::EventPoolConfig {
+                dawn: crate::game::data::event_pools::EventPhasePool {
+                    shops: vec![],
+                    bonuses: vec![],
+                    random_events: vec![],
+                },
+                noon: crate::game::data::event_pools::EventPhasePool {
+                    shops: vec![],
+                    bonuses: vec![],
+                    random_events: vec![],
+                },
+                dusk: crate::game::data::event_pools::EventPhasePool {
+                    shops: vec![],
+                    bonuses: vec![],
+                    random_events: vec![],
+                },
+                midnight: crate::game::data::event_pools::EventPhasePool {
+                    shops: vec![],
+                    bonuses: vec![],
+                    random_events: vec![],
+                },
+                white: crate::game::data::event_pools::EventPhasePool {
+                    shops: vec![],
+                    bonuses: vec![],
+                    random_events: vec![],
+                },
+            },
+        });
+
+        let err = ShopExecutor::purchase_item(&mut world, &game_data, artifact_uuid).unwrap_err();
+        assert!(matches!(err, GameError::AlreadyOwnedArtifact));
+
+        let selected = world.get_resource::<SelectedEvent>().unwrap();
+        let shop = selected.as_shop().unwrap();
+        assert_eq!(shop.visible_items, vec![artifact_uuid]);
+        assert_eq!(world.get_resource::<Enkephalin>().unwrap().amount, 100);
+    }
+
+    // ============================================================
+    // sell_tiem 테스트
+    // ============================================================
+
+    #[test]
+    fn test_sell_equipment_success() {
+        // Given: 인벤토리에 장비가 있고, 상점 안에 있음
+        let mut world = setup_world();
+        setup_shop(&mut world);
+
+        let (_base_uuid, equipment) = create_test_equipment(100);
+        let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
+
+        let initial_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
+
+        // When: 아이템 판매
+        let result = ShopExecutor::sell_tiem(&mut world, item_uuid);
+
+        // Then: 성공
+        assert!(result.is_ok());
+
+        let sell_result = result.unwrap();
+        match sell_result {
+            BehaviorResult::SellItem {
+                enkephalin,
+                inventory_diff,
+            } => {
+                // Then: 판매 가격 = 원가의 50%
+                assert_eq!(enkephalin, initial_enkephalin + 50);
+
+                // Then: 인벤토리에서 제거됨
+                assert_eq!(inventory_diff.removed.len(), 1);
+                assert_eq!(inventory_diff.removed[0], item_uuid);
+
+                // Then: 추가/변경 없음
+                assert_eq!(inventory_diff.added.len(), 0);
+                assert_eq!(inventory_diff.updated.len(), 0);
+            }
+            _ => panic!("Expected SellItem result"),
+        }
+
+        // Then: Enkephalin 증가 확인
+        let final_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
+        assert_eq!(final_enkephalin, initial_enkephalin + 50);
+
+        // Then: 인벤토리에서 아이템 제거 확인
+        let inventory = world.get_resource::<Inventory>().unwrap();
+        assert!(inventory.find_item(item_uuid).is_none());
+    }
+
+    #[test]
+    fn test_sell_abnormality_success() {
+        // Given: 인벤토리에 환상체가 있고, 상점 안에 있음
+        let mut world = setup_world();
+        setup_shop(&mut world);
+
+        let (_base_uuid, abnormality) = create_test_abnormality(200);
+        let owned_uuid = add_owned_item(&mut world, Item::Abnormality(abnormality.clone()));
+
+        let initial_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
+
+        // When: 아이템 판매
+        let result = ShopExecutor::sell_tiem(&mut world, owned_uuid);
+
+        // Then: 성공, 판매 가격 = 200 * 50% = 100
+        assert!(result.is_ok());
+
+        let final_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
+        assert_eq!(final_enkephalin, initial_enkephalin + 100);
+
+        // Then: 인벤토리에서 제거 확인
+        let inventory = world.get_resource::<Inventory>().unwrap();
+        assert!(inventory.find_item(owned_uuid).is_none());
+    }
+
+    #[test]
+    fn test_sell_item_not_in_inventory() {
+        // Given: 인벤토리에 아이템이 없음
+        let mut world = setup_world();
+        setup_shop(&mut world);
+
+        let non_existent_uuid = Uuid::new_v4();
+
+        // When: 존재하지 않는 아이템 판매 시도
+        let result = ShopExecutor::sell_tiem(&mut world, non_existent_uuid);
+
+        // Then: InventoryItemNotFound 에러
+        assert!(result.is_err());
+        assert!(matches!(
+            result.unwrap_err(),
+            GameError::InventoryItemNotFound
+        ));
+    }
+
+    #[test]
+    fn test_sell_item_not_in_shop() {
+        // Given: 상점 안에 있지 않음 (SelectedEvent 없음)
+        let mut world = setup_world();
+
+        let (_base_uuid, equipment) = create_test_equipment(100);
+        let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
+
+        // When: 상점 밖에서 판매 시도
+        let result = ShopExecutor::sell_tiem(&mut world, item_uuid);
+
+        // Then: NotInShopState 에러
+        assert!(result.is_err());
+        assert!(matches!(result.unwrap_err(), GameError::NotInShopState));
+    }
+
+    #[test]
+    fn test_sell_price_calculation() {
+        // Given: 다양한 가격의 아이템들
+        let test_cases = vec![
+            (100, 50),   // 100 → 50
+            (200, 100),  // 200 → 100
+            (75, 37),    // 75 → 37 (정수 나눗셈)
+            (1, 0),      // 1 → 0 (정수 나눗셈)
+            (1000, 500), // 1000 → 500
+        ];
+
+        for (original_price, expected_sell_price) in test_cases {
+            let mut world = setup_world();
+            setup_shop(&mut world);
+
+            let (_base_uuid, equipment) = create_test_equipment(original_price);
+            let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
+
+            let initial_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
+
+            // When: 판매
+            let result = ShopExecutor::sell_tiem(&mut world, item_uuid);
+
+            // Then: 판매 가격이 원가의 50%인지 확인
+            assert!(result.is_ok());
+
+            let final_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
+            assert_eq!(
+                final_enkephalin,
+                initial_enkephalin + expected_sell_price,
+                "Price {}: expected sell price {}, but got {}",
+                original_price,
+                expected_sell_price,
+                final_enkephalin - initial_enkephalin
+            );
+        }
+    }
+
+    #[test]
+    fn test_sell_multiple_items_sequentially() {
+        // Given: 여러 아이템이 인벤토리에 있음
+        let mut world = setup_world();
+        setup_shop(&mut world);
+
+        let (_uuid1, equipment1) = create_test_equipment(100);
+        let (_uuid2, equipment2) = create_test_equipment(200);
+        let (_uuid3, abnormality) = create_test_abnormality(300);
+
+        // Given: 인벤토리에 아이템들 추가
+        let uuid1 = add_owned_item(&mut world, Item::Equipment(equipment1));
+        let uuid2 = add_owned_item(&mut world, Item::Equipment(equipment2));
+        let uuid3 = add_owned_item(&mut world, Item::Abnormality(abnormality));
+
+        let initial_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
+
+        // When: 아이템들을 순차적으로 판매
+        ShopExecutor::sell_tiem(&mut world, uuid1).unwrap();
+        ShopExecutor::sell_tiem(&mut world, uuid2).unwrap();
+        ShopExecutor::sell_tiem(&mut world, uuid3).unwrap();
+
+        // Then: 총 판매 가격 = 50 + 100 + 150 = 300
+        let final_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
+        assert_eq!(final_enkephalin, initial_enkephalin + 300);
+
+        // Then: 인벤토리가 비어있는지 확인
+        let inventory = world.get_resource::<Inventory>().unwrap();
+        assert!(inventory.find_item(uuid1).is_none());
+        assert!(inventory.find_item(uuid2).is_none());
+        assert!(inventory.find_item(uuid3).is_none());
+    }
+
+    #[test]
+    fn test_sell_same_item_twice() {
+        // Given: 인벤토리에 아이템이 하나 있음
+        let mut world = setup_world();
+        setup_shop(&mut world);
+
+        let (_base_uuid, equipment) = create_test_equipment(100);
+        let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
+
+        // When: 첫 번째 판매 성공
+        let result1 = ShopExecutor::sell_tiem(&mut world, item_uuid);
+        assert!(result1.is_ok());
+
+        // When: 두 번째 판매 시도 (이미 제거됨)
+        let result2 = ShopExecutor::sell_tiem(&mut world, item_uuid);
+
+        // Then: InventoryItemNotFound 에러
+        assert!(result2.is_err());
+        assert!(matches!(
+            result2.unwrap_err(),
+            GameError::InventoryItemNotFound
+        ));
+    }
+
+    // ============================================================
+    // 오류 처리 테스트 (no should_panic)
+    // ============================================================
+
+    #[test]
+    fn test_sell_enkephalin_overflow_is_rejected() {
+        // Given: Enkephalin이 거의 u32::MAX에 가까움
+        let mut world = setup_world();
+        setup_shop(&mut world);
+
+        // Given: Enkephalin을 u32::MAX - 10으로 설정
+        {
+            let mut enkephalin = world.get_resource_mut::<Enkephalin>().unwrap();
+            enkephalin.amount = u32::MAX - 10;
+        }
+
+        // Given: 100 가격의 아이템 추가 (판매 시 50 획득)
+        let (_base_uuid, equipment) = create_test_equipment(100);
+        let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
+
+        // When: 판매 시도 (u32::MAX - 10 + 50 = 오버플로우)
+        // Then: 오버플로우는 에러로 처리되어야 함
+        let err = ShopExecutor::sell_tiem(&mut world, item_uuid).unwrap_err();
+        assert!(matches!(err, GameError::InvalidAction));
+    }
+
+    #[test]
+    fn test_sell_without_enkephalin_resource_returns_error() {
+        // Given: Enkephalin 리소스가 없는 World
+        let mut world = World::new();
+        // Given: Enkephalin 리소스를 추가하지 않음
+        world.insert_resource(Inventory::new());
+        setup_shop(&mut world);
+
+        let (_base_uuid, equipment) = create_test_equipment(100);
+        let item_uuid = {
+            let owned_uuid = Uuid::from_u128(1);
+            let mut inventory = world.get_resource_mut::<Inventory>().unwrap();
+            inventory
+                .add_item_owned(owned_uuid, Item::Equipment(equipment.clone()))
+                .unwrap();
+            owned_uuid
+        };
+
+        // When: Enkephalin 리소스 없이 판매 시도
+        // Then: 명시적 에러 반환
+        let err = ShopExecutor::sell_tiem(&mut world, item_uuid).unwrap_err();
+        assert!(matches!(err, GameError::MissingResource("Enkephalin")));
+    }
+
+    #[test]
+    fn test_sell_without_inventory_resource_returns_error() {
+        // Given: Inventory 리소스가 없는 World
+        let mut world = World::new();
+        world.insert_resource(Enkephalin::new(100));
+        // Given: Inventory 리소스를 추가하지 않음
+        setup_shop(&mut world);
+
+        let item_uuid = Uuid::new_v4();
+
+        // When: Inventory 리소스 없이 판매 시도
+        // Then: 명시적 에러 반환
+        let err = ShopExecutor::sell_tiem(&mut world, item_uuid).unwrap_err();
+        assert!(matches!(err, GameError::MissingResource("Inventory")));
+    }
+
+    #[test]
+    fn test_sell_without_shop_state_returns_error() {
+        // Given: SelectedEvent가 없는 World
+        let mut world = setup_world();
+        // Given: setup_shop()을 호출하지 않음
+
+        let (_base_uuid, equipment) = create_test_equipment(100);
+        let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
+
+        // When: 상점 상태 없이 판매 시도
+        // Then: 명시적 에러 반환
+        let err = ShopExecutor::sell_tiem(&mut world, item_uuid).unwrap_err();
+        assert!(matches!(err, GameError::NotInShopState));
+    }
+
+    #[test]
+    fn test_sell_nonexistent_item_returns_error() {
+        // Given: 존재하지 않는 아이템 UUID
+        let mut world = setup_world();
+        setup_shop(&mut world);
+
+        let nonexistent_uuid = Uuid::new_v4();
+
+        // When: 존재하지 않는 아이템 판매 시도
+        // Then: 명시적 에러 반환
+        let err = ShopExecutor::sell_tiem(&mut world, nonexistent_uuid).unwrap_err();
+        assert!(matches!(err, GameError::InventoryItemNotFound));
+    }
+
+    #[test]
+    fn test_sell_with_wrong_event_type_returns_error() {
+        // Given: SelectedEvent가 Shop이 아닌 다른 타입
+        let mut world = setup_world();
+
+        // Given: Bonus 이벤트로 설정 (Shop이 아님)
+        use crate::game::data::bonus_data::BonusType;
+
+        let bonus = BonusEventOption {
+            id: "test_bonus".to_string(),
+            uuid: Uuid::new_v4(),
+            bonus_type: BonusType::Enkephalin,
+            name: "Test Bonus".to_string(),
+            description: "Test bonus description".to_string(),
+            icon: "test_icon.png".to_string(),
+            amount: 30,
+        };
+        world.insert_resource(SelectedEvent::new(SelectedEventState::Reward(
+            crate::ecs::resources::RewardSessionState {
+                stage_uuid: bonus.uuid,
+                mode: crate::game::enums::RewardMode::ClaimAll,
+                rewards: vec![bonus],
+                selected_reward_uuid: None,
+                can_skip: true,
+            },
+        )));
+
+        let (_base_uuid, equipment) = create_test_equipment(100);
+        let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
+
+        // When: Bonus 이벤트 상태에서 판매 시도
+        // Then: 명시적 에러 반환
+        let err = ShopExecutor::sell_tiem(&mut world, item_uuid).unwrap_err();
+        assert!(matches!(err, GameError::EventTypeMismatch));
+    }
+
+    // ============================================================
+    // 경계값 테스트 (Boundary Testing)
+    // ============================================================
+
+    #[test]
+    fn test_sell_price_zero() {
+        // Given: 가격이 1인 아이템 (판매 시 0)
+        let mut world = setup_world();
+        setup_shop(&mut world);
+
+        let (_base_uuid, equipment) = create_test_equipment(1);
+        let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
+
+        let initial_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
+
+        // When: 판매 (1 / 2 = 0)
+        let result = ShopExecutor::sell_tiem(&mut world, item_uuid);
+
+        // Then: 성공하지만 Enkephalin 변화 없음
+        assert!(result.is_ok());
+
+        let final_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
+        assert_eq!(final_enkephalin, initial_enkephalin);
+    }
+
+    #[test]
+    fn test_sell_price_max_safe() {
+        // Given: 매우 큰 가격의 아이템 (하지만 오버플로우는 발생하지 않음)
+        let mut world = setup_world();
+        setup_shop(&mut world);
+
+        // Given: u32::MAX / 2 보다 작은 가격 설정
+        let max_safe_price = 1_000_000_000u32; // 10억
+        let (_base_uuid, equipment) = create_test_equipment(max_safe_price);
+        let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
+
+        let initial_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
+
+        // When: 판매
+        let result = ShopExecutor::sell_tiem(&mut world, item_uuid);
+
+        // Then: 성공
+        assert!(result.is_ok());
+
+        let final_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
+        assert_eq!(final_enkephalin, initial_enkephalin + max_safe_price / 2);
+    }
+
+    #[test]
+    fn test_sell_with_zero_enkephalin() {
+        // Given: Enkephalin이 0인 상태
+        let mut world = setup_world();
+        setup_shop(&mut world);
+
+        // Given: Enkephalin을 0으로 설정
+        {
+            let mut enkephalin = world.get_resource_mut::<Enkephalin>().unwrap();
+            enkephalin.amount = 0;
+        }
+
+        let (_base_uuid, equipment) = create_test_equipment(100);
+        let item_uuid = add_owned_item(&mut world, Item::Equipment(equipment.clone()));
+
+        // When: 판매
+        let result = ShopExecutor::sell_tiem(&mut world, item_uuid);
+
+        // Then: 성공 (판매는 Enkephalin 체크 없음)
+        assert!(result.is_ok());
+
+        let final_enkephalin = world.get_resource::<Enkephalin>().unwrap().amount;
+        // Then: 0 + 50
+        assert_eq!(final_enkephalin, 50);
+    }
+}

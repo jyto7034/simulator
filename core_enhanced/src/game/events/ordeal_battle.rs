@@ -1,0 +1,90 @@
+use bevy_ecs::world::World;
+use uuid::Uuid;
+
+use crate::game::{
+    behavior::GameError,
+    enums::{GameOption, OrdealType},
+    events::EventGenerator,
+};
+
+pub struct OrdealBattleGenerator;
+
+impl EventGenerator for OrdealBattleGenerator {
+    type Output = Vec<GameOption>;
+
+    fn generate(&self, ctx: &super::GeneratorContext) -> Result<Self::Output, GameError> {
+        use crate::ecs::resources::GameProgression;
+
+        let current_ordeal = ctx
+            .world
+            .get_resource::<GameProgression>()
+            .map(|p| p.current_ordeal)
+            .unwrap_or(OrdealType::Dawn);
+
+        if let Some(opponent) = &ctx.extras.opponent_data {
+            println!("Generating Ordeal battle against: {}", opponent.name);
+
+            // TODO: opponent 정보 기반으로 전투 생성
+            // - opponent.level
+            // - opponent.deck
+            // - opponent.items
+            // 등을 활용
+        } else {
+            // NOTE: Ordeal 스케줄에 의해 호출될 수 있으므로, opponent_data 누락은 패닉이 아니라 폴백으로 처리.
+            tracing::warn!("Ordeal battle generated without opponent_data; using fallback options");
+        }
+
+        // TODO: 실제 ordeal 메타데이터에서 uuid 조회
+        // 지금은 임시로 고정 uuid 사용
+        Ok(vec![GameOption::OrdealBattle {
+            ordeal_type: current_ordeal,
+            difficulty: 1,
+            uuid: match current_ordeal {
+                OrdealType::Dawn => {
+                    Uuid::parse_str("850e8400-e29b-41d4-a716-446655440001").unwrap()
+                }
+                OrdealType::Noon => {
+                    Uuid::parse_str("850e8400-e29b-41d4-a716-446655440002").unwrap()
+                }
+                OrdealType::Dusk => {
+                    Uuid::parse_str("850e8400-e29b-41d4-a716-446655440003").unwrap()
+                }
+                OrdealType::Midnight => {
+                    Uuid::parse_str("850e8400-e29b-41d4-a716-446655440004").unwrap()
+                }
+                OrdealType::White => {
+                    Uuid::parse_str("850e8400-e29b-41d4-a716-446655440005").unwrap()
+                }
+            },
+        }])
+    }
+}
+
+/// 시련 전투 비즈니스 로직 헬퍼
+pub struct OrdealBattleExecutor;
+
+impl OrdealBattleExecutor {
+    /// 전투 시작
+    ///
+    /// # Arguments
+    /// * `world` - ECS World
+    /// * `ordeal_battle_uuid` - 시련 전투 UUID
+    /// * `deck_card_ids` - 플레이어가 선택한 덱 구성
+    pub fn start_battle(
+        _world: &mut World,
+        _ordeal_battle_uuid: Uuid,
+        _deck_card_ids: Vec<Uuid>,
+    ) -> Result<(), GameError> {
+        // TODO: GameData에서 시련 전투 메타데이터 조회 (ordeal_battle_uuid로)
+        // TODO: 전투 초기화
+        //   - 플레이어 덱 로드 (deck_card_ids)
+        //   - 적 데이터 로드 (PvE: 몬스터, PvP: Ghost 데이터)
+        //   - 전투 시스템 초기화
+        // TODO: 전투 진행 (별도의 BattleSystem 호출)
+        // TODO: 전투 결과 처리
+        //   승리: 보상 지급, 다음 Phase 진행
+        //   패배: 게임 오버 또는 페널티
+
+        Ok(())
+    }
+}

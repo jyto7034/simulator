@@ -1,0 +1,479 @@
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
+
+use crate::{
+    ecs::resources::{EquipItemResultDto, InventoryDiffDto, Position},
+    game::{
+        battle::{timeline::Timeline, types::BattleWinner},
+        enums::{
+            BonusEventOption, PhaseEvent, RandomEventOption, RewardMode, ShopEventOption, ZoneType,
+        },
+    },
+};
+
+/// 상태 게이트에서 사용하는 payload-less 액션 capability
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+pub enum ActionKind {
+    StartNewGame,
+    UnEquipItem,
+    EquipItem,
+    MoveUnit,
+    MoveBenchUnit,
+    TransferUnit,
+    RequestPhaseData,
+    SelectEvent,
+    PurchaseItem,
+    SellItem,
+    RerollShop,
+    ExitShop,
+    ClaimBonus,
+    ExitBonus,
+    StartSuppression,
+    FinishSuppressionReplay,
+    ClaimCombatReward,
+    ExitCombatReward,
+}
+
+/// GameServer에서 GameCore로 전달되는 플레이어 행동
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum PlayerBehavior {
+    // ============================================================
+    // 게임 관련 행동
+    // ============================================================
+    /// 새 게임 시작
+    StartNewGame,
+    // 아이템 장착 해제
+    UnEquipItem {
+        item_uuid: Uuid,
+        target_unit: Uuid,
+    },
+    /// 아이템 장착
+    EquipItem {
+        item_uuid: Uuid,
+        target_unit: Uuid,
+    },
+    /// 기물 배치 이동 (편성 변경)
+    MoveUnit {
+        target_unit_uuid: Uuid,
+        dest_pos: Position,
+        swap_with_unit_uuid: Option<Uuid>,
+    },
+    /// 벤치 내부 슬롯 이동
+    MoveBenchUnit {
+        target_unit_uuid: Uuid,
+        dest_slot: usize,
+        swap_with_unit_uuid: Option<Uuid>,
+    },
+    /// 배낭 <-> 필드 이동
+    TransferUnit {
+        target_unit_uuid: Uuid,
+        dest_zone: ZoneType,
+        dest_bench_slot: Option<usize>,
+        swap_with_unit_uuid: Option<Uuid>,
+    },
+    // ============================================================
+    // 이벤트 관련 행동
+    // ============================================================
+    /// 현재 페이즈 데이터 요청
+    RequestPhaseData,
+    /// 이벤트 선택 (상점/보너스/랜덤)
+    SelectEvent {
+        event_id: Uuid,
+    },
+    // ============================================================
+    // 상점 관련 행동
+    // ============================================================
+    /// 아이템 구매
+    PurchaseItem {
+        item_uuid: Uuid,
+    },
+    /// 아이템 판매
+    SellItem {
+        item_uuid: Uuid,
+    },
+    /// 상점 리롤 (새로운 아이템으로 교체)
+    RerollShop,
+    /// 상점 나가기
+    ExitShop,
+    // ============================================================
+    // 보너스 관련 행동
+    // ============================================================
+    /// 보너스 수령
+    ClaimBonus,
+    /// 보너스 화면 나가기
+    ExitBonus,
+    // ============================================================
+    // 진압 관련 행동
+    // ============================================================
+    /// 진압 전투 시작
+    StartSuppression {
+        abnormality_id: String,
+    },
+    /// 진압 전투 리플레이 종료
+    FinishSuppressionReplay,
+    /// 진압 전투 보상 수령
+    ClaimCombatReward,
+    /// 진압 전투 보상 확인 완료
+    ExitCombatReward,
+    // ============================================================
+    // 전투 관련 행동 (TODO)
+    // ============================================================
+    // UseCard { card_uuid: Uuid },
+    // EndTurn,
+}
+
+impl PlayerBehavior {
+    pub fn kind(&self) -> ActionKind {
+        match self {
+            PlayerBehavior::StartNewGame => ActionKind::StartNewGame,
+            PlayerBehavior::UnEquipItem { .. } => ActionKind::UnEquipItem,
+            PlayerBehavior::EquipItem { .. } => ActionKind::EquipItem,
+            PlayerBehavior::MoveUnit { .. } => ActionKind::MoveUnit,
+            PlayerBehavior::MoveBenchUnit { .. } => ActionKind::MoveBenchUnit,
+            PlayerBehavior::TransferUnit { .. } => ActionKind::TransferUnit,
+            PlayerBehavior::RequestPhaseData => ActionKind::RequestPhaseData,
+            PlayerBehavior::SelectEvent { .. } => ActionKind::SelectEvent,
+            PlayerBehavior::PurchaseItem { .. } => ActionKind::PurchaseItem,
+            PlayerBehavior::SellItem { .. } => ActionKind::SellItem,
+            PlayerBehavior::RerollShop => ActionKind::RerollShop,
+            PlayerBehavior::ExitShop => ActionKind::ExitShop,
+            PlayerBehavior::ClaimBonus => ActionKind::ClaimBonus,
+            PlayerBehavior::ExitBonus => ActionKind::ExitBonus,
+            PlayerBehavior::StartSuppression { .. } => ActionKind::StartSuppression,
+            PlayerBehavior::FinishSuppressionReplay => ActionKind::FinishSuppressionReplay,
+            PlayerBehavior::ClaimCombatReward => ActionKind::ClaimCombatReward,
+            PlayerBehavior::ExitCombatReward => ActionKind::ExitCombatReward,
+        }
+    }
+}
+
+/// BehaviorResult 는 변경된 모든 값을 넘길 의무가 있음
+/// 예를 들어 PurchaseItem 의 경우
+/// 1. 구매된 아이템
+/// 2. 아이템은 어디에 저장되는지
+/// 3. 남은 자원은 얼마인지
+/// 4. 해당 아이템이 어디서 제거되는지,
+///
+/// 등. 클라이언트는 해당 값들을 반영만 하게끔 해야함.
+#[derive(Debug, Serialize, Deserialize)]
+pub enum BehaviorResult {
+    /// 새 게임 시작
+    StartNewGame,
+
+    /// 페이즈 데이터 요청 → PhaseEvent 반환 (3개의 GameOption 포함)
+    RequestPhaseData(Box<PhaseEvent>),
+
+    /// 이벤트 선택 완료 (추가 메타데이터 없음)
+    EventSelected,
+
+    // 아이템 장착 해제
+    UnEquipItem,
+    /// 아이템 장착/조합
+    EquipItem {
+        result: EquipItemResultDto,
+    },
+    /// 기물 배치 이동 (편성 변경)
+    MoveUnit,
+    /// 벤치 내부 슬롯 이동
+    MoveBenchUnit,
+    /// 배낭 <-> 필드 이동
+    TransferUnit,
+
+    /// 상점 상태 업데이트 (예: 리롤 이후)
+    ShopState {
+        shop: ShopEventOption,
+    },
+
+    RerollShop {
+        new_items: Vec<Uuid>,
+    },
+
+    /// 아이템 판매 → 판매 확인
+    SellItem {
+        enkephalin: u32,
+        inventory_diff: InventoryDiffDto,
+    },
+
+    /// 아이템 구매 → 구매 확인
+    PurchaseItem {
+        enkephalin: u32,
+        inventory_diff: InventoryDiffDto,
+    },
+
+    /// 랜덤 이벤트 상태/결과 업데이트
+    RandomEventState {
+        event: RandomEventOption,
+    },
+    /// 보너스 결과 (자원 및 인벤토리 변경)
+    BonusReward {
+        enkephalin: u32,
+        inventory_diff: InventoryDiffDto,
+    },
+
+    /// 진압 작업 → 진압 결과
+    SuppressAbnormality {
+        winner: BattleWinner,
+        timeline: Timeline,
+    },
+
+    /// 보상 선택/수령 단계 상태
+    RewardState {
+        mode: RewardMode,
+        rewards: Vec<BonusEventOption>,
+        selected_reward_uuid: Option<Uuid>,
+    },
+
+    /// 시련 전투 → 전투 결과
+    Ordeal {
+        // TODO: 승패, 보상, 전투 로그 등
+        battle_result: String,
+    },
+
+    /// Phase 진행 → 다음 Phase 이벤트
+    AdvancePhase {
+        // TODO: 다음 Phase의 이벤트 정보
+        next_phase_event: String,
+    },
+
+    Ok,
+}
+
+impl BehaviorResult {
+    // ============================================================
+    // 타입 체크 헬퍼 (데이터가 없는 variant용)
+    // ============================================================
+
+    pub fn is_start_new_game(&self) -> bool {
+        matches!(self, BehaviorResult::StartNewGame)
+    }
+
+    pub fn is_event_selected(&self) -> bool {
+        matches!(self, BehaviorResult::EventSelected)
+    }
+
+    pub fn is_sell_item(&self) -> bool {
+        matches!(self, BehaviorResult::SellItem { .. })
+    }
+
+    /// SellItem → (남은 엔케팔린, 인벤토리 변경 사항) 반환
+    pub fn as_sell_item(&self) -> Option<(u32, &InventoryDiffDto)> {
+        match self {
+            BehaviorResult::SellItem {
+                enkephalin,
+                inventory_diff,
+            } => Some((*enkephalin, inventory_diff)),
+            _ => None,
+        }
+    }
+
+    pub fn is_ok(&self) -> bool {
+        matches!(self, BehaviorResult::Ok)
+    }
+
+    // ============================================================
+    // 데이터 추출 헬퍼 (참조 반환)
+    // ============================================================
+
+    /// RequestPhaseData → PhaseEvent 참조 반환
+    pub fn as_request_phase_data(&self) -> Option<&PhaseEvent> {
+        match self {
+            BehaviorResult::RequestPhaseData(event) => Some(event.as_ref()),
+            _ => None,
+        }
+    }
+
+    /// ShopState → ShopEventOption 참조 반환
+    pub fn as_shop_state(&self) -> Option<&ShopEventOption> {
+        match self {
+            BehaviorResult::ShopState { shop } => Some(shop),
+            _ => None,
+        }
+    }
+
+    /// RerollShop → 새로운 아이템 UUID 리스트 참조 반환
+    pub fn as_reroll_shop(&self) -> Option<&Vec<Uuid>> {
+        match self {
+            BehaviorResult::RerollShop { new_items } => Some(new_items),
+            _ => None,
+        }
+    }
+
+    /// PurchaseItem → (남은 엔케팔린, 인벤토리 변경 사항) 반환
+    pub fn as_purchase_item(&self) -> Option<(u32, &InventoryDiffDto)> {
+        match self {
+            BehaviorResult::PurchaseItem {
+                enkephalin,
+                inventory_diff,
+            } => Some((*enkephalin, inventory_diff)),
+            _ => None,
+        }
+    }
+
+    /// RandomEventState → RandomEventOption 참조 반환
+    pub fn as_random_event_state(&self) -> Option<&RandomEventOption> {
+        match self {
+            BehaviorResult::RandomEventState { event } => Some(event),
+            _ => None,
+        }
+    }
+
+    /// BonusReward → (남은 엔케팔린, 인벤토리 변경 사항) 반환
+    pub fn as_bonus_reward(&self) -> Option<(u32, &InventoryDiffDto)> {
+        match self {
+            BehaviorResult::BonusReward {
+                enkephalin,
+                inventory_diff,
+            } => Some((*enkephalin, inventory_diff)),
+            _ => None,
+        }
+    }
+
+    /// SuppressAbnormality → (승자, 전투 타임라인) 반환
+    pub fn as_suppress_abnormality(&self) -> Option<(BattleWinner, &Timeline)> {
+        match self {
+            BehaviorResult::SuppressAbnormality { winner, timeline } => Some((*winner, timeline)),
+            _ => None,
+        }
+    }
+
+    /// RewardState → (모드, 보상 목록, 현재 선택 보상 UUID) 반환
+    pub fn as_reward_state(&self) -> Option<(RewardMode, &[BonusEventOption], Option<Uuid>)> {
+        match self {
+            BehaviorResult::RewardState {
+                mode,
+                rewards,
+                selected_reward_uuid,
+            } => Some((*mode, rewards.as_slice(), *selected_reward_uuid)),
+            _ => None,
+        }
+    }
+
+    /// Ordeal → 전투 결과 문자열 참조 반환
+    pub fn as_ordeal(&self) -> Option<&str> {
+        match self {
+            BehaviorResult::Ordeal { battle_result } => Some(battle_result),
+            _ => None,
+        }
+    }
+
+    /// AdvancePhase → 다음 Phase 이벤트 문자열 참조 반환
+    pub fn as_advance_phase(&self) -> Option<&str> {
+        match self {
+            BehaviorResult::AdvancePhase { next_phase_event } => Some(next_phase_event),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum GameError {
+    /// 선택한 이벤트 ID가 현재 Phase의 옵션에 존재하지 않을 때
+    EventNotFound,
+    /// 이벤트는 존재하지만 기대한 타입(Shop/Bonus/Random 등)이 아닐 때
+    EventTypeMismatch,
+
+    /// 현재 GameState/Context에서 허용되지 않은 행동 (치팅 시도 포함)
+    InvalidAction,
+
+    /// 상점 상태가 아니거나, SelectedEvent에 Shop 정보가 없을 때
+    NotInShopState,
+    /// 보너스 상태가 아니거나, SelectedEvent에 Bonus 정보가 없을 때
+    NotInBonusState,
+    /// 상점이 리롤을 지원하지 않을 때
+    ShopRerollNotAllowed,
+    /// 상점의 visible_items / uuid_lookup_table에서 아이템을 찾지 못했을 때
+    ShopItemNotFound,
+
+    /// 인벤토리가 가득 차서 아이템을 추가할 수 없을 때 (예: 아티팩트 슬롯)
+    InventoryFull,
+    /// 인벤토리에서 아이템을 찾을 수 없을 때
+    InventoryItemNotFound,
+    /// 유일해야 하는 아티팩트를 이미 보유 중일 때
+    AlreadyOwnedArtifact,
+
+    /// 구매/행동에 필요한 자원이 부족할 때
+    InsufficientResources,
+
+    /// 아직 Phase 진행이 준비되지 않았을 때
+    PhaseNotReady,
+
+    /// 필수 리소스(Enkephalin, Inventory 등)가 World에 없을 때
+    MissingResource(&'static str),
+
+    /// 기물의 전투 스탯이 정의되지 않았거나 잘못된 경우
+    InvalidUnitStats(&'static str),
+    /// RON 등 정적 데이터가 현재 엔진 계약을 위반할 때
+    InvalidStaticData(String),
+    /// 아직 구현되지 않은 핵심 게임 루프/콘텐츠를 호출했을 때
+    NotImplemented(&'static str),
+
+    /// 필드 위치가 범위를 벗어났을 때
+    OutOfBounds,
+    /// 해당 위치에 이미 기물이 배치되어 있을 때
+    PositionOccupied,
+    /// 해당 기물이 이미 필드에 배치되어 있을 때
+    UnitAlreadyPlaced,
+    /// 필드에서 기물을 찾을 수 없을 때
+    UnitNotFound,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::ecs::resources::InventoryDiffDto;
+    use crate::game::{
+        data::{random_event_data::RandomEventInnerMetadata, shop_data::ShopType},
+        enums::RiskLevel,
+        events::event_selection::random::RandomEventType,
+    };
+
+    #[test]
+    fn behavior_result_helpers_match_variants() {
+        assert!(BehaviorResult::StartNewGame.is_start_new_game());
+        assert!(BehaviorResult::EventSelected.is_event_selected());
+        assert!(BehaviorResult::Ok.is_ok());
+
+        let sell = BehaviorResult::SellItem {
+            enkephalin: 123,
+            inventory_diff: InventoryDiffDto::default(),
+        };
+        assert!(sell.is_sell_item());
+        let (remaining, diff) = sell.as_sell_item().unwrap();
+        assert_eq!(remaining, 123);
+        assert!(diff.added.is_empty());
+
+        let purchase = BehaviorResult::PurchaseItem {
+            enkephalin: 7,
+            inventory_diff: InventoryDiffDto::default(),
+        };
+        let (remaining, diff) = purchase.as_purchase_item().unwrap();
+        assert_eq!(remaining, 7);
+        assert!(diff.removed.is_empty());
+
+        let shop = ShopEventOption {
+            id: "shop".to_string(),
+            name: "Shop".to_string(),
+            uuid: Uuid::nil(),
+            shop_type: ShopType::Shop,
+            can_reroll: true,
+            visible_items: vec![Uuid::nil()],
+        };
+        let shop_state = BehaviorResult::ShopState { shop: shop.clone() };
+        assert_eq!(shop_state.as_shop_state(), Some(&shop));
+
+        let random = RandomEventOption {
+            id: "random".to_string(),
+            name: "Random".to_string(),
+            uuid: Uuid::nil(),
+            event_type: RandomEventType::Bonus,
+            risk_level: RiskLevel::HE,
+            description: "desc".to_string(),
+            image: "img".to_string(),
+            inner_metadata: RandomEventInnerMetadata::Bonus(Uuid::nil()),
+        };
+        let random_state = BehaviorResult::RandomEventState {
+            event: random.clone(),
+        };
+        assert_eq!(random_state.as_random_event_state(), Some(&random));
+    }
+}
