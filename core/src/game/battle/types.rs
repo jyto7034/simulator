@@ -87,6 +87,7 @@ impl OwnedUnit {
             origin.defense,
             origin.basic_attack.interval_ms,
         );
+        stats.magic_resist = origin.magic_resist;
 
         // 성장형 스택 적용
         for (stat_id, value) in &self.growth_stacks.stacks {
@@ -196,6 +197,7 @@ mod tests {
             max_health: 100,
             attack: 10,
             defense: 5,
+            magic_resist: 0,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -315,6 +317,7 @@ mod tests {
             max_health: 100,
             attack: 10,
             defense: 5,
+            magic_resist: 0,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -360,6 +363,7 @@ mod tests {
             max_health: 100,
             attack: 10,
             defense: 5,
+            magic_resist: 0,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),

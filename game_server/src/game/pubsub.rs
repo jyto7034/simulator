@@ -15,6 +15,10 @@ use crate::{
     shared::{circuit_breaker::CircuitBreaker, protocol::ServerMessage},
 };
 
+// Deprecated legacy multiplayer/PvP pubsub bridge. It remains buildable for
+// future reuse, while the active single-player Unity route stays local to
+// `PlayerGameActor`.
+
 #[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
 struct MatchResultPayload {
     player_id: Uuid,

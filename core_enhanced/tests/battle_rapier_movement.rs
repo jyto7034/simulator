@@ -1,30 +1,26 @@
 mod common;
 
-use std::collections::HashMap;
 use std::sync::Arc;
 
-use bevy_ecs::world::World;
-use game_core::ecs::resources::Position;
 use game_core::game::ability::DeliveryDef;
 use game_core::game::battle::core::{
     movement::types::{TimelineVec2, DEFAULT_MOVEMENT_TICK_MS},
     BattleCore,
 };
+use game_core::game::battle::scenario::{
+    BattleFieldSpec, BattleScenario, ScenarioAction, ScenarioEvent, ScenarioEventId,
+    ScenarioGroupId, ScenarioSpawnGroup, ScenarioTrigger, ScenarioUnitRef, ScenarioUnitSpawn,
+    WinCondition,
+};
 use game_core::game::battle::timeline::{HpChangeReason, Timeline, TimelineEvent};
-use game_core::game::battle::types::{BattleWinner, OwnedUnit, PlayerDeckInfo};
+use game_core::game::battle::types::{BattleUnitDraft, BattleUnitSource, BattleWinner};
 use game_core::game::data::{
-    abnormality_data::{AbnormalityDatabase, AbnormalityMetadata, BasicAttackDef, MovementDef},
-    artifact_data::ArtifactDatabase,
-    bonus_data::BonusDatabase,
-    equipment_data::EquipmentDatabase,
-    pve_data::PveEncounterDatabase,
-    random_event_data::RandomEventDatabase,
-    shop_data::ShopDatabase,
-    skill_data::SkillDatabase,
-    GameDataBase,
+    abnormality_data::{AbnormalityMetadata, BasicAttackDef, MovementDef},
+    GameDataBase, GameDataBuilder,
 };
 use game_core::game::enums::{RiskLevel, Side, Tier};
 use game_core::game::growth::GrowthStack;
+use game_core::game::resources::Position;
 use uuid::Uuid;
 
 fn abnormality_with_basic_attack(
@@ -47,6 +43,7 @@ fn abnormality_with_basic_attack(
         magic_resist: 0,
         movement: MovementDef {
             speed_units_per_ms: move_speed_units_per_ms,
+            radius_units: 350_000,
         },
         basic_attack,
         resonance: Default::default(),
@@ -55,57 +52,112 @@ fn abnormality_with_basic_attack(
 }
 
 fn game_data_from_abnormalities(items: Vec<AbnormalityMetadata>) -> Arc<GameDataBase> {
-    Arc::new(GameDataBase::new(
-        game_core::game::data::GameDataBaseParts {
-            abnormality_data: Arc::new(AbnormalityDatabase::new(items)),
-            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
-            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
-            shop_data: Arc::new(ShopDatabase::new(vec![])),
-            bonus_data: Arc::new(BonusDatabase::new(vec![])),
-            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
-            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
-            skill_data: Arc::new(SkillDatabase::new(vec![])),
-            event_pools: common::empty_event_pools(),
+    GameDataBuilder::empty()
+        .with_abnormalities(items)
+        .build_arc()
+}
+
+fn unit_draft(owned_uuid: Uuid, base_uuid: Uuid) -> BattleUnitDraft {
+    BattleUnitDraft {
+        owned_uuid,
+        source: BattleUnitSource::Abnormality { base_uuid },
+        level: Tier::I,
+        growth_stacks: GrowthStack::new(),
+        equipped_items: vec![],
+        equipped_item_enhancements: vec![],
+    }
+}
+
+fn spawn_group(
+    id: &str,
+    side: Side,
+    required_for_victory: bool,
+    units: Vec<(Uuid, Uuid, Position)>,
+) -> ScenarioSpawnGroup {
+    let group_id = ScenarioGroupId::new(id);
+    let spawns = units
+        .into_iter()
+        .enumerate()
+        .map(
+            |(index, (owned_uuid, base_uuid, position))| ScenarioUnitSpawn {
+                unit_ref: ScenarioUnitRef::new(format!("{}_{}", group_id.0, index)),
+                side,
+                draft: unit_draft(owned_uuid, base_uuid),
+                position,
+                instance_salt: index as u32,
+            },
+        )
+        .collect();
+
+    ScenarioSpawnGroup {
+        id: group_id,
+        side,
+        required_for_victory,
+        spawns,
+    }
+}
+
+fn battle_scenario_with_obstacles(
+    player_units: Vec<(Uuid, Uuid, Position)>,
+    opponent_units: Vec<(Uuid, Uuid, Position)>,
+    obstacles: Vec<Position>,
+) -> BattleScenario {
+    let player_group_id = "player_initial";
+    let enemy_group_id = "enemy_initial";
+    BattleScenario {
+        battlefield: BattleFieldSpec {
+            width: common::BOARD_SIZE.0,
+            height: common::BOARD_SIZE.1,
+            valid_tiles: Vec::new(),
+            obstacles,
         },
-    ))
-}
-
-fn deck_single_unit(owned_uuid: Uuid, base_uuid: Uuid, pos: Position) -> PlayerDeckInfo {
-    let mut positions = HashMap::new();
-    positions.insert(owned_uuid, pos);
-    PlayerDeckInfo {
-        units: vec![OwnedUnit {
-            owned_uuid,
-            base_uuid,
-            level: Tier::I,
-            growth_stacks: GrowthStack::new(),
-            equipped_items: vec![],
-        }],
-        artifacts: vec![],
-        positions,
+        artifacts: Vec::new(),
+        groups: vec![
+            spawn_group(player_group_id, Side::Player, false, player_units),
+            spawn_group(enemy_group_id, Side::Opponent, true, opponent_units),
+        ],
+        events: vec![
+            ScenarioEvent {
+                id: ScenarioEventId::new("spawn_player_initial"),
+                trigger: ScenarioTrigger::AtBattleStart,
+                action: ScenarioAction::SpawnGroup {
+                    group_id: ScenarioGroupId::new(player_group_id),
+                },
+                once: true,
+            },
+            ScenarioEvent {
+                id: ScenarioEventId::new("spawn_enemy_initial"),
+                trigger: ScenarioTrigger::AtBattleStart,
+                action: ScenarioAction::SpawnGroup {
+                    group_id: ScenarioGroupId::new(enemy_group_id),
+                },
+                once: true,
+            },
+        ],
+        win_condition: WinCondition::AllRequiredEnemyGroupsDefeated,
+        tactical_plan: game_core::game::battle::scenario::TacticalPlan::default(),
     }
 }
 
-fn deck_with_units(units: Vec<(Uuid, Uuid, Position)>) -> PlayerDeckInfo {
-    let mut positions = HashMap::new();
-    let mut owned = Vec::new();
+fn battle_scenario(
+    player_units: Vec<(Uuid, Uuid, Position)>,
+    opponent_units: Vec<(Uuid, Uuid, Position)>,
+) -> BattleScenario {
+    battle_scenario_with_obstacles(player_units, opponent_units, Vec::new())
+}
 
-    for (owned_uuid, base_uuid, pos) in units {
-        positions.insert(owned_uuid, pos);
-        owned.push(OwnedUnit {
-            owned_uuid,
-            base_uuid,
-            level: Tier::I,
-            growth_stacks: GrowthStack::new(),
-            equipped_items: vec![],
-        });
-    }
-
-    PlayerDeckInfo {
-        units: owned,
-        artifacts: vec![],
-        positions,
-    }
+fn one_vs_one_scenario(
+    player_owned_uuid: Uuid,
+    player_base_uuid: Uuid,
+    player_position: Position,
+    opponent_owned_uuid: Uuid,
+    opponent_base_uuid: Uuid,
+    opponent_position: Position,
+) -> BattleScenario {
+    battle_scenario(
+        vec![(player_owned_uuid, player_base_uuid, player_position)],
+        vec![(opponent_owned_uuid, opponent_base_uuid, opponent_position)],
+    )
 }
 
 fn unit_spawn_time(timeline: &Timeline, owner: Side, base_uuid: Uuid) -> Option<u64> {
@@ -187,21 +239,18 @@ fn rapier_backend_full_battle_melee_closes_distance_and_deals_damage() {
             basic_attack(1.0),
         ),
     ]);
-    let player = deck_single_unit(
+    let scenario = one_vs_one_scenario(
         Uuid::from_u128(0xA100_0001),
         player_base_uuid,
         Position::new(3, 6),
-    );
-    let opponent = deck_single_unit(
         Uuid::from_u128(0xA100_0002),
         opponent_base_uuid,
         Position::new(3, 1),
     );
 
-    let mut battle = BattleCore::new(&player, &opponent, game_data, common::BOARD_SIZE, 9100);
-    let mut world = World::new();
+    let mut battle = BattleCore::new_from_scenario(scenario, game_data, 9100);
     let result = battle
-        .run_battle_with_setup(&mut world, |core| {
+        .run_battle_with_setup(|core| {
             core.use_rapier_continuous_movement_backend();
         })
         .expect("battle runs with Rapier movement backend");
@@ -316,7 +365,7 @@ fn rapier_backend_dense_mixed_team_battle_progresses_and_is_reproducible() {
     }
 
     let game_data = game_data_from_abnormalities(abnormalities);
-    let player = deck_with_units(vec![
+    let player_units = vec![
         (
             Uuid::from_u128(0xB300_0001),
             player_melee_uuids[0],
@@ -347,8 +396,8 @@ fn rapier_backend_dense_mixed_team_battle_progresses_and_is_reproducible() {
             player_ranged_uuids[2],
             Position::new(5, 7),
         ),
-    ]);
-    let opponent = deck_with_units(vec![
+    ];
+    let opponent_units = vec![
         (
             Uuid::from_u128(0xC300_0001),
             opponent_melee_uuids[0],
@@ -379,19 +428,13 @@ fn rapier_backend_dense_mixed_team_battle_progresses_and_is_reproducible() {
             opponent_ranged_uuids[2],
             Position::new(5, 0),
         ),
-    ]);
+    ];
+    let scenario = battle_scenario(player_units, opponent_units);
 
     let run_once = || {
-        let mut battle = BattleCore::new(
-            &player,
-            &opponent,
-            game_data.clone(),
-            common::BOARD_SIZE,
-            9300,
-        );
-        let mut world = World::new();
+        let mut battle = BattleCore::new_from_scenario(scenario.clone(), game_data.clone(), 9300);
         battle
-            .run_battle_with_setup(&mut world, |core| {
+            .run_battle_with_setup(|core| {
                 core.use_rapier_continuous_movement_backend();
             })
             .expect("dense mixed battle runs with Rapier movement backend")
@@ -535,7 +578,7 @@ fn rapier_backend_static_obstacles_and_dense_mixed_team_battle_progress() {
     }
 
     let game_data = game_data_from_abnormalities(abnormalities);
-    let player = deck_with_units(vec![
+    let player_units = vec![
         (
             Uuid::from_u128(0xB500_0001),
             player_melee_uuids[0],
@@ -566,8 +609,8 @@ fn rapier_backend_static_obstacles_and_dense_mixed_team_battle_progress() {
             player_ranged_uuids[2],
             Position::new(5, 7),
         ),
-    ]);
-    let opponent = deck_with_units(vec![
+    ];
+    let opponent_units = vec![
         (
             Uuid::from_u128(0xC500_0001),
             opponent_melee_uuids[0],
@@ -598,30 +641,20 @@ fn rapier_backend_static_obstacles_and_dense_mixed_team_battle_progress() {
             opponent_ranged_uuids[2],
             Position::new(5, 0),
         ),
-    ]);
+    ];
     let static_obstacles = [
         Position::new(2, 4),
         Position::new(3, 4),
         Position::new(4, 4),
     ];
+    let scenario =
+        battle_scenario_with_obstacles(player_units, opponent_units, static_obstacles.to_vec());
 
     let run_once = || {
-        let mut battle = BattleCore::new(
-            &player,
-            &opponent,
-            game_data.clone(),
-            common::BOARD_SIZE,
-            9500,
-        );
-        let mut world = World::new();
+        let mut battle = BattleCore::new_from_scenario(scenario.clone(), game_data.clone(), 9500);
         battle
-            .run_battle_with_setup(&mut world, |core| {
+            .run_battle_with_setup(|core| {
                 core.use_rapier_continuous_movement_backend();
-                for obstacle in static_obstacles {
-                    core.battlefield
-                        .add_static_obstacle(obstacle)
-                        .expect("test obstacle should not overlap spawn positions");
-                }
             })
             .expect("dense obstacle battle runs with Rapier movement backend")
     };
@@ -724,7 +757,7 @@ fn rapier_backend_long_battle_smoke_keeps_bodies_stable_with_static_obstacles() 
     }
 
     let game_data = game_data_from_abnormalities(abnormalities);
-    let player = deck_with_units(vec![
+    let player_units = vec![
         (
             Uuid::from_u128(0xD700_0001),
             player_uuids[0],
@@ -755,8 +788,8 @@ fn rapier_backend_long_battle_smoke_keeps_bodies_stable_with_static_obstacles() 
             player_uuids[5],
             Position::new(5, 7),
         ),
-    ]);
-    let opponent = deck_with_units(vec![
+    ];
+    let opponent_units = vec![
         (
             Uuid::from_u128(0xE700_0001),
             opponent_uuids[0],
@@ -787,7 +820,7 @@ fn rapier_backend_long_battle_smoke_keeps_bodies_stable_with_static_obstacles() 
             opponent_uuids[5],
             Position::new(5, 0),
         ),
-    ]);
+    ];
 
     let static_obstacles = [
         Position::new(2, 3),
@@ -797,16 +830,12 @@ fn rapier_backend_long_battle_smoke_keeps_bodies_stable_with_static_obstacles() 
         Position::new(4, 4),
     ];
 
-    let mut battle = BattleCore::new(&player, &opponent, game_data, common::BOARD_SIZE, 9700);
-    let mut world = World::new();
+    let scenario =
+        battle_scenario_with_obstacles(player_units, opponent_units, static_obstacles.to_vec());
+    let mut battle = BattleCore::new_from_scenario(scenario, game_data, 9700);
     let result = battle
-        .run_battle_with_setup(&mut world, |core| {
+        .run_battle_with_setup(|core| {
             core.use_rapier_continuous_movement_backend();
-            for obstacle in static_obstacles {
-                core.battlefield
-                    .add_static_obstacle(obstacle)
-                    .expect("long smoke obstacle should not overlap spawn positions");
-            }
         })
         .expect("long Rapier smoke battle runs");
 
@@ -903,28 +932,19 @@ fn rapier_backend_full_battle_is_reproducible_for_same_seed() {
             },
         ),
     ]);
-    let player = deck_single_unit(
+    let scenario = one_vs_one_scenario(
         Uuid::from_u128(0xA200_0001),
         player_base_uuid,
         Position::new(2, 6),
-    );
-    let opponent = deck_single_unit(
         Uuid::from_u128(0xA200_0002),
         opponent_base_uuid,
         Position::new(4, 1),
     );
 
     let run_once = || {
-        let mut battle = BattleCore::new(
-            &player,
-            &opponent,
-            game_data.clone(),
-            common::BOARD_SIZE,
-            9200,
-        );
-        let mut world = World::new();
+        let mut battle = BattleCore::new_from_scenario(scenario.clone(), game_data.clone(), 9200);
         battle
-            .run_battle_with_setup(&mut world, |core| {
+            .run_battle_with_setup(|core| {
                 core.use_rapier_continuous_movement_backend();
             })
             .expect("battle runs with Rapier movement backend")

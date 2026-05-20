@@ -1,9 +1,10 @@
 use crate::{
-    ecs::resources::Position,
+    game::resources::Position,
     game::{
-        ability::{SkillArea, SkillStepDef, SkillTarget, UnitTargetRule},
+        ability::{SkillStepDef, SkillTarget, UnitTargetRule},
         battle::{
             core::{
+                movement::types::WorldVec2,
                 types::{
                     DeferredSkillStep, SkillImpactContext, SkillStepProgress, SkillStepResult,
                 },
@@ -32,6 +33,15 @@ impl BattleCore {
         self.active_skill_casts
             .get(&cast_seq)
             .and_then(|cast_state| cast_state.cast_target_anchor_position)
+    }
+
+    pub(in crate::game::battle::core) fn stored_skill_cast_anchor_world_position(
+        &self,
+        cast_seq: u64,
+    ) -> Option<WorldVec2> {
+        self.active_skill_casts
+            .get(&cast_seq)
+            .and_then(|cast_state| cast_state.cast_target_anchor_world_position)
     }
 
     fn cleanup_finished_skill_cast(&mut self, cast_seq: u64) {
@@ -350,33 +360,6 @@ impl BattleCore {
         .filter(|id| in_range(*id))
     }
 
-    pub(in crate::game::battle::core) fn resolve_skill_anchor_position(
-        &self,
-        caster_instance_id: UnitInstanceId,
-        caster_owner: Side,
-        caster_pos: Position,
-        area: &SkillArea,
-        range_units: f32,
-        wants_allies: bool,
-    ) -> Option<Position> {
-        match area {
-            SkillArea::All | SkillArea::RadiusChebyshev { .. } | SkillArea::Line { .. } => {
-                if wants_allies {
-                    Some(caster_pos)
-                } else {
-                    self.choose_skill_target_by_rule(
-                        caster_instance_id,
-                        caster_owner,
-                        caster_pos,
-                        range_units,
-                        UnitTargetRule::Nearest,
-                    )
-                    .and_then(|id| self.battlefield.position_of(id))
-                }
-            }
-        }
-    }
-
     pub(in crate::game::battle::core) fn resolve_skill_step_targets(
         &self,
         cast_seq: u64,
@@ -384,12 +367,11 @@ impl BattleCore {
         step: &SkillStepDef,
         step_target: Option<SkillCastTarget>,
     ) -> Vec<UnitInstanceId> {
-        let Some((caster_owner, caster_pos)) =
+        let Some((caster_owner, _caster_pos)) =
             self.resolve_cast_origin_context(Some(cast_seq), caster_instance_id, false)
         else {
             return Vec::new();
         };
-        let cast_target_anchor_position = self.stored_skill_cast_anchor_position(cast_seq);
 
         let mut targets: Vec<UnitInstanceId> = Vec::new();
 
@@ -402,55 +384,15 @@ impl BattleCore {
                     }
                 }
             }
-            SkillTarget::Allies { area } | SkillTarget::Enemies { area } => {
-                let wants_allies = matches!(step.target, SkillTarget::Allies { .. });
-                let anchor = match step_target {
-                    Some(SkillCastTarget::Tile { position }) => Some(position),
-                    Some(SkillCastTarget::Unit { unit_instance_id }) => self
-                        .battlefield
-                        .position_of(unit_instance_id)
-                        .or(cast_target_anchor_position),
-                    _ => cast_target_anchor_position,
-                };
-                let Some(anchor) = anchor else {
-                    return Vec::new();
-                };
-
-                for unit in self.units.values() {
-                    if unit.is_dead() {
-                        continue;
+            SkillTarget::CastTarget => {
+                if let Some(SkillCastTarget::Unit { unit_instance_id }) = step_target {
+                    if self
+                        .units
+                        .get(&unit_instance_id)
+                        .is_some_and(|unit| !unit.is_dead())
+                    {
+                        targets.push(unit_instance_id);
                     }
-
-                    let is_ally = unit.owner == caster_owner;
-                    if wants_allies != is_ally {
-                        continue;
-                    }
-
-                    let Some(pos) = self.battlefield.position_of(unit.instance_id) else {
-                        continue;
-                    };
-
-                    match area {
-                        SkillArea::All => {}
-                        SkillArea::RadiusChebyshev { radius_tiles } => {
-                            if anchor.chebyshev(&pos) > *radius_tiles as i32 {
-                                continue;
-                            }
-                        }
-                        SkillArea::Line { length_tiles } => {
-                            if !Self::is_point_on_skill_line(
-                                caster_pos,
-                                anchor,
-                                pos,
-                                *length_tiles as i32,
-                                caster_owner,
-                            ) {
-                                continue;
-                            }
-                        }
-                    }
-
-                    targets.push(unit.instance_id);
                 }
             }
         }

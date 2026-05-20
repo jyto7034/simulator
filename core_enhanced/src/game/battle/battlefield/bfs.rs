@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 
 use crate::{
-    ecs::resources::Position,
+    game::resources::Position,
     game::{
         battle::battlefield::{Battlefield, Tile},
         behavior::GameError,
@@ -50,6 +50,47 @@ impl BfsMap {
 }
 
 impl Battlefield {
+    fn is_bfs_passable<P>(&self, pos: Position, is_passable: &mut P) -> bool
+    where
+        P: FnMut(Position, &Tile) -> bool,
+    {
+        if !self.in_bounds(pos) {
+            return false;
+        }
+        let Ok(idx) = self.idx(pos) else {
+            return false;
+        };
+        is_passable(pos, &self.tiles[idx])
+    }
+
+    fn bfs_neighbor_idx<P>(
+        &self,
+        current: Position,
+        next: Position,
+        is_passable: &mut P,
+    ) -> Option<usize>
+    where
+        P: FnMut(Position, &Tile) -> bool,
+    {
+        if !self.is_bfs_passable(next, is_passable) {
+            return None;
+        }
+
+        let dx = next.x - current.x;
+        let dy = next.y - current.y;
+        if dx.abs() == 1 && dy.abs() == 1 {
+            let horizontal = Position::new(next.x, current.y);
+            let vertical = Position::new(current.x, next.y);
+            if !self.is_bfs_passable(horizontal, is_passable)
+                || !self.is_bfs_passable(vertical, is_passable)
+            {
+                return None;
+            }
+        }
+
+        self.idx(next).ok()
+    }
+
     fn neighbors_8_for_side(pos: Position, side: Side) -> [Position; 8] {
         match side {
             Side::Player => [
@@ -100,17 +141,10 @@ impl Battlefield {
             };
 
             for next in Self::neighbors_8(current) {
-                if !self.in_bounds(next) {
+                let Some(next_idx) = self.bfs_neighbor_idx(current, next, &mut is_passable) else {
                     continue;
-                }
-                let next_idx = match self.idx(next) {
-                    Ok(v) => v,
-                    Err(_) => continue,
                 };
                 if dist[next_idx].is_some() {
-                    continue;
-                }
-                if !is_passable(next, &self.tiles[next_idx]) {
                     continue;
                 }
 
@@ -158,17 +192,10 @@ impl Battlefield {
             };
 
             for next in Self::neighbors_8_for_side(current, side) {
-                if !self.in_bounds(next) {
+                let Some(next_idx) = self.bfs_neighbor_idx(current, next, &mut is_passable) else {
                     continue;
-                }
-                let next_idx = match self.idx(next) {
-                    Ok(v) => v,
-                    Err(_) => continue,
                 };
                 if dist[next_idx].is_some() {
-                    continue;
-                }
-                if !is_passable(next, &self.tiles[next_idx]) {
                     continue;
                 }
 

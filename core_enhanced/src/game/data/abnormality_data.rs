@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::game::{
-    ability::DeliveryDef,
+    ability::{DeliveryDef, SkillId},
     data::{build_string_index, build_uuid_index, once_lock_with},
     enums::RiskLevel,
 };
@@ -44,6 +44,10 @@ fn default_move_speed_units_per_ms() -> u32 {
     3000
 }
 
+fn default_body_radius_units() -> u32 {
+    350_000
+}
+
 fn default_attack_delivery() -> DeliveryDef {
     DeliveryDef::Instant
 }
@@ -52,12 +56,15 @@ fn default_attack_delivery() -> DeliveryDef {
 pub struct MovementDef {
     #[serde(default = "default_move_speed_units_per_ms")]
     pub speed_units_per_ms: u32,
+    #[serde(default = "default_body_radius_units")]
+    pub radius_units: u32,
 }
 
 impl Default for MovementDef {
     fn default() -> Self {
         Self {
             speed_units_per_ms: default_move_speed_units_per_ms(),
+            radius_units: default_body_radius_units(),
         }
     }
 }
@@ -145,7 +152,7 @@ pub struct AbnormalityMetadata {
 
     /// 이 기물이 보유한 스킬(유닛당 1개)
     #[serde(default)]
-    pub skill_id: Option<String>,
+    pub skill_id: Option<SkillId>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

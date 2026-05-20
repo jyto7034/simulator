@@ -2,36 +2,89 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    ecs::resources::{EquipItemResultDto, InventoryDiffDto, Position},
+    game::resources::{EquipItemResultDto, InventoryDiffDto, Position, RunFailureReason},
     game::{
         battle::{timeline::Timeline, types::BattleWinner},
-        enums::{
-            BonusEventOption, PhaseEvent, RandomEventOption, RewardMode, ShopEventOption, ZoneType,
+        combat_preview::{CombatDeployment, CombatNodeType, CombatPreview},
+        data::skill_fragment_data::SkillFragmentId,
+        employee::StarterEmployeeCandidate,
+        enums::{RewardMode, ShopEventOption},
+        map::{
+            MapNodeCategory, MapNodeId, MapNodeKindId, MapNodePayload, MapViewDto,
+            MedicalTreatmentKind, NodeSession, SupportNodeMode, SupportNodeType,
         },
+        reward::RewardOption,
+        skill_fragment::{SkillFragmentProgress, SkillFragmentResearchDelivery},
     },
 };
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NodeOutcomeSummary {
+    pub node_id: MapNodeId,
+    pub kind_id: MapNodeKindId,
+    pub category: MapNodeCategory,
+    pub mission_success: bool,
+    pub combat: Option<CombatOutcomeSummary>,
+    pub employee_changes: Vec<NodeOutcomeEmployeeChange>,
+    pub inventory_diff: InventoryDiffDto,
+    pub research_deliveries: Vec<SkillFragmentResearchDelivery>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CombatOutcomeSummary {
+    pub node_type: CombatNodeType,
+    pub winner: BattleWinner,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NodeOutcomeEmployeeChange {
+    pub employee_uuid: Uuid,
+    pub survived: bool,
+    pub became_incapacitated: bool,
+    pub run_hp_before: u32,
+    pub run_hp_after: u32,
+    pub trauma_before: u32,
+    pub trauma_after: u32,
+    pub experience_before: u32,
+    pub experience_after: u32,
+    pub was_alive: bool,
+    pub is_alive: bool,
+}
 
 /// 상태 게이트에서 사용하는 payload-less 액션 capability
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum ActionKind {
     StartNewGame,
+    SelectStarterEmployees,
     UnEquipItem,
     EquipItem,
+    EquipSkillFragment,
+    UnequipSkillFragment,
+    UpgradeSkillFragment,
+    AwakenSkillFragment,
+    DismantleSkillFragment,
+    RestoreEquipment,
+    DismantleEquipment,
+    EnhanceEquipment,
     MoveUnit,
     MoveBenchUnit,
-    TransferUnit,
-    RequestPhaseData,
-    SelectEvent,
+    RequestMapData,
+    SelectMapNode,
+    UseReconScan,
+    ConfirmEnterNode,
+    CancelSelectedNode,
+    CompleteNode,
+    ChooseSupport,
+    SelectSupportTarget,
+    SelectMedicalTreatment,
+    SelectReward,
     PurchaseItem,
     SellItem,
     RerollShop,
     ExitShop,
-    ClaimBonus,
-    ExitBonus,
-    StartSuppression,
-    FinishSuppressionReplay,
-    ClaimCombatReward,
-    ExitCombatReward,
+    ClaimReward,
+    ExitReward,
+    FinishCombatReplay,
 }
 
 /// GameServer에서 GameCore로 전달되는 플레이어 행동
@@ -42,6 +95,10 @@ pub enum PlayerBehavior {
     // ============================================================
     /// 새 게임 시작
     StartNewGame,
+    /// 시작 후보 직원 중 이번 런에 투입할 3명을 선택
+    SelectStarterEmployees {
+        candidate_ids: Vec<String>,
+    },
     // 아이템 장착 해제
     UnEquipItem {
         item_uuid: Uuid,
@@ -52,7 +109,43 @@ pub enum PlayerBehavior {
         item_uuid: Uuid,
         target_unit: Uuid,
     },
-    /// 기물 배치 이동 (편성 변경)
+    /// 직원에게 런 소유 스킬 파편 장착
+    EquipSkillFragment {
+        employee_uuid: Uuid,
+        fragment_id: SkillFragmentId,
+    },
+    /// 직원에게 장착된 스킬 파편 해제
+    UnequipSkillFragment {
+        employee_uuid: Uuid,
+        fragment_id: SkillFragmentId,
+    },
+    /// 같은 등급 재료 파편을 소모해 대상 파편의 강화/개화 진행도를 올림
+    UpgradeSkillFragment {
+        target_fragment_id: SkillFragmentId,
+        material_fragment_id: SkillFragmentId,
+    },
+    /// 개화 가능하거나 조기 개화 비용을 지불할 수 있는 대상 파편을 개화
+    AwakenSkillFragment {
+        target_fragment_id: SkillFragmentId,
+        material_fragment_ids: Vec<SkillFragmentId>,
+    },
+    /// Maintenance에서 추가 보유 스킬 파편을 분쇄해 정비 자원으로 전환
+    DismantleSkillFragment {
+        fragment_id: SkillFragmentId,
+    },
+    /// Maintenance에서 장비 재료를 소비해 완성 장비를 복원
+    RestoreEquipment {
+        recipe_id: String,
+    },
+    /// Maintenance에서 완성 장비를 분해해 장비 재료로 전환
+    DismantleEquipment {
+        item_uuid: Uuid,
+    },
+    /// Maintenance에서 장비 재료를 소비해 소유 장비 인스턴스를 강화
+    EnhanceEquipment {
+        item_uuid: Uuid,
+    },
+    /// 선택한 전투 노드의 배치 구역 안에서 직원 배치 이동
     MoveUnit {
         target_unit_uuid: Uuid,
         dest_pos: Position,
@@ -64,21 +157,35 @@ pub enum PlayerBehavior {
         dest_slot: usize,
         swap_with_unit_uuid: Option<Uuid>,
     },
-    /// 배낭 <-> 필드 이동
-    TransferUnit {
-        target_unit_uuid: Uuid,
-        dest_zone: ZoneType,
-        dest_bench_slot: Option<usize>,
-        swap_with_unit_uuid: Option<Uuid>,
+    /// 현재 런 맵 상태 요청
+    RequestMapData,
+    /// 사용 가능한 맵 노드 선택
+    SelectMapNode {
+        node_id: MapNodeId,
     },
-    // ============================================================
-    // 이벤트 관련 행동
-    // ============================================================
-    /// 현재 페이즈 데이터 요청
-    RequestPhaseData,
-    /// 이벤트 선택 (상점/보너스/랜덤)
-    SelectEvent {
-        event_id: Uuid,
+    /// 전투 노드 프리뷰에서 정밀 스캔 사용
+    UseReconScan,
+    /// 선택한 맵 노드에 실제로 진입
+    ConfirmEnterNode,
+    /// 선택한 맵 노드 프리뷰를 취소하고 맵으로 복귀
+    CancelSelectedNode,
+    /// 현재 노드 처리 완료
+    CompleteNode,
+    /// 선택형 지원 노드에서 지원 효과 선택
+    ChooseSupport {
+        support_type: SupportNodeType,
+    },
+    /// 대상 선택형 지원 노드에서 지원 대상 직원 선택
+    SelectSupportTarget {
+        employee_uuid: Uuid,
+    },
+    /// Medical 지원 노드에서 의료 처치 방식 선택
+    SelectMedicalTreatment {
+        treatment: MedicalTreatmentKind,
+    },
+    /// 선택형 보상 목록에서 보상 선택
+    SelectReward {
+        reward_id: Uuid,
     },
     // ============================================================
     // 상점 관련 행동
@@ -96,25 +203,14 @@ pub enum PlayerBehavior {
     /// 상점 나가기
     ExitShop,
     // ============================================================
-    // 보너스 관련 행동
+    // 보상 세션 관련 행동
     // ============================================================
-    /// 보너스 수령
-    ClaimBonus,
-    /// 보너스 화면 나가기
-    ExitBonus,
-    // ============================================================
-    // 진압 관련 행동
-    // ============================================================
-    /// 진압 전투 시작
-    StartSuppression {
-        abnormality_id: String,
-    },
-    /// 진압 전투 리플레이 종료
-    FinishSuppressionReplay,
-    /// 진압 전투 보상 수령
-    ClaimCombatReward,
-    /// 진압 전투 보상 확인 완료
-    ExitCombatReward,
+    /// 보상 수령
+    ClaimReward,
+    /// 보상 화면 나가기
+    ExitReward,
+    /// 전투 리플레이 종료
+    FinishCombatReplay,
     // ============================================================
     // 전투 관련 행동 (TODO)
     // ============================================================
@@ -126,23 +222,36 @@ impl PlayerBehavior {
     pub fn kind(&self) -> ActionKind {
         match self {
             PlayerBehavior::StartNewGame => ActionKind::StartNewGame,
+            PlayerBehavior::SelectStarterEmployees { .. } => ActionKind::SelectStarterEmployees,
             PlayerBehavior::UnEquipItem { .. } => ActionKind::UnEquipItem,
             PlayerBehavior::EquipItem { .. } => ActionKind::EquipItem,
+            PlayerBehavior::EquipSkillFragment { .. } => ActionKind::EquipSkillFragment,
+            PlayerBehavior::UnequipSkillFragment { .. } => ActionKind::UnequipSkillFragment,
+            PlayerBehavior::UpgradeSkillFragment { .. } => ActionKind::UpgradeSkillFragment,
+            PlayerBehavior::AwakenSkillFragment { .. } => ActionKind::AwakenSkillFragment,
+            PlayerBehavior::DismantleSkillFragment { .. } => ActionKind::DismantleSkillFragment,
+            PlayerBehavior::RestoreEquipment { .. } => ActionKind::RestoreEquipment,
+            PlayerBehavior::DismantleEquipment { .. } => ActionKind::DismantleEquipment,
+            PlayerBehavior::EnhanceEquipment { .. } => ActionKind::EnhanceEquipment,
             PlayerBehavior::MoveUnit { .. } => ActionKind::MoveUnit,
             PlayerBehavior::MoveBenchUnit { .. } => ActionKind::MoveBenchUnit,
-            PlayerBehavior::TransferUnit { .. } => ActionKind::TransferUnit,
-            PlayerBehavior::RequestPhaseData => ActionKind::RequestPhaseData,
-            PlayerBehavior::SelectEvent { .. } => ActionKind::SelectEvent,
+            PlayerBehavior::RequestMapData => ActionKind::RequestMapData,
+            PlayerBehavior::SelectMapNode { .. } => ActionKind::SelectMapNode,
+            PlayerBehavior::UseReconScan => ActionKind::UseReconScan,
+            PlayerBehavior::ConfirmEnterNode => ActionKind::ConfirmEnterNode,
+            PlayerBehavior::CancelSelectedNode => ActionKind::CancelSelectedNode,
+            PlayerBehavior::CompleteNode => ActionKind::CompleteNode,
+            PlayerBehavior::ChooseSupport { .. } => ActionKind::ChooseSupport,
+            PlayerBehavior::SelectSupportTarget { .. } => ActionKind::SelectSupportTarget,
+            PlayerBehavior::SelectMedicalTreatment { .. } => ActionKind::SelectMedicalTreatment,
+            PlayerBehavior::SelectReward { .. } => ActionKind::SelectReward,
             PlayerBehavior::PurchaseItem { .. } => ActionKind::PurchaseItem,
             PlayerBehavior::SellItem { .. } => ActionKind::SellItem,
             PlayerBehavior::RerollShop => ActionKind::RerollShop,
             PlayerBehavior::ExitShop => ActionKind::ExitShop,
-            PlayerBehavior::ClaimBonus => ActionKind::ClaimBonus,
-            PlayerBehavior::ExitBonus => ActionKind::ExitBonus,
-            PlayerBehavior::StartSuppression { .. } => ActionKind::StartSuppression,
-            PlayerBehavior::FinishSuppressionReplay => ActionKind::FinishSuppressionReplay,
-            PlayerBehavior::ClaimCombatReward => ActionKind::ClaimCombatReward,
-            PlayerBehavior::ExitCombatReward => ActionKind::ExitCombatReward,
+            PlayerBehavior::ClaimReward => ActionKind::ClaimReward,
+            PlayerBehavior::ExitReward => ActionKind::ExitReward,
+            PlayerBehavior::FinishCombatReplay => ActionKind::FinishCombatReplay,
         }
     }
 }
@@ -158,13 +267,78 @@ impl PlayerBehavior {
 #[derive(Debug, Serialize, Deserialize)]
 pub enum BehaviorResult {
     /// 새 게임 시작
-    StartNewGame,
-
-    /// 페이즈 데이터 요청 → PhaseEvent 반환 (3개의 GameOption 포함)
-    RequestPhaseData(Box<PhaseEvent>),
-
-    /// 이벤트 선택 완료 (추가 메타데이터 없음)
-    EventSelected,
+    StartNewGame {
+        candidates: Vec<StarterEmployeeCandidate>,
+        required_count: usize,
+    },
+    /// 시작 직원 선택 완료
+    StarterEmployeesSelected {
+        selected_candidate_ids: Vec<String>,
+        employee_uuids: Vec<Uuid>,
+        map: MapViewDto,
+    },
+    /// 현재 런 맵 상태
+    MapState {
+        map: MapViewDto,
+    },
+    /// 맵 노드 진입
+    NodeEntered {
+        node_id: MapNodeId,
+        kind_id: MapNodeKindId,
+        category: MapNodeCategory,
+        payload: MapNodePayload,
+        session: NodeSession,
+        research_deliveries: Vec<SkillFragmentResearchDelivery>,
+    },
+    /// 맵 노드 진입 전 확인/준비 상태
+    NodePreview {
+        node_id: MapNodeId,
+        kind_id: MapNodeKindId,
+        category: MapNodeCategory,
+        payload: MapNodePayload,
+        session: NodeSession,
+        map: MapViewDto,
+        combat_preview: Option<CombatPreview>,
+        combat_deployment: Option<CombatDeployment>,
+        recon_charge: u32,
+    },
+    /// 정밀 스캔 결과
+    ReconScanUsed {
+        node_id: MapNodeId,
+        remaining_recon_charge: u32,
+        combat_preview: CombatPreview,
+    },
+    /// 맵 노드 완료
+    NodeCompleted {
+        map: MapViewDto,
+        outcome: Option<NodeOutcomeSummary>,
+    },
+    /// 지원 노드 상태
+    SupportState {
+        node_id: MapNodeId,
+        support_mode: SupportNodeMode,
+        support_type: Option<SupportNodeType>,
+        choices: Vec<SupportNodeType>,
+        selected_support_type: Option<SupportNodeType>,
+        target_candidates: Vec<Uuid>,
+        selected_employee_uuid: Option<Uuid>,
+        selected_medical_treatment: Option<MedicalTreatmentKind>,
+        research_deliveries: Vec<SkillFragmentResearchDelivery>,
+    },
+    /// 보스 노드 완료로 다음 Act에 진입
+    ActComplete {
+        act_index: u8,
+        map: MapViewDto,
+    },
+    /// 보스 노드 완료로 런 클리어
+    RunComplete {
+        map: MapViewDto,
+    },
+    /// 더 이상 런을 진행할 수 없음
+    RunFailed {
+        reason: RunFailureReason,
+        outcome: Option<NodeOutcomeSummary>,
+    },
 
     // 아이템 장착 해제
     UnEquipItem,
@@ -172,16 +346,51 @@ pub enum BehaviorResult {
     EquipItem {
         result: EquipItemResultDto,
     },
-    /// 기물 배치 이동 (편성 변경)
+    SkillFragmentLoadoutUpdated {
+        employee_uuid: Uuid,
+        equipped_fragment_ids: Vec<SkillFragmentId>,
+    },
+    SkillFragmentUpgraded {
+        target_fragment_id: SkillFragmentId,
+        material_fragment_id: SkillFragmentId,
+        material_remaining_count: u32,
+        progress: SkillFragmentProgress,
+    },
+    SkillFragmentAwakened {
+        target_fragment_id: SkillFragmentId,
+        progress: SkillFragmentProgress,
+    },
+    SkillFragmentDismantled {
+        fragment_id: SkillFragmentId,
+        remaining_count: u32,
+        dust_gained: u32,
+        total_dust: u32,
+    },
+    EquipmentRestored {
+        recipe_id: String,
+        result_equipment_id: String,
+        inventory_diff: InventoryDiffDto,
+    },
+    EquipmentDismantled {
+        item_uuid: Uuid,
+        equipment_id: String,
+        inventory_diff: InventoryDiffDto,
+    },
+    EquipmentEnhanced {
+        item_uuid: Uuid,
+        equipment_id: String,
+        enhancement_level: u8,
+        inventory_diff: InventoryDiffDto,
+    },
+    /// 선택한 전투 노드의 배치 구역 안에서 직원 배치 이동
     MoveUnit,
     /// 벤치 내부 슬롯 이동
     MoveBenchUnit,
-    /// 배낭 <-> 필드 이동
-    TransferUnit,
 
     /// 상점 상태 업데이트 (예: 리롤 이후)
     ShopState {
         shop: ShopEventOption,
+        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
 
     RerollShop {
@@ -200,18 +409,22 @@ pub enum BehaviorResult {
         inventory_diff: InventoryDiffDto,
     },
 
-    /// 랜덤 이벤트 상태/결과 업데이트
-    RandomEventState {
-        event: RandomEventOption,
-    },
-    /// 보너스 결과 (자원 및 인벤토리 변경)
-    BonusReward {
+    /// 보상 수령 결과 (자원 및 인벤토리 변경)
+    RewardGranted {
         enkephalin: u32,
         inventory_diff: InventoryDiffDto,
     },
 
-    /// 진압 작업 → 진압 결과
-    SuppressAbnormality {
+    /// 전투 리플레이 종료 후 자동 지급된 보상과 이어진 노드 진행 결과
+    CombatRewardsGranted {
+        enkephalin: u32,
+        inventory_diff: InventoryDiffDto,
+        outcome: NodeOutcomeSummary,
+        completion: Box<BehaviorResult>,
+    },
+
+    /// 전투 결과
+    CombatResolved {
         winner: BattleWinner,
         timeline: Timeline,
     },
@@ -219,20 +432,9 @@ pub enum BehaviorResult {
     /// 보상 선택/수령 단계 상태
     RewardState {
         mode: RewardMode,
-        rewards: Vec<BonusEventOption>,
+        rewards: Vec<RewardOption>,
         selected_reward_uuid: Option<Uuid>,
-    },
-
-    /// 시련 전투 → 전투 결과
-    Ordeal {
-        // TODO: 승패, 보상, 전투 로그 등
-        battle_result: String,
-    },
-
-    /// Phase 진행 → 다음 Phase 이벤트
-    AdvancePhase {
-        // TODO: 다음 Phase의 이벤트 정보
-        next_phase_event: String,
+        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
 
     Ok,
@@ -244,11 +446,7 @@ impl BehaviorResult {
     // ============================================================
 
     pub fn is_start_new_game(&self) -> bool {
-        matches!(self, BehaviorResult::StartNewGame)
-    }
-
-    pub fn is_event_selected(&self) -> bool {
-        matches!(self, BehaviorResult::EventSelected)
+        matches!(self, BehaviorResult::StartNewGame { .. })
     }
 
     pub fn is_sell_item(&self) -> bool {
@@ -274,18 +472,10 @@ impl BehaviorResult {
     // 데이터 추출 헬퍼 (참조 반환)
     // ============================================================
 
-    /// RequestPhaseData → PhaseEvent 참조 반환
-    pub fn as_request_phase_data(&self) -> Option<&PhaseEvent> {
-        match self {
-            BehaviorResult::RequestPhaseData(event) => Some(event.as_ref()),
-            _ => None,
-        }
-    }
-
     /// ShopState → ShopEventOption 참조 반환
     pub fn as_shop_state(&self) -> Option<&ShopEventOption> {
         match self {
-            BehaviorResult::ShopState { shop } => Some(shop),
+            BehaviorResult::ShopState { shop, .. } => Some(shop),
             _ => None,
         }
     }
@@ -309,18 +499,10 @@ impl BehaviorResult {
         }
     }
 
-    /// RandomEventState → RandomEventOption 참조 반환
-    pub fn as_random_event_state(&self) -> Option<&RandomEventOption> {
+    /// RewardGranted → (남은 엔케팔린, 인벤토리 변경 사항) 반환
+    pub fn as_reward_granted(&self) -> Option<(u32, &InventoryDiffDto)> {
         match self {
-            BehaviorResult::RandomEventState { event } => Some(event),
-            _ => None,
-        }
-    }
-
-    /// BonusReward → (남은 엔케팔린, 인벤토리 변경 사항) 반환
-    pub fn as_bonus_reward(&self) -> Option<(u32, &InventoryDiffDto)> {
-        match self {
-            BehaviorResult::BonusReward {
+            BehaviorResult::RewardGranted {
                 enkephalin,
                 inventory_diff,
             } => Some((*enkephalin, inventory_diff)),
@@ -328,38 +510,23 @@ impl BehaviorResult {
         }
     }
 
-    /// SuppressAbnormality → (승자, 전투 타임라인) 반환
-    pub fn as_suppress_abnormality(&self) -> Option<(BattleWinner, &Timeline)> {
+    /// CombatResolved → (승자, 전투 타임라인) 반환
+    pub fn as_combat_resolved(&self) -> Option<(BattleWinner, &Timeline)> {
         match self {
-            BehaviorResult::SuppressAbnormality { winner, timeline } => Some((*winner, timeline)),
+            BehaviorResult::CombatResolved { winner, timeline } => Some((*winner, timeline)),
             _ => None,
         }
     }
 
     /// RewardState → (모드, 보상 목록, 현재 선택 보상 UUID) 반환
-    pub fn as_reward_state(&self) -> Option<(RewardMode, &[BonusEventOption], Option<Uuid>)> {
+    pub fn as_reward_state(&self) -> Option<(RewardMode, &[RewardOption], Option<Uuid>)> {
         match self {
             BehaviorResult::RewardState {
                 mode,
                 rewards,
                 selected_reward_uuid,
+                ..
             } => Some((*mode, rewards.as_slice(), *selected_reward_uuid)),
-            _ => None,
-        }
-    }
-
-    /// Ordeal → 전투 결과 문자열 참조 반환
-    pub fn as_ordeal(&self) -> Option<&str> {
-        match self {
-            BehaviorResult::Ordeal { battle_result } => Some(battle_result),
-            _ => None,
-        }
-    }
-
-    /// AdvancePhase → 다음 Phase 이벤트 문자열 참조 반환
-    pub fn as_advance_phase(&self) -> Option<&str> {
-        match self {
-            BehaviorResult::AdvancePhase { next_phase_event } => Some(next_phase_event),
             _ => None,
         }
     }
@@ -367,9 +534,9 @@ impl BehaviorResult {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum GameError {
-    /// 선택한 이벤트 ID가 현재 Phase의 옵션에 존재하지 않을 때
+    /// 선택한 이벤트/보상이 현재 세션 옵션에 존재하지 않을 때
     EventNotFound,
-    /// 이벤트는 존재하지만 기대한 타입(Shop/Bonus/Random 등)이 아닐 때
+    /// 이벤트는 존재하지만 기대한 타입(Shop/Reward/Random 등)이 아닐 때
     EventTypeMismatch,
 
     /// 현재 GameState/Context에서 허용되지 않은 행동 (치팅 시도 포함)
@@ -377,8 +544,8 @@ pub enum GameError {
 
     /// 상점 상태가 아니거나, SelectedEvent에 Shop 정보가 없을 때
     NotInShopState,
-    /// 보너스 상태가 아니거나, SelectedEvent에 Bonus 정보가 없을 때
-    NotInBonusState,
+    /// 보상 상태가 아니거나, SelectedEvent에 Reward 정보가 없을 때
+    NotInRewardState,
     /// 상점이 리롤을 지원하지 않을 때
     ShopRerollNotAllowed,
     /// 상점의 visible_items / uuid_lookup_table에서 아이템을 찾지 못했을 때
@@ -393,9 +560,6 @@ pub enum GameError {
 
     /// 구매/행동에 필요한 자원이 부족할 때
     InsufficientResources,
-
-    /// 아직 Phase 진행이 준비되지 않았을 때
-    PhaseNotReady,
 
     /// 필수 리소스(Enkephalin, Inventory 등)가 World에 없을 때
     MissingResource(&'static str),
@@ -420,17 +584,16 @@ pub enum GameError {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ecs::resources::InventoryDiffDto;
-    use crate::game::{
-        data::{random_event_data::RandomEventInnerMetadata, shop_data::ShopType},
-        enums::RiskLevel,
-        events::event_selection::random::RandomEventType,
-    };
+    use crate::game::data::shop_data::ShopType;
+    use crate::game::resources::InventoryDiffDto;
 
     #[test]
     fn behavior_result_helpers_match_variants() {
-        assert!(BehaviorResult::StartNewGame.is_start_new_game());
-        assert!(BehaviorResult::EventSelected.is_event_selected());
+        assert!(BehaviorResult::StartNewGame {
+            candidates: Vec::new(),
+            required_count: 3,
+        }
+        .is_start_new_game());
         assert!(BehaviorResult::Ok.is_ok());
 
         let sell = BehaviorResult::SellItem {
@@ -458,22 +621,10 @@ mod tests {
             can_reroll: true,
             visible_items: vec![Uuid::nil()],
         };
-        let shop_state = BehaviorResult::ShopState { shop: shop.clone() };
+        let shop_state = BehaviorResult::ShopState {
+            shop: shop.clone(),
+            research_deliveries: vec![],
+        };
         assert_eq!(shop_state.as_shop_state(), Some(&shop));
-
-        let random = RandomEventOption {
-            id: "random".to_string(),
-            name: "Random".to_string(),
-            uuid: Uuid::nil(),
-            event_type: RandomEventType::Bonus,
-            risk_level: RiskLevel::HE,
-            description: "desc".to_string(),
-            image: "img".to_string(),
-            inner_metadata: RandomEventInnerMetadata::Bonus(Uuid::nil()),
-        };
-        let random_state = BehaviorResult::RandomEventState {
-            event: random.clone(),
-        };
-        assert_eq!(random_state.as_random_event_state(), Some(&random));
     }
 }

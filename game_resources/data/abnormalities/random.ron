@@ -13,7 +13,7 @@ AbnormalityDatabase(
             defense: 6,
             movement: (speed_units_per_ms: 3000),
             basic_attack: (
-                range_tiles: 1,
+                range_units: 0.5,
                 interval_ms: 1400,
                 windup_ms: 0,
                 delivery: Instant,

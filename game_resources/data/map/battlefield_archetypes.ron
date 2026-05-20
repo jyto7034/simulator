@@ -1,0 +1,64 @@
+(
+    size_classes: [
+        (
+            size_class: Small,
+            id: "small",
+            width: 7,
+            height: 7,
+        ),
+        (
+            size_class: Medium,
+            id: "medium",
+            width: 9,
+            height: 9,
+        ),
+        (
+            size_class: Large,
+            id: "large",
+            width: 11,
+            height: 11,
+        ),
+    ],
+    archetypes: [
+        (
+            archetype: OpenHall,
+            id: "open_hall",
+            default_size_class: Medium,
+        ),
+        (
+            archetype: Corridor,
+            id: "corridor",
+            default_size_class: Medium,
+        ),
+        (
+            archetype: ChokePoint,
+            id: "choke_point",
+            default_size_class: Medium,
+        ),
+        (
+            archetype: Ambush,
+            id: "ambush",
+            default_size_class: Medium,
+        ),
+        (
+            archetype: Surrounded,
+            id: "surrounded",
+            default_size_class: Medium,
+        ),
+        (
+            archetype: SplitRoom,
+            id: "split_room",
+            default_size_class: Medium,
+        ),
+        (
+            archetype: ObstacleRoom,
+            id: "obstacle_room",
+            default_size_class: Medium,
+        ),
+        (
+            archetype: BossArena,
+            id: "boss_arena",
+            default_size_class: Large,
+        ),
+    ],
+)

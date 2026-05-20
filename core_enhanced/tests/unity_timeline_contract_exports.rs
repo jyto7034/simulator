@@ -3,34 +3,32 @@ mod common;
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 
-use bevy_ecs::world::World;
-use game_core::ecs::resources::Position;
 use game_core::game::ability::{
     DeliveryDef, SkillAreaAnchorSource, SkillAreaDeliveryDef, SkillAreaShapeDef,
-    SkillCastTargetingDef, SkillDef, SkillEffectDef, SkillHitTargetFilter, SkillKind,
+    SkillCastTargetingDef, SkillDef, SkillEffectDef, SkillHitTargetFilter, SkillId, SkillKind,
     SkillPresentationDef, SkillProjectileCollisionDef, SkillStepDef, SkillTarget,
     StepTargetingMode, UnitTargetRule,
 };
+use game_core::game::battle::core::movement::types::WorldVec2;
 use game_core::game::battle::core::BattleCore;
 use game_core::game::battle::damage::DamageType;
 use game_core::game::battle::ids::UnitInstanceId;
-use game_core::game::battle::placement::{PlacementBoard, PlacementSlotId};
+use game_core::game::battle::scenario::{
+    BattleFieldSpec, BattleScenario, ScenarioAction, ScenarioEvent, ScenarioEventId,
+    ScenarioGroupId, ScenarioSpawnGroup, ScenarioTrigger, ScenarioUnitRef, ScenarioUnitSpawn,
+    WinCondition,
+};
 use game_core::game::battle::timeline::{HpChangeReason, TimelineEvent};
-use game_core::game::battle::types::{OwnedUnit, PlayerDeckInfo};
+use game_core::game::battle::types::{BattleUnitDraft, BattleUnitSource};
 use game_core::game::data::{
-    abnormality_data::{AbnormalityDatabase, AbnormalityMetadata, BasicAttackDef, MovementDef},
-    artifact_data::ArtifactDatabase,
-    bonus_data::BonusDatabase,
-    equipment_data::EquipmentDatabase,
-    pve_data::PveEncounterDatabase,
-    random_event_data::RandomEventDatabase,
-    shop_data::ShopDatabase,
+    abnormality_data::{AbnormalityMetadata, BasicAttackDef, MovementDef},
     skill_data::SkillDatabase,
-    GameDataBase,
+    GameDataBase, GameDataBuilder,
 };
 use game_core::game::enums::Side;
 use game_core::game::enums::{RiskLevel, Tier};
 use game_core::game::growth::GrowthStack;
+use game_core::game::resources::Position;
 use uuid::Uuid;
 
 const BASIC_ATTACK_PROJECTILE_SPEED_UNITS_PER_MS: u32 = 6_000;
@@ -63,6 +61,7 @@ fn unit(
             } else {
                 SHOWCASE_MELEE_MOVE_SPEED_UNITS_PER_MS
             },
+            radius_units: 350_000,
         },
         basic_attack: BasicAttackDef {
             range_units,
@@ -75,50 +74,101 @@ fn unit(
             max: 10,
             gain_lock_ms: 0,
         },
-        skill_id: skill_id.map(str::to_string),
+        skill_id: skill_id.map(SkillId::from),
     }
 }
 
-fn deck(units: Vec<(Uuid, Uuid, Position)>) -> PlayerDeckInfo {
-    let mut positions = HashMap::new();
-    let mut owned_units = Vec::new();
-    for (owned_uuid, base_uuid, position) in units {
-        positions.insert(owned_uuid, position);
-        owned_units.push(OwnedUnit {
-            owned_uuid,
-            base_uuid,
-            level: Tier::I,
-            growth_stacks: GrowthStack::new(),
-            equipped_items: vec![],
-        });
+fn unit_draft(owned_uuid: Uuid, base_uuid: Uuid) -> BattleUnitDraft {
+    BattleUnitDraft {
+        owned_uuid,
+        source: BattleUnitSource::Abnormality { base_uuid },
+        level: Tier::I,
+        growth_stacks: GrowthStack::new(),
+        equipped_items: vec![],
+        equipped_item_enhancements: vec![],
     }
+}
 
-    PlayerDeckInfo {
-        units: owned_units,
-        artifacts: vec![],
-        positions,
+fn spawn_group(
+    id: &str,
+    side: Side,
+    required_for_victory: bool,
+    units: Vec<(Uuid, Uuid, Position)>,
+) -> ScenarioSpawnGroup {
+    let group_id = ScenarioGroupId::new(id);
+    let spawns = units
+        .into_iter()
+        .enumerate()
+        .map(
+            |(index, (owned_uuid, base_uuid, position))| ScenarioUnitSpawn {
+                unit_ref: ScenarioUnitRef::new(format!("{}_{}", group_id.0, index)),
+                side,
+                draft: unit_draft(owned_uuid, base_uuid),
+                position,
+                instance_salt: index as u32,
+            },
+        )
+        .collect();
+
+    ScenarioSpawnGroup {
+        id: group_id,
+        side,
+        required_for_victory,
+        spawns,
+    }
+}
+
+fn battle_scenario(
+    player_units: Vec<(Uuid, Uuid, Position)>,
+    opponent_units: Vec<(Uuid, Uuid, Position)>,
+) -> BattleScenario {
+    let player_group_id = "player_initial";
+    let enemy_group_id = "enemy_initial";
+    BattleScenario {
+        battlefield: BattleFieldSpec {
+            width: common::BOARD_SIZE.0,
+            height: common::BOARD_SIZE.1,
+            valid_tiles: Vec::new(),
+            obstacles: Vec::new(),
+        },
+        artifacts: Vec::new(),
+        groups: vec![
+            spawn_group(player_group_id, Side::Player, false, player_units),
+            spawn_group(enemy_group_id, Side::Opponent, true, opponent_units),
+        ],
+        events: vec![
+            ScenarioEvent {
+                id: ScenarioEventId::new("spawn_player_initial"),
+                trigger: ScenarioTrigger::AtBattleStart,
+                action: ScenarioAction::SpawnGroup {
+                    group_id: ScenarioGroupId::new(player_group_id),
+                },
+                once: true,
+            },
+            ScenarioEvent {
+                id: ScenarioEventId::new("spawn_enemy_initial"),
+                trigger: ScenarioTrigger::AtBattleStart,
+                action: ScenarioAction::SpawnGroup {
+                    group_id: ScenarioGroupId::new(enemy_group_id),
+                },
+                once: true,
+            },
+        ],
+        win_condition: WinCondition::AllRequiredEnemyGroupsDefeated,
+        tactical_plan: game_core::game::battle::scenario::TacticalPlan::default(),
     }
 }
 
 fn game_data(abnormalities: Vec<AbnormalityMetadata>, skills: Vec<SkillDef>) -> Arc<GameDataBase> {
-    Arc::new(GameDataBase::new(
-        game_core::game::data::GameDataBaseParts {
-            abnormality_data: Arc::new(AbnormalityDatabase::new(abnormalities)),
-            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
-            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
-            shop_data: Arc::new(ShopDatabase::new(vec![])),
-            bonus_data: Arc::new(BonusDatabase::new(vec![])),
-            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
-            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
-            skill_data: Arc::new(SkillDatabase::new(skills)),
-            event_pools: common::empty_event_pools(),
-        },
-    ))
+    GameDataBuilder::empty()
+        .with_abnormalities(abnormalities)
+        .with_skills(SkillDatabase::new(skills))
+        .build_arc()
 }
 
 fn homing_projectile_skill() -> SkillDef {
     SkillDef {
-        id: "unity_homing_bolt".to_string(),
+        id: SkillId::from("unity_homing_bolt"),
         name: "unity_homing_bolt".to_string(),
         kind: SkillKind::Targeted,
         cast_targeting: SkillCastTargetingDef::FirstStepTarget,
@@ -154,7 +204,7 @@ fn homing_projectile_skill() -> SkillDef {
 
 fn fixed_projectile_and_area_skill() -> SkillDef {
     SkillDef {
-        id: "unity_line_and_cone".to_string(),
+        id: SkillId::from("unity_line_and_cone"),
         name: "unity_line_and_cone".to_string(),
         kind: SkillKind::Untargeted,
         cast_targeting: SkillCastTargetingDef::FirstStepTarget,
@@ -209,6 +259,7 @@ fn fixed_projectile_and_area_skill() -> SkillDef {
                             length_units: 2_500_000,
                         },
                         anchor: SkillAreaAnchorSource::Caster,
+                        tracking: Default::default(),
                         hit_targets: SkillHitTargetFilter::Enemies,
                         include_caster: false,
                         tick_policy: game_core::game::ability::SkillAreaTickPolicy::EveryTick,
@@ -429,7 +480,7 @@ fn print_movement_quality(label: &str, metrics: &MovementQualityMetrics) {
 }
 
 #[test]
-fn battle_start_maps_deck_position_to_tft_like_placement_slot_center() {
+fn battle_start_maps_scenario_position_to_battlefield_tile_center() {
     let player_base = Uuid::from_u128(0xA500_0001);
     let opponent_base = Uuid::from_u128(0xB500_0001);
     let player_owned = Uuid::from_u128(0xC500_0001);
@@ -461,15 +512,15 @@ fn battle_start_maps_deck_position_to_tft_like_placement_slot_center() {
         ],
         vec![],
     );
-    let player = deck(vec![(player_owned, player_base, player_slot)]);
-    let opponent = deck(vec![(opponent_owned, opponent_base, Position::new(0, 6))]);
-    let mut battle = BattleCore::new(&player, &opponent, game_data, common::BOARD_SIZE, 5_500);
-    let expected_spawn = PlacementBoard::new(common::BOARD_SIZE.0, common::BOARD_SIZE.1)
-        .world_center(PlacementSlotId::from(player_slot));
-    let mut world = World::new();
+    let scenario = battle_scenario(
+        vec![(player_owned, player_base, player_slot)],
+        vec![(opponent_owned, opponent_base, Position::new(0, 6))],
+    );
+    let mut battle = BattleCore::new_from_scenario(scenario, game_data, 5_500);
+    let expected_spawn = WorldVec2::from_tile_center(player_slot);
 
     battle
-        .run_battle_with_setup(&mut world, |core| {
+        .run_battle_with_post_spawn_setup(|core| {
             let actual_spawn = core
                 .units
                 .values()
@@ -478,10 +529,10 @@ fn battle_start_maps_deck_position_to_tft_like_placement_slot_center() {
                 .world_position();
             assert!(
                 actual_spawn.distance(expected_spawn) <= 0.0001,
-                "deck placement slot should spawn at TFT-like continuous center: actual={actual_spawn:?} expected={expected_spawn:?}"
+                "scenario spawn position should use battlefield tile center: actual={actual_spawn:?} expected={expected_spawn:?}"
             );
         })
-        .expect("placement slot smoke battle runs");
+        .expect("scenario tile spawn smoke battle runs");
 }
 
 #[test]
@@ -529,7 +580,7 @@ fn unity_contract_6v6_melee_rapier_showcase_exports_timeline() {
         ));
     }
 
-    let player = deck(vec![
+    let player_units = vec![
         (
             Uuid::from_u128(0xC600_0001),
             player_units[0],
@@ -560,8 +611,8 @@ fn unity_contract_6v6_melee_rapier_showcase_exports_timeline() {
             player_units[5],
             Position::new(5, 7),
         ),
-    ]);
-    let opponent = deck(vec![
+    ];
+    let opponent_units = vec![
         (
             Uuid::from_u128(0xD600_0001),
             opponent_units[0],
@@ -592,13 +643,13 @@ fn unity_contract_6v6_melee_rapier_showcase_exports_timeline() {
             opponent_units[5],
             Position::new(5, 0),
         ),
-    ]);
+    ];
 
     let game_data = game_data(abnormalities, vec![]);
-    let mut battle = BattleCore::new(&player, &opponent, game_data, common::BOARD_SIZE, 6_600);
-    let mut world = World::new();
+    let scenario = battle_scenario(player_units, opponent_units);
+    let mut battle = BattleCore::new_from_scenario(scenario, game_data, 6_600);
     let result = battle
-        .run_battle_with_setup(&mut world, |core| {
+        .run_battle_with_setup(|core| {
             core.use_rapier_continuous_movement_backend();
         })
         .expect("6v6 melee rapier showcase battle runs");
@@ -781,7 +832,7 @@ fn unity_contract_7v7_rapier_showcase_exports_timeline() {
         abnormalities,
         vec![homing_projectile_skill(), fixed_projectile_and_area_skill()],
     );
-    let player = deck(vec![
+    let player_units = vec![
         (Uuid::from_u128(0xC700_0001), p_homing, Position::new(1, 7)),
         (Uuid::from_u128(0xC700_0002), p_fixed, Position::new(3, 7)),
         (
@@ -809,8 +860,8 @@ fn unity_contract_7v7_rapier_showcase_exports_timeline() {
             p_ranged[1],
             Position::new(5, 7),
         ),
-    ]);
-    let opponent = deck(vec![
+    ];
+    let opponent_units = vec![
         (Uuid::from_u128(0xD700_0001), o_homing, Position::new(5, 0)),
         (Uuid::from_u128(0xD700_0002), o_fixed, Position::new(3, 0)),
         (
@@ -838,12 +889,12 @@ fn unity_contract_7v7_rapier_showcase_exports_timeline() {
             o_ranged[1],
             Position::new(4, 0),
         ),
-    ]);
+    ];
 
-    let mut battle = BattleCore::new(&player, &opponent, game_data, common::BOARD_SIZE, 7_700);
-    let mut world = World::new();
+    let scenario = battle_scenario(player_units, opponent_units);
+    let mut battle = BattleCore::new_from_scenario(scenario, game_data, 7_700);
     let result = battle
-        .run_battle_with_setup(&mut world, |core| {
+        .run_battle_with_setup(|core| {
             core.use_rapier_continuous_movement_backend();
         })
         .expect("7v7 unity contract showcase battle runs");

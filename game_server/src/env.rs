@@ -68,6 +68,8 @@ pub struct ServerSettings {
     pub port: u16,
     pub log_level: String,
     pub metrics_auth_token: Option<String>,
+    #[serde(default)]
+    pub multiplayer_enabled: bool,
 }
 
 #[derive(Debug, Deserialize, Clone)]

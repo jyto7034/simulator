@@ -1,19 +1,21 @@
-use std::{
-    collections::{HashMap, HashSet},
-    sync::Arc,
-};
+use std::{collections::HashSet, sync::Arc};
 
 use game_core::{
-    ecs::resources::Position,
+    game::resources::Position,
     game::{
-        battle::types::{OwnedUnit, PlayerDeckInfo},
-        data::{
-            abnormality_data::{
-                AbnormalityDatabase, AbnormalityMetadata, BasicAttackDef, MovementDef,
+        battle::{
+            scenario::{
+                BattleFieldSpec, BattleScenario, ScenarioAction, ScenarioEvent, ScenarioEventId,
+                ScenarioGroupId, ScenarioSpawnGroup, ScenarioTrigger, ScenarioUnitRef,
+                ScenarioUnitSpawn, WinCondition,
             },
-            GameDataBase, GameDataBaseParts,
+            types::{BattleUnitDraft, BattleUnitSource},
         },
-        enums::{RiskLevel, Tier},
+        data::{
+            abnormality_data::{AbnormalityMetadata, BasicAttackDef, MovementDef},
+            GameDataBase, GameDataBuilder,
+        },
+        enums::{RiskLevel, Side, Tier},
         growth::GrowthStack,
     },
 };
@@ -36,8 +38,7 @@ pub(crate) struct ResolvedUnit {
 pub(crate) struct ResolvedScenario {
     pub(crate) abnormality: AbnormalityMetadata,
     pub(crate) game_data: Arc<GameDataBase>,
-    pub(crate) player_deck: PlayerDeckInfo,
-    pub(crate) opponent_deck: PlayerDeckInfo,
+    pub(crate) battle_scenario: BattleScenario,
     pub(crate) runtime_patches: Vec<(Position, RuntimeStartPatch)>,
 }
 
@@ -60,6 +61,7 @@ pub(crate) fn skill_test_dummy_metadata() -> AbnormalityMetadata {
         magic_resist: 0,
         movement: MovementDef {
             speed_units_per_ms: 0,
+            radius_units: 350_000,
         },
         basic_attack: BasicAttackDef {
             range_units: 1.0,
@@ -198,39 +200,113 @@ fn build_game_data_with_units(
         }
     }
 
-    Arc::new(GameDataBase::new(GameDataBaseParts {
-        abnormality_data: Arc::new(AbnormalityDatabase::new(abnormalities)),
-        artifact_data: Arc::clone(&base.artifact_data),
-        equipment_data: Arc::clone(&base.equipment_data),
-        shop_data: Arc::clone(&base.shop_data),
-        bonus_data: Arc::clone(&base.bonus_data),
-        random_event_data: Arc::clone(&base.random_event_data),
-        pve_data: Arc::clone(&base.pve_data),
-        skill_data: Arc::clone(&base.skill_data),
-        event_pools: base.event_pools.clone(),
-    }))
+    GameDataBuilder::empty()
+        .with_abnormalities(abnormalities)
+        .with_corroded_employee_data(Arc::clone(&base.corroded_employee_data))
+        .with_corroded_wave_data(Arc::clone(&base.corroded_wave_data))
+        .with_artifact_data(Arc::clone(&base.artifact_data))
+        .with_equipment_data(Arc::clone(&base.equipment_data))
+        .with_shop_data(Arc::clone(&base.shop_data))
+        .with_reward_data(Arc::clone(&base.reward_data))
+        .with_random_event_data(Arc::clone(&base.random_event_data))
+        .with_pve_data(Arc::clone(&base.pve_data))
+        .with_skill_data(Arc::clone(&base.skill_data))
+        .with_skill_fragment_data(Arc::clone(&base.skill_fragment_data))
+        .build_arc()
 }
 
-fn build_deck(units: &[ResolvedUnit], owned_seed: u128) -> PlayerDeckInfo {
-    let mut positions = HashMap::new();
-    let mut deck_units = Vec::with_capacity(units.len());
+fn build_spawn_group(
+    group_id: &str,
+    side: Side,
+    required_for_victory: bool,
+    units: &[ResolvedUnit],
+    owned_seed: u128,
+) -> ScenarioSpawnGroup {
+    let group_id = ScenarioGroupId::new(group_id);
+    let spawns = units
+        .iter()
+        .enumerate()
+        .map(|(index, unit)| {
+            let owned_uuid = Uuid::from_u128(owned_seed + index as u128);
+            ScenarioUnitSpawn {
+                unit_ref: ScenarioUnitRef::new(format!("{}_{}", group_id.0, index)),
+                side,
+                draft: BattleUnitDraft {
+                    owned_uuid,
+                    source: BattleUnitSource::Abnormality {
+                        base_uuid: unit.base_uuid,
+                    },
+                    level: Tier::I,
+                    growth_stacks: GrowthStack::new(),
+                    equipped_items: vec![],
+                    equipped_item_enhancements: vec![],
+                },
+                position: unit.position,
+                instance_salt: index as u32,
+            }
+        })
+        .collect();
 
-    for (index, unit) in units.iter().enumerate() {
-        let owned_uuid = Uuid::from_u128(owned_seed + index as u128);
-        positions.insert(owned_uuid, unit.position);
-        deck_units.push(OwnedUnit {
-            owned_uuid,
-            base_uuid: unit.base_uuid,
-            level: Tier::I,
-            growth_stacks: GrowthStack::new(),
-            equipped_items: vec![],
-        });
+    ScenarioSpawnGroup {
+        id: group_id,
+        side,
+        required_for_victory,
+        spawns,
     }
+}
 
-    PlayerDeckInfo {
-        units: deck_units,
-        artifacts: vec![],
-        positions,
+fn build_battle_scenario(
+    player_units: &[ResolvedUnit],
+    opponent_units: &[ResolvedUnit],
+) -> BattleScenario {
+    let player_group_id = "player_initial";
+    let enemy_group_id = "enemy_initial";
+    let groups = vec![
+        build_spawn_group(
+            player_group_id,
+            Side::Player,
+            false,
+            player_units,
+            0xAAA0_0000_0000_0000_0000_0000_0000_0000,
+        ),
+        build_spawn_group(
+            enemy_group_id,
+            Side::Opponent,
+            true,
+            opponent_units,
+            0xBBB0_0000_0000_0000_0000_0000_0000_0000,
+        ),
+    ];
+
+    BattleScenario {
+        battlefield: BattleFieldSpec {
+            width: crate::common::BOARD_SIZE.0,
+            height: crate::common::BOARD_SIZE.1,
+            valid_tiles: Vec::new(),
+            obstacles: Vec::new(),
+        },
+        artifacts: Vec::new(),
+        groups,
+        events: vec![
+            ScenarioEvent {
+                id: ScenarioEventId::new("spawn_player_initial"),
+                trigger: ScenarioTrigger::AtBattleStart,
+                action: ScenarioAction::SpawnGroup {
+                    group_id: ScenarioGroupId::new(player_group_id),
+                },
+                once: true,
+            },
+            ScenarioEvent {
+                id: ScenarioEventId::new("spawn_enemy_initial"),
+                trigger: ScenarioTrigger::AtBattleStart,
+                action: ScenarioAction::SpawnGroup {
+                    group_id: ScenarioGroupId::new(enemy_group_id),
+                },
+                once: true,
+            },
+        ],
+        win_condition: WinCondition::AllRequiredEnemyGroupsDefeated,
+        tactical_plan: game_core::game::battle::scenario::TacticalPlan::default(),
     }
 }
 
@@ -318,20 +394,12 @@ pub(crate) fn resolve_abnormality_scenario(
         }
     }
 
-    let player_deck = build_deck(
-        &resolved_player_units,
-        0xAAA0_0000_0000_0000_0000_0000_0000_0000,
-    );
-    let opponent_deck = build_deck(
-        &resolved_opponent_units,
-        0xBBB0_0000_0000_0000_0000_0000_0000_0000,
-    );
+    let battle_scenario = build_battle_scenario(&resolved_player_units, &resolved_opponent_units);
 
     ResolvedScenario {
         abnormality,
         game_data,
-        player_deck,
-        opponent_deck,
+        battle_scenario,
         runtime_patches,
     }
 }

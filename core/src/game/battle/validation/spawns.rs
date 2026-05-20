@@ -415,6 +415,30 @@ pub(super) fn validate_reference_spawn_order(
                     );
                 }
             }
+            TimelineEvent::SkillAreaDeclared {
+                caster_instance_id,
+                target,
+                ..
+            } => {
+                validate_unit_reference_spawned(
+                    extracted,
+                    *caster_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+                if let Some(SkillCastTarget::Unit { unit_instance_id }) = target {
+                    validate_unit_reference_spawned(
+                        extracted,
+                        *unit_instance_id,
+                        index,
+                        time_ms,
+                        &entry_desc,
+                        violations,
+                    );
+                }
+            }
             TimelineEvent::BuffApplied {
                 caster_instance_id,
                 target_instance_id,

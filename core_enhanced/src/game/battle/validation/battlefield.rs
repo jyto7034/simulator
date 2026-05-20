@@ -1,6 +1,6 @@
 use crate::{
-    ecs::resources::Position,
     game::battle::timeline::{SkillCastTarget, Timeline, TimelineEvent},
+    game::resources::Position,
 };
 
 #[derive(Debug, Clone, Copy)]

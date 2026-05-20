@@ -19,6 +19,7 @@ use game_core::game::battle::core::{
 use game_core::game::battle::enums::BattleEvent;
 use game_core::game::battle::timeline::{
     AttackKind, HpChangeReason, Timeline, TimelineCause, TimelineEvent, TimelineRootCause,
+    TimelineSkillAreaShape,
 };
 use game_core::game::battle::types::{OwnedUnit, PlayerDeckInfo};
 use game_core::game::data::{
@@ -67,7 +68,7 @@ fn make_abnormality(
     skill_id: Option<&str>,
     attack: u32,
     max_health: u32,
-    defense: u32,
+    defense: i32,
     attack_interval_ms: u64,
     attack_range_tiles: u8,
     attack_delivery: DeliveryDef,
@@ -82,6 +83,7 @@ fn make_abnormality(
         max_health,
         attack,
         defense,
+        magic_resist: 0,
         movement: MovementDef {
             speed_units_per_ms: 3000,
         },
@@ -174,6 +176,28 @@ fn parent_seq(cause: &TimelineCause) -> Option<u64> {
     }
 }
 
+fn entry_caused_by_seq(
+    timeline: &Timeline,
+    entry: &game_core::game::battle::timeline::TimelineEntry,
+    expected_seq: u64,
+) -> bool {
+    let Some(direct_parent_seq) = parent_seq(&entry.cause) else {
+        return false;
+    };
+    if direct_parent_seq == expected_seq {
+        return true;
+    }
+
+    timeline
+        .entries
+        .iter()
+        .find(|entry| entry.seq == direct_parent_seq)
+        .is_some_and(|parent| {
+            matches!(parent.event, TimelineEvent::SkillAreaDeclared { .. })
+                && parent_seq(&parent.cause) == Some(expected_seq)
+        })
+}
+
 fn set_linear_motion(
     core: &mut BattleCore,
     unit_id: Uuid,
@@ -219,6 +243,206 @@ fn spawned_unit_id(timeline: &Timeline, base_uuid: Uuid, owner: Side) -> Uuid {
             _ => None,
         })
         .expect("missing UnitSpawned")
+}
+
+#[test]
+fn area_delivery_declares_resolved_boundary_before_damage() {
+    let caster_base_uuid = Uuid::from_u128(0xD001);
+    let target_base_uuid = Uuid::from_u128(0xD002);
+
+    let skill = SkillDef {
+        id: "timeline_area_probe".to_string(),
+        name: "timeline_area_probe".to_string(),
+        kind: SkillKind::Targeted,
+        cast_targeting: SkillCastTargetingDef::FirstStepTarget,
+        focus_time_ms: 0,
+        focus_permissions: Default::default(),
+        steps: vec![SkillStepDef {
+            id: "blast".to_string(),
+            delay_ms: 0,
+            range_tiles: 4,
+            target: SkillTarget::EnemySingle {
+                rule: UnitTargetRule::Nearest,
+            },
+            targeting: StepTargetingMode::ReuseCastTarget,
+            when: Default::default(),
+            repeat: Default::default(),
+            delivery: DeliveryDef::Area {
+                area: SkillAreaDeliveryDef {
+                    shape: SkillAreaShapeDef::Circle {
+                        radius_units: 1_100_000,
+                    },
+                    anchor: SkillAreaAnchorSource::CastTarget,
+                    hit_targets: SkillHitTargetFilter::Enemies,
+                    include_caster: false,
+                    tick_policy: game_core::game::ability::SkillAreaTickPolicy::EveryTick,
+                    duration_ms: 0,
+                    tick_interval_ms: None,
+                },
+            },
+            effects: vec![SkillEffectDef::Damage {
+                amount: 10,
+                damage_type: game_core::game::battle::damage::DamageType::Magic,
+            }],
+            presentation: SkillPresentationDef::default(),
+        }],
+    };
+
+    let game_data = minimal_game_data(
+        vec![
+            make_abnormality(
+                "area_caster",
+                caster_base_uuid,
+                Some("timeline_area_probe"),
+                1,
+                100,
+                0,
+                1_000_000,
+                1,
+                DeliveryDef::Instant,
+                10,
+            ),
+            make_abnormality(
+                "area_target",
+                target_base_uuid,
+                None,
+                1,
+                100,
+                0,
+                1_000_000,
+                1,
+                DeliveryDef::Instant,
+                100,
+            ),
+        ],
+        vec![skill],
+    );
+
+    let timeline = run_battle_with_setup(
+        game_data,
+        vec![(
+            Uuid::from_u128(0xD011),
+            caster_base_uuid,
+            Position::new(0, 0),
+        )],
+        vec![(
+            Uuid::from_u128(0xD012),
+            target_base_uuid,
+            Position::new(0, 2),
+        )],
+        |core| {
+            let caster_id = core
+                .units
+                .values()
+                .find(|unit| unit.owner == Side::Player && unit.base_uuid == caster_base_uuid)
+                .map(|unit| Uuid::from(unit.instance_id))
+                .expect("missing caster");
+            let target_id = core
+                .units
+                .values()
+                .find(|unit| unit.owner == Side::Opponent && unit.base_uuid == target_base_uuid)
+                .map(|unit| Uuid::from(unit.instance_id))
+                .expect("missing target");
+
+            core.units
+                .get_mut(&target_id.into())
+                .expect("target runtime unit should exist")
+                .stats
+                .move_speed_units_per_ms = 0;
+
+            core.enqueue_event(BattleEvent::AutoCastStart {
+                time_ms: 0,
+                caster_instance_id: caster_id.into(),
+                cause: TimelineCause::Root {
+                    kind: TimelineRootCause::System,
+                },
+            });
+        },
+    );
+
+    let caster_id = spawned_unit_id(&timeline, caster_base_uuid, Side::Player);
+    let target_id = spawned_unit_id(&timeline, target_base_uuid, Side::Opponent);
+    let area_entry = timeline
+        .entries
+        .iter()
+        .find(|entry| {
+            matches!(
+                entry.event,
+                TimelineEvent::SkillAreaDeclared {
+                    ref skill_id,
+                    ref step_id,
+                    ..
+                } if skill_id == "timeline_area_probe" && step_id == "blast"
+            )
+        })
+        .expect("area delivery should declare a resolved timeline boundary");
+
+    let TimelineEvent::SkillAreaDeclared {
+        caster_instance_id,
+        target,
+        shape,
+        origin,
+        center,
+        direction_hint,
+        duration_ms,
+        display_duration_ms,
+        tick_interval_ms,
+        ..
+    } = &area_entry.event
+    else {
+        unreachable!("matched SkillAreaDeclared above")
+    };
+
+    assert_eq!(*caster_instance_id, caster_id.into());
+    assert!(matches!(
+        target,
+        Some(game_core::game::battle::timeline::SkillCastTarget::Unit {
+            unit_instance_id
+        }) if *unit_instance_id == target_id.into()
+    ));
+    assert_eq!(
+        *shape,
+        TimelineSkillAreaShape::Circle {
+            radius_units: 1_100_000
+        }
+    );
+    assert_eq!(origin.x_units, 0);
+    assert_eq!(origin.y_units, 0);
+    assert_eq!(center.x_units, 0);
+    assert_eq!(center.y_units, 2_000_000);
+    assert_eq!(direction_hint.x_units, 0);
+    assert_eq!(direction_hint.y_units, 4_000_000);
+    assert_eq!(*duration_ms, 0);
+    assert_eq!(*display_duration_ms, 250);
+    assert_eq!(*tick_interval_ms, None);
+
+    let damage_entry = timeline
+        .entries
+        .iter()
+        .find(|entry| {
+            matches!(
+                entry.event,
+                TimelineEvent::HpChanged {
+                    source_instance_id: Some(source_instance_id),
+                    target_instance_id,
+                    reason: HpChangeReason::Command,
+                    ..
+                } if source_instance_id == caster_id.into()
+                    && target_instance_id == target_id.into()
+            )
+        })
+        .expect("area damage should be recorded");
+    assert!(
+        damage_entry.seq > area_entry.seq,
+        "area boundary must be declared before the resulting damage"
+    );
+    assert_eq!(
+        damage_entry.cause,
+        TimelineCause::Parent {
+            seq: area_entry.seq
+        },
+        "area damage should point to the declared area instance"
+    );
 }
 
 fn find_first_ability_cast_seq(
@@ -282,7 +506,10 @@ fn enemy_radius_area_anchors_on_the_nearest_enemy_instead_of_the_caster_tile() {
             when: Default::default(),
             repeat: Default::default(),
             delivery: DeliveryDef::Instant,
-            effects: vec![SkillEffectDef::Damage { amount: 30 }],
+            effects: vec![SkillEffectDef::Damage {
+                amount: 30,
+                damage_type: game_core::game::battle::damage::DamageType::Magic,
+            }],
             presentation: SkillPresentationDef::default(),
         }],
     };
@@ -376,7 +603,7 @@ fn enemy_radius_area_anchors_on_the_nearest_enemy_instead_of_the_caster_tile() {
                 target_instance_id,
                 delta,
                 ..
-            } if parent_seq(&entry.cause) == Some(step_seq) && *delta == -30 => {
+            } if entry_caused_by_seq(&timeline, entry, step_seq) && *delta == -30 => {
                 Some((*target_instance_id).into())
             }
             _ => None,
@@ -415,7 +642,10 @@ fn delayed_area_reuses_the_original_cast_target_snapshot_after_that_target_dies(
                 when: Default::default(),
                 repeat: Default::default(),
                 delivery: DeliveryDef::Instant,
-                effects: vec![SkillEffectDef::Damage { amount: 200 }],
+                effects: vec![SkillEffectDef::Damage {
+                    amount: 200,
+                    damage_type: game_core::game::battle::damage::DamageType::Magic,
+                }],
                 presentation: SkillPresentationDef::default(),
             },
             SkillStepDef {
@@ -441,7 +671,10 @@ fn delayed_area_reuses_the_original_cast_target_snapshot_after_that_target_dies(
                         tick_interval_ms: None,
                     },
                 },
-                effects: vec![SkillEffectDef::Damage { amount: 25 }],
+                effects: vec![SkillEffectDef::Damage {
+                    amount: 25,
+                    damage_type: game_core::game::battle::damage::DamageType::Magic,
+                }],
                 presentation: SkillPresentationDef::default(),
             },
         ],
@@ -537,7 +770,7 @@ fn delayed_area_reuses_the_original_cast_target_snapshot_after_that_target_dies(
                 target_instance_id,
                 delta,
                 ..
-            } if parent_seq(&entry.cause) == Some(burst_step_seq) && *delta == -25 => {
+            } if entry_caused_by_seq(&timeline, entry, burst_step_seq) && *delta == -25 => {
                 Some((*target_instance_id).into())
             }
             _ => None,
@@ -575,7 +808,10 @@ fn mixed_target_skill_records_enemy_damage_then_self_buff() {
                 when: Default::default(),
                 repeat: Default::default(),
                 delivery: DeliveryDef::Instant,
-                effects: vec![SkillEffectDef::Damage { amount: 15 }],
+                effects: vec![SkillEffectDef::Damage {
+                    amount: 15,
+                    damage_type: game_core::game::battle::damage::DamageType::Magic,
+                }],
                 presentation: SkillPresentationDef::default(),
             },
             SkillStepDef {
@@ -662,7 +898,7 @@ fn mixed_target_skill_records_enemy_damage_then_self_buff() {
             } if *source_instance_id == caster_id.into()
                 && *target_instance_id == enemy_id.into()
                 && *reason == HpChangeReason::Command
-        ) && parent_seq(&entry.cause) == Some(first_step.seq)
+        ) && entry_caused_by_seq(&timeline, entry, first_step.seq)
     }));
 
     assert!(timeline.entries.iter().any(|entry| {
@@ -676,7 +912,7 @@ fn mixed_target_skill_records_enemy_damage_then_self_buff() {
                 && modifier.stat == StatId::Attack
                 && modifier.kind == StatModifierKind::Flat
                 && modifier.value == 5
-        ) && parent_seq(&entry.cause) == Some(second_step.seq)
+        ) && entry_caused_by_seq(&timeline, entry, second_step.seq)
     }));
 }
 
@@ -707,7 +943,10 @@ fn mixed_delivery_skill_delays_projectile_impact_beyond_followup_step() {
                     speed_units_per_ms: 500_000,
                     collision: Default::default(),
                 },
-                effects: vec![SkillEffectDef::Damage { amount: 20 }],
+                effects: vec![SkillEffectDef::Damage {
+                    amount: 20,
+                    damage_type: game_core::game::battle::damage::DamageType::Magic,
+                }],
                 presentation: SkillPresentationDef::default(),
             },
             SkillStepDef {
@@ -796,7 +1035,7 @@ fn mixed_delivery_skill_delays_projectile_impact_beyond_followup_step() {
                 } if *target_instance_id == caster_id.into()
                     && modifier.stat == StatId::Attack
                     && modifier.value == 3
-            ) && parent_seq(&entry.cause) == Some(self_step.seq)
+            ) && entry_caused_by_seq(&timeline, entry, self_step.seq)
         })
         .expect("missing self buff StatChanged");
 
@@ -814,7 +1053,7 @@ fn mixed_delivery_skill_delays_projectile_impact_beyond_followup_step() {
                 } if *source_instance_id == caster_id.into()
                     && *target_instance_id == enemy_id.into()
                     && *reason == HpChangeReason::Command
-            ) && parent_seq(&entry.cause) == Some(projectile_step.seq)
+            ) && entry_caused_by_seq(&timeline, entry, projectile_step.seq)
         })
         .expect("missing projectile-delivered HpChanged");
 
@@ -866,7 +1105,10 @@ fn self_then_retargeted_enemy_skill_resolves_second_step_at_execution_time() {
                 when: Default::default(),
                 repeat: Default::default(),
                 delivery: DeliveryDef::Instant,
-                effects: vec![SkillEffectDef::Damage { amount: 25 }],
+                effects: vec![SkillEffectDef::Damage {
+                    amount: 25,
+                    damage_type: game_core::game::battle::damage::DamageType::Magic,
+                }],
                 presentation: SkillPresentationDef::default(),
             },
         ],
@@ -951,7 +1193,7 @@ fn self_then_retargeted_enemy_skill_resolves_second_step_at_execution_time() {
             } if *source_instance_id == caster_id.into()
                 && *target_instance_id == enemy_id.into()
                 && *reason == HpChangeReason::Command
-        ) && parent_seq(&entry.cause) == Some(enemy_step.seq)
+        ) && entry_caused_by_seq(&timeline, entry, enemy_step.seq)
     }));
 }
 
@@ -982,7 +1224,10 @@ fn conditional_followup_waits_for_projectile_damage_resolution() {
                     speed_units_per_ms: 250_000,
                     collision: Default::default(),
                 },
-                effects: vec![SkillEffectDef::Damage { amount: 20 }],
+                effects: vec![SkillEffectDef::Damage {
+                    amount: 20,
+                    damage_type: game_core::game::battle::damage::DamageType::Magic,
+                }],
                 presentation: SkillPresentationDef::default(),
             },
             SkillStepDef {
@@ -1070,7 +1315,7 @@ fn conditional_followup_waits_for_projectile_damage_resolution() {
                 } if *source_instance_id == caster_id.into()
                     && *target_instance_id == enemy_id.into()
                     && *reason == HpChangeReason::Command
-            ) && parent_seq(&entry.cause) == Some(projectile_step.seq)
+            ) && entry_caused_by_seq(&timeline, entry, projectile_step.seq)
         })
         .expect("missing projectile hit");
 
@@ -1088,7 +1333,7 @@ fn conditional_followup_waits_for_projectile_damage_resolution() {
                     && modifier.stat == StatId::Attack
                     && modifier.kind == StatModifierKind::Flat
                     && modifier.value == 5
-            ) && parent_seq(&entry.cause) == Some(followup_step.seq)
+            ) && entry_caused_by_seq(&timeline, entry, followup_step.seq)
         })
         .expect("missing deferred follow-up buff");
 
@@ -1153,7 +1398,10 @@ fn explicit_cast_targeting_separates_cast_context_from_step_execution_targets() 
                 when: Default::default(),
                 repeat: Default::default(),
                 delivery: DeliveryDef::Instant,
-                effects: vec![SkillEffectDef::Damage { amount: 25 }],
+                effects: vec![SkillEffectDef::Damage {
+                    amount: 25,
+                    damage_type: game_core::game::battle::damage::DamageType::Magic,
+                }],
                 presentation: SkillPresentationDef::default(),
             },
         ],
@@ -1290,7 +1538,10 @@ fn ability_step_timeline_includes_presentation_metadata() {
                 speed_units_per_ms: 500_000,
                 collision: Default::default(),
             },
-            effects: vec![SkillEffectDef::Damage { amount: 10 }],
+            effects: vec![SkillEffectDef::Damage {
+                amount: 10,
+                damage_type: game_core::game::battle::damage::DamageType::Magic,
+            }],
             presentation: SkillPresentationDef {
                 cast_state: Some("Cast".to_string()),
                 projectile_vfx_id: Some("white_night_judgement".to_string()),
@@ -1400,7 +1651,10 @@ fn untargeted_projectile_hits_first_blocker_before_cast_target() {
                 speed_units_per_ms: 500_000,
                 collision: Default::default(),
             },
-            effects: vec![SkillEffectDef::Damage { amount: 40 }],
+            effects: vec![SkillEffectDef::Damage {
+                amount: 40,
+                damage_type: game_core::game::battle::damage::DamageType::Magic,
+            }],
             presentation: SkillPresentationDef::default(),
         }],
     };
@@ -1477,7 +1731,7 @@ fn untargeted_projectile_hits_first_blocker_before_cast_target() {
                 ..
             } if *source_instance_id == caster_id.into()
                 && *reason == HpChangeReason::Command
-                && parent_seq(&entry.cause) == Some(step.seq) =>
+                && entry_caused_by_seq(&timeline, entry, step.seq) =>
             {
                 Some((*target_instance_id).into())
             }
@@ -1522,7 +1776,10 @@ fn untargeted_projectile_miss_finalizes_step_and_cleans_up_damage_gated_followup
                         ..Default::default()
                     },
                 },
-                effects: vec![SkillEffectDef::Damage { amount: 20 }],
+                effects: vec![SkillEffectDef::Damage {
+                    amount: 20,
+                    damage_type: game_core::game::battle::damage::DamageType::Magic,
+                }],
                 presentation: SkillPresentationDef::default(),
             },
             SkillStepDef {
@@ -1601,7 +1858,7 @@ fn untargeted_projectile_miss_finalizes_step_and_cleans_up_damage_gated_followup
                     ..
                 } if *source_instance_id == caster_id.into()
                     && *reason == HpChangeReason::Command
-            ) && parent_seq(&entry.cause) == Some(projectile_step.seq)
+            ) && entry_caused_by_seq(&timeline, entry, projectile_step.seq)
         }),
         "missed untargeted projectile should not apply command damage",
     );
@@ -1661,7 +1918,10 @@ fn untargeted_projectile_still_hits_later_unit_after_cast_target_dies() {
                     ..Default::default()
                 },
             },
-            effects: vec![SkillEffectDef::Damage { amount: 20 }],
+            effects: vec![SkillEffectDef::Damage {
+                amount: 20,
+                damage_type: game_core::game::battle::damage::DamageType::Magic,
+            }],
             presentation: SkillPresentationDef::default(),
         }],
     };
@@ -1777,6 +2037,16 @@ fn untargeted_projectile_still_hits_later_unit_after_cast_target_dies() {
                 .get_mut(&finisher_id)
                 .expect("finisher runtime unit should exist")
                 .current_target = Some(doomed_target_id);
+            core.units
+                .get_mut(&finisher_id)
+                .expect("finisher runtime unit should exist")
+                .action_locks
+                .lock_basic_attack_until(250);
+            for unit in core.units.values_mut() {
+                if unit.owner == Side::Opponent {
+                    unit.action_locks.lock_basic_attack_until(60_000);
+                }
+            }
         },
     );
 
@@ -1823,7 +2093,7 @@ fn untargeted_projectile_still_hits_later_unit_after_cast_target_dies() {
                 ..
             } if *source_instance_id == caster_id.into()
                 && *reason == HpChangeReason::Command
-                && parent_seq(&entry.cause) == Some(step.seq) =>
+                && entry_caused_by_seq(&timeline, entry, step.seq) =>
             {
                 Some((entry.time_ms, (*target_instance_id).into()))
             }
@@ -1876,7 +2146,10 @@ fn untargeted_projectile_hits_moving_target_after_post_launch_stun_that_would_ot
                     ..Default::default()
                 },
             },
-            effects: vec![SkillEffectDef::Damage { amount: 20 }],
+            effects: vec![SkillEffectDef::Damage {
+                amount: 20,
+                damage_type: game_core::game::battle::damage::DamageType::Magic,
+            }],
             presentation: SkillPresentationDef::default(),
         }],
     };
@@ -2056,7 +2329,10 @@ fn targeted_homing_followup_area_uses_impact_context_instead_of_live_target_posi
                     speed_units_per_ms: 500_000,
                     collision: Default::default(),
                 },
-                effects: vec![SkillEffectDef::Damage { amount: 20 }],
+                effects: vec![SkillEffectDef::Damage {
+                    amount: 20,
+                    damage_type: game_core::game::battle::damage::DamageType::Magic,
+                }],
                 presentation: SkillPresentationDef::default(),
             },
             SkillStepDef {
@@ -2082,7 +2358,10 @@ fn targeted_homing_followup_area_uses_impact_context_instead_of_live_target_posi
                         tick_interval_ms: None,
                     },
                 },
-                effects: vec![SkillEffectDef::Damage { amount: 7 }],
+                effects: vec![SkillEffectDef::Damage {
+                    amount: 7,
+                    damage_type: game_core::game::battle::damage::DamageType::Magic,
+                }],
                 presentation: SkillPresentationDef::default(),
             },
         ],
@@ -2184,6 +2463,10 @@ fn targeted_homing_followup_area_uses_impact_context_instead_of_live_target_posi
             splash.pos_y_units = 2_000_000;
             splash.action_state = ActionState::Idle;
 
+            for unit in core.units.values_mut() {
+                unit.action_locks.lock_basic_attack_until(60_000);
+            }
+
             core.enqueue_event(BattleEvent::AutoCastStart {
                 time_ms: 0,
                 caster_instance_id: caster_id,
@@ -2218,7 +2501,7 @@ fn targeted_homing_followup_area_uses_impact_context_instead_of_live_target_posi
                 ..
             } if *source_instance_id == caster_id.into()
                 && *reason == HpChangeReason::Command
-                && parent_seq(&entry.cause) == Some(steps[0].seq) =>
+                && entry_caused_by_seq(&timeline, entry, steps[0].seq) =>
             {
                 Some((*target_instance_id).into())
             }
@@ -2242,7 +2525,7 @@ fn targeted_homing_followup_area_uses_impact_context_instead_of_live_target_posi
                 ..
             } if *source_instance_id == caster_id.into()
                 && *reason == HpChangeReason::Command
-                && parent_seq(&entry.cause) == Some(burst_step.seq) =>
+                && entry_caused_by_seq(&timeline, entry, burst_step.seq) =>
             {
                 Some((*target_instance_id).into())
             }
@@ -2292,7 +2575,10 @@ fn untargeted_piercing_projectile_respects_max_hits() {
                     ..Default::default()
                 },
             },
-            effects: vec![SkillEffectDef::Damage { amount: 15 }],
+            effects: vec![SkillEffectDef::Damage {
+                amount: 15,
+                damage_type: game_core::game::battle::damage::DamageType::Magic,
+            }],
             presentation: SkillPresentationDef::default(),
         }],
     };
@@ -2382,7 +2668,7 @@ fn untargeted_piercing_projectile_respects_max_hits() {
                 ..
             } if *source_instance_id == caster_id.into()
                 && *reason == HpChangeReason::Command
-                && parent_seq(&entry.cause) == Some(step.seq) =>
+                && entry_caused_by_seq(&timeline, entry, step.seq) =>
             {
                 Some((*target_instance_id).into())
             }
@@ -2429,7 +2715,10 @@ fn untargeted_projectile_legacy_despawn_false_still_pierces_for_compat() {
                     ..Default::default()
                 },
             },
-            effects: vec![SkillEffectDef::Damage { amount: 15 }],
+            effects: vec![SkillEffectDef::Damage {
+                amount: 15,
+                damage_type: game_core::game::battle::damage::DamageType::Magic,
+            }],
             presentation: SkillPresentationDef::default(),
         }],
     };
@@ -2523,7 +2812,7 @@ fn untargeted_projectile_legacy_despawn_false_still_pierces_for_compat() {
     let damaged_targets: Vec<Uuid> = timeline
         .entries
         .iter()
-        .filter(|entry| parent_seq(&entry.cause) == Some(step_seq))
+        .filter(|entry| entry_caused_by_seq(&timeline, entry, step_seq))
         .filter_map(|entry| match entry.event {
             TimelineEvent::HpChanged {
                 target_instance_id,
@@ -2578,7 +2867,10 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
                         buff_id: "poison".to_string(),
                         duration_ms: 5_000,
                     },
-                    SkillEffectDef::Damage { amount: 5 },
+                    SkillEffectDef::Damage {
+                        amount: 5,
+                        damage_type: game_core::game::battle::damage::DamageType::Magic,
+                    },
                 ],
                 presentation: SkillPresentationDef::default(),
             },
@@ -2593,7 +2885,10 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
                 when: SkillStepCondition::Always,
                 repeat: SkillStepRepeat::Once,
                 delivery: DeliveryDef::Instant,
-                effects: vec![SkillEffectDef::Damage { amount: 12 }],
+                effects: vec![SkillEffectDef::Damage {
+                    amount: 12,
+                    damage_type: game_core::game::battle::damage::DamageType::Magic,
+                }],
                 presentation: SkillPresentationDef::default(),
             },
             SkillStepDef {
@@ -2623,7 +2918,10 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
                     max: Some(5),
                 },
                 delivery: DeliveryDef::Instant,
-                effects: vec![SkillEffectDef::Damage { amount: 7 }],
+                effects: vec![SkillEffectDef::Damage {
+                    amount: 7,
+                    damage_type: game_core::game::battle::damage::DamageType::Magic,
+                }],
                 presentation: SkillPresentationDef::default(),
             },
         ],
@@ -2691,7 +2989,7 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
                     && *target_instance_id == caster_id.into()
                     && *reason == HpChangeReason::Command
                     && hp_after > hp_before
-            ) && parent_seq(&entry.cause) == Some(heal_step.seq)
+            ) && entry_caused_by_seq(&timeline, entry, heal_step.seq)
         })
         .count();
     assert_eq!(
@@ -2713,7 +3011,7 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
                 } if *source_instance_id == caster_id.into()
                     && *target_instance_id == enemy_id.into()
                     && *reason == HpChangeReason::Command
-            ) && parent_seq(&entry.cause) == Some(barrage_step.seq)
+            ) && entry_caused_by_seq(&timeline, entry, barrage_step.seq)
         })
         .count();
     assert_eq!(
@@ -2745,7 +3043,7 @@ fn ron_added_abnormalities_emit_expected_skill_event_categories_in_battle_smoke(
         None,
         1,
         5_000,
-        9_999,
+        0,
         1_000_000,
         1,
         DeliveryDef::Instant,
@@ -2925,7 +3223,9 @@ fn ron_added_abnormalities_emit_expected_skill_event_categories_in_battle_smoke(
 
         let step_seqs: Vec<u64> = steps.iter().map(|entry| entry.seq).collect();
         let caused_by_steps = |entry: &game_core::game::battle::timeline::TimelineEntry| {
-            parent_seq(&entry.cause).is_some_and(|seq| step_seqs.contains(&seq))
+            step_seqs
+                .iter()
+                .any(|step_seq| entry_caused_by_seq(&timeline, entry, *step_seq))
         };
 
         if let Some(buff_name) = case.expected_buff {

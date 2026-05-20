@@ -1,0 +1,46 @@
+(
+    candidates: [
+        (
+            id: "field_medic",
+            name: "이서연",
+            grade: Junior,
+            role: "현장 의무 보조",
+            background: "붕괴 현장에서 끝까지 동료를 끌고 나온 기록이 있다.",
+        ),
+        (
+            id: "breach_guard",
+            name: "강민재",
+            grade: Junior,
+            role: "격리문 경비",
+            background: "브리칭 경보가 울릴 때 가장 먼저 문 앞으로 선 직원.",
+        ),
+        (
+            id: "records_clerk",
+            name: "한유진",
+            grade: Junior,
+            role: "기록 보조",
+            background: "죽은 관리자의 명령 로그를 끝까지 복원하려 했다.",
+        ),
+        (
+            id: "scout_runner",
+            name: "오지훈",
+            grade: Junior,
+            role: "정찰 러너",
+            background: "길을 잃은 팀을 두 번이나 출구까지 이끈 적이 있다.",
+        ),
+        (
+            id: "containment_trainee",
+            name: "박하린",
+            grade: Junior,
+            role: "격리 절차 훈련생",
+            background: "훈련 성적은 낮지만, 위험 명령을 끝까지 듣는 편이다.",
+        ),
+        (
+            id: "maintenance_tech",
+            name: "최도윤",
+            grade: Junior,
+            role: "정비 기술자",
+            background: "망가진 관측 장비를 임시 배터리 하나로 살려냈다.",
+        ),
+    ],
+)

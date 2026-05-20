@@ -2,6 +2,8 @@ use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+use crate::game::battle::damage::DamageType;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct BuffId(u64);
 
@@ -26,7 +28,10 @@ impl BuffId {
 // Stun, Freeze 같은 하드 CC 는 한 가지 상태만 존재할 수 있음. (기존 CC 를 덮어씌움)
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BuffKind {
-    PeriodicDamage { damage_per_tick: u32 },
+    PeriodicDamage {
+        damage_per_tick: u32,
+        damage_type: DamageType,
+    },
     Stun,
     Freeze,
     Silence,
@@ -52,7 +57,10 @@ static REGISTRY: Lazy<HashMap<BuffId, BuffDef>> = Lazy::new(|| {
     let poison = BuffDef {
         id: BuffId::from_name("poison"),
         name: "poison",
-        kind: BuffKind::PeriodicDamage { damage_per_tick: 2 },
+        kind: BuffKind::PeriodicDamage {
+            damage_per_tick: 2,
+            damage_type: DamageType::Magic,
+        },
         tick_interval_ms: 1000,
         max_stacks: 10,
         reapply_policy: BuffReapplyPolicy::StackRefreshDurationKeepCadence,

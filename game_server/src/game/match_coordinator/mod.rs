@@ -10,6 +10,10 @@ use crate::GameMode;
 pub mod handlers;
 pub mod messages;
 
+/// Deprecated legacy multiplayer coordinator.
+///
+/// Keep this actor buildable for future reuse, but do not route the active
+/// single-player Unity `/game` flow through it.
 pub struct MatchCoordinator {
     matchmakers: HashMap<GameMode, MatchmakerAddr>,
     load_balance_addr: Addr<LoadBalanceActor>,

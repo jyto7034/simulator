@@ -10,8 +10,9 @@ use rapier2d::prelude::{
 use crate::game::battle::ids::UnitInstanceId;
 
 use super::engine::{
-    DirectContinuousMovement, MovementEngine, MovementOutput, MovementStaticObstacle,
-    MovementStopReasonContinuous, MovementTickInput, MovementTickResult, MovementUnitInput,
+    canonicalize_movement_units, DirectContinuousMovement, MovementEngine, MovementOutput,
+    MovementStaticObstacle, MovementStopReasonContinuous, MovementTickInput, MovementTickResult,
+    MovementUnitInput,
 };
 use super::steering::{self, SteeringParams};
 use super::types::WorldVec2;
@@ -509,18 +510,24 @@ impl Default for RapierMovementWorld {
 
 impl MovementEngine for RapierMovementWorld {
     fn tick(&mut self, input: MovementTickInput) -> MovementTickResult {
-        self.sync_units(&input.units);
+        let mut units = input.units;
+        canonicalize_movement_units(&mut units);
+
+        self.sync_units(&units);
         self.sync_board_bounds(input.board_width_units, input.board_height_units);
         self.sync_static_obstacles(&input.static_obstacles);
 
         let mut outputs = Vec::new();
         let dt_seconds = input.dt_ms as f32 / 1_000.0;
-        let units = input.units;
         let original_positions: HashMap<UnitInstanceId, WorldVec2> = units
             .iter()
             .map(|unit| (unit.unit_id, unit.body.position))
             .collect();
 
+        // Movement is intentionally resolved in canonical unit id order, not as
+        // a simultaneous physics step. If this becomes visible in gameplay, the
+        // fix should be a deliberate two-phase movement model, not ad-hoc
+        // shuffling that breaks replay determinism.
         for unit in &units {
             let original_position = original_positions
                 .get(&unit.unit_id)

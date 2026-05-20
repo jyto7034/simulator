@@ -6,7 +6,7 @@ use crate::game::battle::cooldown::{SourcedAbilityActivation, SourcedEffect};
 use crate::game::battle::core::BattleCore;
 use crate::game::battle::damage::{
     apply_damage_to_unit, calculate_damage, BattleCommand, DamageContext, DamageRequest,
-    DamageResult, DamageSource,
+    DamageResult, DamageSource, DamageType,
 };
 use crate::game::battle::enums::BattleEvent;
 use crate::game::battle::enums::ProjectilePayload;
@@ -48,7 +48,8 @@ struct AttackSourceSnapshot {
 struct AttackTargetSnapshot {
     instance_id: UnitInstanceId,
     owner: Side,
-    defense: u32,
+    defense: i32,
+    magic_resist: i32,
     current_hp: u32,
     max_hp: u32,
 }
@@ -170,7 +171,7 @@ impl BattleCore {
                         }
                     }));
                 }
-                Effect::BonusDamage { .. } => {}
+                Effect::BonusDamage { .. } | Effect::ModifyDamage(_) => {}
             }
         }
 
@@ -484,7 +485,8 @@ impl BattleCore {
             attacker_side: snapshot.attacker.owner,
             target_side: snapshot.target.owner,
             attacker_attack: snapshot.attacker.attack,
-            target_defense: snapshot.target.defense,
+            target_armor: snapshot.target.defense,
+            target_magic_resist: snapshot.target.magic_resist,
             target_current_hp: snapshot.target.current_hp,
             target_max_hp: snapshot.target.max_hp,
             on_attack_effects: &on_attack_effects,
@@ -493,9 +495,18 @@ impl BattleCore {
 
         let request = DamageRequest {
             source: DamageSource::BasicAttack,
+            damage_type: DamageType::Physical,
+            modifiers: Default::default(),
+            crit_roll_percent: Some(self.damage_roll_percent(
+                snapshot.attacker.instance_id,
+                snapshot.target.instance_id,
+                snapshot.time_ms,
+                DamageSource::BasicAttack,
+            )),
             attacker_id: snapshot.attacker.instance_id,
             target_id: snapshot.target.instance_id,
             base_damage: snapshot.attacker.attack,
+            minimum_damage: 1,
             time_ms: snapshot.time_ms,
         };
 
@@ -506,14 +517,45 @@ impl BattleCore {
         result
     }
 
-    fn apply_damage_and_record(
+    fn damage_roll_percent(
+        &self,
+        source_id: UnitInstanceId,
+        target_id: UnitInstanceId,
+        time_ms: u64,
+        source: DamageSource,
+    ) -> u8 {
+        const DAMAGE_ROLL_NS: u64 = 0x444D_4752_4F4C_4C53u64; // "DMGROLLS"
+
+        fn unit_tag(unit_id: UnitInstanceId) -> u64 {
+            let mut bytes = [0u8; 8];
+            bytes.copy_from_slice(&unit_id.as_bytes()[..8]);
+            u64::from_be_bytes(bytes)
+        }
+
+        let source_tag = match source {
+            DamageSource::BasicAttack => 1_u64,
+            DamageSource::Ability => 2,
+            DamageSource::BuffTick => 3,
+            DamageSource::Environment => 4,
+        };
+        let seed = self.seed
+            ^ unit_tag(source_id).rotate_left(11)
+            ^ unit_tag(target_id).rotate_left(29)
+            ^ source_tag.rotate_left(43)
+            ^ time_ms.wrapping_mul(0x9E37_79B9_7F4A_7C15)
+            ^ self.timeline_seq.wrapping_mul(0xD1B5_4A32_D192_ED03);
+
+        determinism::uuid_v4_from_seed(seed, DAMAGE_ROLL_NS, self.timeline_seq).as_bytes()[0] % 100
+    }
+
+    fn apply_damage_result_and_record(
         &mut self,
         source_instance_id: Option<UnitInstanceId>,
-        target_instance_id: UnitInstanceId,
-        damage: u32,
+        result: &DamageResult,
         time_ms: u64,
         reason: HpChangeReason,
     ) {
+        let target_instance_id = result.target_id;
         let (target_owner, hp_before) = {
             let Some(target) = self.units.get(&target_instance_id) else {
                 return;
@@ -528,7 +570,7 @@ impl BattleCore {
             return;
         };
 
-        apply_damage_to_unit(&mut target.stats, damage);
+        apply_damage_to_unit(&mut target.stats, result.final_damage);
         let hp_after = target.stats.current_health;
         let delta = hp_after as i32 - hp_before as i32;
 
@@ -541,6 +583,12 @@ impl BattleCore {
                 hp_before,
                 hp_after,
                 reason,
+                damage_source: Some(result.damage_source),
+                damage_type: Some(result.damage_type),
+                raw_damage: Some(result.raw_damage),
+                final_damage: Some(result.final_damage),
+                damage_breakdown: Some(result.breakdown.clone()),
+                critical: Some(result.critical),
             },
         );
 
@@ -610,6 +658,12 @@ impl BattleCore {
                 hp_before,
                 hp_after,
                 reason,
+                damage_source: None,
+                damage_type: None,
+                raw_damage: None,
+                final_damage: None,
+                damage_breakdown: None,
+                critical: None,
             },
         );
 
@@ -662,7 +716,7 @@ impl BattleCore {
             }
         }
 
-        let (target_owner, target_defense, target_current_hp, target_max_hp) = {
+        let (target_owner, target_defense, target_magic_resist, target_current_hp, target_max_hp) = {
             let Some(target) = self.units.get(&target_instance_id) else {
                 return;
             };
@@ -672,6 +726,7 @@ impl BattleCore {
             (
                 target.owner,
                 target.stats.defense,
+                target.stats.magic_resist,
                 target.stats.current_health,
                 target.stats.max_health,
             )
@@ -693,11 +748,37 @@ impl BattleCore {
 
         if !attacker_live {
             // 피격 시점에 공격자가 죽었다면, 기본 공격 데미지만 입힘.
-            let base_damage = attacker_attack.saturating_sub(target_defense).max(1);
-            self.apply_damage_and_record(
+            let ctx = DamageContext {
+                attacker_side: target_owner,
+                target_side: target_owner,
+                attacker_attack,
+                target_armor: target_defense,
+                target_magic_resist,
+                target_current_hp,
+                target_max_hp,
+                on_attack_effects: &[],
+                on_hit_effects: &[],
+            };
+            let request = DamageRequest {
+                source: DamageSource::BasicAttack,
+                damage_type: DamageType::Physical,
+                modifiers: Default::default(),
+                crit_roll_percent: Some(self.damage_roll_percent(
+                    attacker_instance_id,
+                    target_instance_id,
+                    time_ms,
+                    DamageSource::BasicAttack,
+                )),
+                attacker_id: attacker_instance_id,
+                target_id: target_instance_id,
+                base_damage: attacker_attack,
+                minimum_damage: 1,
+                time_ms,
+            };
+            let result = calculate_damage(&request, &ctx);
+            self.apply_damage_result_and_record(
                 Some(attacker_instance_id),
-                target_instance_id,
-                base_damage,
+                &result,
                 time_ms,
                 HpChangeReason::BasicAttack,
             );
@@ -746,7 +827,8 @@ impl BattleCore {
             attacker_side: attacker_owner,
             target_side: target_owner,
             attacker_attack,
-            target_defense,
+            target_armor: target_defense,
+            target_magic_resist,
             target_current_hp,
             target_max_hp,
             on_attack_effects: &on_attack_effects,
@@ -755,9 +837,18 @@ impl BattleCore {
 
         let request = DamageRequest {
             source: DamageSource::BasicAttack,
+            damage_type: DamageType::Physical,
+            modifiers: Default::default(),
+            crit_roll_percent: Some(self.damage_roll_percent(
+                attacker_instance_id,
+                target_instance_id,
+                time_ms,
+                DamageSource::BasicAttack,
+            )),
             attacker_id: attacker_instance_id,
             target_id: target_instance_id,
             base_damage: attacker_attack,
+            minimum_damage: 1,
             time_ms,
         };
 
@@ -769,10 +860,9 @@ impl BattleCore {
             self.add_resonance(attacker_instance_id, gained, time_ms, true);
         }
 
-        self.apply_damage_and_record(
+        self.apply_damage_result_and_record(
             Some(attacker_instance_id),
-            target_instance_id,
-            result.final_damage,
+            &result,
             time_ms,
             HpChangeReason::BasicAttack,
         );
@@ -805,7 +895,7 @@ impl BattleCore {
             (attacker.owner, attacker.base_uuid, attacker.stats.attack)
         };
 
-        let (target_owner, target_defense, target_current_hp, target_max_hp) = {
+        let (target_owner, target_defense, target_magic_resist, target_current_hp, target_max_hp) = {
             let Some(target) = self.units.get(&target_id) else {
                 return false;
             };
@@ -815,6 +905,7 @@ impl BattleCore {
             (
                 target.owner,
                 target.stats.defense,
+                target.stats.magic_resist,
                 target.stats.current_health,
                 target.stats.max_health,
             )
@@ -851,6 +942,7 @@ impl BattleCore {
                             instance_id: target_id,
                             owner: target_owner,
                             defense: target_defense,
+                            magic_resist: target_magic_resist,
                             current_hp: target_current_hp,
                             max_hp: target_max_hp,
                         },
@@ -864,10 +956,9 @@ impl BattleCore {
                     self.add_resonance(attacker_instance_id, gained, current_time_ms, true);
                 }
 
-                self.apply_damage_and_record(
+                self.apply_damage_result_and_record(
                     Some(attacker_instance_id),
-                    target_id,
-                    result.final_damage,
+                    &result,
                     current_time_ms,
                     HpChangeReason::BasicAttack,
                 );
@@ -941,6 +1032,7 @@ impl BattleCore {
                             instance_id: target_id,
                             owner: target_owner,
                             defense: target_defense,
+                            magic_resist: target_magic_resist,
                             current_hp: target_current_hp,
                             max_hp: target_max_hp,
                         },
@@ -953,10 +1045,9 @@ impl BattleCore {
                     self.add_resonance(attacker_instance_id, gained, current_time_ms, true);
                 }
 
-                self.apply_damage_and_record(
+                self.apply_damage_result_and_record(
                     Some(attacker_instance_id),
-                    target_id,
-                    result.final_damage,
+                    &result,
                     current_time_ms,
                     HpChangeReason::BasicAttack,
                 );
@@ -1071,6 +1162,83 @@ impl BattleCore {
                         },
                     );
                 }
+                BattleCommand::ApplyDamage {
+                    source_id,
+                    target_id,
+                    amount,
+                    damage_type,
+                    modifiers,
+                    source,
+                    minimum_damage,
+                } => {
+                    let Some(target) = self.units.get(&target_id) else {
+                        continue;
+                    };
+                    if target.is_dead() {
+                        continue;
+                    }
+
+                    let source_owner = self
+                        .units
+                        .get(&source_id)
+                        .map(|unit| unit.owner)
+                        .or_else(|| self.graveyard.get(&source_id).map(|unit| unit.owner))
+                        .unwrap_or(target.owner);
+                    let source_attack = self
+                        .units
+                        .get(&source_id)
+                        .map(|unit| unit.stats.attack)
+                        .or_else(|| self.graveyard.get(&source_id).map(|unit| unit.stats.attack))
+                        .unwrap_or(0);
+
+                    let ctx = DamageContext {
+                        attacker_side: source_owner,
+                        target_side: target.owner,
+                        attacker_attack: source_attack,
+                        target_armor: target.stats.defense,
+                        target_magic_resist: target.stats.magic_resist,
+                        target_current_hp: target.stats.current_health,
+                        target_max_hp: target.stats.max_health,
+                        on_attack_effects: &[],
+                        on_hit_effects: &[],
+                    };
+                    let request = DamageRequest {
+                        source,
+                        damage_type,
+                        modifiers,
+                        crit_roll_percent: Some(self.damage_roll_percent(
+                            source_id,
+                            target_id,
+                            current_time_ms,
+                            source,
+                        )),
+                        attacker_id: source_id,
+                        target_id,
+                        base_damage: amount,
+                        minimum_damage,
+                        time_ms: current_time_ms,
+                    };
+                    let result = calculate_damage(&request, &ctx);
+                    self.apply_damage_result_and_record(
+                        Some(source_id),
+                        &result,
+                        current_time_ms,
+                        HpChangeReason::Command,
+                    );
+                    let hp_after = self
+                        .units
+                        .get(&target_id)
+                        .map(|unit| unit.stats.current_health)
+                        .unwrap_or(ctx.target_current_hp);
+                    if hp_after < ctx.target_current_hp {
+                        summary.actual_damage_target_count =
+                            summary.actual_damage_target_count.saturating_add(1);
+                    }
+
+                    if !result.triggered_commands.is_empty() {
+                        self.process_commands(result.triggered_commands, current_time_ms);
+                    }
+                }
                 BattleCommand::ApplyHeal {
                     target_id,
                     flat,
@@ -1167,6 +1335,7 @@ mod tests {
     use crate::game::battle::core::movement::{ActionState, MovementState};
     use crate::game::battle::core::types::{ProjectileGuidance, RuntimeUnit};
     use crate::game::battle::core::ProjectileRecord;
+    use crate::game::battle::damage::{DamageSource, DamageType};
     use crate::game::battle::enums::ProjectilePayload;
     use crate::game::battle::timeline::{
         HpChangeReason, MovementStopReason, Timeline, TimelineEvent,
@@ -1306,6 +1475,7 @@ mod tests {
             max_health: 100,
             attack: 10,
             defense: 0,
+            magic_resist: 0,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -1320,6 +1490,7 @@ mod tests {
             max_health: 100,
             attack: 1,
             defense: 0,
+            magic_resist: 0,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -1391,6 +1562,7 @@ mod tests {
             max_health: 100,
             attack: 10,
             defense: 0,
+            magic_resist: 0,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -1405,6 +1577,7 @@ mod tests {
             max_health: 100,
             attack: 1,
             defense: 0,
+            magic_resist: 0,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -1479,7 +1652,10 @@ mod tests {
                 when: Default::default(),
                 repeat: Default::default(),
                 delivery: DeliveryDef::Instant,
-                effects: vec![crate::game::ability::SkillEffectDef::Damage { amount }],
+                effects: vec![crate::game::ability::SkillEffectDef::Damage {
+                    amount,
+                    damage_type: crate::game::battle::damage::DamageType::Magic,
+                }],
                 presentation: Default::default(),
             }],
         }
@@ -1670,6 +1846,46 @@ mod tests {
             })
             .count();
         assert_eq!(hits, 1);
+
+        let hp_changed = core
+            .timeline
+            .entries
+            .iter()
+            .find_map(|entry| match &entry.event {
+                crate::game::battle::timeline::TimelineEvent::HpChanged {
+                    source_instance_id,
+                    target_instance_id,
+                    reason,
+                    damage_source,
+                    damage_type,
+                    raw_damage,
+                    final_damage,
+                    damage_breakdown,
+                    critical,
+                    ..
+                } if *source_instance_id == Some(attacker_id)
+                    && *target_instance_id == target_id
+                    && *reason == HpChangeReason::BasicAttack =>
+                {
+                    Some((
+                        *damage_source,
+                        *damage_type,
+                        *raw_damage,
+                        *final_damage,
+                        damage_breakdown.clone(),
+                        *critical,
+                    ))
+                }
+                _ => None,
+            })
+            .expect("missing basic attack HpChanged metadata");
+        assert_eq!(hp_changed.0, Some(DamageSource::BasicAttack));
+        assert_eq!(hp_changed.1, Some(DamageType::Physical));
+        assert!(hp_changed.2.is_some());
+        assert!(hp_changed.3.is_some());
+        assert_eq!(hp_changed.5, Some(false));
+        let breakdown = hp_changed.4.expect("missing damage breakdown");
+        assert_eq!(breakdown[0].damage_type, DamageType::Physical);
 
         write_timeline_export(
             "apply_projectile_hit_is_idempotent_for_same_projectile_id",

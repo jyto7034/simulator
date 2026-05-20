@@ -1,11 +1,10 @@
-use bevy_ecs::world::World;
 use uuid::Uuid;
 
 use crate::{
-    ecs::resources::Position,
+    game::resources::Position,
     game::{
         ability::{
-            DeliveryDef, SkillDef, SkillEffectDef, SkillStepCondition, SkillStepDef,
+            DeliveryDef, SkillDef, SkillEffectDef, SkillId, SkillStepCondition, SkillStepDef,
             SkillStepRepeat, SkillTarget, SkillUnitReference, StepTargetingMode,
         },
         battle::{
@@ -13,11 +12,12 @@ use crate::{
             damage::{BattleCommand, DamageSource},
             enums::BattleEvent,
             ids::UnitInstanceId,
+            scenario::{ScenarioAction, ScenarioTrigger, WinCondition},
             timeline::{
                 AttackKind, SkillCastTarget, Timeline, TimelineCause, TimelineEvent,
                 TimelineRootCause,
             },
-            types::{BattleResult, BattleWinner},
+            types::{BattleResult, BattleWinner, ParticipantBattleResult},
         },
         behavior::GameError,
         determinism,
@@ -25,6 +25,13 @@ use crate::{
         stats::UnitStats,
     },
 };
+
+fn side_sort_key(side: Side) -> u8 {
+    match side {
+        Side::Player => 0,
+        Side::Opponent => 1,
+    }
+}
 
 use super::{
     movement::{types::DEFAULT_MOVEMENT_TICK_MS, ActionState},
@@ -109,7 +116,7 @@ impl BattleCore {
 
         let key = AbilityProcKey {
             source: context.source,
-            ability_id: context.ability_id.to_string(),
+            ability_id: SkillId::from(context.ability_id),
             binding_index: context.binding_index,
         };
         let current_count = self
@@ -185,6 +192,15 @@ impl BattleCore {
             }
             None => None,
         };
+        let cast_target_anchor_world_position = match cast_target {
+            Some(SkillCastTarget::Tile { position }) => Some(
+                crate::game::battle::core::movement::types::WorldVec2::from_tile_center(position),
+            ),
+            Some(SkillCastTarget::Unit { unit_instance_id }) => {
+                self.unit_world_position_or_tile_center(unit_instance_id)
+            }
+            None => None,
+        };
 
         let ability_seq = self.with_recording_context(cause, |core| {
             core.record_timeline(
@@ -204,6 +220,7 @@ impl BattleCore {
                 caster_owner,
                 anchor_position: caster_pos,
                 cast_target_anchor_position,
+                cast_target_anchor_world_position,
                 allow_dead_caster,
                 total_steps: skill.steps.len(),
                 step_progress: Default::default(),
@@ -270,28 +287,7 @@ impl BattleCore {
                 .map(|id| SkillCastTarget::Unit {
                     unit_instance_id: id,
                 }),
-            SkillTarget::Allies { area } => Some(SkillCastTarget::Tile {
-                position: self
-                    .resolve_skill_anchor_position(
-                        caster_instance_id,
-                        caster_owner,
-                        caster_pos,
-                        area,
-                        range_units,
-                        true,
-                    )
-                    .unwrap_or(caster_pos),
-            }),
-            SkillTarget::Enemies { area } => self
-                .resolve_skill_anchor_position(
-                    caster_instance_id,
-                    caster_owner,
-                    caster_pos,
-                    area,
-                    range_units,
-                    false,
-                )
-                .map(|position| SkillCastTarget::Tile { position }),
+            SkillTarget::CastTarget => None,
         }
     }
 
@@ -322,7 +318,7 @@ impl BattleCore {
                     }
                     _ => None,
                 },
-                SkillTarget::Allies { .. } | SkillTarget::Enemies { .. } => match cast_target {
+                SkillTarget::CastTarget => match cast_target {
                     Some(SkillCastTarget::Unit { unit_instance_id }) => {
                         Some(SkillCastTarget::Unit { unit_instance_id })
                     }
@@ -461,12 +457,16 @@ impl BattleCore {
         }
     }
 
-    fn compute_winner(&self) -> Option<BattleWinner> {
+    fn compute_winner(&mut self, current_time_ms: u64) -> Option<BattleWinner> {
+        if let Some(winner) = self.scenario_runtime.forced_winner {
+            return Some(winner);
+        }
+
         let mut player_alive = false;
         let mut opponent_alive = false;
 
         for unit in self.units.values() {
-            if unit.is_dead() {
+            if unit.is_dead() || !unit.is_combatant() {
                 continue;
             }
 
@@ -474,45 +474,400 @@ impl BattleCore {
                 Side::Player => player_alive = true,
                 Side::Opponent => opponent_alive = true,
             }
+        }
 
-            if player_alive && opponent_alive {
+        #[allow(deprecated)]
+        match self.scenario.win_condition.clone() {
+            WinCondition::AllRequiredEnemyGroupsDefeated => {
+                if !player_alive {
+                    return Some(if opponent_alive {
+                        BattleWinner::Opponent
+                    } else {
+                        BattleWinner::Draw
+                    });
+                }
+
+                let required_enemy_group_count = self.required_enemy_group_count();
+                if required_enemy_group_count == 0 {
+                    return Some(if opponent_alive {
+                        BattleWinner::Opponent
+                    } else {
+                        BattleWinner::Player
+                    });
+                }
+
+                if self.all_required_enemy_groups_defeated() {
+                    return Some(BattleWinner::Player);
+                }
+
+                return None;
+            }
+            WinCondition::DefeatUnit { unit_ref } => {
+                let defeated = self
+                    .scenario_runtime
+                    .unit_refs
+                    .get(&unit_ref)
+                    .and_then(|unit_id| self.units.get(unit_id))
+                    .is_some_and(|unit| unit.is_dead());
+                if defeated {
+                    return Some(BattleWinner::Player);
+                }
+                if !player_alive {
+                    return Some(if opponent_alive {
+                        BattleWinner::Opponent
+                    } else {
+                        BattleWinner::Draw
+                    });
+                }
+                return None;
+            }
+            WinCondition::ProtectUnit { unit_ref } => {
+                let protected_destroyed = self
+                    .scenario_runtime
+                    .unit_refs
+                    .get(&unit_ref)
+                    .and_then(|unit_id| self.units.get(unit_id))
+                    .is_some_and(|unit| unit.is_dead());
+                if protected_destroyed {
+                    return Some(BattleWinner::Opponent);
+                }
+                if !player_alive {
+                    return Some(if opponent_alive {
+                        BattleWinner::Opponent
+                    } else {
+                        BattleWinner::Draw
+                    });
+                }
+                if self.required_enemy_group_count() > 0
+                    && self.all_required_enemy_groups_defeated()
+                {
+                    return Some(BattleWinner::Player);
+                }
+                return None;
+            }
+            WinCondition::ProtectUnitForDuration {
+                unit_ref,
+                time_ms,
+                cleanup_required,
+            } => {
+                let protected_destroyed = self
+                    .scenario_runtime
+                    .unit_refs
+                    .get(&unit_ref)
+                    .and_then(|unit_id| self.units.get(unit_id))
+                    .is_some_and(|unit| unit.is_dead());
+                if protected_destroyed {
+                    return Some(BattleWinner::Opponent);
+                }
+                if !player_alive {
+                    return Some(if opponent_alive {
+                        BattleWinner::Opponent
+                    } else {
+                        BattleWinner::Draw
+                    });
+                }
+                if current_time_ms >= time_ms
+                    && (!cleanup_required
+                        || self.required_enemy_group_count() == 0
+                        || self.all_required_enemy_groups_defeated())
+                {
+                    return Some(BattleWinner::Player);
+                }
+                return None;
+            }
+            WinCondition::SurviveUntil { time_ms } => {
+                if current_time_ms >= time_ms {
+                    return Some(BattleWinner::Player);
+                }
+                if !player_alive {
+                    return Some(if opponent_alive {
+                        BattleWinner::Opponent
+                    } else {
+                        BattleWinner::Draw
+                    });
+                }
+                return None;
+            }
+            WinCondition::RecoverHoldAndExtract {
+                target_point_id,
+                extraction_point_id,
+                target_radius,
+                extraction_radius,
+                hold_duration_ms,
+            } => {
+                if !player_alive {
+                    return Some(if opponent_alive {
+                        BattleWinner::Opponent
+                    } else {
+                        BattleWinner::Draw
+                    });
+                }
+                if self.required_enemy_group_count() > 0
+                    && !self.all_required_enemy_groups_defeated()
+                {
+                    return None;
+                }
+                self.register_recovery_target_secured(
+                    current_time_ms,
+                    &target_point_id,
+                    target_radius,
+                );
+                if !self.update_recovery_hold(
+                    current_time_ms,
+                    &target_point_id,
+                    target_radius,
+                    hold_duration_ms,
+                ) {
+                    return None;
+                }
+                if self.register_extraction_completed(
+                    current_time_ms,
+                    &extraction_point_id,
+                    extraction_radius,
+                ) {
+                    return Some(BattleWinner::Player);
+                }
                 return None;
             }
         }
+    }
 
-        Some(match (player_alive, opponent_alive) {
-            (true, false) => BattleWinner::Player,
-            (false, true) => BattleWinner::Opponent,
-            (false, false) => BattleWinner::Draw,
-            (true, true) => unreachable!(),
-        })
+    fn required_enemy_group_count(&self) -> usize {
+        self.scenario
+            .groups
+            .iter()
+            .filter(|group| group.side == Side::Opponent && group.required_for_victory)
+            .count()
+    }
+
+    fn all_required_enemy_groups_defeated(&self) -> bool {
+        self.scenario
+            .groups
+            .iter()
+            .filter(|group| group.side == Side::Opponent && group.required_for_victory)
+            .all(|group| {
+                self.scenario_runtime.spawned_groups.contains(&group.id)
+                    && group.spawns.iter().all(|spawn| {
+                        self.scenario_runtime
+                            .unit_refs
+                            .get(&spawn.unit_ref)
+                            .and_then(|unit_id| self.units.get(unit_id))
+                            .is_none_or(|unit| unit.is_dead())
+                    })
+            })
+    }
+
+    fn register_recovery_target_secured(
+        &mut self,
+        current_time_ms: u64,
+        point_id: &crate::game::battle::scenario::TacticalPointId,
+        radius: f32,
+    ) {
+        if self.scenario_runtime.recovery_target_secured {
+            return;
+        }
+        let Some(unit_instance_id) = self.first_live_player_in_point_radius(point_id, radius)
+        else {
+            return;
+        };
+
+        self.scenario_runtime.recovery_target_secured = true;
+        self.record_timeline(
+            current_time_ms,
+            TimelineEvent::RecoveryTargetSecured {
+                target_point_id: point_id.0.clone(),
+                unit_instance_id,
+            },
+        );
+    }
+
+    fn register_extraction_completed(
+        &mut self,
+        current_time_ms: u64,
+        point_id: &crate::game::battle::scenario::TacticalPointId,
+        radius: f32,
+    ) -> bool {
+        if !self.scenario_runtime.recovery_target_secured {
+            return false;
+        }
+        let Some(unit_instance_id) = self.first_live_player_in_point_radius(point_id, radius)
+        else {
+            return false;
+        };
+
+        self.record_timeline(
+            current_time_ms,
+            TimelineEvent::ExtractionCompleted {
+                extraction_point_id: point_id.0.clone(),
+                unit_instance_id,
+            },
+        );
+        true
+    }
+
+    fn update_recovery_hold(
+        &mut self,
+        current_time_ms: u64,
+        point_id: &crate::game::battle::scenario::TacticalPointId,
+        radius: f32,
+        hold_duration_ms: u64,
+    ) -> bool {
+        if self.scenario_runtime.recovery_hold_completed {
+            return true;
+        }
+        if !self.scenario_runtime.recovery_target_secured {
+            return false;
+        }
+        if self
+            .first_live_player_in_point_radius(point_id, radius)
+            .is_none()
+        {
+            self.scenario_runtime.recovery_hold_started_at_ms = None;
+            return false;
+        }
+        let started_at = *self
+            .scenario_runtime
+            .recovery_hold_started_at_ms
+            .get_or_insert(current_time_ms);
+        if current_time_ms.saturating_sub(started_at) >= hold_duration_ms {
+            self.scenario_runtime.recovery_hold_completed = true;
+            return true;
+        }
+        false
+    }
+
+    fn first_live_player_in_point_radius(
+        &self,
+        point_id: &crate::game::battle::scenario::TacticalPointId,
+        radius: f32,
+    ) -> Option<crate::game::battle::ids::UnitInstanceId> {
+        let point = self.scenario.tactical_plan.point(point_id)?;
+        let target =
+            crate::game::battle::core::movement::types::WorldVec2::from_tile_center(point.position);
+        let radius = radius.max(0.0);
+        self.units
+            .values()
+            .filter(|unit| {
+                !unit.is_dead()
+                    && unit.owner == Side::Player
+                    && unit.body.position.distance(target) <= radius
+            })
+            .map(|unit| unit.instance_id)
+            .min()
     }
 
     fn finish_battle(&mut self, time_ms: u64, winner: BattleWinner) -> BattleResult {
         self.record_timeline(time_ms, TimelineEvent::BattleEnd { winner });
+        let participant_results = self.participant_results();
         BattleResult {
             winner,
             timeline: self.timeline.clone(),
+            participant_results,
         }
+    }
+
+    fn participant_results(&self) -> Vec<ParticipantBattleResult> {
+        let mut results = self
+            .units
+            .values()
+            .map(|unit| ParticipantBattleResult {
+                unit_instance_id: unit.instance_id,
+                owned_uuid: unit.source_owned_uuid,
+                side: unit.owner,
+                survived: !unit.is_dead(),
+                final_hp: unit.stats.current_health,
+                max_hp: unit.stats.max_health,
+                became_incapacitated: unit.stats.current_health == 0,
+            })
+            .collect::<Vec<_>>();
+        results.sort_by(|left, right| {
+            side_sort_key(left.side)
+                .cmp(&side_sort_key(right.side))
+                .then_with(|| left.unit_instance_id.cmp(&right.unit_instance_id))
+        });
+        results
     }
 
     pub fn init_intial_events(&mut self) {
         let mut unit_ids: Vec<UnitInstanceId> = self.units.keys().copied().collect();
         unit_ids.sort_by(|a, b| a.as_bytes().cmp(b.as_bytes()));
         for unit_id in unit_ids {
-            let Some(unit) = self.units.get_mut(&unit_id) else {
-                continue;
+            self.schedule_initial_attack_for_unit(unit_id, 0);
+        }
+    }
+
+    fn schedule_initial_attack_for_unit(&mut self, unit_id: UnitInstanceId, time_ms: u64) {
+        let Some(unit) = self.units.get_mut(&unit_id) else {
+            return;
+        };
+        if !unit.can_basic_attack() {
+            return;
+        }
+        unit.next_basic_attack_ms = time_ms;
+        unit.pending_basic_attack = false;
+        self.event_queue.push(BattleEvent::AttackStart {
+            time_ms,
+            attacker_instance_id: unit_id,
+            target_instance_id: None,
+            schedule_next: true,
+            cause: TimelineCause::Root {
+                kind: TimelineRootCause::Period,
+            },
+        });
+    }
+
+    fn enqueue_scenario_events(&mut self) {
+        for event in self.scenario.events.clone() {
+            let time_ms = match event.trigger {
+                ScenarioTrigger::AtBattleStart => 0,
+                ScenarioTrigger::AtTimeMs(time_ms) => time_ms,
             };
-            unit.next_basic_attack_ms = 0;
-            unit.pending_basic_attack = false;
-            self.event_queue.push(BattleEvent::AttackStart {
-                time_ms: 0,
-                attacker_instance_id: unit_id,
-                target_instance_id: None,
-                schedule_next: true,
-                cause: TimelineCause::Root {
-                    kind: TimelineRootCause::Period,
-                },
+            match event.action {
+                ScenarioAction::SpawnGroup { group_id } => {
+                    self.event_queue.push(BattleEvent::SpawnGroup {
+                        time_ms,
+                        group_id,
+                        cause: TimelineCause::Root {
+                            kind: TimelineRootCause::Init,
+                        },
+                    });
+                }
+                ScenarioAction::EndBattle { winner } => {
+                    self.event_queue.push(BattleEvent::EndBattle {
+                        time_ms,
+                        winner,
+                        cause: TimelineCause::Root {
+                            kind: TimelineRootCause::System,
+                        },
+                    });
+                }
+            }
+        }
+    }
+
+    fn has_queued_spawn_group_at(&self, time_ms: u64) -> bool {
+        self.event_queue.iter().any(
+            |event| matches!(event, BattleEvent::SpawnGroup { time_ms: queued, .. } if *queued == time_ms),
+        )
+    }
+
+    fn run_on_battle_start_hooks(&mut self) {
+        let mut on_battle_start_commands = Vec::new();
+        let mut unit_ids: Vec<_> = self.units.keys().copied().collect();
+        unit_ids.sort_by(|a, b| a.as_bytes().cmp(b.as_bytes()));
+        for unit_id in unit_ids {
+            on_battle_start_commands.extend(Self::activation_commands_from_bindings(
+                self.collect_all_trigger_activations(
+                    unit_id,
+                    crate::game::stats::TriggerType::OnBattleStart,
+                ),
+                unit_id,
+                None,
+            ));
+        }
+        if !on_battle_start_commands.is_empty() {
+            self.with_recording_root(TimelineRootCause::Init, |core| {
+                core.process_commands(on_battle_start_commands, 0);
             });
         }
     }
@@ -537,18 +892,28 @@ impl BattleCore {
             .push(BattleEvent::ContinuousMovementTick { time_ms });
     }
 
-    pub fn run_battle(&mut self, world: &mut World) -> Result<BattleResult, GameError> {
-        self.run_battle_with_setup(world, |_| {})
+    pub fn run_battle(&mut self) -> Result<BattleResult, GameError> {
+        self.run_battle_with_setup(|_| {})
     }
 
-    pub fn run_battle_with_setup<F>(
+    pub fn run_battle_with_setup<F>(&mut self, setup: F) -> Result<BattleResult, GameError>
+    where
+        F: FnOnce(&mut Self),
+    {
+        self.run_battle_with_hooks(setup, None::<fn(&mut Self)>)
+    }
+
+    pub fn run_battle_with_post_spawn_setup<F>(
         &mut self,
-        _world: &mut World,
-        setup: F,
+        post_spawn_setup: F,
     ) -> Result<BattleResult, GameError>
     where
         F: FnOnce(&mut Self),
     {
+        self.run_battle_with_hooks(|_| {}, Some(post_spawn_setup))
+    }
+
+    pub(in crate::game::battle::core) fn reset_runtime_state_for_battle(&mut self) {
         self.units.clear();
         self.artifacts.clear();
         self.items.clear();
@@ -559,6 +924,10 @@ impl BattleCore {
         self.projectiles.clear();
         self.active_projectiles.clear();
         self.active_areas.clear();
+        self.active_movement_segments.clear();
+        self.melee_slot_reservations.clear();
+        self.last_continuous_movement_tick_ms = None;
+        self.movement_backend.reset_for_battle();
         self.battlefield.clear();
         self.timeline = Timeline::new();
         self.timeline_seq = 0;
@@ -566,11 +935,28 @@ impl BattleCore {
         self.area_seq = 0;
         self.recording_cause_stack.clear();
         self.event_queue.clear();
+        self.scenario_runtime = Default::default();
+    }
 
-        self.build_runtime_units_from_decks(Side::Player)?;
-        self.build_runtime_units_from_decks(Side::Opponent)?;
-        self.build_runtime_field()?;
+    fn run_battle_with_hooks<PreSetup, PostSpawnSetup>(
+        &mut self,
+        setup: PreSetup,
+        mut post_spawn_setup: Option<PostSpawnSetup>,
+    ) -> Result<BattleResult, GameError>
+    where
+        PreSetup: FnOnce(&mut Self),
+        PostSpawnSetup: FnOnce(&mut Self),
+    {
+        self.scenario.validate()?;
+
+        self.reset_runtime_state_for_battle();
+
+        self.build_runtime_artifacts_from_scenario()?;
+        for obstacle in self.scenario.battlefield.obstacles.clone() {
+            self.battlefield.add_static_obstacle(obstacle)?;
+        }
         setup(self);
+        self.build_runtime_field()?;
 
         self.with_recording_root(TimelineRootCause::Init, |core| {
             core.record_timeline(
@@ -580,33 +966,6 @@ impl BattleCore {
                     height: core.battlefield.height(),
                 },
             );
-
-            let mut unit_records: Vec<(UnitInstanceId, Side, Uuid, _, UnitStats)> = core
-                .units
-                .values()
-                .map(|u| {
-                    (
-                        u.instance_id,
-                        u.owner,
-                        u.base_uuid,
-                        u.world_position().quantized_milli(),
-                        u.stats,
-                    )
-                })
-                .collect();
-            unit_records.sort_by(|a, b| a.0.as_bytes().cmp(b.0.as_bytes()));
-            for (unit_instance_id, owner, base_uuid, world_position, stats) in unit_records {
-                core.record_timeline(
-                    0,
-                    TimelineEvent::UnitSpawned {
-                        unit_instance_id,
-                        owner,
-                        base_uuid,
-                        world_position,
-                        stats,
-                    },
-                );
-            }
 
             let mut artifact_records: Vec<(Uuid, Side, Uuid)> = core
                 .artifacts
@@ -624,49 +983,12 @@ impl BattleCore {
                     },
                 );
             }
-
-            let mut item_records: Vec<(Uuid, Side, UnitInstanceId, Uuid)> = core
-                .items
-                .values()
-                .map(|i| (i.instance_id, i.owner, i.owner_unit_instance, i.base_uuid))
-                .collect();
-            item_records.sort_by(|a, b| a.0.as_bytes().cmp(b.0.as_bytes()));
-            for (item_instance_id, owner, owner_unit_instance_id, base_uuid) in item_records {
-                core.record_timeline(
-                    0,
-                    TimelineEvent::ItemSpawned {
-                        item_instance_id,
-                        owner,
-                        owner_unit_instance_id,
-                        base_uuid,
-                    },
-                );
-            }
         });
 
-        let mut on_battle_start_commands = Vec::new();
-        let mut unit_ids: Vec<_> = self.units.keys().copied().collect();
-        unit_ids.sort_by(|a, b| a.as_bytes().cmp(b.as_bytes()));
-        for unit_id in unit_ids {
-            on_battle_start_commands.extend(Self::activation_commands_from_bindings(
-                self.collect_all_trigger_activations(
-                    unit_id,
-                    crate::game::stats::TriggerType::OnBattleStart,
-                ),
-                unit_id,
-                None,
-            ));
-        }
-        if !on_battle_start_commands.is_empty() {
-            self.with_recording_root(TimelineRootCause::Init, |core| {
-                core.process_commands(on_battle_start_commands, 0);
-            });
-        }
-
-        self.init_intial_events();
-        self.schedule_continuous_movement_tick(0);
+        self.enqueue_scenario_events();
 
         let mut last_event_time_ms = 0;
+        let mut battle_start_hooks_ran = false;
 
         while let Some(next_time_ms) = self.event_queue.peek().map(|e| e.time_ms()) {
             let current_time_ms = next_time_ms;
@@ -702,22 +1024,36 @@ impl BattleCore {
                     self.process_event(event, current_time_ms)?;
                 }
 
-                if let Some(winner) = self.compute_winner() {
+                if current_time_ms == 0
+                    && !battle_start_hooks_ran
+                    && !self.has_queued_spawn_group_at(0)
+                {
+                    if let Some(setup) = post_spawn_setup.take() {
+                        setup(self);
+                    }
+                    battle_start_hooks_ran = true;
+                    self.run_on_battle_start_hooks();
+                    self.schedule_continuous_movement_tick(0);
+                }
+
+                if let Some(winner) = self.compute_winner(current_time_ms) {
                     return Ok(self.finish_battle(current_time_ms, winner));
                 }
             }
 
-            if let Some(winner) = self.compute_winner() {
+            if let Some(winner) = self.compute_winner(current_time_ms) {
                 return Ok(self.finish_battle(current_time_ms, winner));
             }
 
-            if let Some(winner) = self.compute_winner() {
+            if let Some(winner) = self.compute_winner(current_time_ms) {
                 return Ok(self.finish_battle(current_time_ms, winner));
             }
         }
 
         let end_time_ms = last_event_time_ms.min(MAX_BATTLE_TIME_MS);
-        let winner = self.compute_winner().unwrap_or(BattleWinner::Draw);
+        let winner = self
+            .compute_winner(end_time_ms)
+            .unwrap_or(BattleWinner::Draw);
         Ok(self.finish_battle(end_time_ms, winner))
     }
 
@@ -780,7 +1116,7 @@ impl BattleCore {
             let next_ready_ms = unit.next_basic_attack_ms;
             let can_attack = unit.action_locks.can_basic_attack(now_ms);
             let lock_until = unit.action_locks.basic_attack_until_ms;
-            if unit.is_dead() || !pending || now_ms < next_ready_ms {
+            if unit.is_dead() || !unit.can_basic_attack() || !pending || now_ms < next_ready_ms {
                 continue;
             }
 
@@ -1243,6 +1579,88 @@ impl BattleCore {
         current_time_ms: u64,
     ) -> Result<(), GameError> {
         match event {
+            BattleEvent::SpawnGroup {
+                time_ms,
+                group_id,
+                cause,
+            } => {
+                let spawned_unit_ids = self.spawn_scenario_group(&group_id)?;
+                if spawned_unit_ids.is_empty() {
+                    return Ok(());
+                }
+
+                self.with_recording_context(cause, |core| {
+                    let mut unit_records: Vec<(
+                        UnitInstanceId,
+                        Side,
+                        crate::game::battle::types::BattleUnitRole,
+                        Uuid,
+                        _,
+                        UnitStats,
+                    )> = spawned_unit_ids
+                        .iter()
+                        .filter_map(|unit_id| {
+                            core.units.get(unit_id).map(|unit| {
+                                (
+                                    unit.instance_id,
+                                    unit.owner,
+                                    unit.role,
+                                    unit.base_uuid,
+                                    unit.world_position().quantized_milli(),
+                                    unit.stats,
+                                )
+                            })
+                        })
+                        .collect();
+                    unit_records.sort_by(|a, b| a.0.as_bytes().cmp(b.0.as_bytes()));
+                    for (unit_instance_id, owner, role, base_uuid, world_position, stats) in
+                        unit_records
+                    {
+                        core.record_timeline(
+                            time_ms,
+                            TimelineEvent::UnitSpawned {
+                                unit_instance_id,
+                                owner,
+                                role,
+                                base_uuid,
+                                world_position,
+                                stats,
+                            },
+                        );
+                    }
+
+                    let mut item_records: Vec<(Uuid, Side, UnitInstanceId, Uuid)> = core
+                        .items
+                        .values()
+                        .filter(|item| spawned_unit_ids.contains(&item.owner_unit_instance))
+                        .map(|i| (i.instance_id, i.owner, i.owner_unit_instance, i.base_uuid))
+                        .collect();
+                    item_records.sort_by(|a, b| a.0.as_bytes().cmp(b.0.as_bytes()));
+                    for (item_instance_id, owner, owner_unit_instance_id, base_uuid) in item_records
+                    {
+                        core.record_timeline(
+                            time_ms,
+                            TimelineEvent::ItemSpawned {
+                                item_instance_id,
+                                owner,
+                                owner_unit_instance_id,
+                                base_uuid,
+                            },
+                        );
+                    }
+                });
+
+                for unit_id in spawned_unit_ids {
+                    self.schedule_initial_attack_for_unit(unit_id, time_ms);
+                }
+                Ok(())
+            }
+            BattleEvent::EndBattle { winner, cause, .. } => {
+                self.with_recording_context(cause, |core| {
+                    core.scenario_runtime.forced_winner = Some(winner);
+                });
+                Ok(())
+            }
             BattleEvent::AttackStart {
                 time_ms,
                 attacker_instance_id,
@@ -1252,10 +1670,10 @@ impl BattleCore {
             } => {
                 let (
                     is_dead,
+                    can_basic_attack,
                     next_ready_ms,
                     can_attack,
                     lock_until,
-                    base_uuid,
                     current_target,
                     interval_ms,
                 ) = {
@@ -1264,15 +1682,15 @@ impl BattleCore {
                     };
                     (
                         attacker.is_dead(),
+                        attacker.can_basic_attack(),
                         attacker.next_basic_attack_ms,
                         attacker.action_locks.can_basic_attack(current_time_ms),
                         attacker.action_locks.basic_attack_until_ms,
-                        attacker.base_uuid,
                         attacker.current_target,
                         attacker.stats.attack_interval_ms.max(1),
                     )
                 };
-                if is_dead {
+                if is_dead || !can_basic_attack {
                     return Ok(());
                 }
 
@@ -1343,10 +1761,9 @@ impl BattleCore {
                 let _ = stopped_movement;
 
                 let windup_ms = self
-                    .game_data
-                    .abnormality_data
-                    .get_by_uuid(&base_uuid)
-                    .map(|m| m.basic_attack.effective_windup_ms() as u64)
+                    .units
+                    .get(&attacker_instance_id)
+                    .map(|unit| unit.basic_attack.effective_windup_ms() as u64)
                     .unwrap_or(0);
                 let resolve_time = time_ms.saturating_add(windup_ms);
 
@@ -1360,7 +1777,7 @@ impl BattleCore {
                 } else {
                     AttackKind::Triggered
                 };
-                let attack_delivery = self.basic_attack_delivery(base_uuid);
+                let attack_delivery = self.basic_attack_delivery_for_unit(attacker_instance_id);
 
                 let start_seq = self.with_recording_context(cause, |core| {
                     core.record_timeline(
@@ -1417,11 +1834,7 @@ impl BattleCore {
                 if !attacker_alive {
                     return Ok(());
                 }
-                let attack_delivery = self
-                    .units
-                    .get(&attacker_instance_id)
-                    .map(|unit| self.basic_attack_delivery(unit.base_uuid))
-                    .unwrap_or(crate::game::battle::timeline::AttackDelivery::Instant);
+                let attack_delivery = self.basic_attack_delivery_for_unit(attacker_instance_id);
 
                 let resolve_seq = self.with_recording_context(cause, |core| {
                     core.record_timeline(
@@ -1560,20 +1973,21 @@ impl BattleCore {
                     return Ok(());
                 }
 
-                let (caster_owner, caster_base_uuid) = {
+                let (caster_owner, skill_id, caster_base_uuid) = {
                     let Some(caster) = self.units.get(&caster_instance_id) else {
                         return Ok(());
                     };
-                    (caster.owner, caster.base_uuid)
+                    (caster.owner, caster.skill_id.clone(), caster.base_uuid)
                 };
 
-                let skill_id = self
-                    .game_data
-                    .abnormality_data
-                    .get_by_uuid(&caster_base_uuid)
-                    .and_then(|m| m.skill_id.as_deref())
-                    .filter(|id| self.game_data.skill_data.get_by_id(id).is_some())
-                    .map(str::to_string);
+                let skill_id = skill_id
+                    .or_else(|| {
+                        self.game_data
+                            .abnormality_data
+                            .get_by_uuid(&caster_base_uuid)
+                            .and_then(|meta| meta.skill_id.clone())
+                    })
+                    .filter(|id| self.game_data.skill_data.get_by_id(id).is_some());
 
                 if skill_id.as_deref().unwrap_or("").is_empty() {
                     // TODO: 기록
@@ -2042,31 +2456,5 @@ impl BattleCore {
                 Ok(())
             }
         }
-    }
-
-    pub(in crate::game::battle::core) fn is_point_on_skill_line(
-        caster_pos: Position,
-        anchor: Position,
-        candidate: Position,
-        length_tiles: i32,
-        caster_owner: Side,
-    ) -> bool {
-        let step_x = (anchor.x - caster_pos.x).signum();
-        let mut step_y = (anchor.y - caster_pos.y).signum();
-        if step_x == 0 && step_y == 0 {
-            step_y = match caster_owner {
-                Side::Player => -1,
-                Side::Opponent => 1,
-            };
-        }
-
-        for step in 1..=length_tiles.max(0) {
-            let point = Position::new(caster_pos.x + step_x * step, caster_pos.y + step_y * step);
-            if point == candidate {
-                return true;
-            }
-        }
-
-        false
     }
 }

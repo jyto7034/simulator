@@ -6,7 +6,7 @@ use std::{
 use serde::{Deserialize, Serialize};
 
 use crate::game::{
-    ability::{DeliveryDef, SkillDef, SkillId, SkillKind, SkillTarget},
+    ability::{DeliveryDef, SkillDef, SkillKind, SkillTarget},
     data::{build_string_index, once_lock_with},
 };
 
@@ -25,7 +25,7 @@ pub struct SkillDatabase {
     pub skills: Vec<SkillDef>,
 
     #[serde(skip)]
-    by_id: OnceLock<HashMap<SkillId, usize>>,
+    by_id: OnceLock<HashMap<String, usize>>,
 }
 
 impl SkillDatabase {
@@ -36,7 +36,7 @@ impl SkillDatabase {
         Self { skills, by_id }
     }
 
-    fn by_id(&self) -> &HashMap<SkillId, usize> {
+    fn by_id(&self) -> &HashMap<String, usize> {
         self.by_id
             .get_or_init(|| build_string_index(&self.skills, "skill id", |skill| &skill.id))
     }
@@ -46,9 +46,9 @@ impl SkillDatabase {
         let _ = self.by_id();
     }
 
-    pub fn get_by_id(&self, id: &str) -> Option<&SkillDef> {
+    pub fn get_by_id(&self, id: impl AsRef<str>) -> Option<&SkillDef> {
         self.by_id()
-            .get(id)
+            .get(id.as_ref())
             .and_then(|&index| self.skills.get(index))
     }
 }
@@ -122,7 +122,7 @@ fn validate_skill_contracts(skills: &[SkillDef]) {
 mod tests {
     use super::*;
     use crate::game::ability::{
-        DeliveryDef, SkillCastTargetingDef, SkillEffectDef, SkillProjectileCollisionDef,
+        DeliveryDef, SkillCastTargetingDef, SkillEffectDef, SkillId, SkillProjectileCollisionDef,
         SkillStepDef, UnitTargetRule,
     };
     use crate::game::battle::damage::DamageType;
@@ -151,7 +151,7 @@ mod tests {
     fn skill_database_rejects_empty_step_skills() {
         let result = std::panic::catch_unwind(|| {
             SkillDatabase::new(vec![SkillDef {
-                id: "empty".to_string(),
+                id: SkillId::from("empty"),
                 name: "empty".to_string(),
                 kind: SkillKind::Untargeted,
                 cast_targeting: SkillCastTargetingDef::FirstStepTarget,
@@ -168,7 +168,7 @@ mod tests {
     fn skill_database_rejects_nondefault_homing_collision_contracts() {
         let result = std::panic::catch_unwind(|| {
             SkillDatabase::new(vec![SkillDef {
-                id: "homing".to_string(),
+                id: SkillId::from("homing"),
                 name: "homing".to_string(),
                 kind: SkillKind::Targeted,
                 cast_targeting: SkillCastTargetingDef::FirstStepTarget,
@@ -191,7 +191,7 @@ mod tests {
     fn skill_database_rejects_duplicate_step_ids() {
         let result = std::panic::catch_unwind(|| {
             SkillDatabase::new(vec![SkillDef {
-                id: "duplicate_steps".to_string(),
+                id: SkillId::from("duplicate_steps"),
                 name: "duplicate_steps".to_string(),
                 kind: SkillKind::Untargeted,
                 cast_targeting: SkillCastTargetingDef::FirstStepTarget,
@@ -211,7 +211,7 @@ mod tests {
     fn skill_database_rejects_unknown_buff_references() {
         let result = std::panic::catch_unwind(|| {
             SkillDatabase::new(vec![SkillDef {
-                id: "unknown_buff".to_string(),
+                id: SkillId::from("unknown_buff"),
                 name: "unknown_buff".to_string(),
                 kind: SkillKind::Untargeted,
                 cast_targeting: SkillCastTargetingDef::FirstStepTarget,
@@ -249,7 +249,7 @@ mod tests {
     fn skill_database_rejects_negative_damage_amounts() {
         let result = std::panic::catch_unwind(|| {
             SkillDatabase::new(vec![SkillDef {
-                id: "negative_damage".to_string(),
+                id: SkillId::from("negative_damage"),
                 name: "negative_damage".to_string(),
                 kind: SkillKind::Untargeted,
                 cast_targeting: SkillCastTargetingDef::FirstStepTarget,

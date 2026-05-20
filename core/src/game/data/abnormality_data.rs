@@ -35,6 +35,10 @@ fn default_basic_attack_interval_ms() -> u64 {
     1500
 }
 
+fn default_magic_resist() -> i32 {
+    0
+}
+
 fn default_move_speed_units_per_ms() -> u32 {
     // 1 tile = 1_000_000 units, so 3 tiles/s ~= 3000 units/ms
     3000
@@ -121,8 +125,11 @@ pub struct AbnormalityMetadata {
     pub max_health: u32,
     /// 전투용 기본 공격력
     pub attack: u32,
-    /// 전투용 기본 방어력
-    pub defense: u32,
+    /// 전투용 기본 방어력. 음수면 받는 물리 피해가 증가한다.
+    pub defense: i32,
+    /// 전투용 기본 마법 저항력. 음수면 받는 마법 피해가 증가한다.
+    #[serde(default = "default_magic_resist")]
+    pub magic_resist: i32,
 
     /// 이동 스펙
     #[serde(default)]
@@ -209,6 +216,7 @@ mod tests {
             max_health: 10,
             attack: 1,
             defense: 1,
+            magic_resist: 0,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),

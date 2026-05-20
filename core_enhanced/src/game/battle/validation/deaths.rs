@@ -221,6 +221,12 @@ fn referenced_unit_ids(event: &TimelineEvent) -> Vec<UnitInstanceId> {
         } => killer_instance_id
             .map(|killer| vec![*unit_instance_id, killer])
             .unwrap_or_else(|| vec![*unit_instance_id]),
+        TimelineEvent::RecoveryTargetSecured {
+            unit_instance_id, ..
+        }
+        | TimelineEvent::ExtractionCompleted {
+            unit_instance_id, ..
+        } => vec![*unit_instance_id],
         TimelineEvent::MovementSegmentStarted {
             unit_instance_id, ..
         }
@@ -394,6 +400,12 @@ fn is_dead_unit_operated_on(
         TimelineEvent::UnitDied {
             unit_instance_id, ..
         } => *unit_instance_id == dead_unit_id,
+        TimelineEvent::RecoveryTargetSecured {
+            unit_instance_id, ..
+        }
+        | TimelineEvent::ExtractionCompleted {
+            unit_instance_id, ..
+        } => config.forbid_dead_units_as_targets && *unit_instance_id == dead_unit_id,
         TimelineEvent::BattleStart { .. }
         | TimelineEvent::ArtifactSpawned { .. }
         | TimelineEvent::BattleEnd { .. } => false,

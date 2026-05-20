@@ -1,61 +1,115 @@
 mod common;
 
-use std::collections::HashMap;
 use std::sync::Arc;
 
-use bevy_ecs::world::World;
-use game_core::ecs::resources::Position;
 use game_core::game::ability::{
     DeliveryDef, SkillAreaAnchorSource, SkillAreaDeliveryDef, SkillAreaShapeDef,
-    SkillCastTargetingDef, SkillDef, SkillEffectDef, SkillHitTargetFilter, SkillKind,
+    SkillCastTargetingDef, SkillDef, SkillEffectDef, SkillHitTargetFilter, SkillId, SkillKind,
     SkillPresentationDef, SkillProjectileCollisionDef, SkillStepCondition, SkillStepDef,
     SkillStepRepeat, SkillTarget, SkillUnitReference, StepTargetingMode, UnitTargetRule,
 };
 use game_core::game::battle::buffs::BuffId;
 use game_core::game::battle::core::BattleCore;
 use game_core::game::battle::enums::BattleEvent;
+use game_core::game::battle::scenario::{
+    BattleFieldSpec, BattleScenario, ScenarioAction, ScenarioEvent, ScenarioEventId,
+    ScenarioGroupId, ScenarioSpawnGroup, ScenarioTrigger, ScenarioUnitRef, ScenarioUnitSpawn,
+    WinCondition,
+};
 use game_core::game::battle::timeline::{
     AttackKind, HpChangeReason, Timeline, TimelineCause, TimelineEvent, TimelineProjectileGuidance,
     TimelineRootCause,
 };
-use game_core::game::battle::types::{OwnedUnit, PlayerDeckInfo};
+use game_core::game::battle::types::{BattleUnitDraft, BattleUnitSource};
 use game_core::game::data::{
-    abnormality_data::{
-        AbnormalityDatabase, AbnormalityMetadata, BasicAttackDef, MovementDef, ResonanceDef,
-    },
-    artifact_data::ArtifactDatabase,
-    bonus_data::BonusDatabase,
-    equipment_data::EquipmentDatabase,
-    pve_data::PveEncounterDatabase,
-    random_event_data::RandomEventDatabase,
-    shop_data::ShopDatabase,
+    abnormality_data::{AbnormalityMetadata, BasicAttackDef, MovementDef, ResonanceDef},
     skill_data::SkillDatabase,
-    GameDataBase,
+    GameDataBase, GameDataBuilder,
 };
 use game_core::game::enums::{RiskLevel, Side, Tier};
 use game_core::game::growth::GrowthStack;
+use game_core::game::resources::Position;
 use game_core::game::stats::{StatId, StatModifier, StatModifierKind};
 use uuid::Uuid;
 
-fn deck(units: Vec<(Uuid, Uuid, Position)>) -> PlayerDeckInfo {
-    let mut positions = HashMap::new();
-    let mut owned_units = Vec::new();
-
-    for (owned_uuid, base_uuid, pos) in units {
-        positions.insert(owned_uuid, pos);
-        owned_units.push(OwnedUnit {
-            owned_uuid,
-            base_uuid,
-            level: Tier::I,
-            growth_stacks: GrowthStack::new(),
-            equipped_items: vec![],
-        });
+fn unit_draft(owned_uuid: Uuid, base_uuid: Uuid) -> BattleUnitDraft {
+    BattleUnitDraft {
+        owned_uuid,
+        source: BattleUnitSource::Abnormality { base_uuid },
+        level: Tier::I,
+        growth_stacks: GrowthStack::new(),
+        equipped_items: vec![],
+        equipped_item_enhancements: vec![],
     }
+}
 
-    PlayerDeckInfo {
-        units: owned_units,
-        artifacts: vec![],
-        positions,
+fn spawn_group(
+    id: &str,
+    side: Side,
+    required_for_victory: bool,
+    units: Vec<(Uuid, Uuid, Position)>,
+) -> ScenarioSpawnGroup {
+    let group_id = ScenarioGroupId::new(id);
+    let spawns = units
+        .into_iter()
+        .enumerate()
+        .map(
+            |(index, (owned_uuid, base_uuid, position))| ScenarioUnitSpawn {
+                unit_ref: ScenarioUnitRef::new(format!("{}_{}", group_id.0, index)),
+                side,
+                draft: unit_draft(owned_uuid, base_uuid),
+                position,
+                instance_salt: index as u32,
+            },
+        )
+        .collect();
+
+    ScenarioSpawnGroup {
+        id: group_id,
+        side,
+        required_for_victory,
+        spawns,
+    }
+}
+
+fn battle_scenario(
+    player_units: Vec<(Uuid, Uuid, Position)>,
+    opponent_units: Vec<(Uuid, Uuid, Position)>,
+) -> BattleScenario {
+    let player_group_id = "player_initial";
+    let enemy_group_id = "enemy_initial";
+    BattleScenario {
+        battlefield: BattleFieldSpec {
+            width: common::BOARD_SIZE.0,
+            height: common::BOARD_SIZE.1,
+            valid_tiles: Vec::new(),
+            obstacles: Vec::new(),
+        },
+        artifacts: Vec::new(),
+        groups: vec![
+            spawn_group(player_group_id, Side::Player, false, player_units),
+            spawn_group(enemy_group_id, Side::Opponent, true, opponent_units),
+        ],
+        events: vec![
+            ScenarioEvent {
+                id: ScenarioEventId::new("spawn_player_initial"),
+                trigger: ScenarioTrigger::AtBattleStart,
+                action: ScenarioAction::SpawnGroup {
+                    group_id: ScenarioGroupId::new(player_group_id),
+                },
+                once: true,
+            },
+            ScenarioEvent {
+                id: ScenarioEventId::new("spawn_enemy_initial"),
+                trigger: ScenarioTrigger::AtBattleStart,
+                action: ScenarioAction::SpawnGroup {
+                    group_id: ScenarioGroupId::new(enemy_group_id),
+                },
+                once: true,
+            },
+        ],
+        win_condition: WinCondition::AllRequiredEnemyGroupsDefeated,
+        tactical_plan: game_core::game::battle::scenario::TacticalPlan::default(),
     }
 }
 
@@ -83,6 +137,7 @@ fn make_abnormality(
         magic_resist: 0,
         movement: MovementDef {
             speed_units_per_ms: 3000,
+            radius_units: 350_000,
         },
         basic_attack: BasicAttackDef {
             range_units: f32::from(attack_range_units),
@@ -95,7 +150,7 @@ fn make_abnormality(
             max: resonance_max,
             gain_lock_ms: 0,
         },
-        skill_id: skill_id.map(str::to_string),
+        skill_id: skill_id.map(SkillId::from),
     }
 }
 
@@ -103,19 +158,10 @@ fn minimal_game_data(
     abnormalities: Vec<AbnormalityMetadata>,
     skills: Vec<SkillDef>,
 ) -> Arc<GameDataBase> {
-    Arc::new(GameDataBase::new(
-        game_core::game::data::GameDataBaseParts {
-            abnormality_data: Arc::new(AbnormalityDatabase::new(abnormalities)),
-            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
-            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
-            shop_data: Arc::new(ShopDatabase::new(vec![])),
-            bonus_data: Arc::new(BonusDatabase::new(vec![])),
-            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
-            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
-            skill_data: Arc::new(SkillDatabase::new(skills)),
-            event_pools: common::empty_event_pools(),
-        },
-    ))
+    GameDataBuilder::empty()
+        .with_abnormalities(abnormalities)
+        .with_skills(SkillDatabase::new(skills))
+        .build_arc()
 }
 
 fn run_battle(
@@ -135,13 +181,10 @@ fn run_battle_with_setup<F>(
 where
     F: FnOnce(&mut BattleCore),
 {
-    let player = deck(player_units);
-    let opponent = deck(opponent_units);
-
-    let mut battle = BattleCore::new(&player, &opponent, game_data, common::BOARD_SIZE, 4242);
-    let mut world = World::new();
+    let scenario = battle_scenario(player_units, opponent_units);
+    let mut battle = BattleCore::new_from_scenario(scenario, game_data, 4242);
     battle
-        .run_battle_with_setup(&mut world, setup)
+        .run_battle_with_post_spawn_setup(setup)
         .expect("battle runs")
         .timeline
 }
@@ -155,13 +198,10 @@ fn run_battle_and_capture_core_with_setup<F>(
 where
     F: FnOnce(&mut BattleCore),
 {
-    let player = deck(player_units);
-    let opponent = deck(opponent_units);
-
-    let mut battle = BattleCore::new(&player, &opponent, game_data, common::BOARD_SIZE, 4242);
-    let mut world = World::new();
+    let scenario = battle_scenario(player_units, opponent_units);
+    let mut battle = BattleCore::new_from_scenario(scenario, game_data, 4242);
     battle
-        .run_battle_with_setup(&mut world, setup)
+        .run_battle_with_post_spawn_setup(setup)
         .expect("battle runs");
     (battle.timeline.clone(), battle)
 }
@@ -257,7 +297,7 @@ fn enemy_radius_area_anchors_on_the_nearest_enemy_instead_of_the_caster_tile() {
     let enemy_b_base_uuid = Uuid::from_u128(0xAA03);
 
     let skill = SkillDef {
-        id: "remote_nova".to_string(),
+        id: SkillId::from("remote_nova"),
         name: "remote_nova".to_string(),
         kind: SkillKind::Untargeted,
         cast_targeting: SkillCastTargetingDef::FirstStepTarget,
@@ -267,13 +307,26 @@ fn enemy_radius_area_anchors_on_the_nearest_enemy_instead_of_the_caster_tile() {
             id: "remote_blast".to_string(),
             delay_ms: 0,
             range_units: 4.0,
-            target: SkillTarget::Enemies {
-                area: game_core::game::ability::SkillArea::RadiusChebyshev { radius_tiles: 1 },
+            target: SkillTarget::EnemySingle {
+                rule: UnitTargetRule::Nearest,
             },
             targeting: StepTargetingMode::ReuseCastTarget,
             when: Default::default(),
             repeat: Default::default(),
-            delivery: DeliveryDef::Instant,
+            delivery: DeliveryDef::Area {
+                area: SkillAreaDeliveryDef {
+                    shape: SkillAreaShapeDef::Circle {
+                        radius_units: 1_100_000,
+                    },
+                    anchor: SkillAreaAnchorSource::CastTarget,
+                    tracking: Default::default(),
+                    hit_targets: SkillHitTargetFilter::Enemies,
+                    include_caster: false,
+                    tick_policy: game_core::game::ability::SkillAreaTickPolicy::EveryTick,
+                    duration_ms: 0,
+                    tick_interval_ms: None,
+                },
+            },
             effects: vec![SkillEffectDef::Damage {
                 amount: 30,
                 damage_type: game_core::game::battle::damage::DamageType::Magic,
@@ -392,7 +445,7 @@ fn delayed_area_reuses_the_original_cast_target_snapshot_after_that_target_dies(
     let nearby_base_uuid = Uuid::from_u128(0xAA23);
 
     let skill = SkillDef {
-        id: "delayed_corpse_burst".to_string(),
+        id: SkillId::from("delayed_corpse_burst"),
         name: "delayed_corpse_burst".to_string(),
         kind: SkillKind::Targeted,
         cast_targeting: SkillCastTargetingDef::FirstStepTarget,
@@ -420,9 +473,7 @@ fn delayed_area_reuses_the_original_cast_target_snapshot_after_that_target_dies(
                 id: "corpse_burst".to_string(),
                 delay_ms: 20,
                 range_units: 4.0,
-                target: SkillTarget::Enemies {
-                    area: game_core::game::ability::SkillArea::RadiusChebyshev { radius_tiles: 1 },
-                },
+                target: SkillTarget::CastTarget,
                 targeting: StepTargetingMode::ReuseCastTarget,
                 when: SkillStepCondition::IfPreviousStepDealtDamage,
                 repeat: Default::default(),
@@ -432,6 +483,7 @@ fn delayed_area_reuses_the_original_cast_target_snapshot_after_that_target_dies(
                             radius_units: 1_100_000,
                         },
                         anchor: SkillAreaAnchorSource::CastTarget,
+                        tracking: Default::default(),
                         hit_targets: SkillHitTargetFilter::Enemies,
                         include_caster: false,
                         tick_policy: game_core::game::ability::SkillAreaTickPolicy::EveryTick,
@@ -558,7 +610,7 @@ fn mixed_target_skill_records_enemy_damage_then_self_buff() {
     let enemy_base_uuid = Uuid::from_u128(0xAA12);
 
     let skill = SkillDef {
-        id: "enemy_then_self".to_string(),
+        id: SkillId::from("enemy_then_self"),
         name: "enemy_then_self".to_string(),
         kind: SkillKind::Targeted,
         cast_targeting: SkillCastTargetingDef::FirstStepTarget,
@@ -690,7 +742,7 @@ fn self_then_retargeted_enemy_skill_resolves_second_step_at_execution_time() {
     let enemy_base_uuid = Uuid::from_u128(0xBC12);
 
     let skill = SkillDef {
-        id: "self_then_retarget".to_string(),
+        id: SkillId::from("self_then_retarget"),
         name: "self_then_retarget".to_string(),
         kind: SkillKind::Targeted,
         cast_targeting: SkillCastTargetingDef::FirstStepTarget,
@@ -824,7 +876,7 @@ fn conditional_followup_waits_for_projectile_damage_resolution() {
     let enemy_base_uuid = Uuid::from_u128(0xBC22);
 
     let skill = SkillDef {
-        id: "conditional_projectile_followup".to_string(),
+        id: SkillId::from("conditional_projectile_followup"),
         name: "conditional_projectile_followup".to_string(),
         kind: SkillKind::Targeted,
         cast_targeting: SkillCastTargetingDef::FirstStepTarget,
@@ -994,7 +1046,7 @@ fn explicit_cast_targeting_separates_cast_context_from_step_execution_targets() 
     let enemy_base_uuid = Uuid::from_u128(0xBC22);
 
     let skill = SkillDef {
-        id: "self_charge_then_locked_shot".to_string(),
+        id: SkillId::from("self_charge_then_locked_shot"),
         name: "self_charge_then_locked_shot".to_string(),
         kind: SkillKind::Targeted,
         cast_targeting: SkillCastTargetingDef::Explicit {
@@ -1155,7 +1207,7 @@ fn ability_step_timeline_includes_presentation_metadata() {
     let enemy_base_uuid = Uuid::from_u128(0xCA52);
 
     let skill = SkillDef {
-        id: "presentation_skill".to_string(),
+        id: SkillId::from("presentation_skill"),
         name: "presentation_skill".to_string(),
         kind: SkillKind::Targeted,
         cast_targeting: SkillCastTargetingDef::FirstStepTarget,
@@ -1324,7 +1376,7 @@ fn untargeted_projectile_miss_finalizes_step_and_cleans_up_damage_gated_followup
     let enemy_base_uuid = Uuid::from_u128(0xCC22);
 
     let skill = SkillDef {
-        id: "untargeted_miss_then_check".to_string(),
+        id: SkillId::from("untargeted_miss_then_check"),
         name: "untargeted_miss_then_check".to_string(),
         kind: SkillKind::Untargeted,
         cast_targeting: SkillCastTargetingDef::FirstStepTarget,
@@ -1467,7 +1519,7 @@ fn untargeted_projectile_still_hits_later_unit_after_cast_target_dies() {
     let charge_target_base_uuid = Uuid::from_u128(0xCC27);
 
     let skill = SkillDef {
-        id: "untargeted_death_through_shot".to_string(),
+        id: SkillId::from("untargeted_death_through_shot"),
         name: "untargeted_death_through_shot".to_string(),
         kind: SkillKind::Untargeted,
         cast_targeting: SkillCastTargetingDef::FirstStepTarget,
@@ -1697,7 +1749,7 @@ fn untargeted_piercing_projectile_respects_max_hits() {
     let third_base_uuid = Uuid::from_u128(0xCC44);
 
     let skill = SkillDef {
-        id: "piercing_skillshot".to_string(),
+        id: SkillId::from("piercing_skillshot"),
         name: "piercing_skillshot".to_string(),
         kind: SkillKind::Untargeted,
         cast_targeting: SkillCastTargetingDef::FirstStepTarget,
@@ -1830,169 +1882,12 @@ fn untargeted_piercing_projectile_respects_max_hits() {
 }
 
 #[test]
-fn untargeted_projectile_legacy_despawn_false_still_pierces_for_compat() {
-    let caster_base_uuid = Uuid::from_u128(0xCC51);
-    let first_base_uuid = Uuid::from_u128(0xCC52);
-    let second_base_uuid = Uuid::from_u128(0xCC53);
-    let third_base_uuid = Uuid::from_u128(0xCC54);
-
-    let skill = SkillDef {
-        id: "legacy_piercing_skillshot".to_string(),
-        name: "legacy_piercing_skillshot".to_string(),
-        kind: SkillKind::Untargeted,
-        cast_targeting: SkillCastTargetingDef::FirstStepTarget,
-        focus_time_ms: 100,
-        focus_permissions: Default::default(),
-        steps: vec![SkillStepDef {
-            id: "legacy_piercing_shot".to_string(),
-            delay_ms: 0,
-            range_units: 4.0,
-            target: SkillTarget::EnemySingle {
-                rule: UnitTargetRule::LowestHealthEnemy,
-            },
-            targeting: StepTargetingMode::ReuseCastTarget,
-            when: Default::default(),
-            repeat: Default::default(),
-            delivery: DeliveryDef::Projectile {
-                speed_units_per_ms: 500_000,
-                collision: SkillProjectileCollisionDef {
-                    despawn_on_hit: Some(false),
-                    max_hits: Some(2),
-                    ..Default::default()
-                },
-            },
-            effects: vec![SkillEffectDef::Damage {
-                amount: 15,
-                damage_type: game_core::game::battle::damage::DamageType::Magic,
-            }],
-            presentation: SkillPresentationDef::default(),
-        }],
-    };
-
-    let game_data = minimal_game_data(
-        vec![
-            make_abnormality(
-                "caster",
-                caster_base_uuid,
-                Some("legacy_piercing_skillshot"),
-                1,
-                120,
-                0,
-                300,
-                1,
-                DeliveryDef::Instant,
-                10,
-            ),
-            make_abnormality(
-                "first",
-                first_base_uuid,
-                None,
-                1,
-                200,
-                0,
-                1_000_000,
-                8,
-                DeliveryDef::Instant,
-                100,
-            ),
-            make_abnormality(
-                "second",
-                second_base_uuid,
-                None,
-                1,
-                200,
-                0,
-                1_000_000,
-                8,
-                DeliveryDef::Instant,
-                100,
-            ),
-            make_abnormality(
-                "third_target",
-                third_base_uuid,
-                None,
-                1,
-                50,
-                0,
-                1_000_000,
-                8,
-                DeliveryDef::Instant,
-                100,
-            ),
-        ],
-        vec![skill],
-    );
-
-    let caster_owned_uuid = Uuid::from_u128(0xDD51);
-    let first_owned_uuid = Uuid::from_u128(0xDD52);
-    let second_owned_uuid = Uuid::from_u128(0xDD53);
-    let third_owned_uuid = Uuid::from_u128(0xDD54);
-
-    let timeline = run_battle(
-        game_data,
-        vec![(caster_owned_uuid, caster_base_uuid, Position::new(0, 0))],
-        vec![
-            (first_owned_uuid, first_base_uuid, Position::new(0, 1)),
-            (second_owned_uuid, second_base_uuid, Position::new(0, 2)),
-            (third_owned_uuid, third_base_uuid, Position::new(0, 3)),
-        ],
-    );
-
-    let caster_id = spawned_unit_id(&timeline, caster_base_uuid, Side::Player);
-    let first_id = spawned_unit_id(&timeline, first_base_uuid, Side::Opponent);
-    let second_id = spawned_unit_id(&timeline, second_base_uuid, Side::Opponent);
-    let third_id = spawned_unit_id(&timeline, third_base_uuid, Side::Opponent);
-    let (ability_seq, _) =
-        find_first_ability_cast_seq(&timeline, "legacy_piercing_skillshot", caster_id);
-    let step_entry = step_entries_for_cast(&timeline, ability_seq)
-        .into_iter()
-        .find(|entry| {
-            matches!(
-                &entry.event,
-                TimelineEvent::AbilityStepTriggered { step_id, .. } if step_id == "legacy_piercing_shot"
-            )
-        })
-        .expect("missing legacy piercing step");
-    let step_seq = step_entry.seq;
-
-    let damaged_targets: Vec<Uuid> = timeline
-        .entries
-        .iter()
-        .filter(|entry| entry_caused_by_seq(&timeline, entry, step_seq))
-        .filter_map(|entry| match entry.event {
-            TimelineEvent::HpChanged {
-                target_instance_id,
-                delta,
-                reason,
-                ..
-            } if delta < 0 && reason == HpChangeReason::Command => {
-                Some::<Uuid>(target_instance_id.into())
-            }
-            _ => None,
-        })
-        .collect();
-
-    assert!(
-        damaged_targets.contains(&first_id),
-        "legacy despawn_on_hit=false should still pierce into the first blocker"
-    );
-    assert!(
-        damaged_targets.contains(&second_id),
-        "legacy despawn_on_hit=false should still pierce into the second blocker"
-    );
-    assert!(
-        !damaged_targets.contains(&third_id),
-        "legacy compatibility should still respect max_hits=2 and stop before the third unit"
-    );
-}
-
-#[test]
 fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
     let caster_base_uuid = Uuid::from_u128(0xBD11);
     let enemy_base_uuid = Uuid::from_u128(0xBD12);
 
     let skill = SkillDef {
-        id: "predation_cycle".to_string(),
+        id: SkillId::from("predation_cycle"),
         name: "predation_cycle".to_string(),
         kind: SkillKind::Targeted,
         cast_targeting: SkillCastTargetingDef::FirstStepTarget,
@@ -2196,19 +2091,19 @@ fn ron_added_abnormalities_emit_expected_skill_event_categories_in_battle_smoke(
         100,
     ));
 
-    let game_data = Arc::new(GameDataBase::new(
-        game_core::game::data::GameDataBaseParts {
-            abnormality_data: Arc::new(AbnormalityDatabase::new(abnormalities)),
-            artifact_data: Arc::clone(&base_game_data.artifact_data),
-            equipment_data: Arc::clone(&base_game_data.equipment_data),
-            shop_data: Arc::clone(&base_game_data.shop_data),
-            bonus_data: Arc::clone(&base_game_data.bonus_data),
-            random_event_data: Arc::clone(&base_game_data.random_event_data),
-            pve_data: Arc::clone(&base_game_data.pve_data),
-            skill_data: Arc::clone(&base_game_data.skill_data),
-            event_pools: base_game_data.event_pools.clone(),
-        },
-    ));
+    let game_data = GameDataBuilder::empty()
+        .with_abnormalities(abnormalities)
+        .with_corroded_employee_data(Arc::clone(&base_game_data.corroded_employee_data))
+        .with_corroded_wave_data(Arc::clone(&base_game_data.corroded_wave_data))
+        .with_artifact_data(Arc::clone(&base_game_data.artifact_data))
+        .with_equipment_data(Arc::clone(&base_game_data.equipment_data))
+        .with_shop_data(Arc::clone(&base_game_data.shop_data))
+        .with_reward_data(Arc::clone(&base_game_data.reward_data))
+        .with_random_event_data(Arc::clone(&base_game_data.random_event_data))
+        .with_pve_data(Arc::clone(&base_game_data.pve_data))
+        .with_skill_data(Arc::clone(&base_game_data.skill_data))
+        .with_skill_fragment_data(Arc::clone(&base_game_data.skill_fragment_data))
+        .build_arc();
 
     let cases = [
         SkillCase {

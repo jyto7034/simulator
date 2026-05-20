@@ -74,6 +74,24 @@ pub fn box_contains_point_centered(
     dx <= half_width && dy <= half_height
 }
 
+fn signed_parallel_within_expanded_segment(
+    parallel: i128,
+    dir_len_sq: i128,
+    backward_units: i128,
+    forward_units: i128,
+) -> bool {
+    let parallel_sq = parallel.saturating_mul(parallel);
+    let limit_units = if parallel < 0 {
+        backward_units
+    } else {
+        forward_units
+    };
+    let max_parallel_sq = limit_units
+        .saturating_mul(limit_units)
+        .saturating_mul(dir_len_sq);
+    parallel_sq <= max_parallel_sq
+}
+
 pub fn line_contains_point_from_origin(
     origin: ContinuousPosition,
     direction_hint: ContinuousPosition,
@@ -98,24 +116,21 @@ pub fn line_contains_point_from_origin(
     let parallel = rel_x
         .saturating_mul(dir_x)
         .saturating_add(rel_y.saturating_mul(dir_y));
-    let min_parallel = -i128::from(expansion_units.max(0));
-    if parallel < min_parallel {
-        return false;
-    }
-
-    let max_parallel_distance = i128::from(length_units.max(0) + expansion_units.max(0));
-    let max_parallel_sq = max_parallel_distance
-        .saturating_mul(max_parallel_distance)
-        .saturating_mul(dir_len_sq);
-    let parallel_sq = parallel.saturating_mul(parallel);
-    if parallel_sq > max_parallel_sq {
+    let expansion = i128::from(expansion_units.max(0));
+    let max_parallel_distance = i128::from(length_units.max(0)).saturating_add(expansion);
+    if !signed_parallel_within_expanded_segment(
+        parallel,
+        dir_len_sq,
+        expansion,
+        max_parallel_distance,
+    ) {
         return false;
     }
 
     let perp = rel_x
         .saturating_mul(-dir_y)
         .saturating_add(rel_y.saturating_mul(dir_x));
-    let expanded_radius = i128::from(expansion_units.max(0));
+    let expanded_radius = expansion;
     let max_perp_sq = expanded_radius
         .saturating_mul(expanded_radius)
         .saturating_mul(dir_len_sq);
@@ -150,25 +165,21 @@ pub fn rectangle_contains_point_from_origin(
         .saturating_add(rel_y.saturating_mul(dir_y));
     let half_width = i128::from(width_units) / 2;
     let length = i128::from(length_units);
-
-    let min_parallel = -i128::from(expansion_units.max(0));
-    if parallel < min_parallel {
-        return false;
-    }
-
-    let max_parallel_distance = length.saturating_add(i128::from(expansion_units.max(0)));
-    let max_parallel_sq = max_parallel_distance
-        .saturating_mul(max_parallel_distance)
-        .saturating_mul(dir_len_sq);
-    let parallel_sq = parallel.saturating_mul(parallel);
-    if parallel_sq > max_parallel_sq {
+    let expansion = i128::from(expansion_units.max(0));
+    let max_parallel_distance = length.saturating_add(expansion);
+    if !signed_parallel_within_expanded_segment(
+        parallel,
+        dir_len_sq,
+        expansion,
+        max_parallel_distance,
+    ) {
         return false;
     }
 
     let perp = rel_x
         .saturating_mul(-dir_y)
         .saturating_add(rel_y.saturating_mul(dir_x));
-    let expanded_half_width = half_width.saturating_add(i128::from(expansion_units.max(0)));
+    let expanded_half_width = half_width.saturating_add(expansion);
     let perp_sq = perp.saturating_mul(perp);
     let max_perp_sq = expanded_half_width
         .saturating_mul(expanded_half_width)
@@ -275,6 +286,29 @@ mod tests {
     }
 
     #[test]
+    fn rectangle_contains_point_from_origin_scales_backward_expansion_by_direction_length() {
+        let origin = ContinuousPosition::new(0, 0);
+        let anchor = ContinuousPosition::new(1_000_000, 0);
+
+        assert!(rectangle_contains_point_from_origin(
+            origin,
+            anchor,
+            100_000,
+            1_000_000,
+            250_000,
+            ContinuousPosition::new(-250_000, 0)
+        ));
+        assert!(!rectangle_contains_point_from_origin(
+            origin,
+            anchor,
+            100_000,
+            1_000_000,
+            250_000,
+            ContinuousPosition::new(-250_001, 0)
+        ));
+    }
+
+    #[test]
     fn box_contains_point_centered_respects_width_and_height() {
         let center = ContinuousPosition::new(0, 0);
         assert!(box_contains_point_centered(
@@ -324,6 +358,27 @@ mod tests {
             10,
             1,
             ContinuousPosition::new(12, 0)
+        ));
+    }
+
+    #[test]
+    fn line_contains_point_from_origin_scales_backward_expansion_by_direction_length() {
+        let origin = ContinuousPosition::new(0, 0);
+        let anchor = ContinuousPosition::new(1_000_000, 0);
+
+        assert!(line_contains_point_from_origin(
+            origin,
+            anchor,
+            1_000_000,
+            250_000,
+            ContinuousPosition::new(-250_000, 0)
+        ));
+        assert!(!line_contains_point_from_origin(
+            origin,
+            anchor,
+            1_000_000,
+            250_000,
+            ContinuousPosition::new(-250_001, 0)
         ));
     }
 

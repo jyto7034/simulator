@@ -125,5 +125,213 @@ ArtifactDatabase(
                 ),
             ],
         ),
+        ArtifactMetadata(
+            id: "manager_manual",
+            uuid: "a0000003-0000-0000-0000-000000000003",
+            name: "Manager's Manual",
+            description: "A practical manual that turns panic into procedure. The team starts each battle better prepared.",
+            rarity: HE,
+            price: 150,
+            triggered_effects: {
+                OnBattleStart: [
+                    (
+                        target: AllAllies,
+                        effect: Modifier(StatModifier(
+                            stat: Defense,
+                            kind: Flat,
+                            value: 4,
+                        )),
+                    ),
+                ],
+            },
+        ),
+        ArtifactMetadata(
+            id: "qliphoth_meter",
+            uuid: "a0000004-0000-0000-0000-000000000004",
+            name: "Qliphoth Meter",
+            description: "A cracked counter that rewards clean openings with a burst of tempo.",
+            rarity: WAW,
+            price: 220,
+            triggered_effects: {
+                OnBattleStart: [
+                    (
+                        target: AllAllies,
+                        effect: Modifier(StatModifier(
+                            stat: AttackIntervalMs,
+                            kind: Flat,
+                            value: -60,
+                        )),
+                    ),
+                ],
+            },
+        ),
+        ArtifactMetadata(
+            id: "lobotomy_badge",
+            uuid: "a0000005-0000-0000-0000-000000000005",
+            name: "Lobotomy Badge",
+            description: "A badge issued to employees who have survived enough bad days to be useful.",
+            rarity: TETH,
+            price: 90,
+            triggered_effects: {
+                Permanent: [
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: MaxHealth,
+                            kind: Flat,
+                            value: 50,
+                        )),
+                    ),
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: Attack,
+                            kind: Flat,
+                            value: 6,
+                        )),
+                    ),
+                ],
+            },
+        ),
+        ArtifactMetadata(
+            id: "emergency_syringe",
+            uuid: "a0000006-0000-0000-0000-000000000006",
+            name: "Emergency Syringe",
+            description: "A single-use looking kit that somehow keeps appearing in the wrong hands.",
+            rarity: HE,
+            price: 140,
+            triggered_effects: {
+                OnAllyDeath: [
+                    (
+                        target: AllAllies,
+                        effect: Heal(flat: 35, percent: 0),
+                    ),
+                ],
+            },
+        ),
+        ArtifactMetadata(
+            id: "black_box_recorder",
+            uuid: "a0000007-0000-0000-0000-000000000007",
+            name: "Black Box Recorder",
+            description: "Every loss is recorded. Every recording improves the next response.",
+            rarity: WAW,
+            price: 260,
+            triggered_effects: {
+                OnAllyDeath: [
+                    (
+                        target: AllAllies,
+                        effect: Modifier(StatModifier(
+                            stat: Attack,
+                            kind: Percent,
+                            value: 8,
+                        )),
+                    ),
+                ],
+            },
+        ),
+        ArtifactMetadata(
+            id: "extraction_ticket",
+            uuid: "a0000008-0000-0000-0000-000000000008",
+            name: "Extraction Ticket",
+            description: "A high-risk request form that makes rewards sharper and more dangerous.",
+            rarity: WAW,
+            price: 240,
+            triggered_effects: {
+                Permanent: [
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: Attack,
+                            kind: Percent,
+                            value: 12,
+                        )),
+                    ),
+                ],
+            },
+        ),
+        ArtifactMetadata(
+            id: "pale_halo_fragment",
+            uuid: "a0000009-0000-0000-0000-000000000009",
+            name: "Pale Halo Fragment",
+            description: "A splinter of counterfeit salvation. It blesses the living and punishes hesitation.",
+            rarity: ALEPH,
+            price: 430,
+            triggered_effects: {
+                OnBattleStart: [
+                    (
+                        target: AllAllies,
+                        effect: Heal(flat: 60, percent: 0),
+                    ),
+                    (
+                        target: AllAllies,
+                        effect: Modifier(StatModifier(
+                            stat: Attack,
+                            kind: Percent,
+                            value: 8,
+                        )),
+                    ),
+                ],
+            },
+        ),
+        ArtifactMetadata(
+            id: "red_mist_memory",
+            uuid: "a0000010-0000-0000-0000-000000000010",
+            name: "Red Mist Memory",
+            description: "An impossible combat record. Frontline units become brutally decisive.",
+            rarity: ALEPH,
+            price: 460,
+            triggered_effects: {
+                OnKill: [
+                    (
+                        target: AllAllies,
+                        effect: Modifier(StatModifier(
+                            stat: Attack,
+                            kind: Percent,
+                            value: 5,
+                        )),
+                    ),
+                ],
+            },
+        ),
+        ArtifactMetadata(
+            id: "abno_observation_log",
+            uuid: "a0000011-0000-0000-0000-000000000011",
+            name: "Abnormality Observation Log",
+            description: "A stack of field notes. The more the team is hit, the faster it adapts.",
+            rarity: HE,
+            price: 170,
+            triggered_effects: {
+                OnHit: [
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: Defense,
+                            kind: Flat,
+                            value: 2,
+                        )),
+                    ),
+                ],
+            },
+        ),
+        ArtifactMetadata(
+            id: "singing_machine_record",
+            uuid: "a0000012-0000-0000-0000-000000000012",
+            name: "Singing Machine Record",
+            description: "An upbeat record that should not be played near machinery.",
+            rarity: WAW,
+            price: 250,
+            triggered_effects: {
+                OnAttack: [
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: AttackIntervalMs,
+                            kind: Flat,
+                            value: -12,
+                        )),
+                    ),
+                ],
+            },
+        ),
     ]
 )

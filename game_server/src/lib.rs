@@ -126,13 +126,13 @@ pub struct AppState {
     pub matchmakers: HashMap<GameMode, MatchmakerAddr>,
 
     // Legacy (test_client)
-    pub sub_manager_addr: Addr<SubScriptionManager>,
+    pub sub_manager_addr: Option<Addr<SubScriptionManager>>,
 
     // New (Unity client)
     pub load_balance_addr: Addr<LoadBalanceActor>,
-    pub match_coordinator_addr: Addr<MatchCoordinator>,
+    pub match_coordinator_addr: Option<Addr<MatchCoordinator>>,
 
-    pub redis: ConnectionManager,
+    pub redis: Option<ConnectionManager>,
     pub logger_manager: Arc<LoggerManager>,
     pub current_run_id: Uuid,
     pub game_data: Arc<GameDataBase>,

@@ -1,0 +1,310 @@
+// 보상 이벤트 메타데이터
+// id: 보상 식별자
+// uuid: 클라이언트가 이미지/설명을 조회하기 위한 고유 식별자
+// name: 보상 이름
+// description: 보상 설명
+// icon: 아이콘 경로
+// effects: 실제 지급 효과 목록
+RewardDatabase(
+    rewards: [
+        RewardMetadata(
+            id: "enkephalin_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440101",
+            name: "엔케팔린 보상",
+            description: "엔케팔린을 획득합니다. 이를 사용하여 상점에서 아이템을 구매할 수 있습니다.",
+            icon: "icons/enkephalin.png",
+            tags: [Currency],
+            effects: [
+                GrantEnkephalin(amount: 100),
+            ],
+        ),
+        RewardMetadata(
+            id: "experience_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440102",
+            name: "작업 경험",
+            description: "직원의 경험치를 획득합니다. 레벨이 오르면 능력치가 향상됩니다.",
+            icon: "icons/experience.png",
+            tags: [Experience],
+            effects: [
+                GrantExperience(amount: 200),
+            ],
+        ),
+        RewardMetadata(
+            id: "ego_gift_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440103",
+            name: "E.G.O 선물",
+            description: "무작위 E.G.O 선물을 획득합니다. 직원에게 장착하여 능력치를 강화할 수 있습니다.",
+            icon: "icons/ego_gift.png",
+            tags: [Equipment],
+            effects: [
+                GrantEquipment(equipment_id: None),
+            ],
+        ),
+        RewardMetadata(
+            id: "abnormality_reward_forbidden",
+            uuid: "650e8400-e29b-41d4-a716-446655440104",
+            name: "새로운 기물",
+            description: "환상체는 플레이어 인벤토리 보상이 될 수 없습니다.",
+            icon: "icons/abnormality.png",
+            tags: [Forbidden],
+            effects: [
+                ForbiddenAbnormalityGrant,
+            ],
+        ),
+        RewardMetadata(
+            id: "large_enkephalin_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440105",
+            name: "고농도 엔케팔린",
+            description: "대량의 엔케팔린을 획득합니다. 후반 상점 운영에 유리합니다.",
+            icon: "icons/enkephalin_large.png",
+            tags: [Currency],
+            effects: [
+                GrantEnkephalin(amount: 180),
+            ],
+        ),
+        RewardMetadata(
+            id: "double_ego_gift_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440106",
+            name: "E.G.O 보급 상자",
+            description: "무작위 E.G.O 선물을 획득합니다. 장비 선택지를 넓힐 수 있습니다.",
+            icon: "icons/ego_cache.png",
+            tags: [Equipment],
+            effects: [
+                GrantEquipment(equipment_id: None),
+            ],
+        ),
+        RewardMetadata(
+            id: "suppression_recruit_reward_forbidden",
+            uuid: "650e8400-e29b-41d4-a716-446655440107",
+            name: "진압 후 수용",
+            description: "환상체는 플레이어 인벤토리 보상이 될 수 없습니다.",
+            icon: "icons/abnormality_cell.png",
+            tags: [Forbidden],
+            effects: [
+                ForbiddenAbnormalityGrant,
+            ],
+        ),
+        RewardMetadata(
+            id: "training_budget_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440108",
+            name: "교육 예산",
+            description: "교육과 재배치를 위한 추가 엔케팔린을 획득합니다.",
+            icon: "icons/training_budget.png",
+            tags: [Currency],
+            effects: [
+                GrantEnkephalin(amount: 140),
+            ],
+        ),
+        RewardMetadata(
+            id: "one_sin_penitence_fragment_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440109",
+            name: "참회의 스킬 파편",
+            description: "One Sin and Hundreds of Good Deeds에서 파생된 모방 스킬 파편을 획득합니다.",
+            icon: "icons/skill_fragment_one_sin.png",
+            tags: [SkillFragment],
+            effects: [
+                GrantSkillFragment(fragment_id: "fragment_one_sin_penitence"),
+            ],
+        ),
+        RewardMetadata(
+            id: "scorched_spark_fragment_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440110",
+            name: "그을린 불씨 파편",
+            description: "Scorched Girl에서 파생된 독립 모방 스킬 파편을 획득합니다.",
+            icon: "icons/skill_fragment_scorched.png",
+            tags: [SkillFragment],
+            effects: [
+                GrantSkillFragment(fragment_id: "fragment_scorched_spark"),
+            ],
+        ),
+        RewardMetadata(
+            id: "red_shoes_impulse_fragment_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440111",
+            name: "붉은 충동 파편",
+            description: "Red Shoes에서 파생된 독립 모방 스킬 파편을 획득합니다.",
+            icon: "icons/skill_fragment_red_shoes.png",
+            tags: [SkillFragment],
+            effects: [
+                GrantSkillFragment(fragment_id: "fragment_red_shoes_impulse"),
+            ],
+        ),
+        RewardMetadata(
+            id: "freischutz_black_round_fragment_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440112",
+            name: "검은 탄환 파편",
+            description: "Der Freischutz에서 파생된 독립 모방 스킬 파편을 획득합니다.",
+            icon: "icons/skill_fragment_freischutz.png",
+            tags: [SkillFragment],
+            effects: [
+                GrantSkillFragment(fragment_id: "fragment_freischutz_black_round"),
+            ],
+        ),
+        RewardMetadata(
+            id: "scorched_spark_research_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440113",
+            name: "그을린 불씨 연구 자료",
+            description: "블랙박스 회수 데이터에서 추출한 Scorched Girl 파생 파편 연구 진행도입니다.",
+            icon: "icons/research_scorched.png",
+            tags: [ResearchProgress],
+            effects: [
+                GrantSkillFragmentResearch(fragment_id: "fragment_scorched_spark", amount: 3),
+            ],
+        ),
+        RewardMetadata(
+            id: "damaged_weapon_fragment_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440114",
+            name: "손상된 무기 파편",
+            description: "침식된 직원의 장비에서 회수한 무기 파편입니다. Maintenance에서 무기 복원과 강화에 사용할 수 있습니다.",
+            icon: "icons/equipment_fragment_weapon.png",
+            tags: [Equipment],
+            effects: [
+                GrantEquipmentMaterial(material_id: "damaged_weapon_fragment", amount: 3),
+            ],
+        ),
+        RewardMetadata(
+            id: "damaged_armor_fragment_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440115",
+            name: "손상된 방어구 파편",
+            description: "침식된 직원의 방어구에서 회수한 파편입니다. Maintenance에서 방어구 복원과 강화에 사용할 수 있습니다.",
+            icon: "icons/equipment_fragment_armor.png",
+            tags: [Equipment],
+            effects: [
+                GrantEquipmentMaterial(material_id: "damaged_armor_fragment", amount: 3),
+            ],
+        ),
+        RewardMetadata(
+            id: "field_equipment_salvage_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440116",
+            name: "현장 장비 잔해",
+            description: "침식된 직원 웨이브에서 회수한 장비 잔해입니다. 무기와 방어구 파편을 함께 획득합니다.",
+            icon: "icons/equipment_salvage.png",
+            tags: [Equipment],
+            effects: [
+                GrantEquipmentMaterial(material_id: "damaged_weapon_fragment", amount: 2),
+                GrantEquipmentMaterial(material_id: "damaged_armor_fragment", amount: 2),
+            ],
+        ),
+        RewardMetadata(
+            id: "scorched_ego_residue_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440117",
+            name: "그을린 E.G.O 잔재",
+            description: "Scorched Girl 진압 흔적에서 회수한 E.G.O 잔재입니다. E.G.O 장비 복원과 연구 재료로 사용됩니다.",
+            icon: "icons/ego_residue_scorched.png",
+            tags: [Equipment, ResearchProgress],
+            effects: [
+                GrantEquipmentMaterial(material_id: "ego_residue_scorched", amount: 1),
+                GrantSkillFragmentResearch(fragment_id: "fragment_scorched_spark", amount: 1),
+            ],
+        ),
+        RewardMetadata(
+            id: "early_abnormality_research_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440118",
+            name: "초기 환상체 분석 기록",
+            description: "낮은 위험도의 환상체 접촉 기록입니다. 초반 스킬 파편 연구도를 조금씩 올립니다.",
+            icon: "icons/research_basic.png",
+            tags: [ResearchProgress],
+            effects: [
+                GrantSkillFragmentResearch(fragment_id: "fragment_one_sin_penitence", amount: 1),
+                GrantSkillFragmentResearch(fragment_id: "fragment_scorched_spark", amount: 1),
+            ],
+        ),
+        RewardMetadata(
+            id: "high_risk_abnormality_research_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440119",
+            name: "고위험 환상체 분석 기록",
+            description: "상위 환상체 조우에서 확보한 분석 기록입니다. 고가치 스킬 파편 연구도를 올립니다.",
+            icon: "icons/research_high_risk.png",
+            tags: [ResearchProgress],
+            effects: [
+                GrantSkillFragmentResearch(fragment_id: "fragment_red_shoes_impulse", amount: 2),
+                GrantSkillFragmentResearch(fragment_id: "fragment_freischutz_black_round", amount: 2),
+            ],
+        ),
+        RewardMetadata(
+            id: "spider_bud_red_eyes_fragment_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440120",
+            name: "붉은 눈 파편",
+            description: "Spider Bud에서 파생된 독립 모방 스킬 파편을 획득합니다.",
+            icon: "icons/skill_fragment_spider_bud.png",
+            tags: [SkillFragment],
+            effects: [
+                GrantSkillFragment(fragment_id: "fragment_spider_bud_red_eyes"),
+            ],
+        ),
+        RewardMetadata(
+            id: "funeral_butterfly_eulogy_fragment_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440121",
+            name: "나비 장례 파편",
+            description: "Funeral of the Dead Butterflies에서 파생된 독립 모방 스킬 파편을 획득합니다.",
+            icon: "icons/skill_fragment_funeral_butterfly.png",
+            tags: [SkillFragment],
+            effects: [
+                GrantSkillFragment(fragment_id: "fragment_funeral_butterfly_eulogy"),
+            ],
+        ),
+        RewardMetadata(
+            id: "helper_grinder_trace_fragment_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440122",
+            name: "분쇄 흔적 파편",
+            description: "All-Around Helper에서 파생된 독립 모방 스킬 파편을 획득합니다.",
+            icon: "icons/skill_fragment_helper_grinder.png",
+            tags: [SkillFragment],
+            effects: [
+                GrantSkillFragment(fragment_id: "fragment_helper_grinder_trace"),
+            ],
+        ),
+        RewardMetadata(
+            id: "alriune_faint_aroma_fragment_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440123",
+            name: "희미한 향기 파편",
+            description: "Alriune에서 파생된 독립 모방 스킬 파편을 획득합니다.",
+            icon: "icons/skill_fragment_alriune.png",
+            tags: [SkillFragment],
+            effects: [
+                GrantSkillFragment(fragment_id: "fragment_alriune_faint_aroma"),
+            ],
+        ),
+        RewardMetadata(
+            id: "a_rank_abnormality_research_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440124",
+            name: "A랭크 환상체 모방 연구 기록",
+            description: "A랭크 구현 후보 환상체들의 파편 연구 진행도를 조금씩 올립니다.",
+            icon: "icons/research_a_rank_fragments.png",
+            tags: [ResearchProgress],
+            effects: [
+                GrantSkillFragmentResearch(fragment_id: "fragment_spider_bud_red_eyes", amount: 1),
+                GrantSkillFragmentResearch(fragment_id: "fragment_funeral_butterfly_eulogy", amount: 1),
+                GrantSkillFragmentResearch(fragment_id: "fragment_helper_grinder_trace", amount: 1),
+                GrantSkillFragmentResearch(fragment_id: "fragment_alriune_faint_aroma", amount: 1),
+            ],
+        ),
+    ],
+    pools: [
+        (
+            id: "default_treasures",
+            reward_ids: [
+                "enkephalin_reward",
+                "ego_gift_reward",
+                "large_enkephalin_reward",
+                "double_ego_gift_reward",
+                "training_budget_reward",
+                "one_sin_penitence_fragment_reward",
+                "scorched_spark_fragment_reward",
+                "red_shoes_impulse_fragment_reward",
+                "freischutz_black_round_fragment_reward",
+                "spider_bud_red_eyes_fragment_reward",
+                "funeral_butterfly_eulogy_fragment_reward",
+                "helper_grinder_trace_fragment_reward",
+                "alriune_faint_aroma_fragment_reward",
+                "scorched_spark_research_reward",
+                "damaged_weapon_fragment_reward",
+                "damaged_armor_fragment_reward",
+                "field_equipment_salvage_reward",
+                "scorched_ego_residue_reward",
+                "early_abnormality_research_reward",
+                "high_risk_abnormality_research_reward",
+                "a_rank_abnormality_research_reward",
+            ],
+        ),
+    ],
+)

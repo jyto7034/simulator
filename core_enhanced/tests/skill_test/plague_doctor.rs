@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
-use game_core::ecs::resources::Position;
 use game_core::game::enums::Side;
+use game_core::game::resources::Position;
 
 use super::{
     healing_hp_changes_caused_by, hp_deltas, passive_dummy_patch, run_abnormality_scenario,

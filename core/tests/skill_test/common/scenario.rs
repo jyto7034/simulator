@@ -57,6 +57,7 @@ pub(crate) fn skill_test_dummy_metadata() -> AbnormalityMetadata {
         max_health: 2_000,
         attack: 10,
         defense: 0,
+        magic_resist: 0,
         movement: MovementDef {
             speed_units_per_ms: 0,
         },

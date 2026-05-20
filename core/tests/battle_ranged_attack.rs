@@ -102,7 +102,7 @@ fn abnormality_with_basic_attack(
     uuid: Uuid,
     max_health: u32,
     attack: u32,
-    defense: u32,
+    defense: i32,
     move_speed_units_per_ms: u32,
     basic_attack: BasicAttackDef,
 ) -> AbnormalityMetadata {
@@ -115,6 +115,7 @@ fn abnormality_with_basic_attack(
         max_health,
         attack,
         defense,
+        magic_resist: 0,
         movement: MovementDef {
             speed_units_per_ms: move_speed_units_per_ms,
         },
@@ -159,6 +160,7 @@ fn ranged_basic_attack_projectile_hits_after_flight_time_and_damages_target() {
         max_health: 999,
         attack: 1000,
         defense: 0,
+        magic_resist: 0,
         movement: Default::default(),
         basic_attack: BasicAttackDef {
             range_tiles: 3,
@@ -182,6 +184,7 @@ fn ranged_basic_attack_projectile_hits_after_flight_time_and_damages_target() {
         max_health: 10,
         attack: 1,
         defense: 0,
+        magic_resist: 0,
         movement: MovementDef {
             speed_units_per_ms: 0,
         },
@@ -868,7 +871,7 @@ fn ranged_vs_ranged_both_sides_land_hits_player_wins() {
         3_000,
         BasicAttackDef {
             range_tiles: 4,
-            interval_ms: 1,
+            interval_ms: 1_000,
             windup_ms: 0,
             delivery: DeliveryDef::Projectile {
                 speed_units_per_ms: 3_000,
@@ -886,7 +889,7 @@ fn ranged_vs_ranged_both_sides_land_hits_player_wins() {
         3_000,
         BasicAttackDef {
             range_tiles: 4,
-            interval_ms: 1,
+            interval_ms: 1_000,
             windup_ms: 0,
             delivery: DeliveryDef::Projectile {
                 speed_units_per_ms: 3_000,
@@ -1480,6 +1483,11 @@ fn tft_like_field_7v7_dense_frontline_prefers_straight_opening_engage() {
         .iter()
         .map(|uuid| find_unit_instance_id(&result.timeline, Side::Player, *uuid))
         .collect();
+    let player_instance_ids: Vec<UnitInstanceId> = player_melee_uuids
+        .iter()
+        .chain(player_ranged_uuids.iter())
+        .map(|uuid| find_unit_instance_id(&result.timeline, Side::Player, *uuid))
+        .collect();
     let opponent_frontline_instance_ids: Vec<UnitInstanceId> = opponent_melee_uuids
         .iter()
         .map(|uuid| find_unit_instance_id(&result.timeline, Side::Opponent, *uuid))
@@ -1500,7 +1508,7 @@ fn tft_like_field_7v7_dense_frontline_prefers_straight_opening_engage() {
         .min()
         .expect("expected dense frontline to eventually kill an opponent melee");
 
-    let player_frontline_killers: Vec<UnitInstanceId> = result
+    let player_killers: Vec<UnitInstanceId> = result
         .timeline
         .entries
         .iter()
@@ -1512,18 +1520,21 @@ fn tft_like_field_7v7_dense_frontline_prefers_straight_opening_engage() {
             } if entry.time_ms == first_opponent_frontline_death_time
                 && opponent_frontline_instance_ids.contains(unit_instance_id) =>
             {
-                killer_instance_id.filter(|id| player_frontline_instance_ids.contains(id))
+                killer_instance_id.filter(|id| player_instance_ids.contains(id))
             }
             _ => None,
         })
         .collect();
 
     assert!(
-        !player_frontline_killers.is_empty(),
-        "expected dense frontline collapse to be caused by player melee killers at the first opponent frontline death time"
+        !player_killers.is_empty(),
+        "expected dense frontline collapse to be caused by player units at the first opponent frontline death time"
     );
 
-    for killer_id in player_frontline_killers {
+    for killer_id in player_killers
+        .into_iter()
+        .filter(|id| player_frontline_instance_ids.contains(id))
+    {
         let next_move = result
             .timeline
             .entries

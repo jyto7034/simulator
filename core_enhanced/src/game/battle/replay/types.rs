@@ -6,7 +6,7 @@ use std::{
 use uuid::Uuid;
 
 use crate::{
-    ecs::resources::Position,
+    game::resources::Position,
     game::{
         ability::SkillId,
         battle::{

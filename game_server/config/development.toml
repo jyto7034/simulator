@@ -3,6 +3,7 @@
 bind_address = "0.0.0.0"
 port = 8081
 log_level = "info" # 로그 레벨
+multiplayer_enabled = false # 싱글 플레이 기본값: 레거시 매치메이킹 비활성화
 # metrics_auth_token = "secret-token-here"  # Optional: enable for metrics endpoint auth
 
 # 로깅 설정

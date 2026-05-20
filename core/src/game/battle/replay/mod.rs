@@ -551,6 +551,73 @@ impl TimelineReplayer {
                         }
                     }
                 }
+                TimelineEvent::SkillAreaDeclared {
+                    caster_instance_id,
+                    target,
+                    ..
+                } => {
+                    let TimelineCause::Parent { seq: parent_seq } = entry.cause else {
+                        violations.push(TimelineReplayViolation {
+                            kind: TimelineReplayViolationKind::UnexpectedDecision,
+                            message: "SkillAreaDeclared recorded without a Parent cause"
+                                .to_string(),
+                            entry_index: Some(index),
+                        });
+                        continue;
+                    };
+
+                    let Some(&parent_index) = seq_to_index.get(&parent_seq) else {
+                        violations.push(TimelineReplayViolation {
+                            kind: TimelineReplayViolationKind::UnexpectedDecision,
+                            message: format!(
+                                "SkillAreaDeclared cause seq {} does not reference any entry",
+                                parent_seq
+                            ),
+                            entry_index: Some(index),
+                        });
+                        continue;
+                    };
+
+                    if !matches!(
+                        timeline.entries[parent_index].event,
+                        TimelineEvent::AbilityStepTriggered { .. }
+                    ) {
+                        violations.push(TimelineReplayViolation {
+                            kind: TimelineReplayViolationKind::UnexpectedDecision,
+                            message: format!(
+                                "SkillAreaDeclared cause seq {} points to invalid parent event: {:?}",
+                                parent_seq, timeline.entries[parent_index].event
+                            ),
+                            entry_index: Some(index),
+                        });
+                    }
+
+                    if !units.contains_key(caster_instance_id) {
+                        violations.push(TimelineReplayViolation {
+                            kind: TimelineReplayViolationKind::UnknownUnitReference,
+                            message: format!(
+                                "SkillAreaDeclared references unknown caster {}",
+                                caster_instance_id
+                            ),
+                            entry_index: Some(index),
+                        });
+                    }
+                    if let Some(crate::game::battle::timeline::SkillCastTarget::Unit {
+                        unit_instance_id,
+                    }) = target
+                    {
+                        if !units.contains_key(unit_instance_id) {
+                            violations.push(TimelineReplayViolation {
+                                kind: TimelineReplayViolationKind::UnknownUnitReference,
+                                message: format!(
+                                    "SkillAreaDeclared references unknown target {}",
+                                    unit_instance_id
+                                ),
+                                entry_index: Some(index),
+                            });
+                        }
+                    }
+                }
 
                 TimelineEvent::BuffApplied {
                     caster_instance_id,
@@ -789,6 +856,7 @@ impl TimelineReplayer {
                             | TimelineEvent::AttackResolve { .. }
                             | TimelineEvent::AbilityCast { .. }
                             | TimelineEvent::AbilityStepTriggered { .. }
+                            | TimelineEvent::SkillAreaDeclared { .. }
                             | TimelineEvent::TriggeredAbilityProc { .. }
                             | TimelineEvent::BuffTick { .. }
                     );
@@ -848,6 +916,7 @@ impl TimelineReplayer {
                             | TimelineEvent::AttackResolve { .. }
                             | TimelineEvent::AbilityCast { .. }
                             | TimelineEvent::AbilityStepTriggered { .. }
+                            | TimelineEvent::SkillAreaDeclared { .. }
                             | TimelineEvent::TriggeredAbilityProc { .. }
                             | TimelineEvent::BuffTick { .. }
                     );

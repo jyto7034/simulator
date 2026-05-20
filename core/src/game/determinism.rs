@@ -47,6 +47,15 @@ pub fn seed_for_phase(run_seed: u64, ordeal: OrdealType, phase: PhaseType) -> u6
     splitmix64(run_seed ^ tag.wrapping_mul(0xD1B5_4A32_D192_ED03))
 }
 
+pub fn seed_for_phase_roll(run_seed: u64, ordeal: OrdealType, phase: PhaseType, roll: u64) -> u64 {
+    let phase_seed = seed_for_phase(run_seed, ordeal, phase);
+    splitmix64(phase_seed ^ roll.wrapping_mul(0x94D0_49BB_1331_11EB))
+}
+
+pub fn seed_with_namespace(seed: u64, namespace: u64) -> u64 {
+    splitmix64(seed ^ namespace.wrapping_mul(0x9E37_79B9_7F4A_7C15))
+}
+
 pub fn uuid_v4_from_seed(seed: u64, namespace: u64, index: u64) -> Uuid {
     let hi = splitmix64(seed ^ namespace);
     let lo = splitmix64(seed ^ namespace.rotate_left(17) ^ index);
@@ -67,6 +76,13 @@ mod tests {
     fn seed_for_phase_changes_across_phases() {
         let s1 = seed_for_phase(123, OrdealType::Dawn, PhaseType::I);
         let s2 = seed_for_phase(123, OrdealType::Dawn, PhaseType::II);
+        assert_ne!(s1, s2);
+    }
+
+    #[test]
+    fn seed_for_phase_roll_changes_across_rolls() {
+        let s1 = seed_for_phase_roll(123, OrdealType::Dawn, PhaseType::I, 0);
+        let s2 = seed_for_phase_roll(123, OrdealType::Dawn, PhaseType::I, 1);
         assert_ne!(s1, s2);
     }
 

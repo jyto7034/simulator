@@ -293,5 +293,633 @@ EquipmentDatabase(
                 ],
             },
         ),
-    ]
+
+        // 추가 E.G.O 무기
+        EquipmentMetadata(
+            id: "magic_bullet",
+            uuid: "e0000000-0000-0000-0000-000000000101",
+            name: "Magic Bullet",
+            equipment_type: Weapon,
+            rarity: HE,
+            price: 180,
+            allow_duplicate_equip: true,
+            triggered_effects: {
+                Permanent: [
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: Attack,
+                            kind: Flat,
+                            value: 32,
+                        )),
+                    ),
+                ],
+                OnAttack: [
+                    (
+                        target: CounterpartUnit,
+                        effect: BonusDamage(flat: 12, percent: 0, damage_type: Magic),
+                    ),
+                ],
+            },
+        ),
+        EquipmentMetadata(
+            id: "da_capo",
+            uuid: "e0000000-0000-0000-0000-000000000102",
+            name: "Da Capo",
+            equipment_type: Weapon,
+            rarity: ALEPH,
+            price: 480,
+            allow_duplicate_equip: true,
+            triggered_effects: {
+                Permanent: [
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: Attack,
+                            kind: Percent,
+                            value: 22,
+                        )),
+                    ),
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: AttackIntervalMs,
+                            kind: Flat,
+                            value: -180,
+                        )),
+                    ),
+                ],
+                OnAttack: [
+                    (
+                        target: CounterpartUnit,
+                        effect: ApplyBuff(buff_id: "silence", duration_ms: 600),
+                    ),
+                ],
+            },
+        ),
+        EquipmentMetadata(
+            id: "solemn_lament",
+            uuid: "e0000000-0000-0000-0000-000000000103",
+            name: "Solemn Lament",
+            equipment_type: Weapon,
+            rarity: WAW,
+            price: 260,
+            allow_duplicate_equip: true,
+            triggered_effects: {
+                Permanent: [
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: Attack,
+                            kind: Flat,
+                            value: 34,
+                        )),
+                    ),
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: AttackIntervalMs,
+                            kind: Flat,
+                            value: -120,
+                        )),
+                    ),
+                ],
+                OnKill: [
+                    (
+                        target: SelfUnit,
+                        effect: Heal(flat: 40, percent: 0),
+                    ),
+                ],
+            },
+        ),
+        EquipmentMetadata(
+            id: "frost_splinter",
+            uuid: "e0000000-0000-0000-0000-000000000104",
+            name: "Frost Splinter",
+            equipment_type: Weapon,
+            rarity: WAW,
+            price: 280,
+            allow_duplicate_equip: true,
+            triggered_effects: {
+                Permanent: [
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: Attack,
+                            kind: Flat,
+                            value: 28,
+                        )),
+                    ),
+                ],
+                OnAttack: [
+                    (
+                        target: CounterpartUnit,
+                        effect: ApplyBuff(buff_id: "freeze", duration_ms: 450),
+                    ),
+                ],
+            },
+        ),
+        EquipmentMetadata(
+            id: "goodbye_cleave",
+            uuid: "e0000000-0000-0000-0000-000000000105",
+            name: "Goodbye",
+            equipment_type: Weapon,
+            rarity: ALEPH,
+            price: 520,
+            allow_duplicate_equip: true,
+            triggered_effects: {
+                Permanent: [
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: Attack,
+                            kind: Flat,
+                            value: 70,
+                        )),
+                    ),
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: MaxHealth,
+                            kind: Flat,
+                            value: 120,
+                        )),
+                    ),
+                ],
+                OnKill: [
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: Attack,
+                            kind: Percent,
+                            value: 8,
+                        )),
+                    ),
+                ],
+            },
+        ),
+
+        // 추가 E.G.O 방어구
+        EquipmentMetadata(
+            id: "snow_queen_armor",
+            uuid: "e0000000-0000-0000-0000-000000000201",
+            name: "Snow Queen's Coat",
+            equipment_type: Armor,
+            rarity: WAW,
+            price: 260,
+            allow_duplicate_equip: true,
+            triggered_effects: {
+                Permanent: [
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: MaxHealth,
+                            kind: Flat,
+                            value: 120,
+                        )),
+                    ),
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: Defense,
+                            kind: Flat,
+                            value: 18,
+                        )),
+                    ),
+                ],
+                OnHit: [
+                    (
+                        target: CounterpartUnit,
+                        effect: ApplyBuff(buff_id: "freeze", duration_ms: 350),
+                    ),
+                ],
+            },
+        ),
+        EquipmentMetadata(
+            id: "blue_star_vestment",
+            uuid: "e0000000-0000-0000-0000-000000000202",
+            name: "Blue Star Vestment",
+            equipment_type: Armor,
+            rarity: ALEPH,
+            price: 500,
+            allow_duplicate_equip: true,
+            triggered_effects: {
+                Permanent: [
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: MaxHealth,
+                            kind: Percent,
+                            value: 28,
+                        )),
+                    ),
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: Defense,
+                            kind: Flat,
+                            value: 16,
+                        )),
+                    ),
+                ],
+                OnBattleStart: [
+                    (
+                        target: AllAllies,
+                        effect: Heal(flat: 20, percent: 0),
+                    ),
+                ],
+            },
+        ),
+        EquipmentMetadata(
+            id: "wingbeat_shell",
+            uuid: "e0000000-0000-0000-0000-000000000203",
+            name: "Wingbeat Shell",
+            equipment_type: Armor,
+            rarity: HE,
+            price: 150,
+            allow_duplicate_equip: true,
+            triggered_effects: {
+                Permanent: [
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: MaxHealth,
+                            kind: Flat,
+                            value: 90,
+                        )),
+                    ),
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: MoveSpeedUnitsPerMs,
+                            kind: Flat,
+                            value: 220,
+                        )),
+                    ),
+                ],
+            },
+        ),
+        EquipmentMetadata(
+            id: "censored_plate",
+            uuid: "e0000000-0000-0000-0000-000000000204",
+            name: "CENSORED Plate",
+            equipment_type: Armor,
+            rarity: ALEPH,
+            price: 540,
+            allow_duplicate_equip: true,
+            triggered_effects: {
+                Permanent: [
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: MaxHealth,
+                            kind: Flat,
+                            value: 220,
+                        )),
+                    ),
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: Defense,
+                            kind: Percent,
+                            value: 18,
+                        )),
+                    ),
+                ],
+                OnHit: [
+                    (
+                        target: CounterpartUnit,
+                        effect: ApplyBuff(buff_id: "stun", duration_ms: 350),
+                    ),
+                ],
+            },
+        ),
+        EquipmentMetadata(
+            id: "thorned_lantern_guard",
+            uuid: "e0000000-0000-0000-0000-000000000205",
+            name: "Thorned Lantern Guard",
+            equipment_type: Armor,
+            rarity: TETH,
+            price: 100,
+            allow_duplicate_equip: true,
+            triggered_effects: {
+                Permanent: [
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: Defense,
+                            kind: Flat,
+                            value: 8,
+                        )),
+                    ),
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: MaxHealth,
+                            kind: Flat,
+                            value: 60,
+                        )),
+                    ),
+                ],
+                OnHit: [
+                    (
+                        target: CounterpartUnit,
+                        effect: BonusDamage(flat: 8, percent: 0, damage_type: Physical),
+                    ),
+                ],
+            },
+        ),
+
+        // 추가 E.G.O 악세서리
+        EquipmentMetadata(
+            id: "laetitia_gift",
+            uuid: "e0000000-0000-0000-0000-000000000301",
+            name: "Laetitia's Gift",
+            equipment_type: Accessory,
+            rarity: WAW,
+            price: 230,
+            allow_duplicate_equip: true,
+            triggered_effects: {
+                Permanent: [
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: Attack,
+                            kind: Flat,
+                            value: 14,
+                        )),
+                    ),
+                ],
+                OnAttack: [
+                    (
+                        target: CounterpartUnit,
+                        effect: ApplyBuff(buff_id: "poison", duration_ms: 3000),
+                    ),
+                ],
+            },
+        ),
+        EquipmentMetadata(
+            id: "butterfly_pin",
+            uuid: "e0000000-0000-0000-0000-000000000302",
+            name: "Butterfly Pin",
+            equipment_type: Accessory,
+            rarity: HE,
+            price: 150,
+            allow_duplicate_equip: true,
+            triggered_effects: {
+                Permanent: [
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: AttackIntervalMs,
+                            kind: Flat,
+                            value: -90,
+                        )),
+                    ),
+                ],
+                OnKill: [
+                    (
+                        target: SelfUnit,
+                        effect: Heal(flat: 20, percent: 0),
+                    ),
+                ],
+            },
+        ),
+        EquipmentMetadata(
+            id: "yin_yang_charm",
+            uuid: "e0000000-0000-0000-0000-000000000303",
+            name: "Yin-Yang Charm",
+            equipment_type: Accessory,
+            rarity: WAW,
+            price: 260,
+            allow_duplicate_equip: true,
+            triggered_effects: {
+                Permanent: [
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: Attack,
+                            kind: Percent,
+                            value: 10,
+                        )),
+                    ),
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: MaxHealth,
+                            kind: Percent,
+                            value: 10,
+                        )),
+                    ),
+                ],
+            },
+        ),
+        EquipmentMetadata(
+            id: "parasite_seed",
+            uuid: "e0000000-0000-0000-0000-000000000304",
+            name: "Parasite Seed",
+            equipment_type: Accessory,
+            rarity: WAW,
+            price: 240,
+            allow_duplicate_equip: true,
+            triggered_effects: {
+                OnBattleStart: [
+                    (
+                        target: AllAllies,
+                        effect: Modifier(StatModifier(
+                            stat: Attack,
+                            kind: Percent,
+                            value: 6,
+                        )),
+                    ),
+                ],
+                OnAllyDeath: [
+                    (
+                        target: SelfUnit,
+                        effect: Heal(flat: 30, percent: 0),
+                    ),
+                ],
+            },
+        ),
+        EquipmentMetadata(
+            id: "orchestra_baton",
+            uuid: "e0000000-0000-0000-0000-000000000305",
+            name: "Silent Baton",
+            equipment_type: Accessory,
+            rarity: ALEPH,
+            price: 420,
+            allow_duplicate_equip: true,
+            triggered_effects: {
+                Permanent: [
+                    (
+                        target: SelfUnit,
+                        effect: Modifier(StatModifier(
+                            stat: AttackIntervalMs,
+                            kind: Flat,
+                            value: -160,
+                        )),
+                    ),
+                ],
+                OnAttack: [
+                    (
+                        target: CounterpartUnit,
+                        effect: ApplyBuff(buff_id: "silence", duration_ms: 500),
+                    ),
+                ],
+            },
+        ),
+    ],
+    materials: [
+        EquipmentMaterialMetadata(
+            id: "damaged_weapon_fragment",
+            uuid: "e1000000-0000-0000-0000-000000000001",
+            name: "손상된 무기 파편",
+            description: "침식된 직원이 남긴 손상된 무기 파편입니다. Maintenance에서 일반 무기 복원이나 강화 재료로 사용할 수 있습니다.",
+            material_type: Fragment,
+            rarity: ZAYIN,
+            equipment_type: Some(Weapon),
+        ),
+        EquipmentMaterialMetadata(
+            id: "damaged_armor_fragment",
+            uuid: "e1000000-0000-0000-0000-000000000002",
+            name: "손상된 방어구 파편",
+            description: "침식된 직원이 남긴 손상된 방어구 파편입니다. Maintenance에서 일반 방어구 복원이나 강화 재료로 사용할 수 있습니다.",
+            material_type: Fragment,
+            rarity: ZAYIN,
+            equipment_type: Some(Armor),
+        ),
+        EquipmentMaterialMetadata(
+            id: "ego_residue_scorched",
+            uuid: "e1000000-0000-0000-0000-000000000101",
+            name: "그을린 E.G.O 잔재",
+            description: "Scorched Girl 진압 흔적에서 회수한 E.G.O 잔재입니다. E.G.O 장비 연구와 복원 재료로 사용됩니다.",
+            material_type: Residue,
+            rarity: HE,
+            equipment_type: None,
+        ),
+    ],
+    recipes: [
+        EquipmentRecipeMetadata(
+            ingredients: [
+                "00000003-0000-0000-0000-000000000003", // Fourth Match Flame
+                "650e8400-e29b-41d4-a716-446655440041", // Crimson Goggles
+            ],
+            result: "e0000000-0000-0000-0000-000000000101", // Magic Bullet
+        ),
+        EquipmentRecipeMetadata(
+            ingredients: [
+                "00000003-0000-0000-0000-000000000003", // Fourth Match Flame
+                "650e8400-e29b-41d4-a716-446655440043", // Time Dial
+            ],
+            result: "e0000000-0000-0000-0000-000000000103", // Solemn Lament
+        ),
+        EquipmentRecipeMetadata(
+            ingredients: [
+                "650e8400-e29b-41d4-a716-446655440031", // Standard Training E.G.O Armor
+                "650e8400-e29b-41d4-a716-446655440043", // Time Dial
+            ],
+            result: "e0000000-0000-0000-0000-000000000203", // Wingbeat Shell
+        ),
+        EquipmentRecipeMetadata(
+            ingredients: [
+                "650e8400-e29b-41d4-a716-446655440031", // Standard Training E.G.O Armor
+                "650e8400-e29b-41d4-a716-446655440041", // Crimson Goggles
+            ],
+            result: "e0000000-0000-0000-0000-000000000205", // Thorned Lantern Guard
+        ),
+        EquipmentRecipeMetadata(
+            ingredients: [
+                "650e8400-e29b-41d4-a716-446655440042", // Resonance Pendant
+                "650e8400-e29b-41d4-a716-446655440043", // Time Dial
+            ],
+            result: "e0000000-0000-0000-0000-000000000305", // Silent Baton
+        ),
+    ],
+    restoration_recipes: [
+        EquipmentRestorationRecipeMetadata(
+            id: "restore_standard_armor",
+            result_equipment_id: "standard_armor",
+            costs: [
+                EquipmentMaterialCost(
+                    material_id: "damaged_armor_fragment",
+                    amount: 3,
+                ),
+            ],
+        ),
+        EquipmentRestorationRecipeMetadata(
+            id: "restore_fourth_match",
+            result_equipment_id: "fourth_match",
+            costs: [
+                EquipmentMaterialCost(
+                    material_id: "damaged_weapon_fragment",
+                    amount: 3,
+                ),
+                EquipmentMaterialCost(
+                    material_id: "ego_residue_scorched",
+                    amount: 1,
+                ),
+            ],
+        ),
+    ],
+    dismantle_recipes: [
+        EquipmentDismantleRecipeMetadata(
+            equipment_id: "standard_armor",
+            yields: [
+                EquipmentMaterialCost(
+                    material_id: "damaged_armor_fragment",
+                    amount: 1,
+                ),
+            ],
+        ),
+        EquipmentDismantleRecipeMetadata(
+            equipment_id: "fourth_match",
+            yields: [
+                EquipmentMaterialCost(
+                    material_id: "damaged_weapon_fragment",
+                    amount: 1,
+                ),
+            ],
+        ),
+    ],
+    enhancement_recipes: [
+        EquipmentEnhancementRecipeMetadata(
+            equipment_id: "standard_armor",
+            max_level: 5,
+            costs_per_level: [
+                EquipmentMaterialCost(
+                    material_id: "damaged_armor_fragment",
+                    amount: 2,
+                ),
+            ],
+            modifiers_per_level: [
+                StatModifier(
+                    stat: MaxHealth,
+                    kind: Flat,
+                    value: 12,
+                ),
+                StatModifier(
+                    stat: Defense,
+                    kind: Flat,
+                    value: 1,
+                ),
+            ],
+        ),
+        EquipmentEnhancementRecipeMetadata(
+            equipment_id: "fourth_match",
+            max_level: 5,
+            costs_per_level: [
+                EquipmentMaterialCost(
+                    material_id: "damaged_weapon_fragment",
+                    amount: 2,
+                ),
+            ],
+            modifiers_per_level: [
+                StatModifier(
+                    stat: Attack,
+                    kind: Flat,
+                    value: 4,
+                ),
+            ],
+        ),
+    ],
 )

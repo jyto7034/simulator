@@ -3,12 +3,12 @@ use uuid::Uuid;
 use crate::game::{
     ability::{
         SkillAreaAnchorSource, SkillAreaDeliveryDef, SkillAreaShapeDef, SkillAreaTickPolicy,
-        SkillHitTargetFilter, SkillId,
+        SkillAreaTracking, SkillHitTargetFilter, SkillId,
     },
     battle::{
         core::{
             movement::types::{TimelineVec2, WorldVec2},
-            spatial::{legacy_units_to_world, AreaQueryShape, DEFAULT_UNIT_HITBOX_RADIUS_UNITS},
+            spatial::AreaQueryShape,
             types::{AreaRuntime, SkillImpactContext, SkillStepResult},
             BattleCore,
         },
@@ -61,8 +61,11 @@ impl BattleCore {
             .sample_unit_world_position_at(caster_instance_id, time_ms)
             .unwrap_or_else(|| WorldVec2::from_tile_center(caster_tile_pos));
         let cast_target_anchor_position = self
-            .stored_skill_cast_anchor_position(cast_seq)
-            .map(WorldVec2::from_tile_center);
+            .stored_skill_cast_anchor_world_position(cast_seq)
+            .or_else(|| {
+                self.stored_skill_cast_anchor_position(cast_seq)
+                    .map(WorldVec2::from_tile_center)
+            });
 
         match area.anchor {
             SkillAreaAnchorSource::CastTarget | SkillAreaAnchorSource::CastTargetStart => {
@@ -228,15 +231,6 @@ impl BattleCore {
         hit_targets: SkillHitTargetFilter,
         include_caster: bool,
     ) -> Vec<UnitInstanceId> {
-        let hitbox_expansion = legacy_units_to_world(DEFAULT_UNIT_HITBOX_RADIUS_UNITS);
-        let query = AreaQueryShape {
-            origin,
-            center,
-            direction_hint,
-            shape,
-            hitbox_expansion,
-        };
-
         let mut targets: Vec<UnitInstanceId> = self
             .units
             .values()
@@ -250,15 +244,55 @@ impl BattleCore {
                 )
             })
             .filter_map(|unit| {
-                let position = self.sample_unit_world_position_at(unit.instance_id, time_ms)?;
+                let body = self.sample_unit_body_at(unit.instance_id, time_ms)?;
+                let query = AreaQueryShape {
+                    origin,
+                    center,
+                    direction_hint,
+                    shape,
+                    hitbox_expansion: body.radius.max(0.0),
+                };
                 self.spatial_query_backend
-                    .contains_area_point(&query, position)
+                    .contains_area_point(&query, body.position)
                     .then_some(unit.instance_id)
             })
             .collect();
 
         targets.sort_by(|a, b| a.as_bytes().cmp(b.as_bytes()));
         targets
+    }
+
+    fn persistent_area_geometry_at(
+        &self,
+        time_ms: u64,
+        runtime: &AreaRuntime,
+    ) -> Option<(WorldVec2, WorldVec2, WorldVec2)> {
+        match runtime.tracking {
+            SkillAreaTracking::GroundFixed => {
+                Some((runtime.origin, runtime.center, runtime.direction_hint))
+            }
+            SkillAreaTracking::FollowCaster | SkillAreaTracking::FollowTarget => {
+                let area = SkillAreaDeliveryDef {
+                    shape: runtime.shape,
+                    anchor: runtime.anchor,
+                    tracking: runtime.tracking,
+                    hit_targets: runtime.hit_targets,
+                    include_caster: runtime.include_caster,
+                    tick_policy: runtime.tick_policy,
+                    duration_ms: runtime.duration_ms,
+                    tick_interval_ms: runtime.tick_interval_ms,
+                };
+                self.resolve_area_geometry(
+                    time_ms,
+                    runtime.cast_seq,
+                    runtime.step_index,
+                    runtime.caster_instance_id,
+                    runtime.step_target,
+                    &area,
+                )
+                .map(|(_, origin, center, direction_hint)| (origin, center, direction_hint))
+            }
+        }
     }
 
     pub(in crate::game::battle::core) fn record_skill_area_declared(
@@ -298,6 +332,7 @@ impl BattleCore {
                 warning_ms: 0,
                 tick_interval_ms: area.tick_interval_ms,
                 tick_policy: area.tick_policy,
+                tracking: area.tracking,
                 hit_targets: area.hit_targets,
                 include_caster: area.include_caster,
             },
@@ -373,6 +408,8 @@ impl BattleCore {
                 step_id: step_id.clone(),
                 caster_instance_id,
                 caster_owner: _caster_owner,
+                anchor: area.anchor,
+                tracking: area.tracking,
                 origin,
                 center,
                 direction_hint,
@@ -380,10 +417,12 @@ impl BattleCore {
                 hit_targets: area.hit_targets,
                 include_caster: area.include_caster,
                 tick_policy: area.tick_policy,
+                duration_ms: area.duration_ms,
                 spawned_at_ms: time_ms,
                 expires_at_ms,
                 tick_interval_ms: area.tick_interval_ms,
                 next_tick_ms,
+                step_target,
                 hit_unit_ids: Vec::new(),
                 previous_tick_unit_ids: Vec::new(),
             },
@@ -440,13 +479,19 @@ impl BattleCore {
             return;
         };
 
+        let Some((origin, center, direction_hint)) =
+            self.persistent_area_geometry_at(time_ms, &runtime)
+        else {
+            return;
+        };
+
         let raw_targets = self.collect_area_targets_at(
             time_ms,
             runtime.caster_owner,
             runtime.caster_instance_id,
-            runtime.origin,
-            runtime.center,
-            runtime.direction_hint,
+            origin,
+            center,
+            direction_hint,
             runtime.shape,
             runtime.hit_targets,
             runtime.include_caster,
@@ -492,8 +537,8 @@ impl BattleCore {
             SkillImpactContext {
                 delivery_id: runtime.area_id,
                 impact_time_ms: time_ms,
-                impact_position: runtime.center,
-                direction_hint: Some(runtime.direction_hint),
+                impact_position: center,
+                direction_hint: Some(direction_hint),
                 first_hit_unit_id: targets.first().copied(),
                 hit_unit_ids: targets.clone(),
                 spawned_area_id: Some(runtime.area_id),
@@ -508,6 +553,9 @@ impl BattleCore {
         );
 
         if let Some(active) = self.active_areas.get_mut(&area_id) {
+            active.origin = origin;
+            active.center = center;
+            active.direction_hint = direction_hint;
             match active.tick_policy {
                 SkillAreaTickPolicy::EveryTick => {}
                 SkillAreaTickPolicy::OncePerArea => {

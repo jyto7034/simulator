@@ -23,7 +23,7 @@ suppress_success = 2      # 진압 성공 시 증가량
 suppress_failure = 1      # 진압 실패 시 감소량
 breach_success = 3        # Breach 성공 시 증가량 (하이리스크 하이리턴)
 breach_failure = 2        # Breach 실패 시 감소량
-phase_recovery = 1        # 페이즈 종료 시 자동 회복량
+node_recovery = 1         # 노드 완료/안정화 시 자동 회복량
 item_recovery = 2         # 특수 아이템 사용 시 회복량
 
 [qliphoth.reward_multipliers]

@@ -2,7 +2,13 @@ use std::collections::HashSet;
 
 use uuid::Uuid;
 
-use crate::game::{battle::placement::PlacementSlotId, behavior::GameError, enums::Side};
+use crate::game::{
+    battle::{
+        ids::UnitInstanceId,
+        scenario::{TacticalGroupMembers, TacticalGroupPlanId},
+    },
+    behavior::GameError,
+};
 
 use super::{
     movement::{types::UnitBody, ActionState},
@@ -10,25 +16,24 @@ use super::{
 };
 
 impl BattleCore {
-    pub(super) fn build_runtime_units_from_decks(&mut self, side: Side) -> Result<(), GameError> {
-        let deck = match side {
-            Side::Opponent => &self.opponent_info,
-            Side::Player => &self.player_info,
-        };
-
-        let mut seen_artifacts: HashSet<Uuid> = HashSet::new();
-        for (idx, artifact) in deck.artifacts.iter().enumerate() {
-            if !seen_artifacts.insert(artifact.base_uuid) {
+    pub(super) fn build_runtime_artifacts_from_scenario(&mut self) -> Result<(), GameError> {
+        let mut seen_artifacts: HashSet<(crate::game::enums::Side, Uuid)> = HashSet::new();
+        for artifact in &self.scenario.artifacts {
+            if !seen_artifacts.insert((artifact.side, artifact.base_uuid)) {
                 return Err(GameError::InvalidAction);
             }
-            let instance_id = Self::make_artifact_instance_id(artifact.base_uuid, side, idx as u32);
+            let instance_id = Self::make_artifact_instance_id(
+                artifact.base_uuid,
+                artifact.side,
+                artifact.instance_salt,
+            );
             if self
                 .artifacts
                 .insert(
                     instance_id,
                     RuntimeArtifact {
                         instance_id,
-                        owner: side,
+                        owner: artifact.side,
                         base_uuid: artifact.base_uuid,
                     },
                 )
@@ -38,58 +43,73 @@ impl BattleCore {
             }
         }
 
-        let artifact_base_uuids: Vec<Uuid> = deck.artifacts.iter().map(|a| a.base_uuid).collect();
-        for (idx, unit) in deck.units.iter().enumerate() {
+        Ok(())
+    }
+
+    pub(super) fn spawn_scenario_group(
+        &mut self,
+        group_id: &crate::game::battle::scenario::ScenarioGroupId,
+    ) -> Result<Vec<UnitInstanceId>, GameError> {
+        if self.scenario_runtime.spawned_groups.contains(group_id) {
+            return Ok(Vec::new());
+        }
+        let group = self
+            .scenario
+            .group(group_id)
+            .cloned()
+            .ok_or(GameError::InvalidAction)?;
+
+        let artifact_base_uuids: Vec<Uuid> = self
+            .scenario
+            .artifacts
+            .iter()
+            .filter(|artifact| artifact.side == group.side)
+            .map(|artifact| artifact.base_uuid)
+            .collect();
+
+        let mut spawned_unit_ids = Vec::new();
+        for spawn in &group.spawns {
+            let unit = &spawn.draft;
+            let combat_profile = unit.combat_profile(&self.game_data)?;
             let mut stats = unit.effective_stats(&self.game_data, &artifact_base_uuids)?;
 
-            let position = deck
-                .positions
-                .get(&unit.owned_uuid)
-                .copied()
-                .ok_or(GameError::UnitNotFound)?;
-
-            let instance_id = Self::make_instance_id(unit.base_uuid, side, idx as u32);
-            let (resonance_start, resonance_max, resonance_lock_ms) = self
-                .game_data
-                .abnormality_data
-                .get_by_uuid(&unit.base_uuid)
-                .map(|meta| {
-                    (
-                        meta.resonance.start,
-                        meta.resonance.max.max(1),
-                        meta.resonance.gain_lock_ms,
-                    )
-                })
-                .unwrap_or((0, 100, 1000));
+            let base_uuid = unit.base_uuid();
+            let instance_id = Self::make_instance_id(base_uuid, group.side, spawn.instance_salt);
+            let resonance_start = combat_profile.resonance.start;
+            let resonance_max = combat_profile.resonance.max.max(1);
+            let resonance_lock_ms = combat_profile.resonance.gain_lock_ms;
             let resonance_current = resonance_start.min(resonance_max);
-            let move_speed_units_per_ms = self
-                .game_data
-                .abnormality_data
-                .get_by_uuid(&unit.base_uuid)
-                .map(|meta| meta.movement.speed_units_per_ms)
-                .unwrap_or(3000);
+            let move_speed_units_per_ms = combat_profile.movement.speed_units_per_ms;
             stats.move_speed_units_per_ms = move_speed_units_per_ms;
-            let spawn_position = self
-                .placement_board
-                .slot(side, PlacementSlotId::from(position))
-                .ok_or(GameError::InvalidAction)?
-                .world_center;
+            let spawn_position =
+                super::movement::types::WorldVec2::from_tile_center(spawn.position);
+            let radius = combat_profile.movement.radius_units as f32
+                / super::movement::types::DATA_UNITS_PER_WORLD;
             let body = UnitBody::new_at(
                 spawn_position,
-                super::movement::types::DEFAULT_UNIT_RADIUS,
+                radius,
                 move_speed_units_per_ms as f32 * 1_000.0
-                    / super::movement::types::LEGACY_POSITION_UNITS_PER_WORLD,
+                    / super::movement::types::DATA_UNITS_PER_WORLD,
             );
+            let tactical_anchor = Some(spawn_position);
+            let tactical_group_id =
+                self.tactical_group_for_spawn(&group.id, &spawn.unit_ref, group.side);
             if self
                 .units
                 .insert(
                     instance_id,
                     RuntimeUnit {
                         instance_id,
-                        owner: side,
-                        base_uuid: unit.base_uuid,
+                        source_owned_uuid: unit.owned_uuid,
+                        owner: group.side,
+                        role: unit.source.role(),
+                        base_uuid,
                         stats,
+                        basic_attack: combat_profile.basic_attack,
+                        skill_id: combat_profile.skill_id,
                         body,
+                        tactical_anchor,
+                        tactical_group_id: tactical_group_id.clone(),
                         move_epoch: 0,
                         action_state: ActionState::Idle,
                         action_locks: Default::default(),
@@ -110,16 +130,31 @@ impl BattleCore {
                 return Err(GameError::InvalidAction);
             }
 
-            self.battlefield.place(instance_id, position)?;
+            self.battlefield.place(instance_id, spawn.position)?;
+            self.scenario_runtime
+                .unit_refs
+                .insert(spawn.unit_ref.clone(), instance_id);
+            if let Some(tactical_group_id) = tactical_group_id {
+                self.scenario_runtime
+                    .tactical_groups
+                    .entry(tactical_group_id)
+                    .or_default()
+                    .push(instance_id);
+            }
+            spawned_unit_ids.push(instance_id);
 
             for (idx, equipment_uuid) in unit.equipped_items.iter().enumerate() {
-                let item_instance_id =
-                    Self::make_item_instance_id(*equipment_uuid, side, instance_id, idx as u32);
+                let item_instance_id = Self::make_item_instance_id(
+                    *equipment_uuid,
+                    group.side,
+                    instance_id,
+                    idx as u32,
+                );
                 self.items.insert(
                     item_instance_id,
                     RuntimeItem {
                         instance_id: item_instance_id,
-                        owner: side,
+                        owner: group.side,
                         owner_unit_instance: instance_id,
                         base_uuid: *equipment_uuid,
                     },
@@ -127,7 +162,10 @@ impl BattleCore {
             }
         }
 
-        Ok(())
+        self.scenario_runtime
+            .spawned_groups
+            .insert(group_id.clone());
+        Ok(spawned_unit_ids)
     }
 
     pub(super) fn build_runtime_field(&mut self) -> Result<(), GameError> {
@@ -137,5 +175,39 @@ impl BattleCore {
             }
         }
         Ok(())
+    }
+
+    fn tactical_group_for_spawn(
+        &self,
+        spawn_group_id: &crate::game::battle::scenario::ScenarioGroupId,
+        unit_ref: &crate::game::battle::scenario::ScenarioUnitRef,
+        side: crate::game::enums::Side,
+    ) -> Option<TacticalGroupPlanId> {
+        self.scenario
+            .tactical_plan
+            .group_plans
+            .iter()
+            .find(|plan| {
+                if plan.side != side {
+                    return false;
+                }
+                match &plan.members {
+                    TacticalGroupMembers::SpawnGroup(group_id) => group_id == spawn_group_id,
+                    TacticalGroupMembers::ExplicitUnits(units) => {
+                        units.iter().any(|id| id == unit_ref)
+                    }
+                    TacticalGroupMembers::SideAll(_) => false,
+                }
+            })
+            .or_else(|| {
+                self.scenario.tactical_plan.group_plans.iter().find(|plan| {
+                    plan.side == side
+                        && matches!(
+                            &plan.members,
+                            TacticalGroupMembers::SideAll(plan_side) if *plan_side == side
+                        )
+                })
+            })
+            .map(|plan| plan.id.clone())
     }
 }

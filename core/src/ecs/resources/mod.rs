@@ -41,6 +41,10 @@ pub enum GameState {
     InSuppression { abnormality_uuid: Uuid },
     /// 진압 전투 리플레이 진행 중
     InSuppressionReplay { abnormality_uuid: Uuid },
+    /// 진압 전투 보상 확인/수령 대기 중
+    InCombatReward { reward_uuid: Uuid },
+    /// 진압 전투 보상 수령 완료 (Exit만 가능)
+    InCombatRewardClaimed { reward_uuid: Uuid },
     /// 시련 전투 진행 중
     InBattle { battle_uuid: Uuid },
     /// 게임 종료
@@ -116,7 +120,9 @@ impl Field {
     }
 
     pub fn has_unit_on_side(&self, side: Side) -> bool {
-        self.placements.values().any(|placement| placement.side == side)
+        self.placements
+            .values()
+            .any(|placement| placement.side == side)
     }
 
     pub fn remove(&mut self, unit_uuid: Uuid) -> Option<Position> {
@@ -137,14 +143,18 @@ impl Field {
             return Err(GameError::OutOfBounds);
         }
 
-        if self.placements.contains_key(&new_pos) {
-            return Err(GameError::PositionOccupied);
-        }
-
         let old_pos = self
             .unit_positions
             .get(&unit_uuid)
             .ok_or(GameError::UnitNotFound)?;
+
+        if *old_pos == new_pos {
+            return Ok(());
+        }
+
+        if self.placements.contains_key(&new_pos) {
+            return Err(GameError::PositionOccupied);
+        }
 
         let placement = self
             .placements
@@ -153,6 +163,36 @@ impl Field {
 
         self.placements.insert(new_pos, placement);
         self.unit_positions.insert(unit_uuid, new_pos);
+        Ok(())
+    }
+
+    pub fn swap_units(&mut self, left_uuid: Uuid, right_uuid: Uuid) -> Result<(), GameError> {
+        if left_uuid == right_uuid {
+            return Ok(());
+        }
+
+        let left_pos = *self
+            .unit_positions
+            .get(&left_uuid)
+            .ok_or(GameError::UnitNotFound)?;
+        let right_pos = *self
+            .unit_positions
+            .get(&right_uuid)
+            .ok_or(GameError::UnitNotFound)?;
+
+        let left_placement = self
+            .placements
+            .remove(&left_pos)
+            .ok_or(GameError::UnitNotFound)?;
+        let right_placement = self
+            .placements
+            .remove(&right_pos)
+            .ok_or(GameError::UnitNotFound)?;
+
+        self.placements.insert(left_pos, right_placement);
+        self.placements.insert(right_pos, left_placement);
+        self.unit_positions.insert(left_uuid, right_pos);
+        self.unit_positions.insert(right_uuid, left_pos);
         Ok(())
     }
 
@@ -248,6 +288,134 @@ impl Field {
 
         for uuid in uuids_to_remove {
             self.remove(uuid);
+        }
+    }
+}
+
+#[derive(Resource, Debug, Clone)]
+pub struct Bench {
+    pub max_slots: usize,
+    pub slots: Vec<Option<Uuid>>,
+    unit_slots: HashMap<Uuid, usize>,
+}
+
+impl Default for Bench {
+    fn default() -> Self {
+        Self::new(8)
+    }
+}
+
+impl Bench {
+    pub fn new(max_slots: usize) -> Self {
+        Self {
+            max_slots,
+            slots: vec![None; max_slots],
+            unit_slots: HashMap::new(),
+        }
+    }
+
+    pub fn slot_of(&self, unit_uuid: Uuid) -> Option<usize> {
+        self.unit_slots.get(&unit_uuid).copied()
+    }
+
+    pub fn occupant(&self, slot: usize) -> Option<Uuid> {
+        self.slots.get(slot).copied().flatten()
+    }
+
+    pub fn remove(&mut self, unit_uuid: Uuid) -> Option<usize> {
+        let slot = self.unit_slots.remove(&unit_uuid)?;
+        if self.slots.get(slot).copied().flatten() == Some(unit_uuid) {
+            self.slots[slot] = None;
+        }
+        Some(slot)
+    }
+
+    pub fn place_first_available(&mut self, unit_uuid: Uuid) -> Result<usize, GameError> {
+        if let Some(slot) = self.slot_of(unit_uuid) {
+            return Ok(slot);
+        }
+
+        let slot = self
+            .slots
+            .iter()
+            .position(Option::is_none)
+            .ok_or(GameError::InventoryFull)?;
+        self.place_at(unit_uuid, slot)
+    }
+
+    pub fn place_at(&mut self, unit_uuid: Uuid, slot: usize) -> Result<usize, GameError> {
+        if slot >= self.max_slots {
+            return Err(GameError::OutOfBounds);
+        }
+
+        if self.slots[slot].is_some() {
+            return Err(GameError::PositionOccupied);
+        }
+
+        self.remove(unit_uuid);
+        self.slots[slot] = Some(unit_uuid);
+        self.unit_slots.insert(unit_uuid, slot);
+        Ok(slot)
+    }
+
+    pub fn replace_unit(
+        &mut self,
+        removed_unit: Uuid,
+        placed_unit: Uuid,
+    ) -> Result<usize, GameError> {
+        let slot = self.remove(removed_unit).ok_or(GameError::UnitNotFound)?;
+        self.place_at(placed_unit, slot)
+    }
+
+    pub fn move_unit(
+        &mut self,
+        unit_uuid: Uuid,
+        dest_slot: usize,
+        swap_with_unit_uuid: Option<Uuid>,
+    ) -> Result<(), GameError> {
+        if dest_slot >= self.max_slots {
+            return Err(GameError::OutOfBounds);
+        }
+
+        let source_slot = self.slot_of(unit_uuid).ok_or(GameError::UnitNotFound)?;
+        if source_slot == dest_slot {
+            return Ok(());
+        }
+
+        if let Some(occupant_uuid) = self.occupant(dest_slot) {
+            if swap_with_unit_uuid != Some(occupant_uuid) {
+                return Err(GameError::PositionOccupied);
+            }
+
+            self.slots[source_slot] = Some(occupant_uuid);
+            self.slots[dest_slot] = Some(unit_uuid);
+            self.unit_slots.insert(unit_uuid, dest_slot);
+            self.unit_slots.insert(occupant_uuid, source_slot);
+            return Ok(());
+        }
+
+        self.slots[source_slot] = None;
+        self.slots[dest_slot] = Some(unit_uuid);
+        self.unit_slots.insert(unit_uuid, dest_slot);
+        Ok(())
+    }
+
+    pub fn sync_owned_units(&mut self, owned_units: &[Uuid], field_units: &HashSet<Uuid>) {
+        let owned_set = owned_units.iter().copied().collect::<HashSet<_>>();
+        let assigned_units = self.unit_slots.keys().copied().collect::<Vec<_>>();
+
+        for unit_uuid in assigned_units {
+            if !owned_set.contains(&unit_uuid) || field_units.contains(&unit_uuid) {
+                self.remove(unit_uuid);
+            }
+        }
+
+        for unit_uuid in owned_units {
+            if field_units.contains(unit_uuid) || self.unit_slots.contains_key(unit_uuid) {
+                continue;
+            }
+
+            let _ = self.place_first_available(*unit_uuid);
         }
     }
 }
@@ -361,6 +529,7 @@ impl Default for Qliphoth {
 pub struct GameProgression {
     pub current_ordeal: OrdealType,
     pub current_phase: PhaseType,
+    pub phase_roll_index: u64,
 }
 
 impl GameProgression {
@@ -368,6 +537,7 @@ impl GameProgression {
         Self {
             current_ordeal: OrdealType::Dawn,
             current_phase: PhaseType::I,
+            phase_roll_index: 0,
         }
     }
 }
@@ -458,6 +628,7 @@ pub struct RewardSessionState {
     pub mode: RewardMode,
     pub rewards: Vec<BonusEventOption>,
     pub selected_reward_uuid: Option<Uuid>,
+    pub can_skip: bool,
 }
 
 impl RewardSessionState {
@@ -873,6 +1044,24 @@ mod tests {
 
         let err = field.move_unit(unit1, Position::new(1, 1)).unwrap_err();
         assert!(matches!(err, GameError::PositionOccupied));
+    }
+
+    #[test]
+    fn test_field_move_unit_to_same_position_is_noop() {
+        use crate::game::enums::Side;
+
+        let unit_uuid = Uuid::new_v4();
+        let mut field = Field::new(3, 3);
+        field
+            .place(unit_uuid, Side::Player, Position::new(1, 1))
+            .unwrap();
+
+        field.move_unit(unit_uuid, Position::new(1, 1)).unwrap();
+
+        assert_eq!(field.get_position(unit_uuid), Some(Position::new(1, 1)));
+        assert_eq!(field.get_unit_at(Position::new(1, 1)), Some(unit_uuid));
+        assert_eq!(field.placements.len(), 1);
+        assert_eq!(field.unit_positions.len(), 1);
     }
 
     #[test]

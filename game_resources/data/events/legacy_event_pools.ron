@@ -1,0 +1,355 @@
+// Legacy 이벤트 풀 설정 (보존용)
+// 현재 노드맵 live flow의 source of truth가 아니며, 기존 데이터 검증/마이그레이션 대상으로 유지한다.
+// WeightedEvent는 weight(가중치)와 uuid(이벤트 식별자)만 가짐
+// UUID로 GameData에서 실제 메타데이터를 조회함
+EventPoolConfig(
+    dawn: LegacyEventPoolBucket(
+        // 상점 풀 (이 중 1개 선택)
+        shops: [
+            WeightedEvent(
+                weight: 60,
+                uuid: "550e8400-e29b-41d4-a716-446655440001",  // 아티팩트 상인 라헬
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "550e8400-e29b-41d4-a716-446655440002",  // E.G.O 무기상 아인 (할인)
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "550e8400-e29b-41d4-a716-446655440004",  // 악세서리 상인 네짜흐
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "550e8400-e29b-41d4-a716-446655440005",  // 기물 관리자 예소드
+            ),
+        ],
+
+        // 보너스 풀 (이 중 1개 선택)
+        bonuses: [
+            WeightedEvent(
+                weight: 40,
+                uuid: "650e8400-e29b-41d4-a716-446655440101",  // 엔케팔린 보상
+            ),
+            WeightedEvent(
+                weight: 30,
+                uuid: "650e8400-e29b-41d4-a716-446655440102",  // 작업 경험
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440103",  // E.G.O 선물
+            ),
+            WeightedEvent(
+                weight: 10,
+                uuid: "650e8400-e29b-41d4-a716-446655440104",  // 새로운 기물 (레어)
+            ),
+            WeightedEvent(
+                weight: 10,
+                uuid: "650e8400-e29b-41d4-a716-446655440105",  // 고농도 엔케팔린
+            ),
+            WeightedEvent(
+                weight: 8,
+                uuid: "650e8400-e29b-41d4-a716-446655440109",  // 참회의 스킬 파편
+            ),
+        ],
+
+        // 랜덤 인카운터 풀 (이 중 1개 선택)
+        random_events: [
+            WeightedEvent(
+                weight: 30,
+                uuid: "650e8400-e29b-41d4-a716-446655440201",  // 의심스러운 상자
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "650e8400-e29b-41d4-a716-446655440202",  // 기도 제단
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440203",  // 떠돌이 상인
+            ),
+            WeightedEvent(
+                weight: 15,
+                uuid: "650e8400-e29b-41d4-a716-446655440204",  // 저주받은 분수
+            ),
+            WeightedEvent(
+                weight: 10,
+                uuid: "650e8400-e29b-41d4-a716-446655440205",  // 수상한 이방인
+            ),
+            WeightedEvent(
+                weight: 10,
+                uuid: "650e8400-e29b-41d4-a716-446655440212",  // 웃는 온실
+            ),
+        ],
+    ),
+
+    noon: LegacyEventPoolBucket(
+        shops: [
+            WeightedEvent(
+                weight: 50,
+                uuid: "550e8400-e29b-41d4-a716-446655440003",  // 방어구 상인 벤자민
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "550e8400-e29b-41d4-a716-446655440001",  // 아티팩트 상인 라헬
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "550e8400-e29b-41d4-a716-446655440004",  // 악세서리 상인 네짜흐
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "550e8400-e29b-41d4-a716-446655440005",  // 기물 관리자 예소드
+            ),
+        ],
+        bonuses: [
+            WeightedEvent(
+                weight: 50,
+                uuid: "650e8400-e29b-41d4-a716-446655440101",  // 엔케팔린 보상
+            ),
+            WeightedEvent(
+                weight: 30,
+                uuid: "650e8400-e29b-41d4-a716-446655440102",  // 작업 경험
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440104",  // 새로운 기물
+            ),
+            WeightedEvent(
+                weight: 15,
+                uuid: "650e8400-e29b-41d4-a716-446655440106",  // E.G.O 보급 상자
+            ),
+        ],
+        random_events: [
+            WeightedEvent(
+                weight: 35,
+                uuid: "650e8400-e29b-41d4-a716-446655440206",  // 도박꾼
+            ),
+            WeightedEvent(
+                weight: 30,
+                uuid: "650e8400-e29b-41d4-a716-446655440207",  // 저주받은 상자
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440208",  // 공허의 관문
+            ),
+            WeightedEvent(
+                weight: 15,
+                uuid: "650e8400-e29b-41d4-a716-446655440209",  // 악마의 계약서
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440210",  // 봉인 기록실
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440211",  // 추출 실패품
+            ),
+            WeightedEvent(
+                weight: 15,
+                uuid: "650e8400-e29b-41d4-a716-446655440213",  // 얼어붙은 거울
+            ),
+        ],
+    ),
+
+    dusk: LegacyEventPoolBucket(
+        shops: [
+            WeightedEvent(
+                weight: 40,
+                uuid: "550e8400-e29b-41d4-a716-446655440002",  // E.G.O 무기상 아인
+            ),
+            WeightedEvent(
+                weight: 35,
+                uuid: "550e8400-e29b-41d4-a716-446655440003",  // 방어구 상인 벤자민
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "550e8400-e29b-41d4-a716-446655440004",  // 악세서리 상인 네짜흐
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "550e8400-e29b-41d4-a716-446655440006",  // 고위험 추출 담당 게부라
+            ),
+        ],
+        bonuses: [
+            WeightedEvent(
+                weight: 45,
+                uuid: "650e8400-e29b-41d4-a716-446655440101",
+            ),
+            WeightedEvent(
+                weight: 35,
+                uuid: "650e8400-e29b-41d4-a716-446655440102",
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440103",
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440107",
+            ),
+        ],
+        random_events: [
+            WeightedEvent(
+                weight: 30,
+                uuid: "650e8400-e29b-41d4-a716-446655440207",
+            ),
+            WeightedEvent(
+                weight: 30,
+                uuid: "650e8400-e29b-41d4-a716-446655440208",
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "650e8400-e29b-41d4-a716-446655440206",
+            ),
+            WeightedEvent(
+                weight: 15,
+                uuid: "650e8400-e29b-41d4-a716-446655440209",
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440214",
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440216",
+            ),
+        ],
+    ),
+
+    midnight: LegacyEventPoolBucket(
+        shops: [
+            WeightedEvent(
+                weight: 40,
+                uuid: "550e8400-e29b-41d4-a716-446655440001",
+            ),
+            WeightedEvent(
+                weight: 35,
+                uuid: "550e8400-e29b-41d4-a716-446655440002",
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "550e8400-e29b-41d4-a716-446655440004",
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "550e8400-e29b-41d4-a716-446655440006",
+            ),
+        ],
+        bonuses: [
+            WeightedEvent(
+                weight: 40,
+                uuid: "650e8400-e29b-41d4-a716-446655440102",
+            ),
+            WeightedEvent(
+                weight: 35,
+                uuid: "650e8400-e29b-41d4-a716-446655440101",
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "650e8400-e29b-41d4-a716-446655440104",
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "650e8400-e29b-41d4-a716-446655440106",
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440108",
+            ),
+        ],
+        random_events: [
+            WeightedEvent(
+                weight: 40,
+                uuid: "650e8400-e29b-41d4-a716-446655440208",
+            ),
+            WeightedEvent(
+                weight: 30,
+                uuid: "650e8400-e29b-41d4-a716-446655440209",
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440207",
+            ),
+            WeightedEvent(
+                weight: 10,
+                uuid: "650e8400-e29b-41d4-a716-446655440206",
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "650e8400-e29b-41d4-a716-446655440215",
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440217",
+            ),
+        ],
+    ),
+
+    white: LegacyEventPoolBucket(
+        shops: [
+            WeightedEvent(
+                weight: 45,
+                uuid: "550e8400-e29b-41d4-a716-446655440002",  // E.G.O 무기상 아인 (최종 시련)
+            ),
+            WeightedEvent(
+                weight: 30,
+                uuid: "550e8400-e29b-41d4-a716-446655440001",  // 아티팩트 상인 라헬
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "550e8400-e29b-41d4-a716-446655440004",  // 악세서리 상인 네짜흐
+            ),
+            WeightedEvent(
+                weight: 40,
+                uuid: "550e8400-e29b-41d4-a716-446655440007",  // 최종 추출 담당 비나
+            ),
+        ],
+        bonuses: [
+            WeightedEvent(
+                weight: 50,
+                uuid: "650e8400-e29b-41d4-a716-446655440104",
+            ),
+            WeightedEvent(
+                weight: 30,
+                uuid: "650e8400-e29b-41d4-a716-446655440103",
+            ),
+            WeightedEvent(
+                weight: 20,
+                uuid: "650e8400-e29b-41d4-a716-446655440102",
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "650e8400-e29b-41d4-a716-446655440105",
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "650e8400-e29b-41d4-a716-446655440107",
+            ),
+        ],
+        random_events: [
+            WeightedEvent(
+                weight: 40,
+                uuid: "650e8400-e29b-41d4-a716-446655440209",
+            ),
+            WeightedEvent(
+                weight: 35,
+                uuid: "650e8400-e29b-41d4-a716-446655440208",
+            ),
+            WeightedEvent(
+                weight: 25,
+                uuid: "650e8400-e29b-41d4-a716-446655440207",
+            ),
+            WeightedEvent(
+                weight: 30,
+                uuid: "650e8400-e29b-41d4-a716-446655440214",
+            ),
+            WeightedEvent(
+                weight: 30,
+                uuid: "650e8400-e29b-41d4-a716-446655440215",
+            ),
+            WeightedEvent(
+                weight: 30,
+                uuid: "650e8400-e29b-41d4-a716-446655440217",
+            ),
+        ],
+    ),
+)

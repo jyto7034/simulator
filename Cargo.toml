@@ -6,7 +6,7 @@ description = "card backend"
 [workspace]
 members = [ 
     "auth_server",
-    "core",
+    "core_enhanced",
     "test_client",
     "metrics",
     "game_server",

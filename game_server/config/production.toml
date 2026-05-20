@@ -3,6 +3,7 @@
 bind_address = "0.0.0.0"
 port = 8080
 log_level = "warn" # 로그 레벨
+multiplayer_enabled = false # 싱글 플레이 기본값: 레거시 매치메이킹 비활성화
 # metrics_auth_token = "CHANGE-ME-IN-PRODUCTION"  # Set via env: APP_SERVER__METRICS_AUTH_TOKEN
 
 # 로깅 설정

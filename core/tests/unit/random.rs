@@ -18,6 +18,10 @@ fn contains_action_kind(haystack: &[ActionKind], needle: ActionKind) -> bool {
 fn start_game_and_request_phase(game: &mut GameCore, player_id: Uuid) -> PhaseEvent {
     game.execute(player_id, PlayerBehavior::StartNewGame)
         .unwrap();
+    if matches!(game.get_state(), GameState::InBonus { .. }) {
+        game.execute(player_id, PlayerBehavior::ClaimBonus).unwrap();
+        game.execute(player_id, PlayerBehavior::ExitBonus).unwrap();
+    }
     match game
         .execute(player_id, PlayerBehavior::RequestPhaseData)
         .unwrap()
@@ -25,6 +29,35 @@ fn start_game_and_request_phase(game: &mut GameCore, player_id: Uuid) -> PhaseEv
         BehaviorResult::RequestPhaseData(event) => *event,
         other => panic!("expected RequestPhaseData, got {other:?}"),
     }
+}
+
+#[test]
+fn starter_bonus_must_be_claimed_before_exit() {
+    let game_data = with_starter_abnormality_bonus(create_test_game_data());
+    let mut game = GameCore::new(game_data, 12345);
+    let player_id = Uuid::new_v4();
+
+    game.execute(player_id, PlayerBehavior::StartNewGame)
+        .unwrap();
+
+    assert!(matches!(game.get_state(), GameState::InBonus { .. }));
+    let allowed = game.get_allowed_actions();
+    assert!(contains_action_kind(&allowed, ActionKind::ClaimBonus));
+    assert!(!contains_action_kind(&allowed, ActionKind::ExitBonus));
+
+    let snapshot = game
+        .get_selected_event_snapshot_json()
+        .expect("selected event snapshot should serialize")
+        .expect("starter bonus should create selected event");
+    assert_eq!(snapshot["can_skip"], false);
+
+    let err = game
+        .execute(player_id, PlayerBehavior::ExitBonus)
+        .unwrap_err();
+    assert!(matches!(err, GameError::InvalidAction));
+
+    game.execute(player_id, PlayerBehavior::ClaimBonus).unwrap();
+    assert_eq!(game.get_allowed_actions(), vec![ActionKind::ExitBonus]);
 }
 
 fn select_random_from_phase_event(
@@ -130,6 +163,34 @@ fn enkephalin_bonus(uuid: Uuid, id: &str, amount: u32) -> BonusMetadata {
     }
 }
 
+fn with_starter_abnormality_bonus(base: Arc<GameDataBase>) -> Arc<GameDataBase> {
+    let base = base.as_ref();
+    let mut bonuses = base.bonus_data.bonuses.clone();
+    if !bonuses.iter().any(|bonus| bonus.id == "abnormality_bonus") {
+        bonuses.push(BonusMetadata {
+            id: "abnormality_bonus".to_string(),
+            bonus_type: BonusType::Abnormality,
+            uuid: Uuid::from_u128(0xD00D_5000_0000_0001),
+            name: "Starter Abnormality".to_string(),
+            description: "Grants one starter abnormality".to_string(),
+            icon: "starter_abnormality.png".to_string(),
+            amount: 1,
+        });
+    }
+
+    Arc::new(GameDataBase::new(GameDataBaseParts {
+        abnormality_data: Arc::clone(&base.abnormality_data),
+        artifact_data: Arc::clone(&base.artifact_data),
+        equipment_data: Arc::clone(&base.equipment_data),
+        shop_data: Arc::clone(&base.shop_data),
+        bonus_data: Arc::new(BonusDatabase::new(bonuses)),
+        random_event_data: Arc::clone(&base.random_event_data),
+        pve_data: Arc::clone(&base.pve_data),
+        skill_data: Arc::clone(&base.skill_data),
+        event_pools: base.event_pools.clone(),
+    }))
+}
+
 #[test]
 fn random_routes_to_shop_stage_immediately() {
     // Given: Random이 Shop으로 라우팅되도록 데이터를 구성한다.
@@ -146,7 +207,8 @@ fn random_routes_to_shop_stage_immediately() {
         image: "shop.png".to_string(),
         inner_metadata: RandomEventInnerMetadata::Shop(shop_uuid),
     };
-    let game_data = create_test_game_data_with_random_event(random_event);
+    let game_data =
+        with_starter_abnormality_bonus(create_test_game_data_with_random_event(random_event));
     let mut game = GameCore::new(game_data, 12345);
     let player_id = Uuid::new_v4();
 
@@ -185,7 +247,8 @@ fn random_routes_to_bonus_stage_immediately() {
         image: "bonus.png".to_string(),
         inner_metadata: RandomEventInnerMetadata::Bonus(bonus_uuid),
     };
-    let game_data = create_test_game_data_with_random_event(random_event);
+    let game_data =
+        with_starter_abnormality_bonus(create_test_game_data_with_random_event(random_event));
     let mut game = GameCore::new(game_data, 12345);
     let player_id = Uuid::new_v4();
 
@@ -224,7 +287,8 @@ fn random_routes_to_pve_stage_with_three_suppression_candidates() {
         image: "pve.png".to_string(),
         inner_metadata: RandomEventInnerMetadata::Suppress(abno_uuid),
     };
-    let game_data = create_test_game_data_with_random_event(random_event);
+    let game_data =
+        with_starter_abnormality_bonus(create_test_game_data_with_random_event(random_event));
     let mut game = GameCore::new(game_data, 12345);
     let player_id = Uuid::new_v4();
 
@@ -305,7 +369,8 @@ fn selected_suppression_candidate_starts_battle_from_in_suppression_state() {
         image: "pve.png".to_string(),
         inner_metadata: RandomEventInnerMetadata::Suppress(abno_uuid),
     };
-    let game_data = create_test_game_data_with_random_event(random_event);
+    let game_data =
+        with_starter_abnormality_bonus(create_test_game_data_with_random_event(random_event));
     let mut game = GameCore::new(game_data, 12345);
     let player_id = Uuid::new_v4();
 
@@ -397,16 +462,16 @@ fn suppression_reward_choose_one_requires_selection_then_claim_and_exit() {
         image: "pve.png".to_string(),
         inner_metadata: RandomEventInnerMetadata::Suppress(abno_uuid),
     };
-    let game_data = create_test_game_data_with_suppression_rewards(
+    let game_data = with_starter_abnormality_bonus(create_test_game_data_with_suppression_rewards(
         random_event,
         RewardMode::ChooseOne,
         vec![reward_a.clone(), reward_b.clone()],
-    );
+    ));
     let mut game = GameCore::new(game_data, 12345);
     let player_id = Uuid::new_v4();
-    game.set_enkephalin(0);
 
     let phase_event = start_game_and_request_phase(&mut game, player_id);
+    game.set_enkephalin(0);
     let result = select_random_from_phase_event(&mut game, player_id, &phase_event).unwrap();
     let suppression_event = result
         .as_request_phase_data()
@@ -529,16 +594,16 @@ fn suppression_reward_claim_all_claims_everything_then_exits() {
         image: "pve.png".to_string(),
         inner_metadata: RandomEventInnerMetadata::Suppress(abno_uuid),
     };
-    let game_data = create_test_game_data_with_suppression_rewards(
+    let game_data = with_starter_abnormality_bonus(create_test_game_data_with_suppression_rewards(
         random_event,
         RewardMode::ClaimAll,
         vec![reward_a.clone(), reward_b.clone()],
-    );
+    ));
     let mut game = GameCore::new(game_data, 12345);
     let player_id = Uuid::new_v4();
-    game.set_enkephalin(0);
 
     let phase_event = start_game_and_request_phase(&mut game, player_id);
+    game.set_enkephalin(0);
     let result = select_random_from_phase_event(&mut game, player_id, &phase_event).unwrap();
     let suppression_event = result
         .as_request_phase_data()

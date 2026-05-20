@@ -6,14 +6,16 @@ use uuid::Uuid;
 use crate::ecs::components::Player;
 use crate::ecs::resources::item_slot::EquippedRef;
 use crate::ecs::resources::{
-    ActionValidator, CurrentPhaseEvents, Enkephalin, Field, GameProgression, GameState, Inventory,
-    Position, Qliphoth, RewardSessionState, SelectedEvent, SelectedEventState, ShopSessionState,
-    StarterBonusPending, SuppressionBattleState,
+    ActionValidator, Bench, CurrentPhaseEvents, Enkephalin, EquipItemOutcomeDto,
+    EquipItemResultDto, EquipmentItemDto, EquippedItemDto, Field, GameProgression, GameState,
+    Inventory, InventoryDiffDto, InventoryItemDto, OwnedEquipment, Position, Qliphoth,
+    RewardSessionState, SelectedEvent, SelectedEventState, ShopSessionState, StarterBonusPending,
+    SuppressionBattleState,
 };
 use crate::ecs::systems::{progression, spawn_player};
 use crate::game::battle::types::BattleWinner;
 use crate::game::behavior::{ActionKind, BehaviorResult, GameError, PlayerBehavior};
-use crate::game::data::{random_event_data::RandomEventTarget, GameDataBase};
+use crate::game::data::{random_event_data::RandomEventTarget, GameDataBase, ItemRef};
 use crate::game::determinism;
 use crate::game::enums::{
     BonusAction, BonusEventOption, GameOption, OrdealType, PhaseEvent, PhaseType, RewardMode,
@@ -28,11 +30,20 @@ use crate::game::managers::event_manager::EventManager;
 use crate::game::managers::qliphoth_manager::QliphothManager;
 use crate::game::managers::uuid_manager::UuidManager;
 
+enum RewardClaimDestination {
+    Bonus,
+    Combat,
+}
+
 pub struct GameCore {
     world: bevy_ecs::world::World,
     game_data: Arc<GameDataBase>,
     run_seed: u64,
 }
+
+const METAGAME_FIELD_WIDTH: u8 = 7;
+const METAGAME_FIELD_HEIGHT: u8 = 4;
+const METAGAME_BENCH_SLOTS: usize = 8;
 
 #[derive(Debug, Clone)]
 struct ResolvedSuppressionRequest {
@@ -45,6 +56,7 @@ struct ResolvedSuppressionRequest {
 
 impl GameCore {
     fn try_auto_deploy_first_player_unit_to_center(&mut self) -> Result<bool, GameError> {
+        self.sync_bench_with_owned_units()?;
         let should_auto_deploy = {
             let field = self
                 .world
@@ -88,6 +100,8 @@ impl GameCore {
             .get_resource_mut::<Field>()
             .ok_or(GameError::MissingResource("Field"))?;
         field.place(unit_uuid, Side::Player, auto_deploy_position)?;
+        drop(field);
+        self.sync_bench_with_owned_units()?;
         info!(
             "Auto-deployed player unit {} to {:?} before suppression start",
             unit_uuid, auto_deploy_position
@@ -118,6 +132,41 @@ impl GameCore {
         candidates.into_iter().next().map(|candidate| candidate.3)
     }
 
+    fn sync_bench_with_owned_units(&mut self) -> Result<(), GameError> {
+        let owned_units = {
+            let inventory = self
+                .world
+                .get_resource::<Inventory>()
+                .ok_or(GameError::MissingResource("Inventory"))?;
+            let mut units = inventory
+                .abnormalities
+                .iter_owned()
+                .map(|owned| owned.instance_uuid)
+                .collect::<Vec<_>>();
+            units.sort();
+            units
+        };
+
+        let field_units = {
+            let field = self
+                .world
+                .get_resource::<Field>()
+                .ok_or(GameError::MissingResource("Field"))?;
+            field
+                .unit_positions
+                .keys()
+                .copied()
+                .collect::<std::collections::HashSet<_>>()
+        };
+
+        let mut bench = self
+            .world
+            .get_resource_mut::<Bench>()
+            .ok_or(GameError::MissingResource("Bench"))?;
+        bench.sync_owned_units(&owned_units, &field_units);
+        Ok(())
+    }
+
     /// GameCore 생성
     ///
     /// # Arguments
@@ -136,7 +185,8 @@ impl GameCore {
         world.insert_resource(GameState::NotStarted);
         world.insert_resource(Inventory::new());
         world.insert_resource(Qliphoth::new());
-        world.insert_resource(Field::new(4, 4));
+        world.insert_resource(Field::new(METAGAME_FIELD_WIDTH, METAGAME_FIELD_HEIGHT));
+        world.insert_resource(Bench::new(METAGAME_BENCH_SLOTS));
 
         // CurrentGameContext 초기화 (NotStarted 상태의 allowed_actions 설정)
         let mut context = ActionValidator::new();
@@ -178,7 +228,7 @@ impl GameCore {
         self.validate_behavior_payload(&behavior)?;
 
         // 3. 행동 처리
-        match behavior {
+        let result = match behavior {
             // 복잡한 행동
             PlayerBehavior::StartNewGame => self.handle_start_new_game(player_id),
             PlayerBehavior::RequestPhaseData => self.handle_request_phase_data(),
@@ -194,11 +244,24 @@ impl GameCore {
             PlayerBehavior::MoveUnit {
                 target_unit_uuid,
                 dest_pos: dest_type,
-            } => self.handle_move_unit(target_unit_uuid, dest_type),
+                swap_with_unit_uuid,
+            } => self.handle_move_unit(target_unit_uuid, dest_type, swap_with_unit_uuid),
+            PlayerBehavior::MoveBenchUnit {
+                target_unit_uuid,
+                dest_slot,
+                swap_with_unit_uuid,
+            } => self.handle_move_bench_unit(target_unit_uuid, dest_slot, swap_with_unit_uuid),
             PlayerBehavior::TransferUnit {
                 target_unit_uuid,
                 dest_zone,
-            } => self.handle_tranfer_unit(target_unit_uuid, dest_zone),
+                dest_bench_slot,
+                swap_with_unit_uuid,
+            } => self.handle_tranfer_unit(
+                target_unit_uuid,
+                dest_zone,
+                dest_bench_slot,
+                swap_with_unit_uuid,
+            ),
 
             // 상점 관련 행동
             PlayerBehavior::PurchaseItem { item_uuid } => {
@@ -219,7 +282,12 @@ impl GameCore {
                 self.handle_start_suppression(&abnormality_id)
             }
             PlayerBehavior::FinishSuppressionReplay => self.handle_finish_suppression_replay(),
-        }
+            PlayerBehavior::ClaimCombatReward => self.handle_claim_combat_reward(),
+            PlayerBehavior::ExitCombatReward => self.handle_exit_combat_reward(),
+        }?;
+
+        self.sync_bench_with_owned_units()?;
+        Ok(result)
     }
 }
 
@@ -258,12 +326,14 @@ impl GameCore {
         stage_uuid: Uuid,
         mode: RewardMode,
         rewards: Vec<BonusEventOption>,
+        can_skip: bool,
     ) -> RewardSessionState {
         RewardSessionState {
             stage_uuid,
             mode,
             rewards,
             selected_reward_uuid: None,
+            can_skip,
         }
     }
 
@@ -275,6 +345,14 @@ impl GameCore {
         }
     }
 
+    fn current_reward_can_skip(&self) -> bool {
+        self.world
+            .get_resource::<SelectedEvent>()
+            .and_then(|selected| selected.as_reward().ok())
+            .map(|reward| reward.can_skip)
+            .unwrap_or(false)
+    }
+
     fn merge_inventory_diff(
         left: &mut crate::ecs::resources::InventoryDiffDto,
         right: crate::ecs::resources::InventoryDiffDto,
@@ -282,6 +360,21 @@ impl GameCore {
         left.added.extend(right.added);
         left.updated.extend(right.updated);
         left.removed.extend(right.removed);
+    }
+
+    fn equipped_item_dtos(
+        inventory: &Inventory,
+        target_unit: Uuid,
+    ) -> Result<Vec<EquippedItemDto>, GameError> {
+        let owned_abnormality = inventory
+            .abnormalities
+            .get_owned(&target_unit)
+            .ok_or(GameError::UnitNotFound)?;
+        Ok(owned_abnormality
+            .item_slot
+            .iter()
+            .map(EquippedItemDto::from_equipped_ref)
+            .collect())
     }
 
     fn validate_behavior_payload(&self, behavior: &PlayerBehavior) -> Result<(), GameError> {
@@ -293,6 +386,8 @@ impl GameCore {
             | PlayerBehavior::ClaimBonus
             | PlayerBehavior::ExitBonus
             | PlayerBehavior::FinishSuppressionReplay
+            | PlayerBehavior::ClaimCombatReward
+            | PlayerBehavior::ExitCombatReward
             | PlayerBehavior::UnEquipItem { .. } => Ok(()),
             PlayerBehavior::SelectEvent { event_id } => {
                 self.validate_select_event_payload(*event_id)
@@ -302,6 +397,9 @@ impl GameCore {
                 target_unit,
             } => self.validate_equip_item_payload(*item_uuid, *target_unit),
             PlayerBehavior::MoveUnit {
+                target_unit_uuid, ..
+            } => self.validate_owned_unit_exists(*target_unit_uuid),
+            PlayerBehavior::MoveBenchUnit {
                 target_unit_uuid, ..
             } => self.validate_owned_unit_exists(*target_unit_uuid),
             PlayerBehavior::TransferUnit {
@@ -491,7 +589,11 @@ impl GameCore {
         info!("Game state transition: {:?} -> {:?}", old_state, new_state);
 
         // 2. allowed_actions 자동 업데이트
-        let allowed = ActionScheduler::get_allowed_actions(&new_state);
+        let mut allowed = ActionScheduler::get_allowed_actions(&new_state);
+        if matches!(new_state, GameState::InBonus { .. }) && !self.current_reward_can_skip() {
+            allowed.retain(|action| *action != ActionKind::ExitBonus);
+        }
+
         let mut context = self
             .world
             .get_resource_mut::<ActionValidator>()
@@ -560,7 +662,7 @@ impl GameCore {
 
         let stage_uuid = starter_bonuses[0].uuid;
         let reward_session =
-            self.build_reward_session(stage_uuid, RewardMode::ClaimAll, starter_bonuses);
+            self.build_reward_session(stage_uuid, RewardMode::ClaimAll, starter_bonuses, false);
 
         self.world
             .insert_resource(SelectedEvent::new(SelectedEventState::Reward(
@@ -589,11 +691,22 @@ impl GameCore {
         }
         let _ = self.world.remove_resource::<SelectedEvent>();
 
-        // 1. 현재 Ordeal, Phase 가져오기
-        let (ordeal, phase) = self.get_progression()?;
+        // 1. 현재 Ordeal, Phase, roll index 가져오기
+        let (ordeal, phase, phase_roll_index) = {
+            let progression = self
+                .world
+                .get_resource::<GameProgression>()
+                .ok_or(GameError::MissingResource("GameProgression"))?;
+            (
+                progression.current_ordeal,
+                progression.current_phase,
+                progression.phase_roll_index,
+            )
+        };
 
-        // 2. Context 생성 (phase 기반 seed로 결정성 보장)
-        let phase_seed = determinism::seed_for_phase(self.run_seed, ordeal, phase);
+        // 2. Context 생성 (run/phase/roll 기반 seed로 결정성 보장)
+        let phase_seed =
+            determinism::seed_for_phase_roll(self.run_seed, ordeal, phase, phase_roll_index);
         let ctx = GeneratorContext::new(&self.world, &self.game_data, phase_seed);
 
         let qliphoth = self.get_qliphoth()?;
@@ -617,6 +730,10 @@ impl GameCore {
             current_phase_event.add_event(option);
         }
 
+        if let Some(mut progression) = self.world.get_resource_mut::<GameProgression>() {
+            progression.phase_roll_index = progression.phase_roll_index.saturating_add(1);
+        }
+
         // 5. 상태 전환: SelectingEvent (allowed_actions 자동 설정)
         self.transition_to(GameState::SelectingEvent)?;
 
@@ -628,7 +745,10 @@ impl GameCore {
         &mut self,
         selected_event_id: Uuid,
     ) -> Result<BehaviorResult, GameError> {
-        if matches!(self.get_state(), GameState::InBonus { .. }) {
+        if matches!(
+            self.get_state(),
+            GameState::InBonus { .. } | GameState::InCombatReward { .. }
+        ) {
             return self.handle_select_reward(selected_event_id);
         }
 
@@ -667,6 +787,7 @@ impl GameCore {
                     selected_bonus.uuid,
                     RewardMode::ClaimAll,
                     vec![selected_bonus.clone()],
+                    true,
                 );
                 if let Some(mut current_phase_events) =
                     self.world.get_resource_mut::<CurrentPhaseEvents>()
@@ -724,6 +845,7 @@ impl GameCore {
                             bonus.uuid,
                             RewardMode::ClaimAll,
                             vec![bonus.clone()],
+                            true,
                         );
                         if let Some(mut current_phase_events) =
                             self.world.get_resource_mut::<CurrentPhaseEvents>()
@@ -845,12 +967,153 @@ impl GameCore {
         item_uuid: Uuid,
         target_unit: Uuid,
     ) -> Result<BehaviorResult, GameError> {
+        let combine_plan = {
+            let inventory = self
+                .world
+                .get_resource::<Inventory>()
+                .ok_or(GameError::MissingResource("Inventory"))?;
+
+            let incoming = inventory
+                .equipments
+                .get_item(&item_uuid)
+                .ok_or(GameError::InventoryItemNotFound)?;
+
+            if incoming.equipped_to.is_some() {
+                return Err(GameError::InvalidAction);
+            }
+
+            let target = inventory
+                .abnormalities
+                .get_owned(&target_unit)
+                .ok_or(GameError::UnitNotFound)?;
+
+            let mut plan = None;
+            for equipped in target.item_slot.iter() {
+                let Some(result_meta) = self
+                    .game_data
+                    .equipment_data
+                    .combination_result(incoming.meta.uuid, equipped.base_uuid)
+                else {
+                    continue;
+                };
+
+                let result_ref = EquippedRef {
+                    instance_uuid: item_uuid,
+                    base_uuid: result_meta.uuid,
+                    equipment_type: result_meta.equipment_type,
+                };
+                target
+                    .item_slot
+                    .can_equip_after_removing(
+                        equipped.instance_uuid,
+                        result_ref,
+                        result_meta.allow_duplicate_equip,
+                    )
+                    .map_err(|_| GameError::InvalidAction)?;
+
+                plan = Some((equipped.instance_uuid, Arc::new(result_meta.clone())));
+                break;
+            }
+
+            plan
+        };
+
+        if let Some((equipped_item_uuid, result_meta)) = combine_plan {
+            let result_instance_uuid = {
+                let mut uuid_manager = self
+                    .world
+                    .get_resource_mut::<UuidManager>()
+                    .ok_or(GameError::MissingResource("UuidManager"))?;
+                uuid_manager.next_owned_equipment()
+            };
+
+            let mut inventory = self
+                .world
+                .get_resource_mut::<Inventory>()
+                .ok_or(GameError::MissingResource("Inventory"))?;
+
+            let incoming = inventory
+                .equipments
+                .get_item(&item_uuid)
+                .ok_or(GameError::InventoryItemNotFound)?;
+            if incoming.equipped_to.is_some() {
+                return Err(GameError::InvalidAction);
+            }
+
+            {
+                let owned_abnormality = inventory
+                    .abnormalities
+                    .get_owned_mut(&target_unit)
+                    .ok_or(GameError::UnitNotFound)?;
+                owned_abnormality
+                    .item_slot
+                    .remove_by_instance(equipped_item_uuid)
+                    .ok_or(GameError::InvalidAction)?;
+                owned_abnormality
+                    .item_slot
+                    .equip(
+                        EquippedRef {
+                            instance_uuid: result_instance_uuid,
+                            base_uuid: result_meta.uuid,
+                            equipment_type: result_meta.equipment_type,
+                        },
+                        result_meta.allow_duplicate_equip,
+                    )
+                    .map_err(|_| GameError::InvalidAction)?;
+            }
+
+            inventory
+                .equipments
+                .remove_item(item_uuid)
+                .ok_or(GameError::InventoryItemNotFound)?;
+            inventory
+                .equipments
+                .remove_item(equipped_item_uuid)
+                .ok_or(GameError::InventoryItemNotFound)?;
+
+            inventory
+                .equipments
+                .add_item(OwnedEquipment::new(
+                    result_instance_uuid,
+                    Arc::clone(&result_meta),
+                ))
+                .map_err(|_| GameError::InventoryFull)?;
+            inventory
+                .equipments
+                .get_item_mut(&result_instance_uuid)
+                .ok_or(GameError::InventoryItemNotFound)?
+                .equipped_to = Some(target_unit);
+
+            let equipped_items = Self::equipped_item_dtos(&inventory, target_unit)?;
+            let inventory_diff = InventoryDiffDto {
+                added: vec![InventoryItemDto::Equipment(EquipmentItemDto::from_owned(
+                    result_instance_uuid,
+                    result_meta.as_ref(),
+                ))],
+                updated: vec![],
+                removed: vec![item_uuid, equipped_item_uuid],
+            };
+
+            return Ok(BehaviorResult::EquipItem {
+                result: EquipItemResultDto {
+                    requested_item_uuid: item_uuid,
+                    target_unit,
+                    outcome: EquipItemOutcomeDto::Combined {
+                        ingredient_item_uuids: vec![equipped_item_uuid, item_uuid],
+                        result_item_uuid: result_instance_uuid,
+                        result_base_uuid: result_meta.uuid,
+                    },
+                    equipped_items,
+                    inventory_diff,
+                },
+            });
+        }
+
         let mut inventory = self
             .world
             .get_resource_mut::<Inventory>()
             .ok_or(GameError::MissingResource("Inventory"))?;
 
-        // 1. 인벤토리에서 아이템 정보 불러오기
         let (base_uuid, equipment_type, allow_duplicate, equipped_to) = {
             let owned_equipment = inventory
                 .equipments
@@ -868,7 +1131,7 @@ impl GameCore {
             return Err(GameError::InvalidAction);
         }
 
-        // 2. 유닛의 장착 슬롯 로직에 위임 (귀속/중복 룰 포함)
+        // 조합 레시피가 없으면 기존 장착 슬롯 로직에 위임한다.
         {
             let owned_abnormality = inventory
                 .abnormalities
@@ -893,8 +1156,27 @@ impl GameCore {
             .get_item_mut(&item_uuid)
             .ok_or(GameError::InventoryItemNotFound)?;
         owned_equipment.equipped_to = Some(target_unit);
+        let updated_item = InventoryItemDto::Equipment(EquipmentItemDto::from_owned(
+            item_uuid,
+            owned_equipment.meta.as_ref(),
+        ));
 
-        Ok(BehaviorResult::EquipItem)
+        let equipped_items = Self::equipped_item_dtos(&inventory, target_unit)?;
+        let inventory_diff = InventoryDiffDto {
+            added: vec![],
+            updated: vec![updated_item],
+            removed: vec![],
+        };
+
+        Ok(BehaviorResult::EquipItem {
+            result: EquipItemResultDto {
+                requested_item_uuid: item_uuid,
+                target_unit,
+                outcome: EquipItemOutcomeDto::Equipped { item_uuid },
+                equipped_items,
+                inventory_diff,
+            },
+        })
     }
 
     fn handle_unequip_item(
@@ -909,16 +1191,70 @@ impl GameCore {
         &mut self,
         target_unit_uuid: Uuid,
         dest_zone: ZoneType,
+        dest_bench_slot: Option<usize>,
+        swap_with_unit_uuid: Option<Uuid>,
     ) -> Result<BehaviorResult, GameError> {
+        self.sync_bench_with_owned_units()?;
         self.validate_owned_unit_exists(target_unit_uuid)?;
+        if let Some(swap_unit_uuid) = swap_with_unit_uuid {
+            self.validate_owned_unit_exists(swap_unit_uuid)?;
+        }
 
         match dest_zone {
             ZoneType::Inventory => {
+                let removed_position = {
+                    let field = self
+                        .world
+                        .get_resource::<Field>()
+                        .ok_or(GameError::MissingResource("Field"))?;
+                    field
+                        .get_position(target_unit_uuid)
+                        .ok_or(GameError::UnitNotFound)?
+                };
+
+                {
+                    let bench = self
+                        .world
+                        .get_resource::<Bench>()
+                        .ok_or(GameError::MissingResource("Bench"))?;
+                    if let Some(swap_unit_uuid) = swap_with_unit_uuid {
+                        if bench.slot_of(swap_unit_uuid).is_none() {
+                            return Err(GameError::UnitNotFound);
+                        }
+                    } else if let Some(slot) = dest_bench_slot {
+                        match bench.occupant(slot) {
+                            None => {}
+                            Some(occupant_uuid) if occupant_uuid == target_unit_uuid => {}
+                            Some(_) => return Err(GameError::PositionOccupied),
+                        }
+                    } else if bench.slots.iter().all(Option::is_some) {
+                        return Err(GameError::InventoryFull);
+                    }
+                }
+
                 let mut field = self
                     .world
                     .get_resource_mut::<Field>()
                     .ok_or(GameError::MissingResource("Field"))?;
-                field.remove(target_unit_uuid).ok_or(GameError::UnitNotFound)?;
+                field
+                    .remove(target_unit_uuid)
+                    .ok_or(GameError::UnitNotFound)?;
+                if let Some(swap_unit_uuid) = swap_with_unit_uuid {
+                    field.place(swap_unit_uuid, Side::Player, removed_position)?;
+                }
+                drop(field);
+
+                let mut bench = self
+                    .world
+                    .get_resource_mut::<Bench>()
+                    .ok_or(GameError::MissingResource("Bench"))?;
+                if let Some(swap_unit_uuid) = swap_with_unit_uuid {
+                    bench.replace_unit(swap_unit_uuid, target_unit_uuid)?;
+                } else if let Some(slot) = dest_bench_slot {
+                    bench.place_at(target_unit_uuid, slot)?;
+                } else {
+                    bench.place_first_available(target_unit_uuid)?;
+                }
             }
             ZoneType::Field => {
                 return Err(GameError::InvalidAction);
@@ -932,7 +1268,14 @@ impl GameCore {
         &mut self,
         target_unit_uuid: Uuid,
         dest_type: Position,
+        swap_with_unit_uuid: Option<Uuid>,
     ) -> Result<BehaviorResult, GameError> {
+        self.sync_bench_with_owned_units()?;
+        self.validate_owned_unit_exists(target_unit_uuid)?;
+        if let Some(swap_unit_uuid) = swap_with_unit_uuid {
+            self.validate_owned_unit_exists(swap_unit_uuid)?;
+        }
+
         let already_on_field = {
             let field = self
                 .world
@@ -946,18 +1289,86 @@ impl GameCore {
                 .world
                 .get_resource_mut::<Field>()
                 .ok_or(GameError::MissingResource("Field"))?;
-            field.move_unit(target_unit_uuid, dest_type)?;
-        } else {
-            self.validate_owned_unit_exists(target_unit_uuid)?;
+            if let Some(occupant_uuid) = field.get_unit_at(dest_type) {
+                if occupant_uuid != target_unit_uuid {
+                    if swap_with_unit_uuid != Some(occupant_uuid) {
+                        return Err(GameError::PositionOccupied);
+                    }
 
+                    field.swap_units(target_unit_uuid, occupant_uuid)?;
+                } else {
+                    field.move_unit(target_unit_uuid, dest_type)?;
+                }
+            } else {
+                field.move_unit(target_unit_uuid, dest_type)?;
+            }
+        } else {
             let mut field = self
                 .world
                 .get_resource_mut::<Field>()
                 .ok_or(GameError::MissingResource("Field"))?;
+            if let Some(occupant_uuid) = field.get_unit_at(dest_type) {
+                if swap_with_unit_uuid != Some(occupant_uuid) {
+                    return Err(GameError::PositionOccupied);
+                }
+
+                field.remove(occupant_uuid).ok_or(GameError::UnitNotFound)?;
+                field.place(target_unit_uuid, Side::Player, dest_type)?;
+                drop(field);
+
+                let mut bench = self
+                    .world
+                    .get_resource_mut::<Bench>()
+                    .ok_or(GameError::MissingResource("Bench"))?;
+                bench.replace_unit(target_unit_uuid, occupant_uuid)?;
+                return Ok(BehaviorResult::MoveUnit);
+            }
+
             field.place(target_unit_uuid, Side::Player, dest_type)?;
+            drop(field);
+
+            let mut bench = self
+                .world
+                .get_resource_mut::<Bench>()
+                .ok_or(GameError::MissingResource("Bench"))?;
+            bench.remove(target_unit_uuid);
         }
 
         Ok(BehaviorResult::MoveUnit)
+    }
+
+    fn handle_move_bench_unit(
+        &mut self,
+        target_unit_uuid: Uuid,
+        dest_slot: usize,
+        swap_with_unit_uuid: Option<Uuid>,
+    ) -> Result<BehaviorResult, GameError> {
+        self.sync_bench_with_owned_units()?;
+        self.validate_owned_unit_exists(target_unit_uuid)?;
+        if let Some(swap_unit_uuid) = swap_with_unit_uuid {
+            self.validate_owned_unit_exists(swap_unit_uuid)?;
+        }
+
+        {
+            let field = self
+                .world
+                .get_resource::<Field>()
+                .ok_or(GameError::MissingResource("Field"))?;
+            if field.get_position(target_unit_uuid).is_some()
+                || swap_with_unit_uuid
+                    .is_some_and(|swap_unit_uuid| field.get_position(swap_unit_uuid).is_some())
+            {
+                return Err(GameError::InvalidAction);
+            }
+        }
+
+        let mut bench = self
+            .world
+            .get_resource_mut::<Bench>()
+            .ok_or(GameError::MissingResource("Bench"))?;
+        bench.move_unit(target_unit_uuid, dest_slot, swap_with_unit_uuid)?;
+
+        Ok(BehaviorResult::MoveBenchUnit)
     }
 
     // ============================================================
@@ -986,70 +1397,21 @@ impl GameCore {
 
     fn execute_bonus_action(&mut self, action: BonusAction) -> Result<BehaviorResult, GameError> {
         match action {
-            BonusAction::Claim => {
-                // 1. 현재 reward 세션을 조회한다.
-                let reward = {
-                    let selected = self
-                        .world
-                        .get_resource::<SelectedEvent>()
-                        .ok_or(GameError::NotInBonusState)?;
-                    selected.as_reward()?.clone()
-                };
-
-                let rewards_to_apply: Vec<BonusEventOption> = match reward.mode {
-                    RewardMode::ClaimAll => reward.rewards.clone(),
-                    RewardMode::ChooseOne => vec![reward
-                        .get_selected_reward()
-                        .cloned()
-                        .ok_or(GameError::InvalidAction)?],
-                };
-
-                let mut inventory_diff = crate::ecs::resources::InventoryDiffDto::default();
-
-                for (index, bonus) in rewards_to_apply.iter().enumerate() {
-                    info!(
-                        "Applying bonus '{}' (uuid={}) with amount={}",
-                        bonus.id, bonus.uuid, bonus.amount
-                    );
-                    let seed = {
-                        let (ordeal, phase) = self.get_progression()?;
-                        determinism::seed_for_phase(self.run_seed, ordeal, phase)
-                            ^ u64::from_be_bytes(bonus.uuid.as_bytes()[..8].try_into().unwrap())
-                            ^ index as u64
-                    };
-
-                    let granted =
-                        BonusExecutor::grant_bonus(&mut self.world, &self.game_data, bonus, seed)?;
-                    Self::merge_inventory_diff(&mut inventory_diff, granted);
-                }
-
-                // 4. 현재 Enkephalin 및 인벤토리 변경 사항을 BehaviorResult로 반환
-                let enkephalin = self
-                    .world
-                    .get_resource::<Enkephalin>()
-                    .map(|e| e.amount)
-                    .unwrap_or(0);
-
-                // 5. 보너스 수령 완료 상태로 전환 (Exit에서만 Phase 진행)
-                self.transition_to(GameState::InBonusClaimed {
-                    bonus_uuid: reward.stage_uuid,
-                })?;
-
-                if let Some(mut current_phase_events) =
-                    self.world.get_resource_mut::<CurrentPhaseEvents>()
-                {
-                    current_phase_events.clear();
-                }
-
-                Ok(BehaviorResult::BonusReward {
-                    enkephalin,
-                    inventory_diff,
-                })
-            }
+            BonusAction::Claim => self.claim_current_reward_session(RewardClaimDestination::Bonus),
 
             BonusAction::Exit => {
+                if matches!(self.get_state(), GameState::InBonus { .. })
+                    && !self.current_reward_can_skip()
+                {
+                    return Err(GameError::InvalidAction);
+                }
+
                 // 스타터 보너스 종료는 Phase 진행을 건너뛰고 바로 정상 사이클 시작 지점으로.
-                if self.world.remove_resource::<StarterBonusPending>().is_some() {
+                if self
+                    .world
+                    .remove_resource::<StarterBonusPending>()
+                    .is_some()
+                {
                     if let Some(mut current_phase_events) =
                         self.world.get_resource_mut::<CurrentPhaseEvents>()
                     {
@@ -1064,6 +1426,80 @@ impl GameCore {
                 self.advance_to_next_phase()
             }
         }
+    }
+
+    fn handle_claim_combat_reward(&mut self) -> Result<BehaviorResult, GameError> {
+        self.claim_current_reward_session(RewardClaimDestination::Combat)
+    }
+
+    fn handle_exit_combat_reward(&mut self) -> Result<BehaviorResult, GameError> {
+        self.advance_to_next_phase()
+    }
+
+    fn claim_current_reward_session(
+        &mut self,
+        destination: RewardClaimDestination,
+    ) -> Result<BehaviorResult, GameError> {
+        let reward = {
+            let selected = self
+                .world
+                .get_resource::<SelectedEvent>()
+                .ok_or(GameError::NotInBonusState)?;
+            selected.as_reward()?.clone()
+        };
+
+        let rewards_to_apply: Vec<BonusEventOption> = match reward.mode {
+            RewardMode::ClaimAll => reward.rewards.clone(),
+            RewardMode::ChooseOne => vec![reward
+                .get_selected_reward()
+                .cloned()
+                .ok_or(GameError::InvalidAction)?],
+        };
+
+        let mut inventory_diff = crate::ecs::resources::InventoryDiffDto::default();
+
+        for (index, bonus) in rewards_to_apply.iter().enumerate() {
+            info!(
+                "Applying bonus '{}' (uuid={}) with amount={}",
+                bonus.id, bonus.uuid, bonus.amount
+            );
+            let seed = {
+                let (ordeal, phase) = self.get_progression()?;
+                determinism::seed_for_phase(self.run_seed, ordeal, phase)
+                    ^ u64::from_be_bytes(bonus.uuid.as_bytes()[..8].try_into().unwrap())
+                    ^ index as u64
+            };
+
+            let granted =
+                BonusExecutor::grant_bonus(&mut self.world, &self.game_data, bonus, seed)?;
+            Self::merge_inventory_diff(&mut inventory_diff, granted);
+        }
+
+        let enkephalin = self
+            .world
+            .get_resource::<Enkephalin>()
+            .map(|e| e.amount)
+            .unwrap_or(0);
+
+        let next_state = match destination {
+            RewardClaimDestination::Bonus => GameState::InBonusClaimed {
+                bonus_uuid: reward.stage_uuid,
+            },
+            RewardClaimDestination::Combat => GameState::InCombatRewardClaimed {
+                reward_uuid: reward.stage_uuid,
+            },
+        };
+        self.transition_to(next_state)?;
+
+        if let Some(mut current_phase_events) = self.world.get_resource_mut::<CurrentPhaseEvents>()
+        {
+            current_phase_events.clear();
+        }
+
+        Ok(BehaviorResult::BonusReward {
+            enkephalin,
+            inventory_diff,
+        })
     }
 
     fn handle_select_reward(
@@ -1286,6 +1722,7 @@ impl GameCore {
             battle.abnormality_uuid,
             battle.reward_mode,
             battle.rewards.clone(),
+            false,
         );
 
         if let Some(mut current_phase_events) = self.world.get_resource_mut::<CurrentPhaseEvents>()
@@ -1302,8 +1739,8 @@ impl GameCore {
             .insert_resource(SelectedEvent::new(SelectedEventState::Reward(
                 reward_session.clone(),
             )));
-        self.transition_to(GameState::InBonus {
-            bonus_uuid: reward_session.stage_uuid,
+        self.transition_to(GameState::InCombatReward {
+            reward_uuid: reward_session.stage_uuid,
         })?;
 
         Ok(self.reward_state_result(&reward_session))
@@ -1434,6 +1871,8 @@ impl GameCore {
             GameState::InBonusClaimed { .. } => "in_bonus_claimed",
             GameState::InSuppression { .. } => "in_suppression",
             GameState::InSuppressionReplay { .. } => "in_suppression_replay",
+            GameState::InCombatReward { .. } => "in_combat_reward",
+            GameState::InCombatRewardClaimed { .. } => "in_combat_reward_claimed",
             GameState::InBattle { .. } => "in_battle",
             GameState::GameOver => "game_over",
         }
@@ -1463,6 +1902,10 @@ impl GameCore {
             .world
             .get_resource::<Inventory>()
             .ok_or(GameError::MissingResource("Inventory"))?;
+        let bench = self
+            .world
+            .get_resource::<Bench>()
+            .ok_or(GameError::MissingResource("Bench"))?;
 
         let mut abnormalities = inventory
             .abnormalities
@@ -1495,6 +1938,7 @@ impl GameCore {
                     ),
                     "growth_stacks": owned.growth_stacks,
                     "equipped_items": equipped_items,
+                    "bench_slot": bench.slot_of(owned.instance_uuid),
                 })
             })
             .collect::<Vec<_>>();
@@ -1542,6 +1986,30 @@ impl GameCore {
         }))
     }
 
+    pub fn get_bench_snapshot_json(&self) -> Result<Value, GameError> {
+        let bench = self
+            .world
+            .get_resource::<Bench>()
+            .ok_or(GameError::MissingResource("Bench"))?;
+
+        let slots = bench
+            .slots
+            .iter()
+            .enumerate()
+            .map(|(slot, unit_uuid)| {
+                json!({
+                    "slot": slot,
+                    "unit_uuid": unit_uuid,
+                })
+            })
+            .collect::<Vec<_>>();
+
+        Ok(json!({
+            "max_slots": bench.max_slots,
+            "slots": slots,
+        }))
+    }
+
     pub fn get_field_snapshot_json(&self) -> Result<Value, GameError> {
         let field = self
             .world
@@ -1574,6 +2042,67 @@ impl GameCore {
         }))
     }
 
+    fn display_items_snapshot_json(&self, item_uuids: &[Uuid]) -> Result<Vec<Value>, GameError> {
+        item_uuids
+            .iter()
+            .copied()
+            .map(|item_uuid| self.display_item_snapshot_json(item_uuid))
+            .collect()
+    }
+
+    fn display_item_snapshot_json(&self, item_uuid: Uuid) -> Result<Value, GameError> {
+        let item = self.game_data.item(&item_uuid).ok_or_else(|| {
+            GameError::InvalidStaticData(format!(
+                "selected event references missing item uuid {item_uuid}"
+            ))
+        })?;
+
+        let value = match item {
+            ItemRef::Equipment(meta) => {
+                let equipment_type = equipment_type_display_key(meta.equipment_type);
+                json!({
+                    "uuid": item_uuid,
+                    "kind": "equipment",
+                    "definition_id": meta.id,
+                    "id": meta.id,
+                    "name": meta.name,
+                    "rarity": meta.rarity,
+                    "price": meta.price,
+                    "type": equipment_type,
+                    "equipment_type": equipment_type,
+                    "description": "",
+                })
+            }
+            ItemRef::Artifact(meta) => json!({
+                "uuid": item_uuid,
+                "kind": "artifact",
+                "definition_id": meta.id,
+                "id": meta.id,
+                "name": meta.name,
+                "rarity": meta.rarity,
+                "price": meta.price,
+                "type": "artifact",
+                "artifact_type": "artifact",
+                "effect_id": meta.id,
+                "description": meta.description,
+            }),
+            ItemRef::Abnormality(meta) => json!({
+                "uuid": item_uuid,
+                "kind": "abnormality",
+                "definition_id": meta.id,
+                "id": meta.id,
+                "name": meta.name,
+                "rarity": meta.risk_level,
+                "risk_level": meta.risk_level,
+                "price": meta.price,
+                "type": "abnormality",
+                "description": "",
+            }),
+        };
+
+        Ok(value)
+    }
+
     pub fn get_selected_event_snapshot_json(&self) -> Result<Option<Value>, GameError> {
         let Some(selected) = self.world.get_resource::<SelectedEvent>() else {
             return Ok(None);
@@ -1587,15 +2116,21 @@ impl GameCore {
                 "uuid": shop.uuid,
                 "shop_type": shop.shop_type,
                 "can_reroll": shop.can_reroll,
-                "visible_items": shop.visible_items,
-                "hidden_items": shop.hidden_items,
+                "visible_items": self.display_items_snapshot_json(&shop.visible_items)?,
+                "hidden_items": self.display_items_snapshot_json(&shop.hidden_items)?,
+                "visible_item_uuids": shop.visible_items,
+                "hidden_item_uuids": shop.hidden_items,
             }),
             SelectedEventState::Reward(reward) => json!({
-                "type": "reward",
+                "type": match self.get_state() {
+                    GameState::InCombatReward { .. } | GameState::InCombatRewardClaimed { .. } => "combat_reward",
+                    _ => "reward",
+                },
                 "stage_uuid": reward.stage_uuid,
                 "mode": reward.mode,
-                "rewards": reward.rewards,
+                "rewards": reward.rewards.iter().map(display_bonus_reward_snapshot_json).collect::<Vec<_>>(),
                 "selected_reward_uuid": reward.selected_reward_uuid,
+                "can_skip": reward.can_skip,
             }),
             SelectedEventState::Suppression(option) => json!({
                 "type": "suppression",
@@ -1611,7 +2146,7 @@ impl GameCore {
                 "abnormality_uuid": battle.abnormality_uuid,
                 "winner": battle.winner,
                 "reward_mode": battle.reward_mode,
-                "rewards": battle.rewards,
+                "rewards": battle.rewards.iter().map(display_bonus_reward_snapshot_json).collect::<Vec<_>>(),
                 "has_timeline": true,
             }),
         };
@@ -1636,16 +2171,51 @@ impl GameCore {
     }
 }
 
+fn equipment_type_display_key(
+    equipment_type: crate::game::data::equipment_data::EquipmentType,
+) -> &'static str {
+    match equipment_type {
+        crate::game::data::equipment_data::EquipmentType::Weapon => "weapon",
+        crate::game::data::equipment_data::EquipmentType::Armor => "armor",
+        crate::game::data::equipment_data::EquipmentType::Accessory => "accessory",
+    }
+}
+
+fn display_bonus_reward_snapshot_json(reward: &BonusEventOption) -> Value {
+    json!({
+        "uuid": reward.uuid,
+        "kind": "bonus",
+        "id": reward.id,
+        "name": reward.name,
+        "rarity": Value::Null,
+        "price": 0,
+        "type": reward.bonus_type,
+        "bonus_type": reward.bonus_type,
+        "description": reward.description,
+        "icon": reward.icon,
+        "amount": reward.amount,
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::ecs::resources::OwnedEquipment;
     use crate::game::battle::timeline::Timeline;
     use crate::game::data::{
+        abnormality_data::AbnormalityDatabase,
         abnormality_data::{AbnormalityMetadata, BasicAttackDef, MovementDef, ResonanceDef},
-        abnormality_data::AbnormalityDatabase, artifact_data::ArtifactDatabase,
-        bonus_data::BonusDatabase, equipment_data::EquipmentDatabase, event_pools::EventPhasePool,
-        event_pools::EventPoolConfig, pve_data::PveEncounterDatabase,
-        random_event_data::RandomEventDatabase, shop_data::ShopDatabase, skill_data::SkillDatabase,
+        artifact_data::{ArtifactDatabase, ArtifactMetadata},
+        bonus_data::BonusDatabase,
+        equipment_data::{
+            EquipmentDatabase, EquipmentMetadata, EquipmentRecipeMetadata, EquipmentType,
+        },
+        event_pools::EventPhasePool,
+        event_pools::EventPoolConfig,
+        pve_data::PveEncounterDatabase,
+        random_event_data::RandomEventDatabase,
+        shop_data::ShopDatabase,
+        skill_data::SkillDatabase,
         GameDataBase, Item,
     };
     use std::sync::Arc;
@@ -1687,11 +2257,149 @@ mod tests {
             max_health: 10,
             attack: 3,
             defense: 1,
+            magic_resist: 0,
             movement: MovementDef::default(),
             basic_attack: BasicAttackDef::default(),
             resonance: ResonanceDef::default(),
             skill_id: None,
         })
+    }
+
+    fn equipment_meta(uuid: u128, id: &str, equipment_type: EquipmentType) -> EquipmentMetadata {
+        EquipmentMetadata {
+            id: id.to_string(),
+            uuid: Uuid::from_u128(uuid),
+            name: id.to_string(),
+            equipment_type,
+            rarity: crate::game::enums::RiskLevel::ZAYIN,
+            price: 0,
+            allow_duplicate_equip: true,
+            triggered_effects: Default::default(),
+            ability_activations: vec![],
+        }
+    }
+
+    fn artifact_meta(uuid: u128, id: &str) -> ArtifactMetadata {
+        ArtifactMetadata {
+            id: id.to_string(),
+            uuid: Uuid::from_u128(uuid),
+            name: id.to_string(),
+            description: format!("{id} description"),
+            rarity: crate::game::enums::RiskLevel::TETH,
+            price: 5,
+            triggered_effects: Default::default(),
+            ability_activations: vec![],
+        }
+    }
+
+    fn game_data_with_display_items(
+        equipment: Vec<EquipmentMetadata>,
+        artifacts: Vec<ArtifactMetadata>,
+    ) -> Arc<GameDataBase> {
+        let pool = EventPhasePool {
+            shops: vec![],
+            bonuses: vec![],
+            random_events: vec![],
+        };
+        let event_pools = EventPoolConfig {
+            dawn: pool.clone(),
+            noon: pool.clone(),
+            dusk: pool.clone(),
+            midnight: pool.clone(),
+            white: pool,
+        };
+
+        Arc::new(GameDataBase::new(crate::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![])),
+            artifact_data: Arc::new(ArtifactDatabase::new(artifacts)),
+            equipment_data: Arc::new(EquipmentDatabase::new(equipment)),
+            shop_data: Arc::new(ShopDatabase::new(vec![])),
+            bonus_data: Arc::new(BonusDatabase::new(vec![])),
+            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
+            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
+            skill_data: Arc::new(SkillDatabase::new(vec![])),
+            event_pools,
+        }))
+    }
+
+    fn game_data_with_equipment(
+        abnormality: Arc<AbnormalityMetadata>,
+        equipment: Vec<EquipmentMetadata>,
+        recipes: Vec<EquipmentRecipeMetadata>,
+    ) -> Arc<GameDataBase> {
+        let pool = EventPhasePool {
+            shops: vec![],
+            bonuses: vec![],
+            random_events: vec![],
+        };
+        let event_pools = EventPoolConfig {
+            dawn: pool.clone(),
+            noon: pool.clone(),
+            dusk: pool.clone(),
+            midnight: pool.clone(),
+            white: pool,
+        };
+
+        Arc::new(GameDataBase::new(crate::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![(*abnormality).clone()])),
+            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
+            equipment_data: Arc::new(EquipmentDatabase::with_recipes(equipment, recipes)),
+            shop_data: Arc::new(ShopDatabase::new(vec![])),
+            bonus_data: Arc::new(BonusDatabase::new(vec![])),
+            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
+            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
+            skill_data: Arc::new(SkillDatabase::new(vec![])),
+            event_pools,
+        }))
+    }
+
+    #[test]
+    fn selected_shop_snapshot_includes_display_item_metadata() {
+        let blade = equipment_meta(0x10, "raw_blade_core", EquipmentType::Weapon);
+        let lens = artifact_meta(0x20, "artifact_echo_lens");
+        let game_data = game_data_with_display_items(vec![blade.clone()], vec![lens.clone()]);
+        let mut core = GameCore::new(game_data, 123);
+
+        core.world
+            .insert_resource(SelectedEvent::new(SelectedEventState::Shop(
+                ShopSessionState {
+                    id: "artifact_shop".to_string(),
+                    name: "Artifact Merchant".to_string(),
+                    uuid: Uuid::from_u128(0x30),
+                    shop_type: crate::game::data::shop_data::ShopType::Shop,
+                    can_reroll: true,
+                    visible_items: vec![blade.uuid],
+                    hidden_items: vec![lens.uuid],
+                },
+            )));
+
+        let selected = core
+            .get_selected_event_snapshot_json()
+            .unwrap()
+            .expect("selected event snapshot");
+
+        assert_eq!(selected["visible_items"][0]["uuid"], json!(blade.uuid));
+        assert_eq!(selected["visible_items"][0]["kind"], "equipment");
+        assert_eq!(
+            selected["visible_items"][0]["definition_id"],
+            "raw_blade_core"
+        );
+        assert_eq!(selected["visible_items"][0]["id"], "raw_blade_core");
+        assert_eq!(selected["visible_items"][0]["equipment_type"], "weapon");
+        assert!(selected["visible_items"][0]["icon"].is_null());
+        assert_eq!(selected["hidden_items"][0]["kind"], "artifact");
+        assert_eq!(
+            selected["hidden_items"][0]["definition_id"],
+            "artifact_echo_lens"
+        );
+        assert_eq!(selected["hidden_items"][0]["id"], "artifact_echo_lens");
+        assert_eq!(
+            selected["hidden_items"][0]["description"],
+            "artifact_echo_lens description"
+        );
+        assert!(selected["hidden_items"][0]["icon"].is_null());
+        assert_eq!(selected["visible_item_uuids"][0], json!(blade.uuid));
+        assert_eq!(selected["hidden_item_uuids"][0], json!(lens.uuid));
     }
 
     #[test]
@@ -1718,6 +2426,110 @@ mod tests {
         assert!(allowed.contains(&ActionKind::RequestPhaseData));
         assert!(allowed.contains(&ActionKind::EquipItem));
         assert!(allowed.contains(&ActionKind::TransferUnit));
+    }
+
+    #[test]
+    fn game_core_uses_metagame_field_dimensions() {
+        let core = GameCore::new(empty_game_data(), 123);
+        let field = core.world.get_resource::<Field>().unwrap();
+
+        assert_eq!(field.width, METAGAME_FIELD_WIDTH);
+        assert_eq!(field.height, METAGAME_FIELD_HEIGHT);
+    }
+
+    #[test]
+    fn equip_item_combines_equipped_component_before_slot_rejection() {
+        let unit_meta = abnormality_meta(1);
+        let component_a = equipment_meta(10, "weapon_component_a", EquipmentType::Weapon);
+        let component_b = equipment_meta(11, "weapon_component_b", EquipmentType::Weapon);
+        let completed = equipment_meta(12, "completed_weapon", EquipmentType::Weapon);
+        let game_data = game_data_with_equipment(
+            Arc::clone(&unit_meta),
+            vec![component_a.clone(), component_b.clone(), completed.clone()],
+            vec![EquipmentRecipeMetadata {
+                ingredients: vec![component_a.uuid, component_b.uuid],
+                result: completed.uuid,
+            }],
+        );
+        let mut core = GameCore::new(game_data, 123);
+        let unit_owned_uuid = Uuid::from_u128(100);
+        let component_a_owned_uuid = Uuid::from_u128(200);
+        let component_b_owned_uuid = Uuid::from_u128(201);
+
+        {
+            let mut inventory = core.world.get_resource_mut::<Inventory>().unwrap();
+            inventory
+                .abnormalities
+                .add_item(unit_owned_uuid, unit_meta)
+                .unwrap();
+            inventory
+                .equipments
+                .add_item(OwnedEquipment::new(
+                    component_a_owned_uuid,
+                    Arc::new(component_a),
+                ))
+                .unwrap();
+            inventory
+                .equipments
+                .add_item(OwnedEquipment::new(
+                    component_b_owned_uuid,
+                    Arc::new(component_b),
+                ))
+                .unwrap();
+        }
+
+        core.handle_equip_item(component_a_owned_uuid, unit_owned_uuid)
+            .unwrap();
+        let result = core
+            .handle_equip_item(component_b_owned_uuid, unit_owned_uuid)
+            .unwrap();
+
+        let BehaviorResult::EquipItem { result } = result else {
+            panic!("expected equip item result");
+        };
+        assert_eq!(result.requested_item_uuid, component_b_owned_uuid);
+        assert_eq!(result.target_unit, unit_owned_uuid);
+        assert_eq!(result.inventory_diff.removed.len(), 2);
+        assert!(result
+            .inventory_diff
+            .removed
+            .contains(&component_a_owned_uuid));
+        assert!(result
+            .inventory_diff
+            .removed
+            .contains(&component_b_owned_uuid));
+        assert_eq!(result.inventory_diff.added.len(), 1);
+        assert!(matches!(
+            result.outcome,
+            EquipItemOutcomeDto::Combined {
+                result_base_uuid,
+                ..
+            } if result_base_uuid == completed.uuid
+        ));
+        assert_eq!(result.equipped_items.len(), 1);
+        assert_eq!(result.equipped_items[0].base_uuid, completed.uuid);
+
+        let inventory = core.world.get_resource::<Inventory>().unwrap();
+        assert!(inventory
+            .equipments
+            .get_item(&component_a_owned_uuid)
+            .is_none());
+        assert!(inventory
+            .equipments
+            .get_item(&component_b_owned_uuid)
+            .is_none());
+
+        let owned_unit = inventory.abnormalities.get_owned(&unit_owned_uuid).unwrap();
+        let equipped = owned_unit.item_slot.iter().collect::<Vec<_>>();
+        assert_eq!(equipped.len(), 1);
+        assert_eq!(equipped[0].base_uuid, completed.uuid);
+
+        let completed_item = inventory
+            .equipments
+            .iter()
+            .find(|item| item.meta.uuid == completed.uuid)
+            .expect("completed item should be created");
+        assert_eq!(completed_item.equipped_to, Some(unit_owned_uuid));
     }
 
     #[test]
@@ -1784,6 +2596,58 @@ mod tests {
     }
 
     #[test]
+    fn suppression_replay_win_enters_combat_reward_then_continues_phase() {
+        let mut core = GameCore::new(empty_game_data(), 123);
+        let player_id = Uuid::from_u128(1);
+        let abnormality_uuid = Uuid::from_u128(0xBEEF);
+
+        core.transition_to(GameState::InSuppressionReplay { abnormality_uuid })
+            .unwrap();
+        core.world
+            .insert_resource(SelectedEvent::new(SelectedEventState::SuppressionBattle(
+                SuppressionBattleState {
+                    abnormality_id: "abno".to_string(),
+                    encounter_id: "encounter".to_string(),
+                    abnormality_uuid,
+                    winner: BattleWinner::Player,
+                    timeline: Timeline::default(),
+                    reward_mode: RewardMode::ClaimAll,
+                    rewards: vec![],
+                },
+            )));
+
+        let result = core
+            .execute(player_id, PlayerBehavior::FinishSuppressionReplay)
+            .unwrap();
+
+        assert!(result.as_reward_state().is_some());
+        assert!(matches!(core.get_state(), GameState::InCombatReward { .. }));
+        assert!(core
+            .get_allowed_actions()
+            .contains(&ActionKind::ClaimCombatReward));
+
+        let result = core
+            .execute(player_id, PlayerBehavior::ClaimCombatReward)
+            .unwrap();
+
+        assert!(matches!(result, BehaviorResult::BonusReward { .. }));
+        assert!(matches!(
+            core.get_state(),
+            GameState::InCombatRewardClaimed { .. }
+        ));
+        assert!(core
+            .get_allowed_actions()
+            .contains(&ActionKind::ExitCombatReward));
+
+        let result = core
+            .execute(player_id, PlayerBehavior::ExitCombatReward)
+            .unwrap();
+
+        assert!(matches!(result, BehaviorResult::AdvancePhase { .. }));
+        assert!(matches!(core.get_state(), GameState::WaitingPhaseRequest));
+    }
+
+    #[test]
     fn move_unit_places_owned_abnormality_onto_field() {
         let mut core = GameCore::new(empty_game_data(), 123);
         let owned_uuid = Uuid::from_u128(0xABCD);
@@ -1805,6 +2669,7 @@ mod tests {
                 PlayerBehavior::MoveUnit {
                     target_unit_uuid: owned_uuid,
                     dest_pos: Position::new(1, 1),
+                    swap_with_unit_uuid: None,
                 },
             )
             .unwrap();
@@ -1812,6 +2677,53 @@ mod tests {
         assert!(matches!(result, BehaviorResult::MoveUnit));
         let field = core.world.get_resource::<Field>().unwrap();
         assert_eq!(field.get_position(owned_uuid), Some(Position::new(1, 1)));
+    }
+
+    #[test]
+    fn move_unit_swaps_with_occupied_field_unit_when_requested() {
+        let mut core = GameCore::new(empty_game_data(), 123);
+        let left_uuid = Uuid::from_u128(0xA001);
+        let right_uuid = Uuid::from_u128(0xA002);
+        core.transition_to(GameState::WaitingPhaseRequest).unwrap();
+
+        {
+            let mut inventory = core
+                .world
+                .get_resource_mut::<Inventory>()
+                .expect("inventory resource should exist");
+            inventory
+                .add_item_owned(left_uuid, Item::Abnormality(abnormality_meta(0x31)))
+                .unwrap();
+            inventory
+                .add_item_owned(right_uuid, Item::Abnormality(abnormality_meta(0x32)))
+                .unwrap();
+        }
+
+        {
+            let mut field = core.world.get_resource_mut::<Field>().unwrap();
+            field
+                .place(left_uuid, Side::Player, Position::new(0, 0))
+                .unwrap();
+            field
+                .place(right_uuid, Side::Player, Position::new(1, 1))
+                .unwrap();
+        }
+
+        let result = core
+            .execute(
+                Uuid::from_u128(1),
+                PlayerBehavior::MoveUnit {
+                    target_unit_uuid: left_uuid,
+                    dest_pos: Position::new(1, 1),
+                    swap_with_unit_uuid: Some(right_uuid),
+                },
+            )
+            .unwrap();
+
+        assert!(matches!(result, BehaviorResult::MoveUnit));
+        let field = core.world.get_resource::<Field>().unwrap();
+        assert_eq!(field.get_position(left_uuid), Some(Position::new(1, 1)));
+        assert_eq!(field.get_position(right_uuid), Some(Position::new(0, 0)));
     }
 
     #[test]
@@ -1832,7 +2744,9 @@ mod tests {
 
         {
             let mut field = core.world.get_resource_mut::<Field>().unwrap();
-            field.place(owned_uuid, Side::Player, Position::new(0, 0)).unwrap();
+            field
+                .place(owned_uuid, Side::Player, Position::new(0, 0))
+                .unwrap();
         }
 
         let result = core
@@ -1841,6 +2755,8 @@ mod tests {
                 PlayerBehavior::TransferUnit {
                     target_unit_uuid: owned_uuid,
                     dest_zone: ZoneType::Inventory,
+                    dest_bench_slot: Some(3),
+                    swap_with_unit_uuid: None,
                 },
             )
             .unwrap();
@@ -1848,5 +2764,142 @@ mod tests {
         assert!(matches!(result, BehaviorResult::TransferUnit));
         let field = core.world.get_resource::<Field>().unwrap();
         assert_eq!(field.get_position(owned_uuid), None);
+        let bench = core.world.get_resource::<Bench>().unwrap();
+        assert_eq!(bench.slot_of(owned_uuid), Some(3));
+    }
+
+    #[test]
+    fn transfer_unit_swaps_field_unit_with_inventory_unit_when_requested() {
+        let mut core = GameCore::new(empty_game_data(), 123);
+        let field_uuid = Uuid::from_u128(0xB001);
+        let inventory_uuid = Uuid::from_u128(0xB002);
+        core.transition_to(GameState::WaitingPhaseRequest).unwrap();
+
+        {
+            let mut inventory = core
+                .world
+                .get_resource_mut::<Inventory>()
+                .expect("inventory resource should exist");
+            inventory
+                .add_item_owned(field_uuid, Item::Abnormality(abnormality_meta(0x41)))
+                .unwrap();
+            inventory
+                .add_item_owned(inventory_uuid, Item::Abnormality(abnormality_meta(0x42)))
+                .unwrap();
+        }
+
+        {
+            let mut field = core.world.get_resource_mut::<Field>().unwrap();
+            field
+                .place(field_uuid, Side::Player, Position::new(0, 0))
+                .unwrap();
+        }
+
+        let result = core
+            .execute(
+                Uuid::from_u128(1),
+                PlayerBehavior::TransferUnit {
+                    target_unit_uuid: field_uuid,
+                    dest_zone: ZoneType::Inventory,
+                    dest_bench_slot: None,
+                    swap_with_unit_uuid: Some(inventory_uuid),
+                },
+            )
+            .unwrap();
+
+        assert!(matches!(result, BehaviorResult::TransferUnit));
+        let field = core.world.get_resource::<Field>().unwrap();
+        assert_eq!(field.get_position(field_uuid), None);
+        assert_eq!(
+            field.get_position(inventory_uuid),
+            Some(Position::new(0, 0))
+        );
+        let bench = core.world.get_resource::<Bench>().unwrap();
+        assert_eq!(bench.slot_of(field_uuid), Some(0));
+        assert_eq!(bench.slot_of(inventory_uuid), None);
+    }
+
+    #[test]
+    fn move_bench_unit_reorders_and_swaps_bench_slots() {
+        let mut core = GameCore::new(empty_game_data(), 123);
+        let left_uuid = Uuid::from_u128(0xC001);
+        let right_uuid = Uuid::from_u128(0xC002);
+        core.transition_to(GameState::WaitingPhaseRequest).unwrap();
+
+        {
+            let mut inventory = core
+                .world
+                .get_resource_mut::<Inventory>()
+                .expect("inventory resource should exist");
+            inventory
+                .add_item_owned(left_uuid, Item::Abnormality(abnormality_meta(0x51)))
+                .unwrap();
+            inventory
+                .add_item_owned(right_uuid, Item::Abnormality(abnormality_meta(0x52)))
+                .unwrap();
+        }
+
+        let result = core
+            .execute(
+                Uuid::from_u128(1),
+                PlayerBehavior::MoveBenchUnit {
+                    target_unit_uuid: left_uuid,
+                    dest_slot: 1,
+                    swap_with_unit_uuid: Some(right_uuid),
+                },
+            )
+            .unwrap();
+
+        assert!(matches!(result, BehaviorResult::MoveBenchUnit));
+        let bench = core.world.get_resource::<Bench>().unwrap();
+        assert_eq!(bench.slot_of(left_uuid), Some(1));
+        assert_eq!(bench.slot_of(right_uuid), Some(0));
+    }
+
+    #[test]
+    fn move_unit_from_bench_to_occupied_field_keeps_swapped_unit_on_bench() {
+        let mut core = GameCore::new(empty_game_data(), 123);
+        let field_uuid = Uuid::from_u128(0xD001);
+        let bench_uuid = Uuid::from_u128(0xD002);
+        core.transition_to(GameState::WaitingPhaseRequest).unwrap();
+
+        {
+            let mut inventory = core
+                .world
+                .get_resource_mut::<Inventory>()
+                .expect("inventory resource should exist");
+            inventory
+                .add_item_owned(field_uuid, Item::Abnormality(abnormality_meta(0x61)))
+                .unwrap();
+            inventory
+                .add_item_owned(bench_uuid, Item::Abnormality(abnormality_meta(0x62)))
+                .unwrap();
+        }
+
+        {
+            let mut field = core.world.get_resource_mut::<Field>().unwrap();
+            field
+                .place(field_uuid, Side::Player, Position::new(0, 0))
+                .unwrap();
+        }
+
+        let result = core
+            .execute(
+                Uuid::from_u128(1),
+                PlayerBehavior::MoveUnit {
+                    target_unit_uuid: bench_uuid,
+                    dest_pos: Position::new(0, 0),
+                    swap_with_unit_uuid: Some(field_uuid),
+                },
+            )
+            .unwrap();
+
+        assert!(matches!(result, BehaviorResult::MoveUnit));
+        let field = core.world.get_resource::<Field>().unwrap();
+        assert_eq!(field.get_position(bench_uuid), Some(Position::new(0, 0)));
+        assert_eq!(field.get_position(field_uuid), None);
+        let bench = core.world.get_resource::<Bench>().unwrap();
+        assert_eq!(bench.slot_of(field_uuid), Some(0));
+        assert_eq!(bench.slot_of(bench_uuid), None);
     }
 }

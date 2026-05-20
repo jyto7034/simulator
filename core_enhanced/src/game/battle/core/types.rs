@@ -3,11 +3,11 @@ use std::collections::BTreeMap;
 use uuid::Uuid;
 
 use crate::{
-    ecs::resources::Position,
+    game::resources::Position,
     game::{
         ability::{
-            SkillAreaShapeDef, SkillAreaTickPolicy, SkillHitTargetFilter, SkillId,
-            SkillProjectileCollisionDef,
+            SkillAreaAnchorSource, SkillAreaShapeDef, SkillAreaTickPolicy, SkillAreaTracking,
+            SkillHitTargetFilter, SkillId, SkillProjectileCollisionDef,
         },
         battle::{
             buffs::BuffId,
@@ -18,8 +18,9 @@ use crate::{
             },
             ids::UnitInstanceId,
             timeline::{SkillCastTarget, TimelineCause},
-            types::UnitSnapshot,
+            types::{BattleUnitRole, UnitSnapshot},
         },
+        data::abnormality_data::BasicAttackDef,
         enums::Side,
         stats::UnitStats,
     },
@@ -92,6 +93,8 @@ pub struct AreaRuntime {
     pub step_id: String,
     pub caster_instance_id: UnitInstanceId,
     pub caster_owner: Side,
+    pub anchor: SkillAreaAnchorSource,
+    pub tracking: SkillAreaTracking,
     pub origin: WorldVec2,
     pub center: WorldVec2,
     pub direction_hint: WorldVec2,
@@ -99,10 +102,12 @@ pub struct AreaRuntime {
     pub hit_targets: SkillHitTargetFilter,
     pub include_caster: bool,
     pub tick_policy: SkillAreaTickPolicy,
+    pub duration_ms: u32,
     pub spawned_at_ms: u64,
     pub expires_at_ms: u64,
     pub tick_interval_ms: Option<u32>,
     pub next_tick_ms: Option<u64>,
+    pub step_target: Option<SkillCastTarget>,
     pub hit_unit_ids: Vec<UnitInstanceId>,
     pub previous_tick_unit_ids: Vec<UnitInstanceId>,
 }
@@ -280,6 +285,7 @@ pub(super) struct ActiveSkillCast {
     pub(super) caster_owner: Side,
     pub(super) anchor_position: Position,
     pub(super) cast_target_anchor_position: Option<Position>,
+    pub(super) cast_target_anchor_world_position: Option<WorldVec2>,
     pub(super) allow_dead_caster: bool,
     pub(super) total_steps: usize,
     pub(super) step_progress: BTreeMap<usize, SkillStepProgress>,
@@ -325,10 +331,16 @@ pub(super) struct AbilityProcState {
 
 pub struct RuntimeUnit {
     pub instance_id: UnitInstanceId,
+    pub source_owned_uuid: Uuid,
     pub owner: Side,
+    pub role: BattleUnitRole,
     pub base_uuid: Uuid,
     pub stats: UnitStats,
+    pub basic_attack: BasicAttackDef,
+    pub skill_id: Option<SkillId>,
     pub body: UnitBody,
+    pub tactical_anchor: Option<WorldVec2>,
+    pub tactical_group_id: Option<crate::game::battle::scenario::TacticalGroupPlanId>,
     pub move_epoch: u32,
     pub action_state: ActionState,
     pub action_locks: ActionLocks,
@@ -350,7 +362,9 @@ impl RuntimeUnit {
         UnitSnapshot {
             id: self.instance_id,
             owner: self.owner,
+            role: self.role,
             position,
+            world_position: self.body.position,
             stats: self.stats,
         }
     }
@@ -375,6 +389,18 @@ impl RuntimeUnit {
 
     pub fn is_dead(&self) -> bool {
         self.stats.current_health == 0
+    }
+
+    pub fn is_combatant(&self) -> bool {
+        self.role == BattleUnitRole::Combatant
+    }
+
+    pub fn can_basic_attack(&self) -> bool {
+        self.is_combatant()
+    }
+
+    pub fn can_move(&self) -> bool {
+        self.is_combatant() && self.stats.move_speed_units_per_ms > 0
     }
 }
 

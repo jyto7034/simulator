@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use game_core::{
-    ecs::resources::Position,
+    game::resources::Position,
     game::{
         enums::Side,
         stats::{StatId, StatModifierKind},

@@ -45,16 +45,13 @@ pub(super) fn validate_auto_attack_cadence(
         .collect();
 
     let mut expected_next_auto_attack_time_ms: HashMap<UnitInstanceId, u64> = HashMap::new();
-    for (unit_id, stats) in &extracted.unit_spawn_stats {
+    for unit_id in extracted.unit_spawn_stats.keys() {
         let spawn_time = extracted
             .unit_spawn_time_ms
             .get(unit_id)
             .copied()
             .unwrap_or(0);
-        expected_next_auto_attack_time_ms.insert(
-            *unit_id,
-            spawn_time.saturating_add(stats.attack_interval_ms.max(1)),
-        );
+        expected_next_auto_attack_time_ms.insert(*unit_id, spawn_time);
     }
 
     let mut missing_reported: HashSet<UnitInstanceId> = HashSet::new();

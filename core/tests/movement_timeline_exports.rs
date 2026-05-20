@@ -38,6 +38,7 @@ fn abnormality(
         max_health: 999,
         attack: 1,
         defense: 0,
+        magic_resist: 0,
         movement: Default::default(),
         basic_attack: Default::default(),
         resonance: Default::default(),

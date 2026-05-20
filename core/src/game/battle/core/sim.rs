@@ -10,7 +10,7 @@ use crate::{
         },
         battle::{
             cooldown::CooldownSource,
-            damage::BattleCommand,
+            damage::{BattleCommand, DamageSource},
             enums::BattleEvent,
             ids::UnitInstanceId,
             timeline::{
@@ -501,11 +501,10 @@ impl BattleCore {
             let Some(unit) = self.units.get_mut(&unit_id) else {
                 continue;
             };
-            let interval_ms = unit.stats.attack_interval_ms.max(1);
-            unit.next_basic_attack_ms = interval_ms;
+            unit.next_basic_attack_ms = 0;
             unit.pending_basic_attack = false;
             self.event_queue.push(BattleEvent::AttackStart {
-                time_ms: interval_ms,
+                time_ms: 0,
                 attacker_instance_id: unit_id,
                 target_instance_id: None,
                 schedule_next: true,
@@ -521,12 +520,11 @@ impl BattleCore {
             .push(BattleEvent::MovementIntent { time_ms });
     }
 
-    fn split_bucket(
+    pub(in crate::game::battle::core) fn split_bucket(
         &self,
         input: Vec<BattleEvent>,
         movement_intent: &mut bool,
         move_steps: &mut Vec<(UnitInstanceId, u32)>,
-        projectile_advances: &mut Vec<BattleEvent>,
         combat: &mut Vec<BattleEvent>,
     ) {
         for event in input {
@@ -539,7 +537,6 @@ impl BattleCore {
                 } => {
                     move_steps.push((unit_instance_id, expected_move_epoch));
                 }
-                BattleEvent::SkillProjectileAdvance { .. } => projectile_advances.push(event),
                 other => combat.push(other),
             }
         }
@@ -691,16 +688,9 @@ impl BattleCore {
 
             let mut movement_intent = false;
             let mut move_steps: Vec<(UnitInstanceId, u32)> = Vec::new();
-            let mut projectile_advances: Vec<BattleEvent> = Vec::new();
             let mut combat: Vec<BattleEvent> = Vec::new();
 
-            self.split_bucket(
-                bucket,
-                &mut movement_intent,
-                &mut move_steps,
-                &mut projectile_advances,
-                &mut combat,
-            );
+            self.split_bucket(bucket, &mut movement_intent, &mut move_steps, &mut combat);
 
             loop {
                 if !combat.is_empty() {
@@ -716,11 +706,6 @@ impl BattleCore {
                     self.handle_move_steps_at(current_time_ms, std::mem::take(&mut move_steps));
                     self.post_move_retarget_at(current_time_ms);
                     self.try_start_pending_basic_attacks(current_time_ms);
-                } else if !projectile_advances.is_empty() {
-                    projectile_advances.sort_by(|a, b| b.cmp(a));
-                    for event in projectile_advances.drain(..) {
-                        self.process_event(event, current_time_ms)?;
-                    }
                 } else {
                     let mut new_bucket: Vec<BattleEvent> = Vec::new();
                     while matches!(self.event_queue.peek(), Some(e) if e.time_ms() == current_time_ms)
@@ -736,7 +721,6 @@ impl BattleCore {
                         new_bucket,
                         &mut movement_intent,
                         &mut move_steps,
-                        &mut projectile_advances,
                         &mut combat,
                     );
                     continue;
@@ -750,7 +734,6 @@ impl BattleCore {
                     new_bucket,
                     &mut movement_intent,
                     &mut move_steps,
-                    &mut projectile_advances,
                     &mut combat,
                 );
 
@@ -814,8 +797,9 @@ impl BattleCore {
                 && self.is_basic_attack_target_in_range(attacker_instance_id, id)
         };
 
-        self.persisted_target_in_range(attacker_instance_id, current_target)
-            .or_else(|| hinted_target.filter(|id| in_range(*id)))
+        hinted_target
+            .filter(|id| in_range(*id))
+            .or_else(|| self.persisted_target_in_range(attacker_instance_id, current_target))
             .or_else(|| self.choose_attack_target_in_range(attacker_instance_id))
     }
 
@@ -893,19 +877,37 @@ impl BattleCore {
             None
         };
 
+        let step_damage_modifiers = step
+            .effects
+            .iter()
+            .filter_map(|effect| match effect {
+                SkillEffectDef::ModifyDamage { modifiers } => Some(*modifiers),
+                _ => None,
+            })
+            .fold(
+                Default::default(),
+                crate::game::battle::damage::DamageModifiers::merge,
+            );
+
         for effect in &step.effects {
             match effect {
-                SkillEffectDef::Damage { amount } => {
+                SkillEffectDef::Damage {
+                    amount,
+                    damage_type,
+                } => {
                     if *amount == 0 {
                         continue;
                     }
-                    let flat = amount.saturating_mul(-1);
+                    let damage_amount = amount.unsigned_abs();
                     for target_id in targets {
-                        commands.push(BattleCommand::ApplyHeal {
+                        commands.push(BattleCommand::ApplyDamage {
+                            source_id: caster_instance_id,
                             target_id: *target_id,
-                            flat,
-                            percent: 0,
-                            source_id: Some(caster_instance_id),
+                            amount: damage_amount,
+                            damage_type: *damage_type,
+                            modifiers: step_damage_modifiers,
+                            source: DamageSource::Ability,
+                            minimum_damage: 0,
                         });
                     }
                     if !targets.is_empty() {
@@ -987,6 +989,7 @@ impl BattleCore {
                             .saturating_add(usize::from(*count));
                     }
                 }
+                SkillEffectDef::ModifyDamage { .. } => {}
             }
         }
 
@@ -1162,7 +1165,7 @@ impl BattleCore {
                             execution.step,
                             execution.cast_target,
                         );
-                        let Some((impact_position, direction_hint, targets)) = core
+                        let Some((origin, impact_position, direction_hint, targets)) = core
                             .resolve_instant_area_targets(
                                 execution.time_ms,
                                 execution.cast_seq,
@@ -1179,6 +1182,18 @@ impl BattleCore {
                             execution.cast_seq,
                             execution.caster_instance_id,
                             execution.time_ms,
+                        );
+                        let area_declared_seq = core.record_skill_area_declared(
+                            execution.time_ms,
+                            delivery_id,
+                            execution.skill.id.clone(),
+                            execution.step.id.clone(),
+                            execution.caster_instance_id,
+                            iteration_target,
+                            origin,
+                            impact_position,
+                            direction_hint,
+                            *area,
                         );
                         core.update_skill_cast_impact_context(
                             execution.cast_seq,
@@ -1200,7 +1215,9 @@ impl BattleCore {
                             &targets,
                         );
                         if !commands.is_empty() {
-                            let summary = core.process_commands(commands, execution.time_ms);
+                            let summary = core.with_recording_cause(area_declared_seq, |core| {
+                                core.process_commands(commands, execution.time_ms)
+                            });
                             aggregated_result.actual_damage_target_count = aggregated_result
                                 .actual_damage_target_count
                                 .saturating_add(summary.actual_damage_target_count);
@@ -1431,6 +1448,9 @@ impl BattleCore {
                 kind,
                 cause,
             } => {
+                // TODO: Resolve all AttackResolve events with the same time_ms as one batch.
+                // Sequential queue order currently lets the first lethal resolve end the battle
+                // before another simultaneous attack can apply its already-started damage.
                 let attacker_alive = self
                     .units
                     .get(&attacker_instance_id)
@@ -1535,13 +1555,20 @@ impl BattleCore {
                 Ok(())
             }
             BattleEvent::SkillAreaTick {
-                time_ms, area_id, ..
+                time_ms,
+                area_id,
+                cause,
+                ..
             } => {
-                self.apply_skill_area_tick(time_ms, area_id);
+                self.with_recording_context(cause, |core| {
+                    core.apply_skill_area_tick(time_ms, area_id);
+                });
                 Ok(())
             }
-            BattleEvent::SkillAreaExpire { area_id, .. } => {
-                self.expire_skill_area(area_id);
+            BattleEvent::SkillAreaExpire { area_id, cause, .. } => {
+                self.with_recording_context(cause, |core| {
+                    core.expire_skill_area(area_id);
+                });
                 Ok(())
             }
             BattleEvent::AutoCastStart {
@@ -1901,16 +1928,14 @@ impl BattleCore {
                         unit.current_target = None;
                     }
 
-                    let was_moving = self.interrupt_movement(
+                    self.interrupt_movement(
                         time_ms,
                         target_instance_id,
                         crate::game::battle::timeline::MovementStopReason::HardCC,
                         Some(lock_until),
                         ActionState::Idle,
                     );
-                    if was_moving {
-                        self.schedule_movement_intent(lock_until);
-                    }
+                    self.schedule_movement_intent(lock_until);
                 }
 
                 Ok(())
@@ -1953,19 +1978,24 @@ impl BattleCore {
                     )
                 });
 
-                if let crate::game::battle::buffs::BuffKind::PeriodicDamage { damage_per_tick } =
-                    def.kind
+                if let crate::game::battle::buffs::BuffKind::PeriodicDamage {
+                    damage_per_tick,
+                    damage_type,
+                } = def.kind
                 {
                     let stacks = stacks.max(1) as i32;
                     let dmg = (damage_per_tick as i32).saturating_mul(stacks);
                     if dmg > 0 {
                         self.with_recording_cause(tick_seq, |core| {
                             core.process_commands(
-                                vec![BattleCommand::ApplyHeal {
+                                vec![BattleCommand::ApplyDamage {
+                                    source_id: caster_instance_id,
                                     target_id: target_instance_id,
-                                    flat: -dmg,
-                                    percent: 0,
-                                    source_id: Some(caster_instance_id),
+                                    amount: dmg as u32,
+                                    damage_type,
+                                    modifiers: Default::default(),
+                                    source: DamageSource::BuffTick,
+                                    minimum_damage: 0,
                                 }],
                                 time_ms,
                             );
@@ -1983,7 +2013,7 @@ impl BattleCore {
                             caster_instance_id,
                             target_instance_id,
                             buff_id,
-                            cause: TimelineCause::Parent { seq: tick_seq },
+                            cause,
                         });
                     } else {
                         active.next_tick_ms = None;

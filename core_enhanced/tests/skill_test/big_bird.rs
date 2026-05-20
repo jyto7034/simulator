@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use game_core::{
-    ecs::resources::Position,
+    game::resources::Position,
     game::{
         battle::buffs::BuffId,
         battle::timeline::TimelineEvent,
@@ -104,6 +104,7 @@ fn big_bird_silence_defers_enemy_autocast_until_buff_expires() {
                 attack: Some(1),
                 movement: Some(MovementDef {
                     speed_units_per_ms: 0,
+                    radius_units: 350_000,
                 }),
                 basic_attack: Some(BasicAttackDef {
                     range_units: 1.0,
@@ -129,6 +130,7 @@ fn big_bird_silence_defers_enemy_autocast_until_buff_expires() {
                 attack: Some(1),
                 movement: Some(MovementDef {
                     speed_units_per_ms: 0,
+                    radius_units: 350_000,
                 }),
                 basic_attack: Some(BasicAttackDef {
                     range_units: 1.0,

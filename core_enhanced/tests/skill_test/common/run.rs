@@ -1,6 +1,5 @@
-use bevy_ecs::world::World;
 use game_core::{
-    ecs::resources::Position,
+    game::resources::Position,
     game::{
         battle::{
             core::BattleCore,
@@ -191,18 +190,15 @@ pub fn run_abnormality_scenario(abnormality_id: &str, board: BoardScenario) -> S
     let resolved =
         super::scenario::resolve_abnormality_scenario(base_game_data, abnormality_id, &board);
 
-    let mut battle = BattleCore::new(
-        &resolved.player_deck,
-        &resolved.opponent_deck,
+    let mut battle = BattleCore::new_from_scenario(
+        resolved.battle_scenario.clone(),
         resolved.game_data.clone(),
-        common::BOARD_SIZE,
         10_000,
     );
 
     let runtime_patches = resolved.runtime_patches.clone();
-    let mut world = World::new();
     let battle_result = battle
-        .run_battle_with_setup(&mut world, |core| {
+        .run_battle_with_post_spawn_setup(|core| {
             for (position, patch) in &runtime_patches {
                 apply_runtime_start_patch(core, *position, patch)
                     .unwrap_or_else(|message| panic!("{message}"));

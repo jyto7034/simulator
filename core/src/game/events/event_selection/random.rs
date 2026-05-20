@@ -37,6 +37,7 @@ impl EventGenerator for RandomEventGenerator {
         ctx: &GeneratorContext,
     ) -> Result<Self::Output, crate::game::behavior::GameError> {
         use crate::ecs::resources::GameProgression;
+        use crate::game::determinism;
         use crate::game::enums::OrdealType;
         use rand::SeedableRng;
 
@@ -55,7 +56,10 @@ impl EventGenerator for RandomEventGenerator {
             .random_events;
 
         // 3. RNG 생성
-        let mut rng = rand::rngs::StdRng::seed_from_u64(ctx.random_seed);
+        let mut rng = rand::rngs::StdRng::seed_from_u64(determinism::seed_with_namespace(
+            ctx.random_seed,
+            0x5241_4E44,
+        ));
 
         // 4. pool에서 가중치 기반 UUID 선택
         let uuid = EventPhasePool::choose_weighted_uuid(pool, &mut rng).ok_or_else(|| {

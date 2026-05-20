@@ -119,7 +119,80 @@ impl BattleCore {
             return None;
         }
 
+        if !self.direct_continuous_melee_approach_can_reach(
+            context.unit_id,
+            target_id,
+            context.start_pos,
+            target_pos,
+            policy.instant_melee_reach_units,
+        ) {
+            return None;
+        }
+
         Some((target_id, target_pos))
+    }
+
+    fn direct_continuous_melee_approach_can_reach(
+        &self,
+        unit_id: UnitInstanceId,
+        target_id: UnitInstanceId,
+        start_pos: Position,
+        target_pos: Position,
+        reach_units: i64,
+    ) -> bool {
+        let Some(unit) = self.units.get(&unit_id) else {
+            return false;
+        };
+        let Some(target) = self.units.get(&target_id) else {
+            return false;
+        };
+
+        let (end_x_units, end_y_units) = boundary_target_units(start_pos, target_pos);
+        Self::segment_can_reach_point(
+            unit.pos_x_units,
+            unit.pos_y_units,
+            end_x_units,
+            end_y_units,
+            target.pos_x_units,
+            target.pos_y_units,
+            reach_units,
+        )
+    }
+
+    fn segment_can_reach_point(
+        start_x_units: i64,
+        start_y_units: i64,
+        end_x_units: i64,
+        end_y_units: i64,
+        point_x_units: i64,
+        point_y_units: i64,
+        reach_units: i64,
+    ) -> bool {
+        let start_x = start_x_units as f64;
+        let start_y = start_y_units as f64;
+        let end_x = end_x_units as f64;
+        let end_y = end_y_units as f64;
+        let point_x = point_x_units as f64;
+        let point_y = point_y_units as f64;
+
+        let segment_x = end_x - start_x;
+        let segment_y = end_y - start_y;
+        let segment_len_sq = segment_x * segment_x + segment_y * segment_y;
+        let t = if segment_len_sq <= f64::EPSILON {
+            0.0
+        } else {
+            let point_from_start_x = point_x - start_x;
+            let point_from_start_y = point_y - start_y;
+            ((point_from_start_x * segment_x + point_from_start_y * segment_y) / segment_len_sq)
+                .clamp(0.0, 1.0)
+        };
+
+        let closest_x = start_x + segment_x * t;
+        let closest_y = start_y + segment_y * t;
+        let dx = point_x - closest_x;
+        let dy = point_y - closest_y;
+        let reach = reach_units.unsigned_abs() as f64;
+        dx * dx + dy * dy <= reach * reach
     }
 
     fn is_direct_continuous_melee_engage_approach(
@@ -1159,6 +1232,57 @@ mod tests {
         );
         assert_eq!(
             core.compare_advance_candidate(context, &lateral_finish, &straight_follow_up),
+            std::cmp::Ordering::Greater
+        );
+    }
+
+    #[test]
+    fn compare_advance_candidate_prefers_front_engage_lane_over_equal_side_slot() {
+        let core = new_core();
+        let enemy_id: UnitInstanceId = Uuid::from_u128(21).into();
+        let context = MovementIntentContext {
+            unit_id: Uuid::from_u128(22).into(),
+            state_kind: MovementIntentStateKind::Idle,
+            repath_counter: 0,
+            start_pos: Position::new(3, 4),
+            owner: Side::Player,
+            base_uuid: Uuid::nil(),
+            current_target: Some(enemy_id),
+        };
+
+        let front_engage = MovementAdvanceCandidate {
+            enemy_id,
+            enemy_pos: Position::new(1, 2),
+            destination: Position::new(1, 3),
+            path: vec![
+                Position::new(3, 4),
+                Position::new(2, 3),
+                Position::new(1, 3),
+            ],
+            first_step: Position::new(2, 3),
+            first_step_reserved_by_other: false,
+            second_step_blocked_by_friendly: false,
+        };
+        let side_engage = MovementAdvanceCandidate {
+            enemy_id,
+            enemy_pos: Position::new(1, 2),
+            destination: Position::new(2, 2),
+            path: vec![
+                Position::new(3, 4),
+                Position::new(2, 3),
+                Position::new(2, 2),
+            ],
+            first_step: Position::new(2, 3),
+            first_step_reserved_by_other: false,
+            second_step_blocked_by_friendly: false,
+        };
+
+        assert_eq!(
+            core.compare_advance_candidate(context, &front_engage, &side_engage),
+            std::cmp::Ordering::Less
+        );
+        assert_eq!(
+            core.compare_advance_candidate(context, &side_engage, &front_engage),
             std::cmp::Ordering::Greater
         );
     }

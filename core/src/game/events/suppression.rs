@@ -127,14 +127,21 @@ impl SuppressionExecutor {
         // 1. Player 덱 정보 구성
         let player_deck = Self::build_player_deck(world)?;
 
-        // 2. Opponent 덱 정보 구성 (PvE 데이터에서 로드)
-        let opponent_deck = Self::build_opponent_deck(&game_data, encounter_id)?;
-
-        // 3. BattleCore 생성 및 전투 실행
         let field = world
             .get_resource::<Field>()
             .ok_or(GameError::MissingResource("Field"))?;
-        let field_size = (field.width, field.height);
+
+        // 2. Opponent 덱 정보 구성 (PvE 데이터에서 로드)
+        let opponent_deck = Self::build_opponent_deck(&game_data, encounter_id, field.height)?;
+
+        // 3. BattleCore 생성 및 전투 실행
+        let field_size = (
+            field.width,
+            field
+                .height
+                .checked_mul(2)
+                .ok_or(GameError::InvalidAction)?,
+        );
         let mut battle = BattleCore::new(
             &player_deck,
             &opponent_deck,
@@ -225,6 +232,7 @@ impl SuppressionExecutor {
     fn build_opponent_deck(
         game_data: &GameDataBase,
         encounter_id: &str,
+        opponent_row_offset: u8,
     ) -> Result<PlayerDeckInfo, GameError> {
         const PVE_OWNED_ABNORMALITY_NS: u64 = 0x0050_5645_4f57_4e44_u64; // "PVEOWND"
 
@@ -265,10 +273,9 @@ impl SuppressionExecutor {
                 equipped_items: vec![],
             });
 
-            positions.insert(
-                owned_uuid,
-                crate::ecs::resources::Position::from(pve_unit.position),
-            );
+            let mut position = crate::ecs::resources::Position::from(pve_unit.position);
+            position.y += i32::from(opponent_row_offset);
+            positions.insert(owned_uuid, position);
         }
 
         Ok(PlayerDeckInfo {
@@ -303,13 +310,20 @@ impl SuppressionExecutor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ecs::resources::GameProgression;
+    use crate::ecs::resources::{GameProgression, Position};
+    use crate::game::battle::timeline::TimelineEvent;
     use crate::game::data::{
-        abnormality_data::AbnormalityDatabase, artifact_data::ArtifactDatabase,
-        bonus_data::BonusDatabase, equipment_data::EquipmentDatabase, event_pools::EventPhasePool,
-        event_pools::EventPoolConfig, pve_data::PveEncounterDatabase,
-        random_event_data::RandomEventDatabase, shop_data::ShopDatabase, skill_data::SkillDatabase,
-        GameDataBase,
+        abnormality_data::{AbnormalityDatabase, AbnormalityMetadata},
+        artifact_data::ArtifactDatabase,
+        bonus_data::BonusDatabase,
+        equipment_data::EquipmentDatabase,
+        event_pools::EventPhasePool,
+        event_pools::EventPoolConfig,
+        pve_data::PveEncounterDatabase,
+        random_event_data::RandomEventDatabase,
+        shop_data::ShopDatabase,
+        skill_data::SkillDatabase,
+        GameDataBase, Item,
     };
     use crate::game::enums::{OrdealType, PhaseType, RewardMode, RiskLevel};
     use crate::game::events::GeneratorContext;
@@ -345,6 +359,41 @@ mod tests {
         }))
     }
 
+    fn game_data_with_abnormalities_and_pve(
+        abnormalities: Vec<AbnormalityMetadata>,
+        encounters: Vec<PveEncounter>,
+    ) -> Arc<GameDataBase> {
+        Arc::new(GameDataBase::new(crate::game::data::GameDataBaseParts {
+            abnormality_data: Arc::new(AbnormalityDatabase::new(abnormalities)),
+            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
+            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
+            shop_data: Arc::new(ShopDatabase::new(vec![])),
+            bonus_data: Arc::new(BonusDatabase::new(vec![])),
+            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
+            pve_data: Arc::new(PveEncounterDatabase::new(encounters)),
+            skill_data: Arc::new(SkillDatabase::new(vec![])),
+            event_pools: empty_event_pools(),
+        }))
+    }
+
+    fn abnormality(id: &str, uuid: Uuid, attack: u32) -> AbnormalityMetadata {
+        AbnormalityMetadata {
+            id: id.to_string(),
+            uuid,
+            name: id.to_string(),
+            risk_level: RiskLevel::ZAYIN,
+            price: 0,
+            max_health: 30,
+            attack,
+            defense: 0,
+            magic_resist: 0,
+            movement: Default::default(),
+            basic_attack: Default::default(),
+            resonance: Default::default(),
+            skill_id: None,
+        }
+    }
+
     fn pve_encounter(id: &str, abnormality_id: &str, risk_level: RiskLevel) -> PveEncounter {
         PveEncounter {
             id: id.to_string(),
@@ -362,6 +411,75 @@ mod tests {
     }
 
     #[test]
+    fn suppression_battle_uses_combined_player_and_opponent_field() {
+        let player_owned_uuid = Uuid::from_u128(0x100);
+        let player_base_uuid = Uuid::from_u128(0x101);
+        let enemy_base_uuid = Uuid::from_u128(0x201);
+        let player = abnormality("player", player_base_uuid, 30);
+        let enemy = abnormality("enemy", enemy_base_uuid, 1);
+        let game_data = game_data_with_abnormalities_and_pve(
+            vec![player.clone(), enemy],
+            vec![PveEncounter {
+                id: "encounter".to_string(),
+                abnormality_id: "enemy".to_string(),
+                difficulty: 1,
+                risk_level: RiskLevel::ZAYIN,
+                reward_mode: RewardMode::ClaimAll,
+                reward_bonus_uuids: vec![],
+                units: vec![crate::game::data::pve_data::PveUnitData {
+                    abnormality_id: "enemy".to_string(),
+                    position: crate::game::data::pve_data::PvePosition { x: 3, y: 2 },
+                    tier: crate::game::enums::Tier::I,
+                }],
+            }],
+        );
+
+        let mut inventory = Inventory::new();
+        inventory
+            .add_item_owned(player_owned_uuid, Item::Abnormality(Arc::new(player)))
+            .expect("player unit should be added to inventory");
+
+        let mut field = Field::new(7, 4);
+        field
+            .place(player_owned_uuid, Side::Player, Position::new(3, 0))
+            .expect("player unit should be placed in player field");
+
+        let mut world = World::new();
+        world.insert_resource(inventory);
+        world.insert_resource(field);
+
+        let result =
+            SuppressionExecutor::start_battle(&mut world, game_data, "enemy", "encounter", 7)
+                .expect("suppression battle should start");
+
+        let battle_start = result
+            .timeline
+            .entries
+            .iter()
+            .find_map(|entry| match entry.event {
+                TimelineEvent::BattleStart { width, height } => Some((width, height)),
+                _ => None,
+            })
+            .expect("timeline should contain BattleStart");
+        assert_eq!(battle_start, (7, 8));
+
+        let opponent_spawn = result
+            .timeline
+            .entries
+            .iter()
+            .find_map(|entry| match entry.event {
+                TimelineEvent::UnitSpawned {
+                    owner: Side::Opponent,
+                    position,
+                    ..
+                } => Some(position),
+                _ => None,
+            })
+            .expect("timeline should contain opponent spawn");
+        assert_eq!(opponent_spawn, Position::new(3, 6));
+    }
+
+    #[test]
     fn suppression_generator_filters_candidates_by_ordeal_risk_level() {
         // Given: Noon은 TETH/HE만 후보로 허용한다.
         let game_data = game_data_with_pve(vec![
@@ -376,6 +494,7 @@ mod tests {
         world.insert_resource(GameProgression {
             current_ordeal: OrdealType::Noon,
             current_phase: PhaseType::I,
+            phase_roll_index: 0,
         });
 
         // When: 동일 seed로 Suppression 후보 3개를 생성한다.
@@ -429,6 +548,7 @@ mod tests {
         world.insert_resource(GameProgression {
             current_ordeal: OrdealType::Dawn,
             current_phase: PhaseType::I,
+            phase_roll_index: 0,
         });
 
         // When: 같은 seed로 두 번 생성한다.
@@ -475,6 +595,7 @@ mod tests {
         world.insert_resource(GameProgression {
             current_ordeal: OrdealType::White,
             current_phase: PhaseType::III,
+            phase_roll_index: 0,
         });
 
         let ctx = GeneratorContext::new(&world, game_data.as_ref(), 999);

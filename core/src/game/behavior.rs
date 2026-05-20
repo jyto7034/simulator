@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    ecs::resources::{InventoryDiffDto, Position},
+    ecs::resources::{EquipItemResultDto, InventoryDiffDto, Position},
     game::{
         battle::{timeline::Timeline, types::BattleWinner},
         enums::{
@@ -18,6 +18,7 @@ pub enum ActionKind {
     UnEquipItem,
     EquipItem,
     MoveUnit,
+    MoveBenchUnit,
     TransferUnit,
     RequestPhaseData,
     SelectEvent,
@@ -29,6 +30,8 @@ pub enum ActionKind {
     ExitBonus,
     StartSuppression,
     FinishSuppressionReplay,
+    ClaimCombatReward,
+    ExitCombatReward,
 }
 
 /// GameServer에서 GameCore로 전달되는 플레이어 행동
@@ -53,11 +56,20 @@ pub enum PlayerBehavior {
     MoveUnit {
         target_unit_uuid: Uuid,
         dest_pos: Position,
+        swap_with_unit_uuid: Option<Uuid>,
+    },
+    /// 벤치 내부 슬롯 이동
+    MoveBenchUnit {
+        target_unit_uuid: Uuid,
+        dest_slot: usize,
+        swap_with_unit_uuid: Option<Uuid>,
     },
     /// 배낭 <-> 필드 이동
     TransferUnit {
         target_unit_uuid: Uuid,
         dest_zone: ZoneType,
+        dest_bench_slot: Option<usize>,
+        swap_with_unit_uuid: Option<Uuid>,
     },
     // ============================================================
     // 이벤트 관련 행동
@@ -99,6 +111,10 @@ pub enum PlayerBehavior {
     },
     /// 진압 전투 리플레이 종료
     FinishSuppressionReplay,
+    /// 진압 전투 보상 수령
+    ClaimCombatReward,
+    /// 진압 전투 보상 확인 완료
+    ExitCombatReward,
     // ============================================================
     // 전투 관련 행동 (TODO)
     // ============================================================
@@ -113,6 +129,7 @@ impl PlayerBehavior {
             PlayerBehavior::UnEquipItem { .. } => ActionKind::UnEquipItem,
             PlayerBehavior::EquipItem { .. } => ActionKind::EquipItem,
             PlayerBehavior::MoveUnit { .. } => ActionKind::MoveUnit,
+            PlayerBehavior::MoveBenchUnit { .. } => ActionKind::MoveBenchUnit,
             PlayerBehavior::TransferUnit { .. } => ActionKind::TransferUnit,
             PlayerBehavior::RequestPhaseData => ActionKind::RequestPhaseData,
             PlayerBehavior::SelectEvent { .. } => ActionKind::SelectEvent,
@@ -124,6 +141,8 @@ impl PlayerBehavior {
             PlayerBehavior::ExitBonus => ActionKind::ExitBonus,
             PlayerBehavior::StartSuppression { .. } => ActionKind::StartSuppression,
             PlayerBehavior::FinishSuppressionReplay => ActionKind::FinishSuppressionReplay,
+            PlayerBehavior::ClaimCombatReward => ActionKind::ClaimCombatReward,
+            PlayerBehavior::ExitCombatReward => ActionKind::ExitCombatReward,
         }
     }
 }
@@ -149,10 +168,14 @@ pub enum BehaviorResult {
 
     // 아이템 장착 해제
     UnEquipItem,
-    /// 아이템 장착
-    EquipItem,
+    /// 아이템 장착/조합
+    EquipItem {
+        result: EquipItemResultDto,
+    },
     /// 기물 배치 이동 (편성 변경)
     MoveUnit,
+    /// 벤치 내부 슬롯 이동
+    MoveBenchUnit,
     /// 배낭 <-> 필드 이동
     TransferUnit,
 

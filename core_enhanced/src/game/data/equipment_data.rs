@@ -8,7 +8,7 @@ use crate::game::{
     behavior::GameError,
     data::{build_string_index, build_uuid_index, once_lock_with},
     enums::RiskLevel,
-    stats::TriggeredEffects,
+    stats::{StatModifier, TriggeredEffects},
 };
 
 fn default_allow_duplicate_equip() -> bool {
@@ -20,6 +20,15 @@ pub enum EquipmentType {
     Weapon,
     Armor,
     Accessory,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum EquipmentMaterialType {
+    Fragment,
+    Core,
+    Blueprint,
+    Residue,
+    Generic,
 }
 
 pub type EquipmentItem = EquipmentMetadata;
@@ -43,18 +52,74 @@ pub struct EquipmentMetadata {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EquipmentMaterialMetadata {
+    pub id: String,
+    pub uuid: Uuid,
+    pub name: String,
+    pub description: String,
+    pub material_type: EquipmentMaterialType,
+    pub rarity: RiskLevel,
+    #[serde(default)]
+    pub equipment_type: Option<EquipmentType>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EquipmentRecipeMetadata {
     pub ingredients: Vec<Uuid>,
     pub result: Uuid,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EquipmentMaterialCost {
+    pub material_id: String,
+    pub amount: u32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EquipmentRestorationRecipeMetadata {
+    pub id: String,
+    pub result_equipment_id: String,
+    pub costs: Vec<EquipmentMaterialCost>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EquipmentDismantleRecipeMetadata {
+    pub equipment_id: String,
+    pub yields: Vec<EquipmentMaterialCost>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EquipmentEnhancementRecipeMetadata {
+    pub equipment_id: String,
+    pub max_level: u8,
+    pub costs_per_level: Vec<EquipmentMaterialCost>,
+    #[serde(default)]
+    pub modifiers_per_level: Vec<StatModifier>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EquipmentDatabase {
     pub items: Vec<EquipmentMetadata>,
     #[serde(default)]
+    pub materials: Vec<EquipmentMaterialMetadata>,
+    #[serde(default)]
     pub recipes: Vec<EquipmentRecipeMetadata>,
+    #[serde(default)]
+    pub restoration_recipes: Vec<EquipmentRestorationRecipeMetadata>,
+    #[serde(default)]
+    pub dismantle_recipes: Vec<EquipmentDismantleRecipeMetadata>,
+    #[serde(default)]
+    pub enhancement_recipes: Vec<EquipmentEnhancementRecipeMetadata>,
     #[serde(skip)]
     by_id: OnceLock<HashMap<String, usize>>,
+    #[serde(skip)]
+    by_material_id: OnceLock<HashMap<String, usize>>,
+    #[serde(skip)]
+    by_restoration_recipe_id: OnceLock<HashMap<String, usize>>,
+    #[serde(skip)]
+    by_dismantle_equipment_id: OnceLock<HashMap<String, usize>>,
+    #[serde(skip)]
+    by_enhancement_equipment_id: OnceLock<HashMap<String, usize>>,
     #[serde(skip)]
     by_uuid: OnceLock<HashMap<Uuid, usize>>,
     #[serde(skip)]
@@ -70,14 +135,93 @@ impl EquipmentDatabase {
         items: Vec<EquipmentMetadata>,
         recipes: Vec<EquipmentRecipeMetadata>,
     ) -> Self {
+        Self::with_materials_and_recipes(items, Vec::new(), recipes)
+    }
+
+    pub fn with_materials_and_recipes(
+        items: Vec<EquipmentMetadata>,
+        materials: Vec<EquipmentMaterialMetadata>,
+        recipes: Vec<EquipmentRecipeMetadata>,
+    ) -> Self {
+        Self::with_materials_recipes_and_restorations(items, materials, recipes, Vec::new())
+    }
+
+    pub fn with_materials_recipes_and_restorations(
+        items: Vec<EquipmentMetadata>,
+        materials: Vec<EquipmentMaterialMetadata>,
+        recipes: Vec<EquipmentRecipeMetadata>,
+        restoration_recipes: Vec<EquipmentRestorationRecipeMetadata>,
+    ) -> Self {
+        Self::with_materials_recipes_restorations_and_dismantles(
+            items,
+            materials,
+            recipes,
+            restoration_recipes,
+            Vec::new(),
+        )
+    }
+
+    pub fn with_materials_recipes_restorations_and_dismantles(
+        items: Vec<EquipmentMetadata>,
+        materials: Vec<EquipmentMaterialMetadata>,
+        recipes: Vec<EquipmentRecipeMetadata>,
+        restoration_recipes: Vec<EquipmentRestorationRecipeMetadata>,
+        dismantle_recipes: Vec<EquipmentDismantleRecipeMetadata>,
+    ) -> Self {
+        Self::with_all(
+            items,
+            materials,
+            recipes,
+            restoration_recipes,
+            dismantle_recipes,
+            Vec::new(),
+        )
+    }
+
+    pub fn with_all(
+        items: Vec<EquipmentMetadata>,
+        materials: Vec<EquipmentMaterialMetadata>,
+        recipes: Vec<EquipmentRecipeMetadata>,
+        restoration_recipes: Vec<EquipmentRestorationRecipeMetadata>,
+        dismantle_recipes: Vec<EquipmentDismantleRecipeMetadata>,
+        enhancement_recipes: Vec<EquipmentEnhancementRecipeMetadata>,
+    ) -> Self {
         let by_id = once_lock_with(build_string_index(&items, "equipment id", |item| &item.id));
+        let by_material_id = once_lock_with(build_string_index(
+            &materials,
+            "equipment material id",
+            |item| &item.id,
+        ));
+        let by_restoration_recipe_id = once_lock_with(build_string_index(
+            &restoration_recipes,
+            "equipment restoration recipe id",
+            |recipe| &recipe.id,
+        ));
+        let by_dismantle_equipment_id = once_lock_with(build_string_index(
+            &dismantle_recipes,
+            "equipment dismantle recipe equipment id",
+            |recipe| &recipe.equipment_id,
+        ));
+        let by_enhancement_equipment_id = once_lock_with(build_string_index(
+            &enhancement_recipes,
+            "equipment enhancement recipe equipment id",
+            |recipe| &recipe.equipment_id,
+        ));
         let by_uuid = once_lock_with(build_uuid_index(&items, "equipment uuid", |item| item.uuid));
         let by_recipe = once_lock_with(build_recipe_index(&recipes));
 
         Self {
             items,
+            materials,
             recipes,
+            restoration_recipes,
+            dismantle_recipes,
+            enhancement_recipes,
             by_id,
+            by_material_id,
+            by_restoration_recipe_id,
+            by_dismantle_equipment_id,
+            by_enhancement_equipment_id,
             by_uuid,
             by_recipe,
         }
@@ -86,6 +230,42 @@ impl EquipmentDatabase {
     fn by_id(&self) -> &HashMap<String, usize> {
         self.by_id
             .get_or_init(|| build_string_index(&self.items, "equipment id", |item| &item.id))
+    }
+
+    fn by_material_id(&self) -> &HashMap<String, usize> {
+        self.by_material_id.get_or_init(|| {
+            build_string_index(&self.materials, "equipment material id", |item| &item.id)
+        })
+    }
+
+    fn by_restoration_recipe_id(&self) -> &HashMap<String, usize> {
+        self.by_restoration_recipe_id.get_or_init(|| {
+            build_string_index(
+                &self.restoration_recipes,
+                "equipment restoration recipe id",
+                |recipe| &recipe.id,
+            )
+        })
+    }
+
+    fn by_dismantle_equipment_id(&self) -> &HashMap<String, usize> {
+        self.by_dismantle_equipment_id.get_or_init(|| {
+            build_string_index(
+                &self.dismantle_recipes,
+                "equipment dismantle recipe equipment id",
+                |recipe| &recipe.equipment_id,
+            )
+        })
+    }
+
+    fn by_enhancement_equipment_id(&self) -> &HashMap<String, usize> {
+        self.by_enhancement_equipment_id.get_or_init(|| {
+            build_string_index(
+                &self.enhancement_recipes,
+                "equipment enhancement recipe equipment id",
+                |recipe| &recipe.equipment_id,
+            )
+        })
     }
 
     fn by_uuid(&self) -> &HashMap<Uuid, usize> {
@@ -100,16 +280,59 @@ impl EquipmentDatabase {
 
     pub(crate) fn validate_indexes(&self) {
         let _ = self.by_id();
+        let _ = self.by_material_id();
+        let _ = self.by_restoration_recipe_id();
+        let _ = self.by_dismantle_equipment_id();
+        let _ = self.by_enhancement_equipment_id();
         let _ = self.by_uuid();
         let _ = self.by_recipe();
         self.validate_recipe_references()
             .expect("equipment recipes must reference existing equipment");
+        self.validate_restoration_recipe_references()
+            .expect("equipment restoration recipes must reference existing data");
+        self.validate_dismantle_recipe_references()
+            .expect("equipment dismantle recipes must reference existing data");
+        self.validate_enhancement_recipe_references()
+            .expect("equipment enhancement recipes must reference existing data");
     }
 
     pub fn get_by_id(&self, id: &str) -> Option<&EquipmentMetadata> {
         self.by_id()
             .get(id)
             .and_then(|&index| self.items.get(index))
+    }
+
+    pub fn get_material_by_id(&self, id: &str) -> Option<&EquipmentMaterialMetadata> {
+        self.by_material_id()
+            .get(id)
+            .and_then(|&index| self.materials.get(index))
+    }
+
+    pub fn get_restoration_recipe_by_id(
+        &self,
+        id: &str,
+    ) -> Option<&EquipmentRestorationRecipeMetadata> {
+        self.by_restoration_recipe_id()
+            .get(id)
+            .and_then(|&index| self.restoration_recipes.get(index))
+    }
+
+    pub fn get_dismantle_recipe_by_equipment_id(
+        &self,
+        equipment_id: &str,
+    ) -> Option<&EquipmentDismantleRecipeMetadata> {
+        self.by_dismantle_equipment_id()
+            .get(equipment_id)
+            .and_then(|&index| self.dismantle_recipes.get(index))
+    }
+
+    pub fn get_enhancement_recipe_by_equipment_id(
+        &self,
+        equipment_id: &str,
+    ) -> Option<&EquipmentEnhancementRecipeMetadata> {
+        self.by_enhancement_equipment_id()
+            .get(equipment_id)
+            .and_then(|&index| self.enhancement_recipes.get(index))
     }
 
     pub fn get_by_uuid(&self, uuid: &Uuid) -> Option<&EquipmentMetadata> {
@@ -147,6 +370,115 @@ impl EquipmentDatabase {
                     "equipment recipe references missing result uuid {}",
                     recipe.result
                 )));
+            }
+        }
+
+        Ok(())
+    }
+
+    fn validate_restoration_recipe_references(&self) -> Result<(), GameError> {
+        for recipe in &self.restoration_recipes {
+            if self.get_by_id(&recipe.result_equipment_id).is_none() {
+                return Err(GameError::InvalidStaticData(format!(
+                    "equipment restoration recipe '{}' references missing result equipment '{}'",
+                    recipe.id, recipe.result_equipment_id
+                )));
+            }
+
+            if recipe.costs.is_empty() {
+                return Err(GameError::InvalidStaticData(format!(
+                    "equipment restoration recipe '{}' must have at least one material cost",
+                    recipe.id
+                )));
+            }
+
+            for cost in &recipe.costs {
+                if cost.amount == 0 {
+                    return Err(GameError::InvalidStaticData(format!(
+                        "equipment restoration recipe '{}' has zero cost for material '{}'",
+                        recipe.id, cost.material_id
+                    )));
+                }
+                if self.get_material_by_id(&cost.material_id).is_none() {
+                    return Err(GameError::InvalidStaticData(format!(
+                        "equipment restoration recipe '{}' references missing material '{}'",
+                        recipe.id, cost.material_id
+                    )));
+                }
+            }
+        }
+
+        Ok(())
+    }
+
+    fn validate_dismantle_recipe_references(&self) -> Result<(), GameError> {
+        for recipe in &self.dismantle_recipes {
+            if self.get_by_id(&recipe.equipment_id).is_none() {
+                return Err(GameError::InvalidStaticData(format!(
+                    "equipment dismantle recipe references missing equipment '{}'",
+                    recipe.equipment_id
+                )));
+            }
+
+            if recipe.yields.is_empty() {
+                return Err(GameError::InvalidStaticData(format!(
+                    "equipment dismantle recipe for '{}' must have at least one yield",
+                    recipe.equipment_id
+                )));
+            }
+
+            for material in &recipe.yields {
+                if material.amount == 0 {
+                    return Err(GameError::InvalidStaticData(format!(
+                        "equipment dismantle recipe for '{}' has zero yield for material '{}'",
+                        recipe.equipment_id, material.material_id
+                    )));
+                }
+                if self.get_material_by_id(&material.material_id).is_none() {
+                    return Err(GameError::InvalidStaticData(format!(
+                        "equipment dismantle recipe for '{}' references missing material '{}'",
+                        recipe.equipment_id, material.material_id
+                    )));
+                }
+            }
+        }
+
+        Ok(())
+    }
+
+    fn validate_enhancement_recipe_references(&self) -> Result<(), GameError> {
+        for recipe in &self.enhancement_recipes {
+            if self.get_by_id(&recipe.equipment_id).is_none() {
+                return Err(GameError::InvalidStaticData(format!(
+                    "equipment enhancement recipe references missing equipment '{}'",
+                    recipe.equipment_id
+                )));
+            }
+            if recipe.max_level == 0 {
+                return Err(GameError::InvalidStaticData(format!(
+                    "equipment enhancement recipe for '{}' must have max_level > 0",
+                    recipe.equipment_id
+                )));
+            }
+            if recipe.costs_per_level.is_empty() {
+                return Err(GameError::InvalidStaticData(format!(
+                    "equipment enhancement recipe for '{}' must have at least one cost",
+                    recipe.equipment_id
+                )));
+            }
+            for cost in &recipe.costs_per_level {
+                if cost.amount == 0 {
+                    return Err(GameError::InvalidStaticData(format!(
+                        "equipment enhancement recipe for '{}' has zero cost for material '{}'",
+                        recipe.equipment_id, cost.material_id
+                    )));
+                }
+                if self.get_material_by_id(&cost.material_id).is_none() {
+                    return Err(GameError::InvalidStaticData(format!(
+                        "equipment enhancement recipe for '{}' references missing material '{}'",
+                        recipe.equipment_id, cost.material_id
+                    )));
+                }
             }
         }
 

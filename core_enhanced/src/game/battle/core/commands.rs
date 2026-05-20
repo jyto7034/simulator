@@ -18,10 +18,10 @@ use crate::game::stats::{Effect, TriggerEffectTarget, TriggerType};
 
 use super::{
     movement::{
-        types::{WorldVec2, LEGACY_POSITION_UNITS_PER_WORLD},
+        types::{WorldVec2, DATA_UNITS_PER_WORLD},
         ActionState,
     },
-    spatial::DEFAULT_UNIT_HITBOX_RADIUS_UNITS,
+    spatial::{moving_circle_sweep_hit_fraction, DEFAULT_UNIT_HITBOX_RADIUS_UNITS},
     types::{CommandExecutionSummary, ProjectileGuidance},
 };
 
@@ -86,7 +86,7 @@ fn projectile_flight_ms_between_world_points(
     speed_units_per_ms: u32,
 ) -> u64 {
     let distance_units = (start.distance(aim)
-        * crate::game::battle::core::movement::types::LEGACY_POSITION_UNITS_PER_WORLD)
+        * crate::game::battle::core::movement::types::DATA_UNITS_PER_WORLD)
         .ceil()
         .max(0.0) as u64;
     projectile_flight_ms(distance_units, speed_units_per_ms)
@@ -110,7 +110,7 @@ impl BattleCore {
 
         self.graveyard
             .get(&unit_instance_id)
-            .map(|snapshot| WorldVec2::from_tile_center(snapshot.position))
+            .map(|snapshot| snapshot.world_position)
     }
 
     pub(super) fn activation_commands_from_bindings(
@@ -468,9 +468,25 @@ impl BattleCore {
     pub(super) fn sample_unit_world_position_at(
         &self,
         unit_instance_id: UnitInstanceId,
-        _time_ms: u64,
+        time_ms: u64,
     ) -> Option<crate::game::battle::core::movement::types::WorldVec2> {
+        if let Some(segment) = self.active_movement_segments.get(&unit_instance_id) {
+            return Some(segment.sample_position_at(time_ms));
+        }
+
         self.unit_world_position_or_tile_center(unit_instance_id)
+    }
+
+    pub(in crate::game::battle::core) fn sample_unit_body_at(
+        &self,
+        unit_instance_id: UnitInstanceId,
+        time_ms: u64,
+    ) -> Option<crate::game::battle::core::movement::types::UnitBody> {
+        let mut body = self.unit_body_view(unit_instance_id)?;
+        if let Some(position) = self.sample_unit_world_position_at(unit_instance_id, time_ms) {
+            body.position = position;
+        }
+        Some(body)
     }
 
     fn calculate_basic_attack_damage_snapshot(
@@ -721,7 +737,22 @@ impl BattleCore {
             return;
         };
 
-        let Some(target_body) = self.unit_body_view(projectile.target_instance_id) else {
+        let from_time_ms = projectile.last_reevaluation_ms;
+        let Some(target_body_start) =
+            self.sample_unit_body_at(projectile.target_instance_id, from_time_ms)
+        else {
+            self.record_basic_attack_projectile_miss(
+                time_ms,
+                projectile_id,
+                projectile.attacker_instance_id,
+                projectile.target_instance_id,
+                projectile.current_position,
+            );
+            return;
+        };
+        let Some(target_body_end) =
+            self.sample_unit_body_at(projectile.target_instance_id, time_ms)
+        else {
             self.record_basic_attack_projectile_miss(
                 time_ms,
                 projectile_id,
@@ -748,13 +779,12 @@ impl BattleCore {
 
         let elapsed_ms = time_ms.saturating_sub(projectile.last_reevaluation_ms);
         let aim = match projectile.guidance {
-            ProjectileGuidance::Homing => target_body.position,
+            ProjectileGuidance::Homing => target_body_end.position,
             ProjectileGuidance::Fixed => projectile.aim,
         };
         let delta = aim - projectile.current_position;
         let distance = delta.length();
-        let speed_world_per_ms =
-            projectile.speed_units_per_ms as f32 / LEGACY_POSITION_UNITS_PER_WORLD;
+        let speed_world_per_ms = projectile.speed_units_per_ms as f32 / DATA_UNITS_PER_WORLD;
         let max_step = speed_world_per_ms * elapsed_ms as f32;
         let next_position = if distance <= f32::EPSILON
             || projectile.speed_units_per_ms == 0
@@ -764,15 +794,15 @@ impl BattleCore {
         } else {
             projectile.current_position + delta * (max_step / distance)
         };
-        let projectile_radius =
-            DEFAULT_UNIT_HITBOX_RADIUS_UNITS as f32 / LEGACY_POSITION_UNITS_PER_WORLD;
-        let reach = target_body.radius + projectile_radius;
+        let projectile_radius = DEFAULT_UNIT_HITBOX_RADIUS_UNITS as f32 / DATA_UNITS_PER_WORLD;
+        let reach = target_body_start.radius.max(target_body_end.radius) + projectile_radius;
 
-        if let Some(hit_fraction) = self.spatial_query_backend.projectile_sweep_hit_fraction(
+        if let Some(hit_fraction) = moving_circle_sweep_hit_fraction(
             projectile.current_position,
             next_position,
             reach,
-            target_body.position,
+            target_body_start.position,
+            target_body_end.position,
         ) {
             let impact_position = projectile.current_position
                 + (next_position - projectile.current_position) * hit_fraction.clamp(0.0, 1.0);
@@ -1014,14 +1044,18 @@ impl BattleCore {
         target_id: UnitInstanceId,
         current_time_ms: u64,
     ) -> bool {
-        let (attacker_owner, attacker_base_uuid, attacker_attack) = {
+        let (attacker_owner, attacker_attack, basic) = {
             let Some(attacker) = self.units.get(&attacker_instance_id) else {
                 return false;
             };
             if attacker.is_dead() {
                 return false;
             }
-            (attacker.owner, attacker.base_uuid, attacker.stats.attack)
+            (
+                attacker.owner,
+                attacker.stats.attack,
+                attacker.basic_attack.clone(),
+            )
         };
 
         let (target_owner, target_defense, target_magic_resist, target_current_hp, target_max_hp) = {
@@ -1043,13 +1077,6 @@ impl BattleCore {
         if target_owner == attacker_owner {
             return false;
         }
-
-        let basic = self
-            .game_data
-            .abnormality_data
-            .get_by_uuid(&attacker_base_uuid)
-            .map(|m| m.basic_attack.clone())
-            .unwrap_or_default();
 
         if !self.is_basic_attack_target_in_range(attacker_instance_id, target_id) {
             return false;
@@ -1452,31 +1479,30 @@ impl BattleCore {
 #[cfg(test)]
 mod tests {
     use super::projectile_flight_ms;
-    use crate::ecs::resources::Position;
     use crate::game::ability::{
-        AbilityActivationBinding, AbilityActivationDef, DeliveryDef, SkillCastTargetingDef,
-        SkillDef, SkillStepDef, SkillTarget, StepTargetingMode, UnitTargetRule,
+        AbilityActivationBinding, AbilityActivationDef, DeliveryDef, SkillAreaShapeDef,
+        SkillCastTargetingDef, SkillDef, SkillHitTargetFilter, SkillId, SkillStepDef, SkillTarget,
+        StepTargetingMode, UnitTargetRule,
     };
-    use crate::game::battle::core::movement::{types::WorldVec2, ActionState};
+    use crate::game::battle::core::movement::{
+        types::{TimelineVec2, UnitBody, WorldVec2, DATA_UNITS_PER_WORLD},
+        ActionState, MovementSegmentEndKind,
+    };
     use crate::game::battle::core::types::{ProjectileGuidance, RuntimeUnit};
-    use crate::game::battle::core::ProjectileRecord;
+    use crate::game::battle::core::{ActiveMovementSegment, ProjectileRecord};
     use crate::game::battle::damage::{DamageSource, DamageType};
+    use crate::game::battle::scenario::BattleScenario;
     use crate::game::battle::timeline::{
         HpChangeReason, MovementStopReason, Timeline, TimelineEvent,
     };
-    use crate::game::battle::types::PlayerDeckInfo;
     use crate::game::data::{
-        abnormality_data::{AbnormalityDatabase, AbnormalityMetadata},
-        artifact_data::ArtifactDatabase,
-        bonus_data::BonusDatabase,
-        equipment_data::{EquipmentDatabase, EquipmentMetadata, EquipmentType},
-        pve_data::PveEncounterDatabase,
-        random_event_data::RandomEventDatabase,
-        shop_data::ShopDatabase,
+        abnormality_data::AbnormalityMetadata,
+        equipment_data::{EquipmentMetadata, EquipmentType},
         skill_data::SkillDatabase,
-        GameDataBase,
+        GameDataBase, GameDataBuilder,
     };
     use crate::game::enums::Side;
+    use crate::game::resources::Position;
     use crate::game::stats::{TriggerEffectTarget, TriggerType, TriggeredEffect, UnitStats};
     use std::collections::HashMap;
     use std::path::PathBuf;
@@ -1505,13 +1531,7 @@ mod tests {
 
     #[test]
     fn spawn_basic_attack_projectile_stores_homing_launch_metadata() {
-        let empty_deck = PlayerDeckInfo {
-            units: vec![],
-            artifacts: vec![],
-            positions: HashMap::new(),
-        };
-        let mut core =
-            super::BattleCore::new(&empty_deck, &empty_deck, empty_game_data(), (4, 4), 1);
+        let mut core = new_test_core(empty_game_data(), 1);
 
         let attacker_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(41));
         let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(42));
@@ -1539,44 +1559,160 @@ mod tests {
         assert_eq!(stored.guidance, ProjectileGuidance::Homing);
     }
 
-    fn empty_game_data() -> Arc<GameDataBase> {
-        Arc::new(GameDataBase::new(crate::game::data::GameDataBaseParts {
-            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![])),
-            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
-            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
-            shop_data: Arc::new(ShopDatabase::new(vec![])),
-            bonus_data: Arc::new(BonusDatabase::new(vec![])),
-            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
-            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
-            skill_data: Arc::new(SkillDatabase::new(vec![])),
-            event_pools: crate::game::data::event_pools::EventPoolConfig {
-                dawn: crate::game::data::event_pools::EventPhasePool {
-                    shops: vec![],
-                    bonuses: vec![],
-                    random_events: vec![],
-                },
-                noon: crate::game::data::event_pools::EventPhasePool {
-                    shops: vec![],
-                    bonuses: vec![],
-                    random_events: vec![],
-                },
-                dusk: crate::game::data::event_pools::EventPhasePool {
-                    shops: vec![],
-                    bonuses: vec![],
-                    random_events: vec![],
-                },
-                midnight: crate::game::data::event_pools::EventPhasePool {
-                    shops: vec![],
-                    bonuses: vec![],
-                    random_events: vec![],
-                },
-                white: crate::game::data::event_pools::EventPhasePool {
-                    shops: vec![],
-                    bonuses: vec![],
-                    random_events: vec![],
-                },
+    #[test]
+    fn unit_world_position_sampling_interpolates_active_movement_segment() {
+        let mut core = new_test_core(empty_game_data(), 1);
+        let unit_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(43));
+        let mut unit = test_runtime_unit(
+            unit_id,
+            Side::Player,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 1, 0, 1),
+        );
+        unit.body = UnitBody::new_at(WorldVec2::new(10.0, 0.0), 0.35, 1.0);
+        core.units.insert(unit_id, unit);
+
+        let timeline_index = core.timeline.entries.len();
+        core.record_timeline(
+            0,
+            TimelineEvent::MovementSegmentStarted {
+                unit_instance_id: unit_id,
+                start: WorldVec2::ZERO.quantized_milli(),
+                target: WorldVec2::new(10.0, 0.0).quantized_milli(),
+                started_at_ms: 0,
+                ends_at_ms: 100,
+                end_kind: MovementSegmentEndKind::Boundary,
             },
-        }))
+        );
+        core.active_movement_segments.insert(
+            unit_id,
+            ActiveMovementSegment {
+                timeline_index,
+                velocity: TimelineVec2 {
+                    x_milli: 100_000,
+                    y_milli: 0,
+                },
+                start: WorldVec2::ZERO,
+                target: WorldVec2::new(10.0, 0.0),
+                started_at_ms: 0,
+                ends_at_ms: 100,
+            },
+        );
+
+        assert_eq!(
+            core.sample_unit_world_position_at(unit_id, 25),
+            Some(WorldVec2::new(2.5, 0.0))
+        );
+        assert_eq!(
+            core.sample_unit_world_position_at(unit_id, 75),
+            Some(WorldVec2::new(7.5, 0.0))
+        );
+    }
+
+    #[test]
+    fn advance_basic_attack_projectile_hits_target_crossing_path_between_reevaluations() {
+        let mut core = new_test_core(empty_game_data(), 1);
+        let attacker_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(46));
+        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(47));
+
+        let mut attacker = test_runtime_unit(
+            attacker_id,
+            Side::Player,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 10, 0, 1),
+        );
+        attacker.body = UnitBody::new_at(WorldVec2::ZERO, 0.10, 1.0);
+        let mut target = test_runtime_unit(
+            target_id,
+            Side::Opponent,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 0, 0, 1),
+        );
+        target.body = UnitBody::new_at(WorldVec2::new(5.0, -2.0), 0.10, 1.0);
+
+        core.units.insert(attacker_id, attacker);
+        core.units.insert(target_id, target);
+        core.active_movement_segments.insert(
+            target_id,
+            ActiveMovementSegment {
+                timeline_index: 0,
+                velocity: TimelineVec2 {
+                    x_milli: 0,
+                    y_milli: -400,
+                },
+                start: WorldVec2::new(5.0, 2.0),
+                target: WorldVec2::new(5.0, -2.0),
+                started_at_ms: 0,
+                ends_at_ms: 10,
+            },
+        );
+
+        let projectile_id = Uuid::from_u128(0xBEEF);
+        core.projectiles.insert(
+            projectile_id,
+            ProjectileRecord {
+                fired_at_ms: 0,
+                last_reevaluation_ms: 0,
+                attacker_instance_id: attacker_id,
+                target_instance_id: target_id,
+                start: WorldVec2::ZERO,
+                current_position: WorldVec2::ZERO,
+                aim: WorldVec2::new(10.0, 0.0),
+                speed_units_per_ms: DATA_UNITS_PER_WORLD as u32,
+                guidance: ProjectileGuidance::Fixed,
+            },
+        );
+
+        core.advance_basic_attack_projectile(10, projectile_id);
+
+        assert!(!core.projectiles.contains_key(&projectile_id));
+        assert!(core
+            .units
+            .get(&target_id)
+            .is_some_and(|target| target.stats.current_health < 100));
+    }
+
+    #[test]
+    fn area_target_collection_uses_runtime_unit_radius() {
+        let mut core = new_test_core(empty_game_data(), 1);
+        let caster_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(44));
+        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(45));
+
+        let mut caster = test_runtime_unit(
+            caster_id,
+            Side::Player,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 1, 0, 1),
+        );
+        caster.body = UnitBody::new_at(WorldVec2::ZERO, 0.35, 1.0);
+        let mut target = test_runtime_unit(
+            target_id,
+            Side::Opponent,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 1, 0, 1),
+        );
+        target.body = UnitBody::new_at(WorldVec2::new(0.30, 0.0), 0.35, 1.0);
+
+        core.units.insert(caster_id, caster);
+        core.units.insert(target_id, target);
+
+        let targets = core.collect_area_targets_at(
+            0,
+            Side::Player,
+            caster_id,
+            WorldVec2::ZERO,
+            WorldVec2::ZERO,
+            WorldVec2::new(1.0, 0.0),
+            SkillAreaShapeDef::Circle { radius_units: 0 },
+            SkillHitTargetFilter::Enemies,
+            false,
+        );
+
+        assert_eq!(targets, vec![target_id]);
+    }
+
+    fn empty_game_data() -> Arc<GameDataBase> {
+        GameDataBuilder::empty().build_arc()
     }
 
     fn battle_test_game_data(
@@ -1629,43 +1765,11 @@ mod tests {
             ability_activations: item_activations,
         };
 
-        Arc::new(GameDataBase::new(crate::game::data::GameDataBaseParts {
-            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![attacker, target])),
-            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
-            equipment_data: Arc::new(EquipmentDatabase::new(vec![item])),
-            shop_data: Arc::new(ShopDatabase::new(vec![])),
-            bonus_data: Arc::new(BonusDatabase::new(vec![])),
-            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
-            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
-            skill_data: Arc::new(SkillDatabase::new(skills)),
-            event_pools: crate::game::data::event_pools::EventPoolConfig {
-                dawn: crate::game::data::event_pools::EventPhasePool {
-                    shops: vec![],
-                    bonuses: vec![],
-                    random_events: vec![],
-                },
-                noon: crate::game::data::event_pools::EventPhasePool {
-                    shops: vec![],
-                    bonuses: vec![],
-                    random_events: vec![],
-                },
-                dusk: crate::game::data::event_pools::EventPhasePool {
-                    shops: vec![],
-                    bonuses: vec![],
-                    random_events: vec![],
-                },
-                midnight: crate::game::data::event_pools::EventPhasePool {
-                    shops: vec![],
-                    bonuses: vec![],
-                    random_events: vec![],
-                },
-                white: crate::game::data::event_pools::EventPhasePool {
-                    shops: vec![],
-                    bonuses: vec![],
-                    random_events: vec![],
-                },
-            },
-        }))
+        GameDataBuilder::empty()
+            .with_abnormalities(vec![attacker, target])
+            .with_equipment(vec![item])
+            .with_skills(SkillDatabase::new(skills))
+            .build_arc()
     }
 
     fn battle_test_game_data_with_artifact(
@@ -1715,48 +1819,15 @@ mod tests {
             ability_activations: vec![],
         };
 
-        Arc::new(GameDataBase::new(crate::game::data::GameDataBaseParts {
-            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![attacker, target])),
-            artifact_data: Arc::new(ArtifactDatabase::new(vec![artifact])),
-            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
-            shop_data: Arc::new(ShopDatabase::new(vec![])),
-            bonus_data: Arc::new(BonusDatabase::new(vec![])),
-            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
-            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
-            skill_data: Arc::new(SkillDatabase::new(vec![])),
-            event_pools: crate::game::data::event_pools::EventPoolConfig {
-                dawn: crate::game::data::event_pools::EventPhasePool {
-                    shops: vec![],
-                    bonuses: vec![],
-                    random_events: vec![],
-                },
-                noon: crate::game::data::event_pools::EventPhasePool {
-                    shops: vec![],
-                    bonuses: vec![],
-                    random_events: vec![],
-                },
-                dusk: crate::game::data::event_pools::EventPhasePool {
-                    shops: vec![],
-                    bonuses: vec![],
-                    random_events: vec![],
-                },
-                midnight: crate::game::data::event_pools::EventPhasePool {
-                    shops: vec![],
-                    bonuses: vec![],
-                    random_events: vec![],
-                },
-                white: crate::game::data::event_pools::EventPhasePool {
-                    shops: vec![],
-                    bonuses: vec![],
-                    random_events: vec![],
-                },
-            },
-        }))
+        GameDataBuilder::empty()
+            .with_abnormalities(vec![attacker, target])
+            .with_artifacts(vec![artifact])
+            .build_arc()
     }
 
     fn damage_proc_skill(id: &str, amount: i32) -> SkillDef {
         SkillDef {
-            id: id.to_string(),
+            id: SkillId::from(id),
             name: id.to_string(),
             kind: Default::default(),
             cast_targeting: SkillCastTargetingDef::FirstStepTarget,
@@ -1790,10 +1861,16 @@ mod tests {
     ) -> RuntimeUnit {
         RuntimeUnit {
             instance_id,
+            source_owned_uuid: instance_id.as_uuid(),
             owner,
+            role: crate::game::battle::types::BattleUnitRole::Combatant,
             base_uuid,
             stats,
+            basic_attack: Default::default(),
+            skill_id: None,
             body: Default::default(),
+            tactical_anchor: None,
+            tactical_group_id: None,
             move_epoch: 0,
             action_state: ActionState::Idle,
             action_locks: Default::default(),
@@ -1827,15 +1904,13 @@ mod tests {
         }
     }
 
+    fn new_test_core(game_data: Arc<GameDataBase>, seed: u64) -> super::BattleCore {
+        super::BattleCore::new_from_scenario(BattleScenario::empty((4, 4)), game_data, seed)
+    }
+
     #[test]
     fn advance_basic_attack_projectile_is_idempotent_for_same_projectile_id() {
-        let empty_deck = PlayerDeckInfo {
-            units: vec![],
-            artifacts: vec![],
-            positions: HashMap::new(),
-        };
-        let mut core =
-            super::BattleCore::new(&empty_deck, &empty_deck, empty_game_data(), (4, 4), 1);
+        let mut core = new_test_core(empty_game_data(), 1);
 
         let attacker_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(1));
         let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(2));
@@ -1849,10 +1924,16 @@ mod tests {
             attacker_id,
             RuntimeUnit {
                 instance_id: attacker_id,
+                source_owned_uuid: attacker_id.as_uuid(),
                 owner: Side::Player,
+                role: crate::game::battle::types::BattleUnitRole::Combatant,
                 base_uuid: Uuid::nil(),
                 stats: attacker_stats,
+                basic_attack: Default::default(),
+                skill_id: None,
                 body: Default::default(),
+                tactical_anchor: None,
+                tactical_group_id: None,
                 move_epoch: 0,
                 action_state: ActionState::Idle,
                 action_locks: Default::default(),
@@ -1873,10 +1954,16 @@ mod tests {
             target_id,
             RuntimeUnit {
                 instance_id: target_id,
+                source_owned_uuid: target_id.as_uuid(),
                 owner: Side::Opponent,
+                role: crate::game::battle::types::BattleUnitRole::Combatant,
                 base_uuid: Uuid::nil(),
                 stats: target_stats,
+                basic_attack: Default::default(),
+                skill_id: None,
                 body: Default::default(),
+                tactical_anchor: None,
+                tactical_group_id: None,
                 move_epoch: 0,
                 action_state: ActionState::Idle,
                 action_locks: Default::default(),
@@ -2003,13 +2090,7 @@ mod tests {
 
     #[test]
     fn apply_hp_delta_records_died_stop_with_latest_continuous_position() {
-        let empty_deck = PlayerDeckInfo {
-            units: vec![],
-            artifacts: vec![],
-            positions: HashMap::new(),
-        };
-        let mut core =
-            super::BattleCore::new(&empty_deck, &empty_deck, empty_game_data(), (4, 4), 1);
+        let mut core = new_test_core(empty_game_data(), 1);
 
         let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(3));
         let mut target_stats = UnitStats::with_values(100, 100, 0, 0, 1000);
@@ -2019,10 +2100,16 @@ mod tests {
             target_id,
             RuntimeUnit {
                 instance_id: target_id,
+                source_owned_uuid: target_id.as_uuid(),
                 owner: Side::Opponent,
+                role: crate::game::battle::types::BattleUnitRole::Combatant,
                 base_uuid: Uuid::nil(),
                 stats: target_stats,
+                basic_attack: Default::default(),
+                skill_id: None,
                 body: Default::default(),
+                tactical_anchor: None,
+                tactical_group_id: None,
                 move_epoch: 0,
                 action_state: ActionState::Idle,
                 action_locks: Default::default(),
@@ -2054,6 +2141,14 @@ mod tests {
         assert_eq!(target.stats.current_health, 0);
         assert_eq!(target.body.position.x, 0.05);
         assert!(matches!(target.action_state, ActionState::Dead));
+        assert_eq!(
+            core.graveyard
+                .get(&target_id)
+                .map(|snapshot| snapshot.world_position),
+            Some(crate::game::battle::core::movement::types::WorldVec2::new(
+                0.05, 0.0
+            ))
+        );
 
         let stop_entry = core
             .timeline
@@ -2086,7 +2181,7 @@ mod tests {
         let item_instance_id = Uuid::from_u128(3);
 
         let activation = AbilityActivationBinding {
-            ability_id: "item_proc".to_string(),
+            ability_id: SkillId::from("item_proc"),
             activation: AbilityActivationDef::TriggerProc {
                 trigger: TriggerType::OnAttack,
                 proc_chance_percent: 100,
@@ -2103,12 +2198,7 @@ mod tests {
             vec![damage_proc_skill("item_proc", 5)],
         );
 
-        let empty_deck = PlayerDeckInfo {
-            units: vec![],
-            artifacts: vec![],
-            positions: HashMap::new(),
-        };
-        let mut core = super::BattleCore::new(&empty_deck, &empty_deck, game_data, (4, 4), 1);
+        let mut core = new_test_core(game_data, 1);
 
         let mut attacker_stats = UnitStats::with_values(100, 100, 10, 0, 1000);
         attacker_stats.move_speed_units_per_ms = 1;
@@ -2152,7 +2242,7 @@ mod tests {
             matches!(
                 &entry.event,
                 TimelineEvent::AbilityCast { skill_id, caster_instance_id, target_instance_id }
-                if skill_id == "item_proc"
+                if skill_id.as_str() == "item_proc"
                     && *caster_instance_id == attacker_id
                     && *target_instance_id == Some(target_id)
             )
@@ -2188,12 +2278,7 @@ mod tests {
             vec![],
         );
 
-        let empty_deck = PlayerDeckInfo {
-            units: vec![],
-            artifacts: vec![],
-            positions: HashMap::new(),
-        };
-        let mut core = super::BattleCore::new(&empty_deck, &empty_deck, game_data, (4, 4), 1);
+        let mut core = new_test_core(game_data, 1);
 
         let mut attacker_stats = UnitStats::with_values(100, 100, 10, 0, 1000);
         attacker_stats.move_speed_units_per_ms = 1;
@@ -2282,12 +2367,7 @@ mod tests {
             artifact_effects,
         );
 
-        let empty_deck = PlayerDeckInfo {
-            units: vec![],
-            artifacts: vec![],
-            positions: HashMap::new(),
-        };
-        let mut core = super::BattleCore::new(&empty_deck, &empty_deck, game_data, (4, 4), 1);
+        let mut core = new_test_core(game_data, 1);
 
         let mut attacker_stats = UnitStats::with_values(100, 60, 10, 0, 1000);
         attacker_stats.move_speed_units_per_ms = 1;
@@ -2352,7 +2432,7 @@ mod tests {
         let item_instance_id = Uuid::from_u128(13);
 
         let activation = AbilityActivationBinding {
-            ability_id: "proc_icd".to_string(),
+            ability_id: SkillId::from("proc_icd"),
             activation: AbilityActivationDef::TriggerProc {
                 trigger: TriggerType::OnAttack,
                 proc_chance_percent: 100,
@@ -2369,12 +2449,7 @@ mod tests {
             vec![damage_proc_skill("proc_icd", 5)],
         );
 
-        let empty_deck = PlayerDeckInfo {
-            units: vec![],
-            artifacts: vec![],
-            positions: HashMap::new(),
-        };
-        let mut core = super::BattleCore::new(&empty_deck, &empty_deck, game_data, (4, 4), 7);
+        let mut core = new_test_core(game_data, 7);
 
         let mut attacker_stats = UnitStats::with_values(100, 100, 10, 0, 1000);
         attacker_stats.move_speed_units_per_ms = 1;
@@ -2423,7 +2498,7 @@ mod tests {
             .filter(|entry| {
                 matches!(
                     &entry.event,
-                    TimelineEvent::AbilityCast { skill_id, .. } if skill_id == "proc_icd"
+                    TimelineEvent::AbilityCast { skill_id, .. } if skill_id.as_str() == "proc_icd"
                 )
             })
             .count();

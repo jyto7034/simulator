@@ -32,7 +32,7 @@ impl Default for GameBalanceConfig {
                     suppress_failure: 1,
                     breach_success: 3,
                     breach_failure: 2,
-                    phase_recovery: 1,
+                    node_recovery: 1,
                     item_recovery: 2,
                 },
                 reward_multipliers: QliphothRewardMultipliers {
@@ -107,7 +107,7 @@ pub struct QliphothChanges {
     pub suppress_failure: u32,
     pub breach_success: u32,
     pub breach_failure: u32,
-    pub phase_recovery: u32,
+    pub node_recovery: u32,
     pub item_recovery: u32,
 }
 

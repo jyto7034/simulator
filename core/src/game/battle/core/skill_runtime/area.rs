@@ -20,12 +20,20 @@ use crate::{
             },
             enums::BattleEvent,
             ids::UnitInstanceId,
-            timeline::SkillCastTarget,
+            timeline::{
+                SkillCastTarget, TimelineEvent, TimelinePointUnits, TimelineSkillAreaShape,
+            },
         },
         determinism,
         enums::Side,
     },
 };
+
+const INSTANT_AREA_DISPLAY_DURATION_MS: u32 = 250;
+
+fn timeline_point(position: ContinuousPosition) -> TimelinePointUnits {
+    TimelinePointUnits::new(position.x_units, position.y_units)
+}
 
 impl BattleCore {
     pub(in crate::game::battle::core) fn allocate_skill_area_delivery_id(
@@ -177,7 +185,12 @@ impl BattleCore {
         caster_instance_id: UnitInstanceId,
         step_target: Option<SkillCastTarget>,
         area: &SkillAreaDeliveryDef,
-    ) -> Option<(ContinuousPosition, ContinuousPosition, Vec<UnitInstanceId>)> {
+    ) -> Option<(
+        ContinuousPosition,
+        ContinuousPosition,
+        ContinuousPosition,
+        Vec<UnitInstanceId>,
+    )> {
         let (caster_owner, origin, anchor_position, direction_hint) = self.resolve_area_geometry(
             time_ms,
             cast_seq,
@@ -187,6 +200,7 @@ impl BattleCore {
             area,
         )?;
         Some((
+            origin,
             anchor_position,
             direction_hint,
             self.collect_area_targets_at(
@@ -331,6 +345,49 @@ impl BattleCore {
         targets
     }
 
+    pub(in crate::game::battle::core) fn record_skill_area_declared(
+        &mut self,
+        time_ms: u64,
+        area_id: Uuid,
+        skill_id: SkillId,
+        step_id: String,
+        caster_instance_id: UnitInstanceId,
+        step_target: Option<SkillCastTarget>,
+        origin: ContinuousPosition,
+        center: ContinuousPosition,
+        direction_hint: ContinuousPosition,
+        area: SkillAreaDeliveryDef,
+    ) -> u64 {
+        let display_duration_ms = if area.duration_ms == 0 {
+            INSTANT_AREA_DISPLAY_DURATION_MS
+        } else {
+            area.duration_ms
+        };
+
+        self.record_timeline(
+            time_ms,
+            TimelineEvent::SkillAreaDeclared {
+                area_id,
+                skill_id,
+                step_id,
+                caster_instance_id,
+                target: step_target,
+                shape: TimelineSkillAreaShape::from(area.shape),
+                origin: timeline_point(origin),
+                center: timeline_point(center),
+                direction_hint: timeline_point(direction_hint),
+                start_time_ms: time_ms,
+                duration_ms: area.duration_ms,
+                display_duration_ms,
+                warning_ms: 0,
+                tick_interval_ms: area.tick_interval_ms,
+                tick_policy: area.tick_policy,
+                hit_targets: area.hit_targets,
+                include_caster: area.include_caster,
+            },
+        )
+    }
+
     pub(in crate::game::battle::core) fn allocate_area_instance_id(
         &mut self,
         cast_seq: u64,
@@ -374,6 +431,18 @@ impl BattleCore {
         };
 
         let area_id = self.allocate_area_instance_id(cast_seq, caster_instance_id, time_ms);
+        let area_declared_seq = self.record_skill_area_declared(
+            time_ms,
+            area_id,
+            skill_id.clone(),
+            step_id.clone(),
+            caster_instance_id,
+            step_target,
+            origin,
+            center,
+            direction_hint,
+            area,
+        );
         let expires_at_ms = time_ms.saturating_add(u64::from(area.duration_ms));
         let next_tick_ms = area
             .tick_interval_ms
@@ -421,7 +490,9 @@ impl BattleCore {
             },
         );
 
-        let cause = self.recording_cause().unwrap_or_default();
+        let cause = crate::game::battle::timeline::TimelineCause::Parent {
+            seq: area_declared_seq,
+        };
         self.event_queue.push(BattleEvent::SkillAreaTick {
             time_ms,
             area_id,

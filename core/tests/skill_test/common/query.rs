@@ -62,8 +62,26 @@ pub fn descendants_of(timeline: &Timeline, parent_seq: u64) -> Vec<&TimelineEntr
     timeline
         .entries
         .iter()
-        .filter(|entry| entry.cause.parent_seq() == Some(parent_seq))
+        .filter(|entry| entry_caused_by_seq(timeline, entry, parent_seq))
         .collect()
+}
+
+pub fn entry_caused_by_seq(timeline: &Timeline, entry: &TimelineEntry, expected_seq: u64) -> bool {
+    let Some(parent_seq) = entry.cause.parent_seq() else {
+        return false;
+    };
+    if parent_seq == expected_seq {
+        return true;
+    }
+
+    timeline
+        .entries
+        .iter()
+        .find(|entry| entry.seq == parent_seq)
+        .is_some_and(|parent| {
+            matches!(parent.event, TimelineEvent::SkillAreaDeclared { .. })
+                && parent.cause.parent_seq() == Some(expected_seq)
+        })
 }
 
 pub fn step_entries_for_cast(timeline: &Timeline, cast_seq: u64) -> Vec<&TimelineEntry> {
@@ -133,7 +151,7 @@ pub fn hp_changes_caused_by(timeline: &Timeline, parent_seq: u64) -> Vec<&Timeli
         .entries
         .iter()
         .filter(|entry| {
-            entry.cause.parent_seq() == Some(parent_seq)
+            entry_caused_by_seq(timeline, entry, parent_seq)
                 && matches!(entry.event, TimelineEvent::HpChanged { .. })
         })
         .collect()
@@ -168,7 +186,7 @@ pub fn stat_changes_caused_by(timeline: &Timeline, parent_seq: u64) -> Vec<&Time
         .entries
         .iter()
         .filter(|entry| {
-            entry.cause.parent_seq() == Some(parent_seq)
+            entry_caused_by_seq(timeline, entry, parent_seq)
                 && matches!(entry.event, TimelineEvent::StatChanged { .. })
         })
         .collect()
@@ -179,7 +197,7 @@ pub fn buffs_applied_by(timeline: &Timeline, parent_seq: u64) -> Vec<&TimelineEn
         .entries
         .iter()
         .filter(|entry| {
-            entry.cause.parent_seq() == Some(parent_seq)
+            entry_caused_by_seq(timeline, entry, parent_seq)
                 && matches!(entry.event, TimelineEvent::BuffApplied { .. })
         })
         .collect()
@@ -200,7 +218,7 @@ pub fn attack_starts_caused_by(timeline: &Timeline, parent_seq: u64) -> Vec<&Tim
         .entries
         .iter()
         .filter(|entry| {
-            entry.cause.parent_seq() == Some(parent_seq)
+            entry_caused_by_seq(timeline, entry, parent_seq)
                 && matches!(entry.event, TimelineEvent::AttackStart { .. })
         })
         .collect()

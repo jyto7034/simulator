@@ -336,27 +336,28 @@ impl Session {
     fn send_error(&self, ctx: &mut Ctx, code: ErrorCode, message: &str) {
         // Publish to Redis event stream first (before moving code)
         if let Some(ref metadata) = self.metadata {
-            let mut redis = self.app_state.redis.clone();
-            let metadata = metadata.clone();
-            let player_id = self.player_id;
-            let pod_id = self.app_state.current_run_id.clone();
-            let error_code_str = format!("{:?}", code); // Use Debug trait to get error code name
-            let error_message = message.to_string();
+            if let Some(mut redis) = self.app_state.redis.clone() {
+                let metadata = metadata.clone();
+                let player_id = self.player_id;
+                let pod_id = self.app_state.current_run_id;
+                let error_code_str = format!("{:?}", code); // Use Debug trait to get error code name
+                let error_message = message.to_string();
 
-            actix::spawn(async move {
-                crate::shared::redis_events::try_publish_test_event(
-                    &mut redis,
-                    &metadata,
-                    "player.error",
-                    pod_id.to_string().as_str(),
-                    vec![
-                        ("player_id", player_id.to_string()),
-                        ("code", error_code_str),
-                        ("message", error_message),
-                    ],
-                )
-                .await;
-            });
+                actix::spawn(async move {
+                    crate::shared::redis_events::try_publish_test_event(
+                        &mut redis,
+                        &metadata,
+                        "player.error",
+                        pod_id.to_string().as_str(),
+                        vec![
+                            ("player_id", player_id.to_string()),
+                            ("code", error_code_str),
+                            ("message", error_message),
+                        ],
+                    )
+                    .await;
+                });
+            }
         }
 
         // Send via WebSocket

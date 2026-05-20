@@ -399,6 +399,7 @@ impl GameDataBase {
         skill_data.validate_indexes();
 
         let item_registry = ItemRegistry::new(&abnormality_data, &artifact_data, &equipment_data);
+        validate_shop_item_references(&shop_data, &item_registry);
 
         Self {
             abnormality_data,
@@ -432,6 +433,19 @@ impl GameDataBase {
     }
 }
 
+fn validate_shop_item_references(shop_data: &ShopDatabase, item_registry: &ItemRegistry) {
+    for shop in &shop_data.shops {
+        for item_uuid in shop.visible_items.iter().chain(shop.hidden_items.iter()) {
+            if item_registry.get_index(item_uuid).is_none() {
+                panic!(
+                    "shop '{}' references missing item uuid {}",
+                    shop.id, item_uuid
+                );
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -443,7 +457,7 @@ mod tests {
         event_pools::{EventPhasePool, EventPoolConfig},
         pve_data::PveEncounterDatabase,
         random_event_data::RandomEventDatabase,
-        shop_data::ShopDatabase,
+        shop_data::{ShopDatabase, ShopMetadata},
         skill_data::SkillDatabase,
     };
     use crate::game::enums::RiskLevel;
@@ -493,6 +507,7 @@ mod tests {
             max_health: 10,
             attack: 1,
             defense: 1,
+            magic_resist: 0,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -563,6 +578,7 @@ mod tests {
             max_health: 10,
             attack: 1,
             defense: 1,
+            magic_resist: 0,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -585,6 +601,32 @@ mod tests {
             artifact_data: Arc::new(ArtifactDatabase::new(vec![artifact])),
             equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
             shop_data: Arc::new(ShopDatabase::new(vec![])),
+            bonus_data: Arc::new(BonusDatabase::new(vec![])),
+            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
+            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
+            skill_data: Arc::new(SkillDatabase::new(vec![])),
+            event_pools: empty_event_pools(),
+        });
+    }
+
+    #[test]
+    #[should_panic(expected = "references missing item uuid")]
+    fn game_data_base_panics_on_shop_referencing_missing_item_uuid() {
+        let shop = ShopMetadata {
+            id: "shop".to_string(),
+            name: "Shop".to_string(),
+            uuid: Uuid::from_u128(100),
+            shop_type: crate::game::data::shop_data::ShopType::Shop,
+            can_reroll: false,
+            visible_items: vec![Uuid::from_u128(999)],
+            hidden_items: vec![],
+        };
+
+        let _ = GameDataBase::new(GameDataBaseParts {
+            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![])),
+            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
+            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
+            shop_data: Arc::new(ShopDatabase::new(vec![shop])),
             bonus_data: Arc::new(BonusDatabase::new(vec![])),
             random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
             pve_data: Arc::new(PveEncounterDatabase::new(vec![])),

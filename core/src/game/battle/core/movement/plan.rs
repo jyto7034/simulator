@@ -176,12 +176,8 @@ impl BattleCore {
         a: Position,
         b: Position,
     ) -> Ordering {
-        let forward_cmp = match owner {
-            Side::Player => a.y.cmp(&b.y),
-            Side::Opponent => b.y.cmp(&a.y),
-        };
-
-        forward_cmp
+        Self::engagement_lane_preference(owner, enemy_pos, a)
+            .cmp(&Self::engagement_lane_preference(owner, enemy_pos, b))
             .then_with(|| a.chebyshev(&enemy_pos).cmp(&b.chebyshev(&enemy_pos)))
             .then_with(|| {
                 (a.x - mover_start.x)
@@ -191,6 +187,31 @@ impl BattleCore {
             .then_with(|| (a.x - enemy_pos.x).abs().cmp(&(b.x - enemy_pos.x).abs()))
             .then_with(|| a.x.cmp(&b.x))
             .then_with(|| a.y.cmp(&b.y))
+    }
+
+    fn engagement_lane_preference(owner: Side, enemy_pos: Position, pos: Position) -> i32 {
+        let side_rank = match owner {
+            Side::Player => {
+                if pos.y > enemy_pos.y {
+                    0
+                } else if pos.y == enemy_pos.y {
+                    1
+                } else {
+                    2
+                }
+            }
+            Side::Opponent => {
+                if pos.y < enemy_pos.y {
+                    0
+                } else if pos.y == enemy_pos.y {
+                    1
+                } else {
+                    2
+                }
+            }
+        };
+
+        side_rank * 100 + (pos.x - enemy_pos.x).abs()
     }
 
     pub(in crate::game::battle::core) fn compare_plan_preference(
@@ -212,9 +233,10 @@ impl BattleCore {
                     .abs()
                     .cmp(&(enemy_b.x - mover_start.x).abs())
             })
-            .then_with(|| match owner {
-                Side::Player => best_dest_a.y.cmp(&best_dest_b.y),
-                Side::Opponent => best_dest_b.y.cmp(&best_dest_a.y),
+            .then_with(|| {
+                Self::engagement_lane_preference(owner, enemy_a, best_dest_a).cmp(
+                    &Self::engagement_lane_preference(owner, enemy_b, best_dest_b),
+                )
             })
             .then_with(|| {
                 best_dest_a
@@ -498,5 +520,54 @@ mod tests {
         );
 
         assert_eq!(ab, ba.reverse());
+    }
+
+    #[test]
+    fn compare_destination_preference_prefers_front_engage_lane_over_side_slot() {
+        let enemy_pos = Position::new(1, 2);
+        let mover_start = Position::new(3, 4);
+        let player_front_slot = Position::new(1, 3);
+        let side_slot = Position::new(2, 2);
+
+        assert_eq!(
+            BattleCore::compare_destination_preference(
+                Side::Player,
+                mover_start,
+                enemy_pos,
+                player_front_slot,
+                side_slot,
+            ),
+            Ordering::Less
+        );
+        assert_eq!(
+            BattleCore::compare_destination_preference(
+                Side::Opponent,
+                Position::new(3, 0),
+                Position::new(1, 2),
+                Position::new(1, 1),
+                side_slot,
+            ),
+            Ordering::Less
+        );
+    }
+
+    #[test]
+    fn compare_plan_preference_prefers_front_engage_lane_over_side_slot() {
+        let enemy_pos = Position::new(1, 2);
+        let mover_start = Position::new(3, 4);
+        let front_slot = Position::new(1, 3);
+        let side_slot = Position::new(2, 2);
+
+        assert_eq!(
+            BattleCore::compare_plan_preference(
+                Side::Player,
+                mover_start,
+                enemy_pos,
+                enemy_pos,
+                front_slot,
+                side_slot,
+            ),
+            Ordering::Less
+        );
     }
 }

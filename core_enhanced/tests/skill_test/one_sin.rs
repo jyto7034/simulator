@@ -1,5 +1,5 @@
 use game_core::{
-    ecs::resources::Position,
+    game::resources::Position,
     game::{battle::timeline::TimelineEvent, enums::Side},
 };
 
@@ -38,6 +38,7 @@ fn one_sin_targets_the_lowest_health_enemy_and_heals_self_after_landing_judgemen
             static_patch: StaticUnitPatch {
                 movement: Some(game_core::game::data::abnormality_data::MovementDef {
                     speed_units_per_ms: 0,
+                    radius_units: 350_000,
                 }),
                 ..Default::default()
             },
@@ -53,6 +54,7 @@ fn one_sin_targets_the_lowest_health_enemy_and_heals_self_after_landing_judgemen
             static_patch: StaticUnitPatch {
                 movement: Some(game_core::game::data::abnormality_data::MovementDef {
                     speed_units_per_ms: 0,
+                    radius_units: 350_000,
                 }),
                 ..Default::default()
             },

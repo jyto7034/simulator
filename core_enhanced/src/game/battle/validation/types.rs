@@ -1,4 +1,4 @@
-use crate::game::battle::types::PlayerDeckInfo;
+use crate::game::battle::scenario::BattleScenario;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TimelineViolationKind {
@@ -56,15 +56,15 @@ pub struct TimelineExpectedCounts {
 }
 
 impl TimelineExpectedCounts {
-    pub fn from_decks(player: &PlayerDeckInfo, opponent: &PlayerDeckInfo) -> Self {
-        let units = player.units.len() + opponent.units.len();
-        let items = player
-            .units
+    pub fn from_scenario(scenario: &BattleScenario) -> Self {
+        let units = scenario.groups.iter().map(|group| group.spawns.len()).sum();
+        let items = scenario
+            .groups
             .iter()
-            .chain(opponent.units.iter())
-            .map(|unit| unit.equipped_items.len())
+            .flat_map(|group| &group.spawns)
+            .map(|spawn| spawn.draft.equipped_items.len())
             .sum();
-        let artifacts = player.artifacts.len() + opponent.artifacts.len();
+        let artifacts = scenario.artifacts.len();
         Self {
             units,
             items,

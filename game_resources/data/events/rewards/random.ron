@@ -1,0 +1,48 @@
+// 랜덤 이벤트 전용 보상 데이터
+// RandomEventInnerMetadata::Reward(Uuid) 에서만 참조되는 보상들
+RewardDatabase(
+    rewards: [
+        RewardMetadata(
+            id: "random_event_reward_1",
+            uuid: "750e8400-e29b-41d4-a716-446655440401",
+            name: "수상한 에너지 팩",
+            description: "의심스러운 출처의 에너지 팩입니다. 사용 시 엔케팔린을 얻습니다.",
+            icon: "icons/random_enkephalin.png",
+            tags: [Currency],
+            effects: [
+                GrantEnkephalin(amount: 77),
+            ],
+        ),
+        RewardMetadata(
+            id: "random_event_reward_2",
+            uuid: "750e8400-e29b-41d4-a716-446655440402",
+            name: "봉인된 E.G.O 상자",
+            description: "정체를 알 수 없는 E.G.O 장비가 담긴 상자입니다.",
+            icon: "icons/random_ego_box.png",
+            tags: [Equipment],
+            effects: [
+                GrantEquipment(equipment_id: None),
+            ],
+        ),
+        RewardMetadata(
+            id: "random_event_reward_3_forbidden",
+            uuid: "750e8400-e29b-41d4-a716-446655440403",
+            name: "미확인 수용실",
+            description: "환상체는 플레이어 인벤토리 보상이 될 수 없습니다.",
+            icon: "icons/random_abnormality.png",
+            tags: [Forbidden],
+            effects: [
+                ForbiddenAbnormalityGrant,
+            ],
+        ),
+    ],
+    pools: [
+        (
+            id: "random_event_rewards",
+            reward_ids: [
+                "random_event_reward_1",
+                "random_event_reward_2",
+            ],
+        ),
+    ],
+)

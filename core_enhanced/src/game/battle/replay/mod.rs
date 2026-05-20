@@ -80,14 +80,18 @@ impl TimelineReplayer {
                 | TimelineEvent::BasicAttackProjectileImpacted { .. }
                 | TimelineEvent::SkillProjectileLaunched { .. }
                 | TimelineEvent::SkillProjectileImpacted { .. }
+                | TimelineEvent::RecoveryTargetSecured { .. }
+                | TimelineEvent::ExtractionCompleted { .. }
                 | TimelineEvent::ResonanceChanged { .. } => {}
 
                 TimelineEvent::UnitSpawned {
                     unit_instance_id,
+                    role,
                     base_uuid,
                     ..
                 } => {
                     if self.config.validate_unit_base_uuid
+                        && role == &crate::game::battle::types::BattleUnitRole::Combatant
                         && self
                             .game_data
                             .abnormality_data

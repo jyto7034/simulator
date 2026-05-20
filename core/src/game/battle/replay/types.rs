@@ -210,6 +210,7 @@ impl ExpectedOutcome {
                     hp_before: actual_before,
                     hp_after: actual_after,
                     reason: actual_reason,
+                    ..
                 },
             ) => {
                 *source_instance_id == *actual_source
@@ -244,11 +245,13 @@ impl ExpectedOutcome {
                     && stats_before.current_health == actual_before.current_health
                     && stats_before.attack == actual_before.attack
                     && stats_before.defense == actual_before.defense
+                    && stats_before.magic_resist == actual_before.magic_resist
                     && stats_before.attack_interval_ms == actual_before.attack_interval_ms
                     && stats_after.max_health == actual_after.max_health
                     && stats_after.current_health == actual_after.current_health
                     && stats_after.attack == actual_after.attack
                     && stats_after.defense == actual_after.defense
+                    && stats_after.magic_resist == actual_after.magic_resist
                     && stats_after.attack_interval_ms == actual_after.attack_interval_ms
             }
             (

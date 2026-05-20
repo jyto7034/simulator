@@ -7,7 +7,7 @@ use rapier2d::{
 };
 
 use super::movement::{
-    types::{UnitBody, WorldVec2, LEGACY_POSITION_UNITS_PER_WORLD},
+    types::{UnitBody, WorldVec2, DATA_UNITS_PER_WORLD},
     HALF_TILE_UNITS,
 };
 
@@ -26,8 +26,8 @@ pub fn bodies_in_range(a: &UnitBody, b: &UnitBody, range_units: f32) -> bool {
     a.can_reach(b, range_units)
 }
 
-pub fn legacy_units_to_world(units: i64) -> f32 {
-    units as f32 / LEGACY_POSITION_UNITS_PER_WORLD
+pub fn data_units_to_world(units: i64) -> f32 {
+    units as f32 / DATA_UNITS_PER_WORLD
 }
 
 pub fn circle_contains_world_point(center: WorldVec2, radius: f32, point: WorldVec2) -> bool {
@@ -136,6 +136,8 @@ pub fn cone_contains_world_point_from_origin(
         return false;
     }
 
+    // Cone skills intentionally use an expanded triangle wedge. This is the
+    // gameplay contract, not an exact Minkowski sum of a circular sector.
     let half_angle = (f32::from(angle_degrees) / 2.0).to_radians();
     let direction_unit = direction * (1.0 / dir_len);
     let reach = length + expansion.max(0.0);
@@ -176,6 +178,46 @@ pub struct AreaQueryShape {
     pub direction_hint: WorldVec2,
     pub shape: SkillAreaShapeDef,
     pub hitbox_expansion: f32,
+}
+
+pub fn moving_circle_sweep_hit_fraction(
+    projectile_start: WorldVec2,
+    projectile_end: WorldVec2,
+    reach: f32,
+    target_start: WorldVec2,
+    target_end: WorldVec2,
+) -> Option<f32> {
+    if reach < 0.0 {
+        return None;
+    }
+
+    let initial_delta = projectile_start - target_start;
+    let relative_motion = (projectile_end - projectile_start) - (target_end - target_start);
+    let c = initial_delta.length_squared() - reach * reach;
+    if c <= 0.0 {
+        return Some(0.0);
+    }
+
+    let a = relative_motion.length_squared();
+    if a <= f32::EPSILON {
+        return None;
+    }
+
+    let b = 2.0 * (initial_delta.x * relative_motion.x + initial_delta.y * relative_motion.y);
+    let discriminant = b * b - 4.0 * a * c;
+    if discriminant < 0.0 {
+        return None;
+    }
+
+    let sqrt_discriminant = discriminant.sqrt();
+    let inv_2a = 1.0 / (2.0 * a);
+    let enter = (-b - sqrt_discriminant) * inv_2a;
+    let exit = (-b + sqrt_discriminant) * inv_2a;
+    if exit < 0.0 || enter > 1.0 {
+        return None;
+    }
+
+    Some(enter.max(0.0).clamp(0.0, 1.0))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -243,13 +285,13 @@ impl DirectSpatialQuery {
         match query.shape {
             SkillAreaShapeDef::Circle { radius_units } => circle_contains_world_point(
                 query.center,
-                legacy_units_to_world(i64::from(radius_units)) + query.hitbox_expansion,
+                data_units_to_world(i64::from(radius_units)) + query.hitbox_expansion,
                 point,
             ),
             SkillAreaShapeDef::Line { length_units } => line_contains_world_point_from_origin(
                 query.origin,
                 query.direction_hint,
-                legacy_units_to_world(i64::from(length_units)),
+                data_units_to_world(i64::from(length_units)),
                 query.hitbox_expansion,
                 point,
             ),
@@ -258,8 +300,8 @@ impl DirectSpatialQuery {
                 height_units,
             } => box_contains_world_point_centered(
                 query.center,
-                legacy_units_to_world(i64::from(width_units)),
-                legacy_units_to_world(i64::from(height_units)),
+                data_units_to_world(i64::from(width_units)),
+                data_units_to_world(i64::from(height_units)),
                 query.hitbox_expansion,
                 point,
             ),
@@ -269,8 +311,8 @@ impl DirectSpatialQuery {
             } => rectangle_contains_world_point_from_origin(
                 query.origin,
                 query.direction_hint,
-                legacy_units_to_world(i64::from(width_units)),
-                legacy_units_to_world(i64::from(length_units)),
+                data_units_to_world(i64::from(width_units)),
+                data_units_to_world(i64::from(length_units)),
                 query.hitbox_expansion,
                 point,
             ),
@@ -281,7 +323,7 @@ impl DirectSpatialQuery {
                 query.origin,
                 query.direction_hint,
                 angle_degrees,
-                legacy_units_to_world(i64::from(length_units)),
+                data_units_to_world(i64::from(length_units)),
                 query.hitbox_expansion,
                 point,
             ),
@@ -337,7 +379,7 @@ impl RapierSpatialQuery {
         match query.shape {
             SkillAreaShapeDef::Circle { radius_units } => self.circle_intersects_point(
                 query.center,
-                legacy_units_to_world(i64::from(radius_units)) + query.hitbox_expansion,
+                data_units_to_world(i64::from(radius_units)) + query.hitbox_expansion,
                 point,
             ),
             SkillAreaShapeDef::Box {
@@ -345,8 +387,8 @@ impl RapierSpatialQuery {
                 height_units,
             } => self.cuboid_intersects_point(
                 query.center,
-                legacy_units_to_world(i64::from(width_units)) * 0.5 + query.hitbox_expansion,
-                legacy_units_to_world(i64::from(height_units)) * 0.5 + query.hitbox_expansion,
+                data_units_to_world(i64::from(width_units)) * 0.5 + query.hitbox_expansion,
+                data_units_to_world(i64::from(height_units)) * 0.5 + query.hitbox_expansion,
                 0.0,
                 point,
             ),
@@ -359,20 +401,20 @@ impl RapierSpatialQuery {
                 if direction_len <= f32::EPSILON {
                     return false;
                 }
-                let length = legacy_units_to_world(i64::from(length_units));
+                let length = data_units_to_world(i64::from(length_units));
                 let expansion = query.hitbox_expansion.max(0.0);
                 let direction_unit = direction * (1.0 / direction_len);
                 let center = query.origin + direction_unit * (length * 0.5);
                 self.cuboid_intersects_point(
                     center,
                     length * 0.5 + expansion,
-                    legacy_units_to_world(i64::from(width_units)) * 0.5 + expansion,
+                    data_units_to_world(i64::from(width_units)) * 0.5 + expansion,
                     direction.y.atan2(direction.x),
                     point,
                 )
             }
             SkillAreaShapeDef::Line { length_units } => {
-                let length = legacy_units_to_world(i64::from(length_units));
+                let length = data_units_to_world(i64::from(length_units));
                 if length <= 0.0 {
                     return point == query.origin;
                 }
@@ -398,7 +440,7 @@ impl RapierSpatialQuery {
                 angle_degrees,
                 length_units,
             } => {
-                let length = legacy_units_to_world(i64::from(length_units));
+                let length = data_units_to_world(i64::from(length_units));
                 if angle_degrees == 0 || length <= 0.0 {
                     return point == query.origin;
                 }
@@ -589,7 +631,7 @@ mod tests {
             center: WorldVec2::new(2.0, 2.0),
             direction_hint: WorldVec2::new(3.0, 2.0),
             shape: SkillAreaShapeDef::Circle {
-                radius_units: LEGACY_POSITION_UNITS_PER_WORLD as u32,
+                radius_units: DATA_UNITS_PER_WORLD as u32,
             },
             hitbox_expansion: 0.25,
         };
@@ -609,8 +651,8 @@ mod tests {
             center: WorldVec2::new(2.0, 2.0),
             direction_hint: WorldVec2::new(3.0, 2.0),
             shape: SkillAreaShapeDef::Box {
-                width_units: (LEGACY_POSITION_UNITS_PER_WORLD * 2.0) as u32,
-                height_units: LEGACY_POSITION_UNITS_PER_WORLD as u32,
+                width_units: (DATA_UNITS_PER_WORLD * 2.0) as u32,
+                height_units: DATA_UNITS_PER_WORLD as u32,
             },
             hitbox_expansion: 0.25,
         };
@@ -630,8 +672,8 @@ mod tests {
             center: WorldVec2::new(4.0, 1.0),
             direction_hint: WorldVec2::new(4.0, 1.0),
             shape: SkillAreaShapeDef::Rectangle {
-                width_units: LEGACY_POSITION_UNITS_PER_WORLD as u32,
-                length_units: (LEGACY_POSITION_UNITS_PER_WORLD * 3.0) as u32,
+                width_units: DATA_UNITS_PER_WORLD as u32,
+                length_units: (DATA_UNITS_PER_WORLD * 3.0) as u32,
             },
             hitbox_expansion: 0.25,
         };
@@ -656,7 +698,7 @@ mod tests {
             center: WorldVec2::new(1.0, 1.0),
             direction_hint: WorldVec2::new(4.0, 1.0),
             shape: SkillAreaShapeDef::Line {
-                length_units: (LEGACY_POSITION_UNITS_PER_WORLD * 3.0) as u32,
+                length_units: (DATA_UNITS_PER_WORLD * 3.0) as u32,
             },
             hitbox_expansion: 0.25,
         };
@@ -686,7 +728,7 @@ mod tests {
             direction_hint: WorldVec2::new(4.0, 1.0),
             shape: SkillAreaShapeDef::Cone {
                 angle_degrees: 60,
-                length_units: (LEGACY_POSITION_UNITS_PER_WORLD * 3.0) as u32,
+                length_units: (DATA_UNITS_PER_WORLD * 3.0) as u32,
             },
             hitbox_expansion: 0.25,
         };
@@ -716,7 +758,7 @@ mod tests {
             direction_hint: WorldVec2::new(1.0, 0.0),
             shape: SkillAreaShapeDef::Cone {
                 angle_degrees: 60,
-                length_units: (LEGACY_POSITION_UNITS_PER_WORLD * 3.0) as u32,
+                length_units: (DATA_UNITS_PER_WORLD * 3.0) as u32,
             },
             hitbox_expansion: 0.0,
         };
@@ -769,5 +811,47 @@ mod tests {
                 other => panic!("sweep mismatch: {other:?}"),
             }
         }
+    }
+
+    #[test]
+    fn moving_circle_sweep_detects_crossing_paths_between_window_endpoints() {
+        let hit_fraction = moving_circle_sweep_hit_fraction(
+            WorldVec2::new(0.0, 0.0),
+            WorldVec2::new(10.0, 0.0),
+            0.25,
+            WorldVec2::new(5.0, 2.0),
+            WorldVec2::new(5.0, -2.0),
+        )
+        .expect("projectile and target paths should cross");
+
+        assert!((hit_fraction - 0.5).abs() <= 0.025);
+    }
+
+    #[test]
+    fn moving_circle_sweep_returns_none_when_paths_do_not_overlap() {
+        assert_eq!(
+            moving_circle_sweep_hit_fraction(
+                WorldVec2::new(0.0, 0.0),
+                WorldVec2::new(10.0, 0.0),
+                0.25,
+                WorldVec2::new(5.0, 2.0),
+                WorldVec2::new(5.0, 1.0),
+            ),
+            None
+        );
+    }
+
+    #[test]
+    fn moving_circle_sweep_returns_zero_when_starting_overlapped() {
+        assert_eq!(
+            moving_circle_sweep_hit_fraction(
+                WorldVec2::new(0.0, 0.0),
+                WorldVec2::new(10.0, 0.0),
+                0.25,
+                WorldVec2::new(0.1, 0.0),
+                WorldVec2::new(5.0, 0.0),
+            ),
+            Some(0.0)
+        );
     }
 }

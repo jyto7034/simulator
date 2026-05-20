@@ -1,0 +1,164 @@
+SkillFragmentDatabase(
+    fragments: [
+        SkillFragmentMetadata(
+            id: "fragment_one_sin_penitence",
+            uuid: "710e8400-e29b-41d4-a716-446655441001",
+            name: "Penitence Fragment",
+            description: "A skill fragment derived from One Sin and Hundreds of Good Deeds. Employees imitate the original Penitence skill through a weaker, independent skill definition.",
+            rarity: Rare,
+            origin: Some(Abnormality(abnormality_id: "o-03-03_one_sin")),
+            sources: [
+                AbnormalitySuppression(abnormality_id: "o-03-03_one_sin"),
+                AbnormalityContainment(abnormality_id: "o-03-03_one_sin"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "o-03-03_one_sin"),
+            ],
+            effect: ActiveSkill(
+                imitation_skill_id: "fragment_one_sin_penitence",
+                upgrade_skill_ids: {},
+                awakened_skill_id: None,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_scorched_spark",
+            uuid: "710e8400-e29b-41d4-a716-446655441002",
+            name: "Scorched Spark Fragment",
+            description: "A skill fragment derived from Scorched Girl. It imitates a small, unstable spark rather than reproducing the original explosion.",
+            rarity: Rare,
+            origin: Some(Abnormality(abnormality_id: "f-01-02")),
+            sources: [
+                AbnormalitySuppression(abnormality_id: "f-01-02"),
+                AbnormalityContainment(abnormality_id: "f-01-02"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "f-01-02"),
+            ],
+            effect: ActiveSkill(
+                imitation_skill_id: "fragment_scorched_spark",
+                upgrade_skill_ids: {},
+                awakened_skill_id: None,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_red_shoes_impulse",
+            uuid: "710e8400-e29b-41d4-a716-446655441003",
+            name: "Red Shoes Impulse Fragment",
+            description: "A skill fragment derived from Red Shoes. It grants a short violent impulse and restless movement instead of the original berserk effect.",
+            rarity: Rare,
+            origin: Some(Abnormality(abnormality_id: "t-09-09")),
+            sources: [
+                AbnormalitySuppression(abnormality_id: "t-09-09"),
+                AbnormalityContainment(abnormality_id: "t-09-09"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "t-09-09"),
+            ],
+            effect: ActiveSkill(
+                imitation_skill_id: "fragment_red_shoes_impulse",
+                upgrade_skill_ids: {},
+                awakened_skill_id: None,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_freischutz_black_round",
+            uuid: "710e8400-e29b-41d4-a716-446655441004",
+            name: "Black Round Fragment",
+            description: "A skill fragment derived from Der Freischutz. It imitates a weaker black bullet and a brief focus recoil as an independent skill.",
+            rarity: Rare,
+            origin: Some(Abnormality(abnormality_id: "t-02-43_freischutz")),
+            sources: [
+                AbnormalitySuppression(abnormality_id: "t-02-43_freischutz"),
+                AbnormalityContainment(abnormality_id: "t-02-43_freischutz"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "t-02-43_freischutz"),
+            ],
+            effect: ActiveSkill(
+                imitation_skill_id: "fragment_freischutz_black_round",
+                upgrade_skill_ids: {},
+                awakened_skill_id: None,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_spider_bud_red_eyes",
+            uuid: "710e8400-e29b-41d4-a716-446655441005",
+            name: "Red Eyes Fragment",
+            description: "A skill fragment derived from Spider Bud. It imitates a controlled venom thread instead of the original ambush and capture pattern.",
+            rarity: Rare,
+            origin: Some(Abnormality(abnormality_id: "o-01-45")),
+            sources: [
+                AbnormalitySuppression(abnormality_id: "o-01-45"),
+                AbnormalityContainment(abnormality_id: "o-01-45"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "o-01-45"),
+            ],
+            effect: ActiveSkill(
+                imitation_skill_id: "fragment_spider_bud_red_eyes",
+                upgrade_skill_ids: {},
+                awakened_skill_id: None,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_funeral_butterfly_eulogy",
+            uuid: "710e8400-e29b-41d4-a716-446655441006",
+            name: "Butterfly Eulogy Fragment",
+            description: "A skill fragment derived from Funeral of the Dead Butterflies. It imitates a restrained eulogy shot rather than the original execution volley.",
+            rarity: Rare,
+            origin: Some(Abnormality(abnormality_id: "t-02-99_funeral_butterfly")),
+            sources: [
+                AbnormalitySuppression(abnormality_id: "t-02-99_funeral_butterfly"),
+                AbnormalityContainment(abnormality_id: "t-02-99_funeral_butterfly"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "t-02-99_funeral_butterfly"),
+            ],
+            effect: ActiveSkill(
+                imitation_skill_id: "fragment_funeral_butterfly_eulogy",
+                upgrade_skill_ids: {},
+                awakened_skill_id: None,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_helper_grinder_trace",
+            uuid: "710e8400-e29b-41d4-a716-446655441007",
+            name: "Grinder Trace Fragment",
+            description: "A skill fragment derived from All-Around Helper. It imitates a short cleaning spin instead of the original uncontrolled grinder protocol.",
+            rarity: Rare,
+            origin: Some(Abnormality(abnormality_id: "t-05-41_all_around_helper")),
+            sources: [
+                AbnormalitySuppression(abnormality_id: "t-05-41_all_around_helper"),
+                AbnormalityContainment(abnormality_id: "t-05-41_all_around_helper"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "t-05-41_all_around_helper"),
+            ],
+            effect: ActiveSkill(
+                imitation_skill_id: "fragment_helper_grinder_trace",
+                upgrade_skill_ids: {},
+                awakened_skill_id: None,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_alriune_faint_aroma",
+            uuid: "710e8400-e29b-41d4-a716-446655441008",
+            name: "Faint Aroma Fragment",
+            description: "A skill fragment derived from Alriune. It imitates a narrow petal haze rather than the original broad flower burial.",
+            rarity: Rare,
+            origin: Some(Abnormality(abnormality_id: "t-04-53_alriune")),
+            sources: [
+                AbnormalitySuppression(abnormality_id: "t-04-53_alriune"),
+                AbnormalityContainment(abnormality_id: "t-04-53_alriune"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "t-04-53_alriune"),
+            ],
+            effect: ActiveSkill(
+                imitation_skill_id: "fragment_alriune_faint_aroma",
+                upgrade_skill_ids: {},
+                awakened_skill_id: None,
+            ),
+        ),
+    ],
+)

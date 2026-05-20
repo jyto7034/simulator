@@ -34,7 +34,7 @@ async-stream = "0.3"
 ron = "0.5.1"
 
 metrics = { path = "../metrics" }
-game_core = { path = "../core" }
+game_core = { path = "../core_enhanced" }
 prometheus = { version = "0.14", features = ["process"] }
 
 [dev-dependencies]

@@ -5,17 +5,18 @@ use uuid::Uuid;
 
 use crate::game::{
     data::{
-        abnormality_data::AbnormalityMetadata, bonus_data::BonusMetadata, build_string_index,
-        build_uuid_index, once_lock_with, shop_data::ShopMetadata, GameDataBase,
+        abnormality_data::AbnormalityMetadata, build_string_index, build_uuid_index,
+        once_lock_with, shop_data::ShopMetadata, GameDataBase,
     },
     enums::RiskLevel,
     events::event_selection::random::RandomEventType,
+    reward::RewardOption,
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum RandomEventInnerMetadata {
     Shop(Uuid),
-    Bonus(Uuid),
+    Reward(Uuid),
     Suppress(Uuid),
 }
 
@@ -35,7 +36,7 @@ pub struct RandomEventMetadata {
 #[derive(Debug, Clone)]
 pub enum RandomEventTarget<'a> {
     Shop(&'a ShopMetadata),
-    Bonus(&'a BonusMetadata),
+    Reward(RewardOption),
     Suppress(&'a AbnormalityMetadata),
 }
 
@@ -55,12 +56,14 @@ impl RandomEventInnerMetadata {
                     .ok_or(GameError::EventNotFound)?;
                 Ok(RandomEventTarget::Shop(shop))
             }
-            RandomEventInnerMetadata::Bonus(uuid) => {
-                let bonus = data
-                    .bonus_data
+            RandomEventInnerMetadata::Reward(uuid) => {
+                let reward = data
+                    .reward_data
                     .get_by_uuid(uuid)
                     .ok_or(GameError::EventNotFound)?;
-                Ok(RandomEventTarget::Bonus(bonus))
+                Ok(RandomEventTarget::Reward(RewardOption::from_metadata(
+                    reward,
+                )))
             }
             RandomEventInnerMetadata::Suppress(uuid) => {
                 let abnormality = data
@@ -77,6 +80,8 @@ impl RandomEventInnerMetadata {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RandomEventDatabase {
     pub events: Vec<RandomEventMetadata>,
+    #[serde(default)]
+    pub pools: Vec<RandomEventPoolMetadata>,
 
     #[serde(skip)]
     by_id: OnceLock<HashMap<String, usize>>,
@@ -84,8 +89,21 @@ pub struct RandomEventDatabase {
     by_uuid: OnceLock<HashMap<Uuid, usize>>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RandomEventPoolMetadata {
+    pub id: String,
+    pub event_ids: Vec<String>,
+}
+
 impl RandomEventDatabase {
     pub fn new(events: Vec<RandomEventMetadata>) -> Self {
+        Self::new_with_pools(events, vec![])
+    }
+
+    pub fn new_with_pools(
+        events: Vec<RandomEventMetadata>,
+        pools: Vec<RandomEventPoolMetadata>,
+    ) -> Self {
         let by_id = once_lock_with(build_string_index(&events, "random event id", |event| {
             &event.id
         }));
@@ -95,6 +113,7 @@ impl RandomEventDatabase {
 
         Self {
             events,
+            pools,
             by_id,
             by_uuid,
         }
@@ -113,6 +132,20 @@ impl RandomEventDatabase {
     pub(crate) fn validate_indexes(&self) {
         let _ = self.by_id();
         let _ = self.by_uuid();
+        for pool in &self.pools {
+            assert!(
+                !pool.id.is_empty(),
+                "random event pool id must not be empty"
+            );
+            for event_id in &pool.event_ids {
+                assert!(
+                    self.get_by_id(event_id).is_some(),
+                    "random event pool '{}' references missing event '{}'",
+                    pool.id,
+                    event_id
+                );
+            }
+        }
     }
 
     pub fn get_by_id(&self, id: &str) -> Option<&RandomEventMetadata> {
@@ -125,5 +158,9 @@ impl RandomEventDatabase {
         self.by_uuid()
             .get(uuid)
             .and_then(|&index| self.events.get(index))
+    }
+
+    pub fn pool_by_id(&self, id: &str) -> Option<&RandomEventPoolMetadata> {
+        self.pools.iter().find(|pool| pool.id == id)
     }
 }

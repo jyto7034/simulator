@@ -7,14 +7,50 @@ ShopDatabase(
             name: "수상한 떠돌이 상인",
             uuid: "750e8400-e29b-41d4-a716-446655440301",
             shop_type: Shop,
-            // 랜덤 이벤트에서만 진입하는 상점이라 EventPoolConfig.shops 에는 포함되지 않음
+            // 랜덤 이벤트에서만 진입하는 상점이라 맵 노드 상점 후보에는 포함되지 않음
             visible_items: [
-                // Soda (저위험 아티팩트)
-                "00000004-0000-0000-0000-000000000004",
+                // One Sin and Hundreds of Good Deeds (저위험 아티팩트)
+                "650e8400-e29b-41d4-a716-446655440011",
                 // Fourth Match Flame (무기)
                 "00000003-0000-0000-0000-000000000003",
+                // Laetitia's Gift (상태이상 악세서리)
+                "e0000000-0000-0000-0000-000000000301",
             ],
             can_reroll: false,
+        ),
+        (
+            id: "random_event_shop_2",
+            name: "검은 기록상",
+            uuid: "750e8400-e29b-41d4-a716-446655440302",
+            shop_type: DiscountShop,
+            visible_items: [
+                "a0000007-0000-0000-0000-000000000007", // Black Box Recorder
+                "e0000000-0000-0000-0000-000000000103", // Solemn Lament
+                "e0000000-0000-0000-0000-000000000205", // Thorned Lantern Guard
+            ],
+            can_reroll: false,
+        ),
+        (
+            id: "random_event_shop_3",
+            name: "고위험 밀수상",
+            uuid: "750e8400-e29b-41d4-a716-446655440303",
+            shop_type: Shop,
+            visible_items: [
+                "e0000000-0000-0000-0000-000000000102", // Da Capo
+                "e0000000-0000-0000-0000-000000000204", // CENSORED Plate
+                "a0000009-0000-0000-0000-000000000009", // Pale Halo Fragment
+            ],
+            can_reroll: false,
+        ),
+    ],
+    pools: [
+        (
+            id: "random_event_shops",
+            shop_ids: [
+                "random_event_shop_1",
+                "random_event_shop_2",
+                "random_event_shop_3",
+            ],
         ),
     ],
 )

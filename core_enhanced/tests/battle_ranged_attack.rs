@@ -1,78 +1,132 @@
 mod common;
 
-use std::collections::HashMap;
 use std::sync::Arc;
 
-use bevy_ecs::world::World;
-use game_core::ecs::resources::Position;
 use game_core::game::ability::DeliveryDef;
 use game_core::game::battle::core::movement::types::DEFAULT_UNIT_RADIUS;
 use game_core::game::battle::core::BattleCore;
 use game_core::game::battle::ids::UnitInstanceId;
 use game_core::game::battle::replay::{types::TimelineReplayerConfig, TimelineReplayer};
+use game_core::game::battle::scenario::{
+    BattleFieldSpec, BattleScenario, ScenarioAction, ScenarioEvent, ScenarioEventId,
+    ScenarioGroupId, ScenarioSpawnGroup, ScenarioTrigger, ScenarioUnitRef, ScenarioUnitSpawn,
+    WinCondition,
+};
 use game_core::game::battle::timeline::{HpChangeReason, TimelineEvent};
-use game_core::game::battle::types::{OwnedUnit, PlayerDeckInfo};
+use game_core::game::battle::types::{BattleUnitDraft, BattleUnitSource};
 use game_core::game::battle::validation::{
     TimelineExpectedCounts, TimelineValidator, TimelineValidatorConfig,
 };
 use game_core::game::data::{
     abnormality_data::{
-        AbnormalityDatabase, AbnormalityMetadata, BasicAttackDef, MovementDef,
-        DEFAULT_INSTANT_BASIC_ATTACK_WINDUP_MS,
+        AbnormalityMetadata, BasicAttackDef, MovementDef, DEFAULT_INSTANT_BASIC_ATTACK_WINDUP_MS,
     },
-    artifact_data::ArtifactDatabase,
-    bonus_data::BonusDatabase,
-    equipment_data::EquipmentDatabase,
-    pve_data::PveEncounterDatabase,
-    random_event_data::RandomEventDatabase,
-    shop_data::ShopDatabase,
-    skill_data::SkillDatabase,
-    GameDataBase,
+    GameDataBase, GameDataBuilder,
 };
 use game_core::game::enums::{RiskLevel, Side, Tier};
 use game_core::game::growth::GrowthStack;
+use game_core::game::resources::Position;
 use uuid::Uuid;
 
-fn deck_single_unit(owned_uuid: Uuid, base_uuid: Uuid, pos: Position) -> PlayerDeckInfo {
-    deck_with_units(vec![(owned_uuid, base_uuid, pos)])
+fn unit_draft(owned_uuid: Uuid, base_uuid: Uuid) -> BattleUnitDraft {
+    BattleUnitDraft {
+        owned_uuid,
+        source: BattleUnitSource::Abnormality { base_uuid },
+        level: Tier::I,
+        growth_stacks: GrowthStack::new(),
+        equipped_items: vec![],
+        equipped_item_enhancements: vec![],
+    }
 }
 
-fn deck_with_units(units: Vec<(Uuid, Uuid, Position)>) -> PlayerDeckInfo {
-    let mut positions = HashMap::new();
-    let mut owned = Vec::new();
+fn spawn_group(
+    id: &str,
+    side: Side,
+    required_for_victory: bool,
+    units: Vec<(Uuid, Uuid, Position)>,
+) -> ScenarioSpawnGroup {
+    let group_id = ScenarioGroupId::new(id);
+    let spawns = units
+        .into_iter()
+        .enumerate()
+        .map(
+            |(index, (owned_uuid, base_uuid, position))| ScenarioUnitSpawn {
+                unit_ref: ScenarioUnitRef::new(format!("{}_{}", group_id.0, index)),
+                side,
+                draft: unit_draft(owned_uuid, base_uuid),
+                position,
+                instance_salt: index as u32,
+            },
+        )
+        .collect();
 
-    for (owned_uuid, base_uuid, pos) in units {
-        positions.insert(owned_uuid, pos);
-        owned.push(OwnedUnit {
-            owned_uuid,
-            base_uuid,
-            level: Tier::I,
-            growth_stacks: GrowthStack::new(),
-            equipped_items: vec![],
-        });
+    ScenarioSpawnGroup {
+        id: group_id,
+        side,
+        required_for_victory,
+        spawns,
     }
+}
 
-    PlayerDeckInfo {
-        units: owned,
-        artifacts: vec![],
-        positions,
+fn battle_scenario(
+    player_units: Vec<(Uuid, Uuid, Position)>,
+    opponent_units: Vec<(Uuid, Uuid, Position)>,
+) -> BattleScenario {
+    let player_group_id = "player_initial";
+    let enemy_group_id = "enemy_initial";
+    BattleScenario {
+        battlefield: BattleFieldSpec {
+            width: common::BOARD_SIZE.0,
+            height: common::BOARD_SIZE.1,
+            valid_tiles: Vec::new(),
+            obstacles: Vec::new(),
+        },
+        artifacts: Vec::new(),
+        groups: vec![
+            spawn_group(player_group_id, Side::Player, false, player_units),
+            spawn_group(enemy_group_id, Side::Opponent, true, opponent_units),
+        ],
+        events: vec![
+            ScenarioEvent {
+                id: ScenarioEventId::new("spawn_player_initial"),
+                trigger: ScenarioTrigger::AtBattleStart,
+                action: ScenarioAction::SpawnGroup {
+                    group_id: ScenarioGroupId::new(player_group_id),
+                },
+                once: true,
+            },
+            ScenarioEvent {
+                id: ScenarioEventId::new("spawn_enemy_initial"),
+                trigger: ScenarioTrigger::AtBattleStart,
+                action: ScenarioAction::SpawnGroup {
+                    group_id: ScenarioGroupId::new(enemy_group_id),
+                },
+                once: true,
+            },
+        ],
+        win_condition: WinCondition::AllRequiredEnemyGroupsDefeated,
+        tactical_plan: game_core::game::battle::scenario::TacticalPlan::default(),
     }
+}
+
+fn one_vs_one_scenario(
+    player_owned_uuid: Uuid,
+    player_base_uuid: Uuid,
+    player_position: Position,
+    opponent_owned_uuid: Uuid,
+    opponent_base_uuid: Uuid,
+    opponent_position: Position,
+) -> BattleScenario {
+    battle_scenario(
+        vec![(player_owned_uuid, player_base_uuid, player_position)],
+        vec![(opponent_owned_uuid, opponent_base_uuid, opponent_position)],
+    )
 }
 
 fn game_data_from_abnormalities(items: Vec<AbnormalityMetadata>) -> Arc<GameDataBase> {
-    Arc::new(GameDataBase::new(
-        game_core::game::data::GameDataBaseParts {
-            abnormality_data: Arc::new(AbnormalityDatabase::new(items)),
-            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
-            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
-            shop_data: Arc::new(ShopDatabase::new(vec![])),
-            bonus_data: Arc::new(BonusDatabase::new(vec![])),
-            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
-            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
-            skill_data: Arc::new(SkillDatabase::new(vec![])),
-            event_pools: common::empty_event_pools(),
-        },
-    ))
+    GameDataBuilder::empty()
+        .with_abnormalities(items)
+        .build_arc()
 }
 
 fn abnormality_with_basic_attack(
@@ -96,6 +150,7 @@ fn abnormality_with_basic_attack(
         magic_resist: 0,
         movement: MovementDef {
             speed_units_per_ms: move_speed_units_per_ms,
+            radius_units: 350_000,
         },
         basic_attack,
         resonance: Default::default(),
@@ -124,14 +179,12 @@ fn find_unit_instance_id(
 }
 
 fn run_battle(
-    player: &PlayerDeckInfo,
-    opponent: &PlayerDeckInfo,
+    scenario: BattleScenario,
     game_data: Arc<GameDataBase>,
     seed: u64,
 ) -> game_core::game::battle::types::BattleResult {
-    let mut battle = BattleCore::new(player, opponent, game_data, common::BOARD_SIZE, seed);
-    let mut world = World::new();
-    battle.run_battle(&mut world).unwrap()
+    let mut battle = BattleCore::new_from_scenario(scenario, game_data, seed);
+    battle.run_battle().unwrap()
 }
 
 fn has_basic_attack_damage(
@@ -195,13 +248,16 @@ fn ranged_basic_attack_projectile_hits_after_flight_time_and_damages_target() {
     );
 
     let game_data = game_data_from_abnormalities(vec![attacker, target]);
-    let player = deck_single_unit(
+    let scenario = one_vs_one_scenario(
         Uuid::from_u128(0xDADA_0001),
         attacker_base_uuid,
         attacker_pos,
+        Uuid::from_u128(0xDADA_0002),
+        target_base_uuid,
+        target_pos,
     );
-    let opponent = deck_single_unit(Uuid::from_u128(0xDADA_0002), target_base_uuid, target_pos);
-    let result = run_battle(&player, &opponent, game_data.clone(), 12345);
+    let expected = TimelineExpectedCounts::from_scenario(&scenario);
+    let result = run_battle(scenario, game_data.clone(), 12345);
 
     common::write_timeline_export(
         "ranged_basic_attack_projectile_hits_after_flight_time",
@@ -301,7 +357,6 @@ fn ranged_basic_attack_projectile_hits_after_flight_time_and_damages_target() {
         .replay(&result.timeline)
         .unwrap();
 
-    let expected = TimelineExpectedCounts::from_decks(&player, &opponent);
     TimelineValidator::new(TimelineValidatorConfig::default())
         .validate(&result.timeline, Some(expected), Some(game_data.as_ref()))
         .unwrap();
@@ -360,24 +415,26 @@ fn projectile_misses_when_target_dies_before_impact() {
     );
 
     let game_data = game_data_from_abnormalities(vec![attacker, finisher, target]);
-    let player = deck_with_units(vec![
-        (
-            Uuid::from_u128(0xA100_0001),
-            attacker_base_uuid,
-            Position::new(0, 0),
-        ),
-        (
-            Uuid::from_u128(0xA100_0002),
-            finisher_base_uuid,
-            Position::new(0, 1),
-        ),
-    ]);
-    let opponent = deck_single_unit(
-        Uuid::from_u128(0xB100_0001),
-        target_base_uuid,
-        Position::new(3, 0),
+    let scenario = battle_scenario(
+        vec![
+            (
+                Uuid::from_u128(0xA100_0001),
+                attacker_base_uuid,
+                Position::new(0, 0),
+            ),
+            (
+                Uuid::from_u128(0xA100_0002),
+                finisher_base_uuid,
+                Position::new(0, 1),
+            ),
+        ],
+        vec![(
+            Uuid::from_u128(0xB100_0001),
+            target_base_uuid,
+            Position::new(3, 0),
+        )],
     );
-    let result = run_battle(&player, &opponent, game_data, 2024);
+    let result = run_battle(scenario, game_data, 2024);
 
     let attacker_id = find_unit_instance_id(&result.timeline, Side::Player, attacker_base_uuid);
     let target_id = find_unit_instance_id(&result.timeline, Side::Opponent, target_base_uuid);
@@ -446,17 +503,15 @@ fn projectile_speed_zero_hits_same_tick_as_attack_resolve() {
     );
 
     let game_data = game_data_from_abnormalities(vec![attacker, target]);
-    let player = deck_single_unit(
+    let scenario = one_vs_one_scenario(
         Uuid::from_u128(0xA300_0001),
         attacker_base_uuid,
         Position::new(0, 0),
-    );
-    let opponent = deck_single_unit(
         Uuid::from_u128(0xB300_0001),
         target_base_uuid,
         Position::new(2, 0),
     );
-    let result = run_battle(&player, &opponent, game_data, 9001);
+    let result = run_battle(scenario, game_data, 9001);
 
     let attacker_id = find_unit_instance_id(&result.timeline, Side::Player, attacker_base_uuid);
     let target_id = find_unit_instance_id(&result.timeline, Side::Opponent, target_base_uuid);
@@ -539,17 +594,15 @@ fn ranged_vs_ranged_both_sides_land_projectile_hits() {
     );
 
     let game_data = game_data_from_abnormalities(vec![player_unit, opponent_unit]);
-    let player = deck_single_unit(
+    let scenario = one_vs_one_scenario(
         Uuid::from_u128(0xA400_0001),
         player_base_uuid,
         Position::new(0, 0),
-    );
-    let opponent = deck_single_unit(
         Uuid::from_u128(0xB400_0001),
         opponent_base_uuid,
         Position::new(3, 0),
     );
-    let result = run_battle(&player, &opponent, game_data, 2026);
+    let result = run_battle(scenario, game_data, 2026);
 
     let player_id = find_unit_instance_id(&result.timeline, Side::Player, player_base_uuid);
     let opponent_id = find_unit_instance_id(&result.timeline, Side::Opponent, opponent_base_uuid);
@@ -600,17 +653,15 @@ fn diagonal_basic_attack_uses_continuous_body_range_not_chebyshev_tiles() {
     );
 
     let game_data = game_data_from_abnormalities(vec![attacker, target]);
-    let player = deck_single_unit(
+    let scenario = one_vs_one_scenario(
         Uuid::from_u128(0xA400_1001),
         attacker_base_uuid,
         Position::new(0, 0),
-    );
-    let opponent = deck_single_unit(
         Uuid::from_u128(0xB400_1001),
         target_base_uuid,
         Position::new(2, 2),
     );
-    let result = run_battle(&player, &opponent, game_data, 556);
+    let result = run_battle(scenario, game_data, 556);
 
     let attacker_id = find_unit_instance_id(&result.timeline, Side::Player, attacker_base_uuid);
     let target_id = find_unit_instance_id(&result.timeline, Side::Opponent, target_base_uuid);
@@ -654,18 +705,16 @@ fn windup_locks_basic_attack_until_resolve() {
         },
     );
 
-    let game_data = game_data_from_abnormalities(vec![attacker, target]);
-    let player = deck_single_unit(
+    let scenario = one_vs_one_scenario(
         Uuid::from_u128(0xA500_0001),
         attacker_base_uuid,
         Position::new(0, 0),
-    );
-    let opponent = deck_single_unit(
         Uuid::from_u128(0xB500_0001),
         target_base_uuid,
         Position::new(2, 0),
     );
-    let result = run_battle(&player, &opponent, game_data, 777);
+    let game_data = game_data_from_abnormalities(vec![attacker, target]);
+    let result = run_battle(scenario, game_data, 777);
 
     let attacker_id = find_unit_instance_id(&result.timeline, Side::Player, attacker_base_uuid);
     let target_id = find_unit_instance_id(&result.timeline, Side::Opponent, target_base_uuid);
@@ -737,18 +786,16 @@ fn instant_basic_attack_without_explicit_windup_uses_default_melee_windup() {
         },
     );
 
-    let game_data = game_data_from_abnormalities(vec![attacker, target]);
-    let player = deck_single_unit(
+    let scenario = one_vs_one_scenario(
         Uuid::from_u128(0xA600_0001),
         attacker_base_uuid,
         Position::new(0, 0),
-    );
-    let opponent = deck_single_unit(
         Uuid::from_u128(0xB600_0001),
         target_base_uuid,
         Position::new(2, 0),
     );
-    let result = run_battle(&player, &opponent, game_data, 778);
+    let game_data = game_data_from_abnormalities(vec![attacker, target]);
+    let result = run_battle(scenario, game_data, 778);
 
     let attacker_id = find_unit_instance_id(&result.timeline, Side::Player, attacker_base_uuid);
     let target_id = find_unit_instance_id(&result.timeline, Side::Opponent, target_base_uuid);
@@ -826,18 +873,16 @@ fn projectile_basic_attack_with_zero_windup_stays_instant_at_start() {
         },
     );
 
-    let game_data = game_data_from_abnormalities(vec![attacker, target]);
-    let player = deck_single_unit(
+    let scenario = one_vs_one_scenario(
         Uuid::from_u128(0xA700_0001),
         attacker_base_uuid,
         Position::new(0, 0),
-    );
-    let opponent = deck_single_unit(
         Uuid::from_u128(0xB700_0001),
         target_base_uuid,
         Position::new(2, 0),
     );
-    let result = run_battle(&player, &opponent, game_data, 779);
+    let game_data = game_data_from_abnormalities(vec![attacker, target]);
+    let result = run_battle(scenario, game_data, 779);
 
     let attacker_id = find_unit_instance_id(&result.timeline, Side::Player, attacker_base_uuid);
     let target_id = find_unit_instance_id(&result.timeline, Side::Opponent, target_base_uuid);

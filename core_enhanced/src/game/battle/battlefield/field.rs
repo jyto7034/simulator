@@ -4,7 +4,7 @@ use crate::game::battle::battlefield::{
     Battlefield, Reservation, Tile, RESERVATION_HARD_DISTANCE_TILES,
 };
 use crate::game::battle::ids::UnitInstanceId;
-use crate::{ecs::resources::Position, game::behavior::GameError};
+use crate::{game::behavior::GameError, game::resources::Position};
 
 impl Battlefield {
     pub fn is_empty_tile(&self, idx: usize) -> bool {
@@ -47,10 +47,19 @@ impl Battlefield {
             width,
             height,
             tiles: vec![Tile::default(); len],
+            valid_tiles: None,
             unit_pos: HashMap::new(),
             reserved_by_unit: HashMap::new(),
             static_obstacles: Default::default(),
         }
+    }
+
+    pub fn new_with_valid_tiles(width: u8, height: u8, valid_tiles: Vec<Position>) -> Self {
+        let mut field = Self::new(width, height);
+        if !valid_tiles.is_empty() {
+            field.valid_tiles = Some(valid_tiles.into_iter().collect());
+        }
+        field
     }
 
     pub fn width(&self) -> u8 {
@@ -87,7 +96,14 @@ impl Battlefield {
     }
 
     pub fn in_bounds(&self, pos: Position) -> bool {
-        pos.x >= 0 && pos.y >= 0 && pos.x < self.width as i32 && pos.y < self.height as i32
+        pos.x >= 0
+            && pos.y >= 0
+            && pos.x < self.width as i32
+            && pos.y < self.height as i32
+            && self
+                .valid_tiles
+                .as_ref()
+                .is_none_or(|valid_tiles| valid_tiles.contains(&pos))
     }
 
     pub fn idx(&self, pos: Position) -> Result<usize, GameError> {
@@ -123,6 +139,31 @@ impl Battlefield {
         let mut obstacles: Vec<Position> = self.static_obstacles.iter().copied().collect();
         obstacles.sort_by_key(|pos| (pos.y, pos.x));
         obstacles
+    }
+
+    pub fn is_static_obstacle(&self, pos: Position) -> bool {
+        self.static_obstacles.contains(&pos)
+    }
+
+    pub fn is_walkable_tile(&self, pos: Position) -> bool {
+        self.in_bounds(pos) && !self.is_static_obstacle(pos)
+    }
+
+    pub fn void_tiles(&self) -> Vec<Position> {
+        let Some(valid_tiles) = &self.valid_tiles else {
+            return Vec::new();
+        };
+
+        let mut void_tiles = Vec::new();
+        for y in 0..self.height as i32 {
+            for x in 0..self.width as i32 {
+                let position = Position::new(x, y);
+                if !valid_tiles.contains(&position) {
+                    void_tiles.push(position);
+                }
+            }
+        }
+        void_tiles
     }
 
     pub fn place(&mut self, unit: UnitInstanceId, pos: Position) -> Result<(), GameError> {
@@ -302,12 +343,12 @@ mod tests {
 
         assert_eq!(bfs.distance_to(Position::new(1, 1)), Some(0));
         assert_eq!(bfs.distance_to(Position::new(1, 0)), None);
-        assert_eq!(bfs.distance_to(Position::new(0, 0)), Some(1));
+        assert_eq!(bfs.distance_to(Position::new(0, 0)), Some(2));
 
         let path = bfs.reconstruct_path_to(Position::new(0, 0)).unwrap();
         assert_eq!(path.first().copied(), Some(Position::new(1, 1)));
         assert_eq!(path.last().copied(), Some(Position::new(0, 0)));
-        assert_eq!(path.len(), 2);
+        assert_eq!(path.len(), 3);
     }
 
     #[test]
@@ -359,6 +400,42 @@ mod tests {
 
         assert!(field.remove_static_obstacle(obstacle));
         field.move_unit(unit, obstacle).unwrap();
+    }
+
+    #[test]
+    fn non_rectangular_valid_tiles_block_void_placement_and_movement() {
+        let unit = UnitInstanceId::from(Uuid::from_u128(1));
+        let mut field = Battlefield::new_with_valid_tiles(
+            3,
+            3,
+            vec![
+                Position::new(1, 0),
+                Position::new(1, 1),
+                Position::new(1, 2),
+            ],
+        );
+
+        assert!(!field.in_bounds(Position::new(0, 0)));
+        assert!(matches!(
+            field.place(unit, Position::new(0, 0)).unwrap_err(),
+            GameError::OutOfBounds
+        ));
+        field.place(unit, Position::new(1, 1)).unwrap();
+        assert!(matches!(
+            field.move_unit(unit, Position::new(0, 1)).unwrap_err(),
+            GameError::OutOfBounds
+        ));
+        assert_eq!(
+            field.void_tiles(),
+            vec![
+                Position::new(0, 0),
+                Position::new(2, 0),
+                Position::new(0, 1),
+                Position::new(2, 1),
+                Position::new(0, 2),
+                Position::new(2, 2),
+            ]
+        );
     }
 
     #[test]

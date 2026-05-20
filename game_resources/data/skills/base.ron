@@ -9,11 +9,11 @@ SkillDatabase(
                 SkillStepDef(
                     id: "explode",
                     delay_ms: 0,
-                    range_tiles: 2,
+                    range_units: 2,
                     target: EnemySingle(rule: Nearest),
                     delivery: Instant,
                     effects: [
-                        Damage(amount: 50),
+                        Damage(amount: 50, damage_type: Magic),
                     ],
                 ),
             ],
@@ -27,8 +27,8 @@ SkillDatabase(
                 SkillStepDef(
                     id: "mass_heal",
                     delay_ms: 0,
-                    range_tiles: 3,
-                    target: Allies(area: RadiusChebyshev(radius_tiles: 3)),
+                    range_units: 3,
+                    target: SelfUnit,
                     delivery: Area(area: (
                         shape: Box(width_units: 6000000, height_units: 6000000),
                         anchor: CastTarget,
@@ -50,7 +50,7 @@ SkillDatabase(
                 SkillStepDef(
                     id: "berserk",
                     delay_ms: 0,
-                    range_tiles: 2,
+                    range_units: 2,
                     target: EnemySingle(rule: Nearest),
                     delivery: Instant,
                     effects: [
@@ -68,15 +68,15 @@ SkillDatabase(
                 SkillStepDef(
                     id: "nova",
                     delay_ms: 0,
-                    range_tiles: 2,
-                    target: Enemies(area: RadiusChebyshev(radius_tiles: 2)),
+                    range_units: 2,
+                    target: EnemySingle(rule: Nearest),
                     delivery: Area(area: (
                         shape: Box(width_units: 4000000, height_units: 4000000),
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
                     effects: [
-                        Damage(amount: 35),
+                        Damage(amount: 35, damage_type: Magic),
                     ],
                 ),
             ],
@@ -90,7 +90,7 @@ SkillDatabase(
                 SkillStepDef(
                     id: "poison_apply",
                     delay_ms: 0,
-                    range_tiles: 2,
+                    range_units: 2,
                     target: EnemySingle(rule: Nearest),
                     delivery: Instant,
                     effects: [
@@ -108,8 +108,8 @@ SkillDatabase(
                 SkillStepDef(
                     id: "fairy_bless",
                     delay_ms: 0,
-                    range_tiles: 3,
-                    target: Allies(area: RadiusChebyshev(radius_tiles: 3)),
+                    range_units: 3,
+                    target: SelfUnit,
                     delivery: Area(area: (
                         shape: Box(width_units: 6000000, height_units: 6000000),
                         anchor: CastTarget,
@@ -138,11 +138,11 @@ SkillDatabase(
                 SkillStepDef(
                     id: "strike",
                     delay_ms: 0,
-                    range_tiles: 2,
+                    range_units: 2,
                     target: EnemySingle(rule: Nearest),
                     delivery: Instant,
                     effects: [
-                        Damage(amount: 60),
+                        Damage(amount: 60, damage_type: Magic),
                     ],
                 ),
             ],
@@ -156,11 +156,11 @@ SkillDatabase(
                 SkillStepDef(
                     id: "penitence_judgement",
                     delay_ms: 0,
-                    range_tiles: 4,
+                    range_units: 4,
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Projectile(speed_units_per_ms: 6000),
                     effects: [
-                        Damage(amount: 38),
+                        Damage(amount: 38, damage_type: Magic),
                     ],
                     presentation: (
                         cast_state: Some("Cast"),
@@ -172,7 +172,7 @@ SkillDatabase(
                 SkillStepDef(
                     id: "penitence_absolution",
                     delay_ms: 180,
-                    range_tiles: 1,
+                    range_units: 1,
                     target: SelfUnit,
                     when: IfPreviousStepDealtDamage,
                     delivery: Instant,
@@ -188,6 +188,46 @@ SkillDatabase(
             ],
         ),
         SkillDef(
+            id: "fragment_one_sin_penitence",
+            name: "Penitence Fragment",
+            kind: Targeted,
+            focus_time_ms: 220,
+            steps: [
+                SkillStepDef(
+                    id: "fragment_penitence_judgement",
+                    delay_ms: 0,
+                    range_units: 3,
+                    target: EnemySingle(rule: LowestHealthEnemy),
+                    delivery: Projectile(speed_units_per_ms: 6000),
+                    effects: [
+                        Damage(amount: 22, damage_type: Magic),
+                    ],
+                    presentation: (
+                        cast_state: Some("Cast"),
+                        projectile_vfx_id: Some("fragment_one_sin_penitence_judgement"),
+                        impact_vfx_id: Some("fragment_one_sin_penitence_judgement_hit"),
+                        target_anchor: Some("Head"),
+                    ),
+                ),
+                SkillStepDef(
+                    id: "fragment_penitence_absolution",
+                    delay_ms: 140,
+                    range_units: 1,
+                    target: SelfUnit,
+                    when: IfPreviousStepDealtDamage,
+                    delivery: Instant,
+                    effects: [
+                        Heal(amount: 6),
+                    ],
+                    presentation: (
+                        cast_state: Some("Cast"),
+                        impact_vfx_id: Some("fragment_one_sin_penitence_absolution"),
+                        target_anchor: Some("Body"),
+                    ),
+                ),
+            ],
+        ),
+        SkillDef(
             id: "punishing_bird_rapid_peck",
             name: "Rapid Peck",
             kind: Targeted,
@@ -196,7 +236,7 @@ SkillDatabase(
                 SkillStepDef(
                     id: "peck_opening",
                     delay_ms: 0,
-                    range_tiles: 1,
+                    range_units: 1,
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Instant,
                     effects: [
@@ -206,7 +246,7 @@ SkillDatabase(
                 SkillStepDef(
                     id: "peck_flurry",
                     delay_ms: 120,
-                    range_tiles: 1,
+                    range_units: 1,
                     target: EnemySingle(rule: CurrentTarget),
                     targeting: RetargetOnStep,
                     repeat: Times(count: 2),
@@ -226,8 +266,8 @@ SkillDatabase(
                 SkillStepDef(
                     id: "lamp_gaze",
                     delay_ms: 0,
-                    range_tiles: 1,
-                    target: Enemies(area: RadiusChebyshev(radius_tiles: 1)),
+                    range_units: 1,
+                    target: EnemySingle(rule: Nearest),
                     delivery: Area(area: (
                         shape: Box(width_units: 2000000, height_units: 2000000),
                         anchor: CastTarget,
@@ -245,15 +285,15 @@ SkillDatabase(
                 SkillStepDef(
                     id: "lamp_burst",
                     delay_ms: 90,
-                    range_tiles: 1,
-                    target: Enemies(area: RadiusChebyshev(radius_tiles: 1)),
+                    range_units: 1,
+                    target: CastTarget,
                     delivery: Area(area: (
                         shape: Box(width_units: 2000000, height_units: 2000000),
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
                     effects: [
-                        Damage(amount: 70),
+                        Damage(amount: 70, damage_type: Magic),
                     ],
                     presentation: (
                         cast_state: Some("Attack"),
@@ -272,11 +312,11 @@ SkillDatabase(
                 SkillStepDef(
                     id: "weigh_sins",
                     delay_ms: 0,
-                    range_tiles: 4,
+                    range_units: 4,
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Instant,
                     effects: [
-                        Damage(amount: 20),
+                        Damage(amount: 20, damage_type: Magic),
                         ApplyBuff(buff_id: "stun", duration_ms: 800),
                     ],
                     presentation: (
@@ -288,13 +328,13 @@ SkillDatabase(
                 SkillStepDef(
                     id: "final_verdict",
                     delay_ms: 90,
-                    range_tiles: 4,
+                    range_units: 4,
                     target: EnemySingle(rule: LowestHealthEnemy),
                     targeting: RetargetOnStep,
                     when: IfPreviousStepDealtDamage,
                     delivery: Instant,
                     effects: [
-                        Damage(amount: 65),
+                        Damage(amount: 65, damage_type: Magic),
                     ],
                     presentation: (
                         cast_state: Some("Attack"),
@@ -313,15 +353,15 @@ SkillDatabase(
                 SkillStepDef(
                     id: "beam_trace",
                     delay_ms: 0,
-                    range_tiles: 5,
-                    target: Enemies(area: Line(length_tiles: 5)),
+                    range_units: 5,
+                    target: EnemySingle(rule: Nearest),
                     delivery: Area(area: (
                         shape: Line(length_units: 5000000),
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
                     effects: [
-                        Damage(amount: 32),
+                        Damage(amount: 32, damage_type: Magic),
                     ],
                     presentation: (
                         cast_state: Some("CastPrep"),
@@ -332,8 +372,8 @@ SkillDatabase(
                 SkillStepDef(
                     id: "beam_overdrive",
                     delay_ms: 80,
-                    range_tiles: 5,
-                    target: Enemies(area: Line(length_tiles: 5)),
+                    range_units: 5,
+                    target: CastTarget,
                     repeat: Times(count: 2),
                     delivery: Area(area: (
                         shape: Line(length_units: 5000000),
@@ -341,7 +381,7 @@ SkillDatabase(
                         hit_targets: Enemies,
                     )),
                     effects: [
-                        Damage(amount: 28),
+                        Damage(amount: 28, damage_type: Magic),
                     ],
                     presentation: (
                         cast_state: Some("Cast"),
@@ -360,11 +400,11 @@ SkillDatabase(
                 SkillStepDef(
                     id: "marked_shot",
                     delay_ms: 0,
-                    range_tiles: 4,
+                    range_units: 4,
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Projectile(speed_units_per_ms: 7500),
                     effects: [
-                        Damage(amount: 68),
+                        Damage(amount: 68, damage_type: Physical),
                     ],
                     presentation: (
                         cast_state: Some("Attack"),
@@ -376,7 +416,7 @@ SkillDatabase(
                 SkillStepDef(
                     id: "hunt_finish",
                     delay_ms: 160,
-                    range_tiles: 4,
+                    range_units: 4,
                     target: EnemySingle(rule: CurrentTarget),
                     targeting: RetargetOnStep,
                     when: IfPreviousStepDealtDamage,
@@ -402,15 +442,15 @@ SkillDatabase(
                 SkillStepDef(
                     id: "consume_burst",
                     delay_ms: 0,
-                    range_tiles: 1,
-                    target: Enemies(area: RadiusChebyshev(radius_tiles: 1)),
+                    range_units: 1,
+                    target: EnemySingle(rule: Nearest),
                     delivery: Area(area: (
                         shape: Box(width_units: 2000000, height_units: 2000000),
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
                     effects: [
-                        Damage(amount: 95),
+                        Damage(amount: 95, damage_type: Physical),
                     ],
                     presentation: (
                         cast_state: Some("Attack"),
@@ -421,7 +461,7 @@ SkillDatabase(
                 SkillStepDef(
                     id: "consume_growth",
                     delay_ms: 20,
-                    range_tiles: 1,
+                    range_units: 1,
                     target: SelfUnit,
                     when: IfPreviousStepDealtDamage,
                     delivery: Instant,
@@ -443,7 +483,7 @@ SkillDatabase(
                 SkillStepDef(
                     id: "consume_heal",
                     delay_ms: 60,
-                    range_tiles: 1,
+                    range_units: 1,
                     target: SelfUnit,
                     delivery: Instant,
                     effects: [
@@ -466,11 +506,11 @@ SkillDatabase(
                 SkillStepDef(
                     id: "slime_orb",
                     delay_ms: 0,
-                    range_tiles: 4,
+                    range_units: 4,
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Projectile(speed_units_per_ms: 5600),
                     effects: [
-                        Damage(amount: 24),
+                        Damage(amount: 24, damage_type: Magic),
                         ApplyBuff(buff_id: "poison", duration_ms: 5000),
                     ],
                     presentation: (
@@ -483,8 +523,8 @@ SkillDatabase(
                 SkillStepDef(
                     id: "slime_spread",
                     delay_ms: 220,
-                    range_tiles: 4,
-                    target: Enemies(area: RadiusChebyshev(radius_tiles: 1)),
+                    range_units: 4,
+                    target: CastTarget,
                     when: IfPreviousStepDealtDamage,
                     delivery: Area(area: (
                         shape: Box(width_units: 2000000, height_units: 2000000),
@@ -492,7 +532,7 @@ SkillDatabase(
                         hit_targets: Enemies,
                     )),
                     effects: [
-                        Damage(amount: 16),
+                        Damage(amount: 16, damage_type: Magic),
                         ApplyBuff(buff_id: "poison", duration_ms: 3000),
                     ],
                     presentation: (
@@ -512,11 +552,11 @@ SkillDatabase(
                 SkillStepDef(
                     id: "tear_open",
                     delay_ms: 0,
-                    range_tiles: 1,
+                    range_units: 1,
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Instant,
                     effects: [
-                        Damage(amount: 62),
+                        Damage(amount: 62, damage_type: Physical),
                     ],
                     presentation: (
                         cast_state: Some("Attack"),
@@ -527,7 +567,7 @@ SkillDatabase(
                 SkillStepDef(
                     id: "mimic_adaptation",
                     delay_ms: 20,
-                    range_tiles: 1,
+                    range_units: 1,
                     target: SelfUnit,
                     when: IfPreviousStepDealtDamage,
                     delivery: Instant,
@@ -549,13 +589,13 @@ SkillDatabase(
                 SkillStepDef(
                     id: "goodbye_finish",
                     delay_ms: 100,
-                    range_tiles: 1,
+                    range_units: 1,
                     target: EnemySingle(rule: CurrentTarget),
                     targeting: RetargetOnStep,
                     repeat: Times(count: 2),
                     delivery: Instant,
                     effects: [
-                        Damage(amount: 58),
+                        Damage(amount: 58, damage_type: Physical),
                     ],
                     presentation: (
                         cast_state: Some("Attack"),
@@ -574,8 +614,8 @@ SkillDatabase(
                 SkillStepDef(
                     id: "ally_salvation",
                     delay_ms: 0,
-                    range_tiles: 3,
-                    target: Allies(area: RadiusChebyshev(radius_tiles: 3)),
+                    range_units: 3,
+                    target: SelfUnit,
                     delivery: Area(area: (
                         shape: Box(width_units: 6000000, height_units: 6000000),
                         anchor: CastTarget,
@@ -594,8 +634,8 @@ SkillDatabase(
                 SkillStepDef(
                     id: "ally_blessing",
                     delay_ms: 40,
-                    range_tiles: 3,
-                    target: Allies(area: RadiusChebyshev(radius_tiles: 3)),
+                    range_units: 3,
+                    target: CastTarget,
                     delivery: Area(area: (
                         shape: Box(width_units: 6000000, height_units: 6000000),
                         anchor: CastTarget,
@@ -620,21 +660,788 @@ SkillDatabase(
                 SkillStepDef(
                     id: "enemy_judgement",
                     delay_ms: 140,
-                    range_tiles: 3,
-                    target: Enemies(area: RadiusChebyshev(radius_tiles: 3)),
+                    range_units: 3,
+                    target: CastTarget,
                     delivery: Area(area: (
                         shape: Box(width_units: 6000000, height_units: 6000000),
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
                     effects: [
-                        Damage(amount: 28),
+                        Damage(amount: 28, damage_type: Magic),
                     ],
                     presentation: (
                         cast_state: Some("Cast"),
                         impact_vfx_id: Some("white_night_pale_benediction_judgement"),
                         target_anchor: Some("Head"),
                     ),
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "singing_machine_rhythmic_grinder",
+            name: "Rhythmic Grinder",
+            kind: Untargeted,
+            focus_time_ms: 420,
+            steps: [
+                SkillStepDef(
+                    id: "metal_chorus",
+                    delay_ms: 0,
+                    range_units: 1,
+                    target: EnemySingle(rule: Nearest),
+                    delivery: Area(area: (
+                        shape: Box(width_units: 2000000, height_units: 2000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
+                    effects: [
+                        Damage(amount: 44, damage_type: Physical),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "machine_tempo",
+                    delay_ms: 40,
+                    range_units: 1,
+                    target: SelfUnit,
+                    when: IfPreviousStepDealtDamage,
+                    delivery: Instant,
+                    effects: [
+                        ModifyStats(
+                            modifier: (
+                                stat: AttackIntervalMs,
+                                kind: Flat,
+                                value: -90,
+                            ),
+                        ),
+                    ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "all_around_helper_grinder_mk4",
+            name: "Grinder Mk4",
+            kind: Untargeted,
+            focus_time_ms: 420,
+            steps: [
+                SkillStepDef(
+                    id: "cleaning_spin",
+                    delay_ms: 0,
+                    range_units: 2,
+                    target: EnemySingle(rule: Nearest),
+                    delivery: Area(area: (
+                        shape: Circle(radius_units: 2000000),
+                        anchor: Caster,
+                        hit_targets: Enemies,
+                        duration_ms: 600,
+                        tick_interval_ms: Some(300),
+                        tick_policy: EveryTick,
+                    )),
+                    effects: [
+                        Damage(amount: 26, damage_type: Physical),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "cleaning_protocol",
+                    delay_ms: 40,
+                    range_units: 1,
+                    target: SelfUnit,
+                    delivery: Instant,
+                    effects: [
+                        ModifyStats(
+                            modifier: (
+                                stat: MoveSpeedUnitsPerMs,
+                                kind: Flat,
+                                value: 300,
+                            ),
+                        ),
+                    ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "freischutz_magic_bullet",
+            name: "Magic Bullet",
+            kind: Targeted,
+            focus_time_ms: 360,
+            steps: [
+                SkillStepDef(
+                    id: "seventh_bullet",
+                    delay_ms: 0,
+                    range_units: 5,
+                    target: EnemySingle(rule: LowestHealthEnemy),
+                    delivery: Projectile(speed_units_per_ms: 7600),
+                    effects: [
+                        Damage(amount: 72, damage_type: Magic),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "smoke_recoil",
+                    delay_ms: 90,
+                    range_units: 1,
+                    target: SelfUnit,
+                    delivery: Instant,
+                    effects: [
+                        ModifyStats(
+                            modifier: (
+                                stat: Attack,
+                                kind: Percent,
+                                value: 8,
+                            ),
+                        ),
+                    ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "funeral_butterfly_eulogy_volley",
+            name: "Eulogy Volley",
+            kind: Targeted,
+            focus_time_ms: 380,
+            steps: [
+                SkillStepDef(
+                    id: "mourning_shot",
+                    delay_ms: 0,
+                    range_units: 4,
+                    target: EnemySingle(rule: CurrentTarget),
+                    delivery: Projectile(speed_units_per_ms: 6400),
+                    effects: [
+                        Damage(amount: 46, damage_type: Physical),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "black_funeral",
+                    delay_ms: 120,
+                    range_units: 4,
+                    target: EnemySingle(rule: LowestHealthEnemy),
+                    targeting: RetargetOnStep,
+                    when: IfPreviousStepDealtDamage,
+                    delivery: Instant,
+                    effects: [
+                        Damage(amount: 36, damage_type: Magic),
+                        ApplyBuff(buff_id: "silence", duration_ms: 900),
+                    ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "laetitia_surprise_gift",
+            name: "Surprise Gift",
+            kind: Targeted,
+            focus_time_ms: 300,
+            steps: [
+                SkillStepDef(
+                    id: "gift_box",
+                    delay_ms: 0,
+                    range_units: 4,
+                    target: EnemySingle(rule: Nearest),
+                    delivery: Projectile(speed_units_per_ms: 5200),
+                    effects: [
+                        Damage(amount: 18, damage_type: Magic),
+                        ApplyBuff(buff_id: "poison", duration_ms: 4000),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "gift_pop",
+                    delay_ms: 180,
+                    range_units: 4,
+                    target: CastTarget,
+                    when: IfPreviousStepDealtDamage,
+                    delivery: Area(area: (
+                        shape: Box(width_units: 2000000, height_units: 2000000),
+                        anchor: ImpactContext,
+                        hit_targets: Enemies,
+                    )),
+                    effects: [
+                        Damage(amount: 24, damage_type: Magic),
+                    ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "snow_queen_crystal_prison",
+            name: "Crystal Prison",
+            kind: Targeted,
+            focus_time_ms: 460,
+            steps: [
+                SkillStepDef(
+                    id: "frost_brand",
+                    delay_ms: 0,
+                    range_units: 4,
+                    target: EnemySingle(rule: CurrentTarget),
+                    delivery: Projectile(speed_units_per_ms: 5800),
+                    effects: [
+                        Damage(amount: 34, damage_type: Magic),
+                        ApplyBuff(buff_id: "freeze", duration_ms: 900),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "ice_shatter",
+                    delay_ms: 160,
+                    range_units: 4,
+                    target: EnemySingle(rule: CurrentTarget),
+                    when: IfPreviousStepDealtDamage,
+                    delivery: Instant,
+                    effects: [
+                        Damage(amount: 44, damage_type: Magic),
+                    ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "rudolta_sleigh_charge",
+            name: "Sleigh Charge",
+            kind: Untargeted,
+            focus_time_ms: 360,
+            steps: [
+                SkillStepDef(
+                    id: "bells_line",
+                    delay_ms: 0,
+                    range_units: 4,
+                    target: EnemySingle(rule: Nearest),
+                    delivery: Area(area: (
+                        shape: Line(length_units: 4000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
+                    effects: [
+                        Damage(amount: 42, damage_type: Physical),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "holiday_crash",
+                    delay_ms: 80,
+                    range_units: 4,
+                    target: CastTarget,
+                    delivery: Area(area: (
+                        shape: Line(length_units: 4000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
+                    effects: [
+                        ApplyBuff(buff_id: "stun", duration_ms: 500),
+                    ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "meat_lantern_lure_trap",
+            name: "Lure Trap",
+            kind: Targeted,
+            focus_time_ms: 260,
+            steps: [
+                SkillStepDef(
+                    id: "sweet_lure",
+                    delay_ms: 0,
+                    range_units: 3,
+                    target: EnemySingle(rule: Nearest),
+                    delivery: Instant,
+                    effects: [
+                        ApplyBuff(buff_id: "stun", duration_ms: 550),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "hidden_jaws",
+                    delay_ms: 110,
+                    range_units: 1,
+                    target: EnemySingle(rule: CurrentTarget),
+                    targeting: RetargetOnStep,
+                    delivery: Instant,
+                    effects: [
+                        Damage(amount: 70, damage_type: Physical),
+                    ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "dreaming_current_coral_surge",
+            name: "Coral Surge",
+            kind: Untargeted,
+            focus_time_ms: 420,
+            steps: [
+                SkillStepDef(
+                    id: "current_sweep",
+                    delay_ms: 0,
+                    range_units: 5,
+                    target: EnemySingle(rule: Nearest),
+                    delivery: Area(area: (
+                        shape: Rectangle(width_units: 2000000, length_units: 5000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
+                    effects: [
+                        Damage(amount: 38, damage_type: Magic),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "accelerating_stream",
+                    delay_ms: 40,
+                    range_units: 1,
+                    target: SelfUnit,
+                    delivery: Instant,
+                    effects: [
+                        ModifyStats(
+                            modifier: (
+                                stat: MoveSpeedUnitsPerMs,
+                                kind: Flat,
+                                value: 350,
+                            ),
+                        ),
+                    ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "alriune_flower_burial",
+            name: "Flower Burial",
+            kind: Untargeted,
+            focus_time_ms: 500,
+            steps: [
+                SkillStepDef(
+                    id: "petal_field",
+                    delay_ms: 0,
+                    range_units: 3,
+                    target: EnemySingle(rule: Nearest),
+                    delivery: Area(area: (
+                        shape: Circle(radius_units: 2000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
+                    effects: [
+                        Damage(amount: 26, damage_type: Magic),
+                        ApplyBuff(buff_id: "silence", duration_ms: 1000),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "last_fragrance",
+                    delay_ms: 100,
+                    range_units: 3,
+                    target: SelfUnit,
+                    delivery: Area(area: (
+                        shape: Circle(radius_units: 2000000),
+                        anchor: Caster,
+                        hit_targets: Allies,
+                        include_caster: true,
+                    )),
+                    effects: [
+                        Heal(amount: 22),
+                    ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "naked_nest_skin_burst",
+            name: "Skin Burst",
+            kind: Targeted,
+            focus_time_ms: 330,
+            steps: [
+                SkillStepDef(
+                    id: "spore_injection",
+                    delay_ms: 0,
+                    range_units: 3,
+                    target: EnemySingle(rule: Nearest),
+                    delivery: Projectile(speed_units_per_ms: 5000),
+                    effects: [
+                        Damage(amount: 30, damage_type: Magic),
+                        ApplyBuff(buff_id: "poison", duration_ms: 5000),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "nest_eruption",
+                    delay_ms: 220,
+                    range_units: 3,
+                    target: CastTarget,
+                    when: IfPreviousStepDealtDamage,
+                    delivery: Area(area: (
+                        shape: Circle(radius_units: 1500000),
+                        anchor: ImpactContext,
+                        hit_targets: Enemies,
+                    )),
+                    effects: [
+                        Damage(amount: 20, damage_type: Magic),
+                        ApplyBuff(buff_id: "poison", duration_ms: 3000),
+                    ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "blue_star_gravity_chant",
+            name: "Gravity Chant",
+            kind: Untargeted,
+            focus_time_ms: 780,
+            steps: [
+                SkillStepDef(
+                    id: "pulling_hymn",
+                    delay_ms: 0,
+                    range_units: 4,
+                    target: EnemySingle(rule: Nearest),
+                    delivery: Area(area: (
+                        shape: Circle(radius_units: 3000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
+                    effects: [
+                        Damage(amount: 34, damage_type: Magic),
+                        ApplyBuff(buff_id: "stun", duration_ms: 600),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "distant_salvation",
+                    delay_ms: 80,
+                    range_units: 3,
+                    target: SelfUnit,
+                    delivery: Area(area: (
+                        shape: Circle(radius_units: 3000000),
+                        anchor: Caster,
+                        hit_targets: Allies,
+                        include_caster: true,
+                    )),
+                    effects: [
+                        Heal(amount: 30),
+                    ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "silent_orchestra_finale",
+            name: "Silent Finale",
+            kind: Untargeted,
+            focus_time_ms: 900,
+            steps: [
+                SkillStepDef(
+                    id: "first_movement",
+                    delay_ms: 0,
+                    range_units: 3,
+                    target: EnemySingle(rule: Nearest),
+                    delivery: Area(area: (
+                        shape: Circle(radius_units: 2000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
+                    effects: [
+                        Damage(amount: 24, damage_type: Magic),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "crescendo",
+                    delay_ms: 120,
+                    range_units: 3,
+                    target: CastTarget,
+                    delivery: Area(area: (
+                        shape: Circle(radius_units: 2000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
+                    effects: [
+                        Damage(amount: 28, damage_type: Magic),
+                        ApplyBuff(buff_id: "silence", duration_ms: 900),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "grand_finale",
+                    delay_ms: 240,
+                    range_units: 3,
+                    target: CastTarget,
+                    delivery: Area(area: (
+                        shape: Circle(radius_units: 2000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
+                    effects: [
+                        Damage(amount: 42, damage_type: Magic),
+                    ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "censored_mind_break",
+            name: "Mind Break",
+            kind: Targeted,
+            focus_time_ms: 520,
+            steps: [
+                SkillStepDef(
+                    id: "redacted_presence",
+                    delay_ms: 0,
+                    range_units: 1,
+                    target: EnemySingle(rule: CurrentTarget),
+                    delivery: Instant,
+                    effects: [
+                        Damage(amount: 74, damage_type: Magic),
+                        ApplyBuff(buff_id: "stun", duration_ms: 700),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "panic_feedback",
+                    delay_ms: 40,
+                    range_units: 1,
+                    target: SelfUnit,
+                    when: IfPreviousStepDealtDamage,
+                    delivery: Instant,
+                    effects: [
+                        ModifyStats(
+                            modifier: (
+                                stat: Defense,
+                                kind: Percent,
+                                value: 12,
+                            ),
+                        ),
+                    ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "yin_black_pulse",
+            name: "Black Pulse",
+            kind: Untargeted,
+            focus_time_ms: 430,
+            steps: [
+                SkillStepDef(
+                    id: "dark_wave",
+                    delay_ms: 0,
+                    range_units: 3,
+                    target: EnemySingle(rule: Nearest),
+                    delivery: Area(area: (
+                        shape: Circle(radius_units: 2000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
+                    effects: [
+                        Damage(amount: 32, damage_type: Magic),
+                        ApplyBuff(buff_id: "silence", duration_ms: 700),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "balance_return",
+                    delay_ms: 80,
+                    range_units: 1,
+                    target: SelfUnit,
+                    delivery: Instant,
+                    effects: [
+                        Heal(amount: 20),
+                    ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "yang_white_resonance",
+            name: "White Resonance",
+            kind: Untargeted,
+            focus_time_ms: 430,
+            steps: [
+                SkillStepDef(
+                    id: "white_wave",
+                    delay_ms: 0,
+                    range_units: 3,
+                    target: SelfUnit,
+                    delivery: Area(area: (
+                        shape: Circle(radius_units: 2000000),
+                        anchor: Caster,
+                        hit_targets: Allies,
+                        include_caster: true,
+                    )),
+                    effects: [
+                        Heal(amount: 34),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "white_judgement",
+                    delay_ms: 100,
+                    range_units: 3,
+                    target: CastTarget,
+                    delivery: Area(area: (
+                        shape: Circle(radius_units: 2000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
+                    effects: [
+                        Damage(amount: 26, damage_type: Magic),
+                    ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "burrowing_heaven_gaze_punishment",
+            name: "Gaze Punishment",
+            kind: Targeted,
+            focus_time_ms: 480,
+            steps: [
+                SkillStepDef(
+                    id: "root_watch",
+                    delay_ms: 0,
+                    range_units: 4,
+                    target: EnemySingle(rule: CurrentTarget),
+                    delivery: Projectile(speed_units_per_ms: 6200),
+                    effects: [
+                        Damage(amount: 40, damage_type: Physical),
+                        ApplyBuff(buff_id: "stun", duration_ms: 500),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "heaven_burrows",
+                    delay_ms: 160,
+                    range_units: 4,
+                    target: CastTarget,
+                    when: IfPreviousStepDealtDamage,
+                    delivery: Area(area: (
+                        shape: Line(length_units: 4000000),
+                        anchor: ImpactContextStart,
+                        hit_targets: Enemies,
+                    )),
+                    effects: [
+                        Damage(amount: 30, damage_type: Physical),
+                    ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "parasite_tree_root_blessing",
+            name: "Root Blessing",
+            kind: Untargeted,
+            focus_time_ms: 520,
+            steps: [
+                SkillStepDef(
+                    id: "false_blessing",
+                    delay_ms: 0,
+                    range_units: 3,
+                    target: SelfUnit,
+                    delivery: Area(area: (
+                        shape: Box(width_units: 6000000, height_units: 6000000),
+                        anchor: Caster,
+                        hit_targets: Allies,
+                        include_caster: true,
+                    )),
+                    effects: [
+                        Heal(amount: 26),
+                        ModifyStats(
+                            modifier: (
+                                stat: Attack,
+                                kind: Percent,
+                                value: 10,
+                            ),
+                        ),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "root_tax",
+                    delay_ms: 120,
+                    range_units: 3,
+                    target: CastTarget,
+                    delivery: Area(area: (
+                        shape: Circle(radius_units: 2000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
+                    effects: [
+                        ApplyBuff(buff_id: "poison", duration_ms: 4000),
+                    ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "porcubbus_spore_bloom",
+            name: "Spore Bloom",
+            kind: Untargeted,
+            focus_time_ms: 340,
+            steps: [
+                SkillStepDef(
+                    id: "laughing_spores",
+                    delay_ms: 0,
+                    range_units: 2,
+                    target: EnemySingle(rule: Nearest),
+                    delivery: Area(area: (
+                        shape: Circle(radius_units: 2000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
+                    effects: [
+                        Damage(amount: 22, damage_type: Magic),
+                        ApplyBuff(buff_id: "poison", duration_ms: 5000),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "toxic_laughter",
+                    delay_ms: 100,
+                    range_units: 2,
+                    target: CastTarget,
+                    delivery: Area(area: (
+                        shape: Circle(radius_units: 2000000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                    )),
+                    effects: [
+                        ApplyBuff(buff_id: "silence", duration_ms: 600),
+                    ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "scarecrow_wisdom_reap",
+            name: "Wisdom Reap",
+            kind: Targeted,
+            focus_time_ms: 310,
+            steps: [
+                SkillStepDef(
+                    id: "brain_pick",
+                    delay_ms: 0,
+                    range_units: 1,
+                    target: EnemySingle(rule: LowestHealthEnemy),
+                    delivery: Instant,
+                    effects: [
+                        Damage(amount: 48, damage_type: Physical),
+                        ApplyBuff(buff_id: "silence", duration_ms: 700),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "stolen_wisdom",
+                    delay_ms: 30,
+                    range_units: 1,
+                    target: SelfUnit,
+                    when: IfPreviousStepDealtDamage,
+                    delivery: Instant,
+                    effects: [
+                        ModifyStats(
+                            modifier: (
+                                stat: Attack,
+                                kind: Percent,
+                                value: 14,
+                            ),
+                        ),
+                    ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "woodsman_heart_rip",
+            name: "Heart Rip",
+            kind: Targeted,
+            focus_time_ms: 390,
+            steps: [
+                SkillStepDef(
+                    id: "axe_cleave",
+                    delay_ms: 0,
+                    range_units: 1,
+                    target: EnemySingle(rule: CurrentTarget),
+                    delivery: Instant,
+                    effects: [
+                        Damage(amount: 66, damage_type: Physical),
+                    ],
+                ),
+                SkillStepDef(
+                    id: "borrowed_heart",
+                    delay_ms: 60,
+                    range_units: 1,
+                    target: SelfUnit,
+                    when: IfPreviousStepDealtDamage,
+                    delivery: Instant,
+                    effects: [
+                        Heal(amount: 36),
+                        ModifyStats(
+                            modifier: (
+                                stat: Defense,
+                                kind: Flat,
+                                value: 6,
+                            ),
+                        ),
+                    ],
                 ),
             ],
         ),
@@ -647,11 +1454,11 @@ SkillDatabase(
                 SkillStepDef(
                     id: "judgement_strike",
                     delay_ms: 0,
-                    range_tiles: 1,
+                    range_units: 1,
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Instant,
                     effects: [
-                        Damage(amount: 18),
+                        Damage(amount: 18, damage_type: Magic),
                         ApplyBuff(buff_id: "silence", duration_ms: 700),
                     ],
                 ),
@@ -666,11 +1473,11 @@ SkillDatabase(
                 SkillStepDef(
                     id: "ember_bite",
                     delay_ms: 0,
-                    range_tiles: 1,
+                    range_units: 1,
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Instant,
                     effects: [
-                        Damage(amount: 10),
+                        Damage(amount: 10, damage_type: Magic),
                         ApplyBuff(buff_id: "poison", duration_ms: 3000),
                     ],
                 ),
@@ -685,7 +1492,7 @@ SkillDatabase(
                 SkillStepDef(
                     id: "guard_plate",
                     delay_ms: 0,
-                    range_tiles: 1,
+                    range_units: 1,
                     target: SelfUnit,
                     delivery: Instant,
                     effects: [
@@ -709,7 +1516,7 @@ SkillDatabase(
                 SkillStepDef(
                     id: "focus_charge",
                     delay_ms: 0,
-                    range_tiles: 1,
+                    range_units: 1,
                     target: SelfUnit,
                     delivery: Instant,
                     effects: [
@@ -727,7 +1534,7 @@ SkillDatabase(
                 SkillStepDef(
                     id: "scarlet_haste",
                     delay_ms: 0,
-                    range_tiles: 1,
+                    range_units: 1,
                     target: SelfUnit,
                     delivery: Instant,
                     effects: [
@@ -746,6 +1553,247 @@ SkillDatabase(
                             ),
                         ),
                     ],
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "fragment_scorched_spark",
+            name: "Scorched Spark Fragment",
+            kind: Targeted,
+            focus_time_ms: 240,
+            steps: [
+                SkillStepDef(
+                    id: "fragment_scorched_spark",
+                    delay_ms: 0,
+                    range_units: 3,
+                    target: EnemySingle(rule: Nearest),
+                    delivery: Projectile(speed_units_per_ms: 5200),
+                    effects: [
+                        Damage(amount: 26, damage_type: Magic),
+                    ],
+                    presentation: (
+                        cast_state: Some("Cast"),
+                        projectile_vfx_id: Some("fragment_scorched_spark"),
+                        impact_vfx_id: Some("fragment_scorched_spark_hit"),
+                        target_anchor: Some("Body"),
+                    ),
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "fragment_red_shoes_impulse",
+            name: "Red Shoes Impulse Fragment",
+            kind: Targeted,
+            focus_time_ms: 180,
+            steps: [
+                SkillStepDef(
+                    id: "fragment_crimson_impulse",
+                    delay_ms: 0,
+                    range_units: 1,
+                    target: EnemySingle(rule: CurrentTarget),
+                    delivery: Instant,
+                    effects: [
+                        ExtraAttack(count: 1),
+                    ],
+                    presentation: (
+                        cast_state: Some("Attack"),
+                        impact_vfx_id: Some("fragment_red_shoes_impulse"),
+                        target_anchor: Some("Legs"),
+                    ),
+                ),
+                SkillStepDef(
+                    id: "fragment_restless_step",
+                    delay_ms: 80,
+                    range_units: 1,
+                    target: SelfUnit,
+                    when: IfPreviousStepDealtDamage,
+                    delivery: Instant,
+                    effects: [
+                        ModifyStats(
+                            modifier: (
+                                stat: MoveSpeedUnitsPerMs,
+                                kind: Flat,
+                                value: 180,
+                            ),
+                        ),
+                    ],
+                    presentation: (
+                        cast_state: Some("Cast"),
+                        impact_vfx_id: Some("fragment_red_shoes_step"),
+                        target_anchor: Some("Legs"),
+                    ),
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "fragment_freischutz_black_round",
+            name: "Black Round Fragment",
+            kind: Targeted,
+            focus_time_ms: 320,
+            steps: [
+                SkillStepDef(
+                    id: "fragment_black_round",
+                    delay_ms: 0,
+                    range_units: 5,
+                    target: EnemySingle(rule: LowestHealthEnemy),
+                    delivery: Projectile(speed_units_per_ms: 7000),
+                    effects: [
+                        Damage(amount: 42, damage_type: Magic),
+                    ],
+                    presentation: (
+                        cast_state: Some("Cast"),
+                        projectile_vfx_id: Some("fragment_freischutz_black_round"),
+                        impact_vfx_id: Some("fragment_freischutz_black_round_hit"),
+                        target_anchor: Some("Head"),
+                    ),
+                ),
+                SkillStepDef(
+                    id: "fragment_smoke_focus",
+                    delay_ms: 100,
+                    range_units: 1,
+                    target: SelfUnit,
+                    delivery: Instant,
+                    effects: [
+                        ModifyStats(
+                            modifier: (
+                                stat: Attack,
+                                kind: Percent,
+                                value: 4,
+                            ),
+                        ),
+                    ],
+                    presentation: (
+                        cast_state: Some("Cast"),
+                        impact_vfx_id: Some("fragment_freischutz_smoke_focus"),
+                        target_anchor: Some("Body"),
+                    ),
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "fragment_spider_bud_red_eyes",
+            name: "Red Eyes Fragment",
+            kind: Targeted,
+            focus_time_ms: 220,
+            steps: [
+                SkillStepDef(
+                    id: "fragment_venom_thread",
+                    delay_ms: 0,
+                    range_units: 3,
+                    target: EnemySingle(rule: CurrentTarget),
+                    delivery: Projectile(speed_units_per_ms: 5600),
+                    effects: [
+                        Damage(amount: 16, damage_type: Physical),
+                        ApplyBuff(buff_id: "poison", duration_ms: 3500),
+                    ],
+                    presentation: (
+                        cast_state: Some("Cast"),
+                        projectile_vfx_id: Some("fragment_spider_bud_red_eyes"),
+                        impact_vfx_id: Some("fragment_spider_bud_red_eyes_hit"),
+                        target_anchor: Some("Body"),
+                    ),
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "fragment_funeral_butterfly_eulogy",
+            name: "Butterfly Eulogy Fragment",
+            kind: Targeted,
+            focus_time_ms: 300,
+            steps: [
+                SkillStepDef(
+                    id: "fragment_pale_shot",
+                    delay_ms: 0,
+                    range_units: 4,
+                    target: EnemySingle(rule: LowestHealthEnemy),
+                    delivery: Projectile(speed_units_per_ms: 6200),
+                    effects: [
+                        Damage(amount: 24, damage_type: Physical),
+                    ],
+                    presentation: (
+                        cast_state: Some("Cast"),
+                        projectile_vfx_id: Some("fragment_funeral_butterfly_shot"),
+                        impact_vfx_id: Some("fragment_funeral_butterfly_hit"),
+                        target_anchor: Some("Head"),
+                    ),
+                ),
+                SkillStepDef(
+                    id: "fragment_quiet_lament",
+                    delay_ms: 120,
+                    range_units: 4,
+                    target: EnemySingle(rule: LowestHealthEnemy),
+                    targeting: RetargetOnStep,
+                    when: IfPreviousStepDealtDamage,
+                    delivery: Instant,
+                    effects: [
+                        Damage(amount: 14, damage_type: Magic),
+                    ],
+                    presentation: (
+                        cast_state: Some("Cast"),
+                        impact_vfx_id: Some("fragment_funeral_butterfly_lament"),
+                        target_anchor: Some("Body"),
+                    ),
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "fragment_helper_grinder_trace",
+            name: "Grinder Trace Fragment",
+            kind: Untargeted,
+            focus_time_ms: 260,
+            steps: [
+                SkillStepDef(
+                    id: "fragment_short_cleaning_spin",
+                    delay_ms: 0,
+                    range_units: 1,
+                    target: EnemySingle(rule: Nearest),
+                    delivery: Area(area: (
+                        shape: Circle(radius_units: 1250000),
+                        anchor: Caster,
+                        hit_targets: Enemies,
+                        duration_ms: 300,
+                        tick_interval_ms: Some(300),
+                        tick_policy: OncePerArea,
+                    )),
+                    effects: [
+                        Damage(amount: 28, damage_type: Physical),
+                    ],
+                    presentation: (
+                        cast_state: Some("Attack"),
+                        impact_vfx_id: Some("fragment_helper_grinder_trace"),
+                        target_anchor: Some("Body"),
+                    ),
+                ),
+            ],
+        ),
+        SkillDef(
+            id: "fragment_alriune_faint_aroma",
+            name: "Faint Aroma Fragment",
+            kind: Untargeted,
+            focus_time_ms: 360,
+            steps: [
+                SkillStepDef(
+                    id: "fragment_petal_haze",
+                    delay_ms: 0,
+                    range_units: 3,
+                    target: EnemySingle(rule: Nearest),
+                    delivery: Area(area: (
+                        shape: Circle(radius_units: 1500000),
+                        anchor: CastTarget,
+                        hit_targets: Enemies,
+                        duration_ms: 900,
+                        tick_interval_ms: Some(450),
+                        tick_policy: OnEnter,
+                    )),
+                    effects: [
+                        Damage(amount: 18, damage_type: Magic),
+                        ApplyBuff(buff_id: "silence", duration_ms: 500),
+                    ],
+                    presentation: (
+                        cast_state: Some("Cast"),
+                        impact_vfx_id: Some("fragment_alriune_faint_aroma"),
+                        target_anchor: Some("Body"),
+                    ),
                 ),
             ],
         ),

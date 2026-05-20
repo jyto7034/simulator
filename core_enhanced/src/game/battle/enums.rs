@@ -7,7 +7,9 @@ use crate::game::ability::SkillId;
 use super::buffs::BuffId;
 use super::core::movement::types::WorldVec2;
 use super::ids::UnitInstanceId;
+use super::scenario::ScenarioGroupId;
 use super::timeline::{AttackKind, SkillCastTarget, TimelineCause};
+use super::types::BattleWinner;
 
 /// 전투 이벤트
 ///
@@ -15,6 +17,16 @@ use super::timeline::{AttackKind, SkillCastTarget, TimelineCause};
 /// `base_uuid`(메타데이터 참조용)와 혼동하지 않도록 주의하세요.
 #[derive(Debug, Clone, PartialEq)]
 pub enum BattleEvent {
+    SpawnGroup {
+        time_ms: u64,
+        group_id: ScenarioGroupId,
+        cause: TimelineCause,
+    },
+    EndBattle {
+        time_ms: u64,
+        winner: BattleWinner,
+        cause: TimelineCause,
+    },
     AttackStart {
         time_ms: u64,
         attacker_instance_id: UnitInstanceId,
@@ -131,6 +143,8 @@ impl BattleEvent {
     pub fn time_ms(&self) -> u64 {
         match self {
             BattleEvent::AttackStart { time_ms, .. }
+            | BattleEvent::SpawnGroup { time_ms, .. }
+            | BattleEvent::EndBattle { time_ms, .. }
             | BattleEvent::AttackResolve { time_ms, .. }
             | BattleEvent::BasicAttackProjectileAdvance { time_ms, .. }
             | BattleEvent::SkillProjectileAdvance { time_ms, .. }
@@ -150,22 +164,26 @@ impl BattleEvent {
     /// 같은 시각에 여러 이벤트가 있을 때 우선순위
     fn priority(&self) -> u8 {
         match self {
+            // Scenario spawns must materialize before same-timestamp attacks,
+            // casts, or movement ticks can observe the board.
+            BattleEvent::SpawnGroup { .. } => 0,
+            BattleEvent::EndBattle { .. } => 1,
             // Projectile advances first so collision impacts are resolved before new actions.
-            BattleEvent::BasicAttackProjectileAdvance { .. } => 0,
-            BattleEvent::SkillProjectileAdvance { .. } => 1,
-            BattleEvent::SkillProjectileImpact { .. } => 2,
-            BattleEvent::SkillAreaTick { .. } => 3,
+            BattleEvent::BasicAttackProjectileAdvance { .. } => 2,
+            BattleEvent::SkillProjectileAdvance { .. } => 3,
+            BattleEvent::SkillProjectileImpact { .. } => 4,
+            BattleEvent::SkillAreaTick { .. } => 5,
             // 버프 틱/적용을 먼저 처리하고, 시전 종료, 공격, 시전 시작, 만료 순으로 처리
-            BattleEvent::ApplyBuff { .. } => 4,
-            BattleEvent::BuffTick { .. } => 5,
-            BattleEvent::AutoCastEnd { .. } => 6,
-            BattleEvent::SkillStep { .. } => 7,
-            BattleEvent::AttackStart { .. } => 8,
-            BattleEvent::AttackResolve { .. } => 9,
-            BattleEvent::AutoCastStart { .. } => 10,
-            BattleEvent::BuffExpire { .. } => 11,
-            BattleEvent::SkillAreaExpire { .. } => 12,
-            BattleEvent::ContinuousMovementTick { .. } => 13,
+            BattleEvent::ApplyBuff { .. } => 6,
+            BattleEvent::BuffTick { .. } => 7,
+            BattleEvent::AutoCastEnd { .. } => 8,
+            BattleEvent::SkillStep { .. } => 9,
+            BattleEvent::AttackStart { .. } => 10,
+            BattleEvent::AttackResolve { .. } => 11,
+            BattleEvent::AutoCastStart { .. } => 12,
+            BattleEvent::BuffExpire { .. } => 13,
+            BattleEvent::SkillAreaExpire { .. } => 14,
+            BattleEvent::ContinuousMovementTick { .. } => 15,
         }
     }
 }
@@ -181,6 +199,10 @@ impl Ord for BattleEvent {
             .cmp(&self.time_ms())
             .then_with(|| other.priority().cmp(&self.priority()))
             .then_with(|| match (self, other) {
+                (
+                    BattleEvent::SpawnGroup { group_id: a, .. },
+                    BattleEvent::SpawnGroup { group_id: b, .. },
+                ) => b.0.cmp(&a.0),
                 (
                     BattleEvent::SkillProjectileAdvance {
                         delivery_id: a_d, ..
@@ -425,6 +447,11 @@ mod tests {
             cause,
         });
 
+        heap.push(BattleEvent::SpawnGroup {
+            time_ms: 10,
+            group_id: ScenarioGroupId::new("wave"),
+            cause,
+        });
         heap.push(BattleEvent::BasicAttackProjectileAdvance {
             time_ms: 10,
             projectile_id: Uuid::from_u128(10),
@@ -456,27 +483,28 @@ mod tests {
             popped[0],
             BattleEvent::AttackStart { time_ms: 9, .. }
         ));
+        assert!(matches!(popped[1], BattleEvent::SpawnGroup { .. }));
         assert!(matches!(
-            popped[1],
+            popped[2],
             BattleEvent::BasicAttackProjectileAdvance { .. }
         ));
         assert!(matches!(
-            popped[2],
+            popped[3],
             BattleEvent::SkillProjectileAdvance { .. }
         ));
         assert!(matches!(
-            popped[3],
+            popped[4],
             BattleEvent::AttackStart { time_ms: 10, .. }
         ));
         assert!(matches!(
-            popped[4],
+            popped[5],
             BattleEvent::AutoCastStart {
                 caster_instance_id,
                 ..
             } if caster_instance_id == caster_small
         ));
         assert!(matches!(
-            popped[5],
+            popped[6],
             BattleEvent::AutoCastStart {
                 caster_instance_id,
                 ..

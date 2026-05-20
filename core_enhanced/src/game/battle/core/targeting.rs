@@ -2,6 +2,7 @@ use std::cmp::Ordering;
 
 use uuid::Uuid;
 
+use super::RuntimeUnit;
 use crate::game::{
     ability::DeliveryDef,
     battle::{core::BattleCore, ids::UnitInstanceId, timeline::AttackDelivery},
@@ -21,7 +22,7 @@ impl BattleCore {
     ) -> f32 {
         self.units
             .get(&unit_id)
-            .map(|unit| self.basic_attack_range_units(unit.base_uuid))
+            .map(|unit| unit.basic_attack.range_units.max(0.0))
             .unwrap_or(f32::MAX)
     }
 
@@ -43,16 +44,6 @@ impl BattleCore {
             .then_with(|| a.as_bytes().cmp(b.as_bytes()))
     }
 
-    pub(in crate::game::battle::core) fn basic_attack_range_policy(
-        &self,
-        unit_base_uuid: Uuid,
-    ) -> BasicAttackRangePolicy {
-        BasicAttackRangePolicy {
-            delivery: self.basic_attack_delivery(unit_base_uuid),
-            range_units: self.basic_attack_range_units(unit_base_uuid),
-        }
-    }
-
     fn basic_attack_target_distance_sq_world(
         &self,
         attacker_instance_id: UnitInstanceId,
@@ -71,7 +62,7 @@ impl BattleCore {
         let Some(attacker) = self.units.get(&attacker_instance_id) else {
             return false;
         };
-        let policy = self.basic_attack_range_policy(attacker.base_uuid);
+        let policy = self.basic_attack_range_policy_for_unit(attacker);
         self.is_basic_attack_target_in_range_with_policy(attacker_instance_id, target_id, policy)
     }
 
@@ -99,7 +90,7 @@ impl BattleCore {
             return None;
         };
         let attacker_owner = attacker.owner;
-        let policy = self.basic_attack_range_policy(attacker.base_uuid);
+        let policy = self.basic_attack_range_policy_for_unit(attacker);
 
         let mut best: Option<(f32, UnitInstanceId)> = None;
         for unit in self.units.values() {
@@ -203,5 +194,29 @@ impl BattleCore {
             DeliveryDef::Projectile { .. } => AttackDelivery::Projectile,
             DeliveryDef::Area { .. } => AttackDelivery::Instant,
         }
+    }
+
+    pub(in crate::game::battle::core) fn basic_attack_range_policy_for_unit(
+        &self,
+        unit: &RuntimeUnit,
+    ) -> BasicAttackRangePolicy {
+        BasicAttackRangePolicy {
+            delivery: match unit.basic_attack.delivery {
+                DeliveryDef::Instant => AttackDelivery::Instant,
+                DeliveryDef::Projectile { .. } => AttackDelivery::Projectile,
+                DeliveryDef::Area { .. } => AttackDelivery::Instant,
+            },
+            range_units: unit.basic_attack.range_units.max(0.0),
+        }
+    }
+
+    pub(in crate::game::battle::core) fn basic_attack_delivery_for_unit(
+        &self,
+        unit_id: UnitInstanceId,
+    ) -> AttackDelivery {
+        self.units
+            .get(&unit_id)
+            .map(|unit| self.basic_attack_range_policy_for_unit(unit).delivery)
+            .unwrap_or(AttackDelivery::Instant)
     }
 }

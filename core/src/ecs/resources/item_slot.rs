@@ -92,6 +92,10 @@ impl ItemSlot {
         self.iter().any(|r| r.base_uuid == base_uuid)
     }
 
+    pub fn contains_instance(&self, instance_uuid: Uuid) -> bool {
+        self.iter().any(|r| r.instance_uuid == instance_uuid)
+    }
+
     /// 장착.
     ///
     /// - 귀속 룰: 이미 슬롯이 차 있으면 교체 없이 무조건 실패합니다.
@@ -132,6 +136,43 @@ impl ItemSlot {
                 Ok(())
             }
         }
+    }
+
+    pub fn remove_by_instance(&mut self, instance_uuid: Uuid) -> Option<EquippedRef> {
+        match &mut self.layout {
+            SlotLayout::ByType {
+                weapon,
+                armor,
+                accessory,
+            } => {
+                for slot in [weapon, armor, accessory] {
+                    if slot
+                        .as_ref()
+                        .is_some_and(|item| item.instance_uuid == instance_uuid)
+                    {
+                        return slot.take();
+                    }
+                }
+
+                None
+            }
+            SlotLayout::Any3 { items } => items
+                .iter()
+                .position(|item| item.instance_uuid == instance_uuid)
+                .map(|index| items.remove(index)),
+        }
+    }
+
+    pub fn can_equip_after_removing(
+        &self,
+        remove_instance_uuid: Uuid,
+        item: EquippedRef,
+        allow_duplicate_base: bool,
+    ) -> Result<(), ItemSlotError> {
+        let mut next = self.clone();
+        next.remove_by_instance(remove_instance_uuid)
+            .ok_or(ItemSlotError::CannotRepresentInLayout)?;
+        next.equip(item, allow_duplicate_base)
     }
 
     /// 해제 아이템 전용: 모든 장착 아이템을 해제하고 반환합니다.

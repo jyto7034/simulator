@@ -327,3 +327,145 @@ fn remaining_instant_steps_are_intentionally_non_spatial() {
         }
     }
 }
+
+#[test]
+fn live_resource_skill_references_resolve() {
+    let game_data = common::load_game_data_from_ron();
+
+    for abnormality in &game_data.abnormality_data.items {
+        if let Some(skill_id) = abnormality.skill_id.as_deref() {
+            assert!(
+                game_data.skill_data.get_by_id(skill_id).is_some(),
+                "abnormality `{}` references missing skill `{}`",
+                abnormality.id,
+                skill_id
+            );
+        }
+    }
+
+    for equipment in &game_data.equipment_data.items {
+        for binding in &equipment.ability_activations {
+            assert!(
+                game_data
+                    .skill_data
+                    .get_by_id(&binding.ability_id)
+                    .is_some(),
+                "equipment `{}` references missing skill `{}`",
+                equipment.id,
+                binding.ability_id
+            );
+        }
+    }
+
+    for artifact in &game_data.artifact_data.items {
+        for binding in &artifact.ability_activations {
+            assert!(
+                game_data
+                    .skill_data
+                    .get_by_id(&binding.ability_id)
+                    .is_some(),
+                "artifact `{}` references missing skill `{}`",
+                artifact.id,
+                binding.ability_id
+            );
+        }
+    }
+}
+
+#[test]
+fn live_event_and_pve_references_resolve() {
+    let game_data = common::load_game_data_from_ron();
+
+    for pool in [
+        &game_data.event_pools.dawn,
+        &game_data.event_pools.noon,
+        &game_data.event_pools.dusk,
+        &game_data.event_pools.midnight,
+        &game_data.event_pools.white,
+    ] {
+        for weighted in &pool.shops {
+            assert!(
+                game_data.shop_data.get_by_uuid(&weighted.uuid).is_some(),
+                "event pool references missing shop uuid {}",
+                weighted.uuid
+            );
+        }
+        for weighted in &pool.bonuses {
+            assert!(
+                game_data.bonus_data.get_by_uuid(&weighted.uuid).is_some(),
+                "event pool references missing bonus uuid {}",
+                weighted.uuid
+            );
+        }
+        for weighted in &pool.random_events {
+            assert!(
+                game_data
+                    .random_event_data
+                    .get_by_uuid(&weighted.uuid)
+                    .is_some(),
+                "event pool references missing random event uuid {}",
+                weighted.uuid
+            );
+        }
+    }
+
+    for event in &game_data.random_event_data.events {
+        match &event.inner_metadata {
+            game_core::game::data::random_event_data::RandomEventInnerMetadata::Shop(uuid) => {
+                assert!(
+                    game_data.shop_data.get_by_uuid(uuid).is_some(),
+                    "random event `{}` references missing shop uuid {}",
+                    event.id,
+                    uuid
+                );
+            }
+            game_core::game::data::random_event_data::RandomEventInnerMetadata::Bonus(uuid) => {
+                assert!(
+                    game_data.bonus_data.get_by_uuid(uuid).is_some(),
+                    "random event `{}` references missing bonus uuid {}",
+                    event.id,
+                    uuid
+                );
+            }
+            game_core::game::data::random_event_data::RandomEventInnerMetadata::Suppress(uuid) => {
+                assert!(
+                    game_data.abnormality_data.get_by_uuid(uuid).is_some(),
+                    "random event `{}` references missing abnormality uuid {}",
+                    event.id,
+                    uuid
+                );
+            }
+        }
+    }
+
+    for encounter in &game_data.pve_data.encounters {
+        assert!(
+            game_data
+                .abnormality_data
+                .get_by_id(&encounter.abnormality_id)
+                .is_some(),
+            "pve encounter `{}` references missing primary abnormality `{}`",
+            encounter.id,
+            encounter.abnormality_id
+        );
+        for unit in &encounter.units {
+            assert!(
+                game_data
+                    .abnormality_data
+                    .get_by_id(&unit.abnormality_id)
+                    .is_some(),
+                "pve encounter `{}` references missing unit abnormality `{}`",
+                encounter.id,
+                unit.abnormality_id
+            );
+        }
+        for bonus_uuid in &encounter.reward_bonus_uuids {
+            assert!(
+                game_data.bonus_data.get_by_uuid(bonus_uuid).is_some(),
+                "pve encounter `{}` references missing reward bonus uuid {}",
+                encounter.id,
+                bonus_uuid
+            );
+        }
+    }
+}

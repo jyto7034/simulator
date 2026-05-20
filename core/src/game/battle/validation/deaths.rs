@@ -136,6 +136,17 @@ fn referenced_unit_ids(event: &TimelineEvent) -> Vec<UnitInstanceId> {
         } => target_instance_id
             .map(|target| vec![*caster_instance_id, target])
             .unwrap_or_else(|| vec![*caster_instance_id]),
+        TimelineEvent::SkillAreaDeclared {
+            caster_instance_id,
+            target,
+            ..
+        } => {
+            let mut ids = vec![*caster_instance_id];
+            if let Some(SkillCastTarget::Unit { unit_instance_id }) = target {
+                ids.push(*unit_instance_id);
+            }
+            ids
+        }
         TimelineEvent::BuffApplied {
             caster_instance_id,
             target_instance_id,
@@ -270,6 +281,18 @@ fn is_dead_unit_operated_on(
             (config.forbid_dead_units_as_attackers && *caster_instance_id == dead_unit_id)
                 || (config.forbid_dead_units_as_targets
                     && target_instance_id.is_some_and(|t| t == dead_unit_id))
+        }
+        TimelineEvent::SkillAreaDeclared {
+            caster_instance_id,
+            target,
+            ..
+        } => {
+            let is_target_dead = target.is_some_and(|t| match t {
+                SkillCastTarget::Unit { unit_instance_id } => unit_instance_id == dead_unit_id,
+                SkillCastTarget::Tile { .. } => false,
+            });
+            (config.forbid_dead_units_as_attackers && *caster_instance_id == dead_unit_id)
+                || (config.forbid_dead_units_as_targets && is_target_dead)
         }
         TimelineEvent::BuffApplied {
             target_instance_id, ..

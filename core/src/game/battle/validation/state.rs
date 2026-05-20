@@ -64,6 +64,7 @@ pub(super) fn validate_stateful_unit_invariants(
                     || stats.max_health != stats_before.max_health
                     || stats.attack != stats_before.attack
                     || stats.defense != stats_before.defense
+                    || stats.magic_resist != stats_before.magic_resist
                     || stats.attack_interval_ms != stats_before.attack_interval_ms
                     || stats.move_speed_units_per_ms != stats_before.move_speed_units_per_ms
                 {

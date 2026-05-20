@@ -1,4 +1,4 @@
-use crate::{config::balance, ecs::resources::Qliphoth};
+use crate::{config::balance, game::resources::Qliphoth};
 use tracing::info;
 
 /// 클리포트 관리 헬퍼
@@ -77,17 +77,17 @@ impl QliphothManager {
         );
     }
 
-    /// 페이즈 종료 시 자동 회복
-    pub fn apply_phase_recovery(qliphoth: &mut Qliphoth) {
+    /// 노드 완료/안정화 시 자동 회복
+    pub fn apply_node_recovery(qliphoth: &mut Qliphoth) {
         let changes = balance::qliphoth_changes();
         let old_amount = qliphoth.amount();
-        qliphoth.increase(changes.phase_recovery);
+        qliphoth.increase(changes.node_recovery);
 
         info!(
-            "Phase recovery: {} → {} (recovery: {})",
+            "Qliphoth recovery: {} → {} (recovery: {})",
             old_amount,
             qliphoth.amount(),
-            changes.phase_recovery
+            changes.node_recovery
         );
     }
 
@@ -186,18 +186,18 @@ mod tests {
     }
 
     #[test]
-    fn test_phase_recovery() {
+    fn test_node_recovery() {
         let mut qliphoth = Qliphoth::new();
         qliphoth.set_amount(5);
 
         let initial = qliphoth.amount();
         let changes = balance::qliphoth_changes();
         let thresholds = balance::qliphoth_thresholds();
-        QliphothManager::apply_phase_recovery(&mut qliphoth);
+        QliphothManager::apply_node_recovery(&mut qliphoth);
 
         assert_eq!(
             qliphoth.amount(),
-            (initial.saturating_add(changes.phase_recovery)).min(thresholds.stable_min)
+            (initial.saturating_add(changes.node_recovery)).min(thresholds.stable_min)
         );
     }
 }

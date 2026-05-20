@@ -21,6 +21,7 @@ impl ActionScheduler {
                     ActionKind::EquipItem,
                     ActionKind::TransferUnit,
                     ActionKind::MoveUnit,
+                    ActionKind::MoveBenchUnit,
                 ]
             }
             GameState::SelectingEvent => {
@@ -31,6 +32,7 @@ impl ActionScheduler {
                     ActionKind::EquipItem,
                     ActionKind::TransferUnit,
                     ActionKind::MoveUnit,
+                    ActionKind::MoveBenchUnit,
                 ]
             }
             GameState::InShop { .. } => {
@@ -57,6 +59,12 @@ impl ActionScheduler {
             }
             GameState::InSuppressionReplay { .. } => {
                 vec![ActionKind::FinishSuppressionReplay]
+            }
+            GameState::InCombatReward { .. } => {
+                vec![ActionKind::SelectEvent, ActionKind::ClaimCombatReward]
+            }
+            GameState::InCombatRewardClaimed { .. } => {
+                vec![ActionKind::ExitCombatReward]
             }
             GameState::InBattle { .. } => {
                 // TODO: UseCard, EndTurn 추가 후 활성화
@@ -106,11 +114,12 @@ mod tests {
         let state = GameState::WaitingPhaseRequest;
         let allowed = ActionScheduler::get_allowed_actions(&state);
 
-        assert_eq!(allowed.len(), 4);
+        assert_eq!(allowed.len(), 5);
         assert!(allowed.contains(&ActionKind::RequestPhaseData));
         assert!(allowed.contains(&ActionKind::EquipItem));
         assert!(allowed.contains(&ActionKind::TransferUnit));
         assert!(allowed.contains(&ActionKind::MoveUnit));
+        assert!(allowed.contains(&ActionKind::MoveBenchUnit));
     }
 
     #[test]
@@ -118,12 +127,13 @@ mod tests {
         let state = GameState::SelectingEvent;
         let allowed = ActionScheduler::get_allowed_actions(&state);
 
-        assert_eq!(allowed.len(), 5);
+        assert_eq!(allowed.len(), 6);
         assert!(allowed.contains(&ActionKind::SelectEvent));
         assert!(allowed.contains(&ActionKind::StartSuppression));
         assert!(allowed.contains(&ActionKind::TransferUnit));
         assert!(allowed.contains(&ActionKind::EquipItem));
         assert!(allowed.contains(&ActionKind::MoveUnit));
+        assert!(allowed.contains(&ActionKind::MoveBenchUnit));
     }
 
     #[test]
@@ -149,6 +159,29 @@ mod tests {
     }
 
     #[test]
+    fn test_in_combat_reward_allows_reward_selection_and_claim() {
+        let state = GameState::InCombatReward {
+            reward_uuid: Uuid::nil(),
+        };
+        let allowed = ActionScheduler::get_allowed_actions(&state);
+
+        assert_eq!(allowed.len(), 2);
+        assert!(allowed.contains(&ActionKind::SelectEvent));
+        assert!(allowed.contains(&ActionKind::ClaimCombatReward));
+    }
+
+    #[test]
+    fn test_in_combat_reward_claimed_allows_only_exit_combat_reward() {
+        let state = GameState::InCombatRewardClaimed {
+            reward_uuid: Uuid::nil(),
+        };
+        let allowed = ActionScheduler::get_allowed_actions(&state);
+
+        assert_eq!(allowed.len(), 1);
+        assert!(allowed.contains(&ActionKind::ExitCombatReward));
+    }
+
+    #[test]
     fn test_in_battle_allows_nothing_for_now() {
         let state = GameState::InBattle {
             battle_uuid: Uuid::nil(),
@@ -167,18 +200,20 @@ mod tests {
 
         let state = GameState::WaitingPhaseRequest;
         let allowed = ActionScheduler::get_allowed_actions(&state);
-        assert_eq!(allowed.len(), 4);
+        assert_eq!(allowed.len(), 5);
         assert!(allowed.contains(&ActionKind::RequestPhaseData));
         assert!(allowed.contains(&ActionKind::EquipItem));
         assert!(allowed.contains(&ActionKind::TransferUnit));
         assert!(allowed.contains(&ActionKind::MoveUnit));
+        assert!(allowed.contains(&ActionKind::MoveBenchUnit));
 
         let state = GameState::SelectingEvent;
         let allowed = ActionScheduler::get_allowed_actions(&state);
-        assert_eq!(allowed.len(), 5);
+        assert_eq!(allowed.len(), 6);
         assert!(allowed.contains(&ActionKind::SelectEvent));
         assert!(allowed.contains(&ActionKind::StartSuppression));
         assert!(allowed.contains(&ActionKind::TransferUnit));
+        assert!(allowed.contains(&ActionKind::MoveBenchUnit));
 
         let state = GameState::InShop {
             shop_uuid: Uuid::nil(),
@@ -222,6 +257,12 @@ mod tests {
             GameState::InSuppressionReplay {
                 abnormality_uuid: Uuid::nil(),
             },
+            GameState::InCombatReward {
+                reward_uuid: Uuid::nil(),
+            },
+            GameState::InCombatRewardClaimed {
+                reward_uuid: Uuid::nil(),
+            },
             GameState::InBattle {
                 battle_uuid: Uuid::nil(),
             },
@@ -237,8 +278,8 @@ mod tests {
     fn test_action_counts_per_state() {
         let test_cases = vec![
             (GameState::NotStarted, 1),
-            (GameState::WaitingPhaseRequest, 4),
-            (GameState::SelectingEvent, 5),
+            (GameState::WaitingPhaseRequest, 5),
+            (GameState::SelectingEvent, 6),
             (
                 GameState::InShop {
                     shop_uuid: Uuid::nil(),
@@ -266,6 +307,18 @@ mod tests {
             (
                 GameState::InSuppressionReplay {
                     abnormality_uuid: Uuid::nil(),
+                },
+                1,
+            ),
+            (
+                GameState::InCombatReward {
+                    reward_uuid: Uuid::nil(),
+                },
+                2,
+            ),
+            (
+                GameState::InCombatRewardClaimed {
+                    reward_uuid: Uuid::nil(),
                 },
                 1,
             ),

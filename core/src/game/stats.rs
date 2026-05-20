@@ -2,7 +2,10 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::game::behavior::GameError;
+use crate::game::{
+    battle::damage::{DamageModifiers, DamageType},
+    behavior::GameError,
+};
 
 /// 트리거 타입
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -48,7 +51,13 @@ pub enum Effect {
     /// 스탯 변경
     Modifier(StatModifier),
     /// 추가 데미지 (현재 공격에)
-    BonusDamage { flat: i32, percent: i32 },
+    BonusDamage {
+        flat: i32,
+        percent: i32,
+        damage_type: DamageType,
+    },
+    /// 현재 피해 요청 전체에 적용되는 관통/증폭/감소 보정.
+    ModifyDamage(DamageModifiers),
     /// 체력 회복
     Heal { flat: i32, percent: i32 },
     /// 버프 적용
@@ -103,6 +112,8 @@ pub enum StatId {
     Attack,
     /// 기본 방어력
     Defense,
+    /// 마법 저항력
+    MagicResist,
     /// 공격 주기(ms). 작을수록 빠름.
     AttackIntervalMs,
     /// 이동 속도 (tile_units/ms)
@@ -137,8 +148,11 @@ pub struct UnitStats {
     pub current_health: u32,
     /// 기본 공격력
     pub attack: u32,
-    /// 기본 방어력 (감쇠 계수에 쓸 값)
-    pub defense: u32,
+    /// 기본 방어력 (감쇠 계수에 쓸 값). 음수면 받는 물리 피해가 증가한다.
+    pub defense: i32,
+    /// 마법 저항력. 음수면 받는 마법 피해가 증가한다.
+    #[serde(default)]
+    pub magic_resist: i32,
     /// 공격 주기(ms). 작을수록 빠름.
     pub attack_interval_ms: u64,
     /// 이동 속도 (tile_units/ms)
@@ -154,6 +168,7 @@ impl UnitStats {
             max_health: 0,
             attack: 0,
             defense: 0,
+            magic_resist: 0,
             attack_interval_ms: 0,
             current_health: 0,
             move_speed_units_per_ms: 0,
@@ -165,7 +180,7 @@ impl UnitStats {
         max_health: u32,
         current_health: u32,
         attack: u32,
-        defense: u32,
+        defense: i32,
         attack_interval_ms: u64,
     ) -> Self {
         let max_health = max_health.min(Self::MAX_HEALTH);
@@ -173,6 +188,7 @@ impl UnitStats {
             max_health,
             attack,
             defense,
+            magic_resist: 0,
             attack_interval_ms,
             current_health: current_health.min(max_health),
             // 테스트/기본 생성 경로는 기본적으로 이동 가능한 유닛을 만든다.
@@ -206,14 +222,14 @@ impl UnitStats {
         }
     }
 
-    /// 방어력에 델타를 더한다 (음수면 감소, 0 이하로 떨어지지 않도록 보정).
+    /// 방어력에 델타를 더한다. 방어력은 음수가 될 수 있다.
     pub fn add_defense(&mut self, delta: i32) {
-        if delta >= 0 {
-            self.defense = self.defense.saturating_add(delta as u32);
-        } else {
-            let dec = delta.unsigned_abs().min(self.defense);
-            self.defense = self.defense.saturating_sub(dec);
-        }
+        self.defense = self.defense.saturating_add(delta);
+    }
+
+    /// 마법 저항력에 델타를 더한다. 마법 저항력은 음수가 될 수 있다.
+    pub fn add_magic_resist(&mut self, delta: i32) {
+        self.magic_resist = self.magic_resist.saturating_add(delta);
     }
 
     /// 공격 주기(ms)에 델타를 더한다.
@@ -270,6 +286,15 @@ impl UnitStats {
                     let delta = base.saturating_mul(i64::from(modifier.value)) / 100;
                     let delta = delta.clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32;
                     self.add_defense(delta);
+                }
+            },
+            MagicResist => match modifier.kind {
+                StatModifierKind::Flat => self.add_magic_resist(modifier.value),
+                StatModifierKind::Percent => {
+                    let base = i64::from(self.magic_resist);
+                    let delta = base.saturating_mul(i64::from(modifier.value)) / 100;
+                    let delta = delta.clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32;
+                    self.add_magic_resist(delta);
                 }
             },
             AttackIntervalMs => match modifier.kind {
@@ -342,7 +367,7 @@ mod tests {
 
     #[test]
     fn unit_stats_percent_modifiers_do_not_wrap_on_large_values() {
-        let mut stats = UnitStats::with_values(u32::MAX, u32::MAX, u32::MAX, u32::MAX, 1);
+        let mut stats = UnitStats::with_values(u32::MAX, u32::MAX, u32::MAX, i32::MAX, 1);
         assert_eq!(stats.max_health, i32::MAX as u32);
         assert_eq!(stats.current_health, i32::MAX as u32);
 

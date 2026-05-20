@@ -19,7 +19,7 @@ pub enum PlacedUnitKind {
 pub struct StaticUnitPatch {
     pub max_health: Option<u32>,
     pub attack: Option<u32>,
-    pub defense: Option<u32>,
+    pub defense: Option<i32>,
     pub movement: Option<MovementDef>,
     pub basic_attack: Option<BasicAttackDef>,
     pub resonance: Option<ResonanceDef>,
@@ -142,7 +142,7 @@ impl UnitPatch {
 pub struct TestUnitOverrides {
     pub max_health: u32,
     pub attack: u32,
-    pub defense: u32,
+    pub defense: i32,
     pub movement: MovementDef,
     pub basic_attack: BasicAttackDef,
     pub resonance: ResonanceDef,
@@ -182,7 +182,7 @@ impl TestUnitOverrides {
         self
     }
 
-    pub fn with_defense(mut self, defense: u32) -> Self {
+    pub fn with_defense(mut self, defense: i32) -> Self {
         self.defense = defense;
         self
     }

@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use game_core::{ecs::resources::Position, game::enums::Side};
+use game_core::{game::enums::Side, game::resources::Position};
 
 use super::{
     damage_hp_changes_caused_by, hp_deltas, passive_dummy_patch, run_abnormality_scenario,

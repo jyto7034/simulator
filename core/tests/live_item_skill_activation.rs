@@ -35,6 +35,7 @@ fn test_abnormality(id: &str, uuid: Uuid, max_health: u32, attack: u32) -> Abnor
         max_health,
         attack,
         defense: 0,
+        magic_resist: 0,
         movement: Default::default(),
         basic_attack: Default::default(),
         resonance: Default::default(),

@@ -7,8 +7,8 @@ use crate::game::{
     battle::{
         core::{
             commands::projectile_flight_ms_for_delivery,
-            movement::types::{WorldVec2, LEGACY_POSITION_UNITS_PER_WORLD},
-            spatial::{legacy_units_to_world, DEFAULT_UNIT_HITBOX_RADIUS_UNITS},
+            movement::types::{WorldVec2, DATA_UNITS_PER_WORLD},
+            spatial::{data_units_to_world, moving_circle_sweep_hit_fraction},
             types::{ActiveProjectileRuntime, ProjectileGuidance, SkillImpactContext},
             BattleCore,
         },
@@ -59,7 +59,7 @@ fn sample_projectile_position_at(
 }
 
 fn projectile_travel_ms(start: WorldVec2, aim: WorldVec2, speed_units_per_ms: u32) -> u64 {
-    let distance_units = (start.distance(aim) * LEGACY_POSITION_UNITS_PER_WORLD).ceil() as u64;
+    let distance_units = (start.distance(aim) * DATA_UNITS_PER_WORLD).ceil() as u64;
     projectile_flight_ms_for_delivery(distance_units, speed_units_per_ms)
 }
 
@@ -216,8 +216,31 @@ impl BattleCore {
                     false,
                 )
         });
-        let Some(target_body) = target_alive
-            .then(|| self.unit_body_view(target_unit_id))
+        let from_time_ms = runtime
+            .last_reevaluation_ms
+            .unwrap_or(runtime.spawned_at_ms);
+        let Some(target_body_start) = target_alive
+            .then(|| self.sample_unit_body_at(target_unit_id, from_time_ms))
+            .flatten()
+        else {
+            self.enqueue_skill_projectile_impact(
+                reevaluation_time_ms,
+                runtime.delivery_id,
+                runtime.cast_seq,
+                runtime.step_index,
+                runtime.skill_id,
+                runtime.step_id,
+                runtime.caster_instance_id,
+                runtime.current_position,
+                None,
+                runtime.impact_vfx_id,
+                true,
+                runtime.cause,
+            );
+            return;
+        };
+        let Some(target_body_end) = target_alive
+            .then(|| self.sample_unit_body_at(target_unit_id, reevaluation_time_ms))
             .flatten()
         else {
             self.enqueue_skill_projectile_impact(
@@ -237,15 +260,11 @@ impl BattleCore {
             return;
         };
 
-        let from_time_ms = runtime
-            .last_reevaluation_ms
-            .unwrap_or(runtime.spawned_at_ms);
         let window_duration_ms = reevaluation_time_ms.saturating_sub(from_time_ms);
-        let aim = target_body.position;
+        let aim = target_body_end.position;
         let direction = aim - runtime.current_position;
         let distance = direction.length();
-        let speed_world_per_ms =
-            runtime.speed_units_per_ms as f32 / LEGACY_POSITION_UNITS_PER_WORLD;
+        let speed_world_per_ms = runtime.speed_units_per_ms as f32 / DATA_UNITS_PER_WORLD;
         let max_step = speed_world_per_ms * window_duration_ms as f32;
         let next_position = if distance <= f32::EPSILON
             || runtime.speed_units_per_ms == 0
@@ -255,14 +274,18 @@ impl BattleCore {
         } else {
             runtime.current_position + direction * (max_step / distance)
         };
-        let reach =
-            legacy_units_to_world(i64::from(runtime.collision.radius_units)) + target_body.radius;
+        let reach = data_units_to_world(i64::from(runtime.collision.radius_units))
+            + target_body_start
+                .radius
+                .max(target_body_end.radius)
+                .max(0.0);
 
-        if let Some(hit_fraction) = self.spatial_query_backend.projectile_sweep_hit_fraction(
+        if let Some(hit_fraction) = moving_circle_sweep_hit_fraction(
             runtime.current_position,
             next_position,
             reach,
-            target_body.position,
+            target_body_start.position,
+            target_body_end.position,
         ) {
             let elapsed_delta = ((window_duration_ms as f32) * hit_fraction).ceil() as u64;
             let impact_time_ms = from_time_ms.saturating_add(elapsed_delta.min(window_duration_ms));
@@ -341,8 +364,7 @@ impl BattleCore {
             return Vec::new();
         }
 
-        let reach = legacy_units_to_world(i64::from(runtime.collision.radius_units))
-            + legacy_units_to_world(DEFAULT_UNIT_HITBOX_RADIUS_UNITS);
+        let projectile_radius = data_units_to_world(i64::from(runtime.collision.radius_units));
         let piercing = Self::skill_projectile_pierces(runtime.collision);
         let max_hits = Self::skill_projectile_hit_limit(runtime.collision);
         let mut seen_hits: HashSet<UnitInstanceId> = runtime.hit_unit_ids.iter().copied().collect();
@@ -375,15 +397,25 @@ impl BattleCore {
                 ) && !seen_hits.contains(&unit.instance_id)
             })
             .filter_map(|unit| {
-                let target_pos = self.sample_unit_world_position_at(
+                let target_body_start = self.sample_unit_body_at(
+                    unit.instance_id,
+                    runtime.spawned_at_ms.saturating_add(from_elapsed_ms),
+                )?;
+                let target_body_end = self.sample_unit_body_at(
                     unit.instance_id,
                     runtime.spawned_at_ms.saturating_add(to_elapsed_ms),
                 )?;
-                let hit_fraction = self.spatial_query_backend.projectile_sweep_hit_fraction(
+                let reach = projectile_radius
+                    + target_body_start
+                        .radius
+                        .max(target_body_end.radius)
+                        .max(0.0);
+                let hit_fraction = moving_circle_sweep_hit_fraction(
                     window_start,
                     window_end,
                     reach,
-                    target_pos,
+                    target_body_start.position,
+                    target_body_end.position,
                 )?;
                 let elapsed_delta = ((window_duration_ms as f32) * hit_fraction).ceil() as u64;
                 let hit_elapsed_ms =
@@ -391,6 +423,11 @@ impl BattleCore {
                 let projectile_pos = projectile_impact_position_at_hit_fraction(
                     window_start,
                     window_end,
+                    hit_fraction,
+                );
+                let target_pos = projectile_impact_position_at_hit_fraction(
+                    target_body_start.position,
+                    target_body_end.position,
                     hit_fraction,
                 );
                 Some((
@@ -644,8 +681,7 @@ impl BattleCore {
             };
             let travel_time_ms = match guidance {
                 ProjectileGuidance::Homing => Some(projectile_flight_ms_for_delivery(
-                    (caster_origin.distance(target_aim) * LEGACY_POSITION_UNITS_PER_WORLD).ceil()
-                        as u64,
+                    (caster_origin.distance(target_aim) * DATA_UNITS_PER_WORLD).ceil() as u64,
                     speed_units_per_ms,
                 )),
                 ProjectileGuidance::Fixed => None,

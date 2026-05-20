@@ -21,8 +21,9 @@ pub(in crate::game::battle::core) struct SampledMotionSegment {
     sampled_at_ms: u64,
     pos_x_units: i64,
     pos_y_units: i64,
-    vel_x_units_per_ms: i64,
-    vel_y_units_per_ms: i64,
+    target_x_units: i64,
+    target_y_units: i64,
+    speed_units_per_ms: u32,
     moving_until_ms: Option<u64>,
 }
 
@@ -33,13 +34,16 @@ impl SampledMotionSegment {
     ) -> super::ContinuousPosition {
         let moving_until_ms = self.moving_until_ms.unwrap_or(time_ms);
         let effective_time_ms = time_ms.min(moving_until_ms);
-        let dt_ms = effective_time_ms.saturating_sub(self.sampled_at_ms) as i64;
-        super::ContinuousPosition::new(
-            self.pos_x_units
-                .saturating_add(self.vel_x_units_per_ms.saturating_mul(dt_ms)),
-            self.pos_y_units
-                .saturating_add(self.vel_y_units_per_ms.saturating_mul(dt_ms)),
-        )
+        let dt_ms = effective_time_ms.saturating_sub(self.sampled_at_ms);
+        let (x_units, y_units) = BattleCore::advance_toward_target_by_dt(
+            self.pos_x_units,
+            self.pos_y_units,
+            self.target_x_units,
+            self.target_y_units,
+            self.speed_units_per_ms,
+            dt_ms,
+        );
+        super::ContinuousPosition::new(x_units, y_units)
     }
 }
 
@@ -195,17 +199,17 @@ impl BattleCore {
         }
 
         let elapsed = now_ms - last;
-        let speed = speed_units_per_ms as i64;
-        let cap = speed.saturating_mul(elapsed as i64);
+        let (next_x, next_y) = Self::advance_toward_target_by_dt(
+            unit.pos_x_units,
+            unit.pos_y_units,
+            state.target_x_units,
+            state.target_y_units,
+            speed_units_per_ms,
+            elapsed,
+        );
 
-        let dx = state.target_x_units.saturating_sub(unit.pos_x_units);
-        let dy = state.target_y_units.saturating_sub(unit.pos_y_units);
-
-        let step_x = if dx >= 0 { dx.min(cap) } else { dx.max(-cap) };
-        let step_y = if dy >= 0 { dy.min(cap) } else { dy.max(-cap) };
-
-        unit.pos_x_units = unit.pos_x_units.saturating_add(step_x);
-        unit.pos_y_units = unit.pos_y_units.saturating_add(step_y);
+        unit.pos_x_units = next_x;
+        unit.pos_y_units = next_y;
         state.last_update_ms = now_ms;
     }
 
@@ -216,11 +220,14 @@ impl BattleCore {
         target_y_units: i64,
         speed_units_per_ms: u32,
     ) -> u64 {
-        let speed_units_per_ms = speed_units_per_ms.max(1) as u64;
-        let dist_x = (target_x_units - pos_x_units).unsigned_abs();
-        let dist_y = (target_y_units - pos_y_units).unsigned_abs();
-        let dist_units = dist_x.max(dist_y);
-        dist_units.div_ceil(speed_units_per_ms).max(1)
+        let speed_units_per_ms = speed_units_per_ms.max(1) as f64;
+        let distance_units = Self::euclidean_distance_units(
+            pos_x_units,
+            pos_y_units,
+            target_x_units,
+            target_y_units,
+        );
+        ((distance_units / speed_units_per_ms).ceil() as u64).max(1)
     }
 
     pub(in crate::game::battle::core) fn sample_motion_segment_at(
@@ -234,20 +241,17 @@ impl BattleCore {
 
         match &unit.action_state {
             ActionState::Moving(state) => {
-                let speed_units_per_ms = unit.stats.move_speed_units_per_ms.max(1) as i64;
+                let speed_units_per_ms = unit.stats.move_speed_units_per_ms.max(1);
                 let elapsed = now_ms.saturating_sub(state.last_update_ms);
-                let cap = speed_units_per_ms.saturating_mul(elapsed as i64);
+                (pos_x_units, pos_y_units) = Self::advance_toward_target_by_dt(
+                    pos_x_units,
+                    pos_y_units,
+                    state.target_x_units,
+                    state.target_y_units,
+                    speed_units_per_ms,
+                    elapsed,
+                );
 
-                let dx = state.target_x_units.saturating_sub(pos_x_units);
-                let dy = state.target_y_units.saturating_sub(pos_y_units);
-                let step_x = if dx >= 0 { dx.min(cap) } else { dx.max(-cap) };
-                let step_y = if dy >= 0 { dy.min(cap) } else { dy.max(-cap) };
-
-                pos_x_units = pos_x_units.saturating_add(step_x);
-                pos_y_units = pos_y_units.saturating_add(step_y);
-
-                let remaining_dx = state.target_x_units.saturating_sub(pos_x_units);
-                let remaining_dy = state.target_y_units.saturating_sub(pos_y_units);
                 let boundary_until_ms = now_ms.saturating_add(Self::time_to_reach_target_ms(
                     pos_x_units,
                     pos_y_units,
@@ -260,8 +264,9 @@ impl BattleCore {
                     sampled_at_ms: now_ms,
                     pos_x_units,
                     pos_y_units,
-                    vel_x_units_per_ms: remaining_dx.signum().saturating_mul(speed_units_per_ms),
-                    vel_y_units_per_ms: remaining_dy.signum().saturating_mul(speed_units_per_ms),
+                    target_x_units: state.target_x_units,
+                    target_y_units: state.target_y_units,
+                    speed_units_per_ms,
                     moving_until_ms: Some(
                         if state.step_end_kind == MovementSegmentEndKind::RangeEnter {
                             state.step_ends_at_ms.max(now_ms).min(boundary_until_ms)
@@ -275,46 +280,27 @@ impl BattleCore {
                 sampled_at_ms: now_ms,
                 pos_x_units,
                 pos_y_units,
-                vel_x_units_per_ms: 0,
-                vel_y_units_per_ms: 0,
+                target_x_units: pos_x_units,
+                target_y_units: pos_y_units,
+                speed_units_per_ms: 0,
                 moving_until_ms: None,
             }),
         }
     }
 
     fn distance_minus_reach_sq_at(
-        dx0: i64,
-        dy0: i64,
-        dvx: i64,
-        dvy: i64,
+        attacker: SampledMotionSegment,
+        target: SampledMotionSegment,
         reach_units: i64,
         t_ms: u64,
     ) -> i128 {
-        let t = i128::from(t_ms);
-        let dx = i128::from(dx0) + i128::from(dvx) * t;
-        let dy = i128::from(dy0) + i128::from(dvy) * t;
+        let sample_time_ms = attacker.sampled_at_ms.saturating_add(t_ms);
+        let attacker_pos = attacker.position_at(sample_time_ms);
+        let target_pos = target.position_at(sample_time_ms);
+        let dx = i128::from(attacker_pos.x_units) - i128::from(target_pos.x_units);
+        let dy = i128::from(attacker_pos.y_units) - i128::from(target_pos.y_units);
         let reach = i128::from(reach_units.unsigned_abs());
         dx * dx + dy * dy - reach * reach
-    }
-
-    fn div_floor_i128(lhs: i128, rhs: i128) -> i128 {
-        let q = lhs / rhs;
-        let r = lhs % rhs;
-        if r != 0 && ((r > 0) != (rhs > 0)) {
-            q - 1
-        } else {
-            q
-        }
-    }
-
-    fn div_ceil_i128(lhs: i128, rhs: i128) -> i128 {
-        let q = lhs / rhs;
-        let r = lhs % rhs;
-        if r != 0 && ((r > 0) == (rhs > 0)) {
-            q + 1
-        } else {
-            q
-        }
     }
 
     fn earliest_range_enter_dt_ms(
@@ -327,38 +313,33 @@ impl BattleCore {
             return None;
         }
 
-        let dx0 = attacker.pos_x_units.saturating_sub(target.pos_x_units);
-        let dy0 = attacker.pos_y_units.saturating_sub(target.pos_y_units);
-        let dvx = attacker
-            .vel_x_units_per_ms
-            .saturating_sub(target.vel_x_units_per_ms);
-        let dvy = attacker
-            .vel_y_units_per_ms
-            .saturating_sub(target.vel_y_units_per_ms);
-
-        if Self::distance_minus_reach_sq_at(dx0, dy0, dvx, dvy, reach_units, 0) <= 0 {
+        if Self::distance_minus_reach_sq_at(attacker, target, reach_units, 0) <= 0 {
             return Some(0);
         }
 
-        let a = i128::from(dvx) * i128::from(dvx) + i128::from(dvy) * i128::from(dvy);
-        if a == 0 {
-            return None;
+        let mut search_low = 0_u64;
+        let mut search_high = max_dt_ms;
+        while search_high.saturating_sub(search_low) > 3 {
+            let third = (search_high - search_low) / 3;
+            let mid_left = search_low + third;
+            let mid_right = search_high - third;
+            let left_value =
+                Self::distance_minus_reach_sq_at(attacker, target, reach_units, mid_left);
+            let right_value =
+                Self::distance_minus_reach_sq_at(attacker, target, reach_units, mid_right);
+            if left_value <= right_value {
+                search_high = mid_right;
+            } else {
+                search_low = mid_left;
+            }
         }
-
-        let b = 2 * (i128::from(dx0) * i128::from(dvx) + i128::from(dy0) * i128::from(dvy));
-
-        let vertex_denom = 2 * a;
-        let max_dt_i128 = i128::from(max_dt_ms);
-        let mut candidates = [0_i128, max_dt_i128, 0_i128, 0_i128];
-        candidates[2] = Self::div_floor_i128(-b, vertex_denom).clamp(0, max_dt_i128);
-        candidates[3] = Self::div_ceil_i128(-b, vertex_denom).clamp(0, max_dt_i128);
 
         let mut min_t = 0_u64;
         let mut min_value = i128::MAX;
-        for candidate in candidates {
-            let t_ms = candidate as u64;
-            let value = Self::distance_minus_reach_sq_at(dx0, dy0, dvx, dvy, reach_units, t_ms);
-            if value < min_value || (value == min_value && t_ms < min_t) {
+        for t_ms in search_low..=search_high {
+            let value = Self::distance_minus_reach_sq_at(attacker, target, reach_units, t_ms);
+            if value < min_value || (value == min_value && (min_value == i128::MAX || t_ms < min_t))
+            {
                 min_value = value;
                 min_t = t_ms;
             }
@@ -372,7 +353,7 @@ impl BattleCore {
         let mut high = min_t.max(1);
         while low < high {
             let mid = low + (high - low) / 2;
-            if Self::distance_minus_reach_sq_at(dx0, dy0, dvx, dvy, reach_units, mid) <= 0 {
+            if Self::distance_minus_reach_sq_at(attacker, target, reach_units, mid) <= 0 {
                 high = mid;
             } else {
                 low = mid + 1;
@@ -428,16 +409,41 @@ impl BattleCore {
         speed_units_per_ms: u32,
         dt_ms: u64,
     ) -> (i64, i64) {
-        let cap = (speed_units_per_ms.max(1) as i64).saturating_mul(dt_ms as i64);
         let dx = target_x_units.saturating_sub(start_x_units);
         let dy = target_y_units.saturating_sub(start_y_units);
-        let step_x = if dx >= 0 { dx.min(cap) } else { dx.max(-cap) };
-        let step_y = if dy >= 0 { dy.min(cap) } else { dy.max(-cap) };
+        if dx == 0 && dy == 0 {
+            return (target_x_units, target_y_units);
+        }
+
+        let travel_units = speed_units_per_ms.max(1) as f64 * dt_ms as f64;
+        let distance_units = Self::euclidean_distance_from_delta(dx, dy);
+        if travel_units >= distance_units {
+            return (target_x_units, target_y_units);
+        }
+
+        let alpha = travel_units / distance_units;
+        let step_x = ((dx as f64) * alpha).round() as i64;
+        let step_y = ((dy as f64) * alpha).round() as i64;
 
         (
             start_x_units.saturating_add(step_x),
             start_y_units.saturating_add(step_y),
         )
+    }
+
+    fn euclidean_distance_units(
+        start_x_units: i64,
+        start_y_units: i64,
+        target_x_units: i64,
+        target_y_units: i64,
+    ) -> f64 {
+        let dx = target_x_units.saturating_sub(start_x_units);
+        let dy = target_y_units.saturating_sub(start_y_units);
+        Self::euclidean_distance_from_delta(dx, dy)
+    }
+
+    fn euclidean_distance_from_delta(dx: i64, dy: i64) -> f64 {
+        ((dx as f64) * (dx as f64) + (dy as f64) * (dy as f64)).sqrt()
     }
 
     pub(in crate::game::battle::core) fn schedule_current_move_step(
@@ -1396,10 +1402,14 @@ mod tests {
     }
 
     #[test]
-    fn time_to_reach_target_ms_uses_chebyshev_distance_and_ceil_division() {
-        // dist=max(|dx|,|dy|)=11, speed=10 -> ceil(11/10)=2
+    fn time_to_reach_target_ms_uses_euclidean_distance_and_ceil_division() {
+        // dist=sqrt(11^2+1^2)=~11.05, speed=10 -> ceil(1.105)=2
         let dt = BattleCore::time_to_reach_target_ms(0, 0, 11, -1, 10);
         assert_eq!(dt, 2);
+
+        // Diagonal movement covers real distance, not max-axis distance.
+        let dt = BattleCore::time_to_reach_target_ms(0, 0, 30, 40, 10);
+        assert_eq!(dt, 5);
 
         // Even when already at target, it returns at least 1ms to avoid "zero time" loops.
         let dt = BattleCore::time_to_reach_target_ms(5, 5, 5, 5, 10);
@@ -1458,6 +1468,104 @@ mod tests {
         core.update_move_position_to(unit_id, 110);
         let unit = core.units.get(&unit_id).unwrap();
         assert_eq!(unit.pos_x_units, 100);
+    }
+
+    #[test]
+    fn update_move_position_to_keeps_diagonal_speed_equal_to_straight_speed() {
+        let mut core = new_core();
+
+        let unit_id: UnitInstanceId = Uuid::from_u128(11).into();
+        let mut stats = UnitStats::with_values(10, 10, 1, 0, 1);
+        stats.move_speed_units_per_ms = 10;
+
+        let mut movement = MovementState::new_at(Position::new(0, 0), 100);
+        movement.target_x_units = 60;
+        movement.target_y_units = 80;
+        movement.last_update_ms = 100;
+
+        core.units.insert(
+            unit_id,
+            RuntimeUnit {
+                instance_id: unit_id,
+                owner: Side::Player,
+                base_uuid: Uuid::nil(),
+                stats,
+                pos_x_units: 0,
+                pos_y_units: 0,
+                move_epoch: 0,
+                action_state: ActionState::Moving(movement),
+                action_locks: Default::default(),
+                current_target: None,
+                next_basic_attack_ms: 0,
+                pending_basic_attack: false,
+                resonance_current: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 0,
+                next_action_time: 0,
+                pending_cast: false,
+                pending_cast_cause: None,
+                pending_skill_cast: None,
+            },
+        );
+
+        core.update_move_position_to(unit_id, 105);
+        let unit = core.units.get(&unit_id).unwrap();
+        assert_eq!(unit.pos_x_units, 30);
+        assert_eq!(unit.pos_y_units, 40);
+
+        core.update_move_position_to(unit_id, 110);
+        let unit = core.units.get(&unit_id).unwrap();
+        assert_eq!(unit.pos_x_units, 60);
+        assert_eq!(unit.pos_y_units, 80);
+    }
+
+    #[test]
+    fn sampled_motion_segment_uses_same_normalized_diagonal_speed_as_movement_update() {
+        let mut core = new_core();
+
+        let unit_id: UnitInstanceId = Uuid::from_u128(13).into();
+        let mut stats = UnitStats::with_values(10, 10, 1, 0, 1);
+        stats.move_speed_units_per_ms = 1;
+
+        let mut movement = MovementState::new_at(Position::new(0, 0), 100);
+        movement.target_x_units = 3_000;
+        movement.target_y_units = 4_000;
+        movement.last_update_ms = 100;
+
+        core.units.insert(
+            unit_id,
+            RuntimeUnit {
+                instance_id: unit_id,
+                owner: Side::Player,
+                base_uuid: Uuid::nil(),
+                stats,
+                pos_x_units: 0,
+                pos_y_units: 0,
+                move_epoch: 0,
+                action_state: ActionState::Moving(movement),
+                action_locks: Default::default(),
+                current_target: None,
+                next_basic_attack_ms: 0,
+                pending_basic_attack: false,
+                resonance_current: 0,
+                resonance_max: 100,
+                resonance_lock_ms: 0,
+                next_action_time: 0,
+                pending_cast: false,
+                pending_cast_cause: None,
+                pending_skill_cast: None,
+            },
+        );
+
+        let sampled = core.sample_motion_segment_at(unit_id, 100).unwrap();
+        let predicted = sampled.position_at(1_100);
+        core.update_move_position_to(unit_id, 1_100);
+        let actual = core.units.get(&unit_id).unwrap();
+
+        assert_eq!(predicted.x_units, 600);
+        assert_eq!(predicted.y_units, 800);
+        assert_eq!(actual.pos_x_units, predicted.x_units);
+        assert_eq!(actual.pos_y_units, predicted.y_units);
     }
 
     #[test]

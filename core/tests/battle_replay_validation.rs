@@ -102,6 +102,7 @@ fn run_poison_autocast_scenario(spec: PoisonAutocastScenario) -> PoisonAutocastR
         max_health: 9999,
         attack: 1,
         defense: 9999,
+        magic_resist: 0,
         movement: Default::default(),
         basic_attack: BasicAttackDef {
             range_tiles: 1,
@@ -126,6 +127,7 @@ fn run_poison_autocast_scenario(spec: PoisonAutocastScenario) -> PoisonAutocastR
         max_health: spec.target_max_health,
         attack: 1,
         defense: 9999,
+        magic_resist: 0,
         movement: Default::default(),
         basic_attack: BasicAttackDef {
             range_tiles: 1,
@@ -250,6 +252,7 @@ fn on_battle_start_triggered_ability_is_replayable_and_parented_via_proc_event()
         max_health: 100,
         attack: 10,
         defense: 0,
+        magic_resist: 0,
         movement: Default::default(),
         basic_attack: BasicAttackDef::default(),
         resonance: ResonanceDef::default(),
@@ -264,6 +267,7 @@ fn on_battle_start_triggered_ability_is_replayable_and_parented_via_proc_event()
         max_health: 100,
         attack: 1,
         defense: 0,
+        magic_resist: 0,
         movement: Default::default(),
         basic_attack: BasicAttackDef::default(),
         resonance: ResonanceDef::default(),
@@ -312,7 +316,10 @@ fn on_battle_start_triggered_ability_is_replayable_and_parented_via_proc_event()
             when: Default::default(),
             repeat: Default::default(),
             delivery: DeliveryDef::Instant,
-            effects: vec![SkillEffectDef::Damage { amount: 7 }],
+            effects: vec![SkillEffectDef::Damage {
+                amount: 7,
+                damage_type: game_core::game::battle::damage::DamageType::Magic,
+            }],
             presentation: SkillPresentationDef::default(),
         }],
     }]);

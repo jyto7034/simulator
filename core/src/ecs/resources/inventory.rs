@@ -3,12 +3,14 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, sync::Arc};
 use uuid::Uuid;
 
-use crate::ecs::resources::item_slot::ItemSlot;
+use crate::ecs::resources::item_slot::{EquippedRef, ItemSlot};
 use crate::game::{
     behavior::GameError,
     data::{
-        abnormality_data::AbnormalityMetadata, artifact_data::ArtifactItem,
-        equipment_data::{EquipmentItem, EquipmentType}, Item,
+        abnormality_data::AbnormalityMetadata,
+        artifact_data::ArtifactItem,
+        equipment_data::{EquipmentItem, EquipmentType},
+        Item,
     },
     enums::RiskLevel,
     growth::GrowthStack,
@@ -28,7 +30,7 @@ pub enum InventoryMetadata {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EquipmentItemDto {
     pub uuid: Uuid,
-    pub id: String,
+    pub definition_id: String,
     pub name: String,
     pub rarity: RiskLevel,
     pub equipment_type: EquipmentType,
@@ -39,7 +41,7 @@ impl EquipmentItemDto {
     pub fn from_owned(instance_uuid: Uuid, meta: &EquipmentItem) -> Self {
         Self {
             uuid: instance_uuid,
-            id: meta.id.clone(),
+            definition_id: meta.id.clone(),
             name: meta.name.clone(),
             rarity: meta.rarity,
             equipment_type: meta.equipment_type,
@@ -51,20 +53,28 @@ impl EquipmentItemDto {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AbnormalityItemDto {
     pub uuid: Uuid,
+    pub base_uuid: Uuid,
     pub id: String,
     pub name: String,
     pub risk_level: RiskLevel,
     pub price: u32,
+    pub max_health: u32,
+    pub resonance_start: u32,
+    pub resonance_max: u32,
 }
 
 impl AbnormalityItemDto {
     pub fn from_owned(instance_uuid: Uuid, meta: &AbnormalityMetadata) -> Self {
         Self {
             uuid: instance_uuid,
+            base_uuid: meta.uuid,
             id: meta.id.clone(),
             name: meta.name.clone(),
             risk_level: meta.risk_level,
             price: meta.price,
+            max_health: meta.max_health,
+            resonance_start: meta.resonance.start,
+            resonance_max: meta.resonance.max,
         }
     }
 }
@@ -72,7 +82,7 @@ impl AbnormalityItemDto {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ArtifactItemDto {
     pub uuid: Uuid,
-    pub id: String,
+    pub definition_id: String,
     pub name: String,
     pub description: String,
     pub rarity: RiskLevel,
@@ -83,7 +93,7 @@ impl ArtifactItemDto {
     pub fn from_metadata(meta: &ArtifactItem) -> Self {
         Self {
             uuid: meta.uuid,
-            id: meta.id.clone(),
+            definition_id: meta.id.clone(),
             name: meta.name.clone(),
             description: meta.description.clone(),
             rarity: meta.rarity,
@@ -128,6 +138,44 @@ pub struct InventoryDiffDto {
     pub added: Vec<InventoryItemDto>,
     pub updated: Vec<InventoryItemDto>,
     pub removed: Vec<Uuid>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct EquippedItemDto {
+    pub instance_uuid: Uuid,
+    pub base_uuid: Uuid,
+    pub equipment_type: EquipmentType,
+}
+
+impl EquippedItemDto {
+    pub fn from_equipped_ref(equipped: &EquippedRef) -> Self {
+        Self {
+            instance_uuid: equipped.instance_uuid,
+            base_uuid: equipped.base_uuid,
+            equipment_type: equipped.equipment_type,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum EquipItemOutcomeDto {
+    Equipped {
+        item_uuid: Uuid,
+    },
+    Combined {
+        ingredient_item_uuids: Vec<Uuid>,
+        result_item_uuid: Uuid,
+        result_base_uuid: Uuid,
+    },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EquipItemResultDto {
+    pub requested_item_uuid: Uuid,
+    pub target_unit: Uuid,
+    pub outcome: EquipItemOutcomeDto,
+    pub equipped_items: Vec<EquippedItemDto>,
+    pub inventory_diff: InventoryDiffDto,
 }
 
 /// 인벤토리 시스템 (3가지 독립된 보관소)
@@ -620,6 +668,7 @@ mod tests {
             max_health: 10,
             attack: 2,
             defense: 1,
+            magic_resist: 0,
             movement: MovementDef::default(),
             basic_attack: BasicAttackDef::default(),
             resonance: ResonanceDef::default(),

@@ -1,27 +1,24 @@
 mod common;
 
-use std::collections::HashMap;
 use std::sync::Arc;
 
-use bevy_ecs::world::World;
-use game_core::ecs::resources::Position;
 use game_core::game::ability::AbilityActivationDef;
 use game_core::game::battle::core::BattleCore;
 use game_core::game::battle::ids::UnitInstanceId;
+use game_core::game::battle::scenario::{
+    BattleFieldSpec, BattleScenario, ScenarioAction, ScenarioArtifact, ScenarioEvent,
+    ScenarioEventId, ScenarioGroupId, ScenarioSpawnGroup, ScenarioTrigger, ScenarioUnitRef,
+    ScenarioUnitSpawn, WinCondition,
+};
 use game_core::game::battle::timeline::{Timeline, TimelineEntry, TimelineEvent};
-use game_core::game::battle::types::{OwnedArtifact, OwnedUnit, PlayerDeckInfo};
+use game_core::game::battle::types::{BattleUnitDraft, BattleUnitSource};
 use game_core::game::data::{
-    abnormality_data::{AbnormalityDatabase, AbnormalityMetadata},
-    artifact_data::ArtifactDatabase,
-    bonus_data::BonusDatabase,
-    equipment_data::EquipmentDatabase,
-    pve_data::PveEncounterDatabase,
-    random_event_data::RandomEventDatabase,
-    shop_data::ShopDatabase,
-    GameDataBase, GameDataBaseParts,
+    abnormality_data::AbnormalityMetadata, artifact_data::ArtifactDatabase,
+    equipment_data::EquipmentDatabase, GameDataBase, GameDataBuilder,
 };
 use game_core::game::enums::{RiskLevel, Side, Tier};
 use game_core::game::growth::GrowthStack;
+use game_core::game::resources::Position;
 use game_core::game::stats::{StatId, StatModifierKind};
 use uuid::Uuid;
 
@@ -43,28 +40,110 @@ fn test_abnormality(id: &str, uuid: Uuid, max_health: u32, attack: u32) -> Abnor
     }
 }
 
-fn deck_with_loadout(
+fn unit_draft(owned_uuid: Uuid, base_uuid: Uuid, equipped_items: Vec<Uuid>) -> BattleUnitDraft {
+    BattleUnitDraft {
+        owned_uuid,
+        source: BattleUnitSource::Abnormality { base_uuid },
+        level: Tier::I,
+        growth_stacks: GrowthStack::new(),
+        equipped_items,
+        equipped_item_enhancements: vec![],
+    }
+}
+
+fn spawn_group(
+    id: &str,
+    side: Side,
+    required_for_victory: bool,
+    units: Vec<(Uuid, Uuid, Position, Vec<Uuid>)>,
+) -> ScenarioSpawnGroup {
+    let group_id = ScenarioGroupId::new(id);
+    let spawns = units
+        .into_iter()
+        .enumerate()
+        .map(
+            |(index, (owned_uuid, base_uuid, position, equipped_items))| ScenarioUnitSpawn {
+                unit_ref: ScenarioUnitRef::new(format!("{}_{}", group_id.0, index)),
+                side,
+                draft: unit_draft(owned_uuid, base_uuid, equipped_items),
+                position,
+                instance_salt: index as u32,
+            },
+        )
+        .collect();
+
+    ScenarioSpawnGroup {
+        id: group_id,
+        side,
+        required_for_victory,
+        spawns,
+    }
+}
+
+fn scenario_with_loadout(
     owned_uuid: Uuid,
     base_uuid: Uuid,
     pos: Position,
     equipped_items: Vec<Uuid>,
     artifacts: Vec<Uuid>,
-) -> PlayerDeckInfo {
-    let mut positions = HashMap::new();
-    positions.insert(owned_uuid, pos);
-    PlayerDeckInfo {
-        units: vec![OwnedUnit {
-            owned_uuid,
-            base_uuid,
-            level: Tier::I,
-            growth_stacks: GrowthStack::new(),
-            equipped_items,
-        }],
+) -> BattleScenario {
+    let player_group_id = "player_initial";
+    let enemy_group_id = "enemy_initial";
+    BattleScenario {
+        battlefield: BattleFieldSpec {
+            width: common::BOARD_SIZE.0,
+            height: common::BOARD_SIZE.1,
+            valid_tiles: Vec::new(),
+            obstacles: Vec::new(),
+        },
         artifacts: artifacts
             .into_iter()
-            .map(|base_uuid| OwnedArtifact { base_uuid })
+            .enumerate()
+            .map(|(index, base_uuid)| ScenarioArtifact {
+                side: Side::Player,
+                base_uuid,
+                instance_salt: index as u32,
+            })
             .collect(),
-        positions,
+        groups: vec![
+            spawn_group(
+                player_group_id,
+                Side::Player,
+                false,
+                vec![(owned_uuid, base_uuid, pos, equipped_items)],
+            ),
+            spawn_group(
+                enemy_group_id,
+                Side::Opponent,
+                true,
+                vec![(
+                    Uuid::from_u128(0xAC02),
+                    Uuid::from_u128(0xAB02),
+                    Position::new(1, 0),
+                    vec![],
+                )],
+            ),
+        ],
+        events: vec![
+            ScenarioEvent {
+                id: ScenarioEventId::new("spawn_player_initial"),
+                trigger: ScenarioTrigger::AtBattleStart,
+                action: ScenarioAction::SpawnGroup {
+                    group_id: ScenarioGroupId::new(player_group_id),
+                },
+                once: true,
+            },
+            ScenarioEvent {
+                id: ScenarioEventId::new("spawn_enemy_initial"),
+                trigger: ScenarioTrigger::AtBattleStart,
+                action: ScenarioAction::SpawnGroup {
+                    group_id: ScenarioGroupId::new(enemy_group_id),
+                },
+                once: true,
+            },
+        ],
+        win_condition: WinCondition::AllRequiredEnemyGroupsDefeated,
+        tactical_plan: game_core::game::battle::scenario::TacticalPlan::default(),
     }
 }
 
@@ -107,17 +186,12 @@ fn game_data_for_live_item_skill_tests(force_proc_item_ids: &[&str]) -> Arc<Game
         .cloned()
         .collect::<Vec<_>>();
 
-    Arc::new(GameDataBase::new(GameDataBaseParts {
-        abnormality_data: Arc::new(AbnormalityDatabase::new(vec![attacker, target])),
-        artifact_data: Arc::new(ArtifactDatabase::new(artifacts)),
-        equipment_data: Arc::new(EquipmentDatabase::new(equipments)),
-        shop_data: Arc::new(ShopDatabase::new(vec![])),
-        bonus_data: Arc::new(BonusDatabase::new(vec![])),
-        random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
-        pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
-        skill_data: Arc::clone(&live.skill_data),
-        event_pools: common::empty_event_pools(),
-    }))
+    GameDataBuilder::empty()
+        .with_abnormalities(vec![attacker, target])
+        .with_artifact_data(Arc::new(ArtifactDatabase::new(artifacts)))
+        .with_equipment_data(Arc::new(EquipmentDatabase::new(equipments)))
+        .with_skill_data(Arc::clone(&live.skill_data))
+        .build_arc()
 }
 
 fn run_battle_with_loadout(
@@ -126,26 +200,17 @@ fn run_battle_with_loadout(
     artifacts: Vec<Uuid>,
 ) -> Timeline {
     let attacker_base_uuid = Uuid::from_u128(0xAB01);
-    let target_base_uuid = Uuid::from_u128(0xAB02);
-    let player = deck_with_loadout(
+    let scenario = scenario_with_loadout(
         Uuid::from_u128(0xAC01),
         attacker_base_uuid,
         Position::new(0, 0),
         equipped_items,
         artifacts,
     );
-    let opponent = deck_with_loadout(
-        Uuid::from_u128(0xAC02),
-        target_base_uuid,
-        Position::new(1, 0),
-        vec![],
-        vec![],
-    );
 
-    let mut battle = BattleCore::new(&player, &opponent, game_data, common::BOARD_SIZE, 20260416);
-    let mut world = World::new();
+    let mut battle = BattleCore::new_from_scenario(scenario, game_data, 20260416);
     battle
-        .run_battle(&mut world)
+        .run_battle()
         .expect("battle should complete")
         .timeline
 }

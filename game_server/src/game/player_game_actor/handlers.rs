@@ -1,5 +1,5 @@
 use actix::{ActorContext, AsyncContext, Handler};
-use serde_json::{json, Value};
+use serde_json::Value;
 
 use tracing::info;
 
@@ -133,55 +133,26 @@ impl PlayerGameActor {
     }
 
     fn build_state_snapshot(&self) -> Result<Value, PlayerGameActorError> {
-        let (ordeal, phase) = self
+        let mut snapshot = self
             .game_core
-            .get_progression()
-            .map_err(PlayerGameActorError::from)?;
-        let qliphoth = self
-            .game_core
-            .get_qliphoth()
-            .map_err(PlayerGameActorError::from)?;
-        let mut selected_event = self
-            .game_core
-            .get_selected_event_snapshot_json()
+            .get_run_snapshot_json()
             .map_err(PlayerGameActorError::from)?;
 
-        if let Some((winner, timeline)) = self.game_core.get_active_suppression_replay() {
-            if let Some(Value::Object(ref mut object)) = selected_event {
-                object.insert(
-                    "compressed_timeline".to_string(),
-                    serde_json::to_value(compress_timeline_payload(winner, &timeline)?).map_err(
-                        |error| {
-                            PlayerGameActorError::new("serialization_failed", error.to_string())
-                        },
-                    )?,
-                );
+        if let Some((winner, timeline)) = self.game_core.get_active_combat_replay() {
+            if let Some(root) = snapshot.as_object_mut() {
+                if let Some(Value::Object(selected_event)) = root.get_mut("selected_event") {
+                    selected_event.insert(
+                        "compressed_timeline".to_string(),
+                        serde_json::to_value(compress_timeline_payload(winner, &timeline)?)
+                            .map_err(|error| {
+                                PlayerGameActorError::new("serialization_failed", error.to_string())
+                            })?,
+                    );
+                }
             }
         }
 
-        Ok(json!({
-            "game_state": self.game_core.game_state_name(),
-            "enkephalin": self.game_core.get_enkephalin(),
-            "progression": {
-                "ordeal": ordeal,
-                "phase": phase,
-            },
-            "qliphoth": {
-                "amount": qliphoth.amount(),
-                "level": self.game_core.qliphoth_level_name(qliphoth.level()),
-            },
-            "allowed_actions": self.game_core.get_allowed_actions(),
-            "current_phase_events": self.game_core.get_current_phase_events(),
-            "inventory": self
-                .game_core
-                .get_inventory_snapshot_json()
-                .map_err(PlayerGameActorError::from)?,
-            "field": self
-                .game_core
-                .get_field_snapshot_json()
-                .map_err(PlayerGameActorError::from)?,
-            "selected_event": selected_event,
-        }))
+        Ok(snapshot)
     }
 
     fn push_to_active_socket(&self, message: super::messages::PlayerGameServerMessage) {
@@ -210,18 +181,8 @@ mod tests {
     use actix_web::rt::time;
     use game_core::game::{
         behavior::PlayerBehavior,
-        data::{
-            abnormality_data::AbnormalityDatabase,
-            artifact_data::ArtifactDatabase,
-            bonus_data::BonusDatabase,
-            equipment_data::EquipmentDatabase,
-            event_pools::{EventPhasePool, EventPoolConfig},
-            pve_data::PveEncounterDatabase,
-            random_event_data::RandomEventDatabase,
-            shop_data::ShopDatabase,
-            skill_data::SkillDatabase,
-            GameDataBase, GameDataBaseParts,
-        },
+        data::{employee_data::StarterEmployeeCandidateDatabase, GameDataBase, GameDataBuilder},
+        employee::{EmployeeGrade, StarterEmployeeCandidate},
         world::GameCore,
     };
     use std::{
@@ -282,29 +243,19 @@ mod tests {
     }
 
     fn empty_game_data() -> Arc<GameDataBase> {
-        let empty = EventPhasePool {
-            shops: vec![],
-            bonuses: vec![],
-            random_events: vec![],
-        };
+        let candidates = (0..5)
+            .map(|index| StarterEmployeeCandidate {
+                id: format!("candidate_{index}"),
+                name: format!("Candidate {index}"),
+                grade: EmployeeGrade::Junior,
+                role: "Test Role".to_string(),
+                background: "Test Background".to_string(),
+            })
+            .collect();
 
-        Arc::new(GameDataBase::new(GameDataBaseParts {
-            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![])),
-            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
-            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
-            shop_data: Arc::new(ShopDatabase::new(vec![])),
-            bonus_data: Arc::new(BonusDatabase::new(vec![])),
-            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
-            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
-            skill_data: Arc::new(SkillDatabase::new(vec![])),
-            event_pools: EventPoolConfig {
-                dawn: empty.clone(),
-                noon: empty.clone(),
-                dusk: empty.clone(),
-                midnight: empty.clone(),
-                white: empty,
-            },
-        }))
+        GameDataBuilder::empty()
+            .with_starter_employee_candidates(StarterEmployeeCandidateDatabase::new(candidates))
+            .build_arc()
     }
 
     #[actix_web::test]
@@ -354,7 +305,10 @@ mod tests {
             other => panic!("expected command_result, got {other:?}"),
         }
 
-        assert_eq!(result.state_snapshot["game_state"], "waiting_phase_request");
+        assert_eq!(
+            result.state_snapshot["game_state"],
+            "selecting_starter_employees"
+        );
     }
 
     #[actix_web::test]

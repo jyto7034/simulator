@@ -7,23 +7,26 @@ use std::{
 use uuid::Uuid;
 
 use crate::{
-    ecs::resources::Position,
+    game::resources::Position,
     game::{
         ability::{
-            SkillAreaShapeDef, SkillAreaTickPolicy, SkillHitTargetFilter, SkillId,
-            SkillPresentationDef,
+            SkillAreaShapeDef, SkillAreaTickPolicy, SkillAreaTracking, SkillHitTargetFilter,
+            SkillId, SkillPresentationDef,
         },
         battle::cooldown::CooldownSource,
         battle::core::movement::{types::TimelineVec2, MovementSegmentEndKind},
         battle::damage::{DamageBreakdown, DamageSource, DamageType},
         battle::ids::UnitInstanceId,
-        battle::{buffs::BuffId, types::BattleWinner},
+        battle::{
+            buffs::BuffId,
+            types::{BattleUnitRole, BattleWinner},
+        },
         enums::Side,
         stats::{StatModifier, UnitStats},
     },
 };
 
-pub const TIMELINE_VERSION: u32 = 20;
+pub const TIMELINE_VERSION: u32 = 22;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
@@ -256,6 +259,8 @@ pub enum TimelineEvent {
     UnitSpawned {
         unit_instance_id: UnitInstanceId,
         owner: Side,
+        #[serde(default)]
+        role: BattleUnitRole,
         base_uuid: Uuid,
         world_position: TimelineVec2,
         stats: UnitStats,
@@ -375,6 +380,8 @@ pub enum TimelineEvent {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         tick_interval_ms: Option<u32>,
         tick_policy: SkillAreaTickPolicy,
+        #[serde(default)]
+        tracking: SkillAreaTracking,
         hit_targets: SkillHitTargetFilter,
         include_caster: bool,
     },
@@ -458,6 +465,14 @@ pub enum TimelineEvent {
         unit_instance_id: UnitInstanceId,
         owner: Side,
         killer_instance_id: Option<UnitInstanceId>,
+    },
+    RecoveryTargetSecured {
+        target_point_id: String,
+        unit_instance_id: UnitInstanceId,
+    },
+    ExtractionCompleted {
+        extraction_point_id: String,
+        unit_instance_id: UnitInstanceId,
     },
     BattleEnd {
         winner: BattleWinner,

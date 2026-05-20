@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{ecs::resources::Position, game::battle::ids::UnitInstanceId};
+use crate::{game::battle::ids::UnitInstanceId, game::resources::Position};
 
 /// Canonical world-space scale for the continuous movement rewrite.
 ///
@@ -16,9 +16,11 @@ pub const DEFAULT_MOVEMENT_TICK_MS: u64 = 50;
 /// more important than writing raw floating point values.
 pub const TIMELINE_POSITION_QUANTIZATION: f32 = 1_000.0;
 
-/// Temporary bridge scale while legacy movement still stores integer
-/// `pos_*_units` on `RuntimeUnit`.
-pub const LEGACY_POSITION_UNITS_PER_WORLD: f32 = 1_000_000.0;
+/// Fixed-point data scale used by authored ranges, projectile speeds, and area sizes.
+///
+/// Runtime movement uses world units. Authored combat data can keep integer
+/// precision by expressing one world unit as this many data units.
+pub const DATA_UNITS_PER_WORLD: f32 = 1_000_000.0;
 
 /// Conservative starting body radius. Final tuning should live in unit data.
 pub const DEFAULT_UNIT_RADIUS: f32 = 0.35;
@@ -43,10 +45,10 @@ impl WorldVec2 {
         }
     }
 
-    pub fn from_legacy_units(x_units: i64, y_units: i64) -> Self {
+    pub fn from_data_units(x_units: i64, y_units: i64) -> Self {
         Self {
-            x: x_units as f32 / LEGACY_POSITION_UNITS_PER_WORLD,
-            y: y_units as f32 / LEGACY_POSITION_UNITS_PER_WORLD,
+            x: x_units as f32 / DATA_UNITS_PER_WORLD,
+            y: y_units as f32 / DATA_UNITS_PER_WORLD,
         }
     }
 
@@ -105,10 +107,10 @@ impl WorldVec2 {
         }
     }
 
-    pub fn to_legacy_units(self) -> (i64, i64) {
+    pub fn to_data_units(self) -> (i64, i64) {
         (
-            (self.x * LEGACY_POSITION_UNITS_PER_WORLD).round() as i64,
-            (self.y * LEGACY_POSITION_UNITS_PER_WORLD).round() as i64,
+            (self.x * DATA_UNITS_PER_WORLD).round() as i64,
+            (self.y * DATA_UNITS_PER_WORLD).round() as i64,
         )
     }
 }
@@ -227,9 +229,9 @@ impl UnitBody {
         Self::new_at(WorldVec2::from_tile_center(tile), radius, move_speed)
     }
 
-    pub fn from_legacy_units(x_units: i64, y_units: i64, radius: f32, move_speed: f32) -> Self {
+    pub fn from_data_units(x_units: i64, y_units: i64, radius: f32, move_speed: f32) -> Self {
         Self::new_at(
-            WorldVec2::from_legacy_units(x_units, y_units),
+            WorldVec2::from_data_units(x_units, y_units),
             radius,
             move_speed,
         )
@@ -269,10 +271,10 @@ mod tests {
     }
 
     #[test]
-    fn legacy_unit_conversion_round_trips_through_world_space() {
-        let pos = WorldVec2::from_legacy_units(1_250_000, -500_000);
+    fn data_unit_conversion_round_trips_through_world_space() {
+        let pos = WorldVec2::from_data_units(1_250_000, -500_000);
         assert_eq!(pos, WorldVec2::new(1.25, -0.5));
-        assert_eq!(pos.to_legacy_units(), (1_250_000, -500_000));
+        assert_eq!(pos.to_data_units(), (1_250_000, -500_000));
     }
 
     #[test]

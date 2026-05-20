@@ -1,5 +1,5 @@
 use game_core::{
-    ecs::resources::Position,
+    game::resources::Position,
     game::{battle::timeline::TimelineEvent, enums::Side},
 };
 

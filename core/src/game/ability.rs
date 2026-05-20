@@ -454,6 +454,10 @@ pub struct SkillDef {
 pub enum SkillEffectDef {
     Damage {
         amount: i32,
+        damage_type: crate::game::battle::damage::DamageType,
+    },
+    ModifyDamage {
+        modifiers: crate::game::battle::damage::DamageModifiers,
     },
     Heal {
         amount: i32,
@@ -516,7 +520,7 @@ mod tests {
                         range_tiles:3,
                         target:EnemySingle(rule:Nearest),
                         delivery:Instant,
-                        effects:[Damage(amount:10)],
+                        effects:[Damage(amount:10, damage_type: Magic)],
                     ),
                 ],
             )
@@ -565,7 +569,7 @@ mod tests {
                         range_tiles:2,
                         target:EnemySingle(rule:Nearest),
                         targeting:RetargetOnStep,
-                        effects:[Damage(amount:10)],
+                        effects:[Damage(amount:10, damage_type: Magic)],
                     ),
                 ],
             )
@@ -574,6 +578,36 @@ mod tests {
         .unwrap();
 
         assert_eq!(def.steps[0].targeting, StepTargetingMode::RetargetOnStep);
+    }
+
+    #[test]
+    fn skill_step_ron_deserialization_reads_damage_modifiers() {
+        let def: SkillDef = ron::de::from_str(
+            r#"
+            (
+                id:"s_damage_mod",
+                steps:[
+                    (
+                        id:"hit",
+                        range_tiles:2,
+                        target:EnemySingle(rule:Nearest),
+                        effects:[
+                            ModifyDamage(modifiers:(magic_resist_penetration_flat:25)),
+                            Damage(amount:100, damage_type:Magic),
+                        ],
+                    ),
+                ],
+            )
+            "#,
+        )
+        .unwrap();
+
+        assert!(matches!(
+            def.steps[0].effects[0],
+            SkillEffectDef::ModifyDamage { modifiers }
+                if modifiers.magic_resist_penetration_flat == 25
+                    && modifiers.armor_penetration_flat == 0
+        ));
     }
 
     #[test]

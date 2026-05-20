@@ -597,6 +597,21 @@ pub(super) fn validate_reference_spawn_order(
                     );
                 }
             }
+            TimelineEvent::RecoveryTargetSecured {
+                unit_instance_id, ..
+            }
+            | TimelineEvent::ExtractionCompleted {
+                unit_instance_id, ..
+            } => {
+                validate_unit_reference_spawned(
+                    extracted,
+                    *unit_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+            }
             TimelineEvent::ItemSpawned {
                 owner_unit_instance_id,
                 ..

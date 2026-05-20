@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use game_core::ecs::resources::Position;
+use game_core::game::resources::Position;
 
 use crate::common::{BOARD_HEIGHT, BOARD_WIDTH};
 

@@ -3,12 +3,10 @@ mod common;
 use std::collections::HashMap;
 use std::sync::Arc;
 
-use bevy_ecs::world::World;
-use game_core::ecs::resources::Position;
 use game_core::game::ability::{
     AbilityActivationBinding, AbilityActivationDef, DeliveryDef, SkillCastTargetingDef, SkillDef,
-    SkillEffectDef, SkillKind, SkillPresentationDef, SkillStepDef, SkillTarget, StepTargetingMode,
-    UnitTargetRule,
+    SkillEffectDef, SkillId, SkillKind, SkillPresentationDef, SkillStepDef, SkillTarget,
+    StepTargetingMode, UnitTargetRule,
 };
 use game_core::game::battle::buffs::BuffId;
 use game_core::game::battle::core::BattleCore;
@@ -16,59 +14,127 @@ use game_core::game::battle::replay::{
     types::{TimelineReplayViolationKind, TimelineReplayerConfig},
     TimelineReplayer,
 };
+use game_core::game::battle::scenario::{
+    BattleFieldSpec, BattleScenario, ScenarioAction, ScenarioArtifact, ScenarioEvent,
+    ScenarioEventId, ScenarioGroupId, ScenarioSpawnGroup, ScenarioTrigger, ScenarioUnitRef,
+    ScenarioUnitSpawn, WinCondition,
+};
 use game_core::game::battle::timeline::{
     HpChangeReason, TimelineCause, TimelineEvent, TimelineRootCause,
 };
-use game_core::game::battle::types::{OwnedUnit, PlayerDeckInfo};
+use game_core::game::battle::types::{BattleUnitDraft, BattleUnitSource};
 use game_core::game::battle::validation::{
     TimelineExpectedCounts, TimelineValidator, TimelineValidatorConfig, TimelineViolationKind,
 };
 use game_core::game::data::{
-    abnormality_data::{AbnormalityDatabase, AbnormalityMetadata, BasicAttackDef, ResonanceDef},
-    artifact_data::{ArtifactDatabase, ArtifactMetadata},
-    bonus_data::BonusDatabase,
-    equipment_data::{EquipmentDatabase, EquipmentMetadata, EquipmentType},
-    event_pools::{EventPhasePool, EventPoolConfig},
-    pve_data::PveEncounterDatabase,
-    random_event_data::RandomEventDatabase,
-    shop_data::ShopDatabase,
+    abnormality_data::{AbnormalityMetadata, BasicAttackDef, ResonanceDef},
+    artifact_data::ArtifactMetadata,
+    equipment_data::{EquipmentMetadata, EquipmentType},
     skill_data::SkillDatabase,
-    GameDataBase,
+    GameDataBase, GameDataBuilder,
 };
 use game_core::game::enums::{RiskLevel, Side, Tier};
 use game_core::game::growth::GrowthStack;
+use game_core::game::resources::Position;
 use game_core::game::stats::TriggerType;
 use uuid::Uuid;
 
-fn empty_event_pools() -> EventPoolConfig {
-    let pool = EventPhasePool {
-        shops: vec![],
-        bonuses: vec![],
-        random_events: vec![],
-    };
-    EventPoolConfig {
-        dawn: pool.clone(),
-        noon: pool.clone(),
-        dusk: pool.clone(),
-        midnight: pool.clone(),
-        white: pool,
+fn unit_draft(owned_uuid: Uuid, base_uuid: Uuid) -> BattleUnitDraft {
+    BattleUnitDraft {
+        owned_uuid,
+        source: BattleUnitSource::Abnormality { base_uuid },
+        level: Tier::I,
+        growth_stacks: GrowthStack::new(),
+        equipped_items: vec![],
+        equipped_item_enhancements: vec![],
     }
 }
 
-fn deck_single_unit(owned_uuid: Uuid, base_uuid: Uuid, pos: Position) -> PlayerDeckInfo {
-    let mut positions = HashMap::new();
-    positions.insert(owned_uuid, pos);
-    PlayerDeckInfo {
-        units: vec![OwnedUnit {
-            owned_uuid,
-            base_uuid,
-            level: Tier::I,
-            growth_stacks: GrowthStack::new(),
-            equipped_items: vec![],
-        }],
-        artifacts: vec![],
-        positions,
+fn spawn_group(
+    id: &str,
+    side: Side,
+    required_for_victory: bool,
+    units: Vec<(Uuid, Uuid, Position)>,
+) -> ScenarioSpawnGroup {
+    let group_id = ScenarioGroupId::new(id);
+    let spawns = units
+        .into_iter()
+        .enumerate()
+        .map(
+            |(index, (owned_uuid, base_uuid, position))| ScenarioUnitSpawn {
+                unit_ref: ScenarioUnitRef::new(format!("{}_{}", group_id.0, index)),
+                side,
+                draft: unit_draft(owned_uuid, base_uuid),
+                position,
+                instance_salt: index as u32,
+            },
+        )
+        .collect();
+
+    ScenarioSpawnGroup {
+        id: group_id,
+        side,
+        required_for_victory,
+        spawns,
     }
+}
+
+fn battle_scenario(
+    player_units: Vec<(Uuid, Uuid, Position)>,
+    opponent_units: Vec<(Uuid, Uuid, Position)>,
+    artifacts: Vec<ScenarioArtifact>,
+) -> BattleScenario {
+    let player_group_id = "player_initial";
+    let enemy_group_id = "enemy_initial";
+
+    BattleScenario {
+        battlefield: BattleFieldSpec {
+            width: common::BOARD_SIZE.0,
+            height: common::BOARD_SIZE.1,
+            valid_tiles: Vec::new(),
+            obstacles: Vec::new(),
+        },
+        artifacts,
+        groups: vec![
+            spawn_group(player_group_id, Side::Player, false, player_units),
+            spawn_group(enemy_group_id, Side::Opponent, true, opponent_units),
+        ],
+        events: vec![
+            ScenarioEvent {
+                id: ScenarioEventId::new("spawn_player_initial"),
+                trigger: ScenarioTrigger::AtBattleStart,
+                action: ScenarioAction::SpawnGroup {
+                    group_id: ScenarioGroupId::new(player_group_id),
+                },
+                once: true,
+            },
+            ScenarioEvent {
+                id: ScenarioEventId::new("spawn_enemy_initial"),
+                trigger: ScenarioTrigger::AtBattleStart,
+                action: ScenarioAction::SpawnGroup {
+                    group_id: ScenarioGroupId::new(enemy_group_id),
+                },
+                once: true,
+            },
+        ],
+        win_condition: WinCondition::AllRequiredEnemyGroupsDefeated,
+        tactical_plan: game_core::game::battle::scenario::TacticalPlan::default(),
+    }
+}
+
+fn one_vs_one_scenario(
+    player_owned_uuid: Uuid,
+    player_base_uuid: Uuid,
+    player_position: Position,
+    opponent_owned_uuid: Uuid,
+    opponent_base_uuid: Uuid,
+    opponent_position: Position,
+) -> BattleScenario {
+    battle_scenario(
+        vec![(player_owned_uuid, player_base_uuid, player_position)],
+        vec![(opponent_owned_uuid, opponent_base_uuid, opponent_position)],
+        Vec::new(),
+    )
 }
 
 struct PoisonAutocastScenario {
@@ -81,8 +147,7 @@ struct PoisonAutocastScenario {
 
 struct PoisonAutocastResult {
     game_data: Arc<GameDataBase>,
-    player: PlayerDeckInfo,
-    opponent: PlayerDeckInfo,
+    expected_counts: TimelineExpectedCounts,
     timeline: game_core::game::battle::timeline::Timeline,
     caster_base_uuid: Uuid,
     target_base_uuid: Uuid,
@@ -115,7 +180,7 @@ fn run_poison_autocast_scenario(spec: PoisonAutocastScenario) -> PoisonAutocastR
             max: spec.caster_resonance_max,
             gain_lock_ms: spec.caster_resonance_gain_lock_ms,
         },
-        skill_id: Some("poison_skill".to_string()),
+        skill_id: Some(SkillId::from("poison_skill")),
     };
 
     let target = AbnormalityMetadata {
@@ -144,7 +209,7 @@ fn run_poison_autocast_scenario(spec: PoisonAutocastScenario) -> PoisonAutocastR
     };
 
     let skills = SkillDatabase::new(vec![SkillDef {
-        id: "poison_skill".to_string(),
+        id: SkillId::from("poison_skill"),
         name: "poison_skill".to_string(),
         kind: SkillKind::Targeted,
         cast_targeting: SkillCastTargetingDef::FirstStepTarget,
@@ -169,45 +234,27 @@ fn run_poison_autocast_scenario(spec: PoisonAutocastScenario) -> PoisonAutocastR
         }],
     }]);
 
-    let game_data = Arc::new(GameDataBase::new(
-        game_core::game::data::GameDataBaseParts {
-            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![caster, target])),
-            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
-            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
-            shop_data: Arc::new(ShopDatabase::new(vec![])),
-            bonus_data: Arc::new(BonusDatabase::new(vec![])),
-            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
-            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
-            skill_data: Arc::new(skills),
-            event_pools: empty_event_pools(),
-        },
-    ));
+    let game_data = GameDataBuilder::empty()
+        .with_abnormalities(vec![caster, target])
+        .with_skills(skills)
+        .build_arc();
 
-    let player = deck_single_unit(
+    let scenario = one_vs_one_scenario(
         Uuid::from_u128(0xDADA_0001),
         caster_base_uuid,
         Position::new(0, 0),
-    );
-    let opponent = deck_single_unit(
         Uuid::from_u128(0xDADA_0002),
         target_base_uuid,
         Position::new(0, 1),
     );
+    let expected_counts = TimelineExpectedCounts::from_scenario(&scenario);
 
-    let mut battle = BattleCore::new(
-        &player,
-        &opponent,
-        game_data.clone(),
-        common::BOARD_SIZE,
-        999,
-    );
-    let mut world = World::new();
-    let result = battle.run_battle(&mut world).unwrap();
+    let mut battle = BattleCore::new_from_scenario(scenario, game_data.clone(), 999);
+    let result = battle.run_battle().unwrap();
 
     PoisonAutocastResult {
         game_data,
-        player,
-        opponent,
+        expected_counts,
         timeline: result.timeline,
         caster_base_uuid,
         target_base_uuid,
@@ -283,7 +330,7 @@ fn on_battle_start_triggered_ability_is_replayable_and_parented_via_proc_event()
         price: 0,
         triggered_effects: HashMap::new(),
         ability_activations: vec![AbilityActivationBinding {
-            ability_id: "opening_proc".to_string(),
+            ability_id: SkillId::from("opening_proc"),
             activation: AbilityActivationDef::TriggerProc {
                 trigger: TriggerType::OnBattleStart,
                 proc_chance_percent: 100,
@@ -294,7 +341,7 @@ fn on_battle_start_triggered_ability_is_replayable_and_parented_via_proc_event()
     };
 
     let skills = SkillDatabase::new(vec![SkillDef {
-        id: "opening_proc".to_string(),
+        id: SkillId::from("opening_proc"),
         name: "Opening Proc".to_string(),
         kind: SkillKind::Targeted,
         cast_targeting: SkillCastTargetingDef::Explicit {
@@ -324,49 +371,44 @@ fn on_battle_start_triggered_ability_is_replayable_and_parented_via_proc_event()
         }],
     }]);
 
-    let game_data = Arc::new(GameDataBase::new(
-        game_core::game::data::GameDataBaseParts {
-            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![caster, target])),
-            artifact_data: Arc::new(ArtifactDatabase::new(vec![artifact])),
-            equipment_data: Arc::new(EquipmentDatabase::new(vec![EquipmentMetadata {
-                id: "noop".to_string(),
-                uuid: Uuid::from_u128(0x5400),
-                name: "noop".to_string(),
-                equipment_type: EquipmentType::Weapon,
-                rarity: RiskLevel::ZAYIN,
-                price: 0,
-                allow_duplicate_equip: true,
-                triggered_effects: HashMap::new(),
-                ability_activations: vec![],
-            }])),
-            shop_data: Arc::new(ShopDatabase::new(vec![])),
-            bonus_data: Arc::new(BonusDatabase::new(vec![])),
-            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
-            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
-            skill_data: Arc::new(skills),
-            event_pools: empty_event_pools(),
-        },
-    ));
+    let game_data = GameDataBuilder::empty()
+        .with_abnormalities(vec![caster, target])
+        .with_artifacts(vec![artifact])
+        .with_equipment(vec![EquipmentMetadata {
+            id: "noop".to_string(),
+            uuid: Uuid::from_u128(0x5400),
+            name: "noop".to_string(),
+            equipment_type: EquipmentType::Weapon,
+            rarity: RiskLevel::ZAYIN,
+            price: 0,
+            allow_duplicate_equip: true,
+            triggered_effects: HashMap::new(),
+            ability_activations: vec![],
+        }])
+        .with_skills(skills)
+        .build_arc();
 
-    let mut player = deck_single_unit(
-        Uuid::from_u128(0x5501),
-        caster_base_uuid,
-        Position::new(0, 0),
-    );
-    player
-        .artifacts
-        .push(game_core::game::battle::types::OwnedArtifact {
+    let scenario = battle_scenario(
+        vec![(
+            Uuid::from_u128(0x5501),
+            caster_base_uuid,
+            Position::new(0, 0),
+        )],
+        vec![(
+            Uuid::from_u128(0x5502),
+            target_base_uuid,
+            Position::new(0, 1),
+        )],
+        vec![ScenarioArtifact {
+            side: Side::Player,
             base_uuid: artifact_uuid,
-        });
-    let opponent = deck_single_unit(
-        Uuid::from_u128(0x5502),
-        target_base_uuid,
-        Position::new(0, 1),
+            instance_salt: 0,
+        }],
     );
 
-    let mut battle = BattleCore::new(&player, &opponent, game_data.clone(), common::BOARD_SIZE, 7);
-    let mut world = World::new();
-    let result = battle.run_battle(&mut world).unwrap();
+    let expected = TimelineExpectedCounts::from_scenario(&scenario);
+    let mut battle = BattleCore::new_from_scenario(scenario, game_data.clone(), 7);
+    let result = battle.run_battle().unwrap();
 
     let proc_entry = result
         .timeline
@@ -395,21 +437,13 @@ fn on_battle_start_triggered_ability_is_replayable_and_parented_via_proc_event()
 
     let validator = TimelineValidator::new(TimelineValidatorConfig::default());
     assert!(validator
-        .validate(
-            &result.timeline,
-            Some(TimelineExpectedCounts {
-                units: 2,
-                items: 0,
-                artifacts: 1,
-            }),
-            None,
-        )
+        .validate(&result.timeline, Some(expected), None)
         .is_ok());
 }
 
 #[test]
 fn battle_timeline_replays_and_validates() {
-    // Given: 테스트용 GameData와 1:1 전투 덱을 만든다.
+    // Given: 테스트용 GameData와 1:1 전투 시나리오를 만든다.
     let game_data = common::create_test_game_data();
 
     let base_uuid = game_data.abnormality_data.items[0].uuid;
@@ -417,19 +451,19 @@ fn battle_timeline_replays_and_validates() {
     let opponent_unit = Uuid::from_u128(0xBB01);
 
     // Given: 시작 위치를 멀리 두어 이동 이벤트도 생성되게 한다.
-    let player = deck_single_unit(player_unit, base_uuid, Position::new(0, 0));
-    let opponent = deck_single_unit(opponent_unit, base_uuid, Position::new(3, 3));
+    let scenario = one_vs_one_scenario(
+        player_unit,
+        base_uuid,
+        Position::new(0, 0),
+        opponent_unit,
+        base_uuid,
+        Position::new(3, 3),
+    );
+    let expected = TimelineExpectedCounts::from_scenario(&scenario);
 
     // When: 전투를 실행해서 서버-권위 타임라인을 생성한다.
-    let mut battle = BattleCore::new(
-        &player,
-        &opponent,
-        game_data.clone(),
-        common::BOARD_SIZE,
-        12345,
-    );
-    let mut world = World::new();
-    let result = battle.run_battle(&mut world).unwrap();
+    let mut battle = BattleCore::new_from_scenario(scenario, game_data.clone(), 12345);
+    let result = battle.run_battle().unwrap();
 
     common::write_timeline_export("battle_timeline_replays_and_validates", &result.timeline);
 
@@ -440,7 +474,6 @@ fn battle_timeline_replays_and_validates() {
         .replay(&result.timeline)
         .unwrap();
 
-    let expected = TimelineExpectedCounts::from_decks(&player, &opponent);
     TimelineValidator::new(TimelineValidatorConfig::default())
         .validate(&result.timeline, Some(expected), Some(game_data.as_ref()))
         .unwrap();
@@ -478,11 +511,10 @@ fn battle_timeline_with_autocast_and_buff_tick_replays_and_validates() {
         .replay(&result.timeline)
         .unwrap();
 
-    let expected = TimelineExpectedCounts::from_decks(&result.player, &result.opponent);
     TimelineValidator::new(TimelineValidatorConfig::default())
         .validate(
             &result.timeline,
-            Some(expected),
+            Some(result.expected_counts),
             Some(result.game_data.as_ref()),
         )
         .unwrap();
@@ -736,18 +768,18 @@ fn tampered_timeline_missing_parent_on_hp_changed_is_rejected_by_validation() {
     let game_data = common::create_test_game_data();
 
     let base_uuid = game_data.abnormality_data.items[0].uuid;
-    let player = deck_single_unit(Uuid::from_u128(1), base_uuid, Position::new(0, 0));
-    let opponent = deck_single_unit(Uuid::from_u128(2), base_uuid, Position::new(1, 0));
-
-    let mut battle = BattleCore::new(
-        &player,
-        &opponent,
-        game_data.clone(),
-        common::BOARD_SIZE,
-        12345,
+    let scenario = one_vs_one_scenario(
+        Uuid::from_u128(1),
+        base_uuid,
+        Position::new(0, 0),
+        Uuid::from_u128(2),
+        base_uuid,
+        Position::new(1, 0),
     );
-    let mut world = World::new();
-    let result = battle.run_battle(&mut world).unwrap();
+    let expected = TimelineExpectedCounts::from_scenario(&scenario);
+
+    let mut battle = BattleCore::new_from_scenario(scenario, game_data.clone(), 12345);
+    let result = battle.run_battle().unwrap();
 
     common::write_timeline_export("tampered_timeline_original", &result.timeline);
 
@@ -765,7 +797,6 @@ fn tampered_timeline_missing_parent_on_hp_changed_is_rejected_by_validation() {
     common::write_timeline_export("tampered_timeline_missing_parent", &tampered);
 
     // When: Validation을 수행한다.
-    let expected = TimelineExpectedCounts::from_decks(&player, &opponent);
     let err = TimelineValidator::new(TimelineValidatorConfig::default())
         .validate(&tampered, Some(expected), Some(game_data.as_ref()))
         .unwrap_err();
@@ -783,18 +814,16 @@ fn tampered_timeline_duplicate_seq_is_rejected_by_replay() {
     let game_data = common::create_test_game_data();
 
     let base_uuid = game_data.abnormality_data.items[0].uuid;
-    let player = deck_single_unit(Uuid::from_u128(11), base_uuid, Position::new(0, 0));
-    let opponent = deck_single_unit(Uuid::from_u128(12), base_uuid, Position::new(3, 3));
-
-    let mut battle = BattleCore::new(
-        &player,
-        &opponent,
-        game_data.clone(),
-        common::BOARD_SIZE,
-        12345,
+    let scenario = one_vs_one_scenario(
+        Uuid::from_u128(11),
+        base_uuid,
+        Position::new(0, 0),
+        Uuid::from_u128(12),
+        base_uuid,
+        Position::new(3, 3),
     );
-    let mut world = World::new();
-    let result = battle.run_battle(&mut world).unwrap();
+    let mut battle = BattleCore::new_from_scenario(scenario, game_data.clone(), 12345);
+    let result = battle.run_battle().unwrap();
 
     let mut tampered = result.timeline.clone();
     tampered.entries[1].seq = tampered.entries[0].seq;

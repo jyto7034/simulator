@@ -1,8 +1,72 @@
+use std::{borrow::Borrow, fmt, ops::Deref};
+
 use serde::{Deserialize, Serialize};
 
 use crate::game::stats::TriggerType;
 
-pub type SkillId = String;
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[serde(transparent)]
+pub struct SkillId(String);
+
+impl SkillId {
+    pub fn new(value: impl Into<String>) -> Self {
+        Self(value.into())
+    }
+
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
+
+impl From<&str> for SkillId {
+    fn from(value: &str) -> Self {
+        Self::new(value)
+    }
+}
+
+impl From<String> for SkillId {
+    fn from(value: String) -> Self {
+        Self::new(value)
+    }
+}
+
+impl AsRef<str> for SkillId {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl Deref for SkillId {
+    type Target = str;
+
+    fn deref(&self) -> &Self::Target {
+        self.as_str()
+    }
+}
+
+impl Borrow<str> for SkillId {
+    fn borrow(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl fmt::Display for SkillId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.0.fmt(f)
+    }
+}
+
+impl PartialEq<str> for SkillId {
+    fn eq(&self, other: &str) -> bool {
+        self.as_str() == other
+    }
+}
+
+impl PartialEq<&str> for SkillId {
+    fn eq(&self, other: &&str) -> bool {
+        self.as_str() == *other
+    }
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub enum SkillKind {
@@ -35,24 +99,11 @@ pub enum SkillTarget {
         #[serde(default)]
         rule: UnitTargetRule,
     },
-    Allies {
-        area: SkillArea,
-    },
-    Enemies {
-        area: SkillArea,
-    },
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
-pub enum SkillArea {
-    #[default]
-    All,
-    RadiusChebyshev {
-        radius_tiles: u8,
-    },
-    Line {
-        length_tiles: u8,
-    },
+    /// Reuse the cast-level target/anchor for delayed spatial deliveries.
+    ///
+    /// This is intentionally not a range expression. Actual multi-hit area
+    /// filtering belongs to `DeliveryDef::Area`.
+    CastTarget,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
@@ -89,13 +140,6 @@ fn default_projectile_collision_radius_units() -> u32 {
     125_000
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(untagged)]
-enum LegacyBoolOrOption {
-    Bool(bool),
-    Option(Option<bool>),
-}
-
 fn deserialize_nonzero_option_u8<'de, D>(deserializer: D) -> Result<Option<u8>, D::Error>
 where
     D: serde::Deserializer<'de>,
@@ -120,17 +164,6 @@ where
     }
 }
 
-fn deserialize_legacy_despawn_on_hit<'de, D>(deserializer: D) -> Result<Option<bool>, D::Error>
-where
-    D: serde::Deserializer<'de>,
-{
-    let legacy = LegacyBoolOrOption::deserialize(deserializer)?;
-    Ok(match legacy {
-        LegacyBoolOrOption::Bool(value) => Some(value),
-        LegacyBoolOrOption::Option(value) => value,
-    })
-}
-
 /// Continuous collision contract for a skill projectile.
 ///
 /// This applies to skill-delivered projectiles. Basic attacks use their own
@@ -143,11 +176,7 @@ pub struct SkillProjectileCollisionDef {
     pub hit_targets: SkillHitTargetFilter,
     #[serde(default)]
     pub piercing: bool,
-    #[serde(
-        default,
-        skip_serializing_if = "Option::is_none",
-        deserialize_with = "deserialize_legacy_despawn_on_hit"
-    )]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub despawn_on_hit: Option<bool>,
     #[serde(default, deserialize_with = "deserialize_nonzero_option_u8")]
     pub max_hits: Option<u8>,
@@ -248,6 +277,14 @@ pub enum SkillAreaTickPolicy {
     OnEnter,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub enum SkillAreaTracking {
+    #[default]
+    GroundFixed,
+    FollowCaster,
+    FollowTarget,
+}
+
 /// Continuous delivery contract for an explicit area instance such as an
 /// instant blast, line sweep, or persistent ground zone.
 ///
@@ -258,6 +295,8 @@ pub struct SkillAreaDeliveryDef {
     pub shape: SkillAreaShapeDef,
     #[serde(default)]
     pub anchor: SkillAreaAnchorSource,
+    #[serde(default)]
+    pub tracking: SkillAreaTracking,
     #[serde(default)]
     pub hit_targets: SkillHitTargetFilter,
     #[serde(default)]
@@ -281,6 +320,23 @@ impl SkillAreaDeliveryDef {
             self.duration_ms == 0 || self.tick_interval_ms.is_some(),
             "persistent skill area requires tick_interval_ms"
         );
+        if self.duration_ms > 0 {
+            match self.tracking {
+                SkillAreaTracking::GroundFixed => {}
+                SkillAreaTracking::FollowCaster => assert_eq!(
+                    self.anchor,
+                    SkillAreaAnchorSource::Caster,
+                    "FollowCaster persistent area requires Caster anchor"
+                ),
+                SkillAreaTracking::FollowTarget => assert!(
+                    matches!(
+                        self.anchor,
+                        SkillAreaAnchorSource::CastTarget | SkillAreaAnchorSource::CastTargetStart
+                    ),
+                    "FollowTarget persistent area requires CastTarget or CastTargetStart anchor"
+                ),
+            }
+        }
     }
 }
 
@@ -528,7 +584,7 @@ mod tests {
         )
         .unwrap();
 
-        assert_eq!(def.id, "s1");
+        assert_eq!(def.id.as_str(), "s1");
         assert_eq!(def.name, "Test Skill");
         assert_eq!(def.kind, SkillKind::Targeted);
         assert_eq!(def.cast_targeting, SkillCastTargetingDef::FirstStepTarget);
@@ -714,7 +770,7 @@ mod tests {
                 radius_units:250000,
                 hit_targets:Any,
                 piercing:true,
-                despawn_on_hit:false,
+                despawn_on_hit:Some(false),
                 max_hits:Some(3),
             )
             "#,
@@ -775,6 +831,7 @@ mod tests {
                     radius_units: 400_000,
                 },
                 anchor: SkillAreaAnchorSource::CastTarget,
+                tracking: Default::default(),
                 hit_targets: SkillHitTargetFilter::Enemies,
                 include_caster: false,
                 tick_policy: SkillAreaTickPolicy::OnEnter,
@@ -804,6 +861,7 @@ mod tests {
                     length_units: 1_600_000,
                 },
                 anchor: SkillAreaAnchorSource::CastTarget,
+                tracking: Default::default(),
                 hit_targets: SkillHitTargetFilter::Allies,
                 include_caster: false,
                 tick_policy: SkillAreaTickPolicy::EveryTick,
@@ -833,6 +891,7 @@ mod tests {
                     height_units: 2_000_000,
                 },
                 anchor: SkillAreaAnchorSource::CastTarget,
+                tracking: Default::default(),
                 hit_targets: SkillHitTargetFilter::Enemies,
                 include_caster: false,
                 tick_policy: SkillAreaTickPolicy::EveryTick,
@@ -861,6 +920,7 @@ mod tests {
                     length_units: 2_400_000,
                 },
                 anchor: SkillAreaAnchorSource::CastTarget,
+                tracking: Default::default(),
                 hit_targets: SkillHitTargetFilter::Enemies,
                 include_caster: false,
                 tick_policy: SkillAreaTickPolicy::EveryTick,
@@ -891,6 +951,7 @@ mod tests {
                     length_units: 1_800_000,
                 },
                 anchor: SkillAreaAnchorSource::Caster,
+                tracking: Default::default(),
                 hit_targets: SkillHitTargetFilter::Enemies,
                 include_caster: false,
                 tick_policy: SkillAreaTickPolicy::EveryTick,
@@ -928,6 +989,7 @@ mod tests {
                         length_units: 1_600_000,
                     },
                     anchor: SkillAreaAnchorSource::ImpactContext,
+                    tracking: Default::default(),
                     hit_targets: SkillHitTargetFilter::Enemies,
                     include_caster: true,
                     tick_policy: SkillAreaTickPolicy::OncePerArea,
@@ -956,6 +1018,7 @@ mod tests {
                     radius_units: 250_000,
                 },
                 anchor: SkillAreaAnchorSource::CastTarget,
+                tracking: Default::default(),
                 hit_targets: SkillHitTargetFilter::Enemies,
                 include_caster: false,
                 tick_policy: SkillAreaTickPolicy::EveryTick,
@@ -1012,6 +1075,7 @@ mod tests {
                 radius_units: 125_000,
             },
             anchor: SkillAreaAnchorSource::CastTarget,
+            tracking: Default::default(),
             hit_targets: SkillHitTargetFilter::Enemies,
             include_caster: false,
             tick_policy: SkillAreaTickPolicy::OnEnter,

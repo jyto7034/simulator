@@ -381,6 +381,39 @@ mod tests {
         BattleCore::new(&deck, &deck, empty_game_data(), (4, 4), 123)
     }
 
+    #[test]
+    fn split_bucket_keeps_skill_projectile_advance_in_combat_bucket() {
+        let core = new_core();
+        let unit_id: UnitInstanceId = Uuid::from_u128(0x1001).into();
+        let mut movement_intent = false;
+        let mut move_steps = Vec::new();
+        let mut combat = Vec::new();
+
+        core.split_bucket(
+            vec![
+                BattleEvent::MoveStep {
+                    time_ms: 10,
+                    unit_instance_id: unit_id,
+                    expected_move_epoch: 7,
+                },
+                BattleEvent::SkillProjectileAdvance {
+                    time_ms: 10,
+                    delivery_id: Uuid::from_u128(0x1002),
+                    cause: TimelineCause::default(),
+                },
+            ],
+            &mut movement_intent,
+            &mut move_steps,
+            &mut combat,
+        );
+
+        assert_eq!(move_steps, vec![(unit_id, 7)]);
+        assert!(matches!(
+            combat.as_slice(),
+            [BattleEvent::SkillProjectileAdvance { .. }]
+        ));
+    }
+
     fn runtime_unit(unit_id: UnitInstanceId, owner: Side) -> RuntimeUnit {
         RuntimeUnit {
             instance_id: unit_id,
@@ -447,6 +480,7 @@ mod tests {
             max_health: 10,
             attack: 1,
             defense: 0,
+            magic_resist: 0,
             movement: Default::default(),
             basic_attack: crate::game::data::abnormality_data::BasicAttackDef {
                 range_tiles,
@@ -894,6 +928,48 @@ mod tests {
     }
 
     #[test]
+    fn movement_intent_avoids_direct_enemy_tile_when_continuous_melee_cannot_reach() {
+        let attacker_base_uuid = Uuid::from_u128(0xB003);
+        let mut core = core_with_abnormalities(vec![abnormality_with_basic_attack(
+            attacker_base_uuid,
+            DeliveryDef::Instant,
+            1,
+        )]);
+        let attacker_id: UnitInstanceId = Uuid::from_u128(147).into();
+        let enemy_id: UnitInstanceId = Uuid::from_u128(148).into();
+
+        let mut attacker = runtime_unit_with_base(attacker_id, Side::Player, attacker_base_uuid);
+        attacker.current_target = Some(enemy_id);
+        let enemy = runtime_unit_with_base(enemy_id, Side::Opponent, attacker_base_uuid);
+
+        core.units.insert(attacker_id, attacker);
+        core.units.insert(enemy_id, enemy);
+
+        place_unit(&mut core, attacker_id, Position::new(2, 2));
+        place_unit(&mut core, enemy_id, Position::new(1, 3));
+
+        // Regression for a stutter loop observed in exported timelines:
+        // the attacker is already on the diagonal boundary toward the occupied
+        // enemy tile, but the enemy's continuous position remains more than
+        // one melee reach away from that boundary.
+        core.units.get_mut(&attacker_id).unwrap().pos_x_units = 1_500_000;
+        core.units.get_mut(&attacker_id).unwrap().pos_y_units = 2_500_000;
+        core.units.get_mut(&enemy_id).unwrap().pos_x_units = 1_000_000;
+        core.units.get_mut(&enemy_id).unwrap().pos_y_units = 3_500_000;
+
+        core.compute_movement_intents(5398);
+
+        let attacker = core.units.get(&attacker_id).unwrap();
+        let ActionState::Moving(state) = &attacker.action_state else {
+            panic!("expected movement state, got {:?}", attacker.action_state);
+        };
+
+        assert_ne!(state.step_to, Position::new(1, 3));
+        assert_ne!(state.reserved_destination, Some(Position::new(1, 3)));
+        assert!(!state.path.contains(&Position::new(1, 3)));
+    }
+
+    #[test]
     fn movement_intent_repositions_when_locked_target_only_has_lateral_entry() {
         let mut core = new_core();
         let attacker_id: UnitInstanceId = Uuid::from_u128(151).into();
@@ -1117,7 +1193,7 @@ mod tests {
     }
 
     #[test]
-    fn attack_start_hint_does_not_override_persisted_target_when_it_is_still_in_range() {
+    fn attack_start_hint_overrides_persisted_target_when_it_is_in_range() {
         let mut core = new_core();
         let attacker_id: UnitInstanceId = Uuid::from_u128(34).into();
         let locked_target_id: UnitInstanceId = Uuid::from_u128(35).into();
@@ -1138,7 +1214,49 @@ mod tests {
 
         place_unit(&mut core, attacker_id, Position::new(0, 0));
         place_unit(&mut core, locked_target_id, Position::new(1, 0));
-        place_unit(&mut core, hinted_target_id, Position::new(1, 1));
+        place_unit(&mut core, hinted_target_id, Position::new(0, 1));
+
+        core.process_event(
+            BattleEvent::AttackStart {
+                time_ms: 0,
+                attacker_instance_id: attacker_id,
+                target_instance_id: Some(hinted_target_id),
+                schedule_next: false,
+                cause: TimelineCause::default(),
+            },
+            0,
+        )
+        .unwrap();
+
+        assert_eq!(
+            core.units.get(&attacker_id).unwrap().current_target,
+            Some(hinted_target_id)
+        );
+    }
+
+    #[test]
+    fn attack_start_invalid_hint_falls_back_to_persisted_target() {
+        let mut core = new_core();
+        let attacker_id: UnitInstanceId = Uuid::from_u128(0x3401).into();
+        let locked_target_id: UnitInstanceId = Uuid::from_u128(0x3501).into();
+        let hinted_target_id: UnitInstanceId = Uuid::from_u128(0x3601).into();
+
+        let mut attacker = runtime_unit(attacker_id, Side::Player);
+        attacker.current_target = Some(locked_target_id);
+
+        core.units.insert(attacker_id, attacker);
+        core.units.insert(
+            locked_target_id,
+            runtime_unit(locked_target_id, Side::Opponent),
+        );
+        core.units.insert(
+            hinted_target_id,
+            runtime_unit(hinted_target_id, Side::Opponent),
+        );
+
+        place_unit(&mut core, attacker_id, Position::new(0, 0));
+        place_unit(&mut core, locked_target_id, Position::new(1, 0));
+        place_unit(&mut core, hinted_target_id, Position::new(3, 3));
 
         core.process_event(
             BattleEvent::AttackStart {
@@ -1614,6 +1732,42 @@ mod tests {
     }
 
     #[test]
+    fn hard_cc_schedules_movement_recheck_for_idle_unit_after_release() {
+        let mut core = new_core();
+        let attacker_id: UnitInstanceId = Uuid::from_u128(0x2101).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(0x2201).into();
+
+        let mut attacker = runtime_unit(attacker_id, Side::Player);
+        attacker.current_target = Some(target_id);
+
+        core.units.insert(attacker_id, attacker);
+        core.units
+            .insert(target_id, runtime_unit(target_id, Side::Opponent));
+
+        place_unit(&mut core, attacker_id, Position::new(0, 0));
+        place_unit(&mut core, target_id, Position::new(1, 0));
+
+        core.process_event(
+            BattleEvent::ApplyBuff {
+                time_ms: 0,
+                caster_instance_id: target_id,
+                target_instance_id: attacker_id,
+                buff_id: BuffId::from_name("stun"),
+                duration_ms: 50,
+                cause: TimelineCause::default(),
+            },
+            0,
+        )
+        .unwrap();
+
+        assert_eq!(core.units.get(&attacker_id).unwrap().current_target, None);
+        assert!(core
+            .event_queue
+            .iter()
+            .any(|event| matches!(event, BattleEvent::MovementIntent { time_ms: 51 })));
+    }
+
+    #[test]
     fn current_target_skill_rule_prefers_locked_target() {
         let mut core = new_core();
         let caster_id: UnitInstanceId = Uuid::from_u128(41).into();
@@ -1917,7 +2071,7 @@ mod tests {
             tick_interval_ms: None,
         };
 
-        let (center, _, targets) = core
+        let (_, center, _, targets) = core
             .resolve_instant_area_targets(
                 0,
                 cast_seq,
@@ -2002,7 +2156,7 @@ mod tests {
             tick_interval_ms: None,
         };
 
-        let (_, _, targets) = core
+        let (_, _, _, targets) = core
             .resolve_instant_area_targets(
                 0,
                 cast_seq,
@@ -2080,7 +2234,7 @@ mod tests {
             tick_interval_ms: None,
         };
 
-        let (_, _, targets) = core
+        let (_, _, _, targets) = core
             .resolve_instant_area_targets(
                 0,
                 cast_seq,
@@ -2167,7 +2321,7 @@ mod tests {
             tick_interval_ms: None,
         };
 
-        let (_, _, targets) = core
+        let (_, _, _, targets) = core
             .resolve_instant_area_targets(
                 0,
                 cast_seq,
@@ -2254,7 +2408,7 @@ mod tests {
             tick_interval_ms: None,
         };
 
-        let (_, _, targets) = core
+        let (_, _, _, targets) = core
             .resolve_instant_area_targets(
                 0,
                 cast_seq,
@@ -2362,7 +2516,7 @@ mod tests {
             tick_interval_ms: None,
         };
 
-        let (_, _, targets) = core
+        let (_, _, _, targets) = core
             .resolve_instant_area_targets(0, cast_seq, 1, caster_id, None, &area)
             .expect("impact-start line area target resolution");
 
@@ -2489,7 +2643,7 @@ mod tests {
             tick_interval_ms: None,
         };
 
-        let (_, _, targets) = core
+        let (_, _, _, targets) = core
             .resolve_instant_area_targets(
                 0,
                 cast_seq,
@@ -2588,7 +2742,7 @@ mod tests {
             tick_interval_ms: None,
         };
 
-        let (center, _, targets) = core
+        let (_, center, _, targets) = core
             .resolve_instant_area_targets(
                 0,
                 cast_seq,
@@ -2630,7 +2784,10 @@ mod tests {
                     tick_interval_ms: Some(500),
                 },
             },
-            vec![SkillEffectDef::Damage { amount: 2 }],
+            vec![SkillEffectDef::Damage {
+                amount: 2,
+                damage_type: crate::game::battle::damage::DamageType::Magic,
+            }],
         );
 
         let mut core = core_with_skill_data(vec![], vec![skill.clone()]);
@@ -2725,7 +2882,10 @@ mod tests {
                     tick_interval_ms: Some(500),
                 },
             },
-            vec![SkillEffectDef::Damage { amount: 2 }],
+            vec![SkillEffectDef::Damage {
+                amount: 2,
+                damage_type: crate::game::battle::damage::DamageType::Magic,
+            }],
         );
 
         let mut core = core_with_skill_data(vec![], vec![skill.clone()]);
@@ -2812,7 +2972,10 @@ mod tests {
                     tick_interval_ms: Some(500),
                 },
             },
-            vec![SkillEffectDef::Damage { amount: 2 }],
+            vec![SkillEffectDef::Damage {
+                amount: 2,
+                damage_type: crate::game::battle::damage::DamageType::Magic,
+            }],
         );
 
         let mut core = core_with_skill_data(vec![], vec![skill.clone()]);
@@ -2897,7 +3060,10 @@ mod tests {
                     tick_interval_ms: Some(500),
                 },
             },
-            vec![SkillEffectDef::Damage { amount: 2 }],
+            vec![SkillEffectDef::Damage {
+                amount: 2,
+                damage_type: crate::game::battle::damage::DamageType::Magic,
+            }],
         );
 
         let mut core = core_with_skill_data(vec![], vec![skill.clone()]);
@@ -3138,6 +3304,7 @@ mod tests {
             max_health: 10,
             attack: 1,
             defense: 0,
+            magic_resist: 0,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -3212,6 +3379,7 @@ mod tests {
             max_health: 10,
             attack: 1,
             defense: 0,
+            magic_resist: 0,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -3330,6 +3498,7 @@ mod tests {
             max_health: 10,
             attack: 1,
             defense: 0,
+            magic_resist: 0,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -3492,7 +3661,10 @@ mod tests {
                     tick_interval_ms: Some(50),
                 },
             },
-            vec![SkillEffectDef::Damage { amount: 2 }],
+            vec![SkillEffectDef::Damage {
+                amount: 2,
+                damage_type: crate::game::battle::damage::DamageType::Magic,
+            }],
         );
 
         let mut core = core_with_skill_data(vec![], vec![skill.clone()]);

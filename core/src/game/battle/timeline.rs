@@ -9,9 +9,13 @@ use uuid::Uuid;
 use crate::{
     ecs::resources::Position,
     game::{
-        ability::{SkillId, SkillPresentationDef},
+        ability::{
+            SkillAreaShapeDef, SkillAreaTickPolicy, SkillHitTargetFilter, SkillId,
+            SkillPresentationDef,
+        },
         battle::cooldown::CooldownSource,
         battle::core::movement::MovementSegmentEndKind,
+        battle::damage::{DamageBreakdown, DamageSource, DamageType},
         battle::ids::UnitInstanceId,
         battle::{buffs::BuffId, types::BattleWinner},
         enums::Side,
@@ -19,7 +23,7 @@ use crate::{
     },
 };
 
-pub const TIMELINE_VERSION: u32 = 13;
+pub const TIMELINE_VERSION: u32 = 15;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
@@ -169,6 +173,71 @@ pub enum SkillCastTarget {
     Tile { position: Position },
 }
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub struct TimelinePointUnits {
+    pub x_units: i64,
+    pub y_units: i64,
+}
+
+impl TimelinePointUnits {
+    pub const fn new(x_units: i64, y_units: i64) -> Self {
+        Self { x_units, y_units }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum TimelineSkillAreaShape {
+    Circle {
+        radius_units: u32,
+    },
+    Line {
+        length_units: u32,
+    },
+    Box {
+        width_units: u32,
+        height_units: u32,
+    },
+    Rectangle {
+        width_units: u32,
+        length_units: u32,
+    },
+    Cone {
+        angle_degrees: u16,
+        length_units: u32,
+    },
+}
+
+impl From<SkillAreaShapeDef> for TimelineSkillAreaShape {
+    fn from(shape: SkillAreaShapeDef) -> Self {
+        match shape {
+            SkillAreaShapeDef::Circle { radius_units } => Self::Circle { radius_units },
+            SkillAreaShapeDef::Line { length_units } => Self::Line { length_units },
+            SkillAreaShapeDef::Box {
+                width_units,
+                height_units,
+            } => Self::Box {
+                width_units,
+                height_units,
+            },
+            SkillAreaShapeDef::Rectangle {
+                width_units,
+                length_units,
+            } => Self::Rectangle {
+                width_units,
+                length_units,
+            },
+            SkillAreaShapeDef::Cone {
+                angle_degrees,
+                length_units,
+            } => Self::Cone {
+                angle_degrees,
+                length_units,
+            },
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum TimelineEvent {
@@ -283,6 +352,34 @@ pub enum TimelineEvent {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         presentation: Option<SkillPresentationDef>,
     },
+    SkillAreaDeclared {
+        area_id: Uuid,
+        skill_id: SkillId,
+        step_id: String,
+        caster_instance_id: UnitInstanceId,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        target: Option<SkillCastTarget>,
+        shape: TimelineSkillAreaShape,
+        /// Directional shapes use `origin` as the sweep start.
+        /// Centered shapes use `center` as the visual center.
+        origin: TimelinePointUnits,
+        center: TimelinePointUnits,
+        /// Absolute aim point. Unity should derive the direction vector from
+        /// `direction_hint - origin` for line/rectangle/cone visuals.
+        direction_hint: TimelinePointUnits,
+        start_time_ms: u64,
+        duration_ms: u32,
+        /// Presentation lifetime. Instant gameplay areas use a short non-zero
+        /// value so debug visuals are visible without changing simulation rules.
+        display_duration_ms: u32,
+        #[serde(default)]
+        warning_ms: u32,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        tick_interval_ms: Option<u32>,
+        tick_policy: SkillAreaTickPolicy,
+        hit_targets: SkillHitTargetFilter,
+        include_caster: bool,
+    },
     BuffApplied {
         caster_instance_id: UnitInstanceId,
         target_instance_id: UnitInstanceId,
@@ -306,6 +403,18 @@ pub enum TimelineEvent {
         hp_before: u32,
         hp_after: u32,
         reason: HpChangeReason,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        damage_source: Option<DamageSource>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        damage_type: Option<DamageType>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        raw_damage: Option<u32>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        final_damage: Option<u32>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        damage_breakdown: Option<Vec<DamageBreakdown>>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        critical: Option<bool>,
     },
     StatChanged {
         source_instance_id: Option<UnitInstanceId>,

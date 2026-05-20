@@ -199,15 +199,9 @@ impl BattleCore {
 mod tests {
     use super::*;
     use crate::game::battle::core::types::{RuntimeArtifact, RuntimeItem, RuntimeUnit};
+    use crate::game::battle::scenario::BattleScenario;
     use crate::game::battle::timeline::{TimelineCause, TimelineRootCause};
-    use crate::game::battle::types::PlayerDeckInfo;
-    use crate::game::data::{
-        abnormality_data::AbnormalityDatabase, artifact_data::ArtifactDatabase,
-        bonus_data::BonusDatabase, equipment_data::EquipmentDatabase, event_pools::EventPhasePool,
-        event_pools::EventPoolConfig, pve_data::PveEncounterDatabase,
-        random_event_data::RandomEventDatabase, shop_data::ShopDatabase, skill_data::SkillDatabase,
-        GameDataBase,
-    };
+    use crate::game::data::{GameDataBase, GameDataBuilder};
     use crate::game::enums::Side;
     use crate::game::stats::{
         Effect, StatId, StatModifier, StatModifierKind, TriggerEffectTarget, TriggeredEffect,
@@ -217,56 +211,33 @@ mod tests {
     use std::sync::Arc;
     use uuid::Uuid;
 
-    fn empty_deck() -> PlayerDeckInfo {
-        PlayerDeckInfo {
-            units: vec![],
-            artifacts: vec![],
-            positions: HashMap::new(),
-        }
-    }
-
     fn game_data_with(
         artifacts: Vec<crate::game::data::artifact_data::ArtifactMetadata>,
         equipments: Vec<crate::game::data::equipment_data::EquipmentMetadata>,
     ) -> Arc<GameDataBase> {
-        let pool = EventPhasePool {
-            shops: vec![],
-            bonuses: vec![],
-            random_events: vec![],
-        };
-        let event_pools = EventPoolConfig {
-            dawn: pool.clone(),
-            noon: pool.clone(),
-            dusk: pool.clone(),
-            midnight: pool.clone(),
-            white: pool,
-        };
-
-        Arc::new(GameDataBase::new(crate::game::data::GameDataBaseParts {
-            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![])),
-            artifact_data: Arc::new(ArtifactDatabase::new(artifacts)),
-            equipment_data: Arc::new(EquipmentDatabase::new(equipments)),
-            shop_data: Arc::new(ShopDatabase::new(vec![])),
-            bonus_data: Arc::new(BonusDatabase::new(vec![])),
-            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
-            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
-            skill_data: Arc::new(SkillDatabase::new(vec![])),
-            event_pools,
-        }))
+        GameDataBuilder::empty()
+            .with_artifacts(artifacts)
+            .with_equipment(equipments)
+            .build_arc()
     }
 
     fn new_core(game_data: Arc<GameDataBase>) -> BattleCore {
-        let deck = empty_deck();
-        BattleCore::new(&deck, &deck, game_data, (4, 4), 123)
+        BattleCore::new_from_scenario(BattleScenario::empty((4, 4)), game_data, 123)
     }
 
     fn runtime_unit(id: u128, owner: Side) -> RuntimeUnit {
         RuntimeUnit {
             instance_id: UnitInstanceId::from(Uuid::from_u128(id)),
+            source_owned_uuid: Uuid::from_u128(id),
             owner,
+            role: crate::game::battle::types::BattleUnitRole::Combatant,
             base_uuid: Uuid::nil(),
             stats: UnitStats::with_values(10, 10, 1, 0, 1),
+            basic_attack: Default::default(),
+            skill_id: None,
             body: Default::default(),
+            tactical_anchor: None,
+            tactical_group_id: None,
             move_epoch: 0,
             action_state: crate::game::battle::core::movement::ActionState::Idle,
             action_locks: Default::default(),

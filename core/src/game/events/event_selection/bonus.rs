@@ -19,6 +19,7 @@ impl EventGenerator for BonusGenerator {
 
     fn generate(&self, ctx: &GeneratorContext) -> Result<Self::Output, GameError> {
         use crate::ecs::resources::GameProgression;
+        use crate::game::determinism;
         use crate::game::enums::OrdealType;
         use rand::SeedableRng;
 
@@ -33,7 +34,10 @@ impl EventGenerator for BonusGenerator {
         let pool = &ctx.game_data.event_pools.get_pool(current_ordeal).bonuses;
 
         // 3. RNG 생성
-        let mut rng = rand::rngs::StdRng::seed_from_u64(ctx.random_seed);
+        let mut rng = rand::rngs::StdRng::seed_from_u64(determinism::seed_with_namespace(
+            ctx.random_seed,
+            0x424F_4E55,
+        ));
 
         // 4. pool에서 가중치 기반 UUID 선택
         let uuid = EventPhasePool::choose_weighted_uuid(pool, &mut rng).ok_or_else(|| {
@@ -308,6 +312,7 @@ mod tests {
             max_health: 10,
             attack: 1,
             defense: 1,
+            magic_resist: 0,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),

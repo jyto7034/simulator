@@ -85,8 +85,20 @@ fn validate_skill_contracts(skills: &[SkillDef]) {
             }
 
             for effect in &step.effects {
-                if let crate::game::ability::SkillEffectDef::ApplyBuff { buff_id, .. } = effect {
-                    validate_registered_buff(&skill.id, "step effect", buff_id);
+                match effect {
+                    crate::game::ability::SkillEffectDef::ApplyBuff { buff_id, .. } => {
+                        validate_registered_buff(&skill.id, "step effect", buff_id);
+                    }
+                    crate::game::ability::SkillEffectDef::Damage { amount, .. } => {
+                        assert!(
+                            *amount >= 0,
+                            "skill '{}' step '{}' has negative Damage amount {}",
+                            skill.id,
+                            step.id,
+                            amount
+                        );
+                    }
+                    _ => {}
                 }
             }
 
@@ -110,9 +122,10 @@ fn validate_skill_contracts(skills: &[SkillDef]) {
 mod tests {
     use super::*;
     use crate::game::ability::{
-        DeliveryDef, SkillCastTargetingDef, SkillProjectileCollisionDef, SkillStepDef,
-        UnitTargetRule,
+        DeliveryDef, SkillCastTargetingDef, SkillEffectDef, SkillProjectileCollisionDef,
+        SkillStepDef, UnitTargetRule,
     };
+    use crate::game::battle::damage::DamageType;
 
     fn projectile_step(collision: SkillProjectileCollisionDef) -> SkillStepDef {
         SkillStepDef {
@@ -230,5 +243,38 @@ mod tests {
         });
 
         assert!(result.is_err(), "unknown buff references must be rejected");
+    }
+
+    #[test]
+    fn skill_database_rejects_negative_damage_amounts() {
+        let result = std::panic::catch_unwind(|| {
+            SkillDatabase::new(vec![SkillDef {
+                id: "negative_damage".to_string(),
+                name: "negative_damage".to_string(),
+                kind: SkillKind::Untargeted,
+                cast_targeting: SkillCastTargetingDef::FirstStepTarget,
+                focus_time_ms: 0,
+                focus_permissions: Default::default(),
+                steps: vec![SkillStepDef {
+                    id: "hit".to_string(),
+                    delay_ms: 0,
+                    range_tiles: 1,
+                    target: SkillTarget::EnemySingle {
+                        rule: UnitTargetRule::Nearest,
+                    },
+                    targeting: Default::default(),
+                    when: Default::default(),
+                    repeat: Default::default(),
+                    delivery: DeliveryDef::Instant,
+                    effects: vec![SkillEffectDef::Damage {
+                        amount: -1,
+                        damage_type: DamageType::Magic,
+                    }],
+                    presentation: Default::default(),
+                }],
+            }]);
+        });
+
+        assert!(result.is_err(), "negative Damage amounts must be rejected");
     }
 }

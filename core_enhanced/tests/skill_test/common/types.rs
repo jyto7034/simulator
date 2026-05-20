@@ -1,8 +1,8 @@
 use game_core::{
-    ecs::resources::Position,
     game::data::abnormality_data::{
         AbnormalityMetadata, BasicAttackDef, MovementDef, ResonanceDef,
     },
+    game::resources::Position,
 };
 use uuid::Uuid;
 
@@ -233,6 +233,7 @@ pub fn passive_dummy_patch(max_health: u32, current_health_after_start: Option<u
         .with_attack(1)
         .with_movement(MovementDef {
             speed_units_per_ms: 0,
+            radius_units: 350_000,
         })
         .with_basic_attack(BasicAttackDef {
             range_units: 1.0,

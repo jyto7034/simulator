@@ -1,9 +1,6 @@
 use uuid::Uuid;
 
-use crate::game::{
-    battle::ids::UnitInstanceId,
-    enums::{OrdealType, PhaseType},
-};
+use crate::game::battle::ids::UnitInstanceId;
 
 const REPATH_JITTER_MOD_MS: u64 = 17;
 
@@ -27,33 +24,20 @@ pub fn repath_jitter_ms(run_seed: u64, unit_id: UnitInstanceId, repath_counter: 
     splitmix64(x) % REPATH_JITTER_MOD_MS
 }
 
-fn ordeal_tag(ordeal: OrdealType) -> u64 {
-    match ordeal {
-        OrdealType::Dawn => 1,
-        OrdealType::Noon => 2,
-        OrdealType::Dusk => 3,
-        OrdealType::Midnight => 4,
-        OrdealType::White => 5,
-    }
-}
-
-fn phase_tag(phase: PhaseType) -> u64 {
-    phase.value() as u64
-}
-
-pub fn seed_for_phase(run_seed: u64, ordeal: OrdealType, phase: PhaseType) -> u64 {
-    // Mix run_seed with stable tags so each phase has an independent deterministic stream.
-    let tag = (ordeal_tag(ordeal) << 8) | phase_tag(phase);
-    splitmix64(run_seed ^ tag.wrapping_mul(0xD1B5_4A32_D192_ED03))
-}
-
-pub fn seed_for_phase_roll(run_seed: u64, ordeal: OrdealType, phase: PhaseType, roll: u64) -> u64 {
-    let phase_seed = seed_for_phase(run_seed, ordeal, phase);
-    splitmix64(phase_seed ^ roll.wrapping_mul(0x94D0_49BB_1331_11EB))
-}
-
 pub fn seed_with_namespace(seed: u64, namespace: u64) -> u64 {
     splitmix64(seed ^ namespace.wrapping_mul(0x9E37_79B9_7F4A_7C15))
+}
+
+/// Derive a deterministic random stream seed from a UUID without assuming
+/// entropy is concentrated in either half of the UUID.
+pub fn seed_with_uuid(seed: u64, namespace: u64, uuid: Uuid) -> u64 {
+    let bytes = uuid.as_bytes();
+    let hi = u64::from_be_bytes(bytes[..8].try_into().expect("uuid high bytes"));
+    let lo = u64::from_be_bytes(bytes[8..].try_into().expect("uuid low bytes"));
+    let base = seed_with_namespace(seed, namespace);
+    let uuid_mix =
+        splitmix64(hi ^ namespace.rotate_left(13)) ^ splitmix64(lo ^ namespace.rotate_right(7));
+    splitmix64(base ^ uuid_mix.rotate_left(31))
 }
 
 pub fn uuid_v4_from_seed(seed: u64, namespace: u64, index: u64) -> Uuid {
@@ -73,26 +57,33 @@ mod tests {
     use super::*;
 
     #[test]
-    fn seed_for_phase_changes_across_phases() {
-        let s1 = seed_for_phase(123, OrdealType::Dawn, PhaseType::I);
-        let s2 = seed_for_phase(123, OrdealType::Dawn, PhaseType::II);
-        assert_ne!(s1, s2);
-    }
-
-    #[test]
-    fn seed_for_phase_roll_changes_across_rolls() {
-        let s1 = seed_for_phase_roll(123, OrdealType::Dawn, PhaseType::I, 0);
-        let s2 = seed_for_phase_roll(123, OrdealType::Dawn, PhaseType::I, 1);
-        assert_ne!(s1, s2);
-    }
-
-    #[test]
     fn uuid_v4_from_seed_is_deterministic() {
         let a = uuid_v4_from_seed(123, 0x5355_5052, 0);
         let b = uuid_v4_from_seed(123, 0x5355_5052, 0);
         let c = uuid_v4_from_seed(123, 0x5355_5052, 1);
         assert_eq!(a, b);
         assert_ne!(a, c);
+    }
+
+    #[test]
+    fn seed_with_uuid_uses_the_full_uuid() {
+        let namespace = 0x4655_4C4C_5555_4944;
+        let a = Uuid::from_u128(0x1111_2222_3333_4444_aaaa_bbbb_cccc_0001);
+        let same_high_different_low = Uuid::from_u128(0x1111_2222_3333_4444_aaaa_bbbb_cccc_0002);
+        let different_high_same_low = Uuid::from_u128(0x9999_2222_3333_4444_aaaa_bbbb_cccc_0001);
+
+        assert_eq!(
+            seed_with_uuid(123, namespace, a),
+            seed_with_uuid(123, namespace, a)
+        );
+        assert_ne!(
+            seed_with_uuid(123, namespace, a),
+            seed_with_uuid(123, namespace, same_high_different_low)
+        );
+        assert_ne!(
+            seed_with_uuid(123, namespace, a),
+            seed_with_uuid(123, namespace, different_high_same_low)
+        );
     }
 
     #[test]

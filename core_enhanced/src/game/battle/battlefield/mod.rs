@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
-use crate::{ecs::resources::Position, game::battle::ids::UnitInstanceId};
+use crate::{game::battle::ids::UnitInstanceId, game::resources::Position};
 
 pub mod bfs;
 pub mod field;
@@ -46,6 +46,7 @@ pub struct Battlefield {
     width: u8,
     height: u8,
     tiles: Vec<Tile>,
+    valid_tiles: Option<HashSet<Position>>,
     unit_pos: HashMap<UnitInstanceId, Position>,
     reserved_by_unit: HashMap<UnitInstanceId, Position>,
     static_obstacles: HashSet<Position>,

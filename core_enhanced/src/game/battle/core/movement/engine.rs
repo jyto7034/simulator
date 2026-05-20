@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
-    ecs::resources::Position,
+    game::resources::Position,
     game::{
         battle::{
             core::{ActiveMovementSegment, BattleCore},
@@ -20,6 +20,7 @@ use super::{
 };
 
 const SEPARATION_SOLVER_ITERATIONS: usize = 4;
+const STATIC_OBSTACLE_EPSILON: f32 = 0.001;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct MovementUnitInput {
@@ -47,6 +48,12 @@ impl MovementStaticObstacle {
             center,
             half_extents: WorldVec2::new(0.5, 0.5),
         }
+    }
+
+    pub fn void_tile(tile: Position) -> Self {
+        let mut obstacle = Self::tile(tile);
+        obstacle.obstacle_id ^= 0x8000_0000_0000_0000;
+        obstacle
     }
 }
 
@@ -115,6 +122,12 @@ pub trait MovementEngine {
     fn tick(&mut self, input: MovementTickInput) -> MovementTickResult;
 }
 
+pub(in crate::game::battle::core::movement) fn canonicalize_movement_units(
+    units: &mut [MovementUnitInput],
+) {
+    units.sort_by(|a, b| a.unit_id.as_bytes().cmp(b.unit_id.as_bytes()));
+}
+
 pub enum ContinuousMovementBackend {
     Direct(DirectContinuousMovement),
     Rapier(RapierMovementWorld),
@@ -131,6 +144,14 @@ impl MovementEngine for ContinuousMovementBackend {
         match self {
             Self::Direct(engine) => engine.tick(input),
             Self::Rapier(engine) => engine.tick(input),
+        }
+    }
+}
+
+impl ContinuousMovementBackend {
+    pub(in crate::game::battle::core) fn reset_for_battle(&mut self) {
+        if let Self::Rapier(engine) = self {
+            engine.clear();
         }
     }
 }
@@ -274,6 +295,31 @@ impl DirectContinuousMovement {
             }
         }
     }
+
+    fn resolve_static_obstacles(
+        from: WorldVec2,
+        desired: WorldVec2,
+        radius: f32,
+        obstacles: &[MovementStaticObstacle],
+        board_width: f32,
+        board_height: f32,
+    ) -> WorldVec2 {
+        let mut resolved = desired;
+        if let Some(hit_t) = obstacles
+            .iter()
+            .filter_map(|obstacle| swept_point_vs_expanded_aabb(from, desired, radius, obstacle))
+            .min_by(|a, b| a.total_cmp(b))
+        {
+            let motion = desired - from;
+            resolved = from + motion * (hit_t - STATIC_OBSTACLE_EPSILON).clamp(0.0, 1.0);
+        }
+
+        for obstacle in obstacles {
+            resolved = depenetrate_expanded_aabb(resolved, radius, obstacle);
+        }
+
+        Self::clamp_to_board(resolved, radius, board_width, board_height)
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -289,8 +335,10 @@ impl MovementEngine for DirectContinuousMovement {
         let mut outputs = Vec::new();
         let mut candidates = Vec::new();
         let dt_seconds = input.dt_ms as f32 / 1_000.0;
+        let mut units = input.units;
+        canonicalize_movement_units(&mut units);
 
-        for unit in &input.units {
+        for unit in &units {
             if unit.is_dead {
                 outputs.push(MovementOutput::MovementStopped {
                     unit_id: unit.unit_id,
@@ -309,12 +357,12 @@ impl MovementEngine for DirectContinuousMovement {
                 continue;
             }
 
-            if let Some(reached) = steering::reached_goal(unit, &input.units) {
+            if let Some(reached) = steering::reached_goal(unit, &units) {
                 outputs.push(reached);
                 continue;
             }
 
-            let Some(target) = steering::goal_target_position(unit, &input.units) else {
+            let Some(target) = steering::goal_target_position(unit, &units) else {
                 outputs.push(MovementOutput::MovementStopped {
                     unit_id: unit.unit_id,
                     position: unit.body.position,
@@ -325,7 +373,7 @@ impl MovementEngine for DirectContinuousMovement {
 
             let displacement = steering::steered_displacement(
                 unit,
-                &input.units,
+                &units,
                 target,
                 dt_seconds,
                 SteeringParams::default(),
@@ -333,6 +381,14 @@ impl MovementEngine for DirectContinuousMovement {
             let to = Self::clamp_to_board(
                 unit.body.position + displacement,
                 unit.body.radius,
+                input.board_width_units,
+                input.board_height_units,
+            );
+            let to = Self::resolve_static_obstacles(
+                unit.body.position,
+                to,
+                unit.body.radius,
+                &input.static_obstacles,
                 input.board_width_units,
                 input.board_height_units,
             );
@@ -347,11 +403,21 @@ impl MovementEngine for DirectContinuousMovement {
 
         Self::apply_separation(
             &mut candidates,
-            &input.units,
+            &units,
             self.separation_radius_multiplier,
             input.board_width_units,
             input.board_height_units,
         );
+        for candidate in &mut candidates {
+            candidate.to = Self::resolve_static_obstacles(
+                candidate.from,
+                candidate.to,
+                candidate.radius,
+                &input.static_obstacles,
+                input.board_width_units,
+                input.board_height_units,
+            );
+        }
 
         for candidate in candidates {
             let velocity = steering::movement_velocity(candidate.from, candidate.to, dt_seconds);
@@ -370,7 +436,105 @@ impl MovementEngine for DirectContinuousMovement {
     }
 }
 
+fn expanded_aabb(obstacle: &MovementStaticObstacle, radius: f32) -> (f32, f32, f32, f32) {
+    let radius = radius.max(0.0);
+    (
+        obstacle.center.x - obstacle.half_extents.x - radius,
+        obstacle.center.x + obstacle.half_extents.x + radius,
+        obstacle.center.y - obstacle.half_extents.y - radius,
+        obstacle.center.y + obstacle.half_extents.y + radius,
+    )
+}
+
+fn point_inside_expanded_aabb(
+    point: WorldVec2,
+    radius: f32,
+    obstacle: &MovementStaticObstacle,
+) -> bool {
+    let (min_x, max_x, min_y, max_y) = expanded_aabb(obstacle, radius);
+    point.x >= min_x && point.x <= max_x && point.y >= min_y && point.y <= max_y
+}
+
+fn swept_point_vs_expanded_aabb(
+    from: WorldVec2,
+    to: WorldVec2,
+    radius: f32,
+    obstacle: &MovementStaticObstacle,
+) -> Option<f32> {
+    if point_inside_expanded_aabb(from, radius, obstacle) {
+        return Some(0.0);
+    }
+
+    let (min_x, max_x, min_y, max_y) = expanded_aabb(obstacle, radius);
+    let delta = to - from;
+    let (mut enter, mut exit) = (0.0_f32, 1.0_f32);
+
+    for (start, movement, min, max) in [
+        (from.x, delta.x, min_x, max_x),
+        (from.y, delta.y, min_y, max_y),
+    ] {
+        if movement.abs() <= f32::EPSILON {
+            if start < min || start > max {
+                return None;
+            }
+            continue;
+        }
+
+        let inv = 1.0 / movement;
+        let mut axis_enter = (min - start) * inv;
+        let mut axis_exit = (max - start) * inv;
+        if axis_enter > axis_exit {
+            std::mem::swap(&mut axis_enter, &mut axis_exit);
+        }
+
+        enter = enter.max(axis_enter);
+        exit = exit.min(axis_exit);
+        if enter > exit {
+            return None;
+        }
+    }
+
+    (0.0..=1.0).contains(&enter).then_some(enter)
+}
+
+fn depenetrate_expanded_aabb(
+    point: WorldVec2,
+    radius: f32,
+    obstacle: &MovementStaticObstacle,
+) -> WorldVec2 {
+    if !point_inside_expanded_aabb(point, radius, obstacle) {
+        return point;
+    }
+
+    let (min_x, max_x, min_y, max_y) = expanded_aabb(obstacle, radius);
+    let exits = [
+        (
+            point.x - min_x,
+            WorldVec2::new(min_x - STATIC_OBSTACLE_EPSILON, point.y),
+        ),
+        (
+            max_x - point.x,
+            WorldVec2::new(max_x + STATIC_OBSTACLE_EPSILON, point.y),
+        ),
+        (
+            point.y - min_y,
+            WorldVec2::new(point.x, min_y - STATIC_OBSTACLE_EPSILON),
+        ),
+        (
+            max_y - point.y,
+            WorldVec2::new(point.x, max_y + STATIC_OBSTACLE_EPSILON),
+        ),
+    ];
+
+    exits
+        .into_iter()
+        .min_by(|a, b| a.0.total_cmp(&b.0))
+        .map(|(_, point)| point)
+        .unwrap_or(point)
+}
+
 impl BattleCore {
+    #[cfg(test)]
     pub fn use_direct_continuous_movement_backend(&mut self) {
         self.movement_backend =
             ContinuousMovementBackend::Direct(DirectContinuousMovement::default());
@@ -405,6 +569,14 @@ impl BattleCore {
                         if *unit_instance_id == unit_id && *segment_ends_at_ms == time_ms {
                             *segment_target = target;
                             *segment_ends_at_ms = ends_at_ms;
+                            self.active_movement_segments.insert(
+                                unit_id,
+                                ActiveMovementSegment {
+                                    target: to,
+                                    ends_at_ms,
+                                    ..active
+                                },
+                            );
                             return;
                         }
                     }
@@ -429,6 +601,10 @@ impl BattleCore {
             ActiveMovementSegment {
                 timeline_index,
                 velocity,
+                start: from,
+                target: to,
+                started_at_ms: time_ms,
+                ends_at_ms,
             },
         );
     }
@@ -470,9 +646,8 @@ impl BattleCore {
                     owner: unit.owner,
                     body,
                     current_target: unit.current_target,
-                    attack_range_units: self.basic_attack_range_units(unit.base_uuid),
-                    can_move: unit.action_locks.can_move(now_ms)
-                        && unit.stats.move_speed_units_per_ms > 0,
+                    attack_range_units: unit.basic_attack.range_units.max(0.0),
+                    can_move: unit.action_locks.can_move(now_ms) && unit.can_move(),
                     is_dead: unit.is_dead(),
                 })
             })
@@ -489,11 +664,19 @@ impl BattleCore {
     }
 
     fn continuous_static_obstacles(&self) -> Vec<MovementStaticObstacle> {
-        self.battlefield
+        let mut obstacles = self
+            .battlefield
             .static_obstacles()
             .into_iter()
             .map(MovementStaticObstacle::tile)
-            .collect()
+            .collect::<Vec<_>>();
+        obstacles.extend(
+            self.battlefield
+                .void_tiles()
+                .into_iter()
+                .map(MovementStaticObstacle::void_tile),
+        );
+        obstacles
     }
 
     pub fn apply_continuous_movement_outputs(
@@ -562,20 +745,9 @@ mod tests {
     use crate::game::{
         battle::{
             core::{movement::ActionState, types::RuntimeUnit, BattleCore},
-            types::PlayerDeckInfo,
+            scenario::BattleScenario,
         },
-        data::{
-            abnormality_data::AbnormalityDatabase,
-            artifact_data::ArtifactDatabase,
-            bonus_data::BonusDatabase,
-            equipment_data::EquipmentDatabase,
-            event_pools::{EventPhasePool, EventPoolConfig},
-            pve_data::PveEncounterDatabase,
-            random_event_data::RandomEventDatabase,
-            shop_data::ShopDatabase,
-            skill_data::SkillDatabase,
-            GameDataBase,
-        },
+        data::{GameDataBase, GameDataBuilder},
         enums::Side,
         stats::UnitStats,
     };
@@ -604,44 +776,12 @@ mod tests {
         }
     }
 
-    fn empty_deck() -> PlayerDeckInfo {
-        PlayerDeckInfo {
-            units: vec![],
-            artifacts: vec![],
-            positions: HashMap::new(),
-        }
-    }
-
     fn empty_game_data() -> Arc<GameDataBase> {
-        let pool = EventPhasePool {
-            shops: vec![],
-            bonuses: vec![],
-            random_events: vec![],
-        };
-        let event_pools = EventPoolConfig {
-            dawn: pool.clone(),
-            noon: pool.clone(),
-            dusk: pool.clone(),
-            midnight: pool.clone(),
-            white: pool,
-        };
-
-        Arc::new(GameDataBase::new(crate::game::data::GameDataBaseParts {
-            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![])),
-            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
-            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
-            shop_data: Arc::new(ShopDatabase::new(vec![])),
-            bonus_data: Arc::new(BonusDatabase::new(vec![])),
-            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
-            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
-            skill_data: Arc::new(SkillDatabase::new(vec![])),
-            event_pools,
-        }))
+        GameDataBuilder::empty().build_arc()
     }
 
     fn new_core() -> BattleCore {
-        let deck = empty_deck();
-        BattleCore::new(&deck, &deck, empty_game_data(), (4, 4), 123)
+        BattleCore::new_from_scenario(BattleScenario::empty((4, 4)), empty_game_data(), 123)
     }
 
     fn runtime_unit(unit_id: UnitInstanceId, owner: Side, position: WorldVec2) -> RuntimeUnit {
@@ -650,10 +790,16 @@ mod tests {
 
         RuntimeUnit {
             instance_id: unit_id,
+            source_owned_uuid: unit_id.as_uuid(),
             owner,
+            role: crate::game::battle::types::BattleUnitRole::Combatant,
             base_uuid: Uuid::nil(),
             stats,
+            basic_attack: Default::default(),
+            skill_id: None,
             body: UnitBody::new_at(position, DEFAULT_UNIT_RADIUS, 1.0),
+            tactical_anchor: Some(position),
+            tactical_group_id: None,
             move_epoch: 0,
             action_state: ActionState::Idle,
             action_locks: Default::default(),
@@ -692,6 +838,36 @@ mod tests {
             units,
             static_obstacles: Vec::new(),
         }
+    }
+
+    #[test]
+    fn movement_backends_canonicalize_unit_order_before_resolution() {
+        let mut first = unit(1, WorldVec2::new(1.0, 1.0));
+        let mut second = unit(2, WorldVec2::new(3.0, 1.0));
+        first.body.goal = Some(MovementGoal::MoveToPoint {
+            point: WorldVec2::new(2.0, 1.0),
+            stop_radius: 0.1,
+        });
+        second.body.goal = Some(MovementGoal::MoveToPoint {
+            point: WorldVec2::new(4.0, 1.0),
+            stop_radius: 0.1,
+        });
+
+        let mut direct = DirectContinuousMovement::default();
+        let direct_result = direct.tick(movement_input(500, vec![second.clone(), first.clone()]));
+        assert!(matches!(
+            direct_result.outputs.first(),
+            Some(MovementOutput::BodyMoved { unit_id, .. })
+                if *unit_id == Uuid::from_u128(1).into()
+        ));
+
+        let mut rapier = RapierMovementWorld::new();
+        let rapier_result = rapier.tick(movement_input(500, vec![second, first]));
+        assert!(matches!(
+            rapier_result.outputs.first(),
+            Some(MovementOutput::BodyMoved { unit_id, .. })
+                if *unit_id == Uuid::from_u128(1).into()
+        ));
     }
 
     #[test]
@@ -817,6 +993,30 @@ mod tests {
     }
 
     #[test]
+    fn direct_engine_static_obstacle_blocks_swept_movement() {
+        let mover_id: UnitInstanceId = Uuid::from_u128(1041).into();
+        let mut mover = unit(1041, WorldVec2::new(0.5, 1.5));
+        mover.body.goal = Some(MovementGoal::MoveToPoint {
+            point: WorldVec2::new(3.5, 1.5),
+            stop_radius: 0.1,
+        });
+
+        let mut input = movement_input(2_000, vec![mover]);
+        input
+            .static_obstacles
+            .push(MovementStaticObstacle::tile(Position::new(1, 1)));
+
+        let mut engine = DirectContinuousMovement::default();
+        let result = engine.tick(input);
+
+        let mover_to = moved_to(&result, mover_id);
+        assert!(
+            mover_to.x < 0.65,
+            "expanded obstacle should stop movement before tile (1, 1), got {mover_to:?}"
+        );
+    }
+
+    #[test]
     fn direct_engine_reports_attack_target_reached() {
         let target_id = Uuid::from_u128(2).into();
         let mut mover = unit(1, WorldVec2::new(0.0, 0.0));
@@ -914,6 +1114,47 @@ mod tests {
             input.static_obstacles,
             vec![MovementStaticObstacle::tile(obstacle)]
         );
+    }
+
+    #[test]
+    fn battle_core_movement_input_projects_non_rectangular_void_tiles_as_static_obstacles() {
+        let scenario = BattleScenario {
+            battlefield: crate::game::battle::scenario::BattleFieldSpec {
+                width: 3,
+                height: 3,
+                valid_tiles: vec![
+                    Position::new(1, 0),
+                    Position::new(1, 1),
+                    Position::new(1, 2),
+                ],
+                obstacles: vec![Position::new(1, 1)],
+            },
+            artifacts: Vec::new(),
+            groups: Vec::new(),
+            events: Vec::new(),
+            win_condition:
+                crate::game::battle::scenario::WinCondition::AllRequiredEnemyGroupsDefeated,
+            tactical_plan: crate::game::battle::scenario::TacticalPlan::default(),
+        };
+        let mut core = BattleCore::new_from_scenario(scenario, empty_game_data(), 123);
+        core.battlefield
+            .add_static_obstacle(Position::new(1, 1))
+            .unwrap();
+
+        let input = core.build_continuous_movement_input(0, 50);
+
+        assert!(input
+            .static_obstacles
+            .contains(&MovementStaticObstacle::tile(Position::new(1, 1))));
+        assert!(input
+            .static_obstacles
+            .contains(&MovementStaticObstacle::void_tile(Position::new(0, 0))));
+        assert!(input
+            .static_obstacles
+            .contains(&MovementStaticObstacle::void_tile(Position::new(2, 2))));
+        assert!(!input
+            .static_obstacles
+            .contains(&MovementStaticObstacle::void_tile(Position::new(1, 0))));
     }
 
     #[test]

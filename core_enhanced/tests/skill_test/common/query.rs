@@ -1,10 +1,10 @@
 use game_core::{
-    ecs::resources::Position,
+    game::resources::Position,
     game::{
         battle::{
             buffs::BuffId,
+            core::movement::types::WorldVec2,
             ids::UnitInstanceId,
-            placement::{PlacementBoard, PlacementSlotId},
             timeline::{AttackKind, Timeline, TimelineEntry, TimelineEvent},
         },
         enums::Side,
@@ -24,22 +24,20 @@ pub fn find_unit_spawn_at(
                 world_position,
                 owner: entry_owner,
                 ..
-            } if spawn_matches_placement_slot(*world_position, *entry_owner, position)
+            } if spawn_matches_tile_center(*world_position, position)
                 && owner.is_none_or(|expected| expected == *entry_owner)
         )
     })
 }
 
-fn spawn_matches_placement_slot(
+fn spawn_matches_tile_center(
     world_position: game_core::game::battle::core::movement::types::TimelineVec2,
-    owner: Side,
     position: Position,
 ) -> bool {
-    let board = PlacementBoard::new(crate::common::BOARD_WIDTH, crate::common::BOARD_HEIGHT);
-    let Some(slot) = board.slot(owner, PlacementSlotId::from(position)) else {
-        return false;
-    };
-    world_position.to_world().distance(slot.world_center) <= 0.001
+    world_position
+        .to_world()
+        .distance(WorldVec2::from_tile_center(position))
+        <= 0.001
 }
 
 pub fn find_unit_instance_at(

@@ -1,8 +1,17 @@
 mod common;
 
-use game_core::game::ability::{
-    DeliveryDef, SkillAreaAnchorSource, SkillAreaShapeDef, SkillTarget,
+use game_core::game::ability::{DeliveryDef, SkillAreaAnchorSource, SkillAreaShapeDef};
+use game_core::game::combat_preview::{
+    BattlefieldArchetype, CombatNodeType, CombatPreview, EnemyKind,
 };
+use game_core::game::data::{
+    pve_data::PveWaveSource,
+    reward_data::RewardTag,
+    skill_fragment_data::{SkillFragmentEffectDef, SkillFragmentOrigin},
+};
+use game_core::game::map::{MapNodeCategory, MapNodeDefinitionDatabase, MapNodeId};
+use game_core::game::reward::RewardEffect;
+use uuid::Uuid;
 
 #[test]
 fn load_game_data_from_ron_reads_step_based_skill_schema() {
@@ -13,7 +22,7 @@ fn load_game_data_from_ron_reads_step_based_skill_schema() {
         .get_by_id("scorched_explosion")
         .expect("scorched_explosion skill should exist in RON data");
 
-    assert_eq!(skill.id, "scorched_explosion");
+    assert_eq!(skill.id.as_str(), "scorched_explosion");
     assert_eq!(skill.steps.len(), 1);
     assert_eq!(skill.steps[0].id, "explode");
     assert_eq!(skill.steps[0].range_units, 2.0);
@@ -69,6 +78,20 @@ fn load_game_data_from_ron_reads_step_based_skill_schema() {
     assert_eq!(
         one_sin_skill.steps[0].presentation.target_anchor.as_deref(),
         Some("Head")
+    );
+
+    let one_sin_fragment_skill = game_data
+        .skill_data
+        .get_by_id("fragment_one_sin_penitence")
+        .expect("One Sin fragment imitation skill should exist in RON data");
+    assert_eq!(one_sin_fragment_skill.steps.len(), 2);
+    assert_eq!(
+        one_sin_fragment_skill.steps[0].id,
+        "fragment_penitence_judgement"
+    );
+    assert_eq!(
+        one_sin_fragment_skill.steps[1].id,
+        "fragment_penitence_absolution"
     );
 
     let queen = game_data
@@ -259,26 +282,222 @@ fn load_game_data_from_ron_reads_step_based_skill_schema() {
 }
 
 #[test]
-fn live_skill_area_targets_use_area_delivery() {
+fn load_game_data_from_ron_reads_skill_fragment_schema() {
     let game_data = common::load_game_data_from_ron();
 
-    for skill in game_data.skill_data.skills.iter() {
-        for step in &skill.steps {
-            let expects_spatial_area = matches!(
-                step.target,
-                SkillTarget::Allies { .. } | SkillTarget::Enemies { .. }
-            );
-            if expects_spatial_area {
-                assert!(
-                    matches!(step.delivery, DeliveryDef::Area { .. }),
-                    "skill `{}` step `{}` targets an area but still uses {:?}",
-                    skill.id,
-                    step.id,
-                    step.delivery
-                );
-            }
+    let fragment = game_data
+        .skill_fragment_data
+        .get_by_id_str("fragment_one_sin_penitence")
+        .expect("One Sin skill fragment should exist in RON data");
+
+    assert!(matches!(
+        &fragment.origin,
+        Some(SkillFragmentOrigin::Abnormality { abnormality_id })
+            if abnormality_id == "o-03-03_one_sin"
+    ));
+    assert!(matches!(
+        &fragment.effect,
+        SkillFragmentEffectDef::ActiveSkill {
+            imitation_skill_id, ..
         }
+            if imitation_skill_id.as_str() == "fragment_one_sin_penitence"
+    ));
+    assert!(
+        game_data
+            .skill_data
+            .get_by_id("fragment_one_sin_penitence")
+            .is_some(),
+        "fragment imitation skill must be an independent SkillDef"
+    );
+
+    let original_skill = game_data
+        .abnormality_data
+        .get_by_id("o-03-03_one_sin")
+        .and_then(|abnormality| abnormality.skill_id.as_ref())
+        .expect("origin abnormality should keep its original skill");
+    assert_eq!(original_skill.as_str(), "one_sin_penitence");
+}
+
+#[test]
+fn load_game_data_from_ron_reads_starter_employee_candidates() {
+    let game_data = common::load_game_data_from_ron();
+
+    let candidates = &game_data.starter_employee_data.candidates;
+    assert_eq!(candidates.len(), 6);
+    assert!(game_data
+        .starter_employee_data
+        .get_by_id("field_medic")
+        .is_some());
+    assert!(candidates
+        .iter()
+        .all(|candidate| !candidate.background.trim().is_empty()));
+}
+
+#[test]
+fn live_rewards_can_grant_skill_fragments_from_ron() {
+    let game_data = common::load_game_data_from_ron();
+
+    for (reward_id, fragment_id) in [
+        (
+            "one_sin_penitence_fragment_reward",
+            "fragment_one_sin_penitence",
+        ),
+        ("scorched_spark_fragment_reward", "fragment_scorched_spark"),
+        (
+            "red_shoes_impulse_fragment_reward",
+            "fragment_red_shoes_impulse",
+        ),
+        (
+            "freischutz_black_round_fragment_reward",
+            "fragment_freischutz_black_round",
+        ),
+    ] {
+        let reward = game_data
+            .reward_data
+            .get_by_id(reward_id)
+            .expect("skill fragment reward should exist in RON data");
+
+        assert!(reward.effects.iter().any(|effect| matches!(
+            effect,
+            RewardEffect::GrantSkillFragment { fragment_id: granted_fragment_id }
+                if granted_fragment_id.as_str() == fragment_id
+        )));
+        assert!(
+            reward.resolved_tags().contains(&RewardTag::SkillFragment),
+            "reward `{reward_id}` should be tagged as a skill fragment reward"
+        );
+        assert!(
+            game_data
+                .skill_fragment_data
+                .get_by_id_str(fragment_id)
+                .is_some(),
+            "reward `{reward_id}` grants missing skill fragment `{fragment_id}`"
+        );
     }
+
+    let research_reward = game_data
+        .reward_data
+        .get_by_id("scorched_spark_research_reward")
+        .expect("skill fragment research reward should exist in RON data");
+    assert!(
+        research_reward
+            .resolved_tags()
+            .contains(&RewardTag::ResearchProgress),
+        "skill fragment research reward should carry the ResearchProgress tag"
+    );
+    assert!(research_reward.effects.iter().any(|effect| matches!(
+        effect,
+        RewardEffect::GrantSkillFragmentResearch {
+            fragment_id,
+            amount: 3,
+        } if fragment_id.as_str() == "fragment_scorched_spark"
+    )));
+
+    let equipment_material_reward = game_data
+        .reward_data
+        .get_by_id("damaged_weapon_fragment_reward")
+        .expect("equipment material reward should exist in RON data");
+    assert!(
+        equipment_material_reward
+            .resolved_tags()
+            .contains(&RewardTag::Equipment),
+        "equipment material reward should carry the Equipment tag"
+    );
+    assert!(equipment_material_reward
+        .effects
+        .iter()
+        .any(|effect| matches!(
+            effect,
+            RewardEffect::GrantEquipmentMaterial {
+                material_id,
+                amount: 3,
+            } if material_id == "damaged_weapon_fragment"
+        )));
+    assert!(
+        game_data
+            .equipment_data
+            .get_material_by_id("damaged_weapon_fragment")
+            .is_some(),
+        "equipment material reward grants missing material"
+    );
+
+    let armor_material_reward = game_data
+        .reward_data
+        .get_by_id("damaged_armor_fragment_reward")
+        .expect("armor material reward should exist in RON data");
+    assert!(armor_material_reward.effects.iter().any(|effect| matches!(
+        effect,
+        RewardEffect::GrantEquipmentMaterial {
+            material_id,
+            amount: 3,
+        } if material_id == "damaged_armor_fragment"
+    )));
+
+    let field_salvage_reward = game_data
+        .reward_data
+        .get_by_id("field_equipment_salvage_reward")
+        .expect("field salvage reward should exist in RON data");
+    assert!(field_salvage_reward
+        .resolved_tags()
+        .contains(&RewardTag::Equipment));
+    assert!(field_salvage_reward.effects.iter().any(|effect| matches!(
+        effect,
+        RewardEffect::GrantEquipmentMaterial {
+            material_id,
+            amount: 2,
+        } if material_id == "damaged_weapon_fragment"
+    )));
+    assert!(field_salvage_reward.effects.iter().any(|effect| matches!(
+        effect,
+        RewardEffect::GrantEquipmentMaterial {
+            material_id,
+            amount: 2,
+        } if material_id == "damaged_armor_fragment"
+    )));
+
+    let high_risk_research_reward = game_data
+        .reward_data
+        .get_by_id("high_risk_abnormality_research_reward")
+        .expect("high-risk research reward should exist in RON data");
+    assert!(high_risk_research_reward
+        .resolved_tags()
+        .contains(&RewardTag::ResearchProgress));
+    assert!(high_risk_research_reward
+        .effects
+        .iter()
+        .any(|effect| matches!(
+            effect,
+            RewardEffect::GrantSkillFragmentResearch {
+                fragment_id,
+                amount: 2,
+            } if fragment_id.as_str() == "fragment_freischutz_black_round"
+        )));
+
+    let restoration_recipe = game_data
+        .equipment_data
+        .get_restoration_recipe_by_id("restore_fourth_match")
+        .expect("live equipment restoration recipe should exist");
+    assert_eq!(restoration_recipe.result_equipment_id, "fourth_match");
+    assert!(restoration_recipe
+        .costs
+        .iter()
+        .any(|cost| { cost.material_id == "damaged_weapon_fragment" && cost.amount == 3 }));
+    let dismantle_recipe = game_data
+        .equipment_data
+        .get_dismantle_recipe_by_equipment_id("fourth_match")
+        .expect("live equipment dismantle recipe should exist");
+    assert!(dismantle_recipe.yields.iter().any(|material| {
+        material.material_id == "damaged_weapon_fragment" && material.amount == 1
+    }));
+    let enhancement_recipe = game_data
+        .equipment_data
+        .get_enhancement_recipe_by_equipment_id("fourth_match")
+        .expect("live equipment enhancement recipe should exist");
+    assert_eq!(enhancement_recipe.max_level, 5);
+    assert!(enhancement_recipe
+        .costs_per_level
+        .iter()
+        .any(|cost| { cost.material_id == "damaged_weapon_fragment" && cost.amount == 2 }));
 }
 
 #[test]
@@ -307,16 +526,6 @@ fn remaining_instant_steps_are_intentionally_non_spatial() {
     for skill in game_data.skill_data.skills.iter() {
         for step in &skill.steps {
             if matches!(step.delivery, DeliveryDef::Instant) {
-                assert!(
-                    !matches!(
-                        step.target,
-                        SkillTarget::Allies { .. } | SkillTarget::Enemies { .. }
-                    ),
-                    "skill `{}` step `{}` still uses Instant for area target {:?}",
-                    skill.id,
-                    step.id,
-                    step.target
-                );
                 assert!(
                     step.presentation.projectile_vfx_id.is_none(),
                     "skill `{}` step `{}` still uses Instant despite projectile_vfx_id",
@@ -376,39 +585,6 @@ fn live_resource_skill_references_resolve() {
 fn live_event_and_pve_references_resolve() {
     let game_data = common::load_game_data_from_ron();
 
-    for pool in [
-        &game_data.event_pools.dawn,
-        &game_data.event_pools.noon,
-        &game_data.event_pools.dusk,
-        &game_data.event_pools.midnight,
-        &game_data.event_pools.white,
-    ] {
-        for weighted in &pool.shops {
-            assert!(
-                game_data.shop_data.get_by_uuid(&weighted.uuid).is_some(),
-                "event pool references missing shop uuid {}",
-                weighted.uuid
-            );
-        }
-        for weighted in &pool.bonuses {
-            assert!(
-                game_data.bonus_data.get_by_uuid(&weighted.uuid).is_some(),
-                "event pool references missing bonus uuid {}",
-                weighted.uuid
-            );
-        }
-        for weighted in &pool.random_events {
-            assert!(
-                game_data
-                    .random_event_data
-                    .get_by_uuid(&weighted.uuid)
-                    .is_some(),
-                "event pool references missing random event uuid {}",
-                weighted.uuid
-            );
-        }
-    }
-
     for event in &game_data.random_event_data.events {
         match &event.inner_metadata {
             game_core::game::data::random_event_data::RandomEventInnerMetadata::Shop(uuid) => {
@@ -419,10 +595,10 @@ fn live_event_and_pve_references_resolve() {
                     uuid
                 );
             }
-            game_core::game::data::random_event_data::RandomEventInnerMetadata::Bonus(uuid) => {
+            game_core::game::data::random_event_data::RandomEventInnerMetadata::Reward(uuid) => {
                 assert!(
-                    game_data.bonus_data.get_by_uuid(uuid).is_some(),
-                    "random event `{}` references missing bonus uuid {}",
+                    game_data.reward_data.get_by_uuid(uuid).is_some(),
+                    "random event `{}` references missing reward uuid {}",
                     event.id,
                     uuid
                 );
@@ -440,6 +616,20 @@ fn live_event_and_pve_references_resolve() {
 
     for encounter in &game_data.pve_data.encounters {
         assert!(
+            encounter.node_type.is_some(),
+            "live pve encounter `{}` must explicitly declare combat node purpose",
+            encounter.id
+        );
+        let node_type = encounter.node_type.expect("checked above");
+        assert!(
+            game_core::game::combat_mission_policy::CombatMissionPolicy::is_live_supported_node_type(
+                node_type
+            ),
+            "live pve encounter `{}` must not use deferred combat node type {:?}",
+            encounter.id,
+            node_type
+        );
+        assert!(
             game_data
                 .abnormality_data
                 .get_by_id(&encounter.abnormality_id)
@@ -448,24 +638,455 @@ fn live_event_and_pve_references_resolve() {
             encounter.id,
             encounter.abnormality_id
         );
-        for unit in &encounter.units {
-            assert!(
-                game_data
-                    .abnormality_data
-                    .get_by_id(&unit.abnormality_id)
-                    .is_some(),
-                "pve encounter `{}` references missing unit abnormality `{}`",
-                encounter.id,
-                unit.abnormality_id
-            );
+        for wave in encounter.wave_definitions() {
+            if let Some(PveWaveSource::GeneratedCorroded { preset_id, .. }) = &wave.source {
+                let preset = game_data
+                    .corroded_wave_data
+                    .get_by_id(preset_id)
+                    .unwrap_or_else(|| {
+                        panic!(
+                            "pve encounter `{}` wave `{}` references missing corroded wave preset `{}`",
+                            encounter.id, wave.id, preset_id
+                        )
+                    });
+                for role in &preset.role_mix {
+                    assert!(
+                        game_data
+                            .corroded_employee_data
+                            .get_by_id(&role.profile_id)
+                            .is_some(),
+                        "corroded wave preset `{}` references missing corroded employee profile `{}`",
+                        preset.id,
+                        role.profile_id
+                    );
+                }
+            }
+
+            for enemy in wave.manual_enemies() {
+                match enemy.kind {
+                    EnemyKind::Abnormality => assert!(
+                        game_data
+                            .abnormality_data
+                            .get_by_id(&enemy.abnormality_id)
+                            .is_some(),
+                        "pve encounter `{}` wave `{}` references missing enemy abnormality `{}`",
+                        encounter.id,
+                        wave.id,
+                        enemy.abnormality_id
+                    ),
+                    EnemyKind::CorrodedEmployee => {
+                        let profile_id = enemy
+                            .profile_id
+                            .as_deref()
+                            .expect("corroded employee wave enemy should specify profile_id");
+                        assert!(
+                            game_data
+                                .corroded_employee_data
+                                .get_by_id(profile_id)
+                                .is_some(),
+                            "pve encounter `{}` wave `{}` references missing corroded employee profile `{}`",
+                            encounter.id,
+                            wave.id,
+                            profile_id
+                        );
+                    }
+                    EnemyKind::FacilityEntity => {
+                        panic!("FacilityEntity pve enemy is not implemented yet");
+                    }
+                }
+            }
         }
-        for bonus_uuid in &encounter.reward_bonus_uuids {
+        for reward_uuid in &encounter.reward_uuids {
+            let reward = game_data
+                .reward_data
+                .get_by_uuid(reward_uuid)
+                .unwrap_or_else(|| {
+                    panic!(
+                        "pve encounter `{}` references missing reward uuid {}",
+                        encounter.id, reward_uuid
+                    )
+                });
             assert!(
-                game_data.bonus_data.get_by_uuid(bonus_uuid).is_some(),
-                "pve encounter `{}` references missing reward bonus uuid {}",
+                !reward.resolved_tags().contains(&RewardTag::Forbidden),
+                "pve encounter `{}` must not offer forbidden legacy reward `{}`",
                 encounter.id,
-                bonus_uuid
+                reward.id
             );
         }
     }
+}
+
+#[test]
+fn live_map_content_pools_are_safe_and_resolve() {
+    let game_data = common::load_game_data_from_ron();
+    let map_nodes = MapNodeDefinitionDatabase::builtin();
+
+    for definition in &map_nodes.nodes {
+        match &definition.payload {
+            game_core::game::map::MapNodePayload::Shop {
+                shop_pool_id: Some(pool_id),
+                ..
+            } => {
+                let pool = game_data
+                    .shop_data
+                    .pool_by_id(pool_id)
+                    .unwrap_or_else(|| panic!("map shop node references missing pool `{pool_id}`"));
+                assert!(
+                    !pool.shop_ids.is_empty(),
+                    "map shop pool `{}` must not be empty",
+                    pool.id
+                );
+            }
+            game_core::game::map::MapNodePayload::Reward {
+                reward_pool_id: Some(pool_id),
+            } => {
+                let pool = game_data
+                    .reward_data
+                    .pool_by_id(pool_id)
+                    .unwrap_or_else(|| {
+                        panic!("map reward node references missing pool `{pool_id}`")
+                    });
+                assert!(
+                    !pool.reward_ids.is_empty(),
+                    "map reward pool `{}` must not be empty",
+                    pool.id
+                );
+                for reward_id in &pool.reward_ids {
+                    let reward = game_data
+                        .reward_data
+                        .get_by_id(reward_id)
+                        .expect("reward pool entries should resolve");
+                    assert!(
+                        !reward.resolved_tags().contains(&RewardTag::Forbidden),
+                        "map reward pool `{}` must not contain forbidden reward `{}`",
+                        pool.id,
+                        reward.id
+                    );
+                }
+            }
+            game_core::game::map::MapNodePayload::Event {
+                event_pool_id: Some(pool_id),
+                ..
+            } => {
+                let pool = game_data
+                    .random_event_data
+                    .pool_by_id(pool_id)
+                    .unwrap_or_else(|| {
+                        panic!("map event node references missing pool `{pool_id}`")
+                    });
+                assert!(
+                    !pool.event_ids.is_empty(),
+                    "map event pool `{}` must not be empty",
+                    pool.id
+                );
+                for event_id in &pool.event_ids {
+                    let event = game_data
+                        .random_event_data
+                        .get_by_id(event_id)
+                        .expect("random event pool entries should resolve");
+                    assert!(
+                        !matches!(
+                            event.inner_metadata,
+                            game_core::game::data::random_event_data::RandomEventInnerMetadata::Suppress(_)
+                        ),
+                        "map event pool `{}` must not contain suppress event `{}`",
+                        pool.id,
+                        event.id
+                    );
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+#[test]
+fn live_pve_reward_contracts_do_not_offer_forbidden_abnormality_materialization() {
+    let game_data = common::load_game_data_from_ron();
+
+    for encounter in &game_data.pve_data.encounters {
+        for reward_uuid in &encounter.reward_uuids {
+            let reward = game_data
+                .reward_data
+                .get_by_uuid(reward_uuid)
+                .expect("pve reward reference should resolve");
+            assert!(
+                !reward.resolved_tags().contains(&RewardTag::Forbidden),
+                "pve encounter `{}` must not offer forbidden legacy reward `{}`",
+                encounter.id,
+                reward.id
+            );
+            assert!(
+                !matches!(
+                    reward.id.as_str(),
+                    "ego_gift_reward" | "double_ego_gift_reward"
+                ),
+                "pve encounter `{}` should use material/research rewards instead of generic equipment reward `{}`",
+                encounter.id,
+                reward.id
+            );
+        }
+    }
+}
+
+#[test]
+fn live_pve_scenario_authoring_contracts_drive_preview_data() {
+    let game_data = common::load_game_data_from_ron();
+
+    for profile_id in [
+        "corroded_guard",
+        "corroded_rusher",
+        "corroded_marksman",
+        "corroded_bruiser",
+        "corroded_medic",
+        "corroded_veteran",
+    ] {
+        assert!(
+            game_data
+                .corroded_employee_data
+                .get_by_id(profile_id)
+                .is_some(),
+            "corroded employee profile `{profile_id}` should exist"
+        );
+    }
+
+    let scorched = game_data
+        .pve_data
+        .get_by_id("suppress_scorched_girl")
+        .expect("scorched scenario should exist");
+    assert_eq!(scorched.node_type, Some(CombatNodeType::Suppression));
+    assert!(matches!(
+        scorched
+            .battlefield
+            .as_ref()
+            .and_then(|battlefield| battlefield.archetype),
+        Some(BattlefieldArchetype::OpenHall)
+    ));
+    assert!(matches!(
+        scorched.authored_win_condition(),
+        Some(game_core::game::battle::scenario::WinCondition::AllRequiredEnemyGroupsDefeated)
+    ));
+    assert_eq!(scorched.waves[0].spawn_zone_ids, ["north_west_entry"]);
+    assert!(scorched.reward_uuids.iter().any(|uuid| {
+        game_data
+            .reward_data
+            .get_by_uuid(uuid)
+            .is_some_and(|reward| reward.id == "scorched_spark_fragment_reward")
+    }));
+
+    let red_shoes = game_data
+        .pve_data
+        .get_by_id("suppress_red_shoes")
+        .expect("red shoes scenario should exist");
+    assert!(red_shoes.reward_uuids.iter().any(|uuid| {
+        game_data
+            .reward_data
+            .get_by_uuid(uuid)
+            .is_some_and(|reward| reward.id == "red_shoes_impulse_fragment_reward")
+    }));
+
+    let freischutz = game_data
+        .pve_data
+        .get_by_id("suppress_freischutz")
+        .expect("freischutz scenario should exist");
+    assert_eq!(freischutz.node_type, Some(CombatNodeType::Suppression));
+    assert!(matches!(
+        freischutz
+            .battlefield
+            .as_ref()
+            .and_then(|battlefield| battlefield.archetype),
+        Some(BattlefieldArchetype::Ambush)
+    ));
+    assert_eq!(freischutz.waves.len(), 2);
+    assert_eq!(freischutz.waves[1].time_ms, 6000);
+    assert_eq!(freischutz.waves[1].spawn_zone_ids, ["side_ambush"]);
+    assert!(matches!(
+        freischutz.waves[1].enemies[0].kind,
+        EnemyKind::CorrodedEmployee
+    ));
+    assert_eq!(
+        freischutz.waves[1].enemies[0].profile_id.as_deref(),
+        Some("corroded_marksman")
+    );
+    assert!(freischutz.reward_uuids.iter().any(|uuid| {
+        game_data
+            .reward_data
+            .get_by_uuid(uuid)
+            .is_some_and(|reward| reward.id == "freischutz_black_round_fragment_reward")
+    }));
+
+    let freischutz_preview = CombatPreview::generate_for_node(
+        MapNodeId::new(Uuid::from_u128(0xF43)),
+        MapNodeCategory::Combat,
+        Some("suppress_freischutz"),
+        game_data.as_ref(),
+        true,
+        99,
+    );
+    assert_eq!(freischutz_preview.archetype, BattlefieldArchetype::Ambush);
+    assert_eq!(freischutz_preview.node_type, CombatNodeType::Suppression);
+    assert_eq!(freischutz_preview.spawn_waves.len(), 2);
+    assert_eq!(freischutz_preview.spawn_waves[1].time_ms, 6000);
+    assert_eq!(
+        freischutz_preview.spawn_waves[1].spawn_zone_ids,
+        ["side_ambush"]
+    );
+    assert!(matches!(
+        freischutz_preview.spawn_waves[1].enemy_entries[0].kind,
+        EnemyKind::CorrodedEmployee
+    ));
+    assert_eq!(
+        freischutz_preview.spawn_waves[1].enemy_entries[0]
+            .profile_id
+            .as_deref(),
+        Some("corroded_marksman")
+    );
+    assert_eq!(
+        freischutz_preview.spawn_waves[1].enemy_entries[0]
+            .appearance_seeds
+            .len() as u32,
+        freischutz_preview.spawn_waves[1].enemy_entries[0].count
+    );
+    assert!(freischutz_preview
+        .spawn_zones
+        .iter()
+        .any(|zone| zone.id == "side_ambush"));
+
+    let recovery = game_data
+        .pve_data
+        .get_by_id("recover_black_box_archive")
+        .expect("black box recovery scenario should exist");
+    assert_eq!(recovery.node_type, Some(CombatNodeType::Recovery));
+    assert!(recovery.tactical_plan.is_none());
+    assert!(recovery.authored_win_condition().is_none());
+    assert!(matches!(
+        recovery
+            .battlefield
+            .as_ref()
+            .and_then(|battlefield| battlefield.archetype),
+        Some(BattlefieldArchetype::Corridor)
+    ));
+    assert_eq!(recovery.waves.len(), 2);
+    assert_eq!(recovery.waves[0].spawn_zone_ids, ["north_entry"]);
+    assert!(!recovery.waves[0].required_for_victory);
+    assert!(recovery
+        .waves
+        .iter()
+        .all(|wave| matches!(wave.source, Some(PveWaveSource::GeneratedCorroded { .. }))));
+    assert!(recovery.reward_uuids.iter().any(|uuid| {
+        game_data
+            .reward_data
+            .get_by_uuid(uuid)
+            .is_some_and(|reward| reward.id == "field_equipment_salvage_reward")
+    }));
+    assert!(recovery.reward_uuids.iter().any(|uuid| {
+        game_data
+            .reward_data
+            .get_by_uuid(uuid)
+            .is_some_and(|reward| reward.id == "early_abnormality_research_reward")
+    }));
+
+    let recovery_preview = CombatPreview::generate_for_node(
+        MapNodeId::new(Uuid::from_u128(0xB10C)),
+        MapNodeCategory::Combat,
+        Some("recover_black_box_archive"),
+        game_data.as_ref(),
+        true,
+        17,
+    );
+    assert_eq!(recovery_preview.node_type, CombatNodeType::Recovery);
+    assert_eq!(recovery_preview.archetype, BattlefieldArchetype::Corridor);
+    assert_eq!(recovery_preview.spawn_waves.len(), 2);
+    assert_eq!(
+        recovery_preview.spawn_waves[0].spawn_zone_ids,
+        ["north_entry"]
+    );
+    assert!(recovery_preview
+        .spawn_waves
+        .iter()
+        .flat_map(|wave| wave.enemy_entries.iter())
+        .all(|entry| matches!(entry.kind, EnemyKind::CorrodedEmployee)));
+
+    let defense = game_data
+        .pve_data
+        .get_by_id("defend_black_box_relay")
+        .expect("black box defense scenario should exist");
+    assert_eq!(defense.node_type, Some(CombatNodeType::Defense));
+    assert!(defense.tactical_plan.is_none());
+    assert!(defense.authored_win_condition().is_none());
+    assert!(matches!(
+        defense
+            .battlefield
+            .as_ref()
+            .and_then(|battlefield| battlefield.archetype),
+        Some(BattlefieldArchetype::ChokePoint)
+    ));
+    assert_eq!(defense.waves.len(), 2);
+    assert!(defense.waves.iter().all(|wave| {
+        matches!(
+            wave.source,
+            Some(PveWaveSource::GeneratedCorroded { ref preset_id, .. })
+                if preset_id.starts_with("black_box_breach_")
+        )
+    }));
+    assert!(defense.reward_uuids.iter().any(|uuid| {
+        game_data
+            .reward_data
+            .get_by_uuid(uuid)
+            .is_some_and(|reward| reward.id == "field_equipment_salvage_reward")
+    }));
+    assert!(defense.reward_uuids.iter().any(|uuid| {
+        game_data
+            .reward_data
+            .get_by_uuid(uuid)
+            .is_some_and(|reward| reward.id == "early_abnormality_research_reward")
+    }));
+
+    let defense_preview = CombatPreview::generate_for_node(
+        MapNodeId::new(Uuid::from_u128(0xD3F3)),
+        MapNodeCategory::Combat,
+        Some("defend_black_box_relay"),
+        game_data.as_ref(),
+        true,
+        41,
+    );
+    assert_eq!(defense_preview.node_type, CombatNodeType::Defense);
+    assert_eq!(defense_preview.archetype, BattlefieldArchetype::ChokePoint);
+    assert_eq!(defense_preview.spawn_waves.len(), 2);
+    assert_eq!(
+        defense_preview.spawn_waves[0].spawn_zone_ids,
+        ["north_entry"]
+    );
+    assert!(defense_preview.spawn_waves.iter().all(|wave| {
+        wave.required_for_victory
+            && wave
+                .enemy_entries
+                .iter()
+                .all(|entry| matches!(entry.kind, EnemyKind::CorrodedEmployee))
+    }));
+
+    let plague = game_data
+        .pve_data
+        .get_by_id("suppress_plague_doctor")
+        .expect("plague doctor scenario should exist");
+    assert_eq!(plague.node_type, Some(CombatNodeType::Boss));
+    assert!(matches!(
+        plague
+            .battlefield
+            .as_ref()
+            .and_then(|battlefield| battlefield.archetype),
+        Some(BattlefieldArchetype::BossArena)
+    ));
+    let mut tactical_plan = game_core::game::battle::scenario::TacticalPlan::free_engage();
+    plague.apply_authored_tactical_plan(&mut tactical_plan);
+    assert_eq!(tactical_plan.points.len(), 1);
+    assert!(matches!(
+        tactical_plan.objective,
+        game_core::game::battle::scenario::BattleObjective::DefeatBoss { ref unit_ref }
+            if unit_ref.0 == "enemy_wave_0_0"
+    ));
+    assert!(matches!(
+        tactical_plan.enemy_plan,
+        game_core::game::battle::scenario::EnemyMovementPlan::AssaultPlayer
+    ));
 }

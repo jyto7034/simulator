@@ -144,20 +144,33 @@ impl TryFrom<ShopMetadataRaw> for ShopMetadata {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ShopDatabase {
     pub shops: Vec<ShopMetadata>,
+    #[serde(default)]
+    pub pools: Vec<ShopPoolMetadata>,
     #[serde(skip)]
     by_id: OnceLock<HashMap<String, usize>>,
     #[serde(skip)]
     by_uuid: OnceLock<HashMap<Uuid, usize>>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ShopPoolMetadata {
+    pub id: String,
+    pub shop_ids: Vec<String>,
+}
+
 impl ShopDatabase {
     pub fn new(shops: Vec<ShopMetadata>) -> Self {
+        Self::new_with_pools(shops, vec![])
+    }
+
+    pub fn new_with_pools(shops: Vec<ShopMetadata>, pools: Vec<ShopPoolMetadata>) -> Self {
         info!("Shop: {:?}", shops);
         let by_id = once_lock_with(build_string_index(&shops, "shop id", |item| &item.id));
         let by_uuid = once_lock_with(build_uuid_index(&shops, "shop uuid", |item| item.uuid));
 
         Self {
             shops,
+            pools,
             by_id,
             by_uuid,
         }
@@ -176,6 +189,17 @@ impl ShopDatabase {
     pub(crate) fn validate_indexes(&self) {
         let _ = self.by_id();
         let _ = self.by_uuid();
+        for pool in &self.pools {
+            assert!(!pool.id.is_empty(), "shop pool id must not be empty");
+            for shop_id in &pool.shop_ids {
+                assert!(
+                    self.get_by_id(shop_id).is_some(),
+                    "shop pool '{}' references missing shop '{}'",
+                    pool.id,
+                    shop_id
+                );
+            }
+        }
     }
 
     pub fn get_by_id(&self, id: &str) -> Option<&ShopMetadata> {
@@ -188,6 +212,10 @@ impl ShopDatabase {
         self.by_uuid()
             .get(uuid)
             .and_then(|&index| self.shops.get(index))
+    }
+
+    pub fn pool_by_id(&self, id: &str) -> Option<&ShopPoolMetadata> {
+        self.pools.iter().find(|pool| pool.id == id)
     }
 }
 

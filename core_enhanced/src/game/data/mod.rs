@@ -10,13 +10,16 @@ use uuid::Uuid;
 use crate::game::data::{
     abnormality_data::{AbnormalityDatabase, AbnormalityMetadata},
     artifact_data::{ArtifactDatabase, ArtifactMetadata},
-    bonus_data::BonusDatabase,
+    corroded_employee_data::CorrodedEmployeeProfileDatabase,
+    corroded_wave_data::CorrodedWavePresetDatabase,
+    employee_data::StarterEmployeeCandidateDatabase,
     equipment_data::{EquipmentDatabase, EquipmentMetadata},
-    event_pools::EventPoolConfig,
     pve_data::PveEncounterDatabase,
     random_event_data::RandomEventDatabase,
+    reward_data::RewardDatabase,
     shop_data::ShopDatabase,
     skill_data::SkillDatabase,
+    skill_fragment_data::SkillFragmentDatabase,
 };
 
 // 환상체 (기물) 정보
@@ -25,14 +28,17 @@ pub mod abnormality_data;
 // 아티팩트 정보
 pub mod artifact_data;
 
-// 보너스 이벤트 정보
-pub mod bonus_data;
-
 // 아이템 ( 장착 장비 ) 정보
 pub mod equipment_data;
 
-// 이벤트 생성을 위한 pools
-pub mod event_pools;
+// 침식된 전 탐사 직원 적 프로필
+pub mod corroded_employee_data;
+
+// 침식 직원 웨이브 생성 preset
+pub mod corroded_wave_data;
+
+// 시작 직원 후보 데이터
+pub mod employee_data;
 
 // PvE 전투 데이터
 pub mod pve_data;
@@ -40,8 +46,14 @@ pub mod pve_data;
 // 랜덤 인카운트 이벤트 정보
 pub mod random_event_data;
 
+// 보상 정보
+pub mod reward_data;
+
 // 스킬 정보
 pub mod skill_data;
+
+// 직원 스킬 파편 정보
+pub mod skill_fragment_data;
 
 // 상점 정보
 pub mod shop_data;
@@ -95,12 +107,15 @@ pub(crate) fn build_string_index<T>(
 pub struct GameDataBase {
     /// 환상체, 장비, 아티팩트 Raw 데이터를 저장하는 마스터 테이블
     pub abnormality_data: Arc<AbnormalityDatabase>,
+    pub corroded_employee_data: Arc<CorrodedEmployeeProfileDatabase>,
+    pub corroded_wave_data: Arc<CorrodedWavePresetDatabase>,
+    pub starter_employee_data: Arc<StarterEmployeeCandidateDatabase>,
     pub artifact_data: Arc<ArtifactDatabase>,
     pub equipment_data: Arc<EquipmentDatabase>,
 
-    /// 마스터 테이블을 참고하여 상인, 랜덤 이벤트, 보너스 등을 구성하여 저장하는 게임 데이터베이스
+    /// 마스터 테이블을 참고하여 상인, 랜덤 이벤트, 보상 등을 구성하여 저장하는 게임 데이터베이스
     pub shop_data: Arc<ShopDatabase>,
-    pub bonus_data: Arc<BonusDatabase>,
+    pub reward_data: Arc<RewardDatabase>,
     pub random_event_data: Arc<RandomEventDatabase>,
 
     /// PvE 전투(Suppress) 데이터
@@ -109,8 +124,8 @@ pub struct GameDataBase {
     /// 스킬 메타데이터 DB
     pub skill_data: Arc<SkillDatabase>,
 
-    /// 이벤트 생성을 위한 가중치 풀 (Ordeal별 이벤트 확률)
-    pub event_pools: EventPoolConfig,
+    /// 직원 스킬 파편 메타데이터 DB
+    pub skill_fragment_data: Arc<SkillFragmentDatabase>,
 
     /// UUID 기반 아이템 조회 레지스트리
     pub item_registry: ItemRegistry,
@@ -118,14 +133,210 @@ pub struct GameDataBase {
 
 pub struct GameDataBaseParts {
     pub abnormality_data: Arc<AbnormalityDatabase>,
+    pub corroded_employee_data: Arc<CorrodedEmployeeProfileDatabase>,
+    pub corroded_wave_data: Arc<CorrodedWavePresetDatabase>,
+    pub starter_employee_data: Arc<StarterEmployeeCandidateDatabase>,
     pub artifact_data: Arc<ArtifactDatabase>,
     pub equipment_data: Arc<EquipmentDatabase>,
     pub shop_data: Arc<ShopDatabase>,
-    pub bonus_data: Arc<BonusDatabase>,
+    pub reward_data: Arc<RewardDatabase>,
     pub random_event_data: Arc<RandomEventDatabase>,
     pub pve_data: Arc<PveEncounterDatabase>,
     pub skill_data: Arc<SkillDatabase>,
-    pub event_pools: EventPoolConfig,
+    pub skill_fragment_data: Arc<SkillFragmentDatabase>,
+}
+
+pub struct GameDataBuilder {
+    abnormality_data: Arc<AbnormalityDatabase>,
+    corroded_employee_data: Arc<CorrodedEmployeeProfileDatabase>,
+    corroded_wave_data: Arc<CorrodedWavePresetDatabase>,
+    starter_employee_data: Arc<StarterEmployeeCandidateDatabase>,
+    artifact_data: Arc<ArtifactDatabase>,
+    equipment_data: Arc<EquipmentDatabase>,
+    shop_data: Arc<ShopDatabase>,
+    reward_data: Arc<RewardDatabase>,
+    random_event_data: Arc<RandomEventDatabase>,
+    pve_data: Arc<PveEncounterDatabase>,
+    skill_data: Arc<SkillDatabase>,
+    skill_fragment_data: Arc<SkillFragmentDatabase>,
+}
+
+impl GameDataBuilder {
+    pub fn empty() -> Self {
+        Self {
+            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![])),
+            corroded_employee_data: Arc::new(CorrodedEmployeeProfileDatabase::new(vec![])),
+            corroded_wave_data: Arc::new(CorrodedWavePresetDatabase::new(vec![])),
+            starter_employee_data: Arc::new(StarterEmployeeCandidateDatabase::new(vec![])),
+            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
+            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
+            shop_data: Arc::new(ShopDatabase::new(vec![])),
+            reward_data: Arc::new(RewardDatabase::new(vec![])),
+            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
+            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
+            skill_data: Arc::new(SkillDatabase::new(vec![])),
+            skill_fragment_data: Arc::new(SkillFragmentDatabase::with_builtin_starter(vec![])),
+        }
+    }
+
+    pub fn with_abnormalities(mut self, items: Vec<AbnormalityMetadata>) -> Self {
+        self.abnormality_data = Arc::new(AbnormalityDatabase::new(items));
+        self
+    }
+
+    pub fn with_abnormality_data(mut self, data: Arc<AbnormalityDatabase>) -> Self {
+        self.abnormality_data = data;
+        self
+    }
+
+    pub fn with_corroded_employee_profiles(
+        mut self,
+        data: CorrodedEmployeeProfileDatabase,
+    ) -> Self {
+        self.corroded_employee_data = Arc::new(data);
+        self
+    }
+
+    pub fn with_corroded_employee_data(
+        mut self,
+        data: Arc<CorrodedEmployeeProfileDatabase>,
+    ) -> Self {
+        self.corroded_employee_data = data;
+        self
+    }
+
+    pub fn with_corroded_wave_presets(mut self, data: CorrodedWavePresetDatabase) -> Self {
+        self.corroded_wave_data = Arc::new(data);
+        self
+    }
+
+    pub fn with_corroded_wave_data(mut self, data: Arc<CorrodedWavePresetDatabase>) -> Self {
+        self.corroded_wave_data = data;
+        self
+    }
+
+    pub fn with_starter_employee_candidates(
+        mut self,
+        data: StarterEmployeeCandidateDatabase,
+    ) -> Self {
+        self.starter_employee_data = Arc::new(data);
+        self
+    }
+
+    pub fn with_starter_employee_data(
+        mut self,
+        data: Arc<StarterEmployeeCandidateDatabase>,
+    ) -> Self {
+        self.starter_employee_data = data;
+        self
+    }
+
+    pub fn with_artifacts(mut self, items: Vec<ArtifactMetadata>) -> Self {
+        self.artifact_data = Arc::new(ArtifactDatabase::new(items));
+        self
+    }
+
+    pub fn with_artifact_data(mut self, data: Arc<ArtifactDatabase>) -> Self {
+        self.artifact_data = data;
+        self
+    }
+
+    pub fn with_equipment(mut self, items: Vec<EquipmentMetadata>) -> Self {
+        self.equipment_data = Arc::new(EquipmentDatabase::new(items));
+        self
+    }
+
+    pub fn with_equipment_data(mut self, data: Arc<EquipmentDatabase>) -> Self {
+        self.equipment_data = data;
+        self
+    }
+
+    pub fn with_shops(mut self, data: ShopDatabase) -> Self {
+        self.shop_data = Arc::new(data);
+        self
+    }
+
+    pub fn with_shop_data(mut self, data: Arc<ShopDatabase>) -> Self {
+        self.shop_data = data;
+        self
+    }
+
+    pub fn with_rewards(mut self, data: RewardDatabase) -> Self {
+        self.reward_data = Arc::new(data);
+        self
+    }
+
+    pub fn with_reward_data(mut self, data: Arc<RewardDatabase>) -> Self {
+        self.reward_data = data;
+        self
+    }
+
+    pub fn with_random_events(mut self, data: RandomEventDatabase) -> Self {
+        self.random_event_data = Arc::new(data);
+        self
+    }
+
+    pub fn with_random_event_data(mut self, data: Arc<RandomEventDatabase>) -> Self {
+        self.random_event_data = data;
+        self
+    }
+
+    pub fn with_pve(mut self, data: PveEncounterDatabase) -> Self {
+        self.pve_data = Arc::new(data);
+        self
+    }
+
+    pub fn with_pve_data(mut self, data: Arc<PveEncounterDatabase>) -> Self {
+        self.pve_data = data;
+        self
+    }
+
+    pub fn with_skills(mut self, data: SkillDatabase) -> Self {
+        self.skill_data = Arc::new(data);
+        self
+    }
+
+    pub fn with_skill_data(mut self, data: Arc<SkillDatabase>) -> Self {
+        self.skill_data = data;
+        self
+    }
+
+    pub fn with_skill_fragments(mut self, data: SkillFragmentDatabase) -> Self {
+        self.skill_fragment_data = Arc::new(data);
+        self
+    }
+
+    pub fn with_skill_fragment_data(mut self, data: Arc<SkillFragmentDatabase>) -> Self {
+        self.skill_fragment_data = data;
+        self
+    }
+
+    pub fn build(self) -> GameDataBase {
+        GameDataBase::new(GameDataBaseParts {
+            abnormality_data: self.abnormality_data,
+            corroded_employee_data: self.corroded_employee_data,
+            corroded_wave_data: self.corroded_wave_data,
+            starter_employee_data: self.starter_employee_data,
+            artifact_data: self.artifact_data,
+            equipment_data: self.equipment_data,
+            shop_data: self.shop_data,
+            reward_data: self.reward_data,
+            random_event_data: self.random_event_data,
+            pve_data: self.pve_data,
+            skill_data: self.skill_data,
+            skill_fragment_data: self.skill_fragment_data,
+        })
+    }
+
+    pub fn build_arc(self) -> Arc<GameDataBase> {
+        Arc::new(self.build())
+    }
+}
+
+impl Default for GameDataBuilder {
+    fn default() -> Self {
+        Self::empty()
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -375,42 +586,334 @@ fn insert_item_index(by_uuid: &mut HashMap<Uuid, ItemIndex>, uuid: Uuid, new_ind
     }
 }
 
+fn validate_skill_fragment_skill_references(
+    skill_fragment_data: &SkillFragmentDatabase,
+    abnormality_data: &AbnormalityDatabase,
+    skill_data: &SkillDatabase,
+) {
+    for fragment in &skill_fragment_data.fragments {
+        if let Some(skill_fragment_data::SkillFragmentOrigin::Abnormality { abnormality_id }) =
+            &fragment.origin
+        {
+            assert!(
+                abnormality_data.get_by_id(abnormality_id).is_some(),
+                "skill fragment '{}' references unknown origin abnormality '{}'",
+                fragment.id,
+                abnormality_id
+            );
+        }
+
+        for source in &fragment.sources {
+            match source {
+                skill_fragment_data::SkillFragmentAcquisitionSource::AbnormalitySuppression {
+                    abnormality_id,
+                }
+                | skill_fragment_data::SkillFragmentAcquisitionSource::AbnormalityContainment {
+                    abnormality_id,
+                } => assert!(
+                    abnormality_data.get_by_id(abnormality_id).is_some(),
+                    "skill fragment '{}' references unknown source abnormality '{}'",
+                    fragment.id,
+                    abnormality_id
+                ),
+                skill_fragment_data::SkillFragmentAcquisitionSource::RareReward
+                | skill_fragment_data::SkillFragmentAcquisitionSource::DependentConcept {
+                    ..
+                } => {}
+            }
+        }
+
+        for dependency in &fragment.dependencies {
+            if let skill_fragment_data::SkillFragmentDependency::SourceAbnormality {
+                abnormality_id,
+            } = dependency
+            {
+                assert!(
+                    abnormality_data.get_by_id(abnormality_id).is_some(),
+                    "skill fragment '{}' references unknown dependency abnormality '{}'",
+                    fragment.id,
+                    abnormality_id
+                );
+            }
+        }
+
+        let (imitation_skill_id, upgrade_skill_ids, awakened_skill_id) = match &fragment.effect {
+            skill_fragment_data::SkillFragmentEffectDef::ActiveSkill {
+                imitation_skill_id,
+                upgrade_skill_ids,
+                awakened_skill_id,
+            } => (imitation_skill_id, upgrade_skill_ids, awakened_skill_id),
+            _ => continue,
+        };
+
+        assert!(
+            skill_data.get_by_id(imitation_skill_id).is_some(),
+            "skill fragment '{}' references unknown imitation skill '{}'",
+            fragment.id,
+            imitation_skill_id
+        );
+        for (level, skill_id) in upgrade_skill_ids {
+            assert!(
+                skill_data.get_by_id(skill_id).is_some(),
+                "skill fragment '{}' references unknown upgrade skill '{}' at level {}",
+                fragment.id,
+                skill_id,
+                level
+            );
+        }
+        if let Some(awakened_skill_id) = awakened_skill_id {
+            assert!(
+                skill_data.get_by_id(awakened_skill_id).is_some(),
+                "skill fragment '{}' references unknown awakened skill '{}'",
+                fragment.id,
+                awakened_skill_id
+            );
+        }
+    }
+}
+
+fn validate_reward_references(
+    reward_data: &RewardDatabase,
+    equipment_data: &EquipmentDatabase,
+    artifact_data: &ArtifactDatabase,
+    skill_fragment_data: &SkillFragmentDatabase,
+) {
+    for reward in &reward_data.rewards {
+        for effect in &reward.effects {
+            match effect {
+                crate::game::reward::RewardEffect::GrantEquipment {
+                    equipment_id: Some(equipment_id),
+                } => assert!(
+                    equipment_data.get_by_id(equipment_id).is_some(),
+                    "reward '{}' references unknown equipment '{}'",
+                    reward.id,
+                    equipment_id
+                ),
+                crate::game::reward::RewardEffect::GrantEquipmentMaterial {
+                    material_id,
+                    amount,
+                } => {
+                    assert!(
+                        *amount > 0,
+                        "reward '{}' grants zero equipment material",
+                        reward.id
+                    );
+                    assert!(
+                        equipment_data.get_material_by_id(material_id).is_some(),
+                        "reward '{}' references unknown equipment material '{}'",
+                        reward.id,
+                        material_id
+                    );
+                }
+                crate::game::reward::RewardEffect::GrantArtifact { artifact_id } => assert!(
+                    artifact_data.get_by_id(artifact_id).is_some(),
+                    "reward '{}' references unknown artifact '{}'",
+                    reward.id,
+                    artifact_id
+                ),
+                crate::game::reward::RewardEffect::GrantSkillFragment { fragment_id } => assert!(
+                    skill_fragment_data.get_by_id(fragment_id).is_some(),
+                    "reward '{}' references unknown skill fragment '{}'",
+                    reward.id,
+                    fragment_id
+                ),
+                crate::game::reward::RewardEffect::GrantSkillFragmentResearch {
+                    fragment_id,
+                    amount,
+                } => {
+                    assert!(
+                        *amount > 0,
+                        "reward '{}' grants zero skill fragment research progress",
+                        reward.id
+                    );
+                    assert!(
+                        skill_fragment_data.get_by_id(fragment_id).is_some(),
+                        "reward '{}' references unknown skill fragment research target '{}'",
+                        reward.id,
+                        fragment_id
+                    );
+                }
+                crate::game::reward::RewardEffect::GrantEnkephalin { .. }
+                | crate::game::reward::RewardEffect::GrantExperience { .. }
+                | crate::game::reward::RewardEffect::GrantEquipment { equipment_id: None }
+                | crate::game::reward::RewardEffect::ForbiddenAbnormalityGrant => {}
+            }
+        }
+    }
+}
+
+fn validate_pve_enemy_references(
+    pve_data: &PveEncounterDatabase,
+    abnormality_data: &AbnormalityDatabase,
+    corroded_employee_data: &CorrodedEmployeeProfileDatabase,
+    corroded_wave_data: &CorrodedWavePresetDatabase,
+    reward_data: &RewardDatabase,
+) {
+    for encounter in &pve_data.encounters {
+        for wave in &encounter.waves {
+            if let Some(source) = &wave.source {
+                if let crate::game::data::pve_data::PveWaveSource::GeneratedCorroded {
+                    preset_id,
+                    ..
+                } = source
+                {
+                    let preset = corroded_wave_data.get_by_id(preset_id).unwrap_or_else(|| {
+                        panic!(
+                            "pve encounter '{}' wave '{}' references unknown corroded wave preset '{}'",
+                            encounter.id, wave.id, preset_id
+                        )
+                    });
+                    for role in &preset.role_mix {
+                        assert!(
+                            corroded_employee_data.get_by_id(&role.profile_id).is_some(),
+                            "corroded wave preset '{}' references unknown corroded employee profile '{}'",
+                            preset.id,
+                            role.profile_id
+                        );
+                    }
+                }
+            }
+
+            for enemy in wave.manual_enemies() {
+                match enemy.kind {
+                    crate::game::combat_preview::EnemyKind::Abnormality => assert!(
+                        abnormality_data.get_by_id(&enemy.abnormality_id).is_some(),
+                        "pve encounter '{}' wave '{}' references unknown abnormality enemy '{}'",
+                        encounter.id,
+                        wave.id,
+                        enemy.abnormality_id
+                    ),
+                    crate::game::combat_preview::EnemyKind::CorrodedEmployee => {
+                        let Some(profile_id) = enemy.profile_id.as_deref() else {
+                            panic!(
+                                "pve encounter '{}' wave '{}' corroded employee '{}' must specify profile_id",
+                                encounter.id, wave.id, enemy.abnormality_id
+                            );
+                        };
+                        assert!(
+                            corroded_employee_data.get_by_id(profile_id).is_some(),
+                            "pve encounter '{}' wave '{}' references unknown corroded employee profile '{}'",
+                            encounter.id,
+                            wave.id,
+                            profile_id
+                        );
+                    }
+                    crate::game::combat_preview::EnemyKind::FacilityEntity => {
+                        panic!(
+                            "pve encounter '{}' wave '{}' uses FacilityEntity before facility entity profiles are implemented",
+                            encounter.id, wave.id
+                        );
+                    }
+                }
+            }
+        }
+        for reward_uuid in &encounter.reward_uuids {
+            let reward = reward_data.get_by_uuid(reward_uuid).unwrap_or_else(|| {
+                panic!(
+                    "pve encounter '{}' references missing reward uuid {}",
+                    encounter.id, reward_uuid
+                )
+            });
+            assert!(
+                !reward
+                    .resolved_tags()
+                    .contains(&crate::game::data::reward_data::RewardTag::Forbidden),
+                "pve encounter '{}' must not offer forbidden legacy reward '{}'",
+                encounter.id,
+                reward.id
+            );
+        }
+        if let Some(node_type) = encounter.node_type {
+            assert!(
+                crate::game::combat_mission_policy::CombatMissionPolicy::is_live_supported_node_type(
+                    node_type
+                ),
+                "pve encounter '{}' uses deferred combat node type {:?}",
+                encounter.id,
+                node_type
+            );
+            let rewards = encounter
+                .reward_uuids
+                .iter()
+                .filter_map(|reward_uuid| reward_data.get_by_uuid(reward_uuid))
+                .map(crate::game::reward::RewardOption::from_metadata)
+                .collect::<Vec<_>>();
+            crate::game::reward_policy::CombatRewardPolicy::for_node_type(node_type)
+                .validate_rewards(&rewards)
+                .unwrap_or_else(|message| {
+                    panic!(
+                        "pve encounter '{}' has invalid {:?} reward policy: {}",
+                        encounter.id, node_type, message
+                    )
+                });
+        }
+    }
+}
+
 impl GameDataBase {
     pub fn new(parts: GameDataBaseParts) -> Self {
         let GameDataBaseParts {
             abnormality_data,
+            corroded_employee_data,
+            corroded_wave_data,
+            starter_employee_data,
             artifact_data,
             equipment_data,
             shop_data,
-            bonus_data,
+            reward_data,
             random_event_data,
             pve_data,
             skill_data,
-            event_pools,
+            skill_fragment_data,
         } = parts;
 
         abnormality_data.validate_indexes();
+        corroded_employee_data.validate_indexes();
+        corroded_wave_data.validate_indexes();
+        starter_employee_data.validate_indexes();
         artifact_data.validate_indexes();
         equipment_data.validate_indexes();
         shop_data.validate_indexes();
-        bonus_data.validate_indexes();
+        reward_data.validate_indexes();
         random_event_data.validate_indexes();
         pve_data.validate_indexes();
         skill_data.validate_indexes();
+        skill_fragment_data.validate_indexes();
+        validate_skill_fragment_skill_references(
+            &skill_fragment_data,
+            &abnormality_data,
+            &skill_data,
+        );
+        validate_reward_references(
+            &reward_data,
+            &equipment_data,
+            &artifact_data,
+            &skill_fragment_data,
+        );
+        validate_pve_enemy_references(
+            &pve_data,
+            &abnormality_data,
+            &corroded_employee_data,
+            &corroded_wave_data,
+            &reward_data,
+        );
 
         let item_registry = ItemRegistry::new(&abnormality_data, &artifact_data, &equipment_data);
         validate_shop_item_references(&shop_data, &item_registry);
 
         Self {
             abnormality_data,
+            corroded_employee_data,
+            corroded_wave_data,
+            starter_employee_data,
             artifact_data,
             equipment_data,
             shop_data,
-            bonus_data,
+            reward_data,
             random_event_data,
             pve_data,
             skill_data,
-            event_pools,
+            skill_fragment_data,
             item_registry,
         }
     }
@@ -449,16 +952,20 @@ fn validate_shop_item_references(shop_data: &ShopDatabase, item_registry: &ItemR
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::game::ability::{
+        DeliveryDef, SkillCastTargetingDef, SkillDef, SkillId, SkillKind, SkillStepDef, SkillTarget,
+    };
     use crate::game::data::{
         abnormality_data::AbnormalityMetadata,
         artifact_data::ArtifactMetadata,
-        bonus_data::BonusDatabase,
         equipment_data::{EquipmentMetadata, EquipmentType},
-        event_pools::{EventPhasePool, EventPoolConfig},
-        pve_data::PveEncounterDatabase,
-        random_event_data::RandomEventDatabase,
         shop_data::{ShopDatabase, ShopMetadata},
         skill_data::SkillDatabase,
+        skill_fragment_data::{
+            SkillFragmentAcquisitionSource, SkillFragmentDatabase, SkillFragmentEffectDef,
+            SkillFragmentId, SkillFragmentMetadata, SkillFragmentOrigin, SkillFragmentRarity,
+        },
+        GameDataBuilder,
     };
     use crate::game::enums::RiskLevel;
     use std::collections::HashMap;
@@ -468,18 +975,70 @@ mod tests {
         uuid: Uuid,
     }
 
-    fn empty_event_pools() -> EventPoolConfig {
-        let pool = EventPhasePool {
-            shops: vec![],
-            bonuses: vec![],
-            random_events: vec![],
-        };
-        EventPoolConfig {
-            dawn: pool.clone(),
-            noon: pool.clone(),
-            dusk: pool.clone(),
-            midnight: pool.clone(),
-            white: pool,
+    fn minimal_skill(id: &str) -> SkillDef {
+        SkillDef {
+            id: SkillId::from(id),
+            name: id.to_string(),
+            kind: SkillKind::Untargeted,
+            cast_targeting: SkillCastTargetingDef::FirstStepTarget,
+            focus_time_ms: 0,
+            focus_permissions: Default::default(),
+            steps: vec![SkillStepDef {
+                id: "step".to_string(),
+                delay_ms: 0,
+                range_units: 1.0,
+                target: SkillTarget::SelfUnit,
+                targeting: Default::default(),
+                when: Default::default(),
+                repeat: Default::default(),
+                delivery: DeliveryDef::Instant,
+                effects: vec![],
+                presentation: Default::default(),
+            }],
+        }
+    }
+
+    fn minimal_abnormality(id: &str, uuid: u128, skill_id: Option<&str>) -> AbnormalityMetadata {
+        AbnormalityMetadata {
+            id: id.to_string(),
+            uuid: Uuid::from_u128(uuid),
+            name: id.to_string(),
+            risk_level: RiskLevel::ZAYIN,
+            price: 10,
+            max_health: 10,
+            attack: 1,
+            defense: 1,
+            magic_resist: 0,
+            movement: Default::default(),
+            basic_attack: Default::default(),
+            resonance: Default::default(),
+            skill_id: skill_id.map(SkillId::from),
+        }
+    }
+
+    fn active_fragment(
+        id: &str,
+        origin_abnormality_id: &str,
+        imitation_skill_id: &str,
+    ) -> SkillFragmentMetadata {
+        SkillFragmentMetadata {
+            id: SkillFragmentId::from(id),
+            uuid: Uuid::from_u128(0xF000),
+            name: id.to_string(),
+            description: "fragment".to_string(),
+            rarity: SkillFragmentRarity::Rare,
+            origin: Some(SkillFragmentOrigin::Abnormality {
+                abnormality_id: origin_abnormality_id.to_string(),
+            }),
+            sources: vec![SkillFragmentAcquisitionSource::AbnormalitySuppression {
+                abnormality_id: origin_abnormality_id.to_string(),
+            }],
+            dependencies: vec![],
+            effect: SkillFragmentEffectDef::ActiveSkill {
+                imitation_skill_id: SkillId::from(imitation_skill_id),
+                upgrade_skill_ids: Default::default(),
+                awakened_skill_id: None,
+            },
         }
     }
 
@@ -537,17 +1096,11 @@ mod tests {
             ability_activations: vec![],
         };
 
-        let game_data = GameDataBase::new(GameDataBaseParts {
-            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![abno])),
-            artifact_data: Arc::new(ArtifactDatabase::new(vec![artifact])),
-            equipment_data: Arc::new(EquipmentDatabase::new(vec![equipment])),
-            shop_data: Arc::new(ShopDatabase::new(vec![])),
-            bonus_data: Arc::new(BonusDatabase::new(vec![])),
-            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
-            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
-            skill_data: Arc::new(SkillDatabase::new(vec![])),
-            event_pools: empty_event_pools(),
-        });
+        let game_data = GameDataBuilder::empty()
+            .with_abnormalities(vec![abno])
+            .with_artifacts(vec![artifact])
+            .with_equipment(vec![equipment])
+            .build();
 
         assert!(matches!(
             game_data.item(&abno_uuid),
@@ -562,6 +1115,55 @@ mod tests {
             Some(ItemRef::Equipment(_))
         ));
         assert!(game_data.item(&Uuid::from_u128(999)).is_none());
+    }
+
+    #[test]
+    fn game_data_base_accepts_fragment_origin_and_independent_imitation_skill() {
+        let abno = minimal_abnormality("one_sin", 1, Some("one_sin_penitence"));
+        let original_skill = minimal_skill("one_sin_penitence");
+        let imitation_skill = minimal_skill("fragment_one_sin_penitence");
+        let fragment = active_fragment("fragment_one_sin", "one_sin", "fragment_one_sin_penitence");
+
+        let game_data = GameDataBuilder::empty()
+            .with_abnormalities(vec![abno])
+            .with_skills(SkillDatabase::new(vec![original_skill, imitation_skill]))
+            .with_skill_fragments(SkillFragmentDatabase::with_builtin_starter(vec![fragment]))
+            .build();
+
+        assert!(game_data
+            .skill_fragment_data
+            .get_by_id_str("fragment_one_sin")
+            .is_some());
+    }
+
+    #[test]
+    #[should_panic(expected = "references unknown origin abnormality")]
+    fn game_data_base_rejects_fragment_unknown_origin_abnormality() {
+        let fragment = active_fragment(
+            "fragment_one_sin",
+            "missing_one_sin",
+            "fragment_one_sin_penitence",
+        );
+
+        let _ = GameDataBuilder::empty()
+            .with_skills(SkillDatabase::new(vec![minimal_skill(
+                "fragment_one_sin_penitence",
+            )]))
+            .with_skill_fragments(SkillFragmentDatabase::with_builtin_starter(vec![fragment]))
+            .build();
+    }
+
+    #[test]
+    #[should_panic(expected = "references unknown imitation skill")]
+    fn game_data_base_rejects_fragment_unknown_imitation_skill() {
+        let abno = minimal_abnormality("one_sin", 1, Some("one_sin_penitence"));
+        let fragment = active_fragment("fragment_one_sin", "one_sin", "fragment_one_sin_penitence");
+
+        let _ = GameDataBuilder::empty()
+            .with_abnormalities(vec![abno])
+            .with_skills(SkillDatabase::new(vec![minimal_skill("one_sin_penitence")]))
+            .with_skill_fragments(SkillFragmentDatabase::with_builtin_starter(vec![fragment]))
+            .build();
     }
 
     #[test]
@@ -596,17 +1198,10 @@ mod tests {
             ability_activations: vec![],
         };
 
-        let _ = GameDataBase::new(GameDataBaseParts {
-            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![abno])),
-            artifact_data: Arc::new(ArtifactDatabase::new(vec![artifact])),
-            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
-            shop_data: Arc::new(ShopDatabase::new(vec![])),
-            bonus_data: Arc::new(BonusDatabase::new(vec![])),
-            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
-            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
-            skill_data: Arc::new(SkillDatabase::new(vec![])),
-            event_pools: empty_event_pools(),
-        });
+        let _ = GameDataBuilder::empty()
+            .with_abnormalities(vec![abno])
+            .with_artifacts(vec![artifact])
+            .build();
     }
 
     #[test]
@@ -622,17 +1217,9 @@ mod tests {
             hidden_items: vec![],
         };
 
-        let _ = GameDataBase::new(GameDataBaseParts {
-            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![])),
-            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
-            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
-            shop_data: Arc::new(ShopDatabase::new(vec![shop])),
-            bonus_data: Arc::new(BonusDatabase::new(vec![])),
-            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
-            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
-            skill_data: Arc::new(SkillDatabase::new(vec![])),
-            event_pools: empty_event_pools(),
-        });
+        let _ = GameDataBuilder::empty()
+            .with_shops(ShopDatabase::new(vec![shop]))
+            .build();
     }
 
     #[test]

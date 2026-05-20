@@ -13,7 +13,7 @@ use game_core::{
 use super::{
     buff_ids, buffs_applied_by, damage_hp_changes_caused_by, hp_deltas, passive_dummy_patch,
     run_abnormality_scenario, scenario_from_board, skill_dummy_board_legend, step_ids,
-    target_unit_ids, BoardEntry, PlacedUnitKind, StaticUnitPatch, UnitPatch,
+    target_unit_ids, BoardEntry, PlacedUnitKind, RuntimeStartPatch, StaticUnitPatch, UnitPatch,
 };
 
 #[test]
@@ -141,6 +141,10 @@ fn big_bird_silence_defers_enemy_autocast_until_buff_expires() {
                     max: 100,
                     gain_lock_ms: 0,
                 }),
+                ..Default::default()
+            },
+            runtime_start: RuntimeStartPatch {
+                basic_attack_lock_until_ms: Some(500),
                 ..Default::default()
             },
             ..Default::default()

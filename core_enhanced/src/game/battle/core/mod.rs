@@ -15,9 +15,9 @@ use crate::game::{
         core::spatial::SpatialQueryBackend,
         enums::BattleEvent,
         ids::UnitInstanceId,
-        placement::PlacementBoard,
+        scenario::{BattleScenario, ScenarioGroupId, ScenarioUnitRef, TacticalGroupPlanId},
         timeline::{Timeline, TimelineCause, TimelineEvent},
-        types::{PlayerDeckInfo, UnitSnapshot},
+        types::UnitSnapshot,
     },
     data::GameDataBase,
 };
@@ -42,8 +42,8 @@ use self::types::{
 pub struct BattleCore {
     event_queue: BinaryHeap<BattleEvent>,
 
-    player_info: PlayerDeckInfo,
-    opponent_info: PlayerDeckInfo,
+    scenario: BattleScenario,
+    scenario_runtime: ScenarioRuntimeState,
 
     pub units: HashMap<UnitInstanceId, RuntimeUnit>,
     artifacts: HashMap<Uuid, RuntimeArtifact>,
@@ -63,7 +63,6 @@ pub struct BattleCore {
     movement_backend: ContinuousMovementBackend,
     spatial_query_backend: SpatialQueryBackend,
     pub battlefield: Battlefield,
-    placement_board: PlacementBoard,
 
     pub game_data: Arc<GameDataBase>,
 
@@ -79,6 +78,41 @@ pub struct BattleCore {
 struct ActiveMovementSegment {
     timeline_index: usize,
     velocity: TimelineVec2,
+    start: WorldVec2,
+    target: WorldVec2,
+    started_at_ms: u64,
+    ends_at_ms: u64,
+}
+
+impl ActiveMovementSegment {
+    fn sample_position_at(&self, time_ms: u64) -> WorldVec2 {
+        if time_ms <= self.started_at_ms {
+            return self.start;
+        }
+        if time_ms >= self.ends_at_ms {
+            return self.target;
+        }
+
+        let duration_ms = self.ends_at_ms.saturating_sub(self.started_at_ms);
+        if duration_ms == 0 {
+            return self.target;
+        }
+
+        let elapsed_ms = time_ms.saturating_sub(self.started_at_ms);
+        let t = elapsed_ms as f32 / duration_ms as f32;
+        self.start + (self.target - self.start) * t
+    }
+}
+
+#[derive(Debug, Clone, Default)]
+pub(in crate::game::battle::core) struct ScenarioRuntimeState {
+    spawned_groups: std::collections::HashSet<ScenarioGroupId>,
+    unit_refs: HashMap<ScenarioUnitRef, UnitInstanceId>,
+    tactical_groups: HashMap<TacticalGroupPlanId, Vec<UnitInstanceId>>,
+    recovery_target_secured: bool,
+    recovery_hold_started_at_ms: Option<u64>,
+    recovery_hold_completed: bool,
+    forced_winner: Option<crate::game::battle::types::BattleWinner>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -90,17 +124,17 @@ pub(in crate::game::battle::core) struct MeleeSlotReservation {
 }
 
 impl BattleCore {
-    pub fn new(
-        player: &PlayerDeckInfo,
-        opponent: &PlayerDeckInfo,
+    pub fn new_from_scenario(
+        scenario: BattleScenario,
         game_data: Arc<GameDataBase>,
-        field_size: (u8, u8),
         seed: u64,
     ) -> Self {
+        let field_size = (scenario.battlefield.width, scenario.battlefield.height);
+        let valid_tiles = scenario.battlefield.valid_tiles.clone();
         Self {
             event_queue: BinaryHeap::new(),
-            player_info: player.clone(),
-            opponent_info: opponent.clone(),
+            scenario,
+            scenario_runtime: ScenarioRuntimeState::default(),
             units: HashMap::new(),
             artifacts: HashMap::new(),
             items: HashMap::new(),
@@ -116,8 +150,7 @@ impl BattleCore {
             last_continuous_movement_tick_ms: None,
             movement_backend: ContinuousMovementBackend::default(),
             spatial_query_backend: SpatialQueryBackend::default(),
-            battlefield: Battlefield::new(field_size.0, field_size.1),
-            placement_board: PlacementBoard::new(field_size.0, field_size.1),
+            battlefield: Battlefield::new_with_valid_tiles(field_size.0, field_size.1, valid_tiles),
             game_data,
             timeline: Timeline::new(),
             timeline_seq: 0,
@@ -204,6 +237,9 @@ impl BattleCore {
 
     fn can_start_autocast(unit: &RuntimeUnit, now_ms: u64) -> bool {
         if now_ms < unit.next_action_time {
+            return false;
+        }
+        if !unit.is_combatant() {
             return false;
         }
         if unit.is_dead() {
@@ -394,81 +430,531 @@ impl BattleCore {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ecs::resources::Position;
     use crate::game::ability::{
-        DeliveryDef, SkillArea, SkillAreaAnchorSource, SkillAreaDeliveryDef, SkillAreaShapeDef,
-        SkillCastTargetingDef, SkillDef, SkillEffectDef, SkillKind, SkillPresentationDef,
-        SkillStepDef, SkillTarget, StepTargetingMode, UnitTargetRule,
+        DeliveryDef, SkillAreaAnchorSource, SkillAreaDeliveryDef, SkillAreaShapeDef,
+        SkillAreaTracking, SkillCastTargetingDef, SkillDef, SkillEffectDef, SkillId, SkillKind,
+        SkillPresentationDef, SkillStepDef, SkillTarget, StepTargetingMode, UnitTargetRule,
     };
     use crate::game::battle::buffs::BuffId;
     use crate::game::battle::core::movement::{types::WorldVec2, ActionState, TILE_UNITS_PER_TILE};
     use crate::game::battle::core::types::RuntimeUnit;
     use crate::game::battle::damage::BattleCommand;
     use crate::game::battle::enums::BattleEvent;
+    use crate::game::battle::scenario::BattleScenario;
     use crate::game::battle::timeline::{TimelineCause, TimelineEvent};
+    use crate::game::battle::types::{BattleUnitDraft, BattleUnitSource, UnitCombatProfile};
     use crate::game::data::{
-        abnormality_data::{AbnormalityDatabase, AbnormalityMetadata},
-        artifact_data::ArtifactDatabase,
-        bonus_data::BonusDatabase,
-        equipment_data::EquipmentDatabase,
-        pve_data::PveEncounterDatabase,
-        random_event_data::RandomEventDatabase,
-        shop_data::ShopDatabase,
-        skill_data::SkillDatabase,
-        GameDataBase,
+        abnormality_data::AbnormalityMetadata, skill_data::SkillDatabase, GameDataBase,
+        GameDataBuilder,
     };
     use crate::game::enums::Side;
+    use crate::game::resources::Position;
     use crate::game::stats::UnitStats;
     use crate::game::stats::{StatId, StatModifier, StatModifierKind};
-    use std::collections::HashMap;
-
-    fn empty_deck() -> PlayerDeckInfo {
-        PlayerDeckInfo {
-            units: vec![],
-            artifacts: vec![],
-            positions: HashMap::new(),
-        }
-    }
 
     fn empty_game_data() -> Arc<GameDataBase> {
-        let pool = crate::game::data::event_pools::EventPhasePool {
-            shops: vec![],
-            bonuses: vec![],
-            random_events: vec![],
-        };
-        let event_pools = crate::game::data::event_pools::EventPoolConfig {
-            dawn: pool.clone(),
-            noon: pool.clone(),
-            dusk: pool.clone(),
-            midnight: pool.clone(),
-            white: pool,
-        };
-
-        Arc::new(GameDataBase::new(crate::game::data::GameDataBaseParts {
-            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![])),
-            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
-            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
-            shop_data: Arc::new(ShopDatabase::new(vec![])),
-            bonus_data: Arc::new(BonusDatabase::new(vec![])),
-            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
-            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
-            skill_data: Arc::new(SkillDatabase::new(vec![])),
-            event_pools,
-        }))
+        GameDataBuilder::empty().build_arc()
     }
 
     fn new_core() -> BattleCore {
-        let deck = empty_deck();
-        BattleCore::new(&deck, &deck, empty_game_data(), (4, 4), 123)
+        BattleCore::new_from_scenario(BattleScenario::empty((4, 4)), empty_game_data(), 123)
+    }
+
+    #[test]
+    fn battle_runtime_reset_clears_continuous_movement_state() {
+        let mut core = new_core();
+        let unit_id = UnitInstanceId::from(Uuid::from_u128(101));
+        let target_id = UnitInstanceId::from(Uuid::from_u128(102));
+
+        core.active_movement_segments.insert(
+            unit_id,
+            ActiveMovementSegment {
+                timeline_index: 7,
+                velocity: TimelineVec2 {
+                    x_milli: 1_000,
+                    y_milli: 0,
+                },
+                start: WorldVec2::ZERO,
+                target: WorldVec2::new(3.0, 0.0),
+                started_at_ms: 10,
+                ends_at_ms: 100,
+            },
+        );
+        core.melee_slot_reservations.insert(
+            unit_id,
+            MeleeSlotReservation {
+                target_id,
+                slot_index: 0,
+                position: WorldVec2::new(1.0, 0.0),
+                unit_radius: 0.35,
+            },
+        );
+        core.last_continuous_movement_tick_ms = Some(100);
+
+        core.reset_runtime_state_for_battle();
+
+        assert!(core.active_movement_segments.is_empty());
+        assert!(core.melee_slot_reservations.is_empty());
+        assert_eq!(core.last_continuous_movement_tick_ms, None);
+    }
+
+    #[test]
+    fn scenario_delayed_required_group_prevents_early_victory_and_spawns_later() {
+        let player_group_id = crate::game::battle::scenario::ScenarioGroupId::new("player");
+        let first_wave_id = crate::game::battle::scenario::ScenarioGroupId::new("wave_1");
+        let second_wave_id = crate::game::battle::scenario::ScenarioGroupId::new("wave_2");
+
+        let player_owned = Uuid::from_u128(1);
+        let first_enemy_owned = Uuid::from_u128(2);
+        let second_enemy_owned = Uuid::from_u128(3);
+
+        let player_ref = crate::game::battle::scenario::ScenarioUnitRef::new("player_0");
+        let first_enemy_ref = crate::game::battle::scenario::ScenarioUnitRef::new("wave_1_0");
+        let second_enemy_ref = crate::game::battle::scenario::ScenarioUnitRef::new("wave_2_0");
+
+        let scenario = crate::game::battle::scenario::BattleScenario {
+            battlefield: crate::game::battle::scenario::BattleFieldSpec {
+                width: 5,
+                height: 5,
+                valid_tiles: Vec::new(),
+                obstacles: Vec::new(),
+            },
+            artifacts: Vec::new(),
+            groups: vec![
+                crate::game::battle::scenario::ScenarioSpawnGroup {
+                    id: player_group_id.clone(),
+                    side: Side::Player,
+                    required_for_victory: false,
+                    spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
+                        unit_ref: player_ref,
+                        side: Side::Player,
+                        draft: fixture_draft(player_owned, Uuid::from_u128(10), 100, 100),
+                        position: Position::new(1, 1),
+                        instance_salt: 0,
+                    }],
+                },
+                crate::game::battle::scenario::ScenarioSpawnGroup {
+                    id: first_wave_id.clone(),
+                    side: Side::Opponent,
+                    required_for_victory: true,
+                    spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
+                        unit_ref: first_enemy_ref,
+                        side: Side::Opponent,
+                        draft: fixture_draft(first_enemy_owned, Uuid::from_u128(20), 1, 1),
+                        position: Position::new(1, 2),
+                        instance_salt: 0,
+                    }],
+                },
+                crate::game::battle::scenario::ScenarioSpawnGroup {
+                    id: second_wave_id.clone(),
+                    side: Side::Opponent,
+                    required_for_victory: true,
+                    spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
+                        unit_ref: second_enemy_ref,
+                        side: Side::Opponent,
+                        draft: fixture_draft(second_enemy_owned, Uuid::from_u128(30), 1, 1),
+                        position: Position::new(2, 1),
+                        instance_salt: 1,
+                    }],
+                },
+            ],
+            events: vec![
+                crate::game::battle::scenario::ScenarioEvent {
+                    id: crate::game::battle::scenario::ScenarioEventId::new("spawn_player"),
+                    trigger: crate::game::battle::scenario::ScenarioTrigger::AtBattleStart,
+                    action: crate::game::battle::scenario::ScenarioAction::SpawnGroup {
+                        group_id: player_group_id,
+                    },
+                    once: true,
+                },
+                crate::game::battle::scenario::ScenarioEvent {
+                    id: crate::game::battle::scenario::ScenarioEventId::new("spawn_wave_1"),
+                    trigger: crate::game::battle::scenario::ScenarioTrigger::AtBattleStart,
+                    action: crate::game::battle::scenario::ScenarioAction::SpawnGroup {
+                        group_id: first_wave_id,
+                    },
+                    once: true,
+                },
+                crate::game::battle::scenario::ScenarioEvent {
+                    id: crate::game::battle::scenario::ScenarioEventId::new("spawn_wave_2"),
+                    trigger: crate::game::battle::scenario::ScenarioTrigger::AtTimeMs(1_000),
+                    action: crate::game::battle::scenario::ScenarioAction::SpawnGroup {
+                        group_id: second_wave_id,
+                    },
+                    once: true,
+                },
+            ],
+            win_condition:
+                crate::game::battle::scenario::WinCondition::AllRequiredEnemyGroupsDefeated,
+            tactical_plan: crate::game::battle::scenario::TacticalPlan::default(),
+        };
+
+        let mut core = BattleCore::new_from_scenario(scenario, empty_game_data(), 123);
+        let result = core.run_battle().expect("battle should run");
+
+        assert_eq!(
+            result.winner,
+            crate::game::battle::types::BattleWinner::Player
+        );
+        assert!(result.timeline.entries.iter().any(|entry| {
+            entry.time_ms == 1_000 && matches!(entry.event, TimelineEvent::UnitSpawned { .. })
+        }));
+    }
+
+    #[test]
+    fn protect_unit_battle_loses_when_defense_object_is_destroyed() {
+        let player_group_id = crate::game::battle::scenario::ScenarioGroupId::new("player");
+        let object_group_id = crate::game::battle::scenario::ScenarioGroupId::new("defense_object");
+        let enemy_group_id = crate::game::battle::scenario::ScenarioGroupId::new("enemy_wave");
+        let protected_ref = crate::game::battle::scenario::ScenarioUnitRef::new("black_box");
+
+        let scenario = crate::game::battle::scenario::BattleScenario {
+            battlefield: crate::game::battle::scenario::BattleFieldSpec {
+                width: 6,
+                height: 6,
+                valid_tiles: Vec::new(),
+                obstacles: Vec::new(),
+            },
+            artifacts: Vec::new(),
+            groups: vec![
+                crate::game::battle::scenario::ScenarioSpawnGroup {
+                    id: player_group_id.clone(),
+                    side: Side::Player,
+                    required_for_victory: false,
+                    spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
+                        unit_ref: crate::game::battle::scenario::ScenarioUnitRef::new("player_0"),
+                        side: Side::Player,
+                        draft: fixture_draft(Uuid::from_u128(401), Uuid::from_u128(402), 100, 1),
+                        position: Position::new(0, 0),
+                        instance_salt: 0,
+                    }],
+                },
+                crate::game::battle::scenario::ScenarioSpawnGroup {
+                    id: object_group_id.clone(),
+                    side: Side::Player,
+                    required_for_victory: false,
+                    spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
+                        unit_ref: protected_ref.clone(),
+                        side: Side::Player,
+                        draft: defense_object_draft(Uuid::from_u128(411), Uuid::from_u128(412), 3),
+                        position: Position::new(4, 4),
+                        instance_salt: 0,
+                    }],
+                },
+                crate::game::battle::scenario::ScenarioSpawnGroup {
+                    id: enemy_group_id.clone(),
+                    side: Side::Opponent,
+                    required_for_victory: false,
+                    spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
+                        unit_ref: crate::game::battle::scenario::ScenarioUnitRef::new("enemy_0"),
+                        side: Side::Opponent,
+                        draft: fixture_draft(Uuid::from_u128(421), Uuid::from_u128(422), 100, 10),
+                        position: Position::new(4, 3),
+                        instance_salt: 0,
+                    }],
+                },
+            ],
+            events: vec![
+                crate::game::battle::scenario::ScenarioEvent {
+                    id: crate::game::battle::scenario::ScenarioEventId::new("spawn_player"),
+                    trigger: crate::game::battle::scenario::ScenarioTrigger::AtBattleStart,
+                    action: crate::game::battle::scenario::ScenarioAction::SpawnGroup {
+                        group_id: player_group_id,
+                    },
+                    once: true,
+                },
+                crate::game::battle::scenario::ScenarioEvent {
+                    id: crate::game::battle::scenario::ScenarioEventId::new("spawn_object"),
+                    trigger: crate::game::battle::scenario::ScenarioTrigger::AtBattleStart,
+                    action: crate::game::battle::scenario::ScenarioAction::SpawnGroup {
+                        group_id: object_group_id,
+                    },
+                    once: true,
+                },
+                crate::game::battle::scenario::ScenarioEvent {
+                    id: crate::game::battle::scenario::ScenarioEventId::new("spawn_enemy"),
+                    trigger: crate::game::battle::scenario::ScenarioTrigger::AtBattleStart,
+                    action: crate::game::battle::scenario::ScenarioAction::SpawnGroup {
+                        group_id: enemy_group_id,
+                    },
+                    once: true,
+                },
+            ],
+            win_condition: crate::game::battle::scenario::WinCondition::ProtectUnit {
+                unit_ref: protected_ref,
+            },
+            tactical_plan: crate::game::battle::scenario::TacticalPlan::default(),
+        };
+
+        let mut core = BattleCore::new_from_scenario(scenario, empty_game_data(), 123);
+        let result = core.run_battle().expect("battle should run");
+
+        assert_eq!(
+            result.winner,
+            crate::game::battle::types::BattleWinner::Opponent
+        );
+        assert!(result.timeline.entries.iter().any(|entry| matches!(
+            &entry.event,
+            TimelineEvent::UnitSpawned {
+                role: crate::game::battle::types::BattleUnitRole::DefenseObject,
+                ..
+            }
+        )));
+    }
+
+    #[test]
+    fn recovery_battle_wins_after_target_clear_hold_and_extraction() {
+        let player_group_id = crate::game::battle::scenario::ScenarioGroupId::new("player");
+        let target_point_id =
+            crate::game::battle::scenario::TacticalPointId::new("recovery_target");
+        let extraction_point_id =
+            crate::game::battle::scenario::TacticalPointId::new("extraction_point");
+
+        let scenario = crate::game::battle::scenario::BattleScenario {
+            battlefield: crate::game::battle::scenario::BattleFieldSpec {
+                width: 4,
+                height: 2,
+                valid_tiles: Vec::new(),
+                obstacles: Vec::new(),
+            },
+            artifacts: Vec::new(),
+            groups: vec![crate::game::battle::scenario::ScenarioSpawnGroup {
+                id: player_group_id.clone(),
+                side: Side::Player,
+                required_for_victory: false,
+                spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
+                    unit_ref: crate::game::battle::scenario::ScenarioUnitRef::new("player_0"),
+                    side: Side::Player,
+                    draft: fixture_draft(Uuid::from_u128(311), Uuid::from_u128(312), 100, 100),
+                    position: Position::new(0, 0),
+                    instance_salt: 0,
+                }],
+            }],
+            events: vec![crate::game::battle::scenario::ScenarioEvent {
+                id: crate::game::battle::scenario::ScenarioEventId::new("spawn_player"),
+                trigger: crate::game::battle::scenario::ScenarioTrigger::AtBattleStart,
+                action: crate::game::battle::scenario::ScenarioAction::SpawnGroup {
+                    group_id: player_group_id,
+                },
+                once: true,
+            }],
+            win_condition: crate::game::battle::scenario::WinCondition::RecoverHoldAndExtract {
+                target_point_id: target_point_id.clone(),
+                extraction_point_id: extraction_point_id.clone(),
+                target_radius: 0.25,
+                extraction_radius: 0.25,
+                hold_duration_ms: 100,
+            },
+            tactical_plan: crate::game::battle::scenario::TacticalPlan {
+                points: vec![
+                    crate::game::battle::scenario::TacticalPoint {
+                        id: target_point_id,
+                        position: Position::new(0, 0),
+                    },
+                    crate::game::battle::scenario::TacticalPoint {
+                        id: extraction_point_id,
+                        position: Position::new(0, 0),
+                    },
+                ],
+                group_plans: vec![crate::game::battle::scenario::TacticalGroupPlan {
+                    id: crate::game::battle::scenario::TacticalGroupPlanId::new("player_main"),
+                    side: Side::Player,
+                    members: crate::game::battle::scenario::TacticalGroupMembers::SideAll(
+                        Side::Player,
+                    ),
+                    objective: crate::game::battle::scenario::GroupObjective::AdvanceAlongPath {
+                        point_ids: vec![
+                            crate::game::battle::scenario::TacticalPointId::new("recovery_target"),
+                            crate::game::battle::scenario::TacticalPointId::new("extraction_point"),
+                        ],
+                    },
+                    formation: crate::game::battle::scenario::FormationKind::Loose,
+                    cohesion_radius: 2.0,
+                    engage_radius: 2.0,
+                }],
+                ..crate::game::battle::scenario::TacticalPlan::default()
+            },
+        };
+
+        let mut core = BattleCore::new_from_scenario(scenario, empty_game_data(), 123);
+        let result = core.run_battle().expect("battle should run");
+
+        assert_eq!(
+            result.winner,
+            crate::game::battle::types::BattleWinner::Player
+        );
+        assert!(result.timeline.entries.iter().any(|entry| matches!(
+            &entry.event,
+            TimelineEvent::RecoveryTargetSecured {
+                target_point_id,
+                ..
+            } if target_point_id == "recovery_target"
+        )));
+        assert!(result.timeline.entries.iter().any(|entry| matches!(
+            &entry.event,
+            TimelineEvent::ExtractionCompleted {
+                extraction_point_id,
+                ..
+            } if extraction_point_id == "extraction_point"
+        )));
+    }
+
+    #[test]
+    fn scenario_spawn_group_members_are_recorded_as_tactical_group_members() {
+        let player_group_id = crate::game::battle::scenario::ScenarioGroupId::new("player");
+        let tactical_group_id =
+            crate::game::battle::scenario::TacticalGroupPlanId::new("player_squad");
+        let player_ref = crate::game::battle::scenario::ScenarioUnitRef::new("player_0");
+        let player_owned = Uuid::from_u128(11);
+
+        let scenario = crate::game::battle::scenario::BattleScenario {
+            battlefield: crate::game::battle::scenario::BattleFieldSpec {
+                width: 5,
+                height: 5,
+                valid_tiles: Vec::new(),
+                obstacles: Vec::new(),
+            },
+            artifacts: Vec::new(),
+            groups: vec![crate::game::battle::scenario::ScenarioSpawnGroup {
+                id: player_group_id.clone(),
+                side: Side::Player,
+                required_for_victory: false,
+                spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
+                    unit_ref: player_ref,
+                    side: Side::Player,
+                    draft: fixture_draft(player_owned, Uuid::from_u128(110), 100, 100),
+                    position: Position::new(1, 1),
+                    instance_salt: 0,
+                }],
+            }],
+            events: vec![crate::game::battle::scenario::ScenarioEvent {
+                id: crate::game::battle::scenario::ScenarioEventId::new("spawn_player"),
+                trigger: crate::game::battle::scenario::ScenarioTrigger::AtBattleStart,
+                action: crate::game::battle::scenario::ScenarioAction::SpawnGroup {
+                    group_id: player_group_id.clone(),
+                },
+                once: true,
+            }],
+            win_condition:
+                crate::game::battle::scenario::WinCondition::AllRequiredEnemyGroupsDefeated,
+            tactical_plan: crate::game::battle::scenario::TacticalPlan {
+                group_plans: vec![
+                    crate::game::battle::scenario::TacticalGroupPlan {
+                        id: crate::game::battle::scenario::TacticalGroupPlanId::new("catch_all"),
+                        side: Side::Player,
+                        members: crate::game::battle::scenario::TacticalGroupMembers::SideAll(
+                            Side::Player,
+                        ),
+                        objective:
+                            crate::game::battle::scenario::GroupObjective::FollowBattleObjective,
+                        formation: crate::game::battle::scenario::FormationKind::Loose,
+                        cohesion_radius: 4.0,
+                        engage_radius: 3.0,
+                    },
+                    crate::game::battle::scenario::TacticalGroupPlan {
+                        id: tactical_group_id.clone(),
+                        side: Side::Player,
+                        members: crate::game::battle::scenario::TacticalGroupMembers::SpawnGroup(
+                            player_group_id,
+                        ),
+                        objective: crate::game::battle::scenario::GroupObjective::HoldArea {
+                            point_id: crate::game::battle::scenario::TacticalPointId::new("hold"),
+                        },
+                        formation: crate::game::battle::scenario::FormationKind::Loose,
+                        cohesion_radius: 2.0,
+                        engage_radius: 1.0,
+                    },
+                ],
+                ..crate::game::battle::scenario::TacticalPlan::default()
+            },
+        };
+
+        let mut core = BattleCore::new_from_scenario(scenario, empty_game_data(), 123);
+        core.spawn_scenario_group(&crate::game::battle::scenario::ScenarioGroupId::new(
+            "player",
+        ))
+        .expect("group should spawn");
+        let unit_id = *core
+            .scenario_runtime
+            .tactical_groups
+            .get(&tactical_group_id)
+            .expect("tactical group should be tracked")
+            .first()
+            .expect("spawned unit should be in tactical group");
+        let unit = core.units.get(&unit_id).expect("spawned unit should exist");
+
+        assert_eq!(unit.tactical_group_id, Some(tactical_group_id));
+    }
+
+    #[test]
+    fn default_tactical_plan_records_player_side_as_main_group() {
+        let player_group_id = crate::game::battle::scenario::ScenarioGroupId::new("player");
+        let player_ref = crate::game::battle::scenario::ScenarioUnitRef::new("player_0");
+        let player_owned = Uuid::from_u128(12);
+        let default_group_id =
+            crate::game::battle::scenario::TacticalPlan::default_player_main_group_id();
+
+        let scenario = crate::game::battle::scenario::BattleScenario {
+            battlefield: crate::game::battle::scenario::BattleFieldSpec {
+                width: 5,
+                height: 5,
+                valid_tiles: Vec::new(),
+                obstacles: Vec::new(),
+            },
+            artifacts: Vec::new(),
+            groups: vec![crate::game::battle::scenario::ScenarioSpawnGroup {
+                id: player_group_id.clone(),
+                side: Side::Player,
+                required_for_victory: false,
+                spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
+                    unit_ref: player_ref,
+                    side: Side::Player,
+                    draft: fixture_draft(player_owned, Uuid::from_u128(120), 100, 100),
+                    position: Position::new(1, 1),
+                    instance_salt: 0,
+                }],
+            }],
+            events: vec![crate::game::battle::scenario::ScenarioEvent {
+                id: crate::game::battle::scenario::ScenarioEventId::new("spawn_player"),
+                trigger: crate::game::battle::scenario::ScenarioTrigger::AtBattleStart,
+                action: crate::game::battle::scenario::ScenarioAction::SpawnGroup {
+                    group_id: player_group_id.clone(),
+                },
+                once: true,
+            }],
+            win_condition:
+                crate::game::battle::scenario::WinCondition::AllRequiredEnemyGroupsDefeated,
+            tactical_plan: crate::game::battle::scenario::TacticalPlan::default(),
+        };
+
+        let mut core = BattleCore::new_from_scenario(scenario, empty_game_data(), 123);
+        core.spawn_scenario_group(&player_group_id)
+            .expect("group should spawn");
+        let unit_id = *core
+            .scenario_runtime
+            .tactical_groups
+            .get(&default_group_id)
+            .expect("default player main group should be tracked")
+            .first()
+            .expect("spawned player should be in default main group");
+        let unit = core.units.get(&unit_id).expect("spawned unit should exist");
+
+        assert_eq!(unit.tactical_group_id, Some(default_group_id));
     }
 
     fn runtime_unit(unit_id: UnitInstanceId, owner: Side) -> RuntimeUnit {
         RuntimeUnit {
             instance_id: unit_id,
+            source_owned_uuid: unit_id.as_uuid(),
             owner,
+            role: crate::game::battle::types::BattleUnitRole::Combatant,
             base_uuid: Uuid::nil(),
             stats: UnitStats::with_values(10, 10, 1, 0, 1),
+            basic_attack: Default::default(),
+            skill_id: None,
             body: Default::default(),
+            tactical_anchor: None,
+            tactical_group_id: None,
             move_epoch: 0,
             action_state: ActionState::Idle,
             action_locks: Default::default(),
@@ -483,6 +969,84 @@ mod tests {
             pending_cast_cause: None,
             pending_skill_cast: None,
         }
+    }
+
+    fn fixture_draft(owned_uuid: Uuid, base_uuid: Uuid, hp: u32, attack: u32) -> BattleUnitDraft {
+        let mut profile = UnitCombatProfile::employee_default();
+        profile.stats = UnitStats::with_values(hp, hp, attack, 0, 100);
+        profile.basic_attack.interval_ms = 100;
+        profile.basic_attack.windup_ms = 1;
+        profile.basic_attack.range_units = 10.0;
+        BattleUnitDraft {
+            owned_uuid,
+            source: BattleUnitSource::TestFixture { base_uuid, profile },
+            level: crate::game::enums::Tier::I,
+            growth_stacks: crate::game::growth::GrowthStack::new(),
+            equipped_items: Vec::new(),
+            equipped_item_enhancements: Vec::new(),
+        }
+    }
+
+    fn defense_object_draft(owned_uuid: Uuid, base_uuid: Uuid, hp: u32) -> BattleUnitDraft {
+        let mut profile = UnitCombatProfile::employee_default();
+        profile.stats = UnitStats::with_values(hp, hp, 0, 0, 100);
+        profile.stats.move_speed_units_per_ms = 0;
+        profile.movement.speed_units_per_ms = 0;
+        profile.skill_id = None;
+        BattleUnitDraft {
+            owned_uuid,
+            source: BattleUnitSource::DefenseObject { base_uuid, profile },
+            level: crate::game::enums::Tier::I,
+            growth_stacks: crate::game::growth::GrowthStack::new(),
+            equipped_items: Vec::new(),
+            equipped_item_enhancements: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn spawned_unit_uses_authored_body_radius() {
+        let group_id = crate::game::battle::scenario::ScenarioGroupId::new("player");
+        let unit_ref = crate::game::battle::scenario::ScenarioUnitRef::new("wide_unit");
+        let owned_uuid = Uuid::from_u128(0xA0A0);
+        let base_uuid = Uuid::from_u128(0xB0B0);
+        let mut draft = fixture_draft(owned_uuid, base_uuid, 100, 10);
+        if let BattleUnitSource::TestFixture { profile, .. } = &mut draft.source {
+            profile.movement.radius_units = 800_000;
+        }
+
+        let scenario = crate::game::battle::scenario::BattleScenario {
+            battlefield: crate::game::battle::scenario::BattleFieldSpec {
+                width: 4,
+                height: 4,
+                valid_tiles: Vec::new(),
+                obstacles: Vec::new(),
+            },
+            artifacts: Vec::new(),
+            groups: vec![crate::game::battle::scenario::ScenarioSpawnGroup {
+                id: group_id.clone(),
+                side: Side::Player,
+                required_for_victory: true,
+                spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
+                    unit_ref,
+                    side: Side::Player,
+                    draft,
+                    position: Position::new(1, 1),
+                    instance_salt: 0,
+                }],
+            }],
+            events: Vec::new(),
+            win_condition:
+                crate::game::battle::scenario::WinCondition::AllRequiredEnemyGroupsDefeated,
+            tactical_plan: Default::default(),
+        };
+        let mut core = BattleCore::new_from_scenario(scenario, empty_game_data(), 123);
+
+        let spawned = core
+            .spawn_scenario_group(&group_id)
+            .expect("spawn group with custom radius");
+        let body = core.unit_body_view(spawned[0]).expect("spawned body");
+
+        assert!((body.radius - 0.8).abs() <= f32::EPSILON);
     }
 
     fn sync_unit_to_battlefield_tile_center(core: &mut BattleCore, unit_id: UnitInstanceId) {
@@ -549,7 +1113,7 @@ mod tests {
         effects: Vec<SkillEffectDef>,
     ) -> SkillDef {
         SkillDef {
-            id: id.to_string(),
+            id: SkillId::from(id),
             name: id.to_string(),
             kind: SkillKind::Targeted,
             cast_targeting: SkillCastTargetingDef::FirstStepTarget,
@@ -574,33 +1138,184 @@ mod tests {
         abnormalities: Vec<AbnormalityMetadata>,
         skills: Vec<SkillDef>,
     ) -> BattleCore {
-        let deck = empty_deck();
-        let pool = crate::game::data::event_pools::EventPhasePool {
-            shops: vec![],
-            bonuses: vec![],
-            random_events: vec![],
-        };
-        let event_pools = crate::game::data::event_pools::EventPoolConfig {
-            dawn: pool.clone(),
-            noon: pool.clone(),
-            dusk: pool.clone(),
-            midnight: pool.clone(),
-            white: pool,
-        };
+        let game_data = GameDataBuilder::empty()
+            .with_abnormalities(abnormalities)
+            .with_skills(SkillDatabase::new(skills))
+            .build_arc();
 
-        let game_data = Arc::new(GameDataBase::new(crate::game::data::GameDataBaseParts {
-            abnormality_data: Arc::new(AbnormalityDatabase::new(abnormalities)),
-            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
-            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
-            shop_data: Arc::new(ShopDatabase::new(vec![])),
-            bonus_data: Arc::new(BonusDatabase::new(vec![])),
-            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
-            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
-            skill_data: Arc::new(SkillDatabase::new(skills)),
-            event_pools,
-        }));
+        BattleCore::new_from_scenario(BattleScenario::empty((6, 6)), game_data, 123)
+    }
 
-        BattleCore::new(&deck, &deck, game_data, (6, 6), 123)
+    fn insert_test_active_skill_cast(
+        core: &mut BattleCore,
+        cast_seq: u64,
+        caster_id: UnitInstanceId,
+        caster_owner: Side,
+        anchor_position: Position,
+        cast_target_anchor_position: Option<Position>,
+        cast_target_anchor_world_position: Option<WorldVec2>,
+    ) {
+        core.active_skill_casts.insert(
+            cast_seq,
+            ActiveSkillCast {
+                caster_instance_id: caster_id,
+                caster_owner,
+                anchor_position,
+                cast_target_anchor_position,
+                cast_target_anchor_world_position,
+                allow_dead_caster: false,
+                total_steps: 1,
+                step_progress: Default::default(),
+                deferred_steps: Default::default(),
+                impact_contexts_by_step: Default::default(),
+                last_impact_context: None,
+                active_area_ids: Vec::new(),
+            },
+        );
+    }
+
+    #[test]
+    fn persistent_area_follow_caster_updates_geometry_each_tick() {
+        let caster_id: UnitInstanceId = Uuid::from_u128(0xFA01).into();
+        let skill_id = SkillId::from("follow_caster_area");
+        let area = SkillAreaDeliveryDef {
+            shape: SkillAreaShapeDef::Circle {
+                radius_units: TILE_UNITS_PER_TILE as u32,
+            },
+            anchor: SkillAreaAnchorSource::Caster,
+            tracking: SkillAreaTracking::FollowCaster,
+            hit_targets: crate::game::ability::SkillHitTargetFilter::Enemies,
+            include_caster: false,
+            tick_policy: crate::game::ability::SkillAreaTickPolicy::EveryTick,
+            duration_ms: 1_000,
+            tick_interval_ms: Some(100),
+        };
+        let skill = single_step_skill(
+            skill_id.as_str(),
+            SkillTarget::SelfUnit,
+            0,
+            0,
+            DeliveryDef::Area { area },
+            vec![],
+        );
+        let mut core = core_with_skill_data(vec![], vec![skill]);
+        core.units
+            .insert(caster_id, runtime_unit(caster_id, Side::Player));
+        core.battlefield
+            .place(caster_id, Position::new(1, 1))
+            .unwrap();
+        sync_unit_to_battlefield_tile_center(&mut core, caster_id);
+        insert_test_active_skill_cast(
+            &mut core,
+            9001,
+            caster_id,
+            Side::Player,
+            Position::new(1, 1),
+            None,
+            None,
+        );
+
+        assert!(core.register_persistent_area(
+            0,
+            9001,
+            0,
+            caster_id,
+            skill_id.clone(),
+            "step_01".to_string(),
+            None,
+            area,
+        ));
+        let area_id = *core.active_areas.keys().next().expect("area id");
+        core.units
+            .get_mut(&caster_id)
+            .unwrap()
+            .set_world_position(WorldVec2::new(3.25, 2.75));
+
+        core.apply_skill_area_tick(100, area_id);
+
+        assert_eq!(
+            core.active_areas
+                .get(&area_id)
+                .map(|runtime| runtime.center),
+            Some(WorldVec2::new(3.25, 2.75))
+        );
+    }
+
+    #[test]
+    fn persistent_area_follow_target_updates_geometry_each_tick() {
+        let caster_id: UnitInstanceId = Uuid::from_u128(0xFA11).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(0xFA12).into();
+        let skill_id = SkillId::from("follow_target_area");
+        let area = SkillAreaDeliveryDef {
+            shape: SkillAreaShapeDef::Circle {
+                radius_units: TILE_UNITS_PER_TILE as u32,
+            },
+            anchor: SkillAreaAnchorSource::CastTarget,
+            tracking: SkillAreaTracking::FollowTarget,
+            hit_targets: crate::game::ability::SkillHitTargetFilter::Enemies,
+            include_caster: false,
+            tick_policy: crate::game::ability::SkillAreaTickPolicy::EveryTick,
+            duration_ms: 1_000,
+            tick_interval_ms: Some(100),
+        };
+        let skill = single_step_skill(
+            skill_id.as_str(),
+            SkillTarget::CastTarget,
+            0,
+            0,
+            DeliveryDef::Area { area },
+            vec![],
+        );
+        let mut core = core_with_skill_data(vec![], vec![skill]);
+        core.units
+            .insert(caster_id, runtime_unit(caster_id, Side::Player));
+        core.units
+            .insert(target_id, runtime_unit(target_id, Side::Opponent));
+        core.battlefield
+            .place(caster_id, Position::new(1, 1))
+            .unwrap();
+        core.battlefield
+            .place(target_id, Position::new(3, 1))
+            .unwrap();
+        sync_unit_to_battlefield_tile_center(&mut core, caster_id);
+        sync_unit_to_battlefield_tile_center(&mut core, target_id);
+        insert_test_active_skill_cast(
+            &mut core,
+            9002,
+            caster_id,
+            Side::Player,
+            Position::new(1, 1),
+            Some(Position::new(3, 1)),
+            Some(WorldVec2::from_tile_center(Position::new(3, 1))),
+        );
+        let step_target = Some(crate::game::battle::timeline::SkillCastTarget::Unit {
+            unit_instance_id: target_id,
+        });
+
+        assert!(core.register_persistent_area(
+            0,
+            9002,
+            0,
+            caster_id,
+            skill_id.clone(),
+            "step_01".to_string(),
+            step_target,
+            area,
+        ));
+        let area_id = *core.active_areas.keys().next().expect("area id");
+        core.units
+            .get_mut(&target_id)
+            .unwrap()
+            .set_world_position(WorldVec2::new(4.25, 1.75));
+
+        core.apply_skill_area_tick(100, area_id);
+
+        assert_eq!(
+            core.active_areas
+                .get(&area_id)
+                .map(|runtime| runtime.center),
+            Some(WorldVec2::new(4.25, 1.75))
+        );
     }
 
     #[test]
@@ -1490,62 +2205,6 @@ mod tests {
     }
 
     #[test]
-    fn line_enemy_area_hits_units_along_anchor_direction() {
-        let mut core = new_core();
-        let caster_id: UnitInstanceId = Uuid::from_u128(61).into();
-        let enemy_front_id: UnitInstanceId = Uuid::from_u128(62).into();
-        let enemy_back_id: UnitInstanceId = Uuid::from_u128(63).into();
-        let enemy_offline_id: UnitInstanceId = Uuid::from_u128(64).into();
-
-        core.units
-            .insert(caster_id, runtime_unit(caster_id, Side::Player));
-        core.units
-            .insert(enemy_front_id, runtime_unit(enemy_front_id, Side::Opponent));
-        core.units
-            .insert(enemy_back_id, runtime_unit(enemy_back_id, Side::Opponent));
-        core.units.insert(
-            enemy_offline_id,
-            runtime_unit(enemy_offline_id, Side::Opponent),
-        );
-
-        let caster_pos = Position::new(1, 1);
-        core.battlefield.place(caster_id, caster_pos).unwrap();
-        core.battlefield
-            .place(enemy_front_id, Position::new(2, 1))
-            .unwrap();
-        core.battlefield
-            .place(enemy_back_id, Position::new(3, 1))
-            .unwrap();
-        core.battlefield
-            .place(enemy_offline_id, Position::new(2, 2))
-            .unwrap();
-
-        let skill = single_step_skill(
-            "line",
-            SkillTarget::Enemies {
-                area: SkillArea::Line { length_tiles: 3 },
-            },
-            3,
-            0,
-            DeliveryDef::Instant,
-            vec![],
-        );
-
-        let start_target =
-            core.resolve_skill_cast_target(&skill, caster_id, Side::Player, caster_pos);
-        let targets = core.resolve_skill_step_targets(
-            0,
-            caster_id,
-            skill.first_step().unwrap(),
-            start_target,
-        );
-
-        assert!(targets.contains(&enemy_front_id));
-        assert!(targets.contains(&enemy_back_id));
-        assert!(!targets.contains(&enemy_offline_id));
-    }
-
-    #[test]
     fn area_reuse_cast_target_preserves_unit_identity_for_anchor_sampling() {
         let mut core = new_core();
         let cast_seq = 26;
@@ -1567,6 +2226,7 @@ mod tests {
         sync_unit_to_battlefield_tile_center(&mut core, target_id);
         let target = core.units.get_mut(&target_id).unwrap();
         target.set_world_position(target.body.position + WorldVec2::new(0.25, 0.0));
+        let stored_target_position = target.body.position;
 
         core.active_skill_casts.insert(
             cast_seq,
@@ -1575,6 +2235,7 @@ mod tests {
                 caster_owner: Side::Player,
                 anchor_position: Position::new(1, 1),
                 cast_target_anchor_position: Some(Position::new(3, 1)),
+                cast_target_anchor_world_position: Some(stored_target_position),
                 allow_dead_caster: false,
                 total_steps: 1,
                 step_progress: Default::default(),
@@ -1584,14 +2245,13 @@ mod tests {
                 active_area_ids: Vec::new(),
             },
         );
+        core.units.remove(&target_id);
 
         let step = SkillStepDef {
             id: "step_01".to_string(),
             delay_ms: 0,
             range_units: 4.0,
-            target: SkillTarget::Enemies {
-                area: SkillArea::RadiusChebyshev { radius_tiles: 1 },
-            },
+            target: SkillTarget::CastTarget,
             targeting: StepTargetingMode::ReuseCastTarget,
             when: Default::default(),
             repeat: Default::default(),
@@ -1601,6 +2261,7 @@ mod tests {
                         radius_units: TILE_UNITS_PER_TILE as u32,
                     },
                     anchor: SkillAreaAnchorSource::CastTarget,
+                    tracking: Default::default(),
                     hit_targets: crate::game::ability::SkillHitTargetFilter::Enemies,
                     include_caster: false,
                     tick_policy: crate::game::ability::SkillAreaTickPolicy::EveryTick,
@@ -1632,8 +2293,7 @@ mod tests {
         let anchor = core
             .resolve_area_anchor_position(0, cast_seq, 0, caster_id, step_target, &area)
             .expect("area anchor");
-        let target_position = core.units.get(&target_id).unwrap().body.position;
-        assert_eq!(anchor, target_position);
+        assert_eq!(anchor, stored_target_position);
     }
 
     #[test]
@@ -1675,6 +2335,7 @@ mod tests {
                 caster_owner: Side::Player,
                 anchor_position: Position::new(1, 1),
                 cast_target_anchor_position: None,
+                cast_target_anchor_world_position: None,
                 allow_dead_caster: false,
                 total_steps: 1,
                 step_progress: Default::default(),
@@ -1690,6 +2351,7 @@ mod tests {
                 radius_units: TILE_UNITS_PER_TILE as u32,
             },
             anchor: SkillAreaAnchorSource::CastTarget,
+            tracking: Default::default(),
             hit_targets: crate::game::ability::SkillHitTargetFilter::Enemies,
             include_caster: false,
             tick_policy: crate::game::ability::SkillAreaTickPolicy::EveryTick,
@@ -1759,6 +2421,7 @@ mod tests {
                 caster_owner: Side::Player,
                 anchor_position: Position::new(1, 1),
                 cast_target_anchor_position: None,
+                cast_target_anchor_world_position: None,
                 allow_dead_caster: false,
                 total_steps: 1,
                 step_progress: Default::default(),
@@ -1775,6 +2438,7 @@ mod tests {
                 length_units: (TILE_UNITS_PER_TILE * 2) as u32,
             },
             anchor: SkillAreaAnchorSource::CastTarget,
+            tracking: Default::default(),
             hit_targets: crate::game::ability::SkillHitTargetFilter::Enemies,
             include_caster: false,
             tick_policy: crate::game::ability::SkillAreaTickPolicy::EveryTick,
@@ -1837,6 +2501,7 @@ mod tests {
                 caster_owner: Side::Player,
                 anchor_position: Position::new(1, 1),
                 cast_target_anchor_position: None,
+                cast_target_anchor_world_position: None,
                 allow_dead_caster: false,
                 total_steps: 1,
                 step_progress: Default::default(),
@@ -1853,6 +2518,7 @@ mod tests {
                 height_units: (TILE_UNITS_PER_TILE * 2) as u32,
             },
             anchor: SkillAreaAnchorSource::CastTarget,
+            tracking: Default::default(),
             hit_targets: crate::game::ability::SkillHitTargetFilter::Enemies,
             include_caster: false,
             tick_policy: crate::game::ability::SkillAreaTickPolicy::EveryTick,
@@ -1925,6 +2591,7 @@ mod tests {
                 caster_owner: Side::Player,
                 anchor_position: Position::new(1, 1),
                 cast_target_anchor_position: None,
+                cast_target_anchor_world_position: None,
                 allow_dead_caster: false,
                 total_steps: 1,
                 step_progress: Default::default(),
@@ -1940,6 +2607,7 @@ mod tests {
                 length_units: (TILE_UNITS_PER_TILE * 3) as u32,
             },
             anchor: SkillAreaAnchorSource::CastTarget,
+            tracking: Default::default(),
             hit_targets: crate::game::ability::SkillHitTargetFilter::Enemies,
             include_caster: false,
             tick_policy: crate::game::ability::SkillAreaTickPolicy::EveryTick,
@@ -2011,6 +2679,7 @@ mod tests {
                 caster_owner: Side::Player,
                 anchor_position: Position::new(1, 1),
                 cast_target_anchor_position: None,
+                cast_target_anchor_world_position: None,
                 allow_dead_caster: false,
                 total_steps: 1,
                 step_progress: Default::default(),
@@ -2027,6 +2696,7 @@ mod tests {
                 length_units: (TILE_UNITS_PER_TILE * 3) as u32,
             },
             anchor: SkillAreaAnchorSource::CastTarget,
+            tracking: Default::default(),
             hit_targets: crate::game::ability::SkillHitTargetFilter::Enemies,
             include_caster: false,
             tick_policy: crate::game::ability::SkillAreaTickPolicy::EveryTick,
@@ -2100,6 +2770,7 @@ mod tests {
                 caster_owner: Side::Player,
                 anchor_position: Position::new(0, 1),
                 cast_target_anchor_position: None,
+                cast_target_anchor_world_position: None,
                 allow_dead_caster: false,
                 total_steps: 1,
                 step_progress: Default::default(),
@@ -2135,6 +2806,7 @@ mod tests {
                 length_units: (TILE_UNITS_PER_TILE * 2) as u32,
             },
             anchor: SkillAreaAnchorSource::ImpactContextStart,
+            tracking: Default::default(),
             hit_targets: crate::game::ability::SkillHitTargetFilter::Enemies,
             include_caster: false,
             tick_policy: crate::game::ability::SkillAreaTickPolicy::EveryTick,
@@ -2174,6 +2846,7 @@ mod tests {
                 caster_owner: Side::Player,
                 anchor_position: Position::new(1, 1),
                 cast_target_anchor_position: None,
+                cast_target_anchor_world_position: None,
                 allow_dead_caster: false,
                 total_steps: 3,
                 step_progress: Default::default(),
@@ -2235,6 +2908,7 @@ mod tests {
                 caster_owner: Side::Player,
                 anchor_position: Position::new(0, 1),
                 cast_target_anchor_position: None,
+                cast_target_anchor_world_position: None,
                 allow_dead_caster: false,
                 total_steps: 2,
                 step_progress: Default::default(),
@@ -2262,6 +2936,7 @@ mod tests {
                 length_units: (TILE_UNITS_PER_TILE * 2) as u32,
             },
             anchor: SkillAreaAnchorSource::ImpactContextStart,
+            tracking: Default::default(),
             hit_targets: crate::game::ability::SkillHitTargetFilter::Enemies,
             include_caster: false,
             tick_policy: crate::game::ability::SkillAreaTickPolicy::EveryTick,
@@ -2326,6 +3001,7 @@ mod tests {
                 caster_owner: Side::Player,
                 anchor_position: Position::new(1, 1),
                 cast_target_anchor_position: None,
+                cast_target_anchor_world_position: None,
                 allow_dead_caster: false,
                 total_steps: 1,
                 step_progress: Default::default(),
@@ -2361,6 +3037,7 @@ mod tests {
                 radius_units: (TILE_UNITS_PER_TILE / 2) as u32,
             },
             anchor: SkillAreaAnchorSource::ImpactContext,
+            tracking: Default::default(),
             hit_targets: crate::game::ability::SkillHitTargetFilter::Enemies,
             include_caster: false,
             tick_policy: crate::game::ability::SkillAreaTickPolicy::EveryTick,
@@ -2392,9 +3069,7 @@ mod tests {
         let enemy_id: UnitInstanceId = Uuid::from_u128(0xA102).into();
         let skill = single_step_skill(
             "persistent_area",
-            SkillTarget::Enemies {
-                area: SkillArea::All,
-            },
+            SkillTarget::CastTarget,
             3,
             0,
             DeliveryDef::Area {
@@ -2403,6 +3078,7 @@ mod tests {
                         radius_units: TILE_UNITS_PER_TILE as u32,
                     },
                     anchor: SkillAreaAnchorSource::CastTarget,
+                    tracking: Default::default(),
                     hit_targets: crate::game::ability::SkillHitTargetFilter::Enemies,
                     include_caster: false,
                     tick_policy: crate::game::ability::SkillAreaTickPolicy::EveryTick,
@@ -2436,6 +3112,7 @@ mod tests {
                 caster_owner: Side::Player,
                 anchor_position: Position::new(1, 1),
                 cast_target_anchor_position: None,
+                cast_target_anchor_world_position: None,
                 allow_dead_caster: false,
                 total_steps: 1,
                 step_progress: Default::default(),
@@ -2490,9 +3167,7 @@ mod tests {
         let enemy_id: UnitInstanceId = Uuid::from_u128(0xA10A).into();
         let skill = single_step_skill(
             "persistent_area_after_death",
-            SkillTarget::Enemies {
-                area: SkillArea::All,
-            },
+            SkillTarget::CastTarget,
             3,
             0,
             DeliveryDef::Area {
@@ -2501,6 +3176,7 @@ mod tests {
                         radius_units: TILE_UNITS_PER_TILE as u32,
                     },
                     anchor: SkillAreaAnchorSource::CastTarget,
+                    tracking: Default::default(),
                     hit_targets: crate::game::ability::SkillHitTargetFilter::Enemies,
                     include_caster: false,
                     tick_policy: crate::game::ability::SkillAreaTickPolicy::EveryTick,
@@ -2534,6 +3210,7 @@ mod tests {
                 caster_owner: Side::Player,
                 anchor_position: Position::new(1, 1),
                 cast_target_anchor_position: None,
+                cast_target_anchor_world_position: None,
                 allow_dead_caster: false,
                 total_steps: 1,
                 step_progress: Default::default(),
@@ -2580,9 +3257,7 @@ mod tests {
         let enemy_id: UnitInstanceId = Uuid::from_u128(0xA112).into();
         let skill = single_step_skill(
             "persistent_area_once",
-            SkillTarget::Enemies {
-                area: SkillArea::All,
-            },
+            SkillTarget::CastTarget,
             3,
             0,
             DeliveryDef::Area {
@@ -2591,6 +3266,7 @@ mod tests {
                         radius_units: TILE_UNITS_PER_TILE as u32,
                     },
                     anchor: SkillAreaAnchorSource::CastTarget,
+                    tracking: Default::default(),
                     hit_targets: crate::game::ability::SkillHitTargetFilter::Enemies,
                     include_caster: false,
                     tick_policy: crate::game::ability::SkillAreaTickPolicy::OncePerArea,
@@ -2624,6 +3300,7 @@ mod tests {
                 caster_owner: Side::Player,
                 anchor_position: Position::new(1, 1),
                 cast_target_anchor_position: None,
+                cast_target_anchor_world_position: None,
                 allow_dead_caster: false,
                 total_steps: 1,
                 step_progress: Default::default(),
@@ -2668,9 +3345,7 @@ mod tests {
         let enemy_id: UnitInstanceId = Uuid::from_u128(0xA122).into();
         let skill = single_step_skill(
             "persistent_area_on_enter",
-            SkillTarget::Enemies {
-                area: SkillArea::All,
-            },
+            SkillTarget::CastTarget,
             3,
             0,
             DeliveryDef::Area {
@@ -2679,6 +3354,7 @@ mod tests {
                         radius_units: TILE_UNITS_PER_TILE as u32,
                     },
                     anchor: SkillAreaAnchorSource::CastTarget,
+                    tracking: Default::default(),
                     hit_targets: crate::game::ability::SkillHitTargetFilter::Enemies,
                     include_caster: false,
                     tick_policy: crate::game::ability::SkillAreaTickPolicy::OnEnter,
@@ -2712,6 +3388,7 @@ mod tests {
                 caster_owner: Side::Player,
                 anchor_position: Position::new(1, 1),
                 cast_target_anchor_position: None,
+                cast_target_anchor_world_position: None,
                 allow_dead_caster: false,
                 total_steps: 1,
                 step_progress: Default::default(),
@@ -3269,9 +3946,7 @@ mod tests {
         let caster_id: UnitInstanceId = Uuid::from_u128(0xA211).into();
         let skill = single_step_skill(
             "cleanup_area",
-            SkillTarget::Enemies {
-                area: SkillArea::All,
-            },
+            SkillTarget::CastTarget,
             3,
             0,
             DeliveryDef::Area {
@@ -3280,6 +3955,7 @@ mod tests {
                         radius_units: TILE_UNITS_PER_TILE as u32,
                     },
                     anchor: SkillAreaAnchorSource::CastTarget,
+                    tracking: Default::default(),
                     hit_targets: crate::game::ability::SkillHitTargetFilter::Enemies,
                     include_caster: false,
                     tick_policy: crate::game::ability::SkillAreaTickPolicy::EveryTick,

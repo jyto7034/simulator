@@ -92,45 +92,12 @@ impl Handler<GetPlayerCount> for LoadBalanceActor {
 mod tests {
     use super::*;
     use crate::shared::metrics::MetricsCtx;
-    use game_core::game::data::{
-        abnormality_data::AbnormalityDatabase,
-        artifact_data::ArtifactDatabase,
-        bonus_data::BonusDatabase,
-        equipment_data::EquipmentDatabase,
-        event_pools::{EventPhasePool, EventPoolConfig},
-        pve_data::PveEncounterDatabase,
-        random_event_data::RandomEventDatabase,
-        shop_data::ShopDatabase,
-        skill_data::SkillDatabase,
-        GameDataBase, GameDataBaseParts,
-    };
+    use game_core::game::data::{GameDataBase, GameDataBuilder};
     use std::sync::Arc;
     use uuid::Uuid;
 
     fn empty_game_data() -> Arc<GameDataBase> {
-        let empty = EventPhasePool {
-            shops: vec![],
-            bonuses: vec![],
-            random_events: vec![],
-        };
-
-        Arc::new(GameDataBase::new(GameDataBaseParts {
-            abnormality_data: Arc::new(AbnormalityDatabase::new(vec![])),
-            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
-            equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
-            shop_data: Arc::new(ShopDatabase::new(vec![])),
-            bonus_data: Arc::new(BonusDatabase::new(vec![])),
-            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
-            pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
-            skill_data: Arc::new(SkillDatabase::new(vec![])),
-            event_pools: EventPoolConfig {
-                dawn: empty.clone(),
-                noon: empty.clone(),
-                dusk: empty.clone(),
-                midnight: empty.clone(),
-                white: empty,
-            },
-        }))
+        GameDataBuilder::empty().build_arc()
     }
 
     #[actix_web::test]

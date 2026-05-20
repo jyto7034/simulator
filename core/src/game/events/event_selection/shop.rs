@@ -26,6 +26,7 @@ impl EventGenerator for ShopGenerator {
 
     fn generate(&self, ctx: &GeneratorContext) -> Result<Self::Output, GameError> {
         use crate::ecs::resources::GameProgression;
+        use crate::game::determinism;
         use crate::game::enums::OrdealType;
         use rand::SeedableRng;
 
@@ -40,7 +41,10 @@ impl EventGenerator for ShopGenerator {
         let pool = &ctx.game_data.event_pools.get_pool(current_ordeal).shops;
 
         // 3. RNG 생성
-        let mut rng = rand::rngs::StdRng::seed_from_u64(ctx.random_seed);
+        let mut rng = rand::rngs::StdRng::seed_from_u64(determinism::seed_with_namespace(
+            ctx.random_seed,
+            0x5348_4F50,
+        ));
 
         // 4. pool에서 가중치 기반 UUID 선택
         let uuid = EventPhasePool::choose_weighted_uuid(pool, &mut rng).ok_or_else(|| {
@@ -446,6 +450,7 @@ mod tests {
             max_health: 100,
             attack: 30,
             defense: 5,
+            magic_resist: 0,
             movement: MovementDef {
                 speed_units_per_ms: 3000,
             },
@@ -929,6 +934,7 @@ mod tests {
                 mode: crate::game::enums::RewardMode::ClaimAll,
                 rewards: vec![bonus],
                 selected_reward_uuid: None,
+                can_skip: true,
             },
         )));
 
