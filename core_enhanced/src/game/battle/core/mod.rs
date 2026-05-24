@@ -59,6 +59,7 @@ pub struct BattleCore {
     active_areas: HashMap<Uuid, AreaRuntime>,
     active_movement_segments: HashMap<UnitInstanceId, ActiveMovementSegment>,
     melee_slot_reservations: HashMap<UnitInstanceId, MeleeSlotReservation>,
+    block_state: BlockRuntimeState,
     last_continuous_movement_tick_ms: Option<u64>,
     movement_backend: ContinuousMovementBackend,
     spatial_query_backend: SpatialQueryBackend,
@@ -115,6 +116,12 @@ pub(in crate::game::battle::core) struct ScenarioRuntimeState {
     forced_winner: Option<crate::game::battle::types::BattleWinner>,
 }
 
+#[derive(Debug, Clone, Default)]
+pub(in crate::game::battle::core) struct BlockRuntimeState {
+    blocker_to_enemies: HashMap<UnitInstanceId, Vec<UnitInstanceId>>,
+    enemy_to_blocker: HashMap<UnitInstanceId, UnitInstanceId>,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub(in crate::game::battle::core) struct MeleeSlotReservation {
     target_id: UnitInstanceId,
@@ -147,6 +154,7 @@ impl BattleCore {
             active_areas: HashMap::new(),
             active_movement_segments: HashMap::new(),
             melee_slot_reservations: HashMap::new(),
+            block_state: BlockRuntimeState::default(),
             last_continuous_movement_tick_ms: None,
             movement_backend: ContinuousMovementBackend::default(),
             spatial_query_backend: SpatialQueryBackend::default(),
@@ -442,7 +450,9 @@ mod tests {
     use crate::game::battle::enums::BattleEvent;
     use crate::game::battle::scenario::BattleScenario;
     use crate::game::battle::timeline::{TimelineCause, TimelineEvent};
-    use crate::game::battle::types::{BattleUnitDraft, BattleUnitSource, UnitCombatProfile};
+    use crate::game::battle::types::{
+        BattleUnitDraft, BattleUnitSource, DeploymentAffinity, UnitCombatProfile,
+    };
     use crate::game::data::{
         abnormality_data::AbnormalityMetadata, skill_data::SkillDatabase, GameDataBase,
         GameDataBuilder,
@@ -525,6 +535,7 @@ mod tests {
                     id: player_group_id.clone(),
                     side: Side::Player,
                     required_for_victory: false,
+                    enemy_movement_plan: None,
                     spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
                         unit_ref: player_ref,
                         side: Side::Player,
@@ -537,6 +548,7 @@ mod tests {
                     id: first_wave_id.clone(),
                     side: Side::Opponent,
                     required_for_victory: true,
+                    enemy_movement_plan: None,
                     spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
                         unit_ref: first_enemy_ref,
                         side: Side::Opponent,
@@ -549,6 +561,7 @@ mod tests {
                     id: second_wave_id.clone(),
                     side: Side::Opponent,
                     required_for_victory: true,
+                    enemy_movement_plan: None,
                     spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
                         unit_ref: second_enemy_ref,
                         side: Side::Opponent,
@@ -621,6 +634,7 @@ mod tests {
                     id: player_group_id.clone(),
                     side: Side::Player,
                     required_for_victory: false,
+                    enemy_movement_plan: None,
                     spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
                         unit_ref: crate::game::battle::scenario::ScenarioUnitRef::new("player_0"),
                         side: Side::Player,
@@ -633,6 +647,7 @@ mod tests {
                     id: object_group_id.clone(),
                     side: Side::Player,
                     required_for_victory: false,
+                    enemy_movement_plan: None,
                     spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
                         unit_ref: protected_ref.clone(),
                         side: Side::Player,
@@ -645,6 +660,7 @@ mod tests {
                     id: enemy_group_id.clone(),
                     side: Side::Opponent,
                     required_for_victory: false,
+                    enemy_movement_plan: None,
                     spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
                         unit_ref: crate::game::battle::scenario::ScenarioUnitRef::new("enemy_0"),
                         side: Side::Opponent,
@@ -722,6 +738,7 @@ mod tests {
                 id: player_group_id.clone(),
                 side: Side::Player,
                 required_for_victory: false,
+                enemy_movement_plan: None,
                 spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
                     unit_ref: crate::game::battle::scenario::ScenarioUnitRef::new("player_0"),
                     side: Side::Player,
@@ -819,6 +836,7 @@ mod tests {
                 id: player_group_id.clone(),
                 side: Side::Player,
                 required_for_victory: false,
+                enemy_movement_plan: None,
                 spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
                     unit_ref: player_ref,
                     side: Side::Player,
@@ -906,6 +924,7 @@ mod tests {
                 id: player_group_id.clone(),
                 side: Side::Player,
                 required_for_victory: false,
+                enemy_movement_plan: None,
                 spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
                     unit_ref: player_ref,
                     side: Side::Player,
@@ -955,6 +974,10 @@ mod tests {
             body: Default::default(),
             tactical_anchor: None,
             tactical_group_id: None,
+            enemy_movement_plan: None,
+            block_capacity: 0,
+            block_radius_units: 0.0,
+            blockable: true,
             move_epoch: 0,
             action_state: ActionState::Idle,
             action_locks: Default::default(),
@@ -1026,6 +1049,7 @@ mod tests {
                 id: group_id.clone(),
                 side: Side::Player,
                 required_for_victory: true,
+                enemy_movement_plan: None,
                 spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
                     unit_ref,
                     side: Side::Player,
@@ -1047,6 +1071,56 @@ mod tests {
         let body = core.unit_body_view(spawned[0]).expect("spawned body");
 
         assert!((body.radius - 0.8).abs() <= f32::EPSILON);
+    }
+
+    #[test]
+    fn platform_only_spawned_unit_cannot_block_even_if_profile_has_capacity() {
+        let group_id = crate::game::battle::scenario::ScenarioGroupId::new("player");
+        let unit_ref = crate::game::battle::scenario::ScenarioUnitRef::new("platform_unit");
+        let owned_uuid = Uuid::from_u128(0xA0A1);
+        let base_uuid = Uuid::from_u128(0xB0B1);
+        let mut draft = fixture_draft(owned_uuid, base_uuid, 100, 10);
+        if let BattleUnitSource::TestFixture { profile, .. } = &mut draft.source {
+            profile.deployment_affinity = DeploymentAffinity::PlatformOnly;
+            profile.block_capacity = 3;
+            profile.block_radius_units = 2.0;
+        }
+
+        let scenario = crate::game::battle::scenario::BattleScenario {
+            battlefield: crate::game::battle::scenario::BattleFieldSpec {
+                width: 4,
+                height: 4,
+                valid_tiles: Vec::new(),
+                obstacles: Vec::new(),
+            },
+            artifacts: Vec::new(),
+            groups: vec![crate::game::battle::scenario::ScenarioSpawnGroup {
+                id: group_id.clone(),
+                side: Side::Player,
+                required_for_victory: true,
+                enemy_movement_plan: None,
+                spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
+                    unit_ref,
+                    side: Side::Player,
+                    draft,
+                    position: Position::new(1, 1),
+                    instance_salt: 0,
+                }],
+            }],
+            events: Vec::new(),
+            win_condition:
+                crate::game::battle::scenario::WinCondition::AllRequiredEnemyGroupsDefeated,
+            tactical_plan: Default::default(),
+        };
+        let mut core = BattleCore::new_from_scenario(scenario, empty_game_data(), 123);
+
+        let spawned = core
+            .spawn_scenario_group(&group_id)
+            .expect("spawn group with platform-only profile");
+        let unit = core.units.get(&spawned[0]).expect("spawned unit");
+
+        assert_eq!(unit.block_capacity, 0);
+        assert_eq!(unit.block_radius_units, 0.0);
     }
 
     fn sync_unit_to_battlefield_tile_center(core: &mut BattleCore, unit_id: UnitInstanceId) {

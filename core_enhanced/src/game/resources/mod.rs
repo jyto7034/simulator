@@ -13,7 +13,7 @@ pub use economy::Enkephalin;
 pub use inventory::*;
 pub use progression::{Qliphoth, QliphothLevel};
 pub use selection::{
-    CombatBattleState, RewardSessionState, SelectedEvent, SelectedEventState, ShopSessionState,
-    SupportSessionState,
+    CombatBattleState, HeadquartersContactSessionState, RewardSessionState, SelectedEvent,
+    SelectedEventState, ShopSessionState, SupportSessionState,
 };
 pub use state::{GameState, RunFailureReason};

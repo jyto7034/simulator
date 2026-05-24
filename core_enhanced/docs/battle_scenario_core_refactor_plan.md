@@ -199,18 +199,13 @@ pub enum WinCondition {
     ProtectUnit {
         unit_ref: ScenarioUnitRef,
     },
-    ProtectUnitForDuration {
-        unit_ref: ScenarioUnitRef,
-        time_ms: u64,
-        cleanup_required: bool,
-    },
     SurviveUntil {
         time_ms: u64,
     },
 }
 ```
 
-현재 구현에서는 `AtBattleStart`, `AtTimeMs`, `SpawnGroup`, `EndBattle`, `AllRequiredEnemyGroupsDefeated`, `DefeatUnit`, `ProtectUnit`, `ProtectUnitForDuration`, `RecoverHoldAndExtract`, `SurviveUntil`을 주 계약으로 지원한다. 과거 `DefendPoint` 지점 누수 계약은 live/runtime/data 계약에서 제거됐다.
+현재 구현에서는 `AtBattleStart`, `AtTimeMs`, `SpawnGroup`, `EndBattle`, `AllRequiredEnemyGroupsDefeated`, `DefeatUnit`, `ProtectUnit`, `RecoverHoldAndExtract`, `SurviveUntil`을 주 계약으로 지원한다. 과거 `DefendPoint` 지점 누수 계약과 시간 생존형 보호 방어 계약은 live/runtime/data 계약에서 제거됐다.
 
 조건부 이벤트는 `BattleScenario` 2단계 확장으로 미룬다. 지금은 보스 HP 조건, 특정 유닛 사망, 웨이브 전멸, 지점 도달 같은 조건을 런타임에서 평가해 새 이벤트를 발생시키지 않는다. 현재 우선순위는 시간 기반 웨이브, 전장/배치/스폰 정보 일치, 실제 조우 데이터 확장, 전투 흐름 안정화다.
 
@@ -410,7 +405,7 @@ CombatExecutor
 - `ScenarioTrigger::AtBattleStart`, `ScenarioTrigger::AtTimeMs`, `ScenarioAction::SpawnGroup`, `ScenarioAction::EndBattle`의 런타임 연결이 있다.
 - `UnitSpawned`와 장착 아이템 `ItemSpawned`는 실제 스폰 시점에 기록된다.
 - 새로 스폰된 유닛은 해당 시점 기준으로 기본 공격 이벤트를 예약한다.
-- `WinCondition::AllRequiredEnemyGroupsDefeated`, `DefeatUnit`, `ProtectUnit`, `ProtectUnitForDuration`, `RecoverHoldAndExtract`, `SurviveUntil`이 `compute_winner`에 반영됐다. 과거 `DefendPoint` 호환 경로는 제거됐다.
+- `WinCondition::AllRequiredEnemyGroupsDefeated`, `DefeatUnit`, `ProtectUnit`, `RecoverHoldAndExtract`, `SurviveUntil`이 `compute_winner`에 반영됐다. 과거 `DefendPoint`와 시간 생존형 보호 방어 호환 경로는 제거됐다.
 - 첫 필수 웨이브를 처치해도 아직 스폰되지 않은 필수 웨이브가 남아 있으면 조기 승리하지 않는 테스트가 추가됐다.
 - `CombatExecutor`가 `CombatPreview.spawn_waves`를 직접 `BattleScenario`의 enemy spawn group/event로 변환한다.
 - map/node combat은 `BattleCore::new_from_scenario(...)`를 사용한다.
@@ -604,8 +599,8 @@ PveEncounter authored data
 - 같은 `ChokePoint` 전장도 `Defense` 블랙박스 방어전이 될 수 있고, `Recovery` 회수전이 될 수도 있다.
 - 클라이언트와 보상 정책은 가능한 한 `CombatPreview.node_type`을 기준으로 목적/보상 정체성을 표현하고, 세부 배치는 `archetype`과 전장 데이터에서 읽는다.
 - 전투 진입 후 클라이언트는 selected event snapshot의 `node_type`을 읽어 현재 전투의 목적을 표시할 수 있다. 이 값은 preview에서 확정된 값과 동일해야 한다.
-- 현재 `CombatExecutor`는 `CombatNodeType::Defense` 조우가 별도 `tactical_plan`과 `win_condition`을 작성하지 않아도 기본 블랙박스 방어 흐름을 만든다. 기본 지점 id는 `black_box_recovery`이고, 주 배치 구역 근처에 `black_box_recovery_device` 보호 오브젝트를 시나리오가 주입한다. 아군은 `HoldDeployment`, 적군은 `PathToPoint`, 승패는 `ProtectUnitForDuration(black_box_recovery_device)`를 사용한다.
-- 보호 오브젝트는 플레이어가 임의로 옮길 수 없고, 이동/공격/스킬 사용을 하지 않는 `BattleUnitRole::DefenseObject` 역할 유닛이다. 이 유닛이 파괴되면 상대 승리다. `Controlled` 임무는 지정 시간 생존 시 즉시 승리하고, `Unstable`/`Collapse` 임무는 지정 시간 생존 후 필수 적 그룹까지 격파해야 승리한다.
+- 현재 `CombatExecutor`는 `CombatNodeType::Defense` 조우가 별도 `tactical_plan`과 `win_condition`을 작성하지 않아도 기본 블랙박스 방어 흐름을 만든다. 기본 지점 id는 `black_box_recovery`이고, 주 배치 구역 근처에 `black_box_recovery_device` 보호 오브젝트를 시나리오가 주입한다. 아군은 `FixedDefense`, 적군은 transitional `PathToPoint`, 승패는 `ProtectUnit(black_box_recovery_device)`를 사용한다.
+- 보호 오브젝트는 플레이어가 임의로 옮길 수 없고, 이동/공격/스킬 사용을 하지 않는 `BattleUnitRole::DefenseObject` 역할 유닛이다. 이 유닛이 파괴되면 상대 승리다. 기본 Defense는 시간 생존형이 아니라 필수 적 그룹이 모두 정리되고 보호 오브젝트가 살아 있으면 승리한다.
 - `CombatMissionRisk`는 적 종류 tier가 아니라 임무 위험도다. 현재 기본값은 조우 `RiskLevel`에서 추론한다. `ZAYIN`/`TETH`는 `Controlled`, `HE`/`WAW`는 `Unstable`, `ALEPH`는 `Collapse`다.
 - `TimelineEvent::UnitSpawned`는 `role`을 포함한다. 클라이언트는 `DefenseObject`를 배치 가능한 아군이 아니라 고정 방어 목표로 표시해야 한다.
 - 과거 `DefendPoint`/지점 도달 누수 계약은 제거됐다. 관문/침투 저지처럼 “지점 도달 누수”가 목적일 때는 기존 방어 오브젝트 계약을 재사용하지 말고 새 leak-runner 임무 계약으로 설계한다.
@@ -638,10 +633,10 @@ PveEncounter(
         points: [
             (id: "black_box_recovery", position: (x: 3, y: 6)),
         ],
-        objective: Some(ProtectUnitForDuration(unit_ref: "black_box", time_ms: 45000, cleanup_required: true)),
+        objective: Some(ProtectUnit(unit_ref: "black_box")),
         enemy_plan: Some(PathToPoint(point_id: "black_box_recovery")),
     )),
-    win_condition: Some(ProtectUnitForDuration(unit_ref: "black_box", time_ms: 45000, cleanup_required: true)),
+    win_condition: Some(ProtectUnit(unit_ref: "black_box")),
     waves: [
         (
             id: "wave_0",

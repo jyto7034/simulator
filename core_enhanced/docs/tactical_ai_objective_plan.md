@@ -12,9 +12,10 @@
 - movement planner는 하드코딩된 “가장 가까운 적 추격”만 사용하지 않는다.
 - 기존 전투 동작은 `SuppressAll + FreeEngage + AssaultPlayer`로 보존한다.
 - 방어형 전투에서는 유저가 세심하게 배치한 의미를 깨지 않는다.
-- 방어형 아군도 완전 고정 포탑이 아니라 anchor 주변의 제한 반경 안에서만 움직인다.
+- `Defense`는 명일방주식 고정 방어 전투로 정리한다. 아군은 전투 중 이동/재배치하지 않고, route를 따라 들어오는 적을 공격/저지한다.
+- 제한 반경 이동은 `Defense`가 아니라 `Encirclement`나 `Frontline`처럼 포위 생존/전선 유지 목적에서 사용한다.
 - 단체 이동은 개별 유닛 AI가 아니라 분대/포메이션 목적 계층에서 처리한다.
-- 1차 구현은 최소 기반만 넣고, 경로 기반 방어/저지/포메이션은 후속으로 미룬다.
+- route 기반 방어와 저지는 `Defense`의 다음 핵심 구현 대상이다. 조건부 분기 route와 고급 포메이션은 후속으로 미룬다.
 
 ## 목표 구조
 
@@ -47,7 +48,6 @@ BattleScenario.tactical_plan
 pub enum BattleObjective {
     SuppressAll,
     ProtectUnit { unit_ref: ScenarioUnitRef },
-    ProtectUnitForDuration { unit_ref: ScenarioUnitRef, time_ms: u64 },
     HoldArea { area_id: TacticalAreaId, duration_ms: Option<u64> },
     AdvanceToPoint { point_id: TacticalPointId },
     DefeatBoss { boss_ref: ScenarioUnitRef },
@@ -77,6 +77,9 @@ pub enum PlayerMovementPlan {
         leash_radius: f32,
         chase_radius: f32,
     },
+    FixedDefense {
+        block_radius: f32,
+    },
     HoldLine {
         line_id: TacticalLineId,
         forward_limit: f32,
@@ -104,9 +107,35 @@ pub enum PlayerMovementPlan {
 
 기존 테스트와 현재 전투 감각을 유지하기 위한 기본값이다.
 
+### FixedDefense
+
+명일방주식 `Defense` 전투의 장기 기본 정책이다.
+
+```text
+전투 시작 전 배치 위치에 고정
+-> 전투 중 재배치 불가
+-> 자율 이동 없음
+-> 사거리 내 적 공격
+-> 지상 배치 직원은 block_radius 안의 적을 저지
+-> 플랫폼 배치 직원은 저지하지 않고 공격/스킬만 수행
+```
+
+의도:
+
+- 방어형 전투에서 플레이어의 배치 판단을 결과에 직접 연결한다.
+- 실패 원인을 “저지 수 부족”, “플랫폼 화력 부족”, “route 방어 실패”처럼 읽기 쉽게 만든다.
+- 기존 자동전투식 제한 이동과 구분되는 명확한 방어 노드 정체성을 만든다.
+
+초기 수치:
+
+```text
+block_radius = 데이터/정책값으로 관리
+block_capacity = 직원 전투 프로필 또는 역할 데이터에서 관리
+```
+
 ### HoldDeployment
 
-방어형 전투의 기본 정책이다.
+포위형 생존전이나 병목 난전에서 쓰는 제한 반경 자동전투 정책이다. `Defense`의 장기 기본값으로 쓰지 않는다.
 
 ```text
 스폰 위치를 anchor로 기억
@@ -122,6 +151,7 @@ pub enum PlayerMovementPlan {
 - 배치의 의미를 보존한다.
 - 전투가 완전히 정적이지 않도록 작은 움직임을 허용한다.
 - 포위형, 병목, 매복 지형에서 유저의 배치 판단이 유지된다.
+- 명일방주식 Defense와 달리 유닛이 제한 반경 안에서 난전을 수행한다.
 
 권장 초기값:
 
@@ -212,15 +242,52 @@ pub enum EnemyMovementPlan {
 
 ### PathToPoint / PathToArea
 
-명일방주식 방어 전투의 기반이다.
+route 기반 전투의 최소 기반이다.
 
 ```text
 적은 목적지나 경로를 따라 이동
--> 사거리 내 아군 공격 또는 블로킹 대응
--> 목적지 도달 시 별도 결과 처리
+-> 사거리 내 아군 공격 또는 저지 대응
+-> route 끝에 도달하면 임무 목적에 맞는 대상/지점으로 행동 전환
 ```
 
-아직 구현하지 않는다. 방어 거점, 경로, 저지/블로킹 규칙이 확정된 뒤 추가한다.
+Defense에서는 route 끝을 누수 지점으로 보지 않는다. 적은 route 끝에서 `DefenseObject`를 공격 대상으로 삼고, 보호 오브젝트 파괴 시 임무가 실패한다.
+
+route 작성 정책:
+
+- 전장 terrain은 ASCII `rows`가 source of truth다.
+- route는 terrain과 같은 크기의 별도 ASCII overlay로 작성한다.
+- route overlay는 화살표와 시작/종료 marker만 얹는다. terrain의 `#`, `.`, `P`를 반복 작성하지 않는다.
+- 검증/디버그 출력은 terrain과 route overlay를 합성해 보여준다.
+- route 하나는 단일 시작점, 단일 종료점, 무분기 선형 경로다.
+- 분기가 필요한 경우 하나의 route를 갈라지게 만들지 말고, 별도 `route_id`를 가진 route 여러 개로 작성한다.
+- 조우 wave는 사용할 `route_id`를 명시한다.
+
+예시:
+
+```ron
+terrain: [
+    "###########",
+    "#PP..#...X#",
+    "#PP..#....#",
+    "#....#....#",
+    "#A........#",
+    "###########",
+],
+
+routes: [
+    (
+        id: "main_breach",
+        overlay: [
+            "           ",
+            "      >>>X ",
+            "      ^    ",
+            "      ^    ",
+            " A>>>>^    ",
+            "           ",
+        ],
+    ),
+]
+```
 
 ### SurroundAndCollapse
 
@@ -268,6 +335,28 @@ ScenarioUnitSpawn.position
 - 목적지 waypoint
 
 `BattleScenario.tactical_plan.points`는 1차 목적지 표현으로 사용한다. `PathToPoint` 적은 해당 전술 포인트의 타일 중심으로 이동하고, `PathAlongPath` 적은 이미 도달한 waypoint를 건너뛰며 첫 미도달 waypoint로 이동한다.
+
+## Defense 저지 규칙
+
+저지는 물리 충돌의 부산물이 아니라 전투 규칙이다. Rapier/continuous movement가 유닛끼리 겹침을 막아서 우연히 멈추는 방식으로 구현하지 않는다.
+
+기본 계약:
+
+- 직원 전투 프로필은 배치 허용 타입을 가진다. 기본값 후보는 `GroundOnly`, `PlatformOnly`, `Any`다.
+- 직원 전투 프로필 또는 역할 데이터는 `block_capacity`를 가진다.
+- 적 전투 프로필은 `blockable`을 가진다. 추후 엘리트/보스 조정을 위해 `block_weight`를 추가할 수 있다.
+- 저지는 `block_radius` 기반으로 판정한다.
+- 지상 배치 직원만 저지할 수 있다. 플랫폼 배치 직원은 저지하지 않는다.
+- 살아 있고, 전투불능/강제 이동/저지 불가 상태가 아니며, 남은 `block_capacity`가 있는 직원만 새 적을 저지할 수 있다.
+- 저지 우선순위는 거리 가까운 순, 동률이면 unit id 순이다.
+- `block_capacity`를 초과한 적은 통과한다.
+- 적끼리의 겹침은 최대한 허용한다. 명일방주식 행렬/겹침 표현은 클라이언트에서 약간의 시각적 offset으로 보정할 수 있다.
+- 지나가던 적도 조건이 맞으면 중간에 저지될 수 있다.
+- 저지된 적은 저지자를 우선 공격한다.
+- 저지자는 자신이 저지한 적을 우선 공격한다.
+- 적 사망, 저지자 사망/전투불능, 강제 이동/넉백, `block_radius` 이탈 시 저지를 해제한다.
+
+Defense 전투에서 route 끝에 도달한 적은 사라지거나 라이프를 깎지 않는다. 저지되지 않고 끝까지 도달한 적은 `DefenseObject`를 공격한다.
 
 ## Movement Planner 변경 방향
 
@@ -387,7 +476,7 @@ Archetype      Objective           Player Plan              Enemy Plan
 ---------------------------------------------------------------------------
 OpenHall       SuppressAll         FreeEngage / GroupAdvance AssaultPlayer
 Corridor       PushOrHoldLine      HoldLine / GroupAdvance   PathToPoint
-ChokePoint     ProtectUnit         HoldDeployment            PathToPoint
+ChokePoint     ProtectUnit         FixedDefense              PathAlongPath
 Ambush         SuppressAll         CautiousEngage            AssaultWithFlankSpawns
 Surrounded     HoldArea            HoldDeployment            PathToArea
 SplitRoom      SuppressAll now     Cautious/Hold fallback    AssaultPlayer
@@ -433,15 +522,22 @@ BossArena      DefeatBoss          MixedPlan                 BossPattern
 - 완료: `PathToPoint` 적은 멀리 있는 아군을 무한 추격하지 않고 전술 포인트로 이동하되, 사거리 안의 아군은 공격한다.
 - 완료: `PathAlongPath` 적은 이미 도달한 waypoint를 건너뛰고 첫 미도달 waypoint로 이동한다.
 - 완료: 빈 적 path나 깨진 적 path는 기존 `FreeEngage`로 fallback하지 않는다.
-- 완료: `WinCondition::ProtectUnitForDuration`은 보호 대상 유닛이 파괴되면 상대 승리로 전투를 종료한다. `Controlled` 방어는 지정 시간 생존 시 즉시 승리하고, `Unstable`/`Collapse` 방어는 지정 시간 생존 후 필수 적 그룹 섬멸까지 요구한다.
+- 제거됨: 과거 시간 생존형 보호 방어 계약은 live/runtime/data 계약에서 제거됐다. 현재 Defense는 `ProtectUnit` + `DefenseObject` + 필수 웨이브 전멸로 성공/실패를 판단한다.
 - 제거됨: 과거 `WinCondition::DefendPoint`/지점 누수 계약은 live/runtime/data 계약에서 제거됐다. runner/leak AI가 필요해지면 별도 임무 계약으로 새로 설계한다.
 - 완료: `WinCondition::RecoverHoldAndExtract`는 필수 적 그룹 정리 후 회수 지점 반경에 들어오면 `RecoveryTargetSecured`를 기록하고, 지정 시간 사수 후 탈출 지점 반경에 들어오면 `ExtractionCompleted`를 기록한 뒤 플레이어 승리로 전투를 종료한다.
 - 완료: `CombatNodeType::Recovery` 기본 전술은 `recovery_target -> extraction_point` 순서의 `AdvanceAlongPath`를 사용한다. 이 흐름은 “적이 포진한 지점까지 돌파, 회수 지점 사수, 탈출 지점 복귀”를 표현하기 위한 최소 구현이다.
+- 확정 정책: `Defense`는 명일방주식 고정 방어로 전환한다. 기존 `HoldDeployment` 기반 방어 기본값은 `Encirclement` 같은 포위 생존/난전형 전투로 역할을 옮긴다.
+- 확정 정책: Defense 성공 조건은 모든 웨이브 종료, 필수 적 전멸, `DefenseObject` 생존이다. 실패 조건은 `DefenseObject` 파괴다.
+- 확정 정책: route는 terrain과 같은 크기의 ASCII overlay로 작성하고, wave는 `route_id`를 명시한다.
+- 확정 정책: 저지는 `block_radius`, `block_capacity`, `blockable` 기반으로 처리하며, 저지 초과 적은 통과한다.
 
 아직 구현하지 않는다:
 
-- 방어 거점 HP.
-- 블로킹/저지.
+- `PlayerMovementPlan::FixedDefense` 런타임 구현.
+- route overlay RON 계약과 route parser/validator.
+- 방어형 적 route 끝 도달 시 `DefenseObject` 공격 전환.
+- `block_radius`/`block_capacity`/`blockable` 기반 저지 런타임.
+- 저지 초과 적 통과를 위한 유닛 간 충돌 정책 조정.
 - 조건부/분기형 waypoint path.
 - 고급 formation slot 재배치.
 - 그룹 분리/합류 전환 트리거.
@@ -450,16 +546,17 @@ BossArena      DefeatBoss          MixedPlan                 BossPattern
 
 ## 후속 구현 순서
 
-1. 적 path를 조건부/분기형 waypoint로 확장.
-2. 목적지 도달 결과를 HP/누적 침입/복수 목표 등으로 확장.
-3. 저지/블로킹 규칙 논의 후 구현.
-4. `TacticalGroupPlan`을 조건부 path, 고급 포메이션 재배치, 그룹 전환 트리거까지 확장.
-5. BossArena용 `BossPattern`과 조건부 시나리오 이벤트 연결.
+1. 전장 템플릿에 route overlay 계약을 추가하고 terrain과 1:1 검증한다.
+2. 직원/적 전투 프로필에 배치 허용 타입, `block_capacity`, `blockable`을 추가한다.
+3. `Defense` 기본 전술을 `FixedDefense + PathAlongPath + DefenseObject` 공격 전환으로 교체한다.
+4. movement/targeting에 저지 상태를 추가하고, 저지 초과 적 통과를 보장한다.
+5. 조건부/분기형 waypoint path, 고급 포메이션 재배치, 그룹 전환 트리거는 이후 확장한다.
+6. BossArena용 `BossPattern`과 조건부 시나리오 이벤트 연결.
 
 ## 설계상 주의점
 
 - `tactical_plan`은 전투를 실행하는 정책이지, 클라이언트 표시 전용 데이터가 아니다.
 - 클라이언트는 같은 데이터를 읽어 배치 UI와 브리핑을 보여줄 수 있지만, 실제 이동 판단은 core가 한다.
 - 기본값이 기존 동작을 보존해야 리팩토링 중 테스트와 플레이 흐름이 깨지지 않는다.
-- 방어형 정책은 유저 배치 의미를 최우선으로 보존한다.
+- 방어형 정책은 유저 배치 의미를 최우선으로 보존한다. Defense에서는 유닛 이동을 허용하지 않고, 포위 생존형 움직임은 Encirclement로 분리한다.
 - 단체 이동은 나중에 반드시 별도 계층으로 처리한다. 개별 nearest-target AI에 약간의 보정만 붙이는 방식은 장기적으로 분대 이동을 망가뜨린다.

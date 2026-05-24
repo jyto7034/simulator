@@ -27,12 +27,24 @@ impl MapNodeKindId {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum MapNodeCategory {
+    Start,
     Combat,
-    Event,
     Support,
+    HeadquartersContact,
     Shop,
     Boss,
     Reward,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum HeadquartersContactOption {
+    RecruitEmployee,
+    RequestEmergencySupplies,
+    OpenHeadquartersShop,
+}
+
+fn default_headquarters_candidate_count() -> usize {
+    3
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -70,16 +82,17 @@ pub enum MapNodePayload {
         #[serde(default)]
         choices: Vec<SupportNodeType>,
     },
+    HeadquartersContact {
+        shop_pool_id: Option<String>,
+        #[serde(default = "default_headquarters_candidate_count")]
+        candidate_count: usize,
+    },
     Encounter {
         encounter_id: Option<String>,
     },
     Shop {
         shop_id: Option<String>,
         shop_pool_id: Option<String>,
-    },
-    Event {
-        event_id: Option<String>,
-        event_pool_id: Option<String>,
     },
     Reward {
         reward_pool_id: Option<String>,

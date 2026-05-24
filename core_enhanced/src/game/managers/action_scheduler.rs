@@ -52,6 +52,9 @@ impl ActionScheduler {
                     ActionKind::ChooseSupport,
                     ActionKind::SelectSupportTarget,
                     ActionKind::SelectMedicalTreatment,
+                    ActionKind::RecruitEmployee,
+                    ActionKind::RequestEmergencySupplies,
+                    ActionKind::OpenHeadquartersShop,
                     ActionKind::RequestMapData,
                 ]
             }
@@ -74,7 +77,7 @@ impl ActionScheduler {
                 vec![ActionKind::ExitReward]
             }
             GameState::InCombatReplay { .. } => {
-                vec![ActionKind::FinishCombatReplay]
+                vec![ActionKind::FinishCombatReplay, ActionKind::RetreatCombat]
             }
             GameState::InBattle { .. } => {
                 // TODO: UseCard, EndTurn 추가 후 활성화
@@ -128,8 +131,9 @@ mod tests {
         };
         let allowed = ActionScheduler::get_allowed_actions(&state);
 
-        assert_eq!(allowed.len(), 1);
+        assert_eq!(allowed.len(), 2);
         assert!(allowed.contains(&ActionKind::FinishCombatReplay));
+        assert!(allowed.contains(&ActionKind::RetreatCombat));
     }
 
     #[test]
@@ -231,7 +235,7 @@ mod tests {
                     kind_id: MapNodeKindId::new("combat_monster"),
                     category: MapNodeCategory::Combat,
                 },
-                5,
+                8,
             ),
             (
                 GameState::InShop {
@@ -255,7 +259,7 @@ mod tests {
                 GameState::InCombatReplay {
                     battle_uuid: Uuid::nil(),
                 },
-                1,
+                2,
             ),
             (
                 GameState::InBattle {

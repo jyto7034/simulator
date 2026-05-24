@@ -143,18 +143,6 @@ impl CombatMissionPolicy {
         }
     }
 
-    pub fn defense_cleanup_required(risk: CombatMissionRisk) -> bool {
-        !matches!(risk, CombatMissionRisk::Controlled)
-    }
-
-    pub fn default_defense_duration_ms(risk: CombatMissionRisk) -> u64 {
-        match risk {
-            CombatMissionRisk::Controlled => 30_000,
-            CombatMissionRisk::Unstable => 45_000,
-            CombatMissionRisk::Collapse => 60_000,
-        }
-    }
-
     pub fn default_recovery_hold_duration_ms(risk: CombatMissionRisk) -> u64 {
         match risk {
             CombatMissionRisk::Controlled => 5_000,
@@ -167,29 +155,9 @@ impl CombatMissionPolicy {
         node_type: CombatNodeType,
         combat_preview: &CombatPreview,
     ) -> TacticalPlan {
-        let mut plan = TacticalPlan::for_archetype(combat_preview.archetype);
+        let plan = TacticalPlan::for_archetype(combat_preview.archetype);
         match node_type {
-            CombatNodeType::Defense => {
-                let point_id = TacticalPointId::new(DEFAULT_DEFENSE_POINT_ID);
-                let point = TacticalPoint {
-                    id: point_id.clone(),
-                    position: default_defense_point_position(combat_preview),
-                };
-                plan.objective = BattleObjective::ProtectUnitForDuration {
-                    unit_ref: ScenarioUnitRef::new(DEFAULT_DEFENSE_OBJECT_REF),
-                    time_ms: combat_preview.mission_risk.default_defense_duration_ms(),
-                    cleanup_required: combat_preview.mission_risk.defense_cleanup_required(),
-                };
-                plan.player_plan = PlayerMovementPlan::HoldDeployment {
-                    guard_radius: 1.5,
-                    leash_radius: 2.5,
-                    chase_radius: 0.75,
-                    return_to_anchor: true,
-                };
-                plan.enemy_plan = EnemyMovementPlan::PathToPoint { point_id };
-                plan.points = vec![point];
-                plan
-            }
+            CombatNodeType::Defense => default_defense_tactical_plan(combat_preview, plan),
             CombatNodeType::Recovery => default_recovery_tactical_plan(combat_preview, plan),
             CombatNodeType::Frontline => default_frontline_tactical_plan(plan),
             CombatNodeType::Encirclement => {
@@ -201,27 +169,13 @@ impl CombatMissionPolicy {
 
     pub fn default_win_condition_for_tactical_plan(
         node_type: CombatNodeType,
-        mission_risk: CombatMissionRisk,
+        _mission_risk: CombatMissionRisk,
         tactical_plan: &TacticalPlan,
     ) -> WinCondition {
         if node_type == CombatNodeType::Defense {
-            if let BattleObjective::ProtectUnitForDuration {
-                unit_ref,
-                time_ms,
-                cleanup_required,
-            } = &tactical_plan.objective
-            {
-                return WinCondition::ProtectUnitForDuration {
-                    unit_ref: unit_ref.clone(),
-                    time_ms: *time_ms,
-                    cleanup_required: *cleanup_required,
-                };
-            }
             if let BattleObjective::ProtectUnit { unit_ref } = &tactical_plan.objective {
-                return WinCondition::ProtectUnitForDuration {
+                return WinCondition::ProtectUnit {
                     unit_ref: unit_ref.clone(),
-                    time_ms: mission_risk.default_defense_duration_ms(),
-                    cleanup_required: mission_risk.defense_cleanup_required(),
                 };
             }
         }
@@ -248,6 +202,75 @@ impl CombatMissionPolicy {
         }
 
         WinCondition::AllRequiredEnemyGroupsDefeated
+    }
+}
+
+fn default_defense_tactical_plan(
+    combat_preview: &CombatPreview,
+    mut base_plan: TacticalPlan,
+) -> TacticalPlan {
+    let (points, point_ids) = default_defense_route_points(combat_preview);
+    base_plan.objective = BattleObjective::ProtectUnit {
+        unit_ref: ScenarioUnitRef::new(DEFAULT_DEFENSE_OBJECT_REF),
+    };
+    base_plan.player_plan = PlayerMovementPlan::FixedDefense;
+    base_plan.enemy_plan = EnemyMovementPlan::PathAlongPath { point_ids };
+    base_plan.points = points;
+    base_plan
+}
+
+fn default_defense_route_points(
+    combat_preview: &CombatPreview,
+) -> (Vec<TacticalPoint>, Vec<TacticalPointId>) {
+    if combat_preview.routes.is_empty() {
+        let point_id = TacticalPointId::new(DEFAULT_DEFENSE_POINT_ID);
+        return (
+            vec![TacticalPoint {
+                id: point_id.clone(),
+                position: default_defense_point_position(combat_preview),
+            }],
+            vec![point_id],
+        );
+    };
+
+    let mut points = Vec::new();
+    let mut primary_point_ids = Vec::new();
+    for (route_index, route) in combat_preview.routes.iter().enumerate() {
+        let route_cells = if route.cells.is_empty() {
+            vec![route.end]
+        } else {
+            route.cells.clone()
+        };
+        for (index, position) in route_cells.iter().copied().enumerate() {
+            let point_id =
+                defense_route_tactical_point_id(&route.id, index, index + 1 == route_cells.len());
+            if route_index == 0 {
+                primary_point_ids.push(point_id.clone());
+            }
+            if points
+                .iter()
+                .any(|point: &TacticalPoint| point.id == point_id)
+            {
+                continue;
+            }
+            points.push(TacticalPoint {
+                id: point_id,
+                position,
+            });
+        }
+    }
+    (points, primary_point_ids)
+}
+
+pub fn defense_route_tactical_point_id(
+    route_id: &str,
+    index: usize,
+    is_route_end: bool,
+) -> TacticalPointId {
+    if is_route_end {
+        TacticalPointId::new(DEFAULT_DEFENSE_POINT_ID)
+    } else {
+        TacticalPointId::new(format!("route_{route_id}_{index}"))
     }
 }
 
@@ -423,18 +446,5 @@ mod tests {
         assert_eq!(preferred[0], CombatNodeType::Encirclement);
         assert_eq!(preferred[1], CombatNodeType::Frontline);
         assert!(!preferred.contains(&CombatNodeType::SplitOperation));
-    }
-
-    #[test]
-    fn defense_risk_controls_cleanup_requirement() {
-        assert!(!CombatMissionPolicy::defense_cleanup_required(
-            CombatMissionRisk::Controlled
-        ));
-        assert!(CombatMissionPolicy::defense_cleanup_required(
-            CombatMissionRisk::Unstable
-        ));
-        assert!(CombatMissionPolicy::defense_cleanup_required(
-            CombatMissionRisk::Collapse
-        ));
     }
 }

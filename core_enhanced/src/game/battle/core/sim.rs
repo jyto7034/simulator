@@ -545,36 +545,6 @@ impl BattleCore {
                 }
                 return None;
             }
-            WinCondition::ProtectUnitForDuration {
-                unit_ref,
-                time_ms,
-                cleanup_required,
-            } => {
-                let protected_destroyed = self
-                    .scenario_runtime
-                    .unit_refs
-                    .get(&unit_ref)
-                    .and_then(|unit_id| self.units.get(unit_id))
-                    .is_some_and(|unit| unit.is_dead());
-                if protected_destroyed {
-                    return Some(BattleWinner::Opponent);
-                }
-                if !player_alive {
-                    return Some(if opponent_alive {
-                        BattleWinner::Opponent
-                    } else {
-                        BattleWinner::Draw
-                    });
-                }
-                if current_time_ms >= time_ms
-                    && (!cleanup_required
-                        || self.required_enemy_group_count() == 0
-                        || self.all_required_enemy_groups_defeated())
-                {
-                    return Some(BattleWinner::Player);
-                }
-                return None;
-            }
             WinCondition::SurviveUntil { time_ms } => {
                 if current_time_ms >= time_ms {
                     return Some(BattleWinner::Player);
@@ -1098,8 +1068,23 @@ impl BattleCore {
                 && self.is_basic_attack_target_in_range(attacker_instance_id, id)
         };
 
-        hinted_target
+        if self.is_fixed_defense_route_enemy(attacker_instance_id) {
+            return self
+                .blocked_by(attacker_instance_id)
+                .filter(|id| in_range(*id))
+                .or_else(|| {
+                    self.fixed_defense_route_end_target_for_enemy(attacker_instance_id)
+                        .filter(|id| in_range(*id))
+                });
+        }
+
+        self.first_blocked_enemy(attacker_instance_id)
             .filter(|id| in_range(*id))
+            .or_else(|| {
+                self.blocked_by(attacker_instance_id)
+                    .filter(|id| in_range(*id))
+            })
+            .or_else(|| hinted_target.filter(|id| in_range(*id)))
             .or_else(|| self.persisted_target_in_range(attacker_instance_id, current_target))
             .or_else(|| self.choose_attack_target_in_range(attacker_instance_id))
     }

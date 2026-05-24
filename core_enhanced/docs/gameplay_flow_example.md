@@ -41,7 +41,7 @@ Act 1 - 봉쇄 구역
 
         [1A] Combat: 작은 환상체
 Start - [1B] Support: Medical
-        [1C] Event: 정체불명의 사무실
+        [1C] HeadquartersContact: 본사 연락
 
         [1A] -> [2A] Elite Combat ------> [3A] Boss
         [1B] -> [2B] Support: Maintenance -> [3A]

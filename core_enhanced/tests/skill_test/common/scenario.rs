@@ -208,7 +208,6 @@ fn build_game_data_with_units(
         .with_equipment_data(Arc::clone(&base.equipment_data))
         .with_shop_data(Arc::clone(&base.shop_data))
         .with_reward_data(Arc::clone(&base.reward_data))
-        .with_random_event_data(Arc::clone(&base.random_event_data))
         .with_pve_data(Arc::clone(&base.pve_data))
         .with_skill_data(Arc::clone(&base.skill_data))
         .with_skill_fragment_data(Arc::clone(&base.skill_fragment_data))
@@ -251,6 +250,7 @@ fn build_spawn_group(
         id: group_id,
         side,
         required_for_victory,
+        enemy_movement_plan: None,
         spawns,
     }
 }

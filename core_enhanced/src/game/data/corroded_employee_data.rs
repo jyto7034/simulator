@@ -5,6 +5,7 @@ use uuid::Uuid;
 
 use crate::game::{
     ability::SkillId,
+    battle::types::DeploymentAffinity,
     data::{
         abnormality_data::{BasicAttackDef, MovementDef, ResonanceDef},
         build_string_index, build_uuid_index, once_lock_with,
@@ -54,6 +55,10 @@ impl CorrodedEmployeeProfileMetadata {
             movement: self.movement.clone(),
             resonance: self.resonance.clone(),
             skill_id: self.skill_id.clone(),
+            deployment_affinity: DeploymentAffinity::GroundOnly,
+            block_capacity: 0,
+            block_radius_units: 0.0,
+            blockable: true,
         }
     }
 }
@@ -159,5 +164,12 @@ mod tests {
         assert_eq!(combat_profile.stats.max_health, 90);
         assert_eq!(combat_profile.stats.attack, 11);
         assert_eq!(combat_profile.basic_attack.interval_ms, 1400);
+        assert_eq!(
+            combat_profile.deployment_affinity,
+            DeploymentAffinity::GroundOnly
+        );
+        assert_eq!(combat_profile.block_capacity, 0);
+        assert_eq!(combat_profile.block_radius_units, 0.0);
+        assert!(combat_profile.blockable);
     }
 }

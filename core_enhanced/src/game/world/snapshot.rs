@@ -500,6 +500,14 @@ impl GameCore {
                 "target_candidates": support.target_candidates,
                 "selected_employee_uuid": support.selected_employee_uuid,
                 "selected_medical_treatment": support.selected_medical_treatment,
+                "maintenance_options": self.maintenance_options_for_support(support),
+            }),
+            SelectedEventState::HeadquartersContact(headquarters) => json!({
+                "type": "headquarters_contact",
+                "node_id": headquarters.node_id,
+                "options": headquarters.options,
+                "recruitment_candidates": headquarters.recruitment_candidates,
+                "shop_pool_id": headquarters.shop_pool_id,
             }),
             SelectedEventState::CombatBattle(battle) => json!({
                 "type": "combat_battle",

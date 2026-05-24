@@ -489,8 +489,8 @@ impl Default for ResearchDeliveryPolicy {
     fn default() -> Self {
         Self {
             deliver_on_node_categories: vec![
-                MapNodeCategory::Event,
                 MapNodeCategory::Support,
+                MapNodeCategory::HeadquartersContact,
                 MapNodeCategory::Shop,
                 MapNodeCategory::Reward,
             ],
@@ -1228,9 +1228,10 @@ mod tests {
         let policy = ResearchDeliveryPolicy::default();
 
         assert!(policy.can_deliver_on(MapNodeCategory::Support));
+        assert!(policy.can_deliver_on(MapNodeCategory::HeadquartersContact));
         assert!(policy.can_deliver_on(MapNodeCategory::Shop));
         assert!(policy.can_deliver_on(MapNodeCategory::Reward));
-        assert!(policy.can_deliver_on(MapNodeCategory::Event));
+        assert!(!policy.can_deliver_on(MapNodeCategory::Start));
         assert!(!policy.can_deliver_on(MapNodeCategory::Combat));
         assert!(!policy.can_deliver_on(MapNodeCategory::Boss));
     }

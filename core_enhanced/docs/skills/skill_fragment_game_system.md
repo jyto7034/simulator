@@ -478,7 +478,7 @@ One Sin 환상체
 2. 직원당 액티브 스킬 파편은 최대 1개로 설계한다.
 3. 완성 파편 직접 획득은 확률 보상으로 두고, 연구 진행도는 안정적인 장기 획득 루트로 둔다.
 4. 연구 완료 파편은 전투 직후 즉시 지급하지 않고 pending 상태로 보관한 뒤, 안전 노드에서 본사 송신으로 자동 수령한다.
-5. 수령 가능한 안전 노드 범위는 `ResearchDeliveryPolicy` 같은 정책 allowlist로 관리한다. 기본값은 `Support`, `Shop`, `Reward`, `Event`를 권장하고, `Combat`, `Boss`는 제외한다.
+5. 수령 가능한 안전 노드 범위는 `ResearchDeliveryPolicy` 같은 정책 allowlist로 관리한다. 현재 기본값은 `Support`, `HeadquartersContact`, `Shop`, `Reward`이고, `Combat`, `Boss`는 제외한다. 기존 `Event` 노드는 제거되었으므로 안전 노드 목록에 포함하지 않는다.
 6. 남는 파편은 먼저 Maintenance 분쇄/정제 재화로 처리하고, 강화/개화 재료로 활용한다.
 7. 랜덤 조합은 즉시 핵심 시스템으로 넣지 않고, 특수 노드 또는 연구 기능으로 후순위 검토한다.
 

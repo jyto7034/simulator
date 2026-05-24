@@ -1,5 +1,5 @@
 use super::{GameCore, RUN_SYSTEM_POLICY};
-use crate::game::behavior::{ActionKind, BehaviorResult, GameError};
+use crate::game::behavior::{ActionKind, BehaviorResult, GameError, MaintenanceOptionsDto};
 use crate::game::employee::EmployeeLifeState;
 use crate::game::employee_trust::{EmployeeTrustResolver, TrustEvent, TrustEventKind};
 use crate::game::map::{MapProgression, MedicalTreatmentKind, RunMap, SupportNodeType};
@@ -21,15 +21,17 @@ impl GameCore {
             support.select(support_type)?;
         }
         let candidates = self.support_target_candidates(support_type)?;
-        let support = self
-            .state
-            .selected_event
-            .as_mut()
-            .ok_or(GameError::InvalidAction)?
-            .as_support_mut()?;
-        support.set_target_candidates(candidates);
-        let result = Self::support_state_result(support);
-        let support = support.clone();
+        let support = {
+            let support = self
+                .state
+                .selected_event
+                .as_mut()
+                .ok_or(GameError::InvalidAction)?
+                .as_support_mut()?;
+            support.set_target_candidates(candidates);
+            support.clone()
+        };
+        let result = self.support_state_result(&support);
         self.refresh_maintenance_action_gate(&support)?;
 
         Ok(result)
@@ -39,37 +41,44 @@ impl GameCore {
         &mut self,
         employee_uuid: Uuid,
     ) -> Result<BehaviorResult, GameError> {
-        let support = self
-            .state
-            .selected_event
-            .as_mut()
-            .ok_or(GameError::InvalidAction)?
-            .as_support_mut()?;
-        support.select_target(employee_uuid)?;
+        let support = {
+            let support = self
+                .state
+                .selected_event
+                .as_mut()
+                .ok_or(GameError::InvalidAction)?
+                .as_support_mut()?;
+            support.select_target(employee_uuid)?;
+            support.clone()
+        };
 
-        Ok(Self::support_state_result(support))
+        Ok(self.support_state_result(&support))
     }
 
     pub(super) fn handle_select_medical_treatment(
         &mut self,
         treatment: MedicalTreatmentKind,
     ) -> Result<BehaviorResult, GameError> {
-        let support = self
-            .state
-            .selected_event
-            .as_mut()
-            .ok_or(GameError::InvalidAction)?
-            .as_support_mut()?;
-        support.select_medical_treatment(treatment)?;
+        let support = {
+            let support = self
+                .state
+                .selected_event
+                .as_mut()
+                .ok_or(GameError::InvalidAction)?
+                .as_support_mut()?;
+            support.select_medical_treatment(treatment)?;
+            support.clone()
+        };
 
-        Ok(Self::support_state_result(support))
+        Ok(self.support_state_result(&support))
     }
 
-    pub(super) fn support_state_result(support: &SupportSessionState) -> BehaviorResult {
-        Self::support_state_result_with_deliveries(support, vec![])
+    pub(super) fn support_state_result(&self, support: &SupportSessionState) -> BehaviorResult {
+        self.support_state_result_with_deliveries(support, vec![])
     }
 
     pub(super) fn support_state_result_with_deliveries(
+        &self,
         support: &SupportSessionState,
         research_deliveries: Vec<crate::game::skill_fragment::SkillFragmentResearchDelivery>,
     ) -> BehaviorResult {
@@ -82,8 +91,100 @@ impl GameCore {
             target_candidates: support.target_candidates.clone(),
             selected_employee_uuid: support.selected_employee_uuid,
             selected_medical_treatment: support.selected_medical_treatment,
+            maintenance_options: self.maintenance_options_for_support(support),
             research_deliveries,
         }
+    }
+
+    pub(super) fn maintenance_options_for_support(
+        &self,
+        support: &SupportSessionState,
+    ) -> Option<MaintenanceOptionsDto> {
+        if support.resolved_support_type().ok()? != SupportNodeType::Maintenance {
+            return None;
+        }
+
+        let inventory = self.inventory().ok()?;
+        let protected_fragment_ids = self.protected_skill_fragment_material_ids().ok()?;
+
+        let restorable_equipment_recipes = self
+            .game_data
+            .equipment_data
+            .restoration_recipes
+            .iter()
+            .filter(|recipe| {
+                inventory.equipments.can_add_item()
+                    && recipe.costs.iter().all(|cost| {
+                        inventory.equipment_materials.amount(&cost.material_id) >= cost.amount
+                    })
+            })
+            .cloned()
+            .collect::<Vec<_>>();
+
+        let mut dismantle_equipment_item_uuids = Vec::new();
+        let mut dismantle_recipes = Vec::new();
+        let mut enhance_equipment_item_uuids = Vec::new();
+        let mut enhancement_recipes = Vec::new();
+        for equipment in inventory.equipments.iter() {
+            if equipment.equipped_to.is_none() {
+                if let Some(recipe) = self
+                    .game_data
+                    .equipment_data
+                    .get_dismantle_recipe_by_equipment_id(&equipment.meta.id)
+                {
+                    dismantle_equipment_item_uuids.push(equipment.instance_uuid);
+                    dismantle_recipes.push(recipe.clone());
+                }
+            }
+
+            if let Some(recipe) = self
+                .game_data
+                .equipment_data
+                .get_enhancement_recipe_by_equipment_id(&equipment.meta.id)
+            {
+                let has_materials = equipment.enhancement_level < recipe.max_level
+                    && recipe.costs_per_level.iter().all(|cost| {
+                        inventory.equipment_materials.amount(&cost.material_id) >= cost.amount
+                    });
+                if has_materials {
+                    enhance_equipment_item_uuids.push(equipment.instance_uuid);
+                    enhancement_recipes.push(recipe.clone());
+                }
+            }
+        }
+        dismantle_equipment_item_uuids.sort();
+        enhance_equipment_item_uuids.sort();
+        dismantle_recipes.sort_by(|left, right| left.equipment_id.cmp(&right.equipment_id));
+        enhancement_recipes.sort_by(|left, right| left.equipment_id.cmp(&right.equipment_id));
+
+        let mut dismantle_skill_fragment_ids = self
+            .state
+            .skill_fragments
+            .owned_ids()
+            .filter(|fragment_id| {
+                self.state
+                    .skill_fragment_policy
+                    .dismantle
+                    .validate_dismantle(
+                        &self.state.skill_fragments,
+                        fragment_id,
+                        &self.game_data.skill_fragment_data,
+                        &protected_fragment_ids,
+                    )
+                    .is_ok()
+            })
+            .cloned()
+            .collect::<Vec<_>>();
+        dismantle_skill_fragment_ids.sort();
+
+        Some(MaintenanceOptionsDto {
+            restorable_equipment_recipes,
+            dismantle_equipment_item_uuids,
+            enhance_equipment_item_uuids,
+            enhancement_recipes,
+            dismantle_recipes,
+            dismantle_skill_fragment_ids,
+        })
     }
 
     pub(super) fn refresh_support_target_candidates(

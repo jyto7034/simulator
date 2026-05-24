@@ -100,22 +100,24 @@
 - `GameProgression`
 - phase advance / ordeal scheduler / phase resolver / event manager 계열 모듈
 
-재사용한 것:
+재사용했던 것:
 
 - 상점 구매/판매/리롤의 검증과 실행 로직
 - 보상 세션 선택/수령 로직
-- 랜덤 이벤트 메타데이터가 Shop/Reward/Suppress 중 무엇을 가리키는지 해석하는 데이터 구조
+- 랜덤 이벤트 메타데이터가 Shop/Reward/Suppress 중 무엇을 가리키는지 해석하는 데이터 구조는 임시 잔재다. 현재 공식 노드 흐름에는 맞지 않으므로 제거 대상이다.
 
 현재 배치:
 
 - 노드맵 진입은 `ViewingMap -> NodeConfirm -> ConfirmEnterNode`가 기준이다.
-- Shop/Reward/Event 노드는 phase selection을 거치지 않고 즉시 `InShop` 또는 `InReward` 세션으로 진입한다.
+- Shop/Reward 노드는 phase selection을 거치지 않고 즉시 `InShop` 또는 `InReward` 세션으로 진입한다.
+- 기존 Event 노드는 Shop/Reward 래퍼일 뿐이므로 공식 live node에서 제거 완료했다.
 - 보상 선택은 `SelectReward`만 사용한다. 이벤트 선택이라는 이름은 더 이상 사용하지 않는다.
 - 전투 보상/보너스/상점 종료는 노드 세션이 있을 때만 노드 완료로 이어진다. phase fallback은 없다.
 
 남은 주의점:
 
-- `event_pools`는 live node flow의 source of truth가 아니므로 코드 경로에서 제거한다. 기존 RON은 `legacy_event_pools.ron`으로 이름만 보존하고 런타임/테스트에서는 읽지 않는다.
+- `MapNodeCategory::Event`, `MapNodePayload::Event`, `RandomEventDatabase` live loading, `event_random`, `event_abnormality_room`, Event 관련 테스트는 제거 완료했다. 기존 RON은 legacy 이름으로만 격리하고 런타임/테스트에서는 읽지 않는다.
+- 추후 랜덤 이벤트가 필요하면 현재 Event 래퍼를 유지하지 말고, `상황 설명 -> 2~3개 선택지 -> 비용/리스크/보상 적용 -> 결과 -> 맵 복귀`를 갖는 새 `RandomEvent` 노드로 다시 작성한다.
 - 단, 데이터 로딩 테스트와 fixture를 대량으로 깨는 이름 변경은 “삭제 가능한 live 레거시”가 아니라 별도 data schema migration으로 다룬다.
 
 ## 전체 작업 순서
@@ -196,7 +198,7 @@
 - `combat_preview.rs`가 2000줄 이상이며, 타입 정의, RON 로딩, ASCII 템플릿 파싱, 생성기, 검증, 테스트를 모두 포함한다.
 - `events/combat.rs`가 2000줄 이상이며, roster 변환, enemy 변환, scenario 생성, 기본 전술, 보상 해석, 테스트를 함께 담고 있다.
 - `PveWinConditionData`와 `WinCondition`, `PveBattleObjectiveData`와 `BattleObjective`가 비슷한 구조를 반복한다.
-- 완료된 정리: deprecated `DefendPoint`, 이전 회수형 `RecoverAndExtract`는 live/runtime/test 계약에서 제거하고, 현재 방어/회수 계약은 `ProtectUnitForDuration`과 `RecoverHoldAndExtract`로 정리한다.
+- 완료된 정리: deprecated `DefendPoint`, 이전 회수형 `RecoverAndExtract`는 live/runtime/test 계약에서 제거하고, 현재 방어/회수 계약은 `ProtectUnit`과 `RecoverHoldAndExtract`로 정리한다.
 - 완료된 정리: `CombatNodeIntentPolicy` thin wrapper는 제거하고, 맵 조우 배정/preview fallback/live RON 검증은 `CombatMissionPolicy`를 직접 참조한다.
 
 ### 리팩토링 방향
@@ -515,12 +517,12 @@ src/game/combat_mission_policy.rs 추가
 - 추가 진행됨: 수동 전투 보상 세션(`InCombatReward`, `InCombatRewardClaimed`, `ClaimCombatReward`, `ExitCombatReward`)은 제거했다. 현재 정책은 `FinishCombatReplay`에서 승리 보상을 자동 지급하고, node session이 있으면 즉시 노드 완료로 이어지는 흐름이다.
 - 추가 진행됨: `PveBattleObjectiveData`와 `PveWinConditionData`를 당장 합치지는 않고, 둘 다 작성된 경우 명백히 다른 승리 계약이면 `PveEncounterDatabase::validate_indexes()`가 실패하도록 검증을 추가했다.
 - 추가 진행됨: world reward/maintenance/research delivery 경로는 `SkillFragmentPolicy::default()`를 직접 만들지 않고 `GameCoreState.skill_fragment_policy`를 사용한다. 공개 inventory convenience 메서드의 default 호출은 테스트/독립 사용 편의용으로만 남는다.
-- 추가 진행됨: 맵 노드 payload를 실제 shop/reward/random/support 세션으로 라우팅하는 책임을 `src/game/world/map_content.rs`로 순수 이동했다. node seed, 안전 노드 연구 배송, 맵 shop/reward/random event 해석, content node 진입 상태 전환이 한 모듈에 모였다.
+- 추가 진행됨: 맵 노드 payload를 실제 shop/reward/support/HeadquartersContact 세션으로 라우팅하는 책임을 `src/game/world/map_content.rs`로 순수 이동했다. node seed, 안전 노드 연구 배송, 맵 shop/reward 해석, content node 진입 상태 전환이 한 모듈에 모였다. 기존 random event 래퍼는 live flow에서 제거했다.
 - 추가 진행됨: 맵 조회, 노드 선택, recon 사용, 노드 진입 확정, 노드 완료/act 전환 흐름을 `src/game/world/node_flow.rs`로 순수 이동했다. `world.rs`는 action dispatch와 남은 도메인 helper를 보유하고, 노드 진행 state machine은 별도 모듈에서 추적한다.
 - 추가 진행됨: 장비 장착/조합, 스킬 파편 장착/강화/각성/분쇄, 장비 복원/분쇄/강화 흐름을 `src/game/world/maintenance.rs`로 순수 이동했다. Maintenance 정책은 기존 validator와 action gate를 그대로 사용하며, 이번 단계에서는 정책 변경 없이 `world.rs`에서 정비 production 기능만 분리했다.
 - 추가 진행됨: phase-era 이벤트 생성/선택/advance 흐름은 live core에서 제거했다. map node에 필요한 shop action과 reward claim/select만 `src/game/world/node_rewards.rs`로 재배치했다. 이 모듈은 phase fallback을 갖지 않으며, 노드 세션이 없는 종료 요청은 `InvalidAction`으로 거부한다.
 - 검증됨: `cargo check -p game_core`, `cargo test -p game_core` 통과.
-- 추가 진행됨: `DefendPoint` live/runtime 의존을 제거했다. 현재 방어형 전투의 source of truth는 `ProtectUnitForDuration`과 고정 방어 오브젝트이며, 지점 누수/runner 미션이 필요해지면 deprecated 계약을 되살리지 않고 새 명시적 계약으로 설계한다.
+- 추가 진행됨: `DefendPoint` live/runtime 의존을 제거했다. 현재 방어형 전투의 source of truth는 `ProtectUnit`과 고정 방어 오브젝트이며, 지점 누수/runner 미션이 필요해지면 deprecated 계약을 되살리지 않고 새 명시적 계약으로 설계한다.
 - 추가 진행됨: 구형 `RecoverAndExtract` 명칭과 계약은 제거하고, 최신 Recovery 정책은 `RecoverHoldAndExtract`로 통일했다. 현재 흐름은 `사전 배치 적 섬멸 -> 회수 체크포인트 진입 -> 일정 시간 사수 -> 다음 체크포인트/탈출 지점 이동`이다.
 
 다음 작업의 완료 기준:

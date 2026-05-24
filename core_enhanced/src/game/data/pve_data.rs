@@ -51,6 +51,8 @@ pub struct PveWaveData {
     pub time_ms: u32,
     #[serde(default)]
     pub spawn_zone_ids: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub route_id: Option<String>,
     #[serde(default = "default_required_for_victory")]
     pub required_for_victory: bool,
     #[serde(default)]
@@ -93,11 +95,6 @@ pub enum PveBattleObjectiveData {
     ProtectUnit {
         unit_ref: String,
     },
-    ProtectUnitForDuration {
-        unit_ref: String,
-        time_ms: u64,
-        cleanup_required: bool,
-    },
     Survive {
         time_ms: u64,
     },
@@ -123,11 +120,6 @@ pub enum PveWinConditionData {
     },
     ProtectUnit {
         unit_ref: String,
-    },
-    ProtectUnitForDuration {
-        unit_ref: String,
-        time_ms: u64,
-        cleanup_required: bool,
     },
     SurviveUntil {
         time_ms: u64,
@@ -267,15 +259,6 @@ impl PveBattleObjectiveData {
             Self::ProtectUnit { unit_ref } => BattleObjective::ProtectUnit {
                 unit_ref: crate::game::battle::scenario::ScenarioUnitRef::new(unit_ref.clone()),
             },
-            Self::ProtectUnitForDuration {
-                unit_ref,
-                time_ms,
-                cleanup_required,
-            } => BattleObjective::ProtectUnitForDuration {
-                unit_ref: crate::game::battle::scenario::ScenarioUnitRef::new(unit_ref.clone()),
-                time_ms: *time_ms,
-                cleanup_required: *cleanup_required,
-            },
             Self::Survive { time_ms } => BattleObjective::Survive { time_ms: *time_ms },
             Self::RecoverHoldAndExtract {
                 target_point_id,
@@ -316,15 +299,6 @@ impl PveWinConditionData {
             },
             Self::ProtectUnit { unit_ref } => WinCondition::ProtectUnit {
                 unit_ref: crate::game::battle::scenario::ScenarioUnitRef::new(unit_ref.clone()),
-            },
-            Self::ProtectUnitForDuration {
-                unit_ref,
-                time_ms,
-                cleanup_required,
-            } => WinCondition::ProtectUnitForDuration {
-                unit_ref: crate::game::battle::scenario::ScenarioUnitRef::new(unit_ref.clone()),
-                time_ms: *time_ms,
-                cleanup_required: *cleanup_required,
             },
             Self::SurviveUntil { time_ms } => WinCondition::SurviveUntil { time_ms: *time_ms },
             Self::RecoverHoldAndExtract {
@@ -512,6 +486,14 @@ fn validate_encounter_authoring_contract(encounter: &PveEncounter) {
                 spawn_zone_id
             );
         }
+        if let Some(route_id) = &wave.route_id {
+            assert!(
+                !route_id.trim().is_empty(),
+                "wave '{}' in pve encounter '{}' has empty route id",
+                wave.id,
+                encounter.id
+            );
+        }
         for enemy in wave.manual_enemies() {
             assert!(
                 !enemy.abnormality_id.trim().is_empty(),
@@ -585,7 +567,6 @@ fn validate_objective_points(
         PveBattleObjectiveData::SuppressAll
         | PveBattleObjectiveData::DefeatBoss { .. }
         | PveBattleObjectiveData::ProtectUnit { .. }
-        | PveBattleObjectiveData::ProtectUnitForDuration { .. }
         | PveBattleObjectiveData::Survive { .. } => {}
     }
 }
@@ -630,7 +611,6 @@ fn validate_win_condition_points(
         PveWinConditionData::AllRequiredEnemyGroupsDefeated
         | PveWinConditionData::DefeatUnit { .. }
         | PveWinConditionData::ProtectUnit { .. }
-        | PveWinConditionData::ProtectUnitForDuration { .. }
         | PveWinConditionData::SurviveUntil { .. } => {}
     }
 }
@@ -681,8 +661,7 @@ impl ObjectiveWinContract {
     fn from_objective(objective: &PveBattleObjectiveData) -> Option<Self> {
         match objective {
             PveBattleObjectiveData::SuppressAll | PveBattleObjectiveData::DefeatBoss { .. } => None,
-            PveBattleObjectiveData::ProtectUnit { unit_ref }
-            | PveBattleObjectiveData::ProtectUnitForDuration { unit_ref, .. } => {
+            PveBattleObjectiveData::ProtectUnit { unit_ref } => {
                 Some(Self::ProtectUnit(unit_ref.clone()))
             }
             PveBattleObjectiveData::Survive { .. } => Some(Self::Survive),
@@ -703,10 +682,7 @@ impl ObjectiveWinContract {
         match win_condition {
             PveWinConditionData::AllRequiredEnemyGroupsDefeated => Self::SuppressAll,
             PveWinConditionData::DefeatUnit { unit_ref } => Self::DefeatUnit(unit_ref.clone()),
-            PveWinConditionData::ProtectUnit { unit_ref }
-            | PveWinConditionData::ProtectUnitForDuration { unit_ref, .. } => {
-                Self::ProtectUnit(unit_ref.clone())
-            }
+            PveWinConditionData::ProtectUnit { unit_ref } => Self::ProtectUnit(unit_ref.clone()),
             PveWinConditionData::SurviveUntil { .. } => Self::Survive,
             PveWinConditionData::RecoverHoldAndExtract {
                 target_point_id,

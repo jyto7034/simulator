@@ -6,12 +6,16 @@ use crate::{
     game::{
         battle::{timeline::Timeline, types::BattleWinner},
         combat_preview::{CombatDeployment, CombatNodeType, CombatPreview},
+        data::equipment_data::{
+            EquipmentDismantleRecipeMetadata, EquipmentEnhancementRecipeMetadata,
+            EquipmentRestorationRecipeMetadata,
+        },
         data::skill_fragment_data::SkillFragmentId,
         employee::StarterEmployeeCandidate,
         enums::{RewardMode, ShopEventOption},
         map::{
-            MapNodeCategory, MapNodeId, MapNodeKindId, MapNodePayload, MapViewDto,
-            MedicalTreatmentKind, NodeSession, SupportNodeMode, SupportNodeType,
+            HeadquartersContactOption, MapNodeCategory, MapNodeId, MapNodeKindId, MapNodePayload,
+            MapViewDto, MedicalTreatmentKind, NodeSession, SupportNodeMode, SupportNodeType,
         },
         reward::RewardOption,
         skill_fragment::{SkillFragmentProgress, SkillFragmentResearchDelivery},
@@ -34,6 +38,7 @@ pub struct NodeOutcomeSummary {
 pub struct CombatOutcomeSummary {
     pub node_type: CombatNodeType,
     pub winner: BattleWinner,
+    pub retreated: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -49,6 +54,22 @@ pub struct NodeOutcomeEmployeeChange {
     pub experience_after: u32,
     pub was_alive: bool,
     pub is_alive: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BenchSlotDto {
+    pub slot: usize,
+    pub unit_uuid: Option<Uuid>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MaintenanceOptionsDto {
+    pub restorable_equipment_recipes: Vec<EquipmentRestorationRecipeMetadata>,
+    pub dismantle_equipment_item_uuids: Vec<Uuid>,
+    pub enhance_equipment_item_uuids: Vec<Uuid>,
+    pub enhancement_recipes: Vec<EquipmentEnhancementRecipeMetadata>,
+    pub dismantle_recipes: Vec<EquipmentDismantleRecipeMetadata>,
+    pub dismantle_skill_fragment_ids: Vec<SkillFragmentId>,
 }
 
 /// 상태 게이트에서 사용하는 payload-less 액션 capability
@@ -77,6 +98,9 @@ pub enum ActionKind {
     ChooseSupport,
     SelectSupportTarget,
     SelectMedicalTreatment,
+    RecruitEmployee,
+    RequestEmergencySupplies,
+    OpenHeadquartersShop,
     SelectReward,
     PurchaseItem,
     SellItem,
@@ -85,6 +109,7 @@ pub enum ActionKind {
     ClaimReward,
     ExitReward,
     FinishCombatReplay,
+    RetreatCombat,
 }
 
 /// GameServer에서 GameCore로 전달되는 플레이어 행동
@@ -183,6 +208,14 @@ pub enum PlayerBehavior {
     SelectMedicalTreatment {
         treatment: MedicalTreatmentKind,
     },
+    /// 본사 연락 노드에서 후보 직원 1명을 채용하고 노드를 완료
+    RecruitEmployee {
+        candidate_id: String,
+    },
+    /// 본사 연락 노드에서 긴급 보급을 요청하고 노드를 완료
+    RequestEmergencySupplies,
+    /// 본사 연락 노드에서 본사 보급 상점을 열어 해당 노드의 행동권을 소비
+    OpenHeadquartersShop,
     /// 선택형 보상 목록에서 보상 선택
     SelectReward {
         reward_id: Uuid,
@@ -211,6 +244,8 @@ pub enum PlayerBehavior {
     ExitReward,
     /// 전투 리플레이 종료
     FinishCombatReplay,
+    /// 비보스 전투에서 후퇴하고 현재 노드를 실패 처리
+    RetreatCombat,
     // ============================================================
     // 전투 관련 행동 (TODO)
     // ============================================================
@@ -244,6 +279,9 @@ impl PlayerBehavior {
             PlayerBehavior::ChooseSupport { .. } => ActionKind::ChooseSupport,
             PlayerBehavior::SelectSupportTarget { .. } => ActionKind::SelectSupportTarget,
             PlayerBehavior::SelectMedicalTreatment { .. } => ActionKind::SelectMedicalTreatment,
+            PlayerBehavior::RecruitEmployee { .. } => ActionKind::RecruitEmployee,
+            PlayerBehavior::RequestEmergencySupplies => ActionKind::RequestEmergencySupplies,
+            PlayerBehavior::OpenHeadquartersShop => ActionKind::OpenHeadquartersShop,
             PlayerBehavior::SelectReward { .. } => ActionKind::SelectReward,
             PlayerBehavior::PurchaseItem { .. } => ActionKind::PurchaseItem,
             PlayerBehavior::SellItem { .. } => ActionKind::SellItem,
@@ -252,6 +290,7 @@ impl PlayerBehavior {
             PlayerBehavior::ClaimReward => ActionKind::ClaimReward,
             PlayerBehavior::ExitReward => ActionKind::ExitReward,
             PlayerBehavior::FinishCombatReplay => ActionKind::FinishCombatReplay,
+            PlayerBehavior::RetreatCombat => ActionKind::RetreatCombat,
         }
     }
 }
@@ -323,6 +362,15 @@ pub enum BehaviorResult {
         target_candidates: Vec<Uuid>,
         selected_employee_uuid: Option<Uuid>,
         selected_medical_treatment: Option<MedicalTreatmentKind>,
+        maintenance_options: Option<MaintenanceOptionsDto>,
+        research_deliveries: Vec<SkillFragmentResearchDelivery>,
+    },
+    /// 본사 연락 노드 상태
+    HeadquartersContactState {
+        node_id: MapNodeId,
+        options: Vec<HeadquartersContactOption>,
+        recruitment_candidates: Vec<StarterEmployeeCandidate>,
+        shop_pool_id: Option<String>,
         research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
     /// 보스 노드 완료로 다음 Act에 진입
@@ -383,9 +431,13 @@ pub enum BehaviorResult {
         inventory_diff: InventoryDiffDto,
     },
     /// 선택한 전투 노드의 배치 구역 안에서 직원 배치 이동
-    MoveUnit,
+    MoveUnit {
+        combat_deployment: CombatDeployment,
+    },
     /// 벤치 내부 슬롯 이동
-    MoveBenchUnit,
+    MoveBenchUnit {
+        bench_slots: Vec<BenchSlotDto>,
+    },
 
     /// 상점 상태 업데이트 (예: 리롤 이후)
     ShopState {
@@ -407,6 +459,20 @@ pub enum BehaviorResult {
     PurchaseItem {
         enkephalin: u32,
         inventory_diff: InventoryDiffDto,
+    },
+
+    /// 본사 연락 노드에서 직원 채용 완료
+    EmployeeRecruited {
+        candidate_id: String,
+        employee_uuid: Uuid,
+        completion: Box<BehaviorResult>,
+    },
+
+    /// 본사 연락 노드에서 긴급 보급 수령 완료
+    EmergencySuppliesGranted {
+        enkephalin: u32,
+        inventory_diff: InventoryDiffDto,
+        completion: Box<BehaviorResult>,
     },
 
     /// 보상 수령 결과 (자원 및 인벤토리 변경)

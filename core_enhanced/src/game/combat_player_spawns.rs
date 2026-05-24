@@ -86,6 +86,7 @@ pub(crate) fn player_scenario_start_from_positions(
             id: group_id,
             side: Side::Player,
             required_for_victory: false,
+            enemy_movement_plan: None,
             spawns,
         },
         artifacts: scenario_artifacts_from_inventory(inventory),

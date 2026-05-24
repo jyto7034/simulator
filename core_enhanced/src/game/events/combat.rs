@@ -236,6 +236,7 @@ impl CombatExecutor {
                 id: group_id,
                 side: Side::Player,
                 required_for_victory: false,
+                enemy_movement_plan: None,
                 spawns,
             },
             artifacts: scenario_artifacts_from_inventory(inventory),
@@ -400,6 +401,7 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
+                    route_id: None,
                     required_for_victory: true,
                     source: None,
                     enemies: vec![PveWaveEnemyData {
@@ -450,6 +452,7 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
+                    route_id: None,
                     required_for_victory: true,
                     source: None,
                     enemies: vec![PveWaveEnemyData {
@@ -531,6 +534,7 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
+                    route_id: None,
                     required_for_victory: true,
                     source: None,
                     enemies: vec![PveWaveEnemyData {
@@ -604,6 +608,7 @@ mod tests {
                 id: "wave_0".to_string(),
                 time_ms: 0,
                 spawn_zone_ids: Vec::new(),
+                route_id: None,
                 required_for_victory: true,
                 source: None,
                 enemies: vec![PveWaveEnemyData {
@@ -685,6 +690,7 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
+                    route_id: Some("black_box_breach_main".to_string()),
                     required_for_victory: true,
                     source: None,
                     enemies: vec![PveWaveEnemyData {
@@ -758,6 +764,7 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
+                    route_id: None,
                     required_for_victory: true,
                     source: None,
                     enemies: vec![PveWaveEnemyData {
@@ -795,6 +802,7 @@ mod tests {
             deployment_zones: vec![crate::game::combat_preview::DeploymentZone {
                 id: "deploy".to_string(),
                 label: "Deploy".to_string(),
+                kind: crate::game::combat_preview::DeploymentZoneKind::Ground,
                 cells: vec![Position::new(1, 1)],
             }],
             spawn_zones: vec![
@@ -815,11 +823,13 @@ mod tests {
                     revealed_details: Vec::new(),
                 },
             ],
+            routes: Vec::new(),
             spawn_waves: vec![
                 crate::game::combat_preview::SpawnWave {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: vec!["entry".to_string()],
+                    route_id: None,
                     enemy_entries: vec![wave_entry.clone()],
                     required_for_victory: true,
                     revealed_by_recon: true,
@@ -828,6 +838,7 @@ mod tests {
                     id: "wave_1".to_string(),
                     time_ms: 1_000,
                     spawn_zone_ids: vec!["reinforcement".to_string()],
+                    route_id: None,
                     enemy_entries: vec![wave_entry],
                     required_for_victory: true,
                     revealed_by_recon: false,
@@ -907,6 +918,7 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
+                    route_id: Some("black_box_breach_main".to_string()),
                     required_for_victory: true,
                     source: None,
                     enemies: vec![PveWaveEnemyData {
@@ -958,7 +970,7 @@ mod tests {
 
         assert!(matches!(
             scenario.tactical_plan.player_plan,
-            PlayerMovementPlan::HoldDeployment { .. }
+            PlayerMovementPlan::FixedDefense
         ));
         assert_eq!(scenario.tactical_plan.points.len(), 1);
         assert!(matches!(
@@ -1005,6 +1017,7 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
+                    route_id: Some("black_box_breach_main".to_string()),
                     required_for_victory: true,
                     source: None,
                     enemies: vec![PveWaveEnemyData {
@@ -1056,27 +1069,41 @@ mod tests {
 
         assert!(matches!(
             scenario.tactical_plan.objective,
-            crate::game::battle::scenario::BattleObjective::ProtectUnitForDuration {
+            crate::game::battle::scenario::BattleObjective::ProtectUnit {
                 ref unit_ref,
-                time_ms: 30_000,
-                cleanup_required: false,
             } if unit_ref.0 == DEFAULT_DEFENSE_OBJECT_REF
         ));
         assert!(matches!(
             scenario.tactical_plan.player_plan,
-            PlayerMovementPlan::HoldDeployment { .. }
+            PlayerMovementPlan::FixedDefense
         ));
-        assert!(matches!(
-            scenario.tactical_plan.enemy_plan,
-            EnemyMovementPlan::PathToPoint { ref point_id }
-                if point_id.0 == "black_box_recovery"
-        ));
+        let EnemyMovementPlan::PathAlongPath { ref point_ids } = scenario.tactical_plan.enemy_plan
+        else {
+            panic!("default Defense should follow the authored battlefield route");
+        };
+        assert_eq!(
+            point_ids.last().map(|point_id| point_id.0.as_str()),
+            Some("black_box_recovery")
+        );
+        let enemy_group = scenario
+            .groups
+            .iter()
+            .find(|group| group.side == Side::Opponent)
+            .expect("defense wave should become an opponent spawn group");
+        let Some(EnemyMovementPlan::PathAlongPath {
+            point_ids: wave_point_ids,
+        }) = &enemy_group.enemy_movement_plan
+        else {
+            panic!("defense wave route_id should select a route movement plan");
+        };
+        assert_eq!(
+            wave_point_ids.last().map(|point_id| point_id.0.as_str()),
+            Some("black_box_recovery")
+        );
         assert!(matches!(
             scenario.win_condition,
-            WinCondition::ProtectUnitForDuration {
+            WinCondition::ProtectUnit {
                 ref unit_ref,
-                time_ms: 30_000,
-                cleanup_required: false,
             } if unit_ref.0 == DEFAULT_DEFENSE_OBJECT_REF
         ));
         assert!(scenario
@@ -1087,9 +1114,14 @@ mod tests {
                     spawn.unit_ref.0 == DEFAULT_DEFENSE_OBJECT_REF
                         && matches!(spawn.draft.source, BattleUnitSource::DefenseObject { .. })
                 })));
-        assert!(preview.deployment_zones[0]
-            .cells
-            .contains(&scenario.tactical_plan.points[0].position));
+        assert_eq!(
+            scenario
+                .tactical_plan
+                .points
+                .last()
+                .map(|point| point.position),
+            preview.routes.first().map(|route| route.end)
+        );
     }
 
     #[test]
@@ -1119,6 +1151,7 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
+                    route_id: None,
                     required_for_victory: true,
                     source: None,
                     enemies: vec![PveWaveEnemyData {
@@ -1234,6 +1267,7 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
+                    route_id: None,
                     required_for_victory: true,
                     source: None,
                     enemies: vec![PveWaveEnemyData {
@@ -1327,6 +1361,7 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
+                    route_id: None,
                     required_for_victory: true,
                     source: None,
                     enemies: vec![PveWaveEnemyData {
@@ -1422,6 +1457,7 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
+                    route_id: None,
                     required_for_victory: true,
                     source: None,
                     enemies: vec![PveWaveEnemyData {

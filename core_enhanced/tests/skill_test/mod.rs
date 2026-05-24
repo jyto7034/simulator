@@ -9,7 +9,6 @@ mod nothing_there;
 mod one_sin;
 mod plague_doctor;
 mod punishing_bird;
-mod random_event_abnormality;
 mod red_shoes;
 mod scorched_girl;
 mod spider_bud;

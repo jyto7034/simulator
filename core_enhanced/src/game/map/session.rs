@@ -4,10 +4,11 @@ use crate::game::map::types::{MapNode, MapNodeCategory, MapNodeId, MapNodeKindId
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum NodeSessionKind {
+    Start,
     Combat,
     Boss,
-    Event,
     Support,
+    HeadquartersContact,
     Shop,
     Reward,
 }
@@ -15,10 +16,11 @@ pub enum NodeSessionKind {
 impl From<MapNodeCategory> for NodeSessionKind {
     fn from(value: MapNodeCategory) -> Self {
         match value {
+            MapNodeCategory::Start => Self::Start,
             MapNodeCategory::Combat => Self::Combat,
             MapNodeCategory::Boss => Self::Boss,
-            MapNodeCategory::Event => Self::Event,
             MapNodeCategory::Support => Self::Support,
+            MapNodeCategory::HeadquartersContact => Self::HeadquartersContact,
             MapNodeCategory::Shop => Self::Shop,
             MapNodeCategory::Reward => Self::Reward,
         }
@@ -72,6 +74,10 @@ mod tests {
     #[test]
     fn session_kind_is_the_domain_mapping_for_every_map_category() {
         assert_eq!(
+            NodeSessionKind::from(MapNodeCategory::Start),
+            NodeSessionKind::Start
+        );
+        assert_eq!(
             NodeSessionKind::from(MapNodeCategory::Combat),
             NodeSessionKind::Combat
         );
@@ -80,12 +86,12 @@ mod tests {
             NodeSessionKind::Boss
         );
         assert_eq!(
-            NodeSessionKind::from(MapNodeCategory::Event),
-            NodeSessionKind::Event
-        );
-        assert_eq!(
             NodeSessionKind::from(MapNodeCategory::Support),
             NodeSessionKind::Support
+        );
+        assert_eq!(
+            NodeSessionKind::from(MapNodeCategory::HeadquartersContact),
+            NodeSessionKind::HeadquartersContact
         );
         assert_eq!(
             NodeSessionKind::from(MapNodeCategory::Shop),

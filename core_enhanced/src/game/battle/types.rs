@@ -98,6 +98,31 @@ pub enum BattleUnitRole {
     DefenseObject,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum DeploymentAffinity {
+    #[default]
+    GroundOnly,
+    PlatformOnly,
+    Any,
+}
+
+impl DeploymentAffinity {
+    pub fn allows_ground(self) -> bool {
+        matches!(
+            self,
+            DeploymentAffinity::GroundOnly | DeploymentAffinity::Any
+        )
+    }
+
+    pub fn allows_platform(self) -> bool {
+        matches!(
+            self,
+            DeploymentAffinity::PlatformOnly | DeploymentAffinity::Any
+        )
+    }
+}
+
 impl BattleUnitSource {
     pub fn base_uuid(&self, owned_uuid: Uuid) -> Uuid {
         match self {
@@ -124,6 +149,10 @@ pub struct UnitCombatProfile {
     pub movement: MovementDef,
     pub resonance: ResonanceDef,
     pub skill_id: Option<SkillId>,
+    pub deployment_affinity: DeploymentAffinity,
+    pub block_capacity: u32,
+    pub block_radius_units: f32,
+    pub blockable: bool,
 }
 
 impl UnitCombatProfile {
@@ -145,6 +174,10 @@ impl UnitCombatProfile {
             movement,
             resonance: ResonanceDef::default(),
             skill_id: None,
+            deployment_affinity: DeploymentAffinity::GroundOnly,
+            block_capacity: 1,
+            block_radius_units: 0.75,
+            blockable: true,
         }
     }
 }
@@ -185,6 +218,10 @@ impl BattleUnitDraft {
             movement: meta.movement.clone(),
             resonance: meta.resonance.clone(),
             skill_id: meta.skill_id.clone(),
+            deployment_affinity: DeploymentAffinity::GroundOnly,
+            block_capacity: 0,
+            block_radius_units: 0.0,
+            blockable: true,
         })
     }
 
@@ -311,6 +348,47 @@ mod tests {
         TriggeredEffect,
     };
     use std::collections::HashMap;
+
+    #[test]
+    fn employee_default_profile_has_ground_blocking_contract() {
+        let profile = UnitCombatProfile::employee_default();
+
+        assert_eq!(profile.deployment_affinity, DeploymentAffinity::GroundOnly);
+        assert_eq!(profile.block_capacity, 1);
+        assert!((profile.block_radius_units - 0.75).abs() <= f32::EPSILON);
+        assert!(profile.blockable);
+    }
+
+    #[test]
+    fn abnormality_profile_defaults_to_blockable_enemy_without_deployment_capacity() {
+        let abno_uuid = Uuid::from_u128(0xAB);
+        let abno = AbnormalityMetadata {
+            id: "abno".to_string(),
+            uuid: abno_uuid,
+            name: "Abno".to_string(),
+            risk_level: RiskLevel::ZAYIN,
+            price: 0,
+            max_health: 100,
+            attack: 10,
+            defense: 5,
+            magic_resist: 0,
+            movement: Default::default(),
+            basic_attack: Default::default(),
+            resonance: Default::default(),
+            skill_id: None,
+        };
+        let game_data = GameDataBuilder::empty()
+            .with_abnormalities(vec![abno])
+            .build();
+
+        let profile =
+            BattleUnitDraft::combat_profile_from_abnormality(abno_uuid, &game_data).unwrap();
+
+        assert_eq!(profile.deployment_affinity, DeploymentAffinity::GroundOnly);
+        assert_eq!(profile.block_capacity, 0);
+        assert_eq!(profile.block_radius_units, 0.0);
+        assert!(profile.blockable);
+    }
 
     #[test]
     fn effective_stats_applies_growth_and_permanent_item_and_artifact_effects() {

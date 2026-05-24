@@ -23,6 +23,8 @@ enum TacticalGoalDecision {
 
 impl BattleCore {
     pub fn build_continuous_attack_goals(&mut self) -> HashMap<UnitInstanceId, MovementGoal> {
+        self.refresh_block_state();
+
         let mut unit_ids: Vec<UnitInstanceId> = self.units.keys().copied().collect();
         unit_ids.sort_by(|a, b| a.as_bytes().cmp(b.as_bytes()));
 
@@ -39,49 +41,63 @@ impl BattleCore {
             if unit.is_dead() || !unit.can_move() {
                 continue;
             }
+            if self.blocked_by(unit_id).is_some() {
+                continue;
+            }
 
-            let goal = match self.group_objective_goal(unit_id) {
-                TacticalGoalDecision::Handled(goal) => goal,
-                TacticalGoalDecision::NotApplicable => match unit.owner {
-                    Side::Player => match self.scenario.tactical_plan.player_plan.clone() {
-                        PlayerMovementPlan::FreeEngage => self.free_engage_goal(
-                            unit_id,
-                            &previous_reservations,
-                            &mut occupied_slots,
-                            &mut reserved_positions,
-                        ),
-                        PlayerMovementPlan::HoldDeployment {
-                            guard_radius,
-                            leash_radius,
-                            chase_radius,
-                            return_to_anchor,
-                        } => self.hold_deployment_goal(
-                            unit_id,
-                            guard_radius,
-                            leash_radius,
-                            chase_radius,
-                            return_to_anchor,
-                        ),
-                        PlayerMovementPlan::CautiousEngage {
-                            leash_radius,
-                            chase_radius,
-                        } => self.cautious_engage_goal(unit_id, leash_radius, chase_radius),
+            let fixed_defense_goal = matches!(
+                (&unit.owner, &self.scenario.tactical_plan.player_plan),
+                (Side::Player, PlayerMovementPlan::FixedDefense)
+            )
+            .then(|| self.fixed_defense_goal(unit_id));
+
+            let goal = if let Some(goal) = fixed_defense_goal {
+                goal
+            } else {
+                match self.group_objective_goal(unit_id) {
+                    TacticalGoalDecision::Handled(goal) => goal,
+                    TacticalGoalDecision::NotApplicable => match unit.owner {
+                        Side::Player => match self.scenario.tactical_plan.player_plan.clone() {
+                            PlayerMovementPlan::FreeEngage => self.free_engage_goal(
+                                unit_id,
+                                &previous_reservations,
+                                &mut occupied_slots,
+                                &mut reserved_positions,
+                            ),
+                            PlayerMovementPlan::HoldDeployment {
+                                guard_radius,
+                                leash_radius,
+                                chase_radius,
+                                return_to_anchor,
+                            } => self.hold_deployment_goal(
+                                unit_id,
+                                guard_radius,
+                                leash_radius,
+                                chase_radius,
+                                return_to_anchor,
+                            ),
+                            PlayerMovementPlan::FixedDefense => self.fixed_defense_goal(unit_id),
+                            PlayerMovementPlan::CautiousEngage {
+                                leash_radius,
+                                chase_radius,
+                            } => self.cautious_engage_goal(unit_id, leash_radius, chase_radius),
+                        },
+                        Side::Opponent => match self.enemy_movement_plan_for_unit(unit_id) {
+                            EnemyMovementPlan::AssaultPlayer => self.free_engage_goal(
+                                unit_id,
+                                &previous_reservations,
+                                &mut occupied_slots,
+                                &mut reserved_positions,
+                            ),
+                            EnemyMovementPlan::PathToPoint { point_id } => {
+                                self.path_to_point_goal(unit_id, &point_id)
+                            }
+                            EnemyMovementPlan::PathAlongPath { point_ids } => {
+                                self.path_along_path_goal(unit_id, &point_ids)
+                            }
+                        },
                     },
-                    Side::Opponent => match self.scenario.tactical_plan.enemy_plan.clone() {
-                        EnemyMovementPlan::AssaultPlayer => self.free_engage_goal(
-                            unit_id,
-                            &previous_reservations,
-                            &mut occupied_slots,
-                            &mut reserved_positions,
-                        ),
-                        EnemyMovementPlan::PathToPoint { point_id } => {
-                            self.path_to_point_goal(unit_id, &point_id)
-                        }
-                        EnemyMovementPlan::PathAlongPath { point_ids } => {
-                            self.path_along_path_goal(unit_id, &point_ids)
-                        }
-                    },
-                },
+                }
             };
 
             if let Some(goal) = goal {
@@ -90,6 +106,13 @@ impl BattleCore {
         }
 
         goals
+    }
+
+    fn enemy_movement_plan_for_unit(&self, unit_id: UnitInstanceId) -> EnemyMovementPlan {
+        self.units
+            .get(&unit_id)
+            .and_then(|unit| unit.enemy_movement_plan.clone())
+            .unwrap_or_else(|| self.scenario.tactical_plan.enemy_plan.clone())
     }
 
     fn free_engage_goal(
@@ -127,6 +150,18 @@ impl BattleCore {
             target_id,
             desired_range,
             approach_point: engagement_point,
+        })
+    }
+
+    fn fixed_defense_goal(&self, unit_id: UnitInstanceId) -> Option<MovementGoal> {
+        let unit = self.units.get(&unit_id)?;
+        let target_id = self
+            .first_blocked_enemy(unit_id)
+            .or_else(|| self.closest_enemy_in_attack_range(unit_id))?;
+        Some(MovementGoal::AttackUnit {
+            target_id,
+            desired_range: unit.basic_attack.range_units.max(0.0),
+            approach_point: None,
         })
     }
 
@@ -221,12 +256,22 @@ impl BattleCore {
         point_id: &crate::game::battle::scenario::TacticalPointId,
     ) -> Option<MovementGoal> {
         let unit = self.units.get(&unit_id)?;
-        if let Some(target_id) = self.closest_enemy_in_attack_range(unit_id) {
+        if let Some(target_id) = self.fixed_defense_route_end_target_for_enemy(unit_id) {
             return Some(MovementGoal::AttackUnit {
                 target_id,
                 desired_range: unit.basic_attack.range_units.max(0.0),
                 approach_point: None,
             });
+        }
+
+        if !self.is_fixed_defense_route_enemy(unit_id) {
+            if let Some(target_id) = self.closest_enemy_in_attack_range(unit_id) {
+                return Some(MovementGoal::AttackUnit {
+                    target_id,
+                    desired_range: unit.basic_attack.range_units.max(0.0),
+                    approach_point: None,
+                });
+            }
         }
 
         let point = self.scenario.tactical_plan.point(point_id)?;
@@ -242,12 +287,22 @@ impl BattleCore {
         point_ids: &[crate::game::battle::scenario::TacticalPointId],
     ) -> Option<MovementGoal> {
         let unit = self.units.get(&unit_id)?;
-        if let Some(target_id) = self.closest_enemy_in_attack_range(unit_id) {
+        if let Some(target_id) = self.fixed_defense_route_end_target_for_enemy(unit_id) {
             return Some(MovementGoal::AttackUnit {
                 target_id,
                 desired_range: unit.basic_attack.range_units.max(0.0),
                 approach_point: None,
             });
+        }
+
+        if !self.is_fixed_defense_route_enemy(unit_id) {
+            if let Some(target_id) = self.closest_enemy_in_attack_range(unit_id) {
+                return Some(MovementGoal::AttackUnit {
+                    target_id,
+                    desired_range: unit.basic_attack.range_units.max(0.0),
+                    approach_point: None,
+                });
+            }
         }
 
         let target = self.active_path_target(unit.body.position, point_ids, 0.25)?;
@@ -952,6 +1007,23 @@ mod tests {
         BattleCore::new_from_scenario(scenario, empty_game_data(), 123)
     }
 
+    fn fixed_defense_core_with_enemy_exit() -> BattleCore {
+        let mut scenario = BattleScenario::empty((8, 4));
+        let point_id = TacticalPointId::new("exit");
+        scenario.tactical_plan = TacticalPlan {
+            player_plan: PlayerMovementPlan::FixedDefense,
+            enemy_plan: EnemyMovementPlan::PathToPoint {
+                point_id: point_id.clone(),
+            },
+            points: vec![TacticalPoint {
+                id: point_id,
+                position: Position::new(7, 1),
+            }],
+            ..TacticalPlan::default()
+        };
+        BattleCore::new_from_scenario(scenario, empty_game_data(), 123)
+    }
+
     fn runtime_unit(
         id: u128,
         owner: Side,
@@ -975,6 +1047,10 @@ mod tests {
             body: UnitBody::new_at(position, 0.35, 1.0),
             tactical_anchor: anchor,
             tactical_group_id: None,
+            enemy_movement_plan: None,
+            block_capacity: 0,
+            block_radius_units: 0.0,
+            blockable: true,
             move_epoch: 0,
             action_state: ActionState::Idle,
             action_locks: Default::default(),
@@ -989,6 +1065,31 @@ mod tests {
             pending_cast_cause: None,
             pending_skill_cast: None,
         }
+    }
+
+    fn blocking_player(id: u128, position: WorldVec2, capacity: u32) -> RuntimeUnit {
+        let mut unit = runtime_unit(id, Side::Player, position, Some(position));
+        unit.block_capacity = capacity;
+        unit.block_radius_units = 1.0;
+        unit.blockable = false;
+        unit.basic_attack.range_units = 1.0;
+        unit
+    }
+
+    fn blockable_enemy(id: u128, position: WorldVec2) -> RuntimeUnit {
+        let mut unit = runtime_unit(id, Side::Opponent, position, None);
+        unit.blockable = true;
+        unit.basic_attack.range_units = 1.0;
+        unit
+    }
+
+    fn defense_object(id: u128, position: WorldVec2) -> RuntimeUnit {
+        let mut unit = runtime_unit(id, Side::Player, position, Some(position));
+        unit.role = crate::game::battle::types::BattleUnitRole::DefenseObject;
+        unit.stats.move_speed_units_per_ms = 0;
+        unit.basic_attack.range_units = 0.0;
+        unit.blockable = false;
+        unit
     }
 
     #[test]
@@ -1141,6 +1242,53 @@ mod tests {
             goals.get(&player_id),
             Some(MovementGoal::MoveToPoint { point, .. }) if *point == anchor
         ));
+    }
+
+    #[test]
+    fn fixed_defense_attacks_enemy_in_range_without_approach() {
+        let mut core = core_with_player_plan(PlayerMovementPlan::FixedDefense);
+        let player_id = UnitInstanceId::from(Uuid::from_u128(1));
+        let enemy_id = UnitInstanceId::from(Uuid::from_u128(2));
+        core.units.insert(
+            player_id,
+            runtime_unit(1, Side::Player, WorldVec2::new(1.0, 1.0), None),
+        );
+        core.units.insert(
+            enemy_id,
+            runtime_unit(2, Side::Opponent, WorldVec2::new(1.4, 1.0), None),
+        );
+
+        let goals = core.build_continuous_attack_goals();
+
+        assert!(matches!(
+            goals.get(&player_id),
+            Some(MovementGoal::AttackUnit {
+                target_id,
+                approach_point: None,
+                ..
+            }) if *target_id == enemy_id
+        ));
+    }
+
+    #[test]
+    fn fixed_defense_does_not_move_toward_enemy_outside_range() {
+        let mut core = core_with_player_plan(PlayerMovementPlan::FixedDefense);
+        let player_id = UnitInstanceId::from(Uuid::from_u128(1));
+        core.units.insert(
+            player_id,
+            runtime_unit(1, Side::Player, WorldVec2::new(1.0, 1.0), None),
+        );
+        core.units.insert(
+            UnitInstanceId::from(Uuid::from_u128(2)),
+            runtime_unit(2, Side::Opponent, WorldVec2::new(6.0, 1.0), None),
+        );
+
+        let goals = core.build_continuous_attack_goals();
+
+        assert!(
+            !goals.contains_key(&player_id),
+            "fixed defense must preserve deployment instead of chasing"
+        );
     }
 
     #[test]
@@ -1374,6 +1522,256 @@ mod tests {
             Some(MovementGoal::MoveToPoint { point, .. })
                 if point.distance(WorldVec2::new(2.991_803_2, 1.181_073)) < 0.001
         ));
+    }
+
+    #[test]
+    fn fixed_defense_ignores_group_objective_movement() {
+        let group_id = TacticalGroupPlanId::new("player_main");
+        let point_id = TacticalPointId::new("rally");
+        let mut scenario = BattleScenario::empty((8, 4));
+        scenario.tactical_plan = TacticalPlan {
+            player_plan: PlayerMovementPlan::FixedDefense,
+            points: vec![TacticalPoint {
+                id: point_id.clone(),
+                position: Position::new(6, 1),
+            }],
+            group_plans: vec![TacticalGroupPlan {
+                id: group_id.clone(),
+                side: Side::Player,
+                members: TacticalGroupMembers::SideAll(Side::Player),
+                objective: GroupObjective::AdvanceToPoint {
+                    point_id: point_id.clone(),
+                },
+                formation: FormationKind::Loose,
+                cohesion_radius: 2.0,
+                engage_radius: 2.0,
+            }],
+            ..TacticalPlan::default()
+        };
+        let mut core = BattleCore::new_from_scenario(scenario, empty_game_data(), 123);
+        let player_id = UnitInstanceId::from(Uuid::from_u128(1));
+        let mut player = runtime_unit(1, Side::Player, WorldVec2::new(1.0, 1.0), None);
+        player.tactical_group_id = Some(group_id.clone());
+        core.units.insert(player_id, player);
+        core.scenario_runtime
+            .tactical_groups
+            .insert(group_id, vec![player_id]);
+
+        let goals = core.build_continuous_attack_goals();
+
+        assert!(
+            !goals.contains_key(&player_id),
+            "fixed defense must bypass group advance movement for deployed allies"
+        );
+    }
+
+    #[test]
+    fn fixed_defense_blocks_near_blockable_enemy_and_prioritizes_attack() {
+        let mut core = fixed_defense_core_with_enemy_exit();
+        let blocker_id = UnitInstanceId::from(Uuid::from_u128(1));
+        let enemy_id = UnitInstanceId::from(Uuid::from_u128(2));
+        core.units
+            .insert(blocker_id, blocking_player(1, WorldVec2::new(1.0, 1.0), 1));
+        core.units
+            .insert(enemy_id, blockable_enemy(2, WorldVec2::new(1.5, 1.0)));
+
+        let goals = core.build_continuous_attack_goals();
+
+        assert!(matches!(
+            goals.get(&blocker_id),
+            Some(MovementGoal::AttackUnit {
+                target_id,
+                approach_point: None,
+                ..
+            }) if *target_id == enemy_id
+        ));
+        assert!(
+            !goals.contains_key(&enemy_id),
+            "blocked enemy should not receive a movement goal"
+        );
+        let movement_input = core.build_continuous_movement_input_with_goals(0, 50, &goals);
+        let blocked_enemy_input = movement_input
+            .units
+            .iter()
+            .find(|unit| unit.unit_id == enemy_id)
+            .expect("blocked enemy should be part of movement input");
+        assert!(
+            !blocked_enemy_input.can_move,
+            "blocked enemy should be movement-locked for the tick"
+        );
+        assert_eq!(
+            core.units.get(&blocker_id).unwrap().current_target,
+            Some(enemy_id)
+        );
+        assert_eq!(
+            core.units.get(&enemy_id).unwrap().current_target,
+            Some(blocker_id)
+        );
+    }
+
+    #[test]
+    fn fixed_defense_block_capacity_allows_excess_enemy_to_pass() {
+        let mut core = fixed_defense_core_with_enemy_exit();
+        let blocker_id = UnitInstanceId::from(Uuid::from_u128(1));
+        let first_enemy_id = UnitInstanceId::from(Uuid::from_u128(2));
+        let second_enemy_id = UnitInstanceId::from(Uuid::from_u128(3));
+        core.units
+            .insert(blocker_id, blocking_player(1, WorldVec2::new(1.0, 1.0), 1));
+        core.units
+            .insert(first_enemy_id, blockable_enemy(2, WorldVec2::new(1.4, 1.0)));
+        core.units.insert(
+            second_enemy_id,
+            blockable_enemy(3, WorldVec2::new(1.6, 1.0)),
+        );
+
+        let goals = core.build_continuous_attack_goals();
+
+        assert!(
+            !goals.contains_key(&first_enemy_id),
+            "first deterministic enemy should consume the only block slot"
+        );
+        assert!(matches!(
+            goals.get(&second_enemy_id),
+            Some(MovementGoal::MoveToPoint { point, .. })
+                if *point == WorldVec2::from_tile_center(Position::new(7, 1))
+        ));
+    }
+
+    #[test]
+    fn fixed_defense_block_tie_uses_lower_blocker_id() {
+        let mut core = fixed_defense_core_with_enemy_exit();
+        let lower_blocker_id = UnitInstanceId::from(Uuid::from_u128(1));
+        let higher_blocker_id = UnitInstanceId::from(Uuid::from_u128(3));
+        let enemy_id = UnitInstanceId::from(Uuid::from_u128(2));
+        core.units.insert(
+            lower_blocker_id,
+            blocking_player(1, WorldVec2::new(1.0, 1.0), 1),
+        );
+        core.units.insert(
+            higher_blocker_id,
+            blocking_player(3, WorldVec2::new(1.0, 2.0), 1),
+        );
+        core.units
+            .insert(enemy_id, blockable_enemy(2, WorldVec2::new(1.0, 1.5)));
+
+        let goals = core.build_continuous_attack_goals();
+
+        assert!(matches!(
+            goals.get(&lower_blocker_id),
+            Some(MovementGoal::AttackUnit { target_id, .. }) if *target_id == enemy_id
+        ));
+        assert_eq!(
+            core.units.get(&enemy_id).unwrap().current_target,
+            Some(lower_blocker_id)
+        );
+    }
+
+    #[test]
+    fn fixed_defense_releases_block_when_enemy_leaves_radius() {
+        let mut core = fixed_defense_core_with_enemy_exit();
+        let blocker_id = UnitInstanceId::from(Uuid::from_u128(1));
+        let enemy_id = UnitInstanceId::from(Uuid::from_u128(2));
+        core.units
+            .insert(blocker_id, blocking_player(1, WorldVec2::new(1.0, 1.0), 1));
+        core.units
+            .insert(enemy_id, blockable_enemy(2, WorldVec2::new(1.5, 1.0)));
+        let first_goals = core.build_continuous_attack_goals();
+        assert!(!first_goals.contains_key(&enemy_id));
+
+        core.units
+            .get_mut(&enemy_id)
+            .unwrap()
+            .set_world_position(WorldVec2::new(4.0, 1.0));
+        let second_goals = core.build_continuous_attack_goals();
+
+        assert!(matches!(
+            second_goals.get(&enemy_id),
+            Some(MovementGoal::MoveToPoint { point, .. })
+                if *point == WorldVec2::from_tile_center(Position::new(7, 1))
+        ));
+    }
+
+    #[test]
+    fn fixed_defense_route_enemy_targets_defense_object_at_route_end() {
+        let mut core = fixed_defense_core_with_enemy_exit();
+        let enemy_id = UnitInstanceId::from(Uuid::from_u128(2));
+        let object_id = UnitInstanceId::from(Uuid::from_u128(9));
+        let endpoint = WorldVec2::from_tile_center(Position::new(7, 1));
+        core.units.insert(enemy_id, blockable_enemy(2, endpoint));
+        core.units.insert(object_id, defense_object(9, endpoint));
+
+        let goals = core.build_continuous_attack_goals();
+
+        assert!(matches!(
+            goals.get(&enemy_id),
+            Some(MovementGoal::AttackUnit {
+                target_id,
+                approach_point: None,
+                ..
+            }) if *target_id == object_id
+        ));
+        assert_eq!(
+            core.select_basic_attack_target(enemy_id, None, None),
+            Some(object_id)
+        );
+    }
+
+    #[test]
+    fn fixed_defense_route_enemy_uses_unit_route_override_for_endpoint_targeting() {
+        let mut core = fixed_defense_core_with_enemy_exit();
+        let enemy_id = UnitInstanceId::from(Uuid::from_u128(2));
+        let object_id = UnitInstanceId::from(Uuid::from_u128(9));
+        let unit_exit_id = TacticalPointId::new("unit_route_exit");
+        let unit_endpoint = WorldVec2::from_tile_center(Position::new(2, 2));
+        core.scenario.tactical_plan.points.push(TacticalPoint {
+            id: unit_exit_id.clone(),
+            position: Position::new(2, 2),
+        });
+
+        let mut enemy = blockable_enemy(2, unit_endpoint);
+        enemy.enemy_movement_plan = Some(EnemyMovementPlan::PathAlongPath {
+            point_ids: vec![unit_exit_id],
+        });
+        core.units.insert(enemy_id, enemy);
+        core.units
+            .insert(object_id, defense_object(9, unit_endpoint));
+
+        let goals = core.build_continuous_attack_goals();
+
+        assert!(matches!(
+            goals.get(&enemy_id),
+            Some(MovementGoal::AttackUnit {
+                target_id,
+                approach_point: None,
+                ..
+            }) if *target_id == object_id
+        ));
+        assert_eq!(
+            core.select_basic_attack_target(enemy_id, None, None),
+            Some(object_id)
+        );
+    }
+
+    #[test]
+    fn fixed_defense_route_enemy_before_endpoint_ignores_incidental_targets() {
+        let mut core = fixed_defense_core_with_enemy_exit();
+        let bystander_id = UnitInstanceId::from(Uuid::from_u128(1));
+        let enemy_id = UnitInstanceId::from(Uuid::from_u128(2));
+        let mut bystander = runtime_unit(1, Side::Player, WorldVec2::new(1.4, 1.0), None);
+        bystander.block_capacity = 0;
+        bystander.block_radius_units = 0.0;
+        let enemy = blockable_enemy(2, WorldVec2::new(1.0, 1.0));
+        core.units.insert(bystander_id, bystander);
+        core.units.insert(enemy_id, enemy);
+
+        let goals = core.build_continuous_attack_goals();
+
+        assert!(matches!(
+            goals.get(&enemy_id),
+            Some(MovementGoal::MoveToPoint { point, .. })
+                if *point == WorldVec2::from_tile_center(Position::new(7, 1))
+        ));
+        assert_eq!(core.select_basic_attack_target(enemy_id, None, None), None);
     }
 
     #[test]

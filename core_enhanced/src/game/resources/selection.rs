@@ -8,8 +8,12 @@ use crate::game::{
     },
     behavior::GameError,
     combat_preview::CombatNodeType,
+    employee::StarterEmployeeCandidate,
     enums::{RewardMode, ShopEventOption},
-    map::{MapNodeId, MedicalTreatmentKind, SupportNodeMode, SupportNodeType},
+    map::{
+        HeadquartersContactOption, MapNodeId, MedicalTreatmentKind, SupportNodeMode,
+        SupportNodeType,
+    },
     reward::RewardOption,
 };
 
@@ -209,6 +213,39 @@ impl SupportSessionState {
 }
 
 #[derive(Debug, Clone)]
+pub struct HeadquartersContactSessionState {
+    pub node_id: MapNodeId,
+    pub options: Vec<HeadquartersContactOption>,
+    pub recruitment_candidates: Vec<StarterEmployeeCandidate>,
+    pub shop_pool_id: Option<String>,
+}
+
+impl HeadquartersContactSessionState {
+    pub fn new(
+        node_id: MapNodeId,
+        recruitment_candidates: Vec<StarterEmployeeCandidate>,
+        shop_pool_id: Option<String>,
+    ) -> Self {
+        Self {
+            node_id,
+            options: vec![
+                HeadquartersContactOption::RecruitEmployee,
+                HeadquartersContactOption::RequestEmergencySupplies,
+                HeadquartersContactOption::OpenHeadquartersShop,
+            ],
+            recruitment_candidates,
+            shop_pool_id,
+        }
+    }
+
+    pub fn get_candidate(&self, candidate_id: &str) -> Option<&StarterEmployeeCandidate> {
+        self.recruitment_candidates
+            .iter()
+            .find(|candidate| candidate.id == candidate_id)
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct CombatBattleState {
     pub abnormality_id: String,
     pub encounter_id: String,
@@ -226,6 +263,7 @@ pub enum SelectedEventState {
     Shop(ShopSessionState),
     Reward(RewardSessionState),
     Support(SupportSessionState),
+    HeadquartersContact(HeadquartersContactSessionState),
     CombatBattle(CombatBattleState),
 }
 
@@ -284,6 +322,13 @@ impl SelectedEvent {
     pub fn as_combat_battle(&self) -> Result<&CombatBattleState, GameError> {
         match &self.event {
             SelectedEventState::CombatBattle(battle) => Ok(battle),
+            _ => Err(GameError::EventTypeMismatch),
+        }
+    }
+
+    pub fn as_headquarters_contact(&self) -> Result<&HeadquartersContactSessionState, GameError> {
+        match &self.event {
+            SelectedEventState::HeadquartersContact(headquarters) => Ok(headquarters),
             _ => Err(GameError::EventTypeMismatch),
         }
     }

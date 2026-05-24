@@ -11,7 +11,7 @@ use crate::game::enums::RewardMode;
 use crate::game::managers::action_scheduler::ActionScheduler;
 use crate::game::map::MapNodeId;
 use crate::game::resources::{
-    Bench, EquippedItemDto, Field, GameState, Inventory, RewardSessionState,
+    Bench, EquippedItemDto, Field, GameState, Inventory, RewardSessionState, SelectedEventState,
 };
 use crate::game::reward::RewardOption;
 
@@ -142,11 +142,15 @@ impl GameCore {
             | PlayerBehavior::ChooseSupport { .. }
             | PlayerBehavior::SelectSupportTarget { .. }
             | PlayerBehavior::SelectMedicalTreatment { .. }
+            | PlayerBehavior::RecruitEmployee { .. }
+            | PlayerBehavior::RequestEmergencySupplies
+            | PlayerBehavior::OpenHeadquartersShop
             | PlayerBehavior::RerollShop
             | PlayerBehavior::ExitShop
             | PlayerBehavior::ClaimReward
             | PlayerBehavior::ExitReward
             | PlayerBehavior::FinishCombatReplay
+            | PlayerBehavior::RetreatCombat
             | PlayerBehavior::UnEquipItem { .. } => Ok(()),
             PlayerBehavior::SelectStarterEmployees { candidate_ids } => {
                 self.validate_starter_employee_selection(candidate_ids)
@@ -512,6 +516,18 @@ impl GameCore {
         let mut allowed = ActionScheduler::get_allowed_actions(&new_state);
         if matches!(new_state, GameState::InReward { .. }) && !self.current_reward_can_skip() {
             allowed.retain(|action| *action != ActionKind::ExitReward);
+        }
+        if matches!(new_state, GameState::InCombatReplay { .. })
+            && self.state.selected_event.as_ref().is_some_and(|selected| {
+                matches!(
+                    &selected.event,
+                    SelectedEventState::CombatBattle(battle)
+                        if battle.node_type
+                            == crate::game::combat_preview::CombatNodeType::Boss
+                )
+            })
+        {
+            allowed.retain(|action| *action != ActionKind::RetreatCombat);
         }
 
         self.state.transition_to(new_state, allowed);

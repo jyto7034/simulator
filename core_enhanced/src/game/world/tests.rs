@@ -1,10 +1,11 @@
 use super::*;
 use crate::game::ability::{DeliveryDef, SkillDef, SkillId, SkillStepDef, SkillTarget};
 use crate::game::battle::timeline::Timeline;
+use crate::game::battle::types::DeploymentAffinity;
 use crate::game::data::{
     abnormality_data::{AbnormalityMetadata, BasicAttackDef, MovementDef, ResonanceDef},
     artifact_data::ArtifactMetadata,
-    employee_data::StarterEmployeeCandidateDatabase,
+    employee_data::{RecruitmentEmployeeCandidateDatabase, StarterEmployeeCandidateDatabase},
     equipment_data::{
         EquipmentDatabase, EquipmentDismantleRecipeMetadata, EquipmentEnhancementRecipeMetadata,
         EquipmentMaterialCost, EquipmentMaterialMetadata, EquipmentMaterialType, EquipmentMetadata,
@@ -13,9 +14,6 @@ use crate::game::data::{
     pve_data::{
         PveBattlefieldOverrideData, PveEncounter, PveEncounterDatabase, PveWaveData,
         PveWaveEnemyData,
-    },
-    random_event_data::{
-        RandomEventDatabase, RandomEventInnerMetadata, RandomEventMetadata, RandomEventPoolMetadata,
     },
     reward_data::{RewardDatabase, RewardMetadata, RewardPoolMetadata, RewardTag},
     shop_data::{ShopDatabase, ShopMetadata, ShopPoolMetadata, ShopType},
@@ -48,7 +46,9 @@ fn empty_game_data() -> Arc<GameDataBase> {
 }
 
 fn test_game_data_builder() -> GameDataBuilder {
-    GameDataBuilder::empty().with_starter_employee_candidates(test_starter_candidate_database())
+    GameDataBuilder::empty()
+        .with_starter_employee_candidates(test_starter_candidate_database())
+        .with_recruitment_employee_candidates(test_recruitment_candidate_database())
 }
 
 fn test_starter_candidate_database() -> StarterEmployeeCandidateDatabase {
@@ -60,6 +60,20 @@ fn test_starter_candidate_database() -> StarterEmployeeCandidateDatabase {
                 grade: EmployeeGrade::Junior,
                 role: "테스트 후보".to_string(),
                 background: "테스트용 시작 직원 후보".to_string(),
+            })
+            .collect(),
+    )
+}
+
+fn test_recruitment_candidate_database() -> RecruitmentEmployeeCandidateDatabase {
+    RecruitmentEmployeeCandidateDatabase::new(
+        (0..6)
+            .map(|index| StarterEmployeeCandidate {
+                id: format!("recruit_{index}"),
+                name: format!("Recruit {index}"),
+                grade: EmployeeGrade::Junior,
+                role: "테스트 채용 후보".to_string(),
+                background: "테스트용 런 중 채용 후보".to_string(),
             })
             .collect(),
     )
@@ -173,7 +187,10 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
                 }),
                 tactical_plan: None,
                 win_condition: None,
-                waves: vec![test_pve_wave("defense_risk_abno")],
+                waves: vec![PveWaveData {
+                    route_id: Some("black_box_breach_main".to_string()),
+                    ..test_pve_wave("defense_risk_abno")
+                }],
                 static_obstacles: vec![],
             },
             PveEncounter {
@@ -237,6 +254,7 @@ fn test_pve_wave(abnormality_id: &str) -> PveWaveData {
         id: "wave_0".to_string(),
         time_ms: 0,
         spawn_zone_ids: Vec::new(),
+        route_id: None,
         required_for_victory: true,
         source: None,
         enemies: vec![PveWaveEnemyData {
@@ -252,25 +270,40 @@ fn test_pve_wave(abnormality_id: &str) -> PveWaveData {
 fn game_data_with_map_content() -> Arc<GameDataBase> {
     let shop_uuid = Uuid::from_u128(10_001);
     let reward_uuid = Uuid::from_u128(10_002);
-    let random_event_uuid = Uuid::from_u128(10_003);
     let forbidden_reward_uuid = Uuid::from_u128(10_004);
-    let suppress_event_uuid = Uuid::from_u128(10_005);
 
     test_game_data_builder()
         .with_shops(ShopDatabase::new_with_pools(
-            vec![ShopMetadata {
-                id: "map_shop".to_string(),
-                name: "Map Shop".to_string(),
-                uuid: shop_uuid,
-                shop_type: ShopType::Shop,
-                can_reroll: false,
-                visible_items: vec![],
-                hidden_items: vec![],
-            }],
-            vec![ShopPoolMetadata {
-                id: "default_shops".to_string(),
-                shop_ids: vec!["map_shop".to_string()],
-            }],
+            vec![
+                ShopMetadata {
+                    id: "map_shop".to_string(),
+                    name: "Map Shop".to_string(),
+                    uuid: shop_uuid,
+                    shop_type: ShopType::Shop,
+                    can_reroll: false,
+                    visible_items: vec![],
+                    hidden_items: vec![],
+                },
+                ShopMetadata {
+                    id: "hq_supply_shop".to_string(),
+                    name: "HQ Supply Shop".to_string(),
+                    uuid: Uuid::from_u128(10_006),
+                    shop_type: ShopType::Shop,
+                    can_reroll: false,
+                    visible_items: vec![],
+                    hidden_items: vec![],
+                },
+            ],
+            vec![
+                ShopPoolMetadata {
+                    id: "default_shops".to_string(),
+                    shop_ids: vec!["map_shop".to_string()],
+                },
+                ShopPoolMetadata {
+                    id: "headquarters_basic_supplies".to_string(),
+                    shop_ids: vec!["hq_supply_shop".to_string()],
+                },
+            ],
         ))
         .with_rewards(RewardDatabase::new_with_pools(
             vec![
@@ -297,36 +330,6 @@ fn game_data_with_map_content() -> Arc<GameDataBase> {
             vec![RewardPoolMetadata {
                 id: "default_treasures".to_string(),
                 reward_ids: vec!["map_reward".to_string()],
-            }],
-        ))
-        .with_random_events(RandomEventDatabase::new_with_pools(
-            vec![
-                RandomEventMetadata {
-                    id: "map_random_reward".to_string(),
-                    name: "Map Random Reward".to_string(),
-                    uuid: random_event_uuid,
-                    event_type:
-                        crate::game::events::event_selection::random::RandomEventType::Reward,
-                    risk_level: crate::game::enums::RiskLevel::ZAYIN,
-                    description: "A deterministic random event".to_string(),
-                    image: String::new(),
-                    inner_metadata: RandomEventInnerMetadata::Reward(reward_uuid),
-                },
-                RandomEventMetadata {
-                    id: "map_suppress_event".to_string(),
-                    name: "Map Suppress Event".to_string(),
-                    uuid: suppress_event_uuid,
-                    event_type:
-                        crate::game::events::event_selection::random::RandomEventType::Suppress,
-                    risk_level: crate::game::enums::RiskLevel::HE,
-                    description: "Suppress event is not a live map event target.".to_string(),
-                    image: String::new(),
-                    inner_metadata: RandomEventInnerMetadata::Suppress(Uuid::from_u128(0xBEEF)),
-                },
-            ],
-            vec![RandomEventPoolMetadata {
-                id: "default_random_events".to_string(),
-                event_ids: vec!["map_random_reward".to_string()],
             }],
         ))
         .build_arc()
@@ -950,6 +953,60 @@ mod map_flow {
     }
 
     #[test]
+    fn combat_deployment_rejects_employee_on_incompatible_zone_kind() {
+        let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
+        let player_id = Uuid::from_u128(1);
+        start_new_game_with_default_starters(&mut core, player_id);
+        let employee_uuid = core.roster().unwrap().available_employee_ids()[0];
+        core.roster_mut()
+            .unwrap()
+            .get_mut(&employee_uuid)
+            .unwrap()
+            .combat_profile
+            .battle_profile
+            .deployment_affinity = DeploymentAffinity::PlatformOnly;
+        let node_id = force_first_available_node(
+            &mut core,
+            MapNodeCategory::Combat,
+            "combat_low_risk",
+            MapNodePayload::Encounter {
+                encounter_id: Some("low_risk_encounter".to_string()),
+            },
+        );
+
+        let preview = core
+            .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+            .unwrap();
+        let BehaviorResult::NodePreview {
+            combat_preview: Some(combat_preview),
+            ..
+        } = preview
+        else {
+            panic!("expected combat preview");
+        };
+        let ground_cell = combat_preview
+            .deployment_zones
+            .iter()
+            .find(|zone| zone.kind == crate::game::combat_preview::DeploymentZoneKind::Ground)
+            .expect("ground deployment zone")
+            .cells[0];
+
+        let err = core
+            .execute(
+                player_id,
+                PlayerBehavior::MoveUnit {
+                    target_unit_uuid: employee_uuid,
+                    dest_pos: ground_cell,
+                    swap_with_unit_uuid: None,
+                },
+            )
+            .unwrap_err();
+
+        assert!(matches!(err, GameError::InvalidAction));
+        assert!(matches!(core.get_state(), GameState::NodeConfirm { .. }));
+    }
+
+    #[test]
     fn combat_node_confirm_revalidates_stale_node_deployment() {
         let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
         let player_id = Uuid::from_u128(1);
@@ -988,6 +1045,56 @@ mod map_flow {
             .get_mut(&employee_uuid)
             .unwrap()
             .availability = EmployeeAvailability::Unavailable;
+
+        let err = core
+            .execute(player_id, PlayerBehavior::ConfirmEnterNode)
+            .unwrap_err();
+
+        assert!(matches!(err, GameError::InvalidAction));
+        assert!(matches!(core.get_state(), GameState::NodeConfirm { .. }));
+    }
+
+    #[test]
+    fn combat_node_confirm_revalidates_stale_deployment_affinity() {
+        let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
+        let player_id = Uuid::from_u128(1);
+        start_new_game_with_default_starters(&mut core, player_id);
+        let employee_uuid = core.roster().unwrap().available_employee_ids()[0];
+        let node_id = force_first_available_node(
+            &mut core,
+            MapNodeCategory::Combat,
+            "combat_low_risk",
+            MapNodePayload::Encounter {
+                encounter_id: Some("low_risk_encounter".to_string()),
+            },
+        );
+
+        let preview = core
+            .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+            .unwrap();
+        let BehaviorResult::NodePreview {
+            combat_preview: Some(combat_preview),
+            ..
+        } = preview
+        else {
+            panic!("expected combat preview");
+        };
+        core.execute(
+            player_id,
+            PlayerBehavior::MoveUnit {
+                target_unit_uuid: employee_uuid,
+                dest_pos: combat_preview.deployment_zones[0].cells[0],
+                swap_with_unit_uuid: None,
+            },
+        )
+        .unwrap();
+        core.roster_mut()
+            .unwrap()
+            .get_mut(&employee_uuid)
+            .unwrap()
+            .combat_profile
+            .battle_profile
+            .deployment_affinity = DeploymentAffinity::PlatformOnly;
 
         let err = core
             .execute(player_id, PlayerBehavior::ConfirmEnterNode)
@@ -1157,6 +1264,23 @@ mod map_flow {
         };
         assert!(!map.available_node_ids.is_empty());
         let first_node_id = map.available_node_ids[0];
+        {
+            let node = core
+                .state
+                .run
+                .as_mut()
+                .expect("run state")
+                .map
+                .node_mut(first_node_id)
+                .expect("node exists");
+            node.category = MapNodeCategory::Support;
+            node.kind_id = crate::game::map::MapNodeKindId::new("support_rest");
+            node.payload = MapNodePayload::Support {
+                support_type: SupportNodeType::Rest,
+                support_mode: SupportNodeMode::Known,
+                choices: vec![],
+            };
+        }
 
         let preview = core
             .execute(
@@ -1177,16 +1301,15 @@ mod map_flow {
         let entered = core
             .execute(player_id, PlayerBehavior::ConfirmEnterNode)
             .unwrap();
-        assert!(matches!(
-            entered,
-            BehaviorResult::NodeEntered {
-                node_id,
-                ..
-            } | BehaviorResult::SupportState {
-                node_id,
-                ..
-            } if node_id == first_node_id
-        ));
+        match entered {
+            BehaviorResult::NodeEntered { node_id, .. }
+            | BehaviorResult::SupportState { node_id, .. }
+            | BehaviorResult::HeadquartersContactState { node_id, .. } => {
+                assert_eq!(node_id, first_node_id);
+            }
+            BehaviorResult::ShopState { .. } | BehaviorResult::RewardState { .. } => {}
+            other => panic!("expected entered map node content, got {other:?}"),
+        }
         let session = core
             .state
             .node_session
@@ -1413,6 +1536,35 @@ fn force_first_available_node(
     node_id
 }
 
+fn force_other_available_support_nodes_to_rest(core: &mut GameCore, except_node_id: MapNodeId) {
+    let available_node_ids = core
+        .state
+        .run
+        .as_ref()
+        .expect("run state")
+        .map_progression
+        .available_node_ids
+        .clone();
+    let map = &mut core.state.run.as_mut().expect("run state").map;
+    for node_id in available_node_ids {
+        if node_id == except_node_id {
+            continue;
+        }
+        let Some(node) = map.node_mut(node_id) else {
+            continue;
+        };
+        if node.category != MapNodeCategory::Support {
+            continue;
+        }
+        node.kind_id = crate::game::map::MapNodeKindId::new("support_rest");
+        node.payload = MapNodePayload::Support {
+            support_type: SupportNodeType::Rest,
+            support_mode: SupportNodeMode::Known,
+            choices: vec![],
+        };
+    }
+}
+
 fn select_and_confirm_map_node(
     core: &mut GameCore,
     player_id: Uuid,
@@ -1562,7 +1714,13 @@ mod system_flow {
                 },
             )
             .expect("combat deployment move should be accepted");
-        assert!(matches!(moved, BehaviorResult::MoveUnit));
+        let BehaviorResult::MoveUnit { combat_deployment } = moved else {
+            panic!("expected combat deployment move result");
+        };
+        assert_eq!(
+            combat_deployment.position_of(employee_uuid),
+            Some(deployment_cell)
+        );
 
         let combat_started = core
             .execute(player_id, PlayerBehavior::ConfirmEnterNode)
@@ -1967,6 +2125,153 @@ mod support {
 mod node_sessions {
     use super::*;
 
+    fn headquarters_payload() -> MapNodePayload {
+        MapNodePayload::HeadquartersContact {
+            shop_pool_id: Some("headquarters_basic_supplies".to_string()),
+            candidate_count: 3,
+        }
+    }
+
+    #[test]
+    fn headquarters_contact_enters_safe_choice_state_with_recruitment_candidates() {
+        let mut core = GameCore::new(game_data_with_map_content(), 123);
+        let player_id = Uuid::from_u128(1);
+        start_new_game_with_default_starters(&mut core, player_id);
+        let node_id = force_first_available_node(
+            &mut core,
+            MapNodeCategory::HeadquartersContact,
+            "headquarters_contact",
+            headquarters_payload(),
+        );
+
+        let result = select_and_confirm_map_node(&mut core, player_id, node_id);
+
+        assert!(matches!(
+            result,
+            BehaviorResult::HeadquartersContactState {
+                options,
+                recruitment_candidates,
+                shop_pool_id: Some(pool_id),
+                ..
+            } if options.contains(&crate::game::map::HeadquartersContactOption::RecruitEmployee)
+                && options.contains(&crate::game::map::HeadquartersContactOption::RequestEmergencySupplies)
+                && options.contains(&crate::game::map::HeadquartersContactOption::OpenHeadquartersShop)
+                && recruitment_candidates.len() == 3
+                && pool_id == "headquarters_basic_supplies"
+        ));
+        assert!(matches!(core.get_state(), GameState::InNode { .. }));
+        assert!(core.state.node_session.is_some());
+        assert!(core
+            .execute(player_id, PlayerBehavior::CompleteNode)
+            .is_err());
+    }
+
+    #[test]
+    fn headquarters_recruit_employee_completes_node_and_adds_roster_member() {
+        let mut core = GameCore::new(game_data_with_map_content(), 123);
+        let player_id = Uuid::from_u128(1);
+        start_new_game_with_default_starters(&mut core, player_id);
+        let initial_roster_size = core.roster().unwrap().len();
+        let node_id = force_first_available_node(
+            &mut core,
+            MapNodeCategory::HeadquartersContact,
+            "headquarters_contact",
+            headquarters_payload(),
+        );
+        let result = select_and_confirm_map_node(&mut core, player_id, node_id);
+        let BehaviorResult::HeadquartersContactState {
+            recruitment_candidates,
+            ..
+        } = result
+        else {
+            panic!("headquarters node should expose recruitment candidates");
+        };
+        let candidate_id = recruitment_candidates[0].id.clone();
+
+        let result = core
+            .execute(
+                player_id,
+                PlayerBehavior::RecruitEmployee {
+                    candidate_id: candidate_id.clone(),
+                },
+            )
+            .unwrap();
+
+        assert!(matches!(
+            result,
+            BehaviorResult::EmployeeRecruited {
+                candidate_id: id,
+                completion,
+                ..
+            } if id == candidate_id
+                && matches!(*completion, BehaviorResult::NodeCompleted { .. })
+        ));
+        assert_eq!(core.roster().unwrap().len(), initial_roster_size + 1);
+        assert!(matches!(core.get_state(), GameState::ViewingMap));
+        assert!(core.state.node_session.is_none());
+    }
+
+    #[test]
+    fn headquarters_shop_uses_headquarters_pool_and_exit_completes_node() {
+        let mut core = GameCore::new(game_data_with_map_content(), 123);
+        let player_id = Uuid::from_u128(1);
+        start_new_game_with_default_starters(&mut core, player_id);
+        let node_id = force_first_available_node(
+            &mut core,
+            MapNodeCategory::HeadquartersContact,
+            "headquarters_contact",
+            headquarters_payload(),
+        );
+        select_and_confirm_map_node(&mut core, player_id, node_id);
+
+        let result = core
+            .execute(player_id, PlayerBehavior::OpenHeadquartersShop)
+            .unwrap();
+
+        assert!(matches!(
+            result,
+            BehaviorResult::ShopState { shop, .. } if shop.id == "hq_supply_shop"
+        ));
+        assert!(matches!(core.get_state(), GameState::InShop { .. }));
+
+        let result = core.execute(player_id, PlayerBehavior::ExitShop).unwrap();
+        assert!(matches!(result, BehaviorResult::NodeCompleted { .. }));
+        assert!(matches!(core.get_state(), GameState::ViewingMap));
+        assert!(core.state.node_session.is_none());
+    }
+
+    #[test]
+    fn headquarters_emergency_supplies_completes_node_without_shop_or_recruitment() {
+        let mut core = GameCore::new(game_data_with_map_content(), 123);
+        let player_id = Uuid::from_u128(1);
+        start_new_game_with_default_starters(&mut core, player_id);
+        let initial_enkephalin = core.get_enkephalin();
+        let initial_roster_size = core.roster().unwrap().len();
+        let node_id = force_first_available_node(
+            &mut core,
+            MapNodeCategory::HeadquartersContact,
+            "headquarters_contact",
+            headquarters_payload(),
+        );
+        select_and_confirm_map_node(&mut core, player_id, node_id);
+
+        let result = core
+            .execute(player_id, PlayerBehavior::RequestEmergencySupplies)
+            .unwrap();
+
+        assert!(matches!(
+            result,
+            BehaviorResult::EmergencySuppliesGranted {
+                enkephalin,
+                completion,
+                ..
+            } if enkephalin == initial_enkephalin + RUN_SYSTEM_POLICY.headquarters_emergency_enkephalin
+                && matches!(*completion, BehaviorResult::NodeCompleted { .. })
+        ));
+        assert_eq!(core.roster().unwrap().len(), initial_roster_size);
+        assert!(matches!(core.get_state(), GameState::ViewingMap));
+    }
+
     #[test]
     fn shop_map_node_enters_shop_and_exit_completes_node() {
         let mut core = GameCore::new(game_data_with_map_content(), 123);
@@ -2067,53 +2372,6 @@ mod node_sessions {
                     && rewards[0].id == "map_reward"
                     && !rewards[0].tags.contains(&RewardTag::Forbidden)
         ));
-    }
-
-    #[test]
-    fn random_map_node_routes_resolved_reward_event_directly_to_reward() {
-        let mut core = GameCore::new(game_data_with_map_content(), 123);
-        let player_id = Uuid::from_u128(1);
-        start_new_game_with_default_starters(&mut core, player_id);
-        let node_id = force_first_available_node(
-            &mut core,
-            MapNodeCategory::Event,
-            "event_random",
-            MapNodePayload::Event {
-                event_id: Some("map_random_reward".to_string()),
-                event_pool_id: None,
-            },
-        );
-
-        let result = select_and_confirm_map_node(&mut core, player_id, node_id);
-        assert!(matches!(result, BehaviorResult::RewardState { .. }));
-        assert!(matches!(core.get_state(), GameState::InReward { .. }));
-        core.execute(player_id, PlayerBehavior::ClaimReward)
-            .unwrap();
-        let result = core.execute(player_id, PlayerBehavior::ExitReward).unwrap();
-
-        assert!(matches!(result, BehaviorResult::NodeCompleted { .. }));
-        assert!(matches!(core.get_state(), GameState::ViewingMap));
-    }
-
-    #[test]
-    fn event_map_node_uses_declared_pool_without_suppress_targets() {
-        let mut core = GameCore::new(game_data_with_map_content(), 123);
-        let player_id = Uuid::from_u128(1);
-        start_new_game_with_default_starters(&mut core, player_id);
-        let node_id = force_first_available_node(
-            &mut core,
-            MapNodeCategory::Event,
-            "event_random",
-            MapNodePayload::Event {
-                event_id: None,
-                event_pool_id: Some("default_random_events".to_string()),
-            },
-        );
-
-        let result = select_and_confirm_map_node(&mut core, player_id, node_id);
-
-        assert!(matches!(result, BehaviorResult::RewardState { .. }));
-        assert!(matches!(core.get_state(), GameState::InReward { .. }));
     }
 
     #[test]
@@ -2338,8 +2596,20 @@ mod equipment {
         );
         core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
             .unwrap();
-        core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        let entered = core
+            .execute(player_id, PlayerBehavior::ConfirmEnterNode)
             .unwrap();
+        let BehaviorResult::SupportState {
+            maintenance_options: Some(maintenance_options),
+            ..
+        } = entered
+        else {
+            panic!("expected maintenance support state with options");
+        };
+        assert!(maintenance_options
+            .restorable_equipment_recipes
+            .iter()
+            .any(|option| option.id == recipe.id));
         assert!(core
             .get_allowed_actions()
             .contains(&ActionKind::RestoreEquipment));
@@ -2552,8 +2822,19 @@ mod equipment {
         );
         core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
             .unwrap();
-        core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        let entered = core
+            .execute(player_id, PlayerBehavior::ConfirmEnterNode)
             .unwrap();
+        let BehaviorResult::SupportState {
+            maintenance_options: Some(maintenance_options),
+            ..
+        } = entered
+        else {
+            panic!("expected maintenance support state with options");
+        };
+        assert!(maintenance_options
+            .enhance_equipment_item_uuids
+            .contains(&owned_uuid));
         assert!(core
             .get_allowed_actions()
             .contains(&ActionKind::EnhanceEquipment));
@@ -3361,6 +3642,7 @@ mod combat {
                 encounter_id: Some("low_risk_encounter".to_string()),
             },
         );
+        force_other_available_support_nodes_to_rest(&mut core, node_id);
 
         core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
             .unwrap();
@@ -3405,6 +3687,7 @@ mod combat {
                 encounter_id: Some("low_risk_encounter".to_string()),
             },
         );
+        force_other_available_support_nodes_to_rest(&mut core, node_id);
 
         core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
             .unwrap();
@@ -3618,6 +3901,94 @@ mod combat {
             .map
             .node(node_id)
             .is_some_and(|node| node.state == crate::game::map::MapNodeState::Completed));
+    }
+
+    #[test]
+    fn retreat_from_non_boss_combat_consumes_node_without_rewards_or_incapacitation() {
+        let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
+        let player_id = Uuid::from_u128(1);
+        start_new_game_with_default_starters(&mut core, player_id);
+        let node_id = start_forced_map_combat(
+            &mut core,
+            player_id,
+            MapNodeCategory::Combat,
+            "combat_defense",
+            "defense_encounter",
+        );
+        assert!(core
+            .get_allowed_actions()
+            .contains(&ActionKind::RetreatCombat));
+        let participant = first_player_participant(&core);
+        let employee_uuid = participant.owned_uuid;
+        let employee_before = core.roster().unwrap().get(&employee_uuid).unwrap().clone();
+
+        let result = core
+            .execute(player_id, PlayerBehavior::RetreatCombat)
+            .unwrap();
+
+        let BehaviorResult::NodeCompleted {
+            outcome: Some(outcome),
+            ..
+        } = result
+        else {
+            panic!("expected retreat to complete the node with failed outcome");
+        };
+        assert!(!outcome.mission_success);
+        assert_eq!(outcome.node_id, node_id);
+        let combat = outcome.combat.expect("combat summary");
+        assert_eq!(
+            combat.node_type,
+            crate::game::combat_preview::CombatNodeType::Defense
+        );
+        assert_eq!(combat.winner, BattleWinner::Draw);
+        assert!(combat.retreated);
+        assert!(outcome.employee_changes.is_empty());
+        assert!(outcome.inventory_diff.added.is_empty());
+        assert!(outcome.research_deliveries.is_empty());
+        assert!(matches!(core.get_state(), GameState::ViewingMap));
+        assert!(core.state.node_session.is_none());
+        assert!(core.state.selected_event.is_none());
+        assert!(core
+            .state
+            .run
+            .as_ref()
+            .unwrap()
+            .map
+            .node(node_id)
+            .is_some_and(|node| node.state == crate::game::map::MapNodeState::Completed));
+        let employee_after = core.roster().unwrap().get(&employee_uuid).unwrap();
+        assert_eq!(
+            employee_after.health.current_hp,
+            employee_before.health.current_hp
+        );
+        assert_eq!(employee_after.trauma, employee_before.trauma);
+        assert_eq!(employee_after.experience, employee_before.experience);
+    }
+
+    #[test]
+    fn retreat_from_boss_combat_is_rejected() {
+        let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
+        let player_id = Uuid::from_u128(1);
+        start_new_game_with_default_starters(&mut core, player_id);
+        start_forced_map_combat(
+            &mut core,
+            player_id,
+            MapNodeCategory::Boss,
+            "boss_abnormality",
+            "boss_risk_encounter",
+        );
+        assert!(!core
+            .get_allowed_actions()
+            .contains(&ActionKind::RetreatCombat));
+
+        let err = core
+            .execute(player_id, PlayerBehavior::RetreatCombat)
+            .unwrap_err();
+
+        assert!(matches!(err, GameError::InvalidAction));
+        assert!(matches!(core.get_state(), GameState::InCombatReplay { .. }));
+        assert!(core.state.node_session.is_some());
+        assert!(core.state.selected_event.is_some());
     }
 
     #[test]
@@ -3880,6 +4251,84 @@ mod combat {
         println!("wrote timeline: {}", path.display());
         assert!(path.exists());
     }
+
+    #[test]
+    fn defense_combat_node_smoke_exports_timeline() {
+        let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
+        let player_id = Uuid::from_u128(1);
+        start_new_game_with_default_starters(&mut core, player_id);
+        let node_id = force_map_combat_node(
+            &mut core,
+            MapNodeCategory::Combat,
+            "combat_defense",
+            "defense_encounter",
+        );
+
+        let preview = core
+            .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+            .unwrap();
+        let BehaviorResult::NodePreview {
+            combat_preview: Some(combat_preview),
+            ..
+        } = &preview
+        else {
+            panic!("expected defense combat preview");
+        };
+        assert_eq!(
+            combat_preview.node_type,
+            crate::game::combat_preview::CombatNodeType::Defense
+        );
+        assert!(combat_preview
+            .routes
+            .iter()
+            .any(|route| route.id == "black_box_breach_main"));
+        assert!(combat_preview.spawn_waves.iter().all(|wave| {
+            wave.route_id.as_deref() == Some("black_box_breach_main") && wave.required_for_victory
+        }));
+        assert!(combat_preview
+            .deployment_zones
+            .iter()
+            .any(|zone| { zone.kind == crate::game::combat_preview::DeploymentZoneKind::Ground }));
+        deploy_first_available_employee_if_combat_preview(&mut core, player_id, &preview);
+
+        let result = core
+            .execute(player_id, PlayerBehavior::ConfirmEnterNode)
+            .unwrap();
+        let BehaviorResult::CombatResolved { timeline, .. } = result else {
+            panic!("expected defense combat resolved timeline");
+        };
+        let battle = core
+            .state
+            .selected_event
+            .as_ref()
+            .unwrap()
+            .as_combat_battle()
+            .unwrap();
+        assert_eq!(
+            battle.node_type,
+            crate::game::combat_preview::CombatNodeType::Defense
+        );
+        assert_eq!(
+            timeline.version,
+            crate::game::battle::timeline::TIMELINE_VERSION
+        );
+        assert!(timeline.entries.iter().any(|entry| matches!(
+            entry.event,
+            crate::game::battle::timeline::TimelineEvent::BattleStart { .. }
+        )));
+        assert!(timeline.entries.iter().any(|entry| matches!(
+            entry.event,
+            crate::game::battle::timeline::TimelineEvent::UnitSpawned { .. }
+        )));
+        assert!(timeline.entries.iter().any(|entry| matches!(
+            entry.event,
+            crate::game::battle::timeline::TimelineEvent::BattleEnd { .. }
+        )));
+
+        let path = write_world_timeline_export("defense_combat_node_smoke", &timeline);
+        println!("wrote timeline: {}", path.display());
+        assert!(path.exists());
+    }
 }
 
 mod placement {
@@ -3930,7 +4379,16 @@ mod placement {
             )
             .unwrap();
 
-        assert!(matches!(result, BehaviorResult::MoveBenchUnit));
+        let BehaviorResult::MoveBenchUnit { bench_slots } = result else {
+            panic!("expected bench move result");
+        };
+        assert_eq!(
+            bench_slots
+                .iter()
+                .find(|slot| slot.slot == 1)
+                .and_then(|slot| slot.unit_uuid),
+            Some(left_uuid)
+        );
         let bench = core.bench().unwrap();
         assert_eq!(bench.slot_of(left_uuid), Some(1));
         assert_eq!(bench.slot_of(right_uuid), Some(0));

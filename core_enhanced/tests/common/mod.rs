@@ -16,13 +16,12 @@ use game_core::game::combat_preview::EnemyKind;
 use game_core::game::data::abnormality_data::{AbnormalityDatabase, AbnormalityMetadata};
 use game_core::game::data::artifact_data::{ArtifactDatabase, ArtifactMetadata};
 use game_core::game::data::corroded_employee_data::CorrodedEmployeeProfileDatabase;
-use game_core::game::data::employee_data::StarterEmployeeCandidateDatabase;
+use game_core::game::data::employee_data::{
+    RecruitmentEmployeeCandidateDatabase, StarterEmployeeCandidateDatabase,
+};
 use game_core::game::data::equipment_data::{EquipmentDatabase, EquipmentMetadata, EquipmentType};
 use game_core::game::data::pve_data::{
     PveEncounter, PveEncounterDatabase, PveWaveData, PveWaveEnemyData,
-};
-use game_core::game::data::random_event_data::{
-    RandomEventDatabase, RandomEventInnerMetadata, RandomEventMetadata, RandomEventPoolMetadata,
 };
 use game_core::game::data::reward_data::{RewardDatabase, RewardMetadata, RewardPoolMetadata};
 use game_core::game::data::shop_data::{ShopDatabase, ShopMetadata, ShopPoolMetadata, ShopType};
@@ -30,7 +29,6 @@ use game_core::game::data::skill_data::SkillDatabase;
 use game_core::game::data::skill_fragment_data::SkillFragmentDatabase;
 use game_core::game::data::{GameDataBase, GameDataBuilder};
 use game_core::game::enums::{RewardMode, RiskLevel};
-use game_core::game::events::event_selection::random::RandomEventType;
 use game_core::game::reward::RewardEffect;
 use uuid::Uuid;
 
@@ -62,11 +60,10 @@ pub fn empty_game_data() -> Arc<GameDataBase> {
 ///
 /// - 리롤 가능한 상점 1개 (visible/hidden 구성)
 /// - Equipment/Artifact/Abnormality 최소 1개
-/// - Reward/RandomEvent/PvE encounter 최소 1개
+/// - Reward/PvE encounter 최소 1개
 pub fn create_test_game_data() -> Arc<GameDataBase> {
     let shop_uuid = Uuid::from_u128(1);
     let reward_uuid = Uuid::from_u128(2);
-    let event_uuid = Uuid::from_u128(3);
 
     let artifact1 = ArtifactMetadata {
         id: "test_artifact_1".to_string(),
@@ -200,17 +197,6 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         effects: vec![RewardEffect::GrantEnkephalin { amount: 100 }],
     };
 
-    let random_event = RandomEventMetadata {
-        id: "test_event".to_string(),
-        uuid: event_uuid,
-        event_type: RandomEventType::Reward,
-        name: "Test Event".to_string(),
-        description: "A test event".to_string(),
-        image: "test.png".to_string(),
-        risk_level: RiskLevel::ALEPH,
-        inner_metadata: RandomEventInnerMetadata::Reward(reward_uuid),
-    };
-
     let artifacts_db = ArtifactDatabase::new(vec![artifact1, artifact2]);
     let equipments_db = EquipmentDatabase::new(vec![equipment1, equipment2]);
     let abnormalities_db = AbnormalityDatabase::new(vec![
@@ -233,14 +219,6 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         }],
     );
 
-    let random_events_db = RandomEventDatabase::new_with_pools(
-        vec![random_event],
-        vec![RandomEventPoolMetadata {
-            id: "default_random_events".to_string(),
-            event_ids: vec!["test_event".to_string()],
-        }],
-    );
-
     let pve_db = PveEncounterDatabase::new(vec![
         PveEncounter {
             id: "pve_test_1".to_string(),
@@ -257,6 +235,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
                 id: "wave_0".to_string(),
                 time_ms: 0,
                 spawn_zone_ids: Vec::new(),
+                route_id: None,
                 required_for_victory: true,
                 source: None,
                 enemies: vec![PveWaveEnemyData {
@@ -284,6 +263,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
                 id: "wave_0".to_string(),
                 time_ms: 0,
                 spawn_zone_ids: Vec::new(),
+                route_id: None,
                 required_for_victory: true,
                 source: None,
                 enemies: vec![PveWaveEnemyData {
@@ -311,6 +291,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
                 id: "wave_0".to_string(),
                 time_ms: 0,
                 spawn_zone_ids: Vec::new(),
+                route_id: None,
                 required_for_victory: true,
                 source: None,
                 enemies: vec![PveWaveEnemyData {
@@ -332,40 +313,8 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         .with_equipment_data(Arc::new(equipments_db))
         .with_shop_data(Arc::new(shops_db))
         .with_reward_data(Arc::new(rewards_db))
-        .with_random_event_data(Arc::new(random_events_db))
         .with_pve_data(Arc::new(pve_db))
         .with_skill_data(Arc::new(skills_db))
-        .build_arc()
-}
-
-/// `create_test_game_data()`를 기반으로, RandomEvent 1개만 교체한 테스트용 GameData 생성.
-///
-/// - Random 옵션 라우팅(Shop/Reward/Suppress) 테스트에 사용
-pub fn create_test_game_data_with_random_event(
-    random_event: RandomEventMetadata,
-) -> Arc<GameDataBase> {
-    let base = create_test_game_data();
-    let base = base.as_ref();
-
-    let random_events_db = RandomEventDatabase::new_with_pools(
-        vec![random_event.clone()],
-        vec![RandomEventPoolMetadata {
-            id: "default_random_events".to_string(),
-            event_ids: vec![random_event.id.clone()],
-        }],
-    );
-
-    GameDataBuilder::empty()
-        .with_abnormality_data(Arc::clone(&base.abnormality_data))
-        .with_corroded_employee_data(Arc::clone(&base.corroded_employee_data))
-        .with_corroded_wave_data(Arc::clone(&base.corroded_wave_data))
-        .with_artifact_data(Arc::clone(&base.artifact_data))
-        .with_equipment_data(Arc::clone(&base.equipment_data))
-        .with_shop_data(Arc::clone(&base.shop_data))
-        .with_reward_data(Arc::clone(&base.reward_data))
-        .with_random_event_data(Arc::new(random_events_db))
-        .with_pve_data(Arc::clone(&base.pve_data))
-        .with_skill_data(Arc::clone(&base.skill_data))
         .build_arc()
 }
 
@@ -374,29 +323,26 @@ pub fn create_test_game_data_with_random_event(
 /// 통합 테스트나 실제 서버에서 사용합니다.
 /// - 상점 데이터 (shops.ron)
 /// - 보상 데이터 (rewards.ron)
-/// - 랜덤 이벤트 데이터 (random_events.ron)
 /// - 환상체 데이터 (abnormalities.ron)
 /// - 장비 데이터 (equipments.ron)
 /// - 아티팩트 데이터 (artifacts.ron)
 /// - 시작 직원 후보 데이터 (employees/starter_candidates.ron)
+/// - 런 중 채용 후보 데이터 (employees/recruitment_candidates.ron)
 /// - 스킬 파편 데이터 (skill_fragments/base.ron)
 #[allow(dead_code)]
 pub fn load_game_data_from_ron() -> Arc<GameDataBase> {
     // Given: RON 파일 include_str! 로 포함 (컴파일 타임)
     let shops_ron = include_str!("../../../game_resources/data/events/shops/base.ron");
-    let random_shops_ron = include_str!("../../../game_resources/data/events/shops/random.ron");
     let rewards_ron = include_str!("../../../game_resources/data/events/rewards/base.ron");
-    let random_rewards_ron = include_str!("../../../game_resources/data/events/rewards/random.ron");
-    let random_events_ron = include_str!("../../../game_resources/data/events/random_events.ron");
     let abnormalities_ron = include_str!("../../../game_resources/data/abnormalities/base.ron");
-    let random_abnormalities_ron =
-        include_str!("../../../game_resources/data/abnormalities/random.ron");
     let corroded_employees_ron =
         include_str!("../../../game_resources/data/enemies/corroded_employees.ron");
     let corroded_wave_presets_ron =
         include_str!("../../../game_resources/data/enemies/corroded_wave_presets.ron");
     let starter_candidates_ron =
         include_str!("../../../game_resources/data/employees/starter_candidates.ron");
+    let recruitment_candidates_ron =
+        include_str!("../../../game_resources/data/employees/recruitment_candidates.ron");
     let equipments_ron = include_str!("../../../game_resources/data/equipments/base.ron");
     let artifacts_ron = include_str!("../../../game_resources/data/artifacts/base.ron");
     let skills_ron = include_str!("../../../game_resources/data/skills/base.ron");
@@ -404,23 +350,14 @@ pub fn load_game_data_from_ron() -> Arc<GameDataBase> {
     let pve_ron = include_str!("../../../game_resources/data/pve/encounters.ron");
 
     // When: RON 역직렬화
-    let mut shops_db: ShopDatabase =
+    let shops_db: ShopDatabase =
         ron::de::from_str(shops_ron).expect("Failed to deserialize shops.ron");
-    let random_shops_db: ShopDatabase =
-        ron::de::from_str(random_shops_ron).expect("Failed to deserialize random_shops.ron");
 
-    let mut rewards_db: RewardDatabase =
+    let rewards_db: RewardDatabase =
         ron::de::from_str(rewards_ron).expect("Failed to deserialize rewards.ron");
-    let random_rewards_db: RewardDatabase =
-        ron::de::from_str(random_rewards_ron).expect("Failed to deserialize random_rewards.ron");
 
-    let random_events_db: RandomEventDatabase =
-        ron::de::from_str(random_events_ron).expect("Failed to deserialize random_events.ron");
-
-    let mut abnormalities_db: AbnormalityDatabase =
+    let abnormalities_db: AbnormalityDatabase =
         ron::de::from_str(abnormalities_ron).expect("Failed to deserialize abnormalities.ron");
-    let random_abnormalities_db: AbnormalityDatabase = ron::de::from_str(random_abnormalities_ron)
-        .expect("Failed to deserialize random_abnormalities.ron");
     let corroded_employee_db: CorrodedEmployeeProfileDatabase =
         ron::de::from_str(corroded_employees_ron)
             .expect("Failed to deserialize corroded_employees.ron");
@@ -430,6 +367,9 @@ pub fn load_game_data_from_ron() -> Arc<GameDataBase> {
     let starter_employee_db: StarterEmployeeCandidateDatabase =
         ron::de::from_str(starter_candidates_ron)
             .expect("Failed to deserialize starter_candidates.ron");
+    let recruitment_employee_db: RecruitmentEmployeeCandidateDatabase =
+        ron::de::from_str(recruitment_candidates_ron)
+            .expect("Failed to deserialize recruitment_candidates.ron");
 
     let equipments_db: EquipmentDatabase =
         ron::de::from_str(equipments_ron).expect("Failed to deserialize equipments.ron");
@@ -445,25 +385,16 @@ pub fn load_game_data_from_ron() -> Arc<GameDataBase> {
     let pve_db: PveEncounterDatabase =
         ron::de::from_str(pve_ron).expect("Failed to deserialize pve encounters.ron");
 
-    // When: 랜덤 이벤트 전용 상점들을 메인 ShopDatabase 에 합침
-    shops_db.shops.extend(random_shops_db.shops);
-    shops_db.pools.extend(random_shops_db.pools);
-
-    // When: 랜덤 전용 보상 / 기물 병합
-    rewards_db.rewards.extend(random_rewards_db.rewards);
-    rewards_db.pools.extend(random_rewards_db.pools);
-    abnormalities_db.items.extend(random_abnormalities_db.items);
-
     GameDataBuilder::empty()
         .with_abnormality_data(Arc::new(abnormalities_db))
         .with_corroded_employee_data(Arc::new(corroded_employee_db))
         .with_corroded_wave_data(Arc::new(corroded_wave_db))
         .with_starter_employee_data(Arc::new(starter_employee_db))
+        .with_recruitment_employee_data(Arc::new(recruitment_employee_db))
         .with_artifact_data(Arc::new(artifacts_db))
         .with_equipment_data(Arc::new(equipments_db))
         .with_shop_data(Arc::new(shops_db))
         .with_reward_data(Arc::new(rewards_db))
-        .with_random_event_data(Arc::new(random_events_db))
         .with_pve_data(Arc::new(pve_db))
         .with_skill_data(Arc::new(skill_db))
         .with_skill_fragment_data(Arc::new(SkillFragmentDatabase::with_builtin_starter(

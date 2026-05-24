@@ -2,7 +2,7 @@ use std::sync::Arc;
 use tracing::{debug, info, warn};
 use uuid::Uuid;
 
-use crate::game::behavior::{ActionKind, BehaviorResult, GameError, PlayerBehavior};
+use crate::game::behavior::{ActionKind, BehaviorResult, BenchSlotDto, GameError, PlayerBehavior};
 use crate::game::combat_mission_policy::CombatMissionPolicy;
 use crate::game::combat_preview::CombatNodeType;
 use crate::game::data::{pve_data::PveEncounter, GameDataBase};
@@ -16,6 +16,7 @@ enum RewardClaimDestination {
 }
 
 mod combat;
+mod headquarters;
 mod helpers;
 mod maintenance;
 mod map_content;
@@ -49,6 +50,7 @@ struct RunSystemPolicy {
     support_medical_trauma_heal: u32,
     support_medical_balanced_hp_heal_percent: u32,
     support_rest_trauma_heal: u32,
+    headquarters_emergency_enkephalin: u32,
 }
 
 const RUN_SYSTEM_POLICY: RunSystemPolicy = RunSystemPolicy {
@@ -62,6 +64,7 @@ const RUN_SYSTEM_POLICY: RunSystemPolicy = RunSystemPolicy {
     support_medical_trauma_heal: 40,
     support_medical_balanced_hp_heal_percent: 25,
     support_rest_trauma_heal: 10,
+    headquarters_emergency_enkephalin: 120,
 };
 
 impl GameCore {
@@ -123,6 +126,11 @@ impl GameCore {
             PlayerBehavior::SelectMedicalTreatment { treatment } => {
                 self.handle_select_medical_treatment(treatment)
             }
+            PlayerBehavior::RecruitEmployee { candidate_id } => {
+                self.handle_recruit_employee(&candidate_id)
+            }
+            PlayerBehavior::RequestEmergencySupplies => self.handle_request_emergency_supplies(),
+            PlayerBehavior::OpenHeadquartersShop => self.handle_open_headquarters_shop(),
             PlayerBehavior::SelectReward { reward_id } => self.handle_select_reward(reward_id),
             PlayerBehavior::EquipItem {
                 item_uuid,
@@ -186,6 +194,7 @@ impl GameCore {
             PlayerBehavior::ExitReward => self.execute_reward_action(RewardAction::Exit),
 
             PlayerBehavior::FinishCombatReplay => self.handle_finish_combat_replay(),
+            PlayerBehavior::RetreatCombat => self.handle_retreat_combat(),
         }?;
 
         self.sync_bench_with_owned_units()?;
@@ -475,7 +484,17 @@ impl GameCore {
         let bench = self.bench_mut()?;
         bench.move_unit(target_unit_uuid, dest_slot, swap_with_unit_uuid)?;
 
-        Ok(BehaviorResult::MoveBenchUnit)
+        let bench_slots = bench
+            .slots
+            .iter()
+            .enumerate()
+            .map(|(slot, unit_uuid)| BenchSlotDto {
+                slot,
+                unit_uuid: *unit_uuid,
+            })
+            .collect();
+
+        Ok(BehaviorResult::MoveBenchUnit { bench_slots })
     }
 }
 

@@ -42,7 +42,46 @@
 -> 다음 Act 또는 런 종료
 ```
 
-## 노드 선택과 진입
+## Act 맵 생성
+
+- Act 맵은 시각적 시작점 `Start`에서 첫 선택 행으로 이어지는 구조다.
+- `Start`는 플레이어가 해결해야 하는 노드가 아니라 이미 완료된 시각적 출발점이다.
+- 실제 선택 가능한 첫 노드는 `Start`의 outgoing에 연결된 depth 1 노드들이다.
+- 맵 생성은 행을 먼저 무작위로 채우는 방식이 아니라, 여러 개의 경로를 먼저 긋고 그 경로 위의 격자점을 노드로 승격하는 path-first 방식이다.
+- 각 경로는 다음 depth로 이동할 때 lane을 좌/유지/우 중 하나로 움직이며, 행마다 최소 노드 수를 보장한다.
+- 각 행은 전투 노드 과밀을 막기 위해 전투 노드 수를 행 너비의 절반 이하로 보정한다.
+- 각 비보스 행에는 최소 하나의 전투 노드를 둔다. 전투가 완전히 없는 행이 반복되면 탐사 압박이 사라지기 때문이다.
+- 보스 직전 행에는 최소 하나의 지원 노드를 보장한다.
+- 이 정책은 “전투만 빽빽한 맵”이 아니라, 전투/지원/본사 연락/보상/상점이 섞인 탐사 경로를 만들기 위한 기본 규칙이다.
+
+## 본사 연락 노드
+
+본사 연락 노드는 런 중 본부와 연결되는 별도 안전 노드다. 기존 `Medical`, `Rest`, `Maintenance` 지원 노드와 역할이 다르므로 별도 노드 계열로 다룬다.
+
+정책:
+
+- 한 번 방문하면 하나의 행동만 선택할 수 있다.
+- 선택지는 직원 충원, 긴급 구호품 요청, 본사 보급 구매다.
+- 연구 완료 파편은 안전 노드 도착 시 자동 수령 정책을 유지하며, 본사 연락 행동권을 소모하지 않는다.
+- 런 중 채용 후보는 시작 직원 후보와 분리된 데이터에서 제공한다.
+- 본사 보급 구매는 기본 구급품과 저등급 재료 중심이다.
+- 일반 상점 노드는 무너진 회사 폐허 속 수수께끼의 상인 컨셉으로 유지한다. 일반 상점은 등장 확률이 낮고, 고가치/고밸류 상품을 판매한다.
+
+현재 core 계약:
+
+- 맵 노드 카테고리는 `HeadquartersContact`다.
+- 노드 payload는 `HeadquartersContact(shop_pool_id, candidate_count)`다.
+- 선택지 enum은 `RecruitEmployee`, `RequestEmergencySupplies`, `OpenHeadquartersShop`다.
+- 런 중 채용 후보 source of truth는 `game_resources/data/employees/recruitment_candidates.ron`이다.
+- 본사 보급 상점 pool 기본값은 `headquarters_basic_supplies`다.
+- 긴급 구호품 기본값은 소량 엔케팔린 지급이다. 구급품/저등급 재료 지급은 밸런스 단계에서 확장할 수 있다.
+
+```text
+본사 연락 노드 진입
+-> 직원 충원 / 긴급 구호품 / 본사 보급 구매 중 하나 선택
+-> 선택한 행동 해결
+-> 노드 완료
+```
 
 ## 시작 직원 선발
 
@@ -156,9 +195,22 @@
 - 현재 core 기본값에서 `CombatNodeType::Defense` 전투는 별도 작성 전술이 없으면 `black_box_recovery` 지점 근처에 `black_box_recovery_device` 보호 오브젝트를 주입한다.
 - 이 보호 오브젝트는 플레이어가 임의로 이동/배치할 수 없고, 움직이지 않으며, 공격하지 않고, 스킬도 사용하지 않는다.
 - 보호 오브젝트는 전투 타임라인에서 `role: defense_object`로 스폰된다. 클라이언트는 이를 일반 직원/아군 전투원이 아니라 고정 방어 목표 UI로 표시한다.
-- 방어형 전투는 보호 오브젝트가 어떠한 이유로든 파괴되면 실패한다.
-- 방어형 전투의 성공 조건은 `CombatMissionRisk`에 따라 달라진다. `Controlled` 방어는 보호 오브젝트가 지정 시간 동안 생존하면 즉시 성공한다. `Unstable`/`Collapse` 방어는 보호 오브젝트가 지정 시간 동안 생존한 뒤, 남은 필수 웨이브까지 섬멸해야 성공한다.
-- `CombatMissionRisk` 기본값은 조우 `RiskLevel`에서 추론한다. `ZAYIN`/`TETH`는 `Controlled`, `HE`/`WAW`는 `Unstable`, `ALEPH`는 `Collapse`다. 이는 적 분류 tier가 아니라 임무 위험도다.
+- 방어형 전투는 명일방주식 고정 방어 전투로 확정한다. 기존 제한 반경 자동전투형 방어는 Defense에서 사용하지 않고, 포위 생존/난전은 `Encirclement`가 담당한다.
+- 방어형 전투에서 아군은 전투 시작 전 배치한 위치에 고정된다. 전투 중 재배치와 자율 이동은 허용하지 않는다.
+- 현재 core 기본값에서 `CombatNodeType::Defense` 아군은 `FixedDefense` 이동 정책을 사용한다. 이 정책은 본대 전진/집결 같은 그룹 이동 목표를 무시하고, 사거리 안에 들어온 적에게만 공격 목표를 만든다.
+- 직원은 배치 허용 타입을 가진다. 기본 계약은 `GroundOnly`, `PlatformOnly`, `Any`이며, 기본 직원은 `GroundOnly`와 저지력 1을 가진다. 지상 배치 직원만 저지할 수 있다.
+- 플랫폼 배치 직원은 적 이동 경로를 막지 않고 공격/스킬만 수행한다. 플랫폼 타일은 적 이동 가능 타일로 취급하지 않는다.
+- 방어형 적은 지정된 `route_id`를 따라 이동한다. route 끝은 누수 지점이 아니라 보호 오브젝트 접근/공격 지점이다.
+- 적이 저지되지 않고 route 끝에 도달하면 보호 오브젝트를 공격 대상으로 삼는다. 보호 오브젝트가 어떠한 이유로든 파괴되면 임무 실패다.
+- 방어형 전투의 성공 조건은 모든 웨이브 종료, 필수 적 전멸, 보호 오브젝트 생존이다.
+- 현재 core 기본 Defense 승리 조건은 시간 생존형이 아니라 `ProtectUnit`이다. 기본 Defense는 필수 적이 모두 정리되고 보호 오브젝트가 살아 있으면 성공한다.
+- 명일방주식 라이프 누수 모델은 사용하지 않는다. 관문을 통과한 적 때문에 별도 라이프가 감소하는 전투가 필요해지면 현재 Defense 계약과 분리된 leak-runner 임무로 새로 설계한다.
+- 저지는 `block_radius` 기반으로 판정한다. `block_capacity`가 남은 지상 직원이 `blockable` 적을 반경 안에서 붙잡는다.
+- 저지 우선순위는 거리 가까운 순, 동률이면 unit id 순으로 deterministic 처리한다.
+- 저지 용량을 초과한 적은 해당 직원을 통과한다. 적끼리의 겹침은 명일방주식 행렬처럼 보이도록 최대한 허용한다.
+- 저지된 적은 저지자를 우선 공격하고, 저지자는 자신이 저지한 적을 우선 공격한다.
+- 저지는 적 사망, 저지자 사망/전투불능, 강제 이동/넉백, `block_radius` 이탈 시 해제된다.
+- 현재 core의 `FixedDefense` 저지 런타임은 물리 충돌 결과가 아니라 `BattleCore`의 명시 상태다. 저지 가능한 직원과 저지 가능한 적을 매 movement tick 전에 deterministic하게 매칭하고, 저지되지 않은 route 적은 주변 직원과 우발 교전하지 않고 경로 진행을 우선한다.
 - 과거 `DefendPoint` 누수형 방어 계약은 live/runtime/data 계약에서 제거됐다. 관문, 탈출로, 침투 저지처럼 “적이 특정 지점에 도달하면 실패”하는 전투가 필요해지면, 현재 방어 오브젝트 계약을 우회하지 말고 별도 leak-runner 임무 계약으로 새로 설계한다.
 - 현재 live RON에는 `defend_black_box_relay`가 첫 방어형 조우로 존재한다. 이 조우는 ChokePoint 전장에서 본사 회수 장치가 블랙박스 기록을 추출하는 동안 침식 직원 웨이브를 막는 구조이며, 보상은 장비 회수와 초기/특정 파편 연구 진행도에 맞춰져 있다.
 - 회수형 전투의 기본 흐름은 `사전 배치 적 섬멸 -> 회수 체크포인트 진입 -> 일정 시간 사수 -> 다음 체크포인트/탈출 지점 이동`이다. 회수 대상은 적이 포진한 지점 근처에 있고, 플레이어 본대는 해당 지점까지 돌파한 뒤 위치를 사수하고 복귀해야 한다.
@@ -229,7 +281,7 @@
 
 ```text
 ResearchDeliveryPolicy
--> deliver_on_node_categories: [Support, Shop, Reward, Event]
+-> deliver_on_node_categories: [Support, HeadquartersContact, Shop, Reward]
 ```
 
 현재 구현 기준:
@@ -239,15 +291,15 @@ ResearchDeliveryPolicy
 - 완료 건수는 즉시 파편 스택으로 들어가지 않고 `pending_research_deliveries`에 쌓인다.
 - `ConfirmEnterNode`에서 진입 노드가 `ResearchDeliveryPolicy` 허용 범위이면 pending 배송을 자동 수령한다.
 - 인벤토리 스냅샷은 보유 파편 목록과 별도로 `skill_fragment_progress`, `pending_research_deliveries`를 노출한다.
-- 안전 노드 진입 결과는 `research_deliveries`를 함께 반환한다. 현재 해당 필드는 `NodeEntered`, `SupportState`, `ShopState`, `RewardState`에 포함된다. Event 노드는 별도 랜덤 이벤트 선택 상태를 만들지 않고 Shop/Reward 세션으로 직접 해석된다.
+- 안전 노드 진입 결과는 `research_deliveries`를 함께 반환한다. 현재 해당 필드는 `NodeEntered`, `SupportState`, `HeadquartersContactState`, `ShopState`, `RewardState`에 포함된다.
 - 클라이언트는 이 값을 사용해 본사 송신/분석 완료 토스트나 결과창 항목을 즉시 표시할 수 있다.
 
 기본 안전 노드:
 
 - `Support`
+- `HeadquartersContact`
 - `Shop`
 - `Reward`
-- `Event`
 
 기본 제외 노드:
 
@@ -258,16 +310,32 @@ ResearchDeliveryPolicy
 
 ## 맵 컨텐츠 풀
 
-맵 노드의 `shop_pool_id`, `reward_pool_id`, `event_pool_id`는 표시용이 아니라 실제 후보 풀이다.
+맵 노드의 `shop_pool_id`, `reward_pool_id`는 표시용이 아니라 실제 후보 풀이다.
 
 - `Shop` 노드는 `shop_id`가 있으면 해당 상점으로 진입하고, 없으면 `shop_pool_id`의 상점 후보 중 하나를 seed 기반으로 선택한다.
 - `Reward` 노드는 `reward_pool_id`의 보상 후보 중 하나를 seed 기반으로 선택한다.
-- `Event` 노드는 `event_id`가 있으면 해당 이벤트를 사용하고, 없으면 `event_pool_id`의 이벤트 후보 중 하나를 seed 기반으로 선택한다.
 - 맵 Reward 풀은 `Forbidden` 보상을 포함하지 않는다.
-- live Event 풀은 현재 `Shop` 또는 `Reward` 타겟만 포함한다. `Suppress` 랜덤 이벤트는 추후 별도 노드 컨텐츠로 재설계할 때까지 live 맵 이벤트 풀에 넣지 않는다.
 - 풀 id가 작성되어 있는데 실제 풀을 찾을 수 없으면 데이터 오류로 취급한다.
 
 의도:
+
+## RandomEvent 재도입 정책
+
+기존 `Event` 노드는 공식 live flow에서 제거되었다.
+
+제거 완료 상태:
+
+- 기존 `Event`는 독립 노드가 아니라 `Shop` 또는 `Reward` 세션으로 즉시 라우팅하는 래퍼에 가까웠다.
+- `Shop`으로 이어지는 이벤트는 `Shop` 노드로 표현한다.
+- `Reward`로 이어지는 이벤트는 `Reward` 노드로 표현한다.
+- `Suppress`로 이어지는 이벤트는 현재 전투/조우 노드로 재설계해야 하며, live 맵 이벤트 풀에 넣지 않는다.
+- `MapNodeCategory::Event`, `MapNodePayload::Event`, `RandomEventDatabase` live 로딩/검증, `event_random`, `event_abnormality_room` 노드 정의는 live flow에서 제거되었다.
+
+추후 재도입 방향:
+
+- 랜덤 이벤트가 필요하면 제거된 `Event` 래퍼를 되살리지 말고, 별도 선택형 `RandomEvent` 노드로 새로 작성한다.
+- 새 `RandomEvent`는 `상황 설명 -> 2~3개 선택지 -> 비용/리스크/보상 적용 -> 결과 -> 맵 복귀` 흐름을 가져야 한다.
+- 새 `RandomEvent`는 `Shop`, `Reward`, `Support`, `HeadquartersContact`와 역할이 겹치지 않아야 한다.
 
 - 전투 직후 즉시 새 파편을 장착해 다음 전투에 바로 최적화하는 흐름을 완화한다.
 - 본사가 분석 결과를 안전 구간에서 송신한다는 설정을 살린다.
@@ -435,7 +503,12 @@ E.G.O 장비:
 - ASCII row의 공백은 전장 밖이다. 따라서 전장은 반드시 사각형일 필요가 없고, ㄱ형 복도, ㄷ형 방, 무너진 비정형 폐허처럼 만들 수 있다.
 - `width`는 가장 긴 row 길이, `height`는 row 개수로 계산한다. 실제 이동/배치/스폰 가능 여부는 공백이 아닌 `valid_tiles`가 결정한다.
 - 공백 타일은 `Battlefield` 기준으로 `OutOfBounds`이며, Rapier 연속 이동 입력에서는 `void_tile` 정적 충돌체로 투영된다.
-- ASCII 문자 규칙은 `.` 일반 전장 타일, `#` 장애물, `P` 아군 배치, `N/L/Q/A/B/W/R` 적 출현 구역이다.
+- ASCII 문자 규칙은 `.` 일반 전장 타일, `#` 장애물, `P` 지상 아군 배치, `T` 플랫폼 아군 배치, `N/L/Q/A/B/W/R` 적 출현 구역이다.
+- 명일방주식 Defense route는 terrain row와 같은 크기의 별도 ASCII overlay로 작성한다. terrain이 실제 맵 source of truth이고, route overlay는 화살표와 시작/종료 marker만 얹는 얇은 레이어다.
+- route overlay의 row 수와 column 수는 terrain과 1:1로 맞아야 한다. overlay 공백은 “route 없음”을 뜻하므로 terrain 안/밖 어디든 가능하고, 화살표와 시작/종료 marker는 terrain의 이동 가능 타일 위에만 올 수 있다.
+- route overlay는 디버그/검증 시 terrain과 합성해 출력한다. 작성자는 합성된 맵을 통해 길, 장애물, 배치칸, 목표 지점을 한눈에 확인할 수 있어야 한다.
+- route 하나는 초기 계약에서 단일 시작점, 단일 종료점, 무분기 선형 경로다. 분기 경로가 필요하면 하나의 route 안에서 갈라지게 만들지 말고, 별도 `route_id`를 가진 route 여러 개로 작성한다.
+- 조우 RON의 웨이브는 사용할 `route_id`를 명시한다. spawn marker만으로 자동 경로를 추론하지 않는다.
 - 같은 아키타입/크기 클래스에 여러 ASCII 템플릿이 있으면 seed 기반으로 하나를 선택한다. 이 방식이 현재 전장 다양성의 기본 수단이다.
 - 런 동안 유지되는 공용 전투 배치판은 사용하지 않는다.
 - 전투 배치는 전투/보스 노드를 선택한 뒤 `NodeConfirm` 단계에서 해당 노드의 `DeploymentZone` 안에 매번 새로 만든다.
@@ -476,13 +549,13 @@ E.G.O 장비:
 - 각 전투는 `BattleScenario`의 전술 정책을 통해 교전형, 방어형, 전진형, 보스형 목적을 가질 수 있다.
 - 기본 전투는 현재와 같은 자유 교전형으로 유지한다.
 - 적 전진형 전투는 단일 목적지 `PathToPoint` 또는 순차 waypoint `PathAlongPath`로 표현한다.
-- 방어형 전투의 기본 승리 조건은 `ProtectUnitForDuration`이다. 보호 오브젝트가 파괴되면 실패하고, 임무 위험도에 따라 지정 시간 생존 즉시 성공 또는 지정 시간 생존 후 필수 적 그룹 섬멸 성공으로 갈린다.
-- 과거 `DefendPoint` 하위 변형과 지점 누수 타임라인은 제거됐다. 현재 방어형 전투는 보호 오브젝트 기반 `ProtectUnitForDuration`만 live 계약으로 사용한다.
+- 방어형 전투의 live 계약은 `ProtectUnit`/보호 오브젝트 기반 명일방주식 고정 방어다. 성공은 모든 웨이브 종료, 필수 적 전멸, 보호 오브젝트 생존으로 판정하고, 실패는 보호 오브젝트 파괴로 판정한다.
+- 과거 `DefendPoint` 하위 변형과 지점 누수 타임라인은 제거됐다. 관문 통과/라이프 누수형 방어가 필요하면 현재 Defense 계약과 섞지 않고 별도 임무로 새로 설계한다.
 - 회수형 전투는 `RecoverHoldAndExtract` 승리 조건으로 필수 적 그룹 정리 후 회수 대상 반경에 들어오면 `RecoveryTargetSecured`를 기록하고, 회수 지점 사수 시간이 끝난 뒤 탈출 지점 반경에 들어오면 `ExtractionCompleted`를 기록한 뒤 승리한다.
 - 전선형 전투는 `AllRequiredEnemyGroupsDefeated`를 기본 승리 조건으로 사용한다. 아군은 무한 추격하지 않고, 넓은 leash 안에서만 전선을 밀어붙인다.
 - 포위형 전투는 `SurviveUntil`을 기본 승리 조건으로 사용한다. 적을 모두 잡는 것이 아니라, 제한 시간 동안 진형을 유지하고 생존하는 것이 목적이다.
 - 분리형 전투는 추후 구현 대상이다. 지금은 `CombatNodeType::SplitOperation`을 live 조우 배정/기본 목적 추론에 사용하지 않는다.
-- 방어형 전투에서는 아군이 배치 위치를 anchor로 기억하고, 제한 반경 안에서만 반응 이동한다.
+- 방어형 전투에서는 아군이 배치 위치에 고정되고, route를 따라 들어오는 적을 저지/공격한다. 제한 반경 반응 이동은 Defense가 아니라 `Encirclement` 같은 포위 생존/난전형 전투에서 사용한다.
 - 기본 전투, 포위형 전투, TFT식 전선 전투에서는 아군 전체를 `player_main` 본대 그룹 하나로 본다.
 - 분리 방, 호위, 다중 거점 방어처럼 목적이 갈라지는 전투에서만 여러 `TacticalGroupPlan`으로 나눈다.
 - 단체 이동이 필요한 전투는 `TacticalGroupPlan` 기반 분대/포메이션 단위 정책으로 처리한다. 현재 core는 기본 본대 그룹, 그룹 데이터 계약, 런타임 멤버십 추적, 단일 tactical point를 향한 최소 포메이션 슬롯 이동, `AdvanceToPoint`의 제한 거리 기반 본대 중심 전진, `AdvanceAlongPath`의 순차 waypoint 전진, `engage_radius` 제한 교전, `cohesion_radius` 기반 슬롯 복귀, 대상 그룹 중심으로 합류하는 최소 `ReconnectToGroup` 동작을 제공한다. 조건부 경로, 고급 포메이션 재배치, 그룹 분리/합류 전환 트리거는 후속 구현 대상이다.
@@ -604,6 +677,30 @@ Maintenance:
 - 트라우마가 임계치를 넘거나 별도 사망 조건이 충족될 때 장기 손실 또는 사망으로 이어진다.
 - 런 실패 판정은 노드 실패가 아니라 남은 직원과 다음 선택 가능한 회복 경로를 기준으로 한다.
 - 보스 환상체 전투에서 패배하면 즉시 런 실패다.
+
+## 후퇴
+
+후퇴는 전투를 이득으로 바꾸는 버튼이 아니라, 배치 실수나 전력 부족을 전투 중 확인했을 때 장기 손실을 줄이는 손절 수단이다.
+
+기본 정책:
+
+- 후퇴는 모든 비보스 전투에서 가능하다. 일반 전투, 전선형, 포위형, 방어형, 회수형 전투가 대상이다.
+- 보스 전투와 특정 강제 이벤트 전투에서는 후퇴할 수 없다.
+- 후퇴를 선택하면 전투는 즉시 중단되고 해당 노드는 실패 처리로 소비된다.
+- 후퇴한 노드는 핵심 보상, 스킬 파편 연구 진행도, 임무 성공 보상을 지급하지 않는다.
+- 후퇴 자체는 직원을 전투불능 처리하지 않는다.
+- 후퇴 자체로 전원 트라우마를 크게 올리지는 않는다. 다만 추후 신뢰도/서사 시스템에서 위험한 작전 투입 후 후퇴에 대한 낮은 강도의 반응이나 작전 손실을 줄 수 있다.
+- 후퇴 후에도 런 실패 판정은 일반 실패와 동일하게 남은 직원과 다음 선택 가능한 회복 경로를 기준으로 한다.
+
+방어형 후퇴:
+
+- 블랙박스/회수 장치가 살아 있어도 작전을 포기한 것으로 본다.
+- 블랙박스 회수 실패이며, 연구 진행도는 지급하지 않는다.
+
+회수형 후퇴:
+
+- 회수 체크포인트 진행도는 폐기한다.
+- 회수 대상 확보 전/후 여부와 관계없이 임무 실패로 처리한다.
 
 HP 정책:
 

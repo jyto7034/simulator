@@ -12,10 +12,9 @@ use crate::game::data::{
     artifact_data::{ArtifactDatabase, ArtifactMetadata},
     corroded_employee_data::CorrodedEmployeeProfileDatabase,
     corroded_wave_data::CorrodedWavePresetDatabase,
-    employee_data::StarterEmployeeCandidateDatabase,
+    employee_data::{RecruitmentEmployeeCandidateDatabase, StarterEmployeeCandidateDatabase},
     equipment_data::{EquipmentDatabase, EquipmentMetadata},
     pve_data::PveEncounterDatabase,
-    random_event_data::RandomEventDatabase,
     reward_data::RewardDatabase,
     shop_data::ShopDatabase,
     skill_data::SkillDatabase,
@@ -42,9 +41,6 @@ pub mod employee_data;
 
 // PvE 전투 데이터
 pub mod pve_data;
-
-// 랜덤 인카운트 이벤트 정보
-pub mod random_event_data;
 
 // 보상 정보
 pub mod reward_data;
@@ -110,13 +106,13 @@ pub struct GameDataBase {
     pub corroded_employee_data: Arc<CorrodedEmployeeProfileDatabase>,
     pub corroded_wave_data: Arc<CorrodedWavePresetDatabase>,
     pub starter_employee_data: Arc<StarterEmployeeCandidateDatabase>,
+    pub recruitment_employee_data: Arc<RecruitmentEmployeeCandidateDatabase>,
     pub artifact_data: Arc<ArtifactDatabase>,
     pub equipment_data: Arc<EquipmentDatabase>,
 
-    /// 마스터 테이블을 참고하여 상인, 랜덤 이벤트, 보상 등을 구성하여 저장하는 게임 데이터베이스
+    /// 마스터 테이블을 참고하여 상인, 보상 등을 구성하여 저장하는 게임 데이터베이스
     pub shop_data: Arc<ShopDatabase>,
     pub reward_data: Arc<RewardDatabase>,
-    pub random_event_data: Arc<RandomEventDatabase>,
 
     /// PvE 전투(Suppress) 데이터
     pub pve_data: Arc<PveEncounterDatabase>,
@@ -136,11 +132,11 @@ pub struct GameDataBaseParts {
     pub corroded_employee_data: Arc<CorrodedEmployeeProfileDatabase>,
     pub corroded_wave_data: Arc<CorrodedWavePresetDatabase>,
     pub starter_employee_data: Arc<StarterEmployeeCandidateDatabase>,
+    pub recruitment_employee_data: Arc<RecruitmentEmployeeCandidateDatabase>,
     pub artifact_data: Arc<ArtifactDatabase>,
     pub equipment_data: Arc<EquipmentDatabase>,
     pub shop_data: Arc<ShopDatabase>,
     pub reward_data: Arc<RewardDatabase>,
-    pub random_event_data: Arc<RandomEventDatabase>,
     pub pve_data: Arc<PveEncounterDatabase>,
     pub skill_data: Arc<SkillDatabase>,
     pub skill_fragment_data: Arc<SkillFragmentDatabase>,
@@ -151,11 +147,11 @@ pub struct GameDataBuilder {
     corroded_employee_data: Arc<CorrodedEmployeeProfileDatabase>,
     corroded_wave_data: Arc<CorrodedWavePresetDatabase>,
     starter_employee_data: Arc<StarterEmployeeCandidateDatabase>,
+    recruitment_employee_data: Arc<RecruitmentEmployeeCandidateDatabase>,
     artifact_data: Arc<ArtifactDatabase>,
     equipment_data: Arc<EquipmentDatabase>,
     shop_data: Arc<ShopDatabase>,
     reward_data: Arc<RewardDatabase>,
-    random_event_data: Arc<RandomEventDatabase>,
     pve_data: Arc<PveEncounterDatabase>,
     skill_data: Arc<SkillDatabase>,
     skill_fragment_data: Arc<SkillFragmentDatabase>,
@@ -168,11 +164,11 @@ impl GameDataBuilder {
             corroded_employee_data: Arc::new(CorrodedEmployeeProfileDatabase::new(vec![])),
             corroded_wave_data: Arc::new(CorrodedWavePresetDatabase::new(vec![])),
             starter_employee_data: Arc::new(StarterEmployeeCandidateDatabase::new(vec![])),
+            recruitment_employee_data: Arc::new(RecruitmentEmployeeCandidateDatabase::new(vec![])),
             artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
             equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
             shop_data: Arc::new(ShopDatabase::new(vec![])),
             reward_data: Arc::new(RewardDatabase::new(vec![])),
-            random_event_data: Arc::new(RandomEventDatabase::new(vec![])),
             pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
             skill_data: Arc::new(SkillDatabase::new(vec![])),
             skill_fragment_data: Arc::new(SkillFragmentDatabase::with_builtin_starter(vec![])),
@@ -231,6 +227,22 @@ impl GameDataBuilder {
         self
     }
 
+    pub fn with_recruitment_employee_candidates(
+        mut self,
+        data: RecruitmentEmployeeCandidateDatabase,
+    ) -> Self {
+        self.recruitment_employee_data = Arc::new(data);
+        self
+    }
+
+    pub fn with_recruitment_employee_data(
+        mut self,
+        data: Arc<RecruitmentEmployeeCandidateDatabase>,
+    ) -> Self {
+        self.recruitment_employee_data = data;
+        self
+    }
+
     pub fn with_artifacts(mut self, items: Vec<ArtifactMetadata>) -> Self {
         self.artifact_data = Arc::new(ArtifactDatabase::new(items));
         self
@@ -271,16 +283,6 @@ impl GameDataBuilder {
         self
     }
 
-    pub fn with_random_events(mut self, data: RandomEventDatabase) -> Self {
-        self.random_event_data = Arc::new(data);
-        self
-    }
-
-    pub fn with_random_event_data(mut self, data: Arc<RandomEventDatabase>) -> Self {
-        self.random_event_data = data;
-        self
-    }
-
     pub fn with_pve(mut self, data: PveEncounterDatabase) -> Self {
         self.pve_data = Arc::new(data);
         self
@@ -317,11 +319,11 @@ impl GameDataBuilder {
             corroded_employee_data: self.corroded_employee_data,
             corroded_wave_data: self.corroded_wave_data,
             starter_employee_data: self.starter_employee_data,
+            recruitment_employee_data: self.recruitment_employee_data,
             artifact_data: self.artifact_data,
             equipment_data: self.equipment_data,
             shop_data: self.shop_data,
             reward_data: self.reward_data,
-            random_event_data: self.random_event_data,
             pve_data: self.pve_data,
             skill_data: self.skill_data,
             skill_fragment_data: self.skill_fragment_data,
@@ -857,11 +859,11 @@ impl GameDataBase {
             corroded_employee_data,
             corroded_wave_data,
             starter_employee_data,
+            recruitment_employee_data,
             artifact_data,
             equipment_data,
             shop_data,
             reward_data,
-            random_event_data,
             pve_data,
             skill_data,
             skill_fragment_data,
@@ -871,11 +873,11 @@ impl GameDataBase {
         corroded_employee_data.validate_indexes();
         corroded_wave_data.validate_indexes();
         starter_employee_data.validate_indexes();
+        recruitment_employee_data.validate_indexes();
         artifact_data.validate_indexes();
         equipment_data.validate_indexes();
         shop_data.validate_indexes();
         reward_data.validate_indexes();
-        random_event_data.validate_indexes();
         pve_data.validate_indexes();
         skill_data.validate_indexes();
         skill_fragment_data.validate_indexes();
@@ -906,11 +908,11 @@ impl GameDataBase {
             corroded_employee_data,
             corroded_wave_data,
             starter_employee_data,
+            recruitment_employee_data,
             artifact_data,
             equipment_data,
             shop_data,
             reward_data,
-            random_event_data,
             pve_data,
             skill_data,
             skill_fragment_data,

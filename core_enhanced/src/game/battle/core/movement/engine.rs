@@ -641,13 +641,14 @@ impl BattleCore {
                 let unit = self.units.get(&unit_id)?;
                 let mut body = unit.movement_body_view();
                 body.goal = goals.get(&unit_id).copied();
+                let is_blocked = self.blocked_by(unit_id).is_some();
                 Some(MovementUnitInput {
                     unit_id,
                     owner: unit.owner,
                     body,
                     current_target: unit.current_target,
                     attack_range_units: unit.basic_attack.range_units.max(0.0),
-                    can_move: unit.action_locks.can_move(now_ms) && unit.can_move(),
+                    can_move: unit.action_locks.can_move(now_ms) && unit.can_move() && !is_blocked,
                     is_dead: unit.is_dead(),
                 })
             })
@@ -729,6 +730,7 @@ impl BattleCore {
         dt_ms: u64,
         goals: &HashMap<UnitInstanceId, MovementGoal>,
     ) -> MovementTickResult {
+        self.refresh_block_state();
         let input = self.build_continuous_movement_input_with_goals(now_ms, dt_ms, goals);
         let result = self.movement_backend.tick(input);
         self.apply_continuous_movement_outputs(now_ms, dt_ms, &result.outputs);
@@ -800,6 +802,10 @@ mod tests {
             body: UnitBody::new_at(position, DEFAULT_UNIT_RADIUS, 1.0),
             tactical_anchor: Some(position),
             tactical_group_id: None,
+            enemy_movement_plan: None,
+            block_capacity: 0,
+            block_radius_units: 0.0,
+            blockable: true,
             move_epoch: 0,
             action_state: ActionState::Idle,
             action_locks: Default::default(),

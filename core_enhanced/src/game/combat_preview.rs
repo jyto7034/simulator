@@ -1,11 +1,12 @@
 use serde::{Deserialize, Serialize};
 use std::{
-    collections::{HashSet, VecDeque},
+    collections::{HashMap, HashSet, VecDeque},
     sync::OnceLock,
 };
 use uuid::Uuid;
 
 use crate::game::{
+    battle::types::DeploymentAffinity,
     behavior::GameError,
     combat_mission_policy::CombatMissionPolicy,
     data::{
@@ -57,14 +58,6 @@ impl CombatMissionRisk {
         CombatMissionPolicy::mission_risk_from_risk_level(risk_level)
     }
 
-    pub fn defense_cleanup_required(self) -> bool {
-        CombatMissionPolicy::defense_cleanup_required(self)
-    }
-
-    pub fn default_defense_duration_ms(self) -> u64 {
-        CombatMissionPolicy::default_defense_duration_ms(self)
-    }
-
     pub fn default_recovery_hold_duration_ms(self) -> u64 {
         CombatMissionPolicy::default_recovery_hold_duration_ms(self)
     }
@@ -103,7 +96,23 @@ pub enum EnemyKind {
 pub struct DeploymentZone {
     pub id: String,
     pub label: String,
+    pub kind: DeploymentZoneKind,
     pub cells: Vec<Position>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum DeploymentZoneKind {
+    Ground,
+    Platform,
+}
+
+impl DeploymentZoneKind {
+    pub fn supports_affinity(self, affinity: DeploymentAffinity) -> bool {
+        match self {
+            DeploymentZoneKind::Ground => affinity.allows_ground(),
+            DeploymentZoneKind::Platform => affinity.allows_platform(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -142,9 +151,19 @@ pub struct SpawnWave {
     pub id: String,
     pub time_ms: u32,
     pub spawn_zone_ids: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub route_id: Option<String>,
     pub enemy_entries: Vec<SpawnWaveEnemyEntry>,
     pub required_for_victory: bool,
     pub revealed_by_recon: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BattlefieldRoute {
+    pub id: String,
+    pub start: Position,
+    pub end: Position,
+    pub cells: Vec<Position>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -159,6 +178,7 @@ pub struct BattlefieldInstance {
     pub valid_tiles: Vec<Position>,
     pub deployment_zones: Vec<DeploymentZone>,
     pub spawn_zones: Vec<SpawnZone>,
+    pub routes: Vec<BattlefieldRoute>,
     pub spawn_waves: Vec<SpawnWave>,
     pub obstacles: Vec<Position>,
     pub enemy_briefing: Vec<EnemyBriefing>,
@@ -201,6 +221,14 @@ struct BattlefieldTemplateDefinition {
     archetype: BattlefieldArchetype,
     size_class: BattlefieldSizeClass,
     rows: Vec<String>,
+    #[serde(default)]
+    routes: Vec<BattlefieldRouteDefinition>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+struct BattlefieldRouteDefinition {
+    id: String,
+    overlay: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -213,6 +241,7 @@ struct ParsedBattlefieldTemplate {
     valid_tiles: Vec<Position>,
     deployment_zones: Vec<DeploymentZone>,
     spawn_zones: Vec<SpawnZone>,
+    routes: Vec<BattlefieldRoute>,
     obstacles: Vec<Position>,
 }
 
@@ -472,8 +501,10 @@ impl BattlefieldGenerator {
         apply_authored_static_obstacles(&mut battlefield_template, encounter);
         let enemy_briefing = enemy_briefing(encounter, game_data, request.category);
         let spawn_waves = spawn_waves_for(
+            node_type,
             archetype,
             &battlefield_template.spawn_zones,
+            &battlefield_template.routes,
             encounter,
             game_data,
             request.recon_revealed,
@@ -490,6 +521,7 @@ impl BattlefieldGenerator {
             valid_tiles: battlefield_template.valid_tiles,
             deployment_zones: battlefield_template.deployment_zones,
             spawn_zones: battlefield_template.spawn_zones,
+            routes: battlefield_template.routes,
             spawn_waves,
             obstacles: battlefield_template.obstacles,
             enemy_briefing,
@@ -511,6 +543,7 @@ pub struct CombatPreview {
     pub valid_tiles: Vec<Position>,
     pub deployment_zones: Vec<DeploymentZone>,
     pub spawn_zones: Vec<SpawnZone>,
+    pub routes: Vec<BattlefieldRoute>,
     pub spawn_waves: Vec<SpawnWave>,
     pub obstacles: Vec<Position>,
     pub enemy_briefing: Vec<EnemyBriefing>,
@@ -650,6 +683,7 @@ impl CombatPreview {
             valid_tiles: instance.valid_tiles,
             deployment_zones: instance.deployment_zones,
             spawn_zones: instance.spawn_zones,
+            routes: instance.routes,
             spawn_waves: instance.spawn_waves,
             obstacles: instance.obstacles,
             enemy_briefing: instance.enemy_briefing,
@@ -736,7 +770,8 @@ fn parse_battlefield_template(
     }
 
     let mut valid_tiles = Vec::new();
-    let mut deployment_cells = Vec::new();
+    let mut ground_deployment_cells = Vec::new();
+    let mut platform_deployment_cells = Vec::new();
     let mut obstacles = Vec::new();
     let mut north_entry = Vec::new();
     let mut north_west_entry = Vec::new();
@@ -757,7 +792,8 @@ fn parse_battlefield_template(
             match tile {
                 '.' => {}
                 '#' => obstacles.push(position),
-                'P' => deployment_cells.push(position),
+                'P' => ground_deployment_cells.push(position),
+                'T' => platform_deployment_cells.push(position),
                 'N' => north_entry.push(position),
                 'L' => north_west_entry.push(position),
                 'Q' => north_east_entry.push(position),
@@ -765,6 +801,7 @@ fn parse_battlefield_template(
                 'B' => boss_anchor.push(position),
                 'W' => west_reinforcement.push(position),
                 'R' => east_reinforcement.push(position),
+                'X' | 'Y' | 'Z' => {}
                 other => {
                     return Err(format!(
                         "battlefield template '{}' contains unsupported tile '{}'",
@@ -776,19 +813,30 @@ fn parse_battlefield_template(
     }
 
     let valid_tiles = unique_positions(valid_tiles);
-    let deployment_cells = unique_positions(deployment_cells);
-    if deployment_cells.is_empty() {
+    let ground_deployment_cells = unique_positions(ground_deployment_cells);
+    let platform_deployment_cells = unique_positions(platform_deployment_cells);
+    if ground_deployment_cells.is_empty() && platform_deployment_cells.is_empty() {
         return Err(format!(
-            "battlefield template '{}' must contain at least one 'P' deployment tile",
+            "battlefield template '{}' must contain at least one deployment tile",
             template.id
         ));
     }
 
-    let deployment_zones = vec![DeploymentZone {
-        id: "primary_deployment".to_string(),
-        label: "Primary Deployment".to_string(),
-        cells: deployment_cells,
-    }];
+    let mut deployment_zones = Vec::new();
+    push_deployment_zone(
+        &mut deployment_zones,
+        "ground_deployment",
+        "Ground Deployment",
+        DeploymentZoneKind::Ground,
+        ground_deployment_cells,
+    );
+    push_deployment_zone(
+        &mut deployment_zones,
+        "platform_deployment",
+        "Platform Deployment",
+        DeploymentZoneKind::Platform,
+        platform_deployment_cells,
+    );
     let mut spawn_zones = Vec::new();
     push_spawn_zone(
         &mut spawn_zones,
@@ -859,6 +907,15 @@ fn parse_battlefield_template(
             template.id
         ));
     }
+    let obstacle_positions = obstacles.iter().copied().collect::<HashSet<_>>();
+    let valid_positions = valid_tiles.iter().copied().collect::<HashSet<_>>();
+    let routes = parse_battlefield_routes(
+        template,
+        width,
+        height,
+        &valid_positions,
+        &obstacle_positions,
+    )?;
 
     Ok(ParsedBattlefieldTemplate {
         id: template.id.clone(),
@@ -869,8 +926,294 @@ fn parse_battlefield_template(
         valid_tiles,
         deployment_zones,
         spawn_zones,
+        routes,
         obstacles: unique_positions(obstacles),
     })
+}
+
+fn parse_battlefield_routes(
+    template: &BattlefieldTemplateDefinition,
+    width: i32,
+    height: i32,
+    valid_tiles: &HashSet<Position>,
+    obstacles: &HashSet<Position>,
+) -> Result<Vec<BattlefieldRoute>, String> {
+    let mut route_ids = HashSet::new();
+    let mut routes = Vec::new();
+    for route in &template.routes {
+        if route.id.trim().is_empty() {
+            return Err(format!(
+                "battlefield template '{}' has route with empty id",
+                template.id
+            ));
+        }
+        if !route_ids.insert(route.id.as_str()) {
+            return Err(format!(
+                "battlefield template '{}' has duplicate route id '{}'",
+                template.id, route.id
+            ));
+        }
+        routes.push(parse_battlefield_route(
+            template,
+            route,
+            width,
+            height,
+            valid_tiles,
+            obstacles,
+        )?);
+    }
+    Ok(routes)
+}
+
+fn parse_battlefield_route(
+    template: &BattlefieldTemplateDefinition,
+    route: &BattlefieldRouteDefinition,
+    width: i32,
+    height: i32,
+    valid_tiles: &HashSet<Position>,
+    obstacles: &HashSet<Position>,
+) -> Result<BattlefieldRoute, String> {
+    if route.overlay.len() != height as usize {
+        return Err(format!(
+            "route '{}' in battlefield template '{}' must have {} rows",
+            route.id, template.id, height
+        ));
+    }
+
+    let mut route_chars: HashMap<Position, char> = HashMap::new();
+    for (y, row) in route.overlay.iter().enumerate() {
+        let row_width = row.chars().count();
+        if row_width != width as usize {
+            return Err(format!(
+                "route '{}' in battlefield template '{}' row {} width must be {} but was {}",
+                route.id, template.id, y, width, row_width
+            ));
+        }
+        for (x, ch) in row.chars().enumerate() {
+            if ch == ' ' {
+                continue;
+            }
+            let position = Position::new(x as i32, y as i32);
+            if !valid_tiles.contains(&position) {
+                return Err(format!(
+                    "route '{}' in battlefield template '{}' places '{}' outside valid terrain at ({}, {})",
+                    route.id, template.id, ch, position.x, position.y
+                ));
+            }
+            if obstacles.contains(&position) {
+                return Err(format!(
+                    "route '{}' in battlefield template '{}' places '{}' on obstacle at ({}, {})",
+                    route.id, template.id, ch, position.x, position.y
+                ));
+            }
+            if !is_route_arrow(ch) && !is_route_marker(ch) {
+                return Err(format!(
+                    "route '{}' in battlefield template '{}' contains unsupported marker '{}'",
+                    route.id, template.id, ch
+                ));
+            }
+            if is_route_marker(ch) {
+                let terrain = terrain_char_at(template, position);
+                if terrain != Some(ch) {
+                    return Err(format!(
+                        "route '{}' in battlefield template '{}' marker '{}' must match terrain marker at ({}, {})",
+                        route.id, template.id, ch, position.x, position.y
+                    ));
+                }
+            }
+            route_chars.insert(position, ch);
+        }
+    }
+
+    if route_chars.len() < 2 {
+        return Err(format!(
+            "route '{}' in battlefield template '{}' must contain at least a start and end marker",
+            route.id, template.id
+        ));
+    }
+
+    let mut outgoing: HashMap<Position, Position> = HashMap::new();
+    let mut incoming_counts: HashMap<Position, usize> = HashMap::new();
+    let mut marker_positions = Vec::new();
+
+    for (&position, &ch) in &route_chars {
+        if is_route_arrow(ch) {
+            let next = route_arrow_destination(position, ch);
+            if !route_chars.contains_key(&next) {
+                return Err(format!(
+                    "route '{}' in battlefield template '{}' arrow '{}' at ({}, {}) points outside route",
+                    route.id, template.id, ch, position.x, position.y
+                ));
+            }
+            outgoing.insert(position, next);
+            *incoming_counts.entry(next).or_default() += 1;
+        } else {
+            marker_positions.push(position);
+        }
+    }
+
+    if marker_positions.len() != 2 {
+        return Err(format!(
+            "route '{}' in battlefield template '{}' must contain exactly two endpoint markers",
+            route.id, template.id
+        ));
+    }
+
+    for &marker in &marker_positions {
+        let candidates = route_marker_outgoing_candidates(marker, &route_chars);
+        if candidates.len() > 1 {
+            return Err(format!(
+                "route '{}' in battlefield template '{}' marker at ({}, {}) branches to multiple arrows",
+                route.id, template.id, marker.x, marker.y
+            ));
+        }
+        if let Some(next) = candidates.first().copied() {
+            outgoing.insert(marker, next);
+            *incoming_counts.entry(next).or_default() += 1;
+        }
+    }
+
+    let starts = marker_positions
+        .iter()
+        .copied()
+        .filter(|position| {
+            incoming_counts.get(position).copied().unwrap_or(0) == 0
+                && outgoing.contains_key(position)
+        })
+        .collect::<Vec<_>>();
+    let ends = marker_positions
+        .iter()
+        .copied()
+        .filter(|position| {
+            incoming_counts.get(position).copied().unwrap_or(0) == 1
+                && !outgoing.contains_key(position)
+        })
+        .collect::<Vec<_>>();
+
+    if starts.len() != 1 || ends.len() != 1 {
+        return Err(format!(
+            "route '{}' in battlefield template '{}' must resolve to one start and one end",
+            route.id, template.id
+        ));
+    }
+
+    for &position in route_chars.keys() {
+        let incoming = incoming_counts.get(&position).copied().unwrap_or(0);
+        if incoming > 1 {
+            return Err(format!(
+                "route '{}' in battlefield template '{}' branches into ({}, {})",
+                route.id, template.id, position.x, position.y
+            ));
+        }
+        if is_route_arrow(route_chars[&position]) && !outgoing.contains_key(&position) {
+            return Err(format!(
+                "route '{}' in battlefield template '{}' arrow at ({}, {}) has no outgoing edge",
+                route.id, template.id, position.x, position.y
+            ));
+        }
+    }
+
+    let start = starts[0];
+    let end = ends[0];
+    let mut cells = Vec::new();
+    let mut visited = HashSet::new();
+    let mut current = start;
+    loop {
+        if !visited.insert(current) {
+            return Err(format!(
+                "route '{}' in battlefield template '{}' contains a loop",
+                route.id, template.id
+            ));
+        }
+        cells.push(current);
+        if current == end {
+            break;
+        }
+        current = *outgoing.get(&current).ok_or_else(|| {
+            format!(
+                "route '{}' in battlefield template '{}' is disconnected before reaching end",
+                route.id, template.id
+            )
+        })?;
+    }
+
+    if cells.len() != route_chars.len() {
+        return Err(format!(
+            "route '{}' in battlefield template '{}' has disconnected cells",
+            route.id, template.id
+        ));
+    }
+
+    Ok(BattlefieldRoute {
+        id: route.id.clone(),
+        start,
+        end,
+        cells,
+    })
+}
+
+fn terrain_char_at(template: &BattlefieldTemplateDefinition, position: Position) -> Option<char> {
+    template
+        .rows
+        .get(position.y as usize)
+        .and_then(|row| row.chars().nth(position.x as usize))
+}
+
+fn is_route_arrow(ch: char) -> bool {
+    matches!(ch, '>' | '<' | '^' | 'v')
+}
+
+fn is_route_marker(ch: char) -> bool {
+    ch.is_ascii_uppercase()
+}
+
+fn route_arrow_destination(position: Position, arrow: char) -> Position {
+    match arrow {
+        '>' => Position::new(position.x + 1, position.y),
+        '<' => Position::new(position.x - 1, position.y),
+        '^' => Position::new(position.x, position.y - 1),
+        'v' => Position::new(position.x, position.y + 1),
+        _ => position,
+    }
+}
+
+fn route_marker_outgoing_candidates(
+    marker: Position,
+    route_chars: &HashMap<Position, char>,
+) -> Vec<Position> {
+    [
+        (Position::new(marker.x + 1, marker.y), '>'),
+        (Position::new(marker.x - 1, marker.y), '<'),
+        (Position::new(marker.x, marker.y - 1), '^'),
+        (Position::new(marker.x, marker.y + 1), 'v'),
+    ]
+    .into_iter()
+    .filter_map(|(position, expected)| {
+        route_chars
+            .get(&position)
+            .is_some_and(|ch| *ch == expected)
+            .then_some(position)
+    })
+    .collect()
+}
+
+fn push_deployment_zone(
+    zones: &mut Vec<DeploymentZone>,
+    id: &str,
+    label: &str,
+    kind: DeploymentZoneKind,
+    cells: Vec<Position>,
+) {
+    if cells.is_empty() {
+        return;
+    }
+
+    zones.push(DeploymentZone {
+        id: id.to_string(),
+        label: label.to_string(),
+        kind,
+        cells: unique_positions(cells),
+    });
 }
 
 fn push_spawn_zone(
@@ -921,18 +1264,22 @@ fn apply_authored_static_obstacles(
 }
 
 fn spawn_waves_for(
+    node_type: CombatNodeType,
     archetype: BattlefieldArchetype,
     spawn_zones: &[SpawnZone],
+    routes: &[BattlefieldRoute],
     encounter: Option<&PveEncounter>,
     game_data: &GameDataBase,
     recon_revealed: bool,
     preview_seed: u64,
 ) -> Vec<SpawnWave> {
+    let fallback_route_id = fallback_spawn_route_id(node_type, routes);
     let Some(encounter) = encounter else {
         return vec![SpawnWave {
             id: "wave_0".to_string(),
             time_ms: 0,
             spawn_zone_ids: spawn_zone_ids_for_wave(archetype, spawn_zones, 0),
+            route_id: fallback_route_id,
             enemy_entries: Vec::new(),
             required_for_victory: true,
             revealed_by_recon: true,
@@ -945,6 +1292,7 @@ fn spawn_waves_for(
             id: "wave_0".to_string(),
             time_ms: 0,
             spawn_zone_ids: spawn_zone_ids_for_wave(archetype, spawn_zones, 0),
+            route_id: fallback_route_id,
             enemy_entries: Vec::new(),
             required_for_victory: true,
             revealed_by_recon: true,
@@ -962,11 +1310,22 @@ fn spawn_waves_for(
             } else {
                 wave.spawn_zone_ids.clone()
             },
+            route_id: wave.route_id.clone(),
             enemy_entries: wave_enemy_entries(wave, game_data, preview_seed, index),
             required_for_victory: wave.required_for_victory,
             revealed_by_recon: index == 0 || recon_revealed,
         })
         .collect()
+}
+
+fn fallback_spawn_route_id(
+    node_type: CombatNodeType,
+    routes: &[BattlefieldRoute],
+) -> Option<String> {
+    if node_type != CombatNodeType::Defense {
+        return None;
+    }
+    routes.first().map(|route| route.id.clone())
 }
 
 fn spawn_zone_ids_for_wave(
@@ -1358,6 +1717,9 @@ fn validate_instance(instance: &BattlefieldInstance) -> Result<(), &'static str>
     if has_duplicate_ids(instance.spawn_zones.iter().map(|zone| zone.id.as_str())) {
         return Err("duplicate spawn zone id");
     }
+    if has_duplicate_ids(instance.routes.iter().map(|route| route.id.as_str())) {
+        return Err("duplicate route id");
+    }
     let deployment_cells = instance
         .deployment_zones
         .iter()
@@ -1405,11 +1767,43 @@ fn validate_instance(instance: &BattlefieldInstance) -> Result<(), &'static str>
     {
         return Err("deployment zone overlaps spawn zone");
     }
+    for route in &instance.routes {
+        if route.cells.is_empty() {
+            return Err("route has no cells");
+        }
+        if route.cells.first().copied() != Some(route.start) {
+            return Err("route first cell must be route start");
+        }
+        if route.cells.last().copied() != Some(route.end) {
+            return Err("route last cell must be route end");
+        }
+        if route.cells.iter().any(|cell| !valid_cells.contains(cell)) {
+            return Err("route is outside valid battlefield tiles");
+        }
+        if route.cells.iter().any(|cell| obstacle_cells.contains(cell)) {
+            return Err("route overlaps obstacle");
+        }
+    }
+    if instance.node_type == CombatNodeType::Defense && !instance.routes.is_empty() {
+        let defense_endpoint = instance.routes[0].end;
+        if instance
+            .routes
+            .iter()
+            .any(|route| route.end != defense_endpoint)
+        {
+            return Err("defense routes must share one defense object endpoint");
+        }
+    }
 
     let spawn_zone_ids = instance
         .spawn_zones
         .iter()
         .map(|zone| zone.id.as_str())
+        .collect::<HashSet<_>>();
+    let route_ids = instance
+        .routes
+        .iter()
+        .map(|route| route.id.as_str())
         .collect::<HashSet<_>>();
     for wave in &instance.spawn_waves {
         if wave
@@ -1418,6 +1812,13 @@ fn validate_instance(instance: &BattlefieldInstance) -> Result<(), &'static str>
             .any(|zone_id| !spawn_zone_ids.contains(zone_id.as_str()))
         {
             return Err("spawn wave references missing spawn zone");
+        }
+        if let Some(route_id) = &wave.route_id {
+            if !route_ids.contains(route_id.as_str()) {
+                return Err("spawn wave references missing route");
+            }
+        } else if instance.node_type == CombatNodeType::Defense {
+            return Err("defense spawn wave must reference a route");
         }
     }
 
@@ -1589,6 +1990,7 @@ mod tests {
             deployment_zones: vec![DeploymentZone {
                 id: "deploy".to_string(),
                 label: "Deploy".to_string(),
+                kind: DeploymentZoneKind::Ground,
                 cells: vec![Position::new(0, 0)],
             }],
             spawn_zones: vec![SpawnZone {
@@ -1599,10 +2001,12 @@ mod tests {
                 cells: vec![Position::new(0, 5)],
                 revealed_details: Vec::new(),
             }],
+            routes: Vec::new(),
             spawn_waves: vec![SpawnWave {
                 id: "wave_0".to_string(),
                 time_ms: 0,
                 spawn_zone_ids: vec!["spawn".to_string()],
+                route_id: None,
                 enemy_entries: Vec::new(),
                 required_for_victory: true,
                 revealed_by_recon: true,
@@ -1744,10 +2148,12 @@ mod tests {
                 valid_tiles: parsed.valid_tiles,
                 deployment_zones: parsed.deployment_zones,
                 spawn_zones: parsed.spawn_zones,
+                routes: parsed.routes,
                 spawn_waves: vec![SpawnWave {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: vec![first_spawn_zone_id],
+                    route_id: None,
                     enemy_entries: Vec::new(),
                     required_for_victory: true,
                     revealed_by_recon: true,
@@ -1763,6 +2169,229 @@ mod tests {
                 )
             });
         }
+    }
+
+    #[test]
+    fn battlefield_template_route_overlay_parses_ordered_route() {
+        let template = BattlefieldTemplateDefinition {
+            id: "route_test".to_string(),
+            archetype: BattlefieldArchetype::ChokePoint,
+            size_class: BattlefieldSizeClass::Small,
+            rows: vec![
+                "  N  ".to_string(),
+                "  .  ".to_string(),
+                "  X  ".to_string(),
+                "PPPPP".to_string(),
+            ],
+            routes: vec![BattlefieldRouteDefinition {
+                id: "main_breach".to_string(),
+                overlay: vec![
+                    "  N  ".to_string(),
+                    "  v  ".to_string(),
+                    "  X  ".to_string(),
+                    "     ".to_string(),
+                ],
+            }],
+        };
+
+        let parsed = parse_battlefield_template(&template, true).unwrap();
+
+        assert_eq!(
+            parsed.routes,
+            vec![BattlefieldRoute {
+                id: "main_breach".to_string(),
+                start: Position::new(2, 0),
+                end: Position::new(2, 2),
+                cells: vec![
+                    Position::new(2, 0),
+                    Position::new(2, 1),
+                    Position::new(2, 2),
+                ],
+            }]
+        );
+    }
+
+    #[test]
+    fn battlefield_template_route_overlay_rejects_obstacle_overlap() {
+        let template = BattlefieldTemplateDefinition {
+            id: "route_obstacle_test".to_string(),
+            archetype: BattlefieldArchetype::ChokePoint,
+            size_class: BattlefieldSizeClass::Small,
+            rows: vec![
+                "  N  ".to_string(),
+                "  #  ".to_string(),
+                "  X  ".to_string(),
+                "PPPPP".to_string(),
+            ],
+            routes: vec![BattlefieldRouteDefinition {
+                id: "main_breach".to_string(),
+                overlay: vec![
+                    "  N  ".to_string(),
+                    "  v  ".to_string(),
+                    "  X  ".to_string(),
+                    "     ".to_string(),
+                ],
+            }],
+        };
+
+        let err = parse_battlefield_template(&template, true).unwrap_err();
+
+        assert!(err.contains("on obstacle"));
+    }
+
+    #[test]
+    fn battlefield_template_exposes_ground_and_platform_deployment_zones() {
+        let template = BattlefieldTemplateDefinition {
+            id: "deployment_kind_test".to_string(),
+            archetype: BattlefieldArchetype::OpenHall,
+            size_class: BattlefieldSizeClass::Small,
+            rows: vec![
+                "NNNNN".to_string(),
+                ".....".to_string(),
+                "PP.TT".to_string(),
+            ],
+            routes: Vec::new(),
+        };
+
+        let parsed = parse_battlefield_template(&template, true).unwrap();
+
+        let ground = parsed
+            .deployment_zones
+            .iter()
+            .find(|zone| zone.kind == DeploymentZoneKind::Ground)
+            .expect("ground deployment zone");
+        let platform = parsed
+            .deployment_zones
+            .iter()
+            .find(|zone| zone.kind == DeploymentZoneKind::Platform)
+            .expect("platform deployment zone");
+        assert_eq!(ground.cells, vec![Position::new(0, 2), Position::new(1, 2)]);
+        assert_eq!(
+            platform.cells,
+            vec![Position::new(3, 2), Position::new(4, 2)]
+        );
+    }
+
+    #[test]
+    fn validate_instance_requires_defense_spawn_wave_route() {
+        let instance = BattlefieldInstance {
+            battlefield_template_id: "defense_without_route".to_string(),
+            node_type: CombatNodeType::Defense,
+            mission_risk: CombatMissionRisk::Controlled,
+            archetype: BattlefieldArchetype::ChokePoint,
+            size_class: BattlefieldSizeClass::Small,
+            width: 1,
+            height: 2,
+            valid_tiles: vec![Position::new(0, 0), Position::new(0, 1)],
+            deployment_zones: vec![DeploymentZone {
+                id: "deploy".to_string(),
+                label: "Deploy".to_string(),
+                kind: DeploymentZoneKind::Ground,
+                cells: vec![Position::new(0, 0)],
+            }],
+            spawn_zones: vec![SpawnZone {
+                id: "spawn".to_string(),
+                label: "Spawn".to_string(),
+                kind: SpawnZoneKind::Entry,
+                confidence: ZoneConfidence::Confirmed,
+                cells: vec![Position::new(0, 1)],
+                revealed_details: Vec::new(),
+            }],
+            routes: Vec::new(),
+            spawn_waves: vec![SpawnWave {
+                id: "wave_0".to_string(),
+                time_ms: 0,
+                spawn_zone_ids: vec!["spawn".to_string()],
+                route_id: None,
+                enemy_entries: Vec::new(),
+                required_for_victory: true,
+                revealed_by_recon: true,
+            }],
+            obstacles: Vec::new(),
+            enemy_briefing: Vec::new(),
+        };
+
+        let result = validate_instance(&instance);
+
+        assert_eq!(result, Err("defense spawn wave must reference a route"));
+    }
+
+    #[test]
+    fn validate_instance_requires_defense_routes_to_share_endpoint() {
+        let instance = BattlefieldInstance {
+            battlefield_template_id: "defense_split_endpoint".to_string(),
+            node_type: CombatNodeType::Defense,
+            mission_risk: CombatMissionRisk::Controlled,
+            archetype: BattlefieldArchetype::ChokePoint,
+            size_class: BattlefieldSizeClass::Small,
+            width: 3,
+            height: 3,
+            valid_tiles: vec![
+                Position::new(0, 0),
+                Position::new(1, 0),
+                Position::new(2, 0),
+                Position::new(0, 1),
+                Position::new(1, 1),
+                Position::new(2, 1),
+                Position::new(0, 2),
+                Position::new(1, 2),
+                Position::new(2, 2),
+            ],
+            deployment_zones: vec![DeploymentZone {
+                id: "deploy".to_string(),
+                label: "Deploy".to_string(),
+                kind: DeploymentZoneKind::Ground,
+                cells: vec![Position::new(1, 1)],
+            }],
+            spawn_zones: vec![SpawnZone {
+                id: "spawn".to_string(),
+                label: "Spawn".to_string(),
+                kind: SpawnZoneKind::Entry,
+                confidence: ZoneConfidence::Confirmed,
+                cells: vec![Position::new(0, 0)],
+                revealed_details: Vec::new(),
+            }],
+            routes: vec![
+                BattlefieldRoute {
+                    id: "lane_a".to_string(),
+                    start: Position::new(0, 0),
+                    end: Position::new(2, 0),
+                    cells: vec![
+                        Position::new(0, 0),
+                        Position::new(1, 0),
+                        Position::new(2, 0),
+                    ],
+                },
+                BattlefieldRoute {
+                    id: "lane_b".to_string(),
+                    start: Position::new(0, 2),
+                    end: Position::new(2, 2),
+                    cells: vec![
+                        Position::new(0, 2),
+                        Position::new(1, 2),
+                        Position::new(2, 2),
+                    ],
+                },
+            ],
+            spawn_waves: vec![SpawnWave {
+                id: "wave_0".to_string(),
+                time_ms: 0,
+                spawn_zone_ids: vec!["spawn".to_string()],
+                route_id: Some("lane_a".to_string()),
+                enemy_entries: Vec::new(),
+                required_for_victory: true,
+                revealed_by_recon: true,
+            }],
+            obstacles: Vec::new(),
+            enemy_briefing: Vec::new(),
+        };
+
+        let result = validate_instance(&instance);
+
+        assert_eq!(
+            result,
+            Err("defense routes must share one defense object endpoint")
+        );
     }
 
     #[test]
@@ -1788,6 +2417,7 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
+                    route_id: None,
                     required_for_victory: true,
                     source: None,
                     enemies: vec![
@@ -1895,6 +2525,7 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
+                    route_id: None,
                     required_for_victory: true,
                     source: Some(PveWaveSource::GeneratedCorroded {
                         preset_id: "test_corroded_mix".to_string(),
@@ -1968,6 +2599,7 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: vec!["north_entry".to_string()],
+                    route_id: None,
                     required_for_victory: false,
                     source: None,
                     enemies: vec![PveWaveEnemyData {
@@ -2025,6 +2657,7 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
+                    route_id: None,
                     required_for_victory: true,
                     source: None,
                     enemies: vec![PveWaveEnemyData {

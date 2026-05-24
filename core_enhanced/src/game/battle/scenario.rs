@@ -68,6 +68,7 @@ pub struct ScenarioSpawnGroup {
     pub id: ScenarioGroupId,
     pub side: Side,
     pub required_for_victory: bool,
+    pub enemy_movement_plan: Option<EnemyMovementPlan>,
     pub spawns: Vec<ScenarioUnitSpawn>,
 }
 
@@ -99,11 +100,6 @@ pub enum WinCondition {
     },
     ProtectUnit {
         unit_ref: ScenarioUnitRef,
-    },
-    ProtectUnitForDuration {
-        unit_ref: ScenarioUnitRef,
-        time_ms: u64,
-        cleanup_required: bool,
     },
     SurviveUntil {
         time_ms: u64,
@@ -191,11 +187,6 @@ pub enum BattleObjective {
     ProtectUnit {
         unit_ref: ScenarioUnitRef,
     },
-    ProtectUnitForDuration {
-        unit_ref: ScenarioUnitRef,
-        time_ms: u64,
-        cleanup_required: bool,
-    },
     Survive {
         time_ms: u64,
     },
@@ -209,6 +200,7 @@ pub enum BattleObjective {
 #[derive(Debug, Clone)]
 pub enum PlayerMovementPlan {
     FreeEngage,
+    FixedDefense,
     HoldDeployment {
         guard_radius: f32,
         leash_radius: f32,
@@ -509,8 +501,7 @@ impl BattleScenario {
                 ensure_point_exists(&known_point_ids, extraction_point_id, "battle objective")?;
             }
             BattleObjective::DefeatBoss { unit_ref }
-            | BattleObjective::ProtectUnit { unit_ref }
-            | BattleObjective::ProtectUnitForDuration { unit_ref, .. } => {
+            | BattleObjective::ProtectUnit { unit_ref } => {
                 ensure_unit_ref_exists(&unit_refs, unit_ref, "battle objective")?;
             }
         }
@@ -604,9 +595,7 @@ impl BattleScenario {
 
         match &self.win_condition {
             WinCondition::AllRequiredEnemyGroupsDefeated | WinCondition::SurviveUntil { .. } => {}
-            WinCondition::DefeatUnit { unit_ref }
-            | WinCondition::ProtectUnit { unit_ref }
-            | WinCondition::ProtectUnitForDuration { unit_ref, .. } => {
+            WinCondition::DefeatUnit { unit_ref } | WinCondition::ProtectUnit { unit_ref } => {
                 ensure_unit_ref_exists(&unit_refs, unit_ref, "win condition")?;
             }
             WinCondition::RecoverHoldAndExtract {

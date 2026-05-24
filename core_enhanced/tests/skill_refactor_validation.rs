@@ -68,6 +68,7 @@ fn spawn_group(
         id: group_id,
         side,
         required_for_victory,
+        enemy_movement_plan: None,
         spawns,
     }
 }
@@ -2099,7 +2100,6 @@ fn ron_added_abnormalities_emit_expected_skill_event_categories_in_battle_smoke(
         .with_equipment_data(Arc::clone(&base_game_data.equipment_data))
         .with_shop_data(Arc::clone(&base_game_data.shop_data))
         .with_reward_data(Arc::clone(&base_game_data.reward_data))
-        .with_random_event_data(Arc::clone(&base_game_data.random_event_data))
         .with_pve_data(Arc::clone(&base_game_data.pve_data))
         .with_skill_data(Arc::clone(&base_game_data.skill_data))
         .with_skill_fragment_data(Arc::clone(&base_game_data.skill_fragment_data))

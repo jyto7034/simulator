@@ -2,14 +2,13 @@ use tracing::info;
 
 use super::GameCore;
 use crate::game::behavior::{BehaviorResult, GameError};
-use crate::game::data::random_event_data::RandomEventTarget;
 use crate::game::data::reward_data::RewardTag;
 use crate::game::determinism;
-use crate::game::enums::{RandomEventOption, RewardMode, ShopEventOption};
+use crate::game::enums::{RewardMode, ShopEventOption};
 use crate::game::map::{MapNodeCategory, MapNodeId, MapNodePayload, SupportNodeMode};
 use crate::game::resources::{
-    GameState, RewardSessionState, SelectedEvent, SelectedEventState, ShopSessionState,
-    SupportSessionState,
+    GameState, HeadquartersContactSessionState, RewardSessionState, SelectedEvent,
+    SelectedEventState, ShopSessionState, SupportSessionState,
 };
 use crate::game::reward::RewardOption;
 
@@ -48,7 +47,7 @@ impl GameCore {
         determinism::seed_with_uuid(act_seed, namespace, node_id.0)
     }
 
-    fn resolve_map_shop(
+    pub(super) fn resolve_map_shop(
         &self,
         node_id: MapNodeId,
         payload: &MapNodePayload,
@@ -108,6 +107,25 @@ impl GameCore {
         let shop = candidates[index];
 
         Ok(Some(ShopSessionState::from(shop)))
+    }
+
+    pub(super) fn recruitment_candidates_for_node(
+        &self,
+        node_id: MapNodeId,
+        candidate_count: usize,
+    ) -> Vec<crate::game::employee::StarterEmployeeCandidate> {
+        let mut candidates = self.game_data.recruitment_employee_data.candidates.clone();
+        if candidates.is_empty() {
+            return candidates;
+        }
+
+        use rand::{seq::SliceRandom, SeedableRng};
+        let seed = self.node_seed(node_id, 0x4851_5F52_4543_5255);
+        let mut rng = rand::rngs::StdRng::seed_from_u64(seed);
+        candidates.shuffle(&mut rng);
+        candidates.truncate(candidate_count.min(candidates.len()));
+        candidates.sort_by(|left, right| left.id.cmp(&right.id));
+        candidates
     }
 
     fn resolve_map_reward(
@@ -177,88 +195,6 @@ impl GameCore {
         )))
     }
 
-    fn resolve_map_random_event(
-        &self,
-        node_id: MapNodeId,
-        payload: &MapNodePayload,
-    ) -> Result<Option<RandomEventOption>, GameError> {
-        let MapNodePayload::Event {
-            event_id,
-            event_pool_id,
-        } = payload
-        else {
-            return Ok(None);
-        };
-
-        if let Some(event_id) = event_id {
-            let event = self
-                .game_data
-                .random_event_data
-                .get_by_id(event_id)
-                .ok_or_else(|| {
-                    GameError::InvalidStaticData(format!(
-                        "map event node references missing random event id '{}'",
-                        event_id
-                    ))
-                })?;
-            return Ok(Some(RandomEventOption::from(event)));
-        }
-
-        let candidates = if let Some(pool_id) = event_pool_id {
-            let pool = self
-                .game_data
-                .random_event_data
-                .pool_by_id(pool_id)
-                .ok_or_else(|| {
-                    GameError::InvalidStaticData(format!(
-                        "map event node references missing random event pool '{}'",
-                        pool_id
-                    ))
-                })?;
-            pool.event_ids
-                .iter()
-                .map(|event_id| {
-                    self.game_data
-                        .random_event_data
-                        .get_by_id(event_id)
-                        .ok_or_else(|| {
-                            GameError::InvalidStaticData(format!(
-                                "random event pool '{}' references missing event '{}'",
-                                pool_id, event_id
-                            ))
-                        })
-                })
-                .collect::<Result<Vec<_>, _>>()?
-        } else {
-            self.game_data
-                .random_event_data
-                .events
-                .iter()
-                .collect::<Vec<_>>()
-        };
-        let candidates = candidates
-            .into_iter()
-            .filter(|event| {
-                !matches!(
-                    event.inner_metadata,
-                    crate::game::data::random_event_data::RandomEventInnerMetadata::Suppress(_)
-                )
-            })
-            .collect::<Vec<_>>();
-
-        if candidates.is_empty() {
-            return Ok(None);
-        }
-
-        use rand::{Rng, SeedableRng};
-        let seed = self.node_seed(node_id, 0x4D41_505F_4556_4E54);
-        let mut rng = rand::rngs::StdRng::seed_from_u64(seed);
-        let index = rng.gen_range(0..candidates.len());
-        let event = candidates[index];
-
-        Ok(Some(RandomEventOption::from(event)))
-    }
-
     pub(super) fn try_enter_map_content_node(
         &mut self,
         node_id: MapNodeId,
@@ -299,56 +235,6 @@ impl GameCore {
                 self.transition_to(GameState::InReward { reward_uuid })?;
                 Ok(Some(result))
             }
-            MapNodeCategory::Event => {
-                let Some(event) = self.resolve_map_random_event(node_id, payload)? else {
-                    return Ok(None);
-                };
-                match event.inner_metadata.resolve(&self.game_data)? {
-                    RandomEventTarget::Shop(shop) => {
-                        let shop = ShopSessionState::from(shop);
-                        let shop_uuid = shop.uuid;
-                        let shop_result = ShopEventOption {
-                            id: shop.id.clone(),
-                            name: shop.name.clone(),
-                            uuid: shop.uuid,
-                            shop_type: shop.shop_type,
-                            can_reroll: shop.can_reroll,
-                            visible_items: shop.visible_items.clone(),
-                        };
-                        self.state.selected_event =
-                            Some(SelectedEvent::new(SelectedEventState::Shop(shop)));
-                        self.transition_to(GameState::InShop { shop_uuid })?;
-                        Ok(Some(BehaviorResult::ShopState {
-                            shop: shop_result,
-                            research_deliveries,
-                        }))
-                    }
-                    RandomEventTarget::Reward(reward) => {
-                        if reward.tags.contains(&RewardTag::Forbidden)
-                            || reward.tags.contains(&RewardTag::Experience)
-                        {
-                            return Err(GameError::InvalidStaticData(format!(
-                                "event node reward '{}' uses a non-combat-only reward tag",
-                                reward.id
-                            )));
-                        }
-                        let reward = self.build_reward_session(
-                            event.uuid,
-                            RewardMode::ClaimAll,
-                            vec![reward],
-                            false,
-                        );
-                        let reward_uuid = reward.stage_uuid;
-                        let result =
-                            self.reward_state_result_with_deliveries(&reward, research_deliveries);
-                        self.state.selected_event =
-                            Some(SelectedEvent::new(SelectedEventState::Reward(reward)));
-                        self.transition_to(GameState::InReward { reward_uuid })?;
-                        Ok(Some(result))
-                    }
-                    RandomEventTarget::Suppress(_) => Err(GameError::InvalidAction),
-                }
-            }
             MapNodeCategory::Support => {
                 let MapNodePayload::Support {
                     support_type,
@@ -376,10 +262,8 @@ impl GameCore {
                 };
                 let mut support_session = support_session;
                 self.refresh_support_target_candidates(&mut support_session)?;
-                let result = Self::support_state_result_with_deliveries(
-                    &support_session,
-                    research_deliveries,
-                );
+                let result = self
+                    .support_state_result_with_deliveries(&support_session, research_deliveries);
                 self.state.selected_event = Some(SelectedEvent::new(SelectedEventState::Support(
                     support_session,
                 )));
@@ -393,6 +277,31 @@ impl GameCore {
                     self.refresh_maintenance_action_gate(&support)?;
                 }
 
+                Ok(Some(result))
+            }
+            MapNodeCategory::HeadquartersContact => {
+                let MapNodePayload::HeadquartersContact {
+                    shop_pool_id,
+                    candidate_count,
+                } = payload
+                else {
+                    return Ok(None);
+                };
+                let session = HeadquartersContactSessionState::new(
+                    node_id,
+                    self.recruitment_candidates_for_node(node_id, *candidate_count),
+                    shop_pool_id.clone(),
+                );
+                let result = BehaviorResult::HeadquartersContactState {
+                    node_id,
+                    options: session.options.clone(),
+                    recruitment_candidates: session.recruitment_candidates.clone(),
+                    shop_pool_id: session.shop_pool_id.clone(),
+                    research_deliveries,
+                };
+                self.state.selected_event = Some(SelectedEvent::new(
+                    SelectedEventState::HeadquartersContact(session),
+                ));
                 Ok(Some(result))
             }
             _ => Ok(None),

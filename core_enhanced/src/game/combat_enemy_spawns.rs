@@ -4,10 +4,14 @@ use tracing::warn;
 
 use crate::game::{
     battle::{
-        scenario::{ScenarioGroupId, ScenarioSpawnGroup, ScenarioUnitRef, ScenarioUnitSpawn},
+        scenario::{
+            EnemyMovementPlan, ScenarioGroupId, ScenarioSpawnGroup, ScenarioUnitRef,
+            ScenarioUnitSpawn,
+        },
         types::{BattleUnitDraft, BattleUnitSource},
     },
     behavior::GameError,
+    combat_mission_policy::defense_route_tactical_point_id,
     combat_preview::{CombatPreview, EnemyKind, SpawnWave, SpawnWaveEnemyEntry},
     data::GameDataBase,
     determinism,
@@ -76,6 +80,7 @@ pub fn enemy_spawn_groups_from_preview(
                 id: group_id,
                 side: Side::Opponent,
                 required_for_victory: wave.required_for_victory,
+                enemy_movement_plan: enemy_movement_plan_for_wave(combat_preview, wave),
                 spawns,
             },
             wave.time_ms,
@@ -83,6 +88,30 @@ pub fn enemy_spawn_groups_from_preview(
     }
 
     Ok(groups)
+}
+
+fn enemy_movement_plan_for_wave(
+    combat_preview: &CombatPreview,
+    wave: &SpawnWave,
+) -> Option<EnemyMovementPlan> {
+    let route_id = wave.route_id.as_ref()?;
+    let route = combat_preview
+        .routes
+        .iter()
+        .find(|route| &route.id == route_id)?;
+    let route_cells = if route.cells.is_empty() {
+        vec![route.end]
+    } else {
+        route.cells.clone()
+    };
+    let point_ids = route_cells
+        .iter()
+        .enumerate()
+        .map(|(index, _)| {
+            defense_route_tactical_point_id(route_id, index, index + 1 == route_cells.len())
+        })
+        .collect::<Vec<_>>();
+    Some(EnemyMovementPlan::PathAlongPath { point_ids })
 }
 
 fn enemy_drafts_for_wave(

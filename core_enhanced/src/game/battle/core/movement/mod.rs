@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 pub const TILE_UNITS_PER_TILE: u64 = 1_000_000;
 pub const HALF_TILE_UNITS: u64 = TILE_UNITS_PER_TILE / 2;
 
+mod blocking;
 pub mod engine;
 mod lifecycle;
 pub mod planner;

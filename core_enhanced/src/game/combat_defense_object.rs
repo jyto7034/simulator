@@ -5,7 +5,7 @@ use crate::game::{
         scenario::{
             ScenarioGroupId, ScenarioSpawnGroup, ScenarioUnitSpawn, TacticalPlan, WinCondition,
         },
-        types::{BattleUnitDraft, BattleUnitSource, UnitCombatProfile},
+        types::{BattleUnitDraft, BattleUnitSource, DeploymentAffinity, UnitCombatProfile},
     },
     combat_mission_policy::DEFAULT_DEFENSE_POINT_ID,
     data::abnormality_data::{BasicAttackDef, MovementDef, ResonanceDef},
@@ -25,8 +25,7 @@ pub fn defense_object_group_for_win_condition(
     tactical_plan: &TacticalPlan,
 ) -> Option<ScenarioSpawnGroup> {
     let unit_ref = match win_condition {
-        WinCondition::ProtectUnit { unit_ref }
-        | WinCondition::ProtectUnitForDuration { unit_ref, .. } => unit_ref,
+        WinCondition::ProtectUnit { unit_ref } => unit_ref,
         _ => return None,
     };
     let position = tactical_plan
@@ -40,6 +39,7 @@ pub fn defense_object_group_for_win_condition(
         id: ScenarioGroupId::new(DEFAULT_DEFENSE_OBJECT_GROUP),
         side: Side::Player,
         required_for_victory: false,
+        enemy_movement_plan: None,
         spawns: vec![ScenarioUnitSpawn {
             unit_ref: unit_ref.clone(),
             side: Side::Player,
@@ -87,5 +87,9 @@ fn default_defense_object_profile() -> UnitCombatProfile {
         movement,
         resonance: ResonanceDef::default(),
         skill_id: None,
+        deployment_affinity: DeploymentAffinity::Any,
+        block_capacity: 0,
+        block_radius_units: 0.0,
+        blockable: false,
     }
 }

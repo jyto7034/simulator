@@ -114,6 +114,7 @@ fn spawn_group(
         id: group_id,
         side,
         required_for_victory,
+        enemy_movement_plan: None,
         spawns,
     }
 }

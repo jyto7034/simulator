@@ -94,6 +94,7 @@ impl BattleCore {
             let tactical_anchor = Some(spawn_position);
             let tactical_group_id =
                 self.tactical_group_for_spawn(&group.id, &spawn.unit_ref, group.side);
+            let (block_capacity, block_radius_units) = runtime_blocking_stats(&combat_profile);
             if self
                 .units
                 .insert(
@@ -110,6 +111,10 @@ impl BattleCore {
                         body,
                         tactical_anchor,
                         tactical_group_id: tactical_group_id.clone(),
+                        enemy_movement_plan: group.enemy_movement_plan.clone(),
+                        block_capacity,
+                        block_radius_units,
+                        blockable: combat_profile.blockable,
                         move_epoch: 0,
                         action_state: ActionState::Idle,
                         action_locks: Default::default(),
@@ -209,5 +214,21 @@ impl BattleCore {
                 })
             })
             .map(|plan| plan.id.clone())
+    }
+}
+
+fn runtime_blocking_stats(
+    combat_profile: &crate::game::battle::types::UnitCombatProfile,
+) -> (u32, f32) {
+    if matches!(
+        combat_profile.deployment_affinity,
+        crate::game::battle::types::DeploymentAffinity::PlatformOnly
+    ) {
+        (0, 0.0)
+    } else {
+        (
+            combat_profile.block_capacity,
+            combat_profile.block_radius_units,
+        )
     }
 }

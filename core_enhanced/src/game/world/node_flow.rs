@@ -4,7 +4,7 @@ use crate::game::map::{
     MapGenerationConfig, MapGenerator, MapNodeCategory, MapNodeExecutor, MapNodeId, MapNodePayload,
     MapProgression, MapViewDto, RunMap, RunProgression,
 };
-use crate::game::resources::GameState;
+use crate::game::resources::{GameState, SelectedEventState};
 
 impl GameCore {
     pub(super) fn current_map_view(&self) -> Result<MapViewDto, GameError> {
@@ -174,6 +174,12 @@ impl GameCore {
     }
 
     pub(super) fn handle_complete_node(&mut self) -> Result<BehaviorResult, GameError> {
+        if self.state.selected_event.as_ref().is_some_and(|selected| {
+            matches!(selected.event, SelectedEventState::HeadquartersContact(_))
+        }) {
+            return Err(GameError::InvalidAction);
+        }
+
         let mut map = self.run_state()?.map.clone();
         let mut progression = self.run_state()?.map_progression.clone();
         let run_progression = self.run_state()?.run_progression.clone();

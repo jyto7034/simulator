@@ -8,7 +8,9 @@ use crate::game::battle::types::{BattleWinner, ParticipantBattleResult};
 use crate::game::behavior::{
     BehaviorResult, CombatOutcomeSummary, GameError, NodeOutcomeEmployeeChange, NodeOutcomeSummary,
 };
-use crate::game::combat_preview::{CombatDeployment, CombatNodeType, CombatPreview};
+use crate::game::combat_preview::{
+    CombatDeployment, CombatNodeType, CombatPreview, DeploymentZoneKind,
+};
 use crate::game::employee::{EmployeeInjury, EmployeeLifeState};
 use crate::game::employee_trust::EmployeeTrustResolver;
 use crate::game::enums::Side;
@@ -89,21 +91,37 @@ impl GameCore {
         Ok(Some(deployment))
     }
 
-    pub(super) fn combat_deployment_allowed_cells(
-        &mut self,
-        node_id: MapNodeId,
-    ) -> Result<Vec<Position>, GameError> {
-        let preview = self
-            .combat_preview_for_node(node_id, false)?
-            .ok_or(GameError::InvalidAction)?;
-        let mut cells = preview
+    fn combat_deployment_zone_kind_for_cell(
+        combat_preview: &CombatPreview,
+        position: Position,
+    ) -> Option<DeploymentZoneKind> {
+        combat_preview
             .deployment_zones
             .iter()
-            .flat_map(|zone| zone.cells.iter().copied())
-            .collect::<Vec<_>>();
-        cells.sort_by_key(|cell| (cell.y, cell.x));
-        cells.dedup();
-        Ok(cells)
+            .find(|zone| zone.cells.contains(&position))
+            .map(|zone| zone.kind)
+    }
+
+    fn validate_employee_deployment_cell(
+        &self,
+        combat_preview: &CombatPreview,
+        employee_uuid: Uuid,
+        position: Position,
+    ) -> Result<(), GameError> {
+        let zone_kind = Self::combat_deployment_zone_kind_for_cell(combat_preview, position)
+            .ok_or(GameError::OutOfBounds)?;
+        let employee = self
+            .roster()?
+            .get(&employee_uuid)
+            .ok_or(GameError::UnitNotFound)?;
+        let profile = employee.combat_profile_for_battle(
+            &self.game_data.skill_fragment_data,
+            &self.state.skill_fragments,
+        )?;
+        if !zone_kind.supports_affinity(profile.deployment_affinity) {
+            return Err(GameError::InvalidAction);
+        }
+        Ok(())
     }
 
     pub(super) fn handle_move_combat_deployment_unit(
@@ -118,18 +136,42 @@ impl GameCore {
             self.validate_owned_unit_exists(swap_unit_uuid)?;
         }
 
-        let allowed_cells = self.combat_deployment_allowed_cells(node_id)?;
-        if !allowed_cells.contains(&dest_pos) {
-            return Err(GameError::OutOfBounds);
+        let combat_preview = self
+            .combat_preview_for_node(node_id, false)?
+            .ok_or(GameError::InvalidAction)?;
+        self.validate_employee_deployment_cell(&combat_preview, target_unit_uuid, dest_pos)?;
+
+        let source_position = self
+            .run_state()?
+            .combat_deployments
+            .get(&node_id)
+            .and_then(|deployment| deployment.position_of(target_unit_uuid));
+        let occupant_uuid = self
+            .run_state()?
+            .combat_deployments
+            .get(&node_id)
+            .and_then(|deployment| deployment.employee_at(dest_pos));
+        if let (Some(swap_unit_uuid), Some(source_position)) =
+            (swap_with_unit_uuid, source_position)
+        {
+            if occupant_uuid == Some(swap_unit_uuid) {
+                self.validate_employee_deployment_cell(
+                    &combat_preview,
+                    swap_unit_uuid,
+                    source_position,
+                )?;
+            }
         }
 
-        let run = self.run_state_mut()?;
-        let deployment = run
+        let deployment = self
+            .run_state_mut()?
             .combat_deployments
             .entry(node_id)
             .or_insert_with(|| CombatDeployment::new(node_id));
         deployment.place(target_unit_uuid, dest_pos, swap_with_unit_uuid)?;
-        Ok(BehaviorResult::MoveUnit)
+        Ok(BehaviorResult::MoveUnit {
+            combat_deployment: deployment.clone(),
+        })
     }
 
     pub(super) fn handle_map_combat_node(
@@ -229,12 +271,16 @@ impl GameCore {
             return Err(GameError::InvalidAction);
         }
 
-        let allowed_cells = self.combat_deployment_allowed_cells(node_id)?;
+        let combat_preview = self
+            .combat_preview_for_node(node_id, false)?
+            .ok_or(GameError::InvalidAction)?;
         for placement in placements {
             self.validate_owned_unit_exists(placement.employee_uuid)?;
-            if !allowed_cells.contains(&placement.position) {
-                return Err(GameError::OutOfBounds);
-            }
+            self.validate_employee_deployment_cell(
+                &combat_preview,
+                placement.employee_uuid,
+                placement.position,
+            )?;
         }
 
         Ok(())
@@ -436,6 +482,25 @@ impl GameCore {
         employee_changes: Vec<NodeOutcomeEmployeeChange>,
         inventory_diff: InventoryDiffDto,
     ) -> Result<NodeOutcomeSummary, GameError> {
+        self.combat_node_outcome_summary_with_resolution(
+            battle,
+            mission_success,
+            battle.winner,
+            false,
+            employee_changes,
+            inventory_diff,
+        )
+    }
+
+    fn combat_node_outcome_summary_with_resolution(
+        &self,
+        battle: &CombatBattleState,
+        mission_success: bool,
+        winner: BattleWinner,
+        retreated: bool,
+        employee_changes: Vec<NodeOutcomeEmployeeChange>,
+        inventory_diff: InventoryDiffDto,
+    ) -> Result<NodeOutcomeSummary, GameError> {
         let session = self
             .state
             .node_session
@@ -448,7 +513,8 @@ impl GameCore {
             mission_success,
             combat: Some(CombatOutcomeSummary {
                 node_type: battle.node_type,
-                winner: battle.winner,
+                winner,
+                retreated,
             }),
             employee_changes,
             inventory_diff,
@@ -709,6 +775,42 @@ impl GameCore {
             inventory_diff,
             outcome,
             completion: Box::new(completion),
+        })
+    }
+
+    pub(super) fn handle_retreat_combat(&mut self) -> Result<BehaviorResult, GameError> {
+        let battle = {
+            let selected = self
+                .state
+                .selected_event
+                .as_ref()
+                .ok_or(GameError::InvalidAction)?;
+            selected.as_combat_battle()?.clone()
+        };
+
+        if battle.node_type == CombatNodeType::Boss {
+            return Err(GameError::InvalidAction);
+        }
+        if self.state.node_session.is_none() {
+            return Err(GameError::InvalidAction);
+        }
+
+        QliphothManager::apply_suppress_failure(&mut self.state.qliphoth);
+        let outcome = self.combat_node_outcome_summary_with_resolution(
+            &battle,
+            false,
+            BattleWinner::Draw,
+            true,
+            Vec::new(),
+            InventoryDiffDto::default(),
+        )?;
+        let completion = self.handle_complete_node()?;
+        Ok(match completion {
+            BehaviorResult::NodeCompleted { map, .. } => BehaviorResult::NodeCompleted {
+                map,
+                outcome: Some(outcome),
+            },
+            other => other,
         })
     }
 }

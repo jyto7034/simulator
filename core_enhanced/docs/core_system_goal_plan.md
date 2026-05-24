@@ -155,7 +155,7 @@ cargo test -p game_core game::world::tests::map_flow::
 - `src/game/world/combat.rs`
   - 전투 보상에 포함된 `GrantExperience` 총량을 계산한다.
   - 해당 전투에 출전했고 생존했으며 전투불능이 아닌 직원에게 경험치를 균등 분배한다.
-  - Reward/Support/Event 같은 비전투 노드에서는 경험치 보상을 지급하지 않는다.
+  - Reward/Support/HeadquartersContact/Shop 같은 비전투 노드에서는 경험치 보상을 지급하지 않는다. 기존 Event 노드는 제거되었으며, 추후 새 RandomEvent를 만들 때 성장 보상 여부를 별도로 결정한다.
 - `src/game/behavior.rs`
   - `NodeOutcomeEmployeeChange`에 `experience_before`, `experience_after`를 추가했다.
 - `src/game/world/tests.rs`
@@ -180,7 +180,7 @@ cargo test -p game_core game::world::tests::map_flow::
 
 - 전투 보상 경험치는 해당 전투에 출전했고 생존한 직원에게 균등 지급한다.
 - 전투불능 직원은 후처리 trauma/run hp 페널티를 받으므로 같은 경험치 보상을 받지 않는다.
-- Reward/Support/Event 노드의 경험치 보상은 사용하지 않는다. 직원 경험치는 전투 참여/생존/후처리 중심으로만 증가한다.
+- Reward/Support/HeadquartersContact/Shop 노드의 경험치 보상은 사용하지 않는다. 직원 경험치는 전투 참여/생존/후처리 중심으로만 증가한다. 기존 Event 노드는 Shop/Reward 래퍼라 제거되었고, 추후 RandomEvent를 새로 만들 때 별도 정책으로 결정한다.
 
 ### 종료 조건
 
@@ -357,7 +357,7 @@ cargo test -p game_core game::world::tests::system_flow::
 - 구 보상 세션 행동명을 `ClaimReward`, `ExitReward`로 변경했다.
 - 구 보상 수령 결과명을 `RewardGranted`로 변경했다.
 - 구 보상 세션 내부 행동명을 `RewardAction`으로 변경했다.
-- 랜덤 이벤트의 보상 타겟은 `Reward`로 표현한다.
+- 기존 랜덤 이벤트의 보상 타겟 래퍼는 제거되었다. 추후 랜덤 이벤트가 필요하면 선택형 `RandomEvent` 노드로 새로 작성한다.
 - 전투 효과의 `BonusDamage`처럼 보상 세션과 무관한 일반 게임 용어는 변경하지 않는다.
 
 ### 문제

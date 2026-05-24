@@ -2,7 +2,8 @@ mod common;
 
 use game_core::game::ability::{DeliveryDef, SkillAreaAnchorSource, SkillAreaShapeDef};
 use game_core::game::combat_preview::{
-    BattlefieldArchetype, CombatNodeType, CombatPreview, EnemyKind,
+    BattlefieldArchetype, CombatNodeType, CombatPreview, DeploymentZoneKind, EnemyKind,
+    SpawnZoneKind,
 };
 use game_core::game::data::{
     pve_data::PveWaveSource,
@@ -10,6 +11,7 @@ use game_core::game::data::{
     skill_fragment_data::{SkillFragmentEffectDef, SkillFragmentOrigin},
 };
 use game_core::game::map::{MapNodeCategory, MapNodeDefinitionDatabase, MapNodeId};
+use game_core::game::resources::Position;
 use game_core::game::reward::RewardEffect;
 use uuid::Uuid;
 
@@ -334,6 +336,22 @@ fn load_game_data_from_ron_reads_starter_employee_candidates() {
 }
 
 #[test]
+fn load_game_data_from_ron_reads_separate_recruitment_candidates() {
+    let game_data = common::load_game_data_from_ron();
+
+    let candidates = &game_data.recruitment_employee_data.candidates;
+    assert!(!candidates.is_empty());
+    assert!(game_data
+        .recruitment_employee_data
+        .get_by_id("hq_field_medic")
+        .is_some());
+    assert!(game_data
+        .starter_employee_data
+        .get_by_id("hq_field_medic")
+        .is_none());
+}
+
+#[test]
 fn live_rewards_can_grant_skill_fragments_from_ron() {
     let game_data = common::load_game_data_from_ron();
 
@@ -582,37 +600,8 @@ fn live_resource_skill_references_resolve() {
 }
 
 #[test]
-fn live_event_and_pve_references_resolve() {
+fn live_pve_references_resolve() {
     let game_data = common::load_game_data_from_ron();
-
-    for event in &game_data.random_event_data.events {
-        match &event.inner_metadata {
-            game_core::game::data::random_event_data::RandomEventInnerMetadata::Shop(uuid) => {
-                assert!(
-                    game_data.shop_data.get_by_uuid(uuid).is_some(),
-                    "random event `{}` references missing shop uuid {}",
-                    event.id,
-                    uuid
-                );
-            }
-            game_core::game::data::random_event_data::RandomEventInnerMetadata::Reward(uuid) => {
-                assert!(
-                    game_data.reward_data.get_by_uuid(uuid).is_some(),
-                    "random event `{}` references missing reward uuid {}",
-                    event.id,
-                    uuid
-                );
-            }
-            game_core::game::data::random_event_data::RandomEventInnerMetadata::Suppress(uuid) => {
-                assert!(
-                    game_data.abnormality_data.get_by_uuid(uuid).is_some(),
-                    "random event `{}` references missing abnormality uuid {}",
-                    event.id,
-                    uuid
-                );
-            }
-        }
-    }
 
     for encounter in &game_data.pve_data.encounters {
         assert!(
@@ -737,6 +726,27 @@ fn live_map_content_pools_are_safe_and_resolve() {
                     pool.id
                 );
             }
+            game_core::game::map::MapNodePayload::HeadquartersContact {
+                shop_pool_id: Some(pool_id),
+                candidate_count,
+            } => {
+                let pool = game_data.shop_data.pool_by_id(pool_id).unwrap_or_else(|| {
+                    panic!("headquarters contact node references missing shop pool `{pool_id}`")
+                });
+                assert!(
+                    !pool.shop_ids.is_empty(),
+                    "headquarters contact shop pool `{}` must not be empty",
+                    pool.id
+                );
+                assert!(
+                    *candidate_count > 0,
+                    "headquarters contact node must expose at least one recruitment candidate"
+                );
+                assert!(
+                    game_data.recruitment_employee_data.candidates.len() >= *candidate_count,
+                    "recruitment_candidates.ron must cover headquarters candidate_count"
+                );
+            }
             game_core::game::map::MapNodePayload::Reward {
                 reward_pool_id: Some(pool_id),
             } => {
@@ -761,37 +771,6 @@ fn live_map_content_pools_are_safe_and_resolve() {
                         "map reward pool `{}` must not contain forbidden reward `{}`",
                         pool.id,
                         reward.id
-                    );
-                }
-            }
-            game_core::game::map::MapNodePayload::Event {
-                event_pool_id: Some(pool_id),
-                ..
-            } => {
-                let pool = game_data
-                    .random_event_data
-                    .pool_by_id(pool_id)
-                    .unwrap_or_else(|| {
-                        panic!("map event node references missing pool `{pool_id}`")
-                    });
-                assert!(
-                    !pool.event_ids.is_empty(),
-                    "map event pool `{}` must not be empty",
-                    pool.id
-                );
-                for event_id in &pool.event_ids {
-                    let event = game_data
-                        .random_event_data
-                        .get_by_id(event_id)
-                        .expect("random event pool entries should resolve");
-                    assert!(
-                        !matches!(
-                            event.inner_metadata,
-                            game_core::game::data::random_event_data::RandomEventInnerMetadata::Suppress(_)
-                        ),
-                        "map event pool `{}` must not contain suppress event `{}`",
-                        pool.id,
-                        event.id
                     );
                 }
             }
@@ -1052,13 +1031,36 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
     );
     assert_eq!(defense_preview.node_type, CombatNodeType::Defense);
     assert_eq!(defense_preview.archetype, BattlefieldArchetype::ChokePoint);
+    let route = defense_preview
+        .routes
+        .iter()
+        .find(|route| route.id == "black_box_breach_main")
+        .expect("defense preview should expose black box breach route");
+    assert_eq!(route.start, Position::new(4, 0));
+    assert_eq!(route.end, Position::new(4, 5));
+    assert!(route.cells.contains(&route.start));
+    assert!(route.cells.contains(&route.end));
+    assert!(route
+        .cells
+        .iter()
+        .all(|cell| defense_preview.valid_tiles.contains(cell)));
+    assert!(defense_preview.spawn_zones.iter().any(|zone| {
+        zone.kind == SpawnZoneKind::Entry
+            && zone.id == "north_entry"
+            && zone.cells.contains(&route.start)
+    }));
+    assert!(defense_preview.deployment_zones.iter().any(|zone| {
+        zone.kind == DeploymentZoneKind::Ground && zone.cells.contains(&Position::new(4, 6))
+    }));
     assert_eq!(defense_preview.spawn_waves.len(), 2);
     assert_eq!(
         defense_preview.spawn_waves[0].spawn_zone_ids,
         ["north_entry"]
     );
     assert!(defense_preview.spawn_waves.iter().all(|wave| {
-        wave.required_for_victory
+        wave.route_id.as_deref() == Some("black_box_breach_main")
+            && wave.spawn_zone_ids == ["north_entry"]
+            && wave.required_for_victory
             && wave
                 .enemy_entries
                 .iter()
