@@ -13,9 +13,9 @@ use super::{
 
 #[test]
 // 목적:
-// Spider Bud의 Poison Stack이 근처 적 여러 명 중 하나만 골라
-// poison 버프를 단일 대상에게만 적용하는지 검증한다.
-fn spider_bud_applies_poison_only_to_the_nearest_enemy() {
+// Spider Bud의 Poison Stack이 가장 가까운 적 하나에게
+// poison 버프를 단일 대상으로 적용하는지 검증한다.
+fn spider_bud_applies_poison_only_to_the_nearest_target() {
     let mut legend = skill_dummy_board_legend();
     legend
         .units
@@ -24,13 +24,12 @@ fn spider_bud_applies_poison_only_to_the_nearest_enemy() {
 
     let board = r#"
         . . . . . . .
-        . C . E! . . .
-        . D! . . . . .
+        . C D! E! . . .
     "#;
 
     let result = run_abnormality_scenario("o-01-45", scenario_from_board(board, &legend));
-    let near_enemy = result
-        .unit_instance_at(Position::new(1, 2), Some(Side::Opponent))
+    let nearest_target = result
+        .unit_instance_at(Position::new(2, 1), Some(Side::Opponent))
         .unwrap();
 
     let cast = result.first_cast_of("spider_bud_poison_stack");
@@ -39,7 +38,7 @@ fn spider_bud_applies_poison_only_to_the_nearest_enemy() {
         TimelineEvent::AbilityCast {
             target_instance_id: Some(target_instance_id),
             ..
-        } if *target_instance_id == near_enemy
+    } if *target_instance_id == nearest_target
     ));
 
     let steps = result.first_cast_steps("spider_bud_poison_stack");
@@ -47,6 +46,6 @@ fn spider_bud_applies_poison_only_to_the_nearest_enemy() {
 
     let buffs = buffs_applied_by(result.timeline(), steps[0].seq);
     assert_eq!(buffs.len(), 1);
-    assert_eq!(target_unit_ids(&buffs), vec![near_enemy]);
+    assert_eq!(target_unit_ids(&buffs), vec![nearest_target]);
     assert_eq!(buff_ids(&buffs), vec![BuffId::from_name("poison")]);
 }

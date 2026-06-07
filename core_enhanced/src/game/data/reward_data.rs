@@ -14,6 +14,7 @@ pub enum RewardTag {
     Experience,
     Equipment,
     Artifact,
+    Consumable,
     SkillFragment,
     ResearchProgress,
     Forbidden,
@@ -52,6 +53,7 @@ impl RewardTag {
                 RewardEffect::GrantEquipment { .. }
                 | RewardEffect::GrantEquipmentMaterial { .. } => tags.push(Self::Equipment),
                 RewardEffect::GrantArtifact { .. } => tags.push(Self::Artifact),
+                RewardEffect::GrantConsumable { .. } => tags.push(Self::Consumable),
                 RewardEffect::GrantSkillFragment { .. } => tags.push(Self::SkillFragment),
                 RewardEffect::GrantSkillFragmentResearch { .. } => {
                     tags.push(Self::ResearchProgress)

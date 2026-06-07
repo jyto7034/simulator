@@ -14,8 +14,8 @@ use super::{
 #[test]
 // 목적:
 // Melting Love의 slime_orb가 가장 약한 적 하나를 먼저 맞추고,
-// slime_spread가 그 주변 클러스터 전체에 피해와 poison을 퍼뜨리는지 확인한다.
-fn melting_love_orb_marks_the_lowest_health_enemy_and_spread_hits_the_whole_cluster() {
+// slime_spread가 전방 tile range 안의 클러스터에 피해와 poison을 퍼뜨리는지 확인한다.
+fn melting_love_orb_marks_the_lowest_health_enemy_and_spread_hits_the_forward_tile_cluster() {
     let mut legend = skill_dummy_board_legend();
     for symbol in ['E', 'F'] {
         legend
@@ -33,7 +33,7 @@ fn melting_love_orb_marks_the_lowest_health_enemy_and_spread_hits_the_whole_clus
         . . . . . . .
         . . . . . . .
         . C D! . . . .
-        . F# E# . . . .
+        . . E# F# . . .
     "#;
 
     let result =
@@ -43,8 +43,8 @@ fn melting_love_orb_marks_the_lowest_health_enemy_and_spread_hits_the_whole_clus
         .unwrap();
     let spread_targets: HashSet<_> = [
         Position::new(2, 2),
-        Position::new(1, 3),
         Position::new(2, 3),
+        Position::new(3, 3),
     ]
     .into_iter()
     .map(|position| {

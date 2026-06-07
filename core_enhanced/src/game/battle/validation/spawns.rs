@@ -307,6 +307,11 @@ pub(super) fn validate_reference_spawn_order(
                 caster_instance_id,
                 target,
                 ..
+            }
+            | TimelineEvent::ManualCastStart {
+                caster_instance_id,
+                target,
+                ..
             } => {
                 validate_unit_reference_spawned(
                     extracted,
@@ -327,7 +332,8 @@ pub(super) fn validate_reference_spawn_order(
                     );
                 }
             }
-            TimelineEvent::AutoCastEnd { caster_instance_id } => {
+            TimelineEvent::AutoCastEnd { caster_instance_id }
+            | TimelineEvent::ManualCastEnd { caster_instance_id } => {
                 validate_unit_reference_spawned(
                     extracted,
                     *caster_instance_id,
@@ -596,21 +602,6 @@ pub(super) fn validate_reference_spawn_order(
                         violations,
                     );
                 }
-            }
-            TimelineEvent::RecoveryTargetSecured {
-                unit_instance_id, ..
-            }
-            | TimelineEvent::ExtractionCompleted {
-                unit_instance_id, ..
-            } => {
-                validate_unit_reference_spawned(
-                    extracted,
-                    *unit_instance_id,
-                    index,
-                    time_ms,
-                    &entry_desc,
-                    violations,
-                );
             }
             TimelineEvent::ItemSpawned {
                 owner_unit_instance_id,

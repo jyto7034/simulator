@@ -277,7 +277,7 @@ ArtifactDatabase(
             id: "red_mist_memory",
             uuid: "a0000010-0000-0000-0000-000000000010",
             name: "Red Mist Memory",
-            description: "An impossible combat record. Frontline units become brutally decisive.",
+            description: "An impossible combat record. DefenseRoute units become brutally decisive.",
             rarity: ALEPH,
             price: 460,
             triggered_effects: {

@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
 use crate::game::{
+    ability::SkillActivationMode,
     battle::types::UnitCombatProfile,
     behavior::GameError,
     data::skill_fragment_data::{
@@ -947,6 +948,7 @@ impl SkillFragmentLoadout {
                     .unwrap_or(imitation_skill_id)
             };
             profile.skill_id = Some(selected_skill_id.clone());
+            profile.skill_activation_mode = SkillActivationMode::Manual;
         }
 
         Ok(profile)
@@ -992,6 +994,7 @@ mod tests {
                 crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
             ],
             dependencies: vec![],
+            compatibility: Default::default(),
             effect: crate::game::data::skill_fragment_data::SkillFragmentEffectDef::ActiveSkill {
                 imitation_skill_id: crate::game::ability::SkillId::from("test_active_skill"),
                 upgrade_skill_ids: Default::default(),
@@ -1018,6 +1021,7 @@ mod tests {
             )
             .unwrap();
         assert_eq!(profile.skill_id.as_deref(), Some("test_active_skill"));
+        assert_eq!(profile.skill_activation_mode, SkillActivationMode::Manual);
     }
 
     #[test]
@@ -1034,6 +1038,7 @@ mod tests {
                     crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
                 ],
                 dependencies: vec![],
+                compatibility: Default::default(),
                 effect: SkillFragmentEffectDef::ActiveSkill {
                     imitation_skill_id: crate::game::ability::SkillId::from(skill_id),
                     upgrade_skill_ids: Default::default(),
@@ -1073,6 +1078,7 @@ mod tests {
                 crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
             ],
             dependencies: vec![],
+            compatibility: Default::default(),
             effect: SkillFragmentEffectDef::ActiveSkill {
                 imitation_skill_id: crate::game::ability::SkillId::from("stack_skill"),
                 upgrade_skill_ids: Default::default(),
@@ -1109,6 +1115,7 @@ mod tests {
                 crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
             ],
             dependencies: vec![],
+            compatibility: Default::default(),
             effect: SkillFragmentEffectDef::ActiveSkill {
                 imitation_skill_id: crate::game::ability::SkillId::from("upgrade_skill"),
                 upgrade_skill_ids: Default::default(),
@@ -1126,6 +1133,7 @@ mod tests {
                 crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
             ],
             dependencies: vec![],
+            compatibility: Default::default(),
             effect: SkillFragmentEffectDef::ActiveSkill {
                 imitation_skill_id: crate::game::ability::SkillId::from("material_skill"),
                 upgrade_skill_ids: Default::default(),
@@ -1195,6 +1203,7 @@ mod tests {
                 crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
             ],
             dependencies: vec![],
+            compatibility: Default::default(),
             effect: SkillFragmentEffectDef::ActiveSkill {
                 imitation_skill_id: crate::game::ability::SkillId::from("delivery_skill"),
                 upgrade_skill_ids: Default::default(),
@@ -1251,6 +1260,7 @@ mod tests {
                 crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
             ],
             dependencies: vec![],
+            compatibility: Default::default(),
             effect: SkillFragmentEffectDef::ActiveSkill {
                 imitation_skill_id: crate::game::ability::SkillId::from("target_skill"),
                 upgrade_skill_ids: Default::default(),
@@ -1268,6 +1278,7 @@ mod tests {
                 crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
             ],
             dependencies: vec![],
+            compatibility: Default::default(),
             effect: SkillFragmentEffectDef::ActiveSkill {
                 imitation_skill_id: crate::game::ability::SkillId::from("material_skill"),
                 upgrade_skill_ids: Default::default(),
@@ -1301,6 +1312,7 @@ mod tests {
                 crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
             ],
             dependencies: vec![],
+            compatibility: Default::default(),
             effect: SkillFragmentEffectDef::ActiveSkill {
                 imitation_skill_id: crate::game::ability::SkillId::from("target_skill"),
                 upgrade_skill_ids: Default::default(),
@@ -1318,6 +1330,7 @@ mod tests {
                 crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
             ],
             dependencies: vec![],
+            compatibility: Default::default(),
             effect: SkillFragmentEffectDef::ActiveSkill {
                 imitation_skill_id: crate::game::ability::SkillId::from("material_skill"),
                 upgrade_skill_ids: Default::default(),
@@ -1355,6 +1368,7 @@ mod tests {
                 crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
             ],
             dependencies: vec![],
+            compatibility: Default::default(),
             effect: SkillFragmentEffectDef::ActiveSkill {
                 imitation_skill_id: crate::game::ability::SkillId::from("target_skill"),
                 upgrade_skill_ids: Default::default(),
@@ -1387,6 +1401,7 @@ mod tests {
                 crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
             ],
             dependencies: vec![],
+            compatibility: Default::default(),
             effect: SkillFragmentEffectDef::ActiveSkill {
                 imitation_skill_id: crate::game::ability::SkillId::from("base_skill"),
                 upgrade_skill_ids,
@@ -1404,6 +1419,7 @@ mod tests {
                 crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
             ],
             dependencies: vec![],
+            compatibility: Default::default(),
             effect: SkillFragmentEffectDef::ActiveSkill {
                 imitation_skill_id: crate::game::ability::SkillId::from("material_skill"),
                 upgrade_skill_ids: Default::default(),

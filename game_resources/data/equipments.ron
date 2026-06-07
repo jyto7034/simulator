@@ -8,6 +8,21 @@ EquipmentDatabase(
             equipment_type: Weapon,
             rarity: ALEPH,
             price: 300,
+            weapon_profile: Some((
+                range_role: Melee,
+                weapon_archetype: Sword,
+                damage_type: Physical,
+                targeting_profile: DefaultForward,
+                air_capable: false,
+                range_units: 1.0,
+                defense_tile_range: (
+                    include_anchor_tile: false,
+                    rows: [".X.", ".@.", "..."],
+                ),
+                interval_ms: 1500,
+                windup_ms: 200,
+                delivery: Instant,
+            )),
         ),
         EquipmentMetadata(
             id: "paradise_lost",
@@ -16,6 +31,27 @@ EquipmentDatabase(
             equipment_type: Weapon,
             rarity: ALEPH,
             price: 500,
+            weapon_profile: Some((
+                range_role: Ranged,
+                weapon_archetype: Staff,
+                damage_type: Magic,
+                targeting_profile: LowMagicResistFirst,
+                air_capable: true,
+                range_units: 6.0,
+                defense_tile_range: (
+                    include_anchor_tile: false,
+                    rows: [
+                        "..X..",
+                        ".XXX.",
+                        "..X..",
+                        "..@..",
+                        ".....",
+                    ],
+                ),
+                interval_ms: 1700,
+                windup_ms: 260,
+                delivery: Projectile(speed_units_per_ms: 6000),
+            )),
         ),
         EquipmentMetadata(
             id: "fourth_match",
@@ -24,6 +60,27 @@ EquipmentDatabase(
             equipment_type: Weapon,
             rarity: HE,
             price: 120,
+            weapon_profile: Some((
+                range_role: Ranged,
+                weapon_archetype: GrenadeLauncher,
+                damage_type: Magic,
+                targeting_profile: SplashClusterFirst,
+                air_capable: false,
+                range_units: 5.0,
+                defense_tile_range: (
+                    include_anchor_tile: false,
+                    rows: [
+                        ".XXX.",
+                        ".XXX.",
+                        "..X..",
+                        "..@..",
+                        ".....",
+                    ],
+                ),
+                interval_ms: 1900,
+                windup_ms: 320,
+                delivery: Projectile(speed_units_per_ms: 5200),
+            )),
         ),
 
         // 방어구 상인 벤자민의 상품

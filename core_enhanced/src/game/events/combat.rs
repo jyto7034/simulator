@@ -6,14 +6,7 @@ use uuid::Uuid;
 use crate::{
     game::resources::{Inventory, Position},
     game::{
-        battle::{
-            core::BattleCore,
-            scenario::{
-                BattleScenario, ScenarioGroupId, ScenarioSpawnGroup, ScenarioUnitRef,
-                ScenarioUnitSpawn,
-            },
-            types::{BattleResult, BattleUnitDraft, BattleUnitSource},
-        },
+        battle::{core::BattleCore, scenario::BattleScenario},
         behavior::GameError,
         combat_battlefield_plan::{
             validate_static_obstacles_do_not_overlap_scenario, BattleStartPlan,
@@ -21,26 +14,34 @@ use crate::{
         combat_defense_object::defense_object_group_for_win_condition,
         combat_enemy_spawns::enemy_spawn_groups_from_preview,
         combat_mission_policy::CombatMissionPolicy,
-        combat_player_spawns::{
-            player_scenario_start_from_positions, scenario_artifacts_from_inventory,
-            PlayerScenarioStart,
-        },
+        combat_player_spawns::{player_scenario_start_from_positions, PlayerScenarioStart},
         combat_preview::{CombatNodeType, CombatPreview},
         combat_rewards::resolve_combat_rewards_from_encounter,
         combat_scenario_groups::{push_start_spawn_group, push_timed_spawn_group},
         data::GameDataBase,
         employee::EmployeeRoster,
-        enums::{RewardMode, Side},
-        growth::GrowthStack,
+        enums::RewardMode,
         reward::RewardOption,
         skill_fragment::SkillFragmentInventory,
     },
+};
+
+#[cfg(test)]
+use crate::game::{
+    battle::{
+        scenario::{ScenarioGroupId, ScenarioSpawnGroup, ScenarioUnitRef, ScenarioUnitSpawn},
+        types::{BattleUnitDraft, BattleUnitSource},
+    },
+    combat_player_spawns::scenario_artifacts_from_inventory,
+    enums::Side,
+    growth::GrowthStack,
 };
 
 /// Node combat business logic helper.
 pub struct CombatExecutor;
 
 #[derive(Debug, Clone, Copy)]
+#[cfg(test)]
 pub struct TestPlayerAbnormalityUnit {
     pub owned_uuid: Uuid,
     pub base_uuid: Uuid,
@@ -48,7 +49,7 @@ pub struct TestPlayerAbnormalityUnit {
 }
 
 impl CombatExecutor {
-    pub fn start_battle_with_combat_preview(
+    pub fn build_battle_with_combat_preview(
         roster: &EmployeeRoster,
         inventory: &Inventory,
         skill_fragments: &SkillFragmentInventory,
@@ -58,9 +59,9 @@ impl CombatExecutor {
         movement_seed: u64,
         combat_preview: &CombatPreview,
         deployment_positions: &HashMap<Uuid, Position>,
-    ) -> Result<BattleResult, GameError> {
+    ) -> Result<BattleCore, GameError> {
         let plan = BattleStartPlan::from_preview(&game_data, encounter_id, combat_preview)?;
-        Self::start_battle_with_explicit_deployment(
+        Self::build_battle_with_explicit_deployment(
             roster,
             inventory,
             skill_fragments,
@@ -74,7 +75,7 @@ impl CombatExecutor {
         )
     }
 
-    fn start_battle_with_explicit_deployment(
+    fn build_battle_with_explicit_deployment(
         roster: &EmployeeRoster,
         inventory: &Inventory,
         skill_fragments: &SkillFragmentInventory,
@@ -85,7 +86,7 @@ impl CombatExecutor {
         plan: BattleStartPlan,
         combat_preview: &CombatPreview,
         deployment_positions: &HashMap<Uuid, Position>,
-    ) -> Result<BattleResult, GameError> {
+    ) -> Result<BattleCore, GameError> {
         info!(
             "Starting node combat for abnormality={} encounter={} field_size={:?}",
             abnormality_id, encounter_id, plan.field_size
@@ -110,12 +111,11 @@ impl CombatExecutor {
         )?;
         validate_static_obstacles_do_not_overlap_scenario(&scenario)?;
 
-        let mut battle = BattleCore::new_from_scenario(scenario, game_data, movement_seed);
-        let result = battle.run_battle()?;
-
-        info!("Node combat completed");
-
-        Ok(result)
+        Ok(BattleCore::new_from_scenario(
+            scenario,
+            game_data,
+            movement_seed,
+        ))
     }
 
     /// Test harness for battle scenarios that intentionally field abnormalities on the player side.
@@ -123,40 +123,6 @@ impl CombatExecutor {
     /// This does not grant, own, buy, or store abnormalities in player inventory. It only converts
     /// explicit test fixtures into a scenario spawn group so combat behavior can be validated against
     /// abnormality metadata when needed.
-    pub fn start_test_battle_with_player_abnormalities(
-        player_units: &[TestPlayerAbnormalityUnit],
-        inventory: &Inventory,
-        game_data: Arc<GameDataBase>,
-        abnormality_id: &str,
-        encounter_id: &str,
-        movement_seed: u64,
-        combat_preview: &CombatPreview,
-        deployment_positions: &HashMap<Uuid, Position>,
-    ) -> Result<BattleResult, GameError> {
-        info!(
-            "Starting test node combat with player-side abnormality fixtures for abnormality={} encounter={}",
-            abnormality_id, encounter_id
-        );
-
-        let player_start = Self::build_test_player_abnormality_scenario_start_from_positions(
-            player_units,
-            inventory,
-            deployment_positions,
-        )?;
-        let plan = BattleStartPlan::from_preview(&game_data, encounter_id, combat_preview)?;
-        let scenario = Self::build_battle_scenario_from_preview(
-            &game_data,
-            encounter_id,
-            combat_preview,
-            plan,
-            player_start,
-        )?;
-        validate_static_obstacles_do_not_overlap_scenario(&scenario)?;
-
-        let mut battle = BattleCore::new_from_scenario(scenario, game_data, movement_seed);
-        battle.run_battle()
-    }
-
     pub fn resolve_rewards(
         game_data: &GameDataBase,
         encounter_id: &str,
@@ -166,13 +132,19 @@ impl CombatExecutor {
             .get_by_id(encounter_id)
             .ok_or(GameError::MissingResource("PveEncounter"))?;
 
-        resolve_combat_rewards_from_encounter(game_data, encounter, encounter.node_type)
+        resolve_combat_rewards_from_encounter(
+            game_data,
+            encounter,
+            encounter.node_type,
+            encounter.mission_variant,
+        )
     }
 
-    pub fn resolve_rewards_for_node_type(
+    pub fn resolve_rewards_for_mission(
         game_data: &GameDataBase,
         encounter_id: &str,
         node_type: CombatNodeType,
+        mission_variant: crate::game::combat_preview::CombatMissionVariant,
     ) -> Result<(RewardMode, Vec<RewardOption>), GameError> {
         let encounter = game_data
             .pve_data
@@ -187,10 +159,24 @@ impl CombatExecutor {
                 )));
             }
         }
+        if let Some(authored_variant) = encounter.mission_variant {
+            if authored_variant != mission_variant {
+                return Err(GameError::InvalidStaticData(format!(
+                    "combat encounter '{}' resolved rewards for {:?}/{:?}, but authored mission_variant is {:?}",
+                    encounter_id, node_type, mission_variant, authored_variant
+                )));
+            }
+        }
 
-        resolve_combat_rewards_from_encounter(game_data, encounter, Some(node_type))
+        resolve_combat_rewards_from_encounter(
+            game_data,
+            encounter,
+            Some(node_type),
+            Some(mission_variant),
+        )
     }
 
+    #[cfg(test)]
     fn build_test_player_abnormality_scenario_start_from_positions(
         player_units: &[TestPlayerAbnormalityUnit],
         inventory: &Inventory,
@@ -261,14 +247,12 @@ impl CombatExecutor {
 
         push_start_spawn_group(&mut groups, &mut events, player_start.spawn_group);
 
-        let mut tactical_plan = CombatMissionPolicy::default_tactical_plan_for_preview(
-            combat_preview.node_type,
-            combat_preview,
-        );
+        let mut tactical_plan =
+            CombatMissionPolicy::default_tactical_plan_for_preview(combat_preview);
         encounter.apply_authored_tactical_plan(&mut tactical_plan);
         let win_condition = encounter.authored_win_condition().unwrap_or_else(|| {
             CombatMissionPolicy::default_win_condition_for_tactical_plan(
-                combat_preview.node_type,
+                combat_preview.mission_variant,
                 combat_preview.mission_risk,
                 &tactical_plan,
             )
@@ -324,6 +308,14 @@ impl CombatExecutor {
                 )));
             }
         }
+        if let Some(authored_variant) = encounter.mission_variant {
+            if authored_variant != combat_preview.mission_variant {
+                return Err(GameError::InvalidStaticData(format!(
+                    "combat preview mission_variant {:?} does not match authored encounter '{}' mission_variant {:?}",
+                    combat_preview.mission_variant, encounter_id, authored_variant
+                )));
+            }
+        }
 
         Ok(())
     }
@@ -341,8 +333,8 @@ mod tests {
         abnormality_data::AbnormalityMetadata,
         pve_data::{
             PveBattleObjectiveData, PveBattlefieldOverrideData, PveEncounter, PveEncounterDatabase,
-            PveEnemyMovementPlanData, PveTacticalPlanData, PveTacticalPointData, PveWaveData,
-            PveWaveEnemyData, PveWinConditionData,
+            PveTacticalPlanData, PveTacticalPointData, PveWaveData, PveWaveEnemyData,
+            PveWinConditionData,
         },
         GameDataBase, GameDataBuilder,
     };
@@ -378,6 +370,8 @@ mod tests {
             basic_attack: Default::default(),
             resonance: Default::default(),
             skill_id: None,
+            mobility_kind: Default::default(),
+            target_traits: Vec::new(),
         }
     }
 
@@ -394,6 +388,7 @@ mod tests {
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
                 node_type: Some(CombatNodeType::Boss),
+                mission_variant: None,
                 battlefield: None,
                 tactical_plan: None,
                 win_condition: None,
@@ -416,10 +411,11 @@ mod tests {
             }],
         );
 
-        let err = CombatExecutor::resolve_rewards_for_node_type(
+        let err = CombatExecutor::resolve_rewards_for_mission(
             game_data.as_ref(),
             "boss_contract",
-            CombatNodeType::Suppression,
+            CombatNodeType::Defense,
+            crate::game::combat_preview::CombatMissionVariant::Defense,
         )
         .expect_err("reward resolution should reject a mismatched combat node type");
 
@@ -445,6 +441,7 @@ mod tests {
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
                 node_type: None,
+                mission_variant: None,
                 battlefield: None,
                 tactical_plan: None,
                 win_condition: None,
@@ -472,7 +469,6 @@ mod tests {
             MapNodeCategory::Combat,
             Some("preview_encounter"),
             game_data.as_ref(),
-            false,
             11,
         );
         let inventory = Inventory::new();
@@ -483,7 +479,7 @@ mod tests {
         let deployment_positions =
             HashMap::from([(employee_uuid, preview.deployment_zones[0].cells[0])]);
 
-        let result = CombatExecutor::start_battle_with_combat_preview(
+        let battle = CombatExecutor::build_battle_with_combat_preview(
             &roster,
             &inventory,
             &skill_fragments,
@@ -496,17 +492,8 @@ mod tests {
         )
         .expect("combat preview should provide a valid battle layout");
 
-        let battle_start = result
-            .timeline
-            .entries
-            .iter()
-            .find_map(|entry| match entry.event {
-                TimelineEvent::BattleStart { width, height } => Some((width, height)),
-                _ => None,
-            })
-            .expect("timeline should contain BattleStart");
         assert_eq!(
-            battle_start,
+            (battle.battlefield.width(), battle.battlefield.height()),
             (preview.width as u8, preview.height as u8),
             "actual combat must use the same battlefield dimensions as preview"
         );
@@ -527,6 +514,7 @@ mod tests {
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
                 node_type: None,
+                mission_variant: None,
                 battlefield: None,
                 tactical_plan: None,
                 win_condition: None,
@@ -554,7 +542,6 @@ mod tests {
             MapNodeCategory::Combat,
             Some("strict_preview_encounter"),
             game_data.as_ref(),
-            false,
             12,
         );
         preview.spawn_waves.clear();
@@ -566,7 +553,7 @@ mod tests {
         let deployment_positions =
             HashMap::from([(employee_uuid, preview.deployment_zones[0].cells[0])]);
 
-        let err = match CombatExecutor::start_battle_with_combat_preview(
+        let err = match CombatExecutor::build_battle_with_combat_preview(
             &roster,
             &inventory,
             &skill_fragments,
@@ -600,7 +587,8 @@ mod tests {
             risk_level: RiskLevel::ZAYIN,
             reward_mode: RewardMode::ClaimAll,
             reward_uuids: vec![],
-            node_type: Some(CombatNodeType::Suppression),
+            node_type: Some(CombatNodeType::Defense),
+            mission_variant: None,
             battlefield: None,
             tactical_plan: None,
             win_condition: None,
@@ -635,7 +623,6 @@ mod tests {
             MapNodeCategory::Combat,
             Some("encounter_a"),
             game_data.as_ref(),
-            false,
             12,
         );
         let mut roster = EmployeeRoster::new();
@@ -643,7 +630,7 @@ mod tests {
         let deployment_positions =
             HashMap::from([(employee_uuid, preview.deployment_zones[0].cells[0])]);
 
-        let err = match CombatExecutor::start_battle_with_combat_preview(
+        let err = match CombatExecutor::build_battle_with_combat_preview(
             &roster,
             &Inventory::new(),
             &SkillFragmentInventory::new(),
@@ -680,6 +667,7 @@ mod tests {
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
                 node_type: Some(CombatNodeType::Defense),
+                mission_variant: None,
                 battlefield: Some(PveBattlefieldOverrideData {
                     archetype: Some(crate::game::combat_preview::BattlefieldArchetype::ChokePoint),
                     size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
@@ -690,7 +678,7 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
-                    route_id: Some("black_box_breach_main".to_string()),
+                    route_id: None,
                     required_for_victory: true,
                     source: None,
                     enemies: vec![PveWaveEnemyData {
@@ -710,16 +698,15 @@ mod tests {
             MapNodeCategory::Combat,
             Some("defense_encounter"),
             game_data.as_ref(),
-            false,
             12,
         );
-        preview.node_type = CombatNodeType::Suppression;
+        preview.node_type = CombatNodeType::Boss;
         let mut roster = EmployeeRoster::new();
         roster.add(Employee::new(employee_uuid, "Agent"));
         let deployment_positions =
             HashMap::from([(employee_uuid, preview.deployment_zones[0].cells[0])]);
 
-        let err = match CombatExecutor::start_battle_with_combat_preview(
+        let err = match CombatExecutor::build_battle_with_combat_preview(
             &roster,
             &Inventory::new(),
             &SkillFragmentInventory::new(),
@@ -737,7 +724,7 @@ mod tests {
         assert!(matches!(
             err,
             GameError::InvalidStaticData(ref message)
-                if message.contains("preview node_type Suppression")
+                if message.contains("preview node_type Boss")
                     && message.contains("authored encounter 'defense_encounter' node_type Defense")
         ));
     }
@@ -757,6 +744,7 @@ mod tests {
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
                 node_type: None,
+                mission_variant: None,
                 battlefield: None,
                 tactical_plan: None,
                 win_condition: None,
@@ -792,13 +780,32 @@ mod tests {
             node_id,
             encounter_id: Some("wave_encounter".to_string()),
             battlefield_template_id: "test_wave_field".to_string(),
-            node_type: crate::game::combat_preview::CombatNodeType::Suppression,
+            node_type: crate::game::combat_preview::CombatNodeType::Defense,
+            mission_variant: crate::game::combat_preview::CombatMissionVariant::Encirclement,
             mission_risk: crate::game::combat_preview::CombatMissionRisk::Controlled,
             archetype: crate::game::combat_preview::BattlefieldArchetype::Ambush,
             size_class: crate::game::combat_preview::BattlefieldSizeClass::Small,
             width: 5,
             height: 5,
-            valid_tiles: Vec::new(),
+            tiles: vec![
+                crate::game::combat_preview::BattlefieldTile {
+                    position: Position::new(1, 1),
+                    kind: crate::game::combat_preview::BattlefieldTileKind::Ground,
+                },
+                crate::game::combat_preview::BattlefieldTile {
+                    position: Position::new(1, 2),
+                    kind: crate::game::combat_preview::BattlefieldTileKind::Ground,
+                },
+                crate::game::combat_preview::BattlefieldTile {
+                    position: Position::new(2, 1),
+                    kind: crate::game::combat_preview::BattlefieldTileKind::Ground,
+                },
+            ],
+            valid_tiles: vec![
+                Position::new(1, 1),
+                Position::new(1, 2),
+                Position::new(2, 1),
+            ],
             deployment_zones: vec![crate::game::combat_preview::DeploymentZone {
                 id: "deploy".to_string(),
                 label: "Deploy".to_string(),
@@ -832,7 +839,6 @@ mod tests {
                     route_id: None,
                     enemy_entries: vec![wave_entry.clone()],
                     required_for_victory: true,
-                    revealed_by_recon: true,
                 },
                 crate::game::combat_preview::SpawnWave {
                     id: "wave_1".to_string(),
@@ -841,13 +847,11 @@ mod tests {
                     route_id: None,
                     enemy_entries: vec![wave_entry],
                     required_for_victory: true,
-                    revealed_by_recon: false,
                 },
             ],
             obstacles: Vec::new(),
             enemy_briefing: Vec::new(),
-            recon_available: true,
-            recon_revealed: false,
+            threat_warnings: Vec::new(),
         };
 
         let inventory = Inventory::new();
@@ -856,7 +860,7 @@ mod tests {
         roster.add(Employee::new(employee_uuid, "Agent"));
         let deployment_positions = HashMap::from([(employee_uuid, Position::new(1, 1))]);
 
-        let result = CombatExecutor::start_battle_with_combat_preview(
+        let mut battle = CombatExecutor::build_battle_with_combat_preview(
             &roster,
             &inventory,
             &skill_fragments,
@@ -868,8 +872,14 @@ mod tests {
             &deployment_positions,
         )
         .expect("preview waves should convert into battle scenario waves");
+        let mut execution = battle
+            .start_battle_execution()
+            .expect("live execution should start");
+        battle
+            .step_battle_execution_until(&mut execution, 1_000)
+            .expect("second wave time should be reachable");
 
-        assert!(result.timeline.entries.iter().any(|entry| {
+        assert!(battle.timeline.entries.iter().any(|entry| {
             entry.time_ms == 1_000
                 && matches!(
                     entry.event,
@@ -898,17 +908,15 @@ mod tests {
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
                 node_type: None,
+                mission_variant: None,
                 battlefield: None,
                 tactical_plan: Some(PveTacticalPlanData {
                     points: vec![PveTacticalPointData {
-                        id: "black_box_recovery".to_string(),
+                        id: "black_box_anchor".to_string(),
                         position: crate::game::data::pve_data::PvePosition { x: 4, y: 8 },
                     }],
                     objective: Some(PveBattleObjectiveData::ProtectUnit {
                         unit_ref: "custom_black_box".to_string(),
-                    }),
-                    enemy_plan: Some(PveEnemyMovementPlanData::PathToPoint {
-                        point_id: "black_box_recovery".to_string(),
                     }),
                 }),
                 win_condition: Some(PveWinConditionData::ProtectUnit {
@@ -937,7 +945,6 @@ mod tests {
             MapNodeCategory::Combat,
             Some("tactical_encounter"),
             game_data.as_ref(),
-            false,
             2,
         );
         assert_eq!(
@@ -975,7 +982,7 @@ mod tests {
         assert_eq!(scenario.tactical_plan.points.len(), 1);
         assert!(matches!(
             scenario.tactical_plan.enemy_plan,
-            EnemyMovementPlan::PathToPoint { ref point_id } if point_id.0 == "black_box_recovery"
+            EnemyMovementPlan::PathAlongCells { ref cells } if !cells.is_empty()
         ));
         assert!(matches!(
             scenario.win_condition,
@@ -1007,6 +1014,7 @@ mod tests {
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
                 node_type: Some(CombatNodeType::Defense),
+                mission_variant: None,
                 battlefield: Some(PveBattlefieldOverrideData {
                     archetype: Some(crate::game::combat_preview::BattlefieldArchetype::ChokePoint),
                     size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
@@ -1036,7 +1044,6 @@ mod tests {
             MapNodeCategory::Combat,
             Some("default_defense_encounter"),
             game_data.as_ref(),
-            false,
             0,
         );
         assert_eq!(preview.node_type, CombatNodeType::Defense);
@@ -1077,28 +1084,24 @@ mod tests {
             scenario.tactical_plan.player_plan,
             PlayerMovementPlan::FixedDefense
         ));
-        let EnemyMovementPlan::PathAlongPath { ref point_ids } = scenario.tactical_plan.enemy_plan
-        else {
-            panic!("default Defense should follow the authored battlefield route");
-        };
+        let EnemyMovementPlan::PathAlongCells { ref cells } = scenario.tactical_plan.enemy_plan;
         assert_eq!(
-            point_ids.last().map(|point_id| point_id.0.as_str()),
-            Some("black_box_recovery")
+            cells.last().copied(),
+            preview.routes.first().map(|route| route.end)
         );
         let enemy_group = scenario
             .groups
             .iter()
             .find(|group| group.side == Side::Opponent)
             .expect("defense wave should become an opponent spawn group");
-        let Some(EnemyMovementPlan::PathAlongPath {
-            point_ids: wave_point_ids,
-        }) = &enemy_group.enemy_movement_plan
+        let Some(EnemyMovementPlan::PathAlongCells { cells: wave_cells }) =
+            &enemy_group.enemy_movement_plan
         else {
             panic!("defense wave route_id should select a route movement plan");
         };
         assert_eq!(
-            wave_point_ids.last().map(|point_id| point_id.0.as_str()),
-            Some("black_box_recovery")
+            wave_cells.last().copied(),
+            preview.routes.first().map(|route| route.end)
         );
         assert!(matches!(
             scenario.win_condition,
@@ -1114,134 +1117,17 @@ mod tests {
                     spawn.unit_ref.0 == DEFAULT_DEFENSE_OBJECT_REF
                         && matches!(spawn.draft.source, BattleUnitSource::DefenseObject { .. })
                 })));
-        assert_eq!(
-            scenario
-                .tactical_plan
-                .points
-                .last()
-                .map(|point| point.position),
-            preview.routes.first().map(|route| route.end)
-        );
-    }
-
-    #[test]
-    fn recovery_node_type_builds_default_recover_and_extract_objective() {
-        let player_owned_uuid = Uuid::from_u128(0x151);
-        let player_base_uuid = Uuid::from_u128(0x252);
-        let enemy_base_uuid = Uuid::from_u128(0x253);
-        let player = abnormality("player_fixture", player_base_uuid, 37);
-        let enemy = abnormality("enemy", enemy_base_uuid, 1);
-        let game_data = game_data_with_abnormalities_and_pve(
-            vec![player, enemy],
-            vec![PveEncounter {
-                id: "default_recovery_encounter".to_string(),
-                abnormality_id: "enemy".to_string(),
-                difficulty: 1,
-                risk_level: RiskLevel::ZAYIN,
-                reward_mode: RewardMode::ClaimAll,
-                reward_uuids: vec![],
-                node_type: Some(CombatNodeType::Recovery),
-                battlefield: Some(PveBattlefieldOverrideData {
-                    archetype: Some(crate::game::combat_preview::BattlefieldArchetype::Corridor),
-                    size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
-                }),
-                tactical_plan: None,
-                win_condition: None,
-                waves: vec![PveWaveData {
-                    id: "wave_0".to_string(),
-                    time_ms: 0,
-                    spawn_zone_ids: Vec::new(),
-                    route_id: None,
-                    required_for_victory: true,
-                    source: None,
-                    enemies: vec![PveWaveEnemyData {
-                        kind: crate::game::combat_preview::EnemyKind::Abnormality,
-                        profile_id: None,
-                        abnormality_id: "enemy".to_string(),
-                        tier: crate::game::enums::Tier::I,
-                        count: 1,
-                    }],
-                }],
-                static_obstacles: vec![],
-            }],
-        );
-        let preview = CombatPreview::generate_for_node(
-            MapNodeId::new(Uuid::from_u128(0x9006)),
-            MapNodeCategory::Combat,
-            Some("default_recovery_encounter"),
-            game_data.as_ref(),
-            false,
-            0,
-        );
-        assert_eq!(preview.node_type, CombatNodeType::Recovery);
-
-        let plan = BattleStartPlan::from_preview(
-            game_data.as_ref(),
-            "default_recovery_encounter",
-            &preview,
-        )
-        .expect("preview should convert to battle start plan");
-        let player_start =
-            CombatExecutor::build_test_player_abnormality_scenario_start_from_positions(
-                &[TestPlayerAbnormalityUnit {
-                    owned_uuid: player_owned_uuid,
-                    base_uuid: player_base_uuid,
-                    level: crate::game::enums::Tier::I,
-                }],
-                &Inventory::new(),
-                &HashMap::from([(player_owned_uuid, preview.deployment_zones[0].cells[0])]),
-            )
-            .expect("test player scenario start");
-        let scenario = CombatExecutor::build_battle_scenario_from_preview(
-            game_data.as_ref(),
-            "default_recovery_encounter",
-            &preview,
-            plan,
-            player_start,
-        )
-        .expect("battle scenario should build");
-
-        assert!(matches!(
-            scenario.tactical_plan.objective,
-            crate::game::battle::scenario::BattleObjective::RecoverHoldAndExtract {
-                ref target_point_id,
-                ref extraction_point_id,
-                hold_duration_ms: 5_000,
-            } if target_point_id.0 == "recovery_target"
-                && extraction_point_id.0 == "extraction_point"
-        ));
-        assert!(matches!(
-            scenario.tactical_plan.player_plan,
-            PlayerMovementPlan::CautiousEngage { .. }
-        ));
         assert!(scenario
-            .tactical_plan
-            .group_plans
+            .groups
             .iter()
-            .any(|group| matches!(
-                group.objective,
-                crate::game::battle::scenario::GroupObjective::AdvanceAlongPath { ref point_ids }
-                    if point_ids.len() == 2
-                        && point_ids[0].0 == "recovery_target"
-                        && point_ids[1].0 == "extraction_point"
-            )));
-        assert!(matches!(
-            scenario.win_condition,
-            WinCondition::RecoverHoldAndExtract {
-                ref target_point_id,
-                ref extraction_point_id,
-                target_radius,
-                extraction_radius,
-                hold_duration_ms: 5_000,
-            } if target_point_id.0 == "recovery_target"
-                && extraction_point_id.0 == "extraction_point"
-                && (target_radius - 0.75).abs() <= f32::EPSILON
-                && (extraction_radius - 0.75).abs() <= f32::EPSILON
-        ));
+            .any(|group| group.id.0 == DEFAULT_DEFENSE_OBJECT_GROUP
+                && group.spawns.iter().any(|spawn| {
+                    Some(spawn.position) == preview.routes.first().map(|route| route.end)
+                })));
     }
 
     #[test]
-    fn frontline_node_type_builds_limited_forward_engagement_objective() {
+    fn defense_node_type_builds_fixed_defense_objective() {
         let player_owned_uuid = Uuid::from_u128(0x161);
         let player_base_uuid = Uuid::from_u128(0x262);
         let enemy_base_uuid = Uuid::from_u128(0x263);
@@ -1250,13 +1136,14 @@ mod tests {
         let game_data = game_data_with_abnormalities_and_pve(
             vec![player, enemy],
             vec![PveEncounter {
-                id: "default_frontline_encounter".to_string(),
+                id: "default_defense_encounter".to_string(),
                 abnormality_id: "enemy".to_string(),
                 difficulty: 1,
                 risk_level: RiskLevel::ZAYIN,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
-                node_type: Some(CombatNodeType::Frontline),
+                node_type: Some(CombatNodeType::Defense),
+                mission_variant: None,
                 battlefield: Some(PveBattlefieldOverrideData {
                     archetype: Some(crate::game::combat_preview::BattlefieldArchetype::Corridor),
                     size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
@@ -1284,15 +1171,14 @@ mod tests {
         let preview = CombatPreview::generate_for_node(
             MapNodeId::new(Uuid::from_u128(0x9007)),
             MapNodeCategory::Combat,
-            Some("default_frontline_encounter"),
+            Some("default_defense_encounter"),
             game_data.as_ref(),
-            false,
             0,
         );
 
         let plan = BattleStartPlan::from_preview(
             game_data.as_ref(),
-            "default_frontline_encounter",
+            "default_defense_encounter",
             &preview,
         )
         .expect("preview should convert to battle start plan");
@@ -1309,7 +1195,7 @@ mod tests {
             .expect("test player scenario start");
         let scenario = CombatExecutor::build_battle_scenario_from_preview(
             game_data.as_ref(),
-            "default_frontline_encounter",
+            "default_defense_encounter",
             &preview,
             plan,
             player_start,
@@ -1318,24 +1204,20 @@ mod tests {
 
         assert!(matches!(
             scenario.tactical_plan.objective,
-            crate::game::battle::scenario::BattleObjective::SuppressAll
+            crate::game::battle::scenario::BattleObjective::ProtectUnit { .. }
         ));
         assert!(matches!(
             scenario.tactical_plan.player_plan,
-            PlayerMovementPlan::CautiousEngage {
-                leash_radius,
-                chase_radius,
-            } if (leash_radius - 5.0).abs() <= f32::EPSILON
-                && (chase_radius - 1.5).abs() <= f32::EPSILON
+            PlayerMovementPlan::FixedDefense
         ));
         assert!(matches!(
             scenario.win_condition,
-            WinCondition::AllRequiredEnemyGroupsDefeated
+            WinCondition::ProtectUnit { .. }
         ));
     }
 
     #[test]
-    fn encirclement_node_type_builds_survival_hold_objective() {
+    fn encirclement_mission_variant_builds_survival_hold_objective() {
         let player_owned_uuid = Uuid::from_u128(0x171);
         let player_base_uuid = Uuid::from_u128(0x272);
         let enemy_base_uuid = Uuid::from_u128(0x273);
@@ -1350,7 +1232,10 @@ mod tests {
                 risk_level: RiskLevel::ZAYIN,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
-                node_type: Some(CombatNodeType::Encirclement),
+                node_type: Some(CombatNodeType::Defense),
+                mission_variant: Some(
+                    crate::game::combat_preview::CombatMissionVariant::Encirclement,
+                ),
                 battlefield: Some(PveBattlefieldOverrideData {
                     archetype: Some(crate::game::combat_preview::BattlefieldArchetype::Surrounded),
                     size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
@@ -1380,7 +1265,6 @@ mod tests {
             MapNodeCategory::Combat,
             Some("default_encirclement_encounter"),
             game_data.as_ref(),
-            false,
             0,
         );
 
@@ -1416,17 +1300,8 @@ mod tests {
         ));
         assert!(matches!(
             scenario.tactical_plan.player_plan,
-            PlayerMovementPlan::HoldDeployment { .. }
+            PlayerMovementPlan::FixedDefense
         ));
-        assert!(scenario
-            .tactical_plan
-            .group_plans
-            .iter()
-            .any(|group| matches!(
-                group.objective,
-                crate::game::battle::scenario::GroupObjective::HoldArea { ref point_id }
-                    if point_id.0 == "survival_anchor"
-            )));
         assert!(matches!(
             scenario.win_condition,
             WinCondition::SurviveUntil { time_ms: 45_000 }
@@ -1450,6 +1325,7 @@ mod tests {
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
                 node_type: None,
+                mission_variant: None,
                 battlefield: None,
                 tactical_plan: None,
                 win_condition: None,
@@ -1478,36 +1354,45 @@ mod tests {
             MapNodeCategory::Combat,
             Some("fixture_encounter"),
             game_data.as_ref(),
-            false,
             11,
         );
         let deployment_positions =
             HashMap::from([(player_owned_uuid, preview.deployment_zones[0].cells[0])]);
 
-        let result = CombatExecutor::start_test_battle_with_player_abnormalities(
-            &[TestPlayerAbnormalityUnit {
-                owned_uuid: player_owned_uuid,
-                base_uuid: player_base_uuid,
-                level: crate::game::enums::Tier::I,
-            }],
-            &inventory,
-            game_data,
-            "enemy",
+        let plan = BattleStartPlan::from_preview(game_data.as_ref(), "fixture_encounter", &preview)
+            .expect("preview should convert to battle start plan");
+        let player_start =
+            CombatExecutor::build_test_player_abnormality_scenario_start_from_positions(
+                &[TestPlayerAbnormalityUnit {
+                    owned_uuid: player_owned_uuid,
+                    base_uuid: player_base_uuid,
+                    level: crate::game::enums::Tier::I,
+                }],
+                &inventory,
+                &deployment_positions,
+            )
+            .expect("test-only player abnormality fixture should build scenario start");
+        let scenario = CombatExecutor::build_battle_scenario_from_preview(
+            game_data.as_ref(),
             "fixture_encounter",
-            7,
             &preview,
-            &deployment_positions,
+            plan,
+            player_start,
         )
-        .expect("test-only player abnormality fixture should start battle");
+        .expect("test-only player abnormality fixture should build battle scenario");
 
-        let player_result = result
-            .participant_results
+        let player_spawn = scenario
+            .groups
             .iter()
-            .find(|participant| {
-                participant.side == Side::Player && participant.owned_uuid == player_owned_uuid
+            .flat_map(|group| group.spawns.iter())
+            .find(|spawn| {
+                spawn.side == Side::Player
+                    && matches!(
+                        spawn.draft.source,
+                        BattleUnitSource::Abnormality { base_uuid } if base_uuid == player_base_uuid
+                    )
             })
-            .expect("participant summary should include player abnormality fixture");
-        assert_eq!(player_result.max_hp, 30);
-        assert!(player_result.survived);
+            .expect("scenario should include player abnormality fixture");
+        assert_eq!(player_spawn.draft.owned_uuid, player_owned_uuid);
     }
 }

@@ -39,16 +39,16 @@ fn fairy_festival_blessing_heals_and_buffs_all_allies_in_range_but_not_enemies()
 
     let board = r#"
         . . . . . . .
-        . . S! C@ S! . .
+        . . . C@ S! S! .
         . . . . . . .
         . . . D# . . .
     "#;
 
     let result = run_abnormality_scenario("f-01-37", scenario_from_board(board, &legend));
     let ally_targets: HashSet<_> = [
-        Position::new(2, 1),
         Position::new(3, 1),
         Position::new(4, 1),
+        Position::new(5, 1),
     ]
     .into_iter()
     .map(|position| {

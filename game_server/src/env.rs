@@ -1,14 +1,11 @@
 use config::{Config, ConfigError, Environment, File, FileFormat};
 use serde::Deserialize;
 
-use crate::GameMode;
-
 #[derive(Debug, Deserialize, Clone)]
 pub struct Settings {
     pub logging: LoggingSettings,
     pub server: ServerSettings,
-    pub matchmaking: MatchmakingSettings,
-    pub redis: RedisSettings,
+    pub session: SessionSettings,
     pub retry: RetrySettings,
 }
 
@@ -33,33 +30,9 @@ impl Settings {
 }
 
 #[derive(Debug, Deserialize, Clone)]
-pub struct MatchmakingSettings {
-    pub try_match_tick_interval_seconds: u64,
-    pub queue_key_prefix: String,
-    pub queue_order_key_prefix: String,
-    pub match_fetch_request_channel_prefix: String,
-    pub match_fetch_ack_channel_prefix: String,
-    pub battle_request_channel: String,
-    pub battle_result_channel_prefix: String,
-    pub game_modes: Vec<MatchModeSettings>,
+pub struct SessionSettings {
     pub heartbeat_interval_seconds: u64,
     pub heartbeat_timeout: u64,
-    pub max_dedicated_server_retries: Option<u32>,
-    pub dedicated_request_timeout_seconds: u64,
-    pub allocation_token_ttl_seconds: u64,
-    pub slow_loading_threshold_seconds: u64,
-    /// Redis operation timeout in seconds (prevents infinite waiting on Redis operations)
-    pub redis_operation_timeout_seconds: u64,
-    /// Skip game server availability check (for development environments without game servers)
-    #[serde(default)]
-    pub skip_game_server_check: bool,
-}
-
-#[derive(Debug, Deserialize, Clone)]
-pub struct RedisSettings {
-    pub max_reconnect_attempts: u32,
-    pub max_reconnect_delay_ms: u64,
-    pub initial_reconnect_delay_ms: u64,
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -68,21 +41,12 @@ pub struct ServerSettings {
     pub port: u16,
     pub log_level: String,
     pub metrics_auth_token: Option<String>,
-    #[serde(default)]
-    pub multiplayer_enabled: bool,
 }
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct LoggingSettings {
     pub directory: String,
     pub filename: String,
-}
-
-#[derive(Debug, Deserialize, Clone)]
-pub struct MatchModeSettings {
-    pub game_mode: GameMode,
-    pub required_players: u32,
-    pub use_mmr_matching: bool,
 }
 
 #[derive(Debug, Deserialize, Clone)]

@@ -11,9 +11,9 @@ use super::{
 
 #[test]
 // 목적:
-// Plague Doctor의 mass_heal이 범위 내 아군만 회복하고,
+// Plague Doctor의 mass_heal이 전방 tile range 안의 아군만 회복하고,
 // 적 유닛은 치유 대상에서 제외되는지 확인한다.
-fn plague_doctor_mass_heal_restores_allies_in_radius_and_ignores_enemies() {
+fn plague_doctor_mass_heal_restores_allies_in_tile_range_and_ignores_enemies() {
     let mut legend = skill_dummy_board_legend();
     legend.patches.insert(
         '@',
@@ -32,15 +32,15 @@ fn plague_doctor_mass_heal_restores_allies_in_radius_and_ignores_enemies() {
 
     let board = r#"
         . . . . . . .
-        . S! C@ S! . . .
+        . . C@ S! S! . .
         . . . D# . . .
     "#;
 
     let result = run_abnormality_scenario("o-02-56", scenario_from_board(board, &legend));
     let ally_targets: HashSet<_> = [
-        Position::new(1, 1),
         Position::new(2, 1),
         Position::new(3, 1),
+        Position::new(4, 1),
     ]
     .into_iter()
     .map(|position| {

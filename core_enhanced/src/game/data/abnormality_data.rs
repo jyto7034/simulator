@@ -5,6 +5,12 @@ use uuid::Uuid;
 
 use crate::game::{
     ability::{DeliveryDef, SkillId},
+    battle::{
+        damage::DamageType,
+        tile_range::TileRangePattern,
+        types::{MobilityKind, UnitTargetTrait},
+    },
+    data::equipment_data::{TargetingProfile, WeaponRangeRole},
     data::{build_string_index, build_uuid_index, once_lock_with},
     enums::RiskLevel,
 };
@@ -52,6 +58,10 @@ fn default_attack_delivery() -> DeliveryDef {
     DeliveryDef::Instant
 }
 
+fn default_basic_attack_damage_type() -> DamageType {
+    DamageType::Physical
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MovementDef {
     #[serde(default = "default_move_speed_units_per_ms")]
@@ -73,6 +83,16 @@ impl Default for MovementDef {
 pub struct BasicAttackDef {
     #[serde(default = "default_attack_range_units")]
     pub range_units: f32,
+    #[serde(default)]
+    pub defense_tile_range: Option<TileRangePattern>,
+    #[serde(default = "default_basic_attack_damage_type")]
+    pub damage_type: DamageType,
+    #[serde(default)]
+    pub targeting_profile: TargetingProfile,
+    #[serde(default)]
+    pub air_capable: bool,
+    #[serde(default)]
+    pub range_role: WeaponRangeRole,
     #[serde(default = "default_basic_attack_interval_ms")]
     pub interval_ms: u64,
     #[serde(default = "default_attack_windup_ms")]
@@ -85,6 +105,11 @@ impl Default for BasicAttackDef {
     fn default() -> Self {
         Self {
             range_units: default_attack_range_units(),
+            defense_tile_range: None,
+            damage_type: default_basic_attack_damage_type(),
+            targeting_profile: TargetingProfile::DefaultForward,
+            air_capable: false,
+            range_role: WeaponRangeRole::Melee,
             interval_ms: default_basic_attack_interval_ms(),
             windup_ms: default_attack_windup_ms(),
             delivery: default_attack_delivery(),
@@ -98,6 +123,28 @@ impl BasicAttackDef {
             DeliveryDef::Instant if self.windup_ms == 0 => DEFAULT_INSTANT_BASIC_ATTACK_WINDUP_MS,
             _ => self.windup_ms,
         }
+    }
+
+    pub(crate) fn validate_runtime_contract(&self, owner_label: impl std::fmt::Display) {
+        let owner_label = owner_label.to_string();
+        assert!(
+            self.interval_ms > 0,
+            "{} basic_attack interval_ms must be greater than zero",
+            owner_label
+        );
+        if let Some(pattern) = &self.defense_tile_range {
+            pattern.validate().unwrap_or_else(|error| {
+                panic!(
+                    "{} basic_attack has invalid defense_tile_range: {}",
+                    owner_label, error
+                )
+            });
+        }
+        assert!(
+            !matches!(&self.delivery, DeliveryDef::TileArea { .. }),
+            "{} basic_attack delivery must be Instant or Projectile; TileArea is skill-only",
+            owner_label
+        );
     }
 }
 
@@ -137,6 +184,12 @@ pub struct AbnormalityMetadata {
     /// 전투용 기본 마법 저항력. 음수면 받는 마법 피해가 증가한다.
     #[serde(default = "default_magic_resist")]
     pub magic_resist: i32,
+    /// 타겟팅에서 사용하는 전투 trait.
+    #[serde(default)]
+    pub target_traits: Vec<UnitTargetTrait>,
+    /// 이동/저지/대공 판정의 source of truth.
+    #[serde(default)]
+    pub mobility_kind: MobilityKind,
 
     /// 이동 스펙
     #[serde(default)]
@@ -173,11 +226,13 @@ impl AbnormalityDatabase {
             item.uuid
         }));
 
-        Self {
+        let database = Self {
             items,
             by_id,
             by_uuid,
-        }
+        };
+        database.validate_indexes();
+        database
     }
 
     fn by_id(&self) -> &HashMap<String, usize> {
@@ -193,6 +248,15 @@ impl AbnormalityDatabase {
     pub(crate) fn validate_indexes(&self) {
         let _ = self.by_id();
         let _ = self.by_uuid();
+        for item in &self.items {
+            assert!(
+                !item.target_traits.contains(&UnitTargetTrait::Airborne),
+                "abnormality '{}' must use mobility_kind: Airborne instead of target_traits: [Airborne]",
+                item.id
+            );
+            item.basic_attack
+                .validate_runtime_contract(format!("abnormality '{}'", item.id));
+        }
     }
 
     pub fn get_by_id(&self, id: &str) -> Option<&AbnormalityMetadata> {
@@ -228,6 +292,8 @@ mod tests {
             basic_attack: Default::default(),
             resonance: Default::default(),
             skill_id: None,
+            mobility_kind: Default::default(),
+            target_traits: Vec::new(),
         }
     }
 
@@ -238,5 +304,27 @@ mod tests {
             abnormality("dup", Uuid::from_u128(1)),
             abnormality("dup", Uuid::from_u128(2)),
         ]);
+    }
+
+    #[test]
+    #[should_panic(expected = "must use mobility_kind: Airborne instead of target_traits")]
+    fn new_rejects_airborne_target_trait_as_source_of_truth() {
+        let mut metadata = abnormality("air_trait", Uuid::from_u128(3));
+        metadata.target_traits = vec![UnitTargetTrait::Airborne];
+
+        let _ = AbnormalityDatabase::new(vec![metadata]);
+    }
+
+    #[test]
+    #[should_panic(expected = "basic_attack delivery must be Instant or Projectile")]
+    fn basic_attack_contract_rejects_tile_area_delivery() {
+        let basic_attack = BasicAttackDef {
+            delivery: DeliveryDef::TileArea {
+                area: Default::default(),
+            },
+            ..Default::default()
+        };
+
+        basic_attack.validate_runtime_contract("test unit");
     }
 }

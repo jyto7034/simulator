@@ -46,17 +46,17 @@ fn white_night_heals_and_buffs_allies_before_judging_enemies() {
     legend.patches.insert('#', passive_dummy_patch(900, None));
 
     let board = r#"
-        . . . . . . .
-        . S! C@ A! . . .
-        . D# E# F# . . .
+        . . . F# . . .
+        . . C@ A! S! . .
+        . . . D# E# . .
     "#;
 
     let result =
         run_abnormality_scenario("o-01-45_white_night", scenario_from_board(board, &legend));
     let ally_targets: HashSet<_> = [
-        Position::new(1, 1),
         Position::new(2, 1),
         Position::new(3, 1),
+        Position::new(4, 1),
     ]
     .into_iter()
     .map(|position| {
@@ -66,9 +66,9 @@ fn white_night_heals_and_buffs_allies_before_judging_enemies() {
     })
     .collect();
     let enemy_targets: HashSet<_> = [
-        Position::new(1, 2),
-        Position::new(2, 2),
+        Position::new(3, 0),
         Position::new(3, 2),
+        Position::new(4, 2),
     ]
     .into_iter()
     .map(|position| {

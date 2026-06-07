@@ -10,10 +10,12 @@ use crate::{
     game::resources::Position,
     game::{
         battle::scenario::{
-            BattleObjective, EnemyMovementPlan, TacticalPlan, TacticalPoint, TacticalPointId,
-            WinCondition,
+            BattleObjective, TacticalPlan, TacticalPoint, TacticalPointId, WinCondition,
         },
-        combat_preview::{BattlefieldArchetype, BattlefieldSizeClass, CombatNodeType, EnemyKind},
+        combat_preview::{
+            BattlefieldArchetype, BattlefieldSizeClass, CombatMissionVariant, CombatNodeType,
+            EnemyKind,
+        },
         data::{build_string_index, once_lock_with},
         enums::{RewardMode, RiskLevel, Tier},
     },
@@ -82,55 +84,17 @@ pub struct PveTacticalPointData {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum PveBattleObjectiveData {
-    SuppressAll,
-    HoldArea {
-        point_id: String,
-    },
-    AdvanceToPoint {
-        point_id: String,
-    },
-    DefeatBoss {
-        unit_ref: String,
-    },
-    ProtectUnit {
-        unit_ref: String,
-    },
-    Survive {
-        time_ms: u64,
-    },
-    RecoverHoldAndExtract {
-        target_point_id: String,
-        extraction_point_id: String,
-        hold_duration_ms: u64,
-    },
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum PveEnemyMovementPlanData {
-    AssaultPlayer,
-    PathToPoint { point_id: String },
-    PathAlongPath { point_ids: Vec<String> },
+    DefeatBoss { unit_ref: String },
+    ProtectUnit { unit_ref: String },
+    Survive { time_ms: u64 },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum PveWinConditionData {
     AllRequiredEnemyGroupsDefeated,
-    DefeatUnit {
-        unit_ref: String,
-    },
-    ProtectUnit {
-        unit_ref: String,
-    },
-    SurviveUntil {
-        time_ms: u64,
-    },
-    RecoverHoldAndExtract {
-        target_point_id: String,
-        extraction_point_id: String,
-        target_radius: f32,
-        extraction_radius: f32,
-        hold_duration_ms: u64,
-    },
+    DefeatUnit { unit_ref: String },
+    ProtectUnit { unit_ref: String },
+    SurviveUntil { time_ms: u64 },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -139,8 +103,6 @@ pub struct PveTacticalPlanData {
     pub points: Vec<PveTacticalPointData>,
     #[serde(default)]
     pub objective: Option<PveBattleObjectiveData>,
-    #[serde(default)]
-    pub enemy_plan: Option<PveEnemyMovementPlanData>,
 }
 
 fn default_tier() -> Tier {
@@ -183,6 +145,8 @@ pub struct PveEncounter {
     pub risk_level: RiskLevel,
     #[serde(default)]
     pub node_type: Option<CombatNodeType>,
+    #[serde(default)]
+    pub mission_variant: Option<CombatMissionVariant>,
     #[serde(default = "default_reward_mode")]
     pub reward_mode: RewardMode,
     #[serde(default)]
@@ -221,9 +185,6 @@ impl PveEncounter {
         if let Some(objective) = &authored.objective {
             plan.objective = objective.to_battle_objective();
         }
-        if let Some(enemy_plan) = &authored.enemy_plan {
-            plan.enemy_plan = enemy_plan.to_enemy_movement_plan();
-        }
     }
 
     pub fn authored_win_condition(&self) -> Option<WinCondition> {
@@ -246,13 +207,6 @@ impl PveWaveData {
 impl PveBattleObjectiveData {
     fn to_battle_objective(&self) -> BattleObjective {
         match self {
-            Self::SuppressAll => BattleObjective::SuppressAll,
-            Self::HoldArea { point_id } => BattleObjective::HoldArea {
-                point_id: TacticalPointId::new(point_id.clone()),
-            },
-            Self::AdvanceToPoint { point_id } => BattleObjective::AdvanceToPoint {
-                point_id: TacticalPointId::new(point_id.clone()),
-            },
             Self::DefeatBoss { unit_ref } => BattleObjective::DefeatBoss {
                 unit_ref: crate::game::battle::scenario::ScenarioUnitRef::new(unit_ref.clone()),
             },
@@ -260,32 +214,6 @@ impl PveBattleObjectiveData {
                 unit_ref: crate::game::battle::scenario::ScenarioUnitRef::new(unit_ref.clone()),
             },
             Self::Survive { time_ms } => BattleObjective::Survive { time_ms: *time_ms },
-            Self::RecoverHoldAndExtract {
-                target_point_id,
-                extraction_point_id,
-                hold_duration_ms,
-            } => BattleObjective::RecoverHoldAndExtract {
-                target_point_id: TacticalPointId::new(target_point_id.clone()),
-                extraction_point_id: TacticalPointId::new(extraction_point_id.clone()),
-                hold_duration_ms: *hold_duration_ms,
-            },
-        }
-    }
-}
-
-impl PveEnemyMovementPlanData {
-    fn to_enemy_movement_plan(&self) -> EnemyMovementPlan {
-        match self {
-            Self::AssaultPlayer => EnemyMovementPlan::AssaultPlayer,
-            Self::PathToPoint { point_id } => EnemyMovementPlan::PathToPoint {
-                point_id: TacticalPointId::new(point_id.clone()),
-            },
-            Self::PathAlongPath { point_ids } => EnemyMovementPlan::PathAlongPath {
-                point_ids: point_ids
-                    .iter()
-                    .map(|point_id| TacticalPointId::new(point_id.clone()))
-                    .collect(),
-            },
         }
     }
 }
@@ -301,19 +229,6 @@ impl PveWinConditionData {
                 unit_ref: crate::game::battle::scenario::ScenarioUnitRef::new(unit_ref.clone()),
             },
             Self::SurviveUntil { time_ms } => WinCondition::SurviveUntil { time_ms: *time_ms },
-            Self::RecoverHoldAndExtract {
-                target_point_id,
-                extraction_point_id,
-                target_radius,
-                extraction_radius,
-                hold_duration_ms,
-            } => WinCondition::RecoverHoldAndExtract {
-                target_point_id: TacticalPointId::new(target_point_id.clone()),
-                extraction_point_id: TacticalPointId::new(extraction_point_id.clone()),
-                target_radius: *target_radius,
-                extraction_radius: *extraction_radius,
-                hold_duration_ms: *hold_duration_ms,
-            },
         }
     }
 }
@@ -525,108 +440,11 @@ fn validate_encounter_authoring_contract(encounter: &PveEncounter) {
         );
     }
 
-    if let Some(objective) = &tactical_plan.objective {
-        validate_objective_points(encounter, &point_ids, objective);
-    }
-    if let Some(enemy_plan) = &tactical_plan.enemy_plan {
-        validate_enemy_plan_points(encounter, &point_ids, enemy_plan);
-    }
-    if let Some(win_condition) = &encounter.win_condition {
-        validate_win_condition_points(encounter, &point_ids, win_condition);
-    }
     if let (Some(objective), Some(win_condition)) =
         (&tactical_plan.objective, &encounter.win_condition)
     {
         validate_objective_win_condition_consistency(encounter, objective, win_condition);
     }
-}
-
-fn validate_objective_points(
-    encounter: &PveEncounter,
-    point_ids: &HashSet<&str>,
-    objective: &PveBattleObjectiveData,
-) {
-    match objective {
-        PveBattleObjectiveData::HoldArea { point_id }
-        | PveBattleObjectiveData::AdvanceToPoint { point_id } => {
-            assert_known_point(encounter, point_ids, point_id, "battle objective");
-        }
-        PveBattleObjectiveData::RecoverHoldAndExtract {
-            target_point_id,
-            extraction_point_id,
-            ..
-        } => {
-            assert_known_point(encounter, point_ids, target_point_id, "battle objective");
-            assert_known_point(
-                encounter,
-                point_ids,
-                extraction_point_id,
-                "battle objective",
-            );
-        }
-        PveBattleObjectiveData::SuppressAll
-        | PveBattleObjectiveData::DefeatBoss { .. }
-        | PveBattleObjectiveData::ProtectUnit { .. }
-        | PveBattleObjectiveData::Survive { .. } => {}
-    }
-}
-
-fn validate_enemy_plan_points(
-    encounter: &PveEncounter,
-    point_ids: &HashSet<&str>,
-    enemy_plan: &PveEnemyMovementPlanData,
-) {
-    match enemy_plan {
-        PveEnemyMovementPlanData::AssaultPlayer => {}
-        PveEnemyMovementPlanData::PathToPoint { point_id } => {
-            assert_known_point(encounter, point_ids, point_id, "enemy movement plan");
-        }
-        PveEnemyMovementPlanData::PathAlongPath { point_ids: path } => {
-            assert!(
-                !path.is_empty(),
-                "enemy PathAlongPath in pve encounter '{}' must not be empty",
-                encounter.id
-            );
-            for point_id in path {
-                assert_known_point(encounter, point_ids, point_id, "enemy movement path");
-            }
-        }
-    }
-}
-
-fn validate_win_condition_points(
-    encounter: &PveEncounter,
-    point_ids: &HashSet<&str>,
-    win_condition: &PveWinConditionData,
-) {
-    match win_condition {
-        PveWinConditionData::RecoverHoldAndExtract {
-            target_point_id,
-            extraction_point_id,
-            ..
-        } => {
-            assert_known_point(encounter, point_ids, target_point_id, "win condition");
-            assert_known_point(encounter, point_ids, extraction_point_id, "win condition");
-        }
-        PveWinConditionData::AllRequiredEnemyGroupsDefeated
-        | PveWinConditionData::DefeatUnit { .. }
-        | PveWinConditionData::ProtectUnit { .. }
-        | PveWinConditionData::SurviveUntil { .. } => {}
-    }
-}
-
-fn assert_known_point(
-    encounter: &PveEncounter,
-    point_ids: &HashSet<&str>,
-    point_id: &str,
-    label: &str,
-) {
-    assert!(
-        point_ids.contains(point_id),
-        "{label} references unknown tactical point '{}' in pve encounter '{}'",
-        point_id,
-        encounter.id
-    );
 }
 
 fn validate_objective_win_condition_consistency(
@@ -647,51 +465,29 @@ fn validate_objective_win_condition_consistency(
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum ObjectiveWinContract {
-    SuppressAll,
+    DefeatAllRequiredEnemies,
     DefeatUnit(String),
     ProtectUnit(String),
     Survive,
-    Recover {
-        target_point_id: String,
-        extraction_point_id: String,
-    },
 }
 
 impl ObjectiveWinContract {
     fn from_objective(objective: &PveBattleObjectiveData) -> Option<Self> {
         match objective {
-            PveBattleObjectiveData::SuppressAll | PveBattleObjectiveData::DefeatBoss { .. } => None,
+            PveBattleObjectiveData::DefeatBoss { .. } => None,
             PveBattleObjectiveData::ProtectUnit { unit_ref } => {
                 Some(Self::ProtectUnit(unit_ref.clone()))
             }
             PveBattleObjectiveData::Survive { .. } => Some(Self::Survive),
-            PveBattleObjectiveData::RecoverHoldAndExtract {
-                target_point_id,
-                extraction_point_id,
-                ..
-            } => Some(Self::Recover {
-                target_point_id: target_point_id.clone(),
-                extraction_point_id: extraction_point_id.clone(),
-            }),
-            PveBattleObjectiveData::HoldArea { .. }
-            | PveBattleObjectiveData::AdvanceToPoint { .. } => None,
         }
     }
 
     fn from_win_condition(win_condition: &PveWinConditionData) -> Self {
         match win_condition {
-            PveWinConditionData::AllRequiredEnemyGroupsDefeated => Self::SuppressAll,
+            PveWinConditionData::AllRequiredEnemyGroupsDefeated => Self::DefeatAllRequiredEnemies,
             PveWinConditionData::DefeatUnit { unit_ref } => Self::DefeatUnit(unit_ref.clone()),
             PveWinConditionData::ProtectUnit { unit_ref } => Self::ProtectUnit(unit_ref.clone()),
             PveWinConditionData::SurviveUntil { .. } => Self::Survive,
-            PveWinConditionData::RecoverHoldAndExtract {
-                target_point_id,
-                extraction_point_id,
-                ..
-            } => Self::Recover {
-                target_point_id: target_point_id.clone(),
-                extraction_point_id: extraction_point_id.clone(),
-            },
         }
     }
 }
@@ -793,10 +589,9 @@ mod tests {
                 )),
                 tactical_plan: Some((
                     points: [
-                        (id: "black_box_recovery", position: (x: 3, y: 6)),
+                        (id: "black_box_anchor", position: (x: 3, y: 6)),
                     ],
                     objective: Some(ProtectUnit(unit_ref: "black_box")),
-                    enemy_plan: Some(PathToPoint(point_id: "black_box_recovery")),
                 )),
                 win_condition: Some(ProtectUnit(unit_ref: "black_box")),
                 waves: [
@@ -824,16 +619,12 @@ mod tests {
         );
         assert!(!encounter.waves[0].required_for_victory);
 
-        let mut plan = TacticalPlan::free_engage();
+        let mut plan = TacticalPlan::default();
         encounter.apply_authored_tactical_plan(&mut plan);
         assert_eq!(plan.points.len(), 1);
         assert!(matches!(
             plan.objective,
             BattleObjective::ProtectUnit { ref unit_ref } if unit_ref.0 == "black_box"
-        ));
-        assert!(matches!(
-            plan.enemy_plan,
-            EnemyMovementPlan::PathToPoint { ref point_id } if point_id.0 == "black_box_recovery"
         ));
         assert!(matches!(
             encounter.authored_win_condition(),
@@ -854,34 +645,6 @@ mod tests {
             )"#,
         )
         .expect("empty wave contract should deserialize before validation");
-
-        PveEncounterDatabase::new(vec![encounter]).validate_indexes();
-    }
-
-    #[test]
-    #[should_panic(expected = "unknown tactical point")]
-    fn pve_encounter_validation_rejects_unknown_tactical_point_reference() {
-        let encounter: PveEncounter = ron::de::from_str(
-            r#"(
-                id: "bad_route",
-                abnormality_id: "enemy",
-                difficulty: 2,
-                risk_level: HE,
-                tactical_plan: Some((
-                    points: [],
-                    enemy_plan: Some(PathToPoint(point_id: "missing")),
-                )),
-                waves: [
-                    (
-                        id: "wave_0",
-                        enemies: [
-                            (abnormality_id: "enemy"),
-                        ],
-                    ),
-                ],
-            )"#,
-        )
-        .expect("invalid authored reference should deserialize before validation");
 
         PveEncounterDatabase::new(vec![encounter]).validate_indexes();
     }

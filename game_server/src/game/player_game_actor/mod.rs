@@ -1,5 +1,5 @@
 use actix::{Actor, Addr, Context, Recipient, SpawnHandle};
-use game_core::game::world::GameCore;
+use game_core::game::{resources::GameState, world::GameCore};
 use std::time::Duration;
 use tracing::info;
 use uuid::Uuid;
@@ -22,7 +22,9 @@ pub struct PlayerGameActor {
     pub(crate) socket: Option<Recipient<PlayerGameServerMessage>>,
     pub(crate) session_control: Option<Recipient<ForceDisconnect>>,
     pub(crate) disconnect_timer: Option<SpawnHandle>,
+    pub(crate) live_battle_tick: Option<SpawnHandle>,
     pub(crate) disconnect_ttl: Duration,
+    pub(crate) live_battle_tick_interval: Duration,
 }
 
 impl PlayerGameActor {
@@ -39,13 +41,24 @@ impl PlayerGameActor {
             socket: None,
             session_control: None,
             disconnect_timer: None,
+            live_battle_tick: None,
             disconnect_ttl: Duration::from_secs(300),
+            live_battle_tick_interval: Duration::from_millis(100),
         }
     }
 
     pub fn with_disconnect_ttl(mut self, disconnect_ttl: Duration) -> Self {
         self.disconnect_ttl = disconnect_ttl;
         self
+    }
+
+    pub fn with_live_battle_tick_interval(mut self, interval: Duration) -> Self {
+        self.live_battle_tick_interval = interval;
+        self
+    }
+
+    pub(crate) fn has_active_live_battle(&self) -> bool {
+        matches!(self.game_core.get_state(), GameState::InBattle { .. })
     }
 }
 

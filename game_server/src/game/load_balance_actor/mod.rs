@@ -1,24 +1,22 @@
-use std::{collections::HashMap, sync::Arc};
+use std::collections::HashMap;
 
 use actix::{Actor, Addr, Context};
 use tracing::info;
 use uuid::Uuid;
 
-use crate::{game::player_game_actor::PlayerGameActor, shared::metrics::MetricsCtx};
+use crate::game::player_game_actor::PlayerGameActor;
 
 pub mod handlers;
 pub mod messages;
 
 pub struct LoadBalanceActor {
     players: HashMap<Uuid, Addr<PlayerGameActor>>,
-    metrics: Arc<MetricsCtx>,
 }
 
 impl LoadBalanceActor {
-    pub fn new(metrics: Arc<MetricsCtx>) -> Self {
+    pub fn new() -> Self {
         Self {
             players: HashMap::new(),
-            metrics,
         }
     }
 }

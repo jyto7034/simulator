@@ -1,0 +1,5171 @@
+{
+  "version": 23,
+  "entries": [
+    {
+      "time_ms": 0,
+      "seq": 0,
+      "cause": {
+        "cause_type": "root",
+        "kind": "init"
+      },
+      "event": {
+        "type": "BattleStart",
+        "width": 7,
+        "height": 8
+      }
+    },
+    {
+      "time_ms": 0,
+      "seq": 1,
+      "cause": {
+        "cause_type": "root",
+        "kind": "init"
+      },
+      "event": {
+        "type": "UnitSpawned",
+        "unit_instance_id": "685913f6-f084-4904-a549-bdc4dff85047",
+        "owner": "Opponent",
+        "role": "combatant",
+        "mobility_kind": "ground",
+        "base_uuid": "d00d1000-0000-0000-0000-000000050003",
+        "world_position": {
+          "x_milli": 5500,
+          "y_milli": 3500
+        },
+        "stats": {
+          "max_health": 2000,
+          "current_health": 2000,
+          "attack": 1,
+          "defense": 0,
+          "magic_resist": 0,
+          "attack_interval_ms": 5000,
+          "move_speed_units_per_ms": 0
+        }
+      }
+    },
+    {
+      "time_ms": 0,
+      "seq": 2,
+      "cause": {
+        "cause_type": "root",
+        "kind": "init"
+      },
+      "event": {
+        "type": "UnitSpawned",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "owner": "Opponent",
+        "role": "combatant",
+        "mobility_kind": "ground",
+        "base_uuid": "d00d1000-0000-0000-0000-000000030002",
+        "world_position": {
+          "x_milli": 3500,
+          "y_milli": 2500
+        },
+        "stats": {
+          "max_health": 2000,
+          "current_health": 2000,
+          "attack": 1,
+          "defense": 0,
+          "magic_resist": 0,
+          "attack_interval_ms": 5000,
+          "move_speed_units_per_ms": 0
+        }
+      }
+    },
+    {
+      "time_ms": 0,
+      "seq": 3,
+      "cause": {
+        "cause_type": "root",
+        "kind": "init"
+      },
+      "event": {
+        "type": "UnitSpawned",
+        "unit_instance_id": "ac8335c7-916c-4c17-a27e-7dea685c2754",
+        "owner": "Opponent",
+        "role": "combatant",
+        "mobility_kind": "ground",
+        "base_uuid": "d00d1000-0000-0000-0000-000000040002",
+        "world_position": {
+          "x_milli": 4500,
+          "y_milli": 2500
+        },
+        "stats": {
+          "max_health": 2000,
+          "current_health": 2000,
+          "attack": 1,
+          "defense": 0,
+          "magic_resist": 0,
+          "attack_interval_ms": 5000,
+          "move_speed_units_per_ms": 0
+        }
+      }
+    },
+    {
+      "time_ms": 0,
+      "seq": 4,
+      "cause": {
+        "cause_type": "root",
+        "kind": "init"
+      },
+      "event": {
+        "type": "UnitSpawned",
+        "unit_instance_id": "cc07572f-593f-4d7d-84c4-67d360dbd9b2",
+        "owner": "Opponent",
+        "role": "combatant",
+        "mobility_kind": "ground",
+        "base_uuid": "d00d1000-0000-0000-0000-000000040003",
+        "world_position": {
+          "x_milli": 4500,
+          "y_milli": 3500
+        },
+        "stats": {
+          "max_health": 2000,
+          "current_health": 2000,
+          "attack": 1,
+          "defense": 0,
+          "magic_resist": 0,
+          "attack_interval_ms": 5000,
+          "move_speed_units_per_ms": 0
+        }
+      }
+    },
+    {
+      "time_ms": 0,
+      "seq": 5,
+      "cause": {
+        "cause_type": "root",
+        "kind": "init"
+      },
+      "event": {
+        "type": "UnitSpawned",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "owner": "Player",
+        "role": "combatant",
+        "mobility_kind": "ground",
+        "base_uuid": "0b024000-0000-0000-0000-000000000103",
+        "world_position": {
+          "x_milli": 2500,
+          "y_milli": 2500
+        },
+        "stats": {
+          "max_health": 900,
+          "current_health": 900,
+          "attack": 58,
+          "defense": 50,
+          "magic_resist": 50,
+          "attack_interval_ms": 1950,
+          "move_speed_units_per_ms": 1700
+        }
+      }
+    },
+    {
+      "time_ms": 0,
+      "seq": 6,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 190,
+      "seq": 7,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 6
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 190,
+      "seq": 8,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 7
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 90,
+        "after": 100,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 190,
+      "seq": 9,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 7
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 2000,
+        "hp_after": 1942,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 190,
+      "seq": 10,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 7
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "before": 0,
+        "after": 5,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 190,
+      "seq": 11,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 7
+      },
+      "event": {
+        "type": "AutoCastStart",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "skill_id": "big_bird_dark_lamp",
+        "target": {
+          "type": "Unit",
+          "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4"
+        }
+      }
+    },
+    {
+      "time_ms": 640,
+      "seq": 12,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 11
+      },
+      "event": {
+        "type": "AbilityCast",
+        "skill_id": "big_bird_dark_lamp",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4"
+      }
+    },
+    {
+      "time_ms": 640,
+      "seq": 13,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 11
+      },
+      "event": {
+        "type": "AutoCastEnd",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20"
+      }
+    },
+    {
+      "time_ms": 640,
+      "seq": 14,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 12
+      },
+      "event": {
+        "type": "AbilityStepTriggered",
+        "skill_id": "big_bird_dark_lamp",
+        "step_id": "lamp_gaze",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "presentation": {
+          "cast_state": "Cast",
+          "impact_vfx_id": "big_bird_dark_lamp_gaze",
+          "target_anchor": "Head"
+        }
+      }
+    },
+    {
+      "time_ms": 640,
+      "seq": 15,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 14
+      },
+      "event": {
+        "type": "SkillAreaDeclared",
+        "area_id": "b59a17be-6dc0-4e6e-b036-568a01467120",
+        "skill_id": "big_bird_dark_lamp",
+        "step_id": "lamp_gaze",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target": {
+          "type": "Unit",
+          "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4"
+        },
+        "shape": {
+          "type": "tile_pattern",
+          "affected_tiles": [
+            {
+              "x": 3,
+              "y": 1
+            },
+            {
+              "x": 4,
+              "y": 1
+            },
+            {
+              "x": 3,
+              "y": 2
+            },
+            {
+              "x": 4,
+              "y": 2
+            },
+            {
+              "x": 3,
+              "y": 3
+            },
+            {
+              "x": 4,
+              "y": 3
+            }
+          ]
+        },
+        "origin": {
+          "x_milli": 2500,
+          "y_milli": 2500
+        },
+        "center": {
+          "x_milli": 3500,
+          "y_milli": 2500
+        },
+        "direction_hint": {
+          "x_milli": 4500,
+          "y_milli": 2500
+        },
+        "start_time_ms": 640,
+        "duration_ms": 0,
+        "display_duration_ms": 250,
+        "warning_ms": 0,
+        "tick_policy": "EveryTick",
+        "tracking": "GroundFixed",
+        "hit_targets": "Enemies",
+        "include_caster": false
+      }
+    },
+    {
+      "time_ms": 640,
+      "seq": 16,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 15
+      },
+      "event": {
+        "type": "BuffApplied",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "buff_id": 4806624552354013260,
+        "duration_ms": 1200
+      }
+    },
+    {
+      "time_ms": 640,
+      "seq": 17,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 15
+      },
+      "event": {
+        "type": "BuffApplied",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "ac8335c7-916c-4c17-a27e-7dea685c2754",
+        "buff_id": 4806624552354013260,
+        "duration_ms": 1200
+      }
+    },
+    {
+      "time_ms": 640,
+      "seq": 18,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 15
+      },
+      "event": {
+        "type": "BuffApplied",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "cc07572f-593f-4d7d-84c4-67d360dbd9b2",
+        "buff_id": 4806624552354013260,
+        "duration_ms": 1200
+      }
+    },
+    {
+      "time_ms": 730,
+      "seq": 19,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 12
+      },
+      "event": {
+        "type": "AbilityStepTriggered",
+        "skill_id": "big_bird_dark_lamp",
+        "step_id": "lamp_burst",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "presentation": {
+          "cast_state": "Attack",
+          "impact_vfx_id": "big_bird_dark_lamp_burst",
+          "target_anchor": "Body"
+        }
+      }
+    },
+    {
+      "time_ms": 730,
+      "seq": 20,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 19
+      },
+      "event": {
+        "type": "SkillAreaDeclared",
+        "area_id": "675f2849-8f35-4318-9c26-806a5241a3b2",
+        "skill_id": "big_bird_dark_lamp",
+        "step_id": "lamp_burst",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target": {
+          "type": "Unit",
+          "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4"
+        },
+        "shape": {
+          "type": "tile_pattern",
+          "affected_tiles": [
+            {
+              "x": 3,
+              "y": 1
+            },
+            {
+              "x": 4,
+              "y": 1
+            },
+            {
+              "x": 3,
+              "y": 2
+            },
+            {
+              "x": 4,
+              "y": 2
+            },
+            {
+              "x": 3,
+              "y": 3
+            },
+            {
+              "x": 4,
+              "y": 3
+            }
+          ]
+        },
+        "origin": {
+          "x_milli": 2500,
+          "y_milli": 2500
+        },
+        "center": {
+          "x_milli": 3500,
+          "y_milli": 2500
+        },
+        "direction_hint": {
+          "x_milli": 4500,
+          "y_milli": 2500
+        },
+        "start_time_ms": 730,
+        "duration_ms": 0,
+        "display_duration_ms": 250,
+        "warning_ms": 0,
+        "tick_policy": "EveryTick",
+        "tracking": "GroundFixed",
+        "hit_targets": "Enemies",
+        "include_caster": false
+      }
+    },
+    {
+      "time_ms": 730,
+      "seq": 21,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 20
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -70,
+        "hp_before": 1942,
+        "hp_after": 1872,
+        "reason": "Command",
+        "damage_source": "Ability",
+        "damage_type": "Magic",
+        "raw_damage": 70,
+        "final_damage": 70,
+        "damage_breakdown": [
+          {
+            "damage_type": "Magic",
+            "raw_damage": 70,
+            "final_damage": 70,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 730,
+      "seq": 22,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 20
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "ac8335c7-916c-4c17-a27e-7dea685c2754",
+        "delta": -70,
+        "hp_before": 2000,
+        "hp_after": 1930,
+        "reason": "Command",
+        "damage_source": "Ability",
+        "damage_type": "Magic",
+        "raw_damage": 70,
+        "final_damage": 70,
+        "damage_breakdown": [
+          {
+            "damage_type": "Magic",
+            "raw_damage": 70,
+            "final_damage": 70,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 730,
+      "seq": 23,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 20
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "cc07572f-593f-4d7d-84c4-67d360dbd9b2",
+        "delta": -70,
+        "hp_before": 2000,
+        "hp_after": 1930,
+        "reason": "Command",
+        "damage_source": "Ability",
+        "damage_type": "Magic",
+        "raw_damage": 70,
+        "final_damage": 70,
+        "damage_breakdown": [
+          {
+            "damage_type": "Magic",
+            "raw_damage": 70,
+            "final_damage": 70,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 1840,
+      "seq": 24,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 16
+      },
+      "event": {
+        "type": "BuffExpired",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "buff_id": 4806624552354013260
+      }
+    },
+    {
+      "time_ms": 1840,
+      "seq": 25,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 17
+      },
+      "event": {
+        "type": "BuffExpired",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "ac8335c7-916c-4c17-a27e-7dea685c2754",
+        "buff_id": 4806624552354013260
+      }
+    },
+    {
+      "time_ms": 1840,
+      "seq": 26,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 18
+      },
+      "event": {
+        "type": "BuffExpired",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "cc07572f-593f-4d7d-84c4-67d360dbd9b2",
+        "buff_id": 4806624552354013260
+      }
+    },
+    {
+      "time_ms": 2590,
+      "seq": 27,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 2780,
+      "seq": 28,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 27
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 2780,
+      "seq": 29,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 28
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 0,
+        "after": 10,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 2780,
+      "seq": 30,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 28
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 10,
+        "after": 15,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 2780,
+      "seq": 31,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 28
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 1872,
+        "hp_after": 1814,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 2780,
+      "seq": 32,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 28
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "before": 5,
+        "after": 10,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 4540,
+      "seq": 33,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 4730,
+      "seq": 34,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 33
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 4730,
+      "seq": 35,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 34
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 15,
+        "after": 25,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 4730,
+      "seq": 36,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 34
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 25,
+        "after": 30,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 4730,
+      "seq": 37,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 34
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 1814,
+        "hp_after": 1756,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 4730,
+      "seq": 38,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 34
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "before": 10,
+        "after": 15,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 6490,
+      "seq": 39,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 6680,
+      "seq": 40,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 39
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 6680,
+      "seq": 41,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 40
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 30,
+        "after": 40,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 6680,
+      "seq": 42,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 40
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 40,
+        "after": 45,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 6680,
+      "seq": 43,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 40
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 1756,
+        "hp_after": 1698,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 6680,
+      "seq": 44,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 40
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "before": 15,
+        "after": 20,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 8440,
+      "seq": 45,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 8630,
+      "seq": 46,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 45
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 8630,
+      "seq": 47,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 46
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 45,
+        "after": 55,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 8630,
+      "seq": 48,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 46
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 55,
+        "after": 60,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 8630,
+      "seq": 49,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 46
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 1698,
+        "hp_after": 1640,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 8630,
+      "seq": 50,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 46
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "before": 20,
+        "after": 25,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 10390,
+      "seq": 51,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 10580,
+      "seq": 52,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 51
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 10580,
+      "seq": 53,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 52
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 60,
+        "after": 70,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 10580,
+      "seq": 54,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 52
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 70,
+        "after": 75,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 10580,
+      "seq": 55,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 52
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 1640,
+        "hp_after": 1582,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 10580,
+      "seq": 56,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 52
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "before": 25,
+        "after": 30,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 12340,
+      "seq": 57,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 12530,
+      "seq": 58,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 57
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 12530,
+      "seq": 59,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 58
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 75,
+        "after": 85,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 12530,
+      "seq": 60,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 58
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 85,
+        "after": 90,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 12530,
+      "seq": 61,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 58
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 1582,
+        "hp_after": 1524,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 12530,
+      "seq": 62,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 58
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "before": 30,
+        "after": 35,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 14290,
+      "seq": 63,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 14480,
+      "seq": 64,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 63
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 14480,
+      "seq": 65,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 64
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 90,
+        "after": 100,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 14480,
+      "seq": 66,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 64
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 1524,
+        "hp_after": 1466,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 14480,
+      "seq": 67,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 64
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "before": 35,
+        "after": 40,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 14480,
+      "seq": 68,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 64
+      },
+      "event": {
+        "type": "AutoCastStart",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "skill_id": "big_bird_dark_lamp",
+        "target": {
+          "type": "Unit",
+          "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4"
+        }
+      }
+    },
+    {
+      "time_ms": 14930,
+      "seq": 69,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 68
+      },
+      "event": {
+        "type": "AbilityCast",
+        "skill_id": "big_bird_dark_lamp",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4"
+      }
+    },
+    {
+      "time_ms": 14930,
+      "seq": 70,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 68
+      },
+      "event": {
+        "type": "AutoCastEnd",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20"
+      }
+    },
+    {
+      "time_ms": 14930,
+      "seq": 71,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 69
+      },
+      "event": {
+        "type": "AbilityStepTriggered",
+        "skill_id": "big_bird_dark_lamp",
+        "step_id": "lamp_gaze",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "presentation": {
+          "cast_state": "Cast",
+          "impact_vfx_id": "big_bird_dark_lamp_gaze",
+          "target_anchor": "Head"
+        }
+      }
+    },
+    {
+      "time_ms": 14930,
+      "seq": 72,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 71
+      },
+      "event": {
+        "type": "SkillAreaDeclared",
+        "area_id": "cda30c3a-825a-4feb-8f5f-bd80857bfb1e",
+        "skill_id": "big_bird_dark_lamp",
+        "step_id": "lamp_gaze",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target": {
+          "type": "Unit",
+          "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4"
+        },
+        "shape": {
+          "type": "tile_pattern",
+          "affected_tiles": [
+            {
+              "x": 3,
+              "y": 1
+            },
+            {
+              "x": 4,
+              "y": 1
+            },
+            {
+              "x": 3,
+              "y": 2
+            },
+            {
+              "x": 4,
+              "y": 2
+            },
+            {
+              "x": 3,
+              "y": 3
+            },
+            {
+              "x": 4,
+              "y": 3
+            }
+          ]
+        },
+        "origin": {
+          "x_milli": 2500,
+          "y_milli": 2500
+        },
+        "center": {
+          "x_milli": 3500,
+          "y_milli": 2500
+        },
+        "direction_hint": {
+          "x_milli": 4500,
+          "y_milli": 2500
+        },
+        "start_time_ms": 14930,
+        "duration_ms": 0,
+        "display_duration_ms": 250,
+        "warning_ms": 0,
+        "tick_policy": "EveryTick",
+        "tracking": "GroundFixed",
+        "hit_targets": "Enemies",
+        "include_caster": false
+      }
+    },
+    {
+      "time_ms": 14930,
+      "seq": 73,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 72
+      },
+      "event": {
+        "type": "BuffApplied",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "buff_id": 4806624552354013260,
+        "duration_ms": 1200
+      }
+    },
+    {
+      "time_ms": 14930,
+      "seq": 74,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 72
+      },
+      "event": {
+        "type": "BuffApplied",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "ac8335c7-916c-4c17-a27e-7dea685c2754",
+        "buff_id": 4806624552354013260,
+        "duration_ms": 1200
+      }
+    },
+    {
+      "time_ms": 14930,
+      "seq": 75,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 72
+      },
+      "event": {
+        "type": "BuffApplied",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "cc07572f-593f-4d7d-84c4-67d360dbd9b2",
+        "buff_id": 4806624552354013260,
+        "duration_ms": 1200
+      }
+    },
+    {
+      "time_ms": 15020,
+      "seq": 76,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 69
+      },
+      "event": {
+        "type": "AbilityStepTriggered",
+        "skill_id": "big_bird_dark_lamp",
+        "step_id": "lamp_burst",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "presentation": {
+          "cast_state": "Attack",
+          "impact_vfx_id": "big_bird_dark_lamp_burst",
+          "target_anchor": "Body"
+        }
+      }
+    },
+    {
+      "time_ms": 15020,
+      "seq": 77,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 76
+      },
+      "event": {
+        "type": "SkillAreaDeclared",
+        "area_id": "60497136-3068-428c-9cda-d17ef45fa748",
+        "skill_id": "big_bird_dark_lamp",
+        "step_id": "lamp_burst",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target": {
+          "type": "Unit",
+          "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4"
+        },
+        "shape": {
+          "type": "tile_pattern",
+          "affected_tiles": [
+            {
+              "x": 3,
+              "y": 1
+            },
+            {
+              "x": 4,
+              "y": 1
+            },
+            {
+              "x": 3,
+              "y": 2
+            },
+            {
+              "x": 4,
+              "y": 2
+            },
+            {
+              "x": 3,
+              "y": 3
+            },
+            {
+              "x": 4,
+              "y": 3
+            }
+          ]
+        },
+        "origin": {
+          "x_milli": 2500,
+          "y_milli": 2500
+        },
+        "center": {
+          "x_milli": 3500,
+          "y_milli": 2500
+        },
+        "direction_hint": {
+          "x_milli": 4500,
+          "y_milli": 2500
+        },
+        "start_time_ms": 15020,
+        "duration_ms": 0,
+        "display_duration_ms": 250,
+        "warning_ms": 0,
+        "tick_policy": "EveryTick",
+        "tracking": "GroundFixed",
+        "hit_targets": "Enemies",
+        "include_caster": false
+      }
+    },
+    {
+      "time_ms": 15020,
+      "seq": 78,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 77
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -70,
+        "hp_before": 1466,
+        "hp_after": 1396,
+        "reason": "Command",
+        "damage_source": "Ability",
+        "damage_type": "Magic",
+        "raw_damage": 70,
+        "final_damage": 70,
+        "damage_breakdown": [
+          {
+            "damage_type": "Magic",
+            "raw_damage": 70,
+            "final_damage": 70,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 15020,
+      "seq": 79,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 77
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "ac8335c7-916c-4c17-a27e-7dea685c2754",
+        "delta": -70,
+        "hp_before": 1930,
+        "hp_after": 1860,
+        "reason": "Command",
+        "damage_source": "Ability",
+        "damage_type": "Magic",
+        "raw_damage": 70,
+        "final_damage": 70,
+        "damage_breakdown": [
+          {
+            "damage_type": "Magic",
+            "raw_damage": 70,
+            "final_damage": 70,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 15020,
+      "seq": 80,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 77
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "cc07572f-593f-4d7d-84c4-67d360dbd9b2",
+        "delta": -70,
+        "hp_before": 1930,
+        "hp_after": 1860,
+        "reason": "Command",
+        "damage_source": "Ability",
+        "damage_type": "Magic",
+        "raw_damage": 70,
+        "final_damage": 70,
+        "damage_breakdown": [
+          {
+            "damage_type": "Magic",
+            "raw_damage": 70,
+            "final_damage": 70,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 16130,
+      "seq": 81,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 73
+      },
+      "event": {
+        "type": "BuffExpired",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "buff_id": 4806624552354013260
+      }
+    },
+    {
+      "time_ms": 16130,
+      "seq": 82,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 74
+      },
+      "event": {
+        "type": "BuffExpired",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "ac8335c7-916c-4c17-a27e-7dea685c2754",
+        "buff_id": 4806624552354013260
+      }
+    },
+    {
+      "time_ms": 16130,
+      "seq": 83,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 75
+      },
+      "event": {
+        "type": "BuffExpired",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "cc07572f-593f-4d7d-84c4-67d360dbd9b2",
+        "buff_id": 4806624552354013260
+      }
+    },
+    {
+      "time_ms": 16880,
+      "seq": 84,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 17070,
+      "seq": 85,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 84
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 17070,
+      "seq": 86,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 85
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 0,
+        "after": 10,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 17070,
+      "seq": 87,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 85
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 10,
+        "after": 15,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 17070,
+      "seq": 88,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 85
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 1396,
+        "hp_after": 1338,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 17070,
+      "seq": 89,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 85
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "before": 40,
+        "after": 45,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 18830,
+      "seq": 90,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 19020,
+      "seq": 91,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 90
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 19020,
+      "seq": 92,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 91
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 15,
+        "after": 25,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 19020,
+      "seq": 93,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 91
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 25,
+        "after": 30,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 19020,
+      "seq": 94,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 91
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 1338,
+        "hp_after": 1280,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 19020,
+      "seq": 95,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 91
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "before": 45,
+        "after": 50,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 20780,
+      "seq": 96,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 20970,
+      "seq": 97,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 96
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 20970,
+      "seq": 98,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 97
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 30,
+        "after": 40,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 20970,
+      "seq": 99,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 97
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 40,
+        "after": 45,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 20970,
+      "seq": 100,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 97
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 1280,
+        "hp_after": 1222,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 20970,
+      "seq": 101,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 97
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "before": 50,
+        "after": 55,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 22730,
+      "seq": 102,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 22920,
+      "seq": 103,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 102
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 22920,
+      "seq": 104,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 103
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 45,
+        "after": 55,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 22920,
+      "seq": 105,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 103
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 55,
+        "after": 60,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 22920,
+      "seq": 106,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 103
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 1222,
+        "hp_after": 1164,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 22920,
+      "seq": 107,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 103
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "before": 55,
+        "after": 60,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 24680,
+      "seq": 108,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 24870,
+      "seq": 109,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 108
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 24870,
+      "seq": 110,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 109
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 60,
+        "after": 70,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 24870,
+      "seq": 111,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 109
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 70,
+        "after": 75,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 24870,
+      "seq": 112,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 109
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 1164,
+        "hp_after": 1106,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 24870,
+      "seq": 113,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 109
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "before": 60,
+        "after": 65,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 26630,
+      "seq": 114,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 26820,
+      "seq": 115,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 114
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 26820,
+      "seq": 116,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 115
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 75,
+        "after": 85,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 26820,
+      "seq": 117,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 115
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 85,
+        "after": 90,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 26820,
+      "seq": 118,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 115
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 1106,
+        "hp_after": 1048,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 26820,
+      "seq": 119,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 115
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "before": 65,
+        "after": 70,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 28580,
+      "seq": 120,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 28770,
+      "seq": 121,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 120
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 28770,
+      "seq": 122,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 121
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 90,
+        "after": 100,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 28770,
+      "seq": 123,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 121
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 1048,
+        "hp_after": 990,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 28770,
+      "seq": 124,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 121
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "before": 70,
+        "after": 75,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 28770,
+      "seq": 125,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 121
+      },
+      "event": {
+        "type": "AutoCastStart",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "skill_id": "big_bird_dark_lamp",
+        "target": {
+          "type": "Unit",
+          "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4"
+        }
+      }
+    },
+    {
+      "time_ms": 29220,
+      "seq": 126,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 125
+      },
+      "event": {
+        "type": "AbilityCast",
+        "skill_id": "big_bird_dark_lamp",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4"
+      }
+    },
+    {
+      "time_ms": 29220,
+      "seq": 127,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 125
+      },
+      "event": {
+        "type": "AutoCastEnd",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20"
+      }
+    },
+    {
+      "time_ms": 29220,
+      "seq": 128,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 126
+      },
+      "event": {
+        "type": "AbilityStepTriggered",
+        "skill_id": "big_bird_dark_lamp",
+        "step_id": "lamp_gaze",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "presentation": {
+          "cast_state": "Cast",
+          "impact_vfx_id": "big_bird_dark_lamp_gaze",
+          "target_anchor": "Head"
+        }
+      }
+    },
+    {
+      "time_ms": 29220,
+      "seq": 129,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 128
+      },
+      "event": {
+        "type": "SkillAreaDeclared",
+        "area_id": "6dac0701-af12-4eae-a512-d644cfcf5283",
+        "skill_id": "big_bird_dark_lamp",
+        "step_id": "lamp_gaze",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target": {
+          "type": "Unit",
+          "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4"
+        },
+        "shape": {
+          "type": "tile_pattern",
+          "affected_tiles": [
+            {
+              "x": 3,
+              "y": 1
+            },
+            {
+              "x": 4,
+              "y": 1
+            },
+            {
+              "x": 3,
+              "y": 2
+            },
+            {
+              "x": 4,
+              "y": 2
+            },
+            {
+              "x": 3,
+              "y": 3
+            },
+            {
+              "x": 4,
+              "y": 3
+            }
+          ]
+        },
+        "origin": {
+          "x_milli": 2500,
+          "y_milli": 2500
+        },
+        "center": {
+          "x_milli": 3500,
+          "y_milli": 2500
+        },
+        "direction_hint": {
+          "x_milli": 4500,
+          "y_milli": 2500
+        },
+        "start_time_ms": 29220,
+        "duration_ms": 0,
+        "display_duration_ms": 250,
+        "warning_ms": 0,
+        "tick_policy": "EveryTick",
+        "tracking": "GroundFixed",
+        "hit_targets": "Enemies",
+        "include_caster": false
+      }
+    },
+    {
+      "time_ms": 29220,
+      "seq": 130,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 129
+      },
+      "event": {
+        "type": "BuffApplied",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "buff_id": 4806624552354013260,
+        "duration_ms": 1200
+      }
+    },
+    {
+      "time_ms": 29220,
+      "seq": 131,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 129
+      },
+      "event": {
+        "type": "BuffApplied",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "ac8335c7-916c-4c17-a27e-7dea685c2754",
+        "buff_id": 4806624552354013260,
+        "duration_ms": 1200
+      }
+    },
+    {
+      "time_ms": 29220,
+      "seq": 132,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 129
+      },
+      "event": {
+        "type": "BuffApplied",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "cc07572f-593f-4d7d-84c4-67d360dbd9b2",
+        "buff_id": 4806624552354013260,
+        "duration_ms": 1200
+      }
+    },
+    {
+      "time_ms": 29310,
+      "seq": 133,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 126
+      },
+      "event": {
+        "type": "AbilityStepTriggered",
+        "skill_id": "big_bird_dark_lamp",
+        "step_id": "lamp_burst",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "presentation": {
+          "cast_state": "Attack",
+          "impact_vfx_id": "big_bird_dark_lamp_burst",
+          "target_anchor": "Body"
+        }
+      }
+    },
+    {
+      "time_ms": 29310,
+      "seq": 134,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 133
+      },
+      "event": {
+        "type": "SkillAreaDeclared",
+        "area_id": "448fcb43-f4b2-43d3-b7e1-a823aee3523d",
+        "skill_id": "big_bird_dark_lamp",
+        "step_id": "lamp_burst",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target": {
+          "type": "Unit",
+          "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4"
+        },
+        "shape": {
+          "type": "tile_pattern",
+          "affected_tiles": [
+            {
+              "x": 3,
+              "y": 1
+            },
+            {
+              "x": 4,
+              "y": 1
+            },
+            {
+              "x": 3,
+              "y": 2
+            },
+            {
+              "x": 4,
+              "y": 2
+            },
+            {
+              "x": 3,
+              "y": 3
+            },
+            {
+              "x": 4,
+              "y": 3
+            }
+          ]
+        },
+        "origin": {
+          "x_milli": 2500,
+          "y_milli": 2500
+        },
+        "center": {
+          "x_milli": 3500,
+          "y_milli": 2500
+        },
+        "direction_hint": {
+          "x_milli": 4500,
+          "y_milli": 2500
+        },
+        "start_time_ms": 29310,
+        "duration_ms": 0,
+        "display_duration_ms": 250,
+        "warning_ms": 0,
+        "tick_policy": "EveryTick",
+        "tracking": "GroundFixed",
+        "hit_targets": "Enemies",
+        "include_caster": false
+      }
+    },
+    {
+      "time_ms": 29310,
+      "seq": 135,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 134
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -70,
+        "hp_before": 990,
+        "hp_after": 920,
+        "reason": "Command",
+        "damage_source": "Ability",
+        "damage_type": "Magic",
+        "raw_damage": 70,
+        "final_damage": 70,
+        "damage_breakdown": [
+          {
+            "damage_type": "Magic",
+            "raw_damage": 70,
+            "final_damage": 70,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 29310,
+      "seq": 136,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 134
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "ac8335c7-916c-4c17-a27e-7dea685c2754",
+        "delta": -70,
+        "hp_before": 1860,
+        "hp_after": 1790,
+        "reason": "Command",
+        "damage_source": "Ability",
+        "damage_type": "Magic",
+        "raw_damage": 70,
+        "final_damage": 70,
+        "damage_breakdown": [
+          {
+            "damage_type": "Magic",
+            "raw_damage": 70,
+            "final_damage": 70,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 29310,
+      "seq": 137,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 134
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "cc07572f-593f-4d7d-84c4-67d360dbd9b2",
+        "delta": -70,
+        "hp_before": 1860,
+        "hp_after": 1790,
+        "reason": "Command",
+        "damage_source": "Ability",
+        "damage_type": "Magic",
+        "raw_damage": 70,
+        "final_damage": 70,
+        "damage_breakdown": [
+          {
+            "damage_type": "Magic",
+            "raw_damage": 70,
+            "final_damage": 70,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 30420,
+      "seq": 138,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 130
+      },
+      "event": {
+        "type": "BuffExpired",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "buff_id": 4806624552354013260
+      }
+    },
+    {
+      "time_ms": 30420,
+      "seq": 139,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 131
+      },
+      "event": {
+        "type": "BuffExpired",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "ac8335c7-916c-4c17-a27e-7dea685c2754",
+        "buff_id": 4806624552354013260
+      }
+    },
+    {
+      "time_ms": 30420,
+      "seq": 140,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 132
+      },
+      "event": {
+        "type": "BuffExpired",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "cc07572f-593f-4d7d-84c4-67d360dbd9b2",
+        "buff_id": 4806624552354013260
+      }
+    },
+    {
+      "time_ms": 31170,
+      "seq": 141,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 31360,
+      "seq": 142,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 141
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 31360,
+      "seq": 143,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 142
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 0,
+        "after": 10,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 31360,
+      "seq": 144,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 142
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 10,
+        "after": 15,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 31360,
+      "seq": 145,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 142
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 920,
+        "hp_after": 862,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 31360,
+      "seq": 146,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 142
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "before": 75,
+        "after": 80,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 33120,
+      "seq": 147,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 33310,
+      "seq": 148,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 147
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 33310,
+      "seq": 149,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 148
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 15,
+        "after": 25,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 33310,
+      "seq": 150,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 148
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 25,
+        "after": 30,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 33310,
+      "seq": 151,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 148
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 862,
+        "hp_after": 804,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 33310,
+      "seq": 152,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 148
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "before": 80,
+        "after": 85,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 35070,
+      "seq": 153,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 35260,
+      "seq": 154,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 153
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 35260,
+      "seq": 155,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 154
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 30,
+        "after": 40,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 35260,
+      "seq": 156,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 154
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 40,
+        "after": 45,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 35260,
+      "seq": 157,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 154
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 804,
+        "hp_after": 746,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 35260,
+      "seq": 158,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 154
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "before": 85,
+        "after": 90,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 37020,
+      "seq": 159,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 37210,
+      "seq": 160,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 159
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 37210,
+      "seq": 161,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 160
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 45,
+        "after": 55,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 37210,
+      "seq": 162,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 160
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 55,
+        "after": 60,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 37210,
+      "seq": 163,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 160
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 746,
+        "hp_after": 688,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 37210,
+      "seq": 164,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 160
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "before": 90,
+        "after": 95,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 38970,
+      "seq": 165,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 39160,
+      "seq": 166,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 165
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 39160,
+      "seq": 167,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 166
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 60,
+        "after": 70,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 39160,
+      "seq": 168,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 166
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 70,
+        "after": 75,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 39160,
+      "seq": 169,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 166
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 688,
+        "hp_after": 630,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 39160,
+      "seq": 170,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 166
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "before": 95,
+        "after": 100,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 40920,
+      "seq": 171,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 41110,
+      "seq": 172,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 171
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 41110,
+      "seq": 173,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 172
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 75,
+        "after": 85,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 41110,
+      "seq": 174,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 172
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 85,
+        "after": 90,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 41110,
+      "seq": 175,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 172
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 630,
+        "hp_after": 572,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 42870,
+      "seq": 176,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 43060,
+      "seq": 177,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 176
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 43060,
+      "seq": 178,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 177
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 90,
+        "after": 100,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 43060,
+      "seq": 179,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 177
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 572,
+        "hp_after": 514,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 43060,
+      "seq": 180,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 177
+      },
+      "event": {
+        "type": "AutoCastStart",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "skill_id": "big_bird_dark_lamp",
+        "target": {
+          "type": "Unit",
+          "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4"
+        }
+      }
+    },
+    {
+      "time_ms": 43510,
+      "seq": 181,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 180
+      },
+      "event": {
+        "type": "AbilityCast",
+        "skill_id": "big_bird_dark_lamp",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4"
+      }
+    },
+    {
+      "time_ms": 43510,
+      "seq": 182,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 180
+      },
+      "event": {
+        "type": "AutoCastEnd",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20"
+      }
+    },
+    {
+      "time_ms": 43510,
+      "seq": 183,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 181
+      },
+      "event": {
+        "type": "AbilityStepTriggered",
+        "skill_id": "big_bird_dark_lamp",
+        "step_id": "lamp_gaze",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "presentation": {
+          "cast_state": "Cast",
+          "impact_vfx_id": "big_bird_dark_lamp_gaze",
+          "target_anchor": "Head"
+        }
+      }
+    },
+    {
+      "time_ms": 43510,
+      "seq": 184,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 183
+      },
+      "event": {
+        "type": "SkillAreaDeclared",
+        "area_id": "9cca6d5f-b6d4-44de-8608-9e0d94b6e891",
+        "skill_id": "big_bird_dark_lamp",
+        "step_id": "lamp_gaze",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target": {
+          "type": "Unit",
+          "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4"
+        },
+        "shape": {
+          "type": "tile_pattern",
+          "affected_tiles": [
+            {
+              "x": 3,
+              "y": 1
+            },
+            {
+              "x": 4,
+              "y": 1
+            },
+            {
+              "x": 3,
+              "y": 2
+            },
+            {
+              "x": 4,
+              "y": 2
+            },
+            {
+              "x": 3,
+              "y": 3
+            },
+            {
+              "x": 4,
+              "y": 3
+            }
+          ]
+        },
+        "origin": {
+          "x_milli": 2500,
+          "y_milli": 2500
+        },
+        "center": {
+          "x_milli": 3500,
+          "y_milli": 2500
+        },
+        "direction_hint": {
+          "x_milli": 4500,
+          "y_milli": 2500
+        },
+        "start_time_ms": 43510,
+        "duration_ms": 0,
+        "display_duration_ms": 250,
+        "warning_ms": 0,
+        "tick_policy": "EveryTick",
+        "tracking": "GroundFixed",
+        "hit_targets": "Enemies",
+        "include_caster": false
+      }
+    },
+    {
+      "time_ms": 43510,
+      "seq": 185,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 184
+      },
+      "event": {
+        "type": "BuffApplied",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "buff_id": 4806624552354013260,
+        "duration_ms": 1200
+      }
+    },
+    {
+      "time_ms": 43510,
+      "seq": 186,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 184
+      },
+      "event": {
+        "type": "BuffApplied",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "ac8335c7-916c-4c17-a27e-7dea685c2754",
+        "buff_id": 4806624552354013260,
+        "duration_ms": 1200
+      }
+    },
+    {
+      "time_ms": 43510,
+      "seq": 187,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 184
+      },
+      "event": {
+        "type": "BuffApplied",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "cc07572f-593f-4d7d-84c4-67d360dbd9b2",
+        "buff_id": 4806624552354013260,
+        "duration_ms": 1200
+      }
+    },
+    {
+      "time_ms": 43600,
+      "seq": 188,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 181
+      },
+      "event": {
+        "type": "AbilityStepTriggered",
+        "skill_id": "big_bird_dark_lamp",
+        "step_id": "lamp_burst",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "presentation": {
+          "cast_state": "Attack",
+          "impact_vfx_id": "big_bird_dark_lamp_burst",
+          "target_anchor": "Body"
+        }
+      }
+    },
+    {
+      "time_ms": 43600,
+      "seq": 189,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 188
+      },
+      "event": {
+        "type": "SkillAreaDeclared",
+        "area_id": "c4578784-4897-409f-8774-cd77967ee58b",
+        "skill_id": "big_bird_dark_lamp",
+        "step_id": "lamp_burst",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target": {
+          "type": "Unit",
+          "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4"
+        },
+        "shape": {
+          "type": "tile_pattern",
+          "affected_tiles": [
+            {
+              "x": 3,
+              "y": 1
+            },
+            {
+              "x": 4,
+              "y": 1
+            },
+            {
+              "x": 3,
+              "y": 2
+            },
+            {
+              "x": 4,
+              "y": 2
+            },
+            {
+              "x": 3,
+              "y": 3
+            },
+            {
+              "x": 4,
+              "y": 3
+            }
+          ]
+        },
+        "origin": {
+          "x_milli": 2500,
+          "y_milli": 2500
+        },
+        "center": {
+          "x_milli": 3500,
+          "y_milli": 2500
+        },
+        "direction_hint": {
+          "x_milli": 4500,
+          "y_milli": 2500
+        },
+        "start_time_ms": 43600,
+        "duration_ms": 0,
+        "display_duration_ms": 250,
+        "warning_ms": 0,
+        "tick_policy": "EveryTick",
+        "tracking": "GroundFixed",
+        "hit_targets": "Enemies",
+        "include_caster": false
+      }
+    },
+    {
+      "time_ms": 43600,
+      "seq": 190,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 189
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -70,
+        "hp_before": 514,
+        "hp_after": 444,
+        "reason": "Command",
+        "damage_source": "Ability",
+        "damage_type": "Magic",
+        "raw_damage": 70,
+        "final_damage": 70,
+        "damage_breakdown": [
+          {
+            "damage_type": "Magic",
+            "raw_damage": 70,
+            "final_damage": 70,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 43600,
+      "seq": 191,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 189
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "ac8335c7-916c-4c17-a27e-7dea685c2754",
+        "delta": -70,
+        "hp_before": 1790,
+        "hp_after": 1720,
+        "reason": "Command",
+        "damage_source": "Ability",
+        "damage_type": "Magic",
+        "raw_damage": 70,
+        "final_damage": 70,
+        "damage_breakdown": [
+          {
+            "damage_type": "Magic",
+            "raw_damage": 70,
+            "final_damage": 70,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 43600,
+      "seq": 192,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 189
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "cc07572f-593f-4d7d-84c4-67d360dbd9b2",
+        "delta": -70,
+        "hp_before": 1790,
+        "hp_after": 1720,
+        "reason": "Command",
+        "damage_source": "Ability",
+        "damage_type": "Magic",
+        "raw_damage": 70,
+        "final_damage": 70,
+        "damage_breakdown": [
+          {
+            "damage_type": "Magic",
+            "raw_damage": 70,
+            "final_damage": 70,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 44710,
+      "seq": 193,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 185
+      },
+      "event": {
+        "type": "BuffExpired",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "buff_id": 4806624552354013260
+      }
+    },
+    {
+      "time_ms": 44710,
+      "seq": 194,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 186
+      },
+      "event": {
+        "type": "BuffExpired",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "ac8335c7-916c-4c17-a27e-7dea685c2754",
+        "buff_id": 4806624552354013260
+      }
+    },
+    {
+      "time_ms": 44710,
+      "seq": 195,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 187
+      },
+      "event": {
+        "type": "BuffExpired",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "cc07572f-593f-4d7d-84c4-67d360dbd9b2",
+        "buff_id": 4806624552354013260
+      }
+    },
+    {
+      "time_ms": 45460,
+      "seq": 196,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 45650,
+      "seq": 197,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 196
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 45650,
+      "seq": 198,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 197
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 0,
+        "after": 10,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 45650,
+      "seq": 199,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 197
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 10,
+        "after": 15,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 45650,
+      "seq": 200,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 197
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 444,
+        "hp_after": 386,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 47410,
+      "seq": 201,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 47600,
+      "seq": 202,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 201
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 47600,
+      "seq": 203,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 202
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 15,
+        "after": 25,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 47600,
+      "seq": 204,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 202
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 25,
+        "after": 30,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 47600,
+      "seq": 205,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 202
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 386,
+        "hp_after": 328,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 49360,
+      "seq": 206,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 49550,
+      "seq": 207,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 206
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 49550,
+      "seq": 208,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 207
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 30,
+        "after": 40,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 49550,
+      "seq": 209,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 207
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 40,
+        "after": 45,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 49550,
+      "seq": 210,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 207
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 328,
+        "hp_after": 270,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 51310,
+      "seq": 211,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 51500,
+      "seq": 212,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 211
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 51500,
+      "seq": 213,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 212
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 45,
+        "after": 55,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 51500,
+      "seq": 214,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 212
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 55,
+        "after": 60,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 51500,
+      "seq": 215,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 212
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 270,
+        "hp_after": 212,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 53260,
+      "seq": 216,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 53450,
+      "seq": 217,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 216
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 53450,
+      "seq": 218,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 217
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 60,
+        "after": 70,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 53450,
+      "seq": 219,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 217
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 70,
+        "after": 75,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 53450,
+      "seq": 220,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 217
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 212,
+        "hp_after": 154,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 55210,
+      "seq": 221,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 55400,
+      "seq": 222,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 221
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 55400,
+      "seq": 223,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 222
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 75,
+        "after": 85,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 55400,
+      "seq": 224,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 222
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 85,
+        "after": 90,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 55400,
+      "seq": 225,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 222
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 154,
+        "hp_after": 96,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 57160,
+      "seq": 226,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 57350,
+      "seq": 227,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 226
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 57350,
+      "seq": 228,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 227
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 90,
+        "after": 100,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 57350,
+      "seq": 229,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 227
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -58,
+        "hp_before": 96,
+        "hp_after": 38,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 57350,
+      "seq": 230,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 227
+      },
+      "event": {
+        "type": "AutoCastStart",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "skill_id": "big_bird_dark_lamp",
+        "target": {
+          "type": "Unit",
+          "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4"
+        }
+      }
+    },
+    {
+      "time_ms": 57800,
+      "seq": 231,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 230
+      },
+      "event": {
+        "type": "AbilityCast",
+        "skill_id": "big_bird_dark_lamp",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4"
+      }
+    },
+    {
+      "time_ms": 57800,
+      "seq": 232,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 230
+      },
+      "event": {
+        "type": "AutoCastEnd",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20"
+      }
+    },
+    {
+      "time_ms": 57800,
+      "seq": 233,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 231
+      },
+      "event": {
+        "type": "AbilityStepTriggered",
+        "skill_id": "big_bird_dark_lamp",
+        "step_id": "lamp_gaze",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "presentation": {
+          "cast_state": "Cast",
+          "impact_vfx_id": "big_bird_dark_lamp_gaze",
+          "target_anchor": "Head"
+        }
+      }
+    },
+    {
+      "time_ms": 57800,
+      "seq": 234,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 233
+      },
+      "event": {
+        "type": "SkillAreaDeclared",
+        "area_id": "c6f1ca6a-7e73-4572-a4f2-e6e0eaa39d37",
+        "skill_id": "big_bird_dark_lamp",
+        "step_id": "lamp_gaze",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target": {
+          "type": "Unit",
+          "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4"
+        },
+        "shape": {
+          "type": "tile_pattern",
+          "affected_tiles": [
+            {
+              "x": 3,
+              "y": 1
+            },
+            {
+              "x": 4,
+              "y": 1
+            },
+            {
+              "x": 3,
+              "y": 2
+            },
+            {
+              "x": 4,
+              "y": 2
+            },
+            {
+              "x": 3,
+              "y": 3
+            },
+            {
+              "x": 4,
+              "y": 3
+            }
+          ]
+        },
+        "origin": {
+          "x_milli": 2500,
+          "y_milli": 2500
+        },
+        "center": {
+          "x_milli": 3500,
+          "y_milli": 2500
+        },
+        "direction_hint": {
+          "x_milli": 4500,
+          "y_milli": 2500
+        },
+        "start_time_ms": 57800,
+        "duration_ms": 0,
+        "display_duration_ms": 250,
+        "warning_ms": 0,
+        "tick_policy": "EveryTick",
+        "tracking": "GroundFixed",
+        "hit_targets": "Enemies",
+        "include_caster": false
+      }
+    },
+    {
+      "time_ms": 57800,
+      "seq": 235,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 234
+      },
+      "event": {
+        "type": "BuffApplied",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "buff_id": 4806624552354013260,
+        "duration_ms": 1200
+      }
+    },
+    {
+      "time_ms": 57800,
+      "seq": 236,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 234
+      },
+      "event": {
+        "type": "BuffApplied",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "ac8335c7-916c-4c17-a27e-7dea685c2754",
+        "buff_id": 4806624552354013260,
+        "duration_ms": 1200
+      }
+    },
+    {
+      "time_ms": 57800,
+      "seq": 237,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 234
+      },
+      "event": {
+        "type": "BuffApplied",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "cc07572f-593f-4d7d-84c4-67d360dbd9b2",
+        "buff_id": 4806624552354013260,
+        "duration_ms": 1200
+      }
+    },
+    {
+      "time_ms": 57890,
+      "seq": 238,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 231
+      },
+      "event": {
+        "type": "AbilityStepTriggered",
+        "skill_id": "big_bird_dark_lamp",
+        "step_id": "lamp_burst",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "presentation": {
+          "cast_state": "Attack",
+          "impact_vfx_id": "big_bird_dark_lamp_burst",
+          "target_anchor": "Body"
+        }
+      }
+    },
+    {
+      "time_ms": 57890,
+      "seq": 239,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 238
+      },
+      "event": {
+        "type": "SkillAreaDeclared",
+        "area_id": "114edb84-3c23-4e5e-bbee-88be15ec69bb",
+        "skill_id": "big_bird_dark_lamp",
+        "step_id": "lamp_burst",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target": {
+          "type": "Unit",
+          "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4"
+        },
+        "shape": {
+          "type": "tile_pattern",
+          "affected_tiles": [
+            {
+              "x": 3,
+              "y": 1
+            },
+            {
+              "x": 4,
+              "y": 1
+            },
+            {
+              "x": 3,
+              "y": 2
+            },
+            {
+              "x": 4,
+              "y": 2
+            },
+            {
+              "x": 3,
+              "y": 3
+            },
+            {
+              "x": 4,
+              "y": 3
+            }
+          ]
+        },
+        "origin": {
+          "x_milli": 2500,
+          "y_milli": 2500
+        },
+        "center": {
+          "x_milli": 3500,
+          "y_milli": 2500
+        },
+        "direction_hint": {
+          "x_milli": 4500,
+          "y_milli": 2500
+        },
+        "start_time_ms": 57890,
+        "duration_ms": 0,
+        "display_duration_ms": 250,
+        "warning_ms": 0,
+        "tick_policy": "EveryTick",
+        "tracking": "GroundFixed",
+        "hit_targets": "Enemies",
+        "include_caster": false
+      }
+    },
+    {
+      "time_ms": 57890,
+      "seq": 240,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 239
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "delta": -38,
+        "hp_before": 38,
+        "hp_after": 0,
+        "reason": "Command",
+        "damage_source": "Ability",
+        "damage_type": "Magic",
+        "raw_damage": 70,
+        "final_damage": 70,
+        "damage_breakdown": [
+          {
+            "damage_type": "Magic",
+            "raw_damage": 70,
+            "final_damage": 70,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 57890,
+      "seq": 241,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 239
+      },
+      "event": {
+        "type": "MovementStopped",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "reason": "died",
+        "world_position": {
+          "x_milli": 3500,
+          "y_milli": 2500
+        }
+      }
+    },
+    {
+      "time_ms": 57890,
+      "seq": 242,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 239
+      },
+      "event": {
+        "type": "UnitDied",
+        "unit_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "owner": "Opponent",
+        "killer_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20"
+      }
+    },
+    {
+      "time_ms": 57890,
+      "seq": 243,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 239
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "ac8335c7-916c-4c17-a27e-7dea685c2754",
+        "delta": -70,
+        "hp_before": 1720,
+        "hp_after": 1650,
+        "reason": "Command",
+        "damage_source": "Ability",
+        "damage_type": "Magic",
+        "raw_damage": 70,
+        "final_damage": 70,
+        "damage_breakdown": [
+          {
+            "damage_type": "Magic",
+            "raw_damage": 70,
+            "final_damage": 70,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 57890,
+      "seq": 244,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 239
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "cc07572f-593f-4d7d-84c4-67d360dbd9b2",
+        "delta": -70,
+        "hp_before": 1720,
+        "hp_after": 1650,
+        "reason": "Command",
+        "damage_source": "Ability",
+        "damage_type": "Magic",
+        "raw_damage": 70,
+        "final_damage": 70,
+        "damage_breakdown": [
+          {
+            "damage_type": "Magic",
+            "raw_damage": 70,
+            "final_damage": 70,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 59000,
+      "seq": 245,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 235
+      },
+      "event": {
+        "type": "BuffExpired",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "a61e9dcb-5150-4e9b-a22c-8b32ddc212b4",
+        "buff_id": 4806624552354013260
+      }
+    },
+    {
+      "time_ms": 59000,
+      "seq": 246,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 236
+      },
+      "event": {
+        "type": "BuffExpired",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "ac8335c7-916c-4c17-a27e-7dea685c2754",
+        "buff_id": 4806624552354013260
+      }
+    },
+    {
+      "time_ms": 59000,
+      "seq": 247,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 237
+      },
+      "event": {
+        "type": "BuffExpired",
+        "caster_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "cc07572f-593f-4d7d-84c4-67d360dbd9b2",
+        "buff_id": 4806624552354013260
+      }
+    },
+    {
+      "time_ms": 59750,
+      "seq": 248,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "ac8335c7-916c-4c17-a27e-7dea685c2754",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 59940,
+      "seq": 249,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 248
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "ac8335c7-916c-4c17-a27e-7dea685c2754",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 59940,
+      "seq": 250,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 249
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 0,
+        "after": 10,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 59940,
+      "seq": 251,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 249
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "before": 10,
+        "after": 15,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 59940,
+      "seq": 252,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 249
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "cc3f7259-9b29-44ed-a317-55874df58b20",
+        "target_instance_id": "ac8335c7-916c-4c17-a27e-7dea685c2754",
+        "delta": -58,
+        "hp_before": 1650,
+        "hp_after": 1592,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 58,
+        "final_damage": 58,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 58,
+            "final_damage": 58,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 59940,
+      "seq": 253,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 249
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "ac8335c7-916c-4c17-a27e-7dea685c2754",
+        "before": 0,
+        "after": 5,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 60000,
+      "seq": 254,
+      "cause": {
+        "cause_type": "root",
+        "kind": "system"
+      },
+      "event": {
+        "type": "BattleEnd",
+        "winner": "Draw"
+      }
+    }
+  ]
+}

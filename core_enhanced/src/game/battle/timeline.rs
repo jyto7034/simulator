@@ -1,3 +1,10 @@
+//! Battle event log contract.
+//!
+//! The historical type name is `Timeline`, but in the current DefenseRoute
+//! live battle model it is not an offline replay driver. It is an append-only
+//! log of battle events that powers live `timeline_delta` payloads, battle
+//! result records, debug exports, and behavior tests.
+
 use serde::{Deserialize, Serialize};
 use std::{
     fs::File,
@@ -10,23 +17,23 @@ use crate::{
     game::resources::Position,
     game::{
         ability::{
-            SkillAreaShapeDef, SkillAreaTickPolicy, SkillAreaTracking, SkillHitTargetFilter,
-            SkillId, SkillPresentationDef,
+            SkillAreaTickPolicy, SkillAreaTracking, SkillHitTargetFilter, SkillId,
+            SkillPresentationDef,
         },
         battle::cooldown::CooldownSource,
         battle::core::movement::{types::TimelineVec2, MovementSegmentEndKind},
-        battle::damage::{DamageBreakdown, DamageSource, DamageType},
+        battle::damage::{DamageBreakdown, DamageFeedbackTag, DamageSource, DamageType},
         battle::ids::UnitInstanceId,
         battle::{
             buffs::BuffId,
-            types::{BattleUnitRole, BattleWinner},
+            types::{BattleUnitRole, BattleWinner, MobilityKind},
         },
         enums::Side,
         stats::{StatModifier, UnitStats},
     },
 };
 
-pub const TIMELINE_VERSION: u32 = 22;
+pub const TIMELINE_VERSION: u32 = 23;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
@@ -108,6 +115,11 @@ pub enum TimelineProjectileGuidance {
     Fixed,
 }
 
+/// Append-only battle event log.
+///
+/// `Timeline` remains the serialized/client-facing name for compatibility with
+/// the current Unity contract. Treat it as a battle event log, not as a
+/// precomputed replay that replaces live battle execution.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Timeline {
     pub version: u32,
@@ -128,6 +140,14 @@ impl Timeline {
 
     pub fn to_pretty_json_string(&self) -> Result<String, serde_json::Error> {
         serde_json::to_string_pretty(self)
+    }
+
+    pub fn entries_after_seq(&self, last_seen_seq: u64) -> Vec<TimelineEntry> {
+        self.entries
+            .iter()
+            .filter(|entry| entry.seq > last_seen_seq)
+            .cloned()
+            .collect()
     }
 
     pub fn write_json<P: AsRef<Path>>(&self, path: P) -> Result<(), Box<dyn std::error::Error>> {
@@ -183,59 +203,10 @@ pub enum SkillCastTarget {
     Tile { position: Position },
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum TimelineSkillAreaShape {
-    Circle {
-        radius_units: u32,
-    },
-    Line {
-        length_units: u32,
-    },
-    Box {
-        width_units: u32,
-        height_units: u32,
-    },
-    Rectangle {
-        width_units: u32,
-        length_units: u32,
-    },
-    /// Triangle wedge semantics, not a circular sector.
-    /// `length_units` is the centerline reach used for visual aiming.
-    Cone {
-        angle_degrees: u16,
-        length_units: u32,
-    },
-}
-
-impl From<SkillAreaShapeDef> for TimelineSkillAreaShape {
-    fn from(shape: SkillAreaShapeDef) -> Self {
-        match shape {
-            SkillAreaShapeDef::Circle { radius_units } => Self::Circle { radius_units },
-            SkillAreaShapeDef::Line { length_units } => Self::Line { length_units },
-            SkillAreaShapeDef::Box {
-                width_units,
-                height_units,
-            } => Self::Box {
-                width_units,
-                height_units,
-            },
-            SkillAreaShapeDef::Rectangle {
-                width_units,
-                length_units,
-            } => Self::Rectangle {
-                width_units,
-                length_units,
-            },
-            SkillAreaShapeDef::Cone {
-                angle_degrees,
-                length_units,
-            } => Self::Cone {
-                angle_degrees,
-                length_units,
-            },
-        }
-    }
+    TilePattern { affected_tiles: Vec<Position> },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -261,6 +232,8 @@ pub enum TimelineEvent {
         owner: Side,
         #[serde(default)]
         role: BattleUnitRole,
+        #[serde(default)]
+        mobility_kind: MobilityKind,
         base_uuid: Uuid,
         world_position: TimelineVec2,
         stats: UnitStats,
@@ -334,6 +307,15 @@ pub enum TimelineEvent {
     AutoCastEnd {
         caster_instance_id: UnitInstanceId,
     },
+    ManualCastStart {
+        caster_instance_id: UnitInstanceId,
+        skill_id: SkillId,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        target: Option<SkillCastTarget>,
+    },
+    ManualCastEnd {
+        caster_instance_id: UnitInstanceId,
+    },
     TriggeredAbilityProc {
         skill_id: SkillId,
         caster_instance_id: UnitInstanceId,
@@ -363,12 +345,11 @@ pub enum TimelineEvent {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         target: Option<SkillCastTarget>,
         shape: TimelineSkillAreaShape,
-        /// Directional shapes use `origin` as the sweep start.
-        /// Centered shapes use `center` as the visual center.
+        /// Tile area events use `shape.affected_tiles` as their gameplay and
+        /// presentation source of truth. `origin`, `center`, and
+        /// `direction_hint` are retained for VFX anchoring.
         origin: TimelineVec2,
         center: TimelineVec2,
-        /// Absolute aim point. Unity should derive the direction vector from
-        /// `direction_hint - origin` for line/rectangle/cone visuals.
         direction_hint: TimelineVec2,
         start_time_ms: u64,
         duration_ms: u32,
@@ -447,6 +428,8 @@ pub enum TimelineEvent {
         damage_breakdown: Option<Vec<DamageBreakdown>>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         critical: Option<bool>,
+        #[serde(default)]
+        feedback_tags: Vec<DamageFeedbackTag>,
     },
     StatChanged {
         source_instance_id: Option<UnitInstanceId>,
@@ -466,14 +449,6 @@ pub enum TimelineEvent {
         owner: Side,
         killer_instance_id: Option<UnitInstanceId>,
     },
-    RecoveryTargetSecured {
-        target_point_id: String,
-        unit_instance_id: UnitInstanceId,
-    },
-    ExtractionCompleted {
-        extraction_point_id: String,
-        unit_instance_id: UnitInstanceId,
-    },
     BattleEnd {
         winner: BattleWinner,
     },
@@ -483,4 +458,38 @@ pub enum TimelineEvent {
 pub enum HpChangeReason {
     BasicAttack,
     Command,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn hp_changed_serializes_feedback_tags_as_snake_case_array() {
+        let source_instance_id = UnitInstanceId::from(Uuid::from_u128(0xA));
+        let target_instance_id = UnitInstanceId::from(Uuid::from_u128(0xB));
+        let event = TimelineEvent::HpChanged {
+            source_instance_id: Some(source_instance_id),
+            target_instance_id,
+            delta: -10,
+            hp_before: 100,
+            hp_after: 90,
+            reason: HpChangeReason::Command,
+            damage_source: Some(DamageSource::Ability),
+            damage_type: Some(DamageType::Physical),
+            raw_damage: Some(20),
+            final_damage: Some(10),
+            damage_breakdown: None,
+            critical: Some(true),
+            feedback_tags: vec![DamageFeedbackTag::Critical, DamageFeedbackTag::Mitigated],
+        };
+
+        let value = serde_json::to_value(event).expect("serialize HpChanged");
+
+        assert_eq!(value["type"], "HpChanged");
+        assert_eq!(
+            value["feedback_tags"],
+            serde_json::json!(["critical", "mitigated"])
+        );
+    }
 }

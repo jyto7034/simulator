@@ -7,8 +7,8 @@ use crate::game::determinism;
 use crate::game::enums::{RewardMode, ShopEventOption};
 use crate::game::map::{MapNodeCategory, MapNodeId, MapNodePayload, SupportNodeMode};
 use crate::game::resources::{
-    GameState, HeadquartersContactSessionState, RewardSessionState, SelectedEvent,
-    SelectedEventState, ShopSessionState, SupportSessionState,
+    ActiveNodeContent, GameState, HeadquartersContactSessionState, RewardSessionState,
+    ShopSessionState, SupportSessionState,
 };
 use crate::game::reward::RewardOption;
 
@@ -216,8 +216,7 @@ impl GameCore {
                     can_reroll: shop.can_reroll,
                     visible_items: shop.visible_items.clone(),
                 };
-                self.state.selected_event =
-                    Some(SelectedEvent::new(SelectedEventState::Shop(shop)));
+                self.state.active_node_content = Some(ActiveNodeContent::Shop(shop));
                 self.transition_to(GameState::InShop { shop_uuid })?;
                 Ok(Some(BehaviorResult::ShopState {
                     shop: shop_result,
@@ -230,8 +229,7 @@ impl GameCore {
                 };
                 let reward_uuid = reward.stage_uuid;
                 let result = self.reward_state_result_with_deliveries(&reward, research_deliveries);
-                self.state.selected_event =
-                    Some(SelectedEvent::new(SelectedEventState::Reward(reward)));
+                self.state.active_node_content = Some(ActiveNodeContent::Reward(reward));
                 self.transition_to(GameState::InReward { reward_uuid })?;
                 Ok(Some(result))
             }
@@ -264,18 +262,8 @@ impl GameCore {
                 self.refresh_support_target_candidates(&mut support_session)?;
                 let result = self
                     .support_state_result_with_deliveries(&support_session, research_deliveries);
-                self.state.selected_event = Some(SelectedEvent::new(SelectedEventState::Support(
-                    support_session,
-                )));
-                if let Some(support) = self
-                    .state
-                    .selected_event
-                    .as_ref()
-                    .and_then(|selected| selected.as_support().ok())
-                    .cloned()
-                {
-                    self.refresh_maintenance_action_gate(&support)?;
-                }
+                self.state.active_node_content = Some(ActiveNodeContent::Support(support_session));
+                self.refresh_allowed_actions();
 
                 Ok(Some(result))
             }
@@ -299,9 +287,9 @@ impl GameCore {
                     shop_pool_id: session.shop_pool_id.clone(),
                     research_deliveries,
                 };
-                self.state.selected_event = Some(SelectedEvent::new(
-                    SelectedEventState::HeadquartersContact(session),
-                ));
+                self.state.active_node_content =
+                    Some(ActiveNodeContent::HeadquartersContact(session));
+                self.refresh_allowed_actions();
                 Ok(Some(result))
             }
             _ => Ok(None),

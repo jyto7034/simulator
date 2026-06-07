@@ -5,13 +5,15 @@ use uuid::Uuid;
 
 use super::{GameCore, RUN_SYSTEM_POLICY};
 use crate::game::behavior::{ActionKind, BehaviorResult, GameError, PlayerBehavior};
-use crate::game::data::skill_fragment_data::SkillFragmentId;
+use crate::game::combat_player_spawns::effective_combat_profile_for_employee;
+use crate::game::data::skill_fragment_data::{SkillFragmentCompatibilityReport, SkillFragmentId};
 use crate::game::employee::{Employee, EmployeeRoster};
 use crate::game::enums::RewardMode;
 use crate::game::managers::action_scheduler::ActionScheduler;
 use crate::game::map::MapNodeId;
+use crate::game::resources::item_slot::ItemSlot;
 use crate::game::resources::{
-    Bench, EquippedItemDto, Field, GameState, Inventory, RewardSessionState, SelectedEventState,
+    EquippedItemDto, GameState, Inventory, RewardSessionState, RosterOrder,
 };
 use crate::game::reward::RewardOption;
 
@@ -24,16 +26,12 @@ impl GameCore {
         Ok(&mut self.state.inventory)
     }
 
-    pub(super) fn field(&self) -> Result<&Field, GameError> {
-        Ok(&self.state.field)
+    pub(super) fn roster_order(&self) -> Result<&RosterOrder, GameError> {
+        Ok(&self.state.roster_order)
     }
 
-    pub(super) fn bench(&self) -> Result<&Bench, GameError> {
-        Ok(&self.state.bench)
-    }
-
-    pub(super) fn bench_mut(&mut self) -> Result<&mut Bench, GameError> {
-        Ok(&mut self.state.bench)
+    pub(super) fn roster_order_mut(&mut self) -> Result<&mut RosterOrder, GameError> {
+        Ok(&mut self.state.roster_order)
     }
 
     pub(super) fn roster(&self) -> Result<&EmployeeRoster, GameError> {
@@ -49,20 +47,11 @@ impl GameCore {
         Ok(roster.available_employee_ids())
     }
 
-    pub(super) fn sync_bench_with_owned_units(&mut self) -> Result<(), GameError> {
+    pub(super) fn sync_roster_order_with_owned_units(&mut self) -> Result<(), GameError> {
         let owned_units = self.available_player_unit_ids()?;
 
-        let field_units = {
-            let field = self.field()?;
-            field
-                .unit_positions
-                .keys()
-                .copied()
-                .collect::<std::collections::HashSet<_>>()
-        };
-
-        let bench = self.bench_mut()?;
-        bench.sync_owned_units(&owned_units, &field_units);
+        let roster_order = self.roster_order_mut()?;
+        roster_order.sync_owned_units(&owned_units);
         Ok(())
     }
 
@@ -97,11 +86,42 @@ impl GameCore {
 
     pub(super) fn current_reward_can_skip(&self) -> bool {
         self.state
-            .selected_event
+            .active_node_content
             .as_ref()
             .and_then(|selected| selected.as_reward().ok())
             .map(|reward| reward.can_skip)
             .unwrap_or(false)
+    }
+
+    pub(super) fn refresh_allowed_actions(&mut self) {
+        let state = self.state.game_state.clone();
+        let allowed = self.allowed_actions_for_state_context(&state);
+        self.state.action_validator.set_allowed_actions(allowed);
+    }
+
+    fn allowed_actions_for_state_context(&self, state: &GameState) -> Vec<ActionKind> {
+        let mut allowed = ActionScheduler::get_allowed_actions(state);
+
+        if matches!(state, GameState::InReward { .. }) && !self.current_reward_can_skip() {
+            allowed.retain(|action| *action != ActionKind::ExitReward);
+        }
+
+        if matches!(state, GameState::InNode { .. }) && self.is_in_maintenance_support_node() {
+            for action in [
+                ActionKind::UpgradeSkillFragment,
+                ActionKind::AwakenSkillFragment,
+                ActionKind::DismantleSkillFragment,
+                ActionKind::RestoreEquipment,
+                ActionKind::DismantleEquipment,
+                ActionKind::EnhanceEquipment,
+            ] {
+                if !allowed.contains(&action) {
+                    allowed.push(action);
+                }
+            }
+        }
+
+        allowed
     }
 
     pub(super) fn merge_inventory_diff(
@@ -135,7 +155,6 @@ impl GameCore {
         match behavior {
             PlayerBehavior::StartNewGame
             | PlayerBehavior::RequestMapData
-            | PlayerBehavior::UseReconScan
             | PlayerBehavior::ConfirmEnterNode
             | PlayerBehavior::CancelSelectedNode
             | PlayerBehavior::CompleteNode
@@ -149,9 +168,15 @@ impl GameCore {
             | PlayerBehavior::ExitShop
             | PlayerBehavior::ClaimReward
             | PlayerBehavior::ExitReward
-            | PlayerBehavior::FinishCombatReplay
-            | PlayerBehavior::RetreatCombat
-            | PlayerBehavior::UnEquipItem { .. } => Ok(()),
+            | PlayerBehavior::CompleteCombatResult
+            | PlayerBehavior::RequestBattleState { .. }
+            | PlayerBehavior::DeployUnit { .. }
+            | PlayerBehavior::WithdrawUnit { .. }
+            | PlayerBehavior::ActivateSkill { .. }
+            | PlayerBehavior::RetreatBattle
+            | PlayerBehavior::PauseBattle
+            | PlayerBehavior::ResumeBattle
+            | PlayerBehavior::SetBattleSpeed { .. } => Ok(()),
             PlayerBehavior::SelectStarterEmployees { candidate_ids } => {
                 self.validate_starter_employee_selection(candidate_ids)
             }
@@ -163,6 +188,14 @@ impl GameCore {
                 item_uuid,
                 target_unit,
             } => self.validate_equip_item_payload(*item_uuid, *target_unit),
+            PlayerBehavior::UnEquipItem {
+                item_uuid,
+                target_unit,
+            } => self.validate_unequip_item_payload(*item_uuid, *target_unit),
+            PlayerBehavior::UseConsumableItem {
+                item_uuid,
+                target_employee_uuid,
+            } => self.validate_use_consumable_item_payload(*item_uuid, *target_employee_uuid),
             PlayerBehavior::EquipSkillFragment {
                 employee_uuid,
                 fragment_id,
@@ -193,10 +226,7 @@ impl GameCore {
             PlayerBehavior::EnhanceEquipment { item_uuid } => {
                 self.validate_enhance_equipment_payload(*item_uuid)
             }
-            PlayerBehavior::MoveUnit {
-                target_unit_uuid, ..
-            } => self.validate_owned_unit_exists(*target_unit_uuid),
-            PlayerBehavior::MoveBenchUnit {
+            PlayerBehavior::MoveRosterUnit {
                 target_unit_uuid, ..
             } => self.validate_owned_unit_exists(*target_unit_uuid),
             PlayerBehavior::PurchaseItem { .. } | PlayerBehavior::SellItem { .. } => Ok(()),
@@ -206,7 +236,7 @@ impl GameCore {
     pub(super) fn validate_select_reward_payload(&self, reward_id: Uuid) -> Result<(), GameError> {
         let selected = self
             .state
-            .selected_event
+            .active_node_content
             .as_ref()
             .ok_or(GameError::NotInRewardState)?;
         let reward = selected.as_reward()?;
@@ -256,6 +286,61 @@ impl GameCore {
         Err(GameError::InvalidAction)
     }
 
+    pub(super) fn validate_unequip_item_payload(
+        &self,
+        item_uuid: Uuid,
+        target_unit: Uuid,
+    ) -> Result<(), GameError> {
+        let inventory = self.inventory()?;
+        let owned_equipment = inventory
+            .equipments
+            .get_item(&item_uuid)
+            .ok_or(GameError::InventoryItemNotFound)?;
+        if owned_equipment.equipped_to != Some(target_unit) {
+            return Err(GameError::InvalidAction);
+        }
+        if owned_equipment.meta.bound {
+            return Err(GameError::InvalidAction);
+        }
+
+        let roster = self.roster()?;
+        let employee = roster.get(&target_unit).ok_or(GameError::UnitNotFound)?;
+        if !employee.is_available_for_combat() {
+            return Err(GameError::InvalidAction);
+        }
+        if employee
+            .loadout
+            .item_slot
+            .iter()
+            .any(|equipped| equipped.instance_uuid == item_uuid)
+        {
+            Ok(())
+        } else {
+            Err(GameError::InvalidAction)
+        }
+    }
+
+    pub(super) fn validate_use_consumable_item_payload(
+        &self,
+        item_uuid: Uuid,
+        target_employee_uuid: Uuid,
+    ) -> Result<(), GameError> {
+        let inventory = self.inventory()?;
+        inventory
+            .consumables
+            .get_item(&item_uuid)
+            .ok_or(GameError::InventoryItemNotFound)?;
+        let employee = self
+            .roster()?
+            .get(&target_employee_uuid)
+            .ok_or(GameError::UnitNotFound)?;
+        if employee.can_receive_consumable_modifier() {
+            Ok(())
+        } else {
+            Err(GameError::InvalidAction)
+        }
+    }
+
     pub(super) fn validate_equip_skill_fragment_payload(
         &self,
         employee_uuid: Uuid,
@@ -282,7 +367,103 @@ impl GameCore {
                 fragment_id
             )));
         }
+        let compatibility =
+            self.skill_fragment_compatibility_report_for_employee(employee_uuid, fragment_id)?;
+        if !compatibility.is_compatible {
+            return Err(GameError::SkillFragmentIncompatible {
+                fragment_id: fragment_id.clone(),
+                failure_codes: compatibility.failure_codes,
+            });
+        }
         Ok(())
+    }
+
+    pub(super) fn skill_fragment_compatibility_report_for_employee(
+        &self,
+        employee_uuid: Uuid,
+        fragment_id: &SkillFragmentId,
+    ) -> Result<SkillFragmentCompatibilityReport, GameError> {
+        let profile = effective_combat_profile_for_employee(
+            self.roster()?,
+            self.inventory()?,
+            &self.state.skill_fragments,
+            &self.game_data,
+            employee_uuid,
+        )?;
+        let metadata = self
+            .game_data
+            .skill_fragment_data
+            .get_by_id(fragment_id)
+            .ok_or_else(|| {
+                GameError::InvalidStaticData(format!(
+                    "skill fragment '{}' is missing from static data",
+                    fragment_id
+                ))
+            })?;
+        Ok(metadata.compatibility_report(&profile))
+    }
+
+    pub(super) fn validate_active_skill_fragment_for_projected_item_slot(
+        &self,
+        employee_uuid: Uuid,
+        projected_item_slot: &ItemSlot,
+    ) -> Result<(), GameError> {
+        let employee = self
+            .roster()?
+            .get(&employee_uuid)
+            .ok_or(GameError::UnitNotFound)?;
+        let Some(active_fragment_id) = employee.skill_fragments.active_fragment_id() else {
+            return Ok(());
+        };
+
+        let mut profile = employee.combat_profile_for_battle(
+            &self.game_data.skill_fragment_data,
+            &self.state.skill_fragments,
+        )?;
+        let mut applied_weapon = None;
+        for equipped in projected_item_slot.iter() {
+            if equipped.equipment_type != crate::game::data::equipment_data::EquipmentType::Weapon {
+                continue;
+            }
+            let item = self
+                .game_data
+                .equipment_data
+                .get_by_uuid(&equipped.base_uuid)
+                .ok_or(GameError::MissingResource(""))?;
+            let weapon_profile = item.weapon_profile.as_ref().ok_or_else(|| {
+                GameError::InvalidStaticData(format!(
+                    "weapon equipment '{}' is missing weapon_profile",
+                    item.id
+                ))
+            })?;
+            if applied_weapon.is_some() {
+                return Err(GameError::InvalidStaticData(
+                    "projected employee loadout contains multiple equipped weapons".to_string(),
+                ));
+            }
+            profile.apply_weapon_profile(weapon_profile);
+            applied_weapon = Some(equipped.base_uuid);
+        }
+
+        let metadata = self
+            .game_data
+            .skill_fragment_data
+            .get_by_id(active_fragment_id)
+            .ok_or_else(|| {
+                GameError::InvalidStaticData(format!(
+                    "active skill fragment '{}' is missing from static data",
+                    active_fragment_id
+                ))
+            })?;
+        let compatibility = metadata.compatibility_report(&profile);
+        if compatibility.is_compatible {
+            Ok(())
+        } else {
+            Err(GameError::SkillFragmentIncompatible {
+                fragment_id: active_fragment_id.clone(),
+                failure_codes: compatibility.failure_codes,
+            })
+        }
     }
 
     pub(super) fn validate_unequip_skill_fragment_payload(
@@ -508,27 +689,12 @@ impl GameCore {
     ///
     /// # Effects
     /// 1. GameCoreState의 GameState 업데이트
-    /// 2. ActionScheduler를 통해 allowed_actions 자동 업데이트
+    /// 2. GameState와 현재 세션 내용을 함께 읽어 allowed_actions 자동 업데이트
     pub(super) fn transition_to(&mut self, new_state: GameState) -> Result<(), GameError> {
         let old_state = self.state.game_state.clone();
         info!("Game state transition: {:?} -> {:?}", old_state, new_state);
 
-        let mut allowed = ActionScheduler::get_allowed_actions(&new_state);
-        if matches!(new_state, GameState::InReward { .. }) && !self.current_reward_can_skip() {
-            allowed.retain(|action| *action != ActionKind::ExitReward);
-        }
-        if matches!(new_state, GameState::InCombatReplay { .. })
-            && self.state.selected_event.as_ref().is_some_and(|selected| {
-                matches!(
-                    &selected.event,
-                    SelectedEventState::CombatBattle(battle)
-                        if battle.node_type
-                            == crate::game::combat_preview::CombatNodeType::Boss
-                )
-            })
-        {
-            allowed.retain(|action| *action != ActionKind::RetreatCombat);
-        }
+        let allowed = self.allowed_actions_for_state_context(&new_state);
 
         self.state.transition_to(new_state, allowed);
 
@@ -547,7 +713,7 @@ impl GameCore {
         &self,
         candidate_ids: &[String],
     ) -> Result<(), GameError> {
-        if candidate_ids.len() != RUN_SYSTEM_POLICY.starter_employee_count {
+        if candidate_ids.len() != RUN_SYSTEM_POLICY.setup.starter_employee_count {
             return Err(GameError::InvalidAction);
         }
         let mut seen = HashSet::new();
@@ -574,8 +740,8 @@ impl GameCore {
         candidate_ids: &[String],
     ) -> Result<Vec<Uuid>, GameError> {
         self.validate_starter_employee_selection(candidate_ids)?;
-        let mut employees = Vec::with_capacity(RUN_SYSTEM_POLICY.starter_employee_count);
-        let mut employee_uuids = Vec::with_capacity(RUN_SYSTEM_POLICY.starter_employee_count);
+        let mut employees = Vec::with_capacity(RUN_SYSTEM_POLICY.setup.starter_employee_count);
+        let mut employee_uuids = Vec::with_capacity(RUN_SYSTEM_POLICY.setup.starter_employee_count);
         for candidate_id in candidate_ids {
             let candidate = self
                 .state
@@ -597,7 +763,7 @@ impl GameCore {
 
         info!(
             "Initialized selected starter employee roster with {} employees",
-            RUN_SYSTEM_POLICY.starter_employee_count
+            RUN_SYSTEM_POLICY.setup.starter_employee_count
         );
         Ok(employee_uuids)
     }

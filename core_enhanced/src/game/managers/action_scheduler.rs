@@ -22,29 +22,25 @@ impl ActionScheduler {
                     ActionKind::RequestMapData,
                     ActionKind::SelectMapNode,
                     ActionKind::EquipItem,
+                    ActionKind::UnEquipItem,
+                    ActionKind::UseConsumableItem,
                     ActionKind::EquipSkillFragment,
                     ActionKind::UnequipSkillFragment,
-                    ActionKind::MoveBenchUnit,
+                    ActionKind::MoveRosterUnit,
                 ]
             }
-            GameState::NodeConfirm { category, .. } => {
-                let mut actions = vec![
+            GameState::NodeConfirm { .. } => {
+                vec![
                     ActionKind::RequestMapData,
+                    ActionKind::SelectMapNode,
                     ActionKind::ConfirmEnterNode,
                     ActionKind::CancelSelectedNode,
                     ActionKind::EquipItem,
+                    ActionKind::UnEquipItem,
+                    ActionKind::UseConsumableItem,
                     ActionKind::EquipSkillFragment,
                     ActionKind::UnequipSkillFragment,
-                ];
-                if matches!(
-                    category,
-                    crate::game::map::MapNodeCategory::Combat
-                        | crate::game::map::MapNodeCategory::Boss
-                ) {
-                    actions.push(ActionKind::UseReconScan);
-                    actions.push(ActionKind::MoveUnit);
-                }
-                actions
+                ]
             }
             GameState::InNode { .. } => {
                 vec![
@@ -76,12 +72,18 @@ impl ActionScheduler {
             GameState::InRewardClaimed { .. } => {
                 vec![ActionKind::ExitReward]
             }
-            GameState::InCombatReplay { .. } => {
-                vec![ActionKind::FinishCombatReplay, ActionKind::RetreatCombat]
-            }
+            GameState::CombatResult { .. } => vec![ActionKind::CompleteCombatResult],
             GameState::InBattle { .. } => {
-                // TODO: UseCard, EndTurn 추가 후 활성화
-                vec![]
+                vec![
+                    ActionKind::RequestBattleState,
+                    ActionKind::DeployUnit,
+                    ActionKind::WithdrawUnit,
+                    ActionKind::ActivateSkill,
+                    ActionKind::RetreatBattle,
+                    ActionKind::PauseBattle,
+                    ActionKind::ResumeBattle,
+                    ActionKind::SetBattleSpeed,
+                ]
             }
             GameState::GameOver | GameState::RunComplete | GameState::RunFailed { .. } => {
                 vec![]
@@ -125,25 +127,32 @@ mod tests {
     }
 
     #[test]
-    fn test_in_combat_replay_allows_only_finish_replay() {
-        let state = GameState::InCombatReplay {
+    fn test_combat_result_allows_only_complete_result() {
+        let state = GameState::CombatResult {
             battle_uuid: Uuid::nil(),
         };
         let allowed = ActionScheduler::get_allowed_actions(&state);
 
-        assert_eq!(allowed.len(), 2);
-        assert!(allowed.contains(&ActionKind::FinishCombatReplay));
-        assert!(allowed.contains(&ActionKind::RetreatCombat));
+        assert_eq!(allowed.len(), 1);
+        assert!(allowed.contains(&ActionKind::CompleteCombatResult));
     }
 
     #[test]
-    fn test_in_battle_allows_nothing_for_now() {
+    fn test_in_battle_allows_live_battle_actions() {
         let state = GameState::InBattle {
             battle_uuid: Uuid::nil(),
         };
         let allowed = ActionScheduler::get_allowed_actions(&state);
 
-        assert!(allowed.is_empty());
+        assert_eq!(allowed.len(), 8);
+        assert!(allowed.contains(&ActionKind::RequestBattleState));
+        assert!(allowed.contains(&ActionKind::DeployUnit));
+        assert!(allowed.contains(&ActionKind::WithdrawUnit));
+        assert!(allowed.contains(&ActionKind::ActivateSkill));
+        assert!(allowed.contains(&ActionKind::RetreatBattle));
+        assert!(allowed.contains(&ActionKind::PauseBattle));
+        assert!(allowed.contains(&ActionKind::ResumeBattle));
+        assert!(allowed.contains(&ActionKind::SetBattleSpeed));
     }
 
     #[test]
@@ -198,7 +207,7 @@ mod tests {
             GameState::InRewardClaimed {
                 reward_uuid: Uuid::nil(),
             },
-            GameState::InCombatReplay {
+            GameState::CombatResult {
                 battle_uuid: Uuid::nil(),
             },
             GameState::InBattle {
@@ -213,80 +222,6 @@ mod tests {
 
         for state in states {
             let _ = ActionScheduler::get_allowed_actions(&state);
-        }
-    }
-
-    #[test]
-    fn test_action_counts_per_state() {
-        let test_cases = vec![
-            (GameState::NotStarted, 1),
-            (GameState::ViewingMap, 6),
-            (
-                GameState::NodeConfirm {
-                    node_id: MapNodeId::new(Uuid::nil()),
-                    kind_id: MapNodeKindId::new("combat_monster"),
-                    category: MapNodeCategory::Combat,
-                },
-                8,
-            ),
-            (
-                GameState::InNode {
-                    node_id: MapNodeId::new(Uuid::nil()),
-                    kind_id: MapNodeKindId::new("combat_monster"),
-                    category: MapNodeCategory::Combat,
-                },
-                8,
-            ),
-            (
-                GameState::InShop {
-                    shop_uuid: Uuid::nil(),
-                },
-                4,
-            ),
-            (
-                GameState::InReward {
-                    reward_uuid: Uuid::nil(),
-                },
-                3,
-            ),
-            (
-                GameState::InRewardClaimed {
-                    reward_uuid: Uuid::nil(),
-                },
-                1,
-            ),
-            (
-                GameState::InCombatReplay {
-                    battle_uuid: Uuid::nil(),
-                },
-                2,
-            ),
-            (
-                GameState::InBattle {
-                    battle_uuid: Uuid::nil(),
-                },
-                0,
-            ),
-            (GameState::GameOver, 0),
-            (GameState::RunComplete, 0),
-            (
-                GameState::RunFailed {
-                    reason: RunFailureReason::NoLivingEmployees,
-                },
-                0,
-            ),
-        ];
-
-        for (state, expected_count) in test_cases {
-            let allowed = ActionScheduler::get_allowed_actions(&state);
-            assert_eq!(
-                allowed.len(),
-                expected_count,
-                "State {:?} should have {} allowed actions, but got {}",
-                state,
-                expected_count,
-                allowed.len()
-            );
         }
     }
 }

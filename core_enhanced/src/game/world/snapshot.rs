@@ -1,11 +1,42 @@
+use serde::Serialize;
 use serde_json::{json, Value};
 use uuid::Uuid;
 
 use super::GameCore;
-use crate::game::behavior::GameError;
+use crate::game::behavior::{
+    GameError, SkillCatalogCastTargetDto, SkillCatalogDeliveryKind, SkillCatalogDto,
+    SkillCatalogSkillDto, SkillCatalogStepDto, SkillCatalogTileAreaDto,
+};
+use crate::game::combat_player_spawns::effective_combat_profile_for_employee;
 use crate::game::data::ItemRef;
-use crate::game::resources::{GameState, SelectedEventState};
+use crate::game::employee::ActiveConsumableModifier;
+use crate::game::resources::{ActiveNodeContent, ConsumableItemDto, GameState};
 use crate::game::reward::RewardOption;
+
+#[derive(Debug, Serialize)]
+struct ActiveConsumableModifierSnapshotDto<'a> {
+    source_item_uuid: Uuid,
+    definition_id: &'a str,
+    name: &'a str,
+    tier: crate::game::data::consumable_data::ConsumableTier,
+    duration_policy: crate::game::data::consumable_data::ConsumableDurationPolicy,
+    remaining_combat_nodes: u32,
+    effect: &'a crate::game::data::consumable_data::ConsumableEffect,
+}
+
+impl<'a> From<&'a ActiveConsumableModifier> for ActiveConsumableModifierSnapshotDto<'a> {
+    fn from(modifier: &'a ActiveConsumableModifier) -> Self {
+        Self {
+            source_item_uuid: modifier.source_item_uuid,
+            definition_id: &modifier.definition_id,
+            name: &modifier.name,
+            tier: modifier.tier,
+            duration_policy: modifier.duration_policy,
+            remaining_combat_nodes: modifier.remaining_combat_nodes,
+            effect: &modifier.effect,
+        }
+    }
+}
 
 impl GameCore {
     pub fn get_run_snapshot_json(&self) -> Result<Value, GameError> {
@@ -49,12 +80,6 @@ impl GameCore {
             .map(|session| json!(session))
             .unwrap_or(Value::Null);
         let enkephalin = self.state.enkephalin.amount;
-        let recon_charge = self
-            .state
-            .run
-            .as_ref()
-            .map(|run| run.recon_charge)
-            .unwrap_or(0);
         let qliphoth = json!({
             "amount": self.state.qliphoth.amount,
             "level": self.qliphoth_level_name(self.state.qliphoth.level),
@@ -68,13 +93,13 @@ impl GameCore {
             "map": map,
             "current_node_session": current_node_session,
             "selected_event": self.get_selected_event_snapshot_json()?,
+            "skill_catalog": serde_json::to_value(self.get_skill_catalog_snapshot_dto())
+                .map_err(|error| GameError::InvalidStaticData(error.to_string()))?,
             "roster": self.get_employee_roster_snapshot_json()?,
-            "field": self.get_field_snapshot_json()?,
-            "bench": self.get_bench_snapshot_json()?,
+            "roster_order": self.get_roster_order_snapshot_json()?,
             "inventory": self.get_inventory_snapshot_json()?,
             "resources": {
                 "enkephalin": enkephalin,
-                "recon_charge": recon_charge,
                 "qliphoth": qliphoth,
             },
         }))
@@ -85,7 +110,7 @@ impl GameCore {
             GameState::NotStarted => json!({ "type": "not_started" }),
             GameState::SelectingStarterEmployees => json!({
                 "type": "selecting_starter_employees",
-                "required_count": super::RUN_SYSTEM_POLICY.starter_employee_count,
+                "required_count": super::RUN_SYSTEM_POLICY.setup.starter_employee_count,
                 "candidates": self.state.starter_candidates,
             }),
             GameState::ViewingMap => json!({ "type": "viewing_map" }),
@@ -94,23 +119,18 @@ impl GameCore {
                 kind_id,
                 category,
             } => {
-                let combat_preview = self
-                    .state
-                    .run
-                    .as_ref()
-                    .and_then(|run| run.combat_previews.get(&node_id));
-                let combat_deployment = self
-                    .state
-                    .run
-                    .as_ref()
-                    .and_then(|run| run.combat_deployments.get(&node_id));
+                let run = self.state.run.as_ref();
+                let combat_preview = run.and_then(|run| run.combat_previews.get(&node_id));
+                let abnormality_attempt = run
+                    .filter(|_| matches!(category, crate::game::map::MapNodeCategory::Combat))
+                    .map(|run| run.abnormality_attempt_dto(node_id));
                 json!({
                     "type": "node_confirm",
                     "node_id": node_id,
                     "kind_id": kind_id,
                     "category": category,
                     "combat_preview": combat_preview,
-                    "combat_deployment": combat_deployment,
+                    "abnormality_attempt": abnormality_attempt,
                 })
             }
             GameState::InNode {
@@ -135,20 +155,125 @@ impl GameCore {
                 "type": "in_reward_claimed",
                 "reward_uuid": reward_uuid,
             }),
-            GameState::InCombatReplay { battle_uuid } => json!({
-                "type": "in_combat_replay",
+            GameState::CombatResult { battle_uuid } => json!({
+                "type": "combat_result",
                 "battle_uuid": battle_uuid,
             }),
-            GameState::InBattle { battle_uuid } => json!({
-                "type": "in_battle",
-                "battle_uuid": battle_uuid,
-            }),
+            GameState::InBattle { battle_uuid } => {
+                let active = self.state.active_battle.as_ref();
+                let abnormality_attempt = active.and_then(|battle| {
+                    (battle.node_type != crate::game::combat_preview::CombatNodeType::Boss).then(
+                        || {
+                            self.state.run.as_ref().map(|run| {
+                                run.abnormality_attempt_dto(crate::game::map::MapNodeId(
+                                    battle.battle_uuid,
+                                ))
+                            })
+                        },
+                    )?
+                });
+                let can_retreat = active.is_some_and(|battle| {
+                    battle.node_type != crate::game::combat_preview::CombatNodeType::Boss
+                        && !battle.execution.is_finished()
+                });
+                json!({
+                    "type": "in_battle",
+                    "battle_uuid": battle_uuid,
+                    "node_type": active.map(|battle| battle.node_type),
+                    "mission_variant": active.map(|battle| battle.mission_variant),
+                    "encounter_id": active.map(|battle| battle.encounter_id.as_str()),
+                    "combat_preview": active.map(|battle| &battle.combat_preview),
+                    "last_pushed_timeline_seq": active.and_then(|battle| battle.last_pushed_timeline_seq),
+                    "deployment": active.and_then(|battle| battle.live_deployment_dto(&self.state.roster)),
+                    "playback": active.map(|battle| battle.playback_state()),
+                    "abnormality_attempt": abnormality_attempt,
+                    "can_retreat": can_retreat,
+                })
+            }
             GameState::GameOver => json!({ "type": "game_over" }),
             GameState::RunComplete => json!({ "type": "run_complete" }),
             GameState::RunFailed { reason } => json!({
                 "type": "run_failed",
                 "reason": reason,
             }),
+        }
+    }
+
+    fn get_skill_catalog_snapshot_dto(&self) -> SkillCatalogDto {
+        let mut skills = self
+            .game_data
+            .skill_data
+            .skills
+            .iter()
+            .map(|skill| {
+                let cast_target = skill.cast_target_definition().map(
+                    |(range_units, target, defense_tile_range, air_capable)| {
+                        SkillCatalogCastTargetDto {
+                            range_units,
+                            target_policy: target.clone(),
+                            defense_tile_range: defense_tile_range.cloned(),
+                            air_capable,
+                        }
+                    },
+                );
+                SkillCatalogSkillDto {
+                    skill_id: skill.id.clone(),
+                    display_name: skill.name.clone(),
+                    kind: skill.kind,
+                    focus_time_ms: skill.focus_time_ms,
+                    focus_permissions: skill.focus_permissions,
+                    cast_target,
+                    steps: skill
+                        .steps
+                        .iter()
+                        .map(|step| {
+                            let tile_area = match &step.delivery {
+                                crate::game::ability::DeliveryDef::TileArea { area } => {
+                                    Some(SkillCatalogTileAreaDto {
+                                        anchor: area.anchor,
+                                        tile_origin: area.tile_origin,
+                                        tracking: area.tracking,
+                                        hit_targets: area.hit_targets,
+                                        include_caster: area.include_caster,
+                                        tick_policy: area.tick_policy,
+                                        duration_ms: area.duration_ms,
+                                        tick_interval_ms: area.tick_interval_ms,
+                                    })
+                                }
+                                _ => None,
+                            };
+                            SkillCatalogStepDto {
+                                step_id: step.id.clone(),
+                                delay_ms: step.delay_ms,
+                                range_units: step.range_units,
+                                target_policy: step.target.clone(),
+                                defense_tile_range: step.defense_tile_range.clone(),
+                                air_capable: step.air_capable,
+                                delivery: match &step.delivery {
+                                    crate::game::ability::DeliveryDef::Instant => {
+                                        SkillCatalogDeliveryKind::Instant
+                                    }
+                                    crate::game::ability::DeliveryDef::Projectile { .. } => {
+                                        SkillCatalogDeliveryKind::Projectile
+                                    }
+                                    crate::game::ability::DeliveryDef::TileArea { .. } => {
+                                        SkillCatalogDeliveryKind::TileArea
+                                    }
+                                },
+                                tile_area,
+                                effects_count: step.effects.len(),
+                                presentation: step.presentation.clone(),
+                            }
+                        })
+                        .collect::<Vec<_>>(),
+                }
+            })
+            .collect::<Vec<_>>();
+        skills.sort_by(|left, right| left.skill_id.cmp(&right.skill_id));
+        SkillCatalogDto {
+            version: 1,
+            range_source_of_truth: "defense_tile_range".to_string(),
+            skills,
         }
     }
 
@@ -166,6 +291,7 @@ impl GameCore {
                     "count": self.state.skill_fragments.count(fragment_id),
                     "name": metadata.map(|fragment| fragment.name.as_str()),
                     "effect": metadata.map(|fragment| format!("{:?}", fragment.effect)),
+                    "requirements": metadata.map(|fragment| &fragment.compatibility),
                     "progress": {
                         "research_progress": progress.research_progress,
                         "research_completion_count": progress.research_completion_count,
@@ -227,6 +353,15 @@ impl GameCore {
             .collect::<Vec<_>>();
         artifacts.sort_by(|left, right| left["uuid"].to_string().cmp(&right["uuid"].to_string()));
 
+        let mut consumables = inventory
+            .consumables
+            .iter()
+            .map(|owned| {
+                json!(crate::game::resources::ConsumableItemDto::from_owned_consumable(owned))
+            })
+            .collect::<Vec<_>>();
+        consumables.sort_by(|left, right| left["uuid"].to_string().cmp(&right["uuid"].to_string()));
+
         let mut equipment_materials = inventory
             .equipment_materials
             .iter()
@@ -253,6 +388,7 @@ impl GameCore {
             "equipments": equipments,
             "equipment_materials": equipment_materials,
             "artifacts": artifacts,
+            "consumables": consumables,
             "skill_fragments": skill_fragments,
             "skill_fragment_progress": skill_fragment_progress,
             "pending_research_deliveries": self.state.skill_fragments.pending_research_deliveries()
@@ -265,10 +401,10 @@ impl GameCore {
         }))
     }
 
-    pub fn get_bench_snapshot_json(&self) -> Result<Value, GameError> {
-        let bench = self.bench()?;
+    pub fn get_roster_order_snapshot_json(&self) -> Result<Value, GameError> {
+        let roster_order = self.roster_order()?;
 
-        let slots = bench
+        let slots = roster_order
             .slots
             .iter()
             .enumerate()
@@ -281,20 +417,49 @@ impl GameCore {
             .collect::<Vec<_>>();
 
         Ok(json!({
-            "max_slots": bench.max_slots,
+            "max_slots": roster_order.max_slots,
             "slots": slots,
         }))
     }
 
     pub fn get_employee_roster_snapshot_json(&self) -> Result<Value, GameError> {
         let roster = self.roster()?;
-        let bench = self.bench().ok();
+        let inventory = self.inventory()?;
+        let roster_order = self.roster_order().ok();
 
         let mut employees = roster
             .iter()
-            .map(|employee| {
-                let bench_slot = bench.and_then(|bench| bench.slot_of(employee.uuid));
-                json!({
+            .map(|employee| -> Result<Value, GameError> {
+                let roster_slot =
+                    roster_order.and_then(|roster_order| roster_order.slot_of(employee.uuid));
+                let effective_profile = effective_combat_profile_for_employee(
+                    roster,
+                    inventory,
+                    &self.state.skill_fragments,
+                    &self.game_data,
+                    employee.uuid,
+                )
+                .ok();
+                let skill_fragment_compatibility = self
+                    .state
+                    .skill_fragments
+                    .owned_ids()
+                    .map(|fragment_id| {
+                        let metadata = self.game_data.skill_fragment_data.get_by_id(fragment_id);
+                        let report = self.skill_fragment_compatibility_report_for_employee(
+                            employee.uuid,
+                            fragment_id,
+                        )?;
+                        Ok(json!({
+                            "id": fragment_id,
+                            "name": metadata.map(|fragment| fragment.name.as_str()),
+                            "is_compatible": report.is_compatible,
+                            "failure_codes": report.failure_codes,
+                            "requirements": metadata.map(|fragment| &fragment.compatibility),
+                        }))
+                    })
+                    .collect::<Result<Vec<_>, GameError>>()?;
+                Ok(json!({
                     "uuid": employee.uuid,
                     "name": employee.name,
                     "level": employee.level,
@@ -338,9 +503,12 @@ impl GameCore {
                         "grade": format!("{:?}", employee.combat_profile.grade),
                         "base_stats": employee.combat_profile.battle_profile.stats,
                         "basic_attack": employee.combat_profile.battle_profile.basic_attack,
-                        "effective_stats": employee.combat_profile_for_battle(&self.game_data.skill_fragment_data, &self.state.skill_fragments).ok().map(|profile| profile.stats),
-                        "effective_basic_attack": employee.combat_profile_for_battle(&self.game_data.skill_fragment_data, &self.state.skill_fragments).ok().map(|profile| profile.basic_attack),
-                        "effective_skill_id": employee.combat_profile_for_battle(&self.game_data.skill_fragment_data, &self.state.skill_fragments).ok().and_then(|profile| profile.skill_id),
+                        "deployment_affinity": employee.combat_profile.battle_profile.deployment_affinity,
+                        "effective_stats": effective_profile.as_ref().map(|profile| profile.stats),
+                        "effective_basic_attack": effective_profile.as_ref().map(|profile| profile.basic_attack.clone()),
+                        "effective_weapon_profile": effective_profile.as_ref().and_then(|profile| profile.weapon_profile.clone()),
+                        "effective_skill_id": effective_profile.as_ref().and_then(|profile| profile.skill_id.clone()),
+                        "effective_deployment_affinity": effective_profile.as_ref().map(|profile| profile.deployment_affinity),
                     },
                     "skill_fragments": {
                         "equipped": employee.skill_fragments.equipped_ids().iter().map(|fragment_id| {
@@ -354,52 +522,35 @@ impl GameCore {
                         "baseline_ids": employee.skill_fragments.baseline_ids(),
                         "active_fragment_id": employee.skill_fragments.active_fragment_id(),
                         "equipped_ids": employee.skill_fragments.equipped_ids(),
+                        "compatibility": skill_fragment_compatibility,
                     },
+                    "active_consumable_modifier": employee
+                        .active_consumable_modifier
+                        .as_ref()
+                        .map(ActiveConsumableModifierSnapshotDto::from),
                     "equipped_items": employee.loadout.item_slot.iter().map(|equipped| {
+                        let equipment = inventory.equipments.get_item(&equipped.instance_uuid);
                         json!({
                             "instance_uuid": equipped.instance_uuid,
                             "base_uuid": equipped.base_uuid,
                             "equipment_type": equipped.equipment_type,
+                            "definition_id": equipment.map(|item| item.meta.id.as_str()),
+                            "name": equipment.map(|item| item.meta.name.as_str()),
+                            "weapon_profile": equipment.and_then(|item| item.meta.weapon_profile.clone()),
+                            "bound": equipment.map(|item| item.meta.bound).unwrap_or(false),
+                            "can_unequip": equipment.map(|item| !item.meta.bound).unwrap_or(false),
+                            "cannot_unequip_reason": equipment.and_then(|item| item.meta.bound.then(|| item.meta.cannot_unequip_reason.as_str())),
                         })
                     }).collect::<Vec<_>>(),
-                    "bench_slot": bench_slot,
-                })
+                    "roster_slot": roster_slot,
+                }))
             })
-            .collect::<Vec<_>>();
+            .collect::<Result<Vec<_>, GameError>>()?;
         employees.sort_by(|left, right| left["uuid"].to_string().cmp(&right["uuid"].to_string()));
 
         Ok(json!({
             "employees": employees,
             "available_employee_ids": roster.available_employee_ids(),
-        }))
-    }
-
-    pub fn get_field_snapshot_json(&self) -> Result<Value, GameError> {
-        let field = self.field()?;
-
-        let mut placements = field
-            .placements
-            .iter()
-            .map(|(position, placement)| {
-                json!({
-                    "position": position,
-                    "unit_uuid": placement.uuid,
-                    "side": placement.side,
-                })
-            })
-            .collect::<Vec<_>>();
-        placements.sort_by(|left, right| {
-            let ly = left["position"]["y"].as_i64().unwrap_or_default();
-            let ry = right["position"]["y"].as_i64().unwrap_or_default();
-            let lx = left["position"]["x"].as_i64().unwrap_or_default();
-            let rx = right["position"]["x"].as_i64().unwrap_or_default();
-            ly.cmp(&ry).then_with(|| lx.cmp(&rx))
-        });
-
-        Ok(json!({
-            "width": field.width,
-            "height": field.height,
-            "placements": placements,
         }))
     }
 
@@ -447,6 +598,17 @@ impl GameCore {
                 "effect_id": meta.id,
                 "description": meta.description,
             }),
+            ItemRef::Consumable(meta) => {
+                let mut value =
+                    serde_json::to_value(ConsumableItemDto::from_metadata(item_uuid, meta))
+                        .map_err(|error| GameError::InvalidStaticData(error.to_string()))?;
+                if let Some(object) = value.as_object_mut() {
+                    object.insert("kind".to_string(), json!("consumable"));
+                    object.insert("id".to_string(), json!(meta.id));
+                    object.insert("type".to_string(), json!("consumable"));
+                }
+                value
+            }
             ItemRef::Abnormality(meta) => json!({
                 "uuid": item_uuid,
                 "kind": "abnormality",
@@ -465,12 +627,12 @@ impl GameCore {
     }
 
     pub fn get_selected_event_snapshot_json(&self) -> Result<Option<Value>, GameError> {
-        let Some(selected) = self.state.selected_event.as_ref() else {
+        let Some(selected) = self.state.active_node_content.as_ref() else {
             return Ok(None);
         };
 
-        let value = match &selected.event {
-            SelectedEventState::Shop(shop) => json!({
+        let value = match selected {
+            ActiveNodeContent::Shop(shop) => json!({
                 "type": "shop",
                 "id": shop.id,
                 "name": shop.name,
@@ -482,7 +644,7 @@ impl GameCore {
                 "visible_item_uuids": shop.visible_items,
                 "hidden_item_uuids": shop.hidden_items,
             }),
-            SelectedEventState::Reward(reward) => json!({
+            ActiveNodeContent::Reward(reward) => json!({
                 "type": "reward",
                 "stage_uuid": reward.stage_uuid,
                 "mode": reward.mode,
@@ -490,7 +652,7 @@ impl GameCore {
                 "selected_reward_uuid": reward.selected_reward_uuid,
                 "can_skip": reward.can_skip,
             }),
-            SelectedEventState::Support(support) => json!({
+            ActiveNodeContent::Support(support) => json!({
                 "type": "support",
                 "node_id": support.node_id,
                 "support_mode": support.support_mode,
@@ -502,18 +664,19 @@ impl GameCore {
                 "selected_medical_treatment": support.selected_medical_treatment,
                 "maintenance_options": self.maintenance_options_for_support(support),
             }),
-            SelectedEventState::HeadquartersContact(headquarters) => json!({
+            ActiveNodeContent::HeadquartersContact(headquarters) => json!({
                 "type": "headquarters_contact",
                 "node_id": headquarters.node_id,
                 "options": headquarters.options,
                 "recruitment_candidates": headquarters.recruitment_candidates,
                 "shop_pool_id": headquarters.shop_pool_id,
             }),
-            SelectedEventState::CombatBattle(battle) => json!({
+            ActiveNodeContent::CombatBattle(battle) => json!({
                 "type": "combat_battle",
                 "abnormality_id": battle.abnormality_id,
                 "encounter_id": battle.encounter_id,
                 "node_type": battle.node_type,
+                "mission_variant": battle.mission_variant,
                 "abnormality_uuid": battle.abnormality_uuid,
                 "winner": battle.winner,
                 "reward_mode": battle.reward_mode,

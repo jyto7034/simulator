@@ -12,6 +12,7 @@ use crate::{
             },
             enums::BattleEvent,
             ids::UnitInstanceId,
+            tile_range::TileRangePattern,
             timeline::SkillCastTarget,
         },
         enums::Side,
@@ -279,9 +280,21 @@ impl BattleCore {
         caster_owner: Side,
         caster_pos: Position,
         range_units: f32,
+        defense_tile_range: Option<&TileRangePattern>,
         rule: UnitTargetRule,
+        air_capable: bool,
     ) -> Option<UnitInstanceId> {
         let in_range = |unit_id: UnitInstanceId| {
+            if !self.single_target_can_target_unit(unit_id, air_capable) {
+                return false;
+            }
+            if self.is_defense_route_player_unit(caster_instance_id) {
+                return self.is_target_in_defense_tile_range(
+                    caster_instance_id,
+                    unit_id,
+                    defense_tile_range,
+                );
+            }
             self.unit_body_view(caster_instance_id)
                 .zip(self.unit_body_view(unit_id))
                 .is_some_and(|(caster, target)| caster.can_reach(&target, range_units))
@@ -302,7 +315,9 @@ impl BattleCore {
                         caster_owner,
                         caster_pos,
                         range_units,
+                        defense_tile_range,
                         UnitTargetRule::Nearest,
+                        air_capable,
                     )
                 }),
             UnitTargetRule::LowestHealthEnemy => {
@@ -317,7 +332,7 @@ impl BattleCore {
                     let Some(target_body) = self.unit_body_view(unit.instance_id) else {
                         continue;
                     };
-                    if !caster_body.can_reach(&target_body, range_units) {
+                    if !in_range(unit.instance_id) {
                         continue;
                     }
                     let distance = caster_body.position.distance_squared(target_body.position);
@@ -350,11 +365,44 @@ impl BattleCore {
                         .filter(|id| self.is_alive_enemy(*id, caster_owner) && in_range(*id))
                 })
                 .or_else(|| {
-                    self.choose_enemy_target_in_range_units(
-                        caster_instance_id,
-                        caster_owner,
-                        range_units,
-                    )
+                    if !self.is_defense_route_player_unit(caster_instance_id) {
+                        return self.choose_enemy_target_in_range_units(
+                            caster_instance_id,
+                            caster_owner,
+                            range_units,
+                            air_capable,
+                        );
+                    }
+                    let Some(caster_body) = self.unit_body_view(caster_instance_id) else {
+                        return None;
+                    };
+                    let mut best: Option<(f32, UnitInstanceId)> = None;
+                    for unit in self.units.values() {
+                        if unit.is_dead()
+                            || unit.owner == caster_owner
+                            || !in_range(unit.instance_id)
+                        {
+                            continue;
+                        }
+                        let Some(target_body) = self.unit_body_view(unit.instance_id) else {
+                            continue;
+                        };
+                        let distance = caster_body.position.distance_squared(target_body.position);
+                        match best {
+                            None => best = Some((distance, unit.instance_id)),
+                            Some((best_distance, _)) if distance < best_distance => {
+                                best = Some((distance, unit.instance_id));
+                            }
+                            Some((best_distance, best_id))
+                                if distance.total_cmp(&best_distance).is_eq()
+                                    && unit.instance_id.as_bytes() < best_id.as_bytes() =>
+                            {
+                                best = Some((distance, unit.instance_id));
+                            }
+                            _ => {}
+                        }
+                    }
+                    best.map(|(_, id)| id)
                 }),
         }
         .filter(|id| in_range(*id))
@@ -379,7 +427,9 @@ impl BattleCore {
             SkillTarget::SelfUnit => targets.push(caster_instance_id),
             SkillTarget::EnemySingle { .. } => {
                 if let Some(SkillCastTarget::Unit { unit_instance_id }) = step_target {
-                    if self.is_alive_enemy(unit_instance_id, caster_owner) {
+                    if self.is_alive_enemy(unit_instance_id, caster_owner)
+                        && self.single_target_can_target_unit(unit_instance_id, step.air_capable)
+                    {
                         targets.push(unit_instance_id);
                     }
                 }

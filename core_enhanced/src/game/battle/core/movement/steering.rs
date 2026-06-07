@@ -5,11 +5,11 @@ use super::{
     types::{MovementGoal, WorldVec2},
 };
 
-const DEFAULT_SEPARATION_MULTIPLIER: f32 = 1.15;
-const DEFAULT_SEPARATION_STRENGTH: f32 = 0.85;
-const DEFAULT_SIDE_BIAS_STRENGTH: f32 = 0.35;
-const DEFAULT_CONGESTION_LOOKAHEAD_MULTIPLIER: f32 = 2.25;
-const DEFAULT_MIN_CONGESTION_SPEED_SCALE: f32 = 0.35;
+const DEFAULT_SEPARATION_MULTIPLIER: f32 = 0.0;
+const DEFAULT_SEPARATION_STRENGTH: f32 = 0.0;
+const DEFAULT_SIDE_BIAS_STRENGTH: f32 = 0.0;
+const DEFAULT_CONGESTION_LOOKAHEAD_MULTIPLIER: f32 = 0.0;
+const DEFAULT_MIN_CONGESTION_SPEED_SCALE: f32 = 1.0;
 const DEFAULT_SIDE_BIAS_ACTIVATION_MULTIPLIER: f32 = 0.9;
 const DEFAULT_EARLY_STRAIGHTEN_DISTANCE_MULTIPLIER: f32 = 3.0;
 const DEFAULT_EARLY_STRAIGHTEN_PRESSURE: f32 = 0.45;
@@ -307,7 +307,7 @@ mod tests {
     use crate::game::{battle::ids::UnitInstanceId, enums::Side};
 
     use super::*;
-    use crate::game::battle::core::movement::types::UnitBody;
+    use crate::game::battle::core::movement::{engine::MovementTerrainPolicy, types::UnitBody};
 
     fn movement_unit(unit_id: u128, position: WorldVec2, goal: MovementGoal) -> MovementUnitInput {
         MovementUnitInput {
@@ -323,6 +323,7 @@ mod tests {
                 goal: Some(goal),
                 physics_handle: None,
             },
+            terrain_policy: MovementTerrainPolicy::Ground,
             current_target: None,
             attack_range_units: 0.5,
             can_move: true,

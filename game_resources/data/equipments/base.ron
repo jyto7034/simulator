@@ -9,6 +9,21 @@ EquipmentDatabase(
             rarity: ALEPH,
             price: 300,
             allow_duplicate_equip: true,
+            weapon_profile: Some((
+                range_role: Melee,
+                weapon_archetype: Sword,
+                damage_type: Physical,
+                targeting_profile: DefaultForward,
+                air_capable: false,
+                range_units: 1.0,
+                defense_tile_range: (
+                    include_anchor_tile: false,
+                    rows: [".X.", ".@.", "..."],
+                ),
+                interval_ms: 1500,
+                windup_ms: 200,
+                delivery: Instant,
+            )),
             triggered_effects: {
                 Permanent: [
                     (
@@ -38,6 +53,27 @@ EquipmentDatabase(
             rarity: ALEPH,
             price: 500,
             allow_duplicate_equip: true,
+            weapon_profile: Some((
+                range_role: Ranged,
+                weapon_archetype: Staff,
+                damage_type: Magic,
+                targeting_profile: LowMagicResistFirst,
+                air_capable: true,
+                range_units: 6.0,
+                defense_tile_range: (
+                    include_anchor_tile: false,
+                    rows: [
+                        "..X..",
+                        ".XXX.",
+                        "..X..",
+                        "..@..",
+                        ".....",
+                    ],
+                ),
+                interval_ms: 1700,
+                windup_ms: 260,
+                delivery: Projectile(speed_units_per_ms: 6000),
+            )),
             triggered_effects: {
                 Permanent: [
                     (
@@ -77,6 +113,27 @@ EquipmentDatabase(
             rarity: HE,
             price: 120,
             allow_duplicate_equip: true,
+            weapon_profile: Some((
+                range_role: Ranged,
+                weapon_archetype: GrenadeLauncher,
+                damage_type: Magic,
+                targeting_profile: SplashClusterFirst,
+                air_capable: false,
+                range_units: 5.0,
+                defense_tile_range: (
+                    include_anchor_tile: false,
+                    rows: [
+                        ".XXX.",
+                        ".XXX.",
+                        "..X..",
+                        "..@..",
+                        ".....",
+                    ],
+                ),
+                interval_ms: 1900,
+                windup_ms: 320,
+                delivery: Projectile(speed_units_per_ms: 5200),
+            )),
             triggered_effects: {
                 Permanent: [
                     (
@@ -303,6 +360,27 @@ EquipmentDatabase(
             rarity: HE,
             price: 180,
             allow_duplicate_equip: true,
+            weapon_profile: Some((
+                range_role: Ranged,
+                weapon_archetype: Gun,
+                damage_type: Magic,
+                targeting_profile: LowDefenseFirst,
+                air_capable: true,
+                range_units: 6.5,
+                defense_tile_range: (
+                    include_anchor_tile: false,
+                    rows: [
+                        "..X..",
+                        "..X..",
+                        "..X..",
+                        "..@..",
+                        ".....",
+                    ],
+                ),
+                interval_ms: 1450,
+                windup_ms: 180,
+                delivery: Projectile(speed_units_per_ms: 7200),
+            )),
             triggered_effects: {
                 Permanent: [
                     (
@@ -330,6 +408,21 @@ EquipmentDatabase(
             rarity: ALEPH,
             price: 480,
             allow_duplicate_equip: true,
+            weapon_profile: Some((
+                range_role: Melee,
+                weapon_archetype: Shield,
+                damage_type: Magic,
+                targeting_profile: DefaultForward,
+                air_capable: false,
+                range_units: 1.0,
+                defense_tile_range: (
+                    include_anchor_tile: false,
+                    rows: [".X.", "X@X", ".X."],
+                ),
+                interval_ms: 1800,
+                windup_ms: 260,
+                delivery: Instant,
+            )),
             triggered_effects: {
                 Permanent: [
                     (
@@ -365,6 +458,27 @@ EquipmentDatabase(
             rarity: WAW,
             price: 260,
             allow_duplicate_equip: true,
+            weapon_profile: Some((
+                range_role: Ranged,
+                weapon_archetype: Bow,
+                damage_type: Physical,
+                targeting_profile: AirFirst,
+                air_capable: true,
+                range_units: 7.0,
+                defense_tile_range: (
+                    include_anchor_tile: false,
+                    rows: [
+                        "..X..",
+                        ".XXX.",
+                        "..X..",
+                        "..@..",
+                        ".....",
+                    ],
+                ),
+                interval_ms: 1350,
+                windup_ms: 160,
+                delivery: Projectile(speed_units_per_ms: 7600),
+            )),
             triggered_effects: {
                 Permanent: [
                     (
@@ -400,6 +514,25 @@ EquipmentDatabase(
             rarity: WAW,
             price: 280,
             allow_duplicate_equip: true,
+            weapon_profile: Some((
+                range_role: Melee,
+                weapon_archetype: Spear,
+                damage_type: Physical,
+                targeting_profile: DefaultForward,
+                air_capable: false,
+                range_units: 1.4,
+                defense_tile_range: (
+                    include_anchor_tile: false,
+                    rows: [
+                        ".X.",
+                        ".X.",
+                        ".@.",
+                    ],
+                ),
+                interval_ms: 1600,
+                windup_ms: 230,
+                delivery: Instant,
+            )),
             triggered_effects: {
                 Permanent: [
                     (
@@ -427,6 +560,25 @@ EquipmentDatabase(
             rarity: ALEPH,
             price: 520,
             allow_duplicate_equip: true,
+            weapon_profile: Some((
+                range_role: Melee,
+                weapon_archetype: Sword,
+                damage_type: Physical,
+                targeting_profile: DefaultForward,
+                air_capable: false,
+                range_units: 1.1,
+                defense_tile_range: (
+                    include_anchor_tile: false,
+                    rows: [
+                        ".X.",
+                        "X@X",
+                        "...",
+                    ],
+                ),
+                interval_ms: 1700,
+                windup_ms: 280,
+                delivery: Instant,
+            )),
             triggered_effects: {
                 Permanent: [
                     (

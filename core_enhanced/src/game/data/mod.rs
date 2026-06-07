@@ -1,5 +1,5 @@
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     fmt::Display,
     hash::Hash,
     sync::{Arc, OnceLock},
@@ -7,18 +7,22 @@ use std::{
 
 use uuid::Uuid;
 
-use crate::game::data::{
-    abnormality_data::{AbnormalityDatabase, AbnormalityMetadata},
-    artifact_data::{ArtifactDatabase, ArtifactMetadata},
-    corroded_employee_data::CorrodedEmployeeProfileDatabase,
-    corroded_wave_data::CorrodedWavePresetDatabase,
-    employee_data::{RecruitmentEmployeeCandidateDatabase, StarterEmployeeCandidateDatabase},
-    equipment_data::{EquipmentDatabase, EquipmentMetadata},
-    pve_data::PveEncounterDatabase,
-    reward_data::RewardDatabase,
-    shop_data::ShopDatabase,
-    skill_data::SkillDatabase,
-    skill_fragment_data::SkillFragmentDatabase,
+use crate::game::{
+    battle::buffs::BuffDatabase,
+    data::{
+        abnormality_data::{AbnormalityDatabase, AbnormalityMetadata},
+        artifact_data::{ArtifactDatabase, ArtifactMetadata},
+        consumable_data::{ConsumableDatabase, ConsumableMetadata},
+        corroded_employee_data::CorrodedEmployeeProfileDatabase,
+        corroded_wave_data::CorrodedWavePresetDatabase,
+        employee_data::{RecruitmentEmployeeCandidateDatabase, StarterEmployeeCandidateDatabase},
+        equipment_data::{EquipmentDatabase, EquipmentMetadata},
+        pve_data::PveEncounterDatabase,
+        reward_data::RewardDatabase,
+        shop_data::ShopDatabase,
+        skill_data::SkillDatabase,
+        skill_fragment_data::SkillFragmentDatabase,
+    },
 };
 
 // 환상체 (기물) 정보
@@ -26,6 +30,9 @@ pub mod abnormality_data;
 
 // 아티팩트 정보
 pub mod artifact_data;
+
+// 섭취 아이템 정보
+pub mod consumable_data;
 
 // 아이템 ( 장착 장비 ) 정보
 pub mod equipment_data;
@@ -108,6 +115,7 @@ pub struct GameDataBase {
     pub starter_employee_data: Arc<StarterEmployeeCandidateDatabase>,
     pub recruitment_employee_data: Arc<RecruitmentEmployeeCandidateDatabase>,
     pub artifact_data: Arc<ArtifactDatabase>,
+    pub consumable_data: Arc<ConsumableDatabase>,
     pub equipment_data: Arc<EquipmentDatabase>,
 
     /// 마스터 테이블을 참고하여 상인, 보상 등을 구성하여 저장하는 게임 데이터베이스
@@ -119,6 +127,9 @@ pub struct GameDataBase {
 
     /// 스킬 메타데이터 DB
     pub skill_data: Arc<SkillDatabase>,
+
+    /// 전투 중 상태이상 buff 메타데이터 DB
+    pub buff_data: Arc<BuffDatabase>,
 
     /// 직원 스킬 파편 메타데이터 DB
     pub skill_fragment_data: Arc<SkillFragmentDatabase>,
@@ -134,11 +145,13 @@ pub struct GameDataBaseParts {
     pub starter_employee_data: Arc<StarterEmployeeCandidateDatabase>,
     pub recruitment_employee_data: Arc<RecruitmentEmployeeCandidateDatabase>,
     pub artifact_data: Arc<ArtifactDatabase>,
+    pub consumable_data: Arc<ConsumableDatabase>,
     pub equipment_data: Arc<EquipmentDatabase>,
     pub shop_data: Arc<ShopDatabase>,
     pub reward_data: Arc<RewardDatabase>,
     pub pve_data: Arc<PveEncounterDatabase>,
     pub skill_data: Arc<SkillDatabase>,
+    pub buff_data: Arc<BuffDatabase>,
     pub skill_fragment_data: Arc<SkillFragmentDatabase>,
 }
 
@@ -149,11 +162,13 @@ pub struct GameDataBuilder {
     starter_employee_data: Arc<StarterEmployeeCandidateDatabase>,
     recruitment_employee_data: Arc<RecruitmentEmployeeCandidateDatabase>,
     artifact_data: Arc<ArtifactDatabase>,
+    consumable_data: Arc<ConsumableDatabase>,
     equipment_data: Arc<EquipmentDatabase>,
     shop_data: Arc<ShopDatabase>,
     reward_data: Arc<RewardDatabase>,
     pve_data: Arc<PveEncounterDatabase>,
     skill_data: Arc<SkillDatabase>,
+    buff_data: Arc<BuffDatabase>,
     skill_fragment_data: Arc<SkillFragmentDatabase>,
 }
 
@@ -166,13 +181,19 @@ impl GameDataBuilder {
             starter_employee_data: Arc::new(StarterEmployeeCandidateDatabase::new(vec![])),
             recruitment_employee_data: Arc::new(RecruitmentEmployeeCandidateDatabase::new(vec![])),
             artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
+            consumable_data: Arc::new(ConsumableDatabase::new(vec![])),
             equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
             shop_data: Arc::new(ShopDatabase::new(vec![])),
             reward_data: Arc::new(RewardDatabase::new(vec![])),
             pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
             skill_data: Arc::new(SkillDatabase::new(vec![])),
+            buff_data: Arc::new(BuffDatabase::new(vec![])),
             skill_fragment_data: Arc::new(SkillFragmentDatabase::with_builtin_starter(vec![])),
         }
+    }
+
+    pub fn live_defaults() -> Self {
+        Self::empty().with_buffs(BuffDatabase::live_default())
     }
 
     pub fn with_abnormalities(mut self, items: Vec<AbnormalityMetadata>) -> Self {
@@ -253,6 +274,16 @@ impl GameDataBuilder {
         self
     }
 
+    pub fn with_consumables(mut self, items: Vec<ConsumableMetadata>) -> Self {
+        self.consumable_data = Arc::new(ConsumableDatabase::new(items));
+        self
+    }
+
+    pub fn with_consumable_data(mut self, data: Arc<ConsumableDatabase>) -> Self {
+        self.consumable_data = data;
+        self
+    }
+
     pub fn with_equipment(mut self, items: Vec<EquipmentMetadata>) -> Self {
         self.equipment_data = Arc::new(EquipmentDatabase::new(items));
         self
@@ -303,6 +334,16 @@ impl GameDataBuilder {
         self
     }
 
+    pub fn with_buffs(mut self, data: BuffDatabase) -> Self {
+        self.buff_data = Arc::new(data);
+        self
+    }
+
+    pub fn with_buff_data(mut self, data: Arc<BuffDatabase>) -> Self {
+        self.buff_data = data;
+        self
+    }
+
     pub fn with_skill_fragments(mut self, data: SkillFragmentDatabase) -> Self {
         self.skill_fragment_data = Arc::new(data);
         self
@@ -321,11 +362,13 @@ impl GameDataBuilder {
             starter_employee_data: self.starter_employee_data,
             recruitment_employee_data: self.recruitment_employee_data,
             artifact_data: self.artifact_data,
+            consumable_data: self.consumable_data,
             equipment_data: self.equipment_data,
             shop_data: self.shop_data,
             reward_data: self.reward_data,
             pve_data: self.pve_data,
             skill_data: self.skill_data,
+            buff_data: self.buff_data,
             skill_fragment_data: self.skill_fragment_data,
         })
     }
@@ -345,6 +388,7 @@ impl Default for GameDataBuilder {
 pub enum Item {
     Equipment(Arc<EquipmentMetadata>),
     Artifact(Arc<ArtifactMetadata>),
+    Consumable(Arc<ConsumableMetadata>),
     Abnormality(Arc<AbnormalityMetadata>),
 }
 
@@ -352,6 +396,7 @@ pub enum Item {
 pub enum ItemRef<'a> {
     Equipment(&'a EquipmentMetadata),
     Artifact(&'a ArtifactMetadata),
+    Consumable(&'a ConsumableMetadata),
     Abnormality(&'a AbnormalityMetadata),
 }
 
@@ -360,6 +405,7 @@ impl<'a> ItemRef<'a> {
         match self {
             ItemRef::Equipment(meta) => meta.price,
             ItemRef::Artifact(meta) => meta.price,
+            ItemRef::Consumable(meta) => meta.price,
             ItemRef::Abnormality(meta) => meta.price,
         }
     }
@@ -368,6 +414,7 @@ impl<'a> ItemRef<'a> {
         match self {
             ItemRef::Equipment(meta) => meta.uuid,
             ItemRef::Artifact(meta) => meta.uuid,
+            ItemRef::Consumable(meta) => meta.uuid,
             ItemRef::Abnormality(meta) => meta.uuid,
         }
     }
@@ -376,6 +423,7 @@ impl<'a> ItemRef<'a> {
         match self {
             ItemRef::Equipment(meta) => &meta.id,
             ItemRef::Artifact(meta) => &meta.id,
+            ItemRef::Consumable(meta) => &meta.id,
             ItemRef::Abnormality(meta) => &meta.id,
         }
     }
@@ -384,6 +432,7 @@ impl<'a> ItemRef<'a> {
         match self {
             ItemRef::Equipment(meta) => &meta.name,
             ItemRef::Artifact(meta) => &meta.name,
+            ItemRef::Consumable(meta) => &meta.name,
             ItemRef::Abnormality(meta) => &meta.name,
         }
     }
@@ -394,6 +443,10 @@ impl<'a> ItemRef<'a> {
 
     pub fn is_artifact(&self) -> bool {
         matches!(self, ItemRef::Artifact(_))
+    }
+
+    pub fn is_consumable(&self) -> bool {
+        matches!(self, ItemRef::Consumable(_))
     }
 
     pub fn is_abnormality(&self) -> bool {
@@ -410,6 +463,7 @@ impl<'a> From<ItemRef<'a>> for Item {
         match value {
             ItemRef::Equipment(meta) => Item::Equipment(Arc::new(meta.clone())),
             ItemRef::Artifact(meta) => Item::Artifact(Arc::new(meta.clone())),
+            ItemRef::Consumable(meta) => Item::Consumable(Arc::new(meta.clone())),
             ItemRef::Abnormality(meta) => Item::Abnormality(Arc::new(meta.clone())),
         }
     }
@@ -425,6 +479,7 @@ impl Item {
         match self {
             Item::Equipment(meta) => meta.price,
             Item::Artifact(meta) => meta.price,
+            Item::Consumable(meta) => meta.price,
             Item::Abnormality(meta) => meta.price,
         }
     }
@@ -434,6 +489,7 @@ impl Item {
         match self {
             Item::Equipment(meta) => meta.uuid,
             Item::Artifact(meta) => meta.uuid,
+            Item::Consumable(meta) => meta.uuid,
             Item::Abnormality(meta) => meta.uuid,
         }
     }
@@ -443,6 +499,7 @@ impl Item {
         match self {
             Item::Equipment(meta) => &meta.id,
             Item::Artifact(meta) => &meta.id,
+            Item::Consumable(meta) => &meta.id,
             Item::Abnormality(meta) => &meta.id,
         }
     }
@@ -452,6 +509,7 @@ impl Item {
         match self {
             Item::Equipment(meta) => &meta.name,
             Item::Artifact(meta) => &meta.name,
+            Item::Consumable(meta) => &meta.name,
             Item::Abnormality(meta) => &meta.name,
         }
     }
@@ -468,6 +526,10 @@ impl Item {
     /// Artifact 타입인지 확인
     pub fn is_artifact(&self) -> bool {
         matches!(self, Item::Artifact(_))
+    }
+
+    pub fn is_consumable(&self) -> bool {
+        matches!(self, Item::Consumable(_))
     }
 
     /// Abnormality 타입인지 확인
@@ -495,6 +557,13 @@ impl Item {
         }
     }
 
+    pub fn as_consumable(&self) -> Option<Arc<ConsumableMetadata>> {
+        match self {
+            Item::Consumable(meta) => Some(meta.clone()),
+            _ => None,
+        }
+    }
+
     /// Abnormality로 변환 (참조)
     pub fn as_abnormality(&self) -> Option<Arc<AbnormalityMetadata>> {
         match self {
@@ -512,6 +581,7 @@ impl Item {
         match self {
             Item::Equipment(meta) => Item::Equipment(Arc::clone(meta)),
             Item::Artifact(meta) => Item::Artifact(Arc::clone(meta)),
+            Item::Consumable(meta) => Item::Consumable(Arc::clone(meta)),
             Item::Abnormality(meta) => Item::Abnormality(Arc::clone(meta)),
         }
     }
@@ -522,6 +592,7 @@ impl Item {
 enum ItemIndex {
     Abnormality(usize),
     Artifact(usize),
+    Consumable(usize),
     Equipment(usize),
 }
 
@@ -530,6 +601,7 @@ impl ItemIndex {
         match self {
             ItemIndex::Abnormality(_) => "abnormality",
             ItemIndex::Artifact(_) => "artifact",
+            ItemIndex::Consumable(_) => "consumable",
             ItemIndex::Equipment(_) => "equipment",
         }
     }
@@ -538,6 +610,7 @@ impl ItemIndex {
         match self {
             ItemIndex::Abnormality(index)
             | ItemIndex::Artifact(index)
+            | ItemIndex::Consumable(index)
             | ItemIndex::Equipment(index) => index,
         }
     }
@@ -552,6 +625,7 @@ impl ItemRegistry {
     pub fn new(
         abnormality_db: &AbnormalityDatabase,
         artifact_db: &ArtifactDatabase,
+        consumable_db: &ConsumableDatabase,
         equipment_db: &EquipmentDatabase,
     ) -> Self {
         let mut by_uuid = HashMap::new();
@@ -562,6 +636,10 @@ impl ItemRegistry {
 
         for (index, meta) in artifact_db.items.iter().enumerate() {
             insert_item_index(&mut by_uuid, meta.uuid, ItemIndex::Artifact(index));
+        }
+
+        for (index, meta) in consumable_db.items.iter().enumerate() {
+            insert_item_index(&mut by_uuid, meta.uuid, ItemIndex::Consumable(index));
         }
 
         for (index, meta) in equipment_db.items.iter().enumerate() {
@@ -607,10 +685,7 @@ fn validate_skill_fragment_skill_references(
 
         for source in &fragment.sources {
             match source {
-                skill_fragment_data::SkillFragmentAcquisitionSource::AbnormalitySuppression {
-                    abnormality_id,
-                }
-                | skill_fragment_data::SkillFragmentAcquisitionSource::AbnormalityContainment {
+                skill_fragment_data::SkillFragmentAcquisitionSource::AbnormalityContainment {
                     abnormality_id,
                 } => assert!(
                     abnormality_data.get_by_id(abnormality_id).is_some(),
@@ -648,28 +723,105 @@ fn validate_skill_fragment_skill_references(
             _ => continue,
         };
 
+        let imitation_skill = skill_data.get_by_id(imitation_skill_id);
         assert!(
-            skill_data.get_by_id(imitation_skill_id).is_some(),
+            imitation_skill.is_some(),
             "skill fragment '{}' references unknown imitation skill '{}'",
             fragment.id,
             imitation_skill_id
         );
+        if let Some(skill) = imitation_skill {
+            validate_defense_route_skill_contract("skill fragment", &fragment.id, skill);
+        }
         for (level, skill_id) in upgrade_skill_ids {
+            let upgrade_skill = skill_data.get_by_id(skill_id);
             assert!(
-                skill_data.get_by_id(skill_id).is_some(),
+                upgrade_skill.is_some(),
                 "skill fragment '{}' references unknown upgrade skill '{}' at level {}",
                 fragment.id,
                 skill_id,
                 level
             );
+            if let Some(skill) = upgrade_skill {
+                validate_defense_route_skill_contract("skill fragment", &fragment.id, skill);
+            }
         }
         if let Some(awakened_skill_id) = awakened_skill_id {
+            let awakened_skill = skill_data.get_by_id(awakened_skill_id);
             assert!(
-                skill_data.get_by_id(awakened_skill_id).is_some(),
+                awakened_skill.is_some(),
                 "skill fragment '{}' references unknown awakened skill '{}'",
                 fragment.id,
                 awakened_skill_id
             );
+            if let Some(skill) = awakened_skill {
+                validate_defense_route_skill_contract("skill fragment", &fragment.id, skill);
+            }
+        }
+    }
+}
+
+fn validate_defense_route_skill_contract(
+    source_kind: &str,
+    source_id: &impl std::fmt::Display,
+    skill: &crate::game::ability::SkillDef,
+) {
+    for step in &skill.steps {
+        let requires_tile_range = matches!(
+            step.target,
+            crate::game::ability::SkillTarget::EnemySingle { .. }
+                | crate::game::ability::SkillTarget::CastTarget
+        ) || matches!(
+            step.delivery,
+            crate::game::ability::DeliveryDef::TileArea { .. }
+        );
+        assert!(
+            !requires_tile_range || step.defense_tile_range.is_some(),
+            "{} '{}' references DefenseRoute skill '{}' step '{}' without defense_tile_range",
+            source_kind,
+            source_id,
+            skill.id,
+            step.id
+        );
+    }
+}
+
+fn validate_unit_skill_references(
+    abnormality_data: &AbnormalityDatabase,
+    corroded_employee_data: &CorrodedEmployeeProfileDatabase,
+    skill_data: &SkillDatabase,
+) {
+    for abnormality in &abnormality_data.items {
+        if let Some(skill_id) = &abnormality.skill_id {
+            let skill = skill_data.get_by_id(skill_id);
+            assert!(
+                skill.is_some(),
+                "abnormality '{}' references unknown skill '{}'",
+                abnormality.id,
+                skill_id
+            );
+            if let Some(skill) = skill {
+                validate_defense_route_skill_contract("abnormality", &abnormality.id, skill);
+            }
+        }
+    }
+
+    for profile in &corroded_employee_data.profiles {
+        if let Some(skill_id) = &profile.skill_id {
+            let skill = skill_data.get_by_id(skill_id);
+            assert!(
+                skill.is_some(),
+                "corroded employee profile '{}' references unknown skill '{}'",
+                profile.id,
+                skill_id
+            );
+            if let Some(skill) = skill {
+                validate_defense_route_skill_contract(
+                    "corroded employee profile",
+                    &profile.id,
+                    skill,
+                );
+            }
         }
     }
 }
@@ -678,6 +830,7 @@ fn validate_reward_references(
     reward_data: &RewardDatabase,
     equipment_data: &EquipmentDatabase,
     artifact_data: &ArtifactDatabase,
+    consumable_data: &ConsumableDatabase,
     skill_fragment_data: &SkillFragmentDatabase,
 ) {
     for reward in &reward_data.rewards {
@@ -712,6 +865,12 @@ fn validate_reward_references(
                     "reward '{}' references unknown artifact '{}'",
                     reward.id,
                     artifact_id
+                ),
+                crate::game::reward::RewardEffect::GrantConsumable { consumable_id } => assert!(
+                    consumable_data.get_by_id(consumable_id).is_some(),
+                    "reward '{}' references unknown consumable '{}'",
+                    reward.id,
+                    consumable_id
                 ),
                 crate::game::reward::RewardEffect::GrantSkillFragment { fragment_id } => assert!(
                     skill_fragment_data.get_by_id(fragment_id).is_some(),
@@ -826,10 +985,18 @@ fn validate_pve_enemy_references(
             );
         }
         if let Some(node_type) = encounter.node_type {
+            let mission_variant = encounter.mission_variant.unwrap_or_else(|| {
+                crate::game::combat_preview::CombatMissionVariant::default_for_node_type(node_type)
+            });
             assert!(
-                crate::game::combat_mission_policy::CombatMissionPolicy::is_live_supported_node_type(
-                    node_type
-                ),
+                mission_variant.is_compatible_with(node_type),
+                "pve encounter '{}' mission_variant {:?} is incompatible with node_type {:?}",
+                encounter.id,
+                mission_variant,
+                node_type
+            );
+            assert!(
+                crate::game::combat_mission_policy::CombatMissionPolicy::is_supported_encounter_node_type(node_type),
                 "pve encounter '{}' uses deferred combat node type {:?}",
                 encounter.id,
                 node_type
@@ -840,7 +1007,7 @@ fn validate_pve_enemy_references(
                 .filter_map(|reward_uuid| reward_data.get_by_uuid(reward_uuid))
                 .map(crate::game::reward::RewardOption::from_metadata)
                 .collect::<Vec<_>>();
-            crate::game::reward_policy::CombatRewardPolicy::for_node_type(node_type)
+            crate::game::reward_policy::CombatRewardPolicy::for_mission(node_type, mission_variant)
                 .validate_rewards(&rewards)
                 .unwrap_or_else(|message| {
                     panic!(
@@ -848,6 +1015,47 @@ fn validate_pve_enemy_references(
                         encounter.id, node_type, message
                     )
                 });
+        }
+    }
+}
+
+fn validate_combat_preview_threat_warning_contract(game_data: &GameDataBase) {
+    const PREVIEW_VALIDATION_SEEDS: [u64; 5] = [0, 1, 17, 41, 99];
+
+    for encounter in &game_data.pve_data.encounters {
+        for seed in PREVIEW_VALIDATION_SEEDS {
+            let preview = crate::game::combat_preview::CombatPreview::generate_for_node(
+                crate::game::map::MapNodeId::new(Uuid::from_u128(
+                    0xADAD_0000_0000_0000_0000_0000_0000_0000_u128 + u128::from(seed),
+                )),
+                crate::game::map::MapNodeCategory::Combat,
+                Some(encounter.id.as_str()),
+                game_data,
+                seed,
+            );
+            let required =
+                crate::game::combat_preview::required_briefing_warning_tags_for_spawn_waves(
+                    &preview.spawn_waves,
+                    game_data,
+                );
+            let briefing_tags = preview
+                .threat_warnings
+                .iter()
+                .filter(|warning| {
+                    warning.source == crate::game::combat_preview::ThreatWarningSource::Briefing
+                })
+                .map(|warning| warning.tag)
+                .collect::<HashSet<_>>();
+
+            for required_tag in required {
+                assert!(
+                    briefing_tags.contains(&required_tag),
+                    "combat preview for pve encounter '{}' seed {} omits required briefing warning {:?}",
+                    encounter.id,
+                    seed,
+                    required_tag
+                );
+            }
         }
     }
 }
@@ -861,11 +1069,13 @@ impl GameDataBase {
             starter_employee_data,
             recruitment_employee_data,
             artifact_data,
+            consumable_data,
             equipment_data,
             shop_data,
             reward_data,
             pve_data,
             skill_data,
+            buff_data,
             skill_fragment_data,
         } = parts;
 
@@ -875,21 +1085,26 @@ impl GameDataBase {
         starter_employee_data.validate_indexes();
         recruitment_employee_data.validate_indexes();
         artifact_data.validate_indexes();
+        consumable_data.validate_indexes();
         equipment_data.validate_indexes();
         shop_data.validate_indexes();
         reward_data.validate_indexes();
         pve_data.validate_indexes();
         skill_data.validate_indexes();
+        buff_data.validate_indexes();
+        skill_data.validate_buff_references(&buff_data);
         skill_fragment_data.validate_indexes();
         validate_skill_fragment_skill_references(
             &skill_fragment_data,
             &abnormality_data,
             &skill_data,
         );
+        validate_unit_skill_references(&abnormality_data, &corroded_employee_data, &skill_data);
         validate_reward_references(
             &reward_data,
             &equipment_data,
             &artifact_data,
+            &consumable_data,
             &skill_fragment_data,
         );
         validate_pve_enemy_references(
@@ -900,24 +1115,33 @@ impl GameDataBase {
             &reward_data,
         );
 
-        let item_registry = ItemRegistry::new(&abnormality_data, &artifact_data, &equipment_data);
+        let item_registry = ItemRegistry::new(
+            &abnormality_data,
+            &artifact_data,
+            &consumable_data,
+            &equipment_data,
+        );
         validate_shop_item_references(&shop_data, &item_registry);
 
-        Self {
+        let database = Self {
             abnormality_data,
             corroded_employee_data,
             corroded_wave_data,
             starter_employee_data,
             recruitment_employee_data,
             artifact_data,
+            consumable_data,
             equipment_data,
             shop_data,
             reward_data,
             pve_data,
             skill_data,
+            buff_data,
             skill_fragment_data,
             item_registry,
-        }
+        };
+        validate_combat_preview_threat_warning_contract(&database);
+        database
     }
 
     /// UUID로 아이템 메타데이터 조회
@@ -931,6 +1155,11 @@ impl GameDataBase {
             ItemIndex::Artifact(index) => {
                 self.artifact_data.items.get(index).map(ItemRef::Artifact)
             }
+            ItemIndex::Consumable(index) => self
+                .consumable_data
+                .items
+                .get(index)
+                .map(ItemRef::Consumable),
             ItemIndex::Equipment(index) => {
                 self.equipment_data.items.get(index).map(ItemRef::Equipment)
             }
@@ -955,8 +1184,10 @@ fn validate_shop_item_references(shop_data: &ShopDatabase, item_registry: &ItemR
 mod tests {
     use super::*;
     use crate::game::ability::{
-        DeliveryDef, SkillCastTargetingDef, SkillDef, SkillId, SkillKind, SkillStepDef, SkillTarget,
+        DeliveryDef, SkillCastTargetingDef, SkillDef, SkillEffectDef, SkillId, SkillKind,
+        SkillStepDef, SkillTarget,
     };
+    use crate::game::battle::buffs::{BuffDatabase, BuffId};
     use crate::game::data::{
         abnormality_data::AbnormalityMetadata,
         artifact_data::ArtifactMetadata,
@@ -970,11 +1201,31 @@ mod tests {
         GameDataBuilder,
     };
     use crate::game::enums::RiskLevel;
-    use std::collections::HashMap;
+    use std::{collections::HashMap, sync::Arc};
 
     #[derive(Clone, Copy)]
     struct DummyKey {
         uuid: Uuid,
+    }
+
+    #[test]
+    fn game_data_builder_empty_does_not_load_live_buffs() {
+        let game_data = GameDataBuilder::empty().build();
+
+        assert!(game_data
+            .buff_data
+            .get(BuffId::from_name("poison"))
+            .is_none());
+    }
+
+    #[test]
+    fn game_data_builder_live_defaults_loads_live_buffs_explicitly() {
+        let game_data = GameDataBuilder::live_defaults().build();
+
+        assert!(game_data
+            .buff_data
+            .get(BuffId::from_name("poison"))
+            .is_some());
     }
 
     fn minimal_skill(id: &str) -> SkillDef {
@@ -989,6 +1240,8 @@ mod tests {
                 id: "step".to_string(),
                 delay_ms: 0,
                 range_units: 1.0,
+                defense_tile_range: None,
+                air_capable: false,
                 target: SkillTarget::SelfUnit,
                 targeting: Default::default(),
                 when: Default::default(),
@@ -1014,7 +1267,9 @@ mod tests {
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
+            mobility_kind: Default::default(),
             skill_id: skill_id.map(SkillId::from),
+            target_traits: Vec::new(),
         }
     }
 
@@ -1032,10 +1287,11 @@ mod tests {
             origin: Some(SkillFragmentOrigin::Abnormality {
                 abnormality_id: origin_abnormality_id.to_string(),
             }),
-            sources: vec![SkillFragmentAcquisitionSource::AbnormalitySuppression {
+            sources: vec![SkillFragmentAcquisitionSource::AbnormalityContainment {
                 abnormality_id: origin_abnormality_id.to_string(),
             }],
             dependencies: vec![],
+            compatibility: Default::default(),
             effect: SkillFragmentEffectDef::ActiveSkill {
                 imitation_skill_id: SkillId::from(imitation_skill_id),
                 upgrade_skill_ids: Default::default(),
@@ -1073,6 +1329,8 @@ mod tests {
             basic_attack: Default::default(),
             resonance: Default::default(),
             skill_id: None,
+            mobility_kind: Default::default(),
+            target_traits: Vec::new(),
         };
 
         let artifact = ArtifactMetadata {
@@ -1094,8 +1352,11 @@ mod tests {
             rarity: RiskLevel::ZAYIN,
             price: 30,
             allow_duplicate_equip: true,
+            bound: false,
+            cannot_unequip_reason: "equipment_bound".to_string(),
             triggered_effects: HashMap::new(),
             ability_activations: vec![],
+            weapon_profile: Some(Default::default()),
         };
 
         let game_data = GameDataBuilder::empty()
@@ -1169,6 +1430,21 @@ mod tests {
     }
 
     #[test]
+    #[should_panic(expected = "references unknown buff")]
+    fn game_data_base_rejects_skill_references_missing_buff_data() {
+        let mut skill = minimal_skill("skill_with_missing_buff");
+        skill.steps[0].effects.push(SkillEffectDef::ApplyBuff {
+            buff_id: "missing_buff".to_string(),
+            duration_ms: 100,
+        });
+
+        let _ = GameDataBuilder::empty()
+            .with_buff_data(Arc::new(BuffDatabase::new(vec![])))
+            .with_skills(SkillDatabase::new(vec![skill]))
+            .build();
+    }
+
+    #[test]
     #[should_panic(expected = "duplicate item uuid")]
     fn game_data_base_panics_on_duplicate_item_uuid_across_categories() {
         let shared_uuid = Uuid::from_u128(1);
@@ -1187,6 +1463,8 @@ mod tests {
             basic_attack: Default::default(),
             resonance: Default::default(),
             skill_id: None,
+            mobility_kind: Default::default(),
+            target_traits: Vec::new(),
         };
 
         let artifact = ArtifactMetadata {
@@ -1235,8 +1513,11 @@ mod tests {
             rarity: RiskLevel::ZAYIN,
             price: 123,
             allow_duplicate_equip: true,
+            bound: false,
+            cannot_unequip_reason: "equipment_bound".to_string(),
             triggered_effects: HashMap::new(),
             ability_activations: vec![],
+            weapon_profile: Some(Default::default()),
         };
         let item = Item::Equipment(Arc::new(equipment));
 

@@ -10,9 +10,9 @@ use super::{
 
 #[test]
 // 목적:
-// Fragment Nova가 적 클러스터에는 광역 피해를 주고,
-// 반경 밖의 먼 적은 맞추지 않는지 확인한다.
-fn fragment_of_the_universe_nova_hits_the_enemy_cluster_but_not_distant_targets() {
+// Fragment Nova가 전방 tile range 안의 적 클러스터에는 광역 피해를 주고,
+// 범위 밖의 먼 적은 맞추지 않는지 확인한다.
+fn fragment_of_the_universe_nova_hits_the_forward_tile_cluster_but_not_distant_targets() {
     let mut legend = skill_dummy_board_legend();
     for symbol in ['E', 'F', 'X'] {
         legend
@@ -24,18 +24,16 @@ fn fragment_of_the_universe_nova_hits_the_enemy_cluster_but_not_distant_targets(
     let board = r#"
         . . . . . . .
         . . . . . . .
-        . . C . . . .
-        . . D! E! . . .
-        . . . F! . . .
+        . . C D! E! . .
+        . . . . F! X! .
         . . . . . . .
-        . . . . . . X!
     "#;
 
     let result = run_abnormality_scenario("f-05-52", scenario_from_board(board, &legend));
     let cluster_targets: HashSet<_> = [
-        Position::new(2, 3),
-        Position::new(3, 3),
-        Position::new(3, 4),
+        Position::new(3, 2),
+        Position::new(4, 2),
+        Position::new(4, 3),
     ]
     .into_iter()
     .map(|position| {
@@ -45,7 +43,7 @@ fn fragment_of_the_universe_nova_hits_the_enemy_cluster_but_not_distant_targets(
     })
     .collect();
     let distant_enemy = result
-        .unit_instance_at(Position::new(6, 6), Some(Side::Opponent))
+        .unit_instance_at(Position::new(5, 3), Some(Side::Opponent))
         .unwrap();
 
     let steps = result.first_cast_steps("fragment_universe_nova");

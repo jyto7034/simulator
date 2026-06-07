@@ -63,13 +63,12 @@ fn one_sin_targets_the_lowest_health_enemy_and_heals_self_after_landing_judgemen
 
     let board = r#"
         . . . . . . .
-        . C@ . . . . .
-        . D! E# . . . .
+        . C@ D! E# . . .
     "#;
 
     let result = run_abnormality_scenario("o-03-03_one_sin", scenario_from_board(board, &legend));
     let low_hp_enemy = result
-        .unit_instance_at(Position::new(1, 2), Some(Side::Opponent))
+        .unit_instance_at(Position::new(2, 1), Some(Side::Opponent))
         .unwrap();
     let caster = result.caster_instance_id();
 

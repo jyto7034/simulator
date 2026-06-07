@@ -31,8 +31,8 @@ pub enum TrustMemoryKind {
     ForcedEarlyAwakening,
     ForcedRiskFragmentUse,
     AllyDeathThenDanger,
-    RestedAtRecoveryNode,
-    NeglectedAtRecoveryNode,
+    RestedAtSupportRest,
+    NeglectedAtSupportRest,
     AllyDeathWitnessed,
 }
 
@@ -154,8 +154,8 @@ pub enum TrustEventKind {
     ForcedEarlyAwakening,
     ForcedRiskFragmentUse,
     AllyDeathThenDanger,
-    RestedAtRecoveryNode,
-    NeglectedAtRecoveryNode,
+    RestedAtSupportRest,
+    NeglectedAtSupportRest,
     AllyDied,
     BeforeDangerNode,
     BeforeFinalNode,
@@ -489,13 +489,13 @@ fn trust_delta_for_event(kind: TrustEventKind) -> i16 {
         TrustEventKind::RestedBeforeDanger
         | TrustEventKind::PromiseKept
         | TrustEventKind::ConsistentInvestment
-        | TrustEventKind::RestedAtRecoveryNode => 8,
+        | TrustEventKind::RestedAtSupportRest => 8,
         TrustEventKind::DeployedWhileInjured
         | TrustEventKind::IncapacitatedNeglected
         | TrustEventKind::ForcedEarlyAwakening
         | TrustEventKind::ForcedRiskFragmentUse
         | TrustEventKind::AllyDeathThenDanger
-        | TrustEventKind::NeglectedAtRecoveryNode => -10,
+        | TrustEventKind::NeglectedAtSupportRest => -10,
         TrustEventKind::AllyDied
         | TrustEventKind::BeforeDangerNode
         | TrustEventKind::BeforeFinalNode
@@ -514,8 +514,8 @@ fn memory_kind_for_event(kind: TrustEventKind) -> TrustMemoryKind {
         TrustEventKind::ForcedEarlyAwakening => TrustMemoryKind::ForcedEarlyAwakening,
         TrustEventKind::ForcedRiskFragmentUse => TrustMemoryKind::ForcedRiskFragmentUse,
         TrustEventKind::AllyDeathThenDanger => TrustMemoryKind::AllyDeathThenDanger,
-        TrustEventKind::RestedAtRecoveryNode => TrustMemoryKind::RestedAtRecoveryNode,
-        TrustEventKind::NeglectedAtRecoveryNode => TrustMemoryKind::NeglectedAtRecoveryNode,
+        TrustEventKind::RestedAtSupportRest => TrustMemoryKind::RestedAtSupportRest,
+        TrustEventKind::NeglectedAtSupportRest => TrustMemoryKind::NeglectedAtSupportRest,
         TrustEventKind::AllyDied => TrustMemoryKind::AllyDeathWitnessed,
         TrustEventKind::BeforeDangerNode
         | TrustEventKind::BeforeFinalNode
@@ -534,7 +534,7 @@ fn cue_key_for_event(kind: TrustEventKind) -> Option<&'static str> {
         TrustEventKind::ForcedEarlyAwakening => Some("trust.memory.forced_early_awakening"),
         TrustEventKind::ForcedRiskFragmentUse => Some("trust.memory.forced_risk_fragment"),
         TrustEventKind::AllyDeathThenDanger => Some("trust.memory.ally_death_then_danger"),
-        TrustEventKind::NeglectedAtRecoveryNode => Some("trust.memory.neglected_at_recovery"),
+        TrustEventKind::NeglectedAtSupportRest => Some("trust.memory.neglected_at_support_rest"),
         _ => None,
     }
 }

@@ -3,7 +3,7 @@ use crate::game::behavior::{BehaviorResult, GameError};
 use crate::game::employee::Employee;
 use crate::game::enums::ShopEventOption;
 use crate::game::map::{MapNodePayload, NodeSessionKind};
-use crate::game::resources::{GameState, InventoryDiffDto, SelectedEvent, SelectedEventState};
+use crate::game::resources::{ActiveNodeContent, GameState, InventoryDiffDto};
 
 impl GameCore {
     fn current_headquarters_contact(
@@ -17,14 +17,14 @@ impl GameCore {
         }
         let selected = self
             .state
-            .selected_event
+            .active_node_content
             .as_ref()
             .ok_or(GameError::InvalidAction)?;
         Ok(selected.as_headquarters_contact()?.clone())
     }
 
     fn complete_headquarters_contact_node(&mut self) -> Result<BehaviorResult, GameError> {
-        self.state.selected_event = None;
+        self.state.active_node_content = None;
         self.handle_complete_node()
     }
 
@@ -41,7 +41,7 @@ impl GameCore {
         let employee_uuid = self.state.uuid_manager.next_employee();
         self.roster_mut()?
             .add(Employee::from_starter_candidate(employee_uuid, &candidate));
-        self.sync_bench_with_owned_units()?;
+        self.sync_roster_order_with_owned_units()?;
 
         let completion = self.complete_headquarters_contact_node()?;
         Ok(BehaviorResult::EmployeeRecruited {
@@ -59,7 +59,7 @@ impl GameCore {
             .state
             .enkephalin
             .amount
-            .saturating_add(RUN_SYSTEM_POLICY.headquarters_emergency_enkephalin);
+            .saturating_add(RUN_SYSTEM_POLICY.headquarters.emergency_enkephalin);
         let enkephalin = self.state.enkephalin.amount;
         let inventory_diff = InventoryDiffDto::default();
 
@@ -92,7 +92,7 @@ impl GameCore {
             can_reroll: shop.can_reroll,
             visible_items: shop.visible_items.clone(),
         };
-        self.state.selected_event = Some(SelectedEvent::new(SelectedEventState::Shop(shop)));
+        self.state.active_node_content = Some(ActiveNodeContent::Shop(shop));
         self.transition_to(GameState::InShop { shop_uuid })?;
         Ok(BehaviorResult::ShopState {
             shop: shop_result,

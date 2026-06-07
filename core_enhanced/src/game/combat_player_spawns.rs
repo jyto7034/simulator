@@ -6,7 +6,7 @@ use crate::game::{
             ScenarioArtifact, ScenarioGroupId, ScenarioSpawnGroup, ScenarioUnitRef,
             ScenarioUnitSpawn,
         },
-        types::{BattleEquipmentEnhancement, BattleUnitDraft, BattleUnitSource},
+        types::{BattleEquipmentEnhancement, BattleUnitDraft, BattleUnitSource, UnitCombatProfile},
     },
     behavior::GameError,
     data::GameDataBase,
@@ -34,44 +34,13 @@ pub(crate) fn player_scenario_start_from_positions(
     let mut spawns = Vec::new();
 
     for (index, (employee_uuid, pos)) in placements.into_iter().enumerate() {
-        let employee = roster.get(&employee_uuid).ok_or(GameError::UnitNotFound)?;
-        if !employee.is_available_for_combat() {
-            return Err(GameError::InvalidAction);
-        }
-
-        let equipped_items: Vec<Uuid> = employee
-            .loadout
-            .item_slot
-            .iter()
-            .map(|equipped| equipped.base_uuid)
-            .collect();
-        let equipped_item_enhancements = employee
-            .loadout
-            .item_slot
-            .iter()
-            .map(|equipped| {
-                let owned = inventory
-                    .equipments
-                    .get_item(&equipped.instance_uuid)
-                    .ok_or(GameError::InventoryItemNotFound)?;
-                Ok(BattleEquipmentEnhancement {
-                    base_uuid: equipped.base_uuid,
-                    enhancement_level: owned.enhancement_level,
-                })
-            })
-            .collect::<Result<Vec<_>, GameError>>()?;
-
-        let draft = BattleUnitDraft {
-            owned_uuid: employee_uuid,
-            source: BattleUnitSource::Employee(
-                employee
-                    .combat_profile_for_battle(&game_data.skill_fragment_data, skill_fragments)?,
-            ),
-            level: employee.battle_tier(),
-            growth_stacks: employee.combat_profile.growth_stacks.clone(),
-            equipped_items,
-            equipped_item_enhancements,
-        };
+        let draft = battle_unit_draft_for_employee(
+            roster,
+            inventory,
+            skill_fragments,
+            game_data,
+            employee_uuid,
+        )?;
         spawns.push(ScenarioUnitSpawn {
             unit_ref: ScenarioUnitRef::new(format!("{}_{}", group_id.0, index)),
             side: Side::Player,
@@ -90,6 +59,88 @@ pub(crate) fn player_scenario_start_from_positions(
             spawns,
         },
         artifacts: scenario_artifacts_from_inventory(inventory),
+    })
+}
+
+pub(crate) fn battle_unit_draft_for_employee(
+    roster: &EmployeeRoster,
+    inventory: &Inventory,
+    skill_fragments: &SkillFragmentInventory,
+    game_data: &GameDataBase,
+    employee_uuid: Uuid,
+) -> Result<BattleUnitDraft, GameError> {
+    battle_unit_draft_for_employee_with_availability(
+        roster,
+        inventory,
+        skill_fragments,
+        game_data,
+        employee_uuid,
+        true,
+    )
+}
+
+pub(crate) fn effective_combat_profile_for_employee(
+    roster: &EmployeeRoster,
+    inventory: &Inventory,
+    skill_fragments: &SkillFragmentInventory,
+    game_data: &GameDataBase,
+    employee_uuid: Uuid,
+) -> Result<UnitCombatProfile, GameError> {
+    battle_unit_draft_for_employee_with_availability(
+        roster,
+        inventory,
+        skill_fragments,
+        game_data,
+        employee_uuid,
+        false,
+    )?
+    .combat_profile(game_data)
+}
+
+fn battle_unit_draft_for_employee_with_availability(
+    roster: &EmployeeRoster,
+    inventory: &Inventory,
+    skill_fragments: &SkillFragmentInventory,
+    game_data: &GameDataBase,
+    employee_uuid: Uuid,
+    require_available_for_combat: bool,
+) -> Result<BattleUnitDraft, GameError> {
+    let employee = roster.get(&employee_uuid).ok_or(GameError::UnitNotFound)?;
+    if require_available_for_combat && !employee.is_available_for_combat() {
+        return Err(GameError::InvalidAction);
+    }
+
+    let equipped_items: Vec<Uuid> = employee
+        .loadout
+        .item_slot
+        .iter()
+        .map(|equipped| equipped.base_uuid)
+        .collect();
+    let equipped_item_enhancements = employee
+        .loadout
+        .item_slot
+        .iter()
+        .map(|equipped| {
+            let owned = inventory
+                .equipments
+                .get_item(&equipped.instance_uuid)
+                .ok_or(GameError::InventoryItemNotFound)?;
+            Ok(BattleEquipmentEnhancement {
+                base_uuid: equipped.base_uuid,
+                enhancement_level: owned.enhancement_level,
+            })
+        })
+        .collect::<Result<Vec<_>, GameError>>()?;
+
+    Ok(BattleUnitDraft {
+        owned_uuid: employee_uuid,
+        source: BattleUnitSource::Employee(
+            employee.combat_profile_for_battle(&game_data.skill_fragment_data, skill_fragments)?,
+        ),
+        level: employee.battle_tier(),
+        growth_stacks: employee.combat_profile.growth_stacks.clone(),
+        equipped_items,
+        equipped_item_enhancements,
     })
 }
 

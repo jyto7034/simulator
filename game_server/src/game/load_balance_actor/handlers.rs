@@ -52,18 +52,6 @@ impl Handler<GetOrCreatePlayerActor> for LoadBalanceActor {
     }
 }
 
-impl Handler<RouteToPlayer> for LoadBalanceActor {
-    type Result = ();
-
-    fn handle(&mut self, msg: RouteToPlayer, _ctx: &mut Self::Context) -> Self::Result {
-        if let Some(addr) = self.players.get(&msg.player_id) {
-            addr.do_send(msg.message);
-        } else {
-            warn!("Player {} not found in LoadBalancer", msg.player_id);
-        }
-    }
-}
-
 impl Handler<RouteToGamePlayer> for LoadBalanceActor {
     type Result = ();
 
@@ -91,7 +79,6 @@ impl Handler<GetPlayerCount> for LoadBalanceActor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::shared::metrics::MetricsCtx;
     use game_core::game::data::{GameDataBase, GameDataBuilder};
     use std::sync::Arc;
     use uuid::Uuid;
@@ -102,7 +89,7 @@ mod tests {
 
     #[actix_web::test]
     async fn get_or_create_player_actor_returns_same_actor_for_same_player() {
-        let load_balance = LoadBalanceActor::new(Arc::new(MetricsCtx::new())).start();
+        let load_balance = LoadBalanceActor::new().start();
         let player_id = Uuid::new_v4();
         let game_data = empty_game_data();
 

@@ -1,0 +1,46 @@
+(
+    candidates: [
+        (
+            id: "hq_field_medic",
+            name: "윤채린",
+            grade: Junior,
+            role: "파견 의무 직원",
+            background: "본사 긴급 파견 명단에 올라온 의무 보조 직원.",
+        ),
+        (
+            id: "hq_security_guard",
+            name: "서강우",
+            grade: Junior,
+            role: "현장 보안 직원",
+            background: "브리칭 현장 통제 훈련을 받은 보안 직원.",
+        ),
+        (
+            id: "hq_recovery_runner",
+            name: "임하늘",
+            grade: Junior,
+            role: "회수 러너",
+            background: "무너진 구역에서 기록 장치를 회수한 경험이 있다.",
+        ),
+        (
+            id: "hq_containment_aide",
+            name: "장유나",
+            grade: Junior,
+            role: "격리 보조 직원",
+            background: "불안정한 격리 절차를 보조하는 데 익숙한 직원.",
+        ),
+        (
+            id: "hq_maintenance_aide",
+            name: "민도겸",
+            grade: Junior,
+            role: "정비 보조 직원",
+            background: "현장 장비를 오래 버티게 하는 데 능숙한 정비 보조.",
+        ),
+        (
+            id: "hq_records_observer",
+            name: "백수아",
+            grade: Junior,
+            role: "기록 관측 직원",
+            background: "관리자 블랙박스 로그를 정리하던 관측 직원.",
+        ),
+    ],
+)

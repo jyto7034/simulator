@@ -7,13 +7,12 @@ use crate::game::map::{MapNodeCategory, MapNodeId, MapNodeKindId};
 pub enum RunFailureReason {
     NoLivingEmployees,
     NoDeployableEmployees,
-    CombatTeamUnavailable,
     BossDefeated,
 }
 
 /// 게임의 명시적인 상태.
 ///
-/// ActionScheduler가 이 상태를 보고 allowed_actions를 결정한다.
+/// 기본 allowed_actions는 이 상태로 결정하고, GameCore가 현재 노드 세션 내용을 더해 최종 보정한다.
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 pub enum GameState {
     #[default]
@@ -39,7 +38,7 @@ pub enum GameState {
     InRewardClaimed {
         reward_uuid: Uuid,
     },
-    InCombatReplay {
+    CombatResult {
         battle_uuid: Uuid,
     },
     InBattle {

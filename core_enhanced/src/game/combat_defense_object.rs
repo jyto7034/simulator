@@ -1,13 +1,14 @@
 use uuid::Uuid;
 
 use crate::game::{
+    ability::SkillActivationMode,
     battle::{
         scenario::{
-            ScenarioGroupId, ScenarioSpawnGroup, ScenarioUnitSpawn, TacticalPlan, WinCondition,
+            EnemyMovementPlan, ScenarioGroupId, ScenarioSpawnGroup, ScenarioUnitSpawn,
+            TacticalPlan, WinCondition,
         },
         types::{BattleUnitDraft, BattleUnitSource, DeploymentAffinity, UnitCombatProfile},
     },
-    combat_mission_policy::DEFAULT_DEFENSE_POINT_ID,
     data::abnormality_data::{BasicAttackDef, MovementDef, ResonanceDef},
     enums::{Side, Tier},
     growth::GrowthStack,
@@ -28,13 +29,7 @@ pub fn defense_object_group_for_win_condition(
         WinCondition::ProtectUnit { unit_ref } => unit_ref,
         _ => return None,
     };
-    let position = tactical_plan
-        .points
-        .iter()
-        .find(|point| point.id.0 == DEFAULT_DEFENSE_POINT_ID)
-        .or_else(|| tactical_plan.points.first())
-        .map(|point| point.position)
-        .unwrap_or(Position::new(0, 0));
+    let position = defense_object_position(tactical_plan);
     Some(ScenarioSpawnGroup {
         id: ScenarioGroupId::new(DEFAULT_DEFENSE_OBJECT_GROUP),
         side: Side::Player,
@@ -60,12 +55,30 @@ pub fn defense_object_group_for_win_condition(
     })
 }
 
+fn defense_object_position(tactical_plan: &TacticalPlan) -> Position {
+    match &tactical_plan.enemy_plan {
+        EnemyMovementPlan::PathAlongCells { cells } => {
+            if let Some(position) = cells.last().copied() {
+                return position;
+            }
+        }
+    }
+
+    tactical_plan
+        .points
+        .first()
+        .map(|point| point.position)
+        .unwrap_or(Position::new(0, 0))
+}
+
 fn default_defense_object_profile() -> UnitCombatProfile {
     let basic_attack = BasicAttackDef {
         range_units: 0.0,
+        defense_tile_range: None,
         interval_ms: 1500,
         windup_ms: 0,
         delivery: Default::default(),
+        ..BasicAttackDef::default()
     };
     let movement = MovementDef {
         speed_units_per_ms: 0,
@@ -84,12 +97,17 @@ fn default_defense_object_profile() -> UnitCombatProfile {
     UnitCombatProfile {
         stats,
         basic_attack,
+        weapon_profile: None,
         movement,
         resonance: ResonanceDef::default(),
         skill_id: None,
+        skill_activation_mode: SkillActivationMode::Auto,
         deployment_affinity: DeploymentAffinity::Any,
         block_capacity: 0,
         block_radius_units: 0.0,
         blockable: false,
+        mobility_kind: crate::game::battle::types::MobilityKind::Ground,
+        target_traits: Vec::new(),
+        incoming_damage_modifiers: Default::default(),
     }
 }

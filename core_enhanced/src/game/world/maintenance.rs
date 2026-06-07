@@ -8,7 +8,7 @@ use crate::game::data::skill_fragment_data::SkillFragmentId;
 use crate::game::resources::item_slot::EquippedRef;
 use crate::game::resources::{
     EquipItemOutcomeDto, EquipItemResultDto, EquipmentItemDto, InventoryDiffDto, InventoryItemDto,
-    OwnedEquipment,
+    OwnedEquipment, UnequipItemResultDto,
 };
 
 impl GameCore {
@@ -47,15 +47,17 @@ impl GameCore {
                         base_uuid: result_meta.uuid,
                         equipment_type: result_meta.equipment_type,
                     };
-                    target
-                        .loadout
-                        .item_slot
-                        .can_equip_after_removing(
-                            equipped.instance_uuid,
-                            result_ref,
-                            result_meta.allow_duplicate_equip,
-                        )
+                    let mut projected_item_slot = target.loadout.item_slot.clone();
+                    projected_item_slot
+                        .remove_by_instance(equipped.instance_uuid)
+                        .ok_or(GameError::InvalidAction)?;
+                    projected_item_slot
+                        .equip(result_ref, result_meta.allow_duplicate_equip)
                         .map_err(|_| GameError::InvalidAction)?;
+                    self.validate_active_skill_fragment_for_projected_item_slot(
+                        target_unit,
+                        &projected_item_slot,
+                    )?;
 
                     plan = Some((equipped.instance_uuid, Arc::new(result_meta.clone())));
                     break;
@@ -175,6 +177,27 @@ impl GameCore {
         }
 
         let _ = inventory;
+        let projected_item_slot = {
+            let roster = self.roster()?;
+            let employee = roster.get(&target_unit).ok_or(GameError::UnitNotFound)?;
+            let mut projected_item_slot = employee.loadout.item_slot.clone();
+            projected_item_slot
+                .equip(
+                    EquippedRef {
+                        instance_uuid: item_uuid,
+                        base_uuid,
+                        equipment_type,
+                    },
+                    allow_duplicate,
+                )
+                .map_err(|_| GameError::InvalidAction)?;
+            projected_item_slot
+        };
+        self.validate_active_skill_fragment_for_projected_item_slot(
+            target_unit,
+            &projected_item_slot,
+        )?;
+
         let roster = self.roster_mut()?;
         let employee = roster
             .get_mut(&target_unit)
@@ -226,11 +249,93 @@ impl GameCore {
 
     pub(super) fn handle_unequip_item(
         &mut self,
-        _item_uuid: Uuid,
-        _target_unit: Uuid,
+        item_uuid: Uuid,
+        target_unit: Uuid,
     ) -> Result<BehaviorResult, GameError> {
-        // 기본 룰: 아이템은 귀속이며 일반 해제는 불가 (해제 아이템으로만 가능)
-        Err(GameError::InvalidAction)
+        self.validate_unequip_item_payload(item_uuid, target_unit)?;
+
+        let roster = self.roster_mut()?;
+        let employee = roster
+            .get_mut(&target_unit)
+            .ok_or(GameError::UnitNotFound)?;
+        employee
+            .loadout
+            .item_slot
+            .remove_by_instance(item_uuid)
+            .ok_or(GameError::InvalidAction)?;
+
+        let inventory = self.inventory_mut()?;
+        let owned_equipment = inventory
+            .equipments
+            .get_item_mut(&item_uuid)
+            .ok_or(GameError::InventoryItemNotFound)?;
+        owned_equipment.equipped_to = None;
+        let updated_item =
+            InventoryItemDto::Equipment(EquipmentItemDto::from_owned_equipment(owned_equipment));
+        let inventory_diff = InventoryDiffDto {
+            added: vec![],
+            updated: vec![updated_item],
+            removed: vec![],
+            material_stacks: vec![],
+        };
+        let _ = inventory;
+
+        let roster = self.roster()?;
+        let inventory = self.inventory()?;
+        let equipped_items =
+            Self::equipped_item_dtos_from_target(inventory, Some(roster), target_unit)?;
+
+        Ok(BehaviorResult::UnEquipItem {
+            result: UnequipItemResultDto {
+                item_uuid,
+                target_unit,
+                equipped_items,
+                inventory_diff,
+            },
+        })
+    }
+
+    pub(super) fn handle_use_consumable_item(
+        &mut self,
+        item_uuid: Uuid,
+        target_employee_uuid: Uuid,
+    ) -> Result<BehaviorResult, GameError> {
+        self.validate_use_consumable_item_payload(item_uuid, target_employee_uuid)?;
+
+        let owned_consumable = self
+            .inventory_mut()?
+            .consumables
+            .remove_item(item_uuid)
+            .ok_or(GameError::InventoryItemNotFound)?;
+        let replaced_modifier = {
+            let employee = self
+                .roster_mut()?
+                .get_mut(&target_employee_uuid)
+                .ok_or(GameError::UnitNotFound)?;
+            employee.apply_consumable_modifier(item_uuid, owned_consumable.meta.as_ref())
+        };
+        let employee = self
+            .roster()?
+            .get(&target_employee_uuid)
+            .ok_or(GameError::UnitNotFound)?;
+        let applied_modifier = employee
+            .active_consumable_modifier
+            .clone()
+            .ok_or(GameError::InvalidAction)?;
+        let inventory_diff = InventoryDiffDto {
+            added: vec![],
+            updated: vec![],
+            removed: vec![item_uuid],
+            material_stacks: vec![],
+        };
+
+        Ok(BehaviorResult::ConsumableItemUsed {
+            item_uuid,
+            target_employee_uuid,
+            replaced_modifier,
+            applied_modifier,
+            inventory_diff,
+        })
     }
 
     pub(super) fn handle_equip_skill_fragment(

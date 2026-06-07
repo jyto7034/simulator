@@ -185,6 +185,25 @@ ShopDatabase(
             ],
             can_reroll: true,
         ),
+
+        // 본사 연락 노드 전용 저밸류 기본 보급
+        (
+            id: "headquarters_basic_supply",
+            name: "본사 긴급 보급",
+            uuid: "550e8400-e29b-41d4-a716-446655440101",
+            shop_type: Shop,
+            visible_items: [
+                "a0000003-0000-0000-0000-000000000003", // manager_manual
+                "a0000005-0000-0000-0000-000000000005", // lobotomy_badge
+                "a0000006-0000-0000-0000-000000000006", // emergency_syringe
+            ],
+            stock_items: [
+                "a0000003-0000-0000-0000-000000000003", // manager_manual
+                "a0000005-0000-0000-0000-000000000005", // lobotomy_badge
+                "a0000006-0000-0000-0000-000000000006", // emergency_syringe
+            ],
+            can_reroll: false,
+        ),
     ],
     pools: [
         (
@@ -197,6 +216,12 @@ ShopDatabase(
                 "yesod_shop",
                 "gebura_shop",
                 "binah_shop",
+            ],
+        ),
+        (
+            id: "headquarters_basic_supplies",
+            shop_ids: [
+                "headquarters_basic_supply",
             ],
         ),
     ],

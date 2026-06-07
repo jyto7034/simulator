@@ -1,6 +1,7 @@
 pub mod ability;
 pub mod battle;
 pub mod behavior;
+pub mod combat_balance;
 pub mod combat_battlefield_plan;
 pub mod combat_defense_object;
 pub mod combat_enemy_spawns;

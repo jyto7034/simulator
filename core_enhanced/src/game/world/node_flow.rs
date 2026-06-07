@@ -1,10 +1,10 @@
-use super::{GameCore, RunState};
+use super::{map_encounters, GameCore, RunState};
 use crate::game::behavior::{BehaviorResult, GameError};
 use crate::game::map::{
     MapGenerationConfig, MapGenerator, MapNodeCategory, MapNodeExecutor, MapNodeId, MapNodePayload,
     MapProgression, MapViewDto, RunMap, RunProgression,
 };
-use crate::game::resources::{GameState, SelectedEventState};
+use crate::game::resources::{ActiveNodeContent, GameState};
 
 impl GameCore {
     pub(super) fn current_map_view(&self) -> Result<MapViewDto, GameError> {
@@ -20,7 +20,11 @@ impl GameCore {
             run_progression.current_act_seed(),
             MapGenerationConfig::default(),
         );
-        self.assign_map_encounters(&mut run_map, run_progression);
+        map_encounters::assign_map_encounters(
+            &self.game_data.pve_data,
+            &mut run_map,
+            run_progression,
+        );
         let progression = MapProgression::from_map(&run_map);
         (run_map, progression)
     }
@@ -38,9 +42,7 @@ impl GameCore {
         let run = self.run_state()?;
         let node = run.map.node(node_id).ok_or(GameError::InvalidAction)?;
         let enter_result = MapNodeExecutor::enter(node);
-        let combat_preview = self.combat_preview_for_node(node_id, false)?;
-        let combat_deployment = self.combat_deployment_for_node(node_id)?;
-        let recon_charge = self.run_state()?.recon_charge;
+        let combat_preview = self.combat_preview_for_node(node_id)?;
         self.state.node_session = Some(enter_result.session.clone());
         self.transition_to(GameState::NodeConfirm {
             node_id,
@@ -56,31 +58,6 @@ impl GameCore {
             session: enter_result.session,
             map: self.current_map_view()?,
             combat_preview,
-            combat_deployment,
-            recon_charge,
-        })
-    }
-
-    pub(super) fn handle_use_recon_scan(&mut self) -> Result<BehaviorResult, GameError> {
-        let node_id = match self.get_state() {
-            GameState::NodeConfirm { node_id, .. } => node_id,
-            _ => return Err(GameError::InvalidAction),
-        };
-        let preview = self
-            .combat_preview_for_node(node_id, true)?
-            .ok_or(GameError::InvalidAction)?;
-        let run = self.run_state_mut()?;
-        if run.recon_charge == 0 {
-            return Err(GameError::InvalidAction);
-        }
-        run.recon_charge = run.recon_charge.saturating_sub(1);
-        let scan_count = run.recon_scanned_nodes.entry(node_id).or_insert(0);
-        *scan_count = scan_count.saturating_add(1);
-        run.combat_previews.insert(node_id, preview.clone());
-        Ok(BehaviorResult::ReconScanUsed {
-            node_id,
-            remaining_recon_charge: run.recon_charge,
-            combat_preview: preview,
         })
     }
 
@@ -105,7 +82,6 @@ impl GameCore {
             if let Some(result) = self.block_or_fail_undeployable_combat_selection()? {
                 return Ok(result);
             }
-            self.ensure_combat_deployment_ready(node_id)?;
         }
 
         progression
@@ -174,15 +150,19 @@ impl GameCore {
     }
 
     pub(super) fn handle_complete_node(&mut self) -> Result<BehaviorResult, GameError> {
-        if self.state.selected_event.as_ref().is_some_and(|selected| {
-            matches!(selected.event, SelectedEventState::HeadquartersContact(_))
-        }) {
+        if self
+            .state
+            .active_node_content
+            .as_ref()
+            .is_some_and(|content| matches!(content, ActiveNodeContent::HeadquartersContact(_)))
+        {
             return Err(GameError::InvalidAction);
         }
 
         let mut map = self.run_state()?.map.clone();
         let mut progression = self.run_state()?.map_progression.clone();
         let run_progression = self.run_state()?.run_progression.clone();
+        let completing_node_id = progression.current_node_id;
 
         self.apply_current_support_node_effect(&map, &progression)?;
 
@@ -195,9 +175,12 @@ impl GameCore {
             if let Some(run) = self.state.run.as_mut() {
                 run.map = map;
                 run.map_progression = progression;
+                if let Some(node_id) = completing_node_id {
+                    run.clear_abnormality_attempt(node_id);
+                }
             }
             self.state.node_session = None;
-            self.state.selected_event = None;
+            self.state.active_node_content = None;
             self.transition_to(GameState::ViewingMap)?;
             return Ok(BehaviorResult::NodeCompleted {
                 map: view,
@@ -210,12 +193,13 @@ impl GameCore {
         if run_progression.advance_act() {
             let (next_map, next_progression) = self.generate_current_act_map(&run_progression);
             let view = next_progression.view(&next_map, &run_progression);
-            let recon_charge = self.run_state()?.recon_charge;
-            let mut next_run = RunState::new(next_map, next_progression, run_progression.clone());
-            next_run.recon_charge = recon_charge;
-            self.state.run = Some(next_run);
+            self.state.run = Some(RunState::new(
+                next_map,
+                next_progression,
+                run_progression.clone(),
+            ));
             self.state.node_session = None;
-            self.state.selected_event = None;
+            self.state.active_node_content = None;
             self.transition_to(GameState::ViewingMap)?;
             Ok(BehaviorResult::ActComplete {
                 act_index: run_progression.act_index,
@@ -225,7 +209,7 @@ impl GameCore {
             let view = progression.view(&map, &run_progression);
             self.state.run = Some(RunState::new(map, progression, run_progression));
             self.state.node_session = None;
-            self.state.selected_event = None;
+            self.state.active_node_content = None;
             self.transition_to(GameState::RunComplete)?;
             Ok(BehaviorResult::RunComplete { map: view })
         }

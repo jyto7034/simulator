@@ -19,14 +19,27 @@ use super::{
     MovementSegmentEndKind,
 };
 
-const SEPARATION_SOLVER_ITERATIONS: usize = 4;
 const STATIC_OBSTACLE_EPSILON: f32 = 0.001;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum MovementTerrainPolicy {
+    #[default]
+    Ground,
+    Airborne,
+}
+
+impl MovementTerrainPolicy {
+    pub fn applies_static_obstacles(self) -> bool {
+        matches!(self, Self::Ground)
+    }
+}
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct MovementUnitInput {
     pub unit_id: UnitInstanceId,
     pub owner: Side,
     pub body: UnitBody,
+    pub terrain_policy: MovementTerrainPolicy,
     pub current_target: Option<UnitInstanceId>,
     pub attack_range_units: f32,
     pub can_move: bool,
@@ -73,6 +86,7 @@ pub enum MovementStopReasonContinuous {
     MovementLocked,
     Dead,
     NoGoal,
+    StaticObstacleBlocked,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -156,18 +170,8 @@ impl ContinuousMovementBackend {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub struct DirectContinuousMovement {
-    pub separation_radius_multiplier: f32,
-}
-
-impl Default for DirectContinuousMovement {
-    fn default() -> Self {
-        Self {
-            separation_radius_multiplier: 1.0,
-        }
-    }
-}
+#[derive(Debug, Clone, Copy, Default, PartialEq)]
+pub struct DirectContinuousMovement;
 
 impl DirectContinuousMovement {
     pub(super) fn clamp_to_board(
@@ -185,115 +189,6 @@ impl DirectContinuousMovement {
             position.x.clamp(min_x, max_x),
             position.y.clamp(min_y, max_y),
         )
-    }
-
-    fn fallback_separation_normal(a: UnitInstanceId, b: UnitInstanceId) -> WorldVec2 {
-        if a.as_bytes() <= b.as_bytes() {
-            WorldVec2::new(-1.0, 0.0)
-        } else {
-            WorldVec2::new(1.0, 0.0)
-        }
-    }
-
-    fn separation_normal(
-        a: UnitInstanceId,
-        a_pos: WorldVec2,
-        b: UnitInstanceId,
-        b_pos: WorldVec2,
-    ) -> WorldVec2 {
-        let delta = a_pos - b_pos;
-        if delta.length_squared() <= f32::EPSILON {
-            Self::fallback_separation_normal(a, b)
-        } else {
-            delta.normalized_or_zero()
-        }
-    }
-
-    fn apply_separation(
-        candidates: &mut [MovementCandidate],
-        units: &[MovementUnitInput],
-        radius_multiplier: f32,
-        board_width: f32,
-        board_height: f32,
-    ) {
-        let radius_multiplier = radius_multiplier.max(0.0);
-        if radius_multiplier <= f32::EPSILON {
-            return;
-        }
-
-        let moving_unit_ids: Vec<UnitInstanceId> = candidates
-            .iter()
-            .map(|candidate| candidate.unit_id)
-            .collect();
-
-        for _ in 0..SEPARATION_SOLVER_ITERATIONS {
-            for i in 0..candidates.len() {
-                for j in (i + 1)..candidates.len() {
-                    let min_distance =
-                        (candidates[i].radius + candidates[j].radius) * radius_multiplier;
-                    let delta = candidates[i].to - candidates[j].to;
-                    let distance = delta.length();
-                    if distance >= min_distance {
-                        continue;
-                    }
-
-                    let normal = if distance <= f32::EPSILON {
-                        Self::fallback_separation_normal(
-                            candidates[i].unit_id,
-                            candidates[j].unit_id,
-                        )
-                    } else {
-                        delta.normalized_or_zero()
-                    };
-                    let correction = (min_distance - distance) * 0.5;
-                    candidates[i].to += normal * correction;
-                    candidates[j].to += normal * -correction;
-                    candidates[i].to = Self::clamp_to_board(
-                        candidates[i].to,
-                        candidates[i].radius,
-                        board_width,
-                        board_height,
-                    );
-                    candidates[j].to = Self::clamp_to_board(
-                        candidates[j].to,
-                        candidates[j].radius,
-                        board_width,
-                        board_height,
-                    );
-                }
-            }
-
-            for candidate in candidates.iter_mut() {
-                for unit in units {
-                    if unit.unit_id == candidate.unit_id {
-                        continue;
-                    }
-                    if moving_unit_ids.contains(&unit.unit_id) {
-                        continue;
-                    }
-
-                    let min_distance = (candidate.radius + unit.body.radius) * radius_multiplier;
-                    let distance = candidate.to.distance(unit.body.position);
-                    if distance >= min_distance {
-                        continue;
-                    }
-
-                    let normal = Self::separation_normal(
-                        candidate.unit_id,
-                        candidate.to,
-                        unit.unit_id,
-                        unit.body.position,
-                    );
-                    candidate.to += normal * (min_distance - distance);
-                    candidate.to = Self::clamp_to_board(
-                        candidate.to,
-                        candidate.radius,
-                        board_width,
-                        board_height,
-                    );
-                }
-            }
-        }
     }
 
     fn resolve_static_obstacles(
@@ -326,8 +221,10 @@ impl DirectContinuousMovement {
 struct MovementCandidate {
     unit_id: UnitInstanceId,
     from: WorldVec2,
+    desired_to: WorldVec2,
     to: WorldVec2,
     radius: f32,
+    terrain_policy: MovementTerrainPolicy,
 }
 
 impl MovementEngine for DirectContinuousMovement {
@@ -378,50 +275,61 @@ impl MovementEngine for DirectContinuousMovement {
                 dt_seconds,
                 SteeringParams::default(),
             );
-            let to = Self::clamp_to_board(
+            let desired_to = Self::clamp_to_board(
                 unit.body.position + displacement,
                 unit.body.radius,
                 input.board_width_units,
                 input.board_height_units,
             );
-            let to = Self::resolve_static_obstacles(
-                unit.body.position,
-                to,
-                unit.body.radius,
-                &input.static_obstacles,
-                input.board_width_units,
-                input.board_height_units,
-            );
+            let to = if unit.terrain_policy.applies_static_obstacles() {
+                Self::resolve_static_obstacles(
+                    unit.body.position,
+                    desired_to,
+                    unit.body.radius,
+                    &input.static_obstacles,
+                    input.board_width_units,
+                    input.board_height_units,
+                )
+            } else {
+                desired_to
+            };
 
             candidates.push(MovementCandidate {
                 unit_id: unit.unit_id,
                 from: unit.body.position,
+                desired_to,
                 to,
                 radius: unit.body.radius,
+                terrain_policy: unit.terrain_policy,
             });
         }
 
-        Self::apply_separation(
-            &mut candidates,
-            &units,
-            self.separation_radius_multiplier,
-            input.board_width_units,
-            input.board_height_units,
-        );
         for candidate in &mut candidates {
-            candidate.to = Self::resolve_static_obstacles(
-                candidate.from,
-                candidate.to,
-                candidate.radius,
-                &input.static_obstacles,
-                input.board_width_units,
-                input.board_height_units,
-            );
+            if candidate.terrain_policy.applies_static_obstacles() {
+                candidate.to = Self::resolve_static_obstacles(
+                    candidate.from,
+                    candidate.to,
+                    candidate.radius,
+                    &input.static_obstacles,
+                    input.board_width_units,
+                    input.board_height_units,
+                );
+            }
         }
 
         for candidate in candidates {
             let velocity = steering::movement_velocity(candidate.from, candidate.to, dt_seconds);
             if (candidate.to - candidate.from).length_squared() <= f32::EPSILON {
+                if candidate.terrain_policy.applies_static_obstacles()
+                    && !input.static_obstacles.is_empty()
+                    && (candidate.desired_to - candidate.from).length_squared() > f32::EPSILON
+                {
+                    outputs.push(MovementOutput::MovementStopped {
+                        unit_id: candidate.unit_id,
+                        position: candidate.from,
+                        reason: MovementStopReasonContinuous::StaticObstacleBlocked,
+                    });
+                }
                 continue;
             }
             outputs.push(MovementOutput::BodyMoved {
@@ -618,7 +526,8 @@ impl BattleCore {
         now_ms: u64,
         dt_ms: u64,
     ) -> MovementTickResult {
-        let goals = self.build_continuous_attack_goals();
+        self.refresh_block_state();
+        let goals = self.build_continuous_attack_goals_from_current_block_state();
         self.run_continuous_movement_tick(now_ms, dt_ms, &goals)
     }
 
@@ -646,6 +555,11 @@ impl BattleCore {
                     unit_id,
                     owner: unit.owner,
                     body,
+                    terrain_policy: if unit.is_airborne() {
+                        MovementTerrainPolicy::Airborne
+                    } else {
+                        MovementTerrainPolicy::Ground
+                    },
                     current_target: unit.current_target,
                     attack_range_units: unit.basic_attack.range_units.max(0.0),
                     can_move: unit.action_locks.can_move(now_ms) && unit.can_move() && !is_blocked,
@@ -730,7 +644,6 @@ impl BattleCore {
         dt_ms: u64,
         goals: &HashMap<UnitInstanceId, MovementGoal>,
     ) -> MovementTickResult {
-        self.refresh_block_state();
         let input = self.build_continuous_movement_input_with_goals(now_ms, dt_ms, goals);
         let result = self.movement_backend.tick(input);
         self.apply_continuous_movement_outputs(now_ms, dt_ms, &result.outputs);
@@ -771,6 +684,7 @@ mod tests {
                 goal: None,
                 physics_handle: None,
             },
+            terrain_policy: MovementTerrainPolicy::Ground,
             current_target: None,
             attack_range_units: 1.0,
             can_move: true,
@@ -792,20 +706,25 @@ mod tests {
 
         RuntimeUnit {
             instance_id: unit_id,
+            spawn_order: u64::from(unit_id.as_bytes()[15]),
             source_owned_uuid: unit_id.as_uuid(),
             owner,
             role: crate::game::battle::types::BattleUnitRole::Combatant,
             base_uuid: Uuid::nil(),
             stats,
+            incoming_damage_modifiers: Default::default(),
             basic_attack: Default::default(),
             skill_id: None,
+            skill_activation_mode: crate::game::ability::SkillActivationMode::Auto,
             body: UnitBody::new_at(position, DEFAULT_UNIT_RADIUS, 1.0),
             tactical_anchor: Some(position),
-            tactical_group_id: None,
             enemy_movement_plan: None,
             block_capacity: 0,
             block_radius_units: 0.0,
             blockable: true,
+            mobility_kind: Default::default(),
+            target_traits: Vec::new(),
+            facing_direction: None,
             move_epoch: 0,
             action_state: ActionState::Idle,
             action_locks: Default::default(),
@@ -833,6 +752,14 @@ mod tests {
                 _ => None,
             })
             .expect("missing BodyMoved output")
+    }
+
+    fn run_direct_and_rapier(input: MovementTickInput) -> (MovementTickResult, MovementTickResult) {
+        let mut direct = DirectContinuousMovement::default();
+        let direct_result = direct.tick(input.clone());
+        let mut rapier = RapierMovementWorld::new();
+        let rapier_result = rapier.tick(input);
+        (direct_result, rapier_result)
     }
 
     fn movement_input(dt_ms: u64, units: Vec<MovementUnitInput>) -> MovementTickInput {
@@ -877,6 +804,85 @@ mod tests {
     }
 
     #[test]
+    fn movement_backends_match_ground_static_obstacle_stop_policy() {
+        let mover_id: UnitInstanceId = Uuid::from_u128(2001).into();
+        let mut mover = unit(2001, WorldVec2::new(1.0, 1.0));
+        mover.body.goal = Some(MovementGoal::MoveToPoint {
+            point: WorldVec2::new(5.0, 3.0),
+            stop_radius: 0.1,
+        });
+        let mut input = movement_input(3_000, vec![mover]);
+        input.static_obstacles.push(MovementStaticObstacle {
+            obstacle_id: 2001,
+            center: WorldVec2::new(2.0, 2.0),
+            half_extents: WorldVec2::new(0.1, 5.0),
+        });
+
+        let (direct_result, rapier_result) = run_direct_and_rapier(input);
+        let direct_to = moved_to(&direct_result, mover_id);
+        let rapier_to = moved_to(&rapier_result, mover_id);
+
+        assert!(
+            direct_to.distance(rapier_to) <= 0.01,
+            "ground obstacle stop policy should be backend-equivalent: direct={direct_to:?}, rapier={rapier_to:?}"
+        );
+        assert!(
+            rapier_to.x < 1.55 && rapier_to.y < 1.35,
+            "ground obstacle response should expose the blocked route instead of sliding around it: {rapier_to:?}"
+        );
+    }
+
+    #[test]
+    fn movement_backends_match_airborne_static_obstacle_policy() {
+        let mover_id: UnitInstanceId = Uuid::from_u128(2002).into();
+        let mut mover = unit(2002, WorldVec2::new(0.5, 1.5));
+        mover.terrain_policy = MovementTerrainPolicy::Airborne;
+        mover.body.goal = Some(MovementGoal::MoveToPoint {
+            point: WorldVec2::new(3.5, 1.5),
+            stop_radius: 0.1,
+        });
+        let mut input = movement_input(2_000, vec![mover]);
+        input
+            .static_obstacles
+            .push(MovementStaticObstacle::tile(Position::new(1, 1)));
+
+        let (direct_result, rapier_result) = run_direct_and_rapier(input);
+
+        assert_eq!(moved_to(&direct_result, mover_id), WorldVec2::new(2.5, 1.5));
+        assert_eq!(moved_to(&rapier_result, mover_id), WorldVec2::new(2.5, 1.5));
+    }
+
+    #[test]
+    fn movement_backends_match_board_clamp_policy() {
+        let mover_id: UnitInstanceId = Uuid::from_u128(2003).into();
+        let mut mover = unit(2003, WorldVec2::new(1.5, 1.5));
+        mover.body.goal = Some(MovementGoal::MoveToPoint {
+            point: WorldVec2::new(-10.0, -10.0),
+            stop_radius: 0.1,
+        });
+        let input = MovementTickInput {
+            now_ms: 0,
+            dt_ms: 2_000,
+            board_width_units: 2.0,
+            board_height_units: 2.0,
+            units: vec![mover],
+            static_obstacles: Vec::new(),
+        };
+
+        let (direct_result, rapier_result) = run_direct_and_rapier(input);
+
+        let expected = WorldVec2::new(0.35, 0.35);
+        assert!(
+            moved_to(&direct_result, mover_id).distance(expected) <= f32::EPSILON,
+            "direct clamp should resolve to board minimum"
+        );
+        assert!(
+            moved_to(&rapier_result, mover_id).distance(expected) <= 0.0001,
+            "rapier clamp should resolve to the same board minimum"
+        );
+    }
+
+    #[test]
     fn direct_engine_moves_toward_point_goal() {
         let mut mover = unit(1, WorldVec2::new(1.0, 1.0));
         mover.body.goal = Some(MovementGoal::MoveToPoint {
@@ -898,7 +904,7 @@ mod tests {
     }
 
     #[test]
-    fn direct_engine_separates_moving_candidates_that_would_overlap() {
+    fn direct_engine_allows_moving_candidates_to_overlap() {
         let first_id: UnitInstanceId = Uuid::from_u128(1001).into();
         let second_id: UnitInstanceId = Uuid::from_u128(1002).into();
         let mut first = unit(1001, WorldVec2::new(1.0, 1.0));
@@ -917,11 +923,11 @@ mod tests {
 
         let first_to = moved_to(&result, first_id);
         let second_to = moved_to(&result, second_id);
-        assert!(first_to.distance(second_to) >= 0.7);
+        assert_eq!(first_to, second_to);
     }
 
     #[test]
-    fn direct_engine_separates_mover_from_static_body() {
+    fn direct_engine_allows_mover_to_overlap_locked_unit_body() {
         let mover_id: UnitInstanceId = Uuid::from_u128(1011).into();
         let blocker_id: UnitInstanceId = Uuid::from_u128(1012).into();
         let mut mover = unit(1011, WorldVec2::new(1.0, 1.0));
@@ -938,7 +944,7 @@ mod tests {
         let result = engine.tick(movement_input(500, vec![mover, blocker]));
 
         let mover_to = moved_to(&result, mover_id);
-        assert!(mover_to.distance(WorldVec2::new(1.6, 1.0)) >= 0.7);
+        assert_eq!(mover_to, WorldVec2::new(1.5, 1.0));
     }
 
     #[test]
@@ -965,7 +971,7 @@ mod tests {
     }
 
     #[test]
-    fn direct_engine_keeps_separation_correction_inside_board_bounds() {
+    fn direct_engine_allows_overlapping_units_at_board_bounds() {
         let mut first = unit(1031, WorldVec2::new(0.35, 0.35));
         let mut second = unit(1032, WorldVec2::new(0.35, 0.35));
         first.body.goal = Some(MovementGoal::MoveToPoint {
@@ -987,15 +993,7 @@ mod tests {
             static_obstacles: Vec::new(),
         });
 
-        let mut moved_count = 0;
-        for output in &result.outputs {
-            if let MovementOutput::BodyMoved { to, .. } = output {
-                moved_count += 1;
-                assert!(to.x >= 0.35 && to.x <= 1.65);
-                assert!(to.y >= 0.35 && to.y <= 1.65);
-            }
-        }
-        assert!(moved_count > 0);
+        assert!(result.outputs.is_empty());
     }
 
     #[test]
@@ -1020,6 +1018,52 @@ mod tests {
             mover_to.x < 0.65,
             "expanded obstacle should stop movement before tile (1, 1), got {mover_to:?}"
         );
+    }
+
+    #[test]
+    fn direct_engine_airborne_policy_ignores_static_obstacles() {
+        let mover_id: UnitInstanceId = Uuid::from_u128(1042).into();
+        let mut mover = unit(1042, WorldVec2::new(0.5, 1.5));
+        mover.terrain_policy = MovementTerrainPolicy::Airborne;
+        mover.body.goal = Some(MovementGoal::MoveToPoint {
+            point: WorldVec2::new(3.5, 1.5),
+            stop_radius: 0.1,
+        });
+
+        let mut input = movement_input(2_000, vec![mover]);
+        input
+            .static_obstacles
+            .push(MovementStaticObstacle::tile(Position::new(1, 1)));
+
+        let mut engine = DirectContinuousMovement;
+        let result = engine.tick(input);
+
+        let mover_to = moved_to(&result, mover_id);
+        assert_eq!(mover_to, WorldVec2::new(2.5, 1.5));
+    }
+
+    #[test]
+    fn direct_engine_airborne_policy_still_clamps_to_board_bounds() {
+        let mover_id: UnitInstanceId = Uuid::from_u128(1043).into();
+        let mut mover = unit(1043, WorldVec2::new(1.5, 1.5));
+        mover.terrain_policy = MovementTerrainPolicy::Airborne;
+        mover.body.goal = Some(MovementGoal::MoveToPoint {
+            point: WorldVec2::new(-10.0, -10.0),
+            stop_radius: 0.1,
+        });
+
+        let mut engine = DirectContinuousMovement;
+        let result = engine.tick(MovementTickInput {
+            now_ms: 0,
+            dt_ms: 2_000,
+            board_width_units: 2.0,
+            board_height_units: 2.0,
+            units: vec![mover],
+            static_obstacles: Vec::new(),
+        });
+
+        let mover_to = moved_to(&result, mover_id);
+        assert_eq!(mover_to, WorldVec2::new(0.35, 0.35));
     }
 
     #[test]
@@ -1161,268 +1205,5 @@ mod tests {
         assert!(!input
             .static_obstacles
             .contains(&MovementStaticObstacle::void_tile(Position::new(1, 0))));
-    }
-
-    #[test]
-    fn battle_core_builds_nearest_enemy_attack_goal_from_continuous_distance() {
-        let mut core = new_core();
-        let mover_id: UnitInstanceId = Uuid::from_u128(20).into();
-        let far_id: UnitInstanceId = Uuid::from_u128(21).into();
-        let near_id: UnitInstanceId = Uuid::from_u128(22).into();
-
-        core.units.insert(
-            mover_id,
-            runtime_unit(mover_id, Side::Player, WorldVec2::new(0.0, 0.0)),
-        );
-        core.units.insert(
-            far_id,
-            runtime_unit(far_id, Side::Opponent, WorldVec2::new(5.0, 0.0)),
-        );
-        core.units.insert(
-            near_id,
-            runtime_unit(near_id, Side::Opponent, WorldVec2::new(2.0, 0.0)),
-        );
-
-        let goals = core.build_continuous_attack_goals();
-
-        assert_eq!(
-            goals.get(&mover_id),
-            Some(&MovementGoal::AttackUnit {
-                target_id: near_id,
-                desired_range: 1.0,
-                approach_point: goals.get(&mover_id).and_then(|goal| match goal {
-                    MovementGoal::AttackUnit { approach_point, .. } => *approach_point,
-                    MovementGoal::MoveToPoint { .. } => None,
-                })
-            })
-        );
-    }
-
-    #[test]
-    fn battle_core_assigns_distinct_melee_approach_slots_for_same_target() {
-        let mut core = new_core();
-        let target_id: UnitInstanceId = Uuid::from_u128(50).into();
-        let first_id: UnitInstanceId = Uuid::from_u128(51).into();
-        let second_id: UnitInstanceId = Uuid::from_u128(52).into();
-        let third_id: UnitInstanceId = Uuid::from_u128(53).into();
-
-        core.units.insert(
-            target_id,
-            runtime_unit(target_id, Side::Opponent, WorldVec2::new(2.0, 2.0)),
-        );
-        core.units.insert(
-            first_id,
-            runtime_unit(first_id, Side::Player, WorldVec2::new(0.5, 0.5)),
-        );
-        core.units.insert(
-            second_id,
-            runtime_unit(second_id, Side::Player, WorldVec2::new(2.0, 0.1)),
-        );
-        core.units.insert(
-            third_id,
-            runtime_unit(third_id, Side::Player, WorldVec2::new(3.5, 0.5)),
-        );
-
-        let goals = core.build_continuous_attack_goals();
-        let mut approach_points = vec![first_id, second_id, third_id]
-            .into_iter()
-            .map(|unit_id| match goals.get(&unit_id) {
-                Some(MovementGoal::AttackUnit {
-                    target_id: goal_target_id,
-                    approach_point: Some(point),
-                    ..
-                }) if *goal_target_id == target_id => *point,
-                other => panic!("expected melee approach slot for {unit_id}: {other:?}"),
-            })
-            .collect::<Vec<_>>();
-
-        approach_points.sort_by(|a, b| a.x.total_cmp(&b.x).then_with(|| a.y.total_cmp(&b.y)));
-        approach_points.dedup();
-
-        assert_eq!(approach_points.len(), 3);
-    }
-
-    #[test]
-    fn battle_core_avoids_world_space_melee_slot_conflicts_across_targets() {
-        let mut core = new_core();
-        let first_target_id: UnitInstanceId = Uuid::from_u128(60).into();
-        let second_target_id: UnitInstanceId = Uuid::from_u128(61).into();
-        let first_id: UnitInstanceId = Uuid::from_u128(62).into();
-        let second_id: UnitInstanceId = Uuid::from_u128(63).into();
-
-        core.units.insert(
-            first_target_id,
-            runtime_unit(first_target_id, Side::Opponent, WorldVec2::new(2.0, 2.0)),
-        );
-        core.units.insert(
-            second_target_id,
-            runtime_unit(second_target_id, Side::Player, WorldVec2::new(2.0, 2.0)),
-        );
-
-        let mut first = runtime_unit(first_id, Side::Player, WorldVec2::new(2.0, 0.1));
-        first.current_target = Some(first_target_id);
-        core.units.insert(first_id, first);
-
-        let mut second = runtime_unit(second_id, Side::Opponent, WorldVec2::new(2.0, 0.1));
-        second.current_target = Some(second_target_id);
-        core.units.insert(second_id, second);
-
-        let goals = core.build_continuous_attack_goals();
-        let first_slot = match goals.get(&first_id) {
-            Some(MovementGoal::AttackUnit {
-                approach_point: Some(point),
-                ..
-            }) => *point,
-            other => panic!("expected first melee approach slot: {other:?}"),
-        };
-        let second_slot = match goals.get(&second_id) {
-            Some(MovementGoal::AttackUnit {
-                approach_point: Some(point),
-                ..
-            }) => *point,
-            other => panic!("expected second melee approach slot: {other:?}"),
-        };
-
-        assert!(
-            first_slot.distance(second_slot) >= DEFAULT_UNIT_RADIUS * 2.0,
-            "slots for different targets should not overlap: first={first_slot:?} second={second_slot:?}"
-        );
-    }
-
-    #[test]
-    fn battle_core_does_not_assign_melee_engagement_point_when_already_in_range() {
-        let mut core = new_core();
-        let target_id: UnitInstanceId = Uuid::from_u128(70).into();
-        let mover_id: UnitInstanceId = Uuid::from_u128(71).into();
-
-        core.units.insert(
-            target_id,
-            runtime_unit(target_id, Side::Opponent, WorldVec2::new(2.0, 2.0)),
-        );
-        core.units.insert(
-            mover_id,
-            runtime_unit(mover_id, Side::Player, WorldVec2::new(1.0, 2.0)),
-        );
-
-        let goals = core.build_continuous_attack_goals();
-
-        assert!(matches!(
-            goals.get(&mover_id),
-            Some(MovementGoal::AttackUnit {
-                target_id: goal_target_id,
-                approach_point: None,
-                ..
-            }) if *goal_target_id == target_id
-        ));
-    }
-
-    #[test]
-    fn battle_core_keeps_previous_melee_engagement_point_across_small_target_drift() {
-        let mut core = new_core();
-        let target_id: UnitInstanceId = Uuid::from_u128(72).into();
-        let mover_id: UnitInstanceId = Uuid::from_u128(73).into();
-
-        core.units.insert(
-            target_id,
-            runtime_unit(target_id, Side::Opponent, WorldVec2::new(2.5, 2.5)),
-        );
-        core.units.insert(
-            mover_id,
-            runtime_unit(mover_id, Side::Player, WorldVec2::new(0.5, 0.5)),
-        );
-
-        let first_goals = core.build_continuous_attack_goals();
-        let first_point = match first_goals.get(&mover_id) {
-            Some(MovementGoal::AttackUnit {
-                approach_point: Some(point),
-                ..
-            }) => *point,
-            other => panic!("expected initial melee engagement point: {other:?}"),
-        };
-
-        let target = core.units.get_mut(&target_id).expect("target exists");
-        target.body.position += WorldVec2::new(0.05, 0.0);
-
-        let second_goals = core.build_continuous_attack_goals();
-        let second_point = match second_goals.get(&mover_id) {
-            Some(MovementGoal::AttackUnit {
-                approach_point: Some(point),
-                ..
-            }) => *point,
-            other => panic!("expected retained melee engagement point: {other:?}"),
-        };
-
-        assert_eq!(second_point, first_point);
-    }
-
-    #[test]
-    fn battle_core_continuous_attack_tick_moves_toward_nearest_enemy() {
-        let mut core = new_core();
-        let mover_id: UnitInstanceId = Uuid::from_u128(30).into();
-        let target_id: UnitInstanceId = Uuid::from_u128(31).into();
-
-        core.units.insert(
-            mover_id,
-            runtime_unit(mover_id, Side::Player, WorldVec2::new(1.0, 1.0)),
-        );
-        core.units.insert(
-            target_id,
-            runtime_unit(target_id, Side::Opponent, WorldVec2::new(3.0, 1.0)),
-        );
-
-        let result = core.run_continuous_attack_movement_tick(0, 500);
-
-        assert!(result.outputs.iter().any(|output| matches!(
-            output,
-            MovementOutput::BodyMoved { unit_id, .. } if *unit_id == mover_id
-        )));
-        let mover_position = core
-            .unit_world_position(mover_id)
-            .expect("missing mover position");
-        let target_position = core
-            .unit_world_position(target_id)
-            .expect("missing target position");
-        assert!(
-            mover_position.x > 1.0,
-            "expected mover to advance toward enemy, got {mover_position:?}"
-        );
-        assert!(
-            mover_position.distance(target_position) < WorldVec2::new(1.0, 1.0).distance(target_position),
-            "expected mover to reduce distance to target, mover={mover_position:?} target={target_position:?}"
-        );
-    }
-
-    #[test]
-    fn battle_core_continuous_attack_goal_preserves_alive_sticky_target() {
-        let mut core = new_core();
-        let mover_id: UnitInstanceId = Uuid::from_u128(40).into();
-        let sticky_id: UnitInstanceId = Uuid::from_u128(41).into();
-        let nearer_id: UnitInstanceId = Uuid::from_u128(42).into();
-
-        let mut mover = runtime_unit(mover_id, Side::Player, WorldVec2::new(0.0, 0.0));
-        mover.current_target = Some(sticky_id);
-        core.units.insert(mover_id, mover);
-        core.units.insert(
-            sticky_id,
-            runtime_unit(sticky_id, Side::Opponent, WorldVec2::new(5.0, 0.0)),
-        );
-        core.units.insert(
-            nearer_id,
-            runtime_unit(nearer_id, Side::Opponent, WorldVec2::new(2.0, 0.0)),
-        );
-
-        let goals = core.build_continuous_attack_goals();
-
-        assert_eq!(
-            goals.get(&mover_id),
-            Some(&MovementGoal::AttackUnit {
-                target_id: sticky_id,
-                desired_range: 1.0,
-                approach_point: goals.get(&mover_id).and_then(|goal| match goal {
-                    MovementGoal::AttackUnit { approach_point, .. } => *approach_point,
-                    MovementGoal::MoveToPoint { .. } => None,
-                })
-            })
-        );
     }
 }

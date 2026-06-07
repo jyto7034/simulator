@@ -2,31 +2,26 @@ use std::sync::Arc;
 use tracing::{debug, info, warn};
 use uuid::Uuid;
 
-use crate::game::behavior::{ActionKind, BehaviorResult, BenchSlotDto, GameError, PlayerBehavior};
-use crate::game::combat_mission_policy::CombatMissionPolicy;
-use crate::game::combat_preview::CombatNodeType;
-use crate::game::data::{pve_data::PveEncounter, GameDataBase};
-use crate::game::determinism;
+use crate::game::behavior::{ActionKind, BehaviorResult, GameError, PlayerBehavior, RosterSlotDto};
+use crate::game::data::GameDataBase;
 use crate::game::enums::{RewardAction, ShopAction};
-use crate::game::map::{MapNodeCategory, MapNodePayload, RunMap, RunProgression};
-use crate::game::resources::{GameState, Position, Qliphoth, SelectedEventState};
-
-enum RewardClaimDestination {
-    Reward,
-}
+use crate::game::map::RunProgression;
+use crate::game::resources::{ActiveNodeContent, GameState, Qliphoth};
 
 mod combat;
 mod headquarters;
 mod helpers;
 mod maintenance;
 mod map_content;
+mod map_encounters;
 mod node_flow;
-mod node_rewards;
+mod reward;
+mod shop;
 mod snapshot;
 mod state;
 mod support;
 
-use state::{GameCoreState, RunState};
+use state::{GameCoreState, LiveBattleDeploymentPolicy, RunState};
 
 pub struct GameCore {
     state: GameCoreState,
@@ -34,37 +29,73 @@ pub struct GameCore {
     run_seed: u64,
 }
 
-const METAGAME_FIELD_WIDTH: u8 = 7;
-const METAGAME_FIELD_HEIGHT: u8 = 4;
-const METAGAME_BENCH_SLOTS: usize = 8;
+const ROSTER_ORDER_SLOTS: usize = 8;
 
 #[derive(Debug, Clone, Copy)]
 struct RunSystemPolicy {
+    setup: RunSetupPolicy,
+    live_deployment: LiveBattleDeploymentPolicy,
+    post_battle: PostBattleResolutionPolicy,
+    support: SupportPolicy,
+    headquarters: HeadquartersPolicy,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct RunSetupPolicy {
     default_max_acts: u8,
     starter_employee_count: usize,
     starter_enkephalin: u32,
-    post_battle_survival_xp: u32,
-    post_battle_incapacitation_trauma: u32,
-    post_battle_incapacitation_run_hp_loss_percent: u32,
-    support_medical_hp_heal_percent: u32,
-    support_medical_trauma_heal: u32,
-    support_medical_balanced_hp_heal_percent: u32,
-    support_rest_trauma_heal: u32,
-    headquarters_emergency_enkephalin: u32,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct PostBattleResolutionPolicy {
+    survival_xp: u32,
+    incapacitation_trauma: u32,
+    incapacitation_run_hp_loss_percent: u32,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct SupportPolicy {
+    medical_hp_heal_percent: u32,
+    medical_trauma_heal: u32,
+    medical_balanced_hp_heal_percent: u32,
+    rest_trauma_heal: u32,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct HeadquartersPolicy {
+    emergency_enkephalin: u32,
 }
 
 const RUN_SYSTEM_POLICY: RunSystemPolicy = RunSystemPolicy {
-    default_max_acts: 3,
-    starter_employee_count: 3,
-    starter_enkephalin: 500,
-    post_battle_survival_xp: 10,
-    post_battle_incapacitation_trauma: 40,
-    post_battle_incapacitation_run_hp_loss_percent: 25,
-    support_medical_hp_heal_percent: 50,
-    support_medical_trauma_heal: 40,
-    support_medical_balanced_hp_heal_percent: 25,
-    support_rest_trauma_heal: 10,
-    headquarters_emergency_enkephalin: 120,
+    setup: RunSetupPolicy {
+        default_max_acts: 3,
+        starter_employee_count: 3,
+        starter_enkephalin: 500,
+    },
+    live_deployment: LiveBattleDeploymentPolicy {
+        initial_cost: 20,
+        max_cost: 99,
+        cost_per_second: 1,
+        base_deploy_cost: 10,
+        redeploy_cooldown_ms: 30_000,
+        redeploy_cost_multiplier_pct: 150,
+        first_instance_salt: 10_000,
+    },
+    post_battle: PostBattleResolutionPolicy {
+        survival_xp: 10,
+        incapacitation_trauma: 40,
+        incapacitation_run_hp_loss_percent: 25,
+    },
+    support: SupportPolicy {
+        medical_hp_heal_percent: 50,
+        medical_trauma_heal: 40,
+        medical_balanced_hp_heal_percent: 25,
+        rest_trauma_heal: 10,
+    },
+    headquarters: HeadquartersPolicy {
+        emergency_enkephalin: 120,
+    },
 };
 
 impl GameCore {
@@ -113,7 +144,6 @@ impl GameCore {
             }
             PlayerBehavior::RequestMapData => self.handle_request_map_data(),
             PlayerBehavior::SelectMapNode { node_id } => self.handle_select_map_node(node_id),
-            PlayerBehavior::UseReconScan => self.handle_use_recon_scan(),
             PlayerBehavior::ConfirmEnterNode => self.handle_confirm_enter_node(),
             PlayerBehavior::CancelSelectedNode => self.handle_cancel_selected_node(),
             PlayerBehavior::CompleteNode => self.handle_complete_node(),
@@ -136,6 +166,10 @@ impl GameCore {
                 item_uuid,
                 target_unit,
             } => self.handle_equip_item(item_uuid, target_unit),
+            PlayerBehavior::UseConsumableItem {
+                item_uuid,
+                target_employee_uuid,
+            } => self.handle_use_consumable_item(item_uuid, target_employee_uuid),
             PlayerBehavior::EquipSkillFragment {
                 employee_uuid,
                 fragment_id,
@@ -168,16 +202,11 @@ impl GameCore {
                 item_uuid,
                 target_unit,
             } => self.handle_unequip_item(item_uuid, target_unit),
-            PlayerBehavior::MoveUnit {
-                target_unit_uuid,
-                dest_pos: dest_type,
-                swap_with_unit_uuid,
-            } => self.handle_move_unit(target_unit_uuid, dest_type, swap_with_unit_uuid),
-            PlayerBehavior::MoveBenchUnit {
+            PlayerBehavior::MoveRosterUnit {
                 target_unit_uuid,
                 dest_slot,
                 swap_with_unit_uuid,
-            } => self.handle_move_bench_unit(target_unit_uuid, dest_slot, swap_with_unit_uuid),
+            } => self.handle_move_roster_unit(target_unit_uuid, dest_slot, swap_with_unit_uuid),
 
             // 상점 관련 행동
             PlayerBehavior::PurchaseItem { item_uuid } => {
@@ -193,11 +222,30 @@ impl GameCore {
             PlayerBehavior::ClaimReward => self.execute_reward_action(RewardAction::Claim),
             PlayerBehavior::ExitReward => self.execute_reward_action(RewardAction::Exit),
 
-            PlayerBehavior::FinishCombatReplay => self.handle_finish_combat_replay(),
-            PlayerBehavior::RetreatCombat => self.handle_retreat_combat(),
+            PlayerBehavior::CompleteCombatResult => self.handle_complete_combat_result(),
+            PlayerBehavior::RequestBattleState { since_seq } => {
+                self.handle_request_battle_state(since_seq)
+            }
+            PlayerBehavior::DeployUnit {
+                employee_uuid,
+                position,
+                facing,
+            } => self.handle_deploy_unit(employee_uuid, position, facing),
+            PlayerBehavior::WithdrawUnit { employee_uuid } => {
+                self.handle_withdraw_unit(employee_uuid)
+            }
+            PlayerBehavior::ActivateSkill {
+                employee_uuid,
+                skill_id,
+                target,
+            } => self.handle_activate_skill(employee_uuid, skill_id, target),
+            PlayerBehavior::RetreatBattle => self.handle_retreat_battle(),
+            PlayerBehavior::PauseBattle => self.handle_pause_battle(),
+            PlayerBehavior::ResumeBattle => self.handle_resume_battle(),
+            PlayerBehavior::SetBattleSpeed { speed } => self.handle_set_battle_speed(speed),
         }?;
 
-        self.sync_bench_with_owned_units()?;
+        self.sync_roster_order_with_owned_units()?;
         Ok(result)
     }
 }
@@ -217,188 +265,30 @@ impl GameCore {
             .ok_or(GameError::MissingResource("RunState"))
     }
 
-    fn assign_map_encounters(&self, map: &mut RunMap, run_progression: &RunProgression) {
-        let mut encounters = self
-            .game_data
-            .pve_data
-            .encounters
-            .iter()
-            .collect::<Vec<_>>();
-        encounters.sort_by(|a, b| {
-            a.difficulty
-                .cmp(&b.difficulty)
-                .then_with(|| a.id.cmp(&b.id))
-        });
-        if encounters.is_empty() {
-            return;
-        }
-
-        let boss_depth = map.node(map.boss_node_id).map_or(0, |node| node.depth);
-        for node in &mut map.nodes {
-            if !matches!(
-                node.category,
-                MapNodeCategory::Combat | MapNodeCategory::Boss
-            ) {
-                continue;
-            }
-
-            if !matches!(
-                &node.payload,
-                MapNodePayload::Encounter { encounter_id: None }
-            ) {
-                continue;
-            }
-
-            let selected =
-                Self::select_encounter_for_map_node(&encounters, node, run_progression, boss_depth);
-
-            if let (Some(encounter), MapNodePayload::Encounter { encounter_id }) =
-                (selected, &mut node.payload)
-            {
-                *encounter_id = Some(encounter.id.clone());
-            }
-        }
-    }
-
-    fn select_encounter_for_map_node<'a>(
-        encounters: &'a [&'a PveEncounter],
-        node: &crate::game::map::MapNode,
-        run_progression: &RunProgression,
-        boss_depth: u8,
-    ) -> Option<&'a PveEncounter> {
-        if encounters.is_empty() {
-            return None;
-        }
-
-        let candidates = Self::encounter_candidates_for_map_node(
-            encounters,
-            node.category,
-            node.kind_id.as_str(),
-            node.depth,
-            boss_depth,
-            run_progression.act_index,
-        );
-        let candidates = if candidates.is_empty() {
-            encounters
-                .iter()
-                .copied()
-                .filter(|encounter| encounter.node_type != Some(CombatNodeType::Boss))
-                .collect::<Vec<_>>()
-        } else {
-            candidates
-        };
-        let candidates = if candidates.is_empty() {
-            encounters.to_vec()
-        } else {
-            candidates
-        };
-
-        let index_seed = run_progression.current_act_seed()
-            ^ (u64::from(node.depth) << 32)
-            ^ u64::from(node.lane)
-            ^ determinism::seed_with_uuid(
-                run_progression.current_act_seed(),
-                0x4D41_505F_454E_4354,
-                node.id.0,
-            );
-        let index = (index_seed as usize) % candidates.len();
-        candidates.get(index).copied()
-    }
-
-    fn encounter_candidates_for_map_node<'a>(
-        encounters: &'a [&'a PveEncounter],
-        category: MapNodeCategory,
-        kind_id: &str,
-        depth: u8,
-        boss_depth: u8,
-        act_index: u8,
-    ) -> Vec<&'a PveEncounter> {
-        if category == MapNodeCategory::Boss {
-            let boss_candidates = encounters
-                .iter()
-                .copied()
-                .filter(|encounter| encounter.node_type == Some(CombatNodeType::Boss))
-                .collect::<Vec<_>>();
-            if !boss_candidates.is_empty() {
-                return boss_candidates;
-            }
-            let max_difficulty = encounters
-                .iter()
-                .map(|encounter| encounter.difficulty)
-                .max()
-                .unwrap_or_default();
-            return encounters
-                .iter()
-                .copied()
-                .filter(|encounter| encounter.difficulty == max_difficulty)
-                .collect();
-        }
-
-        let act_offset = act_index.saturating_mul(2);
-        let is_elite = kind_id.contains("elite");
-        let is_late_depth = depth + 2 >= boss_depth;
-        let preferred_node_types =
-            CombatMissionPolicy::preferred_node_types_for_map_node(category, kind_id);
-        let min_difficulty = if is_elite {
-            3_u8.saturating_add(act_offset)
-        } else {
-            1_u8.saturating_add(act_offset)
-        };
-        let max_difficulty = if is_elite {
-            6_u8.saturating_add(act_offset)
-        } else if is_late_depth {
-            4_u8.saturating_add(act_offset)
-        } else {
-            2_u8.saturating_add(act_offset).saturating_add(depth / 3)
-        };
-
-        let difficulty_candidates = encounters
-            .iter()
-            .copied()
-            .filter(|encounter| encounter.node_type != Some(CombatNodeType::Boss))
-            .filter(|encounter| {
-                encounter.difficulty >= min_difficulty && encounter.difficulty <= max_difficulty
-            })
-            .collect::<Vec<_>>();
-
-        for preferred_node_type in preferred_node_types {
-            let candidates = difficulty_candidates
-                .iter()
-                .copied()
-                .filter(|encounter| encounter.node_type == Some(*preferred_node_type))
-                .collect::<Vec<_>>();
-            if !candidates.is_empty() {
-                return candidates;
-            }
-        }
-
-        difficulty_candidates
-    }
-
     // 플레이어가 게임에 첫 진입을 하였을 때.
     // 바로 런을 시작하지 않고, 본부가 제시한 시작 직원 후보 선택 단계로 진입한다.
     fn handle_start_new_game(&mut self, player_id: Uuid) -> Result<BehaviorResult, GameError> {
         // 플레이어 생성
         self.initial_player(player_id);
         self.state.starter_candidates = self.game_data.starter_employee_data.candidates.clone();
-        if self.state.starter_candidates.len() < RUN_SYSTEM_POLICY.starter_employee_count {
+        if self.state.starter_candidates.len() < RUN_SYSTEM_POLICY.setup.starter_employee_count {
             return Err(GameError::InvalidStaticData(format!(
                 "starter employee candidate data must contain at least {} candidates, got {}",
-                RUN_SYSTEM_POLICY.starter_employee_count,
+                RUN_SYSTEM_POLICY.setup.starter_employee_count,
                 self.state.starter_candidates.len()
             )));
         }
         self.state.roster.clear();
         self.state.run = None;
         self.state.node_session = None;
-        self.state.selected_event = None;
+        self.state.active_node_content = None;
         self.transition_to(GameState::SelectingStarterEmployees)?;
 
         info!("Starter employee selection opened for player {}", player_id);
 
         Ok(BehaviorResult::StartNewGame {
             candidates: self.state.starter_candidates.clone(),
-            required_count: RUN_SYSTEM_POLICY.starter_employee_count,
+            required_count: RUN_SYSTEM_POLICY.setup.starter_employee_count,
         })
     }
 
@@ -407,25 +297,25 @@ impl GameCore {
         candidate_ids: Vec<String>,
     ) -> Result<BehaviorResult, GameError> {
         let employee_uuids = self.initialize_selected_starter_employees(&candidate_ids)?;
-        self.sync_bench_with_owned_units()?;
+        self.sync_roster_order_with_owned_units()?;
 
         // 기초 자원 지급: 첫 안전 노드에서 상점에 들어가도 하나는 살 수 있도록 여유 있게.
         self.state.enkephalin.amount = self
             .state
             .enkephalin
             .amount
-            .saturating_add(RUN_SYSTEM_POLICY.starter_enkephalin);
+            .saturating_add(RUN_SYSTEM_POLICY.setup.starter_enkephalin);
         info!(
             "Granted starter enkephalin: amount={}, total={}",
-            RUN_SYSTEM_POLICY.starter_enkephalin, self.state.enkephalin.amount
+            RUN_SYSTEM_POLICY.setup.starter_enkephalin, self.state.enkephalin.amount
         );
 
         let run_progression =
-            RunProgression::new(self.run_seed, RUN_SYSTEM_POLICY.default_max_acts);
+            RunProgression::new(self.run_seed, RUN_SYSTEM_POLICY.setup.default_max_acts);
         let (run_map, progression) = self.generate_current_act_map(&run_progression);
         self.state.run = Some(RunState::new(run_map, progression, run_progression));
         self.state.node_session = None;
-        self.state.selected_event = None;
+        self.state.active_node_content = None;
         self.transition_to(GameState::ViewingMap)?;
 
         let map = self.current_map_view()?;
@@ -436,65 +326,32 @@ impl GameCore {
         })
     }
 
-    fn handle_move_unit(
-        &mut self,
-        target_unit_uuid: Uuid,
-        dest_type: Position,
-        swap_with_unit_uuid: Option<Uuid>,
-    ) -> Result<BehaviorResult, GameError> {
-        if let GameState::NodeConfirm {
-            node_id, category, ..
-        } = self.get_state()
-        {
-            if matches!(category, MapNodeCategory::Combat | MapNodeCategory::Boss) {
-                return self.handle_move_combat_deployment_unit(
-                    node_id,
-                    target_unit_uuid,
-                    dest_type,
-                    swap_with_unit_uuid,
-                );
-            }
-        }
-
-        Err(GameError::InvalidAction)
-    }
-
-    fn handle_move_bench_unit(
+    fn handle_move_roster_unit(
         &mut self,
         target_unit_uuid: Uuid,
         dest_slot: usize,
         swap_with_unit_uuid: Option<Uuid>,
     ) -> Result<BehaviorResult, GameError> {
-        self.sync_bench_with_owned_units()?;
+        self.sync_roster_order_with_owned_units()?;
         self.validate_owned_unit_exists(target_unit_uuid)?;
         if let Some(swap_unit_uuid) = swap_with_unit_uuid {
             self.validate_owned_unit_exists(swap_unit_uuid)?;
         }
 
-        {
-            let field = self.field()?;
-            if field.get_position(target_unit_uuid).is_some()
-                || swap_with_unit_uuid
-                    .is_some_and(|swap_unit_uuid| field.get_position(swap_unit_uuid).is_some())
-            {
-                return Err(GameError::InvalidAction);
-            }
-        }
+        let roster_order = self.roster_order_mut()?;
+        roster_order.move_unit(target_unit_uuid, dest_slot, swap_with_unit_uuid)?;
 
-        let bench = self.bench_mut()?;
-        bench.move_unit(target_unit_uuid, dest_slot, swap_with_unit_uuid)?;
-
-        let bench_slots = bench
+        let roster_slots = roster_order
             .slots
             .iter()
             .enumerate()
-            .map(|(slot, unit_uuid)| BenchSlotDto {
+            .map(|(slot, unit_uuid)| RosterSlotDto {
                 slot,
                 unit_uuid: *unit_uuid,
             })
             .collect();
 
-        Ok(BehaviorResult::MoveBenchUnit { bench_slots })
+        Ok(BehaviorResult::MoveRosterUnit { roster_slots })
     }
 }
 
@@ -557,7 +414,7 @@ impl GameCore {
             GameState::InShop { .. } => "in_shop",
             GameState::InReward { .. } => "in_reward",
             GameState::InRewardClaimed { .. } => "in_reward_claimed",
-            GameState::InCombatReplay { .. } => "in_combat_replay",
+            GameState::CombatResult { .. } => "combat_result",
             GameState::InBattle { .. } => "in_battle",
             GameState::GameOver => "game_over",
             GameState::RunComplete => "run_complete",
@@ -577,17 +434,17 @@ impl GameCore {
         }
     }
 
-    pub fn get_active_combat_replay(
+    pub fn get_combat_result_event_log(
         &self,
     ) -> Option<(
         crate::game::battle::types::BattleWinner,
         crate::game::battle::timeline::Timeline,
     )> {
         self.state
-            .selected_event
+            .active_node_content
             .as_ref()
-            .and_then(|selected| match &selected.event {
-                SelectedEventState::CombatBattle(battle) => {
+            .and_then(|selected| match selected {
+                ActiveNodeContent::CombatBattle(battle) => {
                     Some((battle.winner, battle.timeline.clone()))
                 }
                 _ => None,

@@ -8,7 +8,6 @@ SkillFragmentDatabase(
             rarity: Rare,
             origin: Some(Abnormality(abnormality_id: "o-03-03_one_sin")),
             sources: [
-                AbnormalitySuppression(abnormality_id: "o-03-03_one_sin"),
                 AbnormalityContainment(abnormality_id: "o-03-03_one_sin"),
             ],
             dependencies: [
@@ -28,12 +27,15 @@ SkillFragmentDatabase(
             rarity: Rare,
             origin: Some(Abnormality(abnormality_id: "f-01-02")),
             sources: [
-                AbnormalitySuppression(abnormality_id: "f-01-02"),
                 AbnormalityContainment(abnormality_id: "f-01-02"),
             ],
             dependencies: [
                 SourceAbnormality(abnormality_id: "f-01-02"),
             ],
+            compatibility: (
+                allowed_range_roles: [Ranged],
+                allowed_weapon_archetypes: [GrenadeLauncher, Staff],
+            ),
             effect: ActiveSkill(
                 imitation_skill_id: "fragment_scorched_spark",
                 upgrade_skill_ids: {},
@@ -48,12 +50,14 @@ SkillFragmentDatabase(
             rarity: Rare,
             origin: Some(Abnormality(abnormality_id: "t-09-09")),
             sources: [
-                AbnormalitySuppression(abnormality_id: "t-09-09"),
                 AbnormalityContainment(abnormality_id: "t-09-09"),
             ],
             dependencies: [
                 SourceAbnormality(abnormality_id: "t-09-09"),
             ],
+            compatibility: (
+                allowed_range_roles: [Melee],
+            ),
             effect: ActiveSkill(
                 imitation_skill_id: "fragment_red_shoes_impulse",
                 upgrade_skill_ids: {},
@@ -68,12 +72,15 @@ SkillFragmentDatabase(
             rarity: Rare,
             origin: Some(Abnormality(abnormality_id: "t-02-43_freischutz")),
             sources: [
-                AbnormalitySuppression(abnormality_id: "t-02-43_freischutz"),
                 AbnormalityContainment(abnormality_id: "t-02-43_freischutz"),
             ],
             dependencies: [
                 SourceAbnormality(abnormality_id: "t-02-43_freischutz"),
             ],
+            compatibility: (
+                allowed_range_roles: [Ranged],
+                allowed_weapon_archetypes: [Gun],
+            ),
             effect: ActiveSkill(
                 imitation_skill_id: "fragment_freischutz_black_round",
                 upgrade_skill_ids: {},
@@ -88,7 +95,6 @@ SkillFragmentDatabase(
             rarity: Rare,
             origin: Some(Abnormality(abnormality_id: "o-01-45")),
             sources: [
-                AbnormalitySuppression(abnormality_id: "o-01-45"),
                 AbnormalityContainment(abnormality_id: "o-01-45"),
             ],
             dependencies: [
@@ -108,12 +114,15 @@ SkillFragmentDatabase(
             rarity: Rare,
             origin: Some(Abnormality(abnormality_id: "t-02-99_funeral_butterfly")),
             sources: [
-                AbnormalitySuppression(abnormality_id: "t-02-99_funeral_butterfly"),
                 AbnormalityContainment(abnormality_id: "t-02-99_funeral_butterfly"),
             ],
             dependencies: [
                 SourceAbnormality(abnormality_id: "t-02-99_funeral_butterfly"),
             ],
+            compatibility: (
+                allowed_range_roles: [Ranged],
+                allowed_weapon_archetypes: [Bow, Gun],
+            ),
             effect: ActiveSkill(
                 imitation_skill_id: "fragment_funeral_butterfly_eulogy",
                 upgrade_skill_ids: {},
@@ -128,12 +137,15 @@ SkillFragmentDatabase(
             rarity: Rare,
             origin: Some(Abnormality(abnormality_id: "t-05-41_all_around_helper")),
             sources: [
-                AbnormalitySuppression(abnormality_id: "t-05-41_all_around_helper"),
                 AbnormalityContainment(abnormality_id: "t-05-41_all_around_helper"),
             ],
             dependencies: [
                 SourceAbnormality(abnormality_id: "t-05-41_all_around_helper"),
             ],
+            compatibility: (
+                allowed_range_roles: [Melee],
+                allowed_weapon_archetypes: [Sword, Spear],
+            ),
             effect: ActiveSkill(
                 imitation_skill_id: "fragment_helper_grinder_trace",
                 upgrade_skill_ids: {},
@@ -148,7 +160,6 @@ SkillFragmentDatabase(
             rarity: Rare,
             origin: Some(Abnormality(abnormality_id: "t-04-53_alriune")),
             sources: [
-                AbnormalitySuppression(abnormality_id: "t-04-53_alriune"),
                 AbnormalityContainment(abnormality_id: "t-04-53_alriune"),
             ],
             dependencies: [

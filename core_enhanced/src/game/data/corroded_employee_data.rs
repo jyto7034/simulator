@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::game::{
-    ability::SkillId,
+    ability::{SkillActivationMode, SkillId},
     battle::types::DeploymentAffinity,
     data::{
         abnormality_data::{BasicAttackDef, MovementDef, ResonanceDef},
@@ -52,13 +52,18 @@ impl CorrodedEmployeeProfileMetadata {
         crate::game::battle::types::UnitCombatProfile {
             stats,
             basic_attack: self.basic_attack.clone(),
+            weapon_profile: None,
             movement: self.movement.clone(),
             resonance: self.resonance.clone(),
             skill_id: self.skill_id.clone(),
+            skill_activation_mode: SkillActivationMode::Auto,
             deployment_affinity: DeploymentAffinity::GroundOnly,
             block_capacity: 0,
             block_radius_units: 0.0,
             blockable: true,
+            mobility_kind: crate::game::battle::types::MobilityKind::Ground,
+            target_traits: Vec::new(),
+            incoming_damage_modifiers: Default::default(),
         }
     }
 }
@@ -119,11 +124,9 @@ impl CorrodedEmployeeProfileDatabase {
                 "corroded employee profile '{}' max_health must be greater than zero",
                 profile.id
             );
-            assert!(
-                profile.basic_attack.interval_ms > 0,
-                "corroded employee profile '{}' attack interval must be greater than zero",
-                profile.id
-            );
+            profile
+                .basic_attack
+                .validate_runtime_contract(format!("corroded employee profile '{}'", profile.id));
         }
     }
 

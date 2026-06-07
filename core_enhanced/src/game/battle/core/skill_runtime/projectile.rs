@@ -773,9 +773,12 @@ impl BattleCore {
 
         let (commands, result) =
             Self::build_skill_step_commands(caster_instance_id, step, &targets);
+        let signal_result =
+            self.record_skill_step_live_signals(caster_instance_id, &skill_id, step, &targets);
+        let mut resolved_result = result;
+        resolved_result.merge(&signal_result);
         if !commands.is_empty() {
             let summary = self.process_commands(commands, time_ms);
-            let mut resolved_result = result;
             resolved_result.actual_damage_target_count = resolved_result
                 .actual_damage_target_count
                 .saturating_add(summary.actual_damage_target_count);
@@ -787,7 +790,13 @@ impl BattleCore {
                 time_ms,
             );
         } else {
-            self.resolve_skill_step_delivery(cast_seq, step_index, result, terminal, time_ms);
+            self.resolve_skill_step_delivery(
+                cast_seq,
+                step_index,
+                resolved_result,
+                terminal,
+                time_ms,
+            );
         }
         self.schedule_pending_autocasts(time_ms);
     }

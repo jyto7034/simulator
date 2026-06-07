@@ -10,6 +10,7 @@ use game_core::game::battle::scenario::{
     ScenarioEventId, ScenarioGroupId, ScenarioSpawnGroup, ScenarioTrigger, ScenarioUnitRef,
     ScenarioUnitSpawn, WinCondition,
 };
+use game_core::game::battle::tile_range::TileRangePattern;
 use game_core::game::battle::timeline::{Timeline, TimelineEntry, TimelineEvent};
 use game_core::game::battle::types::{BattleUnitDraft, BattleUnitSource};
 use game_core::game::data::{
@@ -34,9 +35,17 @@ fn test_abnormality(id: &str, uuid: Uuid, max_health: u32, attack: u32) -> Abnor
         defense: 0,
         magic_resist: 0,
         movement: Default::default(),
-        basic_attack: Default::default(),
+        basic_attack: game_core::game::data::abnormality_data::BasicAttackDef {
+            defense_tile_range: Some(TileRangePattern {
+                include_anchor_tile: false,
+                rows: vec![".X.".to_string(), ".@.".to_string(), "...".to_string()],
+            }),
+            ..Default::default()
+        },
         resonance: Default::default(),
         skill_id: None,
+        mobility_kind: Default::default(),
+        target_traits: Vec::new(),
     }
 }
 
@@ -187,7 +196,7 @@ fn game_data_for_live_item_skill_tests(force_proc_item_ids: &[&str]) -> Arc<Game
         .cloned()
         .collect::<Vec<_>>();
 
-    GameDataBuilder::empty()
+    GameDataBuilder::live_defaults()
         .with_abnormalities(vec![attacker, target])
         .with_artifact_data(Arc::new(ArtifactDatabase::new(artifacts)))
         .with_equipment_data(Arc::new(EquipmentDatabase::new(equipments)))

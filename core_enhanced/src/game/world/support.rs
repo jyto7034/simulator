@@ -1,5 +1,5 @@
 use super::{GameCore, RUN_SYSTEM_POLICY};
-use crate::game::behavior::{ActionKind, BehaviorResult, GameError, MaintenanceOptionsDto};
+use crate::game::behavior::{BehaviorResult, GameError, MaintenanceOptionsDto};
 use crate::game::employee::EmployeeLifeState;
 use crate::game::employee_trust::{EmployeeTrustResolver, TrustEvent, TrustEventKind};
 use crate::game::map::{MapProgression, MedicalTreatmentKind, RunMap, SupportNodeType};
@@ -14,7 +14,7 @@ impl GameCore {
         {
             let support = self
                 .state
-                .selected_event
+                .active_node_content
                 .as_mut()
                 .ok_or(GameError::InvalidAction)?
                 .as_support_mut()?;
@@ -24,7 +24,7 @@ impl GameCore {
         let support = {
             let support = self
                 .state
-                .selected_event
+                .active_node_content
                 .as_mut()
                 .ok_or(GameError::InvalidAction)?
                 .as_support_mut()?;
@@ -32,7 +32,7 @@ impl GameCore {
             support.clone()
         };
         let result = self.support_state_result(&support);
-        self.refresh_maintenance_action_gate(&support)?;
+        self.refresh_allowed_actions();
 
         Ok(result)
     }
@@ -44,7 +44,7 @@ impl GameCore {
         let support = {
             let support = self
                 .state
-                .selected_event
+                .active_node_content
                 .as_mut()
                 .ok_or(GameError::InvalidAction)?
                 .as_support_mut()?;
@@ -62,7 +62,7 @@ impl GameCore {
         let support = {
             let support = self
                 .state
-                .selected_event
+                .active_node_content
                 .as_mut()
                 .ok_or(GameError::InvalidAction)?
                 .as_support_mut()?;
@@ -230,37 +230,9 @@ impl GameCore {
         ]
     }
 
-    pub(super) fn refresh_maintenance_action_gate(
-        &mut self,
-        support: &SupportSessionState,
-    ) -> Result<(), GameError> {
-        let is_maintenance = support
-            .resolved_support_type()
-            .is_ok_and(|support_type| support_type == SupportNodeType::Maintenance);
-        if !is_maintenance {
-            return Ok(());
-        }
-
-        let mut allowed = self.state.action_validator.allowed_actions();
-        for action in [
-            ActionKind::UpgradeSkillFragment,
-            ActionKind::AwakenSkillFragment,
-            ActionKind::DismantleSkillFragment,
-            ActionKind::RestoreEquipment,
-            ActionKind::DismantleEquipment,
-            ActionKind::EnhanceEquipment,
-        ] {
-            if !allowed.contains(&action) {
-                allowed.push(action);
-            }
-        }
-        self.state.action_validator.set_allowed_actions(allowed);
-        Ok(())
-    }
-
     pub(super) fn is_in_maintenance_support_node(&self) -> bool {
         self.state
-            .selected_event
+            .active_node_content
             .as_ref()
             .and_then(|selected| selected.as_support().ok())
             .and_then(|support| support.resolved_support_type().ok())
@@ -280,7 +252,7 @@ impl GameCore {
         };
         let support_session = self
             .state
-            .selected_event
+            .active_node_content
             .as_ref()
             .and_then(|selected| selected.as_support().ok())
             .filter(|support| support.node_id == node_id);
@@ -335,20 +307,20 @@ impl GameCore {
             MedicalTreatmentKind::EmergencyCare => {
                 employee
                     .health
-                    .restore_hp_percent(RUN_SYSTEM_POLICY.support_medical_hp_heal_percent);
+                    .restore_hp_percent(RUN_SYSTEM_POLICY.support.medical_hp_heal_percent);
             }
             MedicalTreatmentKind::Counseling => {
                 employee.trauma = employee
                     .trauma
-                    .saturating_sub(RUN_SYSTEM_POLICY.support_medical_trauma_heal);
+                    .saturating_sub(RUN_SYSTEM_POLICY.support.medical_trauma_heal);
             }
             MedicalTreatmentKind::BalancedCare => {
                 employee
                     .health
-                    .restore_hp_percent(RUN_SYSTEM_POLICY.support_medical_balanced_hp_heal_percent);
+                    .restore_hp_percent(RUN_SYSTEM_POLICY.support.medical_balanced_hp_heal_percent);
                 employee.trauma = employee
                     .trauma
-                    .saturating_sub(RUN_SYSTEM_POLICY.support_medical_trauma_heal / 2);
+                    .saturating_sub(RUN_SYSTEM_POLICY.support.medical_trauma_heal / 2);
             }
         }
 
@@ -369,9 +341,9 @@ impl GameCore {
         {
             employee.trauma = employee
                 .trauma
-                .saturating_sub(RUN_SYSTEM_POLICY.support_rest_trauma_heal);
+                .saturating_sub(RUN_SYSTEM_POLICY.support.rest_trauma_heal);
             let reaction = EmployeeTrustResolver::apply_event(
-                TrustEvent::new(employee.uuid, TrustEventKind::RestedAtRecoveryNode),
+                TrustEvent::new(employee.uuid, TrustEventKind::RestedAtSupportRest),
                 &trust_policy,
             );
             employee.trust.apply_reaction(&reaction);

@@ -1,4 +1,9 @@
-use crate::game::battle::timeline::{Timeline, TimelineEntry, TimelineEvent, TIMELINE_VERSION};
+use std::sync::Arc;
+
+use crate::game::battle::{
+    buffs::BuffDatabase,
+    timeline::{Timeline, TimelineEntry, TimelineEvent, TIMELINE_VERSION},
+};
 
 use super::{
     attacks::validate_attacks,
@@ -21,11 +26,254 @@ use super::{
 
 pub struct TimelineValidator {
     config: TimelineValidatorConfig,
+    buff_data: Arc<BuffDatabase>,
+}
+
+#[cfg(test)]
+mod tests {
+    use std::sync::Arc;
+
+    use uuid::Uuid;
+
+    use crate::game::battle::{
+        buffs::{BuffDatabase, BuffId, BuffKind, BuffMetadata, BuffReapplyPolicy},
+        ids::UnitInstanceId,
+        timeline::{Timeline, TimelineCause, TimelineEntry, TimelineEvent},
+    };
+    use crate::game::{enums::Side, stats::UnitStats};
+
+    use super::{TimelineValidator, TimelineValidatorConfig, TimelineViolationKind};
+
+    fn buff_only_config() -> TimelineValidatorConfig {
+        TimelineValidatorConfig {
+            require_battle_start_end: false,
+            require_contiguous_seq: false,
+            require_non_decreasing_time: false,
+            require_attack_kind: false,
+            validate_parent_seq: false,
+            require_outcome_parent: false,
+            require_autocast_pairs: false,
+            require_spawn_stats_valid: false,
+            require_hp_delta_consistent: false,
+            forbid_dead_units_as_attackers: false,
+            forbid_dead_units_as_targets: false,
+            validate_positions_within_bounds: false,
+            require_movement_path_consistent: false,
+            validate_auto_attack_min_interval: false,
+            validate_auto_attack_presence: false,
+            auto_attack_timing_tolerance_ms: 0,
+        }
+    }
+
+    fn unit_spawn(seq: u64, unit_instance_id: UnitInstanceId, owner: Side) -> TimelineEntry {
+        TimelineEntry {
+            time_ms: 0,
+            seq,
+            cause: TimelineCause::default(),
+            event: TimelineEvent::UnitSpawned {
+                unit_instance_id,
+                owner,
+                role: Default::default(),
+                mobility_kind: Default::default(),
+                base_uuid: Uuid::nil(),
+                world_position: Default::default(),
+                stats: UnitStats::with_values(100, 100, 1, 0, 1),
+            },
+        }
+    }
+
+    #[test]
+    fn timeline_validator_uses_injected_buff_database() {
+        let mut timeline = Timeline::new();
+        timeline.entries.push(TimelineEntry {
+            time_ms: 0,
+            seq: 0,
+            cause: TimelineCause::default(),
+            event: TimelineEvent::BuffApplied {
+                caster_instance_id: UnitInstanceId::from(Uuid::from_u128(1)),
+                target_instance_id: UnitInstanceId::from(Uuid::from_u128(2)),
+                buff_id: BuffId::from_name("poison"),
+                duration_ms: 100,
+            },
+        });
+
+        let validator = TimelineValidator::with_buff_data(
+            buff_only_config(),
+            Arc::new(BuffDatabase::new(vec![])),
+        );
+        let violations = validator
+            .validate(&timeline, None, None)
+            .expect_err("empty injected buff database must reject poison");
+
+        assert!(violations
+            .iter()
+            .any(|violation| violation.kind == TimelineViolationKind::UnknownBuffId));
+    }
+
+    #[test]
+    fn buff_validator_respects_refresh_duration_reapply_policy() {
+        let caster = UnitInstanceId::from(Uuid::from_u128(1));
+        let target = UnitInstanceId::from(Uuid::from_u128(2));
+        let buff_id = BuffId::from_name("refreshing_silence");
+        let buff_data = Arc::new(BuffDatabase::new(vec![BuffMetadata {
+            name: "refreshing_silence".to_string(),
+            kind: BuffKind::Silence,
+            tick_interval_ms: 0,
+            max_stacks: 3,
+            reapply_policy: BuffReapplyPolicy::RefreshDuration,
+        }]));
+        let mut timeline = Timeline::new();
+        timeline.entries.extend([
+            unit_spawn(0, caster, Side::Player),
+            unit_spawn(1, target, Side::Opponent),
+            TimelineEntry {
+                time_ms: 0,
+                seq: 2,
+                cause: TimelineCause::default(),
+                event: TimelineEvent::BuffApplied {
+                    caster_instance_id: caster,
+                    target_instance_id: target,
+                    buff_id,
+                    duration_ms: 100,
+                },
+            },
+            TimelineEntry {
+                time_ms: 50,
+                seq: 3,
+                cause: TimelineCause::default(),
+                event: TimelineEvent::BuffApplied {
+                    caster_instance_id: caster,
+                    target_instance_id: target,
+                    buff_id,
+                    duration_ms: 10,
+                },
+            },
+            TimelineEntry {
+                time_ms: 60,
+                seq: 4,
+                cause: TimelineCause::default(),
+                event: TimelineEvent::BuffExpired {
+                    caster_instance_id: caster,
+                    target_instance_id: target,
+                    buff_id,
+                },
+            },
+        ]);
+
+        let validator = TimelineValidator::with_buff_data(buff_only_config(), buff_data.clone());
+        validator
+            .validate(&timeline, None, None)
+            .expect("RefreshDuration should replace expires_at_ms instead of taking max");
+
+        timeline.entries[4].time_ms = 100;
+        let violations = TimelineValidator::with_buff_data(buff_only_config(), buff_data)
+            .validate(&timeline, None, None)
+            .expect_err("stale original expiration must not validate");
+        assert!(violations
+            .iter()
+            .any(|violation| violation.kind == TimelineViolationKind::BuffExpiredInvalid));
+    }
+
+    #[test]
+    fn buff_validator_models_exclusive_hard_cc_replacement() {
+        let caster = UnitInstanceId::from(Uuid::from_u128(1));
+        let target = UnitInstanceId::from(Uuid::from_u128(2));
+        let stun_id = BuffId::from_name("stun");
+        let freeze_id = BuffId::from_name("freeze");
+        let buff_data = Arc::new(BuffDatabase::new(vec![
+            BuffMetadata {
+                name: "stun".to_string(),
+                kind: BuffKind::Stun,
+                tick_interval_ms: 0,
+                max_stacks: 1,
+                reapply_policy: BuffReapplyPolicy::RefreshDuration,
+            },
+            BuffMetadata {
+                name: "freeze".to_string(),
+                kind: BuffKind::Freeze,
+                tick_interval_ms: 0,
+                max_stacks: 1,
+                reapply_policy: BuffReapplyPolicy::RefreshDuration,
+            },
+        ]));
+        let mut timeline = Timeline::new();
+        timeline.entries.extend([
+            unit_spawn(0, caster, Side::Player),
+            unit_spawn(1, target, Side::Opponent),
+            TimelineEntry {
+                time_ms: 0,
+                seq: 2,
+                cause: TimelineCause::default(),
+                event: TimelineEvent::BuffApplied {
+                    caster_instance_id: caster,
+                    target_instance_id: target,
+                    buff_id: stun_id,
+                    duration_ms: 100,
+                },
+            },
+            TimelineEntry {
+                time_ms: 10,
+                seq: 3,
+                cause: TimelineCause::default(),
+                event: TimelineEvent::BuffApplied {
+                    caster_instance_id: caster,
+                    target_instance_id: target,
+                    buff_id: freeze_id,
+                    duration_ms: 20,
+                },
+            },
+            TimelineEntry {
+                time_ms: 30,
+                seq: 4,
+                cause: TimelineCause::default(),
+                event: TimelineEvent::BuffExpired {
+                    caster_instance_id: caster,
+                    target_instance_id: target,
+                    buff_id: freeze_id,
+                },
+            },
+        ]);
+
+        TimelineValidator::with_buff_data(buff_only_config(), buff_data.clone())
+            .validate(&timeline, None, None)
+            .expect("freeze should replace stun and expire at its own duration");
+
+        timeline.entries.push(TimelineEntry {
+            time_ms: 100,
+            seq: 5,
+            cause: TimelineCause::default(),
+            event: TimelineEvent::BuffExpired {
+                caster_instance_id: caster,
+                target_instance_id: target,
+                buff_id: stun_id,
+            },
+        });
+        let violations = TimelineValidator::with_buff_data(buff_only_config(), buff_data)
+            .validate(&timeline, None, None)
+            .expect_err("replaced hard CC should not remain active");
+        assert!(violations
+            .iter()
+            .any(|violation| violation.kind == TimelineViolationKind::BuffExpiredInvalid));
+    }
 }
 
 impl TimelineValidator {
     pub fn new(config: TimelineValidatorConfig) -> Self {
-        Self { config }
+        Self {
+            config,
+            buff_data: Arc::new(BuffDatabase::new(vec![])),
+        }
+    }
+
+    pub fn with_live_buff_data(config: TimelineValidatorConfig) -> Self {
+        Self {
+            config,
+            buff_data: Arc::new(BuffDatabase::live_default()),
+        }
+    }
+
+    pub fn with_buff_data(config: TimelineValidatorConfig, buff_data: Arc<BuffDatabase>) -> Self {
+        Self { config, buff_data }
     }
 
     pub fn validate(
@@ -109,7 +357,7 @@ impl TimelineValidator {
             validate_autocast_pairs(timeline, focus_time_provider, &mut violations);
         }
         validate_attacks(timeline, &extracted, &mut violations);
-        validate_buffs(timeline, &mut violations);
+        validate_buffs(timeline, &self.buff_data, &mut violations);
         validate_deaths(timeline, &extracted, &mut violations, &self.config);
         validate_auto_attack_cadence(timeline, &extracted, &mut violations, &self.config);
 

@@ -18,9 +18,9 @@ use super::{
 
 #[test]
 // 목적:
-// Big Bird의 Dark Lamp가 "시전자 중심"이 아니라 "선택된 적 중심"으로 anchor를 잡고,
-// 그 적 주변 클러스터에만 silence/burst를 적용하는지 확인한다.
-fn big_bird_silences_and_bursts_only_enemies_within_chebyshev_radius_one() {
+// Big Bird의 Dark Lamp가 시전자 전방 tile range 안의 적에게만
+// silence/burst를 적용하는지 확인한다.
+fn big_bird_silences_and_bursts_only_enemies_within_forward_tile_range() {
     let mut legend = skill_dummy_board_legend();
     for symbol in ['F', 'G', 'H', 'X'] {
         legend
@@ -90,7 +90,7 @@ fn big_bird_silences_and_bursts_only_enemies_within_chebyshev_radius_one() {
 // 목적:
 // Big Bird가 부여한 silence가 실제로 적의 autocast 시작을 막고,
 // silence 만료 뒤에야 스킬 시전이 재개되는지 확인한다.
-fn big_bird_silence_defers_enemy_autocast_until_buff_expires() {
+fn big_bird_silence_blocks_enemy_autocast_while_active() {
     let mut legend = skill_dummy_board_legend();
     legend.units.insert(
         'O',
@@ -108,15 +108,23 @@ fn big_bird_silence_defers_enemy_autocast_until_buff_expires() {
                 }),
                 basic_attack: Some(BasicAttackDef {
                     range_units: 1.0,
+                    defense_tile_range: None,
                     interval_ms: 1,
                     windup_ms: 0,
                     delivery: game_core::game::ability::DeliveryDef::Instant,
+                    ..BasicAttackDef::default()
                 }),
                 resonance: Some(ResonanceDef {
                     start: 90,
                     max: 100,
                     gain_lock_ms: 0,
                 }),
+                ..Default::default()
+            },
+            runtime_start: RuntimeStartPatch {
+                pending_cast: Some(true),
+                basic_attack_lock_until_ms: Some(60_000),
+                resonance_gain_lock_until_ms: Some(60_000),
                 ..Default::default()
             },
             ..Default::default()
@@ -134,9 +142,11 @@ fn big_bird_silence_defers_enemy_autocast_until_buff_expires() {
                 }),
                 basic_attack: Some(BasicAttackDef {
                     range_units: 1.0,
+                    defense_tile_range: None,
                     interval_ms: 500,
                     windup_ms: 0,
                     delivery: game_core::game::ability::DeliveryDef::Instant,
+                    ..BasicAttackDef::default()
                 }),
                 resonance: Some(ResonanceDef {
                     start: 90,
@@ -195,47 +205,24 @@ fn big_bird_silence_defers_enemy_autocast_until_buff_expires() {
         })
         .expect("silence should eventually expire");
 
-    let enemy_autocast_start = result
-        .timeline()
-        .entries
-        .iter()
-        .find(|entry| {
-            matches!(
-                &entry.event,
-                TimelineEvent::AutoCastStart {
-                    caster_instance_id,
-                    skill_id,
-                    ..
-                } if *caster_instance_id == silenced_enemy && skill_id.as_deref() == Some("one_sin_penitence")
-            )
-        })
-        .expect("silenced enemy should eventually start its autocast after silence ends");
-    let enemy_cast = result
-        .timeline()
-        .entries
-        .iter()
-        .find(|entry| {
-            matches!(
-                &entry.event,
-                TimelineEvent::AbilityCast {
-                    caster_instance_id,
-                    skill_id,
-                    ..
-                } if *caster_instance_id == silenced_enemy && skill_id == "one_sin_penitence"
-            )
-        })
-        .expect("silenced enemy should eventually cast after silence expires");
-
     assert!(
         silence_applied.time_ms < silence_expired.time_ms,
         "silence must be applied before it can expire"
     );
     assert!(
-        enemy_autocast_start.time_ms > silence_expired.time_ms,
-        "enemy autocast should not start while silence is active"
-    );
-    assert!(
-        enemy_cast.time_ms >= enemy_autocast_start.time_ms,
-        "ability cast should happen after the deferred autocast start"
+        !result.timeline().entries.iter().any(|entry| {
+            entry.time_ms >= silence_applied.time_ms
+                && entry.time_ms <= silence_expired.time_ms
+                && matches!(
+                    &entry.event,
+                    TimelineEvent::AutoCastStart {
+                        caster_instance_id,
+                        skill_id,
+                        ..
+                    } if *caster_instance_id == silenced_enemy
+                        && skill_id.as_deref() == Some("one_sin_penitence")
+                )
+        }),
+        "enemy autocast should not start while Big Bird silence is active"
     );
 }

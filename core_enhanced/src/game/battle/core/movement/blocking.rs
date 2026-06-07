@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::game::{
     battle::{
-        core::{BattleCore, BlockRuntimeState},
+        core::{movement::types::WorldVec2, BattleCore, BlockRuntimeState},
         ids::UnitInstanceId,
         scenario::{EnemyMovementPlan, PlayerMovementPlan, WinCondition},
         types::BattleUnitRole,
@@ -42,10 +42,11 @@ impl BattleCore {
                     && unit.is_combatant()
                     && !unit.is_dead()
                     && unit.blockable
+                    && !unit.is_airborne()
             })
             .map(|unit| unit.instance_id)
             .collect::<Vec<_>>();
-        enemy_ids.sort_by(|a, b| a.as_bytes().cmp(b.as_bytes()));
+        enemy_ids.sort_by(|a, b| self.compare_enemy_block_priority(*a, *b));
 
         let mut remaining_capacity = blocker_ids
             .iter()
@@ -74,14 +75,8 @@ impl BattleCore {
             block_state.enemy_to_blocker.insert(enemy_id, blocker_id);
         }
 
-        for (blocker_id, enemy_ids) in &mut block_state.blocker_to_enemies {
-            enemy_ids.sort_by(|a, b| {
-                let distance_order = self
-                    .block_distance_sq(*blocker_id, *a)
-                    .unwrap_or(f32::MAX)
-                    .total_cmp(&self.block_distance_sq(*blocker_id, *b).unwrap_or(f32::MAX));
-                distance_order.then_with(|| a.as_bytes().cmp(b.as_bytes()))
-            });
+        for enemy_ids in block_state.blocker_to_enemies.values_mut() {
+            enemy_ids.sort_by(|a, b| self.compare_enemy_block_priority(*a, *b));
         }
 
         self.block_state = block_state;
@@ -159,15 +154,12 @@ impl BattleCore {
             .get(&enemy_id)
             .and_then(|unit| unit.enemy_movement_plan.as_ref())
             .unwrap_or(&self.scenario.tactical_plan.enemy_plan);
-        let point_id = match plan {
-            EnemyMovementPlan::PathToPoint { point_id } => Some(point_id),
-            EnemyMovementPlan::PathAlongPath { point_ids } => point_ids.last(),
-            EnemyMovementPlan::AssaultPlayer => None,
-        }?;
-        self.scenario
-            .tactical_plan
-            .point(point_id)
-            .map(|point| super::types::WorldVec2::from_tile_center(point.position))
+        match plan {
+            EnemyMovementPlan::PathAlongCells { cells } => cells
+                .last()
+                .copied()
+                .map(super::types::WorldVec2::from_tile_center),
+        }
     }
 
     fn closest_available_blocker(
@@ -188,6 +180,67 @@ impl BattleCore {
                     .total_cmp(&self.block_distance_sq(*b, enemy_id).unwrap_or(f32::MAX));
                 distance_order.then_with(|| a.as_bytes().cmp(b.as_bytes()))
             })
+    }
+
+    fn compare_enemy_block_priority(
+        &self,
+        left: UnitInstanceId,
+        right: UnitInstanceId,
+    ) -> std::cmp::Ordering {
+        let progress_order = self
+            .enemy_route_progress(right)
+            .total_cmp(&self.enemy_route_progress(left));
+        progress_order
+            .then_with(|| {
+                let left_spawn_order = self
+                    .units
+                    .get(&left)
+                    .map(|unit| unit.spawn_order)
+                    .unwrap_or(u64::MAX);
+                let right_spawn_order = self
+                    .units
+                    .get(&right)
+                    .map(|unit| unit.spawn_order)
+                    .unwrap_or(u64::MAX);
+                left_spawn_order.cmp(&right_spawn_order)
+            })
+            .then_with(|| left.as_bytes().cmp(right.as_bytes()))
+    }
+
+    pub(in crate::game::battle::core) fn enemy_route_progress(
+        &self,
+        enemy_id: UnitInstanceId,
+    ) -> f32 {
+        let Some(enemy) = self.units.get(&enemy_id) else {
+            return 0.0;
+        };
+        let plan = enemy
+            .enemy_movement_plan
+            .as_ref()
+            .unwrap_or(&self.scenario.tactical_plan.enemy_plan);
+        match plan {
+            EnemyMovementPlan::PathAlongCells { cells } => {
+                route_progress_along_cells(cells, enemy.body.position).unwrap_or(0.0)
+            }
+        }
+    }
+
+    pub(in crate::game::battle::core) fn enemy_route_remaining(
+        &self,
+        enemy_id: UnitInstanceId,
+    ) -> Option<f32> {
+        let enemy = self.units.get(&enemy_id)?;
+        let plan = enemy
+            .enemy_movement_plan
+            .as_ref()
+            .unwrap_or(&self.scenario.tactical_plan.enemy_plan);
+        match plan {
+            EnemyMovementPlan::PathAlongCells { cells } => {
+                let progress = route_progress_along_cells(cells, enemy.body.position)?;
+                let total = route_total_length(cells)?;
+                Some((total - progress).max(0.0))
+            }
+        }
     }
 
     fn is_enemy_inside_block_radius(
@@ -237,4 +290,75 @@ impl BattleCore {
             }
         }
     }
+}
+
+fn route_progress_along_cells(
+    cells: &[crate::game::resources::Position],
+    position: WorldVec2,
+) -> Option<f32> {
+    if cells.is_empty() {
+        return None;
+    }
+    if cells.len() == 1 {
+        return Some(0.0);
+    }
+
+    let centers = cells
+        .iter()
+        .copied()
+        .map(WorldVec2::from_tile_center)
+        .collect::<Vec<_>>();
+    let mut cumulative = 0.0;
+    let mut best_distance_sq = f32::MAX;
+    let mut best_progress = 0.0;
+
+    for segment in centers.windows(2) {
+        let start = segment[0];
+        let end = segment[1];
+        let delta = end - start;
+        let length_sq = delta.length_squared();
+        if length_sq <= f32::EPSILON {
+            continue;
+        }
+        let segment_length = length_sq.sqrt();
+        let to_position = position - start;
+        let t = dot(to_position, delta) / length_sq;
+        let t = t.clamp(0.0, 1.0);
+        let projected = start + delta * t;
+        let distance_sq = position.distance_squared(projected);
+        let progress = cumulative + segment_length * t;
+
+        if distance_sq < best_distance_sq - f32::EPSILON
+            || ((distance_sq - best_distance_sq).abs() <= f32::EPSILON && progress > best_progress)
+        {
+            best_distance_sq = distance_sq;
+            best_progress = progress;
+        }
+
+        cumulative += segment_length;
+    }
+
+    Some(best_progress)
+}
+
+fn route_total_length(cells: &[crate::game::resources::Position]) -> Option<f32> {
+    if cells.len() < 2 {
+        return Some(0.0);
+    }
+
+    let centers = cells
+        .iter()
+        .copied()
+        .map(WorldVec2::from_tile_center)
+        .collect::<Vec<_>>();
+    Some(
+        centers
+            .windows(2)
+            .map(|segment| segment[0].distance(segment[1]))
+            .sum(),
+    )
+}
+
+fn dot(a: WorldVec2, b: WorldVec2) -> f32 {
+    a.x * b.x + a.y * b.y
 }

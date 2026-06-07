@@ -3,13 +3,23 @@ use flate2::{write::GzEncoder, Compression};
 use game_core::game::{
     battle::{timeline::Timeline, types::BattleWinner},
     behavior::{BehaviorResult, GameError},
+    employee::ActiveConsumableModifier,
+    resources::InventoryDiffDto,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::io::Write;
 
 use super::messages::PlayerGameServerMessage;
-use crate::shared::protocol::{ErrorCode, ServerMessage};
+
+#[derive(Debug, Serialize)]
+struct ConsumableItemUsedPayload {
+    item_uuid: uuid::Uuid,
+    target_employee_uuid: uuid::Uuid,
+    replaced_modifier: Option<ActiveConsumableModifier>,
+    applied_modifier: ActiveConsumableModifier,
+    inventory_diff: InventoryDiffDto,
+}
 
 #[derive(Debug, Clone)]
 pub struct PlayerGameActorError {
@@ -84,10 +94,9 @@ impl From<GameError> for PlayerGameActorError {
                 "position_occupied",
                 "Requested position is already occupied".into(),
             ),
-            GameError::UnitAlreadyPlaced => (
-                "unit_already_placed",
-                "Unit is already placed on the field".into(),
-            ),
+            GameError::UnitAlreadyPlaced => {
+                ("unit_already_placed", "Unit is already deployed".into())
+            }
             GameError::UnitNotFound => ("unit_not_found", "Unit was not found".into()),
             GameError::AlreadyOwnedArtifact => (
                 "already_owned_artifact",
@@ -101,6 +110,16 @@ impl From<GameError> for PlayerGameActorError {
                 "not_implemented",
                 format!("Feature is not implemented: {feature}"),
             ),
+            GameError::SkillFragmentIncompatible {
+                fragment_id,
+                failure_codes,
+            } => (
+                "skill_fragment_incompatible",
+                format!(
+                    "Skill fragment '{fragment_id}' is incompatible with the selected employee: {:?}",
+                    failure_codes
+                ),
+            ),
         };
 
         Self { code, message }
@@ -108,19 +127,22 @@ impl From<GameError> for PlayerGameActorError {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CompressedTimelinePayload {
+pub struct CompressedBattleEventLogPayload {
     pub winner: BattleWinner,
+    /// Legacy field name kept for the Unity JSON contract. The payload is a
+    /// compressed battle event log, not a precomputed offline replay.
     pub timeline_encoding: String,
+    /// Legacy field name kept for the Unity JSON contract.
     pub timeline_gzip_base64: String,
     pub raw_json_bytes: usize,
     pub gzip_bytes: usize,
 }
 
-pub fn compress_timeline_payload(
+pub fn compress_battle_event_log_payload(
     winner: BattleWinner,
-    timeline: &Timeline,
-) -> Result<CompressedTimelinePayload, PlayerGameActorError> {
-    let timeline_json = timeline
+    event_log: &Timeline,
+) -> Result<CompressedBattleEventLogPayload, PlayerGameActorError> {
+    let timeline_json = event_log
         .to_json_string()
         .map_err(|error| PlayerGameActorError::new("serialization_failed", error.to_string()))?;
 
@@ -132,7 +154,7 @@ pub fn compress_timeline_payload(
         .finish()
         .map_err(|error| PlayerGameActorError::new("compression_failed", error.to_string()))?;
 
-    Ok(CompressedTimelinePayload {
+    Ok(CompressedBattleEventLogPayload {
         winner,
         timeline_encoding: "gzip+base64".to_string(),
         timeline_gzip_base64: STANDARD.encode(&compressed),
@@ -155,7 +177,7 @@ pub fn behavior_result_to_command_result(
     })
 }
 
-fn behavior_result_payload(
+pub(crate) fn behavior_result_payload(
     result: BehaviorResult,
 ) -> Result<(&'static str, Value), PlayerGameActorError> {
     let mapped = match result {
@@ -190,8 +212,6 @@ fn behavior_result_payload(
             session,
             map,
             combat_preview,
-            combat_deployment,
-            recon_charge,
         } => (
             "NodePreview",
             json!({
@@ -201,20 +221,6 @@ fn behavior_result_payload(
                 "payload": payload,
                 "session": session,
                 "map": map,
-                "combat_preview": combat_preview,
-                "combat_deployment": combat_deployment,
-                "recon_charge": recon_charge,
-            }),
-        ),
-        BehaviorResult::ReconScanUsed {
-            node_id,
-            remaining_recon_charge,
-            combat_preview,
-        } => (
-            "ReconScanUsed",
-            json!({
-                "node_id": node_id,
-                "remaining_recon_charge": remaining_recon_charge,
                 "combat_preview": combat_preview,
             }),
         ),
@@ -252,6 +258,7 @@ fn behavior_result_payload(
             target_candidates,
             selected_employee_uuid,
             selected_medical_treatment,
+            maintenance_options,
             research_deliveries,
         } => (
             "SupportState",
@@ -264,6 +271,23 @@ fn behavior_result_payload(
                 "target_candidates": target_candidates,
                 "selected_employee_uuid": selected_employee_uuid,
                 "selected_medical_treatment": selected_medical_treatment,
+                "maintenance_options": maintenance_options,
+                "research_deliveries": research_deliveries,
+            }),
+        ),
+        BehaviorResult::HeadquartersContactState {
+            node_id,
+            options,
+            recruitment_candidates,
+            shop_pool_id,
+            research_deliveries,
+        } => (
+            "HeadquartersContactState",
+            json!({
+                "node_id": node_id,
+                "options": options,
+                "recruitment_candidates": recruitment_candidates,
+                "shop_pool_id": shop_pool_id,
                 "research_deliveries": research_deliveries,
             }),
         ),
@@ -285,11 +309,35 @@ fn behavior_result_payload(
                 "outcome": outcome,
             }),
         ),
-        BehaviorResult::UnEquipItem => ("UnEquipItem", Value::Null),
+        BehaviorResult::UnEquipItem { result } => (
+            "UnEquipItem",
+            serde_json::to_value(result).map_err(serialize_error)?,
+        ),
         BehaviorResult::EquipItem { result } => (
             "EquipItem",
             serde_json::to_value(result).map_err(serialize_error)?,
         ),
+        BehaviorResult::ConsumableItemUsed {
+            item_uuid,
+            target_employee_uuid,
+            replaced_modifier,
+            applied_modifier,
+            inventory_diff,
+        } => {
+            let payload = ConsumableItemUsedPayload {
+                item_uuid,
+                target_employee_uuid,
+                replaced_modifier,
+                applied_modifier,
+                inventory_diff,
+            };
+            (
+                "ConsumableItemUsed",
+                serde_json::to_value(payload).map_err(|error| {
+                    PlayerGameActorError::new("serialization_failed", error.to_string())
+                })?,
+            )
+        }
         BehaviorResult::SkillFragmentLoadoutUpdated {
             employee_uuid,
             equipped_fragment_ids,
@@ -376,8 +424,12 @@ fn behavior_result_payload(
                 "inventory_diff": inventory_diff,
             }),
         ),
-        BehaviorResult::MoveUnit => ("MoveUnit", Value::Null),
-        BehaviorResult::MoveBenchUnit => ("MoveBenchUnit", Value::Null),
+        BehaviorResult::MoveRosterUnit { roster_slots } => (
+            "MoveRosterUnit",
+            json!({
+                "roster_slots": roster_slots,
+            }),
+        ),
         BehaviorResult::ShopState {
             shop,
             research_deliveries,
@@ -411,6 +463,42 @@ fn behavior_result_payload(
                 "inventory_diff": inventory_diff,
             }),
         ),
+        BehaviorResult::EmployeeRecruited {
+            candidate_id,
+            employee_uuid,
+            completion,
+        } => {
+            let (completion_type, completion_payload) = behavior_result_payload(*completion)?;
+            (
+                "EmployeeRecruited",
+                json!({
+                    "candidate_id": candidate_id,
+                    "employee_uuid": employee_uuid,
+                    "completion": {
+                        "result_type": completion_type,
+                        "payload": completion_payload,
+                    },
+                }),
+            )
+        }
+        BehaviorResult::EmergencySuppliesGranted {
+            enkephalin,
+            inventory_diff,
+            completion,
+        } => {
+            let (completion_type, completion_payload) = behavior_result_payload(*completion)?;
+            (
+                "EmergencySuppliesGranted",
+                json!({
+                    "enkephalin": enkephalin,
+                    "inventory_diff": inventory_diff,
+                    "completion": {
+                        "result_type": completion_type,
+                        "payload": completion_payload,
+                    },
+                }),
+            )
+        }
         BehaviorResult::RewardGranted {
             enkephalin,
             inventory_diff,
@@ -441,10 +529,161 @@ fn behavior_result_payload(
                 }),
             )
         }
-        BehaviorResult::CombatResolved { winner, timeline } => (
-            "CombatResolved",
-            serde_json::to_value(compress_timeline_payload(winner, &timeline)?)
-                .map_err(serialize_error)?,
+        BehaviorResult::BattleAdvanced {
+            battle_uuid,
+            encounter_id,
+            node_type,
+            mission_variant,
+            playback,
+            battle_time_ms,
+            timeline_delta,
+            last_timeline_seq,
+            finished,
+            deployment,
+        } => (
+            "BattleAdvanced",
+            json!({
+                "battle_uuid": battle_uuid,
+                "encounter_id": encounter_id,
+                "node_type": node_type,
+                "mission_variant": mission_variant,
+                "playback": playback,
+                "battle_time_ms": battle_time_ms,
+                "timeline_delta": timeline_delta,
+                "last_timeline_seq": last_timeline_seq,
+                "finished": finished,
+                "deployment": deployment,
+            }),
+        ),
+        BehaviorResult::BattleState {
+            battle_uuid,
+            node_type,
+            mission_variant,
+            encounter_id,
+            combat_preview,
+            playback,
+            battle_time_ms,
+            timeline_delta,
+            last_timeline_seq,
+            finished,
+            deployment,
+        } => (
+            "BattleState",
+            json!({
+                "battle_uuid": battle_uuid,
+                "node_type": node_type,
+                "mission_variant": mission_variant,
+                "encounter_id": encounter_id,
+                "combat_preview": combat_preview,
+                "playback": playback,
+                "battle_time_ms": battle_time_ms,
+                "timeline_delta": timeline_delta,
+                "last_timeline_seq": last_timeline_seq,
+                "finished": finished,
+                "deployment": deployment,
+            }),
+        ),
+        BehaviorResult::BattlePlaybackChanged {
+            battle_uuid,
+            encounter_id,
+            node_type,
+            mission_variant,
+            playback,
+            battle_time_ms,
+            last_timeline_seq,
+            deployment,
+        } => (
+            "BattlePlaybackChanged",
+            json!({
+                "battle_uuid": battle_uuid,
+                "encounter_id": encounter_id,
+                "node_type": node_type,
+                "mission_variant": mission_variant,
+                "playback": playback,
+                "battle_time_ms": battle_time_ms,
+                "last_timeline_seq": last_timeline_seq,
+                "deployment": deployment,
+            }),
+        ),
+        BehaviorResult::BattleUnitDeployed {
+            battle_uuid,
+            encounter_id,
+            node_type,
+            mission_variant,
+            playback,
+            employee_uuid,
+            unit_instance_id,
+            timeline_delta,
+            last_timeline_seq,
+            deployment,
+        } => (
+            "BattleUnitDeployed",
+            json!({
+                "battle_uuid": battle_uuid,
+                "encounter_id": encounter_id,
+                "node_type": node_type,
+                "mission_variant": mission_variant,
+                "playback": playback,
+                "employee_uuid": employee_uuid,
+                "unit_instance_id": unit_instance_id,
+                "timeline_delta": timeline_delta,
+                "last_timeline_seq": last_timeline_seq,
+                "deployment": deployment,
+            }),
+        ),
+        BehaviorResult::BattleUnitWithdrawn {
+            battle_uuid,
+            encounter_id,
+            node_type,
+            mission_variant,
+            playback,
+            employee_uuid,
+            unit_instance_id,
+            timeline_delta,
+            last_timeline_seq,
+            deployment,
+        } => (
+            "BattleUnitWithdrawn",
+            json!({
+                "battle_uuid": battle_uuid,
+                "encounter_id": encounter_id,
+                "node_type": node_type,
+                "mission_variant": mission_variant,
+                "playback": playback,
+                "employee_uuid": employee_uuid,
+                "unit_instance_id": unit_instance_id,
+                "timeline_delta": timeline_delta,
+                "last_timeline_seq": last_timeline_seq,
+                "deployment": deployment,
+            }),
+        ),
+        BehaviorResult::BattleSkillActivated {
+            battle_uuid,
+            encounter_id,
+            node_type,
+            mission_variant,
+            playback,
+            employee_uuid,
+            unit_instance_id,
+            skill_id,
+            timeline_delta,
+            last_timeline_seq,
+            deployment,
+        } => (
+            "BattleSkillActivated",
+            json!({
+                "battle_uuid": battle_uuid,
+                "encounter_id": encounter_id,
+                "node_type": node_type,
+                "mission_variant": mission_variant,
+                "playback": playback,
+                "employee_uuid": employee_uuid,
+                "unit_instance_id": unit_instance_id,
+                "skill_id": skill_id,
+                "timeline_delta": timeline_delta,
+                "last_timeline_seq": last_timeline_seq,
+                "deployment": deployment,
+            }),
         ),
         BehaviorResult::RewardState {
             mode,
@@ -470,39 +709,111 @@ fn serialize_error(error: serde_json::Error) -> PlayerGameActorError {
     PlayerGameActorError::new("serialization_failed", error.to_string())
 }
 
-pub fn legacy_server_message_to_unity(message: ServerMessage) -> PlayerGameServerMessage {
-    match message {
-        ServerMessage::EnQueued { pod_id } => PlayerGameServerMessage::Notification {
-            notification_type: "enqueued".to_string(),
-            payload: json!({ "pod_id": pod_id }),
-        },
-        ServerMessage::DeQueued => PlayerGameServerMessage::Notification {
-            notification_type: "dequeued".to_string(),
-            payload: Value::Null,
-        },
-        ServerMessage::MatchFound {
-            winner_id,
-            opponent_id,
-            battle_data,
-        } => PlayerGameServerMessage::Notification {
-            notification_type: "match_found".to_string(),
-            payload: json!({
-                "winner_id": winner_id,
-                "opponent_id": opponent_id,
-                "battle_data": battle_data,
-            }),
-        },
-        ServerMessage::Error { code, message } => PlayerGameServerMessage::Error {
-            request_id: None,
-            code: legacy_error_code_to_string(code),
-            message,
-        },
-    }
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use game_core::game::{
+        battle::{ids::UnitInstanceId, tile_range::FacingDirection},
+        behavior::{BattlePlaybackState, LiveBattleDeployedUnitDto, LiveBattleDeploymentDto},
+        combat_preview::{CombatMissionVariant, CombatNodeType},
+    };
+    use uuid::Uuid;
 
-fn legacy_error_code_to_string(code: ErrorCode) -> String {
-    serde_json::to_value(code)
-        .ok()
-        .and_then(|value| value.as_str().map(str::to_string))
-        .unwrap_or_else(|| "internal_error".to_string())
+    #[test]
+    fn battle_advanced_payload_preserves_mission_identity() {
+        let (result_type, payload) = behavior_result_payload(BehaviorResult::BattleAdvanced {
+            battle_uuid: Uuid::from_u128(0xB4771E),
+            encounter_id: "defend_black_box_relay".to_string(),
+            node_type: CombatNodeType::Defense,
+            mission_variant: CombatMissionVariant::Encirclement,
+            playback: BattlePlaybackState::default(),
+            battle_time_ms: 3_000,
+            timeline_delta: Vec::new(),
+            last_timeline_seq: 12,
+            finished: false,
+            deployment: None,
+        })
+        .expect("battle advanced result should serialize");
+
+        assert_eq!(result_type, "BattleAdvanced");
+        assert_eq!(payload["encounter_id"], "defend_black_box_relay");
+        assert_eq!(payload["node_type"], "Defense");
+        assert_eq!(payload["mission_variant"], "Encirclement");
+        assert_eq!(payload["playback"]["paused"], false);
+        assert_eq!(payload["playback"]["speed"], "X1");
+        assert_eq!(payload["battle_time_ms"], 3_000);
+        assert_eq!(payload["last_timeline_seq"], 12);
+    }
+
+    #[test]
+    fn live_deployment_command_payloads_preserve_mission_identity() {
+        let deployment = LiveBattleDeploymentDto {
+            battle_time_ms: 1_000,
+            current_cost: 10,
+            max_cost: 30,
+            base_deploy_cost: 10,
+            cost_per_second: 1,
+            deployed_units: vec![LiveBattleDeployedUnitDto {
+                employee_uuid: Uuid::from_u128(0xEFFE_C7),
+                unit_instance_id: UnitInstanceId(Uuid::from_u128(0xD3F3_0001)),
+                facing: FacingDirection::Right,
+                skill_readiness: None,
+            }],
+            redeploying_units: Vec::new(),
+        };
+        let (result_type, payload) = behavior_result_payload(BehaviorResult::BattleUnitDeployed {
+            battle_uuid: Uuid::from_u128(0xB4771E),
+            encounter_id: "defense_encounter".to_string(),
+            node_type: CombatNodeType::Defense,
+            mission_variant: CombatMissionVariant::Defense,
+            playback: BattlePlaybackState::default(),
+            employee_uuid: Uuid::from_u128(0xEFFE_C7),
+            unit_instance_id: UnitInstanceId(Uuid::from_u128(0xD3F3_0001)),
+            timeline_delta: Vec::new(),
+            last_timeline_seq: 21,
+            deployment,
+        })
+        .expect("battle unit deployed result should serialize");
+
+        assert_eq!(result_type, "BattleUnitDeployed");
+        assert_eq!(payload["encounter_id"], "defense_encounter");
+        assert_eq!(payload["node_type"], "Defense");
+        assert_eq!(payload["mission_variant"], "Defense");
+        assert_eq!(payload["last_timeline_seq"], 21);
+        assert_eq!(payload["deployment"]["battle_time_ms"], 1_000);
+        assert_eq!(
+            payload["deployment"]["deployed_units"][0]["facing"],
+            "right"
+        );
+
+        let deployment = LiveBattleDeploymentDto {
+            battle_time_ms: 2_000,
+            current_cost: 10,
+            max_cost: 30,
+            base_deploy_cost: 10,
+            cost_per_second: 1,
+            deployed_units: Vec::new(),
+            redeploying_units: Vec::new(),
+        };
+        let (result_type, payload) = behavior_result_payload(BehaviorResult::BattleUnitWithdrawn {
+            battle_uuid: Uuid::from_u128(0xB4771E),
+            encounter_id: "blue_star_encirclement".to_string(),
+            node_type: CombatNodeType::Defense,
+            mission_variant: CombatMissionVariant::Encirclement,
+            playback: BattlePlaybackState::default(),
+            employee_uuid: Uuid::from_u128(0xEFFE_C7),
+            unit_instance_id: UnitInstanceId(Uuid::from_u128(0xD3F3_0001)),
+            timeline_delta: Vec::new(),
+            last_timeline_seq: 22,
+            deployment,
+        })
+        .expect("battle unit withdrawn result should serialize");
+
+        assert_eq!(result_type, "BattleUnitWithdrawn");
+        assert_eq!(payload["encounter_id"], "blue_star_encirclement");
+        assert_eq!(payload["node_type"], "Defense");
+        assert_eq!(payload["mission_variant"], "Encirclement");
+        assert_eq!(payload["last_timeline_seq"], 22);
+        assert_eq!(payload["deployment"]["battle_time_ms"], 2_000);
+    }
 }

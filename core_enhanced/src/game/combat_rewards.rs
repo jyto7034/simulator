@@ -1,6 +1,6 @@
 use crate::game::{
     behavior::GameError,
-    combat_preview::CombatNodeType,
+    combat_preview::{CombatMissionVariant, CombatNodeType},
     data::{pve_data::PveEncounter, reward_data::RewardTag, GameDataBase},
     enums::RewardMode,
     reward::RewardOption,
@@ -11,6 +11,7 @@ pub(crate) fn resolve_combat_rewards_from_encounter(
     game_data: &GameDataBase,
     encounter: &PveEncounter,
     node_type: Option<CombatNodeType>,
+    mission_variant: Option<CombatMissionVariant>,
 ) -> Result<(RewardMode, Vec<RewardOption>), GameError> {
     let mut rewards = Vec::with_capacity(encounter.reward_uuids.len());
     for reward_uuid in &encounter.reward_uuids {
@@ -29,7 +30,9 @@ pub(crate) fn resolve_combat_rewards_from_encounter(
     }
 
     if let Some(node_type) = node_type {
-        CombatRewardPolicy::for_node_type(node_type)
+        let mission_variant = mission_variant
+            .unwrap_or_else(|| CombatMissionVariant::default_for_node_type(node_type));
+        CombatRewardPolicy::for_mission(node_type, mission_variant)
             .validate_rewards(&rewards)
             .map_err(GameError::InvalidStaticData)?;
     }

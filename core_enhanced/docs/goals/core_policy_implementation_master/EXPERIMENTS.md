@@ -1,0 +1,163 @@
+# Core Policy Implementation Master Experiments
+
+## 2026-06-07
+
+- Read `docs/core_policy_implementation_master_goal.md` and confirmed the first ordered sub-goal is Damage Feedback DTO.
+- Verified the newly added git safety rules are present in the master execution contract.
+- Started code inspection for Damage Feedback DTO.
+- Completed Damage Feedback DTO implementation and focused verification.
+- Damage Feedback DTO verification summary:
+  - `cargo test -p game_core feedback_tags -- --nocapture`: passed.
+  - `cargo test -p game_core damage -- --nocapture`: passed.
+  - `cargo test -p game_core battle -- --nocapture`: passed.
+  - `cargo check -p game_core`: passed.
+- Completed Combat Preview Threat Warnings implementation and focused verification.
+- Combat Preview Threat Warnings verification summary:
+  - `cargo test -p game_core combat_preview -- --nocapture`: passed.
+  - `cargo test -p game_core node_preview -- --nocapture`: passed.
+  - `cargo test -p game_core --test ron_loading -- --nocapture`: passed.
+  - `cargo check -p game_core`: passed.
+- Checkpoint A DTO Foundation is satisfied by the completed Damage Feedback DTO and Combat Preview Threat Warnings focused checks.
+- Completed Abnormality Attempt / Retreat / Re-entry implementation and focused verification.
+- Abnormality Attempt / Retreat / Re-entry verification summary:
+  - `cargo check -p game_core`: passed.
+  - `cargo test -p game_core retreat_from_live_defense_battle_reenters_until_attempts_are_exhausted -- --nocapture`: passed.
+  - `cargo test -p game_core combat -- --nocapture`: passed.
+  - `cargo check -p game_server`: passed.
+- Completed Consumable Modifier Re-entry Duration implementation and focused verification.
+- Consumable Modifier Re-entry Duration verification summary:
+  - `cargo test -p game_core consumable_modifier_survives_retreat_reentry_and_expires_when_abnormality_is_resolved -- --nocapture`: failed once, then passed after exhausted-retreat decrement was restored.
+  - `cargo test -p game_core consumable -- --nocapture`: passed.
+  - `cargo test -p game_core retreat -- --nocapture`: passed.
+  - `cargo check -p game_server`: passed.
+- Checkpoint B lifecycle/duration is satisfied by completed Abnormality Attempt / Retreat / Re-entry and Consumable Modifier Re-entry Duration checks.
+- Completed Unit Overlap and Blocking Runtime implementation and focused verification.
+- Unit Overlap and Blocking Runtime verification summary:
+  - `cargo test -p game_core movement -- --nocapture`: passed.
+  - `cargo test -p game_core fixed_defense_block -- --nocapture`: passed.
+  - `cargo test -p game_core live_defense -- --nocapture`: passed.
+  - `cargo check -p game_server`: passed.
+- Checkpoint C movement/blocking is satisfied by the completed Unit Overlap and Blocking Runtime checks.
+- Paused Weapon Archetype and Targeting Profile after policy discussion revealed airborne enemies need a dedicated source-of-truth goal before `AirFirst`/`air_capable`.
+- Added `docs/airborne_enemy_mobility_goal.md` and inserted it as master goal 6 before Weapon Archetype and Targeting Profile.
+- Updated airborne policy docs with route polyline movement, route endpoint attack-range validation, persisted target revalidation, projected 2D area hit rules, and airborne non-occupancy.
+- Reviewed Rapier movement backend and identified it should become an explicit movement-policy backend goal before Airborne Enemy Mobility.
+- Added `docs/movement_backend_policy_refactor_goal.md` and inserted it as master goal 6, moving Airborne Enemy Mobility and later goals down one slot.
+- Completed Movement Backend Policy Refactor.
+- Movement Backend Policy Refactor summary:
+  - Added typed movement terrain policy to continuous movement input.
+  - Direct/Rapier now apply static obstacle correction only for Ground policy.
+  - Airborne policy now ignores static obstacles/void obstacle projection and still clamps to board bounds.
+  - Removed Direct unit separation and Rapier default local obstacle avoidance from runtime movement semantics.
+  - Runtime Rapier tick now uses core clamp as board bounds source of truth instead of syncing Rapier wall colliders.
+  - Fixed current test fixtures that were stale after weapon/target-trait partial changes so movement verification could compile.
+- Movement Backend Policy Refactor verification summary:
+  - `cargo test -p game_core movement -- --nocapture`: passed.
+  - `cargo test -p game_core blocking -- --nocapture`: passed, but filter only matched 1 test.
+  - `cargo test -p game_core airborne -- --nocapture`: passed.
+  - `cargo test -p game_core fixed_defense -- --nocapture`: passed.
+  - `cargo check -p game_core`: passed.
+- Completed Rapier Backend Quality Refactor.
+- Rapier Backend Quality Refactor summary:
+  - Renamed Rapier correction responsibility to ground static obstacle correction.
+  - Rapier correction now excludes unit colliders and stale/test board wall colliders.
+  - Runtime board bounds remain core clamp's responsibility.
+  - Disabled Rapier KCC slide so authored route obstacles do not become implicit wall-slide detours.
+  - Added Direct/Rapier equivalence tests for ground obstacle stop, airborne static obstacle bypass, and board clamp policy.
+- Rapier Backend Quality Refactor verification summary:
+  - `cargo test -p game_core rapier -- --nocapture`: passed.
+  - `cargo test -p game_core movement_backends -- --nocapture`: failed once on float equality, then passed after tolerance fix.
+  - `cargo test -p game_core movement -- --nocapture`: passed.
+  - `cargo test -p game_core blocking -- --nocapture`: passed.
+  - `cargo test -p game_core airborne -- --nocapture`: passed.
+  - `cargo test -p game_core fixed_defense -- --nocapture`: passed.
+  - `cargo check -p game_core`: passed.
+- Completed Airborne Enemy Mobility.
+- Airborne Enemy Mobility summary:
+  - Added enemy `mobility_kind` source of truth through data/profile/runtime/snapshot/timeline.
+  - Airborne enemies now use `MovementTerrainPolicy::Airborne`, ignore block matching, and follow authored route movement.
+  - Airborne enemy basic attack priority is protected target in range, then nearest live player combatant.
+  - Single-target basic attacks and skills use `air_capable`; area/tile delivery still hits airborne units by projected 2D position.
+  - `CombatPreview` can emit `air_enemy_possible` from actual enemy mobility.
+  - Live `Punishing Bird` is the representative airborne abnormality.
+  - Canonical Unity docs in `F:\unity projects\ark\docs` now include `mobility_kind` and `air_capable` contract fields.
+- Airborne Enemy Mobility verification summary:
+  - `cargo test -p game_core airborne -- --nocapture`: passed.
+  - `cargo test -p game_core movement -- --nocapture`: passed.
+  - `cargo test -p game_core blocking -- --nocapture`: passed.
+  - `cargo test -p game_core combat_preview -- --nocapture`: passed.
+  - `cargo test -p game_core --test ron_loading live_abnormality_ron_reads_airborne_mobility_kind -- --nocapture`: passed.
+  - `cargo check -p game_core`: passed.
+  - `cargo check -p game_server`: passed.
+  - Full `ron_loading` and full `game_core` tests still fail on weapon `weapon_profile` fixture/live data debt; handle in Weapon Archetype and Targeting Profile.
+- Completed Weapon Archetype and Targeting Profile.
+- Weapon Archetype and Targeting Profile summary:
+  - Kept weapon profile validation strict; migrated live/test weapons instead of adding hidden runtime fallback.
+  - Live equipment RON now has explicit `weapon_profile` for the current representative weapon set.
+  - Player basic attacks now use weapon targeting profiles after melee blocked-target priority.
+  - Implemented `DefaultForward`, `AirFirst`, `LowDefenseFirst`, `LowMagicResistFirst`, and `SplashClusterFirst`.
+  - Added route remaining-distance support for forward targeting.
+  - Unity-facing inventory/roster snapshots now expose equipment `weapon_profile` and roster `effective_weapon_profile`.
+  - Canonical Unity docs in `F:\unity projects\ark\docs` now document these fields.
+- Weapon Archetype and Targeting Profile verification summary:
+  - `cargo test -p game_core targeting -- --nocapture`: passed.
+  - `cargo test -p game_core --test ron_loading -- --nocapture`: passed.
+  - `cargo test -p game_core --test skill_test_suite -- --nocapture`: passed.
+  - `cargo test -p game_core -- --nocapture`: passed.
+  - `cargo check -p game_server`: passed.
+  - `git diff --check`: passed.
+- Started Skill Fragment Compatibility foundation.
+- Skill Fragment Compatibility foundation summary:
+  - Added `SkillFragmentCompatibilityRequirements` to skill fragment metadata.
+  - Added pure compatibility evaluator and stable failure codes.
+  - Runtime equip/weapon-change validation is intentionally not wired until policy gates are confirmed.
+- Skill Fragment Compatibility foundation verification summary:
+  - `cargo test -p game_core skill_fragment_data -- --nocapture`: passed.
+  - `cargo check -p game_core`: passed.
+  - `cargo check -p game_server`: passed.
+- Skill Fragment Compatibility effective profile alignment summary:
+  - Added shared effective employee combat profile helper based on the battle draft profile path.
+  - Roster snapshot `effective_weapon_profile` now reflects equipped weapon profiles instead of the unequipped employee base profile.
+- Skill Fragment Compatibility effective profile alignment verification summary:
+  - `cargo test -p game_core equip_item_targets_employee_loadout_after_roster_initialization -- --nocapture`: passed.
+  - `cargo test -p game_core skill_fragment_data -- --nocapture`: passed.
+  - `cargo check -p game_core`: passed.
+  - `cargo check -p game_server`: passed.
+- Skill Fragment Compatibility static validation summary:
+  - Added compatibility requirement validation for duplicate axes, zero block minimums, empty tags, duplicate tags, and required/incompatible tag conflicts.
+  - Connected validation to `SkillFragmentDatabase::validate_indexes`.
+- Skill Fragment Compatibility static validation verification summary:
+  - `cargo test -p game_core skill_fragment_data -- --nocapture`: passed.
+  - `cargo check -p game_core`: passed.
+  - `cargo check -p game_server`: passed.
+- Skill Fragment Compatibility runtime wiring summary:
+  - Applied policy decisions for active fragment weapon requirement, weapon-change invalidation rejection, and stable reason codes.
+  - Added command validation, projected equipment-slot validation, snapshot compatibility DTOs, live RON requirements, game_server error mapping, and canonical Unity doc updates.
+- Skill Fragment Compatibility runtime wiring verification summary:
+  - `cargo test -p game_core skill_fragment_equip -- --nocapture`: passed.
+  - `cargo test -p game_core equipment_combination_rejects_result_that_invalidates_active_fragment -- --nocapture`: passed.
+  - `cargo test -p game_core skill_fragment_actions_equip_and_unequip_employee_loadout -- --nocapture`: passed.
+  - `cargo test -p game_core skill_fragment_dismantle_rejects_equipped_or_last_copy -- --nocapture`: passed.
+  - `cargo test -p game_core manual_fragment -- --nocapture`: passed.
+  - `cargo test -p game_core activate_skill_uses_equipped_manual_fragment_in_live_defense -- --nocapture`: passed.
+  - `cargo test -p game_core skill_fragment_data -- --nocapture`: passed.
+  - `cargo test -p game_core skill_fragment -- --nocapture`: passed.
+  - `cargo test -p game_core --test ron_loading -- --nocapture`: passed.
+  - `cargo check -p game_core`: passed.
+  - `cargo check -p game_server`: passed.
+- Completed AD/AP Balance Validation.
+- AD/AP Balance Validation summary:
+  - Added `combat_balance` as the shared source for high defense, high magic resist, fast breakthrough, and mitigated-damage feedback thresholds.
+  - Confirmed current defense/magic resist formula does not create permanent type immunity when minimum damage is present.
+  - Combat preview now derives required briefing warning tags through the shared policy.
+  - `GameDataBase::new` validates generated preview warning consistency over representative seeds.
+  - Live policy docs now record the code-backed defense/magic resist warning threshold and stat-only non-immunity behavior.
+- AD/AP Balance Validation verification summary:
+  - `cargo fmt`: passed.
+  - `cargo check -p game_core`: passed.
+  - `cargo test -p game_core resistance_alone_cannot_create_permanent_type_immunity_when_minimum_damage_exists -- --nocapture`: passed.
+  - `cargo test -p game_core combat_preview_serializes_typed_threat_warnings -- --nocapture`: passed.
+  - `cargo test -p game_core live_combat_previews_include_required_ad_ap_threat_warning_tags -- --nocapture`: passed.
+  - `cargo test -p game_core --test ron_loading -- --nocapture`: passed.
+  - `cargo check -p game_server`: passed.
+- Checkpoint F AD/AP validation is satisfied by completed policy module, preview warning contract validation, live RON verification, and server compile check.

@@ -2,7 +2,7 @@ use std::{borrow::Borrow, fmt, ops::Deref};
 
 use serde::{Deserialize, Serialize};
 
-use crate::game::stats::TriggerType;
+use crate::game::{battle::tile_range::TileRangePattern, stats::TriggerType};
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
@@ -75,6 +75,20 @@ pub enum SkillKind {
     Untargeted,
 }
 
+/// Runtime activation contract for a unit's active skill.
+///
+/// Skill effect data stays independent from this mode. The same skill runtime can
+/// be driven by player input, automatic resonance, or explicit trigger hooks
+/// depending on who owns the skill in the current battle.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum SkillActivationMode {
+    Manual,
+    #[default]
+    Auto,
+    Triggered,
+}
+
 /// 집중(focus) 동안 허용되는 행동.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub struct FocusPermissions {
@@ -102,7 +116,8 @@ pub enum SkillTarget {
     /// Reuse the cast-level target/anchor for delayed spatial deliveries.
     ///
     /// This is intentionally not a range expression. Actual multi-hit area
-    /// filtering belongs to `DeliveryDef::Area`.
+    /// filtering belongs to `SkillStepDef.defense_tile_range` plus the delivery
+    /// hit filter. DefenseRoute official live skills use `DeliveryDef::TileArea`.
     CastTarget,
 }
 
@@ -115,8 +130,8 @@ pub enum DeliveryDef {
         #[serde(default)]
         collision: SkillProjectileCollisionDef,
     },
-    Area {
-        area: SkillAreaDeliveryDef,
+    TileArea {
+        area: SkillTileAreaDeliveryDef,
     },
 }
 
@@ -229,28 +244,6 @@ impl SkillProjectileCollisionDef {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SkillAreaShapeDef {
-    Circle {
-        radius_units: u32,
-    },
-    Line {
-        length_units: u32,
-    },
-    Box {
-        width_units: u32,
-        height_units: u32,
-    },
-    Rectangle {
-        width_units: u32,
-        length_units: u32,
-    },
-    Cone {
-        angle_degrees: u16,
-        length_units: u32,
-    },
-}
-
 /// Where an explicit area delivery should be anchored.
 ///
 /// This removes runtime guesswork between:
@@ -263,9 +256,9 @@ pub enum SkillAreaAnchorSource {
     CastTarget,
     ImpactContext,
     Caster,
-    // For directional shapes, start the sweep at the cast target instead of the caster.
+    // Use the cast target as the presentation origin instead of the caster.
     CastTargetStart,
-    // For directional shapes, start the sweep at the last projectile/area impact point.
+    // Use the last projectile/area impact point as the presentation origin.
     ImpactContextStart,
 }
 
@@ -285,16 +278,25 @@ pub enum SkillAreaTracking {
     FollowTarget,
 }
 
-/// Continuous delivery contract for an explicit area instance such as an
-/// instant blast, line sweep, or persistent ground zone.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub enum SkillTileAreaOrigin {
+    #[default]
+    Caster,
+    Anchor,
+}
+
+/// Tile-membership delivery for DefenseRoute skills.
 ///
-/// This type is added ahead of runtime wiring so the `.ron` data model can be
-/// stabilized before the battle executor consumes it.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub struct SkillAreaDeliveryDef {
-    pub shape: SkillAreaShapeDef,
+/// In DefenseRoute, `SkillStepDef.defense_tile_range` is the single source of
+/// truth for presentation, cast range, target candidates, and actual hit tiles.
+/// This delivery defines where the tile pattern is projected, how targets inside
+/// that tile range are filtered, and whether the area persists across ticks.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub struct SkillTileAreaDeliveryDef {
     #[serde(default)]
     pub anchor: SkillAreaAnchorSource,
+    #[serde(default)]
+    pub tile_origin: SkillTileAreaOrigin,
     #[serde(default)]
     pub tracking: SkillAreaTracking,
     #[serde(default)]
@@ -309,16 +311,16 @@ pub struct SkillAreaDeliveryDef {
     pub tick_interval_ms: Option<u32>,
 }
 
-impl SkillAreaDeliveryDef {
+impl SkillTileAreaDeliveryDef {
     pub fn validate_runtime_contract(&self) {
         assert_ne!(
             self.tick_interval_ms,
             Some(0),
-            "SkillAreaDeliveryDef.tick_interval_ms must be non-zero"
+            "SkillTileAreaDeliveryDef.tick_interval_ms must be non-zero"
         );
         assert!(
             self.duration_ms == 0 || self.tick_interval_ms.is_some(),
-            "persistent skill area requires tick_interval_ms"
+            "persistent tile skill area requires tick_interval_ms"
         );
         if self.duration_ms > 0 {
             match self.tracking {
@@ -326,14 +328,14 @@ impl SkillAreaDeliveryDef {
                 SkillAreaTracking::FollowCaster => assert_eq!(
                     self.anchor,
                     SkillAreaAnchorSource::Caster,
-                    "FollowCaster persistent area requires Caster anchor"
+                    "FollowCaster persistent tile area requires Caster anchor"
                 ),
                 SkillAreaTracking::FollowTarget => assert!(
                     matches!(
                         self.anchor,
                         SkillAreaAnchorSource::CastTarget | SkillAreaAnchorSource::CastTargetStart
                     ),
-                    "FollowTarget persistent area requires CastTarget or CastTargetStart anchor"
+                    "FollowTarget persistent tile area requires CastTarget or CastTargetStart anchor"
                 ),
             }
         }
@@ -457,6 +459,10 @@ pub enum SkillCastTargetingDef {
         #[serde(default = "default_step_range_units")]
         range_units: f32,
         target: SkillTarget,
+        #[serde(default)]
+        defense_tile_range: Option<TileRangePattern>,
+        #[serde(default)]
+        air_capable: bool,
     },
 }
 
@@ -468,6 +474,10 @@ pub struct SkillStepDef {
     pub delay_ms: u32,
     #[serde(default = "default_step_range_units")]
     pub range_units: f32,
+    #[serde(default)]
+    pub defense_tile_range: Option<TileRangePattern>,
+    #[serde(default)]
+    pub air_capable: bool,
     pub target: SkillTarget,
     #[serde(default)]
     pub targeting: StepTargetingMode,
@@ -521,6 +531,9 @@ pub enum SkillEffectDef {
     ModifyResonance {
         amount: i32,
     },
+    ModifyStabilization {
+        amount: i32,
+    },
     ModifyStats {
         modifier: crate::game::stats::StatModifier,
     },
@@ -538,15 +551,29 @@ impl SkillDef {
         self.steps.first()
     }
 
-    pub fn cast_target_definition(&self) -> Option<(f32, &SkillTarget)> {
+    pub fn cast_target_definition(
+        &self,
+    ) -> Option<(f32, &SkillTarget, Option<&TileRangePattern>, bool)> {
         match &self.cast_targeting {
-            SkillCastTargetingDef::FirstStepTarget => self
-                .first_step()
-                .map(|step| (step.range_units, &step.target)),
+            SkillCastTargetingDef::FirstStepTarget => self.first_step().map(|step| {
+                (
+                    step.range_units,
+                    &step.target,
+                    step.defense_tile_range.as_ref(),
+                    step.air_capable,
+                )
+            }),
             SkillCastTargetingDef::Explicit {
                 range_units,
                 target,
-            } => Some((*range_units, target)),
+                defense_tile_range,
+                air_capable,
+            } => Some((
+                *range_units,
+                target,
+                defense_tile_range.as_ref(),
+                *air_capable,
+            )),
         }
     }
 }
@@ -667,6 +694,31 @@ mod tests {
     }
 
     #[test]
+    fn skill_step_ron_deserialization_reads_stabilization_modifier() {
+        let def: SkillDef = ron::de::from_str(
+            r#"
+            (
+                id:"stabilize",
+                steps:[
+                    (
+                        id:"restore_stability",
+                        range_units:0,
+                        target:SelfUnit,
+                        effects:[ModifyStabilization(amount:5)],
+                    ),
+                ],
+            )
+            "#,
+        )
+        .unwrap();
+
+        assert!(matches!(
+            def.steps[0].effects[0],
+            SkillEffectDef::ModifyStabilization { amount: 5 }
+        ));
+    }
+
+    #[test]
     fn skill_step_ron_deserialization_reads_condition_and_repeat() {
         let def: SkillDef = ron::de::from_str(
             r#"
@@ -734,6 +786,8 @@ mod tests {
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::LowestHealthEnemy,
                 },
+                defense_tile_range: None,
+                air_capable: false,
             }
         );
         assert_eq!(
@@ -743,6 +797,8 @@ mod tests {
                 &SkillTarget::EnemySingle {
                     rule: UnitTargetRule::LowestHealthEnemy,
                 },
+                None,
+                false,
             ))
         );
     }
@@ -810,170 +866,14 @@ mod tests {
     }
 
     #[test]
-    fn skill_area_delivery_def_supports_circle_and_persistent_ticks() {
-        let area: SkillAreaDeliveryDef = ron::de::from_str(
-            r#"
-            (
-                shape:Circle(radius_units:400000),
-                hit_targets:Enemies,
-                tick_policy:OnEnter,
-                duration_ms:3000,
-                tick_interval_ms:Some(500),
-            )
-            "#,
-        )
-        .unwrap();
-
-        assert_eq!(
-            area,
-            SkillAreaDeliveryDef {
-                shape: SkillAreaShapeDef::Circle {
-                    radius_units: 400_000,
-                },
-                anchor: SkillAreaAnchorSource::CastTarget,
-                tracking: Default::default(),
-                hit_targets: SkillHitTargetFilter::Enemies,
-                include_caster: false,
-                tick_policy: SkillAreaTickPolicy::OnEnter,
-                duration_ms: 3_000,
-                tick_interval_ms: Some(500),
-            }
-        );
-    }
-
-    #[test]
-    fn skill_area_delivery_def_supports_rectangles() {
-        let area: SkillAreaDeliveryDef = ron::de::from_str(
-            r#"
-            (
-                shape:Rectangle(width_units:600000,length_units:1600000),
-                hit_targets:Allies,
-            )
-            "#,
-        )
-        .unwrap();
-
-        assert_eq!(
-            area,
-            SkillAreaDeliveryDef {
-                shape: SkillAreaShapeDef::Rectangle {
-                    width_units: 600_000,
-                    length_units: 1_600_000,
-                },
-                anchor: SkillAreaAnchorSource::CastTarget,
-                tracking: Default::default(),
-                hit_targets: SkillHitTargetFilter::Allies,
-                include_caster: false,
-                tick_policy: SkillAreaTickPolicy::EveryTick,
-                duration_ms: 0,
-                tick_interval_ms: None,
-            }
-        );
-    }
-
-    #[test]
-    fn skill_area_delivery_def_supports_centered_boxes() {
-        let area: SkillAreaDeliveryDef = ron::de::from_str(
-            r#"
-            (
-                shape:Box(width_units:2000000,height_units:2000000),
-                hit_targets:Enemies,
-            )
-            "#,
-        )
-        .unwrap();
-
-        assert_eq!(
-            area,
-            SkillAreaDeliveryDef {
-                shape: SkillAreaShapeDef::Box {
-                    width_units: 2_000_000,
-                    height_units: 2_000_000,
-                },
-                anchor: SkillAreaAnchorSource::CastTarget,
-                tracking: Default::default(),
-                hit_targets: SkillHitTargetFilter::Enemies,
-                include_caster: false,
-                tick_policy: SkillAreaTickPolicy::EveryTick,
-                duration_ms: 0,
-                tick_interval_ms: None,
-            }
-        );
-    }
-
-    #[test]
-    fn skill_area_delivery_def_supports_lines() {
-        let area: SkillAreaDeliveryDef = ron::de::from_str(
-            r#"
-            (
-                shape:Line(length_units:2400000),
-                hit_targets:Enemies,
-            )
-            "#,
-        )
-        .unwrap();
-
-        assert_eq!(
-            area,
-            SkillAreaDeliveryDef {
-                shape: SkillAreaShapeDef::Line {
-                    length_units: 2_400_000,
-                },
-                anchor: SkillAreaAnchorSource::CastTarget,
-                tracking: Default::default(),
-                hit_targets: SkillHitTargetFilter::Enemies,
-                include_caster: false,
-                tick_policy: SkillAreaTickPolicy::EveryTick,
-                duration_ms: 0,
-                tick_interval_ms: None,
-            }
-        );
-    }
-
-    #[test]
-    fn skill_area_delivery_def_supports_cones() {
-        let area: SkillAreaDeliveryDef = ron::de::from_str(
-            r#"
-            (
-                shape:Cone(angle_degrees:60,length_units:1800000),
-                anchor:Caster,
-                hit_targets:Enemies,
-            )
-            "#,
-        )
-        .unwrap();
-
-        assert_eq!(
-            area,
-            SkillAreaDeliveryDef {
-                shape: SkillAreaShapeDef::Cone {
-                    angle_degrees: 60,
-                    length_units: 1_800_000,
-                },
-                anchor: SkillAreaAnchorSource::Caster,
-                tracking: Default::default(),
-                hit_targets: SkillHitTargetFilter::Enemies,
-                include_caster: false,
-                tick_policy: SkillAreaTickPolicy::EveryTick,
-                duration_ms: 0,
-                tick_interval_ms: None,
-            }
-        );
-    }
-
-    #[test]
-    fn delivery_def_area_ron_reads_explicit_area_delivery() {
+    fn delivery_def_tile_area_ron_reads_anchor_tile_origin() {
         let delivery: DeliveryDef = ron::de::from_str(
             r#"
-            Area(
+            TileArea(
                 area:(
-                    shape:Rectangle(width_units:600000,length_units:1600000),
-                    anchor:ImpactContext,
+                    anchor:CastTarget,
+                    tile_origin:Anchor,
                     hit_targets:Enemies,
-                    include_caster:true,
-                    tick_policy:OncePerArea,
-                    duration_ms:2500,
-                    tick_interval_ms:Some(500),
                 ),
             )
             "#,
@@ -982,64 +882,39 @@ mod tests {
 
         assert_eq!(
             delivery,
-            DeliveryDef::Area {
-                area: SkillAreaDeliveryDef {
-                    shape: SkillAreaShapeDef::Rectangle {
-                        width_units: 600_000,
-                        length_units: 1_600_000,
-                    },
-                    anchor: SkillAreaAnchorSource::ImpactContext,
-                    tracking: Default::default(),
+            DeliveryDef::TileArea {
+                area: SkillTileAreaDeliveryDef {
+                    anchor: SkillAreaAnchorSource::CastTarget,
+                    tile_origin: SkillTileAreaOrigin::Anchor,
+                    tracking: SkillAreaTracking::GroundFixed,
                     hit_targets: SkillHitTargetFilter::Enemies,
-                    include_caster: true,
-                    tick_policy: SkillAreaTickPolicy::OncePerArea,
-                    duration_ms: 2_500,
-                    tick_interval_ms: Some(500),
+                    include_caster: false,
+                    tick_policy: SkillAreaTickPolicy::EveryTick,
+                    duration_ms: 0,
+                    tick_interval_ms: None,
                 },
             }
         );
     }
 
     #[test]
-    fn skill_area_delivery_def_defaults_anchor_to_cast_target() {
-        let area: SkillAreaDeliveryDef = ron::de::from_str(
+    fn delivery_def_tile_area_ron_defaults_tile_origin_to_caster() {
+        let delivery: DeliveryDef = ron::de::from_str(
             r#"
-            (
-                shape:Circle(radius_units:250000),
+            TileArea(
+                area:(
+                    anchor:CastTarget,
+                    hit_targets:Enemies,
+                ),
             )
             "#,
         )
         .unwrap();
 
-        assert_eq!(
-            area,
-            SkillAreaDeliveryDef {
-                shape: SkillAreaShapeDef::Circle {
-                    radius_units: 250_000,
-                },
-                anchor: SkillAreaAnchorSource::CastTarget,
-                tracking: Default::default(),
-                hit_targets: SkillHitTargetFilter::Enemies,
-                include_caster: false,
-                tick_policy: SkillAreaTickPolicy::EveryTick,
-                duration_ms: 0,
-                tick_interval_ms: None,
-            }
-        );
-    }
-
-    #[test]
-    fn skill_area_delivery_def_defaults_include_caster_to_false() {
-        let area: SkillAreaDeliveryDef = ron::de::from_str(
-            r#"
-            (
-                shape:Circle(radius_units:250000),
-            )
-            "#,
-        )
-        .unwrap();
-
-        assert!(!area.include_caster);
+        let DeliveryDef::TileArea { area } = delivery else {
+            panic!("expected tile area");
+        };
+        assert_eq!(area.tile_origin, SkillTileAreaOrigin::Caster);
     }
 
     #[test]
@@ -1050,43 +925,5 @@ mod tests {
         .expect_err("max_hits == 0 must be rejected");
 
         assert!(err.to_string().contains("non-zero max_hits"));
-    }
-
-    #[test]
-    fn area_delivery_ron_rejects_zero_tick_interval() {
-        let err = ron::de::from_str::<SkillAreaDeliveryDef>(
-            r#"
-            (
-                shape:Circle(radius_units:125000),
-                duration_ms:1000,
-                tick_interval_ms:Some(0),
-            )
-            "#,
-        )
-        .expect_err("tick_interval_ms == 0 must be rejected");
-
-        assert!(err.to_string().contains("non-zero tick_interval_ms"));
-    }
-
-    #[test]
-    fn persistent_area_requires_tick_interval_in_runtime_contract() {
-        let area = SkillAreaDeliveryDef {
-            shape: SkillAreaShapeDef::Circle {
-                radius_units: 125_000,
-            },
-            anchor: SkillAreaAnchorSource::CastTarget,
-            tracking: Default::default(),
-            hit_targets: SkillHitTargetFilter::Enemies,
-            include_caster: false,
-            tick_policy: SkillAreaTickPolicy::OnEnter,
-            duration_ms: 1_000,
-            tick_interval_ms: None,
-        };
-
-        let result = std::panic::catch_unwind(|| area.validate_runtime_contract());
-        assert!(
-            result.is_err(),
-            "persistent areas without tick_interval_ms must be rejected"
-        );
     }
 }

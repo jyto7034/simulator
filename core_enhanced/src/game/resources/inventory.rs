@@ -7,8 +7,13 @@ use crate::game::{
     behavior::GameError,
     data::{
         artifact_data::ArtifactItem,
+        consumable_data::{
+            ConsumableDurationPolicy, ConsumableEffect, ConsumableItem, ConsumableTargetPolicy,
+            ConsumableTier,
+        },
         equipment_data::{
             EquipmentItem, EquipmentMaterialMetadata, EquipmentMaterialType, EquipmentType,
+            WeaponCombatProfile,
         },
         Item,
     },
@@ -28,6 +33,10 @@ pub struct EquipmentItemDto {
     pub equipment_type: EquipmentType,
     pub price: u32,
     pub enhancement_level: u8,
+    pub bound: bool,
+    pub can_unequip: bool,
+    pub cannot_unequip_reason: Option<String>,
+    pub weapon_profile: Option<WeaponCombatProfile>,
 }
 
 impl EquipmentItemDto {
@@ -56,6 +65,10 @@ impl EquipmentItemDto {
             equipment_type: meta.equipment_type,
             price: meta.price,
             enhancement_level,
+            bound: meta.bound,
+            can_unequip: !meta.bound,
+            cannot_unequip_reason: meta.bound.then(|| meta.cannot_unequip_reason.clone()),
+            weapon_profile: meta.weapon_profile.clone(),
         }
     }
 }
@@ -80,6 +93,45 @@ impl ArtifactItemDto {
             rarity: meta.rarity,
             price: meta.price,
         }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ConsumableItemDto {
+    pub uuid: Uuid,
+    pub definition_id: String,
+    pub name: String,
+    pub description: String,
+    pub tier: ConsumableTier,
+    pub rarity: RiskLevel,
+    pub price: u32,
+    pub target_policy: ConsumableTargetPolicy,
+    pub duration_policy: ConsumableDurationPolicy,
+    pub effect: ConsumableEffect,
+}
+
+impl ConsumableItemDto {
+    pub fn from_owned(instance_uuid: Uuid, meta: &ConsumableItem) -> Self {
+        Self::from_metadata(instance_uuid, meta)
+    }
+
+    pub fn from_metadata(uuid: Uuid, meta: &ConsumableItem) -> Self {
+        Self {
+            uuid,
+            definition_id: meta.id.clone(),
+            name: meta.name.clone(),
+            description: meta.description.clone(),
+            tier: meta.tier,
+            rarity: meta.rarity,
+            price: meta.price,
+            target_policy: meta.target_policy,
+            duration_policy: meta.duration_policy,
+            effect: meta.effect.clone(),
+        }
+    }
+
+    pub fn from_owned_consumable(owned: &OwnedConsumable) -> Self {
+        Self::from_owned(owned.instance_uuid, owned.meta.as_ref())
     }
 }
 
@@ -112,6 +164,7 @@ impl EquipmentMaterialStackDto {
 pub enum InventoryItemDto {
     Equipment(EquipmentItemDto),
     Artifact(ArtifactItemDto),
+    Consumable(ConsumableItemDto),
 }
 
 impl InventoryItemDto {
@@ -125,6 +178,9 @@ impl InventoryItemDto {
             Item::Artifact(meta) => Ok(InventoryItemDto::Artifact(ArtifactItemDto::from_metadata(
                 meta.as_ref(),
             ))),
+            Item::Consumable(meta) => Ok(InventoryItemDto::Consumable(
+                ConsumableItemDto::from_owned(uuid, meta.as_ref()),
+            )),
         }
     }
 
@@ -132,6 +188,7 @@ impl InventoryItemDto {
         match self {
             Self::Equipment(equipment_item_dto) => equipment_item_dto.uuid,
             Self::Artifact(artifact_item_dto) => artifact_item_dto.uuid,
+            Self::Consumable(consumable_item_dto) => consumable_item_dto.uuid,
         }
     }
 }
@@ -150,6 +207,14 @@ pub struct EquippedItemDto {
     pub instance_uuid: Uuid,
     pub base_uuid: Uuid,
     pub equipment_type: EquipmentType,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UnequipItemResultDto {
+    pub item_uuid: Uuid,
+    pub target_unit: Uuid,
+    pub equipped_items: Vec<EquippedItemDto>,
+    pub inventory_diff: InventoryDiffDto,
 }
 
 impl EquippedItemDto {
@@ -186,12 +251,13 @@ pub struct EquipItemResultDto {
 /// 플레이어 인벤토리 시스템.
 ///
 /// 환상체는 더 이상 플레이어 소유물이 아니며, 직원/전투 상대 데이터로만 사용됩니다.
-/// 인벤토리는 장비와 아티팩트만 보관합니다.
+/// 인벤토리는 장비, 소모품, 아티팩트를 보관합니다.
 
 #[derive(Default)]
 pub struct Inventory {
     pub equipments: EquipmentInventory,
     pub equipment_materials: EquipmentMaterialInventory,
+    pub consumables: ConsumableInventory,
     pub artifacts: ArtifactSlots,
 }
 
@@ -200,6 +266,7 @@ impl Inventory {
         Self {
             equipments: EquipmentInventory::new(),
             equipment_materials: EquipmentMaterialInventory::new(),
+            consumables: ConsumableInventory::new(),
             artifacts: ArtifactSlots::new(),
         }
     }
@@ -209,6 +276,7 @@ impl Inventory {
         match item {
             Item::Abnormality(_) => false,
             Item::Equipment(_) => self.equipments.can_add_item(),
+            Item::Consumable(_) => self.consumables.can_add_item(),
             Item::Artifact(meta) => {
                 self.artifacts.can_add_item() && !self.artifacts.contains_uuid(meta.uuid)
             }
@@ -222,6 +290,10 @@ impl Inventory {
             return Some(Item::Equipment(Arc::clone(&item.meta)));
         }
 
+        if let Some(item) = self.consumables.get_item(&uuid) {
+            return Some(Item::Consumable(Arc::clone(&item.meta)));
+        }
+
         None
     }
 
@@ -230,6 +302,10 @@ impl Inventory {
         // Equipment는 "소유 인스턴스 UUID"로 제거
         if let Some(item) = self.equipments.remove_item(uuid) {
             return Some(Item::Equipment(item.meta));
+        }
+
+        if let Some(item) = self.consumables.remove_item(uuid) {
+            return Some(Item::Consumable(item.meta));
         }
 
         // Artifact는 UUID로 직접 제거할 수 없음 (index 기반)
@@ -256,6 +332,18 @@ impl Inventory {
                     Err(GameError::InventoryFull)
                 } else {
                     tracing::debug!("Added equipment item to inventory");
+                    Ok(())
+                }
+            }
+            Item::Consumable(data) => {
+                if let Err(err) = self
+                    .consumables
+                    .add_item(OwnedConsumable::new(owned_uuid, data))
+                {
+                    tracing::warn!("Failed to add consumable to inventory: {}", err);
+                    Err(GameError::InventoryFull)
+                } else {
+                    tracing::debug!("Added consumable item to inventory");
                     Ok(())
                 }
             }
@@ -439,6 +527,97 @@ impl OwnedEquipment {
 }
 
 // ============================================================
+// 섭취 아이템 인벤토리
+// ============================================================
+
+#[derive(Debug, Clone)]
+pub struct ConsumableInventory {
+    items: HashMap<Uuid, OwnedConsumable>,
+    max_slots: usize,
+}
+
+impl Default for ConsumableInventory {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl ConsumableInventory {
+    pub fn new() -> Self {
+        Self {
+            items: HashMap::new(),
+            max_slots: 30,
+        }
+    }
+
+    pub fn with_max_slots(max_slots: usize) -> Self {
+        Self {
+            items: HashMap::new(),
+            max_slots,
+        }
+    }
+
+    pub fn can_add_item(&self) -> bool {
+        self.items.len() < self.max_slots
+    }
+
+    pub fn add_item(&mut self, item: OwnedConsumable) -> Result<(), String> {
+        if !self.can_add_item() {
+            return Err(format!(
+                "소모품 인벤토리가 가득 찼습니다 ({}/{})",
+                self.items.len(),
+                self.max_slots
+            ));
+        }
+
+        if self.items.contains_key(&item.instance_uuid) {
+            return Err(format!(
+                "이미 존재하는 소유 소모품 UUID 입니다 (uuid={})",
+                item.instance_uuid
+            ));
+        }
+
+        self.items.insert(item.instance_uuid, item);
+        Ok(())
+    }
+
+    pub fn remove_item(&mut self, uuid: Uuid) -> Option<OwnedConsumable> {
+        self.items.remove(&uuid)
+    }
+
+    pub fn get_item(&self, uuid: &Uuid) -> Option<&OwnedConsumable> {
+        self.items.get(uuid)
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = &OwnedConsumable> {
+        self.items.values()
+    }
+
+    pub fn len(&self) -> usize {
+        self.items.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.items.is_empty()
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct OwnedConsumable {
+    pub instance_uuid: Uuid,
+    pub meta: Arc<ConsumableItem>,
+}
+
+impl OwnedConsumable {
+    pub fn new(instance_uuid: Uuid, meta: Arc<ConsumableItem>) -> Self {
+        Self {
+            instance_uuid,
+            meta,
+        }
+    }
+}
+
+// ============================================================
 // 아티팩트 인벤토리
 // ============================================================
 
@@ -543,8 +722,11 @@ mod tests {
             rarity: RiskLevel::ZAYIN,
             price: 1,
             allow_duplicate_equip: true,
+            bound: false,
+            cannot_unequip_reason: "equipment_bound".to_string(),
             triggered_effects: HashMap::new(),
             ability_activations: vec![],
+            weapon_profile: (equipment_type == EquipmentType::Weapon).then(Default::default),
         })
     }
 
@@ -563,6 +745,8 @@ mod tests {
             basic_attack: BasicAttackDef::default(),
             resonance: ResonanceDef::default(),
             skill_id: None,
+            mobility_kind: Default::default(),
+            target_traits: Vec::new(),
         })
     }
 
@@ -680,6 +864,7 @@ mod tests {
         let inv = Inventory {
             equipments: EquipmentInventory::with_max_slots(0),
             equipment_materials: EquipmentMaterialInventory::new(),
+            consumables: ConsumableInventory::with_max_slots(0),
             artifacts: ArtifactSlots::with_max_slots(0),
         };
         let mut inv = inv;

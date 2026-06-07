@@ -87,10 +87,26 @@
             "####.####",
             "####.####",
             ".........",
-            ".........",
+            "....X....",
             "PPPPPPPPP",
             "PPPPPPPPP",
             ".........",
+        ],
+        routes: [
+            (
+                id: "black_box_breach_main",
+                overlay: [
+                    "    N    ",
+                    "    v    ",
+                    "    v    ",
+                    "    v    ",
+                    "    v    ",
+                    "    X    ",
+                    "         ",
+                    "         ",
+                    "         ",
+                ],
+            ),
         ],
     ),
     (
@@ -101,10 +117,24 @@
             "  NNN  ",
             ".......",
             "###.###",
-            ".......",
+            "...X...",
             "PPPPPPP",
             "PPPPPPP",
             ".......",
+        ],
+        routes: [
+            (
+                id: "black_box_breach_main",
+                overlay: [
+                    "   N   ",
+                    "   v   ",
+                    "   v   ",
+                    "   X   ",
+                    "       ",
+                    "       ",
+                    "       ",
+                ],
+            ),
         ],
     ),
     (
@@ -170,6 +200,22 @@
             ".#.....#.",
             ".........",
         ],
+        routes: [
+            (
+                id: "encirclement_breach_main",
+                overlay: [
+                    "    N    ",
+                    "    v    ",
+                    "    v    ",
+                    "    P    ",
+                    "         ",
+                    "         ",
+                    "         ",
+                    "         ",
+                    "         ",
+                ],
+            ),
+        ],
     ),
     (
         id: "surrounded_medium_breach_01",
@@ -186,6 +232,22 @@
             ".........",
             ".........",
         ],
+        routes: [
+            (
+                id: "encirclement_breach_main",
+                overlay: [
+                    " N       ",
+                    " v       ",
+                    " v       ",
+                    " >>P     ",
+                    "         ",
+                    "         ",
+                    "         ",
+                    "         ",
+                    "         ",
+                ],
+            ),
+        ],
     ),
     (
         id: "surrounded_medium_ruin_01",
@@ -201,6 +263,22 @@
             "W..#.#..R",
             " ....... ",
             "         ",
+        ],
+        routes: [
+            (
+                id: "encirclement_breach_main",
+                overlay: [
+                    "    N    ",
+                    "    v    ",
+                    "    v    ",
+                    "    P    ",
+                    "         ",
+                    "         ",
+                    "         ",
+                    "         ",
+                    "         ",
+                ],
+            ),
         ],
     ),
     (

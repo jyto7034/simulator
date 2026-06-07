@@ -32,14 +32,13 @@ fn nothing_there_goodbye_tears_open_then_adapts_and_finishes_twice() {
 
     let board = r#"
         . . . . . . .
-        . C@ . . . . .
-        . D! . . . . .
+        . C@ D! . . . .
     "#;
 
     let result =
         run_abnormality_scenario("o-06-20_nothing_there", scenario_from_board(board, &legend));
     let enemy = result
-        .unit_instance_at(Position::new(1, 2), Some(Side::Opponent))
+        .unit_instance_at(Position::new(2, 1), Some(Side::Opponent))
         .unwrap();
     let caster = result.caster_instance_id();
 

@@ -7,7 +7,7 @@ use crate::game::{
         types::{BattleWinner, ParticipantBattleResult},
     },
     behavior::GameError,
-    combat_preview::CombatNodeType,
+    combat_preview::{CombatMissionVariant, CombatNodeType},
     employee::StarterEmployeeCandidate,
     enums::{RewardMode, ShopEventOption},
     map::{
@@ -250,6 +250,7 @@ pub struct CombatBattleState {
     pub abnormality_id: String,
     pub encounter_id: String,
     pub node_type: CombatNodeType,
+    pub mission_variant: CombatMissionVariant,
     pub abnormality_uuid: Uuid,
     pub winner: BattleWinner,
     pub timeline: Timeline,
@@ -259,7 +260,7 @@ pub struct CombatBattleState {
 }
 
 #[derive(Debug, Clone)]
-pub enum SelectedEventState {
+pub enum ActiveNodeContent {
     Shop(ShopSessionState),
     Reward(RewardSessionState),
     Support(SupportSessionState),
@@ -267,68 +268,59 @@ pub enum SelectedEventState {
     CombatBattle(CombatBattleState),
 }
 
-#[derive(Debug)]
-pub struct SelectedEvent {
-    pub event: SelectedEventState,
-}
-
-impl SelectedEvent {
-    pub fn new(event: SelectedEventState) -> Self {
-        Self { event }
-    }
-
+impl ActiveNodeContent {
     pub fn as_shop(&self) -> Result<&ShopSessionState, GameError> {
-        match &self.event {
-            SelectedEventState::Shop(shop) => Ok(shop),
+        match self {
+            ActiveNodeContent::Shop(shop) => Ok(shop),
             _ => Err(GameError::EventTypeMismatch),
         }
     }
 
     pub fn as_shop_mut(&mut self) -> Result<&mut ShopSessionState, GameError> {
-        match &mut self.event {
-            SelectedEventState::Shop(shop) => Ok(shop),
+        match self {
+            ActiveNodeContent::Shop(shop) => Ok(shop),
             _ => Err(GameError::EventTypeMismatch),
         }
     }
 
     pub fn as_reward(&self) -> Result<&RewardSessionState, GameError> {
-        match &self.event {
-            SelectedEventState::Reward(reward) => Ok(reward),
+        match self {
+            ActiveNodeContent::Reward(reward) => Ok(reward),
             _ => Err(GameError::EventTypeMismatch),
         }
     }
 
     pub fn as_reward_mut(&mut self) -> Result<&mut RewardSessionState, GameError> {
-        match &mut self.event {
-            SelectedEventState::Reward(reward) => Ok(reward),
+        match self {
+            ActiveNodeContent::Reward(reward) => Ok(reward),
             _ => Err(GameError::EventTypeMismatch),
         }
     }
 
     pub fn as_support(&self) -> Result<&SupportSessionState, GameError> {
-        match &self.event {
-            SelectedEventState::Support(support) => Ok(support),
+        match self {
+            ActiveNodeContent::Support(support) => Ok(support),
             _ => Err(GameError::EventTypeMismatch),
         }
     }
 
     pub fn as_support_mut(&mut self) -> Result<&mut SupportSessionState, GameError> {
-        match &mut self.event {
-            SelectedEventState::Support(support) => Ok(support),
+        match self {
+            ActiveNodeContent::Support(support) => Ok(support),
             _ => Err(GameError::EventTypeMismatch),
         }
     }
 
     pub fn as_combat_battle(&self) -> Result<&CombatBattleState, GameError> {
-        match &self.event {
-            SelectedEventState::CombatBattle(battle) => Ok(battle),
+        match self {
+            ActiveNodeContent::CombatBattle(battle) => Ok(battle),
             _ => Err(GameError::EventTypeMismatch),
         }
     }
 
     pub fn as_headquarters_contact(&self) -> Result<&HeadquartersContactSessionState, GameError> {
-        match &self.event {
-            SelectedEventState::HeadquartersContact(headquarters) => Ok(headquarters),
+        match self {
+            ActiveNodeContent::HeadquartersContact(headquarters) => Ok(headquarters),
             _ => Err(GameError::EventTypeMismatch),
         }
     }

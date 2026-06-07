@@ -5,6 +5,7 @@ use uuid::Uuid;
 
 use crate::game::{
     ability::AbilityActivationBinding,
+    battle::{damage::DamageType, tile_range::TileRangePattern},
     behavior::GameError,
     data::{build_string_index, build_uuid_index, once_lock_with},
     enums::RiskLevel,
@@ -15,11 +16,94 @@ fn default_allow_duplicate_equip() -> bool {
     true
 }
 
+fn default_cannot_unequip_reason() -> String {
+    "equipment_bound".to_string()
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum EquipmentType {
     Weapon,
     Armor,
     Accessory,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub enum WeaponRangeRole {
+    #[default]
+    Melee,
+    Ranged,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub enum WeaponArchetype {
+    #[default]
+    Sword,
+    Spear,
+    Shield,
+    Bow,
+    Gun,
+    GrenadeLauncher,
+    Staff,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub enum TargetingProfile {
+    #[default]
+    DefaultForward,
+    AirFirst,
+    LowDefenseFirst,
+    LowMagicResistFirst,
+    SplashClusterFirst,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct WeaponCombatProfile {
+    pub range_role: WeaponRangeRole,
+    pub weapon_archetype: WeaponArchetype,
+    pub damage_type: DamageType,
+    pub targeting_profile: TargetingProfile,
+    #[serde(default)]
+    pub air_capable: bool,
+    pub range_units: f32,
+    pub defense_tile_range: TileRangePattern,
+    #[serde(default = "default_weapon_attack_interval_ms")]
+    pub interval_ms: u64,
+    #[serde(default = "default_weapon_attack_windup_ms")]
+    pub windup_ms: u32,
+    #[serde(default = "default_weapon_attack_delivery")]
+    pub delivery: crate::game::ability::DeliveryDef,
+}
+
+impl Default for WeaponCombatProfile {
+    fn default() -> Self {
+        Self {
+            range_role: WeaponRangeRole::Melee,
+            weapon_archetype: WeaponArchetype::Sword,
+            damage_type: DamageType::Physical,
+            targeting_profile: TargetingProfile::DefaultForward,
+            air_capable: false,
+            range_units: 1.0,
+            defense_tile_range: TileRangePattern {
+                include_anchor_tile: false,
+                rows: vec![".X.".to_string(), ".@.".to_string(), "...".to_string()],
+            },
+            interval_ms: default_weapon_attack_interval_ms(),
+            windup_ms: default_weapon_attack_windup_ms(),
+            delivery: default_weapon_attack_delivery(),
+        }
+    }
+}
+
+fn default_weapon_attack_interval_ms() -> u64 {
+    1500
+}
+
+fn default_weapon_attack_windup_ms() -> u32 {
+    crate::game::data::abnormality_data::DEFAULT_INSTANT_BASIC_ATTACK_WINDUP_MS
+}
+
+fn default_weapon_attack_delivery() -> crate::game::ability::DeliveryDef {
+    crate::game::ability::DeliveryDef::Instant
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -43,12 +127,18 @@ pub struct EquipmentMetadata {
     pub price: u32,
     #[serde(default = "default_allow_duplicate_equip")]
     pub allow_duplicate_equip: bool,
+    #[serde(default)]
+    pub bound: bool,
+    #[serde(default = "default_cannot_unequip_reason")]
+    pub cannot_unequip_reason: String,
     /// 트리거 기반 효과 (Permanent = 상시 적용)
     #[serde(default)]
     pub triggered_effects: TriggeredEffects,
     /// 장기적으로 사용하는 proc/activation 기반 ability 연결
     #[serde(default)]
     pub ability_activations: Vec<AbilityActivationBinding>,
+    #[serde(default)]
+    pub weapon_profile: Option<WeaponCombatProfile>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -286,6 +376,8 @@ impl EquipmentDatabase {
         let _ = self.by_enhancement_equipment_id();
         let _ = self.by_uuid();
         let _ = self.by_recipe();
+        self.validate_weapon_profiles()
+            .expect("equipment weapon profiles must be valid");
         self.validate_recipe_references()
             .expect("equipment recipes must reference existing equipment");
         self.validate_restoration_recipe_references()
@@ -294,6 +386,30 @@ impl EquipmentDatabase {
             .expect("equipment dismantle recipes must reference existing data");
         self.validate_enhancement_recipe_references()
             .expect("equipment enhancement recipes must reference existing data");
+    }
+
+    fn validate_weapon_profiles(&self) -> Result<(), GameError> {
+        for item in &self.items {
+            match (item.equipment_type, item.weapon_profile.as_ref()) {
+                (EquipmentType::Weapon, Some(profile)) => {
+                    profile.validate_runtime_contract(&item.id)?;
+                }
+                (EquipmentType::Weapon, None) => {
+                    return Err(GameError::InvalidStaticData(format!(
+                        "weapon equipment '{}' is missing weapon_profile",
+                        item.id
+                    )));
+                }
+                (_, Some(_)) => {
+                    return Err(GameError::InvalidStaticData(format!(
+                        "non-weapon equipment '{}' must not define weapon_profile",
+                        item.id
+                    )));
+                }
+                (_, None) => {}
+            }
+        }
+        Ok(())
     }
 
     pub fn get_by_id(&self, id: &str) -> Option<&EquipmentMetadata> {
@@ -486,6 +602,39 @@ impl EquipmentDatabase {
     }
 }
 
+impl WeaponCombatProfile {
+    pub(crate) fn validate_runtime_contract(&self, owner_label: &str) -> Result<(), GameError> {
+        if self.range_units <= 0.0 {
+            return Err(GameError::InvalidStaticData(format!(
+                "weapon '{}' weapon_profile range_units must be > 0",
+                owner_label
+            )));
+        }
+        if self.interval_ms == 0 {
+            return Err(GameError::InvalidStaticData(format!(
+                "weapon '{}' weapon_profile interval_ms must be > 0",
+                owner_label
+            )));
+        }
+        self.defense_tile_range.validate().map_err(|error| {
+            GameError::InvalidStaticData(format!(
+                "weapon '{}' weapon_profile has invalid defense_tile_range: {}",
+                owner_label, error
+            ))
+        })?;
+        if matches!(
+            self.delivery,
+            crate::game::ability::DeliveryDef::TileArea { .. }
+        ) {
+            return Err(GameError::InvalidStaticData(format!(
+                "weapon '{}' weapon_profile delivery must be Instant or Projectile",
+                owner_label
+            )));
+        }
+        Ok(())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 struct RecipeKey {
     first: Uuid,
@@ -544,8 +693,12 @@ mod tests {
             rarity: RiskLevel::ZAYIN,
             price: 0,
             allow_duplicate_equip: true,
+            bound: false,
+            cannot_unequip_reason: "equipment_bound".to_string(),
             triggered_effects: TriggeredEffects::default(),
             ability_activations: vec![],
+            weapon_profile: (equipment_type == EquipmentType::Weapon)
+                .then(WeaponCombatProfile::default),
         }
     }
 

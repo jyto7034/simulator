@@ -1,0 +1,85 @@
+{
+  "version": 23,
+  "entries": [
+    {
+      "time_ms": 10,
+      "seq": 0,
+      "cause": {
+        "cause_type": "root",
+        "kind": "system"
+      },
+      "event": {
+        "type": "BasicAttackProjectileImpacted",
+        "projectile_id": "00000000-0000-0000-0000-00000000aaaa",
+        "attacker_instance_id": "00000000-0000-0000-0000-000000000001",
+        "target_instance_id": "00000000-0000-0000-0000-000000000002",
+        "impact_position": {
+          "x_milli": 650,
+          "y_milli": 0
+        },
+        "hit": true
+      }
+    },
+    {
+      "time_ms": 10,
+      "seq": 1,
+      "cause": {
+        "cause_type": "root",
+        "kind": "system"
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "00000000-0000-0000-0000-000000000001",
+        "before": 0,
+        "after": 1,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 10,
+      "seq": 2,
+      "cause": {
+        "cause_type": "root",
+        "kind": "system"
+      },
+      "event": {
+        "type": "HpChanged",
+        "source_instance_id": "00000000-0000-0000-0000-000000000001",
+        "target_instance_id": "00000000-0000-0000-0000-000000000002",
+        "delta": -10,
+        "hp_before": 100,
+        "hp_after": 90,
+        "reason": "BasicAttack",
+        "damage_source": "BasicAttack",
+        "damage_type": "Physical",
+        "raw_damage": 10,
+        "final_damage": 10,
+        "damage_breakdown": [
+          {
+            "damage_type": "Physical",
+            "raw_damage": 10,
+            "final_damage": 10,
+            "critical": false
+          }
+        ],
+        "critical": false,
+        "feedback_tags": []
+      }
+    },
+    {
+      "time_ms": 10,
+      "seq": 3,
+      "cause": {
+        "cause_type": "root",
+        "kind": "system"
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "00000000-0000-0000-0000-000000000002",
+        "before": 0,
+        "after": 1,
+        "max": 100
+      }
+    }
+  ]
+}

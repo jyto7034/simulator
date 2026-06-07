@@ -1,22 +1,20 @@
-use std::collections::HashSet;
-
 use crate::game::{
     battle::scenario::{
-        BattleObjective, EnemyMovementPlan, FormationKind, GroupObjective, PlayerMovementPlan,
-        ScenarioUnitRef, TacticalGroupMembers, TacticalGroupPlan, TacticalGroupPlanId,
-        TacticalPlan, TacticalPoint, TacticalPointId, WinCondition,
+        BattleObjective, EnemyMovementPlan, PlayerMovementPlan, ScenarioUnitRef, TacticalPlan,
+        TacticalPoint, TacticalPointId, WinCondition,
     },
-    combat_preview::{BattlefieldArchetype, CombatMissionRisk, CombatNodeType, CombatPreview},
+    behavior::GameError,
+    combat_preview::{
+        BattlefieldArchetype, CombatMissionRisk, CombatMissionVariant, CombatNodeType,
+        CombatPreview,
+    },
     data::reward_data::RewardTag,
     enums::RiskLevel,
     map::MapNodeCategory,
     resources::Position,
 };
 
-pub const DEFAULT_DEFENSE_OBJECT_REF: &str = "black_box_recovery_device";
-pub const DEFAULT_DEFENSE_POINT_ID: &str = "black_box_recovery";
-pub const DEFAULT_RECOVERY_TARGET_POINT_ID: &str = "recovery_target";
-pub const DEFAULT_RECOVERY_EXTRACTION_POINT_ID: &str = "extraction_point";
+pub const DEFAULT_DEFENSE_OBJECT_REF: &str = "black_box_device";
 pub const DEFAULT_SURVIVAL_ANCHOR_POINT_ID: &str = "survival_anchor";
 pub const DEFAULT_ENCIRCLEMENT_SURVIVE_MS: u64 = 45_000;
 
@@ -27,14 +25,8 @@ pub const DEFAULT_ENCIRCLEMENT_SURVIVE_MS: u64 = 45_000;
 pub struct CombatMissionPolicy;
 
 impl CombatMissionPolicy {
-    pub const LIVE_SUPPORTED_NODE_TYPES: &'static [CombatNodeType] = &[
-        CombatNodeType::Suppression,
-        CombatNodeType::Defense,
-        CombatNodeType::Frontline,
-        CombatNodeType::Encirclement,
-        CombatNodeType::Recovery,
-        CombatNodeType::Boss,
-    ];
+    pub const SUPPORTED_ENCOUNTER_NODE_TYPES: &'static [CombatNodeType] =
+        &[CombatNodeType::Defense, CombatNodeType::Boss];
 
     pub const ALLOWED_COMBAT_REWARD_TAGS: &'static [RewardTag] = &[
         RewardTag::Currency,
@@ -46,8 +38,19 @@ impl CombatMissionPolicy {
         RewardTag::Narrative,
     ];
 
-    pub fn is_live_supported_node_type(node_type: CombatNodeType) -> bool {
-        Self::LIVE_SUPPORTED_NODE_TYPES.contains(&node_type)
+    pub fn is_supported_encounter_node_type(node_type: CombatNodeType) -> bool {
+        Self::SUPPORTED_ENCOUNTER_NODE_TYPES.contains(&node_type)
+    }
+
+    pub fn starts_as_live_battle(
+        node_type: CombatNodeType,
+        mission_variant: CombatMissionVariant,
+    ) -> bool {
+        matches!(
+            (node_type, mission_variant),
+            (CombatNodeType::Defense, CombatMissionVariant::Defense)
+                | (CombatNodeType::Defense, CombatMissionVariant::Encirclement)
+        )
     }
 
     pub fn preferred_node_types_for_map_node(
@@ -63,75 +66,77 @@ impl CombatMissionPolicy {
         }
 
         if kind_id.contains("elite") {
-            return &[
-                CombatNodeType::Encirclement,
-                CombatNodeType::Frontline,
-                CombatNodeType::Suppression,
-                CombatNodeType::Defense,
-                CombatNodeType::Recovery,
-            ];
+            return &[CombatNodeType::Defense];
         }
 
-        &[
-            CombatNodeType::Suppression,
-            CombatNodeType::Frontline,
-            CombatNodeType::Defense,
-            CombatNodeType::Encirclement,
-            CombatNodeType::Recovery,
-        ]
+        &[CombatNodeType::Defense]
     }
 
-    pub fn fallback_node_type_for_archetype(
+    pub fn try_fallback_node_type_for_archetype(
         category: MapNodeCategory,
         archetype: BattlefieldArchetype,
-    ) -> CombatNodeType {
+    ) -> Result<CombatNodeType, GameError> {
         if category == MapNodeCategory::Boss {
-            return CombatNodeType::Boss;
+            return Ok(CombatNodeType::Boss);
         }
 
-        match archetype {
+        let node_type = match archetype {
             BattlefieldArchetype::OpenHall | BattlefieldArchetype::ObstacleRoom => {
-                CombatNodeType::Suppression
+                CombatNodeType::Defense
             }
-            BattlefieldArchetype::Corridor => CombatNodeType::Frontline,
+            BattlefieldArchetype::Corridor => CombatNodeType::Defense,
             BattlefieldArchetype::ChokePoint => CombatNodeType::Defense,
-            BattlefieldArchetype::Ambush => CombatNodeType::Suppression,
-            BattlefieldArchetype::Surrounded => CombatNodeType::Encirclement,
-            BattlefieldArchetype::SplitRoom => CombatNodeType::Suppression,
+            BattlefieldArchetype::Ambush => CombatNodeType::Defense,
+            BattlefieldArchetype::Surrounded => CombatNodeType::Defense,
+            BattlefieldArchetype::SplitRoom => {
+                return Err(GameError::InvalidStaticData(
+                    "SplitRoom battlefield archetype requires an explicit DefenseRoute/SplitRoom encounter; fallback is disabled until SplitRoom is implemented"
+                        .to_string(),
+                ));
+            }
             BattlefieldArchetype::BossArena => CombatNodeType::Boss,
+        };
+        Ok(node_type)
+    }
+
+    pub fn fallback_mission_variant_for_archetype(
+        node_type: CombatNodeType,
+        archetype: BattlefieldArchetype,
+    ) -> CombatMissionVariant {
+        match (node_type, archetype) {
+            (CombatNodeType::Defense, BattlefieldArchetype::Surrounded) => {
+                CombatMissionVariant::Encirclement
+            }
+            _ => CombatMissionVariant::default_for_node_type(node_type),
         }
     }
 
-    pub fn featured_reward_tags_for_node_type(node_type: CombatNodeType) -> &'static [RewardTag] {
-        match node_type {
-            CombatNodeType::Suppression => &[
-                RewardTag::SkillFragment,
-                RewardTag::Equipment,
-                RewardTag::ResearchProgress,
-                RewardTag::Experience,
-            ],
-            CombatNodeType::Defense => &[
+    pub fn featured_reward_tags_for_mission(
+        node_type: CombatNodeType,
+        mission_variant: CombatMissionVariant,
+    ) -> &'static [RewardTag] {
+        match (node_type, mission_variant) {
+            (CombatNodeType::Defense, CombatMissionVariant::Defense) => &[
                 RewardTag::ResearchProgress,
                 RewardTag::Equipment,
                 RewardTag::Narrative,
             ],
-            CombatNodeType::Frontline => &[RewardTag::Equipment, RewardTag::Experience],
-            CombatNodeType::Encirclement => &[
+            (CombatNodeType::Defense, CombatMissionVariant::Encirclement) => &[
                 RewardTag::Equipment,
                 RewardTag::ResearchProgress,
                 RewardTag::Experience,
             ],
-            CombatNodeType::SplitOperation => &[],
-            CombatNodeType::Recovery => &[
+            (CombatNodeType::Defense, CombatMissionVariant::SplitRoom) => &[
                 RewardTag::Equipment,
-                RewardTag::Narrative,
                 RewardTag::ResearchProgress,
+                RewardTag::Narrative,
             ],
-            CombatNodeType::Boss => &[
+            (CombatNodeType::Boss, CombatMissionVariant::Boss) => &[
                 RewardTag::SkillFragment,
                 RewardTag::Equipment,
                 RewardTag::ResearchProgress,
             ],
+            _ => &[],
         }
     }
 
@@ -143,59 +148,31 @@ impl CombatMissionPolicy {
         }
     }
 
-    pub fn default_recovery_hold_duration_ms(risk: CombatMissionRisk) -> u64 {
-        match risk {
-            CombatMissionRisk::Controlled => 5_000,
-            CombatMissionRisk::Unstable => 8_000,
-            CombatMissionRisk::Collapse => 12_000,
-        }
-    }
-
-    pub fn default_tactical_plan_for_preview(
-        node_type: CombatNodeType,
-        combat_preview: &CombatPreview,
-    ) -> TacticalPlan {
-        let plan = TacticalPlan::for_archetype(combat_preview.archetype);
-        match node_type {
-            CombatNodeType::Defense => default_defense_tactical_plan(combat_preview, plan),
-            CombatNodeType::Recovery => default_recovery_tactical_plan(combat_preview, plan),
-            CombatNodeType::Frontline => default_frontline_tactical_plan(plan),
-            CombatNodeType::Encirclement => {
-                default_encirclement_tactical_plan(combat_preview, plan)
+    pub fn default_tactical_plan_for_preview(combat_preview: &CombatPreview) -> TacticalPlan {
+        match (combat_preview.node_type, combat_preview.mission_variant) {
+            (CombatNodeType::Defense, CombatMissionVariant::Defense) => {
+                default_defense_tactical_plan(combat_preview)
             }
-            _ => plan,
+            (CombatNodeType::Defense, CombatMissionVariant::Encirclement) => {
+                default_encirclement_tactical_plan(combat_preview)
+            }
+            _ => TacticalPlan::default(),
         }
     }
 
     pub fn default_win_condition_for_tactical_plan(
-        node_type: CombatNodeType,
+        mission_variant: CombatMissionVariant,
         _mission_risk: CombatMissionRisk,
         tactical_plan: &TacticalPlan,
     ) -> WinCondition {
-        if node_type == CombatNodeType::Defense {
+        if mission_variant == CombatMissionVariant::Defense {
             if let BattleObjective::ProtectUnit { unit_ref } = &tactical_plan.objective {
                 return WinCondition::ProtectUnit {
                     unit_ref: unit_ref.clone(),
                 };
             }
         }
-        if node_type == CombatNodeType::Recovery {
-            if let BattleObjective::RecoverHoldAndExtract {
-                target_point_id,
-                extraction_point_id,
-                hold_duration_ms,
-            } = &tactical_plan.objective
-            {
-                return WinCondition::RecoverHoldAndExtract {
-                    target_point_id: target_point_id.clone(),
-                    extraction_point_id: extraction_point_id.clone(),
-                    target_radius: 0.75,
-                    extraction_radius: 0.75,
-                    hold_duration_ms: *hold_duration_ms,
-                };
-            }
-        }
-        if node_type == CombatNodeType::Encirclement {
+        if mission_variant == CombatMissionVariant::Encirclement {
             if let BattleObjective::Survive { time_ms } = &tactical_plan.objective {
                 return WinCondition::SurviveUntil { time_ms: *time_ms };
             }
@@ -205,73 +182,31 @@ impl CombatMissionPolicy {
     }
 }
 
-fn default_defense_tactical_plan(
-    combat_preview: &CombatPreview,
-    mut base_plan: TacticalPlan,
-) -> TacticalPlan {
-    let (points, point_ids) = default_defense_route_points(combat_preview);
-    base_plan.objective = BattleObjective::ProtectUnit {
-        unit_ref: ScenarioUnitRef::new(DEFAULT_DEFENSE_OBJECT_REF),
-    };
-    base_plan.player_plan = PlayerMovementPlan::FixedDefense;
-    base_plan.enemy_plan = EnemyMovementPlan::PathAlongPath { point_ids };
-    base_plan.points = points;
-    base_plan
+fn default_defense_tactical_plan(combat_preview: &CombatPreview) -> TacticalPlan {
+    TacticalPlan {
+        objective: BattleObjective::ProtectUnit {
+            unit_ref: ScenarioUnitRef::new(DEFAULT_DEFENSE_OBJECT_REF),
+        },
+        player_plan: PlayerMovementPlan::FixedDefense,
+        enemy_plan: EnemyMovementPlan::PathAlongCells {
+            cells: default_defense_route_cells(combat_preview),
+        },
+        points: Vec::new(),
+    }
 }
 
-fn default_defense_route_points(
-    combat_preview: &CombatPreview,
-) -> (Vec<TacticalPoint>, Vec<TacticalPointId>) {
-    if combat_preview.routes.is_empty() {
-        let point_id = TacticalPointId::new(DEFAULT_DEFENSE_POINT_ID);
-        return (
-            vec![TacticalPoint {
-                id: point_id.clone(),
-                position: default_defense_point_position(combat_preview),
-            }],
-            vec![point_id],
-        );
-    };
-
-    let mut points = Vec::new();
-    let mut primary_point_ids = Vec::new();
-    for (route_index, route) in combat_preview.routes.iter().enumerate() {
-        let route_cells = if route.cells.is_empty() {
-            vec![route.end]
-        } else {
-            route.cells.clone()
-        };
-        for (index, position) in route_cells.iter().copied().enumerate() {
-            let point_id =
-                defense_route_tactical_point_id(&route.id, index, index + 1 == route_cells.len());
-            if route_index == 0 {
-                primary_point_ids.push(point_id.clone());
+fn default_defense_route_cells(combat_preview: &CombatPreview) -> Vec<Position> {
+    combat_preview
+        .routes
+        .first()
+        .map(|route| {
+            if route.cells.is_empty() {
+                vec![route.end]
+            } else {
+                route.cells.clone()
             }
-            if points
-                .iter()
-                .any(|point: &TacticalPoint| point.id == point_id)
-            {
-                continue;
-            }
-            points.push(TacticalPoint {
-                id: point_id,
-                position,
-            });
-        }
-    }
-    (points, primary_point_ids)
-}
-
-pub fn defense_route_tactical_point_id(
-    route_id: &str,
-    index: usize,
-    is_route_end: bool,
-) -> TacticalPointId {
-    if is_route_end {
-        TacticalPointId::new(DEFAULT_DEFENSE_POINT_ID)
-    } else {
-        TacticalPointId::new(format!("route_{route_id}_{index}"))
-    }
+        })
+        .unwrap_or_else(|| vec![default_defense_point_position(combat_preview)])
 }
 
 fn default_defense_point_position(combat_preview: &CombatPreview) -> Position {
@@ -297,129 +232,23 @@ fn default_defense_point_position(combat_preview: &CombatPreview) -> Position {
         .unwrap_or(center)
 }
 
-fn default_recovery_tactical_plan(
-    combat_preview: &CombatPreview,
-    mut base_plan: TacticalPlan,
-) -> TacticalPlan {
-    let target_point_id = TacticalPointId::new(DEFAULT_RECOVERY_TARGET_POINT_ID);
-    let extraction_point_id = TacticalPointId::new(DEFAULT_RECOVERY_EXTRACTION_POINT_ID);
-    let extraction_position = default_defense_point_position(combat_preview);
-    let target_position = default_recovery_target_position(combat_preview, extraction_position);
-
-    base_plan.objective = BattleObjective::RecoverHoldAndExtract {
-        target_point_id: target_point_id.clone(),
-        extraction_point_id: extraction_point_id.clone(),
-        hold_duration_ms: combat_preview
-            .mission_risk
-            .default_recovery_hold_duration_ms(),
-    };
-    base_plan.player_plan = PlayerMovementPlan::CautiousEngage {
-        leash_radius: 3.0,
-        chase_radius: 1.0,
-    };
-    base_plan.enemy_plan = EnemyMovementPlan::AssaultPlayer;
-    base_plan.points = vec![
-        TacticalPoint {
-            id: target_point_id.clone(),
-            position: target_position,
-        },
-        TacticalPoint {
-            id: extraction_point_id.clone(),
-            position: extraction_position,
-        },
-    ];
-    base_plan.group_plans = vec![TacticalGroupPlan {
-        id: TacticalGroupPlanId::new("player_main"),
-        side: crate::game::enums::Side::Player,
-        members: TacticalGroupMembers::SideAll(crate::game::enums::Side::Player),
-        objective: GroupObjective::AdvanceAlongPath {
-            point_ids: vec![target_point_id, extraction_point_id],
-        },
-        formation: FormationKind::Loose,
-        cohesion_radius: 3.0,
-        engage_radius: 2.5,
-    }];
-    base_plan
-}
-
-fn default_frontline_tactical_plan(mut base_plan: TacticalPlan) -> TacticalPlan {
-    base_plan.objective = BattleObjective::SuppressAll;
-    base_plan.player_plan = PlayerMovementPlan::CautiousEngage {
-        leash_radius: 5.0,
-        chase_radius: 1.5,
-    };
-    base_plan.enemy_plan = EnemyMovementPlan::AssaultPlayer;
-    base_plan.group_plans = vec![TacticalGroupPlan {
-        id: TacticalPlan::default_player_main_group_id(),
-        side: crate::game::enums::Side::Player,
-        members: TacticalGroupMembers::SideAll(crate::game::enums::Side::Player),
-        objective: GroupObjective::FollowBattleObjective,
-        formation: FormationKind::Loose,
-        cohesion_radius: 4.0,
-        engage_radius: 3.0,
-    }];
-    base_plan
-}
-
-fn default_encirclement_tactical_plan(
-    combat_preview: &CombatPreview,
-    mut base_plan: TacticalPlan,
-) -> TacticalPlan {
+fn default_encirclement_tactical_plan(combat_preview: &CombatPreview) -> TacticalPlan {
     let point_id = TacticalPointId::new(DEFAULT_SURVIVAL_ANCHOR_POINT_ID);
     let point = TacticalPoint {
         id: point_id.clone(),
         position: default_defense_point_position(combat_preview),
     };
 
-    base_plan.objective = BattleObjective::Survive {
-        time_ms: DEFAULT_ENCIRCLEMENT_SURVIVE_MS,
-    };
-    base_plan.player_plan = PlayerMovementPlan::HoldDeployment {
-        guard_radius: 2.0,
-        leash_radius: 3.0,
-        chase_radius: 1.0,
-        return_to_anchor: true,
-    };
-    base_plan.enemy_plan = EnemyMovementPlan::AssaultPlayer;
-    base_plan.points = vec![point];
-    base_plan.group_plans = vec![TacticalGroupPlan {
-        id: TacticalPlan::default_player_main_group_id(),
-        side: crate::game::enums::Side::Player,
-        members: TacticalGroupMembers::SideAll(crate::game::enums::Side::Player),
-        objective: GroupObjective::HoldArea { point_id },
-        formation: FormationKind::Loose,
-        cohesion_radius: 3.0,
-        engage_radius: 2.5,
-    }];
-    base_plan
-}
-
-fn default_recovery_target_position(
-    combat_preview: &CombatPreview,
-    extraction_position: Position,
-) -> Position {
-    let obstacle_positions = combat_preview
-        .obstacles
-        .iter()
-        .copied()
-        .collect::<HashSet<_>>();
-    let mut candidates = if combat_preview.valid_tiles.is_empty() {
-        (0..combat_preview.height)
-            .flat_map(|y| (0..combat_preview.width).map(move |x| Position::new(x, y)))
-            .collect::<Vec<_>>()
-    } else {
-        combat_preview.valid_tiles.clone()
-    };
-    candidates.retain(|position| !obstacle_positions.contains(position));
-    candidates
-        .into_iter()
-        .max_by_key(|position| {
-            (position.x - extraction_position.x).abs() + (position.y - extraction_position.y).abs()
-        })
-        .unwrap_or(Position::new(
-            combat_preview.width / 2,
-            combat_preview.height / 2,
-        ))
+    TacticalPlan {
+        objective: BattleObjective::Survive {
+            time_ms: DEFAULT_ENCIRCLEMENT_SURVIVE_MS,
+        },
+        player_plan: PlayerMovementPlan::FixedDefense,
+        enemy_plan: EnemyMovementPlan::PathAlongCells {
+            cells: default_defense_route_cells(combat_preview),
+        },
+        points: vec![point],
+    }
 }
 
 #[cfg(test)]
@@ -427,12 +256,12 @@ mod tests {
     use super::*;
 
     #[test]
-    fn split_operation_is_kept_out_of_live_supported_missions() {
-        assert!(CombatMissionPolicy::is_live_supported_node_type(
+    fn only_current_encounter_node_types_are_supported() {
+        assert!(CombatMissionPolicy::is_supported_encounter_node_type(
             CombatNodeType::Defense
         ));
-        assert!(!CombatMissionPolicy::is_live_supported_node_type(
-            CombatNodeType::SplitOperation
+        assert!(CombatMissionPolicy::is_supported_encounter_node_type(
+            CombatNodeType::Boss
         ));
     }
 
@@ -443,8 +272,36 @@ mod tests {
             "combat_elite",
         );
 
-        assert_eq!(preferred[0], CombatNodeType::Encirclement);
-        assert_eq!(preferred[1], CombatNodeType::Frontline);
-        assert!(!preferred.contains(&CombatNodeType::SplitOperation));
+        assert_eq!(preferred[0], CombatNodeType::Defense);
+    }
+
+    #[test]
+    fn split_room_fallback_is_disabled_until_policy_is_implemented() {
+        let result = CombatMissionPolicy::try_fallback_node_type_for_archetype(
+            MapNodeCategory::Combat,
+            BattlefieldArchetype::SplitRoom,
+        );
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn live_execution_is_explicit_per_mission_variant() {
+        assert!(CombatMissionPolicy::starts_as_live_battle(
+            CombatNodeType::Defense,
+            CombatMissionVariant::Defense
+        ));
+        assert!(CombatMissionPolicy::starts_as_live_battle(
+            CombatNodeType::Defense,
+            CombatMissionVariant::Encirclement
+        ));
+        assert!(!CombatMissionPolicy::starts_as_live_battle(
+            CombatNodeType::Defense,
+            CombatMissionVariant::SplitRoom
+        ));
+        assert!(!CombatMissionPolicy::starts_as_live_battle(
+            CombatNodeType::Boss,
+            CombatMissionVariant::Boss
+        ));
     }
 }

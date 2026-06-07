@@ -4,6 +4,12 @@ use crate::game::battle::{
 };
 
 impl BattleCore {
+    /// Append a new entry to the battle event log.
+    ///
+    /// The method name still uses `timeline` because the serialized Unity
+    /// contract exposes `timeline_delta`. The data is the authoritative event
+    /// log for live DefenseRoute battle deltas and result records, not an
+    /// offline replay source.
     pub(super) fn record_timeline(&mut self, time_ms: u64, event: TimelineEvent) -> u64 {
         let seq = self.timeline_seq;
         self.timeline.entries.push(TimelineEntry {

@@ -2,22 +2,23 @@ use uuid::Uuid;
 
 use crate::game::{
     ability::{
-        SkillAreaAnchorSource, SkillAreaDeliveryDef, SkillAreaShapeDef, SkillAreaTickPolicy,
-        SkillAreaTracking, SkillHitTargetFilter, SkillId,
+        SkillAreaAnchorSource, SkillAreaTickPolicy, SkillAreaTracking, SkillHitTargetFilter,
+        SkillId, SkillTileAreaDeliveryDef, SkillTileAreaOrigin,
     },
     battle::{
         core::{
             movement::types::{TimelineVec2, WorldVec2},
-            spatial::AreaQueryShape,
             types::{AreaRuntime, SkillImpactContext, SkillStepResult},
             BattleCore,
         },
         enums::BattleEvent,
         ids::UnitInstanceId,
+        tile_range::TileRangePattern,
         timeline::{SkillCastTarget, TimelineEvent, TimelineSkillAreaShape},
     },
     determinism,
     enums::Side,
+    resources::Position,
 };
 
 const INSTANT_AREA_DISPLAY_DURATION_MS: u32 = 250;
@@ -46,14 +47,14 @@ impl BattleCore {
         )
     }
 
-    pub(in crate::game::battle::core) fn resolve_area_anchor_position(
+    pub(in crate::game::battle::core) fn resolve_area_anchor_position_for(
         &self,
         time_ms: u64,
         cast_seq: u64,
         step_index: usize,
         caster_instance_id: UnitInstanceId,
         step_target: Option<SkillCastTarget>,
-        area: &SkillAreaDeliveryDef,
+        anchor: SkillAreaAnchorSource,
     ) -> Option<WorldVec2> {
         let (_, caster_tile_pos) =
             self.resolve_cast_origin_context(Some(cast_seq), caster_instance_id, false)?;
@@ -67,7 +68,7 @@ impl BattleCore {
                     .map(WorldVec2::from_tile_center)
             });
 
-        match area.anchor {
+        match anchor {
             SkillAreaAnchorSource::CastTarget | SkillAreaAnchorSource::CastTargetStart => {
                 match step_target {
                     Some(SkillCastTarget::Tile { position }) => {
@@ -141,62 +142,27 @@ impl BattleCore {
         anchor_position + fallback
     }
 
-    pub(in crate::game::battle::core) fn resolve_instant_area_targets(
+    pub(in crate::game::battle::core) fn resolve_tile_area_geometry(
         &self,
         time_ms: u64,
         cast_seq: u64,
         step_index: usize,
         caster_instance_id: UnitInstanceId,
         step_target: Option<SkillCastTarget>,
-        area: &SkillAreaDeliveryDef,
-    ) -> Option<(WorldVec2, WorldVec2, WorldVec2, Vec<UnitInstanceId>)> {
-        let (caster_owner, origin, anchor_position, direction_hint) = self.resolve_area_geometry(
-            time_ms,
-            cast_seq,
-            step_index,
-            caster_instance_id,
-            step_target,
-            area,
-        )?;
-        Some((
-            origin,
-            anchor_position,
-            direction_hint,
-            self.collect_area_targets_at(
-                time_ms,
-                caster_owner,
-                caster_instance_id,
-                origin,
-                anchor_position,
-                direction_hint,
-                area.shape,
-                area.hit_targets,
-                area.include_caster,
-            ),
-        ))
-    }
-
-    pub(in crate::game::battle::core) fn resolve_area_geometry(
-        &self,
-        time_ms: u64,
-        cast_seq: u64,
-        step_index: usize,
-        caster_instance_id: UnitInstanceId,
-        step_target: Option<SkillCastTarget>,
-        area: &SkillAreaDeliveryDef,
-    ) -> Option<(Side, WorldVec2, WorldVec2, WorldVec2)> {
+        area: &SkillTileAreaDeliveryDef,
+    ) -> Option<(Side, WorldVec2, WorldVec2, WorldVec2, Position)> {
         let (caster_owner, caster_tile_pos) =
             self.resolve_cast_origin_context(Some(cast_seq), caster_instance_id, false)?;
         let caster_position = self
             .sample_unit_world_position_at(caster_instance_id, time_ms)
             .unwrap_or_else(|| WorldVec2::from_tile_center(caster_tile_pos));
-        let anchor_position = self.resolve_area_anchor_position(
+        let anchor_position = self.resolve_area_anchor_position_for(
             time_ms,
             cast_seq,
             step_index,
             caster_instance_id,
             step_target,
-            area,
+            area.anchor,
         )?;
         let impact_context = self.impact_context_before_step(cast_seq, step_index);
         let direction_hint = self.resolve_area_direction_hint(
@@ -216,18 +182,25 @@ impl BattleCore {
             | SkillAreaAnchorSource::ImpactContext
             | SkillAreaAnchorSource::Caster => caster_position,
         };
-        Some((caster_owner, origin, anchor_position, direction_hint))
+        let anchor_tile = match area.tile_origin {
+            SkillTileAreaOrigin::Caster => caster_tile_pos,
+            SkillTileAreaOrigin::Anchor => anchor_position.project_to_tile(),
+        };
+        Some((
+            caster_owner,
+            origin,
+            anchor_position,
+            direction_hint,
+            anchor_tile,
+        ))
     }
 
-    pub(in crate::game::battle::core) fn collect_area_targets_at(
+    pub(in crate::game::battle::core) fn collect_tile_area_targets_at(
         &self,
         time_ms: u64,
         caster_owner: Side,
         caster_instance_id: UnitInstanceId,
-        origin: WorldVec2,
-        center: WorldVec2,
-        direction_hint: WorldVec2,
-        shape: SkillAreaShapeDef,
+        affected_tiles: &[Position],
         hit_targets: SkillHitTargetFilter,
         include_caster: bool,
     ) -> Vec<UnitInstanceId> {
@@ -245,15 +218,8 @@ impl BattleCore {
             })
             .filter_map(|unit| {
                 let body = self.sample_unit_body_at(unit.instance_id, time_ms)?;
-                let query = AreaQueryShape {
-                    origin,
-                    center,
-                    direction_hint,
-                    shape,
-                    hitbox_expansion: body.radius.max(0.0),
-                };
-                self.spatial_query_backend
-                    .contains_area_point(&query, body.position)
+                affected_tiles
+                    .contains(&body.position.project_to_tile())
                     .then_some(unit.instance_id)
             })
             .collect();
@@ -262,19 +228,66 @@ impl BattleCore {
         targets
     }
 
-    fn persistent_area_geometry_at(
+    pub(in crate::game::battle::core) fn resolve_instant_tile_area_targets(
+        &self,
+        time_ms: u64,
+        cast_seq: u64,
+        step_index: usize,
+        caster_instance_id: UnitInstanceId,
+        step_target: Option<SkillCastTarget>,
+        tile_range: &TileRangePattern,
+        area: &SkillTileAreaDeliveryDef,
+    ) -> Option<(
+        WorldVec2,
+        WorldVec2,
+        WorldVec2,
+        Vec<Position>,
+        Vec<UnitInstanceId>,
+    )> {
+        let (caster_owner, origin, anchor_position, direction_hint, anchor_tile) = self
+            .resolve_tile_area_geometry(
+                time_ms,
+                cast_seq,
+                step_index,
+                caster_instance_id,
+                step_target,
+                area,
+            )?;
+        let facing = self.units.get(&caster_instance_id)?.facing_direction?;
+        let affected_tiles = tile_range.affected_tiles(anchor_tile, facing).ok()?;
+        let targets = self.collect_tile_area_targets_at(
+            time_ms,
+            caster_owner,
+            caster_instance_id,
+            &affected_tiles,
+            area.hit_targets,
+            area.include_caster,
+        );
+        Some((
+            origin,
+            anchor_position,
+            direction_hint,
+            affected_tiles,
+            targets,
+        ))
+    }
+
+    fn persistent_tile_area_geometry_at(
         &self,
         time_ms: u64,
         runtime: &AreaRuntime,
-    ) -> Option<(WorldVec2, WorldVec2, WorldVec2)> {
+    ) -> Option<(WorldVec2, WorldVec2, WorldVec2, Position)> {
         match runtime.tracking {
-            SkillAreaTracking::GroundFixed => {
-                Some((runtime.origin, runtime.center, runtime.direction_hint))
-            }
+            SkillAreaTracking::GroundFixed => Some((
+                runtime.origin,
+                runtime.center,
+                runtime.direction_hint,
+                runtime.tile_anchor,
+            )),
             SkillAreaTracking::FollowCaster | SkillAreaTracking::FollowTarget => {
-                let area = SkillAreaDeliveryDef {
-                    shape: runtime.shape,
+                let area = SkillTileAreaDeliveryDef {
                     anchor: runtime.anchor,
+                    tile_origin: runtime.tile_origin,
                     tracking: runtime.tracking,
                     hit_targets: runtime.hit_targets,
                     include_caster: runtime.include_caster,
@@ -282,7 +295,7 @@ impl BattleCore {
                     duration_ms: runtime.duration_ms,
                     tick_interval_ms: runtime.tick_interval_ms,
                 };
-                self.resolve_area_geometry(
+                self.resolve_tile_area_geometry(
                     time_ms,
                     runtime.cast_seq,
                     runtime.step_index,
@@ -290,12 +303,14 @@ impl BattleCore {
                     runtime.step_target,
                     &area,
                 )
-                .map(|(_, origin, center, direction_hint)| (origin, center, direction_hint))
+                .map(|(_, origin, center, direction_hint, anchor_tile)| {
+                    (origin, center, direction_hint, anchor_tile)
+                })
             }
         }
     }
 
-    pub(in crate::game::battle::core) fn record_skill_area_declared(
+    pub(in crate::game::battle::core) fn record_skill_tile_area_declared(
         &mut self,
         time_ms: u64,
         area_id: Uuid,
@@ -306,7 +321,8 @@ impl BattleCore {
         origin: WorldVec2,
         center: WorldVec2,
         direction_hint: WorldVec2,
-        area: SkillAreaDeliveryDef,
+        affected_tiles: Vec<Position>,
+        area: SkillTileAreaDeliveryDef,
     ) -> u64 {
         let display_duration_ms = if area.duration_ms == 0 {
             INSTANT_AREA_DISPLAY_DURATION_MS
@@ -322,7 +338,7 @@ impl BattleCore {
                 step_id,
                 caster_instance_id,
                 target: step_target,
-                shape: TimelineSkillAreaShape::from(area.shape),
+                shape: TimelineSkillAreaShape::TilePattern { affected_tiles },
                 origin: timeline_point(origin),
                 center: timeline_point(center),
                 direction_hint: timeline_point(direction_hint),
@@ -358,7 +374,7 @@ impl BattleCore {
         )
     }
 
-    pub(in crate::game::battle::core) fn register_persistent_area(
+    pub(in crate::game::battle::core) fn register_persistent_tile_area(
         &mut self,
         time_ms: u64,
         cast_seq: u64,
@@ -367,22 +383,35 @@ impl BattleCore {
         skill_id: SkillId,
         step_id: String,
         step_target: Option<SkillCastTarget>,
-        area: SkillAreaDeliveryDef,
+        tile_range: TileRangePattern,
+        area: SkillTileAreaDeliveryDef,
     ) -> bool {
         area.validate_runtime_contract();
-        let Some((_caster_owner, origin, center, direction_hint)) = self.resolve_area_geometry(
-            time_ms,
-            cast_seq,
-            step_index,
-            caster_instance_id,
-            step_target,
-            &area,
-        ) else {
+        let Some((_caster_owner, origin, center, direction_hint, anchor_tile)) = self
+            .resolve_tile_area_geometry(
+                time_ms,
+                cast_seq,
+                step_index,
+                caster_instance_id,
+                step_target,
+                &area,
+            )
+        else {
+            return false;
+        };
+        let Some(facing) = self
+            .units
+            .get(&caster_instance_id)
+            .and_then(|unit| unit.facing_direction)
+        else {
+            return false;
+        };
+        let Ok(affected_tiles) = tile_range.affected_tiles(anchor_tile, facing) else {
             return false;
         };
 
         let area_id = self.allocate_area_instance_id(cast_seq, caster_instance_id, time_ms);
-        let area_declared_seq = self.record_skill_area_declared(
+        let area_declared_seq = self.record_skill_tile_area_declared(
             time_ms,
             area_id,
             skill_id.clone(),
@@ -392,7 +421,8 @@ impl BattleCore {
             origin,
             center,
             direction_hint,
-            area,
+            affected_tiles,
+            area.clone(),
         );
         let expires_at_ms = time_ms.saturating_add(u64::from(area.duration_ms));
         let next_tick_ms = area
@@ -409,11 +439,13 @@ impl BattleCore {
                 caster_instance_id,
                 caster_owner: _caster_owner,
                 anchor: area.anchor,
+                tile_origin: area.tile_origin,
                 tracking: area.tracking,
                 origin,
                 center,
                 direction_hint,
-                shape: area.shape,
+                tile_range,
+                tile_anchor: anchor_tile,
                 hit_targets: area.hit_targets,
                 include_caster: area.include_caster,
                 tick_policy: area.tick_policy,
@@ -479,20 +511,26 @@ impl BattleCore {
             return;
         };
 
-        let Some((origin, center, direction_hint)) =
-            self.persistent_area_geometry_at(time_ms, &runtime)
+        let Some((origin, center, direction_hint, anchor_tile)) =
+            self.persistent_tile_area_geometry_at(time_ms, &runtime)
         else {
             return;
         };
-
-        let raw_targets = self.collect_area_targets_at(
+        let Some(facing) = self
+            .units
+            .get(&runtime.caster_instance_id)
+            .and_then(|unit| unit.facing_direction)
+        else {
+            return;
+        };
+        let Ok(affected_tiles) = runtime.tile_range.affected_tiles(anchor_tile, facing) else {
+            return;
+        };
+        let raw_targets = self.collect_tile_area_targets_at(
             time_ms,
             runtime.caster_owner,
             runtime.caster_instance_id,
-            origin,
-            center,
-            direction_hint,
-            runtime.shape,
+            &affected_tiles,
             runtime.hit_targets,
             runtime.include_caster,
         );
@@ -531,6 +569,13 @@ impl BattleCore {
                 .actual_damage_target_count
                 .saturating_add(summary.actual_damage_target_count);
         }
+        let signal_result = self.record_skill_step_live_signals(
+            runtime.caster_instance_id,
+            &skill.id,
+            step,
+            &targets,
+        );
+        resolved_result.merge(&signal_result);
         self.update_skill_cast_impact_context(
             runtime.cast_seq,
             runtime.step_index,

@@ -437,12 +437,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "arc-swap"
-version = "1.7.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "69f7f8c3906b62b754cd5326047894316021dcfe5a194c8ea52bdd94934a3457"
-
-[[package]]
 name = "argon2"
 version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1926,27 +1920,19 @@ dependencies = [
  "actix",
  "actix-web",
  "actix-web-actors",
- "async-stream",
  "async-trait",
  "backoff",
  "base64 0.22.1",
- "chrono",
  "config 0.15.11",
  "dotenv",
  "flate2",
- "futures",
- "futures-util",
  "game_core",
- "jsonwebtoken",
  "lazy_static",
  "metrics",
  "prometheus",
- "redis",
- "reqwest",
  "ron 0.5.1",
  "serde",
  "serde_json",
- "thiserror 1.0.69",
  "tokio",
  "tokio-test",
  "tokio-util",
@@ -3920,11 +3906,9 @@ version = "0.22.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aa8455fa3621f6b41c514946de66ea0531f57ca017b2e6c7cc368035ea5b46df"
 dependencies = [
- "arc-swap",
  "async-trait",
  "bytes",
  "combine",
- "futures",
  "futures-util",
  "itoa",
  "percent-encoding",

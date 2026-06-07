@@ -211,7 +211,7 @@ pub fn run_abnormality_scenario(abnormality_id: &str, board: BoardScenario) -> S
             )
         });
 
-    common::write_timeline_export(
+    common::write_debug_event_log_export(
         &format!(
             "skill_test/{}",
             timeline_export_stem(&resolved.abnormality, resolved.game_data.as_ref())

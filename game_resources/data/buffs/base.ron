@@ -1,0 +1,35 @@
+BuffDatabase(
+    buffs: [
+        BuffMetadata(
+            name: "poison",
+            kind: PeriodicDamage(
+                damage_per_tick: 2,
+                damage_type: Magic,
+            ),
+            tick_interval_ms: 1000,
+            max_stacks: 10,
+            reapply_policy: StackRefreshDurationKeepCadence,
+        ),
+        BuffMetadata(
+            name: "stun",
+            kind: Stun,
+            tick_interval_ms: 0,
+            max_stacks: 1,
+            reapply_policy: RefreshDuration,
+        ),
+        BuffMetadata(
+            name: "freeze",
+            kind: Freeze,
+            tick_interval_ms: 0,
+            max_stacks: 1,
+            reapply_policy: RefreshDuration,
+        ),
+        BuffMetadata(
+            name: "silence",
+            kind: Silence,
+            tick_interval_ms: 0,
+            max_stacks: 1,
+            reapply_policy: RefreshDuration,
+        ),
+    ],
+)

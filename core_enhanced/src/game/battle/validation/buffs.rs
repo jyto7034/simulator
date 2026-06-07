@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::game::battle::{
-    buffs,
+    buffs::{BuffDatabase, BuffId, BuffKind, BuffReapplyPolicy},
     ids::UnitInstanceId,
     timeline::{Timeline, TimelineEvent},
 };
@@ -12,7 +12,7 @@ use super::types::{TimelineViolation, TimelineViolationKind};
 struct BuffInstanceKey {
     caster_instance_id: UnitInstanceId,
     target_instance_id: UnitInstanceId,
-    buff_id: buffs::BuffId,
+    buff_id: BuffId,
 }
 
 #[derive(Debug, Clone)]
@@ -22,7 +22,15 @@ struct ActiveBuff {
     next_tick_ms: Option<u64>,
 }
 
-pub(super) fn validate_buffs(timeline: &Timeline, violations: &mut Vec<TimelineViolation>) {
+fn is_exclusive_hard_cc(kind: BuffKind) -> bool {
+    matches!(kind, BuffKind::Stun | BuffKind::Freeze)
+}
+
+pub(super) fn validate_buffs(
+    timeline: &Timeline,
+    buff_data: &BuffDatabase,
+    violations: &mut Vec<TimelineViolation>,
+) {
     let mut active_buffs: HashMap<BuffInstanceKey, ActiveBuff> = HashMap::new();
 
     for (index, entry) in timeline.entries.iter().enumerate() {
@@ -33,7 +41,7 @@ pub(super) fn validate_buffs(timeline: &Timeline, violations: &mut Vec<TimelineV
                 buff_id,
                 duration_ms,
             } => {
-                let Some(def) = buffs::get(buff_id) else {
+                let Some(def) = buff_data.get(buff_id) else {
                     violations.push(TimelineViolation {
                         kind: TimelineViolationKind::UnknownBuffId,
                         message: format!("unknown buff_id {} on BuffApplied", buff_id.as_u64()),
@@ -59,13 +67,33 @@ pub(super) fn validate_buffs(timeline: &Timeline, violations: &mut Vec<TimelineV
                 let expires_at_ms = entry.time_ms.saturating_add(duration_ms);
                 let max_stacks = def.max_stacks.max(1);
 
+                if is_exclusive_hard_cc(def.kind) {
+                    active_buffs.retain(|active_key, _| {
+                        if active_key.target_instance_id != target_instance_id {
+                            return true;
+                        }
+                        let Some(active_def) = buff_data.get(active_key.buff_id) else {
+                            return true;
+                        };
+                        !is_exclusive_hard_cc(active_def.kind)
+                    });
+                }
+
                 let active = active_buffs.entry(key).or_insert(ActiveBuff {
                     stacks: 0,
                     expires_at_ms,
                     next_tick_ms: None,
                 });
-                active.expires_at_ms = active.expires_at_ms.max(expires_at_ms);
-                active.stacks = active.stacks.saturating_add(1).min(max_stacks);
+                match def.reapply_policy {
+                    BuffReapplyPolicy::StackRefreshDurationKeepCadence => {
+                        active.expires_at_ms = active.expires_at_ms.max(expires_at_ms);
+                        active.stacks = active.stacks.saturating_add(1).min(max_stacks);
+                    }
+                    BuffReapplyPolicy::RefreshDuration => {
+                        active.expires_at_ms = expires_at_ms;
+                        active.stacks = max_stacks.min(1);
+                    }
+                }
 
                 if def.tick_interval_ms > 0 && active.next_tick_ms.is_none() {
                     let next_tick = entry.time_ms.saturating_add(def.tick_interval_ms);
@@ -79,7 +107,7 @@ pub(super) fn validate_buffs(timeline: &Timeline, violations: &mut Vec<TimelineV
                 target_instance_id,
                 buff_id,
             } => {
-                let Some(def) = buffs::get(buff_id) else {
+                let Some(def) = buff_data.get(buff_id) else {
                     violations.push(TimelineViolation {
                         kind: TimelineViolationKind::UnknownBuffId,
                         message: format!("unknown buff_id {} on BuffTick", buff_id.as_u64()),
@@ -152,7 +180,7 @@ pub(super) fn validate_buffs(timeline: &Timeline, violations: &mut Vec<TimelineV
                 target_instance_id,
                 buff_id,
             } => {
-                let Some(_def) = buffs::get(buff_id) else {
+                let Some(_def) = buff_data.get(buff_id) else {
                     violations.push(TimelineViolation {
                         kind: TimelineViolationKind::UnknownBuffId,
                         message: format!("unknown buff_id {} on BuffExpired", buff_id.as_u64()),

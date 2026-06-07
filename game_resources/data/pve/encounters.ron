@@ -6,7 +6,7 @@ PveEncounterDatabase(
             abnormality_id: "f-01-02",
             difficulty: 2,
             risk_level: HE,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440101",
@@ -19,10 +19,9 @@ PveEncounterDatabase(
             )),
             tactical_plan: Some((
                 points: [],
-                objective: Some(SuppressAll),
-                enemy_plan: Some(AssaultPlayer),
+                objective: Some(ProtectUnit(unit_ref: "black_box_device")),
             )),
-            win_condition: Some(AllRequiredEnemyGroupsDefeated),
+            win_condition: Some(ProtectUnit(unit_ref: "black_box_device")),
             waves: [
                 PveWaveData(
                     id: "wave_0",
@@ -62,7 +61,6 @@ PveEncounterDatabase(
                     (id: "ritual_gate", position: (x: 5, y: 10)),
                 ],
                 objective: Some(DefeatBoss(unit_ref: "enemy_wave_0_0")),
-                enemy_plan: Some(AssaultPlayer),
             )),
             win_condition: Some(AllRequiredEnemyGroupsDefeated),
             waves: [
@@ -110,7 +108,7 @@ PveEncounterDatabase(
             abnormality_id: "t-09-09",
             difficulty: 3,
             risk_level: WAW,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440101",
@@ -138,7 +136,7 @@ PveEncounterDatabase(
             abnormality_id: "f-05-52",
             difficulty: 1,
             risk_level: TETH,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440101",
@@ -166,7 +164,7 @@ PveEncounterDatabase(
             abnormality_id: "o-01-45",
             difficulty: 1,
             risk_level: TETH,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440101",
@@ -188,13 +186,13 @@ PveEncounterDatabase(
             ],
         ),
 
-        // Black Box Archive - 회수형 전투: 돌파 후 기록 장치 회수, 탈출 지점 복귀
+        // Black Box Archive - DefenseRoute: 기록 장치를 둘러싼 침식 직원 경로 방어
         PveEncounter(
-            id: "recover_black_box_archive",
+            id: "black_box_archive_defense",
             abnormality_id: "o-03-03_one_sin",
             difficulty: 2,
             risk_level: TETH,
-            node_type: Some(Recovery),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440116",
@@ -253,6 +251,7 @@ PveEncounterDatabase(
                     id: "breach_probe",
                     time_ms: 0,
                     spawn_zone_ids: ["north_entry"],
+                    route_id: Some("black_box_breach_main"),
                     required_for_victory: true,
                     source: Some(GeneratedCorroded(
                         preset_id: "black_box_breach_probe",
@@ -262,6 +261,7 @@ PveEncounterDatabase(
                     id: "breach_pressure",
                     time_ms: 10000,
                     spawn_zone_ids: ["north_entry"],
+                    route_id: Some("black_box_breach_main"),
                     required_for_victory: true,
                     source: Some(GeneratedCorroded(
                         preset_id: "black_box_breach_pressure",
@@ -276,7 +276,7 @@ PveEncounterDatabase(
             abnormality_id: "f-01-37",
             difficulty: 4,
             risk_level: WAW,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440101",
@@ -311,7 +311,7 @@ PveEncounterDatabase(
             abnormality_id: "t-01-68_singing_machine",
             difficulty: 2,
             risk_level: HE,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440101",
@@ -346,7 +346,7 @@ PveEncounterDatabase(
             abnormality_id: "t-02-43_freischutz",
             difficulty: 3,
             risk_level: HE,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440101",
@@ -361,10 +361,9 @@ PveEncounterDatabase(
                 points: [
                     (id: "sniper_nest", position: (x: 4, y: 0)),
                 ],
-                objective: Some(SuppressAll),
-                enemy_plan: Some(AssaultPlayer),
+                objective: Some(ProtectUnit(unit_ref: "black_box_device")),
             )),
-            win_condition: Some(AllRequiredEnemyGroupsDefeated),
+            win_condition: Some(ProtectUnit(unit_ref: "black_box_device")),
             waves: [
                 PveWaveData(
                     id: "wave_0",
@@ -403,7 +402,7 @@ PveEncounterDatabase(
             abnormality_id: "t-02-99_funeral_butterfly",
             difficulty: 3,
             risk_level: HE,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440101",
@@ -431,7 +430,7 @@ PveEncounterDatabase(
             abnormality_id: "o-01-67_laetitia",
             difficulty: 4,
             risk_level: WAW,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440105",
@@ -466,7 +465,7 @@ PveEncounterDatabase(
             abnormality_id: "f-01-87_snow_queen",
             difficulty: 4,
             risk_level: WAW,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440105",
@@ -501,7 +500,7 @@ PveEncounterDatabase(
             abnormality_id: "f-02-49_rudolta",
             difficulty: 3,
             risk_level: HE,
-            node_type: Some(Frontline),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440101",
@@ -540,7 +539,7 @@ PveEncounterDatabase(
             abnormality_id: "t-01-54_meat_lantern",
             difficulty: 2,
             risk_level: TETH,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440101",
@@ -568,7 +567,7 @@ PveEncounterDatabase(
             abnormality_id: "o-02-98_dreaming_current",
             difficulty: 4,
             risk_level: WAW,
-            node_type: Some(Frontline),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440105",
@@ -607,7 +606,7 @@ PveEncounterDatabase(
             abnormality_id: "t-04-53_alriune",
             difficulty: 4,
             risk_level: WAW,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440105",
@@ -646,13 +645,17 @@ PveEncounterDatabase(
             abnormality_id: "o-04-84_naked_nest",
             difficulty: 4,
             risk_level: WAW,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440105",
                 "650e8400-e29b-41d4-a716-446655440119",
                 "650e8400-e29b-41d4-a716-446655440118",
             ],
+            battlefield: Some((
+                archetype: Some(Surrounded),
+                size_class: Some(Medium),
+            )),
             waves: [
                 PveWaveData(
                     id: "wave_0",
@@ -681,7 +684,8 @@ PveEncounterDatabase(
             abnormality_id: "o-03-93_blue_star",
             difficulty: 6,
             risk_level: ALEPH,
-            node_type: Some(Encirclement),
+            node_type: Some(Defense),
+            mission_variant: Some(Encirclement),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440105",
@@ -723,7 +727,7 @@ PveEncounterDatabase(
             abnormality_id: "t-01-31_silent_orchestra",
             difficulty: 6,
             risk_level: ALEPH,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440105",
@@ -758,7 +762,7 @@ PveEncounterDatabase(
             abnormality_id: "o-03-89_censored",
             difficulty: 6,
             risk_level: ALEPH,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440105",
@@ -793,7 +797,7 @@ PveEncounterDatabase(
             abnormality_id: "o-01-64_yin",
             difficulty: 4,
             risk_level: WAW,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440105",
@@ -826,7 +830,7 @@ PveEncounterDatabase(
             abnormality_id: "o-05-102_yang",
             difficulty: 4,
             risk_level: WAW,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440105",
@@ -859,7 +863,7 @@ PveEncounterDatabase(
             abnormality_id: "o-04-72_burrowing_heaven",
             difficulty: 5,
             risk_level: WAW,
-            node_type: Some(Frontline),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440105",
@@ -898,7 +902,7 @@ PveEncounterDatabase(
             abnormality_id: "d-04-108_parasite_tree",
             difficulty: 5,
             risk_level: WAW,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440105",
@@ -933,7 +937,7 @@ PveEncounterDatabase(
             abnormality_id: "o-04-66_porcubbus",
             difficulty: 2,
             risk_level: TETH,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440101",
@@ -968,7 +972,7 @@ PveEncounterDatabase(
             abnormality_id: "f-01-18_scarecrow",
             difficulty: 3,
             risk_level: HE,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440101",
@@ -996,7 +1000,7 @@ PveEncounterDatabase(
             abnormality_id: "f-05-32_warm_hearted_woodsman",
             difficulty: 3,
             risk_level: HE,
-            node_type: Some(Suppression),
+            node_type: Some(Defense),
             reward_mode: ChooseOne,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440101",

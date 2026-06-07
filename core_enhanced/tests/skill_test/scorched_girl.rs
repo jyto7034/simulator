@@ -22,14 +22,14 @@ fn scorched_girl_targets_the_nearest_enemy_and_only_damages_that_target() {
 
     let board = r#"
         . . . . . . .
-        . C . . . . .
-        . D! . . . . .
+        . C D! . . . .
+        . . . . . . .
         . . . . E! . .
     "#;
 
     let result = run_abnormality_scenario("f-01-02", scenario_from_board(board, &legend));
     let near_enemy = result
-        .unit_instance_at(Position::new(1, 2), Some(Side::Opponent))
+        .unit_instance_at(Position::new(2, 1), Some(Side::Opponent))
         .unwrap();
     let far_enemy = result
         .unit_instance_at(Position::new(4, 3), Some(Side::Opponent))

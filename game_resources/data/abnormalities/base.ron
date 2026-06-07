@@ -151,6 +151,7 @@ AbnormalityDatabase(
             defense: 25,
             magic_resist: 25,
             movement: (speed_units_per_ms: 1700),
+            mobility_kind: airborne,
             basic_attack: (
                 range_units: 0.5,
                 interval_ms: 1700,

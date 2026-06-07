@@ -98,6 +98,12 @@ pub enum BattleEvent {
         caster_instance_id: UnitInstanceId,
         cause: TimelineCause,
     },
+    /// 플레이어 명령으로 시작한 수동 스킬 시전 종료 훅
+    ManualCastEnd {
+        time_ms: u64,
+        caster_instance_id: UnitInstanceId,
+        cause: TimelineCause,
+    },
     SkillStep {
         time_ms: u64,
         cast_seq: u64,
@@ -153,6 +159,7 @@ impl BattleEvent {
             | BattleEvent::SkillAreaExpire { time_ms, .. }
             | BattleEvent::AutoCastStart { time_ms, .. }
             | BattleEvent::AutoCastEnd { time_ms, .. }
+            | BattleEvent::ManualCastEnd { time_ms, .. }
             | BattleEvent::SkillStep { time_ms, .. }
             | BattleEvent::ApplyBuff { time_ms, .. }
             | BattleEvent::BuffTick { time_ms, .. }
@@ -176,7 +183,7 @@ impl BattleEvent {
             // 버프 틱/적용을 먼저 처리하고, 시전 종료, 공격, 시전 시작, 만료 순으로 처리
             BattleEvent::ApplyBuff { .. } => 6,
             BattleEvent::BuffTick { .. } => 7,
-            BattleEvent::AutoCastEnd { .. } => 8,
+            BattleEvent::AutoCastEnd { .. } | BattleEvent::ManualCastEnd { .. } => 8,
             BattleEvent::SkillStep { .. } => 9,
             BattleEvent::AttackStart { .. } => 10,
             BattleEvent::AttackResolve { .. } => 11,

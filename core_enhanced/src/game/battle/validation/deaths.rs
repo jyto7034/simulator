@@ -124,6 +124,11 @@ fn referenced_unit_ids(event: &TimelineEvent) -> Vec<UnitInstanceId> {
             caster_instance_id,
             target,
             ..
+        }
+        | TimelineEvent::ManualCastStart {
+            caster_instance_id,
+            target,
+            ..
         } => {
             let mut ids = vec![*caster_instance_id];
             if let Some(SkillCastTarget::Unit { unit_instance_id }) = target {
@@ -131,7 +136,8 @@ fn referenced_unit_ids(event: &TimelineEvent) -> Vec<UnitInstanceId> {
             }
             ids
         }
-        TimelineEvent::AutoCastEnd { caster_instance_id } => vec![*caster_instance_id],
+        TimelineEvent::AutoCastEnd { caster_instance_id }
+        | TimelineEvent::ManualCastEnd { caster_instance_id } => vec![*caster_instance_id],
         TimelineEvent::TriggeredAbilityProc {
             caster_instance_id,
             target_instance_id,
@@ -221,12 +227,6 @@ fn referenced_unit_ids(event: &TimelineEvent) -> Vec<UnitInstanceId> {
         } => killer_instance_id
             .map(|killer| vec![*unit_instance_id, killer])
             .unwrap_or_else(|| vec![*unit_instance_id]),
-        TimelineEvent::RecoveryTargetSecured {
-            unit_instance_id, ..
-        }
-        | TimelineEvent::ExtractionCompleted {
-            unit_instance_id, ..
-        } => vec![*unit_instance_id],
         TimelineEvent::MovementSegmentStarted {
             unit_instance_id, ..
         }
@@ -295,6 +295,11 @@ fn is_dead_unit_operated_on(
             caster_instance_id,
             target,
             ..
+        }
+        | TimelineEvent::ManualCastStart {
+            caster_instance_id,
+            target,
+            ..
         } => {
             let is_target_dead = target.is_some_and(|t| match t {
                 SkillCastTarget::Unit { unit_instance_id } => unit_instance_id == dead_unit_id,
@@ -303,7 +308,8 @@ fn is_dead_unit_operated_on(
             (config.forbid_dead_units_as_attackers && *caster_instance_id == dead_unit_id)
                 || (config.forbid_dead_units_as_targets && is_target_dead)
         }
-        TimelineEvent::AutoCastEnd { caster_instance_id } => {
+        TimelineEvent::AutoCastEnd { caster_instance_id }
+        | TimelineEvent::ManualCastEnd { caster_instance_id } => {
             config.forbid_dead_units_as_attackers && *caster_instance_id == dead_unit_id
         }
         TimelineEvent::TriggeredAbilityProc {
@@ -400,12 +406,6 @@ fn is_dead_unit_operated_on(
         TimelineEvent::UnitDied {
             unit_instance_id, ..
         } => *unit_instance_id == dead_unit_id,
-        TimelineEvent::RecoveryTargetSecured {
-            unit_instance_id, ..
-        }
-        | TimelineEvent::ExtractionCompleted {
-            unit_instance_id, ..
-        } => config.forbid_dead_units_as_targets && *unit_instance_id == dead_unit_id,
         TimelineEvent::BattleStart { .. }
         | TimelineEvent::ArtifactSpawned { .. }
         | TimelineEvent::BattleEnd { .. } => false,

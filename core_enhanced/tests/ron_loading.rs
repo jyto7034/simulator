@@ -1,11 +1,15 @@
 mod common;
 
-use game_core::game::ability::{DeliveryDef, SkillAreaAnchorSource, SkillAreaShapeDef};
+use game_core::game::ability::{DeliveryDef, SkillAreaAnchorSource};
+use game_core::game::battle::buffs::{BuffId, BuffKind};
+use game_core::game::battle::types::MobilityKind;
 use game_core::game::combat_preview::{
-    BattlefieldArchetype, CombatNodeType, CombatPreview, DeploymentZoneKind, EnemyKind,
-    SpawnZoneKind,
+    required_briefing_warning_tags_for_spawn_waves, BattlefieldArchetype, CombatNodeType,
+    CombatPreview, DeploymentZoneKind, EnemyKind, SpawnZoneKind, ThreatWarningSource,
 };
 use game_core::game::data::{
+    abnormality_data::AbnormalityDatabase,
+    consumable_data::{ConsumableEffect, ConsumableTier},
     pve_data::PveWaveSource,
     reward_data::RewardTag,
     skill_fragment_data::{SkillFragmentEffectDef, SkillFragmentOrigin},
@@ -14,6 +18,24 @@ use game_core::game::map::{MapNodeCategory, MapNodeDefinitionDatabase, MapNodeId
 use game_core::game::resources::Position;
 use game_core::game::reward::RewardEffect;
 use uuid::Uuid;
+
+#[test]
+fn live_abnormality_ron_reads_airborne_mobility_kind() {
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../game_resources/data/abnormalities/base.ron");
+    let contents = std::fs::read_to_string(&path).expect("abnormalities/base.ron should load");
+    let database: AbnormalityDatabase =
+        ron::de::from_str(&contents).expect("abnormalities/base.ron should deserialize");
+
+    let punishing_bird = database
+        .get_by_id("o-02-56_punishing_bird")
+        .expect("Punishing Bird should exist in live abnormality RON");
+
+    assert_eq!(punishing_bird.mobility_kind, MobilityKind::Airborne);
+    assert!(!punishing_bird
+        .target_traits
+        .contains(&game_core::game::battle::types::UnitTargetTrait::Airborne));
+}
 
 #[test]
 fn load_game_data_from_ron_reads_step_based_skill_schema() {
@@ -100,13 +122,11 @@ fn load_game_data_from_ron_reads_step_based_skill_schema() {
         .skill_data
         .get_by_id("queen_of_hatred_magical_beam")
         .expect("Queen skill should exist in RON data");
+    assert!(queen.steps[0].defense_tile_range.is_some());
     assert!(matches!(
         queen.steps[0].delivery,
-        DeliveryDef::Area {
-            area: game_core::game::ability::SkillAreaDeliveryDef {
-                shape: SkillAreaShapeDef::Line {
-                    length_units: 5_000_000,
-                },
+        DeliveryDef::TileArea {
+            area: game_core::game::ability::SkillTileAreaDeliveryDef {
                 anchor: SkillAreaAnchorSource::CastTarget,
                 ..
             }
@@ -117,14 +137,11 @@ fn load_game_data_from_ron_reads_step_based_skill_schema() {
         .skill_data
         .get_by_id("melting_love_slime_infection")
         .expect("Melting Love skill should exist in RON data");
+    assert!(melting_love.steps[1].defense_tile_range.is_some());
     assert!(matches!(
         melting_love.steps[1].delivery,
-        DeliveryDef::Area {
-            area: game_core::game::ability::SkillAreaDeliveryDef {
-                shape: SkillAreaShapeDef::Box {
-                    width_units: 2_000_000,
-                    height_units: 2_000_000,
-                },
+        DeliveryDef::TileArea {
+            area: game_core::game::ability::SkillTileAreaDeliveryDef {
                 anchor: SkillAreaAnchorSource::ImpactContext,
                 ..
             }
@@ -135,28 +152,22 @@ fn load_game_data_from_ron_reads_step_based_skill_schema() {
         .skill_data
         .get_by_id("white_night_pale_benediction")
         .expect("WhiteNight skill should exist in RON data");
+    assert!(white_night.steps[0].defense_tile_range.is_some());
     assert!(matches!(
         white_night.steps[0].delivery,
-        DeliveryDef::Area {
-            area: game_core::game::ability::SkillAreaDeliveryDef {
-                shape: SkillAreaShapeDef::Box {
-                    width_units: 6_000_000,
-                    height_units: 6_000_000,
-                },
+        DeliveryDef::TileArea {
+            area: game_core::game::ability::SkillTileAreaDeliveryDef {
                 anchor: SkillAreaAnchorSource::CastTarget,
                 include_caster: true,
                 ..
             }
         }
     ));
+    assert!(white_night.steps[2].defense_tile_range.is_some());
     assert!(matches!(
         white_night.steps[2].delivery,
-        DeliveryDef::Area {
-            area: game_core::game::ability::SkillAreaDeliveryDef {
-                shape: SkillAreaShapeDef::Box {
-                    width_units: 6_000_000,
-                    height_units: 6_000_000,
-                },
+        DeliveryDef::TileArea {
+            area: game_core::game::ability::SkillTileAreaDeliveryDef {
                 anchor: SkillAreaAnchorSource::CastTarget,
                 include_caster: false,
                 ..
@@ -181,14 +192,11 @@ fn load_game_data_from_ron_reads_step_based_skill_schema() {
         .skill_data
         .get_by_id("plague_mass_heal")
         .expect("Plague skill should exist in RON data");
+    assert!(plague.steps[0].defense_tile_range.is_some());
     assert!(matches!(
         plague.steps[0].delivery,
-        DeliveryDef::Area {
-            area: game_core::game::ability::SkillAreaDeliveryDef {
-                shape: SkillAreaShapeDef::Box {
-                    width_units: 6_000_000,
-                    height_units: 6_000_000,
-                },
+        DeliveryDef::TileArea {
+            area: game_core::game::ability::SkillTileAreaDeliveryDef {
                 anchor: SkillAreaAnchorSource::CastTarget,
                 include_caster: true,
                 ..
@@ -200,14 +208,11 @@ fn load_game_data_from_ron_reads_step_based_skill_schema() {
         .skill_data
         .get_by_id("fragment_universe_nova")
         .expect("Fragment skill should exist in RON data");
+    assert!(fragment.steps[0].defense_tile_range.is_some());
     assert!(matches!(
         fragment.steps[0].delivery,
-        DeliveryDef::Area {
-            area: game_core::game::ability::SkillAreaDeliveryDef {
-                shape: SkillAreaShapeDef::Box {
-                    width_units: 4_000_000,
-                    height_units: 4_000_000,
-                },
+        DeliveryDef::TileArea {
+            area: game_core::game::ability::SkillTileAreaDeliveryDef {
                 anchor: SkillAreaAnchorSource::CastTarget,
                 ..
             }
@@ -218,14 +223,11 @@ fn load_game_data_from_ron_reads_step_based_skill_schema() {
         .skill_data
         .get_by_id("fairy_festival_blessing")
         .expect("Fairy skill should exist in RON data");
+    assert!(fairy.steps[0].defense_tile_range.is_some());
     assert!(matches!(
         fairy.steps[0].delivery,
-        DeliveryDef::Area {
-            area: game_core::game::ability::SkillAreaDeliveryDef {
-                shape: SkillAreaShapeDef::Box {
-                    width_units: 6_000_000,
-                    height_units: 6_000_000,
-                },
+        DeliveryDef::TileArea {
+            area: game_core::game::ability::SkillTileAreaDeliveryDef {
                 anchor: SkillAreaAnchorSource::CastTarget,
                 include_caster: true,
                 ..
@@ -237,27 +239,21 @@ fn load_game_data_from_ron_reads_step_based_skill_schema() {
         .skill_data
         .get_by_id("big_bird_dark_lamp")
         .expect("Dark Lamp skill should exist in RON data");
+    assert!(dark_lamp.steps[0].defense_tile_range.is_some());
     assert!(matches!(
         dark_lamp.steps[0].delivery,
-        DeliveryDef::Area {
-            area: game_core::game::ability::SkillAreaDeliveryDef {
-                shape: SkillAreaShapeDef::Box {
-                    width_units: 2_000_000,
-                    height_units: 2_000_000,
-                },
+        DeliveryDef::TileArea {
+            area: game_core::game::ability::SkillTileAreaDeliveryDef {
                 anchor: SkillAreaAnchorSource::CastTarget,
                 ..
             }
         }
     ));
+    assert!(dark_lamp.steps[1].defense_tile_range.is_some());
     assert!(matches!(
         dark_lamp.steps[1].delivery,
-        DeliveryDef::Area {
-            area: game_core::game::ability::SkillAreaDeliveryDef {
-                shape: SkillAreaShapeDef::Box {
-                    width_units: 2_000_000,
-                    height_units: 2_000_000,
-                },
+        DeliveryDef::TileArea {
+            area: game_core::game::ability::SkillTileAreaDeliveryDef {
                 anchor: SkillAreaAnchorSource::CastTarget,
                 ..
             }
@@ -268,19 +264,79 @@ fn load_game_data_from_ron_reads_step_based_skill_schema() {
         .skill_data
         .get_by_id("mountain_mass_consumption")
         .expect("Mountain skill should exist in RON data");
+    assert!(mountain_skill.steps[0].defense_tile_range.is_some());
     assert!(matches!(
         mountain_skill.steps[0].delivery,
-        DeliveryDef::Area {
-            area: game_core::game::ability::SkillAreaDeliveryDef {
-                shape: SkillAreaShapeDef::Box {
-                    width_units: 2_000_000,
-                    height_units: 2_000_000,
-                },
+        DeliveryDef::TileArea {
+            area: game_core::game::ability::SkillTileAreaDeliveryDef {
                 anchor: SkillAreaAnchorSource::CastTarget,
                 ..
             }
         }
     ));
+}
+
+#[test]
+fn load_game_data_from_ron_reads_consumable_schema() {
+    let game_data = common::load_game_data_from_ron();
+
+    let ampoule = game_data
+        .consumable_data
+        .get_by_id("stabilizing_ampoule")
+        .expect("stabilizing_ampoule consumable should exist in RON data");
+    assert_eq!(ampoule.tier, ConsumableTier::Common);
+    assert!(ampoule.live_pool);
+    assert!(matches!(
+        ampoule.effect,
+        ConsumableEffect::TraumaMitigation { percent: 20 }
+    ));
+
+    let deployment_anchor = game_data
+        .consumable_data
+        .get_by_id("deployment_anchor_patch")
+        .expect("deployment_anchor_patch consumable should exist in RON data");
+    assert!(deployment_anchor.live_pool);
+    assert!(matches!(
+        deployment_anchor.effect,
+        ConsumableEffect::DeployCostReduction { percent: 25 }
+    ));
+
+    let resonance_primer = game_data
+        .consumable_data
+        .get_by_id("resonance_primer")
+        .expect("resonance_primer consumable should exist in RON data");
+    assert!(resonance_primer.live_pool);
+    assert!(matches!(
+        resonance_primer.effect,
+        ConsumableEffect::InitialSkillCharge { percent: 40 }
+    ));
+
+    let forbidden = game_data
+        .consumable_data
+        .get_by_id("collapse_accelerant")
+        .expect("forbidden prototype should exist for schema validation");
+    assert_eq!(forbidden.tier, ConsumableTier::Forbidden);
+    assert!(!forbidden.live_pool);
+}
+
+#[test]
+fn load_game_data_from_ron_reads_buff_schema() {
+    let game_data = common::load_game_data_from_ron();
+
+    let poison = game_data
+        .buff_data
+        .get(BuffId::from_name("poison"))
+        .expect("poison buff should exist in RON data");
+    assert_eq!(poison.max_stacks, 10);
+    assert_eq!(poison.tick_interval_ms, 1000);
+    assert!(matches!(poison.kind, BuffKind::PeriodicDamage { .. }));
+
+    let stun = game_data
+        .buff_data
+        .get(BuffId::from_name("stun"))
+        .expect("stun buff should exist in RON data");
+    assert_eq!(stun.max_stacks, 1);
+    assert!(matches!(stun.kind, BuffKind::Stun));
 }
 
 #[test]
@@ -611,9 +667,7 @@ fn live_pve_references_resolve() {
         );
         let node_type = encounter.node_type.expect("checked above");
         assert!(
-            game_core::game::combat_mission_policy::CombatMissionPolicy::is_live_supported_node_type(
-                node_type
-            ),
+            game_core::game::combat_mission_policy::CombatMissionPolicy::is_supported_encounter_node_type(node_type),
             "live pve encounter `{}` must not use deferred combat node type {:?}",
             encounter.id,
             node_type
@@ -833,7 +887,7 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
         .pve_data
         .get_by_id("suppress_scorched_girl")
         .expect("scorched scenario should exist");
-    assert_eq!(scorched.node_type, Some(CombatNodeType::Suppression));
+    assert_eq!(scorched.node_type, Some(CombatNodeType::Defense));
     assert!(matches!(
         scorched
             .battlefield
@@ -843,7 +897,7 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
     ));
     assert!(matches!(
         scorched.authored_win_condition(),
-        Some(game_core::game::battle::scenario::WinCondition::AllRequiredEnemyGroupsDefeated)
+        Some(game_core::game::battle::scenario::WinCondition::ProtectUnit { .. })
     ));
     assert_eq!(scorched.waves[0].spawn_zone_ids, ["north_west_entry"]);
     assert!(scorched.reward_uuids.iter().any(|uuid| {
@@ -868,7 +922,7 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
         .pve_data
         .get_by_id("suppress_freischutz")
         .expect("freischutz scenario should exist");
-    assert_eq!(freischutz.node_type, Some(CombatNodeType::Suppression));
+    assert_eq!(freischutz.node_type, Some(CombatNodeType::Defense));
     assert!(matches!(
         freischutz
             .battlefield
@@ -899,11 +953,10 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
         MapNodeCategory::Combat,
         Some("suppress_freischutz"),
         game_data.as_ref(),
-        true,
         99,
     );
     assert_eq!(freischutz_preview.archetype, BattlefieldArchetype::Ambush);
-    assert_eq!(freischutz_preview.node_type, CombatNodeType::Suppression);
+    assert_eq!(freischutz_preview.node_type, CombatNodeType::Defense);
     assert_eq!(freischutz_preview.spawn_waves.len(), 2);
     assert_eq!(freischutz_preview.spawn_waves[1].time_ms, 6000);
     assert_eq!(
@@ -931,56 +984,58 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
         .iter()
         .any(|zone| zone.id == "side_ambush"));
 
-    let recovery = game_data
+    let defense_archive = game_data
         .pve_data
-        .get_by_id("recover_black_box_archive")
-        .expect("black box recovery scenario should exist");
-    assert_eq!(recovery.node_type, Some(CombatNodeType::Recovery));
-    assert!(recovery.tactical_plan.is_none());
-    assert!(recovery.authored_win_condition().is_none());
+        .get_by_id("black_box_archive_defense")
+        .expect("black box defense scenario should exist");
+    assert_eq!(defense_archive.node_type, Some(CombatNodeType::Defense));
+    assert!(defense_archive.tactical_plan.is_none());
+    assert!(defense_archive.authored_win_condition().is_none());
     assert!(matches!(
-        recovery
+        defense_archive
             .battlefield
             .as_ref()
             .and_then(|battlefield| battlefield.archetype),
         Some(BattlefieldArchetype::Corridor)
     ));
-    assert_eq!(recovery.waves.len(), 2);
-    assert_eq!(recovery.waves[0].spawn_zone_ids, ["north_entry"]);
-    assert!(!recovery.waves[0].required_for_victory);
-    assert!(recovery
+    assert_eq!(defense_archive.waves.len(), 2);
+    assert_eq!(defense_archive.waves[0].spawn_zone_ids, ["north_entry"]);
+    assert!(!defense_archive.waves[0].required_for_victory);
+    assert!(defense_archive
         .waves
         .iter()
         .all(|wave| matches!(wave.source, Some(PveWaveSource::GeneratedCorroded { .. }))));
-    assert!(recovery.reward_uuids.iter().any(|uuid| {
+    assert!(defense_archive.reward_uuids.iter().any(|uuid| {
         game_data
             .reward_data
             .get_by_uuid(uuid)
             .is_some_and(|reward| reward.id == "field_equipment_salvage_reward")
     }));
-    assert!(recovery.reward_uuids.iter().any(|uuid| {
+    assert!(defense_archive.reward_uuids.iter().any(|uuid| {
         game_data
             .reward_data
             .get_by_uuid(uuid)
             .is_some_and(|reward| reward.id == "early_abnormality_research_reward")
     }));
 
-    let recovery_preview = CombatPreview::generate_for_node(
+    let defense_archive_preview = CombatPreview::generate_for_node(
         MapNodeId::new(Uuid::from_u128(0xB10C)),
         MapNodeCategory::Combat,
-        Some("recover_black_box_archive"),
+        Some("black_box_archive_defense"),
         game_data.as_ref(),
-        true,
         17,
     );
-    assert_eq!(recovery_preview.node_type, CombatNodeType::Recovery);
-    assert_eq!(recovery_preview.archetype, BattlefieldArchetype::Corridor);
-    assert_eq!(recovery_preview.spawn_waves.len(), 2);
+    assert_eq!(defense_archive_preview.node_type, CombatNodeType::Defense);
     assert_eq!(
-        recovery_preview.spawn_waves[0].spawn_zone_ids,
+        defense_archive_preview.archetype,
+        BattlefieldArchetype::Corridor
+    );
+    assert_eq!(defense_archive_preview.spawn_waves.len(), 2);
+    assert_eq!(
+        defense_archive_preview.spawn_waves[0].spawn_zone_ids,
         ["north_entry"]
     );
-    assert!(recovery_preview
+    assert!(defense_archive_preview
         .spawn_waves
         .iter()
         .flat_map(|wave| wave.enemy_entries.iter())
@@ -1026,7 +1081,6 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
         MapNodeCategory::Combat,
         Some("defend_black_box_relay"),
         game_data.as_ref(),
-        true,
         41,
     );
     assert_eq!(defense_preview.node_type, CombatNodeType::Defense);
@@ -1079,7 +1133,7 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
             .and_then(|battlefield| battlefield.archetype),
         Some(BattlefieldArchetype::BossArena)
     ));
-    let mut tactical_plan = game_core::game::battle::scenario::TacticalPlan::free_engage();
+    let mut tactical_plan = game_core::game::battle::scenario::TacticalPlan::default();
     plague.apply_authored_tactical_plan(&mut tactical_plan);
     assert_eq!(tactical_plan.points.len(), 1);
     assert!(matches!(
@@ -1087,8 +1141,44 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
         game_core::game::battle::scenario::BattleObjective::DefeatBoss { ref unit_ref }
             if unit_ref.0 == "enemy_wave_0_0"
     ));
-    assert!(matches!(
-        tactical_plan.enemy_plan,
-        game_core::game::battle::scenario::EnemyMovementPlan::AssaultPlayer
-    ));
+}
+
+#[test]
+fn live_combat_previews_include_required_ad_ap_threat_warning_tags() {
+    let game_data = common::load_game_data_from_ron();
+    let seeds = [0, 1, 17, 41, 99];
+
+    for encounter in &game_data.pve_data.encounters {
+        for seed in seeds {
+            let preview = CombatPreview::generate_for_node(
+                MapNodeId::new(Uuid::from_u128(
+                    0xADAD_1000_0000_0000_0000_0000_0000_0000_u128 + u128::from(seed),
+                )),
+                MapNodeCategory::Combat,
+                Some(encounter.id.as_str()),
+                game_data.as_ref(),
+                seed,
+            );
+            let required = required_briefing_warning_tags_for_spawn_waves(
+                &preview.spawn_waves,
+                game_data.as_ref(),
+            );
+            let briefing_tags = preview
+                .threat_warnings
+                .iter()
+                .filter(|warning| warning.source == ThreatWarningSource::Briefing)
+                .map(|warning| warning.tag)
+                .collect::<std::collections::HashSet<_>>();
+
+            for required_tag in required {
+                assert!(
+                    briefing_tags.contains(&required_tag),
+                    "encounter '{}' seed {} omits required threat warning {:?}",
+                    encounter.id,
+                    seed,
+                    required_tag
+                );
+            }
+        }
+    }
 }

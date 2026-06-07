@@ -33,6 +33,9 @@ pub enum RewardEffect {
     GrantArtifact {
         artifact_id: String,
     },
+    GrantConsumable {
+        consumable_id: String,
+    },
     GrantSkillFragment {
         fragment_id: SkillFragmentId,
     },
@@ -206,6 +209,20 @@ impl RewardExecutor {
                 ));
                 Self::grant_inventory_item(inventory, uuid_manager, item, &mut inventory_diff)?;
             }
+            RewardEffect::GrantConsumable { consumable_id } => {
+                let item = Item::Consumable(std::sync::Arc::new(
+                    game_data
+                        .consumable_data
+                        .get_by_id(consumable_id)
+                        .ok_or_else(|| {
+                            GameError::InvalidStaticData(format!(
+                                "reward references missing consumable id '{consumable_id}'"
+                            ))
+                        })?
+                        .clone(),
+                ));
+                Self::grant_inventory_item(inventory, uuid_manager, item, &mut inventory_diff)?;
+            }
             RewardEffect::GrantSkillFragment { fragment_id } => {
                 let metadata = game_data
                     .skill_fragment_data
@@ -261,7 +278,10 @@ impl RewardExecutor {
             return Err(GameError::InventoryFull);
         }
 
-        let owned_uuid = uuid_manager.next_owned_equipment();
+        let owned_uuid = match &item {
+            Item::Consumable(_) => uuid_manager.next_owned_consumable(),
+            _ => uuid_manager.next_owned_equipment(),
+        };
         inventory.add_item_owned(owned_uuid, item.clone_arc())?;
         inventory_diff
             .added

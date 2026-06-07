@@ -228,20 +228,25 @@ mod tests {
     fn runtime_unit(id: u128, owner: Side) -> RuntimeUnit {
         RuntimeUnit {
             instance_id: UnitInstanceId::from(Uuid::from_u128(id)),
+            spawn_order: id as u64,
             source_owned_uuid: Uuid::from_u128(id),
             owner,
             role: crate::game::battle::types::BattleUnitRole::Combatant,
             base_uuid: Uuid::nil(),
             stats: UnitStats::with_values(10, 10, 1, 0, 1),
+            incoming_damage_modifiers: Default::default(),
             basic_attack: Default::default(),
             skill_id: None,
+            skill_activation_mode: crate::game::ability::SkillActivationMode::Auto,
             body: Default::default(),
             tactical_anchor: None,
-            tactical_group_id: None,
             enemy_movement_plan: None,
             block_capacity: 0,
             block_radius_units: 0.0,
             blockable: true,
+            mobility_kind: Default::default(),
+            target_traits: Vec::new(),
+            facing_direction: None,
             move_epoch: 0,
             action_state: crate::game::battle::core::movement::ActionState::Idle,
             action_locks: Default::default(),
@@ -389,8 +394,11 @@ mod tests {
             rarity: crate::game::enums::RiskLevel::ZAYIN,
             price: 0,
             allow_duplicate_equip: true,
+            bound: false,
+            cannot_unequip_reason: "equipment_bound".to_string(),
             triggered_effects: triggered,
             ability_activations: vec![],
+            weapon_profile: Some(Default::default()),
         };
 
         let game_data = game_data_with(vec![], vec![equipment]);
@@ -495,8 +503,11 @@ mod tests {
                 rarity: crate::game::enums::RiskLevel::ZAYIN,
                 price: 0,
                 allow_duplicate_equip: true,
+                bound: false,
+                cannot_unequip_reason: "equipment_bound".to_string(),
                 triggered_effects: item_effects,
                 ability_activations: vec![],
+                weapon_profile: Some(Default::default()),
             }],
         );
 

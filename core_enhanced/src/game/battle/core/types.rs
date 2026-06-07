@@ -6,8 +6,8 @@ use crate::{
     game::resources::Position,
     game::{
         ability::{
-            SkillAreaAnchorSource, SkillAreaShapeDef, SkillAreaTickPolicy, SkillAreaTracking,
-            SkillHitTargetFilter, SkillId, SkillProjectileCollisionDef,
+            SkillAreaAnchorSource, SkillAreaTickPolicy, SkillAreaTracking, SkillHitTargetFilter,
+            SkillId, SkillProjectileCollisionDef, SkillTileAreaOrigin,
         },
         battle::{
             buffs::BuffId,
@@ -16,9 +16,12 @@ use crate::{
                 types::{UnitBody, WorldVec2},
                 ActionState,
             },
+            damage::DamageModifiers,
+            damage::DamageType,
             ids::UnitInstanceId,
+            tile_range::{FacingDirection, TileRangePattern},
             timeline::{SkillCastTarget, TimelineCause},
-            types::{BattleUnitRole, UnitSnapshot},
+            types::{BattleUnitRole, MobilityKind, UnitSnapshot, UnitTargetTrait},
         },
         data::abnormality_data::BasicAttackDef,
         enums::Side,
@@ -46,6 +49,7 @@ pub struct ProjectileRecord {
     pub aim: WorldVec2,
     pub speed_units_per_ms: u32,
     pub guidance: ProjectileGuidance,
+    pub damage_type: DamageType,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -94,11 +98,13 @@ pub struct AreaRuntime {
     pub caster_instance_id: UnitInstanceId,
     pub caster_owner: Side,
     pub anchor: SkillAreaAnchorSource,
+    pub tile_origin: SkillTileAreaOrigin,
     pub tracking: SkillAreaTracking,
     pub origin: WorldVec2,
     pub center: WorldVec2,
     pub direction_hint: WorldVec2,
-    pub shape: SkillAreaShapeDef,
+    pub tile_range: TileRangePattern,
+    pub tile_anchor: Position,
     pub hit_targets: SkillHitTargetFilter,
     pub include_caster: bool,
     pub tick_policy: SkillAreaTickPolicy,
@@ -331,20 +337,25 @@ pub(super) struct AbilityProcState {
 
 pub struct RuntimeUnit {
     pub instance_id: UnitInstanceId,
+    pub spawn_order: u64,
     pub source_owned_uuid: Uuid,
     pub owner: Side,
     pub role: BattleUnitRole,
     pub base_uuid: Uuid,
     pub stats: UnitStats,
+    pub incoming_damage_modifiers: DamageModifiers,
     pub basic_attack: BasicAttackDef,
     pub skill_id: Option<SkillId>,
+    pub skill_activation_mode: crate::game::ability::SkillActivationMode,
     pub body: UnitBody,
     pub tactical_anchor: Option<WorldVec2>,
-    pub tactical_group_id: Option<crate::game::battle::scenario::TacticalGroupPlanId>,
     pub enemy_movement_plan: Option<crate::game::battle::scenario::EnemyMovementPlan>,
     pub block_capacity: u32,
     pub block_radius_units: f32,
     pub blockable: bool,
+    pub mobility_kind: MobilityKind,
+    pub target_traits: Vec<UnitTargetTrait>,
+    pub facing_direction: Option<FacingDirection>,
     pub move_epoch: u32,
     pub action_state: ActionState,
     pub action_locks: ActionLocks,
@@ -367,6 +378,7 @@ impl RuntimeUnit {
             id: self.instance_id,
             owner: self.owner,
             role: self.role,
+            mobility_kind: self.mobility_kind,
             position,
             world_position: self.body.position,
             stats: self.stats,
@@ -397,6 +409,10 @@ impl RuntimeUnit {
 
     pub fn is_combatant(&self) -> bool {
         self.role == BattleUnitRole::Combatant
+    }
+
+    pub fn is_airborne(&self) -> bool {
+        self.mobility_kind.is_airborne()
     }
 
     pub fn can_basic_attack(&self) -> bool {

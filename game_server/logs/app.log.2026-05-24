@@ -1,0 +1,6 @@
+  2026-05-24T08:31:22.538513Z  INFO  Ctrl+C received. Initiating graceful shutdown...
+    at game_server\src\main.rs:309 on main ThreadId(1)
+
+  2026-05-24T08:31:22.538634Z  INFO  System has shut down gracefully
+    at game_server\src\main.rs:314 on main ThreadId(1)
+

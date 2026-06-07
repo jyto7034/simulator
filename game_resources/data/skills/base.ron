@@ -1,4 +1,14 @@
 SkillDatabase(
+    range_presets: [
+        SkillRangePresetDef(
+            id: "front_3x2",
+            range: (include_anchor_tile: false, rows: [".XXX.", ".XXX.", "..@..", ".....", "....."]),
+        ),
+        SkillRangePresetDef(
+            id: "front_3x2_include_anchor",
+            range: (include_anchor_tile: true, rows: [".XXX.", ".XXX.", "..@..", ".....", "....."]),
+        ),
+    ],
     skills: [
         SkillDef(
             id: "scorched_explosion",
@@ -10,6 +20,7 @@ SkillDatabase(
                     id: "explode",
                     delay_ms: 0,
                     range_units: 2,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
                     delivery: Instant,
                     effects: [
@@ -28,9 +39,9 @@ SkillDatabase(
                     id: "mass_heal",
                     delay_ms: 0,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2_include_anchor"),
                     target: SelfUnit,
-                    delivery: Area(area: (
-                        shape: Box(width_units: 6000000, height_units: 6000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Allies,
                         include_caster: true,
@@ -51,6 +62,7 @@ SkillDatabase(
                     id: "berserk",
                     delay_ms: 0,
                     range_units: 2,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
                     delivery: Instant,
                     effects: [
@@ -69,9 +81,9 @@ SkillDatabase(
                     id: "nova",
                     delay_ms: 0,
                     range_units: 2,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: Area(area: (
-                        shape: Box(width_units: 4000000, height_units: 4000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -91,6 +103,7 @@ SkillDatabase(
                     id: "poison_apply",
                     delay_ms: 0,
                     range_units: 2,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
                     delivery: Instant,
                     effects: [
@@ -109,9 +122,9 @@ SkillDatabase(
                     id: "fairy_bless",
                     delay_ms: 0,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2_include_anchor"),
                     target: SelfUnit,
-                    delivery: Area(area: (
-                        shape: Box(width_units: 6000000, height_units: 6000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Allies,
                         include_caster: true,
@@ -139,6 +152,7 @@ SkillDatabase(
                     id: "strike",
                     delay_ms: 0,
                     range_units: 2,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
                     delivery: Instant,
                     effects: [
@@ -157,6 +171,7 @@ SkillDatabase(
                     id: "penitence_judgement",
                     delay_ms: 0,
                     range_units: 4,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Projectile(speed_units_per_ms: 6000),
                     effects: [
@@ -197,6 +212,7 @@ SkillDatabase(
                     id: "fragment_penitence_judgement",
                     delay_ms: 0,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Projectile(speed_units_per_ms: 6000),
                     effects: [
@@ -237,6 +253,7 @@ SkillDatabase(
                     id: "peck_opening",
                     delay_ms: 0,
                     range_units: 1,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Instant,
                     effects: [
@@ -247,6 +264,7 @@ SkillDatabase(
                     id: "peck_flurry",
                     delay_ms: 120,
                     range_units: 1,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     targeting: RetargetOnStep,
                     repeat: Times(count: 2),
@@ -267,9 +285,9 @@ SkillDatabase(
                     id: "lamp_gaze",
                     delay_ms: 0,
                     range_units: 1,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: Area(area: (
-                        shape: Box(width_units: 2000000, height_units: 2000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -286,9 +304,9 @@ SkillDatabase(
                     id: "lamp_burst",
                     delay_ms: 90,
                     range_units: 1,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
-                    delivery: Area(area: (
-                        shape: Box(width_units: 2000000, height_units: 2000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -313,6 +331,7 @@ SkillDatabase(
                     id: "weigh_sins",
                     delay_ms: 0,
                     range_units: 4,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Instant,
                     effects: [
@@ -329,6 +348,7 @@ SkillDatabase(
                     id: "final_verdict",
                     delay_ms: 90,
                     range_units: 4,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     targeting: RetargetOnStep,
                     when: IfPreviousStepDealtDamage,
@@ -354,9 +374,9 @@ SkillDatabase(
                     id: "beam_trace",
                     delay_ms: 0,
                     range_units: 5,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: Area(area: (
-                        shape: Line(length_units: 5000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -373,10 +393,10 @@ SkillDatabase(
                     id: "beam_overdrive",
                     delay_ms: 80,
                     range_units: 5,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
                     repeat: Times(count: 2),
-                    delivery: Area(area: (
-                        shape: Line(length_units: 5000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -401,6 +421,7 @@ SkillDatabase(
                     id: "marked_shot",
                     delay_ms: 0,
                     range_units: 4,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Projectile(speed_units_per_ms: 7500),
                     effects: [
@@ -417,6 +438,7 @@ SkillDatabase(
                     id: "hunt_finish",
                     delay_ms: 160,
                     range_units: 4,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     targeting: RetargetOnStep,
                     when: IfPreviousStepDealtDamage,
@@ -443,9 +465,9 @@ SkillDatabase(
                     id: "consume_burst",
                     delay_ms: 0,
                     range_units: 1,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: Area(area: (
-                        shape: Box(width_units: 2000000, height_units: 2000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -507,6 +529,7 @@ SkillDatabase(
                     id: "slime_orb",
                     delay_ms: 0,
                     range_units: 4,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Projectile(speed_units_per_ms: 5600),
                     effects: [
@@ -524,10 +547,10 @@ SkillDatabase(
                     id: "slime_spread",
                     delay_ms: 220,
                     range_units: 4,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
                     when: IfPreviousStepDealtDamage,
-                    delivery: Area(area: (
-                        shape: Box(width_units: 2000000, height_units: 2000000),
+                    delivery: TileArea(area: (
                         anchor: ImpactContext,
                         hit_targets: Enemies,
                     )),
@@ -553,6 +576,7 @@ SkillDatabase(
                     id: "tear_open",
                     delay_ms: 0,
                     range_units: 1,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Instant,
                     effects: [
@@ -590,6 +614,7 @@ SkillDatabase(
                     id: "goodbye_finish",
                     delay_ms: 100,
                     range_units: 1,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     targeting: RetargetOnStep,
                     repeat: Times(count: 2),
@@ -615,9 +640,9 @@ SkillDatabase(
                     id: "ally_salvation",
                     delay_ms: 0,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2_include_anchor"),
                     target: SelfUnit,
-                    delivery: Area(area: (
-                        shape: Box(width_units: 6000000, height_units: 6000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Allies,
                         include_caster: true,
@@ -635,9 +660,9 @@ SkillDatabase(
                     id: "ally_blessing",
                     delay_ms: 40,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2_include_anchor"),
                     target: CastTarget,
-                    delivery: Area(area: (
-                        shape: Box(width_units: 6000000, height_units: 6000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Allies,
                         include_caster: true,
@@ -661,9 +686,9 @@ SkillDatabase(
                     id: "enemy_judgement",
                     delay_ms: 140,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
-                    delivery: Area(area: (
-                        shape: Box(width_units: 6000000, height_units: 6000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -688,9 +713,9 @@ SkillDatabase(
                     id: "metal_chorus",
                     delay_ms: 0,
                     range_units: 1,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: Area(area: (
-                        shape: Box(width_units: 2000000, height_units: 2000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -727,9 +752,9 @@ SkillDatabase(
                     id: "cleaning_spin",
                     delay_ms: 0,
                     range_units: 2,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: Area(area: (
-                        shape: Circle(radius_units: 2000000),
+                    delivery: TileArea(area: (
                         anchor: Caster,
                         hit_targets: Enemies,
                         duration_ms: 600,
@@ -768,6 +793,7 @@ SkillDatabase(
                     id: "seventh_bullet",
                     delay_ms: 0,
                     range_units: 5,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Projectile(speed_units_per_ms: 7600),
                     effects: [
@@ -802,6 +828,7 @@ SkillDatabase(
                     id: "mourning_shot",
                     delay_ms: 0,
                     range_units: 4,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Projectile(speed_units_per_ms: 6400),
                     effects: [
@@ -812,6 +839,7 @@ SkillDatabase(
                     id: "black_funeral",
                     delay_ms: 120,
                     range_units: 4,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     targeting: RetargetOnStep,
                     when: IfPreviousStepDealtDamage,
@@ -833,6 +861,7 @@ SkillDatabase(
                     id: "gift_box",
                     delay_ms: 0,
                     range_units: 4,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
                     delivery: Projectile(speed_units_per_ms: 5200),
                     effects: [
@@ -844,10 +873,10 @@ SkillDatabase(
                     id: "gift_pop",
                     delay_ms: 180,
                     range_units: 4,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
                     when: IfPreviousStepDealtDamage,
-                    delivery: Area(area: (
-                        shape: Box(width_units: 2000000, height_units: 2000000),
+                    delivery: TileArea(area: (
                         anchor: ImpactContext,
                         hit_targets: Enemies,
                     )),
@@ -867,6 +896,7 @@ SkillDatabase(
                     id: "frost_brand",
                     delay_ms: 0,
                     range_units: 4,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Projectile(speed_units_per_ms: 5800),
                     effects: [
@@ -878,6 +908,7 @@ SkillDatabase(
                     id: "ice_shatter",
                     delay_ms: 160,
                     range_units: 4,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     when: IfPreviousStepDealtDamage,
                     delivery: Instant,
@@ -897,9 +928,9 @@ SkillDatabase(
                     id: "bells_line",
                     delay_ms: 0,
                     range_units: 4,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: Area(area: (
-                        shape: Line(length_units: 4000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -911,9 +942,9 @@ SkillDatabase(
                     id: "holiday_crash",
                     delay_ms: 80,
                     range_units: 4,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
-                    delivery: Area(area: (
-                        shape: Line(length_units: 4000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -933,6 +964,7 @@ SkillDatabase(
                     id: "sweet_lure",
                     delay_ms: 0,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
                     delivery: Instant,
                     effects: [
@@ -943,6 +975,7 @@ SkillDatabase(
                     id: "hidden_jaws",
                     delay_ms: 110,
                     range_units: 1,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     targeting: RetargetOnStep,
                     delivery: Instant,
@@ -962,9 +995,9 @@ SkillDatabase(
                     id: "current_sweep",
                     delay_ms: 0,
                     range_units: 5,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: Area(area: (
-                        shape: Rectangle(width_units: 2000000, length_units: 5000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -1000,9 +1033,9 @@ SkillDatabase(
                     id: "petal_field",
                     delay_ms: 0,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: Area(area: (
-                        shape: Circle(radius_units: 2000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -1015,9 +1048,9 @@ SkillDatabase(
                     id: "last_fragrance",
                     delay_ms: 100,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: SelfUnit,
-                    delivery: Area(area: (
-                        shape: Circle(radius_units: 2000000),
+                    delivery: TileArea(area: (
                         anchor: Caster,
                         hit_targets: Allies,
                         include_caster: true,
@@ -1038,6 +1071,7 @@ SkillDatabase(
                     id: "spore_injection",
                     delay_ms: 0,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
                     delivery: Projectile(speed_units_per_ms: 5000),
                     effects: [
@@ -1049,10 +1083,10 @@ SkillDatabase(
                     id: "nest_eruption",
                     delay_ms: 220,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
                     when: IfPreviousStepDealtDamage,
-                    delivery: Area(area: (
-                        shape: Circle(radius_units: 1500000),
+                    delivery: TileArea(area: (
                         anchor: ImpactContext,
                         hit_targets: Enemies,
                     )),
@@ -1073,9 +1107,9 @@ SkillDatabase(
                     id: "pulling_hymn",
                     delay_ms: 0,
                     range_units: 4,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: Area(area: (
-                        shape: Circle(radius_units: 3000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -1088,9 +1122,9 @@ SkillDatabase(
                     id: "distant_salvation",
                     delay_ms: 80,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: SelfUnit,
-                    delivery: Area(area: (
-                        shape: Circle(radius_units: 3000000),
+                    delivery: TileArea(area: (
                         anchor: Caster,
                         hit_targets: Allies,
                         include_caster: true,
@@ -1111,9 +1145,9 @@ SkillDatabase(
                     id: "first_movement",
                     delay_ms: 0,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: Area(area: (
-                        shape: Circle(radius_units: 2000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -1125,9 +1159,9 @@ SkillDatabase(
                     id: "crescendo",
                     delay_ms: 120,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
-                    delivery: Area(area: (
-                        shape: Circle(radius_units: 2000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -1140,9 +1174,9 @@ SkillDatabase(
                     id: "grand_finale",
                     delay_ms: 240,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
-                    delivery: Area(area: (
-                        shape: Circle(radius_units: 2000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -1162,6 +1196,7 @@ SkillDatabase(
                     id: "redacted_presence",
                     delay_ms: 0,
                     range_units: 1,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Instant,
                     effects: [
@@ -1198,9 +1233,9 @@ SkillDatabase(
                     id: "dark_wave",
                     delay_ms: 0,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: Area(area: (
-                        shape: Circle(radius_units: 2000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -1231,9 +1266,9 @@ SkillDatabase(
                     id: "white_wave",
                     delay_ms: 0,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: SelfUnit,
-                    delivery: Area(area: (
-                        shape: Circle(radius_units: 2000000),
+                    delivery: TileArea(area: (
                         anchor: Caster,
                         hit_targets: Allies,
                         include_caster: true,
@@ -1246,9 +1281,9 @@ SkillDatabase(
                     id: "white_judgement",
                     delay_ms: 100,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
-                    delivery: Area(area: (
-                        shape: Circle(radius_units: 2000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -1268,6 +1303,7 @@ SkillDatabase(
                     id: "root_watch",
                     delay_ms: 0,
                     range_units: 4,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Projectile(speed_units_per_ms: 6200),
                     effects: [
@@ -1279,10 +1315,10 @@ SkillDatabase(
                     id: "heaven_burrows",
                     delay_ms: 160,
                     range_units: 4,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
                     when: IfPreviousStepDealtDamage,
-                    delivery: Area(area: (
-                        shape: Line(length_units: 4000000),
+                    delivery: TileArea(area: (
                         anchor: ImpactContextStart,
                         hit_targets: Enemies,
                     )),
@@ -1302,9 +1338,9 @@ SkillDatabase(
                     id: "false_blessing",
                     delay_ms: 0,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: SelfUnit,
-                    delivery: Area(area: (
-                        shape: Box(width_units: 6000000, height_units: 6000000),
+                    delivery: TileArea(area: (
                         anchor: Caster,
                         hit_targets: Allies,
                         include_caster: true,
@@ -1324,9 +1360,9 @@ SkillDatabase(
                     id: "root_tax",
                     delay_ms: 120,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
-                    delivery: Area(area: (
-                        shape: Circle(radius_units: 2000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -1346,9 +1382,9 @@ SkillDatabase(
                     id: "laughing_spores",
                     delay_ms: 0,
                     range_units: 2,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: Area(area: (
-                        shape: Circle(radius_units: 2000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -1361,9 +1397,9 @@ SkillDatabase(
                     id: "toxic_laughter",
                     delay_ms: 100,
                     range_units: 2,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
-                    delivery: Area(area: (
-                        shape: Circle(radius_units: 2000000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                     )),
@@ -1383,6 +1419,7 @@ SkillDatabase(
                     id: "brain_pick",
                     delay_ms: 0,
                     range_units: 1,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Instant,
                     effects: [
@@ -1419,6 +1456,7 @@ SkillDatabase(
                     id: "axe_cleave",
                     delay_ms: 0,
                     range_units: 1,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Instant,
                     effects: [
@@ -1455,6 +1493,7 @@ SkillDatabase(
                     id: "judgement_strike",
                     delay_ms: 0,
                     range_units: 1,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Instant,
                     effects: [
@@ -1474,6 +1513,7 @@ SkillDatabase(
                     id: "ember_bite",
                     delay_ms: 0,
                     range_units: 1,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Instant,
                     effects: [
@@ -1566,6 +1606,7 @@ SkillDatabase(
                     id: "fragment_scorched_spark",
                     delay_ms: 0,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
                     delivery: Projectile(speed_units_per_ms: 5200),
                     effects: [
@@ -1590,6 +1631,7 @@ SkillDatabase(
                     id: "fragment_crimson_impulse",
                     delay_ms: 0,
                     range_units: 1,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Instant,
                     effects: [
@@ -1635,6 +1677,7 @@ SkillDatabase(
                     id: "fragment_black_round",
                     delay_ms: 0,
                     range_units: 5,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Projectile(speed_units_per_ms: 7000),
                     effects: [
@@ -1680,6 +1723,7 @@ SkillDatabase(
                     id: "fragment_venom_thread",
                     delay_ms: 0,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Projectile(speed_units_per_ms: 5600),
                     effects: [
@@ -1705,6 +1749,7 @@ SkillDatabase(
                     id: "fragment_pale_shot",
                     delay_ms: 0,
                     range_units: 4,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Projectile(speed_units_per_ms: 6200),
                     effects: [
@@ -1721,6 +1766,7 @@ SkillDatabase(
                     id: "fragment_quiet_lament",
                     delay_ms: 120,
                     range_units: 4,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     targeting: RetargetOnStep,
                     when: IfPreviousStepDealtDamage,
@@ -1746,9 +1792,9 @@ SkillDatabase(
                     id: "fragment_short_cleaning_spin",
                     delay_ms: 0,
                     range_units: 1,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: Area(area: (
-                        shape: Circle(radius_units: 1250000),
+                    delivery: TileArea(area: (
                         anchor: Caster,
                         hit_targets: Enemies,
                         duration_ms: 300,
@@ -1776,9 +1822,9 @@ SkillDatabase(
                     id: "fragment_petal_haze",
                     delay_ms: 0,
                     range_units: 3,
+                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: Area(area: (
-                        shape: Circle(radius_units: 1500000),
+                    delivery: TileArea(area: (
                         anchor: CastTarget,
                         hit_targets: Enemies,
                         duration_ms: 900,

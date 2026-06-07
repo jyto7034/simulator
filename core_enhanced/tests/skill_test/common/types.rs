@@ -237,9 +237,11 @@ pub fn passive_dummy_patch(max_health: u32, current_health_after_start: Option<u
         })
         .with_basic_attack(BasicAttackDef {
             range_units: 1.0,
+            defense_tile_range: None,
             interval_ms: 5_000,
             windup_ms: 0,
             delivery: game_core::game::ability::DeliveryDef::Instant,
+            ..BasicAttackDef::default()
         });
 
     if let Some(current_health) = current_health_after_start {

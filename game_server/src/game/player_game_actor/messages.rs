@@ -1,6 +1,9 @@
 use actix::{Message, Recipient};
 use game_core::game::{
-    behavior::PlayerBehavior,
+    ability::SkillId,
+    battle::tile_range::FacingDirection,
+    battle::timeline::SkillCastTarget,
+    behavior::{BattlePlaybackSpeed, PlayerBehavior},
     data::skill_fragment_data::SkillFragmentId,
     map::{MapNodeId, MedicalTreatmentKind, SupportNodeType},
     resources::Position,
@@ -39,7 +42,6 @@ pub enum PlayerBehaviorRequest {
     SelectMapNode {
         node_id: MapNodeId,
     },
-    UseReconScan,
     ConfirmEnterNode,
     CancelSelectedNode,
     CompleteNode,
@@ -55,6 +57,11 @@ pub enum PlayerBehaviorRequest {
     SelectReward {
         reward_id: Uuid,
     },
+    RecruitEmployee {
+        candidate_id: String,
+    },
+    RequestEmergencySupplies,
+    OpenHeadquartersShop,
     UnEquipItem {
         item_uuid: Uuid,
         target_unit: Uuid,
@@ -63,13 +70,11 @@ pub enum PlayerBehaviorRequest {
         item_uuid: Uuid,
         target_unit: Uuid,
     },
-    MoveUnit {
-        target_unit_uuid: Uuid,
-        dest_pos: Position,
-        #[serde(default)]
-        swap_with_unit_uuid: Option<Uuid>,
+    UseConsumableItem {
+        item_uuid: Uuid,
+        target_employee_uuid: Uuid,
     },
-    MoveBenchUnit {
+    MoveRosterUnit {
         target_unit_uuid: Uuid,
         dest_slot: usize,
         #[serde(default)]
@@ -113,7 +118,31 @@ pub enum PlayerBehaviorRequest {
     ExitShop,
     ClaimReward,
     ExitReward,
-    FinishCombatReplay,
+    CompleteCombatResult,
+    RequestBattleState {
+        #[serde(default)]
+        since_seq: Option<u64>,
+    },
+    DeployUnit {
+        employee_uuid: Uuid,
+        position: Position,
+        facing: FacingDirection,
+    },
+    WithdrawUnit {
+        employee_uuid: Uuid,
+    },
+    ActivateSkill {
+        employee_uuid: Uuid,
+        skill_id: SkillId,
+        #[serde(default)]
+        target: Option<SkillCastTarget>,
+    },
+    RetreatBattle,
+    PauseBattle,
+    ResumeBattle,
+    SetBattleSpeed {
+        speed: BattlePlaybackSpeed,
+    },
 }
 
 impl From<PlayerBehaviorRequest> for PlayerBehavior {
@@ -125,7 +154,6 @@ impl From<PlayerBehaviorRequest> for PlayerBehavior {
             }
             PlayerBehaviorRequest::RequestMapData => Self::RequestMapData,
             PlayerBehaviorRequest::SelectMapNode { node_id } => Self::SelectMapNode { node_id },
-            PlayerBehaviorRequest::UseReconScan => Self::UseReconScan,
             PlayerBehaviorRequest::ConfirmEnterNode => Self::ConfirmEnterNode,
             PlayerBehaviorRequest::CancelSelectedNode => Self::CancelSelectedNode,
             PlayerBehaviorRequest::CompleteNode => Self::CompleteNode,
@@ -139,6 +167,11 @@ impl From<PlayerBehaviorRequest> for PlayerBehavior {
                 Self::SelectMedicalTreatment { treatment }
             }
             PlayerBehaviorRequest::SelectReward { reward_id } => Self::SelectReward { reward_id },
+            PlayerBehaviorRequest::RecruitEmployee { candidate_id } => {
+                Self::RecruitEmployee { candidate_id }
+            }
+            PlayerBehaviorRequest::RequestEmergencySupplies => Self::RequestEmergencySupplies,
+            PlayerBehaviorRequest::OpenHeadquartersShop => Self::OpenHeadquartersShop,
             PlayerBehaviorRequest::UnEquipItem {
                 item_uuid,
                 target_unit,
@@ -153,20 +186,18 @@ impl From<PlayerBehaviorRequest> for PlayerBehavior {
                 item_uuid,
                 target_unit,
             },
-            PlayerBehaviorRequest::MoveUnit {
-                target_unit_uuid,
-                dest_pos,
-                swap_with_unit_uuid,
-            } => Self::MoveUnit {
-                target_unit_uuid,
-                dest_pos,
-                swap_with_unit_uuid,
+            PlayerBehaviorRequest::UseConsumableItem {
+                item_uuid,
+                target_employee_uuid,
+            } => Self::UseConsumableItem {
+                item_uuid,
+                target_employee_uuid,
             },
-            PlayerBehaviorRequest::MoveBenchUnit {
+            PlayerBehaviorRequest::MoveRosterUnit {
                 target_unit_uuid,
                 dest_slot,
                 swap_with_unit_uuid,
-            } => Self::MoveBenchUnit {
+            } => Self::MoveRosterUnit {
                 target_unit_uuid,
                 dest_slot,
                 swap_with_unit_uuid,
@@ -217,7 +248,35 @@ impl From<PlayerBehaviorRequest> for PlayerBehavior {
             PlayerBehaviorRequest::ExitShop => Self::ExitShop,
             PlayerBehaviorRequest::ClaimReward => Self::ClaimReward,
             PlayerBehaviorRequest::ExitReward => Self::ExitReward,
-            PlayerBehaviorRequest::FinishCombatReplay => Self::FinishCombatReplay,
+            PlayerBehaviorRequest::CompleteCombatResult => Self::CompleteCombatResult,
+            PlayerBehaviorRequest::RequestBattleState { since_seq } => {
+                Self::RequestBattleState { since_seq }
+            }
+            PlayerBehaviorRequest::DeployUnit {
+                employee_uuid,
+                position,
+                facing,
+            } => Self::DeployUnit {
+                employee_uuid,
+                position,
+                facing,
+            },
+            PlayerBehaviorRequest::WithdrawUnit { employee_uuid } => {
+                Self::WithdrawUnit { employee_uuid }
+            }
+            PlayerBehaviorRequest::ActivateSkill {
+                employee_uuid,
+                skill_id,
+                target,
+            } => Self::ActivateSkill {
+                employee_uuid,
+                skill_id,
+                target,
+            },
+            PlayerBehaviorRequest::RetreatBattle => Self::RetreatBattle,
+            PlayerBehaviorRequest::PauseBattle => Self::PauseBattle,
+            PlayerBehaviorRequest::ResumeBattle => Self::ResumeBattle,
+            PlayerBehaviorRequest::SetBattleSpeed { speed } => Self::SetBattleSpeed { speed },
         }
     }
 }
@@ -326,39 +385,165 @@ mod tests {
             other => panic!("unexpected behavior: {other:?}"),
         }
 
-        let request: PlayerBehaviorRequest =
-            serde_json::from_str(r#"{"type":"finish_combat_replay"}"#)
-                .expect("finish combat replay request should deserialize");
-        assert!(matches!(
-            PlayerBehavior::from(request),
-            PlayerBehavior::FinishCombatReplay
-        ));
-
         let request: PlayerBehaviorRequest = serde_json::from_str(r#"{"type":"claim_reward"}"#)
             .expect("claim reward request should deserialize");
         assert!(matches!(
             PlayerBehavior::from(request),
             PlayerBehavior::ClaimReward
         ));
+
+        let request: PlayerBehaviorRequest =
+            serde_json::from_str(r#"{"type":"complete_combat_result"}"#)
+                .expect("complete combat result request should deserialize");
+        assert!(matches!(
+            PlayerBehavior::from(request),
+            PlayerBehavior::CompleteCombatResult
+        ));
+
+        let request: PlayerBehaviorRequest =
+            serde_json::from_str(r#"{"type":"recruit_employee","candidate_id":"candidate_a"}"#)
+                .expect("recruit employee request should deserialize");
+        match PlayerBehavior::from(request) {
+            PlayerBehavior::RecruitEmployee { candidate_id } => {
+                assert_eq!(candidate_id, "candidate_a");
+            }
+            other => panic!("unexpected behavior: {other:?}"),
+        }
+
+        let request: PlayerBehaviorRequest =
+            serde_json::from_str(r#"{"type":"request_emergency_supplies"}"#)
+                .expect("emergency supplies request should deserialize");
+        assert!(matches!(
+            PlayerBehavior::from(request),
+            PlayerBehavior::RequestEmergencySupplies
+        ));
+
+        let request: PlayerBehaviorRequest =
+            serde_json::from_str(r#"{"type":"open_headquarters_shop"}"#)
+                .expect("open headquarters shop request should deserialize");
+        assert!(matches!(
+            PlayerBehavior::from(request),
+            PlayerBehavior::OpenHeadquartersShop
+        ));
+
+        let employee_uuid = Uuid::new_v4();
+        let request: PlayerBehaviorRequest = serde_json::from_str(&format!(
+            r#"{{"type":"move_roster_unit","target_unit_uuid":"{employee_uuid}","dest_slot":2}}"#
+        ))
+        .expect("roster order move request should deserialize");
+        assert!(matches!(
+            PlayerBehavior::from(request),
+            PlayerBehavior::MoveRosterUnit {
+                target_unit_uuid,
+                dest_slot: 2,
+                swap_with_unit_uuid: None,
+            } if target_unit_uuid == employee_uuid
+        ));
+
+        let item_uuid = Uuid::new_v4();
+        let request: PlayerBehaviorRequest = serde_json::from_str(&format!(
+            r#"{{"type":"use_consumable_item","item_uuid":"{item_uuid}","target_employee_uuid":"{employee_uuid}"}}"#
+        ))
+        .expect("use consumable item request should deserialize");
+        assert!(matches!(
+            PlayerBehavior::from(request),
+            PlayerBehavior::UseConsumableItem {
+                item_uuid: actual_item_uuid,
+                target_employee_uuid,
+            } if actual_item_uuid == item_uuid && target_employee_uuid == employee_uuid
+        ));
     }
 
     #[test]
-    fn rejects_removed_phase_and_suppression_requests() {
-        for legacy_type in [
-            "request_phase_data",
-            "select_event",
-            "start_suppression",
-            "finish_suppression_replay",
-            "claim_combat_reward",
-            "exit_combat_reward",
-            "claim_bonus",
-            "exit_bonus",
-        ] {
-            let json = format!(r#"{{"type":"{legacy_type}"}}"#);
-            assert!(
-                serde_json::from_str::<PlayerBehaviorRequest>(&json).is_err(),
-                "legacy request `{legacy_type}` should not deserialize"
-            );
+    fn deserializes_live_battle_requests() {
+        let employee_uuid = Uuid::new_v4();
+        let request: PlayerBehaviorRequest = serde_json::from_str(&format!(
+            r#"{{"type":"deploy_unit","employee_uuid":"{employee_uuid}","position":{{"x":3,"y":4}},"facing":"right"}}"#
+        ))
+        .expect("deploy unit request should deserialize");
+        match PlayerBehavior::from(request) {
+            PlayerBehavior::DeployUnit {
+                employee_uuid: actual_uuid,
+                position,
+                facing,
+            } => {
+                assert_eq!(actual_uuid, employee_uuid);
+                assert_eq!(position.x, 3);
+                assert_eq!(position.y, 4);
+                assert_eq!(facing, FacingDirection::Right);
+            }
+            other => panic!("unexpected behavior: {other:?}"),
         }
+
+        let request: PlayerBehaviorRequest = serde_json::from_str(&format!(
+            r#"{{"type":"withdraw_unit","employee_uuid":"{employee_uuid}"}}"#
+        ))
+        .expect("withdraw unit request should deserialize");
+        assert!(matches!(
+            PlayerBehavior::from(request),
+            PlayerBehavior::WithdrawUnit {
+                employee_uuid: actual_uuid
+            } if actual_uuid == employee_uuid
+        ));
+
+        let request: PlayerBehaviorRequest =
+            serde_json::from_str(r#"{"type":"request_battle_state","since_seq":7}"#)
+                .expect("battle state request should deserialize");
+        assert!(matches!(
+            PlayerBehavior::from(request),
+            PlayerBehavior::RequestBattleState { since_seq: Some(7) }
+        ));
+
+        let request: PlayerBehaviorRequest =
+            serde_json::from_str(r#"{"type":"request_battle_state"}"#)
+                .expect("battle state request without since_seq should deserialize");
+        assert!(matches!(
+            PlayerBehavior::from(request),
+            PlayerBehavior::RequestBattleState { since_seq: None }
+        ));
+
+        let request: PlayerBehaviorRequest = serde_json::from_str(&format!(
+            r#"{{"type":"activate_skill","employee_uuid":"{employee_uuid}","skill_id":"fragment_one_sin_penitence","target":null}}"#
+        ))
+        .expect("activate skill request should deserialize");
+        assert!(matches!(
+            PlayerBehavior::from(request),
+            PlayerBehavior::ActivateSkill {
+                employee_uuid: actual_uuid,
+                skill_id,
+                target: None,
+            } if actual_uuid == employee_uuid && skill_id.as_str() == "fragment_one_sin_penitence"
+        ));
+
+        let request: PlayerBehaviorRequest = serde_json::from_str(r#"{"type":"retreat_battle"}"#)
+            .expect("retreat battle request should deserialize");
+        assert!(matches!(
+            PlayerBehavior::from(request),
+            PlayerBehavior::RetreatBattle
+        ));
+
+        let request: PlayerBehaviorRequest = serde_json::from_str(r#"{"type":"pause_battle"}"#)
+            .expect("pause battle request should deserialize");
+        assert!(matches!(
+            PlayerBehavior::from(request),
+            PlayerBehavior::PauseBattle
+        ));
+
+        let request: PlayerBehaviorRequest = serde_json::from_str(r#"{"type":"resume_battle"}"#)
+            .expect("resume battle request should deserialize");
+        assert!(matches!(
+            PlayerBehavior::from(request),
+            PlayerBehavior::ResumeBattle
+        ));
+
+        let request: PlayerBehaviorRequest =
+            serde_json::from_str(r#"{"type":"set_battle_speed","speed":"X0_5"}"#)
+                .expect("battle speed request should deserialize");
+        assert!(matches!(
+            PlayerBehavior::from(request),
+            PlayerBehavior::SetBattleSpeed {
+                speed: BattlePlaybackSpeed::X0_5
+            }
+        ));
     }
 }

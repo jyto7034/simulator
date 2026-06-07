@@ -3,7 +3,7 @@ use crate::game::battle::ids::UnitInstanceId;
 use crate::game::ability::SkillId;
 #[cfg(test)]
 use crate::game::stats::TriggerEffectTarget;
-use crate::game::{enums::Side, stats::Effect};
+use crate::game::{combat_balance::is_damage_mitigated_for_feedback, enums::Side, stats::Effect};
 use serde::{Deserialize, Serialize};
 
 use super::buffs::BuffId;
@@ -134,6 +134,19 @@ pub enum DamageType {
     True,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum DamageFeedbackTag {
+    Critical,
+    Mitigated,
+    FixedDamage,
+    Immune,
+    Piercing,
+    Shield,
+    Blocked,
+    ResistedStatus,
+}
+
 fn default_damage_type() -> DamageType {
     DamageType::Magic
 }
@@ -164,6 +177,7 @@ pub struct DamageResult {
     pub final_damage: u32,
     pub breakdown: Vec<DamageBreakdown>,
     pub critical: bool,
+    pub feedback_tags: Vec<DamageFeedbackTag>,
     pub target_killed: bool,
     pub target_remaining_hp: u32,
     /// 발동된 트리거 이벤트들
@@ -241,6 +255,7 @@ pub struct DamageContext<'a> {
     pub attacker_attack: u32,
     pub target_armor: i32,
     pub target_magic_resist: i32,
+    pub target_incoming_modifiers: DamageModifiers,
     pub target_current_hp: u32,
     pub target_max_hp: u32,
     pub on_attack_effects: &'a [SourcedEffect],
@@ -368,11 +383,34 @@ fn apply_post_mitigation_modifiers(
     reduced.clamp(0, i128::from(u32::MAX)) as u32
 }
 
+pub fn damage_feedback_tags(
+    damage_type: DamageType,
+    raw_damage: u32,
+    final_damage: u32,
+    critical: bool,
+) -> Vec<DamageFeedbackTag> {
+    let mut tags = Vec::new();
+    if raw_damage > 0 && final_damage == 0 {
+        tags.push(DamageFeedbackTag::Immune);
+    }
+    if matches!(damage_type, DamageType::True) {
+        tags.push(DamageFeedbackTag::FixedDamage);
+    }
+    if is_damage_mitigated_for_feedback(raw_damage, final_damage) {
+        tags.push(DamageFeedbackTag::Mitigated);
+    }
+    if critical {
+        tags.push(DamageFeedbackTag::Critical);
+    }
+    tags
+}
+
 /// 데미지 계산 및 결과 생성
 pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageResult {
     let mut commands = Vec::new();
     let modifiers = request
         .modifiers
+        .merge(ctx.target_incoming_modifiers)
         .merge(modifiers_from_effects(ctx.on_attack_effects))
         .merge(modifiers_from_effects(ctx.on_hit_effects));
     let critical = is_critical_hit(modifiers, request.crit_roll_percent);
@@ -470,6 +508,8 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
     }
     let target_remaining_hp = ctx.target_current_hp.saturating_sub(final_damage);
     let target_killed = target_remaining_hp == 0;
+    let feedback_tags =
+        damage_feedback_tags(request.damage_type, raw_damage, final_damage, critical);
 
     // 5. 사망 시 커맨드 추가
     if target_killed {
@@ -488,6 +528,7 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
         final_damage,
         breakdown,
         critical,
+        feedback_tags,
         target_killed,
         target_remaining_hp,
         triggered_commands: commands,
@@ -540,6 +581,7 @@ mod tests {
             attacker_attack: 1,
             target_armor: 0,
             target_magic_resist: 0,
+            target_incoming_modifiers: DamageModifiers::default(),
             target_current_hp: 1,
             target_max_hp: 1,
             on_attack_effects: &effects,
@@ -572,6 +614,7 @@ mod tests {
             attacker_attack: 1,
             target_armor: 3,
             target_magic_resist: 0,
+            target_incoming_modifiers: DamageModifiers::default(),
             target_current_hp: 100,
             target_max_hp: 100,
             on_attack_effects: &[],
@@ -580,6 +623,41 @@ mod tests {
 
         let result = calculate_damage(&request, &ctx);
         assert_eq!(result.final_damage, 9);
+    }
+
+    #[test]
+    fn resistance_alone_cannot_create_permanent_type_immunity_when_minimum_damage_exists() {
+        let attacker_id: UnitInstanceId = Uuid::from_u128(0xA).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(0xB).into();
+        let request = DamageRequest {
+            source: DamageSource::BasicAttack,
+            damage_type: DamageType::Physical,
+            modifiers: Default::default(),
+            crit_roll_percent: None,
+            attacker_id,
+            target_id,
+            base_damage: 10,
+            minimum_damage: 1,
+            time_ms: 0,
+        };
+        let ctx = DamageContext {
+            attacker_side: Side::Player,
+            target_side: Side::Opponent,
+            attacker_attack: 10,
+            target_armor: i32::MAX,
+            target_magic_resist: i32::MAX,
+            target_incoming_modifiers: DamageModifiers::default(),
+            target_current_hp: 100,
+            target_max_hp: 100,
+            on_attack_effects: &[],
+            on_hit_effects: &[],
+        };
+
+        let result = calculate_damage(&request, &ctx);
+
+        assert_eq!(result.final_damage, 1);
+        assert!(!result.feedback_tags.contains(&DamageFeedbackTag::Immune));
+        assert!(result.feedback_tags.contains(&DamageFeedbackTag::Mitigated));
     }
 
     #[test]
@@ -604,6 +682,7 @@ mod tests {
             attacker_attack: 999,
             target_armor: 999,
             target_magic_resist: 999,
+            target_incoming_modifiers: DamageModifiers::default(),
             target_current_hp: 100,
             target_max_hp: 100,
             on_attack_effects: &[],
@@ -660,6 +739,7 @@ mod tests {
             attacker_attack: 1,
             target_armor: 0,
             target_magic_resist: 0,
+            target_incoming_modifiers: DamageModifiers::default(),
             target_current_hp: 100,
             target_max_hp: 100,
             on_attack_effects: &on_attack,
@@ -692,6 +772,7 @@ mod tests {
             attacker_attack: 1,
             target_armor: 9_999,
             target_magic_resist: 100,
+            target_incoming_modifiers: DamageModifiers::default(),
             target_current_hp: 100,
             target_max_hp: 100,
             on_attack_effects: &[],
@@ -738,6 +819,7 @@ mod tests {
             attacker_attack: 1,
             target_armor: 100,
             target_magic_resist: 0,
+            target_incoming_modifiers: DamageModifiers::default(),
             target_current_hp: 300,
             target_max_hp: 300,
             on_attack_effects: &bonus,
@@ -785,6 +867,7 @@ mod tests {
             attacker_attack: 1,
             target_armor: 100,
             target_magic_resist: 0,
+            target_incoming_modifiers: DamageModifiers::default(),
             target_current_hp: 300,
             target_max_hp: 300,
             on_attack_effects: &on_attack,
@@ -817,6 +900,7 @@ mod tests {
             attacker_attack: 1,
             target_armor: 100,
             target_magic_resist: 100,
+            target_incoming_modifiers: DamageModifiers::default(),
             target_current_hp: 300,
             target_max_hp: 300,
             on_attack_effects: &[],
@@ -852,6 +936,7 @@ mod tests {
             attacker_attack: 1,
             target_armor: 100,
             target_magic_resist: 0,
+            target_incoming_modifiers: DamageModifiers::default(),
             target_current_hp: 300,
             target_max_hp: 300,
             on_attack_effects: &[],
@@ -888,6 +973,7 @@ mod tests {
             attacker_attack: 1,
             target_armor: -100,
             target_magic_resist: 0,
+            target_incoming_modifiers: DamageModifiers::default(),
             target_current_hp: 300,
             target_max_hp: 300,
             on_attack_effects: &[],
@@ -920,6 +1006,7 @@ mod tests {
             attacker_attack: 1,
             target_armor: 100,
             target_magic_resist: 0,
+            target_incoming_modifiers: DamageModifiers::default(),
             target_current_hp: 300,
             target_max_hp: 300,
             on_attack_effects: &[],
@@ -955,6 +1042,7 @@ mod tests {
             attacker_attack: 1,
             target_armor: 0,
             target_magic_resist: 0,
+            target_incoming_modifiers: DamageModifiers::default(),
             target_current_hp: 300,
             target_max_hp: 300,
             on_attack_effects: &[],
@@ -1001,6 +1089,7 @@ mod tests {
             attacker_attack: 1,
             target_armor: 0,
             target_magic_resist: 0,
+            target_incoming_modifiers: DamageModifiers::default(),
             target_current_hp: 300,
             target_max_hp: 300,
             on_attack_effects: &[],
@@ -1024,6 +1113,42 @@ mod tests {
     }
 
     #[test]
+    fn target_incoming_modifiers_reduce_all_incoming_damage() {
+        let attacker_id: UnitInstanceId = Uuid::from_u128(0xA).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(0xB).into();
+        let ctx = DamageContext {
+            attacker_side: Side::Player,
+            target_side: Side::Opponent,
+            attacker_attack: 1,
+            target_armor: 0,
+            target_magic_resist: 0,
+            target_incoming_modifiers: DamageModifiers {
+                damage_reduction_percent: 30,
+                ..Default::default()
+            },
+            target_current_hp: 300,
+            target_max_hp: 300,
+            on_attack_effects: &[],
+            on_hit_effects: &[],
+        };
+        let request = DamageRequest {
+            source: DamageSource::Ability,
+            damage_type: DamageType::Magic,
+            modifiers: Default::default(),
+            crit_roll_percent: None,
+            attacker_id,
+            target_id,
+            base_damage: 100,
+            minimum_damage: 0,
+            time_ms: 0,
+        };
+
+        let result = calculate_damage(&request, &ctx);
+
+        assert_eq!(result.final_damage, 70);
+    }
+
+    #[test]
     fn critical_hit_multiplies_raw_damage_before_mitigation() {
         let attacker_id: UnitInstanceId = Uuid::from_u128(0xA).into();
         let target_id: UnitInstanceId = Uuid::from_u128(0xB).into();
@@ -1033,6 +1158,7 @@ mod tests {
             attacker_attack: 1,
             target_armor: 100,
             target_magic_resist: 0,
+            target_incoming_modifiers: DamageModifiers::default(),
             target_current_hp: 300,
             target_max_hp: 300,
             on_attack_effects: &[],
@@ -1061,5 +1187,42 @@ mod tests {
         assert_eq!(result.final_damage, 75);
         assert_eq!(result.breakdown[0].raw_damage, 150);
         assert!(result.breakdown[0].critical);
+    }
+
+    #[test]
+    fn feedback_tags_include_critical() {
+        assert_eq!(
+            damage_feedback_tags(DamageType::Physical, 100, 100, true),
+            vec![DamageFeedbackTag::Critical]
+        );
+    }
+
+    #[test]
+    fn feedback_tags_include_mitigated_when_final_damage_is_sixty_percent_or_less() {
+        assert_eq!(
+            damage_feedback_tags(DamageType::Physical, 100, 60, false),
+            vec![DamageFeedbackTag::Mitigated]
+        );
+    }
+
+    #[test]
+    fn feedback_tags_include_fixed_damage_for_true_damage() {
+        assert_eq!(
+            damage_feedback_tags(DamageType::True, 100, 100, false),
+            vec![DamageFeedbackTag::FixedDamage]
+        );
+    }
+
+    #[test]
+    fn feedback_tags_include_immune_when_raw_damage_is_fully_prevented() {
+        assert_eq!(
+            damage_feedback_tags(DamageType::Magic, 100, 0, false),
+            vec![DamageFeedbackTag::Immune]
+        );
+    }
+
+    #[test]
+    fn feedback_tags_are_empty_for_plain_damage() {
+        assert!(damage_feedback_tags(DamageType::Physical, 100, 100, false).is_empty());
     }
 }

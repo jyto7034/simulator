@@ -4,8 +4,8 @@ use crate::game::ability::{DeliveryDef, SkillHitTargetFilter};
 use crate::game::battle::cooldown::{SourcedAbilityActivation, SourcedEffect};
 use crate::game::battle::core::BattleCore;
 use crate::game::battle::damage::{
-    apply_damage_to_unit, calculate_damage, BattleCommand, DamageContext, DamageRequest,
-    DamageResult, DamageSource, DamageType,
+    apply_damage_to_unit, calculate_damage, BattleCommand, DamageContext, DamageModifiers,
+    DamageRequest, DamageResult, DamageSource, DamageType,
 };
 use crate::game::battle::enums::BattleEvent;
 use crate::game::battle::ids::UnitInstanceId;
@@ -36,6 +36,7 @@ pub(super) struct ProjectileLaunch {
     pub(super) target_aim: WorldVec2,
     pub(super) speed_units_per_ms: u32,
     pub(super) guidance: ProjectileGuidance,
+    pub(super) damage_type: DamageType,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -51,6 +52,7 @@ struct AttackTargetSnapshot {
     owner: Side,
     defense: i32,
     magic_resist: i32,
+    incoming_damage_modifiers: DamageModifiers,
     current_hp: u32,
     max_hp: u32,
 }
@@ -59,6 +61,7 @@ struct AttackTargetSnapshot {
 struct BasicAttackDamageSnapshot {
     attacker: AttackSourceSnapshot,
     target: AttackTargetSnapshot,
+    damage_type: DamageType,
     time_ms: u64,
 }
 
@@ -413,6 +416,7 @@ impl BattleCore {
                 aim: launch.target_aim,
                 speed_units_per_ms: launch.speed_units_per_ms,
                 guidance: launch.guidance,
+                damage_type: launch.damage_type,
             },
         );
 
@@ -535,6 +539,7 @@ impl BattleCore {
             attacker_attack: snapshot.attacker.attack,
             target_armor: snapshot.target.defense,
             target_magic_resist: snapshot.target.magic_resist,
+            target_incoming_modifiers: snapshot.target.incoming_damage_modifiers,
             target_current_hp: snapshot.target.current_hp,
             target_max_hp: snapshot.target.max_hp,
             on_attack_effects: &on_attack_effects,
@@ -543,7 +548,7 @@ impl BattleCore {
 
         let request = DamageRequest {
             source: DamageSource::BasicAttack,
-            damage_type: DamageType::Physical,
+            damage_type: snapshot.damage_type,
             modifiers: Default::default(),
             crit_roll_percent: Some(self.damage_roll_percent(
                 snapshot.attacker.instance_id,
@@ -637,6 +642,7 @@ impl BattleCore {
                 final_damage: Some(result.final_damage),
                 damage_breakdown: Some(result.breakdown.clone()),
                 critical: Some(result.critical),
+                feedback_tags: result.feedback_tags.clone(),
             },
         );
 
@@ -712,6 +718,7 @@ impl BattleCore {
                 final_damage: None,
                 damage_breakdown: None,
                 critical: None,
+                feedback_tags: Vec::new(),
             },
         );
 
@@ -746,6 +753,7 @@ impl BattleCore {
                 projectile_id,
                 projectile.attacker_instance_id,
                 projectile.target_instance_id,
+                projectile.damage_type,
                 projectile.current_position,
             );
             return;
@@ -758,6 +766,7 @@ impl BattleCore {
                 projectile_id,
                 projectile.attacker_instance_id,
                 projectile.target_instance_id,
+                projectile.damage_type,
                 projectile.current_position,
             );
             return;
@@ -772,6 +781,7 @@ impl BattleCore {
                 projectile_id,
                 projectile.attacker_instance_id,
                 projectile.target_instance_id,
+                projectile.damage_type,
                 projectile.current_position,
             );
             return;
@@ -811,6 +821,7 @@ impl BattleCore {
                 projectile_id,
                 projectile.attacker_instance_id,
                 projectile.target_instance_id,
+                projectile.damage_type,
                 impact_position,
             );
             return;
@@ -834,6 +845,7 @@ impl BattleCore {
         projectile_id: Uuid,
         attacker_instance_id: UnitInstanceId,
         target_instance_id: UnitInstanceId,
+        _damage_type: DamageType,
         impact_position: WorldVec2,
     ) {
         self.record_timeline(
@@ -862,6 +874,7 @@ impl BattleCore {
         projectile_id: Uuid,
         attacker_instance_id: UnitInstanceId,
         target_instance_id: UnitInstanceId,
+        damage_type: DamageType,
         impact_position: WorldVec2,
     ) {
         self.record_timeline(
@@ -875,7 +888,14 @@ impl BattleCore {
             },
         );
 
-        let (target_owner, target_defense, target_magic_resist, target_current_hp, target_max_hp) = {
+        let (
+            target_owner,
+            target_defense,
+            target_magic_resist,
+            target_incoming_modifiers,
+            target_current_hp,
+            target_max_hp,
+        ) = {
             let Some(target) = self.units.get(&target_instance_id) else {
                 return;
             };
@@ -886,6 +906,7 @@ impl BattleCore {
                 target.owner,
                 target.stats.defense,
                 target.stats.magic_resist,
+                target.incoming_damage_modifiers,
                 target.stats.current_health,
                 target.stats.max_health,
             )
@@ -913,6 +934,7 @@ impl BattleCore {
                 attacker_attack,
                 target_armor: target_defense,
                 target_magic_resist,
+                target_incoming_modifiers,
                 target_current_hp,
                 target_max_hp,
                 on_attack_effects: &[],
@@ -920,7 +942,7 @@ impl BattleCore {
             };
             let request = DamageRequest {
                 source: DamageSource::BasicAttack,
-                damage_type: DamageType::Physical,
+                damage_type,
                 modifiers: Default::default(),
                 crit_roll_percent: Some(self.damage_roll_percent(
                     attacker_instance_id,
@@ -988,6 +1010,7 @@ impl BattleCore {
             attacker_attack,
             target_armor: target_defense,
             target_magic_resist,
+            target_incoming_modifiers,
             target_current_hp,
             target_max_hp,
             on_attack_effects: &on_attack_effects,
@@ -996,7 +1019,7 @@ impl BattleCore {
 
         let request = DamageRequest {
             source: DamageSource::BasicAttack,
-            damage_type: DamageType::Physical,
+            damage_type,
             modifiers: Default::default(),
             crit_roll_percent: Some(self.damage_roll_percent(
                 attacker_instance_id,
@@ -1058,7 +1081,14 @@ impl BattleCore {
             )
         };
 
-        let (target_owner, target_defense, target_magic_resist, target_current_hp, target_max_hp) = {
+        let (
+            target_owner,
+            target_defense,
+            target_magic_resist,
+            target_incoming_modifiers,
+            target_current_hp,
+            target_max_hp,
+        ) = {
             let Some(target) = self.units.get(&target_id) else {
                 return false;
             };
@@ -1069,6 +1099,7 @@ impl BattleCore {
                 target.owner,
                 target.stats.defense,
                 target.stats.magic_resist,
+                target.incoming_damage_modifiers,
                 target.stats.current_health,
                 target.stats.max_health,
             )
@@ -1099,9 +1130,11 @@ impl BattleCore {
                             owner: target_owner,
                             defense: target_defense,
                             magic_resist: target_magic_resist,
+                            incoming_damage_modifiers: target_incoming_modifiers,
                             current_hp: target_current_hp,
                             max_hp: target_max_hp,
                         },
+                        damage_type: basic.damage_type,
                         time_ms: current_time_ms,
                     });
 
@@ -1165,68 +1198,14 @@ impl BattleCore {
                         .unwrap_or_else(|| WorldVec2::from_tile_center(target_pos)),
                     speed_units_per_ms,
                     guidance: ProjectileGuidance::Homing,
+                    damage_type: basic.damage_type,
                 });
                 true
             }
-            DeliveryDef::Area { .. } => {
-                // Basic attacks never use area delivery. Treat unexpected data
-                // defensively as an instant hit path rather than introducing a
-                // separate basic-attack spatial model.
-                self.add_resonance(attacker_instance_id, 10, current_time_ms, true);
-
-                let result =
-                    self.calculate_basic_attack_damage_snapshot(BasicAttackDamageSnapshot {
-                        attacker: AttackSourceSnapshot {
-                            instance_id: attacker_instance_id,
-                            owner: attacker_owner,
-                            attack: attacker_attack,
-                        },
-                        target: AttackTargetSnapshot {
-                            instance_id: target_id,
-                            owner: target_owner,
-                            defense: target_defense,
-                            magic_resist: target_magic_resist,
-                            current_hp: target_current_hp,
-                            max_hp: target_max_hp,
-                        },
-                        time_ms: current_time_ms,
-                    });
-
-                let dealt = target_current_hp.saturating_sub(result.target_remaining_hp);
-                let gained = dealt / 10;
-                if gained > 0 {
-                    self.add_resonance(attacker_instance_id, gained, current_time_ms, true);
-                }
-
-                self.apply_damage_result_and_record(
-                    Some(attacker_instance_id),
-                    &result,
-                    current_time_ms,
-                    HpChangeReason::BasicAttack,
-                );
-
-                if !result.triggered_commands.is_empty() {
-                    self.process_commands(result.triggered_commands, current_time_ms);
-                }
-                let mut trigger_ability_commands = Self::activation_commands_from_bindings(
-                    self.collect_all_trigger_activations(
-                        attacker_instance_id,
-                        TriggerType::OnAttack,
-                    ),
-                    attacker_instance_id,
-                    Some(target_id),
-                );
-                trigger_ability_commands.extend(Self::activation_commands_from_bindings(
-                    self.collect_all_trigger_activations(target_id, TriggerType::OnHit),
-                    target_id,
-                    Some(attacker_instance_id),
-                ));
-                if !trigger_ability_commands.is_empty() {
-                    self.process_commands(trigger_ability_commands, current_time_ms);
-                }
-
-                self.schedule_pending_autocasts(current_time_ms);
-                true
+            DeliveryDef::TileArea { .. } => {
+                // BasicAttackDef validation rejects TileArea. Do not silently
+                // reinterpret invalid authoring data as a single-target hit.
+                false
             }
         }
     }
@@ -1350,6 +1329,7 @@ impl BattleCore {
                         attacker_attack: source_attack,
                         target_armor: target.stats.defense,
                         target_magic_resist: target.stats.magic_resist,
+                        target_incoming_modifiers: target.incoming_damage_modifiers,
                         target_current_hp: target.stats.current_health,
                         target_max_hp: target.stats.max_health,
                         on_attack_effects: &[],
@@ -1480,9 +1460,8 @@ impl BattleCore {
 mod tests {
     use super::projectile_flight_ms;
     use crate::game::ability::{
-        AbilityActivationBinding, AbilityActivationDef, DeliveryDef, SkillAreaShapeDef,
-        SkillCastTargetingDef, SkillDef, SkillHitTargetFilter, SkillId, SkillStepDef, SkillTarget,
-        StepTargetingMode, UnitTargetRule,
+        AbilityActivationBinding, AbilityActivationDef, DeliveryDef, SkillCastTargetingDef,
+        SkillDef, SkillId, SkillStepDef, SkillTarget, StepTargetingMode, UnitTargetRule,
     };
     use crate::game::battle::core::movement::{
         types::{TimelineVec2, UnitBody, WorldVec2, DATA_UNITS_PER_WORLD},
@@ -1490,7 +1469,9 @@ mod tests {
     };
     use crate::game::battle::core::types::{ProjectileGuidance, RuntimeUnit};
     use crate::game::battle::core::{ActiveMovementSegment, ProjectileRecord};
-    use crate::game::battle::damage::{DamageSource, DamageType};
+    use crate::game::battle::damage::{
+        BattleCommand, DamageFeedbackTag, DamageModifiers, DamageSource, DamageType,
+    };
     use crate::game::battle::scenario::BattleScenario;
     use crate::game::battle::timeline::{
         HpChangeReason, MovementStopReason, Timeline, TimelineEvent,
@@ -1544,6 +1525,7 @@ mod tests {
             target_aim: WorldVec2::new(0.0009, 0.0002),
             speed_units_per_ms: 1000,
             guidance: ProjectileGuidance::Homing,
+            damage_type: DamageType::Physical,
         });
 
         let stored = core
@@ -1660,6 +1642,7 @@ mod tests {
                 aim: WorldVec2::new(10.0, 0.0),
                 speed_units_per_ms: DATA_UNITS_PER_WORLD as u32,
                 guidance: ProjectileGuidance::Fixed,
+                damage_type: DamageType::Physical,
             },
         );
 
@@ -1670,45 +1653,6 @@ mod tests {
             .units
             .get(&target_id)
             .is_some_and(|target| target.stats.current_health < 100));
-    }
-
-    #[test]
-    fn area_target_collection_uses_runtime_unit_radius() {
-        let mut core = new_test_core(empty_game_data(), 1);
-        let caster_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(44));
-        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(45));
-
-        let mut caster = test_runtime_unit(
-            caster_id,
-            Side::Player,
-            Uuid::nil(),
-            UnitStats::with_values(100, 100, 1, 0, 1),
-        );
-        caster.body = UnitBody::new_at(WorldVec2::ZERO, 0.35, 1.0);
-        let mut target = test_runtime_unit(
-            target_id,
-            Side::Opponent,
-            Uuid::nil(),
-            UnitStats::with_values(100, 100, 1, 0, 1),
-        );
-        target.body = UnitBody::new_at(WorldVec2::new(0.30, 0.0), 0.35, 1.0);
-
-        core.units.insert(caster_id, caster);
-        core.units.insert(target_id, target);
-
-        let targets = core.collect_area_targets_at(
-            0,
-            Side::Player,
-            caster_id,
-            WorldVec2::ZERO,
-            WorldVec2::ZERO,
-            WorldVec2::new(1.0, 0.0),
-            SkillAreaShapeDef::Circle { radius_units: 0 },
-            SkillHitTargetFilter::Enemies,
-            false,
-        );
-
-        assert_eq!(targets, vec![target_id]);
     }
 
     fn empty_game_data() -> Arc<GameDataBase> {
@@ -1737,6 +1681,8 @@ mod tests {
             basic_attack: Default::default(),
             resonance: Default::default(),
             skill_id: None,
+            mobility_kind: Default::default(),
+            target_traits: Vec::new(),
         };
         let target = AbnormalityMetadata {
             id: "target".to_string(),
@@ -1752,6 +1698,8 @@ mod tests {
             basic_attack: Default::default(),
             resonance: Default::default(),
             skill_id: None,
+            mobility_kind: Default::default(),
+            target_traits: Vec::new(),
         };
         let item = EquipmentMetadata {
             id: "item".to_string(),
@@ -1761,11 +1709,14 @@ mod tests {
             rarity: crate::game::enums::RiskLevel::ZAYIN,
             price: 0,
             allow_duplicate_equip: true,
+            bound: false,
+            cannot_unequip_reason: "equipment_bound".to_string(),
             triggered_effects: item_effects,
             ability_activations: item_activations,
+            weapon_profile: Some(Default::default()),
         };
 
-        GameDataBuilder::empty()
+        GameDataBuilder::live_defaults()
             .with_abnormalities(vec![attacker, target])
             .with_equipment(vec![item])
             .with_skills(SkillDatabase::new(skills))
@@ -1792,6 +1743,8 @@ mod tests {
             basic_attack: Default::default(),
             resonance: Default::default(),
             skill_id: None,
+            mobility_kind: Default::default(),
+            target_traits: Vec::new(),
         };
         let target = AbnormalityMetadata {
             id: "target".to_string(),
@@ -1807,6 +1760,8 @@ mod tests {
             basic_attack: Default::default(),
             resonance: Default::default(),
             skill_id: None,
+            mobility_kind: Default::default(),
+            target_traits: Vec::new(),
         };
         let artifact = crate::game::data::artifact_data::ArtifactMetadata {
             id: "artifact".to_string(),
@@ -1837,6 +1792,8 @@ mod tests {
                 id: "hit".to_string(),
                 delay_ms: 0,
                 range_units: 1.0,
+                defense_tile_range: None,
+                air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::CurrentTarget,
                 },
@@ -1859,22 +1816,40 @@ mod tests {
         base_uuid: Uuid,
         stats: UnitStats,
     ) -> RuntimeUnit {
+        let basic_attack = crate::game::data::abnormality_data::BasicAttackDef {
+            defense_tile_range: Some(crate::game::battle::tile_range::TileRangePattern {
+                include_anchor_tile: false,
+                rows: vec![
+                    "XXXXX".to_string(),
+                    "XXXXX".to_string(),
+                    "XX@XX".to_string(),
+                    "XXXXX".to_string(),
+                    "XXXXX".to_string(),
+                ],
+            }),
+            ..Default::default()
+        };
         RuntimeUnit {
             instance_id,
+            spawn_order: u64::from(instance_id.as_bytes()[15]),
             source_owned_uuid: instance_id.as_uuid(),
             owner,
             role: crate::game::battle::types::BattleUnitRole::Combatant,
             base_uuid,
             stats,
-            basic_attack: Default::default(),
+            incoming_damage_modifiers: Default::default(),
+            basic_attack,
             skill_id: None,
+            skill_activation_mode: crate::game::ability::SkillActivationMode::Auto,
             body: Default::default(),
             tactical_anchor: None,
-            tactical_group_id: None,
             enemy_movement_plan: None,
             block_capacity: 0,
             block_radius_units: 0.0,
             blockable: true,
+            mobility_kind: Default::default(),
+            target_traits: Vec::new(),
+            facing_direction: Some(crate::game::battle::tile_range::FacingDirection::Right),
             move_epoch: 0,
             action_state: ActionState::Idle,
             action_locks: Default::default(),
@@ -1891,13 +1866,13 @@ mod tests {
         }
     }
 
-    fn write_timeline_export(name: &str, timeline: &Timeline) -> PathBuf {
-        let out_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("timeline_exports");
-        std::fs::create_dir_all(&out_dir).expect("create timeline_exports directory");
+    fn write_debug_event_log_export(name: &str, timeline: &Timeline) -> PathBuf {
+        let out_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("debug_event_log_exports");
+        std::fs::create_dir_all(&out_dir).expect("create debug_event_log_exports directory");
         let out_path = out_dir.join(format!("{name}.json"));
         timeline
             .write_pretty_json(&out_path)
-            .expect("write timeline json");
+            .expect("write debug event log json");
         out_path
     }
 
@@ -1910,6 +1885,81 @@ mod tests {
 
     fn new_test_core(game_data: Arc<GameDataBase>, seed: u64) -> super::BattleCore {
         super::BattleCore::new_from_scenario(BattleScenario::empty((4, 4)), game_data, seed)
+    }
+
+    #[test]
+    fn apply_damage_command_records_feedback_tags_on_hp_changed() {
+        let mut core = new_test_core(empty_game_data(), 1);
+        let attacker_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xF01));
+        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xF02));
+
+        core.units.insert(
+            attacker_id,
+            test_runtime_unit(
+                attacker_id,
+                Side::Player,
+                Uuid::nil(),
+                UnitStats::with_values(100, 100, 10, 0, 1000),
+            ),
+        );
+        core.units.insert(
+            target_id,
+            test_runtime_unit(
+                target_id,
+                Side::Opponent,
+                Uuid::nil(),
+                UnitStats::with_values(200, 200, 1, 0, 1000),
+            ),
+        );
+
+        core.process_commands(
+            vec![BattleCommand::ApplyDamage {
+                source_id: attacker_id,
+                target_id,
+                amount: 100,
+                damage_type: DamageType::True,
+                modifiers: DamageModifiers::default(),
+                source: DamageSource::Ability,
+                minimum_damage: 0,
+            }],
+            50,
+        );
+
+        let feedback_tags = core
+            .timeline
+            .entries
+            .iter()
+            .find_map(|entry| match &entry.event {
+                TimelineEvent::HpChanged {
+                    source_instance_id,
+                    target_instance_id,
+                    reason,
+                    damage_type,
+                    feedback_tags,
+                    ..
+                } if *source_instance_id == Some(attacker_id)
+                    && *target_instance_id == target_id
+                    && *reason == HpChangeReason::Command =>
+                {
+                    assert_eq!(*damage_type, Some(DamageType::True));
+                    Some(feedback_tags.clone())
+                }
+                _ => None,
+            })
+            .expect("missing command damage HpChanged");
+
+        assert_eq!(feedback_tags, vec![DamageFeedbackTag::FixedDamage]);
+    }
+
+    fn place_test_unit(
+        core: &mut super::BattleCore,
+        unit_id: crate::game::battle::ids::UnitInstanceId,
+        position: Position,
+    ) {
+        core.battlefield.place(unit_id, position).unwrap();
+        if let Some(unit) = core.units.get_mut(&unit_id) {
+            unit.set_world_position(WorldVec2::from_tile_center(position));
+        }
     }
 
     #[test]
@@ -1928,20 +1978,25 @@ mod tests {
             attacker_id,
             RuntimeUnit {
                 instance_id: attacker_id,
+                spawn_order: 0,
                 source_owned_uuid: attacker_id.as_uuid(),
                 owner: Side::Player,
                 role: crate::game::battle::types::BattleUnitRole::Combatant,
                 base_uuid: Uuid::nil(),
                 stats: attacker_stats,
+                incoming_damage_modifiers: Default::default(),
                 basic_attack: Default::default(),
                 skill_id: None,
+                skill_activation_mode: crate::game::ability::SkillActivationMode::Auto,
                 body: Default::default(),
                 tactical_anchor: None,
-                tactical_group_id: None,
                 enemy_movement_plan: None,
                 block_capacity: 0,
                 block_radius_units: 0.0,
                 blockable: true,
+                mobility_kind: Default::default(),
+                target_traits: Vec::new(),
+                facing_direction: None,
                 move_epoch: 0,
                 action_state: ActionState::Idle,
                 action_locks: Default::default(),
@@ -1962,20 +2017,25 @@ mod tests {
             target_id,
             RuntimeUnit {
                 instance_id: target_id,
+                spawn_order: 1,
                 source_owned_uuid: target_id.as_uuid(),
                 owner: Side::Opponent,
                 role: crate::game::battle::types::BattleUnitRole::Combatant,
                 base_uuid: Uuid::nil(),
                 stats: target_stats,
+                incoming_damage_modifiers: Default::default(),
                 basic_attack: Default::default(),
                 skill_id: None,
+                skill_activation_mode: crate::game::ability::SkillActivationMode::Auto,
                 body: Default::default(),
                 tactical_anchor: None,
-                tactical_group_id: None,
                 enemy_movement_plan: None,
                 block_capacity: 0,
                 block_radius_units: 0.0,
                 blockable: true,
+                mobility_kind: Default::default(),
+                target_traits: Vec::new(),
+                facing_direction: None,
                 move_epoch: 0,
                 action_state: ActionState::Idle,
                 action_locks: Default::default(),
@@ -1995,9 +2055,21 @@ mod tests {
         core.battlefield
             .place(attacker_id, Position::new(0, 0))
             .unwrap();
+        core.units
+            .get_mut(&attacker_id)
+            .unwrap()
+            .set_world_position(WorldVec2::new(0.0, 0.0));
         core.battlefield
             .place(target_id, Position::new(1, 0))
             .unwrap();
+        core.units
+            .get_mut(&target_id)
+            .unwrap()
+            .set_world_position(WorldVec2::new(1.0, 0.0));
+        core.units.get_mut(&attacker_id).unwrap().body =
+            UnitBody::new_at(WorldVec2::new(0.0, 0.0), 0.10, 1.0);
+        core.units.get_mut(&target_id).unwrap().body =
+            UnitBody::new_at(WorldVec2::new(1.0, 0.0), 0.10, 1.0);
 
         let projectile_id = Uuid::from_u128(0xAAAA);
         core.projectiles.insert(
@@ -2010,8 +2082,9 @@ mod tests {
                 start: WorldVec2::new(0.0, 0.0),
                 current_position: WorldVec2::new(0.0, 0.0),
                 aim: WorldVec2::new(1.0, 0.0),
-                speed_units_per_ms: 1_000,
+                speed_units_per_ms: DATA_UNITS_PER_WORLD as u32,
                 guidance: ProjectileGuidance::Homing,
+                damage_type: DamageType::Physical,
             },
         );
 
@@ -2069,6 +2142,7 @@ mod tests {
                     final_damage,
                     damage_breakdown,
                     critical,
+                    feedback_tags,
                     ..
                 } if *source_instance_id == Some(attacker_id)
                     && *target_instance_id == target_id
@@ -2081,6 +2155,7 @@ mod tests {
                         *final_damage,
                         damage_breakdown.clone(),
                         *critical,
+                        feedback_tags.clone(),
                     ))
                 }
                 _ => None,
@@ -2091,10 +2166,11 @@ mod tests {
         assert!(hp_changed.2.is_some());
         assert!(hp_changed.3.is_some());
         assert_eq!(hp_changed.5, Some(false));
+        assert_eq!(hp_changed.6, Vec::<DamageFeedbackTag>::new());
         let breakdown = hp_changed.4.expect("missing damage breakdown");
         assert_eq!(breakdown[0].damage_type, DamageType::Physical);
 
-        write_timeline_export(
+        write_debug_event_log_export(
             "advance_basic_attack_projectile_is_idempotent_for_same_projectile_id",
             &core.timeline,
         );
@@ -2112,20 +2188,25 @@ mod tests {
             target_id,
             RuntimeUnit {
                 instance_id: target_id,
+                spawn_order: 0,
                 source_owned_uuid: target_id.as_uuid(),
                 owner: Side::Opponent,
                 role: crate::game::battle::types::BattleUnitRole::Combatant,
                 base_uuid: Uuid::nil(),
                 stats: target_stats,
+                incoming_damage_modifiers: Default::default(),
                 basic_attack: Default::default(),
                 skill_id: None,
+                skill_activation_mode: crate::game::ability::SkillActivationMode::Auto,
                 body: Default::default(),
                 tactical_anchor: None,
-                tactical_group_id: None,
                 enemy_movement_plan: None,
                 block_capacity: 0,
                 block_radius_units: 0.0,
                 blockable: true,
+                mobility_kind: Default::default(),
+                target_traits: Vec::new(),
+                facing_direction: None,
                 move_epoch: 0,
                 action_state: ActionState::Idle,
                 action_locks: Default::default(),
@@ -2185,6 +2266,21 @@ mod tests {
             }
             _ => unreachable!("expected MovementStopped"),
         }
+
+        let hp_feedback_tags = core
+            .timeline
+            .entries
+            .iter()
+            .find_map(|entry| match &entry.event {
+                TimelineEvent::HpChanged {
+                    target_instance_id,
+                    feedback_tags,
+                    ..
+                } if *target_instance_id == target_id => Some(feedback_tags.clone()),
+                _ => None,
+            })
+            .expect("missing HpChanged");
+        assert_eq!(hp_feedback_tags, Vec::<DamageFeedbackTag>::new());
     }
 
     #[test]
@@ -2243,12 +2339,8 @@ mod tests {
                 base_uuid: item_base_uuid,
             },
         );
-        core.battlefield
-            .place(attacker_id, Position::new(0, 0))
-            .unwrap();
-        core.battlefield
-            .place(target_id, Position::new(1, 0))
-            .unwrap();
+        place_test_unit(&mut core, attacker_id, Position::new(0, 0));
+        place_test_unit(&mut core, target_id, Position::new(1, 0));
 
         assert!(core.resolve_basic_attack(attacker_id, target_id, 0));
         drain_event_queue(&mut core);
@@ -2323,12 +2415,8 @@ mod tests {
                 base_uuid: item_base_uuid,
             },
         );
-        core.battlefield
-            .place(attacker_id, Position::new(0, 0))
-            .unwrap();
-        core.battlefield
-            .place(target_id, Position::new(1, 0))
-            .unwrap();
+        place_test_unit(&mut core, attacker_id, Position::new(0, 0));
+        place_test_unit(&mut core, target_id, Position::new(1, 0));
 
         assert!(core.resolve_basic_attack(attacker_id, target_id, 0));
         drain_event_queue(&mut core);
@@ -2417,15 +2505,9 @@ mod tests {
                 base_uuid: artifact_base_uuid,
             },
         );
-        core.battlefield
-            .place(attacker_id, Position::new(0, 0))
-            .unwrap();
-        core.battlefield
-            .place(ally_id, Position::new(0, 1))
-            .unwrap();
-        core.battlefield
-            .place(target_id, Position::new(1, 0))
-            .unwrap();
+        place_test_unit(&mut core, attacker_id, Position::new(0, 0));
+        place_test_unit(&mut core, ally_id, Position::new(0, 1));
+        place_test_unit(&mut core, target_id, Position::new(1, 0));
 
         assert!(core.resolve_basic_attack(attacker_id, target_id, 0));
         drain_event_queue(&mut core);
@@ -2494,12 +2576,8 @@ mod tests {
                 base_uuid: item_base_uuid,
             },
         );
-        core.battlefield
-            .place(attacker_id, Position::new(0, 0))
-            .unwrap();
-        core.battlefield
-            .place(target_id, Position::new(1, 0))
-            .unwrap();
+        place_test_unit(&mut core, attacker_id, Position::new(0, 0));
+        place_test_unit(&mut core, target_id, Position::new(1, 0));
 
         assert!(core.resolve_basic_attack(attacker_id, target_id, 0));
         assert!(core.resolve_basic_attack(attacker_id, target_id, 10));

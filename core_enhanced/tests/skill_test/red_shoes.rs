@@ -21,13 +21,12 @@ fn red_shoes_berserk_schedules_two_triggered_follow_up_attacks() {
 
     let board = r#"
         . . . . . . .
-        . C . . . . .
-        . D! . . . . .
+        . C D! . . . .
     "#;
 
     let result = run_abnormality_scenario("t-09-09", scenario_from_board(board, &legend));
     let enemy = result
-        .unit_instance_at(Position::new(1, 2), Some(Side::Opponent))
+        .unit_instance_at(Position::new(2, 1), Some(Side::Opponent))
         .unwrap();
 
     let cast = result.first_cast_of("red_shoes_berserk");

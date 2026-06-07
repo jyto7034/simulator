@@ -1,11 +1,13 @@
 use uuid::Uuid;
 
+use crate::game::battle::timeline::TimelineEntry;
 use crate::{
     game::resources::Position,
     game::{
         ability::{
-            DeliveryDef, SkillDef, SkillEffectDef, SkillId, SkillStepCondition, SkillStepDef,
-            SkillStepRepeat, SkillTarget, SkillUnitReference, StepTargetingMode,
+            DeliveryDef, SkillActivationMode, SkillDef, SkillEffectDef, SkillId,
+            SkillStepCondition, SkillStepDef, SkillStepRepeat, SkillTarget, SkillUnitReference,
+            StepTargetingMode,
         },
         battle::{
             cooldown::CooldownSource,
@@ -17,9 +19,10 @@ use crate::{
                 AttackKind, SkillCastTarget, Timeline, TimelineCause, TimelineEvent,
                 TimelineRootCause,
             },
-            types::{BattleResult, BattleWinner, ParticipantBattleResult},
+            types::{BattleResult, BattleUnitDraft, BattleWinner, ParticipantBattleResult},
         },
-        behavior::GameError,
+        behavior::{GameError, LiveBattleSkillReadinessDto},
+        data::equipment_data::WeaponRangeRole,
         determinism,
         enums::Side,
         stats::UnitStats,
@@ -41,6 +44,80 @@ use super::{
 };
 
 const MAX_BATTLE_TIME_MS: u64 = 60_000;
+
+#[derive(Debug, Clone)]
+pub struct BattleExecutionState {
+    last_event_time_ms: u64,
+    battle_start_hooks_ran: bool,
+    finished: bool,
+    finalized: bool,
+}
+
+impl BattleExecutionState {
+    pub fn last_event_time_ms(&self) -> u64 {
+        self.last_event_time_ms
+    }
+
+    pub fn is_finished(&self) -> bool {
+        self.finished
+    }
+
+    pub fn is_finalized(&self) -> bool {
+        self.finalized
+    }
+
+    pub fn next_time_after(&self, delta_ms: u64) -> u64 {
+        self.last_event_time_ms.saturating_add(delta_ms)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct BattleFinishSignal {
+    pub time_ms: u64,
+    pub winner: BattleWinner,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BattleStepOutcome {
+    Running,
+    Finished(BattleFinishSignal),
+}
+
+#[derive(Debug, Clone)]
+pub enum BattleLiveCommand {
+    DeployPlayerUnit {
+        draft: BattleUnitDraft,
+        position: Position,
+        facing: crate::game::battle::tile_range::FacingDirection,
+        instance_salt: u32,
+        time_ms: u64,
+    },
+    WithdrawUnit {
+        unit_id: UnitInstanceId,
+    },
+    ActivateSkill {
+        unit_id: UnitInstanceId,
+        skill_id: SkillId,
+        target: Option<SkillCastTarget>,
+        time_ms: u64,
+    },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BattleLiveCommandOutcome {
+    UnitDeployed { unit_id: UnitInstanceId },
+    UnitWithdrawn { unit_id: UnitInstanceId },
+    SkillActivated { unit_id: UnitInstanceId },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum BattleLiveSignal {
+    StabilizationDelta {
+        source_unit_id: UnitInstanceId,
+        skill_id: SkillId,
+        amount: i32,
+    },
+}
 
 #[derive(Debug, Clone)]
 pub(super) struct TriggeredAbilityProcContext<'a> {
@@ -247,6 +324,306 @@ impl BattleCore {
         });
     }
 
+    fn explicit_skill_cast_target_is_valid(
+        &self,
+        skill: &SkillDef,
+        caster_instance_id: UnitInstanceId,
+        caster_owner: Side,
+        _caster_pos: Position,
+        target: SkillCastTarget,
+    ) -> bool {
+        let Some((range_units, target_def, defense_tile_range, air_capable)) =
+            skill.cast_target_definition()
+        else {
+            return false;
+        };
+
+        match (target_def, target) {
+            (SkillTarget::SelfUnit, SkillCastTarget::Unit { unit_instance_id }) => {
+                unit_instance_id == caster_instance_id
+            }
+            (SkillTarget::EnemySingle { .. }, SkillCastTarget::Unit { unit_instance_id }) => {
+                if !self.is_alive_enemy(unit_instance_id, caster_owner) {
+                    return false;
+                }
+                if !self.single_target_can_target_unit(unit_instance_id, air_capable) {
+                    return false;
+                }
+                if self.is_defense_route_player_unit(caster_instance_id) {
+                    return self.is_target_in_defense_tile_range(
+                        caster_instance_id,
+                        unit_instance_id,
+                        defense_tile_range,
+                    );
+                }
+                self.unit_body_view(caster_instance_id)
+                    .zip(self.unit_body_view(unit_instance_id))
+                    .is_some_and(|(caster, target)| caster.can_reach(&target, range_units))
+            }
+            (SkillTarget::CastTarget, SkillCastTarget::Tile { position }) => {
+                self.battlefield.in_bounds(position)
+            }
+            _ => false,
+        }
+    }
+
+    fn start_manual_skill_cast(
+        &mut self,
+        time_ms: u64,
+        caster_instance_id: UnitInstanceId,
+        requested_skill_id: SkillId,
+        explicit_target: Option<SkillCastTarget>,
+    ) -> Result<(), GameError> {
+        let (skill, cast_target) = self.resolve_manual_skill_cast_request(
+            time_ms,
+            caster_instance_id,
+            &requested_skill_id,
+            explicit_target,
+        )?;
+
+        let cast_end_ms = if skill.focus_time_ms == 0 {
+            time_ms.saturating_add(1)
+        } else {
+            time_ms.saturating_add(skill.focus_time_ms as u64)
+        };
+        if let Some(caster) = self.units.get_mut(&caster_instance_id) {
+            caster.next_action_time = cast_end_ms;
+            caster.action_locks.lock_resonance_gain_until(cast_end_ms);
+            if !skill.focus_permissions.allows_basic_attack {
+                caster.action_locks.lock_basic_attack_until(cast_end_ms);
+            }
+            if !skill.focus_permissions.allows_move {
+                caster.action_locks.lock_movement_until(cast_end_ms);
+            }
+            caster.pending_skill_cast = Some(PendingSkillCast {
+                skill_id: skill.id.clone(),
+                cast_target,
+            });
+        }
+
+        if !skill.focus_permissions.allows_move {
+            let interrupted = self.interrupt_movement(
+                time_ms,
+                caster_instance_id,
+                crate::game::battle::timeline::MovementStopReason::CastStarted,
+                Some(cast_end_ms),
+                ActionState::Idle,
+            );
+            if interrupted {
+                self.schedule_continuous_movement_tick(cast_end_ms);
+            }
+        }
+
+        let start_seq = self.record_timeline(
+            time_ms,
+            TimelineEvent::ManualCastStart {
+                skill_id: skill.id,
+                caster_instance_id,
+                target: cast_target,
+            },
+        );
+        self.event_queue.push(BattleEvent::ManualCastEnd {
+            time_ms: cast_end_ms,
+            caster_instance_id,
+            cause: TimelineCause::Parent { seq: start_seq },
+        });
+
+        Ok(())
+    }
+
+    pub fn validate_manual_skill_activation(
+        &self,
+        time_ms: u64,
+        caster_instance_id: UnitInstanceId,
+        requested_skill_id: &SkillId,
+        explicit_target: Option<SkillCastTarget>,
+    ) -> Result<(), GameError> {
+        self.resolve_manual_skill_cast_request(
+            time_ms,
+            caster_instance_id,
+            requested_skill_id,
+            explicit_target,
+        )
+        .map(|_| ())
+    }
+
+    pub fn live_skill_readiness(
+        &self,
+        time_ms: u64,
+        unit_id: UnitInstanceId,
+    ) -> Option<LiveBattleSkillReadinessDto> {
+        let unit = self.units.get(&unit_id)?;
+        let skill_id = unit.skill_id.clone();
+        let activation_mode = unit.skill_activation_mode;
+        let resonance_max = unit.resonance_max.max(1);
+        let mut target_required = false;
+        let mut target_available = false;
+        let mut target_block_reason = None;
+
+        let reason = if unit.owner != Side::Player {
+            Some("not_player_unit")
+        } else if !unit.is_combatant() || unit.is_dead() {
+            Some("unit_unavailable")
+        } else if skill_id.is_none() {
+            Some("no_skill")
+        } else if activation_mode != SkillActivationMode::Manual {
+            Some("activation_mode_not_manual")
+        } else if self.has_buff_kind(unit_id, crate::game::battle::buffs::BuffKind::Silence) {
+            Some("silenced")
+        } else if time_ms < unit.next_action_time {
+            Some("action_locked")
+        } else if unit.resonance_current < resonance_max {
+            Some("resonance_not_full")
+        } else if let Some(skill_id) = &skill_id {
+            let Some(skill) = self.game_data.skill_data.get_by_id(skill_id.as_str()) else {
+                return Some(LiveBattleSkillReadinessDto {
+                    skill_id: Some(skill_id.clone()),
+                    activation_mode,
+                    resonance_current: unit.resonance_current.min(resonance_max),
+                    resonance_max,
+                    manual_activation_allowed: false,
+                    target_required: false,
+                    target_available: false,
+                    can_activate_reason: Some("invalid_static_data".to_string()),
+                    target_block_reason: None,
+                });
+            };
+            let Some(caster_pos) = self.battlefield.position_of(unit_id) else {
+                return Some(LiveBattleSkillReadinessDto {
+                    skill_id: Some(skill_id.clone()),
+                    activation_mode,
+                    resonance_current: unit.resonance_current.min(resonance_max),
+                    resonance_max,
+                    manual_activation_allowed: false,
+                    target_required: false,
+                    target_available: false,
+                    can_activate_reason: Some("unit_unavailable".to_string()),
+                    target_block_reason: None,
+                });
+            };
+
+            match skill.cast_target_definition() {
+                Some((_, SkillTarget::SelfUnit, _, _)) => {
+                    target_required = false;
+                    target_available = true;
+                }
+                Some(_) => {
+                    target_required = true;
+                    target_available = self
+                        .resolve_skill_cast_target(skill, unit_id, unit.owner, caster_pos)
+                        .is_some();
+                    if !target_available {
+                        target_block_reason = Some("no_valid_target".to_string());
+                    }
+                }
+                None => {
+                    target_required = false;
+                    target_available = false;
+                    target_block_reason = Some("invalid_static_data".to_string());
+                }
+            }
+            None
+        } else {
+            Some("no_skill")
+        };
+
+        Some(LiveBattleSkillReadinessDto {
+            skill_id,
+            activation_mode,
+            resonance_current: unit.resonance_current.min(resonance_max),
+            resonance_max,
+            manual_activation_allowed: reason.is_none(),
+            target_required,
+            target_available,
+            can_activate_reason: reason.map(str::to_string),
+            target_block_reason,
+        })
+    }
+
+    fn resolve_manual_skill_cast_request(
+        &self,
+        time_ms: u64,
+        caster_instance_id: UnitInstanceId,
+        requested_skill_id: &SkillId,
+        explicit_target: Option<SkillCastTarget>,
+    ) -> Result<(SkillDef, Option<SkillCastTarget>), GameError> {
+        let Some(caster) = self.units.get(&caster_instance_id) else {
+            return Err(GameError::UnitNotFound);
+        };
+        if caster.owner != Side::Player
+            || caster.skill_activation_mode != SkillActivationMode::Manual
+            || !caster.is_combatant()
+            || caster.is_dead()
+        {
+            return Err(GameError::InvalidAction);
+        }
+        if self.has_buff_kind(
+            caster_instance_id,
+            crate::game::battle::buffs::BuffKind::Silence,
+        ) {
+            return Err(GameError::InvalidAction);
+        }
+        if time_ms < caster.next_action_time {
+            return Err(GameError::InvalidAction);
+        }
+
+        let Some(unit_skill_id) = caster.skill_id.clone() else {
+            return Err(GameError::InvalidAction);
+        };
+        if &unit_skill_id != requested_skill_id {
+            return Err(GameError::InvalidAction);
+        }
+        let max = caster.resonance_max.max(1);
+        if caster.resonance_current < max {
+            return Err(GameError::InsufficientResources);
+        }
+        let caster_owner = caster.owner;
+        let caster_pos = self
+            .battlefield
+            .position_of(caster_instance_id)
+            .ok_or(GameError::InvalidAction)?;
+
+        let skill = self
+            .game_data
+            .skill_data
+            .get_by_id(requested_skill_id.as_str())
+            .cloned()
+            .ok_or_else(|| {
+                GameError::InvalidStaticData(format!(
+                    "manual skill '{}' is missing from skill database",
+                    requested_skill_id
+                ))
+            })?;
+
+        let cast_target = match explicit_target {
+            Some(target)
+                if self.explicit_skill_cast_target_is_valid(
+                    &skill,
+                    caster_instance_id,
+                    caster_owner,
+                    caster_pos,
+                    target,
+                ) =>
+            {
+                Some(target)
+            }
+            Some(_) => return Err(GameError::InvalidAction),
+            None => {
+                self.resolve_skill_cast_target(&skill, caster_instance_id, caster_owner, caster_pos)
+            }
+        };
+        if cast_target.is_none()
+            && !matches!(
+                skill.cast_target_definition(),
+                Some((_, SkillTarget::CastTarget, _, _))
+            )
+        {
+            return Err(GameError::InvalidAction);
+        }
+
+        Ok((skill, cast_target))
+    }
+
     pub(super) fn resolve_skill_cast_target(
         &self,
         skill: &SkillDef,
@@ -254,13 +631,16 @@ impl BattleCore {
         caster_owner: Side,
         caster_pos: Position,
     ) -> Option<SkillCastTarget> {
-        let (range_units, target) = skill.cast_target_definition()?;
+        let (range_units, target, defense_tile_range, air_capable) =
+            skill.cast_target_definition()?;
         self.resolve_skill_target_definition(
             caster_instance_id,
             caster_owner,
             caster_pos,
             range_units,
+            defense_tile_range,
             target,
+            air_capable,
         )
     }
 
@@ -270,7 +650,9 @@ impl BattleCore {
         caster_owner: Side,
         caster_pos: Position,
         range_units: f32,
+        defense_tile_range: Option<&crate::game::battle::tile_range::TileRangePattern>,
         target: &SkillTarget,
+        air_capable: bool,
     ) -> Option<SkillCastTarget> {
         match target {
             SkillTarget::SelfUnit => Some(SkillCastTarget::Unit {
@@ -282,7 +664,9 @@ impl BattleCore {
                     caster_owner,
                     caster_pos,
                     range_units,
+                    defense_tile_range,
                     *rule,
+                    air_capable,
                 )
                 .map(|id| SkillCastTarget::Unit {
                     unit_instance_id: id,
@@ -312,7 +696,11 @@ impl BattleCore {
                 }),
                 SkillTarget::EnemySingle { .. } => match cast_target {
                     Some(SkillCastTarget::Unit { unit_instance_id })
-                        if self.is_alive_enemy(unit_instance_id, caster_owner) =>
+                        if self.is_alive_enemy(unit_instance_id, caster_owner)
+                            && self.single_target_can_target_unit(
+                                unit_instance_id,
+                                step.air_capable,
+                            ) =>
                     {
                         Some(SkillCastTarget::Unit { unit_instance_id })
                     }
@@ -334,7 +722,9 @@ impl BattleCore {
                 caster_owner,
                 caster_pos,
                 step.range_units,
+                step.defense_tile_range.as_ref(),
                 &step.target,
+                step.air_capable,
             ),
         }
     }
@@ -531,13 +921,6 @@ impl BattleCore {
                 if protected_destroyed {
                     return Some(BattleWinner::Opponent);
                 }
-                if !player_alive {
-                    return Some(if opponent_alive {
-                        BattleWinner::Opponent
-                    } else {
-                        BattleWinner::Draw
-                    });
-                }
                 if self.required_enemy_group_count() > 0
                     && self.all_required_enemy_groups_defeated()
                 {
@@ -555,47 +938,6 @@ impl BattleCore {
                     } else {
                         BattleWinner::Draw
                     });
-                }
-                return None;
-            }
-            WinCondition::RecoverHoldAndExtract {
-                target_point_id,
-                extraction_point_id,
-                target_radius,
-                extraction_radius,
-                hold_duration_ms,
-            } => {
-                if !player_alive {
-                    return Some(if opponent_alive {
-                        BattleWinner::Opponent
-                    } else {
-                        BattleWinner::Draw
-                    });
-                }
-                if self.required_enemy_group_count() > 0
-                    && !self.all_required_enemy_groups_defeated()
-                {
-                    return None;
-                }
-                self.register_recovery_target_secured(
-                    current_time_ms,
-                    &target_point_id,
-                    target_radius,
-                );
-                if !self.update_recovery_hold(
-                    current_time_ms,
-                    &target_point_id,
-                    target_radius,
-                    hold_duration_ms,
-                ) {
-                    return None;
-                }
-                if self.register_extraction_completed(
-                    current_time_ms,
-                    &extraction_point_id,
-                    extraction_radius,
-                ) {
-                    return Some(BattleWinner::Player);
                 }
                 return None;
             }
@@ -627,105 +969,6 @@ impl BattleCore {
             })
     }
 
-    fn register_recovery_target_secured(
-        &mut self,
-        current_time_ms: u64,
-        point_id: &crate::game::battle::scenario::TacticalPointId,
-        radius: f32,
-    ) {
-        if self.scenario_runtime.recovery_target_secured {
-            return;
-        }
-        let Some(unit_instance_id) = self.first_live_player_in_point_radius(point_id, radius)
-        else {
-            return;
-        };
-
-        self.scenario_runtime.recovery_target_secured = true;
-        self.record_timeline(
-            current_time_ms,
-            TimelineEvent::RecoveryTargetSecured {
-                target_point_id: point_id.0.clone(),
-                unit_instance_id,
-            },
-        );
-    }
-
-    fn register_extraction_completed(
-        &mut self,
-        current_time_ms: u64,
-        point_id: &crate::game::battle::scenario::TacticalPointId,
-        radius: f32,
-    ) -> bool {
-        if !self.scenario_runtime.recovery_target_secured {
-            return false;
-        }
-        let Some(unit_instance_id) = self.first_live_player_in_point_radius(point_id, radius)
-        else {
-            return false;
-        };
-
-        self.record_timeline(
-            current_time_ms,
-            TimelineEvent::ExtractionCompleted {
-                extraction_point_id: point_id.0.clone(),
-                unit_instance_id,
-            },
-        );
-        true
-    }
-
-    fn update_recovery_hold(
-        &mut self,
-        current_time_ms: u64,
-        point_id: &crate::game::battle::scenario::TacticalPointId,
-        radius: f32,
-        hold_duration_ms: u64,
-    ) -> bool {
-        if self.scenario_runtime.recovery_hold_completed {
-            return true;
-        }
-        if !self.scenario_runtime.recovery_target_secured {
-            return false;
-        }
-        if self
-            .first_live_player_in_point_radius(point_id, radius)
-            .is_none()
-        {
-            self.scenario_runtime.recovery_hold_started_at_ms = None;
-            return false;
-        }
-        let started_at = *self
-            .scenario_runtime
-            .recovery_hold_started_at_ms
-            .get_or_insert(current_time_ms);
-        if current_time_ms.saturating_sub(started_at) >= hold_duration_ms {
-            self.scenario_runtime.recovery_hold_completed = true;
-            return true;
-        }
-        false
-    }
-
-    fn first_live_player_in_point_radius(
-        &self,
-        point_id: &crate::game::battle::scenario::TacticalPointId,
-        radius: f32,
-    ) -> Option<crate::game::battle::ids::UnitInstanceId> {
-        let point = self.scenario.tactical_plan.point(point_id)?;
-        let target =
-            crate::game::battle::core::movement::types::WorldVec2::from_tile_center(point.position);
-        let radius = radius.max(0.0);
-        self.units
-            .values()
-            .filter(|unit| {
-                !unit.is_dead()
-                    && unit.owner == Side::Player
-                    && unit.body.position.distance(target) <= radius
-            })
-            .map(|unit| unit.instance_id)
-            .min()
-    }
-
     fn finish_battle(&mut self, time_ms: u64, winner: BattleWinner) -> BattleResult {
         self.record_timeline(time_ms, TimelineEvent::BattleEnd { winner });
         let participant_results = self.participant_results();
@@ -734,6 +977,15 @@ impl BattleCore {
             timeline: self.timeline.clone(),
             participant_results,
         }
+    }
+
+    fn finish_signal(
+        state: &mut BattleExecutionState,
+        time_ms: u64,
+        winner: BattleWinner,
+    ) -> BattleStepOutcome {
+        state.finished = true;
+        BattleStepOutcome::Finished(BattleFinishSignal { time_ms, winner })
     }
 
     fn participant_results(&self) -> Vec<ParticipantBattleResult> {
@@ -766,7 +1018,11 @@ impl BattleCore {
         }
     }
 
-    fn schedule_initial_attack_for_unit(&mut self, unit_id: UnitInstanceId, time_ms: u64) {
+    pub(super) fn schedule_initial_attack_for_unit(
+        &mut self,
+        unit_id: UnitInstanceId,
+        time_ms: u64,
+    ) {
         let Some(unit) = self.units.get_mut(&unit_id) else {
             return;
         };
@@ -783,6 +1039,80 @@ impl BattleCore {
             cause: TimelineCause::Root {
                 kind: TimelineRootCause::Period,
             },
+        });
+    }
+
+    pub(super) fn record_spawned_units(
+        &mut self,
+        time_ms: u64,
+        cause: TimelineCause,
+        spawned_unit_ids: &[UnitInstanceId],
+    ) {
+        if spawned_unit_ids.is_empty() {
+            return;
+        }
+
+        self.with_recording_context(cause, |core| {
+            let mut unit_records: Vec<(
+                UnitInstanceId,
+                Side,
+                crate::game::battle::types::BattleUnitRole,
+                crate::game::battle::types::MobilityKind,
+                Uuid,
+                _,
+                UnitStats,
+            )> = spawned_unit_ids
+                .iter()
+                .filter_map(|unit_id| {
+                    core.units.get(unit_id).map(|unit| {
+                        (
+                            unit.instance_id,
+                            unit.owner,
+                            unit.role,
+                            unit.mobility_kind,
+                            unit.base_uuid,
+                            unit.world_position().quantized_milli(),
+                            unit.stats,
+                        )
+                    })
+                })
+                .collect();
+            unit_records.sort_by(|a, b| a.0.as_bytes().cmp(b.0.as_bytes()));
+            for (unit_instance_id, owner, role, mobility_kind, base_uuid, world_position, stats) in
+                unit_records
+            {
+                core.record_timeline(
+                    time_ms,
+                    TimelineEvent::UnitSpawned {
+                        unit_instance_id,
+                        owner,
+                        role,
+                        mobility_kind,
+                        base_uuid,
+                        world_position,
+                        stats,
+                    },
+                );
+            }
+
+            let mut item_records: Vec<(Uuid, Side, UnitInstanceId, Uuid)> = core
+                .items
+                .values()
+                .filter(|item| spawned_unit_ids.contains(&item.owner_unit_instance))
+                .map(|i| (i.instance_id, i.owner, i.owner_unit_instance, i.base_uuid))
+                .collect();
+            item_records.sort_by(|a, b| a.0.as_bytes().cmp(b.0.as_bytes()));
+            for (item_instance_id, owner, owner_unit_instance_id, base_uuid) in item_records {
+                core.record_timeline(
+                    time_ms,
+                    TimelineEvent::ItemSpawned {
+                        item_instance_id,
+                        owner,
+                        owner_unit_instance_id,
+                        base_uuid,
+                    },
+                );
+            }
         });
     }
 
@@ -895,7 +1225,6 @@ impl BattleCore {
         self.active_projectiles.clear();
         self.active_areas.clear();
         self.active_movement_segments.clear();
-        self.melee_slot_reservations.clear();
         self.last_continuous_movement_tick_ms = None;
         self.movement_backend.reset_for_battle();
         self.battlefield.clear();
@@ -903,19 +1232,103 @@ impl BattleCore {
         self.timeline_seq = 0;
         self.projectile_seq = 0;
         self.area_seq = 0;
+        self.live_signals.clear();
         self.recording_cause_stack.clear();
         self.event_queue.clear();
         self.scenario_runtime = Default::default();
     }
 
-    fn run_battle_with_hooks<PreSetup, PostSpawnSetup>(
+    pub fn start_battle_execution(&mut self) -> Result<BattleExecutionState, GameError> {
+        self.start_battle_execution_with_setup(|_| {})
+    }
+
+    pub fn step_battle_execution(
+        &mut self,
+        state: &mut BattleExecutionState,
+    ) -> Result<BattleStepOutcome, GameError> {
+        self.step_battle_execution_with_post_spawn_setup(state, &mut None::<fn(&mut Self)>)
+    }
+
+    pub fn step_battle_execution_until(
+        &mut self,
+        state: &mut BattleExecutionState,
+        target_time_ms: u64,
+    ) -> Result<BattleStepOutcome, GameError> {
+        self.step_battle_execution_until_with_post_spawn_setup(
+            state,
+            target_time_ms,
+            &mut None::<fn(&mut Self)>,
+        )
+    }
+
+    pub fn step_battle_execution_by(
+        &mut self,
+        state: &mut BattleExecutionState,
+        delta_ms: u64,
+    ) -> Result<BattleStepOutcome, GameError> {
+        let target_time_ms = state.next_time_after(delta_ms);
+        self.step_battle_execution_until(state, target_time_ms)
+    }
+
+    pub fn event_log_entries_after_seq(&self, last_seen_seq: u64) -> Vec<TimelineEntry> {
+        self.timeline.entries_after_seq(last_seen_seq)
+    }
+
+    pub fn drain_live_signals(&mut self) -> Vec<BattleLiveSignal> {
+        std::mem::take(&mut self.live_signals)
+    }
+
+    pub fn finalize_battle_execution(
+        &mut self,
+        state: &mut BattleExecutionState,
+        finish: BattleFinishSignal,
+    ) -> Result<BattleResult, GameError> {
+        if !state.finished || state.finalized {
+            return Err(GameError::InvalidAction);
+        }
+
+        state.finalized = true;
+        Ok(self.finish_battle(finish.time_ms, finish.winner))
+    }
+
+    pub fn apply_live_command(
+        &mut self,
+        command: BattleLiveCommand,
+    ) -> Result<BattleLiveCommandOutcome, GameError> {
+        match command {
+            BattleLiveCommand::DeployPlayerUnit {
+                draft,
+                position,
+                facing,
+                instance_salt,
+                time_ms,
+            } => {
+                let unit_id =
+                    self.deploy_player_unit(draft, position, facing, instance_salt, time_ms)?;
+                Ok(BattleLiveCommandOutcome::UnitDeployed { unit_id })
+            }
+            BattleLiveCommand::WithdrawUnit { unit_id } => {
+                self.withdraw_unit(unit_id)?;
+                Ok(BattleLiveCommandOutcome::UnitWithdrawn { unit_id })
+            }
+            BattleLiveCommand::ActivateSkill {
+                unit_id,
+                skill_id,
+                target,
+                time_ms,
+            } => {
+                self.start_manual_skill_cast(time_ms, unit_id, skill_id, target)?;
+                Ok(BattleLiveCommandOutcome::SkillActivated { unit_id })
+            }
+        }
+    }
+
+    fn start_battle_execution_with_setup<PreSetup>(
         &mut self,
         setup: PreSetup,
-        mut post_spawn_setup: Option<PostSpawnSetup>,
-    ) -> Result<BattleResult, GameError>
+    ) -> Result<BattleExecutionState, GameError>
     where
         PreSetup: FnOnce(&mut Self),
-        PostSpawnSetup: FnOnce(&mut Self),
     {
         self.scenario.validate()?;
 
@@ -957,74 +1370,160 @@ impl BattleCore {
 
         self.enqueue_scenario_events();
 
-        let mut last_event_time_ms = 0;
-        let mut battle_start_hooks_ran = false;
+        Ok(BattleExecutionState {
+            last_event_time_ms: 0,
+            battle_start_hooks_ran: false,
+            finished: false,
+            finalized: false,
+        })
+    }
 
-        while let Some(next_time_ms) = self.event_queue.peek().map(|e| e.time_ms()) {
-            let current_time_ms = next_time_ms;
-            last_event_time_ms = current_time_ms;
+    fn step_battle_execution_with_post_spawn_setup<PostSpawnSetup>(
+        &mut self,
+        state: &mut BattleExecutionState,
+        post_spawn_setup: &mut Option<PostSpawnSetup>,
+    ) -> Result<BattleStepOutcome, GameError>
+    where
+        PostSpawnSetup: FnOnce(&mut Self),
+    {
+        if state.finished {
+            return Err(GameError::InvalidAction);
+        }
 
-            if current_time_ms > MAX_BATTLE_TIME_MS {
-                return Ok(self.finish_battle(MAX_BATTLE_TIME_MS, BattleWinner::Draw));
+        let Some(next_time_ms) = self.event_queue.peek().map(|e| e.time_ms()) else {
+            let end_time_ms = state.last_event_time_ms.min(MAX_BATTLE_TIME_MS);
+            let winner = self
+                .compute_winner(end_time_ms)
+                .unwrap_or(BattleWinner::Draw);
+            return Ok(Self::finish_signal(state, end_time_ms, winner));
+        };
+
+        let current_time_ms = next_time_ms;
+        state.last_event_time_ms = current_time_ms;
+
+        if current_time_ms > MAX_BATTLE_TIME_MS {
+            return Ok(Self::finish_signal(
+                state,
+                MAX_BATTLE_TIME_MS,
+                BattleWinner::Draw,
+            ));
+        }
+
+        let mut bucket: Vec<BattleEvent> = Vec::new();
+        while matches!(self.event_queue.peek(), Some(e) if e.time_ms() == current_time_ms) {
+            bucket.push(self.event_queue.pop().unwrap());
+        }
+
+        loop {
+            if bucket.is_empty() {
+                let mut new_bucket: Vec<BattleEvent> = Vec::new();
+                while matches!(self.event_queue.peek(), Some(e) if e.time_ms() == current_time_ms) {
+                    new_bucket.push(self.event_queue.pop().unwrap());
+                }
+
+                if new_bucket.is_empty() {
+                    break;
+                }
+
+                bucket = new_bucket;
+                continue;
             }
 
-            let mut bucket: Vec<BattleEvent> = Vec::new();
-            while matches!(self.event_queue.peek(), Some(e) if e.time_ms() == current_time_ms) {
-                bucket.push(self.event_queue.pop().unwrap());
+            bucket.sort_by(|a, b| b.cmp(a));
+            for event in bucket.drain(..) {
+                self.process_event(event, current_time_ms)?;
             }
 
-            loop {
-                if bucket.is_empty() {
-                    let mut new_bucket: Vec<BattleEvent> = Vec::new();
-                    while matches!(self.event_queue.peek(), Some(e) if e.time_ms() == current_time_ms)
-                    {
-                        new_bucket.push(self.event_queue.pop().unwrap());
-                    }
-
-                    if new_bucket.is_empty() {
-                        break;
-                    }
-
-                    bucket = new_bucket;
-                    continue;
+            if current_time_ms == 0
+                && !state.battle_start_hooks_ran
+                && !self.has_queued_spawn_group_at(0)
+            {
+                if let Some(setup) = post_spawn_setup.take() {
+                    setup(self);
                 }
-
-                bucket.sort_by(|a, b| b.cmp(a));
-                for event in bucket.drain(..) {
-                    self.process_event(event, current_time_ms)?;
-                }
-
-                if current_time_ms == 0
-                    && !battle_start_hooks_ran
-                    && !self.has_queued_spawn_group_at(0)
-                {
-                    if let Some(setup) = post_spawn_setup.take() {
-                        setup(self);
-                    }
-                    battle_start_hooks_ran = true;
-                    self.run_on_battle_start_hooks();
-                    self.schedule_continuous_movement_tick(0);
-                }
-
-                if let Some(winner) = self.compute_winner(current_time_ms) {
-                    return Ok(self.finish_battle(current_time_ms, winner));
-                }
+                state.battle_start_hooks_ran = true;
+                self.run_on_battle_start_hooks();
+                self.schedule_continuous_movement_tick(0);
             }
 
             if let Some(winner) = self.compute_winner(current_time_ms) {
-                return Ok(self.finish_battle(current_time_ms, winner));
-            }
-
-            if let Some(winner) = self.compute_winner(current_time_ms) {
-                return Ok(self.finish_battle(current_time_ms, winner));
+                return Ok(Self::finish_signal(state, current_time_ms, winner));
             }
         }
 
-        let end_time_ms = last_event_time_ms.min(MAX_BATTLE_TIME_MS);
-        let winner = self
-            .compute_winner(end_time_ms)
-            .unwrap_or(BattleWinner::Draw);
-        Ok(self.finish_battle(end_time_ms, winner))
+        if let Some(winner) = self.compute_winner(current_time_ms) {
+            return Ok(Self::finish_signal(state, current_time_ms, winner));
+        }
+
+        Ok(BattleStepOutcome::Running)
+    }
+
+    fn step_battle_execution_until_with_post_spawn_setup<PostSpawnSetup>(
+        &mut self,
+        state: &mut BattleExecutionState,
+        target_time_ms: u64,
+        post_spawn_setup: &mut Option<PostSpawnSetup>,
+    ) -> Result<BattleStepOutcome, GameError>
+    where
+        PostSpawnSetup: FnOnce(&mut Self),
+    {
+        if state.finished {
+            return Err(GameError::InvalidAction);
+        }
+
+        let target_time_ms = target_time_ms.min(MAX_BATTLE_TIME_MS);
+        if target_time_ms < state.last_event_time_ms {
+            return Ok(BattleStepOutcome::Running);
+        }
+
+        loop {
+            let Some(next_time_ms) = self.event_queue.peek().map(|event| event.time_ms()) else {
+                state.last_event_time_ms = target_time_ms;
+                let winner = self
+                    .compute_winner(target_time_ms)
+                    .unwrap_or(BattleWinner::Draw);
+                return Ok(Self::finish_signal(state, target_time_ms, winner));
+            };
+
+            if next_time_ms > target_time_ms {
+                state.last_event_time_ms = target_time_ms;
+                if let Some(winner) = self.compute_winner(target_time_ms) {
+                    return Ok(Self::finish_signal(state, target_time_ms, winner));
+                }
+                return Ok(BattleStepOutcome::Running);
+            }
+
+            match self.step_battle_execution_with_post_spawn_setup(state, post_spawn_setup)? {
+                BattleStepOutcome::Running => {
+                    if state.last_event_time_ms >= target_time_ms {
+                        return Ok(BattleStepOutcome::Running);
+                    }
+                }
+                finished @ BattleStepOutcome::Finished(_) => return Ok(finished),
+            }
+        }
+    }
+
+    fn run_battle_with_hooks<PreSetup, PostSpawnSetup>(
+        &mut self,
+        setup: PreSetup,
+        mut post_spawn_setup: Option<PostSpawnSetup>,
+    ) -> Result<BattleResult, GameError>
+    where
+        PreSetup: FnOnce(&mut Self),
+        PostSpawnSetup: FnOnce(&mut Self),
+    {
+        let mut state = self.start_battle_execution_with_setup(setup)?;
+        loop {
+            match self
+                .step_battle_execution_with_post_spawn_setup(&mut state, &mut post_spawn_setup)?
+            {
+                BattleStepOutcome::Running => {}
+                BattleStepOutcome::Finished(finish) => {
+                    return self.finalize_battle_execution(&mut state, finish);
+                }
+            }
+        }
     }
 
     pub(in crate::game::battle::core) fn is_alive_enemy(
@@ -1069,6 +1568,9 @@ impl BattleCore {
         };
 
         if self.is_fixed_defense_route_enemy(attacker_instance_id) {
+            if attacker.is_airborne() {
+                return self.airborne_enemy_basic_attack_target_in_range(attacker_instance_id);
+            }
             return self
                 .blocked_by(attacker_instance_id)
                 .filter(|id| in_range(*id))
@@ -1078,12 +1580,24 @@ impl BattleCore {
                 });
         }
 
-        self.first_blocked_enemy(attacker_instance_id)
-            .filter(|id| in_range(*id))
-            .or_else(|| {
-                self.blocked_by(attacker_instance_id)
+        if attacker.owner == Side::Player {
+            if attacker.basic_attack.range_role == WeaponRangeRole::Melee {
+                if let Some(blocked_target) = self
+                    .first_blocked_enemy(attacker_instance_id)
                     .filter(|id| in_range(*id))
-            })
+                {
+                    return Some(blocked_target);
+                }
+            }
+
+            return self
+                .choose_attack_target_in_range(attacker_instance_id)
+                .or_else(|| hinted_target.filter(|id| in_range(*id)))
+                .or_else(|| self.persisted_target_in_range(attacker_instance_id, current_target));
+        }
+
+        self.blocked_by(attacker_instance_id)
+            .filter(|id| in_range(*id))
             .or_else(|| hinted_target.filter(|id| in_range(*id)))
             .or_else(|| self.persisted_target_in_range(attacker_instance_id, current_target))
             .or_else(|| self.choose_attack_target_in_range(attacker_instance_id))
@@ -1227,6 +1741,7 @@ impl BattleCore {
                             result.applied_effect_count.saturating_add(targets.len());
                     }
                 }
+                SkillEffectDef::ModifyStabilization { .. } => {}
                 SkillEffectDef::ModifyStats { modifier } => {
                     for target_id in targets {
                         commands.push(BattleCommand::ApplyModifier {
@@ -1279,6 +1794,36 @@ impl BattleCore {
         }
 
         (commands, result)
+    }
+
+    pub(super) fn record_skill_step_live_signals(
+        &mut self,
+        caster_instance_id: UnitInstanceId,
+        skill_id: &SkillId,
+        step: &SkillStepDef,
+        targets: &[UnitInstanceId],
+    ) -> SkillStepResult {
+        let mut result = SkillStepResult::default();
+        if targets.is_empty() {
+            return result;
+        }
+
+        for effect in &step.effects {
+            if let SkillEffectDef::ModifyStabilization { amount } = effect {
+                if *amount == 0 {
+                    continue;
+                }
+                self.live_signals
+                    .push(BattleLiveSignal::StabilizationDelta {
+                        source_unit_id: caster_instance_id,
+                        skill_id: skill_id.clone(),
+                        amount: *amount,
+                    });
+                result.applied_effect_count = result.applied_effect_count.saturating_add(1);
+            }
+        }
+
+        result
     }
 
     pub(super) fn resolve_skill_step<'a>(
@@ -1399,6 +1944,13 @@ impl BattleCore {
                             .saturating_add(summary.actual_damage_target_count);
                     }
                     aggregated_result.merge(&result);
+                    let signal_result = core.record_skill_step_live_signals(
+                        execution.caster_instance_id,
+                        &execution.skill.id,
+                        execution.step,
+                        &targets,
+                    );
+                    aggregated_result.merge(&signal_result);
                 }
 
                 core.finalize_skill_step(
@@ -1439,7 +1991,17 @@ impl BattleCore {
                     );
                 }
             }
-            DeliveryDef::Area { area } => {
+            DeliveryDef::TileArea { area } => {
+                let Some(tile_range) = execution.step.defense_tile_range.as_ref() else {
+                    core.finalize_skill_step(
+                        execution.cast_seq,
+                        execution.step_index,
+                        SkillStepResult::default(),
+                        execution.time_ms,
+                    );
+                    return;
+                };
+
                 if area.duration_ms == 0 {
                     let mut aggregated_result = SkillStepResult::default();
 
@@ -1450,15 +2012,21 @@ impl BattleCore {
                             execution.step,
                             execution.cast_target,
                         );
-                        let Some((origin, impact_position, direction_hint, targets)) = core
-                            .resolve_instant_area_targets(
-                                execution.time_ms,
-                                execution.cast_seq,
-                                execution.step_index,
-                                execution.caster_instance_id,
-                                iteration_target,
-                                area,
-                            )
+                        let Some((
+                            origin,
+                            impact_position,
+                            direction_hint,
+                            affected_tiles,
+                            targets,
+                        )) = core.resolve_instant_tile_area_targets(
+                            execution.time_ms,
+                            execution.cast_seq,
+                            execution.step_index,
+                            execution.caster_instance_id,
+                            iteration_target,
+                            tile_range,
+                            area,
+                        )
                         else {
                             continue;
                         };
@@ -1468,7 +2036,7 @@ impl BattleCore {
                             execution.caster_instance_id,
                             execution.time_ms,
                         );
-                        let area_declared_seq = core.record_skill_area_declared(
+                        let area_declared_seq = core.record_skill_tile_area_declared(
                             execution.time_ms,
                             delivery_id,
                             execution.skill.id.clone(),
@@ -1478,7 +2046,8 @@ impl BattleCore {
                             origin,
                             impact_position,
                             direction_hint,
-                            *area,
+                            affected_tiles,
+                            area.clone(),
                         );
                         core.update_skill_cast_impact_context(
                             execution.cast_seq,
@@ -1508,6 +2077,13 @@ impl BattleCore {
                                 .saturating_add(summary.actual_damage_target_count);
                         }
                         aggregated_result.merge(&result);
+                        let signal_result = core.record_skill_step_live_signals(
+                            execution.caster_instance_id,
+                            &execution.skill.id,
+                            execution.step,
+                            &targets,
+                        );
+                        aggregated_result.merge(&signal_result);
                     }
 
                     core.finalize_skill_step(
@@ -1527,7 +2103,7 @@ impl BattleCore {
                         execution.step,
                         execution.cast_target,
                     );
-                    if core.register_persistent_area(
+                    if core.register_persistent_tile_area(
                         execution.time_ms,
                         execution.cast_seq,
                         execution.step_index,
@@ -1535,7 +2111,8 @@ impl BattleCore {
                         execution.skill.id.clone(),
                         execution.step.id.clone(),
                         iteration_target,
-                        *area,
+                        tile_range.clone(),
+                        area.clone(),
                     ) {
                         spawned_areas = spawned_areas.saturating_add(1);
                     }
@@ -1570,70 +2147,7 @@ impl BattleCore {
                 cause,
             } => {
                 let spawned_unit_ids = self.spawn_scenario_group(&group_id)?;
-                if spawned_unit_ids.is_empty() {
-                    return Ok(());
-                }
-
-                self.with_recording_context(cause, |core| {
-                    let mut unit_records: Vec<(
-                        UnitInstanceId,
-                        Side,
-                        crate::game::battle::types::BattleUnitRole,
-                        Uuid,
-                        _,
-                        UnitStats,
-                    )> = spawned_unit_ids
-                        .iter()
-                        .filter_map(|unit_id| {
-                            core.units.get(unit_id).map(|unit| {
-                                (
-                                    unit.instance_id,
-                                    unit.owner,
-                                    unit.role,
-                                    unit.base_uuid,
-                                    unit.world_position().quantized_milli(),
-                                    unit.stats,
-                                )
-                            })
-                        })
-                        .collect();
-                    unit_records.sort_by(|a, b| a.0.as_bytes().cmp(b.0.as_bytes()));
-                    for (unit_instance_id, owner, role, base_uuid, world_position, stats) in
-                        unit_records
-                    {
-                        core.record_timeline(
-                            time_ms,
-                            TimelineEvent::UnitSpawned {
-                                unit_instance_id,
-                                owner,
-                                role,
-                                base_uuid,
-                                world_position,
-                                stats,
-                            },
-                        );
-                    }
-
-                    let mut item_records: Vec<(Uuid, Side, UnitInstanceId, Uuid)> = core
-                        .items
-                        .values()
-                        .filter(|item| spawned_unit_ids.contains(&item.owner_unit_instance))
-                        .map(|i| (i.instance_id, i.owner, i.owner_unit_instance, i.base_uuid))
-                        .collect();
-                    item_records.sort_by(|a, b| a.0.as_bytes().cmp(b.0.as_bytes()));
-                    for (item_instance_id, owner, owner_unit_instance_id, base_uuid) in item_records
-                    {
-                        core.record_timeline(
-                            time_ms,
-                            TimelineEvent::ItemSpawned {
-                                item_instance_id,
-                                owner,
-                                owner_unit_instance_id,
-                                base_uuid,
-                            },
-                        );
-                    }
-                });
+                self.record_spawned_units(time_ms, cause, &spawned_unit_ids);
 
                 for unit_id in spawned_unit_ids {
                     self.schedule_initial_attack_for_unit(unit_id, time_ms);
@@ -2131,6 +2645,65 @@ impl BattleCore {
 
                 Ok(())
             }
+            BattleEvent::ManualCastEnd {
+                time_ms,
+                caster_instance_id,
+                cause,
+            } => {
+                let blocked_until = self
+                    .units
+                    .get(&caster_instance_id)
+                    .map(|unit| unit.next_action_time)
+                    .unwrap_or(0);
+                if time_ms < blocked_until {
+                    self.event_queue.push(BattleEvent::ManualCastEnd {
+                        time_ms: blocked_until,
+                        caster_instance_id,
+                        cause,
+                    });
+                    return Ok(());
+                }
+
+                let pending = self
+                    .units
+                    .get_mut(&caster_instance_id)
+                    .and_then(|unit| unit.pending_skill_cast.take());
+                self.with_recording_context(cause, |core| {
+                    if let Some(pending) = pending {
+                        core.invoke_ability(
+                            time_ms,
+                            caster_instance_id,
+                            &pending.skill_id,
+                            pending.cast_target,
+                            cause,
+                            false,
+                        );
+                    }
+
+                    core.record_timeline(
+                        time_ms,
+                        TimelineEvent::ManualCastEnd { caster_instance_id },
+                    );
+                });
+
+                let Some(caster) = self.units.get_mut(&caster_instance_id) else {
+                    return Ok(());
+                };
+                let recovery_ends_at =
+                    time_ms.saturating_add(caster.stats.attack_interval_ms.max(1));
+                caster.next_basic_attack_ms = caster.next_basic_attack_ms.max(recovery_ends_at);
+                caster.resonance_current = 0;
+                caster
+                    .action_locks
+                    .lock_resonance_gain_until(time_ms.saturating_add(caster.resonance_lock_ms));
+                if caster.next_action_time <= time_ms {
+                    caster.next_action_time = 0;
+                }
+                caster.pending_cast = false;
+                caster.pending_cast_cause = None;
+
+                Ok(())
+            }
             BattleEvent::SkillStep {
                 time_ms,
                 cast_seq,
@@ -2170,7 +2743,7 @@ impl BattleCore {
                 duration_ms,
                 cause,
             } => {
-                let Some(def) = crate::game::battle::buffs::get(buff_id) else {
+                let Some(def) = self.game_data.buff_data.get(buff_id).cloned() else {
                     return Ok(());
                 };
 
@@ -2217,7 +2790,7 @@ impl BattleCore {
                         if k.target_instance_id != target_instance_id {
                             return true;
                         }
-                        let Some(kdef) = crate::game::battle::buffs::get(k.buff_id) else {
+                        let Some(kdef) = self.game_data.buff_data.get(k.buff_id) else {
                             return true;
                         };
                         !matches!(
@@ -2298,7 +2871,7 @@ impl BattleCore {
                 buff_id,
                 cause,
             } => {
-                let Some(def) = crate::game::battle::buffs::get(buff_id) else {
+                let Some(def) = self.game_data.buff_data.get(buff_id).cloned() else {
                     return Ok(());
                 };
 
@@ -2380,7 +2953,7 @@ impl BattleCore {
                 buff_id,
                 cause,
             } => {
-                let Some(def) = crate::game::battle::buffs::get(buff_id) else {
+                let Some(def) = self.game_data.buff_data.get(buff_id).cloned() else {
                     return Ok(());
                 };
 

@@ -1,24 +1,17 @@
-use ::redis::aio::ConnectionManager;
 use actix::{Addr, Message};
-use actix_web::HttpRequest;
 use backoff::ExponentialBackoff;
 use game_core::game::data::GameDataBase;
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::io;
-use std::net::IpAddr;
-use std::sync::{Arc, RwLock};
-use std::time::{Duration, Instant};
+use std::sync::Arc;
+use std::time::Duration;
 use tokio::sync::RwLock as TokioRwLock;
-use tracing::{debug, error, warn};
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 use uuid::Uuid;
 
 use crate::env::RetrySettings;
-use crate::game::{load_balance_actor::LoadBalanceActor, match_coordinator::MatchCoordinator};
-use crate::matchmaking::subscript::SubScriptionManager;
-use crate::{env::Settings, matchmaking::matchmaker::MatchmakerAddr, shared::metrics::MetricsCtx};
+use crate::env::Settings;
+use crate::game::load_balance_actor::LoadBalanceActor;
 
 lazy_static::lazy_static! {
     pub static ref RETRY_CONFIG: TokioRwLock<Option<ExponentialBackoff>> = TokioRwLock::new(None);
@@ -27,8 +20,7 @@ lazy_static::lazy_static! {
 pub mod env;
 
 // Module groups
-pub mod game; // Game Server new modules
-pub mod matchmaking; // Match Server legacy modules
+pub mod game;
 pub mod shared; // Shared infrastructure modules
 
 pub struct LoggerManager {
@@ -123,149 +115,9 @@ pub async fn init_retry_config(settings: &RetrySettings) {
 #[derive(Clone)]
 pub struct AppState {
     pub settings: Settings,
-    pub matchmakers: HashMap<GameMode, MatchmakerAddr>,
-
-    // Legacy (test_client)
-    pub sub_manager_addr: Option<Addr<SubScriptionManager>>,
-
-    // New (Unity client)
     pub load_balance_addr: Addr<LoadBalanceActor>,
-    pub match_coordinator_addr: Option<Addr<MatchCoordinator>>,
-
-    pub redis: Option<ConnectionManager>,
     pub logger_manager: Arc<LoggerManager>,
     pub current_run_id: Uuid,
     pub game_data: Arc<GameDataBase>,
-    pub metrics: Arc<MetricsCtx>,
     pub metrics_registry: prometheus::Registry,
-    pub rate_limiter: Arc<RateLimiter>,
-}
-
-pub fn extract_client_ip(req: &HttpRequest) -> Option<IpAddr> {
-    // 1. X-Forwarded-For 검증 강화
-    if let Some(forwarded) = req.headers().get("x-forwarded-for") {
-        if let Ok(forwarded_str) = forwarded.to_str() {
-            for ip_str in forwarded_str.split(',') {
-                let ip_str = ip_str.trim();
-                if let Ok(ip) = ip_str.parse::<IpAddr>() {
-                    // Private IP 및 localhost 필터링
-                    if !is_private_or_loopback_ip(&ip) {
-                        debug!("Extracted public client IP from X-Forwarded-For: {}", ip);
-                        return Some(ip);
-                    }
-                }
-            }
-        }
-    }
-
-    // 2-3. 기존 X-Real-IP, CF-Connecting-IP 처리...
-
-    // 4. Direct connection (개발 환경에서만 허용)
-    if cfg!(debug_assertions) {
-        // 디버그 빌드에서만
-        if let Some(peer_addr) = req.connection_info().peer_addr() {
-            if let Some(ip_str) = peer_addr.split(':').next() {
-                if let Ok(ip) = ip_str.parse::<IpAddr>() {
-                    warn!("Using direct connection IP in development: {}", ip);
-                    return Some(ip);
-                }
-            }
-        }
-    }
-
-    error!(
-        "Could not extract valid client IP from request headers: {:?}",
-        req.headers()
-    );
-    None
-}
-
-fn is_private_or_loopback_ip(ip: &IpAddr) -> bool {
-    match ip {
-        IpAddr::V4(ipv4) => ipv4.is_private() || ipv4.is_loopback() || ipv4.is_link_local(),
-        IpAddr::V6(ipv6) => ipv6.is_loopback() || ipv6.is_unspecified(),
-    }
-}
-
-#[derive(Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, Hash)]
-pub enum GameMode {
-    None,
-    #[serde(rename = "Normal")]
-    Normal,
-    #[serde(rename = "Ranked")]
-    Ranked,
-}
-
-/// Simple rate limiter using token bucket algorithm
-pub struct RateLimiter {
-    buckets: Arc<RwLock<HashMap<IpAddr, TokenBucket>>>,
-    max_requests_per_second: u32,
-    #[allow(dead_code)]
-    cleanup_interval: Duration,
-}
-
-struct TokenBucket {
-    tokens: f64,
-    last_refill: Instant,
-    max_tokens: f64,
-    refill_rate: f64, // tokens per second
-}
-
-impl RateLimiter {
-    pub fn new(max_requests_per_second: u32) -> Self {
-        Self {
-            buckets: Arc::new(RwLock::new(HashMap::new())),
-            max_requests_per_second,
-            cleanup_interval: Duration::from_secs(300), // cleanup every 5 minutes
-        }
-    }
-
-    pub fn check(&self, _ip: &IpAddr) -> bool {
-        true
-        // let mut buckets = self.buckets.write().unwrap();
-        // let bucket = buckets.entry(*ip).or_insert_with(|| TokenBucket {
-        //     tokens: self.max_requests_per_second as f64,
-        //     last_refill: Instant::now(),
-        //     max_tokens: self.max_requests_per_second as f64,
-        //     refill_rate: self.max_requests_per_second as f64,
-        // });
-
-        // // Refill tokens based on elapsed time
-        // let now = Instant::now();
-        // let elapsed = now.duration_since(bucket.last_refill).as_secs_f64();
-        // bucket.tokens = (bucket.tokens + elapsed * bucket.refill_rate).min(bucket.max_tokens);
-        // bucket.last_refill = now;
-
-        // // Check if we have tokens
-        // if bucket.tokens >= 1.0 {
-        //     bucket.tokens -= 1.0;
-        //     true
-        // } else {
-        //     false
-        // }
-    }
-
-    /// Cleanup old entries (call periodically)
-    pub fn cleanup(&self) {
-        let mut buckets = self.buckets.write().unwrap();
-        let now = Instant::now();
-        buckets.retain(|_, bucket| {
-            now.duration_since(bucket.last_refill) < Duration::from_secs(600) // 10 minutes
-        });
-    }
-}
-
-pub async fn flush_redis_default() -> Result<(), Box<dyn std::error::Error>> {
-    let redis_url =
-        std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://127.0.0.1:6379".to_string());
-
-    let client = redis::Client::open(redis_url)?;
-    let mut conn = client.get_async_connection().await?;
-
-    // FLUSHDB for the selected DB only (safer than FLUSHALL)
-    redis::cmd("FLUSHDB")
-        .query_async::<_, ()>(&mut conn)
-        .await?;
-
-    Ok(())
 }

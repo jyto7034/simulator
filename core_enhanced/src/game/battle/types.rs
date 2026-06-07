@@ -4,13 +4,16 @@ use uuid::Uuid;
 use crate::{
     game::resources::Position,
     game::{
-        ability::SkillId,
+        ability::{SkillActivationMode, SkillId},
         battle::core::movement::types::WorldVec2,
+        battle::damage::DamageModifiers,
         battle::ids::UnitInstanceId,
+        battle::tile_range::TileRangePattern,
         battle::timeline::Timeline,
         behavior::GameError,
         data::{
             abnormality_data::{BasicAttackDef, MovementDef, ResonanceDef},
+            equipment_data::{EquipmentType, WeaponCombatProfile},
             GameDataBase,
         },
         enums::{Side, Tier},
@@ -49,6 +52,7 @@ pub struct UnitSnapshot {
     pub id: UnitInstanceId,
     pub owner: Side,
     pub role: BattleUnitRole,
+    pub mobility_kind: MobilityKind,
     pub position: Position,
     pub world_position: WorldVec2,
     pub stats: UnitStats,
@@ -107,6 +111,29 @@ pub enum DeploymentAffinity {
     Any,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum MobilityKind {
+    #[default]
+    Ground,
+    Airborne,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum UnitTargetTrait {
+    Airborne,
+}
+
+impl MobilityKind {
+    pub fn is_airborne(self) -> bool {
+        matches!(self, Self::Airborne)
+    }
+
+    pub fn can_be_blocked(self) -> bool {
+        matches!(self, Self::Ground)
+    }
+}
+
 impl DeploymentAffinity {
     pub fn allows_ground(self) -> bool {
         matches!(
@@ -146,22 +173,32 @@ impl BattleUnitSource {
 pub struct UnitCombatProfile {
     pub stats: UnitStats,
     pub basic_attack: BasicAttackDef,
+    pub weapon_profile: Option<WeaponCombatProfile>,
     pub movement: MovementDef,
     pub resonance: ResonanceDef,
     pub skill_id: Option<SkillId>,
+    pub skill_activation_mode: SkillActivationMode,
     pub deployment_affinity: DeploymentAffinity,
     pub block_capacity: u32,
     pub block_radius_units: f32,
     pub blockable: bool,
+    pub mobility_kind: MobilityKind,
+    pub target_traits: Vec<UnitTargetTrait>,
+    pub incoming_damage_modifiers: DamageModifiers,
 }
 
 impl UnitCombatProfile {
     pub fn employee_default() -> Self {
         let basic_attack = BasicAttackDef {
             range_units: 1.0,
+            defense_tile_range: Some(TileRangePattern {
+                include_anchor_tile: false,
+                rows: vec![".X.".to_string(), ".@.".to_string(), "...".to_string()],
+            }),
             interval_ms: 1500,
             windup_ms: 200,
             delivery: Default::default(),
+            ..BasicAttackDef::default()
         };
         let movement = MovementDef::default();
         let mut stats = UnitStats::with_values(100, 100, 10, 0, basic_attack.interval_ms);
@@ -171,14 +208,36 @@ impl UnitCombatProfile {
         Self {
             stats,
             basic_attack,
+            weapon_profile: None,
             movement,
             resonance: ResonanceDef::default(),
             skill_id: None,
+            skill_activation_mode: SkillActivationMode::Auto,
             deployment_affinity: DeploymentAffinity::GroundOnly,
             block_capacity: 1,
             block_radius_units: 0.75,
             blockable: true,
+            mobility_kind: MobilityKind::Ground,
+            target_traits: Vec::new(),
+            incoming_damage_modifiers: DamageModifiers::default(),
         }
+    }
+
+    pub fn apply_weapon_profile(&mut self, weapon_profile: &WeaponCombatProfile) {
+        weapon_profile
+            .validate_runtime_contract("equipped weapon")
+            .expect("validated equipment weapon profile");
+        self.basic_attack.range_units = weapon_profile.range_units;
+        self.basic_attack.defense_tile_range = Some(weapon_profile.defense_tile_range.clone());
+        self.basic_attack.damage_type = weapon_profile.damage_type;
+        self.basic_attack.targeting_profile = weapon_profile.targeting_profile;
+        self.basic_attack.air_capable = weapon_profile.air_capable;
+        self.basic_attack.range_role = weapon_profile.range_role;
+        self.basic_attack.interval_ms = weapon_profile.interval_ms;
+        self.basic_attack.windup_ms = weapon_profile.windup_ms;
+        self.basic_attack.delivery = weapon_profile.delivery.clone();
+        self.stats.attack_interval_ms = weapon_profile.interval_ms;
+        self.weapon_profile = Some(weapon_profile.clone());
     }
 }
 
@@ -215,18 +274,23 @@ impl BattleUnitDraft {
         Ok(UnitCombatProfile {
             stats,
             basic_attack: meta.basic_attack.clone(),
+            weapon_profile: None,
             movement: meta.movement.clone(),
             resonance: meta.resonance.clone(),
             skill_id: meta.skill_id.clone(),
+            skill_activation_mode: SkillActivationMode::Auto,
             deployment_affinity: DeploymentAffinity::GroundOnly,
             block_capacity: 0,
             block_radius_units: 0.0,
-            blockable: true,
+            blockable: meta.mobility_kind.can_be_blocked(),
+            mobility_kind: meta.mobility_kind,
+            target_traits: effective_target_traits(meta.mobility_kind, &meta.target_traits),
+            incoming_damage_modifiers: DamageModifiers::default(),
         })
     }
 
     pub fn combat_profile(&self, game_data: &GameDataBase) -> Result<UnitCombatProfile, GameError> {
-        match &self.source {
+        let mut profile = match &self.source {
             BattleUnitSource::Employee(profile) => Ok(profile.clone()),
             BattleUnitSource::Abnormality { base_uuid } => {
                 Self::combat_profile_from_abnormality(*base_uuid, game_data)
@@ -238,7 +302,37 @@ impl BattleUnitDraft {
                 .ok_or(GameError::MissingResource("CorrodedEmployeeProfile")),
             BattleUnitSource::TestFixture { profile, .. } => Ok(profile.clone()),
             BattleUnitSource::DefenseObject { profile, .. } => Ok(profile.clone()),
+        }?;
+
+        if matches!(&self.source, BattleUnitSource::Employee(_)) {
+            let mut weapon_profile: Option<&WeaponCombatProfile> = None;
+            for item_uuid in &self.equipped_items {
+                let item = game_data
+                    .equipment_data
+                    .get_by_uuid(item_uuid)
+                    .ok_or(GameError::MissingResource(""))?;
+                if item.equipment_type != EquipmentType::Weapon {
+                    continue;
+                }
+                let next_profile = item.weapon_profile.as_ref().ok_or_else(|| {
+                    GameError::InvalidStaticData(format!(
+                        "weapon equipment '{}' is missing weapon_profile",
+                        item.id
+                    ))
+                })?;
+                if weapon_profile.is_some() {
+                    return Err(GameError::InvalidStaticData(
+                        "battle unit draft contains multiple equipped weapons".to_string(),
+                    ));
+                }
+                weapon_profile = Some(next_profile);
+            }
+            if let Some(weapon_profile) = weapon_profile {
+                profile.apply_weapon_profile(weapon_profile);
+            }
         }
+
+        Ok(profile)
     }
 
     pub fn effective_stats(
@@ -330,6 +424,17 @@ impl BattleUnitDraft {
     }
 }
 
+fn effective_target_traits(
+    mobility_kind: MobilityKind,
+    authored_traits: &[UnitTargetTrait],
+) -> Vec<UnitTargetTrait> {
+    let mut traits = authored_traits.to_vec();
+    if mobility_kind.is_airborne() && !traits.contains(&UnitTargetTrait::Airborne) {
+        traits.push(UnitTargetTrait::Airborne);
+    }
+    traits
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -376,6 +481,8 @@ mod tests {
             basic_attack: Default::default(),
             resonance: Default::default(),
             skill_id: None,
+            mobility_kind: Default::default(),
+            target_traits: Vec::new(),
         };
         let game_data = GameDataBuilder::empty()
             .with_abnormalities(vec![abno])
@@ -387,7 +494,40 @@ mod tests {
         assert_eq!(profile.deployment_affinity, DeploymentAffinity::GroundOnly);
         assert_eq!(profile.block_capacity, 0);
         assert_eq!(profile.block_radius_units, 0.0);
+        assert_eq!(profile.mobility_kind, MobilityKind::Ground);
         assert!(profile.blockable);
+    }
+
+    #[test]
+    fn abnormality_airborne_profile_derives_unblockable_display_trait() {
+        let abno_uuid = Uuid::from_u128(0xAC);
+        let abno = AbnormalityMetadata {
+            id: "drone".to_string(),
+            uuid: abno_uuid,
+            name: "Drone".to_string(),
+            risk_level: RiskLevel::ZAYIN,
+            price: 0,
+            max_health: 100,
+            attack: 10,
+            defense: 5,
+            magic_resist: 0,
+            movement: Default::default(),
+            basic_attack: Default::default(),
+            resonance: Default::default(),
+            skill_id: None,
+            mobility_kind: MobilityKind::Airborne,
+            target_traits: Vec::new(),
+        };
+        let game_data = GameDataBuilder::empty()
+            .with_abnormalities(vec![abno.clone()])
+            .build();
+
+        let profile =
+            BattleUnitDraft::combat_profile_from_abnormality(abno_uuid, &game_data).unwrap();
+
+        assert_eq!(profile.mobility_kind, MobilityKind::Airborne);
+        assert!(!profile.blockable);
+        assert!(profile.target_traits.contains(&UnitTargetTrait::Airborne));
     }
 
     #[test]
@@ -410,6 +550,8 @@ mod tests {
             basic_attack: Default::default(),
             resonance: Default::default(),
             skill_id: None,
+            mobility_kind: Default::default(),
+            target_traits: Vec::new(),
         };
 
         let mut item_triggers: HashMap<TriggerType, Vec<TriggeredEffect>> = HashMap::new();
@@ -429,8 +571,11 @@ mod tests {
             rarity: RiskLevel::ZAYIN,
             price: 0,
             allow_duplicate_equip: true,
+            bound: false,
+            cannot_unequip_reason: "equipment_bound".to_string(),
             triggered_effects: item_triggers,
             ability_activations: vec![],
+            weapon_profile: Some(Default::default()),
         };
 
         let mut artifact_triggers: HashMap<TriggerType, Vec<TriggeredEffect>> = HashMap::new();
@@ -500,6 +645,8 @@ mod tests {
             basic_attack: Default::default(),
             resonance: Default::default(),
             skill_id: None,
+            mobility_kind: Default::default(),
+            target_traits: Vec::new(),
         };
         let item = EquipmentMetadata {
             id: "enhanced_item".to_string(),
@@ -509,8 +656,11 @@ mod tests {
             rarity: RiskLevel::ZAYIN,
             price: 0,
             allow_duplicate_equip: true,
+            bound: false,
+            cannot_unequip_reason: "equipment_bound".to_string(),
             triggered_effects: HashMap::new(),
             ability_activations: vec![],
+            weapon_profile: Some(Default::default()),
         };
         let game_data = GameDataBuilder::empty()
             .with_abnormalities(vec![abno])
@@ -587,7 +737,8 @@ mod tests {
     }
 
     #[test]
-    fn effective_stats_errors_when_attack_interval_is_zero() {
+    #[should_panic(expected = "basic_attack interval_ms must be greater than zero")]
+    fn game_data_validation_rejects_attack_interval_zero() {
         let abno_uuid = Uuid::from_u128(1);
         let mut abno = AbnormalityMetadata {
             id: "abno".to_string(),
@@ -603,26 +754,14 @@ mod tests {
             basic_attack: Default::default(),
             resonance: Default::default(),
             skill_id: None,
+            mobility_kind: Default::default(),
+            target_traits: Vec::new(),
         };
         abno.basic_attack.interval_ms = 0;
 
-        let game_data = GameDataBuilder::empty()
+        let _game_data = GameDataBuilder::empty()
             .with_abnormalities(vec![abno])
             .build();
-
-        let unit = BattleUnitDraft {
-            owned_uuid: Uuid::from_u128(10),
-            source: BattleUnitSource::Abnormality {
-                base_uuid: abno_uuid,
-            },
-            level: Tier::I,
-            growth_stacks: GrowthStack::new(),
-            equipped_items: vec![],
-            equipped_item_enhancements: vec![],
-        };
-
-        let err = unit.effective_stats(&game_data, &[]).unwrap_err();
-        assert!(matches!(err, GameError::InvalidUnitStats(_)));
     }
 
     #[test]
@@ -644,6 +783,8 @@ mod tests {
             basic_attack: Default::default(),
             resonance: Default::default(),
             skill_id: None,
+            mobility_kind: Default::default(),
+            target_traits: Vec::new(),
         };
 
         let mut artifact_triggers: HashMap<TriggerType, Vec<TriggeredEffect>> = HashMap::new();

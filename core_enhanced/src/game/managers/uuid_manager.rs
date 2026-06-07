@@ -16,6 +16,7 @@ pub struct UuidManager {
 
 impl UuidManager {
     pub const NS_OWNED_EQUIPMENT: u64 = 0x4f57_4e44_4551_5549; // "OWNDEQUI"
+    pub const NS_OWNED_CONSUMABLE: u64 = 0x4f57_4e44_434f_4e53; // "OWNDCONS"
     pub const NS_EMPLOYEE: u64 = 0x454d_504c_4f59_4545; // "EMPLOYEE"
 
     pub fn new(run_seed: u64) -> Self {
@@ -34,6 +35,10 @@ impl UuidManager {
 
     pub fn next_owned_equipment(&mut self) -> Uuid {
         self.next(Self::NS_OWNED_EQUIPMENT)
+    }
+
+    pub fn next_owned_consumable(&mut self) -> Uuid {
+        self.next(Self::NS_OWNED_CONSUMABLE)
     }
 
     pub fn next_employee(&mut self) -> Uuid {

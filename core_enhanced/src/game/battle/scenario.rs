@@ -5,7 +5,6 @@ use uuid::Uuid;
 use crate::game::{
     battle::types::{BattleUnitDraft, BattleWinner},
     behavior::GameError,
-    combat_preview::BattlefieldArchetype,
     enums::Side,
     resources::Position,
 };
@@ -95,37 +94,15 @@ pub struct ScenarioEvent {
 #[derive(Debug, Clone)]
 pub enum WinCondition {
     AllRequiredEnemyGroupsDefeated,
-    DefeatUnit {
-        unit_ref: ScenarioUnitRef,
-    },
-    ProtectUnit {
-        unit_ref: ScenarioUnitRef,
-    },
-    SurviveUntil {
-        time_ms: u64,
-    },
-    RecoverHoldAndExtract {
-        target_point_id: TacticalPointId,
-        extraction_point_id: TacticalPointId,
-        target_radius: f32,
-        extraction_radius: f32,
-        hold_duration_ms: u64,
-    },
+    DefeatUnit { unit_ref: ScenarioUnitRef },
+    ProtectUnit { unit_ref: ScenarioUnitRef },
+    SurviveUntil { time_ms: u64 },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct TacticalPointId(pub String);
 
 impl TacticalPointId {
-    pub fn new(value: impl Into<String>) -> Self {
-        Self(value.into())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct TacticalGroupPlanId(pub String);
-
-impl TacticalGroupPlanId {
     pub fn new(value: impl Into<String>) -> Self {
         Self(value.into())
     }
@@ -138,86 +115,20 @@ pub struct TacticalPoint {
 }
 
 #[derive(Debug, Clone)]
-pub enum TacticalGroupMembers {
-    SpawnGroup(ScenarioGroupId),
-    ExplicitUnits(Vec<ScenarioUnitRef>),
-    SideAll(Side),
-}
-
-#[derive(Debug, Clone)]
-pub enum GroupObjective {
-    FollowBattleObjective,
-    HoldArea { point_id: TacticalPointId },
-    AdvanceToPoint { point_id: TacticalPointId },
-    AdvanceAlongPath { point_ids: Vec<TacticalPointId> },
-    ReconnectToGroup { group_id: TacticalGroupPlanId },
-}
-
-#[derive(Debug, Clone)]
-pub enum FormationKind {
-    Loose,
-    Column,
-    Line,
-    Wedge,
-}
-
-#[derive(Debug, Clone)]
-pub struct TacticalGroupPlan {
-    pub id: TacticalGroupPlanId,
-    pub side: Side,
-    pub members: TacticalGroupMembers,
-    pub objective: GroupObjective,
-    pub formation: FormationKind,
-    pub cohesion_radius: f32,
-    pub engage_radius: f32,
-}
-
-#[derive(Debug, Clone)]
 pub enum BattleObjective {
-    SuppressAll,
-    HoldArea {
-        point_id: TacticalPointId,
-    },
-    AdvanceToPoint {
-        point_id: TacticalPointId,
-    },
-    DefeatBoss {
-        unit_ref: ScenarioUnitRef,
-    },
-    ProtectUnit {
-        unit_ref: ScenarioUnitRef,
-    },
-    Survive {
-        time_ms: u64,
-    },
-    RecoverHoldAndExtract {
-        target_point_id: TacticalPointId,
-        extraction_point_id: TacticalPointId,
-        hold_duration_ms: u64,
-    },
+    DefeatBoss { unit_ref: ScenarioUnitRef },
+    ProtectUnit { unit_ref: ScenarioUnitRef },
+    Survive { time_ms: u64 },
 }
 
 #[derive(Debug, Clone)]
 pub enum PlayerMovementPlan {
-    FreeEngage,
     FixedDefense,
-    HoldDeployment {
-        guard_radius: f32,
-        leash_radius: f32,
-        chase_radius: f32,
-        return_to_anchor: bool,
-    },
-    CautiousEngage {
-        leash_radius: f32,
-        chase_radius: f32,
-    },
 }
 
 #[derive(Debug, Clone)]
 pub enum EnemyMovementPlan {
-    AssaultPlayer,
-    PathToPoint { point_id: TacticalPointId },
-    PathAlongPath { point_ids: Vec<TacticalPointId> },
+    PathAlongCells { cells: Vec<Position> },
 }
 
 #[derive(Debug, Clone)]
@@ -226,100 +137,26 @@ pub struct TacticalPlan {
     pub player_plan: PlayerMovementPlan,
     pub enemy_plan: EnemyMovementPlan,
     pub points: Vec<TacticalPoint>,
-    pub group_plans: Vec<TacticalGroupPlan>,
 }
 
 impl TacticalPlan {
-    pub fn free_engage() -> Self {
+    pub fn fixed_defense() -> Self {
         Self {
-            objective: BattleObjective::SuppressAll,
-            player_plan: PlayerMovementPlan::FreeEngage,
-            enemy_plan: EnemyMovementPlan::AssaultPlayer,
+            objective: BattleObjective::Survive { time_ms: 0 },
+            player_plan: PlayerMovementPlan::FixedDefense,
+            enemy_plan: EnemyMovementPlan::PathAlongCells { cells: Vec::new() },
             points: Vec::new(),
-            group_plans: vec![Self::default_player_main_group()],
-        }
-    }
-
-    pub fn hold_deployment_default() -> Self {
-        Self {
-            objective: BattleObjective::SuppressAll,
-            player_plan: PlayerMovementPlan::HoldDeployment {
-                guard_radius: 1.5,
-                leash_radius: 2.5,
-                chase_radius: 0.75,
-                return_to_anchor: true,
-            },
-            enemy_plan: EnemyMovementPlan::AssaultPlayer,
-            points: Vec::new(),
-            group_plans: vec![Self::default_player_main_group()],
         }
     }
 
     pub fn point(&self, point_id: &TacticalPointId) -> Option<&TacticalPoint> {
         self.points.iter().find(|point| &point.id == point_id)
     }
-
-    pub fn group_plan(&self, group_id: &TacticalGroupPlanId) -> Option<&TacticalGroupPlan> {
-        self.group_plans.iter().find(|group| &group.id == group_id)
-    }
-
-    pub fn for_archetype(archetype: BattlefieldArchetype) -> Self {
-        match archetype {
-            BattlefieldArchetype::OpenHall => Self::free_engage(),
-            BattlefieldArchetype::Corridor => Self {
-                objective: BattleObjective::SuppressAll,
-                player_plan: PlayerMovementPlan::CautiousEngage {
-                    leash_radius: 3.0,
-                    chase_radius: 1.0,
-                },
-                enemy_plan: EnemyMovementPlan::AssaultPlayer,
-                points: Vec::new(),
-                group_plans: vec![Self::default_player_main_group()],
-            },
-            BattlefieldArchetype::ChokePoint
-            | BattlefieldArchetype::Ambush
-            | BattlefieldArchetype::Surrounded
-            | BattlefieldArchetype::SplitRoom => Self::hold_deployment_default(),
-            BattlefieldArchetype::ObstacleRoom => Self {
-                objective: BattleObjective::SuppressAll,
-                player_plan: PlayerMovementPlan::CautiousEngage {
-                    leash_radius: 2.5,
-                    chase_radius: 0.75,
-                },
-                enemy_plan: EnemyMovementPlan::AssaultPlayer,
-                points: Vec::new(),
-                group_plans: vec![Self::default_player_main_group()],
-            },
-            BattlefieldArchetype::BossArena => Self {
-                objective: BattleObjective::SuppressAll,
-                player_plan: PlayerMovementPlan::FreeEngage,
-                enemy_plan: EnemyMovementPlan::AssaultPlayer,
-                points: Vec::new(),
-                group_plans: vec![Self::default_player_main_group()],
-            },
-        }
-    }
-
-    pub fn default_player_main_group_id() -> TacticalGroupPlanId {
-        TacticalGroupPlanId::new("player_main")
-    }
-
-    fn default_player_main_group() -> TacticalGroupPlan {
-        TacticalGroupPlan {
-            id: Self::default_player_main_group_id(),
-            side: Side::Player,
-            members: TacticalGroupMembers::SideAll(Side::Player),
-            objective: GroupObjective::FollowBattleObjective,
-            formation: FormationKind::Loose,
-            cohesion_radius: 4.0,
-            engage_radius: 3.0,
-        }
-    }
 }
 
 impl Default for TacticalPlan {
     fn default() -> Self {
-        Self::free_engage()
+        Self::fixed_defense()
     }
 }
 
@@ -481,25 +318,11 @@ impl BattleScenario {
     }
 
     fn validate_tactical_plan(&self) -> Result<(), GameError> {
-        let known_point_ids = self.tactical_point_ids()?;
-        let group_ids = self.group_ids();
+        self.tactical_point_ids()?;
         let unit_refs = self.unit_refs();
-        let tactical_group_ids = self.tactical_group_ids()?;
 
         match &self.tactical_plan.objective {
-            BattleObjective::SuppressAll | BattleObjective::Survive { .. } => {}
-            BattleObjective::HoldArea { point_id }
-            | BattleObjective::AdvanceToPoint { point_id } => {
-                ensure_point_exists(&known_point_ids, point_id, "battle objective")?;
-            }
-            BattleObjective::RecoverHoldAndExtract {
-                target_point_id,
-                extraction_point_id,
-                ..
-            } => {
-                ensure_point_exists(&known_point_ids, target_point_id, "battle objective")?;
-                ensure_point_exists(&known_point_ids, extraction_point_id, "battle objective")?;
-            }
+            BattleObjective::Survive { .. } => {}
             BattleObjective::DefeatBoss { unit_ref }
             | BattleObjective::ProtectUnit { unit_ref } => {
                 ensure_unit_ref_exists(&unit_refs, unit_ref, "battle objective")?;
@@ -507,81 +330,9 @@ impl BattleScenario {
         }
 
         match &self.tactical_plan.enemy_plan {
-            EnemyMovementPlan::AssaultPlayer => {}
-            EnemyMovementPlan::PathToPoint { point_id } => {
-                ensure_point_exists(&known_point_ids, point_id, "enemy movement plan")?;
-            }
-            EnemyMovementPlan::PathAlongPath { point_ids } => {
-                if point_ids.is_empty() {
-                    return Err(invalid_scenario(
-                        "enemy PathAlongPath must reference at least one tactical point",
-                    ));
-                }
-                for point_id in point_ids {
-                    ensure_point_exists(&known_point_ids, point_id, "enemy movement path")?;
-                }
-            }
-        }
-
-        for group_plan in &self.tactical_plan.group_plans {
-            if group_plan.cohesion_radius < 0.0
-                || group_plan.engage_radius < 0.0
-                || !group_plan.cohesion_radius.is_finite()
-                || !group_plan.engage_radius.is_finite()
-            {
-                return Err(invalid_scenario(format!(
-                    "tactical group '{}' radii must be finite non-negative values",
-                    group_plan.id.0
-                )));
-            }
-
-            match &group_plan.members {
-                TacticalGroupMembers::SpawnGroup(group_id) => {
-                    if !group_ids.contains(group_id) {
-                        return Err(invalid_scenario(format!(
-                            "tactical group '{}' references unknown spawn group '{}'",
-                            group_plan.id.0, group_id.0
-                        )));
-                    }
-                }
-                TacticalGroupMembers::ExplicitUnits(unit_ids) => {
-                    for unit_ref in unit_ids {
-                        ensure_unit_ref_exists(&unit_refs, unit_ref, "tactical group members")?;
-                    }
-                }
-                TacticalGroupMembers::SideAll(_) => {}
-            }
-
-            match &group_plan.objective {
-                GroupObjective::FollowBattleObjective => {}
-                GroupObjective::HoldArea { point_id }
-                | GroupObjective::AdvanceToPoint { point_id } => {
-                    ensure_point_exists(&known_point_ids, point_id, "tactical group objective")?;
-                }
-                GroupObjective::AdvanceAlongPath { point_ids } => {
-                    if point_ids.is_empty() {
-                        return Err(invalid_scenario(format!(
-                            "tactical group '{}' AdvanceAlongPath must reference at least one tactical point",
-                            group_plan.id.0
-                        )));
-                    }
-                    for point_id in point_ids {
-                        ensure_point_exists(&known_point_ids, point_id, "tactical group path")?;
-                    }
-                }
-                GroupObjective::ReconnectToGroup { group_id } => {
-                    if group_id == &group_plan.id {
-                        return Err(invalid_scenario(format!(
-                            "tactical group '{}' cannot reconnect to itself",
-                            group_plan.id.0
-                        )));
-                    }
-                    if !tactical_group_ids.contains(group_id) {
-                        return Err(invalid_scenario(format!(
-                            "tactical group '{}' reconnects to unknown group '{}'",
-                            group_plan.id.0, group_id.0
-                        )));
-                    }
+            EnemyMovementPlan::PathAlongCells { cells } => {
+                for cell in cells {
+                    self.validate_position(*cell, "enemy movement path cell")?;
                 }
             }
         }
@@ -591,32 +342,11 @@ impl BattleScenario {
 
     fn validate_win_condition(&self) -> Result<(), GameError> {
         let unit_refs = self.unit_refs();
-        let point_ids = self.tactical_point_ids()?;
 
         match &self.win_condition {
             WinCondition::AllRequiredEnemyGroupsDefeated | WinCondition::SurviveUntil { .. } => {}
             WinCondition::DefeatUnit { unit_ref } | WinCondition::ProtectUnit { unit_ref } => {
                 ensure_unit_ref_exists(&unit_refs, unit_ref, "win condition")?;
-            }
-            WinCondition::RecoverHoldAndExtract {
-                target_point_id,
-                extraction_point_id,
-                target_radius,
-                extraction_radius,
-                ..
-            } => {
-                ensure_point_exists(&point_ids, target_point_id, "win condition")?;
-                ensure_point_exists(&point_ids, extraction_point_id, "win condition")?;
-                if *target_radius < 0.0 || !target_radius.is_finite() {
-                    return Err(invalid_scenario(
-                        "RecoverHoldAndExtract target radius must be a finite non-negative value",
-                    ));
-                }
-                if *extraction_radius < 0.0 || !extraction_radius.is_finite() {
-                    return Err(invalid_scenario(
-                        "RecoverHoldAndExtract extraction radius must be a finite non-negative value",
-                    ));
-                }
             }
         }
 
@@ -650,28 +380,11 @@ impl BattleScenario {
         Ok(())
     }
 
-    fn group_ids(&self) -> HashSet<ScenarioGroupId> {
-        self.groups.iter().map(|group| group.id.clone()).collect()
-    }
-
     fn unit_refs(&self) -> HashSet<ScenarioUnitRef> {
         self.groups
             .iter()
             .flat_map(|group| group.spawns.iter().map(|spawn| spawn.unit_ref.clone()))
             .collect()
-    }
-
-    fn tactical_group_ids(&self) -> Result<HashSet<TacticalGroupPlanId>, GameError> {
-        let mut ids = HashSet::new();
-        for group in &self.tactical_plan.group_plans {
-            if !ids.insert(group.id.clone()) {
-                return Err(invalid_scenario(format!(
-                    "duplicate tactical group id '{}'",
-                    group.id.0
-                )));
-            }
-        }
-        Ok(ids)
     }
 
     fn tactical_point_ids(&self) -> Result<HashSet<TacticalPointId>, GameError> {
@@ -687,20 +400,6 @@ impl BattleScenario {
         }
         Ok(ids)
     }
-}
-
-fn ensure_point_exists(
-    point_ids: &HashSet<TacticalPointId>,
-    point_id: &TacticalPointId,
-    label: &str,
-) -> Result<(), GameError> {
-    if !point_ids.contains(point_id) {
-        return Err(invalid_scenario(format!(
-            "{label} references unknown tactical point '{}'",
-            point_id.0
-        )));
-    }
-    Ok(())
 }
 
 fn ensure_unit_ref_exists(
@@ -740,41 +439,8 @@ mod tests {
         ));
         assert!(matches!(
             scenario.tactical_plan.player_plan,
-            PlayerMovementPlan::FreeEngage
+            PlayerMovementPlan::FixedDefense
         ));
-    }
-
-    #[test]
-    fn tactical_plan_defaults_preserve_free_engage_for_open_hall() {
-        let plan = TacticalPlan::for_archetype(BattlefieldArchetype::OpenHall);
-
-        assert!(matches!(plan.objective, BattleObjective::SuppressAll));
-        assert!(matches!(plan.player_plan, PlayerMovementPlan::FreeEngage));
-        assert!(matches!(plan.enemy_plan, EnemyMovementPlan::AssaultPlayer));
-        assert!(plan
-            .group_plan(&TacticalPlan::default_player_main_group_id())
-            .is_some());
-        assert!(plan.group_plans.iter().any(|group| {
-            group.side == Side::Player
-                && matches!(group.members, TacticalGroupMembers::SideAll(Side::Player))
-                && matches!(group.objective, GroupObjective::FollowBattleObjective)
-        }));
-    }
-
-    #[test]
-    fn tactical_plan_maps_defensive_archetypes_to_hold_deployment() {
-        for archetype in [
-            BattlefieldArchetype::ChokePoint,
-            BattlefieldArchetype::Ambush,
-            BattlefieldArchetype::Surrounded,
-            BattlefieldArchetype::SplitRoom,
-        ] {
-            let plan = TacticalPlan::for_archetype(archetype);
-            assert!(matches!(
-                plan.player_plan,
-                PlayerMovementPlan::HoldDeployment { .. }
-            ));
-        }
     }
 
     #[test]
@@ -806,16 +472,6 @@ mod tests {
         ];
 
         assert_invalid_scenario_contains(scenario.validate(), "duplicate tactical point id 'gate'");
-    }
-
-    #[test]
-    fn scenario_validation_rejects_unknown_enemy_path_point() {
-        let mut scenario = BattleScenario::empty((5, 6));
-        scenario.tactical_plan.enemy_plan = EnemyMovementPlan::PathToPoint {
-            point_id: TacticalPointId::new("exit"),
-        };
-
-        assert_invalid_scenario_contains(scenario.validate(), "unknown tactical point 'exit'");
     }
 
     fn assert_invalid_scenario_contains(result: Result<(), GameError>, expected: &str) {

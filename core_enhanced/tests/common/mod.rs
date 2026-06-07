@@ -11,10 +11,11 @@ use game_core::game::ability::{
     DeliveryDef, SkillCastTargetingDef, SkillDef, SkillId, SkillKind, SkillPresentationDef,
     SkillStepDef, SkillTarget, StepTargetingMode,
 };
-use game_core::game::battle::timeline::Timeline;
+use game_core::game::battle::{buffs::BuffDatabase, timeline::Timeline};
 use game_core::game::combat_preview::EnemyKind;
 use game_core::game::data::abnormality_data::{AbnormalityDatabase, AbnormalityMetadata};
 use game_core::game::data::artifact_data::{ArtifactDatabase, ArtifactMetadata};
+use game_core::game::data::consumable_data::ConsumableDatabase;
 use game_core::game::data::corroded_employee_data::CorrodedEmployeeProfileDatabase;
 use game_core::game::data::employee_data::{
     RecruitmentEmployeeCandidateDatabase, StarterEmployeeCandidateDatabase,
@@ -32,23 +33,23 @@ use game_core::game::enums::{RewardMode, RiskLevel};
 use game_core::game::reward::RewardEffect;
 use uuid::Uuid;
 
-pub fn timeline_exports_dir() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("timeline_exports")
+pub fn debug_event_log_exports_dir() -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("debug_event_log_exports")
 }
 
-pub fn write_timeline_export(name: &str, timeline: &Timeline) -> PathBuf {
-    let out_dir = timeline_exports_dir();
+pub fn write_debug_event_log_export(name: &str, timeline: &Timeline) -> PathBuf {
+    let out_dir = debug_event_log_exports_dir();
     let out_path = out_dir.join(format!("{name}.json"));
     let parent_dir = out_path.parent().unwrap_or_else(|| {
         panic!(
-            "timeline export path must have parent: {}",
+            "debug event log export path must have parent: {}",
             out_path.display()
         )
     });
-    std::fs::create_dir_all(parent_dir).expect("create timeline_exports directory");
+    std::fs::create_dir_all(parent_dir).expect("create debug_event_log_exports directory");
     timeline
         .write_pretty_json(&out_path)
-        .expect("write timeline json");
+        .expect("write debug event log json");
     out_path
 }
 
@@ -94,8 +95,11 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         rarity: RiskLevel::HE,
         price: 150,
         allow_duplicate_equip: true,
+        bound: false,
+        cannot_unequip_reason: "equipment_bound".to_string(),
         triggered_effects: Default::default(),
         ability_activations: vec![],
+        weapon_profile: Some(Default::default()),
     };
     let equipment2 = EquipmentMetadata {
         id: "test_armor_1".to_string(),
@@ -105,8 +109,11 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         rarity: RiskLevel::TETH,
         price: 80,
         allow_duplicate_equip: true,
+        bound: false,
+        cannot_unequip_reason: "equipment_bound".to_string(),
         triggered_effects: Default::default(),
         ability_activations: vec![],
+        weapon_profile: None,
     };
 
     let skill_id = SkillId::from("test_skill");
@@ -121,6 +128,8 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
             id: "step_01".to_string(),
             delay_ms: 0,
             range_units: 1.0,
+            defense_tile_range: None,
+            air_capable: false,
             target: SkillTarget::SelfUnit,
             targeting: StepTargetingMode::ReuseCastTarget,
             when: Default::default(),
@@ -145,6 +154,8 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         basic_attack: Default::default(),
         resonance: Default::default(),
         skill_id: Some(skill_id),
+        mobility_kind: Default::default(),
+        target_traits: Vec::new(),
     };
     let abnormality2 = AbnormalityMetadata {
         id: "test_abnorm_2".to_string(),
@@ -160,6 +171,8 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         basic_attack: Default::default(),
         resonance: Default::default(),
         skill_id: None,
+        mobility_kind: Default::default(),
+        target_traits: Vec::new(),
     };
     let abnormality3 = AbnormalityMetadata {
         id: "test_abnorm_3".to_string(),
@@ -175,6 +188,8 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         basic_attack: Default::default(),
         resonance: Default::default(),
         skill_id: None,
+        mobility_kind: Default::default(),
+        target_traits: Vec::new(),
     };
 
     let shop = ShopMetadata {
@@ -228,6 +243,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
             reward_mode: RewardMode::ChooseOne,
             reward_uuids: vec![reward_uuid],
             node_type: None,
+            mission_variant: None,
             battlefield: None,
             tactical_plan: None,
             win_condition: None,
@@ -256,6 +272,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
             reward_mode: RewardMode::ChooseOne,
             reward_uuids: vec![reward_uuid],
             node_type: None,
+            mission_variant: None,
             battlefield: None,
             tactical_plan: None,
             win_condition: None,
@@ -284,6 +301,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
             reward_mode: RewardMode::ChooseOne,
             reward_uuids: vec![reward_uuid],
             node_type: None,
+            mission_variant: None,
             battlefield: None,
             tactical_plan: None,
             win_condition: None,
@@ -326,6 +344,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
 /// - 환상체 데이터 (abnormalities.ron)
 /// - 장비 데이터 (equipments.ron)
 /// - 아티팩트 데이터 (artifacts.ron)
+/// - 섭취 아이템 데이터 (consumables/base.ron)
 /// - 시작 직원 후보 데이터 (employees/starter_candidates.ron)
 /// - 런 중 채용 후보 데이터 (employees/recruitment_candidates.ron)
 /// - 스킬 파편 데이터 (skill_fragments/base.ron)
@@ -345,6 +364,8 @@ pub fn load_game_data_from_ron() -> Arc<GameDataBase> {
         include_str!("../../../game_resources/data/employees/recruitment_candidates.ron");
     let equipments_ron = include_str!("../../../game_resources/data/equipments/base.ron");
     let artifacts_ron = include_str!("../../../game_resources/data/artifacts/base.ron");
+    let consumables_ron = include_str!("../../../game_resources/data/consumables/base.ron");
+    let buffs_ron = include_str!("../../../game_resources/data/buffs/base.ron");
     let skills_ron = include_str!("../../../game_resources/data/skills/base.ron");
     let skill_fragments_ron = include_str!("../../../game_resources/data/skill_fragments/base.ron");
     let pve_ron = include_str!("../../../game_resources/data/pve/encounters.ron");
@@ -377,6 +398,12 @@ pub fn load_game_data_from_ron() -> Arc<GameDataBase> {
     let artifacts_db: ArtifactDatabase =
         ron::de::from_str(artifacts_ron).expect("Failed to deserialize artifacts.ron");
 
+    let consumables_db: ConsumableDatabase =
+        ron::de::from_str(consumables_ron).expect("Failed to deserialize consumables/base.ron");
+
+    let buffs_db: BuffDatabase =
+        ron::de::from_str(buffs_ron).expect("Failed to deserialize buffs/base.ron");
+
     let skill_db: SkillDatabase =
         ron::de::from_str(skills_ron).expect("Failed to deserialize skills.ron");
     let skill_fragment_db: SkillFragmentDatabase = ron::de::from_str(skill_fragments_ron)
@@ -392,10 +419,12 @@ pub fn load_game_data_from_ron() -> Arc<GameDataBase> {
         .with_starter_employee_data(Arc::new(starter_employee_db))
         .with_recruitment_employee_data(Arc::new(recruitment_employee_db))
         .with_artifact_data(Arc::new(artifacts_db))
+        .with_consumable_data(Arc::new(consumables_db))
         .with_equipment_data(Arc::new(equipments_db))
         .with_shop_data(Arc::new(shops_db))
         .with_reward_data(Arc::new(rewards_db))
         .with_pve_data(Arc::new(pve_db))
+        .with_buff_data(Arc::new(buffs_db))
         .with_skill_data(Arc::new(skill_db))
         .with_skill_fragment_data(Arc::new(SkillFragmentDatabase::with_builtin_starter(
             skill_fragment_db.fragments,

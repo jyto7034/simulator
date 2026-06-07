@@ -9,6 +9,7 @@ use game_core::{
                 ScenarioGroupId, ScenarioSpawnGroup, ScenarioTrigger, ScenarioUnitRef,
                 ScenarioUnitSpawn, WinCondition,
             },
+            tile_range::TileRangePattern,
             types::{BattleUnitDraft, BattleUnitSource},
         },
         data::{
@@ -48,6 +49,27 @@ enum ScenarioUnitRole {
     Other,
 }
 
+fn broad_defense_tile_range() -> TileRangePattern {
+    TileRangePattern {
+        include_anchor_tile: false,
+        rows: vec![
+            "XXXXXXXXX".to_string(),
+            "XXXXXXXXX".to_string(),
+            "XXXXXXXXX".to_string(),
+            "XXXXXXXXX".to_string(),
+            "XXXX@XXXX".to_string(),
+            "XXXXXXXXX".to_string(),
+            "XXXXXXXXX".to_string(),
+            "XXXXXXXXX".to_string(),
+            "XXXXXXXXX".to_string(),
+        ],
+    }
+}
+
+fn apply_skill_test_basic_attack_contract(abnormality: &mut AbnormalityMetadata) {
+    abnormality.basic_attack.defense_tile_range = Some(broad_defense_tile_range());
+}
+
 pub(crate) fn skill_test_dummy_metadata() -> AbnormalityMetadata {
     AbnormalityMetadata {
         id: "skill_test_dummy".to_string(),
@@ -65,12 +87,16 @@ pub(crate) fn skill_test_dummy_metadata() -> AbnormalityMetadata {
         },
         basic_attack: BasicAttackDef {
             range_units: 1.0,
+            defense_tile_range: Some(broad_defense_tile_range()),
             interval_ms: 500,
             windup_ms: 0,
             delivery: game_core::game::ability::DeliveryDef::Instant,
+            ..BasicAttackDef::default()
         },
         resonance: Default::default(),
         skill_id: None,
+        mobility_kind: Default::default(),
+        target_traits: Vec::new(),
     }
 }
 
@@ -132,6 +158,7 @@ fn materialize_unit_metadata(
     let explicit_resonance_override = unit.patch.static_patch.resonance.is_some();
 
     unit.patch.static_patch.apply_to_metadata(&mut abnormality);
+    apply_skill_test_basic_attack_contract(&mut abnormality);
 
     let desired_resonance_start = if explicit_resonance_override {
         abnormality.resonance.start
@@ -180,6 +207,9 @@ fn build_game_data_with_units(
     metadata_overrides: &[AbnormalityMetadata],
 ) -> Arc<GameDataBase> {
     let mut abnormalities = base.abnormality_data.items.clone();
+    for abnormality in &mut abnormalities {
+        apply_skill_test_basic_attack_contract(abnormality);
+    }
     let mut known_uuids: HashSet<Uuid> = abnormalities.iter().map(|meta| meta.uuid).collect();
 
     if known_uuids.insert(SKILL_DUMMY_UUID) {
@@ -209,6 +239,7 @@ fn build_game_data_with_units(
         .with_shop_data(Arc::clone(&base.shop_data))
         .with_reward_data(Arc::clone(&base.reward_data))
         .with_pve_data(Arc::clone(&base.pve_data))
+        .with_buff_data(Arc::clone(&base.buff_data))
         .with_skill_data(Arc::clone(&base.skill_data))
         .with_skill_fragment_data(Arc::clone(&base.skill_fragment_data))
         .build_arc()

@@ -11,7 +11,6 @@ use crate::game::{
         types::{BattleUnitDraft, BattleUnitSource},
     },
     behavior::GameError,
-    combat_mission_policy::defense_route_tactical_point_id,
     combat_preview::{CombatPreview, EnemyKind, SpawnWave, SpawnWaveEnemyEntry},
     data::GameDataBase,
     determinism,
@@ -104,14 +103,7 @@ fn enemy_movement_plan_for_wave(
     } else {
         route.cells.clone()
     };
-    let point_ids = route_cells
-        .iter()
-        .enumerate()
-        .map(|(index, _)| {
-            defense_route_tactical_point_id(route_id, index, index + 1 == route_cells.len())
-        })
-        .collect::<Vec<_>>();
-    Some(EnemyMovementPlan::PathAlongPath { point_ids })
+    Some(EnemyMovementPlan::PathAlongCells { cells: route_cells })
 }
 
 fn enemy_drafts_for_wave(

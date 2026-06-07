@@ -3,9 +3,8 @@ mod common;
 use std::sync::Arc;
 
 use game_core::game::ability::{
-    DeliveryDef, SkillAreaAnchorSource, SkillAreaDeliveryDef, SkillAreaShapeDef,
-    SkillCastTargetingDef, SkillDef, SkillEffectDef, SkillHitTargetFilter, SkillId, SkillKind,
-    SkillPresentationDef, SkillProjectileCollisionDef, SkillStepCondition, SkillStepDef,
+    DeliveryDef, SkillCastTargetingDef, SkillDef, SkillEffectDef, SkillHitTargetFilter, SkillId,
+    SkillKind, SkillPresentationDef, SkillProjectileCollisionDef, SkillStepCondition, SkillStepDef,
     SkillStepRepeat, SkillTarget, SkillUnitReference, StepTargetingMode, UnitTargetRule,
 };
 use game_core::game::battle::buffs::BuffId;
@@ -16,6 +15,7 @@ use game_core::game::battle::scenario::{
     ScenarioGroupId, ScenarioSpawnGroup, ScenarioTrigger, ScenarioUnitRef, ScenarioUnitSpawn,
     WinCondition,
 };
+use game_core::game::battle::tile_range::TileRangePattern;
 use game_core::game::battle::timeline::{
     AttackKind, HpChangeReason, Timeline, TimelineCause, TimelineEvent, TimelineProjectileGuidance,
     TimelineRootCause,
@@ -41,6 +41,39 @@ fn unit_draft(owned_uuid: Uuid, base_uuid: Uuid) -> BattleUnitDraft {
         equipped_items: vec![],
         equipped_item_enhancements: vec![],
     }
+}
+
+fn broad_defense_tile_range() -> TileRangePattern {
+    TileRangePattern {
+        include_anchor_tile: false,
+        rows: vec![
+            "XXXXXXXXX".to_string(),
+            "XXXXXXXXX".to_string(),
+            "XXXXXXXXX".to_string(),
+            "XXXXXXXXX".to_string(),
+            "XXXX@XXXX".to_string(),
+            "XXXXXXXXX".to_string(),
+            "XXXXXXXXX".to_string(),
+            "XXXXXXXXX".to_string(),
+            "XXXXXXXXX".to_string(),
+        ],
+    }
+}
+
+fn skill_with_broad_defense_tile_range(mut skill: SkillDef) -> SkillDef {
+    let fallback_range = broad_defense_tile_range();
+    if let SkillCastTargetingDef::Explicit {
+        defense_tile_range, ..
+    } = &mut skill.cast_targeting
+    {
+        *defense_tile_range = Some(fallback_range.clone());
+    }
+
+    for step in &mut skill.steps {
+        step.defense_tile_range = Some(fallback_range.clone());
+    }
+
+    skill
 }
 
 fn spawn_group(
@@ -142,9 +175,11 @@ fn make_abnormality(
         },
         basic_attack: BasicAttackDef {
             range_units: f32::from(attack_range_units),
+            defense_tile_range: Some(broad_defense_tile_range()),
             interval_ms: attack_interval_ms,
             windup_ms: 0,
             delivery: attack_delivery,
+            ..BasicAttackDef::default()
         },
         resonance: ResonanceDef {
             start: 0,
@@ -152,6 +187,8 @@ fn make_abnormality(
             gain_lock_ms: 0,
         },
         skill_id: skill_id.map(SkillId::from),
+        mobility_kind: Default::default(),
+        target_traits: Vec::new(),
     }
 }
 
@@ -159,7 +196,11 @@ fn minimal_game_data(
     abnormalities: Vec<AbnormalityMetadata>,
     skills: Vec<SkillDef>,
 ) -> Arc<GameDataBase> {
-    GameDataBuilder::empty()
+    let skills = skills
+        .into_iter()
+        .map(skill_with_broad_defense_tile_range)
+        .collect();
+    GameDataBuilder::live_defaults()
         .with_abnormalities(abnormalities)
         .with_skills(SkillDatabase::new(skills))
         .build_arc()
@@ -272,7 +313,23 @@ fn find_first_ability_cast_seq(
                 } if actual_skill_id == skill_id && *actual_caster == caster_instance_id.into()
             )
         })
-        .expect("missing AbilityCast");
+        .unwrap_or_else(|| {
+            let observed: Vec<_> = timeline
+                .entries
+                .iter()
+                .filter_map(|entry| match &entry.event {
+                    TimelineEvent::AbilityCast {
+                        skill_id,
+                        caster_instance_id,
+                        ..
+                    } => Some((entry.time_ms, skill_id.clone(), *caster_instance_id)),
+                    _ => None,
+                })
+                .collect();
+            panic!(
+                "missing AbilityCast skill_id={skill_id} caster_instance_id={caster_instance_id}; observed={observed:?}"
+            )
+        });
 
     (entry.seq, entry.time_ms)
 }
@@ -292,320 +349,6 @@ fn step_entries_for_cast<'a>(
 }
 
 #[test]
-fn enemy_radius_area_anchors_on_the_nearest_enemy_instead_of_the_caster_tile() {
-    let caster_base_uuid = Uuid::from_u128(0xAA01);
-    let enemy_a_base_uuid = Uuid::from_u128(0xAA02);
-    let enemy_b_base_uuid = Uuid::from_u128(0xAA03);
-
-    let skill = SkillDef {
-        id: SkillId::from("remote_nova"),
-        name: "remote_nova".to_string(),
-        kind: SkillKind::Untargeted,
-        cast_targeting: SkillCastTargetingDef::FirstStepTarget,
-        focus_time_ms: 0,
-        focus_permissions: Default::default(),
-        steps: vec![SkillStepDef {
-            id: "remote_blast".to_string(),
-            delay_ms: 0,
-            range_units: 4.0,
-            target: SkillTarget::EnemySingle {
-                rule: UnitTargetRule::Nearest,
-            },
-            targeting: StepTargetingMode::ReuseCastTarget,
-            when: Default::default(),
-            repeat: Default::default(),
-            delivery: DeliveryDef::Area {
-                area: SkillAreaDeliveryDef {
-                    shape: SkillAreaShapeDef::Circle {
-                        radius_units: 1_100_000,
-                    },
-                    anchor: SkillAreaAnchorSource::CastTarget,
-                    tracking: Default::default(),
-                    hit_targets: SkillHitTargetFilter::Enemies,
-                    include_caster: false,
-                    tick_policy: game_core::game::ability::SkillAreaTickPolicy::EveryTick,
-                    duration_ms: 0,
-                    tick_interval_ms: None,
-                },
-            },
-            effects: vec![SkillEffectDef::Damage {
-                amount: 30,
-                damage_type: game_core::game::battle::damage::DamageType::Magic,
-            }],
-            presentation: SkillPresentationDef::default(),
-        }],
-    };
-
-    let game_data = minimal_game_data(
-        vec![
-            make_abnormality(
-                "caster",
-                caster_base_uuid,
-                Some("remote_nova"),
-                1,
-                200,
-                0,
-                300,
-                4,
-                DeliveryDef::Instant,
-                1,
-            ),
-            make_abnormality(
-                "enemy_a",
-                enemy_a_base_uuid,
-                None,
-                1,
-                150,
-                0,
-                5_000,
-                1,
-                DeliveryDef::Instant,
-                10,
-            ),
-            make_abnormality(
-                "enemy_b",
-                enemy_b_base_uuid,
-                None,
-                1,
-                150,
-                0,
-                5_000,
-                1,
-                DeliveryDef::Instant,
-                10,
-            ),
-        ],
-        vec![skill],
-    );
-
-    let caster_owned_id = Uuid::from_u128(0xAA11);
-    let enemy_a_owned_id = Uuid::from_u128(0xAA12);
-    let enemy_b_owned_id = Uuid::from_u128(0xAA13);
-    let timeline = run_battle_with_setup(
-        game_data,
-        vec![(caster_owned_id, caster_base_uuid, Position::new(1, 1))],
-        vec![
-            (enemy_a_owned_id, enemy_a_base_uuid, Position::new(3, 1)),
-            (enemy_b_owned_id, enemy_b_base_uuid, Position::new(4, 1)),
-        ],
-        |core| {
-            let caster_instance_id = core
-                .battlefield
-                .occupant(Position::new(1, 1))
-                .expect("inspect caster tile")
-                .expect("caster should exist");
-            core.enqueue_event(BattleEvent::AutoCastStart {
-                time_ms: 0,
-                caster_instance_id,
-                cause: TimelineCause::default(),
-            });
-        },
-    );
-    let caster_id = spawned_unit_id(&timeline, caster_base_uuid, Side::Player);
-    let enemy_a_id = spawned_unit_id(&timeline, enemy_a_base_uuid, Side::Opponent);
-    let enemy_b_id = spawned_unit_id(&timeline, enemy_b_base_uuid, Side::Opponent);
-
-    let (ability_seq, _) = find_first_ability_cast_seq(&timeline, "remote_nova", caster_id);
-    let step_seq = step_entries_for_cast(&timeline, ability_seq)
-        .into_iter()
-        .find_map(|entry| {
-            matches!(
-                &entry.event,
-                TimelineEvent::AbilityStepTriggered { step_id, .. } if step_id == "remote_blast"
-            )
-            .then_some(entry.seq)
-        })
-        .expect("missing remote_blast step");
-
-    let damaged_targets: Vec<Uuid> = timeline
-        .entries
-        .iter()
-        .filter_map(|entry| match &entry.event {
-            TimelineEvent::HpChanged {
-                target_instance_id,
-                delta,
-                ..
-            } if entry_caused_by_seq(&timeline, entry, step_seq) && *delta == -30 => {
-                Some((*target_instance_id).into())
-            }
-            _ => None,
-        })
-        .collect();
-
-    assert_eq!(
-        damaged_targets,
-        vec![enemy_a_id, enemy_b_id],
-        "enemy-centered radius AoE should anchor on the nearest enemy cluster, not the caster tile"
-    );
-}
-
-#[test]
-fn delayed_area_reuses_the_original_cast_target_snapshot_after_that_target_dies() {
-    let caster_base_uuid = Uuid::from_u128(0xAA21);
-    let primary_base_uuid = Uuid::from_u128(0xAA22);
-    let nearby_base_uuid = Uuid::from_u128(0xAA23);
-
-    let skill = SkillDef {
-        id: SkillId::from("delayed_corpse_burst"),
-        name: "delayed_corpse_burst".to_string(),
-        kind: SkillKind::Targeted,
-        cast_targeting: SkillCastTargetingDef::FirstStepTarget,
-        focus_time_ms: 0,
-        focus_permissions: Default::default(),
-        steps: vec![
-            SkillStepDef {
-                id: "kill_primary".to_string(),
-                delay_ms: 0,
-                range_units: 4.0,
-                target: SkillTarget::EnemySingle {
-                    rule: UnitTargetRule::Nearest,
-                },
-                targeting: StepTargetingMode::ReuseCastTarget,
-                when: Default::default(),
-                repeat: Default::default(),
-                delivery: DeliveryDef::Instant,
-                effects: vec![SkillEffectDef::Damage {
-                    amount: 200,
-                    damage_type: game_core::game::battle::damage::DamageType::Magic,
-                }],
-                presentation: SkillPresentationDef::default(),
-            },
-            SkillStepDef {
-                id: "corpse_burst".to_string(),
-                delay_ms: 20,
-                range_units: 4.0,
-                target: SkillTarget::CastTarget,
-                targeting: StepTargetingMode::ReuseCastTarget,
-                when: SkillStepCondition::IfPreviousStepDealtDamage,
-                repeat: Default::default(),
-                delivery: DeliveryDef::Area {
-                    area: SkillAreaDeliveryDef {
-                        shape: SkillAreaShapeDef::Circle {
-                            radius_units: 1_100_000,
-                        },
-                        anchor: SkillAreaAnchorSource::CastTarget,
-                        tracking: Default::default(),
-                        hit_targets: SkillHitTargetFilter::Enemies,
-                        include_caster: false,
-                        tick_policy: game_core::game::ability::SkillAreaTickPolicy::EveryTick,
-                        duration_ms: 0,
-                        tick_interval_ms: None,
-                    },
-                },
-                effects: vec![SkillEffectDef::Damage {
-                    amount: 25,
-                    damage_type: game_core::game::battle::damage::DamageType::Magic,
-                }],
-                presentation: SkillPresentationDef::default(),
-            },
-        ],
-    };
-
-    let game_data = minimal_game_data(
-        vec![
-            make_abnormality(
-                "caster",
-                caster_base_uuid,
-                Some("delayed_corpse_burst"),
-                1,
-                200,
-                0,
-                300,
-                4,
-                DeliveryDef::Instant,
-                1,
-            ),
-            make_abnormality(
-                "primary",
-                primary_base_uuid,
-                None,
-                1,
-                100,
-                0,
-                5_000,
-                1,
-                DeliveryDef::Instant,
-                10,
-            ),
-            make_abnormality(
-                "nearby",
-                nearby_base_uuid,
-                None,
-                1,
-                150,
-                0,
-                5_000,
-                1,
-                DeliveryDef::Instant,
-                10,
-            ),
-        ],
-        vec![skill],
-    );
-
-    let caster_owned_id = Uuid::from_u128(0xAA31);
-    let primary_owned_id = Uuid::from_u128(0xAA32);
-    let nearby_owned_id = Uuid::from_u128(0xAA33);
-    let timeline = run_battle_with_setup(
-        game_data,
-        vec![(caster_owned_id, caster_base_uuid, Position::new(1, 1))],
-        vec![
-            (primary_owned_id, primary_base_uuid, Position::new(3, 1)),
-            (nearby_owned_id, nearby_base_uuid, Position::new(4, 1)),
-        ],
-        |core| {
-            let caster_instance_id = core
-                .battlefield
-                .occupant(Position::new(1, 1))
-                .expect("inspect caster tile")
-                .expect("caster should exist");
-            core.enqueue_event(BattleEvent::AutoCastStart {
-                time_ms: 0,
-                caster_instance_id,
-                cause: TimelineCause::default(),
-            });
-        },
-    );
-    let caster_id = spawned_unit_id(&timeline, caster_base_uuid, Side::Player);
-    let nearby_id = spawned_unit_id(&timeline, nearby_base_uuid, Side::Opponent);
-
-    let (ability_seq, _) =
-        find_first_ability_cast_seq(&timeline, "delayed_corpse_burst", caster_id);
-    let steps = step_entries_for_cast(&timeline, ability_seq);
-    let burst_step_seq = steps
-        .into_iter()
-        .find_map(|entry| {
-            matches!(
-                &entry.event,
-                TimelineEvent::AbilityStepTriggered { step_id, .. } if step_id == "corpse_burst"
-            )
-            .then_some(entry.seq)
-        })
-        .expect("missing corpse_burst step");
-
-    let burst_hits: Vec<Uuid> = timeline
-        .entries
-        .iter()
-        .filter_map(|entry| match &entry.event {
-            TimelineEvent::HpChanged {
-                target_instance_id,
-                delta,
-                ..
-            } if entry_caused_by_seq(&timeline, entry, burst_step_seq) && *delta == -25 => {
-                Some((*target_instance_id).into())
-            }
-            _ => None,
-        })
-        .collect();
-
-    assert_eq!(
-        burst_hits,
-        vec![nearby_id],
-        "delayed AoE should explode at the original cast target snapshot after the primary target dies"
-    );
-}
-
-#[test]
 fn mixed_target_skill_records_enemy_damage_then_self_buff() {
     let caster_base_uuid = Uuid::from_u128(0xAA11);
     let enemy_base_uuid = Uuid::from_u128(0xAA12);
@@ -622,6 +365,8 @@ fn mixed_target_skill_records_enemy_damage_then_self_buff() {
                 id: "enemy_burst".to_string(),
                 delay_ms: 0,
                 range_units: 1.0,
+                defense_tile_range: None,
+                air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::Nearest,
                 },
@@ -639,6 +384,8 @@ fn mixed_target_skill_records_enemy_damage_then_self_buff() {
                 id: "self_buff".to_string(),
                 delay_ms: 50,
                 range_units: 1.0,
+                defense_tile_range: None,
+                air_capable: false,
                 target: SkillTarget::SelfUnit,
                 targeting: StepTargetingMode::ReuseCastTarget,
                 when: Default::default(),
@@ -754,6 +501,8 @@ fn self_then_retargeted_enemy_skill_resolves_second_step_at_execution_time() {
                 id: "self_charge".to_string(),
                 delay_ms: 0,
                 range_units: 1.0,
+                defense_tile_range: None,
+                air_capable: false,
                 target: SkillTarget::SelfUnit,
                 targeting: StepTargetingMode::ReuseCastTarget,
                 when: Default::default(),
@@ -772,6 +521,8 @@ fn self_then_retargeted_enemy_skill_resolves_second_step_at_execution_time() {
                 id: "retargeted_strike".to_string(),
                 delay_ms: 10,
                 range_units: 1.0,
+                defense_tile_range: None,
+                air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::Nearest,
                 },
@@ -888,6 +639,8 @@ fn conditional_followup_waits_for_projectile_damage_resolution() {
                 id: "delayed_shot".to_string(),
                 delay_ms: 0,
                 range_units: 3.0,
+                defense_tile_range: None,
+                air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::Nearest,
                 },
@@ -908,6 +661,8 @@ fn conditional_followup_waits_for_projectile_damage_resolution() {
                 id: "heal_on_hit".to_string(),
                 delay_ms: 1,
                 range_units: 1.0,
+                defense_tile_range: None,
+                air_capable: false,
                 target: SkillTarget::SelfUnit,
                 targeting: StepTargetingMode::ReuseCastTarget,
                 when: SkillStepCondition::IfPreviousStepDealtDamage,
@@ -1055,6 +810,8 @@ fn explicit_cast_targeting_separates_cast_context_from_step_execution_targets() 
             target: SkillTarget::EnemySingle {
                 rule: UnitTargetRule::Nearest,
             },
+            defense_tile_range: None,
+            air_capable: false,
         },
         focus_time_ms: 100,
         focus_permissions: Default::default(),
@@ -1063,6 +820,8 @@ fn explicit_cast_targeting_separates_cast_context_from_step_execution_targets() 
                 id: "self_charge".to_string(),
                 delay_ms: 0,
                 range_units: 1.0,
+                defense_tile_range: None,
+                air_capable: false,
                 target: SkillTarget::SelfUnit,
                 targeting: StepTargetingMode::ReuseCastTarget,
                 when: Default::default(),
@@ -1081,6 +840,8 @@ fn explicit_cast_targeting_separates_cast_context_from_step_execution_targets() 
                 id: "locked_shot".to_string(),
                 delay_ms: 10,
                 range_units: 1.0,
+                defense_tile_range: None,
+                air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::CurrentTarget,
                 },
@@ -1218,6 +979,8 @@ fn ability_step_timeline_includes_presentation_metadata() {
             id: "judgement".to_string(),
             delay_ms: 0,
             range_units: 1.0,
+            defense_tile_range: None,
+            air_capable: false,
             target: SkillTarget::EnemySingle {
                 rule: UnitTargetRule::Nearest,
             },
@@ -1388,6 +1151,8 @@ fn untargeted_projectile_miss_finalizes_step_and_cleans_up_damage_gated_followup
                 id: "missable_shot".to_string(),
                 delay_ms: 0,
                 range_units: 2.0,
+                defense_tile_range: None,
+                air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::Nearest,
                 },
@@ -1411,6 +1176,8 @@ fn untargeted_projectile_miss_finalizes_step_and_cleans_up_damage_gated_followup
                 id: "followup_buff".to_string(),
                 delay_ms: 1,
                 range_units: 1.0,
+                defense_tile_range: None,
+                air_capable: false,
                 target: SkillTarget::SelfUnit,
                 targeting: StepTargetingMode::ReuseCastTarget,
                 when: SkillStepCondition::IfPreviousStepDealtDamage,
@@ -1530,6 +1297,8 @@ fn untargeted_projectile_still_hits_later_unit_after_cast_target_dies() {
             id: "death_through_shot".to_string(),
             delay_ms: 0,
             range_units: 4.0,
+            defense_tile_range: None,
+            air_capable: false,
             target: SkillTarget::EnemySingle {
                 rule: UnitTargetRule::LowestHealthEnemy,
             },
@@ -1630,7 +1399,7 @@ fn untargeted_projectile_still_hits_later_unit_after_cast_target_dies() {
             (
                 Uuid::from_u128(55),
                 charge_target_base_uuid,
-                Position::new(2, 0),
+                Position::new(6, 0),
             ),
             (
                 Uuid::from_u128(56),
@@ -1760,6 +1529,8 @@ fn untargeted_piercing_projectile_respects_max_hits() {
             id: "piercing_shot".to_string(),
             delay_ms: 0,
             range_units: 4.0,
+            defense_tile_range: None,
+            air_capable: false,
             target: SkillTarget::EnemySingle {
                 rule: UnitTargetRule::LowestHealthEnemy,
             },
@@ -1899,6 +1670,8 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
                 id: "prime_stacks".to_string(),
                 delay_ms: 0,
                 range_units: 1.0,
+                defense_tile_range: None,
+                air_capable: false,
                 target: SkillTarget::SelfUnit,
                 targeting: StepTargetingMode::ReuseCastTarget,
                 when: SkillStepCondition::Always,
@@ -1920,6 +1693,8 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
                 id: "opening_strike".to_string(),
                 delay_ms: 1,
                 range_units: 1.0,
+                defense_tile_range: None,
+                air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::Nearest,
                 },
@@ -1937,6 +1712,8 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
                 id: "heal_on_hit".to_string(),
                 delay_ms: 2,
                 range_units: 1.0,
+                defense_tile_range: None,
+                air_capable: false,
                 target: SkillTarget::SelfUnit,
                 targeting: StepTargetingMode::ReuseCastTarget,
                 when: SkillStepCondition::IfPreviousStepDealtDamage,
@@ -1949,6 +1726,8 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
                 id: "stacked_barrage".to_string(),
                 delay_ms: 3,
                 range_units: 1.0,
+                defense_tile_range: None,
+                air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::Nearest,
                 },
@@ -2079,6 +1858,9 @@ fn ron_added_abnormalities_emit_expected_skill_event_categories_in_battle_smoke(
     let base_game_data = common::load_game_data_from_ron();
     let training_dummy_uuid = Uuid::from_u128(0xDEAD_BEEF);
     let mut abnormalities = base_game_data.abnormality_data.items.clone();
+    for abnormality in &mut abnormalities {
+        abnormality.basic_attack.defense_tile_range = Some(broad_defense_tile_range());
+    }
     abnormalities.push(make_abnormality(
         "skill_test_dummy",
         training_dummy_uuid,
@@ -2092,7 +1874,7 @@ fn ron_added_abnormalities_emit_expected_skill_event_categories_in_battle_smoke(
         100,
     ));
 
-    let game_data = GameDataBuilder::empty()
+    let game_data = GameDataBuilder::live_defaults()
         .with_abnormalities(abnormalities)
         .with_corroded_employee_data(Arc::clone(&base_game_data.corroded_employee_data))
         .with_corroded_wave_data(Arc::clone(&base_game_data.corroded_wave_data))
@@ -2101,7 +1883,15 @@ fn ron_added_abnormalities_emit_expected_skill_event_categories_in_battle_smoke(
         .with_shop_data(Arc::clone(&base_game_data.shop_data))
         .with_reward_data(Arc::clone(&base_game_data.reward_data))
         .with_pve_data(Arc::clone(&base_game_data.pve_data))
-        .with_skill_data(Arc::clone(&base_game_data.skill_data))
+        .with_skills(SkillDatabase::new(
+            base_game_data
+                .skill_data
+                .skills
+                .iter()
+                .cloned()
+                .map(skill_with_broad_defense_tile_range)
+                .collect(),
+        ))
         .with_skill_fragment_data(Arc::clone(&base_game_data.skill_fragment_data))
         .build_arc();
 

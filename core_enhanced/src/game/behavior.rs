@@ -2,15 +2,28 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    game::resources::{EquipItemResultDto, InventoryDiffDto, Position, RunFailureReason},
+    game::employee::ActiveConsumableModifier,
+    game::resources::{
+        EquipItemResultDto, InventoryDiffDto, Position, RunFailureReason, UnequipItemResultDto,
+    },
     game::{
-        battle::{timeline::Timeline, types::BattleWinner},
-        combat_preview::{CombatDeployment, CombatNodeType, CombatPreview},
+        ability::{
+            FocusPermissions, SkillActivationMode, SkillAreaAnchorSource, SkillAreaTickPolicy,
+            SkillAreaTracking, SkillHitTargetFilter, SkillId, SkillKind, SkillTarget,
+            SkillTileAreaOrigin,
+        },
+        battle::{
+            ids::UnitInstanceId,
+            tile_range::{FacingDirection, TileRangePattern},
+            timeline::{SkillCastTarget, TimelineEntry},
+            types::BattleWinner,
+        },
+        combat_preview::{CombatMissionVariant, CombatNodeType, CombatPreview},
         data::equipment_data::{
             EquipmentDismantleRecipeMetadata, EquipmentEnhancementRecipeMetadata,
             EquipmentRestorationRecipeMetadata,
         },
-        data::skill_fragment_data::SkillFragmentId,
+        data::skill_fragment_data::{SkillFragmentCompatibilityFailureCode, SkillFragmentId},
         employee::StarterEmployeeCandidate,
         enums::{RewardMode, ShopEventOption},
         map::{
@@ -37,8 +50,17 @@ pub struct NodeOutcomeSummary {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CombatOutcomeSummary {
     pub node_type: CombatNodeType,
+    pub mission_variant: CombatMissionVariant,
     pub winner: BattleWinner,
     pub retreated: bool,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub struct AbnormalityAttemptDto {
+    pub node_id: MapNodeId,
+    pub max_attempts: u8,
+    pub attempts_started: u8,
+    pub remaining_attempts: u8,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -57,7 +79,7 @@ pub struct NodeOutcomeEmployeeChange {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct BenchSlotDto {
+pub struct RosterSlotDto {
     pub slot: usize,
     pub unit_uuid: Option<Uuid>,
 }
@@ -72,6 +94,40 @@ pub struct MaintenanceOptionsDto {
     pub dismantle_skill_fragment_ids: Vec<SkillFragmentId>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum BattlePlaybackSpeed {
+    X0_5,
+    X1,
+    X2,
+    X3,
+}
+
+impl BattlePlaybackSpeed {
+    pub fn ratio(self) -> (u64, u64) {
+        match self {
+            Self::X0_5 => (1, 2),
+            Self::X1 => (1, 1),
+            Self::X2 => (2, 1),
+            Self::X3 => (3, 1),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BattlePlaybackState {
+    pub paused: bool,
+    pub speed: BattlePlaybackSpeed,
+}
+
+impl Default for BattlePlaybackState {
+    fn default() -> Self {
+        Self {
+            paused: false,
+            speed: BattlePlaybackSpeed::X1,
+        }
+    }
+}
+
 /// 상태 게이트에서 사용하는 payload-less 액션 capability
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum ActionKind {
@@ -79,6 +135,7 @@ pub enum ActionKind {
     SelectStarterEmployees,
     UnEquipItem,
     EquipItem,
+    UseConsumableItem,
     EquipSkillFragment,
     UnequipSkillFragment,
     UpgradeSkillFragment,
@@ -87,11 +144,9 @@ pub enum ActionKind {
     RestoreEquipment,
     DismantleEquipment,
     EnhanceEquipment,
-    MoveUnit,
-    MoveBenchUnit,
+    MoveRosterUnit,
     RequestMapData,
     SelectMapNode,
-    UseReconScan,
     ConfirmEnterNode,
     CancelSelectedNode,
     CompleteNode,
@@ -108,8 +163,15 @@ pub enum ActionKind {
     ExitShop,
     ClaimReward,
     ExitReward,
-    FinishCombatReplay,
-    RetreatCombat,
+    CompleteCombatResult,
+    RequestBattleState,
+    DeployUnit,
+    WithdrawUnit,
+    ActivateSkill,
+    RetreatBattle,
+    PauseBattle,
+    ResumeBattle,
+    SetBattleSpeed,
 }
 
 /// GameServer에서 GameCore로 전달되는 플레이어 행동
@@ -133,6 +195,11 @@ pub enum PlayerBehavior {
     EquipItem {
         item_uuid: Uuid,
         target_unit: Uuid,
+    },
+    /// Safezone Item Use 장면에서 직원에게 섭취 아이템 사용
+    UseConsumableItem {
+        item_uuid: Uuid,
+        target_employee_uuid: Uuid,
     },
     /// 직원에게 런 소유 스킬 파편 장착
     EquipSkillFragment {
@@ -170,14 +237,8 @@ pub enum PlayerBehavior {
     EnhanceEquipment {
         item_uuid: Uuid,
     },
-    /// 선택한 전투 노드의 배치 구역 안에서 직원 배치 이동
-    MoveUnit {
-        target_unit_uuid: Uuid,
-        dest_pos: Position,
-        swap_with_unit_uuid: Option<Uuid>,
-    },
-    /// 벤치 내부 슬롯 이동
-    MoveBenchUnit {
+    /// 런 중 직원 명단 표시 순서 이동
+    MoveRosterUnit {
         target_unit_uuid: Uuid,
         dest_slot: usize,
         swap_with_unit_uuid: Option<Uuid>,
@@ -188,8 +249,6 @@ pub enum PlayerBehavior {
     SelectMapNode {
         node_id: MapNodeId,
     },
-    /// 전투 노드 프리뷰에서 정밀 스캔 사용
-    UseReconScan,
     /// 선택한 맵 노드에 실제로 진입
     ConfirmEnterNode,
     /// 선택한 맵 노드 프리뷰를 취소하고 맵으로 복귀
@@ -242,15 +301,40 @@ pub enum PlayerBehavior {
     ClaimReward,
     /// 보상 화면 나가기
     ExitReward,
-    /// 전투 리플레이 종료
-    FinishCombatReplay,
-    /// 비보스 전투에서 후퇴하고 현재 노드를 실패 처리
-    RetreatCombat,
-    // ============================================================
-    // 전투 관련 행동 (TODO)
-    // ============================================================
-    // UseCard { card_uuid: Uuid },
-    // EndTurn,
+    /// 전투 결과 확인 완료
+    CompleteCombatResult,
+    /// 실시간 전투 상태 요청
+    RequestBattleState {
+        #[serde(default)]
+        since_seq: Option<u64>,
+    },
+    /// 실시간 DefenseRoute 전투에서 직원을 지정 위치에 배치
+    DeployUnit {
+        employee_uuid: Uuid,
+        position: Position,
+        facing: FacingDirection,
+    },
+    /// 실시간 DefenseRoute 전투에서 배치된 직원을 후퇴시키고 재배치 대기 상태로 전환
+    WithdrawUnit {
+        employee_uuid: Uuid,
+    },
+    /// 실시간 DefenseRoute 전투에서 배치된 직원의 수동 스킬을 발동
+    ActivateSkill {
+        employee_uuid: Uuid,
+        skill_id: crate::game::ability::SkillId,
+        #[serde(default)]
+        target: Option<SkillCastTarget>,
+    },
+    /// 실시간 비보스 전투에서 후퇴하고 현재 노드를 실패 처리
+    RetreatBattle,
+    /// 실시간 DefenseRoute 전투 시뮬레이션 시간을 정지
+    PauseBattle,
+    /// 실시간 DefenseRoute 전투 시뮬레이션 시간을 재생
+    ResumeBattle,
+    /// 실시간 DefenseRoute 전투 시뮬레이션 배속 변경
+    SetBattleSpeed {
+        speed: BattlePlaybackSpeed,
+    },
 }
 
 impl PlayerBehavior {
@@ -260,6 +344,7 @@ impl PlayerBehavior {
             PlayerBehavior::SelectStarterEmployees { .. } => ActionKind::SelectStarterEmployees,
             PlayerBehavior::UnEquipItem { .. } => ActionKind::UnEquipItem,
             PlayerBehavior::EquipItem { .. } => ActionKind::EquipItem,
+            PlayerBehavior::UseConsumableItem { .. } => ActionKind::UseConsumableItem,
             PlayerBehavior::EquipSkillFragment { .. } => ActionKind::EquipSkillFragment,
             PlayerBehavior::UnequipSkillFragment { .. } => ActionKind::UnequipSkillFragment,
             PlayerBehavior::UpgradeSkillFragment { .. } => ActionKind::UpgradeSkillFragment,
@@ -268,11 +353,9 @@ impl PlayerBehavior {
             PlayerBehavior::RestoreEquipment { .. } => ActionKind::RestoreEquipment,
             PlayerBehavior::DismantleEquipment { .. } => ActionKind::DismantleEquipment,
             PlayerBehavior::EnhanceEquipment { .. } => ActionKind::EnhanceEquipment,
-            PlayerBehavior::MoveUnit { .. } => ActionKind::MoveUnit,
-            PlayerBehavior::MoveBenchUnit { .. } => ActionKind::MoveBenchUnit,
+            PlayerBehavior::MoveRosterUnit { .. } => ActionKind::MoveRosterUnit,
             PlayerBehavior::RequestMapData => ActionKind::RequestMapData,
             PlayerBehavior::SelectMapNode { .. } => ActionKind::SelectMapNode,
-            PlayerBehavior::UseReconScan => ActionKind::UseReconScan,
             PlayerBehavior::ConfirmEnterNode => ActionKind::ConfirmEnterNode,
             PlayerBehavior::CancelSelectedNode => ActionKind::CancelSelectedNode,
             PlayerBehavior::CompleteNode => ActionKind::CompleteNode,
@@ -289,10 +372,134 @@ impl PlayerBehavior {
             PlayerBehavior::ExitShop => ActionKind::ExitShop,
             PlayerBehavior::ClaimReward => ActionKind::ClaimReward,
             PlayerBehavior::ExitReward => ActionKind::ExitReward,
-            PlayerBehavior::FinishCombatReplay => ActionKind::FinishCombatReplay,
-            PlayerBehavior::RetreatCombat => ActionKind::RetreatCombat,
+            PlayerBehavior::CompleteCombatResult => ActionKind::CompleteCombatResult,
+            PlayerBehavior::RequestBattleState { .. } => ActionKind::RequestBattleState,
+            PlayerBehavior::DeployUnit { .. } => ActionKind::DeployUnit,
+            PlayerBehavior::WithdrawUnit { .. } => ActionKind::WithdrawUnit,
+            PlayerBehavior::ActivateSkill { .. } => ActionKind::ActivateSkill,
+            PlayerBehavior::RetreatBattle => ActionKind::RetreatBattle,
+            PlayerBehavior::PauseBattle => ActionKind::PauseBattle,
+            PlayerBehavior::ResumeBattle => ActionKind::ResumeBattle,
+            PlayerBehavior::SetBattleSpeed { .. } => ActionKind::SetBattleSpeed,
         }
     }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct LiveBattleDeploymentDto {
+    pub battle_time_ms: u64,
+    /// Player-facing "공간 안정화치" value. Rust member name stays cost during the
+    /// first Unity/server contract migration.
+    pub current_cost: u32,
+    /// Player-facing maximum "공간 안정화치".
+    pub max_cost: u32,
+    /// Stabilization required for a first deployment.
+    pub base_deploy_cost: u32,
+    /// Automatic stabilization recovery rate.
+    pub cost_per_second: u32,
+    pub unit_deploy_costs: Vec<LiveBattleUnitDeployCostDto>,
+    pub deployed_units: Vec<LiveBattleDeployedUnitDto>,
+    pub redeploying_units: Vec<LiveBattleRedeployUnitDto>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct LiveBattleUnitDeployCostDto {
+    pub employee_uuid: Uuid,
+    pub base_deploy_cost: u32,
+    pub effective_deploy_cost: u32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct LiveBattleDeployedUnitDto {
+    pub employee_uuid: Uuid,
+    pub unit_instance_id: UnitInstanceId,
+    pub facing: FacingDirection,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub skill_readiness: Option<LiveBattleSkillReadinessDto>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct LiveBattleRedeployUnitDto {
+    pub employee_uuid: Uuid,
+    pub ready_at_ms: u64,
+    pub deploy_cost: u32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct LiveBattleSkillReadinessDto {
+    pub skill_id: Option<SkillId>,
+    pub activation_mode: SkillActivationMode,
+    pub resonance_current: u32,
+    pub resonance_max: u32,
+    pub manual_activation_allowed: bool,
+    #[serde(default)]
+    pub target_required: bool,
+    #[serde(default)]
+    pub target_available: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub can_activate_reason: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub target_block_reason: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SkillCatalogDto {
+    pub version: u32,
+    pub range_source_of_truth: String,
+    pub skills: Vec<SkillCatalogSkillDto>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SkillCatalogSkillDto {
+    pub skill_id: SkillId,
+    pub display_name: String,
+    pub kind: SkillKind,
+    pub focus_time_ms: u32,
+    pub focus_permissions: FocusPermissions,
+    pub cast_target: Option<SkillCatalogCastTargetDto>,
+    pub steps: Vec<SkillCatalogStepDto>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SkillCatalogCastTargetDto {
+    pub range_units: f32,
+    pub target_policy: SkillTarget,
+    pub defense_tile_range: Option<TileRangePattern>,
+    pub air_capable: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SkillCatalogStepDto {
+    pub step_id: String,
+    pub delay_ms: u32,
+    pub range_units: f32,
+    pub target_policy: SkillTarget,
+    pub defense_tile_range: Option<TileRangePattern>,
+    pub air_capable: bool,
+    pub delivery: SkillCatalogDeliveryKind,
+    pub tile_area: Option<SkillCatalogTileAreaDto>,
+    pub effects_count: usize,
+    pub presentation: crate::game::ability::SkillPresentationDef,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum SkillCatalogDeliveryKind {
+    Instant,
+    Projectile,
+    TileArea,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct SkillCatalogTileAreaDto {
+    pub anchor: SkillAreaAnchorSource,
+    pub tile_origin: SkillTileAreaOrigin,
+    pub tracking: SkillAreaTracking,
+    pub hit_targets: SkillHitTargetFilter,
+    pub include_caster: bool,
+    pub tick_policy: SkillAreaTickPolicy,
+    pub duration_ms: u32,
+    pub tick_interval_ms: Option<u32>,
 }
 
 /// BehaviorResult 는 변경된 모든 값을 넘길 의무가 있음
@@ -338,14 +545,6 @@ pub enum BehaviorResult {
         session: NodeSession,
         map: MapViewDto,
         combat_preview: Option<CombatPreview>,
-        combat_deployment: Option<CombatDeployment>,
-        recon_charge: u32,
-    },
-    /// 정밀 스캔 결과
-    ReconScanUsed {
-        node_id: MapNodeId,
-        remaining_recon_charge: u32,
-        combat_preview: CombatPreview,
     },
     /// 맵 노드 완료
     NodeCompleted {
@@ -389,10 +588,19 @@ pub enum BehaviorResult {
     },
 
     // 아이템 장착 해제
-    UnEquipItem,
+    UnEquipItem {
+        result: UnequipItemResultDto,
+    },
     /// 아이템 장착/조합
     EquipItem {
         result: EquipItemResultDto,
+    },
+    ConsumableItemUsed {
+        item_uuid: Uuid,
+        target_employee_uuid: Uuid,
+        replaced_modifier: Option<ActiveConsumableModifier>,
+        applied_modifier: ActiveConsumableModifier,
+        inventory_diff: InventoryDiffDto,
     },
     SkillFragmentLoadoutUpdated {
         employee_uuid: Uuid,
@@ -430,13 +638,9 @@ pub enum BehaviorResult {
         enhancement_level: u8,
         inventory_diff: InventoryDiffDto,
     },
-    /// 선택한 전투 노드의 배치 구역 안에서 직원 배치 이동
-    MoveUnit {
-        combat_deployment: CombatDeployment,
-    },
-    /// 벤치 내부 슬롯 이동
-    MoveBenchUnit {
-        bench_slots: Vec<BenchSlotDto>,
+    /// 런 중 직원 명단 표시 순서 이동
+    MoveRosterUnit {
+        roster_slots: Vec<RosterSlotDto>,
     },
 
     /// 상점 상태 업데이트 (예: 리롤 이후)
@@ -489,10 +693,88 @@ pub enum BehaviorResult {
         completion: Box<BehaviorResult>,
     },
 
-    /// 전투 결과
-    CombatResolved {
-        winner: BattleWinner,
-        timeline: Timeline,
+    /// 실시간 전투 tick 결과
+    BattleAdvanced {
+        battle_uuid: Uuid,
+        encounter_id: String,
+        node_type: CombatNodeType,
+        mission_variant: CombatMissionVariant,
+        playback: BattlePlaybackState,
+        battle_time_ms: u64,
+        timeline_delta: Vec<TimelineEntry>,
+        last_timeline_seq: u64,
+        finished: bool,
+        deployment: Option<LiveBattleDeploymentDto>,
+    },
+
+    /// 실시간 전투 상태 조회 결과
+    BattleState {
+        battle_uuid: Uuid,
+        node_type: CombatNodeType,
+        mission_variant: CombatMissionVariant,
+        encounter_id: String,
+        combat_preview: CombatPreview,
+        playback: BattlePlaybackState,
+        battle_time_ms: u64,
+        timeline_delta: Vec<TimelineEntry>,
+        last_timeline_seq: u64,
+        finished: bool,
+        deployment: Option<LiveBattleDeploymentDto>,
+    },
+
+    /// 실시간 전투 재생 상태가 변경됨
+    BattlePlaybackChanged {
+        battle_uuid: Uuid,
+        encounter_id: String,
+        node_type: CombatNodeType,
+        mission_variant: CombatMissionVariant,
+        playback: BattlePlaybackState,
+        battle_time_ms: u64,
+        last_timeline_seq: u64,
+        deployment: Option<LiveBattleDeploymentDto>,
+    },
+
+    /// 실시간 전투에서 직원 배치가 적용됨
+    BattleUnitDeployed {
+        battle_uuid: Uuid,
+        encounter_id: String,
+        node_type: CombatNodeType,
+        mission_variant: CombatMissionVariant,
+        playback: BattlePlaybackState,
+        employee_uuid: Uuid,
+        unit_instance_id: UnitInstanceId,
+        timeline_delta: Vec<TimelineEntry>,
+        last_timeline_seq: u64,
+        deployment: LiveBattleDeploymentDto,
+    },
+
+    /// 실시간 전투에서 직원 후퇴가 적용됨
+    BattleUnitWithdrawn {
+        battle_uuid: Uuid,
+        encounter_id: String,
+        node_type: CombatNodeType,
+        mission_variant: CombatMissionVariant,
+        playback: BattlePlaybackState,
+        employee_uuid: Uuid,
+        unit_instance_id: UnitInstanceId,
+        timeline_delta: Vec<TimelineEntry>,
+        last_timeline_seq: u64,
+        deployment: LiveBattleDeploymentDto,
+    },
+
+    /// 실시간 전투에서 직원 수동 스킬 발동 명령이 적용됨
+    BattleSkillActivated {
+        battle_uuid: Uuid,
+        encounter_id: String,
+        node_type: CombatNodeType,
+        mission_variant: CombatMissionVariant,
+        playback: BattlePlaybackState,
+        employee_uuid: Uuid,
+        unit_instance_id: UnitInstanceId,
+        skill_id: crate::game::ability::SkillId,
+        timeline_delta: Vec<TimelineEntry>,
+        last_timeline_seq: u64,
+        deployment: LiveBattleDeploymentDto,
     },
 
     /// 보상 선택/수령 단계 상태
@@ -576,14 +858,6 @@ impl BehaviorResult {
         }
     }
 
-    /// CombatResolved → (승자, 전투 타임라인) 반환
-    pub fn as_combat_resolved(&self) -> Option<(BattleWinner, &Timeline)> {
-        match self {
-            BehaviorResult::CombatResolved { winner, timeline } => Some((*winner, timeline)),
-            _ => None,
-        }
-    }
-
     /// RewardState → (모드, 보상 목록, 현재 선택 보상 UUID) 반환
     pub fn as_reward_state(&self) -> Option<(RewardMode, &[RewardOption], Option<Uuid>)> {
         match self {
@@ -608,9 +882,9 @@ pub enum GameError {
     /// 현재 GameState/Context에서 허용되지 않은 행동 (치팅 시도 포함)
     InvalidAction,
 
-    /// 상점 상태가 아니거나, SelectedEvent에 Shop 정보가 없을 때
+    /// 상점 상태가 아니거나, 활성 노드 콘텐츠에 Shop 정보가 없을 때
     NotInShopState,
-    /// 보상 상태가 아니거나, SelectedEvent에 Reward 정보가 없을 때
+    /// 보상 상태가 아니거나, 활성 노드 콘텐츠에 Reward 정보가 없을 때
     NotInRewardState,
     /// 상점이 리롤을 지원하지 않을 때
     ShopRerollNotAllowed,
@@ -636,6 +910,12 @@ pub enum GameError {
     InvalidStaticData(String),
     /// 아직 구현되지 않은 핵심 게임 루프/콘텐츠를 호출했을 때
     NotImplemented(&'static str),
+
+    /// 스킬 파편이 현재 직원/무기 전투 프로필과 호환되지 않을 때
+    SkillFragmentIncompatible {
+        fragment_id: SkillFragmentId,
+        failure_codes: Vec<SkillFragmentCompatibilityFailureCode>,
+    },
 
     /// 필드 위치가 범위를 벗어났을 때
     OutOfBounds,
