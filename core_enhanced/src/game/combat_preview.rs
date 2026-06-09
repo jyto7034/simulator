@@ -21,7 +21,7 @@ use std::{
 
 const CORRODED_APPEARANCE_SEED_NS: u64 = 0x434F_5241_5050_4541; // "CORAPPEA"
 const THREAT_RUMOR_SEED_NS: u64 = 0x5448_5254_5255_4D52; // "THRTRUMR"
-const THREAT_RUMOR_CHANCE_PERCENT: u8 = 10;
+const THREAT_RUMOR_CHANCE_PERCENT: u8 = 20;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum BattlefieldArchetype {
@@ -181,7 +181,6 @@ pub enum ThreatWarningTag {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum ThreatWarningStatus {
     Unverified,
-    Observed,
     Disproved,
 }
 
@@ -189,7 +188,6 @@ pub enum ThreatWarningStatus {
 pub enum ThreatWarningSource {
     Briefing,
     Rumor,
-    Observed,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -575,7 +573,6 @@ impl BattlefieldGenerator {
             });
         apply_authored_static_obstacles(&mut battlefield_template, encounter);
         ensure_defense_route(&mut battlefield_template, node_type);
-        let enemy_briefing = enemy_briefing(encounter, game_data, request.category);
         let spawn_waves = spawn_waves_for(
             node_type,
             archetype,
@@ -585,6 +582,7 @@ impl BattlefieldGenerator {
             game_data,
             request.seed,
         );
+        let enemy_briefing = enemy_briefing(encounter, game_data, request.category, &spawn_waves);
         let threat_warnings = threat_warnings_for(&spawn_waves, game_data, request.seed);
         Ok(BattlefieldInstance {
             battlefield_template_id: battlefield_template.id,
@@ -735,6 +733,14 @@ impl CombatPreview {
     ) -> Self {
         Self::try_generate_for_node(node_id, category, encounter_id, game_data, seed)
             .expect("combat preview battlefield should be valid")
+    }
+
+    pub fn disprove_rumor_warnings(&mut self) {
+        for warning in &mut self.threat_warnings {
+            if warning.source == ThreatWarningSource::Rumor {
+                warning.status = ThreatWarningStatus::Disproved;
+            }
+        }
     }
 }
 
@@ -1618,7 +1624,7 @@ fn threat_warnings_for(
     preview_seed: u64,
 ) -> Vec<ThreatWarning> {
     let tags = required_briefing_warning_tags_for_spawn_waves(spawn_waves, game_data);
-    let mut warnings = all_threat_warning_tags()
+    let mut warnings = detectable_threat_warning_tags()
         .iter()
         .copied()
         .filter(|tag| tags.contains(tag))
@@ -1669,14 +1675,11 @@ pub fn required_briefing_warning_tags_for_spawn_waves(
     tags
 }
 
-fn all_threat_warning_tags() -> &'static [ThreatWarningTag] {
+fn detectable_threat_warning_tags() -> &'static [ThreatWarningTag] {
     &[
         ThreatWarningTag::ArmoredEnemyPossible,
         ThreatWarningTag::HighMagicResistEnemyPossible,
         ThreatWarningTag::AirEnemyPossible,
-        ThreatWarningTag::HardToBlockEnemyPossible,
-        ThreatWarningTag::ShieldedEnemyPossible,
-        ThreatWarningTag::RegeneratingEnemyPossible,
         ThreatWarningTag::FastBreakthroughEnemyPossible,
     ]
 }
@@ -1690,7 +1693,7 @@ fn rumor_threat_warning_tag(
         return None;
     }
 
-    let candidates = all_threat_warning_tags()
+    let candidates = detectable_threat_warning_tags()
         .iter()
         .copied()
         .filter(|tag| !real_tags.contains(tag))
@@ -1736,6 +1739,7 @@ fn enemy_briefing(
     encounter: Option<&PveEncounter>,
     game_data: &GameDataBase,
     category: MapNodeCategory,
+    spawn_waves: &[SpawnWave],
 ) -> Vec<EnemyBriefing> {
     let Some(encounter) = encounter else {
         return vec![EnemyBriefing {
@@ -1751,10 +1755,9 @@ fn enemy_briefing(
         .abnormality_data
         .get_by_id(&encounter.abnormality_id);
     let kind = primary_enemy_kind(encounter, category);
-    let count_hint = encounter
-        .wave_definitions()
+    let count_hint = spawn_waves
         .iter()
-        .flat_map(|wave| &wave.enemies)
+        .flat_map(|wave| &wave.enemy_entries)
         .map(|enemy| enemy.count)
         .sum::<u32>()
         .max(1);
@@ -2287,6 +2290,7 @@ mod tests {
 
     #[test]
     fn rumor_threat_warning_is_seeded_and_limited_to_one_entry() {
+        assert_eq!(THREAT_RUMOR_CHANCE_PERCENT, 20);
         let seed = (0..10_000)
             .find(|seed| rumor_threat_warning_tag(*seed, &HashSet::new()).is_some())
             .expect("test should find a rumor-producing seed");
@@ -2297,6 +2301,7 @@ mod tests {
         assert_eq!(first.len(), 1);
         assert_eq!(first[0].status, ThreatWarningStatus::Unverified);
         assert_eq!(first[0].source, ThreatWarningSource::Rumor);
+        assert!(detectable_threat_warning_tags().contains(&first[0].tag));
     }
 
     #[test]
@@ -2309,6 +2314,24 @@ mod tests {
             }
         }
         panic!("test should find a rumor-producing seed");
+    }
+
+    #[test]
+    fn rumor_threat_warning_uses_only_currently_detectable_missing_tags() {
+        let implemented_tags = HashSet::from([
+            ThreatWarningTag::ArmoredEnemyPossible,
+            ThreatWarningTag::HighMagicResistEnemyPossible,
+            ThreatWarningTag::AirEnemyPossible,
+            ThreatWarningTag::FastBreakthroughEnemyPossible,
+        ]);
+        assert_eq!(
+            detectable_threat_warning_tags()
+                .iter()
+                .copied()
+                .collect::<HashSet<_>>(),
+            implemented_tags
+        );
+        assert!(rumor_threat_warning_tag(0, &implemented_tags).is_none());
     }
 
     #[test]
@@ -2972,6 +2995,10 @@ mod tests {
                 .iter()
                 .map(|entry| entry.appearance_seeds.len())
                 .sum::<usize>()
+        );
+        assert_eq!(
+            first.enemy_briefing[0].count_hint,
+            entries.iter().map(|entry| entry.count).sum::<u32>()
         );
     }
 

@@ -5,7 +5,9 @@ use uuid::Uuid;
 
 use super::{GameCore, RUN_SYSTEM_POLICY};
 use crate::game::behavior::{ActionKind, BehaviorResult, GameError, PlayerBehavior};
-use crate::game::combat_player_spawns::effective_combat_profile_for_employee;
+use crate::game::combat_player_spawns::{
+    effective_combat_profile_for_employee, effective_combat_profile_for_employee_with_item_slot,
+};
 use crate::game::data::skill_fragment_data::{SkillFragmentCompatibilityReport, SkillFragmentId};
 use crate::game::employee::{Employee, EmployeeRoster};
 use crate::game::enums::RewardMode;
@@ -106,12 +108,15 @@ impl GameCore {
             allowed.retain(|action| *action != ActionKind::ExitReward);
         }
 
-        if matches!(state, GameState::InNode { .. }) && self.is_in_maintenance_support_node() {
+        if matches!(state, GameState::InNode { .. }) && self.is_in_maintenance_node() {
             for action in [
+                ActionKind::EquipItem,
+                ActionKind::UnEquipItem,
+                ActionKind::EquipSkillFragment,
+                ActionKind::UnequipSkillFragment,
                 ActionKind::UpgradeSkillFragment,
                 ActionKind::AwakenSkillFragment,
                 ActionKind::DismantleSkillFragment,
-                ActionKind::RestoreEquipment,
                 ActionKind::DismantleEquipment,
                 ActionKind::EnhanceEquipment,
             ] {
@@ -204,21 +209,14 @@ impl GameCore {
                 employee_uuid,
                 fragment_id,
             } => self.validate_unequip_skill_fragment_payload(*employee_uuid, fragment_id),
-            PlayerBehavior::UpgradeSkillFragment {
-                target_fragment_id,
-                material_fragment_id,
-            } => self
-                .validate_upgrade_skill_fragment_payload(target_fragment_id, material_fragment_id),
-            PlayerBehavior::AwakenSkillFragment {
-                target_fragment_id,
-                material_fragment_ids,
-            } => self
-                .validate_awaken_skill_fragment_payload(target_fragment_id, material_fragment_ids),
+            PlayerBehavior::UpgradeSkillFragment { target_fragment_id } => {
+                self.validate_upgrade_skill_fragment_payload(target_fragment_id)
+            }
+            PlayerBehavior::AwakenSkillFragment { target_fragment_id } => {
+                self.validate_awaken_skill_fragment_payload(target_fragment_id)
+            }
             PlayerBehavior::DismantleSkillFragment { fragment_id } => {
                 self.validate_dismantle_skill_fragment_payload(fragment_id)
-            }
-            PlayerBehavior::RestoreEquipment { recipe_id } => {
-                self.validate_restore_equipment_payload(recipe_id)
             }
             PlayerBehavior::DismantleEquipment { item_uuid } => {
                 self.validate_dismantle_equipment_payload(*item_uuid)
@@ -416,34 +414,13 @@ impl GameCore {
             return Ok(());
         };
 
-        let mut profile = employee.combat_profile_for_battle(
-            &self.game_data.skill_fragment_data,
+        let profile = effective_combat_profile_for_employee_with_item_slot(
+            employee,
+            self.inventory()?,
             &self.state.skill_fragments,
+            &self.game_data,
+            projected_item_slot,
         )?;
-        let mut applied_weapon = None;
-        for equipped in projected_item_slot.iter() {
-            if equipped.equipment_type != crate::game::data::equipment_data::EquipmentType::Weapon {
-                continue;
-            }
-            let item = self
-                .game_data
-                .equipment_data
-                .get_by_uuid(&equipped.base_uuid)
-                .ok_or(GameError::MissingResource(""))?;
-            let weapon_profile = item.weapon_profile.as_ref().ok_or_else(|| {
-                GameError::InvalidStaticData(format!(
-                    "weapon equipment '{}' is missing weapon_profile",
-                    item.id
-                ))
-            })?;
-            if applied_weapon.is_some() {
-                return Err(GameError::InvalidStaticData(
-                    "projected employee loadout contains multiple equipped weapons".to_string(),
-                ));
-            }
-            profile.apply_weapon_profile(weapon_profile);
-            applied_weapon = Some(equipped.base_uuid);
-        }
 
         let metadata = self
             .game_data
@@ -492,21 +469,17 @@ impl GameCore {
     pub(super) fn validate_upgrade_skill_fragment_payload(
         &self,
         target_fragment_id: &SkillFragmentId,
-        material_fragment_id: &SkillFragmentId,
     ) -> Result<(), GameError> {
-        if !self.is_in_maintenance_support_node() {
+        if !self.is_in_maintenance_node() {
             return Err(GameError::InvalidAction);
         }
-        let protected_material_ids = self.protected_skill_fragment_material_ids()?;
         self.state
             .skill_fragment_policy
             .composition
-            .validate_material_upgrade(
+            .validate_dust_upgrade(
                 &self.state.skill_fragments,
                 target_fragment_id,
-                material_fragment_id,
                 &self.game_data.skill_fragment_data,
-                &protected_material_ids,
             )
             .map(|_| ())
     }
@@ -514,21 +487,17 @@ impl GameCore {
     pub(super) fn validate_awaken_skill_fragment_payload(
         &self,
         target_fragment_id: &SkillFragmentId,
-        material_fragment_ids: &[SkillFragmentId],
     ) -> Result<(), GameError> {
-        if !self.is_in_maintenance_support_node() {
+        if !self.is_in_maintenance_node() {
             return Err(GameError::InvalidAction);
         }
-        let protected_material_ids = self.protected_skill_fragment_material_ids()?;
         self.state
             .skill_fragment_policy
             .composition
-            .validate_awakening(
+            .validate_dust_awakening(
                 &self.state.skill_fragments,
                 target_fragment_id,
-                material_fragment_ids,
                 &self.game_data.skill_fragment_data,
-                &protected_material_ids,
             )
             .map(|_| ())
     }
@@ -537,10 +506,9 @@ impl GameCore {
         &self,
         fragment_id: &SkillFragmentId,
     ) -> Result<(), GameError> {
-        if !self.is_in_maintenance_support_node() {
+        if !self.is_in_maintenance_node() {
             return Err(GameError::InvalidAction);
         }
-        let protected_material_ids = self.protected_skill_fragment_material_ids()?;
         self.state
             .skill_fragment_policy
             .dismantle
@@ -548,47 +516,15 @@ impl GameCore {
                 &self.state.skill_fragments,
                 fragment_id,
                 &self.game_data.skill_fragment_data,
-                &protected_material_ids,
             )
             .map(|_| ())
-    }
-
-    pub(super) fn validate_restore_equipment_payload(
-        &self,
-        recipe_id: &str,
-    ) -> Result<(), GameError> {
-        if !self.is_in_maintenance_support_node() {
-            return Err(GameError::InvalidAction);
-        }
-
-        let recipe = self
-            .game_data
-            .equipment_data
-            .get_restoration_recipe_by_id(recipe_id)
-            .ok_or_else(|| {
-                GameError::InvalidStaticData(format!(
-                    "unknown equipment restoration recipe '{recipe_id}'"
-                ))
-            })?;
-        let inventory = self.inventory()?;
-        if !inventory.equipments.can_add_item() {
-            return Err(GameError::InventoryFull);
-        }
-
-        for cost in &recipe.costs {
-            if inventory.equipment_materials.amount(&cost.material_id) < cost.amount {
-                return Err(GameError::InvalidAction);
-            }
-        }
-
-        Ok(())
     }
 
     pub(super) fn validate_dismantle_equipment_payload(
         &self,
         item_uuid: Uuid,
     ) -> Result<(), GameError> {
-        if !self.is_in_maintenance_support_node() {
+        if !self.is_in_maintenance_node() {
             return Err(GameError::InvalidAction);
         }
 
@@ -597,9 +533,6 @@ impl GameCore {
             .equipments
             .get_item(&item_uuid)
             .ok_or(GameError::InventoryItemNotFound)?;
-        if equipment.equipped_to.is_some() {
-            return Err(GameError::InvalidAction);
-        }
 
         let recipe = self
             .game_data
@@ -626,7 +559,7 @@ impl GameCore {
         &self,
         item_uuid: Uuid,
     ) -> Result<(), GameError> {
-        if !self.is_in_maintenance_support_node() {
+        if !self.is_in_maintenance_node() {
             return Err(GameError::InvalidAction);
         }
 
@@ -656,16 +589,6 @@ impl GameCore {
         }
 
         Ok(())
-    }
-
-    pub(super) fn protected_skill_fragment_material_ids(
-        &self,
-    ) -> Result<Vec<SkillFragmentId>, GameError> {
-        Ok(self
-            .roster()?
-            .iter()
-            .flat_map(|employee| employee.skill_fragments.equipped_ids())
-            .collect())
     }
 
     pub(super) fn validate_owned_unit_exists(

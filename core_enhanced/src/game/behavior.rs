@@ -19,10 +19,7 @@ use crate::{
             types::BattleWinner,
         },
         combat_preview::{CombatMissionVariant, CombatNodeType, CombatPreview},
-        data::equipment_data::{
-            EquipmentDismantleRecipeMetadata, EquipmentEnhancementRecipeMetadata,
-            EquipmentRestorationRecipeMetadata,
-        },
+        data::equipment_data::EquipmentType,
         data::skill_fragment_data::{SkillFragmentCompatibilityFailureCode, SkillFragmentId},
         employee::StarterEmployeeCandidate,
         enums::{RewardMode, ShopEventOption},
@@ -86,12 +83,90 @@ pub struct RosterSlotDto {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MaintenanceOptionsDto {
-    pub restorable_equipment_recipes: Vec<EquipmentRestorationRecipeMetadata>,
-    pub dismantle_equipment_item_uuids: Vec<Uuid>,
-    pub enhance_equipment_item_uuids: Vec<Uuid>,
-    pub enhancement_recipes: Vec<EquipmentEnhancementRecipeMetadata>,
-    pub dismantle_recipes: Vec<EquipmentDismantleRecipeMetadata>,
-    pub dismantle_skill_fragment_ids: Vec<SkillFragmentId>,
+    pub items: Vec<MaintenanceItemPreviewDto>,
+    pub materials: Vec<MaintenanceMaterialAmountDto>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MaintenanceItemPreviewDto {
+    pub target_id: String,
+    pub target_kind: MaintenanceTargetKind,
+    pub equipment_type: Option<EquipmentType>,
+    pub display_name: String,
+    pub source: MaintenanceSourceDto,
+    pub operations: MaintenanceOperationsDto,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+pub enum MaintenanceTargetKind {
+    SkillFragment,
+    Equipment,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MaintenanceSourceDto {
+    #[serde(rename = "type")]
+    pub source_type: MaintenanceSourceKind,
+    pub employee_uuid: Option<Uuid>,
+    pub slot_kind: Option<MaintenanceSlotKind>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MaintenanceSourceKind {
+    Bag,
+    Equipped,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MaintenanceSlotKind {
+    SkillFragment,
+    Weapon,
+    Armor,
+    Accessory,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MaintenanceOperationsDto {
+    pub dismantle: MaintenanceOperationPreviewDto,
+    pub enhance: MaintenanceOperationPreviewDto,
+    pub awaken: MaintenanceOperationPreviewDto,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MaintenanceOperationPreviewDto {
+    pub can_execute: bool,
+    pub disabled_reason: Option<String>,
+    pub costs: Vec<MaintenanceMaterialAmountDto>,
+    pub gains: Vec<MaintenanceMaterialAmountDto>,
+    pub before: MaintenanceTargetStatePreviewDto,
+    pub after: Option<MaintenanceTargetStatePreviewDto>,
+    pub requires_confirm: bool,
+    pub will_unequip: bool,
+    pub warnings: Vec<MaintenanceWarning>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MaintenanceMaterialAmountDto {
+    pub material_id: String,
+    pub amount: u32,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct MaintenanceTargetStatePreviewDto {
+    pub stack_count: Option<u32>,
+    pub enhancement_level: Option<u8>,
+    pub upgrade_level: Option<u8>,
+    pub awakening_progress: Option<u32>,
+    pub awakening_available: Option<bool>,
+    pub awakened: Option<bool>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MaintenanceWarning {
+    EquippedItemWillBeUnequipped,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -141,7 +216,6 @@ pub enum ActionKind {
     UpgradeSkillFragment,
     AwakenSkillFragment,
     DismantleSkillFragment,
-    RestoreEquipment,
     DismantleEquipment,
     EnhanceEquipment,
     MoveRosterUnit,
@@ -211,23 +285,17 @@ pub enum PlayerBehavior {
         employee_uuid: Uuid,
         fragment_id: SkillFragmentId,
     },
-    /// 같은 등급 재료 파편을 소모해 대상 파편의 강화/개화 진행도를 올림
+    /// 파편 가루를 소모해 대상 파편의 강화/개화 진행도를 올림
     UpgradeSkillFragment {
         target_fragment_id: SkillFragmentId,
-        material_fragment_id: SkillFragmentId,
     },
-    /// 개화 가능하거나 조기 개화 비용을 지불할 수 있는 대상 파편을 개화
+    /// 개화 가능하거나 조기 개화 파편 가루 비용을 지불할 수 있는 대상 파편을 개화
     AwakenSkillFragment {
         target_fragment_id: SkillFragmentId,
-        material_fragment_ids: Vec<SkillFragmentId>,
     },
-    /// Maintenance에서 추가 보유 스킬 파편을 분쇄해 정비 자원으로 전환
+    /// Maintenance에서 스킬 파편을 분쇄해 파편 가루로 전환
     DismantleSkillFragment {
         fragment_id: SkillFragmentId,
-    },
-    /// Maintenance에서 장비 재료를 소비해 완성 장비를 복원
-    RestoreEquipment {
-        recipe_id: String,
     },
     /// Maintenance에서 완성 장비를 분해해 장비 재료로 전환
     DismantleEquipment {
@@ -350,7 +418,6 @@ impl PlayerBehavior {
             PlayerBehavior::UpgradeSkillFragment { .. } => ActionKind::UpgradeSkillFragment,
             PlayerBehavior::AwakenSkillFragment { .. } => ActionKind::AwakenSkillFragment,
             PlayerBehavior::DismantleSkillFragment { .. } => ActionKind::DismantleSkillFragment,
-            PlayerBehavior::RestoreEquipment { .. } => ActionKind::RestoreEquipment,
             PlayerBehavior::DismantleEquipment { .. } => ActionKind::DismantleEquipment,
             PlayerBehavior::EnhanceEquipment { .. } => ActionKind::EnhanceEquipment,
             PlayerBehavior::MoveRosterUnit { .. } => ActionKind::MoveRosterUnit,
@@ -561,7 +628,12 @@ pub enum BehaviorResult {
         target_candidates: Vec<Uuid>,
         selected_employee_uuid: Option<Uuid>,
         selected_medical_treatment: Option<MedicalTreatmentKind>,
-        maintenance_options: Option<MaintenanceOptionsDto>,
+        research_deliveries: Vec<SkillFragmentResearchDelivery>,
+    },
+    /// 정비 노드 상태
+    MaintenanceState {
+        node_id: MapNodeId,
+        maintenance_options: MaintenanceOptionsDto,
         research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
     /// 본사 연락 노드 상태
@@ -608,12 +680,14 @@ pub enum BehaviorResult {
     },
     SkillFragmentUpgraded {
         target_fragment_id: SkillFragmentId,
-        material_fragment_id: SkillFragmentId,
-        material_remaining_count: u32,
+        dust_spent: u32,
+        remaining_dust: u32,
         progress: SkillFragmentProgress,
     },
     SkillFragmentAwakened {
         target_fragment_id: SkillFragmentId,
+        dust_spent: u32,
+        remaining_dust: u32,
         progress: SkillFragmentProgress,
     },
     SkillFragmentDismantled {
@@ -621,11 +695,6 @@ pub enum BehaviorResult {
         remaining_count: u32,
         dust_gained: u32,
         total_dust: u32,
-    },
-    EquipmentRestored {
-        recipe_id: String,
-        result_equipment_id: String,
-        inventory_diff: InventoryDiffDto,
     },
     EquipmentDismantled {
         item_uuid: Uuid,

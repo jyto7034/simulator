@@ -14,7 +14,7 @@ use crate::{
 
 use super::{
     rapier_backend::RapierMovementWorld,
-    steering::{self, SteeringParams},
+    steering,
     types::{MovementGoal, TimelineVec2, UnitBody, WorldVec2},
     MovementSegmentEndKind,
 };
@@ -268,13 +268,7 @@ impl MovementEngine for DirectContinuousMovement {
                 continue;
             };
 
-            let displacement = steering::steered_displacement(
-                unit,
-                &units,
-                target,
-                dt_seconds,
-                SteeringParams::default(),
-            );
+            let displacement = steering::steered_displacement(unit, target, dt_seconds);
             let desired_to = Self::clamp_to_board(
                 unit.body.position + displacement,
                 unit.body.radius,

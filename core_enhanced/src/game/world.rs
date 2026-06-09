@@ -8,6 +8,7 @@ use crate::game::enums::{RewardAction, ShopAction};
 use crate::game::map::RunProgression;
 use crate::game::resources::{ActiveNodeContent, GameState, Qliphoth};
 
+mod admin;
 mod combat;
 mod headquarters;
 mod helpers;
@@ -22,6 +23,8 @@ mod state;
 mod support;
 
 use state::{GameCoreState, LiveBattleDeploymentPolicy, RunState};
+
+pub use admin::{AdminCommand, AdminCommandOutput};
 
 pub struct GameCore {
     state: GameCoreState,
@@ -178,19 +181,14 @@ impl GameCore {
                 employee_uuid,
                 fragment_id,
             } => self.handle_unequip_skill_fragment(employee_uuid, &fragment_id),
-            PlayerBehavior::UpgradeSkillFragment {
-                target_fragment_id,
-                material_fragment_id,
-            } => self.handle_upgrade_skill_fragment(&target_fragment_id, &material_fragment_id),
-            PlayerBehavior::AwakenSkillFragment {
-                target_fragment_id,
-                material_fragment_ids,
-            } => self.handle_awaken_skill_fragment(&target_fragment_id, &material_fragment_ids),
+            PlayerBehavior::UpgradeSkillFragment { target_fragment_id } => {
+                self.handle_upgrade_skill_fragment(&target_fragment_id)
+            }
+            PlayerBehavior::AwakenSkillFragment { target_fragment_id } => {
+                self.handle_awaken_skill_fragment(&target_fragment_id)
+            }
             PlayerBehavior::DismantleSkillFragment { fragment_id } => {
                 self.handle_dismantle_skill_fragment(&fragment_id)
-            }
-            PlayerBehavior::RestoreEquipment { recipe_id } => {
-                self.handle_restore_equipment(&recipe_id)
             }
             PlayerBehavior::DismantleEquipment { item_uuid } => {
                 self.handle_dismantle_equipment(item_uuid)

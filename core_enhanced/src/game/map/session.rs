@@ -8,6 +8,7 @@ pub enum NodeSessionKind {
     Combat,
     Boss,
     Support,
+    Maintenance,
     HeadquartersContact,
     Shop,
     Reward,
@@ -20,6 +21,7 @@ impl From<MapNodeCategory> for NodeSessionKind {
             MapNodeCategory::Combat => Self::Combat,
             MapNodeCategory::Boss => Self::Boss,
             MapNodeCategory::Support => Self::Support,
+            MapNodeCategory::Maintenance => Self::Maintenance,
             MapNodeCategory::HeadquartersContact => Self::HeadquartersContact,
             MapNodeCategory::Shop => Self::Shop,
             MapNodeCategory::Reward => Self::Reward,
@@ -88,6 +90,10 @@ mod tests {
         assert_eq!(
             NodeSessionKind::from(MapNodeCategory::Support),
             NodeSessionKind::Support
+        );
+        assert_eq!(
+            NodeSessionKind::from(MapNodeCategory::Maintenance),
+            NodeSessionKind::Maintenance
         );
         assert_eq!(
             NodeSessionKind::from(MapNodeCategory::HeadquartersContact),

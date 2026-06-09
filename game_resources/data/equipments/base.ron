@@ -923,28 +923,19 @@ EquipmentDatabase(
     ],
     materials: [
         EquipmentMaterialMetadata(
-            id: "damaged_weapon_fragment",
+            id: "equipment_dust",
             uuid: "e1000000-0000-0000-0000-000000000001",
-            name: "손상된 무기 파편",
-            description: "침식된 직원이 남긴 손상된 무기 파편입니다. Maintenance에서 일반 무기 복원이나 강화 재료로 사용할 수 있습니다.",
-            material_type: Fragment,
+            name: "장비 가루",
+            description: "불필요한 장비나 전장 잔해를 분쇄해 얻는 공통 장비 강화 재료입니다.",
+            material_type: Generic,
             rarity: ZAYIN,
-            equipment_type: Some(Weapon),
-        ),
-        EquipmentMaterialMetadata(
-            id: "damaged_armor_fragment",
-            uuid: "e1000000-0000-0000-0000-000000000002",
-            name: "손상된 방어구 파편",
-            description: "침식된 직원이 남긴 손상된 방어구 파편입니다. Maintenance에서 일반 방어구 복원이나 강화 재료로 사용할 수 있습니다.",
-            material_type: Fragment,
-            rarity: ZAYIN,
-            equipment_type: Some(Armor),
+            equipment_type: None,
         ),
         EquipmentMaterialMetadata(
             id: "ego_residue_scorched",
             uuid: "e1000000-0000-0000-0000-000000000101",
             name: "그을린 E.G.O 잔재",
-            description: "Scorched Girl 진압 흔적에서 회수한 E.G.O 잔재입니다. E.G.O 장비 연구와 복원 재료로 사용됩니다.",
+            description: "Scorched Girl 진압 흔적에서 회수한 E.G.O 잔재입니다. E.G.O 장비 연구와 특수 강화 재료로 사용됩니다.",
             material_type: Residue,
             rarity: HE,
             equipment_type: None,
@@ -987,38 +978,12 @@ EquipmentDatabase(
             result: "e0000000-0000-0000-0000-000000000305", // Silent Baton
         ),
     ],
-    restoration_recipes: [
-        EquipmentRestorationRecipeMetadata(
-            id: "restore_standard_armor",
-            result_equipment_id: "standard_armor",
-            costs: [
-                EquipmentMaterialCost(
-                    material_id: "damaged_armor_fragment",
-                    amount: 3,
-                ),
-            ],
-        ),
-        EquipmentRestorationRecipeMetadata(
-            id: "restore_fourth_match",
-            result_equipment_id: "fourth_match",
-            costs: [
-                EquipmentMaterialCost(
-                    material_id: "damaged_weapon_fragment",
-                    amount: 3,
-                ),
-                EquipmentMaterialCost(
-                    material_id: "ego_residue_scorched",
-                    amount: 1,
-                ),
-            ],
-        ),
-    ],
     dismantle_recipes: [
         EquipmentDismantleRecipeMetadata(
             equipment_id: "standard_armor",
             yields: [
                 EquipmentMaterialCost(
-                    material_id: "damaged_armor_fragment",
+                    material_id: "equipment_dust",
                     amount: 1,
                 ),
             ],
@@ -1027,7 +992,7 @@ EquipmentDatabase(
             equipment_id: "fourth_match",
             yields: [
                 EquipmentMaterialCost(
-                    material_id: "damaged_weapon_fragment",
+                    material_id: "equipment_dust",
                     amount: 1,
                 ),
             ],
@@ -1039,7 +1004,7 @@ EquipmentDatabase(
             max_level: 5,
             costs_per_level: [
                 EquipmentMaterialCost(
-                    material_id: "damaged_armor_fragment",
+                    material_id: "equipment_dust",
                     amount: 2,
                 ),
             ],
@@ -1061,7 +1026,7 @@ EquipmentDatabase(
             max_level: 5,
             costs_per_level: [
                 EquipmentMaterialCost(
-                    material_id: "damaged_weapon_fragment",
+                    material_id: "equipment_dust",
                     amount: 2,
                 ),
             ],

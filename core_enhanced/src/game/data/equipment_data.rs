@@ -166,13 +166,6 @@ pub struct EquipmentMaterialCost {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EquipmentRestorationRecipeMetadata {
-    pub id: String,
-    pub result_equipment_id: String,
-    pub costs: Vec<EquipmentMaterialCost>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EquipmentDismantleRecipeMetadata {
     pub equipment_id: String,
     pub yields: Vec<EquipmentMaterialCost>,
@@ -195,8 +188,6 @@ pub struct EquipmentDatabase {
     #[serde(default)]
     pub recipes: Vec<EquipmentRecipeMetadata>,
     #[serde(default)]
-    pub restoration_recipes: Vec<EquipmentRestorationRecipeMetadata>,
-    #[serde(default)]
     pub dismantle_recipes: Vec<EquipmentDismantleRecipeMetadata>,
     #[serde(default)]
     pub enhancement_recipes: Vec<EquipmentEnhancementRecipeMetadata>,
@@ -204,8 +195,6 @@ pub struct EquipmentDatabase {
     by_id: OnceLock<HashMap<String, usize>>,
     #[serde(skip)]
     by_material_id: OnceLock<HashMap<String, usize>>,
-    #[serde(skip)]
-    by_restoration_recipe_id: OnceLock<HashMap<String, usize>>,
     #[serde(skip)]
     by_dismantle_equipment_id: OnceLock<HashMap<String, usize>>,
     #[serde(skip)]
@@ -233,46 +222,22 @@ impl EquipmentDatabase {
         materials: Vec<EquipmentMaterialMetadata>,
         recipes: Vec<EquipmentRecipeMetadata>,
     ) -> Self {
-        Self::with_materials_recipes_and_restorations(items, materials, recipes, Vec::new())
+        Self::with_materials_recipes_and_dismantles(items, materials, recipes, Vec::new())
     }
 
-    pub fn with_materials_recipes_and_restorations(
+    pub fn with_materials_recipes_and_dismantles(
         items: Vec<EquipmentMetadata>,
         materials: Vec<EquipmentMaterialMetadata>,
         recipes: Vec<EquipmentRecipeMetadata>,
-        restoration_recipes: Vec<EquipmentRestorationRecipeMetadata>,
-    ) -> Self {
-        Self::with_materials_recipes_restorations_and_dismantles(
-            items,
-            materials,
-            recipes,
-            restoration_recipes,
-            Vec::new(),
-        )
-    }
-
-    pub fn with_materials_recipes_restorations_and_dismantles(
-        items: Vec<EquipmentMetadata>,
-        materials: Vec<EquipmentMaterialMetadata>,
-        recipes: Vec<EquipmentRecipeMetadata>,
-        restoration_recipes: Vec<EquipmentRestorationRecipeMetadata>,
         dismantle_recipes: Vec<EquipmentDismantleRecipeMetadata>,
     ) -> Self {
-        Self::with_all(
-            items,
-            materials,
-            recipes,
-            restoration_recipes,
-            dismantle_recipes,
-            Vec::new(),
-        )
+        Self::with_all(items, materials, recipes, dismantle_recipes, Vec::new())
     }
 
     pub fn with_all(
         items: Vec<EquipmentMetadata>,
         materials: Vec<EquipmentMaterialMetadata>,
         recipes: Vec<EquipmentRecipeMetadata>,
-        restoration_recipes: Vec<EquipmentRestorationRecipeMetadata>,
         dismantle_recipes: Vec<EquipmentDismantleRecipeMetadata>,
         enhancement_recipes: Vec<EquipmentEnhancementRecipeMetadata>,
     ) -> Self {
@@ -281,11 +246,6 @@ impl EquipmentDatabase {
             &materials,
             "equipment material id",
             |item| &item.id,
-        ));
-        let by_restoration_recipe_id = once_lock_with(build_string_index(
-            &restoration_recipes,
-            "equipment restoration recipe id",
-            |recipe| &recipe.id,
         ));
         let by_dismantle_equipment_id = once_lock_with(build_string_index(
             &dismantle_recipes,
@@ -304,12 +264,10 @@ impl EquipmentDatabase {
             items,
             materials,
             recipes,
-            restoration_recipes,
             dismantle_recipes,
             enhancement_recipes,
             by_id,
             by_material_id,
-            by_restoration_recipe_id,
             by_dismantle_equipment_id,
             by_enhancement_equipment_id,
             by_uuid,
@@ -325,16 +283,6 @@ impl EquipmentDatabase {
     fn by_material_id(&self) -> &HashMap<String, usize> {
         self.by_material_id.get_or_init(|| {
             build_string_index(&self.materials, "equipment material id", |item| &item.id)
-        })
-    }
-
-    fn by_restoration_recipe_id(&self) -> &HashMap<String, usize> {
-        self.by_restoration_recipe_id.get_or_init(|| {
-            build_string_index(
-                &self.restoration_recipes,
-                "equipment restoration recipe id",
-                |recipe| &recipe.id,
-            )
         })
     }
 
@@ -371,7 +319,6 @@ impl EquipmentDatabase {
     pub(crate) fn validate_indexes(&self) {
         let _ = self.by_id();
         let _ = self.by_material_id();
-        let _ = self.by_restoration_recipe_id();
         let _ = self.by_dismantle_equipment_id();
         let _ = self.by_enhancement_equipment_id();
         let _ = self.by_uuid();
@@ -380,8 +327,6 @@ impl EquipmentDatabase {
             .expect("equipment weapon profiles must be valid");
         self.validate_recipe_references()
             .expect("equipment recipes must reference existing equipment");
-        self.validate_restoration_recipe_references()
-            .expect("equipment restoration recipes must reference existing data");
         self.validate_dismantle_recipe_references()
             .expect("equipment dismantle recipes must reference existing data");
         self.validate_enhancement_recipe_references()
@@ -422,15 +367,6 @@ impl EquipmentDatabase {
         self.by_material_id()
             .get(id)
             .and_then(|&index| self.materials.get(index))
-    }
-
-    pub fn get_restoration_recipe_by_id(
-        &self,
-        id: &str,
-    ) -> Option<&EquipmentRestorationRecipeMetadata> {
-        self.by_restoration_recipe_id()
-            .get(id)
-            .and_then(|&index| self.restoration_recipes.get(index))
     }
 
     pub fn get_dismantle_recipe_by_equipment_id(
@@ -486,41 +422,6 @@ impl EquipmentDatabase {
                     "equipment recipe references missing result uuid {}",
                     recipe.result
                 )));
-            }
-        }
-
-        Ok(())
-    }
-
-    fn validate_restoration_recipe_references(&self) -> Result<(), GameError> {
-        for recipe in &self.restoration_recipes {
-            if self.get_by_id(&recipe.result_equipment_id).is_none() {
-                return Err(GameError::InvalidStaticData(format!(
-                    "equipment restoration recipe '{}' references missing result equipment '{}'",
-                    recipe.id, recipe.result_equipment_id
-                )));
-            }
-
-            if recipe.costs.is_empty() {
-                return Err(GameError::InvalidStaticData(format!(
-                    "equipment restoration recipe '{}' must have at least one material cost",
-                    recipe.id
-                )));
-            }
-
-            for cost in &recipe.costs {
-                if cost.amount == 0 {
-                    return Err(GameError::InvalidStaticData(format!(
-                        "equipment restoration recipe '{}' has zero cost for material '{}'",
-                        recipe.id, cost.material_id
-                    )));
-                }
-                if self.get_material_by_id(&cost.material_id).is_none() {
-                    return Err(GameError::InvalidStaticData(format!(
-                        "equipment restoration recipe '{}' references missing material '{}'",
-                        recipe.id, cost.material_id
-                    )));
-                }
             }
         }
 

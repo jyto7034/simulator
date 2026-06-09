@@ -10,9 +10,9 @@ use crate::game::{
     },
     behavior::GameError,
     data::GameDataBase,
-    employee::EmployeeRoster,
+    employee::{Employee, EmployeeRoster},
     enums::Side,
-    resources::{Inventory, Position},
+    resources::{item_slot::ItemSlot, Inventory, Position},
     skill_fragment::SkillFragmentInventory,
 };
 
@@ -86,13 +86,30 @@ pub(crate) fn effective_combat_profile_for_employee(
     game_data: &GameDataBase,
     employee_uuid: Uuid,
 ) -> Result<UnitCombatProfile, GameError> {
-    battle_unit_draft_for_employee_with_availability(
-        roster,
+    let employee = roster.get(&employee_uuid).ok_or(GameError::UnitNotFound)?;
+    effective_combat_profile_for_employee_with_item_slot(
+        employee,
         inventory,
         skill_fragments,
         game_data,
-        employee_uuid,
-        false,
+        &employee.loadout.item_slot,
+    )
+}
+
+pub(crate) fn effective_combat_profile_for_employee_with_item_slot(
+    employee: &Employee,
+    inventory: &Inventory,
+    skill_fragments: &SkillFragmentInventory,
+    game_data: &GameDataBase,
+    item_slot: &ItemSlot,
+) -> Result<UnitCombatProfile, GameError> {
+    battle_unit_draft_for_employee_from_item_slot(
+        employee.uuid,
+        employee,
+        inventory,
+        skill_fragments,
+        game_data,
+        item_slot,
     )?
     .combat_profile(game_data)
 }
@@ -110,15 +127,29 @@ fn battle_unit_draft_for_employee_with_availability(
         return Err(GameError::InvalidAction);
     }
 
-    let equipped_items: Vec<Uuid> = employee
-        .loadout
-        .item_slot
+    battle_unit_draft_for_employee_from_item_slot(
+        employee_uuid,
+        employee,
+        inventory,
+        skill_fragments,
+        game_data,
+        &employee.loadout.item_slot,
+    )
+}
+
+fn battle_unit_draft_for_employee_from_item_slot(
+    employee_uuid: Uuid,
+    employee: &Employee,
+    inventory: &Inventory,
+    skill_fragments: &SkillFragmentInventory,
+    game_data: &GameDataBase,
+    item_slot: &ItemSlot,
+) -> Result<BattleUnitDraft, GameError> {
+    let equipped_items: Vec<Uuid> = item_slot
         .iter()
         .map(|equipped| equipped.base_uuid)
         .collect();
-    let equipped_item_enhancements = employee
-        .loadout
-        .item_slot
+    let equipped_item_enhancements = item_slot
         .iter()
         .map(|equipped| {
             let owned = inventory

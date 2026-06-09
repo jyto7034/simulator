@@ -380,22 +380,18 @@ impl GameCore {
     pub(super) fn handle_upgrade_skill_fragment(
         &mut self,
         target_fragment_id: &SkillFragmentId,
-        material_fragment_id: &SkillFragmentId,
     ) -> Result<BehaviorResult, GameError> {
-        self.validate_upgrade_skill_fragment_payload(target_fragment_id, material_fragment_id)?;
-        let protected_material_ids = self.protected_skill_fragment_material_ids()?;
-        let result = self.state.skill_fragments.upgrade_with_material_policy(
+        self.validate_upgrade_skill_fragment_payload(target_fragment_id)?;
+        let result = self.state.skill_fragments.upgrade_with_dust_policy(
             target_fragment_id,
-            material_fragment_id,
             &self.game_data.skill_fragment_data,
-            &protected_material_ids,
             &self.state.skill_fragment_policy,
         )?;
 
         Ok(BehaviorResult::SkillFragmentUpgraded {
             target_fragment_id: target_fragment_id.clone(),
-            material_fragment_id: material_fragment_id.clone(),
-            material_remaining_count: result.material_remaining_count,
+            dust_spent: result.dust_spent,
+            remaining_dust: result.remaining_dust,
             progress: result.progress,
         })
     }
@@ -403,20 +399,18 @@ impl GameCore {
     pub(super) fn handle_awaken_skill_fragment(
         &mut self,
         target_fragment_id: &SkillFragmentId,
-        material_fragment_ids: &[SkillFragmentId],
     ) -> Result<BehaviorResult, GameError> {
-        self.validate_awaken_skill_fragment_payload(target_fragment_id, material_fragment_ids)?;
-        let protected_material_ids = self.protected_skill_fragment_material_ids()?;
-        let result = self.state.skill_fragments.awaken_with_materials_policy(
+        self.validate_awaken_skill_fragment_payload(target_fragment_id)?;
+        let result = self.state.skill_fragments.awaken_with_dust_policy(
             target_fragment_id,
-            material_fragment_ids,
             &self.game_data.skill_fragment_data,
-            &protected_material_ids,
             &self.state.skill_fragment_policy,
         )?;
 
         Ok(BehaviorResult::SkillFragmentAwakened {
             target_fragment_id: target_fragment_id.clone(),
+            dust_spent: result.dust_spent,
+            remaining_dust: result.remaining_dust,
             progress: result.progress,
         })
     }
@@ -426,11 +420,27 @@ impl GameCore {
         fragment_id: &SkillFragmentId,
     ) -> Result<BehaviorResult, GameError> {
         self.validate_dismantle_skill_fragment_payload(fragment_id)?;
-        let protected_material_ids = self.protected_skill_fragment_material_ids()?;
+        let equipped_employee_ids = self
+            .state
+            .roster
+            .iter()
+            .filter(|employee| {
+                employee
+                    .skill_fragments
+                    .active_fragment_id()
+                    .is_some_and(|active_id| active_id == fragment_id)
+            })
+            .map(|employee| employee.uuid)
+            .collect::<Vec<_>>();
+        for employee_uuid in equipped_employee_ids {
+            let database = self.game_data.skill_fragment_data.clone();
+            self.state
+                .roster
+                .unequip_skill_fragment(employee_uuid, &database, fragment_id)?;
+        }
         let result = self.state.skill_fragments.dismantle_with_policy(
             fragment_id,
             &self.game_data.skill_fragment_data,
-            &protected_material_ids,
             &self.state.skill_fragment_policy,
         )?;
 
@@ -439,87 +449,6 @@ impl GameCore {
             remaining_count: result.remaining_count,
             dust_gained: result.dust_gained,
             total_dust: result.total_dust,
-        })
-    }
-
-    pub(super) fn handle_restore_equipment(
-        &mut self,
-        recipe_id: &str,
-    ) -> Result<BehaviorResult, GameError> {
-        self.validate_restore_equipment_payload(recipe_id)?;
-        let recipe = self
-            .game_data
-            .equipment_data
-            .get_restoration_recipe_by_id(recipe_id)
-            .ok_or_else(|| {
-                GameError::InvalidStaticData(format!(
-                    "unknown equipment restoration recipe '{recipe_id}'"
-                ))
-            })?
-            .clone();
-        let result_meta = Arc::new(
-            self.game_data
-                .equipment_data
-                .get_by_id(&recipe.result_equipment_id)
-                .ok_or_else(|| {
-                    GameError::InvalidStaticData(format!(
-                        "equipment restoration recipe '{}' references missing result '{}'",
-                        recipe.id, recipe.result_equipment_id
-                    ))
-                })?
-                .clone(),
-        );
-        let cost_materials = recipe
-            .costs
-            .iter()
-            .map(|cost| {
-                self.game_data
-                    .equipment_data
-                    .get_material_by_id(&cost.material_id)
-                    .ok_or_else(|| {
-                        GameError::InvalidStaticData(format!(
-                            "equipment restoration recipe '{}' references missing material '{}'",
-                            recipe.id, cost.material_id
-                        ))
-                    })
-                    .cloned()
-                    .map(|metadata| (cost.material_id.clone(), cost.amount, metadata))
-            })
-            .collect::<Result<Vec<_>, _>>()?;
-        let result_instance_uuid = self.state.uuid_manager.next_owned_equipment();
-
-        let inventory = self.inventory_mut()?;
-        let mut material_stacks = Vec::with_capacity(cost_materials.len());
-        for (material_id, amount, metadata) in &cost_materials {
-            let remaining = inventory
-                .equipment_materials
-                .consume(material_id, *amount)?;
-            material_stacks.push(
-                crate::game::resources::EquipmentMaterialStackDto::from_metadata(
-                    metadata, remaining,
-                ),
-            );
-        }
-        inventory
-            .equipments
-            .add_item(OwnedEquipment::new(
-                result_instance_uuid,
-                Arc::clone(&result_meta),
-            ))
-            .map_err(|_| GameError::InventoryFull)?;
-
-        Ok(BehaviorResult::EquipmentRestored {
-            recipe_id: recipe.id,
-            result_equipment_id: recipe.result_equipment_id,
-            inventory_diff: InventoryDiffDto {
-                added: vec![InventoryItemDto::Equipment(EquipmentItemDto::from_owned(
-                    result_instance_uuid,
-                    result_meta.as_ref(),
-                ))],
-                updated: vec![],
-                removed: vec![],
-                material_stacks,
-            },
         })
     }
 
@@ -536,6 +465,12 @@ impl GameCore {
             .meta
             .id
             .clone();
+        let equipped_to = self
+            .inventory()?
+            .equipments
+            .get_item(&item_uuid)
+            .ok_or(GameError::InventoryItemNotFound)?
+            .equipped_to;
         let recipe = self
             .game_data
             .equipment_data
@@ -563,6 +498,18 @@ impl GameCore {
                     .map(|metadata| (material.material_id.clone(), material.amount, metadata))
             })
             .collect::<Result<Vec<_>, _>>()?;
+
+        if let Some(employee_uuid) = equipped_to {
+            let roster = self.roster_mut()?;
+            let employee = roster
+                .get_mut(&employee_uuid)
+                .ok_or(GameError::UnitNotFound)?;
+            employee
+                .loadout
+                .item_slot
+                .remove_by_instance(item_uuid)
+                .ok_or(GameError::InvalidAction)?;
+        }
 
         let inventory = self.inventory_mut()?;
         inventory

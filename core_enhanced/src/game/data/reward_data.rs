@@ -226,7 +226,7 @@ mod tests {
             icon: "icons/equipment_material.png".to_string(),
             tags: Vec::new(),
             effects: vec![RewardEffect::GrantEquipmentMaterial {
-                material_id: "damaged_weapon_fragment".to_string(),
+                material_id: "equipment_dust".to_string(),
                 amount: 2,
             }],
         };

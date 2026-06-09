@@ -1123,7 +1123,7 @@ impl GameDataBase {
         );
         validate_shop_item_references(&shop_data, &item_registry);
 
-        let database = Self {
+        Self {
             abnormality_data,
             corroded_employee_data,
             corroded_wave_data,
@@ -1139,9 +1139,7 @@ impl GameDataBase {
             buff_data,
             skill_fragment_data,
             item_registry,
-        };
-        validate_combat_preview_threat_warning_contract(&database);
-        database
+        }
     }
 
     /// UUID로 아이템 메타데이터 조회
@@ -1164,6 +1162,10 @@ impl GameDataBase {
                 self.equipment_data.items.get(index).map(ItemRef::Equipment)
             }
         }
+    }
+
+    pub fn validate_generated_combat_preview_contracts(&self) {
+        validate_combat_preview_threat_warning_contract(self);
     }
 }
 

@@ -469,7 +469,7 @@ fn live_rewards_can_grant_skill_fragments_from_ron() {
 
     let equipment_material_reward = game_data
         .reward_data
-        .get_by_id("damaged_weapon_fragment_reward")
+        .get_by_id("equipment_dust_reward")
         .expect("equipment material reward should exist in RON data");
     assert!(
         equipment_material_reward
@@ -485,27 +485,15 @@ fn live_rewards_can_grant_skill_fragments_from_ron() {
             RewardEffect::GrantEquipmentMaterial {
                 material_id,
                 amount: 3,
-            } if material_id == "damaged_weapon_fragment"
+            } if material_id == "equipment_dust"
         )));
     assert!(
         game_data
             .equipment_data
-            .get_material_by_id("damaged_weapon_fragment")
+            .get_material_by_id("equipment_dust")
             .is_some(),
         "equipment material reward grants missing material"
     );
-
-    let armor_material_reward = game_data
-        .reward_data
-        .get_by_id("damaged_armor_fragment_reward")
-        .expect("armor material reward should exist in RON data");
-    assert!(armor_material_reward.effects.iter().any(|effect| matches!(
-        effect,
-        RewardEffect::GrantEquipmentMaterial {
-            material_id,
-            amount: 3,
-        } if material_id == "damaged_armor_fragment"
-    )));
 
     let field_salvage_reward = game_data
         .reward_data
@@ -518,15 +506,8 @@ fn live_rewards_can_grant_skill_fragments_from_ron() {
         effect,
         RewardEffect::GrantEquipmentMaterial {
             material_id,
-            amount: 2,
-        } if material_id == "damaged_weapon_fragment"
-    )));
-    assert!(field_salvage_reward.effects.iter().any(|effect| matches!(
-        effect,
-        RewardEffect::GrantEquipmentMaterial {
-            material_id,
-            amount: 2,
-        } if material_id == "damaged_armor_fragment"
+            amount: 4,
+        } if material_id == "equipment_dust"
     )));
 
     let high_risk_research_reward = game_data
@@ -547,22 +528,14 @@ fn live_rewards_can_grant_skill_fragments_from_ron() {
             } if fragment_id.as_str() == "fragment_freischutz_black_round"
         )));
 
-    let restoration_recipe = game_data
-        .equipment_data
-        .get_restoration_recipe_by_id("restore_fourth_match")
-        .expect("live equipment restoration recipe should exist");
-    assert_eq!(restoration_recipe.result_equipment_id, "fourth_match");
-    assert!(restoration_recipe
-        .costs
-        .iter()
-        .any(|cost| { cost.material_id == "damaged_weapon_fragment" && cost.amount == 3 }));
     let dismantle_recipe = game_data
         .equipment_data
         .get_dismantle_recipe_by_equipment_id("fourth_match")
         .expect("live equipment dismantle recipe should exist");
-    assert!(dismantle_recipe.yields.iter().any(|material| {
-        material.material_id == "damaged_weapon_fragment" && material.amount == 1
-    }));
+    assert!(dismantle_recipe
+        .yields
+        .iter()
+        .any(|material| { material.material_id == "equipment_dust" && material.amount == 1 }));
     let enhancement_recipe = game_data
         .equipment_data
         .get_enhancement_recipe_by_equipment_id("fourth_match")
@@ -571,7 +544,7 @@ fn live_rewards_can_grant_skill_fragments_from_ron() {
     assert!(enhancement_recipe
         .costs_per_level
         .iter()
-        .any(|cost| { cost.material_id == "damaged_weapon_fragment" && cost.amount == 2 }));
+        .any(|cost| { cost.material_id == "equipment_dust" && cost.amount == 2 }));
 }
 
 #[test]
@@ -1146,6 +1119,7 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
 #[test]
 fn live_combat_previews_include_required_ad_ap_threat_warning_tags() {
     let game_data = common::load_game_data_from_ron();
+    game_data.validate_generated_combat_preview_contracts();
     let seeds = [0, 1, 17, 41, 99];
 
     for encounter in &game_data.pve_data.encounters {

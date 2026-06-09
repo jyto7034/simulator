@@ -7,8 +7,8 @@ use crate::game::determinism;
 use crate::game::enums::{RewardMode, ShopEventOption};
 use crate::game::map::{MapNodeCategory, MapNodeId, MapNodePayload, SupportNodeMode};
 use crate::game::resources::{
-    ActiveNodeContent, GameState, HeadquartersContactSessionState, RewardSessionState,
-    ShopSessionState, SupportSessionState,
+    ActiveNodeContent, GameState, HeadquartersContactSessionState, MaintenanceSessionState,
+    RewardSessionState, ShopSessionState, SupportSessionState,
 };
 use crate::game::reward::RewardOption;
 
@@ -128,7 +128,7 @@ impl GameCore {
         candidates
     }
 
-    fn resolve_map_reward(
+    pub(super) fn resolve_map_reward(
         &self,
         node_id: MapNodeId,
         payload: &MapNodePayload,
@@ -265,6 +265,17 @@ impl GameCore {
                 self.state.active_node_content = Some(ActiveNodeContent::Support(support_session));
                 self.refresh_allowed_actions();
 
+                Ok(Some(result))
+            }
+            MapNodeCategory::Maintenance => {
+                let MapNodePayload::Maintenance = payload else {
+                    return Ok(None);
+                };
+                let session = MaintenanceSessionState::new(node_id);
+                let result =
+                    self.maintenance_state_result_with_deliveries(&session, research_deliveries);
+                self.state.active_node_content = Some(ActiveNodeContent::Maintenance(session));
+                self.refresh_allowed_actions();
                 Ok(Some(result))
             }
             MapNodeCategory::HeadquartersContact => {

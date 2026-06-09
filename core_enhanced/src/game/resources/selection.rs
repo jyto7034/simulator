@@ -213,6 +213,17 @@ impl SupportSessionState {
 }
 
 #[derive(Debug, Clone)]
+pub struct MaintenanceSessionState {
+    pub node_id: MapNodeId,
+}
+
+impl MaintenanceSessionState {
+    pub fn new(node_id: MapNodeId) -> Self {
+        Self { node_id }
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct HeadquartersContactSessionState {
     pub node_id: MapNodeId,
     pub options: Vec<HeadquartersContactOption>,
@@ -264,6 +275,7 @@ pub enum ActiveNodeContent {
     Shop(ShopSessionState),
     Reward(RewardSessionState),
     Support(SupportSessionState),
+    Maintenance(MaintenanceSessionState),
     HeadquartersContact(HeadquartersContactSessionState),
     CombatBattle(CombatBattleState),
 }
@@ -307,6 +319,13 @@ impl ActiveNodeContent {
     pub fn as_support_mut(&mut self) -> Result<&mut SupportSessionState, GameError> {
         match self {
             ActiveNodeContent::Support(support) => Ok(support),
+            _ => Err(GameError::EventTypeMismatch),
+        }
+    }
+
+    pub fn as_maintenance(&self) -> Result<&MaintenanceSessionState, GameError> {
+        match self {
+            ActiveNodeContent::Maintenance(maintenance) => Ok(maintenance),
             _ => Err(GameError::EventTypeMismatch),
         }
     }

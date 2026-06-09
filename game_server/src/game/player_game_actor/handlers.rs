@@ -5,8 +5,9 @@ use tracing::{info, warn};
 
 use crate::game::player_game_actor::{
     messages::{
-        AttachSession, CommandExecutionResult, DetachSession, ExecutePlayerBehavior,
-        ForceDisconnect, PlayerGameServerMessage, PushServerMessage, QuitPlayerActor,
+        AttachSession, CommandExecutionResult, DetachSession, ExecuteAdminCommand,
+        ExecutePlayerBehavior, ForceDisconnect, PlayerGameServerMessage, PushServerMessage,
+        QuitPlayerActor,
     },
     state::{
         behavior_result_payload, behavior_result_to_command_result, compress_battle_event_log_payload,
@@ -75,6 +76,31 @@ impl Handler<ExecutePlayerBehavior> for PlayerGameActor {
             .execute(self.player_id, msg.behavior)
             .map_err(PlayerGameActorError::from)?;
         let response = behavior_result_to_command_result(msg.request_id, result)?;
+        let state_snapshot = self.build_state_snapshot()?;
+        self.ensure_live_battle_tick(ctx);
+
+        Ok(CommandExecutionResult {
+            response,
+            state_snapshot,
+        })
+    }
+}
+
+impl Handler<ExecuteAdminCommand> for PlayerGameActor {
+    type Result = Result<CommandExecutionResult, PlayerGameActorError>;
+
+    fn handle(&mut self, msg: ExecuteAdminCommand, ctx: &mut Self::Context) -> Self::Result {
+        self.ensure_active_session(msg.session_id)?;
+        let result = self
+            .game_core
+            .execute_admin_command(msg.command)
+            .map_err(PlayerGameActorError::from)?;
+        let response = PlayerGameServerMessage::AdminResult {
+            request_id: msg.request_id,
+            ok: true,
+            result_type: result.result_type.to_string(),
+            payload: result.payload,
+        };
         let state_snapshot = self.build_state_snapshot()?;
         self.ensure_live_battle_tick(ctx);
 
@@ -357,6 +383,8 @@ mod tests {
             attack: 1,
             defense: 0,
             magic_resist: 0,
+            target_traits: Vec::new(),
+            mobility_kind: Default::default(),
             movement: MovementDef::default(),
             basic_attack: BasicAttackDef::default(),
             resonance: ResonanceDef::default(),

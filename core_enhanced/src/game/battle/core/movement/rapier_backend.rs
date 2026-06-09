@@ -14,7 +14,7 @@ use super::engine::{
     MovementStaticObstacle, MovementStopReasonContinuous, MovementTickInput, MovementTickResult,
     MovementUnitInput,
 };
-use super::steering::{self, SteeringParams};
+use super::steering;
 use super::types::WorldVec2;
 
 /// Rapier-side handles owned by the continuous movement backend.
@@ -553,13 +553,7 @@ impl MovementEngine for RapierMovementWorld {
                 continue;
             };
 
-            let desired_displacement = steering::steered_displacement(
-                unit,
-                &units,
-                target,
-                dt_seconds,
-                SteeringParams::default(),
-            );
+            let desired_displacement = steering::steered_displacement(unit, target, dt_seconds);
             let desired_to = DirectContinuousMovement::clamp_to_board(
                 unit.body.position + desired_displacement,
                 unit.body.radius,

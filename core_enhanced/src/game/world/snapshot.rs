@@ -38,6 +38,38 @@ impl<'a> From<&'a ActiveConsumableModifier> for ActiveConsumableModifierSnapshot
     }
 }
 
+fn snapshot_game_error_code(error: &GameError) -> &'static str {
+    match error {
+        GameError::EventNotFound => "event_not_found",
+        GameError::EventTypeMismatch => "event_type_mismatch",
+        GameError::InvalidAction => "invalid_action",
+        GameError::NotInShopState => "not_in_shop_state",
+        GameError::NotInRewardState => "not_in_reward_state",
+        GameError::ShopRerollNotAllowed => "shop_reroll_not_allowed",
+        GameError::ShopItemNotFound => "shop_item_not_found",
+        GameError::InventoryFull => "inventory_full",
+        GameError::InventoryItemNotFound => "inventory_item_not_found",
+        GameError::AlreadyOwnedArtifact => "already_owned_artifact",
+        GameError::InsufficientResources => "insufficient_resources",
+        GameError::MissingResource(_) => "missing_resource",
+        GameError::InvalidUnitStats(_) => "invalid_unit_stats",
+        GameError::InvalidStaticData(_) => "invalid_static_data",
+        GameError::NotImplemented(_) => "not_implemented",
+        GameError::SkillFragmentIncompatible { .. } => "skill_fragment_incompatible",
+        GameError::OutOfBounds => "out_of_bounds",
+        GameError::PositionOccupied => "position_occupied",
+        GameError::UnitAlreadyPlaced => "unit_already_placed",
+        GameError::UnitNotFound => "unit_not_found",
+    }
+}
+
+fn effective_profile_error_json(error: &GameError) -> Value {
+    json!({
+        "code": snapshot_game_error_code(error),
+        "message": format!("{error:?}"),
+    })
+}
+
 impl GameCore {
     pub fn get_run_snapshot_json(&self) -> Result<Value, GameError> {
         let map = self
@@ -432,14 +464,17 @@ impl GameCore {
             .map(|employee| -> Result<Value, GameError> {
                 let roster_slot =
                     roster_order.and_then(|roster_order| roster_order.slot_of(employee.uuid));
-                let effective_profile = effective_combat_profile_for_employee(
+                let effective_profile_result = effective_combat_profile_for_employee(
                     roster,
                     inventory,
                     &self.state.skill_fragments,
                     &self.game_data,
                     employee.uuid,
-                )
-                .ok();
+                );
+                let (effective_profile, effective_profile_error) = match effective_profile_result {
+                    Ok(profile) => (Some(profile), Value::Null),
+                    Err(error) => (None, effective_profile_error_json(&error)),
+                };
                 let skill_fragment_compatibility = self
                     .state
                     .skill_fragments
@@ -509,6 +544,7 @@ impl GameCore {
                         "effective_weapon_profile": effective_profile.as_ref().and_then(|profile| profile.weapon_profile.clone()),
                         "effective_skill_id": effective_profile.as_ref().and_then(|profile| profile.skill_id.clone()),
                         "effective_deployment_affinity": effective_profile.as_ref().map(|profile| profile.deployment_affinity),
+                        "effective_profile_error": effective_profile_error,
                     },
                     "skill_fragments": {
                         "equipped": employee.skill_fragments.equipped_ids().iter().map(|fragment_id| {
@@ -662,7 +698,11 @@ impl GameCore {
                 "target_candidates": support.target_candidates,
                 "selected_employee_uuid": support.selected_employee_uuid,
                 "selected_medical_treatment": support.selected_medical_treatment,
-                "maintenance_options": self.maintenance_options_for_support(support),
+            }),
+            ActiveNodeContent::Maintenance(maintenance) => json!({
+                "type": "maintenance",
+                "node_id": maintenance.node_id,
+                "maintenance_options": self.maintenance_options(),
             }),
             ActiveNodeContent::HeadquartersContact(headquarters) => json!({
                 "type": "headquarters_contact",

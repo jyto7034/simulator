@@ -33,6 +33,11 @@ impl UuidManager {
         uuid
     }
 
+    pub fn peek(&self, namespace: u64) -> Uuid {
+        let index = self.counters.get(&namespace).copied().unwrap_or(0);
+        determinism::uuid_v4_from_seed(self.run_seed, namespace, index)
+    }
+
     pub fn next_owned_equipment(&mut self) -> Uuid {
         self.next(Self::NS_OWNED_EQUIPMENT)
     }
@@ -43,5 +48,20 @@ impl UuidManager {
 
     pub fn next_employee(&mut self) -> Uuid {
         self.next(Self::NS_EMPLOYEE)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn peek_returns_next_uuid_without_advancing_stream() {
+        let mut manager = UuidManager::new(123);
+        let peeked = manager.peek(UuidManager::NS_OWNED_EQUIPMENT);
+
+        assert_eq!(manager.peek(UuidManager::NS_OWNED_EQUIPMENT), peeked);
+        assert_eq!(manager.next_owned_equipment(), peeked);
+        assert_ne!(manager.peek(UuidManager::NS_OWNED_EQUIPMENT), peeked);
     }
 }

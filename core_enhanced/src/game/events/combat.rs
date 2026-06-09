@@ -907,9 +907,12 @@ mod tests {
                 risk_level: RiskLevel::ZAYIN,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
-                node_type: None,
+                node_type: Some(CombatNodeType::Defense),
                 mission_variant: None,
-                battlefield: None,
+                battlefield: Some(PveBattlefieldOverrideData {
+                    archetype: Some(crate::game::combat_preview::BattlefieldArchetype::ChokePoint),
+                    size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
+                }),
                 tactical_plan: Some(PveTacticalPlanData {
                     points: vec![PveTacticalPointData {
                         id: "black_box_anchor".to_string(),

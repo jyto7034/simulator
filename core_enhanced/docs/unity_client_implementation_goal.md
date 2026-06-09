@@ -152,7 +152,7 @@ Unity에서 `/game` WebSocket에 연결해 다음 흐름을 실제로 조작할 
 `Safe Node`와 `Safezone`은 다른 개념이다.
 
 - `Safe Node`는 맵 위 비전투 노드다. `Medical`, `Rest`, `Maintenance`, `HeadquartersContact`, `Shop`, `Reward`가 여기에 속한다.
-- `Support Node`는 Safe Node 중 core `SupportState`를 쓰는 하위 계열이며 `Medical`, `Rest`, `Maintenance`만 포함한다.
+- `Support Node`는 Safe Node 중 core `SupportState`를 쓰는 하위 계열이며 현재 `Medical`, `Rest`만 포함한다. `Maintenance`는 독립 정비 노드다.
 - `Safezone`은 다음 노드 진입 전 준비 UX다. 별도 map node가 아니고 노드를 소비하지 않는다.
 - Safezone은 플레이어가 선택적으로 들어가는 장소가 아니라 게임 흐름상 노드와 노드 사이에서 항상 거치는 장면이다.
 - `StartNewGame` 이후에는 직원 선발이 먼저 진행되고, 직원 선발 완료 후 Safezone의 `Node Exploration`으로 들어간다.
@@ -169,10 +169,36 @@ Unity에서 `/game` WebSocket에 연결해 다음 흐름을 실제로 조작할 
 - `Loadout`의 장착/해제 기본 UX는 drag-and-drop이다. 우측 가방 아이템을 중앙 호환 슬롯으로 드롭하면 장착하고, 중앙 장착 슬롯의 아이템/파편을 우측 가방으로 드롭하면 해제한다. 클릭은 장착/해제가 아니라 선택/미리보기 용도로 둔다.
 - 호환되지 않는 슬롯에 드롭하면 command를 보내지 않고 시각 피드백만 표시한다.
 - Safezone에서는 현재 계약상 `use_consumable_item`, 장비 장착/해제, 스킬 파편 장착/해제, 인벤토리 확인, 다음 노드 preview 확인을 live 연결한다.
-- `휴식 정비` 와이어프레임은 Safezone의 `Loadout` 장면 표현으로 취급한다. 여기서 `Maintenance` 전용 강화/개화/분쇄/복원/분해/강화 command를 노출하지 않는다.
+- `휴식 정비` 와이어프레임은 Safezone의 `Loadout` 장면 표현으로 취급한다. 여기서 `Maintenance` 전용 파편 강화/개화/분쇄, 장비 분쇄/강화 command를 노출하지 않는다.
 - `휴식` 와이어프레임은 Rest Node 연출이나 Safezone 분위기 연출에 쓸 수 있지만, Rest Node의 실제 효과는 core에서 `complete_node` 시점에만 적용된다.
 - `Item Use` 장면에서 사용 아이템/소모품을 사망자가 아닌 직원에게 드래그하면 `use_consumable_item`을 보낸다. 사망자인 직원은 UI에서 사용 불가로 처리한다.
 - 하단 좌측 `저장` 버튼은 1차 구현에서 실제 저장 기능 없이 mock 버튼으로 둔다.
+
+Maintenance UI:
+
+- `Maintenance`는 정비 노드 화면이다. 주 기능은 스킬 파편/장비의 `분쇄`, `강화`, `개화`다.
+- 장비/스킬 파편 장착 교체는 정비 중 편의를 위한 부가 기능이며, Loadout과 같은 호환/교체 규칙을 따른다.
+- 화면은 3패널이다.
+- 좌측 패널은 직원 로스터다. 직원 카드는 대략 10:6 비율의 직사각형 카드로 세로 배치한다.
+- 직원 카드 좌측에는 캐릭터 초상화, 중앙/우측에는 장착 중인 `스킬 파편`, `무기`, `방어구`, `악세서리` list를 표시한다.
+- 장착품 list element를 클릭하면 해당 장착품이 선택되고 중앙 프리뷰에 표시된다.
+- 중앙 패널은 작업 전/후 프리뷰다. 현재 선택 대상, 대상 출처, 현재 선택 작업, 작업 전/후 변화, 소모/획득 재료, 실행 가능/불가능 사유, 실행 전 확인을 표시한다.
+- 대상 출처는 `가방에서 선택됨`과 `특정 직원이 장착 중`을 명확히 구분한다.
+- 우측 패널은 가방이다. 기존 Item Use/Loadout의 슬롯 grid와 scroll 구조를 재사용한다.
+- Maintenance 가방 카테고리는 `스킬 파편`, `무기`, `방어구`, `악세서리` 4종이다. `소모성`은 Maintenance 가방 카테고리에 포함하지 않는다.
+- 가방 아이템을 클릭하면 중앙 프리뷰에 표시한다.
+- 가방 아이템을 좌측 직원 카드의 호환 슬롯에 drag-and-drop하면 장착 교체를 시도한다.
+- 호환되지 않는 드롭은 command를 보내지 않고 UI에서 즉시 실패 피드백을 표시한다.
+- 하단 작업 버튼은 `분쇄`, `강화`, `개화` 3개만 둔다.
+- 우하단에는 `나가기` 버튼을 두고 `CompleteNode`에 매핑한다.
+- 클릭만으로 분쇄/강화/개화가 바로 실행되면 안 된다. 클릭은 대상 선택과 중앙 프리뷰 갱신만 한다.
+- 실제 작업은 중앙 프리뷰에서 실행 전 확인을 거쳐야 한다.
+- 장착 중인 항목을 분쇄하려는 경우 경고창/확인 게이트를 제공한다.
+- 장착 중인 항목을 분쇄하면 자동 해제가 동반될 수 있으므로 중앙 프리뷰와 확인창에 `장착 중`, `분쇄 시 자동 해제됨`을 명확히 표시한다.
+- 스킬 파편 분쇄는 파편 가루를 획득하고, 스킬 파편 강화는 파편 가루를 소비한다.
+- 장비 분쇄는 장비 가루를 획득하고, 장비 강화는 장비 가루를 소비한다.
+- 파편 가루와 장비 가루는 서로 독립이다.
+- 개화는 1차 정책에서 스킬 파편 전용 작업이다. 무기/방어구/악세서리 선택 시 개화는 disabled 처리한다.
 
 ## Non-Goals
 
@@ -440,7 +466,7 @@ Unity-facing 필드인 `timeline_delta`, `compressed_timeline`, `has_timeline`�
 - Battle Result.
 - Medical.
 - Rest.
-- Maintenance.
+- Maintenance. 3패널 정비 화면이다. 좌측 직원 로스터/장착품 list, 중앙 작업 전후 프리뷰와 확인 게이트, 우측 4카테고리 가방을 가진다. 주 작업은 분쇄/강화/개화이며, 장착 교체는 부가 편의 기능이다.
 - Headquarters Contact.
 - Shop.
 - Reward.

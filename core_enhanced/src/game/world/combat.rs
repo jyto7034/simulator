@@ -1062,7 +1062,7 @@ impl GameCore {
     }
 
     pub(super) fn handle_retreat_battle(&mut self) -> Result<BehaviorResult, GameError> {
-        let (node_id, combat_preview, attempts_exhausted) = {
+        let (node_id, mut combat_preview, attempts_exhausted) = {
             let Some(active) = self.state.active_battle.as_ref() else {
                 return Err(GameError::InvalidAction);
             };
@@ -1078,6 +1078,7 @@ impl GameCore {
         };
 
         if !attempts_exhausted {
+            combat_preview.disprove_rumor_warnings();
             let (kind_id, category, payload, session) = {
                 let run = self.run_state()?;
                 let node = run.map.node(node_id).ok_or(GameError::InvalidAction)?;
@@ -1089,6 +1090,9 @@ impl GameCore {
                     enter_result.session,
                 )
             };
+            self.run_state_mut()?
+                .combat_previews
+                .insert(node_id, combat_preview.clone());
             self.state.active_battle = None;
             self.state.active_node_content = None;
             self.state.node_session = Some(session.clone());

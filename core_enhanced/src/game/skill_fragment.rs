@@ -47,12 +47,15 @@ pub enum SkillFragmentGrantResult {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SkillFragmentUpgradeResult {
-    pub material_remaining_count: u32,
+    pub dust_spent: u32,
+    pub remaining_dust: u32,
     pub progress: SkillFragmentProgress,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SkillFragmentAwakenResult {
+    pub dust_spent: u32,
+    pub remaining_dust: u32,
     pub progress: SkillFragmentProgress,
 }
 
@@ -116,6 +119,28 @@ impl SkillFragmentInventory {
 
     pub fn fragment_dust(&self) -> u32 {
         self.fragment_dust
+    }
+
+    pub fn add_fragment_dust(&mut self, amount: u32) -> Result<u32, GameError> {
+        if amount == 0 {
+            return Err(GameError::InvalidAction);
+        }
+        self.fragment_dust = self
+            .fragment_dust
+            .checked_add(amount)
+            .ok_or(GameError::InvalidAction)?;
+        Ok(self.fragment_dust)
+    }
+
+    fn consume_fragment_dust(&mut self, amount: u32) -> Result<u32, GameError> {
+        if amount == 0 {
+            return Err(GameError::InvalidAction);
+        }
+        if self.fragment_dust < amount {
+            return Err(GameError::InvalidAction);
+        }
+        self.fragment_dust -= amount;
+        Ok(self.fragment_dust)
     }
 
     pub fn pending_research_deliveries(&self) -> impl Iterator<Item = (&SkillFragmentId, u32)> {
@@ -254,46 +279,28 @@ impl SkillFragmentInventory {
         Ok(deliveries)
     }
 
-    pub fn upgrade_with_material(
+    pub fn upgrade_with_dust(
         &mut self,
         target_fragment_id: &SkillFragmentId,
-        material_fragment_id: &SkillFragmentId,
         database: &SkillFragmentDatabase,
-        protected_material_ids: &[SkillFragmentId],
     ) -> Result<SkillFragmentUpgradeResult, GameError> {
-        self.upgrade_with_material_policy(
+        self.upgrade_with_dust_policy(
             target_fragment_id,
-            material_fragment_id,
             database,
-            protected_material_ids,
             &SkillFragmentPolicy::default(),
         )
     }
 
-    pub fn upgrade_with_material_policy(
+    pub fn upgrade_with_dust_policy(
         &mut self,
         target_fragment_id: &SkillFragmentId,
-        material_fragment_id: &SkillFragmentId,
         database: &SkillFragmentDatabase,
-        protected_material_ids: &[SkillFragmentId],
         policy: &SkillFragmentPolicy,
     ) -> Result<SkillFragmentUpgradeResult, GameError> {
-        let cost = policy.composition.validate_material_upgrade(
-            self,
-            target_fragment_id,
-            material_fragment_id,
-            database,
-            protected_material_ids,
-        )?;
-
-        let stack = self
-            .stacks
-            .get_mut(material_fragment_id)
-            .ok_or(GameError::InvalidAction)?;
-        stack.count = stack
-            .count
-            .checked_sub(cost)
-            .ok_or(GameError::InvalidAction)?;
+        let cost = policy
+            .composition
+            .validate_dust_upgrade(self, target_fragment_id, database)?;
+        let remaining_dust = self.consume_fragment_dust(cost)?;
 
         let progress = self.progress.entry(target_fragment_id.clone()).or_default();
         progress.upgrade_level = progress.upgrade_level.saturating_add(1);
@@ -309,59 +316,47 @@ impl SkillFragmentInventory {
         }
 
         Ok(SkillFragmentUpgradeResult {
-            material_remaining_count: stack.count,
+            dust_spent: cost,
+            remaining_dust,
             progress: *progress,
         })
     }
 
-    pub fn awaken_with_materials(
+    pub fn awaken_with_dust(
         &mut self,
         target_fragment_id: &SkillFragmentId,
-        material_fragment_ids: &[SkillFragmentId],
         database: &SkillFragmentDatabase,
-        protected_material_ids: &[SkillFragmentId],
     ) -> Result<SkillFragmentAwakenResult, GameError> {
-        self.awaken_with_materials_policy(
+        self.awaken_with_dust_policy(
             target_fragment_id,
-            material_fragment_ids,
             database,
-            protected_material_ids,
             &SkillFragmentPolicy::default(),
         )
     }
 
-    pub fn awaken_with_materials_policy(
+    pub fn awaken_with_dust_policy(
         &mut self,
         target_fragment_id: &SkillFragmentId,
-        material_fragment_ids: &[SkillFragmentId],
         database: &SkillFragmentDatabase,
-        protected_material_ids: &[SkillFragmentId],
         policy: &SkillFragmentPolicy,
     ) -> Result<SkillFragmentAwakenResult, GameError> {
-        let material_costs = policy.composition.validate_awakening(
-            self,
-            target_fragment_id,
-            material_fragment_ids,
-            database,
-            protected_material_ids,
-        )?;
-
-        for (material_id, cost) in material_costs {
-            let stack = self
-                .stacks
-                .get_mut(&material_id)
-                .ok_or(GameError::InvalidAction)?;
-            stack.count = stack
-                .count
-                .checked_sub(cost)
-                .ok_or(GameError::InvalidAction)?;
-        }
+        let cost =
+            policy
+                .composition
+                .validate_dust_awakening(self, target_fragment_id, database)?;
+        let remaining_dust = if cost == 0 {
+            self.fragment_dust
+        } else {
+            self.consume_fragment_dust(cost)?
+        };
 
         let progress = self.progress.entry(target_fragment_id.clone()).or_default();
         progress.awakening_available = true;
         progress.awakened = true;
 
         Ok(SkillFragmentAwakenResult {
+            dust_spent: cost,
+            remaining_dust,
             progress: *progress,
         })
     }
@@ -370,38 +365,34 @@ impl SkillFragmentInventory {
         &mut self,
         fragment_id: &SkillFragmentId,
         database: &SkillFragmentDatabase,
-        protected_fragment_ids: &[SkillFragmentId],
     ) -> Result<SkillFragmentDismantleResult, GameError> {
-        self.dismantle_with_policy(
-            fragment_id,
-            database,
-            protected_fragment_ids,
-            &SkillFragmentPolicy::default(),
-        )
+        self.dismantle_with_policy(fragment_id, database, &SkillFragmentPolicy::default())
     }
 
     pub fn dismantle_with_policy(
         &mut self,
         fragment_id: &SkillFragmentId,
         database: &SkillFragmentDatabase,
-        protected_fragment_ids: &[SkillFragmentId],
         policy: &SkillFragmentPolicy,
     ) -> Result<SkillFragmentDismantleResult, GameError> {
-        let dust_gained = policy.dismantle.validate_dismantle(
-            self,
-            fragment_id,
-            database,
-            protected_fragment_ids,
-        )?;
-        let stack = self
-            .stacks
-            .get_mut(fragment_id)
-            .ok_or(GameError::InvalidAction)?;
-        stack.count = stack.count.checked_sub(1).ok_or(GameError::InvalidAction)?;
+        let dust_gained = policy
+            .dismantle
+            .validate_dismantle(self, fragment_id, database)?;
+        let remaining_count = {
+            let stack = self
+                .stacks
+                .get_mut(fragment_id)
+                .ok_or(GameError::InvalidAction)?;
+            stack.count = stack.count.checked_sub(1).ok_or(GameError::InvalidAction)?;
+            stack.count
+        };
+        if remaining_count == 0 {
+            self.stacks.remove(fragment_id);
+        }
         self.fragment_dust = self.fragment_dust.saturating_add(dust_gained);
 
         Ok(SkillFragmentDismantleResult {
-            remaining_count: stack.count,
+            remaining_count,
             dust_gained,
             total_dust: self.fragment_dust,
         })
@@ -434,13 +425,12 @@ pub struct SkillFragmentEquipPolicy {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SkillFragmentCompositionPolicy {
-    pub materials_per_upgrade: u32,
-    pub minimum_retained_count: u32,
+    pub dust_per_upgrade: u32,
     pub awakening_progress_per_upgrade: u32,
     pub awakening_threshold: u32,
-    pub post_awakening_materials_per_upgrade: u32,
+    pub post_awakening_dust_per_upgrade: u32,
     pub max_upgrade_level: u8,
-    pub early_awakening_materials_per_missing_progress: u32,
+    pub early_awakening_dust_per_missing_progress: u32,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -471,13 +461,12 @@ impl SkillFragmentPolicy {
             stacking: SkillFragmentStackingPolicy::StackCopies,
             dismantle: SkillFragmentDismantlePolicy::MaintenanceOnly,
             composition: SkillFragmentCompositionPolicy {
-                materials_per_upgrade: 1,
-                minimum_retained_count: 1,
+                dust_per_upgrade: 4,
                 awakening_progress_per_upgrade: 1,
                 awakening_threshold: 7,
-                post_awakening_materials_per_upgrade: 2,
+                post_awakening_dust_per_upgrade: 8,
                 max_upgrade_level: 10,
-                early_awakening_materials_per_missing_progress: 1,
+                early_awakening_dust_per_missing_progress: 4,
             },
             research: SkillFragmentResearchPolicy {
                 completion_threshold: 100,
@@ -544,19 +533,12 @@ impl SkillFragmentDismantlePolicy {
         inventory: &SkillFragmentInventory,
         fragment_id: &SkillFragmentId,
         database: &SkillFragmentDatabase,
-        protected_fragment_ids: &[SkillFragmentId],
     ) -> Result<u32, GameError> {
         if matches!(self, SkillFragmentDismantlePolicy::Disabled) {
             return Err(GameError::InvalidAction);
         }
-        if protected_fragment_ids
-            .iter()
-            .any(|protected| protected == fragment_id)
-        {
-            return Err(GameError::InvalidAction);
-        }
         let count = inventory.count(fragment_id);
-        if count <= 1 {
+        if count == 0 {
             return Err(GameError::InvalidAction);
         }
         let fragment = database.get_by_id(fragment_id).ok_or_else(|| {
@@ -595,74 +577,51 @@ impl SkillFragmentEquipPolicy {
 }
 
 impl SkillFragmentCompositionPolicy {
-    pub fn validate_material_upgrade(
+    pub fn dust_upgrade_cost(
         &self,
         inventory: &SkillFragmentInventory,
         target_fragment_id: &SkillFragmentId,
-        material_fragment_id: &SkillFragmentId,
         database: &SkillFragmentDatabase,
-        protected_material_ids: &[SkillFragmentId],
     ) -> Result<u32, GameError> {
-        if self.materials_per_upgrade == 0 {
+        if self.dust_per_upgrade == 0 {
             return Err(GameError::InvalidStaticData(
-                "fragment upgrade materials_per_upgrade must be > 0".to_string(),
+                "fragment upgrade dust_per_upgrade must be > 0".to_string(),
             ));
         }
-        if self.post_awakening_materials_per_upgrade == 0 {
+        if self.post_awakening_dust_per_upgrade == 0 {
             return Err(GameError::InvalidStaticData(
-                "fragment upgrade post_awakening_materials_per_upgrade must be > 0".to_string(),
+                "fragment upgrade post_awakening_dust_per_upgrade must be > 0".to_string(),
             ));
         }
-        if target_fragment_id == material_fragment_id {
-            return Err(GameError::InvalidAction);
-        }
-        if protected_material_ids
-            .iter()
-            .any(|protected| protected == material_fragment_id)
-        {
-            return Err(GameError::InvalidAction);
-        }
-        if !inventory.contains(target_fragment_id) || !inventory.contains(material_fragment_id) {
+        if !inventory.contains(target_fragment_id) {
             return Err(GameError::InvalidAction);
         }
 
-        let target = database.get_by_id(target_fragment_id).ok_or_else(|| {
+        database.get_by_id(target_fragment_id).ok_or_else(|| {
             GameError::InvalidStaticData(format!(
                 "skill fragment '{}' is owned by run but missing from static data",
                 target_fragment_id
             ))
         })?;
-        let material = database.get_by_id(material_fragment_id).ok_or_else(|| {
-            GameError::InvalidStaticData(format!(
-                "skill fragment '{}' is owned by run but missing from static data",
-                material_fragment_id
-            ))
-        })?;
-        self.validate_same_rarity_material(&target.rarity, &material.rarity)?;
 
         let progress = inventory.progress(target_fragment_id);
         if progress.upgrade_level >= self.max_upgrade_level {
             return Err(GameError::InvalidAction);
         }
 
-        let cost = if progress.awakened {
-            self.post_awakening_materials_per_upgrade
+        Ok(if progress.awakened {
+            self.post_awakening_dust_per_upgrade
         } else {
-            self.materials_per_upgrade
-        };
-
-        self.validate_material_count(inventory, material_fragment_id, cost)?;
-        Ok(cost)
+            self.dust_per_upgrade
+        })
     }
 
-    pub fn validate_awakening(
+    pub fn dust_awakening_cost(
         &self,
         inventory: &SkillFragmentInventory,
         target_fragment_id: &SkillFragmentId,
-        material_fragment_ids: &[SkillFragmentId],
         database: &SkillFragmentDatabase,
-        protected_material_ids: &[SkillFragmentId],
-    ) -> Result<BTreeMap<SkillFragmentId, u32>, GameError> {
+    ) -> Result<u32, GameError> {
         if !self.target_can_awaken(database, target_fragment_id)? {
             return Err(GameError::InvalidAction);
         }
@@ -678,74 +637,37 @@ impl SkillFragmentCompositionPolicy {
         let missing_progress = self
             .awakening_threshold
             .saturating_sub(progress.awakening_progress);
-        let required_material_count = missing_progress
-            .checked_mul(self.early_awakening_materials_per_missing_progress)
-            .ok_or(GameError::InvalidAction)?;
-        if material_fragment_ids.len() as u32 != required_material_count {
-            return Err(GameError::InvalidAction);
-        }
-
-        let target = database.get_by_id(target_fragment_id).ok_or_else(|| {
-            GameError::InvalidStaticData(format!(
-                "skill fragment '{}' is owned by run but missing from static data",
-                target_fragment_id
-            ))
-        })?;
-        let mut costs = BTreeMap::new();
-        for material_id in material_fragment_ids {
-            if material_id == target_fragment_id {
-                return Err(GameError::InvalidAction);
-            }
-            if protected_material_ids
-                .iter()
-                .any(|protected| protected == material_id)
-            {
-                return Err(GameError::InvalidAction);
-            }
-            let material = database.get_by_id(material_id).ok_or_else(|| {
-                GameError::InvalidStaticData(format!(
-                    "skill fragment '{}' is owned by run but missing from static data",
-                    material_id
-                ))
-            })?;
-            self.validate_same_rarity_material(&target.rarity, &material.rarity)?;
-            *costs.entry(material_id.clone()).or_insert(0) += 1;
-        }
-
-        for (material_id, cost) in &costs {
-            self.validate_material_count(inventory, material_id, *cost)?;
-        }
-
-        Ok(costs)
+        missing_progress
+            .checked_mul(self.early_awakening_dust_per_missing_progress)
+            .ok_or(GameError::InvalidAction)
     }
 
-    fn validate_same_rarity_material(
-        &self,
-        target: &SkillFragmentRarity,
-        material: &SkillFragmentRarity,
-    ) -> Result<(), GameError> {
-        if target == material {
-            Ok(())
-        } else {
-            Err(GameError::InvalidAction)
-        }
-    }
-
-    fn validate_material_count(
+    pub fn validate_dust_upgrade(
         &self,
         inventory: &SkillFragmentInventory,
-        material_fragment_id: &SkillFragmentId,
-        cost: u32,
-    ) -> Result<(), GameError> {
-        let count = inventory.count(material_fragment_id);
-        let required = self
-            .minimum_retained_count
-            .checked_add(cost)
-            .ok_or(GameError::InvalidAction)?;
-        if count < required {
+        target_fragment_id: &SkillFragmentId,
+        database: &SkillFragmentDatabase,
+    ) -> Result<u32, GameError> {
+        let cost = self.dust_upgrade_cost(inventory, target_fragment_id, database)?;
+        if inventory.fragment_dust() < cost {
             return Err(GameError::InvalidAction);
         }
-        Ok(())
+        Ok(cost)
+    }
+
+    pub fn validate_dust_awakening(
+        &self,
+        inventory: &SkillFragmentInventory,
+        target_fragment_id: &SkillFragmentId,
+        database: &SkillFragmentDatabase,
+    ) -> Result<u32, GameError> {
+        let required_dust = self.dust_awakening_cost(inventory, target_fragment_id, database)?;
+
+        if inventory.fragment_dust() < required_dust {
+            Err(GameError::InvalidAction)
+        } else {
+            Ok(required_dust)
+        }
     }
 
     fn target_can_awaken(
@@ -1066,7 +988,7 @@ mod tests {
     }
 
     #[test]
-    fn additional_fragment_copies_stack_as_future_upgrade_material() {
+    fn additional_fragment_copies_stack_until_dismantled_for_dust() {
         let fragment = SkillFragmentMetadata {
             id: SkillFragmentId::from("fragment_stack_test"),
             uuid: uuid::Uuid::from_u128(10),
@@ -1103,7 +1025,7 @@ mod tests {
     }
 
     #[test]
-    fn same_rarity_material_upgrade_consumes_material_and_increases_awakening_progress() {
+    fn dust_upgrade_consumes_fragment_dust_and_increases_awakening_progress() {
         let target = SkillFragmentMetadata {
             id: SkillFragmentId::from("fragment_upgrade_target"),
             uuid: uuid::Uuid::from_u128(11),
@@ -1122,36 +1044,15 @@ mod tests {
                 awakened_skill_id: Some(crate::game::ability::SkillId::from("awakened_skill")),
             },
         };
-        let material = SkillFragmentMetadata {
-            id: SkillFragmentId::from("fragment_upgrade_material"),
-            uuid: uuid::Uuid::from_u128(12),
-            name: "Upgrade Material".to_string(),
-            description: "test".to_string(),
-            rarity: crate::game::data::skill_fragment_data::SkillFragmentRarity::Rare,
-            origin: None,
-            sources: vec![
-                crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
-            ],
-            dependencies: vec![],
-            compatibility: Default::default(),
-            effect: SkillFragmentEffectDef::ActiveSkill {
-                imitation_skill_id: crate::game::ability::SkillId::from("material_skill"),
-                upgrade_skill_ids: Default::default(),
-                awakened_skill_id: None,
-            },
-        };
-        let database =
-            SkillFragmentDatabase::with_builtin_starter(vec![target.clone(), material.clone()]);
+        let database = SkillFragmentDatabase::with_builtin_starter(vec![target.clone()]);
         let mut inventory = SkillFragmentInventory::new();
         inventory.add(&target).unwrap();
-        inventory.add(&material).unwrap();
-        inventory.add(&material).unwrap();
+        inventory.add_fragment_dust(4).unwrap();
 
-        let result = inventory
-            .upgrade_with_material(&target.id, &material.id, &database, &[])
-            .unwrap();
+        let result = inventory.upgrade_with_dust(&target.id, &database).unwrap();
 
-        assert_eq!(result.material_remaining_count, 1);
+        assert_eq!(result.dust_spent, 4);
+        assert_eq!(result.remaining_dust, 0);
         assert_eq!(result.progress.upgrade_level, 1);
         assert_eq!(result.progress.awakening_progress, 1);
         assert!(!result.progress.awakening_available);
@@ -1246,9 +1147,8 @@ mod tests {
     }
 
     #[test]
-    fn material_upgrade_preserves_one_material_copy() {
+    fn dust_upgrade_rejects_insufficient_fragment_dust() {
         let target_id = SkillFragmentId::from("fragment_target");
-        let material_id = SkillFragmentId::from("fragment_single_material_copy");
         let target = SkillFragmentMetadata {
             id: target_id.clone(),
             uuid: uuid::Uuid::from_u128(13),
@@ -1267,40 +1167,20 @@ mod tests {
                 awakened_skill_id: None,
             },
         };
-        let material = SkillFragmentMetadata {
-            id: material_id.clone(),
-            uuid: uuid::Uuid::from_u128(14),
-            name: "Material".to_string(),
-            description: "test".to_string(),
-            rarity: crate::game::data::skill_fragment_data::SkillFragmentRarity::Rare,
-            origin: None,
-            sources: vec![
-                crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
-            ],
-            dependencies: vec![],
-            compatibility: Default::default(),
-            effect: SkillFragmentEffectDef::ActiveSkill {
-                imitation_skill_id: crate::game::ability::SkillId::from("material_skill"),
-                upgrade_skill_ids: Default::default(),
-                awakened_skill_id: None,
-            },
-        };
-        let database =
-            SkillFragmentDatabase::with_builtin_starter(vec![target.clone(), material.clone()]);
+        let database = SkillFragmentDatabase::with_builtin_starter(vec![target.clone()]);
         let mut inventory = SkillFragmentInventory::new();
         inventory.add(&target).unwrap();
-        inventory.add(&material).unwrap();
 
         let err = inventory
-            .upgrade_with_material(&target_id, &material_id, &database, &[])
+            .upgrade_with_dust(&target_id, &database)
             .unwrap_err();
 
         assert!(matches!(err, GameError::InvalidAction));
-        assert_eq!(inventory.count(&material_id), 1);
+        assert_eq!(inventory.fragment_dust(), 0);
     }
 
     #[test]
-    fn awakening_requires_awakened_skill_and_consumes_early_material_cost() {
+    fn awakening_requires_awakened_skill_and_consumes_early_dust_cost() {
         let target = SkillFragmentMetadata {
             id: SkillFragmentId::from("fragment_awakening_target"),
             uuid: uuid::Uuid::from_u128(15),
@@ -1319,40 +1199,17 @@ mod tests {
                 awakened_skill_id: Some(crate::game::ability::SkillId::from("awakened_skill")),
             },
         };
-        let material = SkillFragmentMetadata {
-            id: SkillFragmentId::from("fragment_awakening_material"),
-            uuid: uuid::Uuid::from_u128(16),
-            name: "Awakening Material".to_string(),
-            description: "test".to_string(),
-            rarity: crate::game::data::skill_fragment_data::SkillFragmentRarity::Rare,
-            origin: None,
-            sources: vec![
-                crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
-            ],
-            dependencies: vec![],
-            compatibility: Default::default(),
-            effect: SkillFragmentEffectDef::ActiveSkill {
-                imitation_skill_id: crate::game::ability::SkillId::from("material_skill"),
-                upgrade_skill_ids: Default::default(),
-                awakened_skill_id: None,
-            },
-        };
-        let database =
-            SkillFragmentDatabase::with_builtin_starter(vec![target.clone(), material.clone()]);
+        let database = SkillFragmentDatabase::with_builtin_starter(vec![target.clone()]);
         let mut inventory = SkillFragmentInventory::new();
         inventory.add(&target).unwrap();
-        for _ in 0..8 {
-            inventory.add(&material).unwrap();
-        }
+        inventory.add_fragment_dust(28).unwrap();
 
-        let material_plan = vec![material.id.clone(); 7];
-        let result = inventory
-            .awaken_with_materials(&target.id, &material_plan, &database, &[])
-            .unwrap();
+        let result = inventory.awaken_with_dust(&target.id, &database).unwrap();
 
+        assert_eq!(result.dust_spent, 28);
+        assert_eq!(result.remaining_dust, 0);
         assert!(result.progress.awakening_available);
         assert!(result.progress.awakened);
-        assert_eq!(inventory.count(&material.id), 1);
     }
 
     #[test]
@@ -1380,7 +1237,7 @@ mod tests {
         inventory.add(&target).unwrap();
 
         let err = inventory
-            .awaken_with_materials(&target.id, &[], &database, &[])
+            .awaken_with_dust(&target.id, &database)
             .unwrap_err();
 
         assert!(matches!(err, GameError::InvalidAction));
@@ -1408,34 +1265,11 @@ mod tests {
                 awakened_skill_id: Some(crate::game::ability::SkillId::from("awakened_skill")),
             },
         };
-        let material = SkillFragmentMetadata {
-            id: SkillFragmentId::from("fragment_variant_material"),
-            uuid: uuid::Uuid::from_u128(19),
-            name: "Variant Material".to_string(),
-            description: "test".to_string(),
-            rarity: crate::game::data::skill_fragment_data::SkillFragmentRarity::Rare,
-            origin: None,
-            sources: vec![
-                crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
-            ],
-            dependencies: vec![],
-            compatibility: Default::default(),
-            effect: SkillFragmentEffectDef::ActiveSkill {
-                imitation_skill_id: crate::game::ability::SkillId::from("material_skill"),
-                upgrade_skill_ids: Default::default(),
-                awakened_skill_id: None,
-            },
-        };
-        let database =
-            SkillFragmentDatabase::with_builtin_starter(vec![target.clone(), material.clone()]);
+        let database = SkillFragmentDatabase::with_builtin_starter(vec![target.clone()]);
         let mut inventory = SkillFragmentInventory::new();
         inventory.add(&target).unwrap();
-        for _ in 0..9 {
-            inventory.add(&material).unwrap();
-        }
-        inventory
-            .upgrade_with_material(&target.id, &material.id, &database, &[])
-            .unwrap();
+        inventory.add_fragment_dust(28).unwrap();
+        inventory.upgrade_with_dust(&target.id, &database).unwrap();
 
         let mut loadout = SkillFragmentLoadout::starter();
         loadout.equip(&inventory, &database, &target.id).unwrap();
@@ -1448,10 +1282,7 @@ mod tests {
             .unwrap();
         assert_eq!(upgraded_profile.skill_id.as_deref(), Some("variant_skill"));
 
-        let material_plan = vec![material.id.clone(); 6];
-        inventory
-            .awaken_with_materials(&target.id, &material_plan, &database, &[])
-            .unwrap();
+        inventory.awaken_with_dust(&target.id, &database).unwrap();
         let awakened_profile = loadout
             .apply_to_profile(
                 &database,

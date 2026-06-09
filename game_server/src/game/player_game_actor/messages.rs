@@ -7,6 +7,7 @@ use game_core::game::{
     data::skill_fragment_data::SkillFragmentId,
     map::{MapNodeId, MedicalTreatmentKind, SupportNodeType},
     resources::Position,
+    world::AdminCommand,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -25,6 +26,12 @@ pub enum PlayerGameClientMessage {
     Command {
         request_id: String,
         behavior: PlayerBehaviorRequest,
+    },
+    AdminCommand {
+        request_id: String,
+        admin: AdminCommand,
+        #[serde(default)]
+        token: Option<String>,
     },
     Ping,
     /// 플레이어 의도적 종료: Actor 즉시 중지 + 다음 접속 시 새로운 게임으로 시작.
@@ -90,17 +97,12 @@ pub enum PlayerBehaviorRequest {
     },
     UpgradeSkillFragment {
         target_fragment_id: SkillFragmentId,
-        material_fragment_id: SkillFragmentId,
     },
     AwakenSkillFragment {
         target_fragment_id: SkillFragmentId,
-        material_fragment_ids: Vec<SkillFragmentId>,
     },
     DismantleSkillFragment {
         fragment_id: SkillFragmentId,
-    },
-    RestoreEquipment {
-        recipe_id: String,
     },
     DismantleEquipment {
         item_uuid: Uuid,
@@ -216,25 +218,14 @@ impl From<PlayerBehaviorRequest> for PlayerBehavior {
                 employee_uuid,
                 fragment_id,
             },
-            PlayerBehaviorRequest::UpgradeSkillFragment {
-                target_fragment_id,
-                material_fragment_id,
-            } => Self::UpgradeSkillFragment {
-                target_fragment_id,
-                material_fragment_id,
-            },
-            PlayerBehaviorRequest::AwakenSkillFragment {
-                target_fragment_id,
-                material_fragment_ids,
-            } => Self::AwakenSkillFragment {
-                target_fragment_id,
-                material_fragment_ids,
-            },
+            PlayerBehaviorRequest::UpgradeSkillFragment { target_fragment_id } => {
+                Self::UpgradeSkillFragment { target_fragment_id }
+            }
+            PlayerBehaviorRequest::AwakenSkillFragment { target_fragment_id } => {
+                Self::AwakenSkillFragment { target_fragment_id }
+            }
             PlayerBehaviorRequest::DismantleSkillFragment { fragment_id } => {
                 Self::DismantleSkillFragment { fragment_id }
-            }
-            PlayerBehaviorRequest::RestoreEquipment { recipe_id } => {
-                Self::RestoreEquipment { recipe_id }
             }
             PlayerBehaviorRequest::DismantleEquipment { item_uuid } => {
                 Self::DismantleEquipment { item_uuid }
@@ -297,6 +288,12 @@ pub enum PlayerGameServerMessage {
         result_type: String,
         payload: Value,
     },
+    AdminResult {
+        request_id: String,
+        ok: bool,
+        result_type: String,
+        payload: Value,
+    },
     Error {
         #[serde(skip_serializing_if = "Option::is_none")]
         request_id: Option<String>,
@@ -346,6 +343,14 @@ pub struct ExecutePlayerBehavior {
 }
 
 #[derive(Message)]
+#[rtype(result = "Result<CommandExecutionResult, PlayerGameActorError>")]
+pub struct ExecuteAdminCommand {
+    pub session_id: Uuid,
+    pub request_id: String,
+    pub command: AdminCommand,
+}
+
+#[derive(Message)]
 #[rtype(result = "()")]
 pub struct PushServerMessage {
     pub message: PlayerGameServerMessage,
@@ -376,11 +381,33 @@ mod tests {
         }
 
         let request: PlayerBehaviorRequest =
-            serde_json::from_str(r#"{"type":"choose_support","support_type":"Maintenance"}"#)
+            serde_json::from_str(r#"{"type":"choose_support","support_type":"Rest"}"#)
                 .expect("support request should deserialize");
         match PlayerBehavior::from(request) {
             PlayerBehavior::ChooseSupport { support_type } => {
-                assert_eq!(support_type, SupportNodeType::Maintenance);
+                assert_eq!(support_type, SupportNodeType::Rest);
+            }
+            other => panic!("unexpected behavior: {other:?}"),
+        }
+
+        let request: PlayerBehaviorRequest = serde_json::from_str(
+            r#"{"type":"upgrade_skill_fragment","target_fragment_id":"fragment_a"}"#,
+        )
+        .expect("skill fragment upgrade request should deserialize");
+        match PlayerBehavior::from(request) {
+            PlayerBehavior::UpgradeSkillFragment { target_fragment_id } => {
+                assert_eq!(target_fragment_id.as_str(), "fragment_a");
+            }
+            other => panic!("unexpected behavior: {other:?}"),
+        }
+
+        let request: PlayerBehaviorRequest = serde_json::from_str(
+            r#"{"type":"awaken_skill_fragment","target_fragment_id":"fragment_a"}"#,
+        )
+        .expect("skill fragment awaken request should deserialize");
+        match PlayerBehavior::from(request) {
+            PlayerBehavior::AwakenSkillFragment { target_fragment_id } => {
+                assert_eq!(target_fragment_id.as_str(), "fragment_a");
             }
             other => panic!("unexpected behavior: {other:?}"),
         }
@@ -452,6 +479,53 @@ mod tests {
                 target_employee_uuid,
             } if actual_item_uuid == item_uuid && target_employee_uuid == employee_uuid
         ));
+    }
+
+    #[test]
+    fn deserializes_admin_command_as_separate_top_level_message() {
+        let request: PlayerGameClientMessage = serde_json::from_str(
+            r#"{"type":"admin_command","request_id":"admin-001","token":"dev","admin":{"type":"admin_enter_maintenance"}}"#,
+        )
+        .expect("admin command should deserialize as top-level message");
+
+        match request {
+            PlayerGameClientMessage::AdminCommand {
+                request_id,
+                admin: AdminCommand::AdminEnterMaintenance,
+                token,
+            } => {
+                assert_eq!(request_id, "admin-001");
+                assert_eq!(token.as_deref(), Some("dev"));
+            }
+            other => panic!("unexpected message: {other:?}"),
+        }
+
+        let request: PlayerGameClientMessage = serde_json::from_str(
+            r#"{"type":"admin_command","request_id":"admin-002","admin":{"type":"admin_dump_grant_catalog"}}"#,
+        )
+        .expect("admin grant catalog command should deserialize as top-level message");
+
+        match request {
+            PlayerGameClientMessage::AdminCommand {
+                request_id,
+                admin: AdminCommand::AdminDumpGrantCatalog,
+                token,
+            } => {
+                assert_eq!(request_id, "admin-002");
+                assert!(token.is_none());
+            }
+            other => panic!("unexpected message: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn admin_command_is_not_a_player_behavior_request() {
+        let err = serde_json::from_str::<PlayerBehaviorRequest>(
+            r#"{"type":"admin_enter_maintenance"}"#,
+        )
+        .expect_err("admin command must not deserialize as gameplay behavior");
+
+        assert!(err.to_string().contains("unknown variant"));
     }
 
     #[test]

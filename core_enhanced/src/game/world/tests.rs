@@ -1,6 +1,9 @@
 use super::*;
 use crate::game::ability::{DeliveryDef, SkillDef, SkillId, SkillStepDef, SkillTarget};
 use crate::game::battle::{buffs::BuffDatabase, tile_range::FacingDirection, timeline::Timeline};
+use crate::game::combat_preview::{
+    ThreatWarning, ThreatWarningSource, ThreatWarningStatus, ThreatWarningTag,
+};
 use crate::game::data::{
     abnormality_data::{
         AbnormalityDatabase, AbnormalityMetadata, BasicAttackDef, MovementDef, ResonanceDef,
@@ -16,8 +19,8 @@ use crate::game::data::{
     equipment_data::{
         EquipmentDatabase, EquipmentDismantleRecipeMetadata, EquipmentEnhancementRecipeMetadata,
         EquipmentMaterialCost, EquipmentMaterialMetadata, EquipmentMaterialType, EquipmentMetadata,
-        EquipmentRecipeMetadata, EquipmentRestorationRecipeMetadata, EquipmentType,
-        WeaponArchetype, WeaponCombatProfile, WeaponRangeRole,
+        EquipmentRecipeMetadata, EquipmentType, WeaponArchetype, WeaponCombatProfile,
+        WeaponRangeRole,
     },
     pve_data::{
         PveBattlefieldOverrideData, PveEncounter, PveEncounterDatabase, PveWaveData,
@@ -560,25 +563,6 @@ fn game_data_with_equipment(
         .build_arc()
 }
 
-fn game_data_with_equipment_restoration(
-    abnormality: Arc<AbnormalityMetadata>,
-    equipment: Vec<EquipmentMetadata>,
-    materials: Vec<EquipmentMaterialMetadata>,
-    restoration_recipes: Vec<EquipmentRestorationRecipeMetadata>,
-) -> Arc<GameDataBase> {
-    test_game_data_builder()
-        .with_abnormalities(vec![(*abnormality).clone()])
-        .with_equipment_data(Arc::new(
-            EquipmentDatabase::with_materials_recipes_and_restorations(
-                equipment,
-                materials,
-                vec![],
-                restoration_recipes,
-            ),
-        ))
-        .build_arc()
-}
-
 fn game_data_with_equipment_dismantle(
     abnormality: Arc<AbnormalityMetadata>,
     equipment: Vec<EquipmentMetadata>,
@@ -588,10 +572,9 @@ fn game_data_with_equipment_dismantle(
     test_game_data_builder()
         .with_abnormalities(vec![(*abnormality).clone()])
         .with_equipment_data(Arc::new(
-            EquipmentDatabase::with_materials_recipes_restorations_and_dismantles(
+            EquipmentDatabase::with_materials_recipes_and_dismantles(
                 equipment,
                 materials,
-                vec![],
                 vec![],
                 dismantle_recipes,
             ),
@@ -610,7 +593,6 @@ fn game_data_with_equipment_enhancement(
         .with_equipment_data(Arc::new(EquipmentDatabase::with_all(
             equipment,
             materials,
-            vec![],
             vec![],
             vec![],
             enhancement_recipes,
@@ -968,6 +950,52 @@ mod snapshots_and_start {
             .as_array()
             .unwrap()
             .contains(&json!(employee_id)));
+    }
+
+    #[test]
+    fn employee_roster_snapshot_surfaces_effective_profile_errors() {
+        let mut core = GameCore::new(empty_game_data(), 123);
+        let player_id = Uuid::from_u128(1);
+        start_new_game_with_default_starters(&mut core, player_id);
+        let employee_id = core.roster().unwrap().available_employee_ids()[0];
+        let stale_item_uuid = Uuid::from_u128(0xEFFE_C710);
+
+        {
+            let employee = core.roster_mut().unwrap().get_mut(&employee_id).unwrap();
+            employee
+                .loadout
+                .item_slot
+                .equip(
+                    crate::game::resources::item_slot::EquippedRef {
+                        instance_uuid: stale_item_uuid,
+                        base_uuid: Uuid::from_u128(0xBADC_0DE),
+                        equipment_type: EquipmentType::Weapon,
+                    },
+                    true,
+                )
+                .unwrap();
+        }
+
+        let snapshot = core.get_employee_roster_snapshot_json().unwrap();
+        let employee = snapshot["employees"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|employee| employee["uuid"] == json!(employee_id))
+            .expect("starter employee is exposed in roster snapshot");
+        let combat_profile = &employee["combat_profile"];
+
+        assert_eq!(
+            combat_profile["effective_profile_error"]["code"],
+            "inventory_item_not_found"
+        );
+        assert!(combat_profile["effective_profile_error"]["message"]
+            .as_str()
+            .unwrap()
+            .contains("InventoryItemNotFound"));
+        assert_eq!(combat_profile["effective_stats"], Value::Null);
+        assert_eq!(combat_profile["effective_weapon_profile"], Value::Null);
+        assert_eq!(combat_profile["effective_deployment_affinity"], Value::Null);
     }
 
     #[test]
@@ -2023,7 +2051,7 @@ mod support {
     }
 
     #[test]
-    fn support_choice_recomputes_maintenance_actions_from_current_choice() {
+    fn support_choice_does_not_expose_maintenance_actions() {
         let mut core = GameCore::new(empty_game_data(), 123);
         let player_id = Uuid::from_u128(1);
         start_new_game_with_default_starters(&mut core, player_id);
@@ -2034,22 +2062,11 @@ mod support {
             MapNodePayload::Support {
                 support_type: SupportNodeType::Medical,
                 support_mode: SupportNodeMode::LimitedChoice,
-                choices: vec![SupportNodeType::Maintenance, SupportNodeType::Rest],
+                choices: vec![SupportNodeType::Medical, SupportNodeType::Rest],
             },
         );
 
         select_and_confirm_map_node(&mut core, player_id, node_id);
-        core.execute(
-            player_id,
-            PlayerBehavior::ChooseSupport {
-                support_type: SupportNodeType::Maintenance,
-            },
-        )
-        .unwrap();
-        assert!(core
-            .get_allowed_actions()
-            .contains(&ActionKind::DismantleSkillFragment));
-
         core.execute(
             player_id,
             PlayerBehavior::ChooseSupport {
@@ -2058,6 +2075,32 @@ mod support {
         )
         .unwrap();
         assert!(!core
+            .get_allowed_actions()
+            .contains(&ActionKind::DismantleSkillFragment));
+    }
+
+    #[test]
+    fn independent_maintenance_node_exposes_maintenance_actions() {
+        let mut core = GameCore::new(empty_game_data(), 123);
+        let player_id = Uuid::from_u128(1);
+        start_new_game_with_default_starters(&mut core, player_id);
+        let node_id = force_first_available_node(
+            &mut core,
+            MapNodeCategory::Maintenance,
+            "maintenance",
+            MapNodePayload::Maintenance,
+        );
+
+        let result = select_and_confirm_map_node(&mut core, player_id, node_id);
+
+        assert!(matches!(
+            result,
+            BehaviorResult::MaintenanceState {
+                maintenance_options,
+                ..
+            } if !maintenance_options.materials.is_empty()
+        ));
+        assert!(core
             .get_allowed_actions()
             .contains(&ActionKind::DismantleSkillFragment));
     }
@@ -2093,7 +2136,6 @@ mod support {
             } if choices == vec![
                 SupportNodeType::Medical,
                 SupportNodeType::Rest,
-                SupportNodeType::Maintenance,
             ]
         ));
     }
@@ -2946,120 +2988,6 @@ mod equipment {
     }
 
     #[test]
-    fn restore_equipment_is_maintenance_only_and_consumes_material_stacks() {
-        let unit_meta = abnormality_meta(1);
-        let restored = equipment_meta(30, "restored_weapon", EquipmentType::Weapon);
-        let material = EquipmentMaterialMetadata {
-            id: "test_weapon_fragment".to_string(),
-            uuid: Uuid::from_u128(31),
-            name: "Test Weapon Fragment".to_string(),
-            description: "A test restoration material".to_string(),
-            material_type: EquipmentMaterialType::Fragment,
-            rarity: crate::game::enums::RiskLevel::ZAYIN,
-            equipment_type: Some(EquipmentType::Weapon),
-        };
-        let recipe = EquipmentRestorationRecipeMetadata {
-            id: "restore_test_weapon".to_string(),
-            result_equipment_id: restored.id.clone(),
-            costs: vec![EquipmentMaterialCost {
-                material_id: material.id.clone(),
-                amount: 3,
-            }],
-        };
-        let game_data = game_data_with_equipment_restoration(
-            Arc::clone(&unit_meta),
-            vec![restored.clone()],
-            vec![material.clone()],
-            vec![recipe.clone()],
-        );
-        let mut core = GameCore::new(game_data, 123);
-        let player_id = Uuid::from_u128(1);
-        start_new_game_with_default_starters(&mut core, player_id);
-        core.inventory_mut()
-            .unwrap()
-            .equipment_materials
-            .add(&material.id, 3)
-            .unwrap();
-
-        let err = core
-            .execute(
-                player_id,
-                PlayerBehavior::RestoreEquipment {
-                    recipe_id: recipe.id.clone(),
-                },
-            )
-            .unwrap_err();
-        assert!(matches!(err, GameError::InvalidAction));
-
-        let node_id = force_first_available_node(
-            &mut core,
-            MapNodeCategory::Support,
-            "support_maintenance",
-            MapNodePayload::Support {
-                support_type: SupportNodeType::Maintenance,
-                support_mode: SupportNodeMode::Known,
-                choices: vec![],
-            },
-        );
-        core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
-            .unwrap();
-        let entered = core
-            .execute(player_id, PlayerBehavior::ConfirmEnterNode)
-            .unwrap();
-        let BehaviorResult::SupportState {
-            maintenance_options: Some(maintenance_options),
-            ..
-        } = entered
-        else {
-            panic!("expected maintenance support state with options");
-        };
-        assert!(maintenance_options
-            .restorable_equipment_recipes
-            .iter()
-            .any(|option| option.id == recipe.id));
-        assert!(core
-            .get_allowed_actions()
-            .contains(&ActionKind::RestoreEquipment));
-
-        let result = core
-            .execute(
-                player_id,
-                PlayerBehavior::RestoreEquipment {
-                    recipe_id: recipe.id.clone(),
-                },
-            )
-            .unwrap();
-
-        let BehaviorResult::EquipmentRestored {
-            recipe_id,
-            result_equipment_id,
-            inventory_diff,
-        } = result
-        else {
-            panic!("expected equipment restoration result");
-        };
-        assert_eq!(recipe_id, recipe.id);
-        assert_eq!(result_equipment_id, restored.id);
-        assert_eq!(inventory_diff.added.len(), 1);
-        assert_eq!(inventory_diff.material_stacks.len(), 1);
-        assert_eq!(inventory_diff.material_stacks[0].material_id, material.id);
-        assert_eq!(inventory_diff.material_stacks[0].amount, 0);
-        assert_eq!(
-            core.inventory()
-                .unwrap()
-                .equipment_materials
-                .amount(&material.id),
-            0
-        );
-        assert!(core
-            .inventory()
-            .unwrap()
-            .equipments
-            .iter()
-            .any(|owned| owned.meta.id == restored.id));
-    }
-
-    #[test]
     fn dismantle_equipment_is_maintenance_only_and_grants_material_stacks() {
         let unit_meta = abnormality_meta(1);
         let equipment = equipment_meta(40, "dismantle_weapon", EquipmentType::Weapon);
@@ -3107,13 +3035,9 @@ mod equipment {
 
         let node_id = force_first_available_node(
             &mut core,
-            MapNodeCategory::Support,
-            "support_maintenance",
-            MapNodePayload::Support {
-                support_type: SupportNodeType::Maintenance,
-                support_mode: SupportNodeMode::Known,
-                choices: vec![],
-            },
+            MapNodeCategory::Maintenance,
+            "maintenance",
+            MapNodePayload::Maintenance,
         );
         core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
             .unwrap();
@@ -3159,6 +3083,102 @@ mod equipment {
                 .equipment_materials
                 .amount(&material.id),
             2
+        );
+    }
+
+    #[test]
+    fn dismantle_equipment_automatically_unequips_equipped_item() {
+        let unit_meta = abnormality_meta(1);
+        let equipment = equipment_meta(45, "equipped_dismantle_weapon", EquipmentType::Weapon);
+        let material = EquipmentMaterialMetadata {
+            id: "equipment_dust".to_string(),
+            uuid: Uuid::from_u128(46),
+            name: "Equipment Dust".to_string(),
+            description: "A test equipment dust material".to_string(),
+            material_type: EquipmentMaterialType::Generic,
+            rarity: crate::game::enums::RiskLevel::ZAYIN,
+            equipment_type: None,
+        };
+        let recipe = EquipmentDismantleRecipeMetadata {
+            equipment_id: equipment.id.clone(),
+            yields: vec![EquipmentMaterialCost {
+                material_id: material.id.clone(),
+                amount: 1,
+            }],
+        };
+        let game_data = game_data_with_equipment_dismantle(
+            Arc::clone(&unit_meta),
+            vec![equipment.clone()],
+            vec![material.clone()],
+            vec![recipe],
+        );
+        let mut core = GameCore::new(game_data, 123);
+        let player_id = Uuid::from_u128(1);
+        start_new_game_with_default_starters(&mut core, player_id);
+        let employee_uuid = core.roster().unwrap().available_employee_ids()[0];
+        let owned_uuid = Uuid::from_u128(451);
+        core.inventory_mut()
+            .unwrap()
+            .equipments
+            .add_item(OwnedEquipment::new(owned_uuid, Arc::new(equipment.clone())))
+            .unwrap();
+        core.execute(
+            player_id,
+            PlayerBehavior::EquipItem {
+                item_uuid: owned_uuid,
+                target_unit: employee_uuid,
+            },
+        )
+        .unwrap();
+
+        let node_id = force_first_available_node(
+            &mut core,
+            MapNodeCategory::Maintenance,
+            "maintenance",
+            MapNodePayload::Maintenance,
+        );
+        core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+            .unwrap();
+        let entered = core
+            .execute(player_id, PlayerBehavior::ConfirmEnterNode)
+            .unwrap();
+        let BehaviorResult::MaintenanceState {
+            maintenance_options,
+            ..
+        } = entered
+        else {
+            panic!("expected maintenance state with options");
+        };
+        let preview = maintenance_options
+            .items
+            .iter()
+            .find(|item| item.target_id == owned_uuid.to_string())
+            .expect("equipped equipment should appear in maintenance preview");
+        assert!(preview.operations.dismantle.can_execute);
+        assert!(preview.operations.dismantle.will_unequip);
+
+        core.execute(
+            player_id,
+            PlayerBehavior::DismantleEquipment {
+                item_uuid: owned_uuid,
+            },
+        )
+        .unwrap();
+
+        assert!(core
+            .inventory()
+            .unwrap()
+            .equipments
+            .get_item(&owned_uuid)
+            .is_none());
+        let employee = core.roster().unwrap().get(&employee_uuid).unwrap();
+        assert!(!employee.loadout.item_slot.contains_instance(owned_uuid));
+        assert_eq!(
+            core.inventory()
+                .unwrap()
+                .equipment_materials
+                .amount(&material.id),
+            1
         );
     }
 
@@ -3219,29 +3239,28 @@ mod equipment {
 
         let node_id = force_first_available_node(
             &mut core,
-            MapNodeCategory::Support,
-            "support_maintenance",
-            MapNodePayload::Support {
-                support_type: SupportNodeType::Maintenance,
-                support_mode: SupportNodeMode::Known,
-                choices: vec![],
-            },
+            MapNodeCategory::Maintenance,
+            "maintenance",
+            MapNodePayload::Maintenance,
         );
         core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
             .unwrap();
         let entered = core
             .execute(player_id, PlayerBehavior::ConfirmEnterNode)
             .unwrap();
-        let BehaviorResult::SupportState {
-            maintenance_options: Some(maintenance_options),
+        let BehaviorResult::MaintenanceState {
+            maintenance_options,
             ..
         } = entered
         else {
-            panic!("expected maintenance support state with options");
+            panic!("expected maintenance state with options");
         };
-        assert!(maintenance_options
-            .enhance_equipment_item_uuids
-            .contains(&owned_uuid));
+        let maintenance_item = maintenance_options
+            .items
+            .iter()
+            .find(|item| item.target_id == owned_uuid.to_string())
+            .expect("equipment should be present in maintenance preview");
+        assert!(maintenance_item.operations.enhance.can_execute);
         assert!(core
             .get_allowed_actions()
             .contains(&ActionKind::EnhanceEquipment));
@@ -3554,23 +3573,19 @@ mod equipment {
     }
 
     #[test]
-    fn skill_fragment_upgrade_consumes_same_rarity_material_and_updates_progress() {
+    fn skill_fragment_upgrade_consumes_fragment_dust_and_updates_progress() {
         let target = active_skill_fragment("upgrade_active_fragment", 0xF00F, "upgrade_skill");
-        let material = active_skill_fragment("upgrade_material_fragment", 0xF010, "material_skill");
-        let game_data = game_data_with_skill_fragments(vec![target.clone(), material.clone()]);
+        let game_data = game_data_with_skill_fragments(vec![target.clone()]);
         let mut core = GameCore::new(game_data, 123);
         let player_id = Uuid::from_u128(1);
         start_new_game_with_default_starters(&mut core, player_id);
         core.state.skill_fragments.add(&target).unwrap();
-        core.state.skill_fragments.add(&material).unwrap();
-        core.state.skill_fragments.add(&material).unwrap();
 
         let err = core
             .execute(
                 player_id,
                 PlayerBehavior::UpgradeSkillFragment {
                     target_fragment_id: target.id.clone(),
-                    material_fragment_id: material.id.clone(),
                 },
             )
             .unwrap_err();
@@ -3578,13 +3593,9 @@ mod equipment {
 
         let node_id = force_first_available_node(
             &mut core,
-            MapNodeCategory::Support,
-            "support_maintenance",
-            MapNodePayload::Support {
-                support_type: SupportNodeType::Maintenance,
-                support_mode: SupportNodeMode::Known,
-                choices: vec![],
-            },
+            MapNodeCategory::Maintenance,
+            "maintenance",
+            MapNodePayload::Maintenance,
         );
         core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
             .unwrap();
@@ -3593,33 +3604,33 @@ mod equipment {
         assert!(core
             .get_allowed_actions()
             .contains(&ActionKind::UpgradeSkillFragment));
+        core.state.skill_fragments.add_fragment_dust(4).unwrap();
 
         let result = core
             .execute(
                 player_id,
                 PlayerBehavior::UpgradeSkillFragment {
                     target_fragment_id: target.id.clone(),
-                    material_fragment_id: material.id.clone(),
                 },
             )
             .unwrap();
 
         let BehaviorResult::SkillFragmentUpgraded {
             target_fragment_id,
-            material_fragment_id,
-            material_remaining_count,
+            dust_spent,
+            remaining_dust,
             progress,
         } = result
         else {
             panic!("expected skill fragment upgrade result");
         };
         assert_eq!(target_fragment_id, target.id);
-        assert_eq!(material_fragment_id, material.id);
-        assert_eq!(material_remaining_count, 1);
+        assert_eq!(dust_spent, 4);
+        assert_eq!(remaining_dust, 0);
         assert_eq!(progress.upgrade_level, 1);
         assert_eq!(progress.awakening_progress, 1);
         assert_eq!(core.state.skill_fragments.count(&target.id), 1);
-        assert_eq!(core.state.skill_fragments.count(&material.id), 1);
+        assert_eq!(core.state.skill_fragments.fragment_dust(), 0);
     }
 
     #[test]
@@ -3644,13 +3655,9 @@ mod equipment {
 
         let node_id = force_first_available_node(
             &mut core,
-            MapNodeCategory::Support,
-            "support_maintenance",
-            MapNodePayload::Support {
-                support_type: SupportNodeType::Maintenance,
-                support_mode: SupportNodeMode::Known,
-                choices: vec![],
-            },
+            MapNodeCategory::Maintenance,
+            "maintenance",
+            MapNodePayload::Maintenance,
         );
         core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
             .unwrap();
@@ -3687,7 +3694,7 @@ mod equipment {
     }
 
     #[test]
-    fn skill_fragment_dismantle_rejects_equipped_or_last_copy() {
+    fn skill_fragment_dismantle_unequips_equipped_fragment() {
         let fragment =
             active_skill_fragment("equipped_dismantle_fragment", 0xF012, "equipped_skill");
         let weapon = weapon_equipment(0xE004, "dismantle_test_sword", WeaponArchetype::Sword);
@@ -3718,32 +3725,38 @@ mod equipment {
 
         let node_id = force_first_available_node(
             &mut core,
-            MapNodeCategory::Support,
-            "support_maintenance",
-            MapNodePayload::Support {
-                support_type: SupportNodeType::Maintenance,
-                support_mode: SupportNodeMode::Known,
-                choices: vec![],
-            },
+            MapNodeCategory::Maintenance,
+            "maintenance",
+            MapNodePayload::Maintenance,
         );
         core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
             .unwrap();
         core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
             .unwrap();
 
-        let err = core
+        let result = core
             .execute(
                 player_id,
                 PlayerBehavior::DismantleSkillFragment {
                     fragment_id: fragment.id.clone(),
                 },
             )
-            .unwrap_err();
-        assert!(matches!(err, GameError::InvalidAction));
+            .unwrap();
+
+        assert!(matches!(
+            result,
+            BehaviorResult::SkillFragmentDismantled {
+                remaining_count: 1,
+                ..
+            }
+        ));
+        let employee = core.roster().unwrap().get(&employee_uuid).unwrap();
+        assert_eq!(employee.skill_fragments.active_fragment_id(), None);
+        assert_eq!(core.state.skill_fragments.fragment_dust(), 2);
     }
 
     #[test]
-    fn skill_fragment_dismantle_rejects_last_copy() {
+    fn skill_fragment_dismantle_allows_last_copy() {
         let fragment =
             active_skill_fragment("last_copy_dismantle_fragment", 0xF013, "last_copy_skill");
         let game_data = game_data_with_skill_fragments(vec![fragment.clone()]);
@@ -3751,41 +3764,35 @@ mod equipment {
         let player_id = Uuid::from_u128(1);
         start_new_game_with_default_starters(&mut core, player_id);
         core.state.skill_fragments.add(&fragment).unwrap();
-        core.state.skill_fragments.add(&fragment).unwrap();
 
         let node_id = force_first_available_node(
             &mut core,
-            MapNodeCategory::Support,
-            "support_maintenance",
-            MapNodePayload::Support {
-                support_type: SupportNodeType::Maintenance,
-                support_mode: SupportNodeMode::Known,
-                choices: vec![],
-            },
+            MapNodeCategory::Maintenance,
+            "maintenance",
+            MapNodePayload::Maintenance,
         );
         core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
             .unwrap();
         core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
             .unwrap();
 
-        core.execute(
-            player_id,
-            PlayerBehavior::DismantleSkillFragment {
-                fragment_id: fragment.id.clone(),
-            },
-        )
-        .unwrap();
-
-        let err = core
+        let result = core
             .execute(
                 player_id,
                 PlayerBehavior::DismantleSkillFragment {
                     fragment_id: fragment.id.clone(),
                 },
             )
-            .unwrap_err();
-        assert!(matches!(err, GameError::InvalidAction));
-        assert_eq!(core.state.skill_fragments.count(&fragment.id), 1);
+            .unwrap();
+
+        assert!(matches!(
+            result,
+            BehaviorResult::SkillFragmentDismantled {
+                remaining_count: 0,
+                ..
+            }
+        ));
+        assert_eq!(core.state.skill_fragments.count(&fragment.id), 0);
     }
 }
 
@@ -5574,6 +5581,75 @@ mod combat {
                 .node(node_id)
                 .is_some_and(|node| node.state == crate::game::map::MapNodeState::Completed));
         }
+    }
+
+    #[test]
+    fn retreat_marks_rumor_threat_warning_disproved_on_reentry_preview() {
+        let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
+        let player_id = Uuid::from_u128(1);
+        start_new_game_with_default_starters(&mut core, player_id);
+        let node_id = force_map_combat_node(
+            &mut core,
+            MapNodeCategory::Combat,
+            "combat_defense",
+            "defense_encounter",
+        );
+
+        core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+            .unwrap();
+        core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+            .unwrap();
+
+        let active = core
+            .state
+            .active_battle
+            .as_mut()
+            .expect("battle should be active");
+        active.combat_preview.threat_warnings = vec![
+            ThreatWarning {
+                tag: ThreatWarningTag::ArmoredEnemyPossible,
+                status: ThreatWarningStatus::Unverified,
+                source: ThreatWarningSource::Briefing,
+            },
+            ThreatWarning {
+                tag: ThreatWarningTag::AirEnemyPossible,
+                status: ThreatWarningStatus::Unverified,
+                source: ThreatWarningSource::Rumor,
+            },
+        ];
+
+        let result = core
+            .execute(player_id, PlayerBehavior::RetreatBattle)
+            .unwrap();
+        let BehaviorResult::NodePreview {
+            combat_preview: Some(preview),
+            ..
+        } = result
+        else {
+            panic!("retreat should return node preview while attempts remain");
+        };
+
+        assert!(preview.threat_warnings.iter().any(|warning| {
+            warning.source == ThreatWarningSource::Briefing
+                && warning.status == ThreatWarningStatus::Unverified
+        }));
+        assert!(preview.threat_warnings.iter().any(|warning| {
+            warning.source == ThreatWarningSource::Rumor
+                && warning.status == ThreatWarningStatus::Disproved
+        }));
+
+        let cached = core
+            .state
+            .run
+            .as_ref()
+            .unwrap()
+            .combat_previews
+            .get(&node_id)
+            .expect("retreat should update cached node preview");
+        assert!(cached.threat_warnings.iter().any(|warning| {
+            warning.source == ThreatWarningSource::Rumor
+                && warning.status == ThreatWarningStatus::Disproved
+        }));
     }
 
     #[test]

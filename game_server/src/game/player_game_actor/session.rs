@@ -17,8 +17,9 @@ use crate::{
         load_balance_actor::messages::GetOrCreatePlayerActor,
         player_game_actor::{
             messages::{
-                AttachSession, DetachSession, ExecutePlayerBehavior, ForceDisconnect,
-                PlayerGameClientMessage, PlayerGameServerMessage, QuitPlayerActor,
+                AttachSession, DetachSession, ExecuteAdminCommand, ExecutePlayerBehavior,
+                ForceDisconnect, PlayerGameClientMessage, PlayerGameServerMessage,
+                QuitPlayerActor,
             },
             state::PlayerGameActorError,
             PlayerGameActor,
@@ -208,6 +209,59 @@ impl PlayerGameSession {
             })
             .spawn(ctx);
     }
+
+    fn handle_admin_command(
+        &mut self,
+        ctx: &mut Ctx,
+        request_id: String,
+        command: game_core::game::world::AdminCommand,
+        token: Option<String>,
+    ) {
+        if let Err(error) = admin_command_access_from_env(token.as_deref()) {
+            Self::send_json(ctx, &error.to_server_message(Some(request_id)));
+            return;
+        }
+
+        let Some(actor) = self.player_actor.clone() else {
+            self.send_error(
+                ctx,
+                Some(request_id),
+                "not_authenticated",
+                "Authenticate before sending admin commands",
+            );
+            return;
+        };
+
+        let session_id = self.session_id;
+
+        actor
+            .send(ExecuteAdminCommand {
+                session_id,
+                request_id: request_id.clone(),
+                command,
+            })
+            .into_actor(self)
+            .map(move |result, _act, ctx| match result {
+                Ok(Ok(result)) => {
+                    Self::send_json(ctx, &result.response);
+                    Self::send_json(
+                        ctx,
+                        &PlayerGameServerMessage::StateSnapshot {
+                            state: result.state_snapshot,
+                        },
+                    );
+                }
+                Ok(Err(error)) => {
+                    Self::send_json(ctx, &error.to_server_message(Some(request_id.clone())))
+                }
+                Err(error) => Self::send_json(
+                    ctx,
+                    &PlayerGameActorError::new("internal_error", error.to_string())
+                        .to_server_message(Some(request_id.clone())),
+                ),
+            })
+            .spawn(ctx);
+    }
 }
 
 impl Actor for PlayerGameSession {
@@ -273,6 +327,13 @@ impl StreamHandler<Result<Message, ProtocolError>> for PlayerGameSession {
                     }) => {
                         self.handle_command(ctx, request_id, behavior.into());
                     }
+                    Ok(PlayerGameClientMessage::AdminCommand {
+                        request_id,
+                        admin,
+                        token,
+                    }) => {
+                        self.handle_admin_command(ctx, request_id, admin, token);
+                    }
                     Ok(PlayerGameClientMessage::Ping) => {
                         Self::send_json(ctx, &PlayerGameServerMessage::Pong);
                     }
@@ -328,11 +389,94 @@ fn mock_authenticate(player_id: Uuid, _token: Option<&str>) -> Result<(), Player
     Ok(())
 }
 
+fn admin_command_access_from_env(token: Option<&str>) -> Result<(), PlayerGameActorError> {
+    admin_command_access(
+        std::env::var("RUN_MODE").ok().as_deref(),
+        std::env::var("ENABLE_ADMIN_COMMANDS").ok().as_deref(),
+        std::env::var("ADMIN_COMMAND_TOKEN").ok().as_deref(),
+        token,
+    )
+}
+
+fn admin_command_access(
+    run_mode: Option<&str>,
+    enable_flag: Option<&str>,
+    configured_token: Option<&str>,
+    supplied_token: Option<&str>,
+) -> Result<(), PlayerGameActorError> {
+    if run_mode
+        .is_some_and(|value| value.eq_ignore_ascii_case("production"))
+    {
+        return Err(PlayerGameActorError::new(
+            "admin_commands_disabled",
+            "Admin commands are disabled in production",
+        ));
+    }
+
+    let enabled = enable_flag.is_some_and(|value| {
+        matches!(
+            value.trim().to_ascii_lowercase().as_str(),
+            "1" | "true" | "yes" | "on"
+        )
+    });
+    if !enabled {
+        return Err(PlayerGameActorError::new(
+            "admin_commands_disabled",
+            "Set ENABLE_ADMIN_COMMANDS=true to enable admin commands",
+        ));
+    }
+
+    if let Some(configured_token) = configured_token.filter(|value| !value.is_empty()) {
+        if supplied_token != Some(configured_token) {
+            return Err(PlayerGameActorError::new(
+                "admin_unauthorized",
+                "Admin command token is missing or invalid",
+            ));
+        }
+    }
+
+    Ok(())
+}
+
 fn derive_run_seed(player_id: Uuid, current_run_id: Uuid) -> u64 {
     let mut hasher = DefaultHasher::new();
     player_id.hash(&mut hasher);
     current_run_id.hash(&mut hasher);
     hasher.finish()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn admin_access_requires_enable_flag() {
+        let err = admin_command_access(Some("development"), None, None, None)
+            .expect_err("admin access should require explicit flag");
+        assert_eq!(err.code, "admin_commands_disabled");
+    }
+
+    #[test]
+    fn admin_access_rejects_production_even_when_enabled() {
+        let err = admin_command_access(Some("production"), Some("true"), None, None)
+            .expect_err("production must reject admin access");
+        assert_eq!(err.code, "admin_commands_disabled");
+    }
+
+    #[test]
+    fn admin_access_requires_matching_token_when_configured() {
+        let err = admin_command_access(Some("development"), Some("true"), Some("secret"), None)
+            .expect_err("configured token should be required");
+        assert_eq!(err.code, "admin_unauthorized");
+
+        admin_command_access(
+            Some("development"),
+            Some("true"),
+            Some("secret"),
+            Some("secret"),
+        )
+        .expect("matching token should allow admin access");
+    }
 }
 
 fn mailbox_error(error: actix::MailboxError) -> PlayerGameActorError {

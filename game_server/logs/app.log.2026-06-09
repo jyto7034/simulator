@@ -1,0 +1,714 @@
+  2026-06-09T07:08:45.228454Z  INFO  SIGINT received; starting forced shutdown
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:333 on main ThreadId(1)
+
+  2026-06-09T07:08:45.229488Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2026-06-09T07:08:45.229660Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:7 ThreadId(10)
+
+  2026-06-09T07:08:45.229750Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:19 ThreadId(22)
+
+  2026-06-09T07:08:45.229849Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:24 ThreadId(27)
+
+  2026-06-09T07:08:45.229965Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:3 ThreadId(6)
+
+  2026-06-09T07:08:45.230063Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:30 ThreadId(33)
+
+  2026-06-09T07:08:45.230146Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:25 ThreadId(28)
+
+  2026-06-09T07:08:45.230214Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:5 ThreadId(8)
+
+  2026-06-09T07:08:45.230272Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:6 ThreadId(9)
+
+  2026-06-09T07:08:45.230331Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:18 ThreadId(21)
+
+  2026-06-09T07:08:45.230410Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:16 ThreadId(19)
+
+  2026-06-09T07:08:45.230470Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:11 ThreadId(14)
+
+  2026-06-09T07:08:45.230527Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:22 ThreadId(25)
+
+  2026-06-09T07:08:45.230579Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:23 ThreadId(26)
+
+  2026-06-09T07:08:45.230614Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:14 ThreadId(17)
+
+  2026-06-09T07:08:45.230674Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:29 ThreadId(32)
+
+  2026-06-09T07:08:45.230746Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:8 ThreadId(11)
+
+  2026-06-09T07:08:45.230805Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:21 ThreadId(24)
+
+  2026-06-09T07:08:45.230865Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:28 ThreadId(31)
+
+  2026-06-09T07:08:45.230904Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:31 ThreadId(34)
+
+  2026-06-09T07:08:45.230955Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:12 ThreadId(15)
+
+  2026-06-09T07:08:45.230995Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:4 ThreadId(7)
+
+  2026-06-09T07:08:45.231049Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:9 ThreadId(12)
+
+  2026-06-09T07:08:45.231112Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:26 ThreadId(29)
+
+  2026-06-09T07:08:45.231188Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:27 ThreadId(30)
+
+  2026-06-09T07:08:45.231256Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:15 ThreadId(18)
+
+  2026-06-09T07:08:45.231321Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2026-06-09T07:08:45.231405Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2026-06-09T07:08:45.231460Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:13 ThreadId(16)
+
+  2026-06-09T07:08:45.231513Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:20 ThreadId(23)
+
+  2026-06-09T07:08:45.231576Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:10 ThreadId(13)
+
+  2026-06-09T07:08:45.231656Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:17 ThreadId(20)
+
+  2026-06-09T07:08:45.231706Z  INFO  accept thread stopped
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\accept.rs:143 on actix-server acceptor ThreadId(35)
+
+  2026-06-09T07:09:06.762652Z  INFO  Logger initialization complete: console and file (logs/app.log) output enabled
+    at game_server\src\lib.rs:94 on main ThreadId(1)
+
+  2026-06-09T07:09:06.762783Z  INFO  Logger initialized
+    at game_server\src\main.rs:57 on main ThreadId(1)
+
+  2026-06-09T07:09:06.762878Z  INFO  Retry config initialized
+    at game_server\src\main.rs:61 on main ThreadId(1)
+
+  2026-06-09T07:09:06.775310Z  INFO  Shop: []
+    at core_enhanced\src\game\data\shop_data.rs:167 on main ThreadId(1)
+
+  2026-06-09T07:09:06.776272Z  INFO  Game data loaded for meta-game sessions
+    at game_server\src\main.rs:64 on main ThreadId(1)
+
+  2026-06-09T07:09:06.776451Z  INFO  Metrics initialized and registered
+    at game_server\src\main.rs:69 on main ThreadId(1)
+
+  2026-06-09T07:09:06.776573Z  INFO  LoadBalanceActor started
+    at game_server\src\main.rs:73 on main ThreadId(1)
+
+  2026-06-09T07:09:06.776653Z  INFO  Starting HTTP server on 0.0.0.0:8081
+    at game_server\src\main.rs:89 on main ThreadId(1)
+
+  2026-06-09T07:09:06.777944Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on main ThreadId(1)
+
+  2026-06-09T07:09:06.778023Z  INFO  Game Server is running on 0.0.0.0:8081
+    at game_server\src\main.rs:135 on main ThreadId(1)
+
+  2026-06-09T07:09:06.778117Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on main ThreadId(1)
+
+  2026-06-09T07:09:06.778191Z  INFO  starting service: "actix-web-service-0.0.0.0:8081", workers: 32, listening on: 0.0.0.0:8081
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on main ThreadId(1)
+
+  2026-06-09T07:09:06.786192Z  INFO  LoadBalanceActor started
+    at game_server\src\game\load_balance_actor\mod.rs:28 on main ThreadId(1)
+
+  2026-06-09T07:12:46.528981Z  INFO  PlayerGameSession started: ae985acc-031d-4d9c-860c-04d34c06db5b
+    at game_server\src\game\player_game_actor\session.rs:271 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2026-06-09T07:12:46.578474Z  INFO  Creating PlayerGameActor for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:43 on main ThreadId(1)
+
+  2026-06-09T07:12:46.578663Z  INFO  Initializing GameCore with run_seed=15081433457669782771
+    at core_enhanced\src\game\world.rs:110 on main ThreadId(1)
+
+  2026-06-09T07:12:46.579093Z  INFO  PlayerGameActor started for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\player_game_actor\mod.rs:69 on main ThreadId(1)
+
+  2026-06-09T07:12:48.848875Z  INFO  Initializing player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world\helpers.rs:629 on main ThreadId(1)
+
+  2026-06-09T07:12:48.849028Z  INFO  Game state transition: NotStarted -> SelectingStarterEmployees
+    at core_enhanced\src\game\world\helpers.rs:618 on main ThreadId(1)
+
+  2026-06-09T07:12:48.849135Z  INFO  Starter employee selection opened for player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world.rs:285 on main ThreadId(1)
+
+  2026-06-09T07:12:50.357184Z  INFO  Initialized selected starter employee roster with 3 employees
+    at core_enhanced\src\game\world\helpers.rs:687 on main ThreadId(1)
+
+  2026-06-09T07:12:50.357343Z  INFO  Granted starter enkephalin: amount=500, total=500
+    at core_enhanced\src\game\world.rs:306 on main ThreadId(1)
+
+  2026-06-09T07:12:50.358258Z  INFO  Game state transition: SelectingStarterEmployees -> ViewingMap
+    at core_enhanced\src\game\world\helpers.rs:618 on main ThreadId(1)
+
+  2026-06-09T07:12:52.464774Z  INFO  Game state transition: ViewingMap -> NodeConfirm { node_id: MapNodeId(ee9822e9-07ad-446c-a56e-cb0ec30b1a23), kind_id: MapNodeKindId("headquarters_contact"), category: HeadquartersContact }
+    at core_enhanced\src\game\world\helpers.rs:618 on main ThreadId(1)
+
+  2026-06-09T07:12:53.258730Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(ee9822e9-07ad-446c-a56e-cb0ec30b1a23), kind_id: MapNodeKindId("headquarters_contact"), category: HeadquartersContact } -> NodeConfirm { node_id: MapNodeId(ee9822e9-07ad-446c-a340-85e58c7c8523), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:618 on main ThreadId(1)
+
+  2026-06-09T07:12:53.559332Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(ee9822e9-07ad-446c-a340-85e58c7c8523), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> NodeConfirm { node_id: MapNodeId(ee9822e9-07ad-446c-a1fd-368dee564d96), kind_id: MapNodeKindId("support_full_choice"), category: Support }
+    at core_enhanced\src\game\world\helpers.rs:618 on main ThreadId(1)
+
+  2026-06-09T07:12:53.837863Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(ee9822e9-07ad-446c-a1fd-368dee564d96), kind_id: MapNodeKindId("support_full_choice"), category: Support } -> NodeConfirm { node_id: MapNodeId(ee9822e9-07ad-446c-a56e-cb0ec30b1a23), kind_id: MapNodeKindId("headquarters_contact"), category: HeadquartersContact }
+    at core_enhanced\src\game\world\helpers.rs:618 on main ThreadId(1)
+
+  2026-06-09T07:12:55.085068Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(ee9822e9-07ad-446c-a56e-cb0ec30b1a23), kind_id: MapNodeKindId("headquarters_contact"), category: HeadquartersContact } -> NodeConfirm { node_id: MapNodeId(ee9822e9-07ad-446c-a340-85e58c7c8523), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:618 on main ThreadId(1)
+
+  2026-06-09T07:12:59.796032Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(ee9822e9-07ad-446c-a340-85e58c7c8523), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> NodeConfirm { node_id: MapNodeId(ee9822e9-07ad-446c-a56e-cb0ec30b1a23), kind_id: MapNodeKindId("headquarters_contact"), category: HeadquartersContact }
+    at core_enhanced\src\game\world\helpers.rs:618 on main ThreadId(1)
+
+  2026-06-09T07:13:00.596402Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(ee9822e9-07ad-446c-a56e-cb0ec30b1a23), kind_id: MapNodeKindId("headquarters_contact"), category: HeadquartersContact } -> NodeConfirm { node_id: MapNodeId(ee9822e9-07ad-446c-a340-85e58c7c8523), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:618 on main ThreadId(1)
+
+  2026-06-09T07:13:01.779818Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(ee9822e9-07ad-446c-a340-85e58c7c8523), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> NodeConfirm { node_id: MapNodeId(ee9822e9-07ad-446c-a56e-cb0ec30b1a23), kind_id: MapNodeKindId("headquarters_contact"), category: HeadquartersContact }
+    at core_enhanced\src\game\world\helpers.rs:618 on main ThreadId(1)
+
+  2026-06-09T07:13:09.981597Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(ee9822e9-07ad-446c-a56e-cb0ec30b1a23), kind_id: MapNodeKindId("headquarters_contact"), category: HeadquartersContact } -> InNode { node_id: MapNodeId(ee9822e9-07ad-446c-a56e-cb0ec30b1a23), kind_id: MapNodeKindId("headquarters_contact"), category: HeadquartersContact }
+    at core_enhanced\src\game\world\helpers.rs:618 on main ThreadId(1)
+
+  2026-06-09T07:13:24.633341Z  INFO  SIGINT received; starting forced shutdown
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:333 on main ThreadId(1)
+
+  2026-06-09T07:13:24.633587Z  INFO  accept thread stopped
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\accept.rs:143 on actix-server acceptor ThreadId(35)
+
+  2026-06-09T07:13:24.633637Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:6 ThreadId(9)
+
+  2026-06-09T07:13:24.633701Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2026-06-09T07:13:24.633771Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2026-06-09T07:13:24.633860Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:5 ThreadId(8)
+
+  2026-06-09T07:13:24.633898Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:8 ThreadId(11)
+
+  2026-06-09T07:13:24.633981Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:10 ThreadId(13)
+
+  2026-06-09T07:13:24.634050Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:3 ThreadId(6)
+
+  2026-06-09T07:13:24.634132Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:11 ThreadId(14)
+
+  2026-06-09T07:13:24.634197Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:9 ThreadId(12)
+
+  2026-06-09T07:13:24.634250Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:13 ThreadId(16)
+
+  2026-06-09T07:13:24.634297Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:17 ThreadId(20)
+
+  2026-06-09T07:13:24.634353Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:18 ThreadId(21)
+
+  2026-06-09T07:13:24.634409Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:15 ThreadId(18)
+
+  2026-06-09T07:13:24.634456Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:19 ThreadId(22)
+
+  2026-06-09T07:13:24.634528Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:20 ThreadId(23)
+
+  2026-06-09T07:13:24.634580Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:22 ThreadId(25)
+
+  2026-06-09T07:13:24.634639Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:23 ThreadId(26)
+
+  2026-06-09T07:13:24.634692Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:24 ThreadId(27)
+
+  2026-06-09T07:13:24.634748Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:25 ThreadId(28)
+
+  2026-06-09T07:13:24.634814Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:4 ThreadId(7)
+
+  2026-06-09T07:13:24.634869Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:29 ThreadId(32)
+
+  2026-06-09T07:13:24.634927Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:31 ThreadId(34)
+
+  2026-06-09T07:13:24.634983Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:21 ThreadId(24)
+
+  2026-06-09T07:13:24.635043Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:28 ThreadId(31)
+
+  2026-06-09T07:13:24.635100Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:14 ThreadId(17)
+
+  2026-06-09T07:13:24.635144Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:30 ThreadId(33)
+
+  2026-06-09T07:13:24.635204Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:26 ThreadId(29)
+
+  2026-06-09T07:13:24.635273Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:16 ThreadId(19)
+
+  2026-06-09T07:13:24.635333Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:27 ThreadId(30)
+
+  2026-06-09T07:13:24.635380Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:7 ThreadId(10)
+
+  2026-06-09T07:13:24.635433Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:12 ThreadId(15)
+
+  2026-06-09T07:13:24.635491Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2026-06-09T07:13:24.635550Z  INFO  Ctrl+C received. Initiating graceful shutdown...
+    at game_server\src\main.rs:146 on main ThreadId(1)
+
+  2026-06-09T07:13:25.468825Z  INFO  Logger initialization complete: console and file (logs/app.log) output enabled
+    at game_server\src\lib.rs:94 on main ThreadId(1)
+
+  2026-06-09T07:13:25.468967Z  INFO  Logger initialized
+    at game_server\src\main.rs:57 on main ThreadId(1)
+
+  2026-06-09T07:13:25.469120Z  INFO  Retry config initialized
+    at game_server\src\main.rs:61 on main ThreadId(1)
+
+  2026-06-09T07:13:25.481572Z  INFO  Shop: []
+    at core_enhanced\src\game\data\shop_data.rs:167 on main ThreadId(1)
+
+  2026-06-09T07:13:25.482383Z  INFO  Game data loaded for meta-game sessions
+    at game_server\src\main.rs:64 on main ThreadId(1)
+
+  2026-06-09T07:13:25.482539Z  INFO  Metrics initialized and registered
+    at game_server\src\main.rs:69 on main ThreadId(1)
+
+  2026-06-09T07:13:25.482654Z  INFO  LoadBalanceActor started
+    at game_server\src\main.rs:73 on main ThreadId(1)
+
+  2026-06-09T07:13:25.482726Z  INFO  Starting HTTP server on 0.0.0.0:8081
+    at game_server\src\main.rs:89 on main ThreadId(1)
+
+  2026-06-09T07:13:25.484125Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on main ThreadId(1)
+
+  2026-06-09T07:13:25.484279Z  INFO  Game Server is running on 0.0.0.0:8081
+    at game_server\src\main.rs:135 on main ThreadId(1)
+
+  2026-06-09T07:13:25.484375Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on main ThreadId(1)
+
+  2026-06-09T07:13:25.484480Z  INFO  starting service: "actix-web-service-0.0.0.0:8081", workers: 32, listening on: 0.0.0.0:8081
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on main ThreadId(1)
+
+  2026-06-09T07:13:25.492650Z  INFO  LoadBalanceActor started
+    at game_server\src\game\load_balance_actor\mod.rs:28 on main ThreadId(1)
+
+  2026-06-09T07:13:27.142941Z  INFO  PlayerGameSession started: d2fd9998-aa6d-4064-955e-2573ee08e335
+    at game_server\src\game\player_game_actor\session.rs:271 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2026-06-09T07:13:27.173185Z  INFO  Creating PlayerGameActor for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:43 on main ThreadId(1)
+
+  2026-06-09T07:13:27.173275Z  INFO  Initializing GameCore with run_seed=3410460943830771765
+    at core_enhanced\src\game\world.rs:110 on main ThreadId(1)
+
+  2026-06-09T07:13:27.173636Z  INFO  PlayerGameActor started for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\player_game_actor\mod.rs:69 on main ThreadId(1)
+
+  2026-06-09T07:16:00.356837Z  INFO  PlayerGameSession started: 520de325-f8a6-4181-a4cd-4cca397ffbd2
+    at game_server\src\game\player_game_actor\session.rs:271 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2026-06-09T07:21:00.783310Z  INFO  Deregistering player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:22 on main ThreadId(1)
+
+  2026-06-09T07:23:06.100578Z  INFO  PlayerGameSession started: 4ae4c61f-0e5f-4dc4-8fbb-db97215daa39
+    at game_server\src\game\player_game_actor\session.rs:271 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2026-06-09T07:23:06.137907Z  INFO  Creating PlayerGameActor for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:43 on main ThreadId(1)
+
+  2026-06-09T07:23:06.137997Z  INFO  Initializing GameCore with run_seed=3410460943830771765
+    at core_enhanced\src\game\world.rs:110 on main ThreadId(1)
+
+  2026-06-09T07:23:06.138161Z  INFO  PlayerGameActor started for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\player_game_actor\mod.rs:69 on main ThreadId(1)
+
+  2026-06-09T07:24:20.549349Z  INFO  Initializing player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world\helpers.rs:629 on main ThreadId(1)
+
+  2026-06-09T07:24:20.549479Z  INFO  Game state transition: NotStarted -> SelectingStarterEmployees
+    at core_enhanced\src\game\world\helpers.rs:618 on main ThreadId(1)
+
+  2026-06-09T07:24:20.549567Z  INFO  Starter employee selection opened for player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world.rs:285 on main ThreadId(1)
+
+  2026-06-09T07:27:02.321198Z  INFO  SIGINT received; starting forced shutdown
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:333 on main ThreadId(1)
+
+  2026-06-09T07:27:02.321360Z  INFO  accept thread stopped
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\accept.rs:143 on actix-server acceptor ThreadId(35)
+
+  2026-06-09T07:27:02.321421Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:10 ThreadId(13)
+
+  2026-06-09T07:27:02.321489Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:21 ThreadId(24)
+
+  2026-06-09T07:27:02.321567Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:23 ThreadId(26)
+
+  2026-06-09T07:27:02.321672Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:8 ThreadId(11)
+
+  2026-06-09T07:27:02.321761Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:12 ThreadId(15)
+
+  2026-06-09T07:27:02.321818Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:11 ThreadId(14)
+
+  2026-06-09T07:27:02.321897Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:6 ThreadId(9)
+
+  2026-06-09T07:27:02.321959Z  INFO  force shutdown worker, closing 1 connections
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:606 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2026-06-09T07:27:02.322050Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:7 ThreadId(10)
+
+  2026-06-09T07:27:02.322115Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:5 ThreadId(8)
+
+  2026-06-09T07:27:02.322193Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:4 ThreadId(7)
+
+  2026-06-09T07:27:02.322297Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:16 ThreadId(19)
+
+  2026-06-09T07:27:02.322353Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:15 ThreadId(18)
+
+  2026-06-09T07:27:02.322407Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:13 ThreadId(16)
+
+  2026-06-09T07:27:02.322467Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:14 ThreadId(17)
+
+  2026-06-09T07:27:02.322516Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2026-06-09T07:27:02.322601Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:17 ThreadId(20)
+
+  2026-06-09T07:27:02.322686Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:3 ThreadId(6)
+
+  2026-06-09T07:27:02.322765Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:18 ThreadId(21)
+
+  2026-06-09T07:27:02.322856Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:19 ThreadId(22)
+
+  2026-06-09T07:27:02.322934Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:20 ThreadId(23)
+
+  2026-06-09T07:27:02.323011Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2026-06-09T07:27:02.323068Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:26 ThreadId(29)
+
+  2026-06-09T07:27:02.323120Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:27 ThreadId(30)
+
+  2026-06-09T07:27:02.323177Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:22 ThreadId(25)
+
+  2026-06-09T07:27:02.323248Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:25 ThreadId(28)
+
+  2026-06-09T07:27:02.323306Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:28 ThreadId(31)
+
+  2026-06-09T07:27:02.323363Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:31 ThreadId(34)
+
+  2026-06-09T07:27:02.323453Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:30 ThreadId(33)
+
+  2026-06-09T07:27:02.323580Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:29 ThreadId(32)
+
+  2026-06-09T07:27:02.323640Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:24 ThreadId(27)
+
+  2026-06-09T07:27:02.323685Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:9 ThreadId(12)
+
+  2026-06-09T07:27:02.323751Z  INFO  Ctrl+C received. Initiating graceful shutdown...
+    at game_server\src\main.rs:146 on main ThreadId(1)
+
+  2026-06-09T07:27:38.976540Z  INFO  Logger initialization complete: console and file (logs/app.log) output enabled
+    at game_server\src\lib.rs:94 on main ThreadId(1)
+
+  2026-06-09T07:27:38.976652Z  INFO  Logger initialized
+    at game_server\src\main.rs:57 on main ThreadId(1)
+
+  2026-06-09T07:27:38.976725Z  INFO  Retry config initialized
+    at game_server\src\main.rs:61 on main ThreadId(1)
+
+  2026-06-09T07:27:38.988878Z  INFO  Shop: []
+    at core_enhanced\src\game\data\shop_data.rs:167 on main ThreadId(1)
+
+  2026-06-09T07:27:38.989877Z  INFO  Game data loaded for meta-game sessions
+    at game_server\src\main.rs:64 on main ThreadId(1)
+
+  2026-06-09T07:27:38.990037Z  INFO  Metrics initialized and registered
+    at game_server\src\main.rs:69 on main ThreadId(1)
+
+  2026-06-09T07:27:38.990140Z  INFO  LoadBalanceActor started
+    at game_server\src\main.rs:73 on main ThreadId(1)
+
+  2026-06-09T07:27:38.990194Z  INFO  Starting HTTP server on 0.0.0.0:8081
+    at game_server\src\main.rs:89 on main ThreadId(1)
+
+  2026-06-09T07:27:38.991389Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on main ThreadId(1)
+
+  2026-06-09T07:27:38.991463Z  INFO  Game Server is running on 0.0.0.0:8081
+    at game_server\src\main.rs:135 on main ThreadId(1)
+
+  2026-06-09T07:27:38.991547Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on main ThreadId(1)
+
+  2026-06-09T07:27:38.991606Z  INFO  starting service: "actix-web-service-0.0.0.0:8081", workers: 32, listening on: 0.0.0.0:8081
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on main ThreadId(1)
+
+  2026-06-09T07:27:38.998889Z  INFO  LoadBalanceActor started
+    at game_server\src\game\load_balance_actor\mod.rs:28 on main ThreadId(1)
+
+  2026-06-09T07:27:42.784634Z  INFO  PlayerGameSession started: 1f9afe5b-1ea7-4a41-9216-ba34fa7be89e
+    at game_server\src\game\player_game_actor\session.rs:271 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2026-06-09T07:27:42.814424Z  INFO  Creating PlayerGameActor for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:43 on main ThreadId(1)
+
+  2026-06-09T07:27:42.814511Z  INFO  Initializing GameCore with run_seed=18010804277240820698
+    at core_enhanced\src\game\world.rs:110 on main ThreadId(1)
+
+  2026-06-09T07:27:42.814911Z  INFO  PlayerGameActor started for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\player_game_actor\mod.rs:69 on main ThreadId(1)
+
+  2026-06-09T07:36:14.380471Z  INFO  Deregistering player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:22 on main ThreadId(1)
+
+  2026-06-09T07:38:40.816463Z  INFO  PlayerGameSession started: 071204bd-f873-4aba-ab5d-e0570dc8dd8d
+    at game_server\src\game\player_game_actor\session.rs:271 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2026-06-09T07:38:40.849473Z  INFO  Creating PlayerGameActor for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:43 on main ThreadId(1)
+
+  2026-06-09T07:38:40.849558Z  INFO  Initializing GameCore with run_seed=18010804277240820698
+    at core_enhanced\src\game\world.rs:110 on main ThreadId(1)
+
+  2026-06-09T07:38:40.849692Z  INFO  PlayerGameActor started for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\player_game_actor\mod.rs:69 on main ThreadId(1)
+
+  2026-06-09T07:39:01.264665Z  INFO  Ctrl+C received. Initiating graceful shutdown...
+    at game_server\src\main.rs:146 on main ThreadId(1)
+
+  2026-06-09T07:39:01.264802Z  INFO  System has shut down gracefully
+    at game_server\src\main.rs:150 on main ThreadId(1)
+
+  2026-06-09T07:39:21.885735Z  INFO  Logger initialization complete: console and file (logs/app.log) output enabled
+    at game_server\src\lib.rs:94 on main ThreadId(1)
+
+  2026-06-09T07:39:21.885941Z  INFO  Logger initialized
+    at game_server\src\main.rs:57 on main ThreadId(1)
+
+  2026-06-09T07:39:21.886060Z  INFO  Retry config initialized
+    at game_server\src\main.rs:61 on main ThreadId(1)
+
+  2026-06-09T07:39:21.899489Z  INFO  Shop: []
+    at core_enhanced\src\game\data\shop_data.rs:167 on main ThreadId(1)
+
+  2026-06-09T07:39:21.900359Z  INFO  Game data loaded for meta-game sessions
+    at game_server\src\main.rs:64 on main ThreadId(1)
+
+  2026-06-09T07:39:21.900525Z  INFO  Metrics initialized and registered
+    at game_server\src\main.rs:69 on main ThreadId(1)
+
+  2026-06-09T07:39:21.900639Z  INFO  LoadBalanceActor started
+    at game_server\src\main.rs:73 on main ThreadId(1)
+
+  2026-06-09T07:39:21.900697Z  INFO  Starting HTTP server on 0.0.0.0:8081
+    at game_server\src\main.rs:89 on main ThreadId(1)
+
+  2026-06-09T07:39:21.902121Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on main ThreadId(1)
+
+  2026-06-09T07:39:21.902227Z  INFO  Game Server is running on 0.0.0.0:8081
+    at game_server\src\main.rs:135 on main ThreadId(1)
+
+  2026-06-09T07:39:21.902307Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on main ThreadId(1)
+
+  2026-06-09T07:39:21.902386Z  INFO  starting service: "actix-web-service-0.0.0.0:8081", workers: 32, listening on: 0.0.0.0:8081
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on main ThreadId(1)
+
+  2026-06-09T07:39:21.911410Z  INFO  LoadBalanceActor started
+    at game_server\src\game\load_balance_actor\mod.rs:28 on main ThreadId(1)
+
+  2026-06-09T07:39:24.955625Z  INFO  PlayerGameSession started: 3cd94d42-90b0-42dc-a60e-37f10ee7cd46
+    at game_server\src\game\player_game_actor\session.rs:271 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2026-06-09T07:39:25.006605Z  INFO  Creating PlayerGameActor for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:43 on main ThreadId(1)
+
+  2026-06-09T07:39:25.006704Z  INFO  Initializing GameCore with run_seed=4678286623358246723
+    at core_enhanced\src\game\world.rs:110 on main ThreadId(1)
+
+  2026-06-09T07:39:25.007293Z  INFO  PlayerGameActor started for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\player_game_actor\mod.rs:69 on main ThreadId(1)
+
+  2026-06-09T07:39:45.966498Z  INFO  SIGINT received; starting forced shutdown
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:333 on main ThreadId(1)
+
+  2026-06-09T07:39:45.966697Z  INFO  accept thread stopped
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\accept.rs:143 on actix-server acceptor ThreadId(35)
+
+  2026-06-09T07:39:45.966756Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:27 ThreadId(30)
+
+  2026-06-09T07:39:45.966815Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2026-06-09T07:39:45.966877Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:3 ThreadId(6)
+
+  2026-06-09T07:39:45.966934Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2026-06-09T07:39:45.966982Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:12 ThreadId(15)
+
+  2026-06-09T07:39:45.967077Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:5 ThreadId(8)
+
+  2026-06-09T07:39:45.967127Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:13 ThreadId(16)
+
+  2026-06-09T07:39:45.967176Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:15 ThreadId(18)
+
+  2026-06-09T07:39:45.967230Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:16 ThreadId(19)
+
+  2026-06-09T07:39:45.967284Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:14 ThreadId(17)
+
+  2026-06-09T07:39:45.967344Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:19 ThreadId(22)
+
+  2026-06-09T07:39:45.967398Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:18 ThreadId(21)
+
+  2026-06-09T07:39:45.967447Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:11 ThreadId(14)
+
+  2026-06-09T07:39:45.967503Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:4 ThreadId(7)
+
+  2026-06-09T07:39:45.967556Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:7 ThreadId(10)
+
+  2026-06-09T07:39:45.967593Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:24 ThreadId(27)
+
+  2026-06-09T07:39:45.967649Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:25 ThreadId(28)
+
+  2026-06-09T07:39:45.967699Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:8 ThreadId(11)
+
+  2026-06-09T07:39:45.967742Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:17 ThreadId(20)
+
+  2026-06-09T07:39:45.967797Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:21 ThreadId(24)
+
+  2026-06-09T07:39:45.967840Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:20 ThreadId(23)
+
+  2026-06-09T07:39:45.967902Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:29 ThreadId(32)
+
+  2026-06-09T07:39:45.967957Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:28 ThreadId(31)
+
+  2026-06-09T07:39:45.968006Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:9 ThreadId(12)
+
+  2026-06-09T07:39:45.968051Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2026-06-09T07:39:45.968101Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:22 ThreadId(25)
+
+  2026-06-09T07:39:45.968151Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:31 ThreadId(34)
+
+  2026-06-09T07:39:45.968207Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:30 ThreadId(33)
+
+  2026-06-09T07:39:45.968267Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:6 ThreadId(9)
+
+  2026-06-09T07:39:45.968316Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:26 ThreadId(29)
+
+  2026-06-09T07:39:45.968368Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:23 ThreadId(26)
+
+  2026-06-09T07:39:45.968416Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:10 ThreadId(13)
+
+  2026-06-09T07:39:45.968452Z  INFO  Ctrl+C received. Initiating graceful shutdown...
+    at game_server\src\main.rs:146 on main ThreadId(1)
+

@@ -32,7 +32,9 @@ F:\unity projects\ark\docs
 
 ## 작업 원칙
 
+- `code_documentation_sync_guidelines.md`: core/server 코드와 문서를 항상 함께 갱신하기 위한 상위 작업 지침.
 - `codex_goal_command.md`: 새 goal을 Codex에게 맡길 때 붙여 넣는 표준 goal 명령어.
+- `core_file_hierarchy_refactor_goal.md`: core 파일 계층 정리를 위한 대형 refactor goal 문서.
 - 레거시는 과감하게 제거한다. 현재 공식 흐름에 없는 compatibility layer, adapter, legacy test는 되살리지 않는다.
 - 문서를 무조건 따르지 않는다. 실제 코드와 live RON/API를 읽고 더 나은 개선안이 보이면 근거를 설명하고 사용자 확인 후 진행한다.
 - 정책이 모호하면 구현 전에 사용자와 의논한다. 특히 게임 룰, 노드 흐름, 보상, 직원 성장, 전투 성공/실패 판정은 임의 확정하지 않는다.

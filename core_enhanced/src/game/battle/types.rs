@@ -678,7 +678,6 @@ mod tests {
                     }],
                     vec![],
                     vec![],
-                    vec![],
                     vec![EquipmentEnhancementRecipeMetadata {
                         equipment_id: "enhanced_item".to_string(),
                         max_level: 3,

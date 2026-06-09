@@ -1016,12 +1016,13 @@ Unity 문서와 UI에서 `Rest`, `Maintenance`, `휴식`, `휴식 정비`, `supp
 - `Loadout`의 Unity UX는 drag-and-drop을 기본으로 한다. 우측 가방의 장비/스킬 파편을 중앙의 호환 장착 슬롯으로 드롭하면 장착 command를 보내고, 중앙 장착 슬롯의 장비/스킬 파편을 우측 가방으로 드롭하면 해제 command를 보낸다. 클릭은 장착/해제가 아니라 선택/미리보기 용도다.
 - 호환되지 않는 슬롯에 드롭하면 Unity는 command를 보내지 않고 시각 피드백만 표시한다.
 - 현재 계약상 Safezone에서 live 연결할 수 있는 준비 행동은 `use_consumable_item`, `equip_item`, `un_equip_item`, `equip_skill_fragment`, `un_equip_skill_fragment`, 인벤토리/노드 preview 확인이다.
-- Safezone은 `Maintenance` 노드가 아니다. `restore_equipment`, `dismantle_equipment`, `enhance_equipment`, `upgrade_skill_fragment`, `awaken_skill_fragment`, `dismantle_skill_fragment`는 `Maintenance` 노드 내부에서만 노출한다.
+- Safezone은 `Maintenance` 노드가 아니다. `dismantle_equipment`, `enhance_equipment`, `upgrade_skill_fragment`, `awaken_skill_fragment`, `dismantle_skill_fragment`는 `Maintenance` 노드 내부에서만 노출한다.
+- Maintenance 내부에서도 장비/스킬 파편 장착 교체를 편의 기능으로 제공할 수 있다. 단, 이는 Maintenance의 주 기능이 아니라 정비 작업 중 대상 정리를 돕는 부가 기능이며, Loadout과 같은 호환/교체 규칙을 사용한다.
 - `Item Use` 장면은 섭취 아이템을 사망자가 아닌 직원에게 드래그해 다음 전투/보스 노드용 active modifier를 적용하는 live command를 가진다. 사망자인 직원은 Unity에서 사용 불가로 처리한다.
 
 ## Support Nodes
 
-지원 노드는 `SupportState`와 `selected_event.type == "support"`를 사용한다.
+지원 노드는 `SupportState`와 `selected_event.type == "support"`를 사용한다. 현재 지원 노드는 `Medical`과 `Rest`만 포함한다. `Maintenance`는 별도 독립 노드다.
 
 `selected_event.type == "support"` snapshot 핵심:
 
@@ -1035,8 +1036,7 @@ Unity 문서와 UI에서 `Rest`, `Maintenance`, `휴식`, `휴식 정비`, `supp
   "selected_support_type": null,
   "target_candidates": [],
   "selected_employee_uuid": null,
-  "selected_medical_treatment": null,
-  "maintenance_options": null
+  "selected_medical_treatment": null
 }
 ```
 
@@ -1047,7 +1047,6 @@ Unity 문서와 UI에서 `Rest`, `Maintenance`, `휴식`, `휴식 정비`, `supp
 ```text
 Medical
 Rest
-Maintenance
 ```
 
 지원 모드:
@@ -1066,7 +1065,7 @@ FullChoice
   "request_id": "support-1",
   "behavior": {
     "type": "choose_support",
-    "support_type": "Maintenance"
+    "support_type": "Rest"
   }
 }
 ```
@@ -1101,20 +1100,115 @@ Counseling
 BalancedCare
 ```
 
-Maintenance에서는 `maintenance_options`를 보고 가능한 작업만 UI에 표시한다.
-
-`maintenance_options` shape:
+Maintenance는 `SupportState`가 아니라 `MaintenanceState`와 `selected_event.type == "maintenance"`를 사용한다. Maintenance에서는 `maintenance_options`를 보고 가능한 작업만 UI에 표시한다.
 
 ```json
 {
-  "restorable_equipment_recipes": [],
-  "dismantle_equipment_item_uuids": [],
-  "enhance_equipment_item_uuids": [],
-  "enhancement_recipes": [],
-  "dismantle_recipes": [],
-  "dismantle_skill_fragment_ids": []
+  "type": "maintenance",
+  "node_id": "...",
+  "maintenance_options": {
+    "items": [],
+    "materials": []
+  }
 }
 ```
+
+새 Maintenance 정책:
+
+- Maintenance는 노드를 소비하는 정비 노드다.
+- 주 기능은 스킬 파편/장비의 `분쇄`, `강화`, `개화`다.
+- 장비/스킬 파편 장착 교체는 정비 중 편의를 위한 부가 기능이다.
+- 화면은 3패널이다.
+- 좌측 패널은 직원 로스터다. 직원 카드는 세로로 배치하고, 카드에는 초상화와 장착 중인 스킬 파편/무기/방어구/악세서리 list를 표시한다.
+- 장착품 list element를 클릭하면 해당 장착품을 선택하고 중앙 프리뷰에 표시한다.
+- 중앙 패널은 작업 전/후 프리뷰다. 현재 선택 대상, 대상 출처, 선택 작업, 작업 전/후 변화, 소모/획득 재료, 실행 가능/불가능 사유, 실행 전 확인을 표시한다.
+- 대상 출처는 `bag`과 `equipped`를 구분한다. `equipped` 대상은 직원 uuid와 slot kind를 함께 표시한다.
+- 우측 패널은 가방이다. Item Use/Loadout의 슬롯 grid와 scroll 구조를 재사용하되 카테고리는 `스킬 파편`, `무기`, `방어구`, `악세서리` 4종이다.
+- 클릭은 대상 선택과 중앙 프리뷰 갱신만 수행한다. 클릭만으로 분쇄/강화/개화가 실행되면 안 된다.
+- 실제 작업은 중앙 프리뷰의 확인 단계를 거친 뒤 command를 보낸다.
+- 하단 작업 버튼은 `분쇄`, `강화`, `개화` 3개만 둔다.
+- 우하단 `나가기`는 `complete_node`에 매핑된다.
+- 스킬 파편을 분쇄하면 파편 가루를 획득한다.
+- 무기/방어구/악세서리를 분쇄하면 장비 가루를 획득한다.
+- 스킬 파편 강화는 파편 가루를 소비한다.
+- 무기/방어구/악세서리 강화는 장비 가루를 소비한다.
+- 파편 가루와 장비 가루는 서로 독립이다.
+- 개화는 1차 정책에서 스킬 파편 전용 작업이다. 장비 선택 시 개화는 disabled 처리한다.
+- 장착 중인 스킬 파편과 장착 중인 장비도 분쇄할 수 있다. Unity는 경고창/확인 게이트를 제공하고, core는 확인된 command로 보고 자동 해제 후 분쇄한다.
+- 장착 중 대상의 중앙 프리뷰에는 `장착 중`, `분쇄 시 자동 해제됨` 경고가 필요하다.
+- 가방 아이템을 좌측 직원 카드의 호환 슬롯에 drag-and-drop하면 장착 교체를 시도한다.
+- 장착 교체 규칙은 Loadout과 같은 validation을 사용한다.
+- 호환되지 않는 드롭은 command를 보내지 않고 Unity에서 즉시 실패 피드백을 표시한다.
+
+제거된 legacy `maintenance_options` shape:
+
+- `dismantle_equipment_item_uuids`, `enhance_equipment_item_uuids`, `enhancement_recipes`, `dismantle_recipes`, `dismantle_skill_fragment_ids` 같은 list-only 필드는 더 이상 사용하지 않는다.
+- Unity는 아래 typed operation preview shape를 사용한다.
+
+새 Maintenance snapshot/DTO 목표 shape:
+
+```json
+{
+  "items": [
+    {
+      "target_id": "equipment-instance-or-fragment-id",
+      "target_kind": "SkillFragment",
+      "equipment_type": null,
+      "display_name": "Fragment Name",
+      "source": {
+        "type": "equipped",
+        "employee_uuid": "uuid",
+        "slot_kind": "skill_fragment"
+      },
+      "operations": {
+        "dismantle": {
+          "can_execute": true,
+          "disabled_reason": null,
+          "costs": [],
+          "gains": [{ "material_id": "fragment_dust", "amount": 2 }],
+          "before": {},
+          "after": null,
+          "requires_confirm": true,
+          "will_unequip": true,
+          "warnings": ["equipped_item_will_be_unequipped"]
+        },
+        "enhance": {
+          "can_execute": false,
+          "disabled_reason": "not_enough_fragment_dust",
+          "costs": [{ "material_id": "fragment_dust", "amount": 4 }],
+          "gains": [],
+          "before": {},
+          "after": {},
+          "requires_confirm": true,
+          "will_unequip": false,
+          "warnings": []
+        },
+        "awaken": {
+          "can_execute": true,
+          "disabled_reason": null,
+          "costs": [],
+          "gains": [],
+          "before": {},
+          "after": {},
+          "requires_confirm": true,
+          "will_unequip": false,
+          "warnings": []
+        }
+      }
+    }
+  ],
+  "materials": [
+    { "material_id": "fragment_dust", "amount": 12 },
+    { "material_id": "equipment_dust", "amount": 8 }
+  ]
+}
+```
+
+`target_kind`는 `SkillFragment` 또는 `Equipment`다. `equipment_type`은 장비일 때 `Weapon`, `Armor`, `Accessory` 중 하나이며, 스킬 파편일 때는 `null`이다.
+
+`source.type`은 `bag` 또는 `equipped`다. `bag` source는 직원 uuid가 없고, `equipped` source는 장착 직원과 slot kind를 가진다.
+
+Unity는 비용, 결과, 가능 여부를 직접 계산하지 않는다. `operations.*.can_execute`, `disabled_reason`, `costs`, `gains`, `before`, `after`, `requires_confirm`, `will_unequip`, `warnings`를 source of truth로 사용한다.
 
 지원 노드 효과 적용 시점:
 
@@ -1355,7 +1449,7 @@ payload:
 
 장비 장착:
 
-장비 장착/해제는 `ViewingMap`, `NodeConfirm`, Safezone 같은 노드 진입 전 준비 구간에서만 UI로 노출한다. `InBattle`, 전투 결과 처리, Support/Maintenance 내부 작업 결과를 보고 즉석으로 바꾸는 흐름은 만들지 않는다.
+장비 장착/해제는 `ViewingMap`, `NodeConfirm`, Safezone 같은 노드 진입 전 준비 구간에서 UI로 노출한다. Maintenance 내부에서는 정비 편의 기능으로 장착 교체를 허용한다. `InBattle`, 전투 결과 처리, 보상 처리 중에는 전투 결과를 보고 즉석으로 바꾸는 흐름을 만들지 않는다.
 
 ```json
 {
@@ -1450,18 +1544,9 @@ result는 toast/즉시 피드백용이다. 최종 UI 상태는 뒤따르는 `sta
 
 Maintenance 장비 작업:
 
-아래 작업은 Safezone의 간단 정비가 아니라 `Maintenance` Safe Node 내부 작업이다. Unity는 현재 snapshot의 `selected_event.type == "support"`, `support_type == "Maintenance"`, `maintenance_options`와 `allowed_actions`를 확인한 경우에만 노출한다.
+아래 작업은 Safezone의 간단 정비가 아니라 `Maintenance` Safe Node 내부 작업이다. Unity는 현재 snapshot의 `selected_event.type == "maintenance"`, `maintenance_options`와 `allowed_actions`를 확인한 경우에만 노출한다.
 
-```json
-{
-  "type": "command",
-  "request_id": "restore-equipment-1",
-  "behavior": {
-    "type": "restore_equipment",
-    "recipe_id": "recipe_id"
-  }
-}
-```
+UI 표시명은 `분쇄`와 `강화`다. command/result 이름은 core 계약이 refactor되기 전까지 기존 `dismantle_equipment`, `enhance_equipment`, `EquipmentDismantled`, `EquipmentEnhanced`를 사용한다.
 
 ```json
 {
@@ -1488,7 +1573,6 @@ Maintenance 장비 작업:
 Maintenance 장비 result:
 
 ```text
-EquipmentRestored
 EquipmentDismantled
 EquipmentEnhanced
 ```
@@ -1636,19 +1720,22 @@ Unity는 수동 스킬 버튼의 활성화 여부를 `skill_readiness.manual_act
 
 Maintenance 강화:
 
+UI 표시명은 `강화`다. 스킬 파편 강화는 파편 가루를 소비한다. Unity는 비용을 직접 계산하지 않고 `maintenance_options.items[*].operations.enhance.costs`를 표시 source of truth로 사용한다. command payload는 대상 파편 id만 보낸다.
+
 ```json
 {
   "type": "command",
   "request_id": "fragment-upgrade-1",
   "behavior": {
     "type": "upgrade_skill_fragment",
-    "target_fragment_id": "fragment_a",
-    "material_fragment_id": "fragment_b"
+    "target_fragment_id": "fragment_a"
   }
 }
 ```
 
 Maintenance 개화:
+
+UI 표시명은 `개화`다. 1차 정책에서 개화는 스킬 파편 전용 작업이다. 장비 선택 시 중앙 프리뷰와 하단 작업 버튼에서 개화는 disabled 처리한다.
 
 ```json
 {
@@ -1656,13 +1743,14 @@ Maintenance 개화:
   "request_id": "fragment-awaken-1",
   "behavior": {
     "type": "awaken_skill_fragment",
-    "target_fragment_id": "fragment_a",
-    "material_fragment_ids": ["fragment_b", "fragment_c"]
+    "target_fragment_id": "fragment_a"
   }
 }
 ```
 
 Maintenance 분쇄:
+
+UI 표시명은 `분쇄`다. 스킬 파편을 분쇄하면 파편 가루를 획득한다. 장착 중인 스킬 파편도 Unity 확인 게이트 후 자동 해제 + 분쇄할 수 있다.
 
 ```json
 {

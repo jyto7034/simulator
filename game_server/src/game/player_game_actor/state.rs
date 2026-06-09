@@ -1,10 +1,18 @@
 use base64::{engine::general_purpose::STANDARD, Engine as _};
 use flate2::{write::GzEncoder, Compression};
 use game_core::game::{
-    battle::{timeline::Timeline, types::BattleWinner},
-    behavior::{BehaviorResult, GameError},
+    ability::SkillId,
+    battle::{
+        ids::UnitInstanceId,
+        timeline::{Timeline, TimelineEntry},
+        types::BattleWinner,
+    },
+    behavior::{BattlePlaybackState, BehaviorResult, GameError, LiveBattleDeploymentDto},
+    combat_preview::{CombatMissionVariant, CombatNodeType, CombatPreview},
+    data::skill_fragment_data::SkillFragmentId,
     employee::ActiveConsumableModifier,
     resources::InventoryDiffDto,
+    skill_fragment::SkillFragmentProgress,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
@@ -19,6 +27,106 @@ struct ConsumableItemUsedPayload {
     replaced_modifier: Option<ActiveConsumableModifier>,
     applied_modifier: ActiveConsumableModifier,
     inventory_diff: InventoryDiffDto,
+}
+
+#[derive(Debug, Serialize)]
+struct SkillFragmentUpgradedPayload {
+    target_fragment_id: SkillFragmentId,
+    dust_spent: u32,
+    remaining_dust: u32,
+    progress: SkillFragmentProgress,
+}
+
+#[derive(Debug, Serialize)]
+struct SkillFragmentAwakenedPayload {
+    target_fragment_id: SkillFragmentId,
+    dust_spent: u32,
+    remaining_dust: u32,
+    progress: SkillFragmentProgress,
+}
+
+#[derive(Debug, Serialize)]
+struct BattleAdvancedPayload {
+    battle_uuid: uuid::Uuid,
+    encounter_id: String,
+    node_type: CombatNodeType,
+    mission_variant: CombatMissionVariant,
+    playback: BattlePlaybackState,
+    battle_time_ms: u64,
+    timeline_delta: Vec<TimelineEntry>,
+    last_timeline_seq: u64,
+    finished: bool,
+    deployment: Option<LiveBattleDeploymentDto>,
+}
+
+#[derive(Debug, Serialize)]
+struct BattleStatePayload {
+    battle_uuid: uuid::Uuid,
+    node_type: CombatNodeType,
+    mission_variant: CombatMissionVariant,
+    encounter_id: String,
+    combat_preview: CombatPreview,
+    playback: BattlePlaybackState,
+    battle_time_ms: u64,
+    timeline_delta: Vec<TimelineEntry>,
+    last_timeline_seq: u64,
+    finished: bool,
+    deployment: Option<LiveBattleDeploymentDto>,
+}
+
+#[derive(Debug, Serialize)]
+struct BattlePlaybackChangedPayload {
+    battle_uuid: uuid::Uuid,
+    encounter_id: String,
+    node_type: CombatNodeType,
+    mission_variant: CombatMissionVariant,
+    playback: BattlePlaybackState,
+    battle_time_ms: u64,
+    last_timeline_seq: u64,
+    deployment: Option<LiveBattleDeploymentDto>,
+}
+
+#[derive(Debug, Serialize)]
+struct BattleUnitDeployedPayload {
+    battle_uuid: uuid::Uuid,
+    encounter_id: String,
+    node_type: CombatNodeType,
+    mission_variant: CombatMissionVariant,
+    playback: BattlePlaybackState,
+    employee_uuid: uuid::Uuid,
+    unit_instance_id: UnitInstanceId,
+    timeline_delta: Vec<TimelineEntry>,
+    last_timeline_seq: u64,
+    deployment: LiveBattleDeploymentDto,
+}
+
+#[derive(Debug, Serialize)]
+struct BattleUnitWithdrawnPayload {
+    battle_uuid: uuid::Uuid,
+    encounter_id: String,
+    node_type: CombatNodeType,
+    mission_variant: CombatMissionVariant,
+    playback: BattlePlaybackState,
+    employee_uuid: uuid::Uuid,
+    unit_instance_id: UnitInstanceId,
+    timeline_delta: Vec<TimelineEntry>,
+    last_timeline_seq: u64,
+    deployment: LiveBattleDeploymentDto,
+}
+
+#[derive(Debug, Serialize)]
+struct BattleSkillActivatedPayload {
+    battle_uuid: uuid::Uuid,
+    encounter_id: String,
+    node_type: CombatNodeType,
+    mission_variant: CombatMissionVariant,
+    playback: BattlePlaybackState,
+    employee_uuid: uuid::Uuid,
+    unit_instance_id: UnitInstanceId,
+    skill_id: SkillId,
+    timeline_delta: Vec<TimelineEntry>,
+    last_timeline_seq: u64,
+    deployment: LiveBattleDeploymentDto,
 }
 
 #[derive(Debug, Clone)]
@@ -258,7 +366,6 @@ pub(crate) fn behavior_result_payload(
             target_candidates,
             selected_employee_uuid,
             selected_medical_treatment,
-            maintenance_options,
             research_deliveries,
         } => (
             "SupportState",
@@ -271,6 +378,17 @@ pub(crate) fn behavior_result_payload(
                 "target_candidates": target_candidates,
                 "selected_employee_uuid": selected_employee_uuid,
                 "selected_medical_treatment": selected_medical_treatment,
+                "research_deliveries": research_deliveries,
+            }),
+        ),
+        BehaviorResult::MaintenanceState {
+            node_id,
+            maintenance_options,
+            research_deliveries,
+        } => (
+            "MaintenanceState",
+            json!({
+                "node_id": node_id,
                 "maintenance_options": maintenance_options,
                 "research_deliveries": research_deliveries,
             }),
@@ -350,28 +468,38 @@ pub(crate) fn behavior_result_payload(
         ),
         BehaviorResult::SkillFragmentUpgraded {
             target_fragment_id,
-            material_fragment_id,
-            material_remaining_count,
+            dust_spent,
+            remaining_dust,
             progress,
-        } => (
-            "SkillFragmentUpgraded",
-            json!({
-                "target_fragment_id": target_fragment_id,
-                "material_fragment_id": material_fragment_id,
-                "material_remaining_count": material_remaining_count,
-                "progress": progress,
-            }),
-        ),
+        } => {
+            let payload = SkillFragmentUpgradedPayload {
+                target_fragment_id,
+                dust_spent,
+                remaining_dust,
+                progress,
+            };
+            (
+                "SkillFragmentUpgraded",
+                serde_json::to_value(payload).map_err(serialize_error)?,
+            )
+        }
         BehaviorResult::SkillFragmentAwakened {
             target_fragment_id,
+            dust_spent,
+            remaining_dust,
             progress,
-        } => (
-            "SkillFragmentAwakened",
-            json!({
-                "target_fragment_id": target_fragment_id,
-                "progress": progress,
-            }),
-        ),
+        } => {
+            let payload = SkillFragmentAwakenedPayload {
+                target_fragment_id,
+                dust_spent,
+                remaining_dust,
+                progress,
+            };
+            (
+                "SkillFragmentAwakened",
+                serde_json::to_value(payload).map_err(serialize_error)?,
+            )
+        }
         BehaviorResult::SkillFragmentDismantled {
             fragment_id,
             remaining_count,
@@ -384,18 +512,6 @@ pub(crate) fn behavior_result_payload(
                 "remaining_count": remaining_count,
                 "dust_gained": dust_gained,
                 "total_dust": total_dust,
-            }),
-        ),
-        BehaviorResult::EquipmentRestored {
-            recipe_id,
-            result_equipment_id,
-            inventory_diff,
-        } => (
-            "EquipmentRestored",
-            json!({
-                "recipe_id": recipe_id,
-                "result_equipment_id": result_equipment_id,
-                "inventory_diff": inventory_diff,
             }),
         ),
         BehaviorResult::EquipmentDismantled {
@@ -540,21 +656,24 @@ pub(crate) fn behavior_result_payload(
             last_timeline_seq,
             finished,
             deployment,
-        } => (
-            "BattleAdvanced",
-            json!({
-                "battle_uuid": battle_uuid,
-                "encounter_id": encounter_id,
-                "node_type": node_type,
-                "mission_variant": mission_variant,
-                "playback": playback,
-                "battle_time_ms": battle_time_ms,
-                "timeline_delta": timeline_delta,
-                "last_timeline_seq": last_timeline_seq,
-                "finished": finished,
-                "deployment": deployment,
-            }),
-        ),
+        } => {
+            let payload = BattleAdvancedPayload {
+                battle_uuid,
+                encounter_id,
+                node_type,
+                mission_variant,
+                playback,
+                battle_time_ms,
+                timeline_delta,
+                last_timeline_seq,
+                finished,
+                deployment,
+            };
+            (
+                "BattleAdvanced",
+                serde_json::to_value(payload).map_err(serialize_error)?,
+            )
+        }
         BehaviorResult::BattleState {
             battle_uuid,
             node_type,
@@ -567,22 +686,25 @@ pub(crate) fn behavior_result_payload(
             last_timeline_seq,
             finished,
             deployment,
-        } => (
-            "BattleState",
-            json!({
-                "battle_uuid": battle_uuid,
-                "node_type": node_type,
-                "mission_variant": mission_variant,
-                "encounter_id": encounter_id,
-                "combat_preview": combat_preview,
-                "playback": playback,
-                "battle_time_ms": battle_time_ms,
-                "timeline_delta": timeline_delta,
-                "last_timeline_seq": last_timeline_seq,
-                "finished": finished,
-                "deployment": deployment,
-            }),
-        ),
+        } => {
+            let payload = BattleStatePayload {
+                battle_uuid,
+                node_type,
+                mission_variant,
+                encounter_id,
+                combat_preview,
+                playback,
+                battle_time_ms,
+                timeline_delta,
+                last_timeline_seq,
+                finished,
+                deployment,
+            };
+            (
+                "BattleState",
+                serde_json::to_value(payload).map_err(serialize_error)?,
+            )
+        }
         BehaviorResult::BattlePlaybackChanged {
             battle_uuid,
             encounter_id,
@@ -592,19 +714,22 @@ pub(crate) fn behavior_result_payload(
             battle_time_ms,
             last_timeline_seq,
             deployment,
-        } => (
-            "BattlePlaybackChanged",
-            json!({
-                "battle_uuid": battle_uuid,
-                "encounter_id": encounter_id,
-                "node_type": node_type,
-                "mission_variant": mission_variant,
-                "playback": playback,
-                "battle_time_ms": battle_time_ms,
-                "last_timeline_seq": last_timeline_seq,
-                "deployment": deployment,
-            }),
-        ),
+        } => {
+            let payload = BattlePlaybackChangedPayload {
+                battle_uuid,
+                encounter_id,
+                node_type,
+                mission_variant,
+                playback,
+                battle_time_ms,
+                last_timeline_seq,
+                deployment,
+            };
+            (
+                "BattlePlaybackChanged",
+                serde_json::to_value(payload).map_err(serialize_error)?,
+            )
+        }
         BehaviorResult::BattleUnitDeployed {
             battle_uuid,
             encounter_id,
@@ -616,21 +741,24 @@ pub(crate) fn behavior_result_payload(
             timeline_delta,
             last_timeline_seq,
             deployment,
-        } => (
-            "BattleUnitDeployed",
-            json!({
-                "battle_uuid": battle_uuid,
-                "encounter_id": encounter_id,
-                "node_type": node_type,
-                "mission_variant": mission_variant,
-                "playback": playback,
-                "employee_uuid": employee_uuid,
-                "unit_instance_id": unit_instance_id,
-                "timeline_delta": timeline_delta,
-                "last_timeline_seq": last_timeline_seq,
-                "deployment": deployment,
-            }),
-        ),
+        } => {
+            let payload = BattleUnitDeployedPayload {
+                battle_uuid,
+                encounter_id,
+                node_type,
+                mission_variant,
+                playback,
+                employee_uuid,
+                unit_instance_id,
+                timeline_delta,
+                last_timeline_seq,
+                deployment,
+            };
+            (
+                "BattleUnitDeployed",
+                serde_json::to_value(payload).map_err(serialize_error)?,
+            )
+        }
         BehaviorResult::BattleUnitWithdrawn {
             battle_uuid,
             encounter_id,
@@ -642,21 +770,24 @@ pub(crate) fn behavior_result_payload(
             timeline_delta,
             last_timeline_seq,
             deployment,
-        } => (
-            "BattleUnitWithdrawn",
-            json!({
-                "battle_uuid": battle_uuid,
-                "encounter_id": encounter_id,
-                "node_type": node_type,
-                "mission_variant": mission_variant,
-                "playback": playback,
-                "employee_uuid": employee_uuid,
-                "unit_instance_id": unit_instance_id,
-                "timeline_delta": timeline_delta,
-                "last_timeline_seq": last_timeline_seq,
-                "deployment": deployment,
-            }),
-        ),
+        } => {
+            let payload = BattleUnitWithdrawnPayload {
+                battle_uuid,
+                encounter_id,
+                node_type,
+                mission_variant,
+                playback,
+                employee_uuid,
+                unit_instance_id,
+                timeline_delta,
+                last_timeline_seq,
+                deployment,
+            };
+            (
+                "BattleUnitWithdrawn",
+                serde_json::to_value(payload).map_err(serialize_error)?,
+            )
+        }
         BehaviorResult::BattleSkillActivated {
             battle_uuid,
             encounter_id,
@@ -669,22 +800,25 @@ pub(crate) fn behavior_result_payload(
             timeline_delta,
             last_timeline_seq,
             deployment,
-        } => (
-            "BattleSkillActivated",
-            json!({
-                "battle_uuid": battle_uuid,
-                "encounter_id": encounter_id,
-                "node_type": node_type,
-                "mission_variant": mission_variant,
-                "playback": playback,
-                "employee_uuid": employee_uuid,
-                "unit_instance_id": unit_instance_id,
-                "skill_id": skill_id,
-                "timeline_delta": timeline_delta,
-                "last_timeline_seq": last_timeline_seq,
-                "deployment": deployment,
-            }),
-        ),
+        } => {
+            let payload = BattleSkillActivatedPayload {
+                battle_uuid,
+                encounter_id,
+                node_type,
+                mission_variant,
+                playback,
+                employee_uuid,
+                unit_instance_id,
+                skill_id,
+                timeline_delta,
+                last_timeline_seq,
+                deployment,
+            };
+            (
+                "BattleSkillActivated",
+                serde_json::to_value(payload).map_err(serialize_error)?,
+            )
+        }
         BehaviorResult::RewardState {
             mode,
             rewards,
@@ -713,9 +847,21 @@ fn serialize_error(error: serde_json::Error) -> PlayerGameActorError {
 mod tests {
     use super::*;
     use game_core::game::{
-        battle::{ids::UnitInstanceId, tile_range::FacingDirection},
-        behavior::{BattlePlaybackState, LiveBattleDeployedUnitDto, LiveBattleDeploymentDto},
+        battle::{
+            core::movement::types::TimelineVec2,
+            damage::{DamageFeedbackTag, DamageSource, DamageType},
+            ids::UnitInstanceId,
+            tile_range::FacingDirection,
+            timeline::{HpChangeReason, TimelineCause, TimelineEntry, TimelineEvent},
+            types::{BattleUnitRole, MobilityKind},
+        },
+        behavior::{
+            BattlePlaybackState, LiveBattleDeployedUnitDto, LiveBattleDeploymentDto,
+            LiveBattleUnitDeployCostDto,
+        },
         combat_preview::{CombatMissionVariant, CombatNodeType},
+        enums::Side,
+        stats::UnitStats,
     };
     use uuid::Uuid;
 
@@ -746,6 +892,79 @@ mod tests {
     }
 
     #[test]
+    fn battle_advanced_payload_preserves_timeline_contract_fields() {
+        let source = UnitInstanceId(Uuid::from_u128(0xA11CE));
+        let target = UnitInstanceId(Uuid::from_u128(0xB0B));
+        let (result_type, payload) = behavior_result_payload(BehaviorResult::BattleAdvanced {
+            battle_uuid: Uuid::from_u128(0xB4771E),
+            encounter_id: "airborne_damage_contract".to_string(),
+            node_type: CombatNodeType::Defense,
+            mission_variant: CombatMissionVariant::Defense,
+            playback: BattlePlaybackState::default(),
+            battle_time_ms: 4_000,
+            timeline_delta: vec![
+                TimelineEntry {
+                    time_ms: 100,
+                    seq: 1,
+                    cause: TimelineCause::default(),
+                    event: TimelineEvent::UnitSpawned {
+                        unit_instance_id: target,
+                        owner: Side::Opponent,
+                        role: BattleUnitRole::Combatant,
+                        mobility_kind: MobilityKind::Airborne,
+                        base_uuid: Uuid::from_u128(0xABCD),
+                        world_position: TimelineVec2::default(),
+                        stats: UnitStats::default(),
+                    },
+                },
+                TimelineEntry {
+                    time_ms: 200,
+                    seq: 2,
+                    cause: TimelineCause::default(),
+                    event: TimelineEvent::HpChanged {
+                        source_instance_id: Some(source),
+                        target_instance_id: target,
+                        delta: -10,
+                        hp_before: 100,
+                        hp_after: 90,
+                        reason: HpChangeReason::Command,
+                        damage_source: Some(DamageSource::Ability),
+                        damage_type: Some(DamageType::Physical),
+                        raw_damage: Some(20),
+                        final_damage: Some(10),
+                        damage_breakdown: None,
+                        critical: Some(true),
+                        feedback_tags: vec![
+                            DamageFeedbackTag::Critical,
+                            DamageFeedbackTag::Mitigated,
+                        ],
+                    },
+                },
+            ],
+            last_timeline_seq: 2,
+            finished: false,
+            deployment: None,
+        })
+        .expect("battle advanced result should serialize timeline contract fields");
+
+        assert_eq!(result_type, "BattleAdvanced");
+        assert_eq!(payload["timeline_delta"][0]["event"]["type"], "UnitSpawned");
+        assert_eq!(
+            payload["timeline_delta"][0]["event"]["mobility_kind"],
+            "airborne"
+        );
+        assert_eq!(payload["timeline_delta"][1]["event"]["type"], "HpChanged");
+        assert_eq!(
+            payload["timeline_delta"][1]["event"]["damage_type"],
+            "Physical"
+        );
+        assert_eq!(
+            payload["timeline_delta"][1]["event"]["feedback_tags"],
+            serde_json::json!(["critical", "mitigated"])
+        );
+    }
+
+    #[test]
     fn live_deployment_command_payloads_preserve_mission_identity() {
         let deployment = LiveBattleDeploymentDto {
             battle_time_ms: 1_000,
@@ -753,6 +972,11 @@ mod tests {
             max_cost: 30,
             base_deploy_cost: 10,
             cost_per_second: 1,
+            unit_deploy_costs: vec![LiveBattleUnitDeployCostDto {
+                employee_uuid: Uuid::from_u128(0xEFFE_C7),
+                base_deploy_cost: 10,
+                effective_deploy_cost: 7,
+            }],
             deployed_units: vec![LiveBattleDeployedUnitDto {
                 employee_uuid: Uuid::from_u128(0xEFFE_C7),
                 unit_instance_id: UnitInstanceId(Uuid::from_u128(0xD3F3_0001)),
@@ -785,6 +1009,18 @@ mod tests {
             payload["deployment"]["deployed_units"][0]["facing"],
             "right"
         );
+        assert_eq!(
+            payload["deployment"]["unit_deploy_costs"][0]["employee_uuid"],
+            "00000000-0000-0000-0000-000000effec7"
+        );
+        assert_eq!(
+            payload["deployment"]["unit_deploy_costs"][0]["base_deploy_cost"],
+            10
+        );
+        assert_eq!(
+            payload["deployment"]["unit_deploy_costs"][0]["effective_deploy_cost"],
+            7
+        );
 
         let deployment = LiveBattleDeploymentDto {
             battle_time_ms: 2_000,
@@ -792,6 +1028,11 @@ mod tests {
             max_cost: 30,
             base_deploy_cost: 10,
             cost_per_second: 1,
+            unit_deploy_costs: vec![LiveBattleUnitDeployCostDto {
+                employee_uuid: Uuid::from_u128(0xEFFE_C7),
+                base_deploy_cost: 10,
+                effective_deploy_cost: 10,
+            }],
             deployed_units: Vec::new(),
             redeploying_units: Vec::new(),
         };
@@ -815,5 +1056,9 @@ mod tests {
         assert_eq!(payload["mission_variant"], "Encirclement");
         assert_eq!(payload["last_timeline_seq"], 22);
         assert_eq!(payload["deployment"]["battle_time_ms"], 2_000);
+        assert_eq!(
+            payload["deployment"]["unit_deploy_costs"][0]["effective_deploy_cost"],
+            10
+        );
     }
 }

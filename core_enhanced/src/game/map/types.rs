@@ -30,6 +30,7 @@ pub enum MapNodeCategory {
     Start,
     Combat,
     Support,
+    Maintenance,
     HeadquartersContact,
     Shop,
     Boss,
@@ -51,7 +52,6 @@ fn default_headquarters_candidate_count() -> usize {
 pub enum SupportNodeType {
     Medical,
     Rest,
-    Maintenance,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -82,6 +82,7 @@ pub enum MapNodePayload {
         #[serde(default)]
         choices: Vec<SupportNodeType>,
     },
+    Maintenance,
     HeadquartersContact {
         shop_pool_id: Option<String>,
         #[serde(default = "default_headquarters_candidate_count")]
