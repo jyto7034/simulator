@@ -1,9 +1,10 @@
-use super::{GameCore, RUN_SYSTEM_POLICY};
+use super::GameCore;
 use crate::game::behavior::{BehaviorResult, GameError};
 use crate::game::employee::Employee;
 use crate::game::enums::ShopEventOption;
-use crate::game::map::{MapNodePayload, NodeSessionKind};
-use crate::game::resources::{ActiveNodeContent, GameState, InventoryDiffDto};
+use crate::game::map::{MapNodeCategory, MapNodePayload};
+use crate::game::resources::{ActiveNodeContent, GameState};
+use crate::game::reward::RewardEffect;
 
 impl GameCore {
     fn current_headquarters_contact(
@@ -12,7 +13,7 @@ impl GameCore {
         let Some(node_session) = self.state.node_session.as_ref() else {
             return Err(GameError::InvalidAction);
         };
-        if node_session.session_kind != NodeSessionKind::HeadquartersContact {
+        if node_session.category != MapNodeCategory::HeadquartersContact {
             return Err(GameError::InvalidAction);
         }
         let selected = self
@@ -55,18 +56,16 @@ impl GameCore {
         &mut self,
     ) -> Result<BehaviorResult, GameError> {
         let _headquarters = self.current_headquarters_contact()?;
-        self.state.enkephalin.amount = self
-            .state
-            .enkephalin
-            .amount
-            .saturating_add(RUN_SYSTEM_POLICY.headquarters.emergency_enkephalin);
+        let emergency_enkephalin = self.run_policy().headquarters.emergency_enkephalin;
+        let granted = self.apply_grant_effects(&[RewardEffect::GrantEnkephalin {
+            amount: emergency_enkephalin,
+        }])?;
         let enkephalin = self.state.enkephalin.amount;
-        let inventory_diff = InventoryDiffDto::default();
 
         let completion = self.complete_headquarters_contact_node()?;
         Ok(BehaviorResult::EmergencySuppliesGranted {
             enkephalin,
-            inventory_diff,
+            inventory_diff: granted.inventory_diff,
             completion: Box::new(completion),
         })
     }

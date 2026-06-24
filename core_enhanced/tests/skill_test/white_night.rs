@@ -86,7 +86,7 @@ fn white_night_heals_and_buffs_allies_before_judging_enemies() {
 
     assert_eq!(
         target_unit_ids(&healing_hp_changes_caused_by(
-            result.timeline(),
+            result.event_log(),
             steps[0].seq
         ))
         .into_iter()
@@ -95,24 +95,24 @@ fn white_night_heals_and_buffs_allies_before_judging_enemies() {
     );
     assert_eq!(
         hp_deltas(&healing_hp_changes_caused_by(
-            result.timeline(),
+            result.event_log(),
             steps[0].seq
         )),
         vec![55, 55, 55]
     );
     assert_eq!(
-        target_unit_ids(&stat_changes_caused_by(result.timeline(), steps[1].seq))
+        target_unit_ids(&stat_changes_caused_by(result.event_log(), steps[1].seq))
             .into_iter()
             .collect::<HashSet<_>>(),
         ally_targets
     );
     assert_eq!(
-        stat_modifier_summaries(&stat_changes_caused_by(result.timeline(), steps[1].seq)),
+        stat_modifier_summaries(&stat_changes_caused_by(result.event_log(), steps[1].seq)),
         vec![(StatId::Attack, StatModifierKind::Percent, 20); 3]
     );
     assert_eq!(
         target_unit_ids(&damage_hp_changes_caused_by(
-            result.timeline(),
+            result.event_log(),
             steps[2].seq
         ))
         .into_iter()
@@ -121,7 +121,7 @@ fn white_night_heals_and_buffs_allies_before_judging_enemies() {
     );
     assert_eq!(
         hp_deltas(&damage_hp_changes_caused_by(
-            result.timeline(),
+            result.event_log(),
             steps[2].seq
         )),
         vec![-28, -28, -28]

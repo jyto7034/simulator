@@ -5,8 +5,8 @@ use crate::{
     game::{
         battle::{
             core::{ActiveMovementSegment, BattleCore},
+            event_log::BattleLogEvent,
             ids::UnitInstanceId,
-            timeline::TimelineEvent,
         },
         enums::Side,
     },
@@ -15,7 +15,7 @@ use crate::{
 use super::{
     rapier_backend::RapierMovementWorld,
     steering,
-    types::{MovementGoal, TimelineVec2, UnitBody, WorldVec2},
+    types::{MovementGoal, UnitBody, WorldVec2},
     MovementSegmentEndKind,
 };
 
@@ -217,124 +217,208 @@ impl DirectContinuousMovement {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
-struct MovementCandidate {
+pub(super) trait ContinuousMovementResolver {
+    fn prepare_tick(
+        &mut self,
+        _units: &[MovementUnitInput],
+        _static_obstacles: &[MovementStaticObstacle],
+    ) {
+    }
+
+    fn corrected_position(
+        &mut self,
+        unit: &MovementUnitInput,
+        desired_to: WorldVec2,
+        board_width_units: f32,
+        board_height_units: f32,
+        static_obstacles: &[MovementStaticObstacle],
+        dt_seconds: f32,
+    ) -> WorldVec2;
+
+    fn apply_position(&mut self, _unit_id: UnitInstanceId, _position: WorldVec2) {}
+}
+
+pub(super) fn run_continuous_movement_tick(
+    resolver: &mut impl ContinuousMovementResolver,
+    input: MovementTickInput,
+) -> MovementTickResult {
+    let MovementTickInput {
+        now_ms: _,
+        dt_ms,
+        board_width_units,
+        board_height_units,
+        mut units,
+        static_obstacles,
+    } = input;
+
+    canonicalize_movement_units(&mut units);
+    resolver.prepare_tick(&units, &static_obstacles);
+
+    let mut outputs = Vec::new();
+    let dt_seconds = dt_ms as f32 / 1_000.0;
+
+    for unit in &units {
+        if unit.is_dead {
+            outputs.push(MovementOutput::MovementStopped {
+                unit_id: unit.unit_id,
+                position: unit.body.position,
+                reason: MovementStopReasonContinuous::Dead,
+            });
+            continue;
+        }
+
+        if !unit.can_move {
+            resolver.apply_position(unit.unit_id, unit.body.position);
+            push_body_moved_if_changed(
+                &mut outputs,
+                unit.unit_id,
+                unit.body.position,
+                unit.body.position,
+                dt_seconds,
+            );
+            outputs.push(MovementOutput::MovementStopped {
+                unit_id: unit.unit_id,
+                position: unit.body.position,
+                reason: MovementStopReasonContinuous::MovementLocked,
+            });
+            continue;
+        }
+
+        if let Some(reached) = steering::reached_goal(unit, &units) {
+            resolver.apply_position(unit.unit_id, unit.body.position);
+            push_body_moved_if_changed(
+                &mut outputs,
+                unit.unit_id,
+                unit.body.position,
+                unit.body.position,
+                dt_seconds,
+            );
+            outputs.push(reached);
+            continue;
+        }
+
+        let Some(target) = steering::goal_target_position(unit, &units) else {
+            resolver.apply_position(unit.unit_id, unit.body.position);
+            push_body_moved_if_changed(
+                &mut outputs,
+                unit.unit_id,
+                unit.body.position,
+                unit.body.position,
+                dt_seconds,
+            );
+            outputs.push(MovementOutput::MovementStopped {
+                unit_id: unit.unit_id,
+                position: unit.body.position,
+                reason: MovementStopReasonContinuous::NoGoal,
+            });
+            continue;
+        };
+
+        let displacement = steering::steered_displacement(unit, target, dt_seconds);
+        let desired_to = DirectContinuousMovement::clamp_to_board(
+            unit.body.position + displacement,
+            unit.body.radius,
+            board_width_units,
+            board_height_units,
+        );
+        let to = resolver.corrected_position(
+            unit,
+            desired_to,
+            board_width_units,
+            board_height_units,
+            &static_obstacles,
+            dt_seconds,
+        );
+        resolver.apply_position(unit.unit_id, to);
+
+        if (to - unit.body.position).length_squared() <= f32::EPSILON {
+            push_body_moved_if_changed(
+                &mut outputs,
+                unit.unit_id,
+                unit.body.position,
+                to,
+                dt_seconds,
+            );
+            if unit.terrain_policy.applies_static_obstacles()
+                && !static_obstacles.is_empty()
+                && (desired_to - unit.body.position).length_squared() > f32::EPSILON
+            {
+                outputs.push(MovementOutput::MovementStopped {
+                    unit_id: unit.unit_id,
+                    position: to,
+                    reason: MovementStopReasonContinuous::StaticObstacleBlocked,
+                });
+            }
+            continue;
+        }
+
+        push_body_moved_if_changed(
+            &mut outputs,
+            unit.unit_id,
+            unit.body.position,
+            to,
+            dt_seconds,
+        );
+    }
+
+    MovementTickResult { outputs }
+}
+
+fn push_body_moved_if_changed(
+    outputs: &mut Vec<MovementOutput>,
     unit_id: UnitInstanceId,
     from: WorldVec2,
-    desired_to: WorldVec2,
     to: WorldVec2,
-    radius: f32,
-    terrain_policy: MovementTerrainPolicy,
+    dt_seconds: f32,
+) {
+    if (to - from).length_squared() <= f32::EPSILON {
+        return;
+    }
+
+    outputs.push(MovementOutput::BodyMoved {
+        unit_id,
+        from,
+        to,
+        velocity: steering::movement_velocity(from, to, dt_seconds),
+    });
 }
 
 impl MovementEngine for DirectContinuousMovement {
     fn tick(&mut self, input: MovementTickInput) -> MovementTickResult {
-        let mut outputs = Vec::new();
-        let mut candidates = Vec::new();
-        let dt_seconds = input.dt_ms as f32 / 1_000.0;
-        let mut units = input.units;
-        canonicalize_movement_units(&mut units);
+        run_continuous_movement_tick(self, input)
+    }
+}
 
-        for unit in &units {
-            if unit.is_dead {
-                outputs.push(MovementOutput::MovementStopped {
-                    unit_id: unit.unit_id,
-                    position: unit.body.position,
-                    reason: MovementStopReasonContinuous::Dead,
-                });
-                continue;
-            }
-
-            if !unit.can_move {
-                outputs.push(MovementOutput::MovementStopped {
-                    unit_id: unit.unit_id,
-                    position: unit.body.position,
-                    reason: MovementStopReasonContinuous::MovementLocked,
-                });
-                continue;
-            }
-
-            if let Some(reached) = steering::reached_goal(unit, &units) {
-                outputs.push(reached);
-                continue;
-            }
-
-            let Some(target) = steering::goal_target_position(unit, &units) else {
-                outputs.push(MovementOutput::MovementStopped {
-                    unit_id: unit.unit_id,
-                    position: unit.body.position,
-                    reason: MovementStopReasonContinuous::NoGoal,
-                });
-                continue;
-            };
-
-            let displacement = steering::steered_displacement(unit, target, dt_seconds);
-            let desired_to = Self::clamp_to_board(
-                unit.body.position + displacement,
-                unit.body.radius,
-                input.board_width_units,
-                input.board_height_units,
-            );
-            let to = if unit.terrain_policy.applies_static_obstacles() {
-                Self::resolve_static_obstacles(
-                    unit.body.position,
-                    desired_to,
-                    unit.body.radius,
-                    &input.static_obstacles,
-                    input.board_width_units,
-                    input.board_height_units,
-                )
-            } else {
-                desired_to
-            };
-
-            candidates.push(MovementCandidate {
-                unit_id: unit.unit_id,
-                from: unit.body.position,
-                desired_to,
-                to,
-                radius: unit.body.radius,
-                terrain_policy: unit.terrain_policy,
-            });
+impl ContinuousMovementResolver for DirectContinuousMovement {
+    fn corrected_position(
+        &mut self,
+        unit: &MovementUnitInput,
+        desired_to: WorldVec2,
+        board_width_units: f32,
+        board_height_units: f32,
+        static_obstacles: &[MovementStaticObstacle],
+        _dt_seconds: f32,
+    ) -> WorldVec2 {
+        if !unit.terrain_policy.applies_static_obstacles() {
+            return desired_to;
         }
 
-        for candidate in &mut candidates {
-            if candidate.terrain_policy.applies_static_obstacles() {
-                candidate.to = Self::resolve_static_obstacles(
-                    candidate.from,
-                    candidate.to,
-                    candidate.radius,
-                    &input.static_obstacles,
-                    input.board_width_units,
-                    input.board_height_units,
-                );
-            }
-        }
-
-        for candidate in candidates {
-            let velocity = steering::movement_velocity(candidate.from, candidate.to, dt_seconds);
-            if (candidate.to - candidate.from).length_squared() <= f32::EPSILON {
-                if candidate.terrain_policy.applies_static_obstacles()
-                    && !input.static_obstacles.is_empty()
-                    && (candidate.desired_to - candidate.from).length_squared() > f32::EPSILON
-                {
-                    outputs.push(MovementOutput::MovementStopped {
-                        unit_id: candidate.unit_id,
-                        position: candidate.from,
-                        reason: MovementStopReasonContinuous::StaticObstacleBlocked,
-                    });
-                }
-                continue;
-            }
-            outputs.push(MovementOutput::BodyMoved {
-                unit_id: candidate.unit_id,
-                from: candidate.from,
-                to: candidate.to,
-                velocity,
-            });
-        }
-
-        MovementTickResult { outputs }
+        let first_pass = Self::resolve_static_obstacles(
+            unit.body.position,
+            desired_to,
+            unit.body.radius,
+            static_obstacles,
+            board_width_units,
+            board_height_units,
+        );
+        Self::resolve_static_obstacles(
+            unit.body.position,
+            first_pass,
+            unit.body.radius,
+            static_obstacles,
+            board_width_units,
+            board_height_units,
+        )
     }
 }
 
@@ -446,50 +530,20 @@ impl BattleCore {
         self.movement_backend = ContinuousMovementBackend::Rapier(RapierMovementWorld::default());
     }
 
-    fn record_or_extend_continuous_movement_segment(
+    fn record_continuous_movement_segment(
         &mut self,
         time_ms: u64,
         dt_ms: u64,
         unit_id: UnitInstanceId,
         from: WorldVec2,
         to: WorldVec2,
-        velocity: TimelineVec2,
     ) {
         let ends_at_ms = time_ms.saturating_add(dt_ms);
         let target = to.quantized_milli();
 
-        if let Some(active) = self.active_movement_segments.get(&unit_id).copied() {
-            if active.velocity == velocity {
-                if let Some(entry) = self.timeline.entries.get_mut(active.timeline_index) {
-                    if let TimelineEvent::MovementSegmentStarted {
-                        unit_instance_id,
-                        target: segment_target,
-                        ends_at_ms: segment_ends_at_ms,
-                        ..
-                    } = &mut entry.event
-                    {
-                        if *unit_instance_id == unit_id && *segment_ends_at_ms == time_ms {
-                            *segment_target = target;
-                            *segment_ends_at_ms = ends_at_ms;
-                            self.active_movement_segments.insert(
-                                unit_id,
-                                ActiveMovementSegment {
-                                    target: to,
-                                    ends_at_ms,
-                                    ..active
-                                },
-                            );
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-
-        let timeline_index = self.timeline.entries.len();
-        self.record_timeline(
+        self.record_event_log(
             time_ms,
-            TimelineEvent::MovementSegmentStarted {
+            BattleLogEvent::MovementSegmentStarted {
                 unit_instance_id: unit_id,
                 start: from.quantized_milli(),
                 target,
@@ -501,8 +555,6 @@ impl BattleCore {
         self.active_movement_segments.insert(
             unit_id,
             ActiveMovementSegment {
-                timeline_index,
-                velocity,
                 start: from,
                 target: to,
                 started_at_ms: time_ms,
@@ -521,7 +573,7 @@ impl BattleCore {
         dt_ms: u64,
     ) -> MovementTickResult {
         self.refresh_block_state();
-        let goals = self.build_continuous_attack_goals_from_current_block_state();
+        let goals = self.build_continuous_attack_goals_from_current_block_state(now_ms);
         self.run_continuous_movement_tick(now_ms, dt_ms, &goals)
     }
 
@@ -545,6 +597,9 @@ impl BattleCore {
                 let mut body = unit.movement_body_view();
                 body.goal = goals.get(&unit_id).copied();
                 let is_blocked = self.blocked_by(unit_id).is_some();
+                let hard_cc_blocked = self
+                    .active_hard_cc_release_time_ms(unit_id, now_ms)
+                    .is_some();
                 Some(MovementUnitInput {
                     unit_id,
                     owner: unit.owner,
@@ -556,7 +611,10 @@ impl BattleCore {
                     },
                     current_target: unit.current_target,
                     attack_range_units: unit.basic_attack.range_units.max(0.0),
-                    can_move: unit.action_locks.can_move(now_ms) && unit.can_move() && !is_blocked,
+                    can_move: unit.action_locks.can_move(now_ms)
+                        && unit.can_move()
+                        && !is_blocked
+                        && !hard_cc_blocked,
                     is_dead: unit.is_dead(),
                 })
             })
@@ -603,19 +661,25 @@ impl BattleCore {
                     velocity,
                 } => {
                     if let Some(unit) = self.units.get(&unit_id) {
+                        let owner = unit.owner;
                         let mut body = unit.movement_body_view();
                         body.previous_position = from;
                         body.position = to;
                         body.velocity = velocity;
                         self.apply_unit_body_position(unit_id, &body);
-                        self.record_or_extend_continuous_movement_segment(
-                            time_ms,
-                            dt_ms,
-                            unit_id,
-                            from,
-                            to,
-                            velocity.quantized_milli(),
-                        );
+                        if owner == Side::Opponent {
+                            if let Some(facing) =
+                                crate::game::battle::tile_range::FacingDirection::from_delta(
+                                    to.x - from.x,
+                                    to.y - from.y,
+                                )
+                            {
+                                if let Some(unit) = self.units.get_mut(&unit_id) {
+                                    unit.facing_direction = Some(facing);
+                                }
+                            }
+                        }
+                        self.record_continuous_movement_segment(time_ms, dt_ms, unit_id, from, to);
                     }
                 }
                 MovementOutput::TargetReached { unit_id, target_id } => {
@@ -700,11 +764,16 @@ mod tests {
 
         RuntimeUnit {
             instance_id: unit_id,
+            lifecycle: crate::game::battle::core::types::RuntimeUnitLifecycle::Active,
             spawn_order: u64::from(unit_id.as_bytes()[15]),
             source_owned_uuid: unit_id.as_uuid(),
             owner,
             role: crate::game::battle::types::BattleUnitRole::Combatant,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Normal,
             base_uuid: Uuid::nil(),
+            source_identity: crate::game::battle::types::BattleUnitSourceIdentity::TestFixture {
+                base_uuid: Uuid::nil(),
+            },
             stats,
             incoming_damage_modifiers: Default::default(),
             basic_attack: Default::default(),
@@ -725,6 +794,7 @@ mod tests {
             current_target: None,
             next_basic_attack_ms: 0,
             pending_basic_attack: false,
+            ranged_reposition_until_ms: 0,
             resonance_current: 0,
             resonance_max: 100,
             resonance_lock_ms: 0,
@@ -1113,6 +1183,101 @@ mod tests {
             core.unit_world_position(unit_id),
             Some(WorldVec2::new(1.5, 1.0))
         );
+    }
+
+    #[test]
+    fn battle_core_records_immutable_movement_segments_per_tick() {
+        let mut core = new_core();
+        core.use_direct_continuous_movement_backend();
+        let unit_id: UnitInstanceId = Uuid::from_u128(12).into();
+        core.units.insert(
+            unit_id,
+            runtime_unit(unit_id, Side::Player, WorldVec2::new(1.0, 1.0)),
+        );
+
+        let mut goals = HashMap::new();
+        goals.insert(
+            unit_id,
+            MovementGoal::MoveToPoint {
+                point: WorldVec2::new(10.0, 1.0),
+                stop_radius: 0.1,
+            },
+        );
+
+        core.run_continuous_movement_tick(0, 50, &goals);
+        let first_event = core
+            .event_log
+            .entries
+            .iter()
+            .find_map(|entry| match &entry.event {
+                BattleLogEvent::MovementSegmentStarted {
+                    unit_instance_id,
+                    start,
+                    target,
+                    started_at_ms,
+                    ends_at_ms,
+                    ..
+                } if *unit_instance_id == unit_id => {
+                    Some((entry.seq, *start, *target, *started_at_ms, *ends_at_ms))
+                }
+                _ => None,
+            })
+            .expect("first movement segment should be recorded");
+
+        core.run_continuous_movement_tick(50, 50, &goals);
+        let segments = core
+            .event_log
+            .entries
+            .iter()
+            .filter_map(|entry| match &entry.event {
+                BattleLogEvent::MovementSegmentStarted {
+                    unit_instance_id,
+                    start,
+                    target,
+                    started_at_ms,
+                    ends_at_ms,
+                    ..
+                } if *unit_instance_id == unit_id => {
+                    Some((entry.seq, *start, *target, *started_at_ms, *ends_at_ms))
+                }
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+
+        assert_eq!(segments.len(), 2);
+        assert_eq!(
+            segments[0], first_event,
+            "first movement event must remain immutable after later ticks"
+        );
+        assert_eq!(segments[0].3, 0);
+        assert_eq!(segments[0].4, 50);
+        assert_eq!(segments[1].3, 50);
+        assert_eq!(segments[1].4, 100);
+        assert_eq!(
+            segments[0].2, segments[1].1,
+            "adjacent live movement segments should connect target to next start"
+        );
+    }
+
+    #[test]
+    fn battle_core_does_not_record_movement_segment_without_body_motion() {
+        let mut core = new_core();
+        core.use_direct_continuous_movement_backend();
+        let unit_id: UnitInstanceId = Uuid::from_u128(13).into();
+        core.units.insert(
+            unit_id,
+            runtime_unit(unit_id, Side::Player, WorldVec2::new(1.0, 1.0)),
+        );
+
+        let goals = HashMap::new();
+
+        core.run_continuous_movement_tick(0, 50, &goals);
+
+        assert!(!core.event_log.entries.iter().any(|entry| matches!(
+            entry.event,
+            BattleLogEvent::MovementSegmentStarted { unit_instance_id, .. }
+                if unit_instance_id == unit_id
+        )));
     }
 
     #[test]

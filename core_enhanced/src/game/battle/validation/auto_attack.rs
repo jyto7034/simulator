@@ -1,34 +1,34 @@
 use std::collections::{HashMap, HashSet};
 
 use crate::game::battle::{
+    event_log::{AttackKind, BattleEventLog, BattleLogEvent},
     ids::UnitInstanceId,
-    timeline::{AttackKind, Timeline, TimelineEvent},
 };
 
 use super::{
     spawns::ExtractedSpawns,
-    types::{TimelineValidatorConfig, TimelineViolation, TimelineViolationKind},
+    types::{EventLogValidatorConfig, EventLogViolation, EventLogViolationKind},
 };
 
 pub(super) fn validate_auto_attack_cadence(
-    timeline: &Timeline,
+    event_log: &BattleEventLog,
     extracted: &ExtractedSpawns,
-    violations: &mut Vec<TimelineViolation>,
-    config: &TimelineValidatorConfig,
+    violations: &mut Vec<EventLogViolation>,
+    config: &EventLogValidatorConfig,
 ) {
     if !config.validate_auto_attack_min_interval && !config.validate_auto_attack_presence {
         return;
     }
 
-    let battle_end_time_ms = timeline
+    let battle_end_time_ms = event_log
         .entries
         .last()
         .map(|e| e.time_ms)
         .unwrap_or_default();
 
     let mut unit_death_time_ms: HashMap<UnitInstanceId, u64> = HashMap::new();
-    for entry in &timeline.entries {
-        if let TimelineEvent::UnitDied {
+    for entry in &event_log.entries {
+        if let BattleLogEvent::UnitDied {
             unit_instance_id, ..
         } = entry.event
         {
@@ -58,8 +58,8 @@ pub(super) fn validate_auto_attack_cadence(
     let mut casting_until_ms: HashMap<UnitInstanceId, u64> = HashMap::new();
 
     let mut index = 0usize;
-    while index < timeline.entries.len() {
-        let time_ms = timeline.entries[index].time_ms;
+    while index < event_log.entries.len() {
+        let time_ms = event_log.entries[index].time_ms;
 
         if config.validate_auto_attack_presence {
             let expected_entries: Vec<(UnitInstanceId, u64)> = expected_next_auto_attack_time_ms
@@ -94,8 +94,8 @@ pub(super) fn validate_auto_attack_cadence(
 
                 let tolerance = config.auto_attack_timing_tolerance_ms;
                 if time_ms > effective_expected_time.saturating_add(tolerance) {
-                    violations.push(TimelineViolation {
-                        kind: TimelineViolationKind::MissingExpectedAutoAttack,
+                    violations.push(EventLogViolation {
+                        kind: EventLogViolationKind::MissingExpectedAutoAttack,
                         message: format!(
                             "missing expected auto attack: unit={} expected_time_ms={} tolerance_ms={}",
                             unit_id, effective_expected_time, tolerance
@@ -109,25 +109,30 @@ pub(super) fn validate_auto_attack_cadence(
 
         let mut auto_attackers_this_tick: HashSet<UnitInstanceId> = HashSet::new();
         let mut tick_end = index;
-        while tick_end < timeline.entries.len() && timeline.entries[tick_end].time_ms == time_ms {
-            let entry = &timeline.entries[tick_end];
+        while tick_end < event_log.entries.len() && event_log.entries[tick_end].time_ms == time_ms {
+            let entry = &event_log.entries[tick_end];
             match &entry.event {
-                TimelineEvent::AttackStart {
+                BattleLogEvent::AttackStart {
                     attacker_instance_id,
                     kind: Some(AttackKind::Auto),
                     ..
                 } => {
                     auto_attackers_this_tick.insert(*attacker_instance_id);
                 }
-                TimelineEvent::AutoCastStart {
+                BattleLogEvent::AutoCastStart {
                     caster_instance_id, ..
                 } => {
                     casting_until_ms.insert(*caster_instance_id, time_ms.saturating_add(1));
                 }
-                TimelineEvent::AutoCastEnd { caster_instance_id } => {
+                BattleLogEvent::AutoCastEnd { caster_instance_id } => {
                     casting_until_ms.remove(caster_instance_id);
                 }
-                TimelineEvent::StatChanged {
+                BattleLogEvent::SkillCastInterrupted {
+                    caster_instance_id, ..
+                } => {
+                    casting_until_ms.remove(caster_instance_id);
+                }
+                BattleLogEvent::StatChanged {
                     target_instance_id,
                     stats_after,
                     ..
@@ -149,8 +154,8 @@ pub(super) fn validate_auto_attack_cadence(
                 };
 
                 if time_ms < expected_next {
-                    violations.push(TimelineViolation {
-                        kind: TimelineViolationKind::AutoAttackTooEarly,
+                    violations.push(EventLogViolation {
+                        kind: EventLogViolationKind::AutoAttackTooEarly,
                         message: format!(
                             "auto attack too early: unit={} time_ms={} expected_min_time_ms={}",
                             attacker_id, time_ms, expected_next

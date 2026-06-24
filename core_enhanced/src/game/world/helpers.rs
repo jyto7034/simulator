@@ -3,21 +3,23 @@ use std::collections::HashSet;
 use tracing::{debug, info};
 use uuid::Uuid;
 
-use super::{GameCore, RUN_SYSTEM_POLICY};
+use super::GameCore;
 use crate::game::behavior::{ActionKind, BehaviorResult, GameError, PlayerBehavior};
 use crate::game::combat_player_spawns::{
     effective_combat_profile_for_employee, effective_combat_profile_for_employee_with_item_slot,
 };
-use crate::game::data::skill_fragment_data::{SkillFragmentCompatibilityReport, SkillFragmentId};
+use crate::game::data::skill_fragment_data::{
+    SkillFragmentCompatibilityReport, SkillFragmentEquipLimit, SkillFragmentId,
+};
 use crate::game::employee::{Employee, EmployeeRoster};
 use crate::game::enums::RewardMode;
-use crate::game::managers::action_scheduler::ActionScheduler;
+use crate::game::managers::action_scheduler::{ActionScheduler, AllowedActionContext};
 use crate::game::map::MapNodeId;
-use crate::game::resources::item_slot::ItemSlot;
+use crate::game::resources::item_slot::{EquippedRef, ItemSlot};
 use crate::game::resources::{
-    EquippedItemDto, GameState, Inventory, RewardSessionState, RosterOrder,
+    EquippedItemDto, GameState, Inventory, InventoryItemDto, RewardSessionState, RosterOrder,
 };
-use crate::game::reward::RewardOption;
+use crate::game::reward::{RewardEffect, RewardOption};
 
 impl GameCore {
     pub(super) fn inventory(&self) -> Result<&Inventory, GameError> {
@@ -101,32 +103,21 @@ impl GameCore {
         self.state.action_validator.set_allowed_actions(allowed);
     }
 
-    fn allowed_actions_for_state_context(&self, state: &GameState) -> Vec<ActionKind> {
-        let mut allowed = ActionScheduler::get_allowed_actions(state);
-
-        if matches!(state, GameState::InReward { .. }) && !self.current_reward_can_skip() {
-            allowed.retain(|action| *action != ActionKind::ExitReward);
+    pub(super) fn allowed_actions_for_state_context(&self, state: &GameState) -> Vec<ActionKind> {
+        let mut actions = ActionScheduler::get_allowed_actions_for_context(
+            state,
+            AllowedActionContext {
+                reward_can_skip: self.current_reward_can_skip(),
+                in_maintenance_node: self.is_in_maintenance_node(),
+                run_checkpoint_can_load: self.state.run_checkpoint.can_load(),
+            },
+        );
+        if matches!(state, GameState::CombatResult { .. })
+            && !self.can_complete_combat_result_locally()
+        {
+            actions.retain(|action| *action != ActionKind::CompleteCombatResult);
         }
-
-        if matches!(state, GameState::InNode { .. }) && self.is_in_maintenance_node() {
-            for action in [
-                ActionKind::EquipItem,
-                ActionKind::UnEquipItem,
-                ActionKind::EquipSkillFragment,
-                ActionKind::UnequipSkillFragment,
-                ActionKind::UpgradeSkillFragment,
-                ActionKind::AwakenSkillFragment,
-                ActionKind::DismantleSkillFragment,
-                ActionKind::DismantleEquipment,
-                ActionKind::EnhanceEquipment,
-            ] {
-                if !allowed.contains(&action) {
-                    allowed.push(action);
-                }
-            }
-        }
-
-        allowed
+        actions
     }
 
     pub(super) fn merge_inventory_diff(
@@ -164,8 +155,7 @@ impl GameCore {
             | PlayerBehavior::CancelSelectedNode
             | PlayerBehavior::CompleteNode
             | PlayerBehavior::ChooseSupport { .. }
-            | PlayerBehavior::SelectSupportTarget { .. }
-            | PlayerBehavior::SelectMedicalTreatment { .. }
+            | PlayerBehavior::LoadRunCheckpoint
             | PlayerBehavior::RecruitEmployee { .. }
             | PlayerBehavior::RequestEmergencySupplies
             | PlayerBehavior::OpenHeadquartersShop
@@ -175,6 +165,8 @@ impl GameCore {
             | PlayerBehavior::ExitReward
             | PlayerBehavior::CompleteCombatResult
             | PlayerBehavior::RequestBattleState { .. }
+            | PlayerBehavior::RecoverBattleSetupLoss
+            | PlayerBehavior::RequestDeploymentRangePreview { .. }
             | PlayerBehavior::DeployUnit { .. }
             | PlayerBehavior::WithdrawUnit { .. }
             | PlayerBehavior::ActivateSkill { .. }
@@ -272,6 +264,9 @@ impl GameCore {
             .get_item(&item_uuid)
             .ok_or(GameError::InventoryItemNotFound)?;
 
+        if owned_equipment.meta.bound {
+            return Err(GameError::InvalidAction);
+        }
         if owned_equipment.equipped_to.is_some() {
             return Err(GameError::InvalidAction);
         }
@@ -315,6 +310,46 @@ impl GameCore {
             Ok(())
         } else {
             Err(GameError::InvalidAction)
+        }
+    }
+
+    pub(super) fn validate_skill_fragment_equip_limit(
+        &self,
+        employee_uuid: Uuid,
+        fragment_id: &SkillFragmentId,
+    ) -> Result<(), GameError> {
+        let metadata = self
+            .game_data
+            .skill_fragment_data
+            .get_by_id(fragment_id)
+            .ok_or_else(|| {
+                GameError::InvalidStaticData(format!(
+                    "employee loadout references missing skill fragment '{fragment_id}'"
+                ))
+            })?;
+        let roster = self.roster()?;
+        let current_other_equipped = roster
+            .iter()
+            .filter(|employee| employee.uuid != employee_uuid)
+            .filter(|employee| employee.skill_fragments.active_fragment_id() == Some(fragment_id))
+            .count();
+        match metadata.equip_limit {
+            SkillFragmentEquipLimit::GlobalExclusive => {
+                if current_other_equipped == 0 {
+                    Ok(())
+                } else {
+                    Err(GameError::InvalidAction)
+                }
+            }
+            SkillFragmentEquipLimit::OwnedCopies => {
+                let required_count = u32::try_from(current_other_equipped + 1)
+                    .map_err(|_| GameError::InvalidAction)?;
+                if self.state.skill_fragments.count(fragment_id) >= required_count {
+                    Ok(())
+                } else {
+                    Err(GameError::InvalidAction)
+                }
+            }
         }
     }
 
@@ -533,6 +568,9 @@ impl GameCore {
             .equipments
             .get_item(&item_uuid)
             .ok_or(GameError::InventoryItemNotFound)?;
+        if equipment.meta.bound {
+            return Err(GameError::InvalidAction);
+        }
 
         let recipe = self
             .game_data
@@ -545,14 +583,15 @@ impl GameCore {
                 ))
             })?;
 
-        for material in &recipe.yields {
-            let current = inventory.equipment_materials.amount(&material.material_id);
-            if current > u32::MAX.saturating_sub(material.amount) {
-                return Err(GameError::InvalidAction);
-            }
-        }
-
-        Ok(())
+        let grant_effects = recipe
+            .yields
+            .iter()
+            .map(|material| RewardEffect::GrantEquipmentMaterial {
+                material_id: material.material_id.clone(),
+                amount: material.amount,
+            })
+            .collect::<Vec<_>>();
+        self.preview_grant_effects(&grant_effects).map(|_| ())
     }
 
     pub(super) fn validate_enhance_equipment_payload(
@@ -568,6 +607,9 @@ impl GameCore {
             .equipments
             .get_item(&item_uuid)
             .ok_or(GameError::InventoryItemNotFound)?;
+        if equipment.meta.bound {
+            return Err(GameError::InvalidAction);
+        }
         let recipe = self
             .game_data
             .equipment_data
@@ -636,7 +678,8 @@ impl GameCore {
         &self,
         candidate_ids: &[String],
     ) -> Result<(), GameError> {
-        if candidate_ids.len() != RUN_SYSTEM_POLICY.setup.starter_employee_count {
+        let starter_employee_count = self.run_policy().setup.starter_employee_count;
+        if candidate_ids.len() != starter_employee_count {
             return Err(GameError::InvalidAction);
         }
         let mut seen = HashSet::new();
@@ -663,8 +706,11 @@ impl GameCore {
         candidate_ids: &[String],
     ) -> Result<Vec<Uuid>, GameError> {
         self.validate_starter_employee_selection(candidate_ids)?;
-        let mut employees = Vec::with_capacity(RUN_SYSTEM_POLICY.setup.starter_employee_count);
-        let mut employee_uuids = Vec::with_capacity(RUN_SYSTEM_POLICY.setup.starter_employee_count);
+        let starter_employee_count = self.run_policy().setup.starter_employee_count;
+        let mut candidate_plans = Vec::with_capacity(starter_employee_count);
+        let mut grant_effects = Vec::new();
+        let mut equipment_assignments = Vec::new();
+        let mut employee_uuids = Vec::with_capacity(starter_employee_count);
         for candidate_id in candidate_ids {
             let candidate = self
                 .state
@@ -675,6 +721,65 @@ impl GameCore {
                 .clone();
             let employee_uuid = self.state.uuid_manager.next_employee();
             employee_uuids.push(employee_uuid);
+            let mut projected_employee =
+                Employee::from_starter_candidate(employee_uuid, &candidate);
+            for equipment_id in &candidate.starter_loadout.equipment_ids {
+                let equipment = self
+                    .game_data
+                    .equipment_data
+                    .get_by_id(equipment_id)
+                    .ok_or_else(|| {
+                        GameError::InvalidStaticData(format!(
+                            "starter employee candidate '{}' references missing equipment '{}'",
+                            candidate.id, equipment_id
+                        ))
+                    })?;
+                let placeholder_uuid = Uuid::from_u128(
+                    0xF000_0000_0000_0000_0000_0000_0000_0000u128
+                        + u128::try_from(grant_effects.len())
+                            .map_err(|_| GameError::InvalidAction)?,
+                );
+                projected_employee
+                    .loadout
+                    .item_slot
+                    .equip(
+                        EquippedRef {
+                            instance_uuid: placeholder_uuid,
+                            base_uuid: equipment.uuid,
+                            equipment_type: equipment.equipment_type,
+                        },
+                        equipment.allow_duplicate_equip,
+                    )
+                    .map_err(|_| {
+                        GameError::InvalidStaticData(format!(
+                            "starter employee candidate '{}' has invalid equipment loadout",
+                            candidate.id
+                        ))
+                    })?;
+                grant_effects.push(RewardEffect::GrantEquipment {
+                    equipment_id: equipment_id.clone(),
+                });
+                equipment_assignments.push((employee_uuid, equipment_id.clone()));
+            }
+            candidate_plans.push((employee_uuid, candidate));
+        }
+        self.preview_grant_effects(&grant_effects)?;
+        let granted = self.apply_grant_effects(&grant_effects)?;
+        let granted_equipment = granted
+            .inventory_diff
+            .added
+            .iter()
+            .filter_map(|item| match item {
+                InventoryItemDto::Equipment(item) => Some((item.uuid, item.definition_id.clone())),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        if granted_equipment.len() != equipment_assignments.len() {
+            return Err(GameError::InvalidAction);
+        }
+
+        let mut employees = Vec::with_capacity(starter_employee_count);
+        for (employee_uuid, candidate) in candidate_plans {
             employees.push(Employee::from_starter_candidate(employee_uuid, &candidate));
         }
 
@@ -684,9 +789,52 @@ impl GameCore {
             roster.add(employee);
         }
 
+        for ((employee_uuid, expected_equipment_id), (instance_uuid, granted_equipment_id)) in
+            equipment_assignments.into_iter().zip(granted_equipment)
+        {
+            if expected_equipment_id != granted_equipment_id {
+                return Err(GameError::InvalidAction);
+            }
+            let equipment = self
+                .game_data
+                .equipment_data
+                .get_by_id(&granted_equipment_id)
+                .ok_or_else(|| {
+                    GameError::InvalidStaticData(format!(
+                        "starter loadout grant returned missing equipment '{}'",
+                        granted_equipment_id
+                    ))
+                })?;
+            let base_uuid = equipment.uuid;
+            let equipment_type = equipment.equipment_type;
+            let allow_duplicate_equip = equipment.allow_duplicate_equip;
+            let roster = self.roster_mut()?;
+            let employee = roster
+                .get_mut(&employee_uuid)
+                .ok_or(GameError::UnitNotFound)?;
+            employee
+                .loadout
+                .item_slot
+                .equip(
+                    EquippedRef {
+                        instance_uuid,
+                        base_uuid,
+                        equipment_type,
+                    },
+                    allow_duplicate_equip,
+                )
+                .map_err(|_| GameError::InvalidAction)?;
+            let inventory = self.inventory_mut()?;
+            inventory
+                .equipments
+                .get_item_mut(&instance_uuid)
+                .ok_or(GameError::InventoryItemNotFound)?
+                .equipped_to = Some(employee_uuid);
+        }
+
         info!(
             "Initialized selected starter employee roster with {} employees",
-            RUN_SYSTEM_POLICY.setup.starter_employee_count
+            starter_employee_count
         );
         Ok(employee_uuids)
     }

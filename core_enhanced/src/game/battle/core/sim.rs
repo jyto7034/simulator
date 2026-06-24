@@ -1,6 +1,6 @@
 use uuid::Uuid;
 
-use crate::game::battle::timeline::TimelineEntry;
+use crate::game::battle::event_log::BattleEventLogEntry;
 use crate::{
     game::resources::Position,
     game::{
@@ -13,16 +13,15 @@ use crate::{
             cooldown::CooldownSource,
             damage::{BattleCommand, DamageSource},
             enums::BattleEvent,
+            event_log::{
+                BattleEventCause, BattleEventLog, BattleEventRootCause, BattleLogEvent,
+                BuffExpireReason, SkillCastTarget,
+            },
             ids::UnitInstanceId,
             scenario::{ScenarioAction, ScenarioTrigger, WinCondition},
-            timeline::{
-                AttackKind, SkillCastTarget, Timeline, TimelineCause, TimelineEvent,
-                TimelineRootCause,
-            },
             types::{BattleResult, BattleUnitDraft, BattleWinner, ParticipantBattleResult},
         },
         behavior::{GameError, LiveBattleSkillReadinessDto},
-        data::equipment_data::WeaponRangeRole,
         determinism,
         enums::Side,
         stats::UnitStats,
@@ -36,14 +35,19 @@ fn side_sort_key(side: Side) -> u8 {
     }
 }
 
+fn cast_start_seq_from_cause(cause: BattleEventCause) -> Option<u64> {
+    match cause {
+        BattleEventCause::Parent { seq } => Some(seq),
+        BattleEventCause::Root { .. } => None,
+    }
+}
+
 use super::{
-    movement::{types::DEFAULT_MOVEMENT_TICK_MS, ActionState},
+    movement::ActionState,
     skill_runtime::cast::PreviousStepDamageGate,
     types::{AbilityProcKey, PendingSkillCast, SkillStepResult},
     ActiveBuff, BattleCore, BuffInstanceKey,
 };
-
-const MAX_BATTLE_TIME_MS: u64 = 60_000;
 
 #[derive(Debug, Clone)]
 pub struct BattleExecutionState {
@@ -83,6 +87,40 @@ pub enum BattleStepOutcome {
     Finished(BattleFinishSignal),
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BattleDeployCurrentHpPolicy {
+    FixedCurrentHp(u32),
+    PercentOfMax(u32),
+}
+
+impl BattleDeployCurrentHpPolicy {
+    pub const WITHDRAW_REDEPLOY_RECOVERY_PERCENT: u32 = 30;
+    pub const DEATH_REDEPLOY_PERCENT: u32 = 60;
+
+    pub fn withdraw_redeploy(current_hp: u32, max_hp: u32) -> Self {
+        let recovered_hp = current_hp
+            .saturating_add(max_hp.saturating_mul(Self::WITHDRAW_REDEPLOY_RECOVERY_PERCENT) / 100);
+        BattleDeployCurrentHpPolicy::FixedCurrentHp(recovered_hp.min(max_hp))
+    }
+
+    pub fn death_redeploy() -> Self {
+        BattleDeployCurrentHpPolicy::PercentOfMax(Self::DEATH_REDEPLOY_PERCENT)
+    }
+
+    pub fn current_hp_for_max(self, max_hp: u32) -> u32 {
+        if max_hp == 0 {
+            return 0;
+        }
+        let current_hp = match self {
+            BattleDeployCurrentHpPolicy::FixedCurrentHp(current_hp) => current_hp,
+            BattleDeployCurrentHpPolicy::PercentOfMax(percent) => {
+                max_hp.saturating_mul(percent) / 100
+            }
+        };
+        current_hp.max(1).min(max_hp)
+    }
+}
+
 #[derive(Debug, Clone)]
 pub enum BattleLiveCommand {
     DeployPlayerUnit {
@@ -91,9 +129,11 @@ pub enum BattleLiveCommand {
         facing: crate::game::battle::tile_range::FacingDirection,
         instance_salt: u32,
         time_ms: u64,
+        current_hp_policy: Option<BattleDeployCurrentHpPolicy>,
     },
     WithdrawUnit {
         unit_id: UnitInstanceId,
+        time_ms: u64,
     },
     ActivateSkill {
         unit_id: UnitInstanceId,
@@ -139,10 +179,38 @@ struct SkillStepExecution<'a> {
     skill: &'a SkillDef,
     step: &'a SkillStepDef,
     cast_target: Option<SkillCastTarget>,
-    cause: TimelineCause,
+    cause: BattleEventCause,
 }
 
 impl BattleCore {
+    fn movement_tick_ms(&self) -> u64 {
+        self.game_data
+            .run_policy
+            .battle_runtime
+            .movement_tick_ms
+            .max(1)
+    }
+
+    fn max_battle_time_ms(&self) -> u64 {
+        self.game_data
+            .run_policy
+            .battle_runtime
+            .max_battle_time_ms
+            .max(1)
+    }
+
+    fn has_pending_attack_resolve_at(&self, time_ms: u64) -> bool {
+        self.event_queue.iter().any(|event| {
+            matches!(
+                event,
+                BattleEvent::AttackResolve {
+                    time_ms: event_time_ms,
+                    ..
+                } if *event_time_ms == time_ms
+            )
+        })
+    }
+
     fn proc_roll_percent(
         &self,
         source: CooldownSource,
@@ -242,7 +310,7 @@ impl BattleCore {
         caster_instance_id: UnitInstanceId,
         skill_id: &str,
         explicit_target: Option<SkillCastTarget>,
-        cause: TimelineCause,
+        cause: BattleEventCause,
         allow_dead_caster: bool,
     ) {
         let Some(skill) = self.game_data.skill_data.get_by_id(skill_id).cloned() else {
@@ -265,7 +333,7 @@ impl BattleCore {
         let cast_target_anchor_position = match cast_target {
             Some(SkillCastTarget::Tile { position }) => Some(position),
             Some(SkillCastTarget::Unit { unit_instance_id }) => {
-                self.battlefield.position_of(unit_instance_id)
+                self.live_unit_projected_tile(unit_instance_id)
             }
             None => None,
         };
@@ -280,9 +348,9 @@ impl BattleCore {
         };
 
         let ability_seq = self.with_recording_context(cause, |core| {
-            core.record_timeline(
+            core.record_event_log(
                 time_ms,
-                TimelineEvent::AbilityCast {
+                BattleLogEvent::AbilityCast {
                     skill_id: skill.id.clone(),
                     caster_instance_id,
                     target_instance_id,
@@ -294,6 +362,7 @@ impl BattleCore {
             ability_seq,
             super::types::ActiveSkillCast {
                 caster_instance_id,
+                skill_id: skill.id.clone(),
                 caster_owner,
                 anchor_position: caster_pos,
                 cast_target_anchor_position,
@@ -318,7 +387,7 @@ impl BattleCore {
                     skill_id: skill.id.clone(),
                     step_id: step.id.clone(),
                     cast_target,
-                    cause: TimelineCause::Parent { seq: ability_seq },
+                    cause: BattleEventCause::Parent { seq: ability_seq },
                 });
             }
         });
@@ -332,7 +401,7 @@ impl BattleCore {
         _caster_pos: Position,
         target: SkillCastTarget,
     ) -> bool {
-        let Some((range_units, target_def, defense_tile_range, air_capable)) =
+        let Some((target_def, range_policy, defense_tile_range, air_capable)) =
             skill.cast_target_definition()
         else {
             return false;
@@ -349,25 +418,21 @@ impl BattleCore {
                 if !self.single_target_can_target_unit(unit_instance_id, air_capable) {
                     return false;
                 }
-                if self.is_defense_route_player_unit(caster_instance_id) {
-                    return self.is_target_in_defense_tile_range(
-                        caster_instance_id,
-                        unit_instance_id,
-                        defense_tile_range,
-                    );
-                }
-                self.unit_body_view(caster_instance_id)
-                    .zip(self.unit_body_view(unit_instance_id))
-                    .is_some_and(|(caster, target)| caster.can_reach(&target, range_units))
+                self.is_target_in_tile_range_policy(
+                    caster_instance_id,
+                    unit_instance_id,
+                    range_policy,
+                    defense_tile_range,
+                )
             }
             (SkillTarget::CastTarget, SkillCastTarget::Tile { position }) => {
-                self.battlefield.in_bounds(position)
+                self.battlefield.is_valid_tile(position)
             }
             _ => false,
         }
     }
 
-    fn start_manual_skill_cast(
+    pub(super) fn start_manual_skill_cast(
         &mut self,
         time_ms: u64,
         caster_instance_id: UnitInstanceId,
@@ -395,17 +460,13 @@ impl BattleCore {
             if !skill.focus_permissions.allows_move {
                 caster.action_locks.lock_movement_until(cast_end_ms);
             }
-            caster.pending_skill_cast = Some(PendingSkillCast {
-                skill_id: skill.id.clone(),
-                cast_target,
-            });
         }
 
         if !skill.focus_permissions.allows_move {
             let interrupted = self.interrupt_movement(
                 time_ms,
                 caster_instance_id,
-                crate::game::battle::timeline::MovementStopReason::CastStarted,
+                crate::game::battle::event_log::MovementStopReason::CastStarted,
                 Some(cast_end_ms),
                 ActionState::Idle,
             );
@@ -414,18 +475,25 @@ impl BattleCore {
             }
         }
 
-        let start_seq = self.record_timeline(
+        let start_seq = self.record_event_log(
             time_ms,
-            TimelineEvent::ManualCastStart {
-                skill_id: skill.id,
+            BattleLogEvent::ManualCastStart {
+                skill_id: skill.id.clone(),
                 caster_instance_id,
-                target: cast_target,
+                target: cast_target.clone(),
             },
         );
+        if let Some(caster) = self.units.get_mut(&caster_instance_id) {
+            caster.pending_skill_cast = Some(PendingSkillCast {
+                skill_id: skill.id,
+                cast_target,
+                start_seq,
+            });
+        }
         self.event_queue.push(BattleEvent::ManualCastEnd {
             time_ms: cast_end_ms,
             caster_instance_id,
-            cause: TimelineCause::Parent { seq: start_seq },
+            cause: BattleEventCause::Parent { seq: start_seq },
         });
 
         Ok(())
@@ -462,12 +530,17 @@ impl BattleCore {
 
         let reason = if unit.owner != Side::Player {
             Some("not_player_unit")
-        } else if !unit.is_combatant() || unit.is_dead() {
+        } else if !unit.is_active() || !unit.is_combatant() {
             Some("unit_unavailable")
         } else if skill_id.is_none() {
             Some("no_skill")
         } else if activation_mode != SkillActivationMode::Manual {
             Some("activation_mode_not_manual")
+        } else if self
+            .active_hard_cc_release_time_ms(unit_id, time_ms)
+            .is_some()
+        {
+            Some("hard_cc")
         } else if self.has_buff_kind(unit_id, crate::game::battle::buffs::BuffKind::Silence) {
             Some("silenced")
         } else if time_ms < unit.next_action_time {
@@ -488,7 +561,7 @@ impl BattleCore {
                     target_block_reason: None,
                 });
             };
-            let Some(caster_pos) = self.battlefield.position_of(unit_id) else {
+            let Some(caster_pos) = self.live_unit_projected_tile(unit_id) else {
                 return Some(LiveBattleSkillReadinessDto {
                     skill_id: Some(skill_id.clone()),
                     activation_mode,
@@ -503,7 +576,7 @@ impl BattleCore {
             };
 
             match skill.cast_target_definition() {
-                Some((_, SkillTarget::SelfUnit, _, _)) => {
+                Some((SkillTarget::SelfUnit, _, _, _)) => {
                     target_required = false;
                     target_available = true;
                 }
@@ -553,7 +626,13 @@ impl BattleCore {
         if caster.owner != Side::Player
             || caster.skill_activation_mode != SkillActivationMode::Manual
             || !caster.is_combatant()
-            || caster.is_dead()
+            || !caster.is_active()
+        {
+            return Err(GameError::InvalidAction);
+        }
+        if self
+            .active_hard_cc_release_time_ms(caster_instance_id, time_ms)
+            .is_some()
         {
             return Err(GameError::InvalidAction);
         }
@@ -579,8 +658,7 @@ impl BattleCore {
         }
         let caster_owner = caster.owner;
         let caster_pos = self
-            .battlefield
-            .position_of(caster_instance_id)
+            .live_unit_projected_tile(caster_instance_id)
             .ok_or(GameError::InvalidAction)?;
 
         let skill = self
@@ -615,7 +693,7 @@ impl BattleCore {
         if cast_target.is_none()
             && !matches!(
                 skill.cast_target_definition(),
-                Some((_, SkillTarget::CastTarget, _, _))
+                Some((SkillTarget::CastTarget, _, _, _))
             )
         {
             return Err(GameError::InvalidAction);
@@ -631,16 +709,18 @@ impl BattleCore {
         caster_owner: Side,
         caster_pos: Position,
     ) -> Option<SkillCastTarget> {
-        let (range_units, target, defense_tile_range, air_capable) =
+        let (target, range_policy, defense_tile_range, air_capable) =
             skill.cast_target_definition()?;
+        let usefulness_step = self.skill_cast_target_usefulness_step(skill, target);
         self.resolve_skill_target_definition(
             caster_instance_id,
             caster_owner,
             caster_pos,
-            range_units,
+            range_policy,
             defense_tile_range,
             target,
             air_capable,
+            usefulness_step,
         )
     }
 
@@ -649,10 +729,11 @@ impl BattleCore {
         caster_instance_id: UnitInstanceId,
         caster_owner: Side,
         caster_pos: Position,
-        range_units: f32,
+        range_policy: crate::game::battle::tile_range::TileRangePolicy,
         defense_tile_range: Option<&crate::game::battle::tile_range::TileRangePattern>,
         target: &SkillTarget,
         air_capable: bool,
+        usefulness_step: Option<&SkillStepDef>,
     ) -> Option<SkillCastTarget> {
         match target {
             SkillTarget::SelfUnit => Some(SkillCastTarget::Unit {
@@ -663,10 +744,11 @@ impl BattleCore {
                     caster_instance_id,
                     caster_owner,
                     caster_pos,
-                    range_units,
+                    range_policy,
                     defense_tile_range,
                     *rule,
                     air_capable,
+                    usefulness_step,
                 )
                 .map(|id| SkillCastTarget::Unit {
                     unit_instance_id: id,
@@ -700,6 +782,12 @@ impl BattleCore {
                             && self.single_target_can_target_unit(
                                 unit_instance_id,
                                 step.air_capable,
+                            )
+                            && self.is_target_in_tile_range_policy(
+                                caster_instance_id,
+                                unit_instance_id,
+                                step.range_policy,
+                                step.defense_tile_range.as_ref(),
                             ) =>
                     {
                         Some(SkillCastTarget::Unit { unit_instance_id })
@@ -721,10 +809,11 @@ impl BattleCore {
                 caster_instance_id,
                 caster_owner,
                 caster_pos,
-                step.range_units,
+                step.range_policy,
                 step.defense_tile_range.as_ref(),
                 &step.target,
                 step.air_capable,
+                Some(step),
             ),
         }
     }
@@ -736,8 +825,8 @@ impl BattleCore {
         allow_dead_caster: bool,
     ) -> Option<(Side, Position)> {
         if let Some(caster) = self.units.get(&caster_instance_id) {
-            if !caster.is_dead() {
-                if let Some(position) = self.battlefield.position_of(caster_instance_id) {
+            if caster.is_active() {
+                if let Some(position) = self.live_unit_projected_tile(caster_instance_id) {
                     return Some((caster.owner, position));
                 }
             } else if allow_dead_caster {
@@ -856,7 +945,7 @@ impl BattleCore {
         let mut opponent_alive = false;
 
         for unit in self.units.values() {
-            if unit.is_dead() || !unit.is_combatant() {
+            if !unit.is_active() || !unit.is_combatant() {
                 continue;
             }
 
@@ -928,6 +1017,21 @@ impl BattleCore {
                 }
                 return None;
             }
+            WinCondition::ProtectUnitUntil { unit_ref, time_ms } => {
+                let protected_destroyed = self
+                    .scenario_runtime
+                    .unit_refs
+                    .get(&unit_ref)
+                    .and_then(|unit_id| self.units.get(unit_id))
+                    .is_some_and(|unit| unit.is_dead());
+                if protected_destroyed {
+                    return Some(BattleWinner::Opponent);
+                }
+                if current_time_ms >= time_ms {
+                    return Some(BattleWinner::Player);
+                }
+                return None;
+            }
             WinCondition::SurviveUntil { time_ms } => {
                 if current_time_ms >= time_ms {
                     return Some(BattleWinner::Player);
@@ -970,11 +1074,11 @@ impl BattleCore {
     }
 
     fn finish_battle(&mut self, time_ms: u64, winner: BattleWinner) -> BattleResult {
-        self.record_timeline(time_ms, TimelineEvent::BattleEnd { winner });
+        self.record_event_log(time_ms, BattleLogEvent::BattleEnd { winner });
         let participant_results = self.participant_results();
         BattleResult {
             winner,
-            timeline: self.timeline.clone(),
+            event_log: self.event_log.clone(),
             participant_results,
         }
     }
@@ -1036,8 +1140,8 @@ impl BattleCore {
             attacker_instance_id: unit_id,
             target_instance_id: None,
             schedule_next: true,
-            cause: TimelineCause::Root {
-                kind: TimelineRootCause::Period,
+            cause: BattleEventCause::Root {
+                kind: BattleEventRootCause::Period,
             },
         });
     }
@@ -1045,7 +1149,7 @@ impl BattleCore {
     pub(super) fn record_spawned_units(
         &mut self,
         time_ms: u64,
-        cause: TimelineCause,
+        cause: BattleEventCause,
         spawned_unit_ids: &[UnitInstanceId],
     ) {
         if spawned_unit_ids.is_empty() {
@@ -1057,8 +1161,10 @@ impl BattleCore {
                 UnitInstanceId,
                 Side,
                 crate::game::battle::types::BattleUnitRole,
+                crate::game::battle::types::BattleUnitThreatClass,
                 crate::game::battle::types::MobilityKind,
                 Uuid,
+                crate::game::battle::types::BattleUnitSourceIdentity,
                 _,
                 UnitStats,
             )> = spawned_unit_ids
@@ -1069,8 +1175,10 @@ impl BattleCore {
                             unit.instance_id,
                             unit.owner,
                             unit.role,
+                            unit.threat_class,
                             unit.mobility_kind,
                             unit.base_uuid,
+                            unit.source_identity.clone(),
                             unit.world_position().quantized_milli(),
                             unit.stats,
                         )
@@ -1078,17 +1186,28 @@ impl BattleCore {
                 })
                 .collect();
             unit_records.sort_by(|a, b| a.0.as_bytes().cmp(b.0.as_bytes()));
-            for (unit_instance_id, owner, role, mobility_kind, base_uuid, world_position, stats) in
-                unit_records
+            for (
+                unit_instance_id,
+                owner,
+                role,
+                threat_class,
+                mobility_kind,
+                base_uuid,
+                unit_source,
+                world_position,
+                stats,
+            ) in unit_records
             {
-                core.record_timeline(
+                core.record_event_log(
                     time_ms,
-                    TimelineEvent::UnitSpawned {
+                    BattleLogEvent::UnitSpawned {
                         unit_instance_id,
                         owner,
                         role,
+                        threat_class,
                         mobility_kind,
                         base_uuid,
+                        unit_source,
                         world_position,
                         stats,
                     },
@@ -1103,9 +1222,9 @@ impl BattleCore {
                 .collect();
             item_records.sort_by(|a, b| a.0.as_bytes().cmp(b.0.as_bytes()));
             for (item_instance_id, owner, owner_unit_instance_id, base_uuid) in item_records {
-                core.record_timeline(
+                core.record_event_log(
                     time_ms,
-                    TimelineEvent::ItemSpawned {
+                    BattleLogEvent::ItemSpawned {
                         item_instance_id,
                         owner,
                         owner_unit_instance_id,
@@ -1127,8 +1246,8 @@ impl BattleCore {
                     self.event_queue.push(BattleEvent::SpawnGroup {
                         time_ms,
                         group_id,
-                        cause: TimelineCause::Root {
-                            kind: TimelineRootCause::Init,
+                        cause: BattleEventCause::Root {
+                            kind: BattleEventRootCause::Init,
                         },
                     });
                 }
@@ -1136,8 +1255,8 @@ impl BattleCore {
                     self.event_queue.push(BattleEvent::EndBattle {
                         time_ms,
                         winner,
-                        cause: TimelineCause::Root {
-                            kind: TimelineRootCause::System,
+                        cause: BattleEventCause::Root {
+                            kind: BattleEventRootCause::System,
                         },
                     });
                 }
@@ -1166,18 +1285,17 @@ impl BattleCore {
             ));
         }
         if !on_battle_start_commands.is_empty() {
-            self.with_recording_root(TimelineRootCause::Init, |core| {
+            self.with_recording_root(BattleEventRootCause::Init, |core| {
                 core.process_commands(on_battle_start_commands, 0);
             });
         }
     }
 
     pub(super) fn schedule_continuous_movement_tick(&mut self, time_ms: u64) {
+        let movement_tick_ms = self.movement_tick_ms();
         if self
             .last_continuous_movement_tick_ms
-            .is_some_and(|last_time_ms| {
-                time_ms < last_time_ms.saturating_add(DEFAULT_MOVEMENT_TICK_MS)
-            })
+            .is_some_and(|last_time_ms| time_ms < last_time_ms.saturating_add(movement_tick_ms))
         {
             return;
         }
@@ -1228,12 +1346,13 @@ impl BattleCore {
         self.last_continuous_movement_tick_ms = None;
         self.movement_backend.reset_for_battle();
         self.battlefield.clear();
-        self.timeline = Timeline::new();
-        self.timeline_seq = 0;
+        self.event_log = BattleEventLog::new();
+        self.event_log_seq = 1;
         self.projectile_seq = 0;
         self.area_seq = 0;
         self.live_signals.clear();
         self.recording_cause_stack.clear();
+        self.recording_source_command_stack.clear();
         self.event_queue.clear();
         self.scenario_runtime = Default::default();
     }
@@ -1270,8 +1389,8 @@ impl BattleCore {
         self.step_battle_execution_until(state, target_time_ms)
     }
 
-    pub fn event_log_entries_after_seq(&self, last_seen_seq: u64) -> Vec<TimelineEntry> {
-        self.timeline.entries_after_seq(last_seen_seq)
+    pub fn event_log_entries_after_seq(&self, last_seen_seq: u64) -> Vec<BattleEventLogEntry> {
+        self.event_log.entries_after_seq(last_seen_seq)
     }
 
     pub fn drain_live_signals(&mut self) -> Vec<BattleLiveSignal> {
@@ -1302,13 +1421,20 @@ impl BattleCore {
                 facing,
                 instance_salt,
                 time_ms,
+                current_hp_policy,
             } => {
-                let unit_id =
-                    self.deploy_player_unit(draft, position, facing, instance_salt, time_ms)?;
+                let unit_id = self.deploy_player_unit(
+                    draft,
+                    position,
+                    facing,
+                    instance_salt,
+                    time_ms,
+                    current_hp_policy,
+                )?;
                 Ok(BattleLiveCommandOutcome::UnitDeployed { unit_id })
             }
-            BattleLiveCommand::WithdrawUnit { unit_id } => {
-                self.withdraw_unit(unit_id)?;
+            BattleLiveCommand::WithdrawUnit { unit_id, time_ms } => {
+                self.withdraw_unit(unit_id, time_ms)?;
                 Ok(BattleLiveCommandOutcome::UnitWithdrawn { unit_id })
             }
             BattleLiveCommand::ActivateSkill {
@@ -1320,6 +1446,20 @@ impl BattleCore {
                 self.start_manual_skill_cast(time_ms, unit_id, skill_id, target)?;
                 Ok(BattleLiveCommandOutcome::SkillActivated { unit_id })
             }
+        }
+    }
+
+    pub fn apply_live_command_with_source_command_id(
+        &mut self,
+        command: BattleLiveCommand,
+        source_command_id: Option<&str>,
+    ) -> Result<BattleLiveCommandOutcome, GameError> {
+        match source_command_id {
+            Some(source_command_id) => self
+                .with_recording_source_command_id(source_command_id, |core| {
+                    core.apply_live_command(command)
+                }),
+            None => self.apply_live_command(command),
         }
     }
 
@@ -1341,10 +1481,10 @@ impl BattleCore {
         setup(self);
         self.build_runtime_field()?;
 
-        self.with_recording_root(TimelineRootCause::Init, |core| {
-            core.record_timeline(
+        self.with_recording_root(BattleEventRootCause::Init, |core| {
+            core.record_event_log(
                 0,
-                TimelineEvent::BattleStart {
+                BattleLogEvent::BattleStart {
                     width: core.battlefield.width(),
                     height: core.battlefield.height(),
                 },
@@ -1357,9 +1497,9 @@ impl BattleCore {
                 .collect();
             artifact_records.sort_by(|a, b| a.0.as_bytes().cmp(b.0.as_bytes()));
             for (artifact_instance_id, owner, base_uuid) in artifact_records {
-                core.record_timeline(
+                core.record_event_log(
                     0,
-                    TimelineEvent::ArtifactSpawned {
+                    BattleLogEvent::ArtifactSpawned {
                         artifact_instance_id,
                         owner,
                         base_uuid,
@@ -1391,7 +1531,7 @@ impl BattleCore {
         }
 
         let Some(next_time_ms) = self.event_queue.peek().map(|e| e.time_ms()) else {
-            let end_time_ms = state.last_event_time_ms.min(MAX_BATTLE_TIME_MS);
+            let end_time_ms = state.last_event_time_ms.min(self.max_battle_time_ms());
             let winner = self
                 .compute_winner(end_time_ms)
                 .unwrap_or(BattleWinner::Draw);
@@ -1401,10 +1541,11 @@ impl BattleCore {
         let current_time_ms = next_time_ms;
         state.last_event_time_ms = current_time_ms;
 
-        if current_time_ms > MAX_BATTLE_TIME_MS {
+        let max_battle_time_ms = self.max_battle_time_ms();
+        if current_time_ms > max_battle_time_ms {
             return Ok(Self::finish_signal(
                 state,
-                MAX_BATTLE_TIME_MS,
+                max_battle_time_ms,
                 BattleWinner::Draw,
             ));
         }
@@ -1447,6 +1588,9 @@ impl BattleCore {
             }
 
             if let Some(winner) = self.compute_winner(current_time_ms) {
+                if self.has_pending_attack_resolve_at(current_time_ms) {
+                    continue;
+                }
                 return Ok(Self::finish_signal(state, current_time_ms, winner));
             }
         }
@@ -1471,7 +1615,7 @@ impl BattleCore {
             return Err(GameError::InvalidAction);
         }
 
-        let target_time_ms = target_time_ms.min(MAX_BATTLE_TIME_MS);
+        let target_time_ms = target_time_ms.min(self.max_battle_time_ms());
         if target_time_ms < state.last_event_time_ms {
             return Ok(BattleStepOutcome::Running);
         }
@@ -1532,137 +1676,18 @@ impl BattleCore {
         owner: Side,
     ) -> bool {
         match self.units.get(&unit_id) {
-            Some(unit) => unit.owner != owner && !unit.is_dead(),
+            Some(unit) => unit.owner != owner && unit.is_active(),
             None => false,
         }
     }
 
-    pub(in crate::game::battle::core) fn persisted_target_if_alive(
-        &self,
-        owner: Side,
-        current_target: Option<UnitInstanceId>,
-    ) -> Option<UnitInstanceId> {
-        current_target.filter(|id| self.is_alive_enemy(*id, owner))
-    }
-
-    pub(in crate::game::battle::core) fn persisted_target_in_range(
-        &self,
-        attacker_instance_id: UnitInstanceId,
-        current_target: Option<UnitInstanceId>,
-    ) -> Option<UnitInstanceId> {
-        let attacker = self.units.get(&attacker_instance_id)?;
-        self.persisted_target_if_alive(attacker.owner, current_target)
-            .filter(|id| self.is_basic_attack_target_in_range(attacker_instance_id, *id))
-    }
-
-    pub(in crate::game::battle::core) fn select_basic_attack_target(
-        &self,
-        attacker_instance_id: UnitInstanceId,
-        current_target: Option<UnitInstanceId>,
-        hinted_target: Option<UnitInstanceId>,
-    ) -> Option<UnitInstanceId> {
-        let attacker = self.units.get(&attacker_instance_id)?;
-        let in_range = |id: UnitInstanceId| {
-            self.is_alive_enemy(id, attacker.owner)
-                && self.is_basic_attack_target_in_range(attacker_instance_id, id)
-        };
-
-        if self.is_fixed_defense_route_enemy(attacker_instance_id) {
-            if attacker.is_airborne() {
-                return self.airborne_enemy_basic_attack_target_in_range(attacker_instance_id);
-            }
-            return self
-                .blocked_by(attacker_instance_id)
-                .filter(|id| in_range(*id))
-                .or_else(|| {
-                    self.fixed_defense_route_end_target_for_enemy(attacker_instance_id)
-                        .filter(|id| in_range(*id))
-                });
-        }
-
-        if attacker.owner == Side::Player {
-            if attacker.basic_attack.range_role == WeaponRangeRole::Melee {
-                if let Some(blocked_target) = self
-                    .first_blocked_enemy(attacker_instance_id)
-                    .filter(|id| in_range(*id))
-                {
-                    return Some(blocked_target);
-                }
-            }
-
-            return self
-                .choose_attack_target_in_range(attacker_instance_id)
-                .or_else(|| hinted_target.filter(|id| in_range(*id)))
-                .or_else(|| self.persisted_target_in_range(attacker_instance_id, current_target));
-        }
-
-        self.blocked_by(attacker_instance_id)
-            .filter(|id| in_range(*id))
-            .or_else(|| hinted_target.filter(|id| in_range(*id)))
-            .or_else(|| self.persisted_target_in_range(attacker_instance_id, current_target))
-            .or_else(|| self.choose_attack_target_in_range(attacker_instance_id))
-    }
-
-    pub(super) fn try_start_pending_basic_attacks(&mut self, now_ms: u64) {
-        let mut unit_ids: Vec<UnitInstanceId> = self.units.keys().copied().collect();
-        unit_ids.sort_by(|a, b| a.as_bytes().cmp(b.as_bytes()));
-
-        for unit_id in unit_ids {
-            let Some(unit) = self.units.get(&unit_id) else {
-                continue;
-            };
-            let pending = unit.pending_basic_attack;
-            let next_ready_ms = unit.next_basic_attack_ms;
-            let can_attack = unit.action_locks.can_basic_attack(now_ms);
-            let lock_until = unit.action_locks.basic_attack_until_ms;
-            if unit.is_dead() || !unit.can_basic_attack() || !pending || now_ms < next_ready_ms {
-                continue;
-            }
-
-            if !can_attack {
-                if let Some(unit) = self.units.get_mut(&unit_id) {
-                    unit.pending_basic_attack = false;
-                }
-                self.event_queue.push(BattleEvent::AttackStart {
-                    time_ms: lock_until,
-                    attacker_instance_id: unit_id,
-                    target_instance_id: None,
-                    schedule_next: true,
-                    cause: TimelineCause::Root {
-                        kind: TimelineRootCause::Period,
-                    },
-                });
-                continue;
-            }
-
-            let target = self.select_basic_attack_target(unit_id, unit.current_target, None);
-            let Some(target_id) = target else {
-                if let Some(unit) = self.units.get_mut(&unit_id) {
-                    unit.current_target = None;
-                }
-                continue;
-            };
-
-            if let Some(unit) = self.units.get_mut(&unit_id) {
-                unit.pending_basic_attack = false;
-            }
-
-            self.event_queue.push(BattleEvent::AttackStart {
-                time_ms: now_ms,
-                attacker_instance_id: unit_id,
-                target_instance_id: Some(target_id),
-                schedule_next: true,
-                cause: TimelineCause::Root {
-                    kind: TimelineRootCause::Period,
-                },
-            });
-        }
-    }
-
     pub(super) fn build_skill_step_commands(
+        &self,
         caster_instance_id: UnitInstanceId,
         step: &SkillStepDef,
         targets: &[UnitInstanceId],
+        committed_at_ms: u64,
+        source_template: Option<&crate::game::battle::damage::DamageSourceSnapshot>,
     ) -> (Vec<BattleCommand>, SkillStepResult) {
         let mut commands: Vec<BattleCommand> = Vec::new();
         let mut result = SkillStepResult {
@@ -1699,14 +1724,32 @@ impl BattleCore {
                     }
                     let damage_amount = amount.unsigned_abs();
                     for target_id in targets {
+                        let source_snapshot = if let Some(template) = source_template {
+                            let mut snapshot = template.clone();
+                            snapshot.source = DamageSource::Ability;
+                            snapshot.damage_type = *damage_type;
+                            snapshot.base_damage = damage_amount;
+                            snapshot.modifiers = step_damage_modifiers;
+                            snapshot.minimum_damage = 0;
+                            self.materialize_damage_source_snapshot_for_target(snapshot, *target_id)
+                        } else if let Some(snapshot) = self.damage_source_snapshot_for_unit(
+                            caster_instance_id,
+                            *target_id,
+                            DamageSource::Ability,
+                            *damage_type,
+                            damage_amount,
+                            step_damage_modifiers,
+                            0,
+                            committed_at_ms,
+                            false,
+                        ) {
+                            snapshot
+                        } else {
+                            continue;
+                        };
                         commands.push(BattleCommand::ApplyDamage {
-                            source_id: caster_instance_id,
                             target_id: *target_id,
-                            amount: damage_amount,
-                            damage_type: *damage_type,
-                            modifiers: step_damage_modifiers,
-                            source: DamageSource::Ability,
-                            minimum_damage: 0,
+                            source_snapshot,
                         });
                     }
                     if !targets.is_empty() {
@@ -1765,6 +1808,18 @@ impl BattleCore {
                             target_id: *target_id,
                             buff_id,
                             duration_ms: u64::from(*duration_ms),
+                        });
+                    }
+                    if !targets.is_empty() {
+                        result.applied_effect_count =
+                            result.applied_effect_count.saturating_add(targets.len());
+                    }
+                }
+                SkillEffectDef::InterruptCast => {
+                    for target_id in targets {
+                        commands.push(BattleCommand::InterruptCast {
+                            source_id: caster_instance_id,
+                            target_id: *target_id,
                         });
                     }
                     if !targets.is_empty() {
@@ -1903,9 +1958,9 @@ impl BattleCore {
             (!execution.step.presentation.is_empty()).then(|| execution.step.presentation.clone());
 
         let step_seq = self.with_recording_context(execution.cause, |core| {
-            core.record_timeline(
+            core.record_event_log(
                 execution.time_ms,
-                TimelineEvent::AbilityStepTriggered {
+                BattleLogEvent::AbilityStepTriggered {
                     skill_id: execution.skill.id.clone(),
                     step_id: execution.step.id.clone(),
                     caster_instance_id: execution.caster_instance_id,
@@ -1932,10 +1987,12 @@ impl BattleCore {
                         execution.step,
                         iteration_target,
                     );
-                    let (commands, result) = Self::build_skill_step_commands(
+                    let (commands, result) = core.build_skill_step_commands(
                         execution.caster_instance_id,
                         execution.step,
                         &targets,
+                        execution.time_ms,
+                        None,
                     );
                     if !commands.is_empty() {
                         let summary = core.process_commands(commands, execution.time_ms);
@@ -1960,10 +2017,7 @@ impl BattleCore {
                     execution.time_ms,
                 );
             }
-            DeliveryDef::Projectile {
-                speed_units_per_ms,
-                collision,
-            } => {
+            delivery @ DeliveryDef::Projectile { .. } => {
                 let launched_count = core.dispatch_skill_projectile_delivery(
                     execution.time_ms,
                     execution.cast_seq,
@@ -1972,8 +2026,7 @@ impl BattleCore {
                     execution.skill,
                     execution.step,
                     execution.cast_target,
-                    *speed_units_per_ms,
-                    *collision,
+                    delivery,
                     repeat_count,
                 );
                 if launched_count == 0 {
@@ -2030,6 +2083,18 @@ impl BattleCore {
                         else {
                             continue;
                         };
+                        if core.skill_step_needs_hostile_usefulness_gate(
+                            execution.caster_instance_id,
+                            execution.step,
+                            area.hit_targets,
+                            &targets,
+                        ) && !core.skill_step_has_useful_hostile_target(
+                            execution.caster_instance_id,
+                            execution.step,
+                            &targets,
+                        ) {
+                            continue;
+                        }
 
                         let delivery_id = core.allocate_skill_area_delivery_id(
                             execution.cast_seq,
@@ -2063,10 +2128,12 @@ impl BattleCore {
                             },
                         );
 
-                        let (commands, result) = Self::build_skill_step_commands(
+                        let (commands, result) = core.build_skill_step_commands(
                             execution.caster_instance_id,
                             execution.step,
                             &targets,
+                            execution.time_ms,
+                            None,
                         );
                         if !commands.is_empty() {
                             let summary = core.with_recording_cause(area_declared_seq, |core| {
@@ -2110,6 +2177,7 @@ impl BattleCore {
                         execution.caster_instance_id,
                         execution.skill.id.clone(),
                         execution.step.id.clone(),
+                        execution.step,
                         iteration_target,
                         tile_range.clone(),
                         area.clone(),
@@ -2167,152 +2235,14 @@ impl BattleCore {
                 schedule_next,
                 cause,
             } => {
-                let (
-                    is_dead,
-                    can_basic_attack,
-                    next_ready_ms,
-                    can_attack,
-                    lock_until,
-                    current_target,
-                    interval_ms,
-                ) = {
-                    let Some(attacker) = self.units.get(&attacker_instance_id) else {
-                        return Ok(());
-                    };
-                    (
-                        attacker.is_dead(),
-                        attacker.can_basic_attack(),
-                        attacker.next_basic_attack_ms,
-                        attacker.action_locks.can_basic_attack(current_time_ms),
-                        attacker.action_locks.basic_attack_until_ms,
-                        attacker.current_target,
-                        attacker.stats.attack_interval_ms.max(1),
-                    )
-                };
-                if is_dead || !can_basic_attack {
-                    return Ok(());
-                }
-
-                if schedule_next && current_time_ms < next_ready_ms {
-                    self.event_queue.push(BattleEvent::AttackStart {
-                        time_ms: next_ready_ms,
-                        attacker_instance_id,
-                        target_instance_id,
-                        schedule_next,
-                        cause,
-                    });
-                    return Ok(());
-                }
-
-                // 행동 락(하드 CC/집중 등)으로 공격이 지연됐을 때 재스케줄링
-                if !can_attack {
-                    self.event_queue.push(BattleEvent::AttackStart {
-                        time_ms: if schedule_next {
-                            lock_until.max(next_ready_ms)
-                        } else {
-                            lock_until
-                        },
-                        attacker_instance_id,
-                        target_instance_id,
-                        schedule_next,
-                        cause,
-                    });
-                    return Ok(());
-                }
-
-                let hinted_target = if schedule_next {
-                    None
-                } else {
-                    target_instance_id
-                };
-                let target = self.select_basic_attack_target(
-                    attacker_instance_id,
-                    current_target,
-                    hinted_target,
-                );
-
-                if target.is_none() {
-                    if let Some(attacker) = self.units.get_mut(&attacker_instance_id) {
-                        attacker.current_target = None;
-                    }
-                    if schedule_next {
-                        if let Some(attacker) = self.units.get_mut(&attacker_instance_id) {
-                            attacker.pending_basic_attack = true;
-                            attacker.next_basic_attack_ms = time_ms;
-                        }
-                    }
-                    return Ok(());
-                }
-
-                let target_id = target.unwrap();
-                let stopped_movement = self.interrupt_movement(
+                self.handle_basic_attack_start_event(
                     time_ms,
+                    current_time_ms,
                     attacker_instance_id,
-                    crate::game::battle::timeline::MovementStopReason::AttackStarted,
-                    None,
-                    ActionState::Idle,
+                    target_instance_id,
+                    schedule_next,
+                    cause,
                 );
-                if let Some(attacker) = self.units.get_mut(&attacker_instance_id) {
-                    attacker.current_target = Some(target_id);
-                    attacker.pending_basic_attack = false;
-                }
-
-                let _ = stopped_movement;
-
-                let windup_ms = self
-                    .units
-                    .get(&attacker_instance_id)
-                    .map(|unit| unit.basic_attack.effective_windup_ms() as u64)
-                    .unwrap_or(0);
-                let resolve_time = time_ms.saturating_add(windup_ms);
-
-                if let Some(attacker) = self.units.get_mut(&attacker_instance_id) {
-                    attacker.action_locks.lock_basic_attack_until(resolve_time);
-                    attacker.action_locks.lock_movement_until(resolve_time);
-                }
-
-                let attack_kind = if schedule_next {
-                    AttackKind::Auto
-                } else {
-                    AttackKind::Triggered
-                };
-                let attack_delivery = self.basic_attack_delivery_for_unit(attacker_instance_id);
-
-                let start_seq = self.with_recording_context(cause, |core| {
-                    core.record_timeline(
-                        time_ms,
-                        TimelineEvent::AttackStart {
-                            attacker_instance_id,
-                            target_instance_id: target_id,
-                            kind: Some(attack_kind),
-                            delivery: Some(attack_delivery),
-                        },
-                    )
-                });
-
-                self.event_queue.push(BattleEvent::AttackResolve {
-                    time_ms: resolve_time,
-                    attacker_instance_id,
-                    target_instance_id: target_id,
-                    kind: attack_kind,
-                    cause: TimelineCause::Parent { seq: start_seq },
-                });
-
-                if schedule_next {
-                    let next_time = time_ms.saturating_add(interval_ms);
-                    if let Some(attacker) = self.units.get_mut(&attacker_instance_id) {
-                        attacker.next_basic_attack_ms = next_time;
-                    }
-                    self.event_queue.push(BattleEvent::AttackStart {
-                        time_ms: next_time,
-                        attacker_instance_id,
-                        target_instance_id: None,
-                        schedule_next: true,
-                        cause: TimelineCause::Root {
-                            kind: TimelineRootCause::Period,
-                        },
-                    });
-                }
 
                 Ok(())
             }
@@ -2320,50 +2250,20 @@ impl BattleCore {
                 time_ms,
                 attacker_instance_id,
                 target_instance_id,
+                source_snapshot,
                 kind,
+                delivery,
                 cause,
             } => {
-                // TODO: Resolve all AttackResolve events with the same time_ms as one batch.
-                // Sequential queue order currently lets the first lethal resolve end the battle
-                // before another simultaneous attack can apply its already-started damage.
-                let attacker_alive = self
-                    .units
-                    .get(&attacker_instance_id)
-                    .is_some_and(|unit| !unit.is_dead());
-                if !attacker_alive {
-                    return Ok(());
-                }
-                let attack_delivery = self.basic_attack_delivery_for_unit(attacker_instance_id);
-
-                let resolve_seq = self.with_recording_context(cause, |core| {
-                    core.record_timeline(
-                        time_ms,
-                        TimelineEvent::AttackResolve {
-                            attacker_instance_id,
-                            target_instance_id,
-                            kind: Some(kind),
-                            delivery: Some(attack_delivery),
-                        },
-                    )
-                });
-
-                let hit = self.with_recording_cause(resolve_seq, |core| {
-                    core.resolve_basic_attack(attacker_instance_id, target_instance_id, time_ms)
-                });
-
-                if !hit {
-                    self.with_recording_cause(resolve_seq, |core| {
-                        core.record_timeline(
-                            time_ms,
-                            TimelineEvent::AttackMiss {
-                                attacker_instance_id,
-                                target_instance_id,
-                                kind: Some(kind),
-                                delivery: Some(attack_delivery),
-                            },
-                        )
-                    });
-                }
+                self.handle_basic_attack_resolve_event(
+                    time_ms,
+                    attacker_instance_id,
+                    target_instance_id,
+                    source_snapshot,
+                    kind,
+                    delivery,
+                    cause,
+                );
 
                 Ok(())
             }
@@ -2386,6 +2286,7 @@ impl BattleCore {
                 skill_id,
                 step_id,
                 caster_instance_id,
+                source_snapshot,
                 impact_position,
                 first_hit_unit_id,
                 impact_vfx_id,
@@ -2401,6 +2302,7 @@ impl BattleCore {
                         skill_id,
                         step_id,
                         caster_instance_id,
+                        source_snapshot,
                         impact_position,
                         first_hit_unit_id,
                         impact_vfx_id,
@@ -2443,7 +2345,7 @@ impl BattleCore {
                 let Some(caster) = self.units.get(&caster_instance_id) else {
                     return Ok(());
                 };
-                if caster.is_dead() {
+                if !caster.is_active() {
                     return Ok(());
                 }
                 if self.has_buff_kind(
@@ -2456,7 +2358,10 @@ impl BattleCore {
                     }
                     return Ok(());
                 }
-                let blocked_until = caster.next_action_time;
+                let blocked_until = caster.next_action_time.max(
+                    self.active_hard_cc_release_time_ms(caster_instance_id, time_ms)
+                        .unwrap_or(0),
+                );
 
                 // CC 등 행동이 막힌 상태라면 이벤트 연기
                 if time_ms < blocked_until {
@@ -2493,7 +2398,7 @@ impl BattleCore {
                     return Ok(());
                 }
 
-                let caster_pos = match self.battlefield.position_of(caster_instance_id) {
+                let caster_pos = match self.live_unit_projected_tile(caster_instance_id) {
                     Some(pos) => pos,
                     None => return Ok(()),
                 };
@@ -2505,6 +2410,25 @@ impl BattleCore {
                     Some(skill) => skill.clone(),
                     None => return Ok(()),
                 };
+
+                let target = self.resolve_skill_cast_target(
+                    &skill,
+                    caster_instance_id,
+                    caster_owner,
+                    caster_pos,
+                );
+                if !self.skill_has_useful_automatic_cast_target(
+                    time_ms,
+                    &skill,
+                    caster_instance_id,
+                    target,
+                ) {
+                    if let Some(caster) = self.units.get_mut(&caster_instance_id) {
+                        caster.pending_cast = true;
+                        caster.pending_cast_cause.get_or_insert(cause);
+                    }
+                    return Ok(());
+                }
 
                 // "캐스트/집중"이 진행되는 동안 새로운 AutoCastStart를 막기 위한 캐스트 락.
                 // (공격/이동은 ActionLocks로 개별 게이트)
@@ -2533,7 +2457,7 @@ impl BattleCore {
                     let interrupted = self.interrupt_movement(
                         time_ms,
                         caster_instance_id,
-                        crate::game::battle::timeline::MovementStopReason::CastStarted,
+                        crate::game::battle::event_log::MovementStopReason::CastStarted,
                         Some(cast_end_ms),
                         ActionState::Idle,
                     );
@@ -2542,24 +2466,10 @@ impl BattleCore {
                     }
                 }
 
-                // Current rule: autocast may begin even when no valid cast target is found.
-                // We still enter focus/recovery and spend resonance at AutoCastEnd so
-                // "bad timing" remains a possible AI failure mode.
-                //
-                // Revisit only if playtests show this feels excessively punishing:
-                // the alternative contract is to abort before PendingSkillCast is stored
-                // and preserve resonance when target resolution returns None.
-                let target = self.resolve_skill_cast_target(
-                    &skill,
-                    caster_instance_id,
-                    caster_owner,
-                    caster_pos,
-                );
-
                 let start_seq = self.with_recording_context(cause, |core| {
-                    core.record_timeline(
+                    core.record_event_log(
                         time_ms,
-                        TimelineEvent::AutoCastStart {
+                        BattleLogEvent::AutoCastStart {
                             skill_id,
                             caster_instance_id,
                             target,
@@ -2571,13 +2481,14 @@ impl BattleCore {
                     caster.pending_skill_cast = Some(PendingSkillCast {
                         skill_id: skill.id.clone(),
                         cast_target: target,
+                        start_seq,
                     });
                 }
 
                 self.event_queue.push(BattleEvent::AutoCastEnd {
                     time_ms: cast_end_ms,
                     caster_instance_id,
-                    cause: TimelineCause::Parent { seq: start_seq },
+                    cause: BattleEventCause::Parent { seq: start_seq },
                 });
 
                 Ok(())
@@ -2587,11 +2498,27 @@ impl BattleCore {
                 caster_instance_id,
                 cause,
             } => {
+                let Some(expected_start_seq) = cast_start_seq_from_cause(cause) else {
+                    return Ok(());
+                };
+                let has_matching_pending = self
+                    .units
+                    .get(&caster_instance_id)
+                    .and_then(|unit| unit.pending_skill_cast.as_ref())
+                    .is_some_and(|pending| pending.start_seq == expected_start_seq);
+                if !has_matching_pending {
+                    return Ok(());
+                }
+
                 let blocked_until = self
                     .units
                     .get(&caster_instance_id)
                     .map(|unit| unit.next_action_time)
-                    .unwrap_or(0);
+                    .unwrap_or(0)
+                    .max(
+                        self.active_hard_cc_release_time_ms(caster_instance_id, time_ms)
+                            .unwrap_or(0),
+                    );
                 if time_ms < blocked_until {
                     self.event_queue.push(BattleEvent::AutoCastEnd {
                         time_ms: blocked_until,
@@ -2601,10 +2528,17 @@ impl BattleCore {
                     return Ok(());
                 }
 
-                let pending = self
-                    .units
-                    .get_mut(&caster_instance_id)
-                    .and_then(|unit| unit.pending_skill_cast.take());
+                let pending = self.units.get_mut(&caster_instance_id).and_then(|unit| {
+                    if unit
+                        .pending_skill_cast
+                        .as_ref()
+                        .is_some_and(|pending| pending.start_seq == expected_start_seq)
+                    {
+                        unit.pending_skill_cast.take()
+                    } else {
+                        None
+                    }
+                });
                 self.with_recording_context(cause, |core| {
                     if let Some(pending) = pending {
                         core.invoke_ability(
@@ -2618,9 +2552,9 @@ impl BattleCore {
                         core.schedule_pending_autocasts(time_ms);
                     }
 
-                    core.record_timeline(
+                    core.record_event_log(
                         time_ms,
-                        TimelineEvent::AutoCastEnd { caster_instance_id },
+                        BattleLogEvent::AutoCastEnd { caster_instance_id },
                     );
                 });
 
@@ -2630,10 +2564,6 @@ impl BattleCore {
                 let recovery_ends_at =
                     time_ms.saturating_add(caster.stats.attack_interval_ms.max(1));
                 caster.next_basic_attack_ms = caster.next_basic_attack_ms.max(recovery_ends_at);
-                // Intentionally consumes resonance even if the pending cast had no target and
-                // invoke_ability became a functional no-op. Keep this coupled with the
-                // AutoCastStart rule above so the "whiff still spends" behavior stays explicit
-                // in code until we decide otherwise from playtest feedback.
                 caster.resonance_current = 0;
                 caster
                     .action_locks
@@ -2650,11 +2580,27 @@ impl BattleCore {
                 caster_instance_id,
                 cause,
             } => {
+                let Some(expected_start_seq) = cast_start_seq_from_cause(cause) else {
+                    return Ok(());
+                };
+                let has_matching_pending = self
+                    .units
+                    .get(&caster_instance_id)
+                    .and_then(|unit| unit.pending_skill_cast.as_ref())
+                    .is_some_and(|pending| pending.start_seq == expected_start_seq);
+                if !has_matching_pending {
+                    return Ok(());
+                }
+
                 let blocked_until = self
                     .units
                     .get(&caster_instance_id)
                     .map(|unit| unit.next_action_time)
-                    .unwrap_or(0);
+                    .unwrap_or(0)
+                    .max(
+                        self.active_hard_cc_release_time_ms(caster_instance_id, time_ms)
+                            .unwrap_or(0),
+                    );
                 if time_ms < blocked_until {
                     self.event_queue.push(BattleEvent::ManualCastEnd {
                         time_ms: blocked_until,
@@ -2664,10 +2610,17 @@ impl BattleCore {
                     return Ok(());
                 }
 
-                let pending = self
-                    .units
-                    .get_mut(&caster_instance_id)
-                    .and_then(|unit| unit.pending_skill_cast.take());
+                let pending = self.units.get_mut(&caster_instance_id).and_then(|unit| {
+                    if unit
+                        .pending_skill_cast
+                        .as_ref()
+                        .is_some_and(|pending| pending.start_seq == expected_start_seq)
+                    {
+                        unit.pending_skill_cast.take()
+                    } else {
+                        None
+                    }
+                });
                 self.with_recording_context(cause, |core| {
                     if let Some(pending) = pending {
                         core.invoke_ability(
@@ -2680,9 +2633,9 @@ impl BattleCore {
                         );
                     }
 
-                    core.record_timeline(
+                    core.record_event_log(
                         time_ms,
-                        TimelineEvent::ManualCastEnd { caster_instance_id },
+                        BattleLogEvent::ManualCastEnd { caster_instance_id },
                     );
                 });
 
@@ -2753,22 +2706,10 @@ impl BattleCore {
 
                 if !matches!(
                     self.units.get(&target_instance_id),
-                    Some(unit) if !unit.is_dead()
+                    Some(unit) if unit.is_active()
                 ) {
                     return Ok(());
                 }
-
-                let applied_seq = self.with_recording_context(cause, |core| {
-                    core.record_timeline(
-                        time_ms,
-                        TimelineEvent::BuffApplied {
-                            caster_instance_id,
-                            target_instance_id,
-                            buff_id,
-                            duration_ms,
-                        },
-                    )
-                });
 
                 let key = BuffInstanceKey {
                     caster_instance_id,
@@ -2778,28 +2719,61 @@ impl BattleCore {
 
                 let expires_at_ms = time_ms.saturating_add(duration_ms);
                 let max_stacks = def.max_stacks.max(1);
-                let is_hard_cc = matches!(
-                    def.kind,
-                    crate::game::battle::buffs::BuffKind::Stun
-                        | crate::game::battle::buffs::BuffKind::Freeze
-                );
+                let is_hard_cc = Self::is_hard_cc_kind(def.kind);
 
-                // Hard CC is exclusive per target: any existing hard CC on this target is replaced.
+                // Hard CC is exclusive per target. Reapplying the same active
+                // buff refreshes it; applying a different hard CC explicitly
+                // ends the old one before the new BuffApplied event.
                 if is_hard_cc {
-                    self.buffs.retain(|k, _| {
-                        if k.target_instance_id != target_instance_id {
-                            return true;
-                        }
-                        let Some(kdef) = self.game_data.buff_data.get(k.buff_id) else {
-                            return true;
-                        };
-                        !matches!(
-                            kdef.kind,
-                            crate::game::battle::buffs::BuffKind::Stun
-                                | crate::game::battle::buffs::BuffKind::Freeze
-                        )
+                    let mut replaced_keys = self
+                        .buffs
+                        .keys()
+                        .copied()
+                        .filter(|active_key| {
+                            active_key.target_instance_id == target_instance_id
+                                && *active_key != key
+                                && self
+                                    .game_data
+                                    .buff_data
+                                    .get(active_key.buff_id)
+                                    .is_some_and(|active_def| {
+                                        Self::is_hard_cc_kind(active_def.kind)
+                                    })
+                        })
+                        .collect::<Vec<_>>();
+                    replaced_keys.sort_by(|left, right| {
+                        left.target_instance_id
+                            .cmp(&right.target_instance_id)
+                            .then_with(|| left.caster_instance_id.cmp(&right.caster_instance_id))
+                            .then_with(|| left.buff_id.as_u64().cmp(&right.buff_id.as_u64()))
                     });
+                    for replaced_key in replaced_keys {
+                        self.buffs.remove(&replaced_key);
+                        self.with_recording_context(cause, |core| {
+                            core.record_event_log(
+                                time_ms,
+                                BattleLogEvent::BuffExpired {
+                                    caster_instance_id: replaced_key.caster_instance_id,
+                                    target_instance_id: replaced_key.target_instance_id,
+                                    buff_id: replaced_key.buff_id,
+                                    reason: BuffExpireReason::Replaced,
+                                },
+                            )
+                        });
+                    }
                 }
+
+                let applied_seq = self.with_recording_context(cause, |core| {
+                    core.record_event_log(
+                        time_ms,
+                        BattleLogEvent::BuffApplied {
+                            caster_instance_id,
+                            target_instance_id,
+                            buff_id,
+                            duration_ms,
+                        },
+                    )
+                });
 
                 let entry = self.buffs.entry(key).or_insert(ActiveBuff {
                     stacks: 0,
@@ -2829,7 +2803,7 @@ impl BattleCore {
                             caster_instance_id,
                             target_instance_id,
                             buff_id,
-                            cause: TimelineCause::Parent { seq: applied_seq },
+                            cause: BattleEventCause::Parent { seq: applied_seq },
                         });
                     }
                 }
@@ -2839,23 +2813,19 @@ impl BattleCore {
                     caster_instance_id,
                     target_instance_id,
                     buff_id,
-                    cause: TimelineCause::Parent { seq: applied_seq },
+                    cause: BattleEventCause::Parent { seq: applied_seq },
                 });
 
                 if is_hard_cc {
                     let lock_until = effective_expires_at_ms.saturating_add(1);
                     if let Some(unit) = self.units.get_mut(&target_instance_id) {
-                        unit.next_action_time = unit.next_action_time.max(lock_until);
-                        unit.action_locks.lock_movement_until(lock_until);
-                        unit.action_locks.lock_basic_attack_until(lock_until);
-                        unit.action_locks.lock_resonance_gain_until(lock_until);
                         unit.current_target = None;
                     }
 
                     self.interrupt_movement(
                         time_ms,
                         target_instance_id,
-                        crate::game::battle::timeline::MovementStopReason::HardCC,
+                        crate::game::battle::event_log::MovementStopReason::HardCC,
                         Some(lock_until),
                         ActionState::Idle,
                     );
@@ -2892,9 +2862,9 @@ impl BattleCore {
                 let (stacks, expires_at_ms) = (active.stacks, active.expires_at_ms);
 
                 let tick_seq = self.with_recording_context(cause, |core| {
-                    core.record_timeline(
+                    core.record_event_log(
                         time_ms,
-                        TimelineEvent::BuffTick {
+                        BattleLogEvent::BuffTick {
                             caster_instance_id,
                             target_instance_id,
                             buff_id,
@@ -2911,15 +2881,23 @@ impl BattleCore {
                     let dmg = (damage_per_tick as i32).saturating_mul(stacks);
                     if dmg > 0 {
                         self.with_recording_cause(tick_seq, |core| {
+                            let Some(source_snapshot) = core.damage_source_snapshot_for_unit(
+                                caster_instance_id,
+                                target_instance_id,
+                                DamageSource::BuffTick,
+                                damage_type,
+                                dmg as u32,
+                                Default::default(),
+                                0,
+                                time_ms,
+                                false,
+                            ) else {
+                                return;
+                            };
                             core.process_commands(
                                 vec![BattleCommand::ApplyDamage {
-                                    source_id: caster_instance_id,
                                     target_id: target_instance_id,
-                                    amount: dmg as u32,
-                                    damage_type,
-                                    modifiers: Default::default(),
-                                    source: DamageSource::BuffTick,
-                                    minimum_damage: 0,
+                                    source_snapshot,
                                 }],
                                 time_ms,
                             );
@@ -2972,12 +2950,13 @@ impl BattleCore {
                 }
 
                 self.with_recording_context(cause, |core| {
-                    core.record_timeline(
+                    core.record_event_log(
                         time_ms,
-                        TimelineEvent::BuffExpired {
+                        BattleLogEvent::BuffExpired {
                             caster_instance_id,
                             target_instance_id,
                             buff_id,
+                            reason: BuffExpireReason::Natural,
                         },
                     )
                 });
@@ -2995,20 +2974,21 @@ impl BattleCore {
                 Ok(())
             }
             BattleEvent::ContinuousMovementTick { time_ms } => {
+                let movement_tick_ms = self.movement_tick_ms();
                 if self
                     .last_continuous_movement_tick_ms
                     .is_some_and(|last_time_ms| {
-                        time_ms < last_time_ms.saturating_add(DEFAULT_MOVEMENT_TICK_MS)
+                        time_ms < last_time_ms.saturating_add(movement_tick_ms)
                     })
                 {
                     return Ok(());
                 }
 
                 self.last_continuous_movement_tick_ms = Some(time_ms);
-                self.run_continuous_attack_movement_tick(time_ms, DEFAULT_MOVEMENT_TICK_MS);
+                self.run_continuous_attack_movement_tick(time_ms, movement_tick_ms);
                 self.try_start_pending_basic_attacks(time_ms);
-                let next_time_ms = time_ms.saturating_add(DEFAULT_MOVEMENT_TICK_MS);
-                if next_time_ms <= MAX_BATTLE_TIME_MS {
+                let next_time_ms = time_ms.saturating_add(movement_tick_ms);
+                if next_time_ms <= self.max_battle_time_ms() {
                     self.schedule_continuous_movement_tick(next_time_ms);
                 }
                 Ok(())

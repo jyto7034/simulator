@@ -35,7 +35,6 @@ impl MapNodeExecutor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::game::map::session::NodeSessionKind;
     use crate::game::map::types::{MapNodeState, SupportNodeMode, SupportNodeType};
     use uuid::Uuid;
 
@@ -52,7 +51,7 @@ mod tests {
             payload: MapNodePayload::Support {
                 support_type: SupportNodeType::Rest,
                 support_mode: SupportNodeMode::LimitedChoice,
-                choices: vec![SupportNodeType::Rest, SupportNodeType::Medical],
+                choices: vec![SupportNodeType::SavePoint, SupportNodeType::Rest],
             },
         };
 
@@ -63,6 +62,6 @@ mod tests {
         assert_eq!(result.category, MapNodeCategory::Support);
         assert_eq!(result.payload, node.payload);
         assert_eq!(result.session.node_id, node.id);
-        assert_eq!(result.session.session_kind, NodeSessionKind::Support);
+        assert_eq!(result.session.category, MapNodeCategory::Support);
     }
 }

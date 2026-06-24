@@ -1,0 +1,191 @@
+{
+  "version": 1,
+  "run_seed": 0,
+  "battle_uuid": "34c54c75-9364-4a65-8779-87379b0e7903",
+  "abnormality_id": "defense_risk_abno",
+  "encounter_id": "defense_encounter",
+  "node_type": "Defense",
+  "mission_variant": "Defense",
+  "winner": "Player",
+  "participant_results": [
+    {
+      "unit_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+      "owned_uuid": "def00000-0000-0000-0000-000000000001",
+      "side": "Player",
+      "survived": true,
+      "final_hp": 350,
+      "max_hp": 350,
+      "became_incapacitated": false
+    },
+    {
+      "unit_instance_id": "7f4d14c2-cb63-4fac-901d-63c46bbdf960",
+      "owned_uuid": "1ea68e97-2aef-454b-8148-26a0a6dfddab",
+      "side": "Opponent",
+      "survived": true,
+      "final_hp": 10,
+      "max_hp": 10,
+      "became_incapacitated": false
+    }
+  ],
+  "result_stats": {
+    "battle": {
+      "duration_ms": 5,
+      "winner": "Player",
+      "killed_enemy_count": 0
+    },
+    "employees": [
+      {
+        "employee_uuid": "def00000-0000-0000-0000-000000000001",
+        "unit_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+        "survived": true,
+        "became_incapacitated": false,
+        "final_hp": 350,
+        "max_hp": 350,
+        "damage_dealt": 0,
+        "damage_taken": 0,
+        "kill_count": 0,
+        "basic_attack_count": 0,
+        "skill_cast_count": 0,
+        "deployed_count": 0,
+        "withdrawn_count": 0,
+        "deployed_time_ms": 0
+      }
+    ],
+    "mvp": {
+      "employee_uuid": "def00000-0000-0000-0000-000000000001",
+      "unit_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+      "score": 50,
+      "title": "Survivor",
+      "highlighted_metrics": [
+        {
+          "metric": "Survived",
+          "value": 1,
+          "weighted_score": 50,
+          "title": "Survivor"
+        }
+      ]
+    }
+  },
+  "event_log": {
+    "version": 27,
+    "entries": [
+      {
+        "time_ms": 0,
+        "seq": 1,
+        "cause": {
+          "cause_type": "root",
+          "kind": "init"
+        },
+        "event": {
+          "type": "BattleStart",
+          "width": 7,
+          "height": 7
+        }
+      },
+      {
+        "time_ms": 0,
+        "seq": 2,
+        "cause": {
+          "cause_type": "root",
+          "kind": "init"
+        },
+        "event": {
+          "type": "UnitSpawned",
+          "unit_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "owner": "Player",
+          "role": "defense_object",
+          "threat_class": "normal",
+          "mobility_kind": "ground",
+          "base_uuid": "def00000-0000-0000-0000-000000000002",
+          "unit_source": {
+            "kind": "defense_object",
+            "base_uuid": "def00000-0000-0000-0000-000000000002"
+          },
+          "world_position": {
+            "x_milli": 3500,
+            "y_milli": 3500
+          },
+          "stats": {
+            "max_health": 350,
+            "current_health": 350,
+            "attack": 0,
+            "defense": 8,
+            "magic_resist": 8,
+            "attack_interval_ms": 1500,
+            "move_speed_units_per_ms": 0
+          }
+        }
+      },
+      {
+        "time_ms": 0,
+        "seq": 3,
+        "cause": {
+          "cause_type": "root",
+          "kind": "init"
+        },
+        "event": {
+          "type": "UnitSpawned",
+          "unit_instance_id": "7f4d14c2-cb63-4fac-901d-63c46bbdf960",
+          "owner": "Opponent",
+          "role": "combatant",
+          "threat_class": "elite",
+          "mobility_kind": "ground",
+          "base_uuid": "00000000-0000-0000-0000-000000004e25",
+          "unit_source": {
+            "kind": "abnormality",
+            "abnormality_id": "defense_risk_abno",
+            "base_uuid": "00000000-0000-0000-0000-000000004e25"
+          },
+          "world_position": {
+            "x_milli": 2500,
+            "y_milli": 500
+          },
+          "stats": {
+            "max_health": 10,
+            "current_health": 10,
+            "attack": 1,
+            "defense": 0,
+            "magic_resist": 0,
+            "attack_interval_ms": 1500,
+            "move_speed_units_per_ms": 3000
+          }
+        }
+      },
+      {
+        "time_ms": 0,
+        "seq": 4,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "7f4d14c2-cb63-4fac-901d-63c46bbdf960",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 500
+          },
+          "target": {
+            "x_milli": 2606,
+            "y_milli": 606
+          },
+          "started_at_ms": 0,
+          "ends_at_ms": 50,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5,
+        "seq": 5,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "BattleEnd",
+          "winner": "Player"
+        }
+      }
+    ]
+  }
+}

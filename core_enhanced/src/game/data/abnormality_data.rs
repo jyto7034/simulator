@@ -7,8 +7,8 @@ use crate::game::{
     ability::{DeliveryDef, SkillId},
     battle::{
         damage::DamageType,
-        tile_range::TileRangePattern,
-        types::{MobilityKind, UnitTargetTrait},
+        tile_range::{TileRangePattern, TileRangePolicy},
+        types::{BattleUnitThreatClass, MobilityKind, UnitTargetTrait},
     },
     data::equipment_data::{TargetingProfile, WeaponRangeRole},
     data::{build_string_index, build_uuid_index, once_lock_with},
@@ -41,8 +41,16 @@ fn default_basic_attack_interval_ms() -> u64 {
     1500
 }
 
+fn default_ranged_reposition_ms() -> u64 {
+    1000
+}
+
 fn default_magic_resist() -> i32 {
     0
+}
+
+fn default_abnormality_threat_class() -> BattleUnitThreatClass {
+    BattleUnitThreatClass::Elite
 }
 
 fn default_move_speed_units_per_ms() -> u32 {
@@ -84,6 +92,8 @@ pub struct BasicAttackDef {
     #[serde(default = "default_attack_range_units")]
     pub range_units: f32,
     #[serde(default)]
+    pub range_policy: TileRangePolicy,
+    #[serde(default)]
     pub defense_tile_range: Option<TileRangePattern>,
     #[serde(default = "default_basic_attack_damage_type")]
     pub damage_type: DamageType,
@@ -97,6 +107,8 @@ pub struct BasicAttackDef {
     pub interval_ms: u64,
     #[serde(default = "default_attack_windup_ms")]
     pub windup_ms: u32,
+    #[serde(default = "default_ranged_reposition_ms")]
+    pub ranged_reposition_ms: u64,
     #[serde(default = "default_attack_delivery")]
     pub delivery: DeliveryDef,
 }
@@ -105,6 +117,7 @@ impl Default for BasicAttackDef {
     fn default() -> Self {
         Self {
             range_units: default_attack_range_units(),
+            range_policy: TileRangePolicy::Pattern,
             defense_tile_range: None,
             damage_type: default_basic_attack_damage_type(),
             targeting_profile: TargetingProfile::DefaultForward,
@@ -112,6 +125,7 @@ impl Default for BasicAttackDef {
             range_role: WeaponRangeRole::Melee,
             interval_ms: default_basic_attack_interval_ms(),
             windup_ms: default_attack_windup_ms(),
+            ranged_reposition_ms: default_ranged_reposition_ms(),
             delivery: default_attack_delivery(),
         }
     }
@@ -132,17 +146,39 @@ impl BasicAttackDef {
             "{} basic_attack interval_ms must be greater than zero",
             owner_label
         );
-        if let Some(pattern) = &self.defense_tile_range {
-            pattern.validate().unwrap_or_else(|error| {
-                panic!(
-                    "{} basic_attack has invalid defense_tile_range: {}",
-                    owner_label, error
-                )
-            });
+        match self.range_policy {
+            TileRangePolicy::Pattern => {
+                if let Some(pattern) = &self.defense_tile_range {
+                    pattern.validate().unwrap_or_else(|error| {
+                        panic!(
+                            "{} basic_attack has invalid defense_tile_range: {}",
+                            owner_label, error
+                        )
+                    });
+                }
+            }
+            TileRangePolicy::WholeFieldValidTiles => {
+                assert!(
+                    self.defense_tile_range.is_none(),
+                    "{} basic_attack uses WholeFieldValidTiles and must not also define defense_tile_range",
+                    owner_label
+                );
+            }
         }
         assert!(
             !matches!(&self.delivery, DeliveryDef::TileArea { .. }),
             "{} basic_attack delivery must be Instant or Projectile; TileArea is skill-only",
+            owner_label
+        );
+        assert!(
+            !matches!(
+                &self.delivery,
+                DeliveryDef::Projectile {
+                    hit_policy: crate::game::ability::ProjectileHitPolicy::DirectionalCollision,
+                    ..
+                }
+            ),
+            "{} basic_attack delivery must not use DirectionalCollision; collision projectiles are skill-only",
             owner_label
         );
     }
@@ -190,6 +226,10 @@ pub struct AbnormalityMetadata {
     /// 이동/저지/대공 판정의 source of truth.
     #[serde(default)]
     pub mobility_kind: MobilityKind,
+
+    /// 전투 표시 등급. 환상체는 최소 Elite이며 보스 환상체만 Boss다.
+    #[serde(default = "default_abnormality_threat_class")]
+    pub threat_class: BattleUnitThreatClass,
 
     /// 이동 스펙
     #[serde(default)]
@@ -288,6 +328,7 @@ mod tests {
             attack: 1,
             defense: 1,
             magic_resist: 0,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),

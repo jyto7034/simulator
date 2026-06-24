@@ -7,28 +7,28 @@ use crate::{
         ability::{SkillActivationMode, SkillId},
         battle::core::movement::types::WorldVec2,
         battle::damage::DamageModifiers,
+        battle::event_log::BattleEventLog,
         battle::ids::UnitInstanceId,
         battle::tile_range::TileRangePattern,
-        battle::timeline::Timeline,
         behavior::GameError,
         data::{
             abnormality_data::{BasicAttackDef, MovementDef, ResonanceDef},
-            equipment_data::{EquipmentType, WeaponCombatProfile},
+            equipment_data::{EquipmentType, WeaponCombatProfile, WeaponRangeRole},
             GameDataBase,
         },
         enums::{Side, Tier},
-        growth::{GrowthId, GrowthStack},
+        growth::GrowthStack,
         stats::UnitStats,
     },
 };
 
 pub struct BattleResult {
     pub winner: BattleWinner,
-    pub timeline: Timeline,
+    pub event_log: BattleEventLog,
     pub participant_results: Vec<ParticipantBattleResult>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ParticipantBattleResult {
     pub unit_instance_id: UnitInstanceId,
     pub owned_uuid: Uuid,
@@ -52,6 +52,7 @@ pub struct UnitSnapshot {
     pub id: UnitInstanceId,
     pub owner: Side,
     pub role: BattleUnitRole,
+    pub threat_class: BattleUnitThreatClass,
     pub mobility_kind: MobilityKind,
     pub position: Position,
     pub world_position: WorldVec2,
@@ -62,6 +63,7 @@ pub struct UnitSnapshot {
 pub struct BattleUnitDraft {
     pub owned_uuid: Uuid,
     pub source: BattleUnitSource,
+    pub threat_class: BattleUnitThreatClass,
     pub level: Tier,
     pub growth_stacks: GrowthStack,
     pub equipped_items: Vec<Uuid>,
@@ -94,12 +96,67 @@ pub enum BattleUnitSource {
     },
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum BattleUnitSourceIdentity {
+    Employee {
+        employee_uuid: Uuid,
+        base_uuid: Uuid,
+    },
+    Abnormality {
+        abnormality_id: String,
+        base_uuid: Uuid,
+    },
+    CorrodedEmployee {
+        profile_id: String,
+        base_uuid: Uuid,
+    },
+    FacilityEntity {
+        profile_id: String,
+        base_uuid: Uuid,
+    },
+    DefenseObject {
+        base_uuid: Uuid,
+    },
+    TestFixture {
+        base_uuid: Uuid,
+    },
+}
+
+impl BattleUnitSourceIdentity {
+    pub fn base_uuid(&self) -> Uuid {
+        match self {
+            Self::Employee { base_uuid, .. }
+            | Self::Abnormality { base_uuid, .. }
+            | Self::CorrodedEmployee { base_uuid, .. }
+            | Self::FacilityEntity { base_uuid, .. }
+            | Self::DefenseObject { base_uuid }
+            | Self::TestFixture { base_uuid } => *base_uuid,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum BattleUnitRole {
     #[default]
     Combatant,
     DefenseObject,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum BattleUnitThreatClass {
+    #[default]
+    Normal,
+    Elite,
+    Boss,
+}
+
+impl BattleUnitThreatClass {
+    pub fn uses_resonance_bar(self) -> bool {
+        matches!(self, Self::Elite | Self::Boss)
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
@@ -167,6 +224,46 @@ impl BattleUnitSource {
             _ => BattleUnitRole::Combatant,
         }
     }
+
+    pub fn source_identity(
+        &self,
+        owned_uuid: Uuid,
+        game_data: &GameDataBase,
+    ) -> Result<BattleUnitSourceIdentity, GameError> {
+        Ok(match self {
+            BattleUnitSource::Employee(_) => BattleUnitSourceIdentity::Employee {
+                employee_uuid: owned_uuid,
+                base_uuid: owned_uuid,
+            },
+            BattleUnitSource::Abnormality { base_uuid } => {
+                let meta = game_data
+                    .abnormality_data
+                    .get_by_uuid(base_uuid)
+                    .ok_or(GameError::MissingResource("AbnormalityMetadata"))?;
+                BattleUnitSourceIdentity::Abnormality {
+                    abnormality_id: meta.id.clone(),
+                    base_uuid: *base_uuid,
+                }
+            }
+            BattleUnitSource::CorrodedEmployee {
+                profile_id,
+                base_uuid,
+            } => BattleUnitSourceIdentity::CorrodedEmployee {
+                profile_id: profile_id.clone(),
+                base_uuid: *base_uuid,
+            },
+            BattleUnitSource::TestFixture { base_uuid, .. } => {
+                BattleUnitSourceIdentity::TestFixture {
+                    base_uuid: *base_uuid,
+                }
+            }
+            BattleUnitSource::DefenseObject { base_uuid, .. } => {
+                BattleUnitSourceIdentity::DefenseObject {
+                    base_uuid: *base_uuid,
+                }
+            }
+        })
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -187,14 +284,38 @@ pub struct UnitCombatProfile {
     pub incoming_damage_modifiers: DamageModifiers,
 }
 
+pub fn default_basic_attack_tile_range_for_role(range_role: WeaponRangeRole) -> TileRangePattern {
+    match range_role {
+        WeaponRangeRole::Melee => TileRangePattern {
+            include_anchor_tile: true,
+            rows: vec![".X.".to_string(), ".@.".to_string(), "...".to_string()],
+        },
+        WeaponRangeRole::Ranged => TileRangePattern {
+            include_anchor_tile: true,
+            rows: vec![
+                "XXX".to_string(),
+                "XXX".to_string(),
+                "XXX".to_string(),
+                ".@.".to_string(),
+            ],
+        },
+    }
+}
+
+pub fn effective_basic_attack_tile_range(basic_attack: &BasicAttackDef) -> TileRangePattern {
+    basic_attack
+        .defense_tile_range
+        .clone()
+        .unwrap_or_else(|| default_basic_attack_tile_range_for_role(basic_attack.range_role))
+}
+
 impl UnitCombatProfile {
     pub fn employee_default() -> Self {
         let basic_attack = BasicAttackDef {
             range_units: 1.0,
-            defense_tile_range: Some(TileRangePattern {
-                include_anchor_tile: false,
-                rows: vec![".X.".to_string(), ".@.".to_string(), "...".to_string()],
-            }),
+            defense_tile_range: Some(default_basic_attack_tile_range_for_role(
+                WeaponRangeRole::Melee,
+            )),
             interval_ms: 1500,
             windup_ms: 200,
             delivery: Default::default(),
@@ -228,6 +349,7 @@ impl UnitCombatProfile {
             .validate_runtime_contract("equipped weapon")
             .expect("validated equipment weapon profile");
         self.basic_attack.range_units = weapon_profile.range_units;
+        self.basic_attack.range_policy = crate::game::battle::tile_range::TileRangePolicy::Pattern;
         self.basic_attack.defense_tile_range = Some(weapon_profile.defense_tile_range.clone());
         self.basic_attack.damage_type = weapon_profile.damage_type;
         self.basic_attack.targeting_profile = weapon_profile.targeting_profile;
@@ -235,6 +357,7 @@ impl UnitCombatProfile {
         self.basic_attack.range_role = weapon_profile.range_role;
         self.basic_attack.interval_ms = weapon_profile.interval_ms;
         self.basic_attack.windup_ms = weapon_profile.windup_ms;
+        self.basic_attack.ranged_reposition_ms = weapon_profile.ranged_reposition_ms;
         self.basic_attack.delivery = weapon_profile.delivery.clone();
         self.stats.attack_interval_ms = weapon_profile.interval_ms;
         self.weapon_profile = Some(weapon_profile.clone());
@@ -340,87 +463,7 @@ impl BattleUnitDraft {
         game_data: &GameDataBase,
         artifacts: &[Uuid],
     ) -> Result<UnitStats, GameError> {
-        let base_profile = self.combat_profile(game_data)?;
-        let base_current_health = base_profile.stats.current_health;
-        let base_max_health = base_profile.stats.max_health.max(1);
-        let mut stats = base_profile.stats;
-
-        // 성장형 스택 적용
-        for (stat_id, value) in &self.growth_stacks.stacks {
-            match stat_id {
-                GrowthId::KillStack => {
-                    stats.add_attack(*value);
-                }
-                GrowthId::PveWinStack => {}
-                GrowthId::QuestRewardStack => {}
-            }
-        }
-
-        // 아이템 스탯 적용
-        for item_uuid in &self.equipped_items {
-            let origin_item = game_data
-                .equipment_data
-                .get_by_uuid(item_uuid)
-                .ok_or(GameError::MissingResource(""))?;
-
-            stats
-                .apply_permanent_effects(&origin_item.triggered_effects)
-                .map_err(|err| match err {
-                    GameError::InvalidStaticData(message) => GameError::InvalidStaticData(format!(
-                        "equipment '{}' invalid Permanent effect: {}",
-                        origin_item.id, message
-                    )),
-                    other => other,
-                })?;
-
-            let enhancement_level: u32 = self
-                .equipped_item_enhancements
-                .iter()
-                .filter(|enhancement| enhancement.base_uuid == *item_uuid)
-                .map(|enhancement| u32::from(enhancement.enhancement_level))
-                .sum();
-            if enhancement_level > 0 {
-                if let Some(recipe) = game_data
-                    .equipment_data
-                    .get_enhancement_recipe_by_equipment_id(&origin_item.id)
-                {
-                    for modifier in &recipe.modifiers_per_level {
-                        for _ in 0..enhancement_level {
-                            stats.apply_modifier(*modifier);
-                        }
-                    }
-                }
-            }
-        }
-
-        // 아티팩트 스탯 적용
-        for artifact_uuid in artifacts {
-            let origin_artifact = game_data
-                .artifact_data
-                .get_by_uuid(artifact_uuid)
-                .ok_or(GameError::MissingResource(""))?;
-
-            stats
-                .apply_permanent_effects(&origin_artifact.triggered_effects)
-                .map_err(|err| match err {
-                    GameError::InvalidStaticData(message) => GameError::InvalidStaticData(format!(
-                        "artifact '{}' invalid Permanent effect: {}",
-                        origin_artifact.id, message
-                    )),
-                    other => other,
-                })?;
-        }
-
-        // Growth/gear/artifacts can change max HP. Preserve the authored run-HP ratio instead
-        // of blindly starting every combat at full health.
-        stats.current_health = if base_current_health == 0 {
-            0
-        } else {
-            let scaled = base_current_health.saturating_mul(stats.max_health) / base_max_health;
-            scaled.max(1).min(stats.max_health)
-        };
-
-        Ok(stats)
+        crate::game::battle::stat_pipeline::effective_stats_for_draft(self, game_data, artifacts)
     }
 }
 
@@ -448,6 +491,7 @@ mod tests {
         GameDataBuilder,
     };
     use crate::game::enums::RiskLevel;
+    use crate::game::growth::GrowthId;
     use crate::game::stats::{
         Effect, StatId, StatModifier, StatModifierKind, TriggerEffectTarget, TriggerType,
         TriggeredEffect,
@@ -477,6 +521,7 @@ mod tests {
             attack: 10,
             defense: 5,
             magic_resist: 0,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -511,6 +556,7 @@ mod tests {
             attack: 10,
             defense: 5,
             magic_resist: 0,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -546,6 +592,7 @@ mod tests {
             attack: 10,
             defense: 5,
             magic_resist: 0,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -612,6 +659,7 @@ mod tests {
             source: BattleUnitSource::Abnormality {
                 base_uuid: abno_uuid,
             },
+            threat_class: BattleUnitThreatClass::Elite,
             level: Tier::I,
             growth_stacks: growth,
             equipped_items: vec![item_uuid],
@@ -641,6 +689,7 @@ mod tests {
             attack: 10,
             defense: 5,
             magic_resist: 0,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -700,6 +749,7 @@ mod tests {
             source: BattleUnitSource::Abnormality {
                 base_uuid: abno_uuid,
             },
+            threat_class: BattleUnitThreatClass::Elite,
             level: Tier::I,
             growth_stacks: GrowthStack::new(),
             equipped_items: vec![item_uuid],
@@ -722,6 +772,7 @@ mod tests {
             source: BattleUnitSource::Abnormality {
                 base_uuid: Uuid::from_u128(1),
             },
+            threat_class: BattleUnitThreatClass::Elite,
             level: Tier::I,
             growth_stacks: GrowthStack::new(),
             equipped_items: vec![],
@@ -749,6 +800,7 @@ mod tests {
             attack: 10,
             defense: 5,
             magic_resist: 0,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -778,6 +830,7 @@ mod tests {
             attack: 10,
             defense: 5,
             magic_resist: 0,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -819,6 +872,7 @@ mod tests {
             source: BattleUnitSource::Abnormality {
                 base_uuid: abno_uuid,
             },
+            threat_class: BattleUnitThreatClass::Elite,
             level: Tier::I,
             growth_stacks: GrowthStack::new(),
             equipped_items: vec![],

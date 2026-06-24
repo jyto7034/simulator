@@ -1,9 +1,9 @@
 {
-  "version": 23,
+  "version": 27,
   "entries": [
     {
       "time_ms": 0,
-      "seq": 0,
+      "seq": 1,
       "cause": {
         "cause_type": "root",
         "kind": "init"
@@ -16,7 +16,7 @@
     },
     {
       "time_ms": 0,
-      "seq": 1,
+      "seq": 2,
       "cause": {
         "cause_type": "root",
         "kind": "init"
@@ -26,8 +26,14 @@
         "unit_instance_id": "e7fcc5fd-a90e-4358-ba9b-fd872793b15c",
         "owner": "Opponent",
         "role": "combatant",
+        "threat_class": "elite",
         "mobility_kind": "ground",
         "base_uuid": "d00d1000-0000-0000-0000-000000020001",
+        "unit_source": {
+          "kind": "abnormality",
+          "abnormality_id": "skill_test_dummy_2_1",
+          "base_uuid": "d00d1000-0000-0000-0000-000000020001"
+        },
         "world_position": {
           "x_milli": 2500,
           "y_milli": 1500
@@ -45,7 +51,7 @@
     },
     {
       "time_ms": 0,
-      "seq": 2,
+      "seq": 3,
       "cause": {
         "cause_type": "root",
         "kind": "init"
@@ -55,8 +61,14 @@
         "unit_instance_id": "24d55cc2-28a6-42b9-ab79-e353aacd52c4",
         "owner": "Player",
         "role": "combatant",
+        "threat_class": "elite",
         "mobility_kind": "ground",
         "base_uuid": "0b062000-0000-0000-0000-000000000109",
+        "unit_source": {
+          "kind": "abnormality",
+          "abnormality_id": "o-06-20_nothing_there",
+          "base_uuid": "0b062000-0000-0000-0000-000000000109"
+        },
         "world_position": {
           "x_milli": 1500,
           "y_milli": 1500
@@ -74,7 +86,7 @@
     },
     {
       "time_ms": 0,
-      "seq": 3,
+      "seq": 4,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -89,10 +101,10 @@
     },
     {
       "time_ms": 210,
-      "seq": 4,
+      "seq": 5,
       "cause": {
         "cause_type": "parent",
-        "seq": 3
+        "seq": 4
       },
       "event": {
         "type": "AttackResolve",
@@ -104,10 +116,10 @@
     },
     {
       "time_ms": 210,
-      "seq": 5,
+      "seq": 6,
       "cause": {
         "cause_type": "parent",
-        "seq": 4
+        "seq": 5
       },
       "event": {
         "type": "ResonanceChanged",
@@ -119,10 +131,10 @@
     },
     {
       "time_ms": 210,
-      "seq": 6,
+      "seq": 7,
       "cause": {
         "cause_type": "parent",
-        "seq": 4
+        "seq": 5
       },
       "event": {
         "type": "HpChanged",
@@ -150,10 +162,10 @@
     },
     {
       "time_ms": 210,
-      "seq": 7,
+      "seq": 8,
       "cause": {
         "cause_type": "parent",
-        "seq": 4
+        "seq": 5
       },
       "event": {
         "type": "ResonanceChanged",
@@ -165,10 +177,10 @@
     },
     {
       "time_ms": 210,
-      "seq": 8,
+      "seq": 9,
       "cause": {
         "cause_type": "parent",
-        "seq": 4
+        "seq": 5
       },
       "event": {
         "type": "AutoCastStart",
@@ -182,10 +194,10 @@
     },
     {
       "time_ms": 710,
-      "seq": 9,
+      "seq": 10,
       "cause": {
         "cause_type": "parent",
-        "seq": 8
+        "seq": 9
       },
       "event": {
         "type": "AbilityCast",
@@ -196,10 +208,10 @@
     },
     {
       "time_ms": 710,
-      "seq": 10,
+      "seq": 11,
       "cause": {
         "cause_type": "parent",
-        "seq": 8
+        "seq": 9
       },
       "event": {
         "type": "AutoCastEnd",
@@ -208,10 +220,10 @@
     },
     {
       "time_ms": 710,
-      "seq": 11,
+      "seq": 12,
       "cause": {
         "cause_type": "parent",
-        "seq": 9
+        "seq": 10
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -228,10 +240,10 @@
     },
     {
       "time_ms": 710,
-      "seq": 12,
+      "seq": 13,
       "cause": {
         "cause_type": "parent",
-        "seq": 11
+        "seq": 12
       },
       "event": {
         "type": "HpChanged",
@@ -259,10 +271,10 @@
     },
     {
       "time_ms": 730,
-      "seq": 13,
+      "seq": 14,
       "cause": {
         "cause_type": "parent",
-        "seq": 9
+        "seq": 10
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -279,10 +291,10 @@
     },
     {
       "time_ms": 730,
-      "seq": 14,
+      "seq": 15,
       "cause": {
         "cause_type": "parent",
-        "seq": 13
+        "seq": 14
       },
       "event": {
         "type": "StatChanged",
@@ -315,10 +327,10 @@
     },
     {
       "time_ms": 810,
-      "seq": 15,
+      "seq": 16,
       "cause": {
         "cause_type": "parent",
-        "seq": 9
+        "seq": 10
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -335,10 +347,10 @@
     },
     {
       "time_ms": 810,
-      "seq": 16,
+      "seq": 17,
       "cause": {
         "cause_type": "parent",
-        "seq": 15
+        "seq": 16
       },
       "event": {
         "type": "HpChanged",
@@ -366,10 +378,10 @@
     },
     {
       "time_ms": 810,
-      "seq": 17,
+      "seq": 18,
       "cause": {
         "cause_type": "parent",
-        "seq": 15
+        "seq": 16
       },
       "event": {
         "type": "HpChanged",
@@ -397,7 +409,7 @@
     },
     {
       "time_ms": 2810,
-      "seq": 18,
+      "seq": 19,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -412,10 +424,10 @@
     },
     {
       "time_ms": 3020,
-      "seq": 19,
+      "seq": 20,
       "cause": {
         "cause_type": "parent",
-        "seq": 18
+        "seq": 19
       },
       "event": {
         "type": "AttackResolve",
@@ -427,10 +439,10 @@
     },
     {
       "time_ms": 3020,
-      "seq": 20,
+      "seq": 21,
       "cause": {
         "cause_type": "parent",
-        "seq": 19
+        "seq": 20
       },
       "event": {
         "type": "ResonanceChanged",
@@ -442,10 +454,10 @@
     },
     {
       "time_ms": 3020,
-      "seq": 21,
+      "seq": 22,
       "cause": {
         "cause_type": "parent",
-        "seq": 19
+        "seq": 20
       },
       "event": {
         "type": "ResonanceChanged",
@@ -457,10 +469,10 @@
     },
     {
       "time_ms": 3020,
-      "seq": 22,
+      "seq": 23,
       "cause": {
         "cause_type": "parent",
-        "seq": 19
+        "seq": 20
       },
       "event": {
         "type": "HpChanged",
@@ -488,10 +500,10 @@
     },
     {
       "time_ms": 3020,
-      "seq": 23,
+      "seq": 24,
       "cause": {
         "cause_type": "parent",
-        "seq": 19
+        "seq": 20
       },
       "event": {
         "type": "ResonanceChanged",
@@ -503,7 +515,7 @@
     },
     {
       "time_ms": 4910,
-      "seq": 24,
+      "seq": 25,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -518,10 +530,10 @@
     },
     {
       "time_ms": 5120,
-      "seq": 25,
+      "seq": 26,
       "cause": {
         "cause_type": "parent",
-        "seq": 24
+        "seq": 25
       },
       "event": {
         "type": "AttackResolve",
@@ -533,10 +545,10 @@
     },
     {
       "time_ms": 5120,
-      "seq": 26,
+      "seq": 27,
       "cause": {
         "cause_type": "parent",
-        "seq": 25
+        "seq": 26
       },
       "event": {
         "type": "ResonanceChanged",
@@ -548,10 +560,10 @@
     },
     {
       "time_ms": 5120,
-      "seq": 27,
+      "seq": 28,
       "cause": {
         "cause_type": "parent",
-        "seq": 25
+        "seq": 26
       },
       "event": {
         "type": "ResonanceChanged",
@@ -563,10 +575,10 @@
     },
     {
       "time_ms": 5120,
-      "seq": 28,
+      "seq": 29,
       "cause": {
         "cause_type": "parent",
-        "seq": 25
+        "seq": 26
       },
       "event": {
         "type": "HpChanged",
@@ -594,10 +606,10 @@
     },
     {
       "time_ms": 5120,
-      "seq": 29,
+      "seq": 30,
       "cause": {
         "cause_type": "parent",
-        "seq": 25
+        "seq": 26
       },
       "event": {
         "type": "ResonanceChanged",
@@ -609,7 +621,7 @@
     },
     {
       "time_ms": 7010,
-      "seq": 30,
+      "seq": 31,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -624,10 +636,10 @@
     },
     {
       "time_ms": 7220,
-      "seq": 31,
+      "seq": 32,
       "cause": {
         "cause_type": "parent",
-        "seq": 30
+        "seq": 31
       },
       "event": {
         "type": "AttackResolve",
@@ -639,10 +651,10 @@
     },
     {
       "time_ms": 7220,
-      "seq": 32,
+      "seq": 33,
       "cause": {
         "cause_type": "parent",
-        "seq": 31
+        "seq": 32
       },
       "event": {
         "type": "ResonanceChanged",
@@ -654,10 +666,10 @@
     },
     {
       "time_ms": 7220,
-      "seq": 33,
+      "seq": 34,
       "cause": {
         "cause_type": "parent",
-        "seq": 31
+        "seq": 32
       },
       "event": {
         "type": "ResonanceChanged",
@@ -669,10 +681,10 @@
     },
     {
       "time_ms": 7220,
-      "seq": 34,
+      "seq": 35,
       "cause": {
         "cause_type": "parent",
-        "seq": 31
+        "seq": 32
       },
       "event": {
         "type": "HpChanged",
@@ -700,10 +712,10 @@
     },
     {
       "time_ms": 7220,
-      "seq": 35,
+      "seq": 36,
       "cause": {
         "cause_type": "parent",
-        "seq": 31
+        "seq": 32
       },
       "event": {
         "type": "ResonanceChanged",
@@ -715,7 +727,7 @@
     },
     {
       "time_ms": 9110,
-      "seq": 36,
+      "seq": 37,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -730,10 +742,10 @@
     },
     {
       "time_ms": 9320,
-      "seq": 37,
+      "seq": 38,
       "cause": {
         "cause_type": "parent",
-        "seq": 36
+        "seq": 37
       },
       "event": {
         "type": "AttackResolve",
@@ -745,10 +757,10 @@
     },
     {
       "time_ms": 9320,
-      "seq": 38,
+      "seq": 39,
       "cause": {
         "cause_type": "parent",
-        "seq": 37
+        "seq": 38
       },
       "event": {
         "type": "ResonanceChanged",
@@ -760,10 +772,10 @@
     },
     {
       "time_ms": 9320,
-      "seq": 39,
+      "seq": 40,
       "cause": {
         "cause_type": "parent",
-        "seq": 37
+        "seq": 38
       },
       "event": {
         "type": "ResonanceChanged",
@@ -775,10 +787,10 @@
     },
     {
       "time_ms": 9320,
-      "seq": 40,
+      "seq": 41,
       "cause": {
         "cause_type": "parent",
-        "seq": 37
+        "seq": 38
       },
       "event": {
         "type": "HpChanged",
@@ -806,10 +818,10 @@
     },
     {
       "time_ms": 9320,
-      "seq": 41,
+      "seq": 42,
       "cause": {
         "cause_type": "parent",
-        "seq": 37
+        "seq": 38
       },
       "event": {
         "type": "ResonanceChanged",
@@ -821,7 +833,7 @@
     },
     {
       "time_ms": 11210,
-      "seq": 42,
+      "seq": 43,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -836,10 +848,10 @@
     },
     {
       "time_ms": 11420,
-      "seq": 43,
+      "seq": 44,
       "cause": {
         "cause_type": "parent",
-        "seq": 42
+        "seq": 43
       },
       "event": {
         "type": "AttackResolve",
@@ -851,10 +863,10 @@
     },
     {
       "time_ms": 11420,
-      "seq": 44,
+      "seq": 45,
       "cause": {
         "cause_type": "parent",
-        "seq": 43
+        "seq": 44
       },
       "event": {
         "type": "ResonanceChanged",
@@ -866,10 +878,10 @@
     },
     {
       "time_ms": 11420,
-      "seq": 45,
+      "seq": 46,
       "cause": {
         "cause_type": "parent",
-        "seq": 43
+        "seq": 44
       },
       "event": {
         "type": "ResonanceChanged",
@@ -881,10 +893,10 @@
     },
     {
       "time_ms": 11420,
-      "seq": 46,
+      "seq": 47,
       "cause": {
         "cause_type": "parent",
-        "seq": 43
+        "seq": 44
       },
       "event": {
         "type": "HpChanged",
@@ -912,10 +924,10 @@
     },
     {
       "time_ms": 11420,
-      "seq": 47,
+      "seq": 48,
       "cause": {
         "cause_type": "parent",
-        "seq": 43
+        "seq": 44
       },
       "event": {
         "type": "ResonanceChanged",
@@ -927,10 +939,10 @@
     },
     {
       "time_ms": 11420,
-      "seq": 48,
+      "seq": 49,
       "cause": {
         "cause_type": "parent",
-        "seq": 43
+        "seq": 44
       },
       "event": {
         "type": "AutoCastStart",
@@ -944,10 +956,10 @@
     },
     {
       "time_ms": 11920,
-      "seq": 49,
+      "seq": 50,
       "cause": {
         "cause_type": "parent",
-        "seq": 48
+        "seq": 49
       },
       "event": {
         "type": "AbilityCast",
@@ -958,10 +970,10 @@
     },
     {
       "time_ms": 11920,
-      "seq": 50,
+      "seq": 51,
       "cause": {
         "cause_type": "parent",
-        "seq": 48
+        "seq": 49
       },
       "event": {
         "type": "AutoCastEnd",
@@ -970,10 +982,10 @@
     },
     {
       "time_ms": 11920,
-      "seq": 51,
+      "seq": 52,
       "cause": {
         "cause_type": "parent",
-        "seq": 49
+        "seq": 50
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -990,10 +1002,10 @@
     },
     {
       "time_ms": 11920,
-      "seq": 52,
+      "seq": 53,
       "cause": {
         "cause_type": "parent",
-        "seq": 51
+        "seq": 52
       },
       "event": {
         "type": "HpChanged",
@@ -1021,10 +1033,10 @@
     },
     {
       "time_ms": 11940,
-      "seq": 53,
+      "seq": 54,
       "cause": {
         "cause_type": "parent",
-        "seq": 49
+        "seq": 50
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -1041,10 +1053,10 @@
     },
     {
       "time_ms": 11940,
-      "seq": 54,
+      "seq": 55,
       "cause": {
         "cause_type": "parent",
-        "seq": 53
+        "seq": 54
       },
       "event": {
         "type": "StatChanged",
@@ -1077,10 +1089,10 @@
     },
     {
       "time_ms": 12020,
-      "seq": 55,
+      "seq": 56,
       "cause": {
         "cause_type": "parent",
-        "seq": 49
+        "seq": 50
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -1097,10 +1109,10 @@
     },
     {
       "time_ms": 12020,
-      "seq": 56,
+      "seq": 57,
       "cause": {
         "cause_type": "parent",
-        "seq": 55
+        "seq": 56
       },
       "event": {
         "type": "HpChanged",
@@ -1128,10 +1140,10 @@
     },
     {
       "time_ms": 12020,
-      "seq": 57,
+      "seq": 58,
       "cause": {
         "cause_type": "parent",
-        "seq": 55
+        "seq": 56
       },
       "event": {
         "type": "HpChanged",
@@ -1159,7 +1171,7 @@
     },
     {
       "time_ms": 14020,
-      "seq": 58,
+      "seq": 59,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -1174,10 +1186,10 @@
     },
     {
       "time_ms": 14230,
-      "seq": 59,
+      "seq": 60,
       "cause": {
         "cause_type": "parent",
-        "seq": 58
+        "seq": 59
       },
       "event": {
         "type": "AttackResolve",
@@ -1189,10 +1201,10 @@
     },
     {
       "time_ms": 14230,
-      "seq": 60,
+      "seq": 61,
       "cause": {
         "cause_type": "parent",
-        "seq": 59
+        "seq": 60
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1204,10 +1216,10 @@
     },
     {
       "time_ms": 14230,
-      "seq": 61,
+      "seq": 62,
       "cause": {
         "cause_type": "parent",
-        "seq": 59
+        "seq": 60
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1219,10 +1231,10 @@
     },
     {
       "time_ms": 14230,
-      "seq": 62,
+      "seq": 63,
       "cause": {
         "cause_type": "parent",
-        "seq": 59
+        "seq": 60
       },
       "event": {
         "type": "HpChanged",
@@ -1250,10 +1262,10 @@
     },
     {
       "time_ms": 14230,
-      "seq": 63,
+      "seq": 64,
       "cause": {
         "cause_type": "parent",
-        "seq": 59
+        "seq": 60
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1265,7 +1277,7 @@
     },
     {
       "time_ms": 16120,
-      "seq": 64,
+      "seq": 65,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -1280,10 +1292,10 @@
     },
     {
       "time_ms": 16330,
-      "seq": 65,
+      "seq": 66,
       "cause": {
         "cause_type": "parent",
-        "seq": 64
+        "seq": 65
       },
       "event": {
         "type": "AttackResolve",
@@ -1295,10 +1307,10 @@
     },
     {
       "time_ms": 16330,
-      "seq": 66,
+      "seq": 67,
       "cause": {
         "cause_type": "parent",
-        "seq": 65
+        "seq": 66
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1310,10 +1322,10 @@
     },
     {
       "time_ms": 16330,
-      "seq": 67,
+      "seq": 68,
       "cause": {
         "cause_type": "parent",
-        "seq": 65
+        "seq": 66
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1325,10 +1337,10 @@
     },
     {
       "time_ms": 16330,
-      "seq": 68,
+      "seq": 69,
       "cause": {
         "cause_type": "parent",
-        "seq": 65
+        "seq": 66
       },
       "event": {
         "type": "HpChanged",
@@ -1356,10 +1368,10 @@
     },
     {
       "time_ms": 16330,
-      "seq": 69,
+      "seq": 70,
       "cause": {
         "cause_type": "parent",
-        "seq": 65
+        "seq": 66
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1371,7 +1383,7 @@
     },
     {
       "time_ms": 18220,
-      "seq": 70,
+      "seq": 71,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -1386,10 +1398,10 @@
     },
     {
       "time_ms": 18430,
-      "seq": 71,
+      "seq": 72,
       "cause": {
         "cause_type": "parent",
-        "seq": 70
+        "seq": 71
       },
       "event": {
         "type": "AttackResolve",
@@ -1401,10 +1413,10 @@
     },
     {
       "time_ms": 18430,
-      "seq": 72,
+      "seq": 73,
       "cause": {
         "cause_type": "parent",
-        "seq": 71
+        "seq": 72
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1416,10 +1428,10 @@
     },
     {
       "time_ms": 18430,
-      "seq": 73,
+      "seq": 74,
       "cause": {
         "cause_type": "parent",
-        "seq": 71
+        "seq": 72
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1431,10 +1443,10 @@
     },
     {
       "time_ms": 18430,
-      "seq": 74,
+      "seq": 75,
       "cause": {
         "cause_type": "parent",
-        "seq": 71
+        "seq": 72
       },
       "event": {
         "type": "HpChanged",
@@ -1462,10 +1474,10 @@
     },
     {
       "time_ms": 18430,
-      "seq": 75,
+      "seq": 76,
       "cause": {
         "cause_type": "parent",
-        "seq": 71
+        "seq": 72
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1477,7 +1489,7 @@
     },
     {
       "time_ms": 20320,
-      "seq": 76,
+      "seq": 77,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -1492,10 +1504,10 @@
     },
     {
       "time_ms": 20530,
-      "seq": 77,
+      "seq": 78,
       "cause": {
         "cause_type": "parent",
-        "seq": 76
+        "seq": 77
       },
       "event": {
         "type": "AttackResolve",
@@ -1507,10 +1519,10 @@
     },
     {
       "time_ms": 20530,
-      "seq": 78,
+      "seq": 79,
       "cause": {
         "cause_type": "parent",
-        "seq": 77
+        "seq": 78
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1522,10 +1534,10 @@
     },
     {
       "time_ms": 20530,
-      "seq": 79,
+      "seq": 80,
       "cause": {
         "cause_type": "parent",
-        "seq": 77
+        "seq": 78
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1537,10 +1549,10 @@
     },
     {
       "time_ms": 20530,
-      "seq": 80,
+      "seq": 81,
       "cause": {
         "cause_type": "parent",
-        "seq": 77
+        "seq": 78
       },
       "event": {
         "type": "HpChanged",
@@ -1568,10 +1580,10 @@
     },
     {
       "time_ms": 20530,
-      "seq": 81,
+      "seq": 82,
       "cause": {
         "cause_type": "parent",
-        "seq": 77
+        "seq": 78
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1583,7 +1595,7 @@
     },
     {
       "time_ms": 22420,
-      "seq": 82,
+      "seq": 83,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -1598,10 +1610,10 @@
     },
     {
       "time_ms": 22630,
-      "seq": 83,
+      "seq": 84,
       "cause": {
         "cause_type": "parent",
-        "seq": 82
+        "seq": 83
       },
       "event": {
         "type": "AttackResolve",
@@ -1613,10 +1625,10 @@
     },
     {
       "time_ms": 22630,
-      "seq": 84,
+      "seq": 85,
       "cause": {
         "cause_type": "parent",
-        "seq": 83
+        "seq": 84
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1628,10 +1640,10 @@
     },
     {
       "time_ms": 22630,
-      "seq": 85,
+      "seq": 86,
       "cause": {
         "cause_type": "parent",
-        "seq": 83
+        "seq": 84
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1643,10 +1655,10 @@
     },
     {
       "time_ms": 22630,
-      "seq": 86,
+      "seq": 87,
       "cause": {
         "cause_type": "parent",
-        "seq": 83
+        "seq": 84
       },
       "event": {
         "type": "HpChanged",
@@ -1674,10 +1686,10 @@
     },
     {
       "time_ms": 22630,
-      "seq": 87,
+      "seq": 88,
       "cause": {
         "cause_type": "parent",
-        "seq": 83
+        "seq": 84
       },
       "event": {
         "type": "AutoCastStart",
@@ -1691,10 +1703,10 @@
     },
     {
       "time_ms": 23130,
-      "seq": 88,
+      "seq": 89,
       "cause": {
         "cause_type": "parent",
-        "seq": 87
+        "seq": 88
       },
       "event": {
         "type": "AbilityCast",
@@ -1705,10 +1717,10 @@
     },
     {
       "time_ms": 23130,
-      "seq": 89,
+      "seq": 90,
       "cause": {
         "cause_type": "parent",
-        "seq": 87
+        "seq": 88
       },
       "event": {
         "type": "AutoCastEnd",
@@ -1717,10 +1729,10 @@
     },
     {
       "time_ms": 23130,
-      "seq": 90,
+      "seq": 91,
       "cause": {
         "cause_type": "parent",
-        "seq": 88
+        "seq": 89
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -1737,10 +1749,10 @@
     },
     {
       "time_ms": 23130,
-      "seq": 91,
+      "seq": 92,
       "cause": {
         "cause_type": "parent",
-        "seq": 90
+        "seq": 91
       },
       "event": {
         "type": "HpChanged",
@@ -1768,10 +1780,10 @@
     },
     {
       "time_ms": 23150,
-      "seq": 92,
+      "seq": 93,
       "cause": {
         "cause_type": "parent",
-        "seq": 88
+        "seq": 89
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -1788,10 +1800,10 @@
     },
     {
       "time_ms": 23150,
-      "seq": 93,
+      "seq": 94,
       "cause": {
         "cause_type": "parent",
-        "seq": 92
+        "seq": 93
       },
       "event": {
         "type": "StatChanged",
@@ -1824,10 +1836,10 @@
     },
     {
       "time_ms": 23230,
-      "seq": 94,
+      "seq": 95,
       "cause": {
         "cause_type": "parent",
-        "seq": 88
+        "seq": 89
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -1844,10 +1856,10 @@
     },
     {
       "time_ms": 23230,
-      "seq": 95,
+      "seq": 96,
       "cause": {
         "cause_type": "parent",
-        "seq": 94
+        "seq": 95
       },
       "event": {
         "type": "HpChanged",
@@ -1875,10 +1887,10 @@
     },
     {
       "time_ms": 23230,
-      "seq": 96,
+      "seq": 97,
       "cause": {
         "cause_type": "parent",
-        "seq": 94
+        "seq": 95
       },
       "event": {
         "type": "HpChanged",
@@ -1906,7 +1918,7 @@
     },
     {
       "time_ms": 25230,
-      "seq": 97,
+      "seq": 98,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -1921,10 +1933,10 @@
     },
     {
       "time_ms": 25440,
-      "seq": 98,
+      "seq": 99,
       "cause": {
         "cause_type": "parent",
-        "seq": 97
+        "seq": 98
       },
       "event": {
         "type": "AttackResolve",
@@ -1936,10 +1948,10 @@
     },
     {
       "time_ms": 25440,
-      "seq": 99,
+      "seq": 100,
       "cause": {
         "cause_type": "parent",
-        "seq": 98
+        "seq": 99
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1951,10 +1963,10 @@
     },
     {
       "time_ms": 25440,
-      "seq": 100,
+      "seq": 101,
       "cause": {
         "cause_type": "parent",
-        "seq": 98
+        "seq": 99
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1966,10 +1978,10 @@
     },
     {
       "time_ms": 25440,
-      "seq": 101,
+      "seq": 102,
       "cause": {
         "cause_type": "parent",
-        "seq": 98
+        "seq": 99
       },
       "event": {
         "type": "HpChanged",
@@ -1997,7 +2009,7 @@
     },
     {
       "time_ms": 27330,
-      "seq": 102,
+      "seq": 103,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -2012,10 +2024,10 @@
     },
     {
       "time_ms": 27540,
-      "seq": 103,
+      "seq": 104,
       "cause": {
         "cause_type": "parent",
-        "seq": 102
+        "seq": 103
       },
       "event": {
         "type": "AttackResolve",
@@ -2027,10 +2039,10 @@
     },
     {
       "time_ms": 27540,
-      "seq": 104,
+      "seq": 105,
       "cause": {
         "cause_type": "parent",
-        "seq": 103
+        "seq": 104
       },
       "event": {
         "type": "ResonanceChanged",
@@ -2042,10 +2054,10 @@
     },
     {
       "time_ms": 27540,
-      "seq": 105,
+      "seq": 106,
       "cause": {
         "cause_type": "parent",
-        "seq": 103
+        "seq": 104
       },
       "event": {
         "type": "ResonanceChanged",
@@ -2057,10 +2069,10 @@
     },
     {
       "time_ms": 27540,
-      "seq": 106,
+      "seq": 107,
       "cause": {
         "cause_type": "parent",
-        "seq": 103
+        "seq": 104
       },
       "event": {
         "type": "HpChanged",
@@ -2088,10 +2100,10 @@
     },
     {
       "time_ms": 27540,
-      "seq": 107,
+      "seq": 108,
       "cause": {
         "cause_type": "parent",
-        "seq": 103
+        "seq": 104
       },
       "event": {
         "type": "MovementStopped",
@@ -2105,21 +2117,29 @@
     },
     {
       "time_ms": 27540,
-      "seq": 108,
+      "seq": 109,
       "cause": {
         "cause_type": "parent",
-        "seq": 103
+        "seq": 104
       },
       "event": {
         "type": "UnitDied",
         "unit_instance_id": "e7fcc5fd-a90e-4358-ba9b-fd872793b15c",
         "owner": "Opponent",
-        "killer_instance_id": "24d55cc2-28a6-42b9-ab79-e353aacd52c4"
+        "killer_instance_id": "24d55cc2-28a6-42b9-ab79-e353aacd52c4",
+        "world_position": {
+          "x_milli": 2500,
+          "y_milli": 1500
+        },
+        "position": {
+          "x": 2,
+          "y": 1
+        }
       }
     },
     {
       "time_ms": 27540,
-      "seq": 109,
+      "seq": 110,
       "cause": {
         "cause_type": "root",
         "kind": "system"

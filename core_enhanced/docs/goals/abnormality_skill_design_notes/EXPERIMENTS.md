@@ -1,0 +1,57 @@
+# Abnormality Skill Design Notes Experiments
+
+## 2026-06-12
+
+- Created goal working directory.
+- Confirmed target list from `docs/skills/lobotomy_content_catalog.md` and `docs/skills/skill_fragment_wiki.md`.
+- Planned to use one-page-at-a-time wiki access to avoid putting unnecessary load on the source site.
+- Opened and summarized these pages sequentially, one page at a time:
+  - WhiteNight
+  - Nothing There
+  - Apocalypse Bird
+  - Big Bird
+  - Judgement Bird
+  - Punishing Bird
+- Added the first seven S-grade entries to `docs/skills/abnormality_skill_design_notes.md`.
+- Opened and summarized the remaining S-grade pages sequentially:
+  - The Queen of Hatred
+  - The King of Greed
+  - The Knight of Despair
+  - Mountain of Smiling Bodies
+  - Blue Star
+  - CENSORED
+  - The Silent Orchestra
+  - Melting Love
+- Completed all 14 S-grade entries in the design note after consolidating the doctor-form prelude into WhiteNight.
+- Policy correction after completion: the doctor-form prelude is not counted as a separate abnormality from WhiteNight. Consolidated the design note and catalogs from 42 targets to 41 targets.
+- Opened and summarized all A-grade pages sequentially, one page at a time:
+  - Der Freischutz
+  - The Funeral of the Dead Butterflies
+  - Little Red Riding Hooded Mercenary
+  - Big and Will be Bad Wolf
+  - Laetitia
+  - Child of the Galaxy
+  - The Red Shoes
+  - One Sin and Hundreds of Good Deeds
+  - Army in Black
+  - The Burrowing Heaven
+  - Alriune
+  - Snow White's Apple
+- Completed all 12 A-grade entries in the design note.
+- Opened and summarized all B-grade pages sequentially, one page at a time:
+  - Scorched Girl
+  - Spider Bud
+  - Fragment of the Universe
+  - Warm-hearted Woodsman
+  - Forsaken Murderer
+  - Fairy Festival
+  - The Little Prince
+  - Queen Bee
+  - Dream of a Black Swan
+  - The Dreaming Current
+  - The Firebird
+  - Yin
+  - Yang
+  - Singing Machine
+  - Schadenfreude
+- Completed all 15 B-grade entries in the design note.

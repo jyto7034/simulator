@@ -1,9 +1,9 @@
 {
-  "version": 23,
+  "version": 27,
   "entries": [
     {
-      "time_ms": 10,
-      "seq": 0,
+      "time_ms": 1,
+      "seq": 1,
       "cause": {
         "cause_type": "root",
         "kind": "system"
@@ -14,15 +14,15 @@
         "attacker_instance_id": "00000000-0000-0000-0000-000000000001",
         "target_instance_id": "00000000-0000-0000-0000-000000000002",
         "impact_position": {
-          "x_milli": 650,
+          "x_milli": 900,
           "y_milli": 0
         },
         "hit": true
       }
     },
     {
-      "time_ms": 10,
-      "seq": 1,
+      "time_ms": 1,
+      "seq": 2,
       "cause": {
         "cause_type": "root",
         "kind": "system"
@@ -36,8 +36,8 @@
       }
     },
     {
-      "time_ms": 10,
-      "seq": 2,
+      "time_ms": 1,
+      "seq": 3,
       "cause": {
         "cause_type": "root",
         "kind": "system"
@@ -67,8 +67,8 @@
       }
     },
     {
-      "time_ms": 10,
-      "seq": 3,
+      "time_ms": 1,
+      "seq": 4,
       "cause": {
         "cause_type": "root",
         "kind": "system"

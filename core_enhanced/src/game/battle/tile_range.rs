@@ -2,6 +2,14 @@ use serde::{Deserialize, Serialize};
 
 use crate::game::resources::Position;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum TileRangePolicy {
+    #[default]
+    Pattern,
+    WholeFieldValidTiles,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum FacingDirection {
@@ -18,6 +26,27 @@ impl FacingDirection {
             FacingDirection::Right => (-dy, dx),
             FacingDirection::Down => (-dx, -dy),
             FacingDirection::Left => (dy, -dx),
+        }
+    }
+
+    pub fn from_delta(dx: f32, dy: f32) -> Option<Self> {
+        if dx.abs() <= f32::EPSILON && dy.abs() <= f32::EPSILON {
+            return None;
+        }
+        if dx.abs() > dy.abs() {
+            if dx > 0.0 {
+                Some(FacingDirection::Right)
+            } else {
+                Some(FacingDirection::Left)
+            }
+        } else if dy.abs() > dx.abs() {
+            if dy > 0.0 {
+                Some(FacingDirection::Down)
+            } else {
+                Some(FacingDirection::Up)
+            }
+        } else {
+            None
         }
     }
 }

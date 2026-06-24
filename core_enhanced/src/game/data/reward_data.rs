@@ -4,20 +4,25 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::game::{
-    data::{build_string_index, build_uuid_index, once_lock_with},
+    data::{
+        build_string_index, build_uuid_index,
+        equipment_data::{EquipmentDatabase, EquipmentMetadata, EquipmentType},
+        once_lock_with,
+    },
+    enums::RiskLevel,
     reward::RewardEffect,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum RewardTag {
+pub enum RewardGrantKind {
     Currency,
     Experience,
     Equipment,
     Artifact,
     Consumable,
     SkillFragment,
+    FragmentDust,
     ResearchProgress,
-    Forbidden,
     Narrative,
 }
 
@@ -28,47 +33,42 @@ pub struct RewardMetadata {
     pub name: String,
     pub description: String,
     pub icon: String,
-    #[serde(default)]
-    pub tags: Vec<RewardTag>,
     pub effects: Vec<RewardEffect>,
 }
 
 impl RewardMetadata {
-    pub fn resolved_tags(&self) -> Vec<RewardTag> {
-        if !self.tags.is_empty() {
-            return normalized_tags(self.tags.clone());
-        }
-
-        RewardTag::from_effects(&self.effects)
+    pub fn grant_kinds(&self) -> Vec<RewardGrantKind> {
+        RewardGrantKind::from_effects(&self.effects)
     }
 }
 
-impl RewardTag {
+impl RewardGrantKind {
     pub fn from_effects(effects: &[RewardEffect]) -> Vec<Self> {
-        let mut tags = Vec::new();
+        let mut kinds = Vec::new();
         for effect in effects {
             match effect {
-                RewardEffect::GrantEnkephalin { .. } => tags.push(Self::Currency),
-                RewardEffect::GrantExperience { .. } => tags.push(Self::Experience),
+                RewardEffect::GrantEnkephalin { .. } => kinds.push(Self::Currency),
+                RewardEffect::GrantExperience { .. } => kinds.push(Self::Experience),
                 RewardEffect::GrantEquipment { .. }
-                | RewardEffect::GrantEquipmentMaterial { .. } => tags.push(Self::Equipment),
-                RewardEffect::GrantArtifact { .. } => tags.push(Self::Artifact),
-                RewardEffect::GrantConsumable { .. } => tags.push(Self::Consumable),
-                RewardEffect::GrantSkillFragment { .. } => tags.push(Self::SkillFragment),
+                | RewardEffect::GrantEquipmentFromPool { .. }
+                | RewardEffect::GrantEquipmentMaterial { .. } => kinds.push(Self::Equipment),
+                RewardEffect::GrantArtifact { .. } => kinds.push(Self::Artifact),
+                RewardEffect::GrantConsumable { .. } => kinds.push(Self::Consumable),
+                RewardEffect::GrantSkillFragment { .. } => kinds.push(Self::SkillFragment),
+                RewardEffect::GrantFragmentDust { .. } => kinds.push(Self::FragmentDust),
                 RewardEffect::GrantSkillFragmentResearch { .. } => {
-                    tags.push(Self::ResearchProgress)
+                    kinds.push(Self::ResearchProgress)
                 }
-                RewardEffect::ForbiddenAbnormalityGrant => tags.push(Self::Forbidden),
             }
         }
-        normalized_tags(tags)
+        normalized_grant_kinds(kinds)
     }
 }
 
-fn normalized_tags(mut tags: Vec<RewardTag>) -> Vec<RewardTag> {
-    tags.sort_by_key(|tag| *tag as u8);
-    tags.dedup();
-    tags
+fn normalized_grant_kinds(mut kinds: Vec<RewardGrantKind>) -> Vec<RewardGrantKind> {
+    kinds.sort_by_key(|kind| *kind as u8);
+    kinds.dedup();
+    kinds
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -76,6 +76,8 @@ pub struct RewardDatabase {
     pub rewards: Vec<RewardMetadata>,
     #[serde(default)]
     pub pools: Vec<RewardPoolMetadata>,
+    #[serde(default)]
+    pub equipment_pools: Vec<EquipmentRewardPoolMetadata>,
     #[serde(skip)]
     by_id: OnceLock<HashMap<String, usize>>,
     #[serde(skip)]
@@ -86,6 +88,95 @@ pub struct RewardDatabase {
 pub struct RewardPoolMetadata {
     pub id: String,
     pub reward_ids: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EquipmentRewardPoolMetadata {
+    pub id: String,
+    #[serde(default)]
+    pub filter: EquipmentRewardPoolFilter,
+    #[serde(default)]
+    pub entries: Vec<EquipmentRewardPoolEntry>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EquipmentRewardPoolFilter {
+    pub rarity_min: Option<RiskLevel>,
+    pub rarity_max: Option<RiskLevel>,
+    #[serde(default)]
+    pub equipment_type_in: Vec<EquipmentType>,
+    #[serde(default)]
+    pub exclude_bound: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EquipmentRewardPoolEntry {
+    pub equipment_id: String,
+    pub weight: u32,
+}
+
+impl EquipmentRewardPoolMetadata {
+    pub fn candidates<'a>(
+        &'a self,
+        equipment_data: &'a EquipmentDatabase,
+    ) -> Vec<(&'a EquipmentMetadata, u32)> {
+        if self.entries.is_empty() {
+            return equipment_data
+                .items
+                .iter()
+                .filter(|equipment| self.filter.matches(equipment))
+                .map(|equipment| (equipment, 1))
+                .collect();
+        }
+
+        self.entries
+            .iter()
+            .filter(|entry| entry.weight > 0)
+            .filter_map(|entry| {
+                equipment_data
+                    .get_by_id(&entry.equipment_id)
+                    .filter(|equipment| self.filter.matches(equipment))
+                    .map(|equipment| (equipment, entry.weight))
+            })
+            .collect()
+    }
+}
+
+impl EquipmentRewardPoolFilter {
+    pub fn matches(&self, equipment: &EquipmentMetadata) -> bool {
+        if self.exclude_bound && equipment.bound {
+            return false;
+        }
+        if let Some(min) = self.rarity_min {
+            if risk_rank(equipment.rarity) < risk_rank(min) {
+                return false;
+            }
+        }
+        if let Some(max) = self.rarity_max {
+            if risk_rank(equipment.rarity) > risk_rank(max) {
+                return false;
+            }
+        }
+        if !self.equipment_type_in.is_empty()
+            && !self.equipment_type_in.contains(&equipment.equipment_type)
+        {
+            return false;
+        }
+        true
+    }
+}
+
+fn risk_rank(risk: RiskLevel) -> u8 {
+    match risk {
+        RiskLevel::ZAYIN => 0,
+        RiskLevel::TETH => 1,
+        RiskLevel::HE => 2,
+        RiskLevel::WAW => 3,
+        RiskLevel::ALEPH => 4,
+    }
 }
 
 impl RewardDatabase {
@@ -100,6 +191,7 @@ impl RewardDatabase {
         Self {
             rewards,
             pools,
+            equipment_pools: vec![],
             by_id,
             by_uuid,
         }
@@ -120,8 +212,8 @@ impl RewardDatabase {
         let _ = self.by_uuid();
         for reward in &self.rewards {
             assert!(
-                !reward.resolved_tags().is_empty(),
-                "reward '{}' must resolve at least one reward tag",
+                !reward.grant_kinds().is_empty(),
+                "reward '{}' must resolve at least one grant kind",
                 reward.id
             );
         }
@@ -153,6 +245,10 @@ impl RewardDatabase {
     pub fn pool_by_id(&self, id: &str) -> Option<&RewardPoolMetadata> {
         self.pools.iter().find(|pool| pool.id == id)
     }
+
+    pub fn equipment_pool_by_id(&self, id: &str) -> Option<&EquipmentRewardPoolMetadata> {
+        self.equipment_pools.iter().find(|pool| pool.id == id)
+    }
 }
 
 #[cfg(test)]
@@ -161,14 +257,13 @@ mod tests {
     use crate::game::data::skill_fragment_data::SkillFragmentId;
 
     #[test]
-    fn reward_tags_are_inferred_from_effects_when_omitted() {
+    fn reward_grant_kinds_are_inferred_from_effects() {
         let reward = RewardMetadata {
             id: "mixed_reward".to_string(),
             uuid: Uuid::from_u128(1),
             name: "Mixed".to_string(),
             description: "Mixed reward".to_string(),
             icon: "icons/mixed.png".to_string(),
-            tags: Vec::new(),
             effects: vec![
                 RewardEffect::GrantEnkephalin { amount: 10 },
                 RewardEffect::GrantSkillFragment {
@@ -178,24 +273,9 @@ mod tests {
         };
 
         assert_eq!(
-            reward.resolved_tags(),
-            vec![RewardTag::Currency, RewardTag::SkillFragment]
+            reward.grant_kinds(),
+            vec![RewardGrantKind::Currency, RewardGrantKind::SkillFragment]
         );
-    }
-
-    #[test]
-    fn explicit_reward_tags_are_normalized_and_preferred() {
-        let reward = RewardMetadata {
-            id: "research_reward".to_string(),
-            uuid: Uuid::from_u128(2),
-            name: "Research".to_string(),
-            description: "Research reward".to_string(),
-            icon: "icons/research.png".to_string(),
-            tags: vec![RewardTag::ResearchProgress, RewardTag::ResearchProgress],
-            effects: vec![RewardEffect::GrantEnkephalin { amount: 1 }],
-        };
-
-        assert_eq!(reward.resolved_tags(), vec![RewardTag::ResearchProgress]);
     }
 
     #[test]
@@ -206,14 +286,16 @@ mod tests {
             name: "Fragment Research".to_string(),
             description: "Fragment research reward".to_string(),
             icon: "icons/research.png".to_string(),
-            tags: Vec::new(),
             effects: vec![RewardEffect::GrantSkillFragmentResearch {
                 fragment_id: SkillFragmentId::from("fragment_test"),
                 amount: 3,
             }],
         };
 
-        assert_eq!(reward.resolved_tags(), vec![RewardTag::ResearchProgress]);
+        assert_eq!(
+            reward.grant_kinds(),
+            vec![RewardGrantKind::ResearchProgress]
+        );
     }
 
     #[test]
@@ -224,13 +306,12 @@ mod tests {
             name: "Equipment Material".to_string(),
             description: "Equipment material reward".to_string(),
             icon: "icons/equipment_material.png".to_string(),
-            tags: Vec::new(),
             effects: vec![RewardEffect::GrantEquipmentMaterial {
                 material_id: "equipment_dust".to_string(),
                 amount: 2,
             }],
         };
 
-        assert_eq!(reward.resolved_tags(), vec![RewardTag::Equipment]);
+        assert_eq!(reward.grant_kinds(), vec![RewardGrantKind::Equipment]);
     }
 }

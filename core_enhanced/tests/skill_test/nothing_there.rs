@@ -49,36 +49,36 @@ fn nothing_there_goodbye_tears_open_then_adapts_and_finishes_twice() {
     );
     assert_eq!(
         target_unit_ids(&damage_hp_changes_caused_by(
-            result.timeline(),
+            result.event_log(),
             steps[0].seq
         )),
         vec![enemy]
     );
     assert_eq!(
         hp_deltas(&damage_hp_changes_caused_by(
-            result.timeline(),
+            result.event_log(),
             steps[0].seq
         )),
         vec![-62]
     );
     assert_eq!(
-        target_unit_ids(&stat_changes_caused_by(result.timeline(), steps[1].seq)),
+        target_unit_ids(&stat_changes_caused_by(result.event_log(), steps[1].seq)),
         vec![caster]
     );
     assert_eq!(
-        stat_modifier_summaries(&stat_changes_caused_by(result.timeline(), steps[1].seq)),
+        stat_modifier_summaries(&stat_changes_caused_by(result.event_log(), steps[1].seq)),
         vec![(StatId::Attack, StatModifierKind::Percent, 18)]
     );
     assert_eq!(
         target_unit_ids(&damage_hp_changes_caused_by(
-            result.timeline(),
+            result.event_log(),
             steps[2].seq
         )),
         vec![enemy, enemy]
     );
     assert_eq!(
         hp_deltas(&damage_hp_changes_caused_by(
-            result.timeline(),
+            result.event_log(),
             steps[2].seq
         )),
         vec![-58, -58]

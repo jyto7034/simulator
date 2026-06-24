@@ -1,18 +1,12 @@
-use std::collections::HashMap;
-
-use crate::game::battle::battlefield::{Battlefield, Tile};
-use crate::game::battle::ids::UnitInstanceId;
+use crate::game::battle::battlefield::BattlefieldLayout;
 use crate::{game::behavior::GameError, game::resources::Position};
 
-impl Battlefield {
+impl BattlefieldLayout {
     pub fn new(width: u8, height: u8) -> Self {
-        let len = (width as usize) * (height as usize);
         Self {
             width,
             height,
-            tiles: vec![Tile::default(); len],
             valid_tiles: None,
-            unit_pos: HashMap::new(),
             static_obstacles: Default::default(),
         }
     }
@@ -34,45 +28,49 @@ impl Battlefield {
     }
 
     pub fn clear(&mut self) {
-        for tile in &mut self.tiles {
-            tile.occupant = None;
-        }
-        self.unit_pos.clear();
         self.static_obstacles.clear();
     }
 
-    pub fn in_bounds(&self, pos: Position) -> bool {
-        pos.x >= 0
-            && pos.y >= 0
-            && pos.x < self.width as i32
-            && pos.y < self.height as i32
+    pub fn position_in_bounds(&self, pos: Position) -> bool {
+        pos.x >= 0 && pos.y >= 0 && pos.x < self.width as i32 && pos.y < self.height as i32
+    }
+
+    pub fn is_valid_tile(&self, pos: Position) -> bool {
+        self.position_in_bounds(pos)
             && self
                 .valid_tiles
                 .as_ref()
                 .is_none_or(|valid_tiles| valid_tiles.contains(&pos))
     }
 
-    pub fn idx(&self, pos: Position) -> Result<usize, GameError> {
-        if !self.in_bounds(pos) {
+    pub fn valid_positions(&self) -> Vec<Position> {
+        let mut positions = match &self.valid_tiles {
+            Some(valid_tiles) => valid_tiles.iter().copied().collect::<Vec<_>>(),
+            None => (0..self.height as i32)
+                .flat_map(|y| (0..self.width as i32).map(move |x| Position::new(x, y)))
+                .collect::<Vec<_>>(),
+        };
+        positions.sort_by_key(|pos| (pos.y, pos.x));
+        positions
+    }
+
+    pub fn ensure_valid_tile(&self, pos: Position) -> Result<(), GameError> {
+        if !self.is_valid_tile(pos) {
             return Err(GameError::OutOfBounds);
         }
-        Ok((pos.y as usize) * (self.width as usize) + (pos.x as usize))
+        Ok(())
     }
 
-    pub fn position_of(&self, unit: UnitInstanceId) -> Option<Position> {
-        self.unit_pos.get(&unit).copied()
-    }
-
-    pub fn occupant(&self, pos: Position) -> Result<Option<UnitInstanceId>, GameError> {
-        let idx = self.idx(pos)?;
-        Ok(self.tiles[idx].occupant)
+    pub fn ensure_walkable_tile(&self, pos: Position) -> Result<(), GameError> {
+        self.ensure_valid_tile(pos)?;
+        if self.is_static_obstacle(pos) {
+            return Err(GameError::StaticObstacleBlocked);
+        }
+        Ok(())
     }
 
     pub fn add_static_obstacle(&mut self, pos: Position) -> Result<(), GameError> {
-        let idx = self.idx(pos)?;
-        if self.tiles[idx].occupant.is_some() {
-            return Err(GameError::PositionOccupied);
-        }
+        self.ensure_valid_tile(pos)?;
         self.static_obstacles.insert(pos);
         Ok(())
     }
@@ -92,7 +90,7 @@ impl Battlefield {
     }
 
     pub fn is_walkable_tile(&self, pos: Position) -> bool {
-        self.in_bounds(pos) && !self.is_static_obstacle(pos)
+        self.is_valid_tile(pos) && !self.is_static_obstacle(pos)
     }
 
     pub fn void_tiles(&self) -> Vec<Position> {
@@ -111,54 +109,31 @@ impl Battlefield {
         }
         void_tiles
     }
-
-    pub fn place(&mut self, unit: UnitInstanceId, pos: Position) -> Result<(), GameError> {
-        if self.unit_pos.contains_key(&unit) {
-            return Err(GameError::UnitAlreadyPlaced);
-        }
-        let idx = self.idx(pos)?;
-        if self.tiles[idx].occupant.is_some() || self.static_obstacles.contains(&pos) {
-            return Err(GameError::PositionOccupied);
-        }
-        self.tiles[idx].set_occupant(unit);
-        self.unit_pos.insert(unit, pos);
-        Ok(())
-    }
-
-    pub fn remove(&mut self, unit: UnitInstanceId) -> Option<Position> {
-        let pos = self.unit_pos.remove(&unit)?;
-        let idx = self.idx(pos).ok()?;
-        let _ = self.tiles[idx].clear_occupant(unit);
-        Some(pos)
-    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use uuid::Uuid;
 
     #[test]
     fn static_obstacles_block_placement() {
-        let mut field = Battlefield::new(3, 3);
-        let unit = UnitInstanceId::from(Uuid::from_u128(1));
+        let mut field = BattlefieldLayout::new(3, 3);
         let obstacle = Position::new(1, 1);
         field.add_static_obstacle(obstacle).unwrap();
 
         assert_eq!(field.static_obstacles(), vec![obstacle]);
         assert!(matches!(
-            field.place(unit, obstacle).unwrap_err(),
-            GameError::PositionOccupied
+            field.ensure_walkable_tile(obstacle).unwrap_err(),
+            GameError::StaticObstacleBlocked
         ));
 
         assert!(field.remove_static_obstacle(obstacle));
-        field.place(unit, obstacle).unwrap();
+        field.ensure_walkable_tile(obstacle).unwrap();
     }
 
     #[test]
     fn non_rectangular_valid_tiles_block_void_placement() {
-        let unit = UnitInstanceId::from(Uuid::from_u128(1));
-        let mut field = Battlefield::new_with_valid_tiles(
+        let field = BattlefieldLayout::new_with_valid_tiles(
             3,
             3,
             vec![
@@ -168,12 +143,12 @@ mod tests {
             ],
         );
 
-        assert!(!field.in_bounds(Position::new(0, 0)));
+        assert!(!field.is_valid_tile(Position::new(0, 0)));
         assert!(matches!(
-            field.place(unit, Position::new(0, 0)).unwrap_err(),
+            field.ensure_walkable_tile(Position::new(0, 0)).unwrap_err(),
             GameError::OutOfBounds
         ));
-        field.place(unit, Position::new(1, 1)).unwrap();
+        field.ensure_walkable_tile(Position::new(1, 1)).unwrap();
         assert_eq!(
             field.void_tiles(),
             vec![

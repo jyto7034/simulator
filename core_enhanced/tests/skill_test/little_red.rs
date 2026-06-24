@@ -1,7 +1,7 @@
 use game_core::{
     game::resources::Position,
     game::{
-        battle::timeline::{AttackKind, TimelineEvent},
+        battle::event_log::{AttackKind, BattleLogEvent},
         enums::Side,
     },
 };
@@ -38,7 +38,7 @@ fn little_red_follows_marked_shot_with_two_finish_attacks_on_the_same_prey() {
     let cast = result.first_cast_of("little_red_hunt_the_prey");
     assert!(matches!(
         &cast.event,
-        TimelineEvent::AbilityCast {
+        BattleLogEvent::AbilityCast {
             target_instance_id: Some(target_instance_id),
             ..
         } if *target_instance_id == enemy
@@ -48,12 +48,12 @@ fn little_red_follows_marked_shot_with_two_finish_attacks_on_the_same_prey() {
     assert_eq!(step_ids(&steps), vec!["marked_shot", "hunt_finish"]);
     assert_eq!(
         target_unit_ids(&damage_hp_changes_caused_by(
-            result.timeline(),
+            result.event_log(),
             steps[0].seq
         )),
         vec![enemy]
     );
-    let finish_attacks = attack_starts_caused_by(result.timeline(), steps[1].seq);
+    let finish_attacks = attack_starts_caused_by(result.event_log(), steps[1].seq);
     assert_eq!(target_unit_ids(&finish_attacks), vec![enemy, enemy]);
     assert_eq!(
         attack_kinds(&finish_attacks),

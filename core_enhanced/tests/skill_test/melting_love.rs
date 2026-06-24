@@ -59,29 +59,29 @@ fn melting_love_orb_marks_the_lowest_health_enemy_and_spread_hits_the_forward_ti
 
     assert_eq!(
         target_unit_ids(&damage_hp_changes_caused_by(
-            result.timeline(),
+            result.event_log(),
             steps[0].seq
         )),
         vec![primary_target]
     );
     assert_eq!(
         hp_deltas(&damage_hp_changes_caused_by(
-            result.timeline(),
+            result.event_log(),
             steps[0].seq
         )),
         vec![-24]
     );
     assert_eq!(
-        target_unit_ids(&buffs_applied_by(result.timeline(), steps[0].seq)),
+        target_unit_ids(&buffs_applied_by(result.event_log(), steps[0].seq)),
         vec![primary_target]
     );
     assert_eq!(
-        buff_ids(&buffs_applied_by(result.timeline(), steps[0].seq)),
+        buff_ids(&buffs_applied_by(result.event_log(), steps[0].seq)),
         vec![BuffId::from_name("poison")]
     );
     assert_eq!(
         target_unit_ids(&damage_hp_changes_caused_by(
-            result.timeline(),
+            result.event_log(),
             steps[1].seq
         ))
         .into_iter()
@@ -90,19 +90,19 @@ fn melting_love_orb_marks_the_lowest_health_enemy_and_spread_hits_the_forward_ti
     );
     assert_eq!(
         hp_deltas(&damage_hp_changes_caused_by(
-            result.timeline(),
+            result.event_log(),
             steps[1].seq
         )),
         vec![-16, -16, -16]
     );
     assert_eq!(
-        target_unit_ids(&buffs_applied_by(result.timeline(), steps[1].seq))
+        target_unit_ids(&buffs_applied_by(result.event_log(), steps[1].seq))
             .into_iter()
             .collect::<HashSet<_>>(),
         spread_targets
     );
     assert_eq!(
-        buff_ids(&buffs_applied_by(result.timeline(), steps[1].seq)),
+        buff_ids(&buffs_applied_by(result.event_log(), steps[1].seq)),
         vec![BuffId::from_name("poison"); 3]
     );
 }

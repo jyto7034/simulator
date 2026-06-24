@@ -2,7 +2,10 @@ use std::{borrow::Borrow, fmt, ops::Deref};
 
 use serde::{Deserialize, Serialize};
 
-use crate::game::{battle::tile_range::TileRangePattern, stats::TriggerType};
+use crate::game::{
+    battle::tile_range::{TileRangePattern, TileRangePolicy},
+    stats::TriggerType,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
@@ -121,12 +124,50 @@ pub enum SkillTarget {
     CastTarget,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub enum ProjectileHitPolicy {
+    #[default]
+    TargetLocked,
+    DirectionalCollision,
+}
+
+fn default_projectile_hit_policy() -> ProjectileHitPolicy {
+    ProjectileHitPolicy::TargetLocked
+}
+
+fn deserialize_nonzero_option_u64<'de, D>(deserializer: D) -> Result<Option<u64>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let value = Option::<u64>::deserialize(deserializer)?;
+    match value {
+        Some(0) => Err(serde::de::Error::custom("expected non-zero u64 value")),
+        other => Ok(other),
+    }
+}
+
+fn default_false() -> bool {
+    false
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub enum DeliveryDef {
     #[default]
     Instant,
     Projectile {
         speed_units_per_ms: u32,
+        #[serde(default = "default_projectile_hit_policy")]
+        hit_policy: ProjectileHitPolicy,
+        #[serde(default = "default_false")]
+        allow_targetless_cast: bool,
+        #[serde(default, deserialize_with = "deserialize_nonzero_option_u32")]
+        max_range_tiles: Option<u32>,
+        #[serde(default, deserialize_with = "deserialize_nonzero_option_u64")]
+        max_lifetime_ms: Option<u64>,
+        #[serde(default, deserialize_with = "deserialize_nonzero_option_u32")]
+        max_kills: Option<u32>,
+        #[serde(default, deserialize_with = "deserialize_nonzero_option_u32")]
+        max_pierces: Option<u32>,
         #[serde(default)]
         collision: SkillProjectileCollisionDef,
     },
@@ -141,8 +182,7 @@ pub enum DeliveryDef {
 /// - `SkillTarget` answers "who is the step trying to affect?"
 /// - `SkillHitTargetFilter` answers "who can this spatial delivery collide with?"
 ///
-/// Runtime wiring is introduced in a later phase; for now this type fixes the
-/// data contract for projectile/AoE continuous delivery.
+/// Runtime collision filter for explicitly spatial skill deliveries.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub enum SkillHitTargetFilter {
     Allies,
@@ -445,20 +485,14 @@ fn default_step_id() -> String {
     "step".to_string()
 }
 
-fn default_step_range_units() -> f32 {
-    1.0
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub enum SkillCastTargetingDef {
-    /// Backward-compatible default: infer the cast-level target from the first step.
-    #[default]
-    FirstStepTarget,
     /// Explicit cast-level targeting independent from individual step execution targets.
     Explicit {
-        #[serde(default = "default_step_range_units")]
-        range_units: f32,
         target: SkillTarget,
+        #[serde(default)]
+        range_policy: TileRangePolicy,
         #[serde(default)]
         defense_tile_range: Option<TileRangePattern>,
         #[serde(default)]
@@ -466,14 +500,31 @@ pub enum SkillCastTargetingDef {
     },
 }
 
+impl SkillCastTargetingDef {
+    pub fn explicit(
+        target: SkillTarget,
+        range_policy: TileRangePolicy,
+        defense_tile_range: Option<TileRangePattern>,
+        air_capable: bool,
+    ) -> Self {
+        Self::Explicit {
+            target,
+            range_policy,
+            defense_tile_range,
+            air_capable,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct SkillStepDef {
     #[serde(default = "default_step_id")]
     pub id: String,
     #[serde(default)]
     pub delay_ms: u32,
-    #[serde(default = "default_step_range_units")]
-    pub range_units: f32,
+    #[serde(default)]
+    pub range_policy: TileRangePolicy,
     #[serde(default)]
     pub defense_tile_range: Option<TileRangePattern>,
     #[serde(default)]
@@ -505,7 +556,6 @@ pub struct SkillDef {
     pub name: String,
     #[serde(default)]
     pub kind: SkillKind,
-    #[serde(default)]
     pub cast_targeting: SkillCastTargetingDef,
     #[serde(default)]
     pub focus_time_ms: u32,
@@ -541,6 +591,7 @@ pub enum SkillEffectDef {
         buff_id: String,
         duration_ms: u32,
     },
+    InterruptCast,
     ExtraAttack {
         count: u8,
     },
@@ -553,24 +604,21 @@ impl SkillDef {
 
     pub fn cast_target_definition(
         &self,
-    ) -> Option<(f32, &SkillTarget, Option<&TileRangePattern>, bool)> {
+    ) -> Option<(
+        &SkillTarget,
+        TileRangePolicy,
+        Option<&TileRangePattern>,
+        bool,
+    )> {
         match &self.cast_targeting {
-            SkillCastTargetingDef::FirstStepTarget => self.first_step().map(|step| {
-                (
-                    step.range_units,
-                    &step.target,
-                    step.defense_tile_range.as_ref(),
-                    step.air_capable,
-                )
-            }),
             SkillCastTargetingDef::Explicit {
-                range_units,
                 target,
+                range_policy,
                 defense_tile_range,
                 air_capable,
             } => Some((
-                *range_units,
                 target,
+                *range_policy,
                 defense_tile_range.as_ref(),
                 *air_capable,
             )),
@@ -597,10 +645,12 @@ mod tests {
                 id:"s1",
                 name:"Test Skill",
                 focus_time_ms:200,
+                cast_targeting:Explicit(
+                    target:EnemySingle(rule:Nearest),
+                ),
                 steps:[
                     (
                         id:"hit",
-                        range_units:3,
                         target:EnemySingle(rule:Nearest),
                         delivery:Instant,
                         effects:[Damage(amount:10, damage_type: Magic)],
@@ -614,11 +664,20 @@ mod tests {
         assert_eq!(def.id.as_str(), "s1");
         assert_eq!(def.name, "Test Skill");
         assert_eq!(def.kind, SkillKind::Targeted);
-        assert_eq!(def.cast_targeting, SkillCastTargetingDef::FirstStepTarget);
+        assert_eq!(
+            def.cast_targeting,
+            SkillCastTargetingDef::Explicit {
+                target: SkillTarget::EnemySingle {
+                    rule: UnitTargetRule::Nearest,
+                },
+                range_policy: Default::default(),
+                defense_tile_range: None,
+                air_capable: false,
+            }
+        );
         assert_eq!(def.focus_time_ms, 200);
         assert_eq!(def.steps.len(), 1);
         assert_eq!(def.steps[0].id, "hit");
-        assert_eq!(def.steps[0].range_units, 3.0);
         assert_eq!(def.steps[0].targeting, StepTargetingMode::ReuseCastTarget);
         assert_eq!(def.steps[0].when, SkillStepCondition::Always);
         assert_eq!(def.steps[0].repeat, SkillStepRepeat::Once);
@@ -646,10 +705,12 @@ mod tests {
             r#"
             (
                 id:"s2",
+                cast_targeting:Explicit(
+                    target:EnemySingle(rule:Nearest),
+                ),
                 steps:[
                     (
                         id:"retarget",
-                        range_units:2,
                         target:EnemySingle(rule:Nearest),
                         targeting:RetargetOnStep,
                         effects:[Damage(amount:10, damage_type: Magic)],
@@ -669,10 +730,12 @@ mod tests {
             r#"
             (
                 id:"s_damage_mod",
+                cast_targeting:Explicit(
+                    target:EnemySingle(rule:Nearest),
+                ),
                 steps:[
                     (
                         id:"hit",
-                        range_units:2,
                         target:EnemySingle(rule:Nearest),
                         effects:[
                             ModifyDamage(modifiers:(magic_resist_penetration_flat:25)),
@@ -699,10 +762,12 @@ mod tests {
             r#"
             (
                 id:"stabilize",
+                cast_targeting:Explicit(
+                    target:SelfUnit,
+                ),
                 steps:[
                     (
                         id:"restore_stability",
-                        range_units:0,
                         target:SelfUnit,
                         effects:[ModifyStabilization(amount:5)],
                     ),
@@ -724,10 +789,12 @@ mod tests {
             r#"
             (
                 id:"s3",
+                cast_targeting:Explicit(
+                    target:SelfUnit,
+                ),
                 steps:[
                     (
                         id:"followup",
-                        range_units:1,
                         target:SelfUnit,
                         when:IfPreviousStepDealtDamage,
                         repeat:ByBuffStacks(
@@ -764,7 +831,6 @@ mod tests {
             (
                 id:"s4",
                 cast_targeting:Explicit(
-                    range_units:4,
                     target:EnemySingle(rule:LowestHealthEnemy),
                 ),
                 steps:[
@@ -782,10 +848,10 @@ mod tests {
         assert_eq!(
             def.cast_targeting,
             SkillCastTargetingDef::Explicit {
-                range_units: 4.0,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::LowestHealthEnemy,
                 },
+                range_policy: Default::default(),
                 defense_tile_range: None,
                 air_capable: false,
             }
@@ -793,10 +859,10 @@ mod tests {
         assert_eq!(
             def.cast_target_definition(),
             Some((
-                4.0,
                 &SkillTarget::EnemySingle {
                     rule: UnitTargetRule::LowestHealthEnemy,
                 },
+                Default::default(),
                 None,
                 false,
             ))
@@ -860,6 +926,12 @@ mod tests {
             delivery,
             DeliveryDef::Projectile {
                 speed_units_per_ms: 6_000,
+                hit_policy: ProjectileHitPolicy::TargetLocked,
+                allow_targetless_cast: false,
+                max_range_tiles: None,
+                max_lifetime_ms: None,
+                max_kills: None,
+                max_pierces: None,
                 collision: SkillProjectileCollisionDef::default(),
             }
         );

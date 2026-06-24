@@ -1,6 +1,7 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, HashSet};
 
 use rand::{rngs::StdRng, Rng, SeedableRng};
+use serde::{Deserialize, Serialize};
 
 use crate::game::{
     determinism,
@@ -27,6 +28,112 @@ impl Default for MapGenerationConfig {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MapGenerationPolicyData {
+    pub early_depth_category_weights: Vec<MapCategoryWeight>,
+    pub pre_boss_category_weights: Vec<MapCategoryWeight>,
+    pub normal_safe_categories: Vec<MapNodeCategory>,
+    pub pre_boss_safe_categories: Vec<MapNodeCategory>,
+    pub row_repair: MapRowRepairPolicy,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MapCategoryWeight {
+    pub category: MapNodeCategory,
+    pub weight: u32,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MapRowRepairPolicy {
+    pub max_combat_per_row_divisor: usize,
+    pub ensure_combat_each_row: bool,
+    pub ensure_support_before_boss: bool,
+}
+
+impl MapGenerationPolicyData {
+    pub fn from_ron_str(input: &str) -> Result<Self, String> {
+        ron::de::from_str(input).map_err(|err| err.to_string())
+    }
+
+    pub fn builtin() -> Self {
+        let policy = Self::from_ron_str(include_str!(
+            "../../../../game_resources/data/map/generation_policy.ron"
+        ))
+        .expect("built-in map generation policy must be valid RON");
+        policy
+            .validate_contract()
+            .expect("built-in map generation policy must satisfy generation contract");
+        policy
+    }
+
+    pub fn validate_contract(&self) -> Result<(), String> {
+        validate_category_weights(
+            "early_depth_category_weights",
+            &self.early_depth_category_weights,
+        )?;
+        validate_category_weights("pre_boss_category_weights", &self.pre_boss_category_weights)?;
+        validate_safe_categories("normal_safe_categories", &self.normal_safe_categories)?;
+        validate_safe_categories("pre_boss_safe_categories", &self.pre_boss_safe_categories)?;
+        if self.row_repair.max_combat_per_row_divisor == 0 {
+            return Err("row_repair.max_combat_per_row_divisor must be non-zero".to_string());
+        }
+        Ok(())
+    }
+}
+
+fn validate_category_weights(name: &str, weights: &[MapCategoryWeight]) -> Result<(), String> {
+    if weights.is_empty() {
+        return Err(format!("{name} must not be empty"));
+    }
+    if !weights.iter().any(|entry| entry.weight > 0) {
+        return Err(format!("{name} must include at least one positive weight"));
+    }
+    let mut seen = HashSet::new();
+    for entry in weights {
+        if matches!(
+            entry.category,
+            MapNodeCategory::Start | MapNodeCategory::Boss
+        ) {
+            return Err(format!(
+                "{name} must not route generated playable rows to {:?}",
+                entry.category
+            ));
+        }
+        if !seen.insert(entry.category) {
+            return Err(format!(
+                "{name} contains duplicate category {:?}",
+                entry.category
+            ));
+        }
+    }
+    Ok(())
+}
+
+fn validate_safe_categories(name: &str, categories: &[MapNodeCategory]) -> Result<(), String> {
+    if categories.is_empty() {
+        return Err(format!("{name} must not be empty"));
+    }
+    let mut seen = HashSet::new();
+    for category in categories {
+        if matches!(
+            category,
+            MapNodeCategory::Start | MapNodeCategory::Boss | MapNodeCategory::Combat
+        ) {
+            return Err(format!(
+                "{name} must only contain non-combat replacement categories, found {:?}",
+                category
+            ));
+        }
+        if !seen.insert(*category) {
+            return Err(format!("{name} contains duplicate category {:?}", category));
+        }
+    }
+    Ok(())
+}
+
 pub struct MapGenerator;
 
 impl MapGenerator {
@@ -39,6 +146,19 @@ impl MapGenerator {
         config: MapGenerationConfig,
         definitions: &MapNodeDefinitionDatabase,
     ) -> RunMap {
+        let policy = MapGenerationPolicyData::builtin();
+        Self::generate_with_definitions_and_policy(run_seed, config, definitions, &policy)
+    }
+
+    pub fn generate_with_definitions_and_policy(
+        run_seed: u64,
+        config: MapGenerationConfig,
+        definitions: &MapNodeDefinitionDatabase,
+        policy: &MapGenerationPolicyData,
+    ) -> RunMap {
+        policy
+            .validate_contract()
+            .expect("map generation policy must satisfy generation contract");
         assert!(config.depth_count >= 3, "map depth must be at least 3");
         assert!(config.min_width > 0, "map min width must be non-zero");
         assert!(
@@ -79,7 +199,7 @@ impl MapGenerator {
                 let id = MapNodeId::new(determinism::uuid_v4_from_seed(seed, MAP_NS, node_index));
                 node_index += 1;
                 let definition =
-                    Self::roll_node_definition(depth, boss_depth, definitions, &mut rng);
+                    Self::roll_node_definition(depth, boss_depth, definitions, policy, &mut rng);
                 rows.entry(depth).or_default().insert(lane, id);
                 nodes.push(MapNode {
                     id,
@@ -97,7 +217,14 @@ impl MapGenerator {
                 });
             }
 
-            Self::repair_row_distribution(depth, boss_depth, &mut nodes, definitions, &mut rng);
+            Self::repair_row_distribution(
+                depth,
+                boss_depth,
+                &mut nodes,
+                definitions,
+                policy,
+                &mut rng,
+            );
         }
 
         let boss_id = MapNodeId::new(determinism::uuid_v4_from_seed(seed, MAP_NS, node_index));
@@ -237,14 +364,12 @@ impl MapGenerator {
         depth: u8,
         boss_depth: u8,
         definitions: &'a MapNodeDefinitionDatabase,
+        policy: &MapGenerationPolicyData,
         rng: &mut StdRng,
     ) -> &'a MapNodeDefinition {
         if depth + 1 == boss_depth {
-            let category = if rng.gen_bool(0.65) {
-                MapNodeCategory::Support
-            } else {
-                MapNodeCategory::Combat
-            };
+            let category = Self::roll_category(&policy.pre_boss_category_weights, rng)
+                .expect("pre-boss category policy must include positive weights");
             return Self::roll_weighted_definition(
                 definitions.weighted_candidates(depth, Some(category), false),
                 rng,
@@ -259,11 +384,8 @@ impl MapGenerator {
         }
 
         if depth <= 1 {
-            let category = match rng.gen_range(0..100) {
-                0..=49 => MapNodeCategory::Combat,
-                50..=74 => MapNodeCategory::Support,
-                _ => MapNodeCategory::HeadquartersContact,
-            };
+            let category = Self::roll_category(&policy.early_depth_category_weights, rng)
+                .expect("early-depth category policy must include positive weights");
             Self::roll_weighted_definition(
                 definitions.weighted_candidates(depth, Some(category), false),
                 rng,
@@ -286,6 +408,7 @@ impl MapGenerator {
         boss_depth: u8,
         nodes: &mut [MapNode],
         definitions: &MapNodeDefinitionDatabase,
+        policy: &MapGenerationPolicyData,
         rng: &mut StdRng,
     ) {
         let row_indices = nodes
@@ -297,7 +420,7 @@ impl MapGenerator {
             return;
         }
 
-        let max_combat = (row_indices.len() / 2).max(1);
+        let max_combat = (row_indices.len() / policy.row_repair.max_combat_per_row_divisor).max(1);
         let mut combat_indices = row_indices
             .iter()
             .copied()
@@ -308,16 +431,20 @@ impl MapGenerator {
             let Some(index) = combat_indices.pop() else {
                 break;
             };
-            let replacement = Self::roll_safe_definition(depth, boss_depth, definitions, rng)
-                .unwrap_or_else(|| Self::roll_node_definition(depth, boss_depth, definitions, rng));
+            let replacement =
+                Self::roll_safe_definition(depth, boss_depth, definitions, policy, rng)
+                    .unwrap_or_else(|| {
+                        Self::roll_node_definition(depth, boss_depth, definitions, policy, rng)
+                    });
             nodes[index].kind_id = replacement.kind_id.clone();
             nodes[index].category = replacement.category;
             nodes[index].payload = replacement.payload.clone();
         }
 
-        if !row_indices
-            .iter()
-            .any(|index| nodes[*index].category == MapNodeCategory::Combat)
+        if policy.row_repair.ensure_combat_each_row
+            && !row_indices
+                .iter()
+                .any(|index| nodes[*index].category == MapNodeCategory::Combat)
         {
             if let Some(index) = row_indices
                 .iter()
@@ -335,7 +462,8 @@ impl MapGenerator {
             }
         }
 
-        if depth + 1 == boss_depth
+        if policy.row_repair.ensure_support_before_boss
+            && depth + 1 == boss_depth
             && !row_indices
                 .iter()
                 .any(|index| nodes[*index].category == MapNodeCategory::Support)
@@ -362,26 +490,17 @@ impl MapGenerator {
         depth: u8,
         boss_depth: u8,
         definitions: &'a MapNodeDefinitionDatabase,
+        policy: &MapGenerationPolicyData,
         rng: &mut StdRng,
     ) -> Option<&'a MapNodeDefinition> {
         let categories = if depth + 1 == boss_depth {
-            [
-                MapNodeCategory::Support,
-                MapNodeCategory::Reward,
-                MapNodeCategory::HeadquartersContact,
-                MapNodeCategory::Shop,
-            ]
+            &policy.pre_boss_safe_categories
         } else {
-            [
-                MapNodeCategory::Support,
-                MapNodeCategory::HeadquartersContact,
-                MapNodeCategory::Reward,
-                MapNodeCategory::Shop,
-            ]
+            &policy.normal_safe_categories
         };
         let mut candidates = Vec::new();
         for category in categories {
-            candidates.extend(definitions.weighted_candidates(depth, Some(category), false));
+            candidates.extend(definitions.weighted_candidates(depth, Some(*category), false));
         }
         Self::roll_weighted_definition(candidates, rng)
     }
@@ -412,6 +531,24 @@ impl MapGenerator {
                 return Some(candidate);
             }
             roll -= candidate.weight;
+        }
+        None
+    }
+
+    fn roll_category(weights: &[MapCategoryWeight], rng: &mut StdRng) -> Option<MapNodeCategory> {
+        let total_weight = weights
+            .iter()
+            .fold(0_u32, |total, entry| total.saturating_add(entry.weight));
+        if total_weight == 0 {
+            return None;
+        }
+
+        let mut roll = rng.gen_range(0..total_weight);
+        for entry in weights {
+            if roll < entry.weight {
+                return Some(entry.category);
+            }
+            roll -= entry.weight;
         }
         None
     }
@@ -469,6 +606,7 @@ mod tests {
     fn generated_rows_are_not_combat_only_corridors() {
         let map = MapGenerator::generate(42, MapGenerationConfig::default());
         let boss_depth = MapGenerationConfig::default().depth_count;
+        let policy = MapGenerationPolicyData::builtin();
 
         for depth in 1..boss_depth {
             let row = map
@@ -483,7 +621,7 @@ mod tests {
 
             assert!(!row.is_empty(), "depth {depth} must have nodes");
             assert!(
-                combat_count <= (row.len() / 2).max(1),
+                combat_count <= (row.len() / policy.row_repair.max_combat_per_row_divisor).max(1),
                 "depth {depth} has too many combat nodes"
             );
         }
@@ -527,5 +665,22 @@ mod tests {
                     crate::game::map::MapNodePayload::HeadquartersContact { .. }
                 )
         }));
+    }
+
+    #[test]
+    fn builtin_generation_policy_validate_contract() {
+        let policy = MapGenerationPolicyData::builtin();
+        assert!(policy.validate_contract().is_ok());
+        assert_eq!(policy.row_repair.max_combat_per_row_divisor, 2);
+        assert!(policy.row_repair.ensure_combat_each_row);
+        assert!(policy.row_repair.ensure_support_before_boss);
+        assert!(policy
+            .early_depth_category_weights
+            .iter()
+            .any(|entry| entry.category == MapNodeCategory::HeadquartersContact));
+        assert!(policy
+            .pre_boss_category_weights
+            .iter()
+            .any(|entry| entry.category == MapNodeCategory::Support));
     }
 }

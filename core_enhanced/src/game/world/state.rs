@@ -1,29 +1,40 @@
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::{collections::HashMap, fs::File, io::BufWriter, path::PathBuf};
 use uuid::Uuid;
 
 use crate::game::battle::{
     core::{
-        sim::{BattleExecutionState, BattleLiveSignal},
+        sim::{BattleDeployCurrentHpPolicy, BattleExecutionState, BattleLiveSignal},
         BattleCore,
     },
+    event_log::{BattleEventLog, BattleEventLogEntry},
     ids::UnitInstanceId,
+    result_stats::BattleResultStatsDto,
     tile_range::FacingDirection,
-    timeline::TimelineEntry,
+    types::{BattleUnitRole, BattleWinner, ParticipantBattleResult},
 };
 use crate::game::behavior::{
-    AbnormalityAttemptDto, ActionKind, BattlePlaybackState, LiveBattleDeployedUnitDto,
-    LiveBattleDeploymentDto, LiveBattleRedeployUnitDto, LiveBattleUnitDeployCostDto,
+    AbnormalityAttemptDto, ActionKind, BattlePlaybackState, GameError, LiveBattleDeployedUnitDto,
+    LiveBattleDeploymentDto, LiveBattleEventDeltaDto, LiveBattleHudBarMode,
+    LiveBattleRedeployUnitDto, LiveBattleSetupBattlefieldDto, LiveBattleSetupCatalogRefsDto,
+    LiveBattleSetupSnapshotDto, LiveBattleSetupSnapshotMessageType,
+    LiveBattleSetupTacticalPointDto, LiveBattleSetupTacticalPointType,
+    LiveBattleStateCheckpointDto, LiveBattleUnitCheckpointDto, LiveBattleUnitDeployCostDto,
+    LiveBattleUnitHudDto, LiveBattleUpdateDto, LiveBattleUpdateMessageType,
+    RunCheckpointSnapshotDto,
 };
 use crate::game::combat_preview::{CombatMissionVariant, CombatNodeType, CombatPreview};
+use crate::game::data::run_policy_data::LiveBattleDeploymentPolicy;
 use crate::game::employee::{EmployeeRoster, StarterEmployeeCandidate};
 use crate::game::employee_trust::EmployeeTrustPolicy;
 use crate::game::enums::RewardMode;
 use crate::game::managers::action_scheduler::ActionScheduler;
 use crate::game::managers::uuid_manager::UuidManager;
 use crate::game::map::{MapProgression, NodeSession, RunMap, RunProgression};
+use crate::game::range_preview::range_previews_for_runtime_unit;
 use crate::game::resources::{
-    ActionValidator, ActiveNodeContent, Enkephalin, GameState, Inventory, Qliphoth, RosterOrder,
+    ActionValidator, ActiveNodeContent, CombatBattleState, Enkephalin, GameState, Inventory,
+    RosterOrder,
 };
 use crate::game::reward::RewardOption;
 use crate::game::skill_fragment::{
@@ -96,7 +107,6 @@ pub struct GameCoreState {
     pub run: Option<RunState>,
     pub uuid_manager: UuidManager,
     pub enkephalin: Enkephalin,
-    pub qliphoth: Qliphoth,
     pub inventory: Inventory,
     pub roster_order: RosterOrder,
     pub roster: EmployeeRoster,
@@ -106,6 +116,47 @@ pub struct GameCoreState {
     pub research_delivery_policy: ResearchDeliveryPolicy,
     pub employee_trust_policy: EmployeeTrustPolicy,
     pub active_battle: Option<ActiveBattleSession>,
+    pub run_checkpoint: RunCheckpointState,
+}
+
+pub const RUN_CHECKPOINT_MAX_LOADS: u8 = 3;
+
+#[derive(Clone, Default)]
+pub struct RunCheckpointState {
+    pub payload: Option<RunCheckpointPayload>,
+    pub loads_used: u8,
+}
+
+#[derive(Clone)]
+pub struct RunCheckpointPayload {
+    pub map: RunMap,
+    pub map_progression: MapProgression,
+    pub run_progression: RunProgression,
+    pub combat_previews: HashMap<crate::game::map::MapNodeId, CombatPreview>,
+    pub abnormality_attempts: HashMap<crate::game::map::MapNodeId, AbnormalityAttemptState>,
+    pub enkephalin: Enkephalin,
+    pub inventory: Inventory,
+    pub roster_order: RosterOrder,
+    pub roster: EmployeeRoster,
+    pub skill_fragments: SkillFragmentInventory,
+    pub uuid_manager: UuidManager,
+}
+
+impl RunCheckpointState {
+    pub fn can_load(&self) -> bool {
+        self.payload.is_some() && self.loads_used < RUN_CHECKPOINT_MAX_LOADS
+    }
+
+    pub fn to_dto(&self) -> RunCheckpointSnapshotDto {
+        let remaining_loads = RUN_CHECKPOINT_MAX_LOADS.saturating_sub(self.loads_used);
+        RunCheckpointSnapshotDto {
+            exists: self.payload.is_some(),
+            loads_used: self.loads_used,
+            max_loads: RUN_CHECKPOINT_MAX_LOADS,
+            remaining_loads,
+            can_load: self.can_load(),
+        }
+    }
 }
 
 pub struct ActiveBattleSession {
@@ -119,7 +170,7 @@ pub struct ActiveBattleSession {
     pub combat_preview: CombatPreview,
     pub battle: BattleCore,
     pub execution: BattleExecutionState,
-    pub last_pushed_timeline_seq: Option<u64>,
+    pub last_pushed_event_log_seq: Option<u64>,
     pub live_deployment: Option<LiveBattleDeploymentState>,
     pub playback: BattlePlaybackState,
     pub playback_delta_remainder: u64,
@@ -131,27 +182,18 @@ pub struct LiveBattleDeploymentState {
     pub cost_per_second: u32,
     pub last_cost_update_ms: u64,
     pub base_deploy_cost: u32,
-    pub redeploy_cooldown_ms: u64,
+    pub withdraw_redeploy_cooldown_ms: u64,
+    pub defeat_redeploy_cooldown_ms: u64,
     pub redeploy_cost_multiplier_pct: u32,
     pub next_instance_salt: u32,
     pub deployed_units: HashMap<Uuid, LiveBattleDeployedUnitState>,
     pub redeploy_locks: HashMap<Uuid, LiveBattleRedeployState>,
 }
 
-#[derive(Debug, Clone, Copy)]
-pub struct LiveBattleDeploymentPolicy {
-    pub initial_cost: u32,
-    pub max_cost: u32,
-    pub cost_per_second: u32,
-    pub base_deploy_cost: u32,
-    pub redeploy_cooldown_ms: u64,
-    pub redeploy_cost_multiplier_pct: u32,
-    pub first_instance_salt: u32,
-}
-
 pub struct LiveBattleRedeployState {
     pub ready_at_ms: u64,
     pub deploy_cost: u32,
+    pub current_hp_policy: BattleDeployCurrentHpPolicy,
 }
 
 pub struct LiveBattleDeployedUnitState {
@@ -167,7 +209,8 @@ impl LiveBattleDeploymentState {
             cost_per_second: policy.cost_per_second,
             last_cost_update_ms: 0,
             base_deploy_cost: policy.base_deploy_cost,
-            redeploy_cooldown_ms: policy.redeploy_cooldown_ms,
+            withdraw_redeploy_cooldown_ms: policy.withdraw_redeploy_cooldown_ms,
+            defeat_redeploy_cooldown_ms: policy.defeat_redeploy_cooldown_ms,
             redeploy_cost_multiplier_pct: policy.redeploy_cost_multiplier_pct,
             next_instance_salt: policy.first_instance_salt,
             deployed_units: HashMap::new(),
@@ -245,19 +288,152 @@ impl ActiveBattleSession {
         }
     }
 
+    pub fn reconcile_live_deployment_with_battle_state(&mut self) {
+        let Some(deployment) = self.live_deployment.as_mut() else {
+            return;
+        };
+        let now_ms = self.execution.last_event_time_ms();
+        let redeploy_cost = deployment
+            .base_deploy_cost
+            .saturating_mul(deployment.redeploy_cost_multiplier_pct)
+            / 100;
+        let stale_deployments = deployment
+            .deployed_units
+            .iter()
+            .filter_map(|(employee_uuid, deployed)| {
+                let current_hp_policy = match self.battle.units.get(&deployed.unit_instance_id) {
+                    Some(unit) if unit.is_active() => return None,
+                    Some(unit)
+                        if matches!(
+                            unit.lifecycle,
+                            crate::game::battle::core::types::RuntimeUnitLifecycle::Withdrawn
+                        ) =>
+                    {
+                        BattleDeployCurrentHpPolicy::withdraw_redeploy(
+                            unit.stats.current_health,
+                            unit.stats.max_health,
+                        )
+                    }
+                    Some(_) | None => BattleDeployCurrentHpPolicy::death_redeploy(),
+                };
+                Some((*employee_uuid, current_hp_policy))
+            })
+            .collect::<Vec<_>>();
+
+        for (employee_uuid, current_hp_policy) in stale_deployments {
+            deployment.deployed_units.remove(&employee_uuid);
+            deployment
+                .redeploy_locks
+                .entry(employee_uuid)
+                .or_insert_with(|| LiveBattleRedeployState {
+                    ready_at_ms: now_ms.saturating_add(deployment.defeat_redeploy_cooldown_ms),
+                    deploy_cost: redeploy_cost,
+                    current_hp_policy,
+                });
+        }
+    }
+
+    pub fn battle_setup_snapshot_dto(&self) -> LiveBattleSetupSnapshotDto {
+        let scenario = self.battle.scenario();
+        let mut tactical_points = scenario
+            .tactical_plan
+            .points
+            .iter()
+            .map(|point| LiveBattleSetupTacticalPointDto {
+                id: point.id.0.clone(),
+                point_type: LiveBattleSetupTacticalPointType::TacticalPoint,
+                position: point.position,
+            })
+            .collect::<Vec<_>>();
+
+        for route in &self.combat_preview.routes {
+            let endpoint_id = format!("{}_endpoint", route.id);
+            if tactical_points.iter().any(|point| point.id == endpoint_id) {
+                continue;
+            }
+            tactical_points.push(LiveBattleSetupTacticalPointDto {
+                id: endpoint_id,
+                point_type: LiveBattleSetupTacticalPointType::RouteEndpoint,
+                position: route.end,
+            });
+        }
+        tactical_points.sort_by(|left, right| left.id.cmp(&right.id));
+
+        let mut abnormality_ids = vec![self.abnormality_id.clone()];
+        abnormality_ids.extend(
+            self.combat_preview
+                .enemy_briefing
+                .iter()
+                .map(|briefing| briefing.abnormality_id.clone()),
+        );
+        abnormality_ids.extend(
+            self.combat_preview
+                .spawn_waves
+                .iter()
+                .flat_map(|wave| wave.enemy_entries.iter())
+                .filter(|entry| {
+                    entry.kind == crate::game::combat_preview::EnemyKind::Abnormality
+                        && !entry.abnormality_id.trim().is_empty()
+                })
+                .map(|entry| entry.abnormality_id.clone()),
+        );
+        abnormality_ids.sort();
+        abnormality_ids.dedup();
+
+        LiveBattleSetupSnapshotDto {
+            message_type: LiveBattleSetupSnapshotMessageType::BattleSetupSnapshot,
+            setup_version: LiveBattleSetupSnapshotDto::SETUP_VERSION,
+            battle_uuid: self.battle_uuid,
+            encounter_id: self.encounter_id.clone(),
+            node_type: self.node_type,
+            mission_variant: self.mission_variant,
+            survive_timer_ms: self.combat_preview.survive_timer_ms,
+            battlefield: LiveBattleSetupBattlefieldDto {
+                width: i32::from(scenario.battlefield.width),
+                height: i32::from(scenario.battlefield.height),
+                tiles: self.combat_preview.tiles.clone(),
+                valid_tiles: scenario.battlefield.valid_tiles.clone(),
+                blocked_tiles: scenario.battlefield.obstacles.clone(),
+                static_obstacles: scenario.battlefield.obstacles.clone(),
+            },
+            routes: self.combat_preview.routes.clone(),
+            deployment_zones: self.combat_preview.deployment_zones.clone(),
+            spawn_zones: self.combat_preview.spawn_zones.clone(),
+            tactical_points,
+            static_objects: Vec::new(),
+            initial_units: Vec::new(),
+            catalog_refs: LiveBattleSetupCatalogRefsDto {
+                battlefield_template_id: self.combat_preview.battlefield_template_id.clone(),
+                abnormality_ids,
+            },
+        }
+    }
+
     pub fn live_deployment_dto(&self, roster: &EmployeeRoster) -> Option<LiveBattleDeploymentDto> {
         let deployment = self.live_deployment.as_ref()?;
         let mut deployed_units = deployment
             .deployed_units
             .iter()
-            .map(|(employee_uuid, deployed)| LiveBattleDeployedUnitDto {
-                employee_uuid: *employee_uuid,
-                unit_instance_id: deployed.unit_instance_id,
-                facing: deployed.facing,
-                skill_readiness: self.battle.live_skill_readiness(
-                    self.execution.last_event_time_ms(),
-                    deployed.unit_instance_id,
-                ),
+            .map(|(employee_uuid, deployed)| {
+                let position = self
+                    .battle
+                    .unit_projected_tile(deployed.unit_instance_id)
+                    .unwrap_or_else(|| {
+                        panic!(
+                            "live deployment references unit without runtime position: {:?}",
+                            deployed.unit_instance_id
+                        )
+                    });
+                LiveBattleDeployedUnitDto {
+                    employee_uuid: *employee_uuid,
+                    unit_instance_id: deployed.unit_instance_id,
+                    position,
+                    facing: deployed.facing,
+                    skill_readiness: self.battle.live_skill_readiness(
+                        self.execution.last_event_time_ms(),
+                        deployed.unit_instance_id,
+                    ),
+                }
             })
             .collect::<Vec<_>>();
         deployed_units.sort_by(|left, right| left.employee_uuid.cmp(&right.employee_uuid));
@@ -305,30 +481,122 @@ impl ActiveBattleSession {
         })
     }
 
-    pub fn drain_event_log_delta(&mut self) -> Vec<TimelineEntry> {
-        let delta = self
-            .last_pushed_timeline_seq
-            .map(|last_seen_seq| self.battle.event_log_entries_after_seq(last_seen_seq))
-            .unwrap_or_else(|| self.battle.timeline.entries.clone());
-        if let Some(last) = delta.last() {
-            self.last_pushed_timeline_seq = Some(last.seq);
+    pub fn drain_battle_update_dto(&mut self, roster: &EmployeeRoster) -> LiveBattleUpdateDto {
+        self.reconcile_live_deployment_with_battle_state();
+        let after_seq = self.last_pushed_event_log_seq.unwrap_or(0);
+        let events = self.battle.event_log_entries_after_seq(after_seq);
+        let to_seq = events.last().map(|entry| entry.seq).unwrap_or(after_seq);
+        if !events.is_empty() {
+            self.last_pushed_event_log_seq = Some(to_seq);
         }
-        delta
+        self.battle_update_dto_from_events(after_seq, to_seq, events, roster)
     }
 
-    pub fn event_log_delta_after(&self, last_seen_seq: Option<u64>) -> Vec<TimelineEntry> {
-        last_seen_seq
-            .map(|seq| self.battle.event_log_entries_after_seq(seq))
-            .unwrap_or_else(|| self.battle.timeline.entries.clone())
-    }
-
-    pub fn last_event_log_seq(&self) -> u64 {
+    pub fn latest_event_log_seq(&self) -> u64 {
         self.battle
-            .timeline
+            .event_log
             .entries
             .last()
             .map(|entry| entry.seq)
             .unwrap_or(0)
+    }
+
+    pub fn battle_update_dto_after(
+        &self,
+        last_seen_seq: Option<u64>,
+        roster: &EmployeeRoster,
+    ) -> Result<LiveBattleUpdateDto, GameError> {
+        let after_seq = last_seen_seq.unwrap_or(0);
+        let latest_seq = self.latest_event_log_seq();
+        if after_seq > latest_seq {
+            return Err(GameError::InvalidBattleResyncSeq {
+                requested: after_seq,
+                latest: latest_seq,
+            });
+        }
+        let events = self.battle.event_log_entries_after_seq(after_seq);
+        let to_seq = events.last().map(|entry| entry.seq).unwrap_or(after_seq);
+        Ok(self.battle_update_dto_from_events(after_seq, to_seq, events, roster))
+    }
+
+    fn battle_update_dto_from_events(
+        &self,
+        after_seq: u64,
+        to_seq: u64,
+        events: Vec<BattleEventLogEntry>,
+        roster: &EmployeeRoster,
+    ) -> LiveBattleUpdateDto {
+        LiveBattleUpdateDto {
+            message_type: LiveBattleUpdateMessageType::BattleUpdate,
+            battle_uuid: self.battle_uuid,
+            server_battle_time_ms: self.execution.last_event_time_ms(),
+            events_delta: LiveBattleEventDeltaDto {
+                after_seq,
+                to_seq,
+                events,
+            },
+            checkpoint: self.live_checkpoint_dto(to_seq, roster),
+        }
+    }
+
+    fn live_checkpoint_dto(
+        &self,
+        at_seq: u64,
+        roster: &EmployeeRoster,
+    ) -> LiveBattleStateCheckpointDto {
+        let mut units = self
+            .battle
+            .units
+            .values()
+            .filter(|unit| unit.is_active())
+            .map(|unit| {
+                let position = unit.body.projected_tile();
+                LiveBattleUnitCheckpointDto {
+                    unit_instance_id: unit.instance_id,
+                    owner: unit.owner,
+                    role: unit.role,
+                    hud: live_unit_hud_dto(unit),
+                    range_previews: range_previews_for_runtime_unit(
+                        unit,
+                        self.battle.game_data.as_ref(),
+                        &self.battle.battlefield,
+                        position,
+                    ),
+                    mobility_kind: unit.mobility_kind,
+                    unit_source: unit.source_identity.clone(),
+                    position,
+                    world_position: unit.world_position(),
+                    stats: unit.stats,
+                }
+            })
+            .collect::<Vec<_>>();
+        units.sort_by(|left, right| left.unit_instance_id.cmp(&right.unit_instance_id));
+
+        LiveBattleStateCheckpointDto {
+            at_seq,
+            battle_time_ms: self.execution.last_event_time_ms(),
+            playback: self.playback_state(),
+            units,
+            deployment: self.live_deployment_dto(roster),
+        }
+    }
+}
+
+fn live_unit_hud_dto(unit: &crate::game::battle::core::types::RuntimeUnit) -> LiveBattleUnitHudDto {
+    let uses_resonance = unit.role != BattleUnitRole::DefenseObject
+        && (unit.owner == crate::game::enums::Side::Player
+            || unit.threat_class.uses_resonance_bar());
+    let bar_mode = if uses_resonance {
+        LiveBattleHudBarMode::HpAndResonance
+    } else {
+        LiveBattleHudBarMode::HpOnly
+    };
+
+    LiveBattleUnitHudDto {
+        threat_class: unit.threat_class,
+        bar_mode,
+        resonance_current: uses_resonance.then_some(unit.resonance_current),
+        resonance_max: uses_resonance.then_some(unit.resonance_max),
     }
 }
 
@@ -338,6 +606,22 @@ pub struct RunState {
     pub run_progression: RunProgression,
     pub combat_previews: HashMap<crate::game::map::MapNodeId, CombatPreview>,
     pub abnormality_attempts: HashMap<crate::game::map::MapNodeId, AbnormalityAttemptState>,
+    pub battle_records: Vec<CombatBattleState>,
+}
+
+#[derive(Debug, Serialize)]
+struct BattleRecordExport<'a> {
+    version: u32,
+    run_seed: u64,
+    battle_uuid: Uuid,
+    abnormality_id: &'a str,
+    encounter_id: &'a str,
+    node_type: CombatNodeType,
+    mission_variant: CombatMissionVariant,
+    winner: BattleWinner,
+    participant_results: &'a [ParticipantBattleResult],
+    result_stats: &'a BattleResultStatsDto,
+    event_log: &'a BattleEventLog,
 }
 
 impl RunState {
@@ -352,7 +636,69 @@ impl RunState {
             run_progression,
             combat_previews: HashMap::new(),
             abnormality_attempts: HashMap::new(),
+            battle_records: Vec::new(),
         }
+    }
+
+    pub fn battle_record_root_dir(&self) -> PathBuf {
+        PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("battle_records")
+            .join(format!("run_{:016x}", self.run_progression.run_seed))
+    }
+
+    pub fn battle_record_path(&self, battle_uuid: Uuid) -> PathBuf {
+        self.battle_record_root_dir()
+            .join(format!("{battle_uuid}.json"))
+    }
+
+    pub fn record_battle(&mut self, battle: &CombatBattleState) -> Result<(), GameError> {
+        if self
+            .battle_records
+            .iter()
+            .any(|record| record.abnormality_uuid == battle.abnormality_uuid)
+        {
+            return Ok(());
+        }
+        self.write_battle_record_file(battle)?;
+        self.battle_records.push(battle.clone());
+        Ok(())
+    }
+
+    fn write_battle_record_file(&self, battle: &CombatBattleState) -> Result<(), GameError> {
+        let out_dir = self.battle_record_root_dir();
+        std::fs::create_dir_all(&out_dir).map_err(|error| {
+            GameError::InvalidStaticData(format!(
+                "failed to create battle record directory '{}': {error}",
+                out_dir.display()
+            ))
+        })?;
+        let out_path = self.battle_record_path(battle.abnormality_uuid);
+        let file = File::create(&out_path).map_err(|error| {
+            GameError::InvalidStaticData(format!(
+                "failed to create battle record file '{}': {error}",
+                out_path.display()
+            ))
+        })?;
+        let writer = BufWriter::new(file);
+        let export = BattleRecordExport {
+            version: 1,
+            run_seed: self.run_progression.run_seed,
+            battle_uuid: battle.abnormality_uuid,
+            abnormality_id: &battle.abnormality_id,
+            encounter_id: &battle.encounter_id,
+            node_type: battle.node_type,
+            mission_variant: battle.mission_variant,
+            winner: battle.winner,
+            participant_results: &battle.participant_results,
+            result_stats: &battle.result_stats,
+            event_log: &battle.event_log,
+        };
+        serde_json::to_writer_pretty(writer, &export).map_err(|error| {
+            GameError::InvalidStaticData(format!(
+                "failed to write battle record file '{}': {error}",
+                out_path.display()
+            ))
+        })
     }
 
     pub fn abnormality_attempt_state(
@@ -403,7 +749,6 @@ impl GameCoreState {
             run: None,
             uuid_manager: UuidManager::new(run_seed),
             enkephalin: Enkephalin::new(0),
-            qliphoth: Qliphoth::new(),
             inventory: Inventory::new(),
             roster_order: RosterOrder::new(super::ROSTER_ORDER_SLOTS),
             roster: EmployeeRoster::new(),
@@ -413,6 +758,7 @@ impl GameCoreState {
             research_delivery_policy: ResearchDeliveryPolicy::default(),
             employee_trust_policy: EmployeeTrustPolicy::narrative_only(),
             active_battle: None,
+            run_checkpoint: RunCheckpointState::default(),
         }
     }
 

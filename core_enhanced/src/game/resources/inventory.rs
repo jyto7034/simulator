@@ -174,7 +174,6 @@ impl InventoryItemDto {
                 uuid,
                 meta.as_ref(),
             ))),
-            Item::Abnormality(_) => Err(GameError::InvalidAction),
             Item::Artifact(meta) => Ok(InventoryItemDto::Artifact(ArtifactItemDto::from_metadata(
                 meta.as_ref(),
             ))),
@@ -250,15 +249,30 @@ pub struct EquipItemResultDto {
 
 /// 플레이어 인벤토리 시스템.
 ///
-/// 환상체는 더 이상 플레이어 소유물이 아니며, 직원/전투 상대 데이터로만 사용됩니다.
+/// 환상체는 플레이어 소유물이 아니며, 직원/전투 상대 데이터로만 사용됩니다.
 /// 인벤토리는 장비, 소모품, 아티팩트를 보관합니다.
 
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct Inventory {
     pub equipments: EquipmentInventory,
     pub equipment_materials: EquipmentMaterialInventory,
     pub consumables: ConsumableInventory,
     pub artifacts: ArtifactSlots,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum InventoryRemoveError {
+    NotFound,
+    NotRemovableArtifact(Uuid),
+}
+
+impl InventoryRemoveError {
+    pub fn into_game_error(self) -> GameError {
+        match self {
+            InventoryRemoveError::NotFound => GameError::InventoryItemNotFound,
+            InventoryRemoveError::NotRemovableArtifact(_) => GameError::InventoryItemNotRemovable,
+        }
+    }
 }
 
 impl Inventory {
@@ -274,7 +288,6 @@ impl Inventory {
     /// 아이템을 추가할 수 있는지 검증 (실제로 추가하지 않음)
     pub fn can_add_item(&self, item: &Item) -> bool {
         match item {
-            Item::Abnormality(_) => false,
             Item::Equipment(_) => self.equipments.can_add_item(),
             Item::Consumable(_) => self.consumables.can_add_item(),
             Item::Artifact(meta) => {
@@ -297,20 +310,24 @@ impl Inventory {
         None
     }
 
-    /// UUID로 아이템 제거
-    pub fn remove_item(&mut self, uuid: Uuid) -> Option<Item> {
-        // Equipment는 "소유 인스턴스 UUID"로 제거
+    /// UUID로 제거 가능한 owned item을 제거합니다.
+    ///
+    /// 장비와 소모품은 owned instance UUID로 제거합니다.
+    /// 아티팩트는 영구 귀속 보유 효과이므로 generic remove path에 들어오지 않습니다.
+    pub fn remove_item(&mut self, uuid: Uuid) -> Result<Item, InventoryRemoveError> {
         if let Some(item) = self.equipments.remove_item(uuid) {
-            return Some(Item::Equipment(item.meta));
+            return Ok(Item::Equipment(item.meta));
         }
 
         if let Some(item) = self.consumables.remove_item(uuid) {
-            return Some(Item::Consumable(item.meta));
+            return Ok(Item::Consumable(item.meta));
         }
 
-        // Artifact는 UUID로 직접 제거할 수 없음 (index 기반)
-        // TODO: ArtifactSlots에 remove_by_uuid 추가 필요
-        None
+        if self.artifacts.contains_uuid(uuid) {
+            return Err(InventoryRemoveError::NotRemovableArtifact(uuid));
+        }
+
+        Err(InventoryRemoveError::NotFound)
     }
 
     /// 아이템을 소유 인스턴스로 추가합니다.
@@ -319,10 +336,6 @@ impl Inventory {
     /// - Artifact: 현재는 `meta.uuid`를 그대로 owned_uuid로 사용합니다.
     pub fn add_item_owned(&mut self, owned_uuid: Uuid, item: Item) -> Result<(), GameError> {
         match item {
-            Item::Abnormality(_) => {
-                tracing::warn!("Rejected abnormality item for player inventory");
-                Err(GameError::InvalidAction)
-            }
             Item::Equipment(data) => {
                 if let Err(err) = self
                     .equipments
@@ -706,7 +719,6 @@ impl ArtifactSlots {
 mod tests {
     use super::*;
     use crate::game::data::{
-        abnormality_data::{AbnormalityMetadata, BasicAttackDef, MovementDef, ResonanceDef},
         artifact_data::ArtifactMetadata,
         equipment_data::{EquipmentMetadata, EquipmentType},
         Item,
@@ -727,26 +739,6 @@ mod tests {
             triggered_effects: HashMap::new(),
             ability_activations: vec![],
             weapon_profile: (equipment_type == EquipmentType::Weapon).then(Default::default),
-        })
-    }
-
-    fn abnormality_meta(uuid: u128) -> Arc<AbnormalityMetadata> {
-        Arc::new(AbnormalityMetadata {
-            id: format!("abno_{uuid}"),
-            uuid: Uuid::from_u128(uuid),
-            name: "Abno".to_string(),
-            risk_level: RiskLevel::ZAYIN,
-            price: 1,
-            max_health: 10,
-            attack: 2,
-            defense: 1,
-            magic_resist: 0,
-            movement: MovementDef::default(),
-            basic_attack: BasicAttackDef::default(),
-            resonance: ResonanceDef::default(),
-            skill_id: None,
-            mobility_kind: Default::default(),
-            target_traits: Vec::new(),
         })
     }
 
@@ -780,7 +772,7 @@ mod tests {
     }
 
     #[test]
-    fn inventory_artifact_is_added_to_slots_and_is_not_removable_by_uuid() {
+    fn permanent_artifact_is_added_to_slots_and_not_removed_by_owned_item_path() {
         let mut inv = Inventory::new();
         let artifact = Item::Artifact(artifact_meta(10));
 
@@ -789,7 +781,15 @@ mod tests {
 
         assert!(inv.has_artifact(Uuid::from_u128(10)));
         assert!(inv.find_item(Uuid::from_u128(10)).is_none());
-        assert!(inv.remove_item(Uuid::from_u128(10)).is_none());
+        assert!(matches!(
+            inv.remove_item(Uuid::from_u128(10)),
+            Err(InventoryRemoveError::NotRemovableArtifact(uuid))
+                if uuid == Uuid::from_u128(10)
+        ));
+        assert!(matches!(
+            inv.remove_item(Uuid::from_u128(404)),
+            Err(InventoryRemoveError::NotFound)
+        ));
     }
 
     #[test]
@@ -869,11 +869,6 @@ mod tests {
         };
         let mut inv = inv;
 
-        assert!(matches!(
-            inv.add_item_owned(Uuid::from_u128(1), Item::Abnormality(abnormality_meta(1)))
-                .unwrap_err(),
-            GameError::InvalidAction
-        ));
         assert!(matches!(
             inv.add_item_owned(
                 Uuid::from_u128(2),

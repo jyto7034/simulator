@@ -30,7 +30,7 @@ use crate::{
 use crate::game::{
     battle::{
         scenario::{ScenarioGroupId, ScenarioSpawnGroup, ScenarioUnitRef, ScenarioUnitSpawn},
-        types::{BattleUnitDraft, BattleUnitSource},
+        types::{BattleUnitDraft, BattleUnitSource, BattleUnitThreatClass},
     },
     combat_player_spawns::scenario_artifacts_from_inventory,
     enums::Side,
@@ -203,6 +203,7 @@ impl CombatExecutor {
                 source: BattleUnitSource::Abnormality {
                     base_uuid: fixture.base_uuid,
                 },
+                threat_class: BattleUnitThreatClass::Elite,
                 level: fixture.level,
                 growth_stacks: GrowthStack::new(),
                 equipped_items: vec![],
@@ -255,6 +256,7 @@ impl CombatExecutor {
                 combat_preview.mission_variant,
                 combat_preview.mission_risk,
                 &tactical_plan,
+                combat_preview.survive_timer_ms,
             )
         });
 
@@ -324,17 +326,20 @@ impl CombatExecutor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::game::battle::scenario::{EnemyMovementPlan, PlayerMovementPlan, WinCondition};
-    use crate::game::battle::timeline::TimelineEvent;
+    use crate::game::battle::core::{movement::types::WorldVec2, BattleCore};
+    use crate::game::battle::event_log::BattleLogEvent;
+    use crate::game::battle::scenario::{
+        EnemyMovementPlan, PlayerMovementPlan, ScenarioAction, ScenarioTrigger, WinCondition,
+    };
     use crate::game::combat_defense_object::DEFAULT_DEFENSE_OBJECT_GROUP;
     use crate::game::combat_mission_policy::DEFAULT_DEFENSE_OBJECT_REF;
-    use crate::game::combat_preview::CombatPreview;
+    use crate::game::combat_preview::{BattlefieldArchetype, BattlefieldSizeClass, CombatPreview};
     use crate::game::data::{
         abnormality_data::AbnormalityMetadata,
         pve_data::{
             PveBattleObjectiveData, PveBattlefieldOverrideData, PveEncounter, PveEncounterDatabase,
             PveTacticalPlanData, PveTacticalPointData, PveWaveData, PveWaveEnemyData,
-            PveWinConditionData,
+            PveWaveSource, PveWinConditionData,
         },
         GameDataBase, GameDataBuilder,
     };
@@ -366,6 +371,7 @@ mod tests {
             attack,
             defense: 0,
             magic_resist: 0,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -373,6 +379,49 @@ mod tests {
             mobility_kind: Default::default(),
             target_traits: Vec::new(),
         }
+    }
+
+    fn route_progress(cells: &[Position], position: WorldVec2) -> f32 {
+        let centers = cells
+            .iter()
+            .copied()
+            .map(WorldVec2::from_tile_center)
+            .collect::<Vec<_>>();
+        if centers.len() < 2 {
+            return 0.0;
+        }
+
+        let mut cumulative = 0.0;
+        let mut best_distance_sq = f32::MAX;
+        let mut best_progress = 0.0;
+        for segment in centers.windows(2) {
+            let start = segment[0];
+            let end = segment[1];
+            let delta = end - start;
+            let length_sq = delta.length_squared();
+            if length_sq <= f32::EPSILON {
+                continue;
+            }
+            let segment_length = length_sq.sqrt();
+            let t = dot_world(position - start, delta) / length_sq;
+            let t = t.clamp(0.0, 1.0);
+            let projected = start + delta * t;
+            let distance_sq = position.distance_squared(projected);
+            let progress = cumulative + segment_length * t;
+            if distance_sq < best_distance_sq - f32::EPSILON
+                || ((distance_sq - best_distance_sq).abs() <= f32::EPSILON
+                    && progress > best_progress)
+            {
+                best_distance_sq = distance_sq;
+                best_progress = progress;
+            }
+            cumulative += segment_length;
+        }
+        best_progress
+    }
+
+    fn dot_world(left: WorldVec2, right: WorldVec2) -> f32 {
+        left.x * right.x + left.y * right.y
     }
 
     #[test]
@@ -389,6 +438,7 @@ mod tests {
                 reward_uuids: vec![],
                 node_type: Some(CombatNodeType::Boss),
                 mission_variant: None,
+                survive_timer_ms: None,
                 battlefield: None,
                 tactical_plan: None,
                 win_condition: None,
@@ -396,16 +446,13 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
-                    route_id: None,
+                    route_id: Some("defense_main".to_string()),
                     required_for_victory: true,
-                    source: None,
-                    enemies: vec![PveWaveEnemyData {
-                        kind: crate::game::combat_preview::EnemyKind::Abnormality,
-                        profile_id: None,
+                    source: PveWaveSource::Manual(vec![PveWaveEnemyData::Abnormality {
                         abnormality_id: "enemy".to_string(),
                         tier: crate::game::enums::Tier::I,
                         count: 1,
-                    }],
+                    }]),
                 }],
                 static_obstacles: vec![],
             }],
@@ -442,6 +489,7 @@ mod tests {
                 reward_uuids: vec![],
                 node_type: None,
                 mission_variant: None,
+                survive_timer_ms: None,
                 battlefield: None,
                 tactical_plan: None,
                 win_condition: None,
@@ -449,16 +497,13 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
-                    route_id: None,
+                    route_id: Some("defense_main".to_string()),
                     required_for_victory: true,
-                    source: None,
-                    enemies: vec![PveWaveEnemyData {
-                        kind: crate::game::combat_preview::EnemyKind::Abnormality,
-                        profile_id: None,
+                    source: PveWaveSource::Manual(vec![PveWaveEnemyData::Abnormality {
                         abnormality_id: "enemy".to_string(),
                         tier: crate::game::enums::Tier::I,
                         count: 1,
-                    }],
+                    }]),
                 }],
                 static_obstacles: vec![],
             }],
@@ -515,6 +560,7 @@ mod tests {
                 reward_uuids: vec![],
                 node_type: None,
                 mission_variant: None,
+                survive_timer_ms: None,
                 battlefield: None,
                 tactical_plan: None,
                 win_condition: None,
@@ -522,16 +568,13 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
-                    route_id: None,
+                    route_id: Some("defense_main".to_string()),
                     required_for_victory: true,
-                    source: None,
-                    enemies: vec![PveWaveEnemyData {
-                        kind: crate::game::combat_preview::EnemyKind::Abnormality,
-                        profile_id: None,
+                    source: PveWaveSource::Manual(vec![PveWaveEnemyData::Abnormality {
                         abnormality_id: "enemy".to_string(),
                         tier: crate::game::enums::Tier::I,
                         count: 1,
-                    }],
+                    }]),
                 }],
                 static_obstacles: vec![],
             }],
@@ -589,6 +632,7 @@ mod tests {
             reward_uuids: vec![],
             node_type: Some(CombatNodeType::Defense),
             mission_variant: None,
+            survive_timer_ms: None,
             battlefield: None,
             tactical_plan: None,
             win_condition: None,
@@ -596,23 +640,26 @@ mod tests {
                 id: "wave_0".to_string(),
                 time_ms: 0,
                 spawn_zone_ids: Vec::new(),
-                route_id: None,
+                route_id: Some("defense_main".to_string()),
                 required_for_victory: true,
-                source: None,
-                enemies: vec![PveWaveEnemyData {
-                    kind: crate::game::combat_preview::EnemyKind::Abnormality,
-                    profile_id: None,
+                source: PveWaveSource::Manual(vec![PveWaveEnemyData::Abnormality {
                     abnormality_id: "enemy_a".to_string(),
                     tier: crate::game::enums::Tier::I,
                     count: 1,
-                }],
+                }]),
             }],
             static_obstacles: vec![],
         };
         let mut encounter_b = encounter_a.clone();
         encounter_b.id = "encounter_b".to_string();
         encounter_b.abnormality_id = "enemy_b".to_string();
-        encounter_b.waves[0].enemies[0].abnormality_id = "enemy_b".to_string();
+        let PveWaveSource::Manual(enemies) = &mut encounter_b.waves[0].source else {
+            panic!("test encounter should use a manual wave");
+        };
+        let PveWaveEnemyData::Abnormality { abnormality_id, .. } = &mut enemies[0] else {
+            panic!("test encounter should use an abnormality enemy");
+        };
+        *abnormality_id = "enemy_b".to_string();
         let game_data = game_data_with_abnormalities_and_pve(
             vec![enemy_a, enemy_b],
             vec![encounter_a, encounter_b],
@@ -668,6 +715,7 @@ mod tests {
                 reward_uuids: vec![],
                 node_type: Some(CombatNodeType::Defense),
                 mission_variant: None,
+                survive_timer_ms: None,
                 battlefield: Some(PveBattlefieldOverrideData {
                     archetype: Some(crate::game::combat_preview::BattlefieldArchetype::ChokePoint),
                     size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
@@ -678,16 +726,13 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
-                    route_id: None,
+                    route_id: Some("defense_main".to_string()),
                     required_for_victory: true,
-                    source: None,
-                    enemies: vec![PveWaveEnemyData {
-                        kind: crate::game::combat_preview::EnemyKind::Abnormality,
-                        profile_id: None,
+                    source: PveWaveSource::Manual(vec![PveWaveEnemyData::Abnormality {
                         abnormality_id: "enemy".to_string(),
                         tier: crate::game::enums::Tier::I,
                         count: 1,
-                    }],
+                    }]),
                 }],
                 static_obstacles: vec![],
             }],
@@ -745,6 +790,7 @@ mod tests {
                 reward_uuids: vec![],
                 node_type: None,
                 mission_variant: None,
+                survive_timer_ms: None,
                 battlefield: None,
                 tactical_plan: None,
                 win_condition: None,
@@ -752,16 +798,13 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
-                    route_id: None,
+                    route_id: Some("defense_main".to_string()),
                     required_for_victory: true,
-                    source: None,
-                    enemies: vec![PveWaveEnemyData {
-                        kind: crate::game::combat_preview::EnemyKind::Abnormality,
-                        profile_id: None,
+                    source: PveWaveSource::Manual(vec![PveWaveEnemyData::Abnormality {
                         abnormality_id: "enemy".to_string(),
                         tier: crate::game::enums::Tier::I,
                         count: 1,
-                    }],
+                    }]),
                 }],
                 static_obstacles: vec![],
             }],
@@ -776,36 +819,31 @@ mod tests {
             count: 1,
             appearance_seeds: Vec::new(),
         };
+        let valid_tiles = (0..5)
+            .flat_map(|y| (0..5).map(move |x| Position::new(x, y)))
+            .collect::<Vec<_>>();
+        let tiles = valid_tiles
+            .iter()
+            .copied()
+            .map(|position| crate::game::combat_preview::BattlefieldTile {
+                position,
+                kind: crate::game::combat_preview::BattlefieldTileKind::Ground,
+            })
+            .collect::<Vec<_>>();
         let preview = CombatPreview {
             node_id,
             encounter_id: Some("wave_encounter".to_string()),
             battlefield_template_id: "test_wave_field".to_string(),
             node_type: crate::game::combat_preview::CombatNodeType::Defense,
-            mission_variant: crate::game::combat_preview::CombatMissionVariant::Encirclement,
+            mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
+            survive_timer_ms: None,
             mission_risk: crate::game::combat_preview::CombatMissionRisk::Controlled,
             archetype: crate::game::combat_preview::BattlefieldArchetype::Ambush,
             size_class: crate::game::combat_preview::BattlefieldSizeClass::Small,
             width: 5,
             height: 5,
-            tiles: vec![
-                crate::game::combat_preview::BattlefieldTile {
-                    position: Position::new(1, 1),
-                    kind: crate::game::combat_preview::BattlefieldTileKind::Ground,
-                },
-                crate::game::combat_preview::BattlefieldTile {
-                    position: Position::new(1, 2),
-                    kind: crate::game::combat_preview::BattlefieldTileKind::Ground,
-                },
-                crate::game::combat_preview::BattlefieldTile {
-                    position: Position::new(2, 1),
-                    kind: crate::game::combat_preview::BattlefieldTileKind::Ground,
-                },
-            ],
-            valid_tiles: vec![
-                Position::new(1, 1),
-                Position::new(1, 2),
-                Position::new(2, 1),
-            ],
+            tiles,
+            valid_tiles,
             deployment_zones: vec![crate::game::combat_preview::DeploymentZone {
                 id: "deploy".to_string(),
                 label: "Deploy".to_string(),
@@ -826,7 +864,7 @@ mod tests {
                     label: "Reinforcement".to_string(),
                     kind: crate::game::combat_preview::SpawnZoneKind::Ambush,
                     confidence: crate::game::combat_preview::ZoneConfidence::Likely,
-                    cells: vec![Position::new(2, 1)],
+                    cells: vec![Position::new(4, 4)],
                     revealed_details: Vec::new(),
                 },
             ],
@@ -860,34 +898,44 @@ mod tests {
         roster.add(Employee::new(employee_uuid, "Agent"));
         let deployment_positions = HashMap::from([(employee_uuid, Position::new(1, 1))]);
 
-        let mut battle = CombatExecutor::build_battle_with_combat_preview(
+        let plan = BattleStartPlan::from_preview(&game_data, "wave_encounter", &preview)
+            .expect("preview should build a battle start plan");
+        let player_start = player_scenario_start_from_positions(
             &roster,
             &inventory,
             &skill_fragments,
-            game_data,
-            "enemy",
+            &game_data,
+            deployment_positions
+                .iter()
+                .map(|(uuid, position)| (*uuid, *position))
+                .collect(),
+        )
+        .expect("player deployment should build scenario start");
+        let scenario = CombatExecutor::build_battle_scenario_from_preview(
+            &game_data,
             "wave_encounter",
-            7,
             &preview,
-            &deployment_positions,
+            plan,
+            player_start,
         )
         .expect("preview waves should convert into battle scenario waves");
-        let mut execution = battle
-            .start_battle_execution()
-            .expect("live execution should start");
-        battle
-            .step_battle_execution_until(&mut execution, 1_000)
-            .expect("second wave time should be reachable");
 
-        assert!(battle.timeline.entries.iter().any(|entry| {
-            entry.time_ms == 1_000
-                && matches!(
-                    entry.event,
-                    TimelineEvent::UnitSpawned {
-                        owner: Side::Opponent,
-                        ..
+        let timed_spawn_group_id =
+            scenario
+                .events
+                .iter()
+                .find_map(|event| match (&event.trigger, &event.action) {
+                    (ScenarioTrigger::AtTimeMs(1_000), ScenarioAction::SpawnGroup { group_id }) => {
+                        Some(group_id)
                     }
-                )
+                    _ => None,
+                });
+        assert!(
+            timed_spawn_group_id.is_some(),
+            "second preview wave should become a timed scenario spawn event at 1000ms"
+        );
+        assert!(scenario.groups.iter().any(|group| {
+            Some(&group.id) == timed_spawn_group_id && group.side == Side::Opponent
         }));
     }
 
@@ -909,6 +957,7 @@ mod tests {
                 reward_uuids: vec![],
                 node_type: Some(CombatNodeType::Defense),
                 mission_variant: None,
+                survive_timer_ms: None,
                 battlefield: Some(PveBattlefieldOverrideData {
                     archetype: Some(crate::game::combat_preview::BattlefieldArchetype::ChokePoint),
                     size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
@@ -929,16 +978,13 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
-                    route_id: Some("black_box_breach_main".to_string()),
+                    route_id: Some("defense_main".to_string()),
                     required_for_victory: true,
-                    source: None,
-                    enemies: vec![PveWaveEnemyData {
-                        kind: crate::game::combat_preview::EnemyKind::Abnormality,
-                        profile_id: None,
+                    source: PveWaveSource::Manual(vec![PveWaveEnemyData::Abnormality {
                         abnormality_id: "enemy".to_string(),
                         tier: crate::game::enums::Tier::I,
                         count: 1,
-                    }],
+                    }]),
                 }],
                 static_obstacles: vec![],
             }],
@@ -1018,6 +1064,7 @@ mod tests {
                 reward_uuids: vec![],
                 node_type: Some(CombatNodeType::Defense),
                 mission_variant: None,
+                survive_timer_ms: None,
                 battlefield: Some(PveBattlefieldOverrideData {
                     archetype: Some(crate::game::combat_preview::BattlefieldArchetype::ChokePoint),
                     size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
@@ -1028,16 +1075,13 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
-                    route_id: Some("black_box_breach_main".to_string()),
+                    route_id: Some("defense_main".to_string()),
                     required_for_victory: true,
-                    source: None,
-                    enemies: vec![PveWaveEnemyData {
-                        kind: crate::game::combat_preview::EnemyKind::Abnormality,
-                        profile_id: None,
+                    source: PveWaveSource::Manual(vec![PveWaveEnemyData::Abnormality {
                         abnormality_id: "enemy".to_string(),
                         tier: crate::game::enums::Tier::I,
                         count: 1,
-                    }],
+                    }]),
                 }],
                 static_obstacles: vec![],
             }],
@@ -1088,10 +1132,12 @@ mod tests {
             PlayerMovementPlan::FixedDefense
         ));
         let EnemyMovementPlan::PathAlongCells { ref cells } = scenario.tactical_plan.enemy_plan;
-        assert_eq!(
-            cells.last().copied(),
-            preview.routes.first().map(|route| route.end)
-        );
+        let preview_route_cells = &preview
+            .routes
+            .first()
+            .expect("defense preview should expose a route")
+            .cells;
+        assert_eq!(cells, preview_route_cells);
         let enemy_group = scenario
             .groups
             .iter()
@@ -1102,10 +1148,7 @@ mod tests {
         else {
             panic!("defense wave route_id should select a route movement plan");
         };
-        assert_eq!(
-            wave_cells.last().copied(),
-            preview.routes.first().map(|route| route.end)
-        );
+        assert_eq!(wave_cells, preview_route_cells);
         assert!(matches!(
             scenario.win_condition,
             WinCondition::ProtectUnit {
@@ -1130,6 +1173,126 @@ mod tests {
     }
 
     #[test]
+    fn authored_defense_route_enemy_progresses_past_spawn_boundary() {
+        let player_owned_uuid = Uuid::from_u128(0x9101);
+        let player_base_uuid = Uuid::from_u128(0x9102);
+        let enemy_base_uuid = Uuid::from_u128(0x9103);
+        let player = abnormality("route_player", player_base_uuid, 1);
+        let enemy = abnormality("route_enemy", enemy_base_uuid, 1);
+        let game_data = game_data_with_abnormalities_and_pve(
+            vec![player, enemy],
+            vec![PveEncounter {
+                id: "generated_route_encounter".to_string(),
+                abnormality_id: "route_enemy".to_string(),
+                difficulty: 1,
+                risk_level: RiskLevel::ZAYIN,
+                reward_mode: RewardMode::ClaimAll,
+                reward_uuids: vec![],
+                node_type: Some(CombatNodeType::Defense),
+                mission_variant: None,
+                survive_timer_ms: None,
+                battlefield: Some(PveBattlefieldOverrideData {
+                    archetype: Some(BattlefieldArchetype::Corridor),
+                    size_class: Some(BattlefieldSizeClass::Medium),
+                }),
+                tactical_plan: None,
+                win_condition: None,
+                waves: vec![PveWaveData {
+                    id: "wave_0".to_string(),
+                    time_ms: 0,
+                    spawn_zone_ids: Vec::new(),
+                    route_id: Some("defense_main".to_string()),
+                    required_for_victory: true,
+                    source: PveWaveSource::Manual(vec![PveWaveEnemyData::Abnormality {
+                        abnormality_id: "route_enemy".to_string(),
+                        tier: crate::game::enums::Tier::I,
+                        count: 1,
+                    }]),
+                }],
+                static_obstacles: vec![],
+            }],
+        );
+        let preview = CombatPreview::generate_for_node(
+            MapNodeId::new(Uuid::from_u128(0x9104)),
+            MapNodeCategory::Combat,
+            Some("generated_route_encounter"),
+            game_data.as_ref(),
+            2,
+        );
+        assert_eq!(preview.battlefield_template_id, "corridor_medium_hook_01");
+        let route_cells = preview
+            .routes
+            .first()
+            .expect("authored route should exist")
+            .cells
+            .clone();
+        assert!(
+            route_cells.len() > 2,
+            "authored route should contain adjacent waypoints, not only endpoints"
+        );
+
+        let plan = BattleStartPlan::from_preview(
+            game_data.as_ref(),
+            "generated_route_encounter",
+            &preview,
+        )
+        .expect("preview should convert to battle start plan");
+        let route_end = preview
+            .routes
+            .first()
+            .expect("authored route should exist")
+            .end;
+        let player_position = preview.deployment_zones[0]
+            .cells
+            .iter()
+            .copied()
+            .find(|cell| *cell != route_end)
+            .expect("test deployment zone should include a non-object cell");
+        let player_start =
+            CombatExecutor::build_test_player_abnormality_scenario_start_from_positions(
+                &[TestPlayerAbnormalityUnit {
+                    owned_uuid: player_owned_uuid,
+                    base_uuid: player_base_uuid,
+                    level: crate::game::enums::Tier::I,
+                }],
+                &Inventory::new(),
+                &HashMap::from([(player_owned_uuid, player_position)]),
+            )
+            .expect("test player scenario start");
+        let scenario = CombatExecutor::build_battle_scenario_from_preview(
+            game_data.as_ref(),
+            "generated_route_encounter",
+            &preview,
+            plan,
+            player_start,
+        )
+        .expect("battle scenario should build");
+
+        let mut core = BattleCore::new_from_scenario(scenario, game_data, 0x9105);
+        core.use_direct_continuous_movement_backend();
+        let mut execution = core.start_battle_execution().unwrap();
+        core.step_battle_execution_until(&mut execution, 2_000)
+            .unwrap();
+
+        let enemy_position = core
+            .units
+            .values()
+            .find(|unit| unit.owner == Side::Opponent)
+            .expect("enemy should have spawned")
+            .world_position();
+        let progress = route_progress(&route_cells, enemy_position);
+        assert!(
+            progress > 1.0,
+            "enemy should progress beyond the spawn-row boundary on authored route: position={enemy_position:?}, progress={progress}"
+        );
+        assert!(core
+            .event_log
+            .entries
+            .iter()
+            .any(|entry| matches!(entry.event, BattleLogEvent::MovementSegmentStarted { .. })));
+    }
+
+    #[test]
     fn defense_node_type_builds_fixed_defense_objective() {
         let player_owned_uuid = Uuid::from_u128(0x161);
         let player_base_uuid = Uuid::from_u128(0x262);
@@ -1147,6 +1310,7 @@ mod tests {
                 reward_uuids: vec![],
                 node_type: Some(CombatNodeType::Defense),
                 mission_variant: None,
+                survive_timer_ms: None,
                 battlefield: Some(PveBattlefieldOverrideData {
                     archetype: Some(crate::game::combat_preview::BattlefieldArchetype::Corridor),
                     size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
@@ -1157,16 +1321,13 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
-                    route_id: None,
+                    route_id: Some("defense_main".to_string()),
                     required_for_victory: true,
-                    source: None,
-                    enemies: vec![PveWaveEnemyData {
-                        kind: crate::game::combat_preview::EnemyKind::Abnormality,
-                        profile_id: None,
+                    source: PveWaveSource::Manual(vec![PveWaveEnemyData::Abnormality {
                         abnormality_id: "enemy".to_string(),
                         tier: crate::game::enums::Tier::I,
                         count: 1,
-                    }],
+                    }]),
                 }],
                 static_obstacles: vec![],
             }],
@@ -1220,7 +1381,7 @@ mod tests {
     }
 
     #[test]
-    fn encirclement_mission_variant_builds_survival_hold_objective() {
+    fn survival_timer_builds_protected_timer_objective() {
         let player_owned_uuid = Uuid::from_u128(0x171);
         let player_base_uuid = Uuid::from_u128(0x272);
         let enemy_base_uuid = Uuid::from_u128(0x273);
@@ -1229,16 +1390,15 @@ mod tests {
         let game_data = game_data_with_abnormalities_and_pve(
             vec![player, enemy],
             vec![PveEncounter {
-                id: "default_encirclement_encounter".to_string(),
+                id: "survival_timer_encounter".to_string(),
                 abnormality_id: "enemy".to_string(),
                 difficulty: 1,
                 risk_level: RiskLevel::ZAYIN,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
                 node_type: Some(CombatNodeType::Defense),
-                mission_variant: Some(
-                    crate::game::combat_preview::CombatMissionVariant::Encirclement,
-                ),
+                mission_variant: None,
+                survive_timer_ms: Some(45_000),
                 battlefield: Some(PveBattlefieldOverrideData {
                     archetype: Some(crate::game::combat_preview::BattlefieldArchetype::Surrounded),
                     size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
@@ -1249,16 +1409,13 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
-                    route_id: None,
+                    route_id: Some("defense_main".to_string()),
                     required_for_victory: true,
-                    source: None,
-                    enemies: vec![PveWaveEnemyData {
-                        kind: crate::game::combat_preview::EnemyKind::Abnormality,
-                        profile_id: None,
+                    source: PveWaveSource::Manual(vec![PveWaveEnemyData::Abnormality {
                         abnormality_id: "enemy".to_string(),
                         tier: crate::game::enums::Tier::I,
                         count: 1,
-                    }],
+                    }]),
                 }],
                 static_obstacles: vec![],
             }],
@@ -1266,17 +1423,14 @@ mod tests {
         let preview = CombatPreview::generate_for_node(
             MapNodeId::new(Uuid::from_u128(0x9008)),
             MapNodeCategory::Combat,
-            Some("default_encirclement_encounter"),
+            Some("survival_timer_encounter"),
             game_data.as_ref(),
             0,
         );
 
-        let plan = BattleStartPlan::from_preview(
-            game_data.as_ref(),
-            "default_encirclement_encounter",
-            &preview,
-        )
-        .expect("preview should convert to battle start plan");
+        let plan =
+            BattleStartPlan::from_preview(game_data.as_ref(), "survival_timer_encounter", &preview)
+                .expect("preview should convert to battle start plan");
         let player_start =
             CombatExecutor::build_test_player_abnormality_scenario_start_from_positions(
                 &[TestPlayerAbnormalityUnit {
@@ -1290,7 +1444,7 @@ mod tests {
             .expect("test player scenario start");
         let scenario = CombatExecutor::build_battle_scenario_from_preview(
             game_data.as_ref(),
-            "default_encirclement_encounter",
+            "survival_timer_encounter",
             &preview,
             plan,
             player_start,
@@ -1299,7 +1453,7 @@ mod tests {
 
         assert!(matches!(
             scenario.tactical_plan.objective,
-            crate::game::battle::scenario::BattleObjective::Survive { time_ms: 45_000 }
+            crate::game::battle::scenario::BattleObjective::ProtectUnit { .. }
         ));
         assert!(matches!(
             scenario.tactical_plan.player_plan,
@@ -1307,8 +1461,113 @@ mod tests {
         ));
         assert!(matches!(
             scenario.win_condition,
-            WinCondition::SurviveUntil { time_ms: 45_000 }
+            WinCondition::ProtectUnitUntil {
+                time_ms: 45_000,
+                ..
+            }
         ));
+    }
+
+    #[test]
+    fn surrounded_battlefield_remains_default_defense_and_does_not_end_before_deployment() {
+        let enemy_base_uuid = Uuid::from_u128(0x283);
+        let enemy = abnormality("enemy", enemy_base_uuid, 1);
+        let game_data = game_data_with_abnormalities_and_pve(
+            vec![enemy],
+            vec![PveEncounter {
+                id: "surrounded_default_defense".to_string(),
+                abnormality_id: "enemy".to_string(),
+                difficulty: 1,
+                risk_level: RiskLevel::ZAYIN,
+                reward_mode: RewardMode::ClaimAll,
+                reward_uuids: vec![],
+                node_type: Some(CombatNodeType::Defense),
+                mission_variant: None,
+                survive_timer_ms: None,
+                battlefield: Some(PveBattlefieldOverrideData {
+                    archetype: Some(crate::game::combat_preview::BattlefieldArchetype::Surrounded),
+                    size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Medium),
+                }),
+                tactical_plan: None,
+                win_condition: None,
+                waves: vec![PveWaveData {
+                    id: "wave_0".to_string(),
+                    time_ms: 0,
+                    spawn_zone_ids: Vec::new(),
+                    route_id: Some("defense_main".to_string()),
+                    required_for_victory: true,
+                    source: PveWaveSource::Manual(vec![PveWaveEnemyData::Abnormality {
+                        abnormality_id: "enemy".to_string(),
+                        tier: crate::game::enums::Tier::I,
+                        count: 1,
+                    }]),
+                }],
+                static_obstacles: vec![],
+            }],
+        );
+        let preview = CombatPreview::generate_for_node(
+            MapNodeId::new(Uuid::from_u128(0x9009)),
+            MapNodeCategory::Combat,
+            Some("surrounded_default_defense"),
+            game_data.as_ref(),
+            4,
+        );
+
+        assert_eq!(
+            preview.mission_variant,
+            crate::game::combat_preview::CombatMissionVariant::Defense
+        );
+        assert_eq!(preview.survive_timer_ms, None);
+        assert_eq!(
+            preview.archetype,
+            crate::game::combat_preview::BattlefieldArchetype::Surrounded
+        );
+
+        let plan = BattleStartPlan::from_preview(
+            game_data.as_ref(),
+            "surrounded_default_defense",
+            &preview,
+        )
+        .expect("preview should convert to battle start plan");
+        let empty_player_start =
+            CombatExecutor::build_test_player_abnormality_scenario_start_from_positions(
+                &[],
+                &Inventory::new(),
+                &HashMap::new(),
+            )
+            .expect("empty deployment player start should build");
+        let scenario = CombatExecutor::build_battle_scenario_from_preview(
+            game_data.as_ref(),
+            "surrounded_default_defense",
+            &preview,
+            plan,
+            empty_player_start,
+        )
+        .expect("battle scenario should build");
+
+        assert!(matches!(
+            scenario.win_condition,
+            WinCondition::ProtectUnit { .. }
+        ));
+
+        let mut core = BattleCore::new_from_scenario(scenario, game_data, 123);
+        let mut execution = core
+            .start_battle_execution()
+            .expect("battle execution should start");
+        let outcome = core
+            .step_battle_execution_by(&mut execution, 0)
+            .expect("initial update should not fail");
+
+        assert!(matches!(
+            outcome,
+            crate::game::battle::core::sim::BattleStepOutcome::Running
+        ));
+        assert!(!core.event_log.entries.iter().any(|entry| {
+            matches!(
+                entry.event,
+                crate::game::battle::event_log::BattleLogEvent::BattleEnd { .. }
+            )
+        }));
     }
 
     #[test]
@@ -1329,6 +1588,7 @@ mod tests {
                 reward_uuids: vec![],
                 node_type: None,
                 mission_variant: None,
+                survive_timer_ms: None,
                 battlefield: None,
                 tactical_plan: None,
                 win_condition: None,
@@ -1336,16 +1596,13 @@ mod tests {
                     id: "wave_0".to_string(),
                     time_ms: 0,
                     spawn_zone_ids: Vec::new(),
-                    route_id: None,
+                    route_id: Some("defense_main".to_string()),
                     required_for_victory: true,
-                    source: None,
-                    enemies: vec![PveWaveEnemyData {
-                        kind: crate::game::combat_preview::EnemyKind::Abnormality,
-                        profile_id: None,
+                    source: PveWaveSource::Manual(vec![PveWaveEnemyData::Abnormality {
                         abnormality_id: "enemy".to_string(),
                         tier: crate::game::enums::Tier::I,
                         count: 1,
-                    }],
+                    }]),
                 }],
                 static_obstacles: vec![],
             }],

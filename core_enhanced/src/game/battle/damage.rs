@@ -23,6 +23,46 @@ pub struct DamageRequest {
     pub time_ms: u64,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct DamageBonusSnapshot {
+    pub flat: i32,
+    pub percent: i32,
+    pub damage_type: DamageType,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DamageSourceSnapshot {
+    pub source_id: UnitInstanceId,
+    pub source_side: Side,
+    pub source_attack: u32,
+    pub source: DamageSource,
+    pub damage_type: DamageType,
+    pub base_damage: u32,
+    pub modifiers: DamageModifiers,
+    pub crit_roll_percent: Option<u8>,
+    pub crit_roll_event_log_seq: u64,
+    pub minimum_damage: u32,
+    pub committed_at_ms: u64,
+    pub on_attack_modifiers: DamageModifiers,
+    pub on_attack_bonus_damage: Vec<DamageBonusSnapshot>,
+}
+
+impl DamageSourceSnapshot {
+    pub fn request(&self, target_id: UnitInstanceId) -> DamageRequest {
+        DamageRequest {
+            source: self.source,
+            damage_type: self.damage_type,
+            modifiers: self.modifiers,
+            crit_roll_percent: self.crit_roll_percent,
+            attacker_id: self.source_id,
+            target_id,
+            base_damage: self.base_damage,
+            minimum_damage: self.minimum_damage,
+            time_ms: self.committed_at_ms,
+        }
+    }
+}
+
 /// 출처별 2차 데미지 계산 보정값.
 ///
 /// 저항 조정은 감쇠 전에 적용하고, 증폭/감소는 감쇠 후에 적용한다.
@@ -141,10 +181,6 @@ pub enum DamageFeedbackTag {
     Mitigated,
     FixedDamage,
     Immune,
-    Piercing,
-    Shield,
-    Blocked,
-    ResistedStatus,
 }
 
 fn default_damage_type() -> DamageType {
@@ -218,13 +254,13 @@ pub enum BattleCommand {
     },
     /// 피해 적용 요청
     ApplyDamage {
+        target_id: UnitInstanceId,
+        source_snapshot: DamageSourceSnapshot,
+    },
+    /// 현재 진행 중인 스킬 집중/시전 취소 요청
+    InterruptCast {
         source_id: UnitInstanceId,
         target_id: UnitInstanceId,
-        amount: u32,
-        damage_type: DamageType,
-        modifiers: DamageModifiers,
-        source: DamageSource,
-        minimum_damage: u32,
     },
     /// 공명 변경 요청
     ModifyResonance {
@@ -321,6 +357,24 @@ fn modifiers_from_effects(effects: &[SourcedEffect]) -> DamageModifiers {
             _ => None,
         })
         .fold(DamageModifiers::default(), DamageModifiers::merge)
+}
+
+fn bonus_damage_component(
+    running_raw_damage: &mut i128,
+    flat: i32,
+    percent: i32,
+    damage_type: DamageType,
+) -> Option<(DamageType, u32)> {
+    let flat_bonus = i128::from(flat);
+    let percent_basis = running_raw_damage.saturating_add(flat_bonus);
+    let bonus_raw = flat_bonus + percent_basis.saturating_mul(i128::from(percent)) / 100;
+    let bonus_raw = raw_damage_component(bonus_raw);
+    if bonus_raw > 0 {
+        *running_raw_damage = running_raw_damage.saturating_add(i128::from(bonus_raw));
+        Some((damage_type, bonus_raw))
+    } else {
+        None
+    }
 }
 
 fn type_damage_amp_percent(damage_type: DamageType, modifiers: DamageModifiers) -> i32 {
@@ -429,14 +483,10 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
                 percent,
                 damage_type,
             } => {
-                let flat_bonus = i128::from(*flat);
-                let percent_basis = running_raw_damage.saturating_add(flat_bonus);
-                let bonus_raw =
-                    flat_bonus + percent_basis.saturating_mul(i128::from(*percent)) / 100;
-                let bonus_raw = raw_damage_component(bonus_raw);
-                if bonus_raw > 0 {
-                    raw_components.push((*damage_type, bonus_raw));
-                    running_raw_damage = running_raw_damage.saturating_add(i128::from(bonus_raw));
+                if let Some(component) =
+                    bonus_damage_component(&mut running_raw_damage, *flat, *percent, *damage_type)
+                {
+                    raw_components.push(component);
                 }
             }
             _ => {}
@@ -451,14 +501,10 @@ pub fn calculate_damage(request: &DamageRequest, ctx: &DamageContext) -> DamageR
                 percent,
                 damage_type,
             } => {
-                let flat_bonus = i128::from(*flat);
-                let percent_basis = running_raw_damage.saturating_add(flat_bonus);
-                let bonus_raw =
-                    flat_bonus + percent_basis.saturating_mul(i128::from(*percent)) / 100;
-                let bonus_raw = raw_damage_component(bonus_raw);
-                if bonus_raw > 0 {
-                    raw_components.push((*damage_type, bonus_raw));
-                    running_raw_damage = running_raw_damage.saturating_add(i128::from(bonus_raw));
+                if let Some(component) =
+                    bonus_damage_component(&mut running_raw_damage, *flat, *percent, *damage_type)
+                {
+                    raw_components.push(component);
                 }
             }
             _ => {}

@@ -3,18 +3,18 @@ use uuid::Uuid;
 use crate::game::{
     ability::{
         SkillAreaAnchorSource, SkillAreaTickPolicy, SkillAreaTracking, SkillHitTargetFilter,
-        SkillId, SkillTileAreaDeliveryDef, SkillTileAreaOrigin,
+        SkillId, SkillStepDef, SkillTileAreaDeliveryDef, SkillTileAreaOrigin,
     },
     battle::{
         core::{
-            movement::types::{TimelineVec2, WorldVec2},
+            movement::types::{EventLogVec2, WorldVec2},
             types::{AreaRuntime, SkillImpactContext, SkillStepResult},
             BattleCore,
         },
         enums::BattleEvent,
+        event_log::{BattleLogEvent, BattleSkillAreaShape, SkillCastTarget},
         ids::UnitInstanceId,
-        tile_range::TileRangePattern,
-        timeline::{SkillCastTarget, TimelineEvent, TimelineSkillAreaShape},
+        tile_range::{FacingDirection, TileRangePattern},
     },
     determinism,
     enums::Side,
@@ -23,11 +23,25 @@ use crate::game::{
 
 const INSTANT_AREA_DISPLAY_DURATION_MS: u32 = 250;
 
-fn timeline_point(position: WorldVec2) -> TimelineVec2 {
+fn event_log_point(position: WorldVec2) -> EventLogVec2 {
     position.quantized_milli()
 }
 
 impl BattleCore {
+    fn valid_tile_area_tiles(
+        &self,
+        tile_range: &TileRangePattern,
+        anchor_tile: Position,
+        facing: FacingDirection,
+    ) -> Option<Vec<Position>> {
+        let affected_tiles = tile_range.affected_tiles(anchor_tile, facing).ok()?;
+        let valid_tiles = affected_tiles
+            .into_iter()
+            .filter(|tile| self.battlefield.is_valid_tile(*tile))
+            .collect::<Vec<_>>();
+        (!valid_tiles.is_empty()).then_some(valid_tiles)
+    }
+
     pub(in crate::game::battle::core) fn allocate_skill_area_delivery_id(
         &mut self,
         cast_seq: u64,
@@ -254,7 +268,7 @@ impl BattleCore {
                 area,
             )?;
         let facing = self.units.get(&caster_instance_id)?.facing_direction?;
-        let affected_tiles = tile_range.affected_tiles(anchor_tile, facing).ok()?;
+        let affected_tiles = self.valid_tile_area_tiles(tile_range, anchor_tile, facing)?;
         let targets = self.collect_tile_area_targets_at(
             time_ms,
             caster_owner,
@@ -330,18 +344,18 @@ impl BattleCore {
             area.duration_ms
         };
 
-        self.record_timeline(
+        self.record_event_log(
             time_ms,
-            TimelineEvent::SkillAreaDeclared {
+            BattleLogEvent::SkillAreaDeclared {
                 area_id,
                 skill_id,
                 step_id,
                 caster_instance_id,
                 target: step_target,
-                shape: TimelineSkillAreaShape::TilePattern { affected_tiles },
-                origin: timeline_point(origin),
-                center: timeline_point(center),
-                direction_hint: timeline_point(direction_hint),
+                shape: BattleSkillAreaShape::TilePattern { affected_tiles },
+                origin: event_log_point(origin),
+                center: event_log_point(center),
+                direction_hint: event_log_point(direction_hint),
                 start_time_ms: time_ms,
                 duration_ms: area.duration_ms,
                 display_duration_ms,
@@ -382,6 +396,7 @@ impl BattleCore {
         caster_instance_id: UnitInstanceId,
         skill_id: SkillId,
         step_id: String,
+        step: &SkillStepDef,
         step_target: Option<SkillCastTarget>,
         tile_range: TileRangePattern,
         area: SkillTileAreaDeliveryDef,
@@ -406,9 +421,27 @@ impl BattleCore {
         else {
             return false;
         };
-        let Ok(affected_tiles) = tile_range.affected_tiles(anchor_tile, facing) else {
+        let Some(affected_tiles) = self.valid_tile_area_tiles(&tile_range, anchor_tile, facing)
+        else {
             return false;
         };
+        let targets = self.collect_tile_area_targets_at(
+            time_ms,
+            _caster_owner,
+            caster_instance_id,
+            &affected_tiles,
+            area.hit_targets,
+            area.include_caster,
+        );
+        if self.skill_step_needs_hostile_usefulness_gate(
+            caster_instance_id,
+            step,
+            area.hit_targets,
+            &targets,
+        ) && !self.skill_step_has_useful_hostile_target(caster_instance_id, step, &targets)
+        {
+            return false;
+        }
 
         let area_id = self.allocate_area_instance_id(cast_seq, caster_instance_id, time_ms);
         let area_declared_seq = self.record_skill_tile_area_declared(
@@ -477,7 +510,7 @@ impl BattleCore {
             },
         );
 
-        let cause = crate::game::battle::timeline::TimelineCause::Parent {
+        let cause = crate::game::battle::event_log::BattleEventCause::Parent {
             seq: area_declared_seq,
         };
         self.event_queue.push(BattleEvent::SkillAreaTick {
@@ -523,7 +556,9 @@ impl BattleCore {
         else {
             return;
         };
-        let Ok(affected_tiles) = runtime.tile_range.affected_tiles(anchor_tile, facing) else {
+        let Some(affected_tiles) =
+            self.valid_tile_area_tiles(&runtime.tile_range, anchor_tile, facing)
+        else {
             return;
         };
         let raw_targets = self.collect_tile_area_targets_at(
@@ -560,8 +595,13 @@ impl BattleCore {
         else {
             return;
         };
-        let (commands, result) =
-            Self::build_skill_step_commands(runtime.caster_instance_id, step, &targets);
+        let (commands, result) = self.build_skill_step_commands(
+            runtime.caster_instance_id,
+            step,
+            &targets,
+            time_ms,
+            None,
+        );
         let mut resolved_result = result;
         if !commands.is_empty() {
             let summary = self.process_commands(commands, time_ms);

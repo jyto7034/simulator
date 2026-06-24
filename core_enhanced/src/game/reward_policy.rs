@@ -1,7 +1,7 @@
 use crate::game::{
     combat_mission_policy::CombatMissionPolicy,
     combat_preview::{CombatMissionVariant, CombatNodeType},
-    data::reward_data::RewardTag,
+    data::reward_data::RewardGrantKind,
     reward::RewardOption,
 };
 
@@ -9,8 +9,8 @@ use crate::game::{
 pub struct CombatRewardPolicy {
     node_type: CombatNodeType,
     mission_variant: CombatMissionVariant,
-    featured_tags: &'static [RewardTag],
-    allowed_tags: &'static [RewardTag],
+    featured_kinds: &'static [RewardGrantKind],
+    allowed_kinds: &'static [RewardGrantKind],
 }
 
 impl CombatRewardPolicy {
@@ -18,20 +18,20 @@ impl CombatRewardPolicy {
         Self::new(
             node_type,
             mission_variant,
-            CombatMissionPolicy::featured_reward_tags_for_mission(node_type, mission_variant),
+            CombatMissionPolicy::featured_reward_kinds_for_mission(node_type, mission_variant),
         )
     }
 
     const fn new(
         node_type: CombatNodeType,
         mission_variant: CombatMissionVariant,
-        featured_tags: &'static [RewardTag],
+        featured_kinds: &'static [RewardGrantKind],
     ) -> Self {
         Self {
             node_type,
             mission_variant,
-            featured_tags,
-            allowed_tags: CombatMissionPolicy::ALLOWED_COMBAT_REWARD_TAGS,
+            featured_kinds,
+            allowed_kinds: CombatMissionPolicy::ALLOWED_COMBAT_REWARD_KINDS,
         }
     }
 
@@ -43,30 +43,30 @@ impl CombatRewardPolicy {
         self.mission_variant
     }
 
-    pub fn featured_tags(&self) -> &'static [RewardTag] {
-        self.featured_tags
+    pub fn featured_kinds(&self) -> &'static [RewardGrantKind] {
+        self.featured_kinds
     }
 
-    pub fn allowed_tags(&self) -> &'static [RewardTag] {
-        self.allowed_tags
+    pub fn allowed_kinds(&self) -> &'static [RewardGrantKind] {
+        self.allowed_kinds
     }
 
     pub fn validate_rewards(&self, rewards: &[RewardOption]) -> Result<(), String> {
         for reward in rewards {
-            if reward.tags.is_empty() {
+            let grant_kinds = reward.grant_kinds();
+            if grant_kinds.is_empty() {
                 return Err(format!(
-                    "reward '{}' has no semantic reward tags",
+                    "reward '{}' has no semantic grant kinds",
                     reward.id
                 ));
             }
-            if let Some(forbidden_tag) = reward
-                .tags
+            if let Some(forbidden_kind) = grant_kinds
                 .iter()
-                .find(|tag| !self.allowed_tags.contains(tag))
+                .find(|kind| !self.allowed_kinds.contains(kind))
             {
                 return Err(format!(
-                    "reward '{}' tag {:?} is not allowed for {:?}",
-                    reward.id, forbidden_tag, self.node_type
+                    "reward '{}' grant kind {:?} is not allowed for {:?}",
+                    reward.id, forbidden_kind, self.node_type
                 ));
             }
         }
@@ -77,14 +77,14 @@ impl CombatRewardPolicy {
 
         let has_featured_reward = rewards.iter().any(|reward| {
             reward
-                .tags
+                .grant_kinds()
                 .iter()
-                .any(|tag| self.featured_tags.contains(tag))
+                .any(|kind| self.featured_kinds.contains(kind))
         });
         if !has_featured_reward {
             return Err(format!(
-                "{:?} reward pool must include at least one featured tag {:?}",
-                self.mission_variant, self.featured_tags
+                "{:?} reward pool must include at least one featured grant kind {:?}",
+                self.mission_variant, self.featured_kinds
             ));
         }
 
@@ -98,15 +98,14 @@ mod tests {
     use crate::game::reward::RewardEffect;
     use uuid::Uuid;
 
-    fn reward(id: &str, tags: Vec<RewardTag>) -> RewardOption {
+    fn reward(id: &str, effects: Vec<RewardEffect>) -> RewardOption {
         RewardOption {
             id: id.to_string(),
             uuid: Uuid::from_u128(1),
             name: id.to_string(),
             description: String::new(),
             icon: String::new(),
-            tags,
-            effects: vec![RewardEffect::GrantEnkephalin { amount: 1 }],
+            effects,
         }
     }
 
@@ -117,34 +116,50 @@ mod tests {
 
         policy
             .validate_rewards(&[
-                reward("currency", vec![RewardTag::Currency]),
-                reward("fragment", vec![RewardTag::SkillFragment]),
+                reward(
+                    "currency",
+                    vec![RewardEffect::GrantEnkephalin { amount: 1 }],
+                ),
+                reward(
+                    "fragment",
+                    vec![RewardEffect::GrantSkillFragment {
+                        fragment_id: crate::game::data::skill_fragment_data::SkillFragmentId::from(
+                            "fragment_test",
+                        ),
+                    }],
+                ),
             ])
             .expect("boss reward pool should accept skill fragment candidates");
     }
 
     #[test]
-    fn policy_rejects_forbidden_legacy_reward_tags() {
+    fn policy_rejects_disallowed_grant_kinds() {
         let policy =
             CombatRewardPolicy::for_mission(CombatNodeType::Defense, CombatMissionVariant::Defense);
         let err = policy
-            .validate_rewards(&[reward("legacy", vec![RewardTag::Forbidden])])
-            .expect_err("forbidden tags must not be valid combat rewards");
+            .validate_rewards(&[reward(
+                "consumable",
+                vec![RewardEffect::GrantConsumable {
+                    consumable_id: "test".to_string(),
+                }],
+            )])
+            .expect_err("disallowed grant kinds must not be valid combat rewards");
 
         assert!(err.contains("not allowed"));
     }
 
     #[test]
-    fn policy_requires_at_least_one_featured_tag_when_rewards_exist() {
-        let policy = CombatRewardPolicy::for_mission(
-            CombatNodeType::Defense,
-            CombatMissionVariant::Encirclement,
-        );
+    fn policy_requires_at_least_one_featured_grant_kind_when_rewards_exist() {
+        let policy =
+            CombatRewardPolicy::for_mission(CombatNodeType::Defense, CombatMissionVariant::Defense);
         let err = policy
-            .validate_rewards(&[reward("currency", vec![RewardTag::Currency])])
+            .validate_rewards(&[reward(
+                "currency",
+                vec![RewardEffect::GrantEnkephalin { amount: 1 }],
+            )])
             .expect_err("currency-only pools should not define combat reward identity");
 
-        assert!(err.contains("featured tag"));
+        assert!(err.contains("featured grant kind"));
     }
 
     #[test]
@@ -154,9 +169,12 @@ mod tests {
 
         assert!(policy.validate_rewards(&[]).is_ok());
         let err = policy
-            .validate_rewards(&[reward("currency", vec![RewardTag::Currency])])
-            .expect_err("defense reward pool should contain a defense featured tag");
+            .validate_rewards(&[reward(
+                "currency",
+                vec![RewardEffect::GrantEnkephalin { amount: 1 }],
+            )])
+            .expect_err("defense reward pool should contain a defense featured grant kind");
 
-        assert!(err.contains("featured tag"));
+        assert!(err.contains("featured grant kind"));
     }
 }

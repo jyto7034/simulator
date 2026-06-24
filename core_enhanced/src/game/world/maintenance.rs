@@ -8,8 +8,9 @@ use crate::game::data::skill_fragment_data::SkillFragmentId;
 use crate::game::resources::item_slot::EquippedRef;
 use crate::game::resources::{
     EquipItemOutcomeDto, EquipItemResultDto, EquipmentItemDto, InventoryDiffDto, InventoryItemDto,
-    OwnedEquipment, UnequipItemResultDto,
+    UnequipItemResultDto,
 };
+use crate::game::reward::RewardEffect;
 
 impl GameCore {
     pub(super) fn handle_equip_item(
@@ -41,6 +42,13 @@ impl GameCore {
                     else {
                         continue;
                     };
+                    let equipped_item = inventory
+                        .equipments
+                        .get_item(&equipped.instance_uuid)
+                        .ok_or(GameError::InventoryItemNotFound)?;
+                    if equipped_item.meta.bound {
+                        return Err(GameError::InvalidAction);
+                    }
 
                     let result_ref = EquippedRef {
                         instance_uuid: item_uuid,
@@ -68,8 +76,6 @@ impl GameCore {
         };
 
         if let Some((equipped_item_uuid, result_meta)) = combine_plan {
-            let result_instance_uuid = self.state.uuid_manager.next_owned_equipment();
-
             let incoming_equipped_to = {
                 let inventory = self.inventory()?;
                 inventory
@@ -91,6 +97,36 @@ impl GameCore {
                 .item_slot
                 .remove_by_instance(equipped_item_uuid)
                 .ok_or(GameError::InvalidAction)?;
+
+            let inventory = self.inventory_mut()?;
+            inventory
+                .equipments
+                .remove_item(item_uuid)
+                .ok_or(GameError::InventoryItemNotFound)?;
+            inventory
+                .equipments
+                .remove_item(equipped_item_uuid)
+                .ok_or(GameError::InventoryItemNotFound)?;
+
+            let granted = self.apply_grant_effects(&[RewardEffect::GrantEquipment {
+                equipment_id: result_meta.id.clone(),
+            }])?;
+            let result_instance_uuid = granted
+                .inventory_diff
+                .added
+                .iter()
+                .find_map(|item| match item {
+                    InventoryItemDto::Equipment(item) if item.definition_id == result_meta.id => {
+                        Some(item.uuid)
+                    }
+                    _ => None,
+                })
+                .ok_or(GameError::InvalidAction)?;
+
+            let roster = self.roster_mut()?;
+            let employee = roster
+                .get_mut(&target_unit)
+                .ok_or(GameError::UnitNotFound)?;
             employee
                 .loadout
                 .item_slot
@@ -107,31 +143,12 @@ impl GameCore {
             let inventory = self.inventory_mut()?;
             inventory
                 .equipments
-                .remove_item(item_uuid)
-                .ok_or(GameError::InventoryItemNotFound)?;
-            inventory
-                .equipments
-                .remove_item(equipped_item_uuid)
-                .ok_or(GameError::InventoryItemNotFound)?;
-
-            inventory
-                .equipments
-                .add_item(OwnedEquipment::new(
-                    result_instance_uuid,
-                    Arc::clone(&result_meta),
-                ))
-                .map_err(|_| GameError::InventoryFull)?;
-            inventory
-                .equipments
                 .get_item_mut(&result_instance_uuid)
                 .ok_or(GameError::InventoryItemNotFound)?
                 .equipped_to = Some(target_unit);
 
             let inventory_diff = InventoryDiffDto {
-                added: vec![InventoryItemDto::Equipment(EquipmentItemDto::from_owned(
-                    result_instance_uuid,
-                    result_meta.as_ref(),
-                ))],
+                added: granted.inventory_diff.added,
                 updated: vec![],
                 removed: vec![item_uuid, equipped_item_uuid],
                 material_stacks: vec![],
@@ -344,6 +361,7 @@ impl GameCore {
         fragment_id: &SkillFragmentId,
     ) -> Result<BehaviorResult, GameError> {
         self.validate_equip_skill_fragment_payload(employee_uuid, fragment_id)?;
+        self.validate_skill_fragment_equip_limit(employee_uuid, fragment_id)?;
         let inventory = self.state.skill_fragments.clone();
         let database = self.game_data.skill_fragment_data.clone();
         let employee = self.state.roster.equip_skill_fragment(
@@ -420,7 +438,45 @@ impl GameCore {
         fragment_id: &SkillFragmentId,
     ) -> Result<BehaviorResult, GameError> {
         self.validate_dismantle_skill_fragment_payload(fragment_id)?;
-        let equipped_employee_ids = self
+        let dust_gained = self
+            .state
+            .skill_fragment_policy
+            .dismantle
+            .validate_dismantle(
+                &self.state.skill_fragments,
+                fragment_id,
+                &self.game_data.skill_fragment_data,
+            )?;
+        self.preview_grant_effects(&[RewardEffect::GrantFragmentDust {
+            amount: dust_gained,
+        }])?;
+        let result = self
+            .state
+            .skill_fragments
+            .remove_copy_for_dismantle_with_policy(
+                fragment_id,
+                &self.game_data.skill_fragment_data,
+                &self.state.skill_fragment_policy,
+            )?;
+        let metadata = self
+            .game_data
+            .skill_fragment_data
+            .get_by_id(fragment_id)
+            .ok_or_else(|| {
+                GameError::InvalidStaticData(format!(
+                    "skill fragment '{}' is owned by run but missing from static data",
+                    fragment_id
+                ))
+            })?;
+        let allowed_equipped_count = match metadata.equip_limit {
+            crate::game::data::skill_fragment_data::SkillFragmentEquipLimit::OwnedCopies => {
+                result.remaining_count as usize
+            }
+            crate::game::data::skill_fragment_data::SkillFragmentEquipLimit::GlobalExclusive => {
+                usize::from(result.remaining_count > 0)
+            }
+        };
+        let mut equipped_employee_ids = self
             .state
             .roster
             .iter()
@@ -432,23 +488,25 @@ impl GameCore {
             })
             .map(|employee| employee.uuid)
             .collect::<Vec<_>>();
-        for employee_uuid in equipped_employee_ids {
+        equipped_employee_ids.sort_by_key(|uuid| uuid.as_u128());
+        for employee_uuid in equipped_employee_ids
+            .into_iter()
+            .skip(allowed_equipped_count)
+        {
             let database = self.game_data.skill_fragment_data.clone();
             self.state
                 .roster
                 .unequip_skill_fragment(employee_uuid, &database, fragment_id)?;
         }
-        let result = self.state.skill_fragments.dismantle_with_policy(
-            fragment_id,
-            &self.game_data.skill_fragment_data,
-            &self.state.skill_fragment_policy,
-        )?;
+        self.apply_grant_effects(&[RewardEffect::GrantFragmentDust {
+            amount: result.dust_gained,
+        }])?;
 
         Ok(BehaviorResult::SkillFragmentDismantled {
             fragment_id: fragment_id.clone(),
             remaining_count: result.remaining_count,
             dust_gained: result.dust_gained,
-            total_dust: result.total_dust,
+            total_dust: self.state.skill_fragments.fragment_dust(),
         })
     }
 
@@ -481,23 +539,15 @@ impl GameCore {
                 ))
             })?
             .clone();
-        let yield_materials = recipe
+        let grant_effects = recipe
             .yields
             .iter()
-            .map(|material| {
-                self.game_data
-                    .equipment_data
-                    .get_material_by_id(&material.material_id)
-                    .ok_or_else(|| {
-                        GameError::InvalidStaticData(format!(
-                            "equipment dismantle recipe for '{}' references missing material '{}'",
-                            recipe.equipment_id, material.material_id
-                        ))
-                    })
-                    .cloned()
-                    .map(|metadata| (material.material_id.clone(), material.amount, metadata))
+            .map(|material| RewardEffect::GrantEquipmentMaterial {
+                material_id: material.material_id.clone(),
+                amount: material.amount,
             })
-            .collect::<Result<Vec<_>, _>>()?;
+            .collect::<Vec<_>>();
+        self.preview_grant_effects(&grant_effects)?;
 
         if let Some(employee_uuid) = equipped_to {
             let roster = self.roster_mut()?;
@@ -517,15 +567,7 @@ impl GameCore {
             .remove_item(item_uuid)
             .ok_or(GameError::InventoryItemNotFound)?;
 
-        let mut material_stacks = Vec::with_capacity(yield_materials.len());
-        for (material_id, amount, metadata) in &yield_materials {
-            let new_amount = inventory.equipment_materials.add(material_id, *amount)?;
-            material_stacks.push(
-                crate::game::resources::EquipmentMaterialStackDto::from_metadata(
-                    metadata, new_amount,
-                ),
-            );
-        }
+        let granted = self.apply_grant_effects(&grant_effects)?;
 
         Ok(BehaviorResult::EquipmentDismantled {
             item_uuid,
@@ -534,7 +576,7 @@ impl GameCore {
                 added: vec![],
                 updated: vec![],
                 removed: vec![item_uuid],
-                material_stacks,
+                material_stacks: granted.inventory_diff.material_stacks,
             },
         })
     }

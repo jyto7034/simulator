@@ -4,6 +4,7 @@ use std::sync::Arc;
 
 use game_core::game::ability::AbilityActivationDef;
 use game_core::game::battle::core::BattleCore;
+use game_core::game::battle::event_log::{BattleEventLog, BattleEventLogEntry, BattleLogEvent};
 use game_core::game::battle::ids::UnitInstanceId;
 use game_core::game::battle::scenario::{
     BattleFieldSpec, BattleScenario, ScenarioAction, ScenarioArtifact, ScenarioEvent,
@@ -11,7 +12,6 @@ use game_core::game::battle::scenario::{
     ScenarioUnitSpawn, WinCondition,
 };
 use game_core::game::battle::tile_range::TileRangePattern;
-use game_core::game::battle::timeline::{Timeline, TimelineEntry, TimelineEvent};
 use game_core::game::battle::types::{BattleUnitDraft, BattleUnitSource};
 use game_core::game::data::{
     abnormality_data::AbnormalityMetadata, artifact_data::ArtifactDatabase,
@@ -20,7 +20,6 @@ use game_core::game::data::{
 use game_core::game::enums::{RiskLevel, Side, Tier};
 use game_core::game::growth::GrowthStack;
 use game_core::game::resources::Position;
-use game_core::game::stats::{StatId, StatModifierKind};
 use uuid::Uuid;
 
 fn test_abnormality(id: &str, uuid: Uuid, max_health: u32, attack: u32) -> AbnormalityMetadata {
@@ -34,6 +33,7 @@ fn test_abnormality(id: &str, uuid: Uuid, max_health: u32, attack: u32) -> Abnor
         attack,
         defense: 0,
         magic_resist: 0,
+        threat_class: game_core::game::battle::types::BattleUnitThreatClass::Elite,
         movement: Default::default(),
         basic_attack: game_core::game::data::abnormality_data::BasicAttackDef {
             defense_tile_range: Some(TileRangePattern {
@@ -53,6 +53,7 @@ fn unit_draft(owned_uuid: Uuid, base_uuid: Uuid, equipped_items: Vec<Uuid>) -> B
     BattleUnitDraft {
         owned_uuid,
         source: BattleUnitSource::Abnormality { base_uuid },
+        threat_class: game_core::game::battle::types::BattleUnitThreatClass::Elite,
         level: Tier::I,
         growth_stacks: GrowthStack::new(),
         equipped_items,
@@ -167,12 +168,7 @@ fn game_data_for_live_item_skill_tests(force_proc_item_ids: &[&str]) -> Arc<Game
         .equipment_data
         .items
         .iter()
-        .filter(|meta| {
-            matches!(
-                meta.id.as_str(),
-                "paradise_lost" | "fourth_match" | "penitence_armor" | "resonance_pendant"
-            )
-        })
+        .filter(|meta| matches!(meta.id.as_str(), "paradise_lost" | "resonance_pendant"))
         .cloned()
         .collect::<Vec<_>>();
     for equipment in &mut equipments {
@@ -188,17 +184,9 @@ fn game_data_for_live_item_skill_tests(force_proc_item_ids: &[&str]) -> Arc<Game
         }
     }
 
-    let artifacts = live
-        .artifact_data
-        .items
-        .iter()
-        .filter(|meta| meta.id == "red_ribbon")
-        .cloned()
-        .collect::<Vec<_>>();
-
     GameDataBuilder::live_defaults()
         .with_abnormalities(vec![attacker, target])
-        .with_artifact_data(Arc::new(ArtifactDatabase::new(artifacts)))
+        .with_artifact_data(Arc::new(ArtifactDatabase::new(vec![])))
         .with_equipment_data(Arc::new(EquipmentDatabase::new(equipments)))
         .with_skill_data(Arc::clone(&live.skill_data))
         .build_arc()
@@ -208,7 +196,7 @@ fn run_battle_with_loadout(
     game_data: Arc<GameDataBase>,
     equipped_items: Vec<Uuid>,
     artifacts: Vec<Uuid>,
-) -> Timeline {
+) -> BattleEventLog {
     let attacker_base_uuid = Uuid::from_u128(0xAB01);
     let scenario = scenario_with_loadout(
         Uuid::from_u128(0xAC01),
@@ -222,15 +210,19 @@ fn run_battle_with_loadout(
     battle
         .run_battle()
         .expect("battle should complete")
-        .timeline
+        .event_log
 }
 
-fn find_unit_instance_id(timeline: &Timeline, base_uuid: Uuid, owner: Side) -> UnitInstanceId {
-    timeline
+fn find_unit_instance_id(
+    event_log: &BattleEventLog,
+    base_uuid: Uuid,
+    owner: Side,
+) -> UnitInstanceId {
+    event_log
         .entries
         .iter()
         .find_map(|entry| match entry.event {
-            TimelineEvent::UnitSpawned {
+            BattleLogEvent::UnitSpawned {
                 unit_instance_id,
                 base_uuid: spawned_base_uuid,
                 owner: spawned_owner,
@@ -241,12 +233,12 @@ fn find_unit_instance_id(timeline: &Timeline, base_uuid: Uuid, owner: Side) -> U
         .expect("missing UnitSpawned entry for test unit")
 }
 
-fn find_first_cast_seq(timeline: &Timeline, caster: UnitInstanceId, skill_id: &str) -> u64 {
-    timeline
+fn find_first_cast_seq(event_log: &BattleEventLog, caster: UnitInstanceId, skill_id: &str) -> u64 {
+    event_log
         .entries
         .iter()
         .find_map(|entry| match &entry.event {
-            TimelineEvent::AbilityCast {
+            BattleLogEvent::AbilityCast {
                 caster_instance_id,
                 skill_id: actual_skill_id,
                 ..
@@ -256,13 +248,13 @@ fn find_first_cast_seq(timeline: &Timeline, caster: UnitInstanceId, skill_id: &s
         .unwrap_or_else(|| panic!("missing AbilityCast for {skill_id}"))
 }
 
-fn descendants_of(timeline: &Timeline, root_seq: u64) -> Vec<&TimelineEntry> {
+fn descendants_of(event_log: &BattleEventLog, root_seq: u64) -> Vec<&BattleEventLogEntry> {
     let mut relevant_seqs = vec![root_seq];
     let mut changed = true;
 
     while changed {
         changed = false;
-        for entry in &timeline.entries {
+        for entry in &event_log.entries {
             if entry
                 .cause
                 .parent_seq()
@@ -275,7 +267,7 @@ fn descendants_of(timeline: &Timeline, root_seq: u64) -> Vec<&TimelineEntry> {
         }
     }
 
-    timeline
+    event_log
         .entries
         .iter()
         .filter(|entry| entry.seq != root_seq && relevant_seqs.contains(&entry.seq))
@@ -286,13 +278,7 @@ fn descendants_of(timeline: &Timeline, root_seq: u64) -> Vec<&TimelineEntry> {
 fn live_item_and_artifact_ability_ids_resolve_to_skill_defs() {
     let game_data = common::load_game_data_from_ron();
 
-    for ability_id in [
-        "paradise_lost_judgement",
-        "fourth_match_ember",
-        "penitence_guard",
-        "resonance_pendant_opening_focus",
-        "red_ribbon_haste",
-    ] {
+    for ability_id in ["paradise_lost_judgement", "resonance_pendant_opening_focus"] {
         assert!(
             game_data.skill_data.get_by_id(ability_id).is_some(),
             "missing live skill definition for {ability_id}"
@@ -303,104 +289,46 @@ fn live_item_and_artifact_ability_ids_resolve_to_skill_defs() {
 #[test]
 fn live_on_battle_start_item_and_artifact_skills_apply_expected_self_effects() {
     let game_data = game_data_for_live_item_skill_tests(&[]);
-    let penitence_uuid = game_data
-        .equipment_data
-        .get_by_id("penitence_armor")
-        .expect("missing penitence armor")
-        .uuid;
     let pendant_uuid = game_data
         .equipment_data
         .get_by_id("resonance_pendant")
         .expect("missing resonance pendant")
         .uuid;
-    let ribbon_uuid = game_data
-        .artifact_data
-        .get_by_id("red_ribbon")
-        .expect("missing red ribbon")
-        .uuid;
 
-    let timeline = run_battle_with_loadout(
-        game_data,
-        vec![penitence_uuid, pendant_uuid],
-        vec![ribbon_uuid],
-    );
-    let attacker_id = find_unit_instance_id(&timeline, Uuid::from_u128(0xAB01), Side::Player);
+    let event_log = run_battle_with_loadout(game_data, vec![pendant_uuid], vec![]);
+    let attacker_id = find_unit_instance_id(&event_log, Uuid::from_u128(0xAB01), Side::Player);
 
-    let guard_seq = find_first_cast_seq(&timeline, attacker_id, "penitence_guard");
-    let guard_entries = descendants_of(&timeline, guard_seq);
-    assert!(guard_entries.iter().any(|entry| matches!(
-        entry.event,
-        TimelineEvent::StatChanged {
-            target_instance_id,
-            modifier,
-            ..
-        } if target_instance_id == attacker_id
-            && modifier.stat == StatId::Defense
-            && modifier.kind == StatModifierKind::Flat
-            && modifier.value == 8
-    )));
-
-    let focus_seq = find_first_cast_seq(&timeline, attacker_id, "resonance_pendant_opening_focus");
-    let focus_entries = descendants_of(&timeline, focus_seq);
+    let focus_seq = find_first_cast_seq(&event_log, attacker_id, "resonance_pendant_opening_focus");
+    let focus_entries = descendants_of(&event_log, focus_seq);
     assert!(focus_entries.iter().any(|entry| matches!(
         entry.event,
-        TimelineEvent::ResonanceChanged {
+        BattleLogEvent::ResonanceChanged {
             unit_instance_id,
             before,
             after,
             ..
         } if unit_instance_id == attacker_id && after.saturating_sub(before) == 30
     )));
-
-    let haste_seq = find_first_cast_seq(&timeline, attacker_id, "red_ribbon_haste");
-    let haste_entries = descendants_of(&timeline, haste_seq);
-    assert!(haste_entries.iter().any(|entry| matches!(
-        entry.event,
-        TimelineEvent::StatChanged {
-            target_instance_id,
-            modifier,
-            ..
-        } if target_instance_id == attacker_id
-            && modifier.stat == StatId::AttackIntervalMs
-            && modifier.kind == StatModifierKind::Flat
-            && modifier.value == -100
-    )));
-    assert!(haste_entries.iter().any(|entry| matches!(
-        entry.event,
-        TimelineEvent::StatChanged {
-            target_instance_id,
-            modifier,
-            ..
-        } if target_instance_id == attacker_id
-            && modifier.stat == StatId::MoveSpeedUnitsPerMs
-            && modifier.kind == StatModifierKind::Flat
-            && modifier.value == 250
-    )));
 }
 
 #[test]
 fn live_on_attack_proc_item_skills_apply_expected_debuffs_when_forced_to_proc() {
-    let game_data = game_data_for_live_item_skill_tests(&["paradise_lost", "fourth_match"]);
+    let game_data = game_data_for_live_item_skill_tests(&["paradise_lost"]);
     let paradise_uuid = game_data
         .equipment_data
         .get_by_id("paradise_lost")
         .expect("missing paradise lost")
         .uuid;
-    let ember_uuid = game_data
-        .equipment_data
-        .get_by_id("fourth_match")
-        .expect("missing fourth match")
-        .uuid;
 
-    let timeline = run_battle_with_loadout(game_data, vec![paradise_uuid, ember_uuid], vec![]);
-    let attacker_id = find_unit_instance_id(&timeline, Uuid::from_u128(0xAB01), Side::Player);
-    let target_id = find_unit_instance_id(&timeline, Uuid::from_u128(0xAB02), Side::Opponent);
+    let event_log = run_battle_with_loadout(game_data, vec![paradise_uuid], vec![]);
+    let attacker_id = find_unit_instance_id(&event_log, Uuid::from_u128(0xAB01), Side::Player);
+    let target_id = find_unit_instance_id(&event_log, Uuid::from_u128(0xAB02), Side::Opponent);
 
-    let judgement_seq = find_first_cast_seq(&timeline, attacker_id, "paradise_lost_judgement");
-    let judgement_entries = descendants_of(&timeline, judgement_seq);
+    let judgement_seq = find_first_cast_seq(&event_log, attacker_id, "paradise_lost_judgement");
+    let judgement_entries = descendants_of(&event_log, judgement_seq);
     assert!(judgement_entries.iter().any(|entry| matches!(
         entry.event,
-        TimelineEvent::HpChanged {
+        BattleLogEvent::HpChanged {
             target_instance_id,
             delta,
             ..
@@ -408,31 +336,11 @@ fn live_on_attack_proc_item_skills_apply_expected_debuffs_when_forced_to_proc() 
     )));
     assert!(judgement_entries.iter().any(|entry| matches!(
         entry.event,
-        TimelineEvent::BuffApplied {
+        BattleLogEvent::BuffApplied {
             target_instance_id,
             buff_id,
             ..
         } if target_instance_id == target_id
             && buff_id == game_core::game::battle::buffs::BuffId::from_name("silence")
-    )));
-
-    let ember_seq = find_first_cast_seq(&timeline, attacker_id, "fourth_match_ember");
-    let ember_entries = descendants_of(&timeline, ember_seq);
-    assert!(ember_entries.iter().any(|entry| matches!(
-        entry.event,
-        TimelineEvent::HpChanged {
-            target_instance_id,
-            delta,
-            ..
-        } if target_instance_id == target_id && delta < 0
-    )));
-    assert!(ember_entries.iter().any(|entry| matches!(
-        entry.event,
-        TimelineEvent::BuffApplied {
-            target_instance_id,
-            buff_id,
-            ..
-        } if target_instance_id == target_id
-            && buff_id == game_core::game::battle::buffs::BuffId::from_name("poison")
     )));
 }

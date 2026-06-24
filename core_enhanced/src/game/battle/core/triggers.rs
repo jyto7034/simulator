@@ -199,8 +199,8 @@ impl BattleCore {
 mod tests {
     use super::*;
     use crate::game::battle::core::types::{RuntimeArtifact, RuntimeItem, RuntimeUnit};
+    use crate::game::battle::event_log::{BattleEventCause, BattleEventRootCause};
     use crate::game::battle::scenario::BattleScenario;
-    use crate::game::battle::timeline::{TimelineCause, TimelineRootCause};
     use crate::game::data::{GameDataBase, GameDataBuilder};
     use crate::game::enums::Side;
     use crate::game::stats::{
@@ -228,11 +228,16 @@ mod tests {
     fn runtime_unit(id: u128, owner: Side) -> RuntimeUnit {
         RuntimeUnit {
             instance_id: UnitInstanceId::from(Uuid::from_u128(id)),
+            lifecycle: crate::game::battle::core::types::RuntimeUnitLifecycle::Active,
             spawn_order: id as u64,
             source_owned_uuid: Uuid::from_u128(id),
             owner,
             role: crate::game::battle::types::BattleUnitRole::Combatant,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Normal,
             base_uuid: Uuid::nil(),
+            source_identity: crate::game::battle::types::BattleUnitSourceIdentity::TestFixture {
+                base_uuid: Uuid::nil(),
+            },
             stats: UnitStats::with_values(10, 10, 1, 0, 1),
             incoming_damage_modifiers: Default::default(),
             basic_attack: Default::default(),
@@ -253,6 +258,7 @@ mod tests {
             current_target: None,
             next_basic_attack_ms: 0,
             pending_basic_attack: false,
+            ranged_reposition_until_ms: 0,
             resonance_current: 0,
             resonance_max: 100,
             resonance_lock_ms: 0,
@@ -534,8 +540,8 @@ mod tests {
             },
         );
 
-        core.recording_cause_stack.push(TimelineCause::Root {
-            kind: TimelineRootCause::System,
+        core.recording_cause_stack.push(BattleEventCause::Root {
+            kind: BattleEventRootCause::System,
         });
         let out = core.collect_all_triggers(unit_id, TriggerType::OnBattleStart);
         assert_eq!(out.len(), 2);

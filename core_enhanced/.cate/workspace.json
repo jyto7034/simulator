@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "name": "core_enhanced",
+  "color": "",
+  "dockState": {
+    "zones": {
+      "left": {
+        "position": "left",
+        "visible": false,
+        "size": 260,
+        "layout": null
+      },
+      "right": {
+        "position": "right",
+        "visible": false,
+        "size": 260,
+        "layout": null
+      },
+      "bottom": {
+        "position": "bottom",
+        "visible": false,
+        "size": 240,
+        "layout": null
+      },
+      "center": {
+        "position": "center",
+        "visible": true,
+        "size": 0,
+        "layout": {
+          "type": "tabs",
+          "id": "8c641ff1-a034-44e1-82ab-d002e987ce21",
+          "panelIds": [
+            "4345b05a-818e-42f6-8645-b25d03398624"
+          ],
+          "activeIndex": 0
+        }
+      }
+    },
+    "locations": {
+      "4345b05a-818e-42f6-8645-b25d03398624": {
+        "type": "dock",
+        "zone": "center",
+        "stackId": "8c641ff1-a034-44e1-82ab-d002e987ce21"
+      }
+    }
+  },
+  "panels": {
+    "f70d2d27-e02a-46a2-8397-93574fa0ff15": {
+      "type": "terminal",
+      "title": "acr0tic@Acr0tic: /mnt/f/work/simulator/core_enhanced"
+    },
+    "4345b05a-818e-42f6-8645-b25d03398624": {
+      "type": "canvas",
+      "title": "Canvas"
+    }
+  },
+  "canvases": {
+    "4345b05a-818e-42f6-8645-b25d03398624": {
+      "id": "4345b05a-818e-42f6-8645-b25d03398624",
+      "canvasNodes": {
+        "6ea89556-129e-48be-9c6a-dc0272215d87": {
+          "id": "6ea89556-129e-48be-9c6a-dc0272215d87",
+          "panelId": "f70d2d27-e02a-46a2-8397-93574fa0ff15",
+          "origin": {
+            "x": 8,
+            "y": 38
+          },
+          "size": {
+            "width": 821.1988891026508,
+            "height": 522.9563890339416
+          },
+          "zOrder": 1,
+          "creationIndex": 0,
+          "animationState": "idle",
+          "dockLayout": {
+            "type": "tabs",
+            "id": "7c3d42f7-29a0-4bbd-b3d8-c5b372c140e4",
+            "panelIds": [
+              "f70d2d27-e02a-46a2-8397-93574fa0ff15"
+            ],
+            "activeIndex": 0
+          }
+        }
+      },
+      "zoomLevel": 1.2999999999999998,
+      "viewportOffset": {
+        "x": -0.17848695222920696,
+        "y": 122.49754919365125
+      }
+    }
+  }
+}

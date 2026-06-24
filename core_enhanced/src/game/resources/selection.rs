@@ -3,17 +3,15 @@ use uuid::Uuid;
 use crate::game::data::shop_data::{ShopMetadata, ShopType};
 use crate::game::{
     battle::{
-        timeline::Timeline,
+        event_log::BattleEventLog,
+        result_stats::BattleResultStatsDto,
         types::{BattleWinner, ParticipantBattleResult},
     },
     behavior::GameError,
     combat_preview::{CombatMissionVariant, CombatNodeType},
     employee::StarterEmployeeCandidate,
     enums::{RewardMode, ShopEventOption},
-    map::{
-        HeadquartersContactOption, MapNodeId, MedicalTreatmentKind, SupportNodeMode,
-        SupportNodeType,
-    },
+    map::{HeadquartersContactOption, MapNodeId, SupportNodeMode, SupportNodeType},
     reward::RewardOption,
 };
 
@@ -101,9 +99,6 @@ pub struct SupportSessionState {
     pub support_type: Option<SupportNodeType>,
     pub choices: Vec<SupportNodeType>,
     pub selected_support_type: Option<SupportNodeType>,
-    pub target_candidates: Vec<Uuid>,
-    pub selected_employee_uuid: Option<Uuid>,
-    pub selected_medical_treatment: Option<MedicalTreatmentKind>,
 }
 
 impl SupportSessionState {
@@ -114,9 +109,6 @@ impl SupportSessionState {
             support_type: Some(support_type),
             choices: Vec::new(),
             selected_support_type: None,
-            target_candidates: Vec::new(),
-            selected_employee_uuid: None,
-            selected_medical_treatment: None,
         }
     }
 
@@ -131,9 +123,6 @@ impl SupportSessionState {
             support_type: None,
             choices,
             selected_support_type: None,
-            target_candidates: Vec::new(),
-            selected_employee_uuid: None,
-            selected_medical_treatment: None,
         }
     }
 
@@ -148,58 +137,7 @@ impl SupportSessionState {
             return Err(GameError::InvalidAction);
         }
         self.selected_support_type = Some(support_type);
-        self.selected_employee_uuid = None;
-        self.selected_medical_treatment = None;
         Ok(())
-    }
-
-    pub fn set_target_candidates(&mut self, mut candidates: Vec<Uuid>) {
-        candidates.sort();
-        candidates.dedup();
-        self.target_candidates = candidates;
-        if self
-            .selected_employee_uuid
-            .is_some_and(|employee_uuid| !self.target_candidates.contains(&employee_uuid))
-        {
-            self.selected_employee_uuid = None;
-        }
-    }
-
-    pub fn select_target(&mut self, employee_uuid: Uuid) -> Result<(), GameError> {
-        if self.target_candidates.is_empty() || !self.target_candidates.contains(&employee_uuid) {
-            return Err(GameError::InvalidAction);
-        }
-        self.selected_employee_uuid = Some(employee_uuid);
-        Ok(())
-    }
-
-    pub fn select_medical_treatment(
-        &mut self,
-        treatment: MedicalTreatmentKind,
-    ) -> Result<(), GameError> {
-        if self.resolved_support_type()? != SupportNodeType::Medical {
-            return Err(GameError::InvalidAction);
-        }
-        self.selected_medical_treatment = Some(treatment);
-        Ok(())
-    }
-
-    pub fn requires_employee_target(support_type: SupportNodeType) -> bool {
-        matches!(support_type, SupportNodeType::Medical)
-    }
-
-    pub fn needs_target_selection(&self) -> Result<bool, GameError> {
-        let support_type = self.resolved_support_type()?;
-        Ok(Self::requires_employee_target(support_type)
-            && !self.target_candidates.is_empty()
-            && self.selected_employee_uuid.is_none())
-    }
-
-    pub fn needs_medical_treatment_selection(&self) -> Result<bool, GameError> {
-        Ok(self.resolved_support_type()? == SupportNodeType::Medical
-            && !self.target_candidates.is_empty()
-            && self.selected_employee_uuid.is_some()
-            && self.selected_medical_treatment.is_none())
     }
 
     pub fn resolved_support_type(&self) -> Result<SupportNodeType, GameError> {
@@ -264,7 +202,8 @@ pub struct CombatBattleState {
     pub mission_variant: CombatMissionVariant,
     pub abnormality_uuid: Uuid,
     pub winner: BattleWinner,
-    pub timeline: Timeline,
+    pub event_log: BattleEventLog,
+    pub result_stats: BattleResultStatsDto,
     pub reward_mode: RewardMode,
     pub rewards: Vec<RewardOption>,
     pub participant_results: Vec<ParticipantBattleResult>,

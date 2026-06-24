@@ -13,8 +13,8 @@ mod validator;
 
 pub use focus::SkillFocusTimeProvider;
 pub use types::{
-    TimelineExpectedCounts, TimelineValidatorConfig, TimelineViolation, TimelineViolationKind,
+    EventLogExpectedCounts, EventLogValidatorConfig, EventLogViolation, EventLogViolationKind,
 };
-pub use validator::TimelineValidator;
+pub use validator::EventLogValidator;
 
 mod types;

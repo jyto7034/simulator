@@ -1,4 +1,4 @@
-use std::collections::{BTreeSet, HashMap};
+use std::collections::HashMap;
 
 use tracing::info;
 use uuid::Uuid;
@@ -8,33 +8,40 @@ use super::{
         ActiveBattleSession, LiveBattleDeployedUnitState, LiveBattleDeploymentState,
         LiveBattleRedeployState,
     },
-    GameCore, RUN_SYSTEM_POLICY,
+    GameCore,
 };
 use crate::game::ability::{DeliveryDef, SkillTarget};
 use crate::game::battle::{
-    core::sim::{BattleLiveCommand, BattleLiveCommandOutcome, BattleStepOutcome},
-    timeline::Timeline,
-    types::{BattleWinner, ParticipantBattleResult},
+    core::sim::{
+        BattleDeployCurrentHpPolicy, BattleLiveCommand, BattleLiveCommandOutcome, BattleStepOutcome,
+    },
+    event_log::BattleEventLog,
+    result_stats::collect_battle_result_stats,
+    tile_range::{FacingDirection, TileRangePolicy},
+    types::{BattleUnitSource, BattleWinner, ParticipantBattleResult},
 };
 use crate::game::behavior::{
-    BattlePlaybackState, BehaviorResult, CombatOutcomeSummary, GameError,
-    NodeOutcomeEmployeeChange, NodeOutcomeSummary,
+    BattlePlaybackState, BehaviorResult, CombatOutcomeSummary, DeploymentRangePreviewFacingDto,
+    DeploymentRangePreviewFacingsDto, DeploymentRangePreviewResultDto, GameError,
+    LiveBattleRangePreviewsDto, NodeOutcomeEmployeeChange, NodeOutcomeSummary,
 };
 use crate::game::combat_player_spawns::battle_unit_draft_for_employee;
 use crate::game::combat_preview::{CombatNodeType, CombatPreview, DeploymentZoneKind};
 use crate::game::employee::{EmployeeInjury, EmployeeLifeState, EmployeeRoster};
 use crate::game::employee_trust::EmployeeTrustResolver;
-use crate::game::enums::Side;
+use crate::game::enums::{RewardMode, Side};
 use crate::game::events::combat::CombatExecutor;
-use crate::game::managers::qliphoth_manager::QliphothManager;
-use crate::game::map::{
-    MapNodeCategory, MapNodeExecutor, MapNodeId, MapNodePayload, SupportNodeMode,
-};
+use crate::game::managers::uuid_manager::UuidManager;
+use crate::game::map::{MapNodeCategory, MapNodeExecutor, MapNodeId, MapNodePayload};
+use crate::game::range_preview::range_previews_for_combat_profile;
 use crate::game::resources::{
-    ActiveNodeContent, CombatBattleState, GameState, InventoryDiffDto, Position,
-    RewardSessionState, RunFailureReason,
+    ActiveNodeContent, CombatBattleState, Enkephalin, GameState, Inventory, InventoryDiffDto,
+    Position, RunFailureReason,
 };
-use crate::game::reward::RewardEffect;
+use crate::game::reward::{
+    ExperienceTargetPolicy, GrantExecutionContext, GrantExecutor, RewardEffect,
+};
+use crate::game::skill_fragment::SkillFragmentInventory;
 
 #[derive(Debug, Clone, Copy)]
 struct EmployeeOutcomeBefore {
@@ -42,6 +49,14 @@ struct EmployeeOutcomeBefore {
     trauma: u32,
     experience: u32,
     alive: bool,
+}
+
+struct StagedCombatResultState {
+    inventory: Inventory,
+    skill_fragments: SkillFragmentInventory,
+    roster: EmployeeRoster,
+    uuid_manager: UuidManager,
+    enkephalin: Enkephalin,
 }
 
 impl GameCore {
@@ -175,6 +190,7 @@ impl GameCore {
             {
                 return Err(GameError::InvalidAction);
             }
+            let live_deployment_policy = self.run_policy().live_deployment;
             self.state.active_battle = Some(ActiveBattleSession {
                 battle_uuid: selected_uuid,
                 abnormality_id,
@@ -186,17 +202,15 @@ impl GameCore {
                 combat_preview,
                 battle,
                 execution,
-                last_pushed_timeline_seq: None,
-                live_deployment: Some(LiveBattleDeploymentState::new(
-                    RUN_SYSTEM_POLICY.live_deployment,
-                )),
+                last_pushed_event_log_seq: None,
+                live_deployment: Some(LiveBattleDeploymentState::new(live_deployment_policy)),
                 playback: BattlePlaybackState::default(),
                 playback_delta_remainder: 0,
             });
             self.transition_to(GameState::InBattle {
                 battle_uuid: selected_uuid,
             })?;
-            return self.advance_active_battle_by(0);
+            return self.advance_active_battle_by_internal(0, true);
         }
 
         Err(GameError::InvalidStaticData(format!(
@@ -209,17 +223,49 @@ impl GameCore {
         &mut self,
         participant_results: &[ParticipantBattleResult],
     ) -> Result<(), GameError> {
+        let mut staged = self.staged_combat_result_state();
+        self.apply_post_battle_resolution_to_state(&mut staged, participant_results)?;
+        self.commit_staged_combat_result_state(staged);
+        self.sync_roster_order_with_owned_units()?;
+        Ok(())
+    }
+
+    fn staged_combat_result_state(&self) -> StagedCombatResultState {
+        StagedCombatResultState {
+            inventory: self.state.inventory.clone(),
+            skill_fragments: self.state.skill_fragments.clone(),
+            roster: self.state.roster.clone(),
+            uuid_manager: self.state.uuid_manager.clone(),
+            enkephalin: self.state.enkephalin.clone(),
+        }
+    }
+
+    fn commit_staged_combat_result_state(&mut self, staged: StagedCombatResultState) {
+        self.state.inventory = staged.inventory;
+        self.state.skill_fragments = staged.skill_fragments;
+        self.state.roster = staged.roster;
+        self.state.uuid_manager = staged.uuid_manager;
+        self.state.enkephalin = staged.enkephalin;
+    }
+
+    fn apply_post_battle_resolution_to_state(
+        &self,
+        staged: &mut StagedCombatResultState,
+        participant_results: &[ParticipantBattleResult],
+    ) -> Result<(), GameError> {
         let trust_policy = self.state.employee_trust_policy.clone();
-        let roster = self.roster_mut()?;
-        if roster.is_empty() {
+        let post_battle_policy = self.run_policy().post_battle;
+        let post_battle_survival_xp = self.run_policy().growth.post_battle_survival_xp;
+        if staged.roster.is_empty() {
             return Ok(());
         }
 
+        let mut survival_xp_employee_ids = Vec::new();
         for participant in participant_results
             .iter()
             .filter(|participant| participant.side == Side::Player)
         {
-            let Some(employee) = roster.get_mut(&participant.owned_uuid) else {
+            let Some(employee) = staged.roster.get_mut(&participant.owned_uuid) else {
                 continue;
             };
 
@@ -227,15 +273,13 @@ impl GameCore {
                 let trauma_outcome = EmployeeTrustResolver::modify_trauma(
                     &employee.trust,
                     employee.uuid,
-                    RUN_SYSTEM_POLICY.post_battle.incapacitation_trauma,
+                    post_battle_policy.incapacitation_trauma,
                     &trust_policy,
                 );
                 employee.trust.apply_reaction(&trauma_outcome.reaction);
                 employee.apply_incapacitation(
                     trauma_outcome.final_amount,
-                    RUN_SYSTEM_POLICY
-                        .post_battle
-                        .incapacitation_run_hp_loss_percent,
+                    post_battle_policy.incapacitation_run_hp_loss_percent,
                     crate::game::employee::EmployeeInjury {
                         id: "battle_incapacitation".to_string(),
                         severity: 1,
@@ -246,13 +290,11 @@ impl GameCore {
                     employee.uuid, employee.trauma, employee.life_state
                 );
             } else if participant.survived {
-                employee.add_experience(RUN_SYSTEM_POLICY.post_battle.survival_xp);
+                survival_xp_employee_ids.push(employee.uuid);
             } else {
                 employee.apply_incapacitation(
-                    RUN_SYSTEM_POLICY.post_battle.incapacitation_trauma,
-                    RUN_SYSTEM_POLICY
-                        .post_battle
-                        .incapacitation_run_hp_loss_percent,
+                    post_battle_policy.incapacitation_trauma,
+                    post_battle_policy.incapacitation_run_hp_loss_percent,
                     EmployeeInjury {
                         id: "battle_loss".to_string(),
                         severity: 1,
@@ -261,17 +303,42 @@ impl GameCore {
             }
         }
 
-        let _ = roster;
-        self.sync_roster_order_with_owned_units()?;
+        if post_battle_survival_xp > 0 {
+            for employee_uuid in survival_xp_employee_ids {
+                GrantExecutor::grant_effects_with_state(
+                    &mut staged.inventory,
+                    &mut staged.skill_fragments,
+                    &mut staged.roster,
+                    &mut staged.uuid_manager,
+                    &mut staged.enkephalin,
+                    &self.game_data,
+                    &self.state.skill_fragment_policy,
+                    &GrantExecutionContext {
+                        selected_employee_id: Some(employee_uuid),
+                        ..GrantExecutionContext::default()
+                    },
+                    &[RewardEffect::GrantExperience {
+                        amount: post_battle_survival_xp,
+                        target: ExperienceTargetPolicy::SelectedEmployee,
+                    }],
+                    self.run_seed ^ 0x4752_414e_5446_5853,
+                )?;
+            }
+        }
         Ok(())
     }
 
     fn decrement_consumables_after_combat_node(&mut self) -> Result<(), GameError> {
-        let roster = self.roster_mut()?;
+        let mut staged = self.staged_combat_result_state();
+        Self::decrement_consumables_after_combat_node_in_roster(&mut staged.roster);
+        self.commit_staged_combat_result_state(staged);
+        Ok(())
+    }
+
+    fn decrement_consumables_after_combat_node_in_roster(roster: &mut EmployeeRoster) {
         for employee in roster.iter_mut() {
             employee.decrement_consumable_after_combat_node();
         }
-        Ok(())
     }
 
     fn employee_outcome_before(
@@ -305,6 +372,14 @@ impl GameCore {
         participant_results: &[ParticipantBattleResult],
     ) -> Result<Vec<NodeOutcomeEmployeeChange>, GameError> {
         let roster = self.roster()?;
+        Self::employee_outcome_changes_from_roster(roster, before, participant_results)
+    }
+
+    fn employee_outcome_changes_from_roster(
+        roster: &EmployeeRoster,
+        before: HashMap<Uuid, EmployeeOutcomeBefore>,
+        participant_results: &[ParticipantBattleResult],
+    ) -> Result<Vec<NodeOutcomeEmployeeChange>, GameError> {
         let mut changes = Vec::new();
         for participant in participant_results
             .iter()
@@ -333,77 +408,27 @@ impl GameCore {
         Ok(changes)
     }
 
-    fn combat_experience_reward_amount(
-        &self,
-        reward: &RewardSessionState,
-    ) -> Result<u32, GameError> {
-        let rewards_to_apply = match reward.mode {
-            crate::game::enums::RewardMode::ClaimAll => reward.rewards.clone(),
-            crate::game::enums::RewardMode::ChooseOne => vec![reward
-                .get_selected_reward()
-                .cloned()
-                .ok_or(GameError::InvalidAction)?],
-        };
-
-        let mut amount = 0_u32;
-        for reward in rewards_to_apply {
-            for effect in reward.effects {
-                if let RewardEffect::GrantExperience {
-                    amount: effect_amount,
-                } = effect
-                {
-                    amount = amount
-                        .checked_add(effect_amount)
-                        .ok_or(GameError::InvalidAction)?;
-                }
-            }
-        }
-        Ok(amount)
-    }
-
-    fn apply_combat_experience_reward(
-        &mut self,
+    fn combat_experience_context_from_roster(
+        roster: &EmployeeRoster,
         participant_results: &[ParticipantBattleResult],
-        amount: u32,
-    ) -> Result<(), GameError> {
-        if amount == 0 {
-            return Ok(());
-        }
+    ) -> GrantExecutionContext {
+        let eligible_employee_ids = participant_results
+            .iter()
+            .filter(|participant| {
+                participant.side == Side::Player
+                    && participant.survived
+                    && !participant.became_incapacitated
+                    && roster
+                        .get(&participant.owned_uuid)
+                        .is_some_and(|employee| employee.life_state == EmployeeLifeState::Alive)
+            })
+            .map(|participant| participant.owned_uuid)
+            .collect::<Vec<_>>();
 
-        let eligible_employee_ids = {
-            let roster = self.roster()?;
-            participant_results
-                .iter()
-                .filter(|participant| {
-                    participant.side == Side::Player
-                        && participant.survived
-                        && !participant.became_incapacitated
-                        && roster
-                            .get(&participant.owned_uuid)
-                            .is_some_and(|employee| employee.life_state == EmployeeLifeState::Alive)
-                })
-                .map(|participant| participant.owned_uuid)
-                .collect::<BTreeSet<_>>()
-        };
-
-        if eligible_employee_ids.is_empty() {
-            return Ok(());
+        GrantExecutionContext {
+            combat_participant_employee_ids: Some(eligible_employee_ids),
+            selected_employee_id: None,
         }
-
-        let eligible_count =
-            u32::try_from(eligible_employee_ids.len()).map_err(|_| GameError::InvalidAction)?;
-        let base_amount = amount / eligible_count;
-        let mut remainder = amount % eligible_count;
-        let roster = self.roster_mut()?;
-        for employee_id in eligible_employee_ids {
-            let extra = u32::from(remainder > 0);
-            remainder = remainder.saturating_sub(1);
-            let employee = roster
-                .get_mut(&employee_id)
-                .ok_or(GameError::UnitNotFound)?;
-            employee.add_experience(base_amount.saturating_add(extra));
-        }
-        Ok(())
     }
 
     fn combat_node_outcome_summary(
@@ -456,53 +481,67 @@ impl GameCore {
 
     fn current_run_failure_reason(&self) -> Result<Option<RunFailureReason>, GameError> {
         let roster = self.roster()?;
+        Ok(Self::current_run_failure_reason_for_roster(roster))
+    }
+
+    fn current_run_failure_reason_for_roster(roster: &EmployeeRoster) -> Option<RunFailureReason> {
         if roster.is_empty() {
-            return Ok(None);
+            return None;
         }
 
         if !roster
             .iter()
             .any(|employee| employee.life_state == EmployeeLifeState::Alive)
         {
-            return Ok(Some(RunFailureReason::NoLivingEmployees));
+            return Some(RunFailureReason::NoLivingEmployees);
         }
 
         if roster.available_employee_ids().is_empty() {
-            return Ok(Some(RunFailureReason::NoDeployableEmployees));
+            return Some(RunFailureReason::NoDeployableEmployees);
         }
 
-        Ok(None)
+        None
     }
 
-    fn has_available_medical_support_node(&self) -> Result<bool, GameError> {
-        let run = self.run_state()?;
-        Ok(run
-            .map_progression
-            .available_node_ids
-            .iter()
-            .any(|node_id| {
-                run.map.node(*node_id).is_some_and(|node| {
-                    if node.category != MapNodeCategory::Support {
-                        return false;
-                    }
-                    match &node.payload {
-                        MapNodePayload::Support {
-                            support_type,
-                            support_mode,
-                            choices,
-                        } => match support_mode {
-                            SupportNodeMode::Known => {
-                                *support_type == crate::game::map::SupportNodeType::Medical
-                            }
-                            SupportNodeMode::LimitedChoice => {
-                                choices.contains(&crate::game::map::SupportNodeType::Medical)
-                            }
-                            SupportNodeMode::FullChoice => true,
-                        },
-                        _ => false,
-                    }
-                })
-            }))
+    pub(super) fn can_complete_combat_result_locally(&self) -> bool {
+        let Some(session) = self.state.node_session.as_ref() else {
+            return false;
+        };
+        if !matches!(
+            session.category,
+            MapNodeCategory::Combat | MapNodeCategory::Boss
+        ) {
+            return false;
+        }
+        let Some(content) = self.state.active_node_content.as_ref() else {
+            return false;
+        };
+        let Ok(battle) = content.as_combat_battle() else {
+            return false;
+        };
+        if battle.abnormality_uuid != session.node_id.0 {
+            return false;
+        }
+        if battle.winner == BattleWinner::Player && battle.reward_mode != RewardMode::ClaimAll {
+            return false;
+        }
+        let Ok(run) = self.run_state() else {
+            return false;
+        };
+        if run.map_progression.current_node_id != Some(session.node_id) {
+            return false;
+        }
+        if run.map.node(session.node_id).is_none() {
+            return false;
+        }
+
+        let mut map = run.map.clone();
+        let mut progression = run.map_progression.clone();
+        progression.complete_current_node(&mut map).is_ok()
+    }
+
+    fn can_recover_no_deployable_with_checkpoint(&self) -> bool {
+        self.state.run_checkpoint.can_load()
     }
 
     pub(super) fn block_or_fail_undeployable_combat_selection(
@@ -513,7 +552,7 @@ impl GameCore {
                 self.fail_run(RunFailureReason::NoLivingEmployees).map(Some)
             }
             Some(RunFailureReason::NoDeployableEmployees) => {
-                if self.has_available_medical_support_node()? {
+                if self.can_recover_no_deployable_with_checkpoint() {
                     Err(GameError::InvalidAction)
                 } else {
                     self.fail_run(RunFailureReason::NoDeployableEmployees)
@@ -549,7 +588,7 @@ impl GameCore {
                 self.fail_run(RunFailureReason::NoLivingEmployees).map(Some)
             }
             Some(RunFailureReason::NoDeployableEmployees) => {
-                if self.has_available_medical_support_node()? {
+                if self.can_recover_no_deployable_with_checkpoint() {
                     Ok(None)
                 } else {
                     self.fail_run(RunFailureReason::NoDeployableEmployees)
@@ -567,30 +606,37 @@ impl GameCore {
         active: &mut ActiveBattleSession,
         roster: &EmployeeRoster,
         finished: bool,
+        include_setup_snapshot: bool,
     ) -> BehaviorResult {
         active.refresh_live_deployment_cost();
         active.apply_live_signals_to_deployment();
-        let timeline_delta = active.drain_event_log_delta();
+        let battle_setup_snapshot =
+            include_setup_snapshot.then(|| active.battle_setup_snapshot_dto());
+        let battle_update = active.drain_battle_update_dto(roster);
         BehaviorResult::BattleAdvanced {
             battle_uuid: active.battle_uuid,
             encounter_id: active.encounter_id.clone(),
             node_type: active.node_type,
             mission_variant: active.mission_variant,
-            playback: active.playback_state(),
-            battle_time_ms: active.execution.last_event_time_ms(),
-            timeline_delta,
-            last_timeline_seq: active.last_event_log_seq(),
+            battle_setup_snapshot,
+            battle_update,
             finished,
-            deployment: active.live_deployment_dto(roster),
         }
     }
 
     fn combat_battle_state_from_live_result(
         active: &ActiveBattleSession,
         winner: BattleWinner,
-        timeline: Timeline,
+        event_log: BattleEventLog,
         participant_results: Vec<ParticipantBattleResult>,
+        result_stats_policy: &crate::game::data::run_policy_data::BattleResultStatsPolicy,
     ) -> CombatBattleState {
+        let result_stats = collect_battle_result_stats(
+            winner,
+            &event_log,
+            &participant_results,
+            result_stats_policy,
+        );
         CombatBattleState {
             abnormality_id: active.abnormality_id.clone(),
             encounter_id: active.encounter_id.clone(),
@@ -598,7 +644,8 @@ impl GameCore {
             mission_variant: active.mission_variant,
             abnormality_uuid: active.battle_uuid,
             winner,
-            timeline,
+            event_log,
+            result_stats,
             reward_mode: active.reward_mode,
             rewards: active.rewards.clone(),
             participant_results,
@@ -610,13 +657,23 @@ impl GameCore {
         battle: CombatBattleState,
     ) -> Result<(), GameError> {
         let battle_uuid = battle.abnormality_uuid;
+        self.run_state_mut()?.record_battle(&battle)?;
         self.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
         self.state.active_battle = None;
         self.transition_to(GameState::CombatResult { battle_uuid })
     }
 
     pub fn advance_active_battle_by(&mut self, delta_ms: u64) -> Result<BehaviorResult, GameError> {
+        self.advance_active_battle_by_internal(delta_ms, false)
+    }
+
+    fn advance_active_battle_by_internal(
+        &mut self,
+        delta_ms: u64,
+        include_setup_snapshot: bool,
+    ) -> Result<BehaviorResult, GameError> {
         let roster = self.state.roster.clone();
+        let result_stats_policy = self.run_policy().battle_result_stats.clone();
         let (result, completed_battle) = {
             let active = self
                 .state
@@ -635,13 +692,18 @@ impl GameCore {
                     Some(Self::combat_battle_state_from_live_result(
                         active,
                         battle_result.winner,
-                        battle_result.timeline,
+                        battle_result.event_log,
                         battle_result.participant_results,
+                        &result_stats_policy,
                     ))
                 }
             };
-            let result =
-                Self::active_battle_advanced_result(active, &roster, completed_battle.is_some());
+            let result = Self::active_battle_advanced_result(
+                active,
+                &roster,
+                completed_battle.is_some(),
+                include_setup_snapshot,
+            );
             (result, completed_battle)
         };
         if let Some(battle) = completed_battle {
@@ -670,6 +732,7 @@ impl GameCore {
         &mut self,
     ) -> Result<BehaviorResult, GameError> {
         let roster = self.state.roster.clone();
+        let result_stats_policy = self.run_policy().battle_result_stats.clone();
         let (result, completed_battle) = {
             let active = self
                 .state
@@ -686,13 +749,18 @@ impl GameCore {
                     Some(Self::combat_battle_state_from_live_result(
                         active,
                         battle_result.winner,
-                        battle_result.timeline,
+                        battle_result.event_log,
                         battle_result.participant_results,
+                        &result_stats_policy,
                     ))
                 }
             };
-            let result =
-                Self::active_battle_advanced_result(active, &roster, completed_battle.is_some());
+            let result = Self::active_battle_advanced_result(
+                active,
+                &roster,
+                completed_battle.is_some(),
+                false,
+            );
             (result, completed_battle)
         };
         if let Some(battle) = completed_battle {
@@ -705,24 +773,62 @@ impl GameCore {
         &mut self,
         since_seq: Option<u64>,
     ) -> Result<BehaviorResult, GameError> {
-        let roster = self.roster()?;
+        let roster = self.state.roster.clone();
         let active = self
             .state
             .active_battle
-            .as_ref()
+            .as_mut()
             .ok_or(GameError::InvalidAction)?;
+        active.reconcile_live_deployment_with_battle_state();
+        let battle_update = active.battle_update_dto_after(since_seq, &roster)?;
         Ok(BehaviorResult::BattleState {
             battle_uuid: active.battle_uuid,
             node_type: active.node_type,
             mission_variant: active.mission_variant,
             encounter_id: active.encounter_id.clone(),
             combat_preview: active.combat_preview.clone(),
-            playback: active.playback_state(),
-            battle_time_ms: active.execution.last_event_time_ms(),
-            timeline_delta: active.event_log_delta_after(since_seq),
-            last_timeline_seq: active.last_event_log_seq(),
+            battle_update,
             finished: active.execution.is_finished(),
-            deployment: active.live_deployment_dto(roster),
+        })
+    }
+
+    pub(super) fn handle_recover_battle_setup_loss(&mut self) -> Result<BehaviorResult, GameError> {
+        let (node_id, kind_id, category, payload, session, combat_preview) = {
+            let Some(active) = self.state.active_battle.as_ref() else {
+                return Err(GameError::InvalidAction);
+            };
+            let node_id = MapNodeId(active.battle_uuid);
+            let combat_preview = active.combat_preview.clone();
+            let run = self.run_state()?;
+            let node = run.map.node(node_id).ok_or(GameError::InvalidAction)?;
+            let enter_result = MapNodeExecutor::enter(node);
+            (
+                node_id,
+                enter_result.kind_id,
+                enter_result.category,
+                enter_result.payload,
+                enter_result.session,
+                combat_preview,
+            )
+        };
+
+        self.state.active_battle = None;
+        self.state.active_node_content = None;
+        self.state.node_session = Some(session.clone());
+        self.transition_to(GameState::NodeConfirm {
+            node_id,
+            kind_id: kind_id.clone(),
+            category,
+        })?;
+
+        Ok(BehaviorResult::NodePreview {
+            node_id,
+            kind_id,
+            category,
+            payload,
+            session,
+            map: self.current_map_view()?,
+            combat_preview: Some(combat_preview),
         })
     }
 
@@ -734,15 +840,13 @@ impl GameCore {
             .as_mut()
             .ok_or(GameError::InvalidAction)?;
         active.playback.paused = true;
+        let battle_update = active.drain_battle_update_dto(&roster);
         Ok(BehaviorResult::BattlePlaybackChanged {
             battle_uuid: active.battle_uuid,
             encounter_id: active.encounter_id.clone(),
             node_type: active.node_type,
             mission_variant: active.mission_variant,
-            playback: active.playback_state(),
-            battle_time_ms: active.execution.last_event_time_ms(),
-            last_timeline_seq: active.last_event_log_seq(),
-            deployment: active.live_deployment_dto(&roster),
+            battle_update,
         })
     }
 
@@ -754,15 +858,13 @@ impl GameCore {
             .as_mut()
             .ok_or(GameError::InvalidAction)?;
         active.playback.paused = false;
+        let battle_update = active.drain_battle_update_dto(&roster);
         Ok(BehaviorResult::BattlePlaybackChanged {
             battle_uuid: active.battle_uuid,
             encounter_id: active.encounter_id.clone(),
             node_type: active.node_type,
             mission_variant: active.mission_variant,
-            playback: active.playback_state(),
-            battle_time_ms: active.execution.last_event_time_ms(),
-            last_timeline_seq: active.last_event_log_seq(),
-            deployment: active.live_deployment_dto(&roster),
+            battle_update,
         })
     }
 
@@ -778,15 +880,13 @@ impl GameCore {
             .ok_or(GameError::InvalidAction)?;
         active.playback.speed = speed;
         active.playback_delta_remainder = 0;
+        let battle_update = active.drain_battle_update_dto(&roster);
         Ok(BehaviorResult::BattlePlaybackChanged {
             battle_uuid: active.battle_uuid,
             encounter_id: active.encounter_id.clone(),
             node_type: active.node_type,
             mission_variant: active.mission_variant,
-            playback: active.playback_state(),
-            battle_time_ms: active.execution.last_event_time_ms(),
-            last_timeline_seq: active.last_event_log_seq(),
-            deployment: active.live_deployment_dto(&roster),
+            battle_update,
         })
     }
 
@@ -795,6 +895,7 @@ impl GameCore {
         employee_uuid: Uuid,
         position: Position,
         facing: crate::game::battle::tile_range::FacingDirection,
+        source_command_id: Option<&str>,
     ) -> Result<BehaviorResult, GameError> {
         let combat_preview = self
             .state
@@ -812,7 +913,7 @@ impl GameCore {
             employee_uuid,
         )?;
         self.validate_defense_route_deployable_profile(&draft)?;
-        let base_deploy_cost = {
+        let (base_deploy_cost, current_hp_policy) = {
             let active = self
                 .state
                 .active_battle
@@ -822,11 +923,13 @@ impl GameCore {
                 .live_deployment
                 .as_ref()
                 .ok_or(GameError::InvalidAction)?;
-            deployment
-                .redeploy_locks
-                .get(&employee_uuid)
-                .map(|lock| lock.deploy_cost)
-                .unwrap_or(deployment.base_deploy_cost)
+            let redeploy_lock = deployment.redeploy_locks.get(&employee_uuid);
+            (
+                redeploy_lock
+                    .map(|lock| lock.deploy_cost)
+                    .unwrap_or(deployment.base_deploy_cost),
+                redeploy_lock.map(|lock| lock.current_hp_policy),
+            )
         };
         let deploy_cost = self
             .roster()?
@@ -857,15 +960,17 @@ impl GameCore {
         let instance_salt = deployment.next_instance_salt;
         deployment.next_instance_salt = deployment.next_instance_salt.saturating_add(1);
         let time_ms = active.execution.last_event_time_ms();
-        let outcome = active
-            .battle
-            .apply_live_command(BattleLiveCommand::DeployPlayerUnit {
+        let outcome = active.battle.apply_live_command_with_source_command_id(
+            BattleLiveCommand::DeployPlayerUnit {
                 draft,
                 position,
                 facing,
                 instance_salt,
                 time_ms,
-            })?;
+                current_hp_policy,
+            },
+            source_command_id,
+        )?;
         let BattleLiveCommandOutcome::UnitDeployed { unit_id } = outcome else {
             return Err(GameError::InvalidAction);
         };
@@ -879,21 +984,15 @@ impl GameCore {
             },
         );
         active.apply_live_signals_to_deployment();
-        let timeline_delta = active.drain_event_log_delta();
-        let deployment = active
-            .live_deployment_dto(&roster)
-            .ok_or(GameError::InvalidAction)?;
+        let battle_update = active.drain_battle_update_dto(&roster);
         Ok(BehaviorResult::BattleUnitDeployed {
             battle_uuid: active.battle_uuid,
             encounter_id: active.encounter_id.clone(),
             node_type: active.node_type,
             mission_variant: active.mission_variant,
-            playback: active.playback_state(),
+            battle_update,
             employee_uuid,
             unit_instance_id: unit_id,
-            timeline_delta,
-            last_timeline_seq: active.last_event_log_seq(),
-            deployment,
         })
     }
 
@@ -910,14 +1009,9 @@ impl GameCore {
         ) {
             return Ok(());
         }
-        let crate::game::battle::types::BattleUnitSource::Employee(profile) = &draft.source else {
+        let BattleUnitSource::Employee(profile) = &draft.source else {
             return Ok(());
         };
-        if profile.basic_attack.defense_tile_range.is_none() {
-            return Err(GameError::InvalidStaticData(
-                "DefenseRoute player basic attack is missing defense_tile_range".to_string(),
-            ));
-        }
         let Some(skill_id) = &profile.skill_id else {
             return Ok(());
         };
@@ -937,11 +1031,13 @@ impl GameCore {
                 SkillTarget::EnemySingle { .. } | SkillTarget::CastTarget
             ) || matches!(step.delivery, DeliveryDef::TileArea { .. })
             {
-                if step.defense_tile_range.is_some() {
+                if step.range_policy == TileRangePolicy::WholeFieldValidTiles
+                    || step.defense_tile_range.is_some()
+                {
                     continue;
                 }
                 return Err(GameError::InvalidStaticData(format!(
-                    "DefenseRoute player skill '{}' step '{}' is missing defense_tile_range",
+                    "DefenseRoute player skill '{}' step '{}' is missing defense_tile_range or WholeFieldValidTiles range_policy",
                     skill_id, step.id
                 )));
             }
@@ -949,9 +1045,85 @@ impl GameCore {
         Ok(())
     }
 
+    pub fn deployment_range_preview_dto(
+        &self,
+        employee_uuid: Uuid,
+        position: Position,
+        facing: FacingDirection,
+    ) -> Result<LiveBattleRangePreviewsDto, GameError> {
+        let active = self
+            .state
+            .active_battle
+            .as_ref()
+            .ok_or(GameError::InvalidAction)?;
+        self.validate_employee_deployment_cell(&active.combat_preview, employee_uuid, position)?;
+        let draft = battle_unit_draft_for_employee(
+            self.roster()?,
+            self.inventory()?,
+            &self.state.skill_fragments,
+            self.game_data.as_ref(),
+            employee_uuid,
+        )?;
+        self.validate_defense_route_deployable_profile(&draft)?;
+        let BattleUnitSource::Employee(profile) = &draft.source else {
+            return Err(GameError::InvalidAction);
+        };
+        Ok(range_previews_for_combat_profile(
+            profile,
+            self.game_data.as_ref(),
+            &active.battle.battlefield,
+            position,
+            facing,
+        ))
+    }
+
+    pub(super) fn handle_request_deployment_range_preview(
+        &self,
+        employee_uuid: Uuid,
+        position: Position,
+    ) -> Result<BehaviorResult, GameError> {
+        Ok(BehaviorResult::DeploymentRangePreview {
+            result: DeploymentRangePreviewResultDto {
+                employee_uuid,
+                position,
+                facings: DeploymentRangePreviewFacingsDto {
+                    up: DeploymentRangePreviewFacingDto {
+                        range_previews: self.deployment_range_preview_dto(
+                            employee_uuid,
+                            position,
+                            FacingDirection::Up,
+                        )?,
+                    },
+                    right: DeploymentRangePreviewFacingDto {
+                        range_previews: self.deployment_range_preview_dto(
+                            employee_uuid,
+                            position,
+                            FacingDirection::Right,
+                        )?,
+                    },
+                    down: DeploymentRangePreviewFacingDto {
+                        range_previews: self.deployment_range_preview_dto(
+                            employee_uuid,
+                            position,
+                            FacingDirection::Down,
+                        )?,
+                    },
+                    left: DeploymentRangePreviewFacingDto {
+                        range_previews: self.deployment_range_preview_dto(
+                            employee_uuid,
+                            position,
+                            FacingDirection::Left,
+                        )?,
+                    },
+                },
+            },
+        })
+    }
+
     pub(super) fn handle_withdraw_unit(
         &mut self,
         employee_uuid: Uuid,
+        source_command_id: Option<&str>,
     ) -> Result<BehaviorResult, GameError> {
         let roster = self.state.roster.clone();
         let active = self
@@ -968,12 +1140,25 @@ impl GameCore {
             .remove(&employee_uuid)
             .ok_or(GameError::UnitNotFound)?;
         let unit_id = deployed.unit_instance_id;
-        let outcome = active
-            .battle
-            .apply_live_command(BattleLiveCommand::WithdrawUnit { unit_id })?;
+        let time_ms = active.execution.last_event_time_ms();
+        let outcome = active.battle.apply_live_command_with_source_command_id(
+            BattleLiveCommand::WithdrawUnit { unit_id, time_ms },
+            source_command_id,
+        )?;
         if !matches!(outcome, BattleLiveCommandOutcome::UnitWithdrawn { .. }) {
             return Err(GameError::InvalidAction);
         }
+        let current_hp_policy = active
+            .battle
+            .units
+            .get(&unit_id)
+            .map(|unit| {
+                BattleDeployCurrentHpPolicy::withdraw_redeploy(
+                    unit.stats.current_health,
+                    unit.stats.max_health,
+                )
+            })
+            .ok_or(GameError::UnitNotFound)?;
         let deploy_cost = deployment
             .base_deploy_cost
             .saturating_mul(deployment.redeploy_cost_multiplier_pct)
@@ -984,25 +1169,20 @@ impl GameCore {
                 ready_at_ms: active
                     .execution
                     .last_event_time_ms()
-                    .saturating_add(deployment.redeploy_cooldown_ms),
+                    .saturating_add(deployment.withdraw_redeploy_cooldown_ms),
                 deploy_cost,
+                current_hp_policy,
             },
         );
-        let timeline_delta = active.drain_event_log_delta();
-        let deployment = active
-            .live_deployment_dto(&roster)
-            .ok_or(GameError::InvalidAction)?;
+        let battle_update = active.drain_battle_update_dto(&roster);
         Ok(BehaviorResult::BattleUnitWithdrawn {
             battle_uuid: active.battle_uuid,
             encounter_id: active.encounter_id.clone(),
             node_type: active.node_type,
             mission_variant: active.mission_variant,
-            playback: active.playback_state(),
+            battle_update,
             employee_uuid,
             unit_instance_id: unit_id,
-            timeline_delta,
-            last_timeline_seq: active.last_event_log_seq(),
-            deployment,
         })
     }
 
@@ -1010,7 +1190,8 @@ impl GameCore {
         &mut self,
         employee_uuid: Uuid,
         skill_id: crate::game::ability::SkillId,
-        target: Option<crate::game::battle::timeline::SkillCastTarget>,
+        target: Option<crate::game::battle::event_log::SkillCastTarget>,
+        source_command_id: Option<&str>,
     ) -> Result<BehaviorResult, GameError> {
         let roster = self.state.roster.clone();
         let active = self
@@ -1031,33 +1212,28 @@ impl GameCore {
             &skill_id,
             target.clone(),
         )?;
-        let outcome = active
-            .battle
-            .apply_live_command(BattleLiveCommand::ActivateSkill {
+        let outcome = active.battle.apply_live_command_with_source_command_id(
+            BattleLiveCommand::ActivateSkill {
                 unit_id,
                 skill_id: skill_id.clone(),
                 target,
                 time_ms,
-            })?;
+            },
+            source_command_id,
+        )?;
         if !matches!(outcome, BattleLiveCommandOutcome::SkillActivated { .. }) {
             return Err(GameError::InvalidAction);
         }
-        let timeline_delta = active.drain_event_log_delta();
-        let deployment = active
-            .live_deployment_dto(&roster)
-            .ok_or(GameError::InvalidAction)?;
+        let battle_update = active.drain_battle_update_dto(&roster);
         Ok(BehaviorResult::BattleSkillActivated {
             battle_uuid: active.battle_uuid,
             encounter_id: active.encounter_id.clone(),
             node_type: active.node_type,
             mission_variant: active.mission_variant,
-            playback: active.playback_state(),
+            battle_update,
             employee_uuid,
             unit_instance_id: unit_id,
             skill_id,
-            timeline_delta,
-            last_timeline_seq: active.last_event_log_seq(),
-            deployment,
         })
     }
 
@@ -1118,15 +1294,17 @@ impl GameCore {
                 .active_battle
                 .as_ref()
                 .ok_or(GameError::InvalidAction)?;
+            let result_stats_policy = self.run_policy().battle_result_stats.clone();
             Self::combat_battle_state_from_live_result(
                 active,
                 BattleWinner::Draw,
-                active.battle.timeline.clone(),
+                active.battle.event_log.clone(),
                 Vec::new(),
+                &result_stats_policy,
             )
         };
         self.state.active_battle = None;
-        QliphothManager::apply_suppress_failure(&mut self.state.qliphoth);
+        self.run_state_mut()?.record_battle(&battle)?;
         let outcome = self.combat_node_outcome_summary_with_resolution(
             &battle,
             false,
@@ -1156,19 +1334,11 @@ impl GameCore {
             content.as_combat_battle()?.clone()
         };
 
-        match battle.winner {
-            BattleWinner::Player => {
-                QliphothManager::apply_suppress_success(&mut self.state.qliphoth)
-            }
-            BattleWinner::Opponent | BattleWinner::Draw => {
-                QliphothManager::apply_suppress_failure(&mut self.state.qliphoth)
-            }
-        }
         let employee_before = self.employee_outcome_before(&battle.participant_results)?;
-        self.apply_post_battle_resolution(&battle.participant_results)?;
-        self.decrement_consumables_after_combat_node()?;
 
         if battle.node_type == CombatNodeType::Boss && battle.winner != BattleWinner::Player {
+            self.apply_post_battle_resolution(&battle.participant_results)?;
+            self.decrement_consumables_after_combat_node()?;
             let employee_changes =
                 self.employee_outcome_changes(employee_before, &battle.participant_results)?;
             let outcome = self
@@ -1183,6 +1353,8 @@ impl GameCore {
         }
 
         if battle.winner != BattleWinner::Player {
+            self.apply_post_battle_resolution(&battle.participant_results)?;
+            self.decrement_consumables_after_combat_node()?;
             let employee_changes =
                 self.employee_outcome_changes(employee_before, &battle.participant_results)?;
             info!(
@@ -1214,7 +1386,7 @@ impl GameCore {
                         let completion = self.handle_complete_node()?;
                         if self.current_run_failure_reason()?
                             == Some(RunFailureReason::NoDeployableEmployees)
-                            && !self.has_available_medical_support_node()?
+                            && !self.can_recover_no_deployable_with_checkpoint()
                         {
                             return self.fail_run_with_outcome(
                                 RunFailureReason::NoDeployableEmployees,
@@ -1262,27 +1434,83 @@ impl GameCore {
             return Err(GameError::InvalidAction);
         }
 
+        let completion = self.plan_complete_current_node(false)?;
+        let mut staged = self.staged_combat_result_state();
+        self.apply_post_battle_resolution_to_state(&mut staged, &battle.participant_results)?;
+        Self::decrement_consumables_after_combat_node_in_roster(&mut staged.roster);
+
+        match Self::current_run_failure_reason_for_roster(&staged.roster) {
+            Some(RunFailureReason::NoLivingEmployees) => {
+                self.commit_staged_combat_result_state(staged);
+                return self.fail_run(RunFailureReason::NoLivingEmployees);
+            }
+            Some(RunFailureReason::NoDeployableEmployees)
+                if !self.can_recover_no_deployable_with_checkpoint() =>
+            {
+                self.commit_staged_combat_result_state(staged);
+                return self.fail_run(RunFailureReason::NoDeployableEmployees);
+            }
+            Some(RunFailureReason::BossDefeated) => {
+                self.commit_staged_combat_result_state(staged);
+                return self.fail_run(RunFailureReason::BossDefeated);
+            }
+            Some(RunFailureReason::NoDeployableEmployees) | None => {}
+        }
+
         let reward_session = self.build_reward_session(
             battle.abnormality_uuid,
             battle.reward_mode,
             battle.rewards.clone(),
             false,
         );
-        let experience_reward_amount = self.combat_experience_reward_amount(&reward_session)?;
-        let (enkephalin, inventory_diff) = self.apply_reward_session(&reward_session)?;
-        self.apply_combat_experience_reward(&battle.participant_results, experience_reward_amount)?;
-        let employee_changes =
-            self.employee_outcome_changes(employee_before, &battle.participant_results)?;
+        let rewards_to_apply = match reward_session.mode {
+            RewardMode::ClaimAll => reward_session.rewards.clone(),
+            RewardMode::ChooseOne => {
+                return Err(GameError::InvalidStaticData(format!(
+                    "combat result '{}' uses ChooseOne reward mode, but combat result rewards are automatically granted and must use ClaimAll",
+                    battle.encounter_id
+                )));
+            }
+        };
+        let experience_context = Self::combat_experience_context_from_roster(
+            &staged.roster,
+            &battle.participant_results,
+        );
+        let (
+            inventory_diff,
+            skill_fragment_diffs,
+            skill_fragment_research_diffs,
+            employee_experience_diffs,
+        ) = self.apply_reward_options_with_context_to_state(
+            reward_session.stage_uuid,
+            &rewards_to_apply,
+            &experience_context,
+            &mut staged.inventory,
+            &mut staged.skill_fragments,
+            &mut staged.roster,
+            &mut staged.uuid_manager,
+            &mut staged.enkephalin,
+        )?;
+        let enkephalin = staged.enkephalin.amount;
+        let employee_changes = Self::employee_outcome_changes_from_roster(
+            &staged.roster,
+            employee_before,
+            &battle.participant_results,
+        )?;
         let outcome = self.combat_node_outcome_summary(
             &battle,
             true,
             employee_changes,
             inventory_diff.clone(),
         )?;
-        let completion = self.handle_complete_node()?;
+        self.commit_staged_combat_result_state(staged);
+        let completion = self.commit_staged_node_completion(completion)?;
         Ok(BehaviorResult::CombatRewardsGranted {
             enkephalin,
             inventory_diff,
+            skill_fragment_diffs,
+            skill_fragment_research_diffs,
+            employee_experience_diffs,
             outcome,
             completion: Box::new(completion),
         })

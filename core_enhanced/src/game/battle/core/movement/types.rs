@@ -9,12 +9,9 @@ use crate::{game::battle::ids::UnitInstanceId, game::resources::Position};
 /// coordinate space as the source of truth.
 pub const WORLD_UNITS_PER_TILE: f32 = 1.0;
 
-/// Default fixed movement step for the first continuous movement implementation.
-pub const DEFAULT_MOVEMENT_TICK_MS: u64 = 50;
-
-/// Quantization scale for timeline/debug output when exact JSON stability is
+/// Quantization scale for event_log/debug output when exact JSON stability is
 /// more important than writing raw floating point values.
-pub const TIMELINE_POSITION_QUANTIZATION: f32 = 1_000.0;
+pub const EVENT_LOG_POSITION_QUANTIZATION: f32 = 1_000.0;
 
 /// Fixed-point data scale used by authored ranges, projectile speeds, and area sizes.
 ///
@@ -100,10 +97,10 @@ impl WorldVec2 {
         }
     }
 
-    pub fn quantized_milli(self) -> TimelineVec2 {
-        TimelineVec2 {
-            x_milli: (self.x * TIMELINE_POSITION_QUANTIZATION).round() as i32,
-            y_milli: (self.y * TIMELINE_POSITION_QUANTIZATION).round() as i32,
+    pub fn quantized_milli(self) -> EventLogVec2 {
+        EventLogVec2 {
+            x_milli: (self.x * EVENT_LOG_POSITION_QUANTIZATION).round() as i32,
+            y_milli: (self.y * EVENT_LOG_POSITION_QUANTIZATION).round() as i32,
         }
     }
 
@@ -147,16 +144,16 @@ impl std::ops::Mul<f32> for WorldVec2 {
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
-pub struct TimelineVec2 {
+pub struct EventLogVec2 {
     pub x_milli: i32,
     pub y_milli: i32,
 }
 
-impl TimelineVec2 {
+impl EventLogVec2 {
     pub fn to_world(self) -> WorldVec2 {
         WorldVec2::new(
-            self.x_milli as f32 / TIMELINE_POSITION_QUANTIZATION,
-            self.y_milli as f32 / TIMELINE_POSITION_QUANTIZATION,
+            self.x_milli as f32 / EVENT_LOG_POSITION_QUANTIZATION,
+            self.y_milli as f32 / EVENT_LOG_POSITION_QUANTIZATION,
         )
     }
 }
@@ -278,12 +275,12 @@ mod tests {
     }
 
     #[test]
-    fn timeline_quantization_round_trips_to_world_scale() {
+    fn event_log_quantization_round_trips_to_world_scale() {
         let point = WorldVec2::new(1.2345, 6.7894).quantized_milli();
 
         assert_eq!(
             point,
-            TimelineVec2 {
+            EventLogVec2 {
                 x_milli: 1235,
                 y_milli: 6789
             }

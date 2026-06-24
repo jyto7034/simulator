@@ -1,5 +1,5 @@
 use crate::{
-    game::battle::timeline::{SkillCastTarget, Timeline, TimelineEvent},
+    game::battle::event_log::{BattleEventLog, BattleLogEvent, SkillCastTarget},
     game::resources::Position,
 };
 
@@ -9,9 +9,9 @@ pub(super) struct BattlefieldSize {
     pub(super) height: u8,
 }
 
-pub(super) fn extract_battlefield_size(timeline: &Timeline) -> Option<BattlefieldSize> {
-    for entry in &timeline.entries {
-        if let TimelineEvent::BattleStart { width, height } = entry.event {
+pub(super) fn extract_battlefield_size(event_log: &BattleEventLog) -> Option<BattlefieldSize> {
+    for entry in &event_log.entries {
+        if let BattleLogEvent::BattleStart { width, height } = entry.event {
             return Some(BattlefieldSize { width, height });
         }
     }
@@ -22,9 +22,9 @@ pub(super) fn position_in_bounds(pos: Position, width: u8, height: u8) -> bool {
     pos.x >= 0 && pos.y >= 0 && pos.x < width as i32 && pos.y < height as i32
 }
 
-pub(super) fn positions_from_event(event: &TimelineEvent) -> Vec<(Position, &'static str)> {
+pub(super) fn positions_from_event(event: &BattleLogEvent) -> Vec<(Position, &'static str)> {
     match event {
-        TimelineEvent::AutoCastStart {
+        BattleLogEvent::AutoCastStart {
             target: Some(SkillCastTarget::Tile { position }),
             ..
         } => vec![(*position, "AutoCastStart.target(tile)")],

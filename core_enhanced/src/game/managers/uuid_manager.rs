@@ -8,7 +8,7 @@ use crate::game::determinism;
 ///
 /// IMPORTANT: Use separate namespaces for unrelated streams so adding a new call site
 /// doesn't shift every subsequent UUID in other systems.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct UuidManager {
     run_seed: u64,
     counters: BTreeMap<u64, u64>,

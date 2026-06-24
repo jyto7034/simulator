@@ -110,6 +110,16 @@ impl BuffDatabase {
                         metadata.name
                     );
                 }
+                if matches!(
+                    metadata.kind,
+                    BuffKind::Stun | BuffKind::Freeze | BuffKind::Silence
+                ) {
+                    assert_eq!(
+                        metadata.max_stacks, 1,
+                        "control buff '{}' must declare max_stacks == 1",
+                        metadata.name
+                    );
+                }
                 let id = BuffId::from_name(&metadata.name);
                 (
                     id,
@@ -182,5 +192,17 @@ mod tests {
         assert_eq!(silence.max_stacks, 1);
 
         assert!(database.get(BuffId::from_name("unknown_buff")).is_none());
+    }
+
+    #[test]
+    #[should_panic(expected = "control buff 'bad_stun' must declare max_stacks == 1")]
+    fn control_status_metadata_rejects_stackable_hard_cc() {
+        BuffDatabase::new(vec![BuffMetadata {
+            name: "bad_stun".to_string(),
+            kind: BuffKind::Stun,
+            tick_interval_ms: 0,
+            max_stacks: 2,
+            reapply_policy: BuffReapplyPolicy::RefreshDuration,
+        }]);
     }
 }

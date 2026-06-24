@@ -11,9 +11,9 @@ use crate::{
                 BattleCore,
             },
             enums::BattleEvent,
+            event_log::SkillCastTarget,
             ids::UnitInstanceId,
-            tile_range::TileRangePattern,
-            timeline::SkillCastTarget,
+            tile_range::{TileRangePattern, TileRangePolicy},
         },
         enums::Side,
     },
@@ -279,25 +279,27 @@ impl BattleCore {
         caster_instance_id: UnitInstanceId,
         caster_owner: Side,
         caster_pos: Position,
-        range_units: f32,
+        range_policy: TileRangePolicy,
         defense_tile_range: Option<&TileRangePattern>,
         rule: UnitTargetRule,
         air_capable: bool,
+        usefulness_step: Option<&SkillStepDef>,
     ) -> Option<UnitInstanceId> {
         let in_range = |unit_id: UnitInstanceId| {
             if !self.single_target_can_target_unit(unit_id, air_capable) {
                 return false;
             }
-            if self.is_defense_route_player_unit(caster_instance_id) {
-                return self.is_target_in_defense_tile_range(
-                    caster_instance_id,
-                    unit_id,
-                    defense_tile_range,
-                );
-            }
-            self.unit_body_view(caster_instance_id)
-                .zip(self.unit_body_view(unit_id))
-                .is_some_and(|(caster, target)| caster.can_reach(&target, range_units))
+            self.is_target_in_tile_range_policy(
+                caster_instance_id,
+                unit_id,
+                range_policy,
+                defense_tile_range,
+            )
+        };
+        let is_useful = |unit_id: UnitInstanceId| {
+            usefulness_step.is_none_or(|step| {
+                self.is_skill_step_useful_hostile_target(caster_instance_id, step, unit_id)
+            })
         };
 
         match rule {
@@ -305,19 +307,20 @@ impl BattleCore {
                 .units
                 .get(&caster_instance_id)
                 .and_then(|caster| {
-                    caster
-                        .current_target
-                        .filter(|id| self.is_alive_enemy(*id, caster_owner) && in_range(*id))
+                    caster.current_target.filter(|id| {
+                        self.is_alive_enemy(*id, caster_owner) && in_range(*id) && is_useful(*id)
+                    })
                 })
                 .or_else(|| {
                     self.choose_skill_target_by_rule(
                         caster_instance_id,
                         caster_owner,
                         caster_pos,
-                        range_units,
+                        range_policy,
                         defense_tile_range,
                         UnitTargetRule::Nearest,
                         air_capable,
+                        usefulness_step,
                     )
                 }),
             UnitTargetRule::LowestHealthEnemy => {
@@ -326,13 +329,13 @@ impl BattleCore {
                 };
                 let mut best: Option<(u32, f32, UnitInstanceId)> = None;
                 for unit in self.units.values() {
-                    if unit.is_dead() || unit.owner == caster_owner {
+                    if !unit.is_active() || unit.owner == caster_owner {
                         continue;
                     }
                     let Some(target_body) = self.unit_body_view(unit.instance_id) else {
                         continue;
                     };
-                    if !in_range(unit.instance_id) {
+                    if !in_range(unit.instance_id) || !is_useful(unit.instance_id) {
                         continue;
                     }
                     let distance = caster_body.position.distance_squared(target_body.position);
@@ -360,27 +363,20 @@ impl BattleCore {
                 .units
                 .get(&caster_instance_id)
                 .and_then(|caster| {
-                    caster
-                        .current_target
-                        .filter(|id| self.is_alive_enemy(*id, caster_owner) && in_range(*id))
+                    caster.current_target.filter(|id| {
+                        self.is_alive_enemy(*id, caster_owner) && in_range(*id) && is_useful(*id)
+                    })
                 })
                 .or_else(|| {
-                    if !self.is_defense_route_player_unit(caster_instance_id) {
-                        return self.choose_enemy_target_in_range_units(
-                            caster_instance_id,
-                            caster_owner,
-                            range_units,
-                            air_capable,
-                        );
-                    }
                     let Some(caster_body) = self.unit_body_view(caster_instance_id) else {
                         return None;
                     };
                     let mut best: Option<(f32, UnitInstanceId)> = None;
                     for unit in self.units.values() {
-                        if unit.is_dead()
+                        if !unit.is_active()
                             || unit.owner == caster_owner
                             || !in_range(unit.instance_id)
+                            || !is_useful(unit.instance_id)
                         {
                             continue;
                         }
@@ -405,7 +401,7 @@ impl BattleCore {
                     best.map(|(_, id)| id)
                 }),
         }
-        .filter(|id| in_range(*id))
+        .filter(|id| in_range(*id) && is_useful(*id))
     }
 
     pub(in crate::game::battle::core) fn resolve_skill_step_targets(
@@ -429,6 +425,17 @@ impl BattleCore {
                 if let Some(SkillCastTarget::Unit { unit_instance_id }) = step_target {
                     if self.is_alive_enemy(unit_instance_id, caster_owner)
                         && self.single_target_can_target_unit(unit_instance_id, step.air_capable)
+                        && self.is_target_in_tile_range_policy(
+                            caster_instance_id,
+                            unit_instance_id,
+                            step.range_policy,
+                            step.defense_tile_range.as_ref(),
+                        )
+                        && self.is_skill_step_useful_hostile_target(
+                            caster_instance_id,
+                            step,
+                            unit_instance_id,
+                        )
                     {
                         targets.push(unit_instance_id);
                     }
@@ -439,7 +446,7 @@ impl BattleCore {
                     if self
                         .units
                         .get(&unit_instance_id)
-                        .is_some_and(|unit| !unit.is_dead())
+                        .is_some_and(|unit| unit.is_active())
                     {
                         targets.push(unit_instance_id);
                     }

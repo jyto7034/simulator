@@ -1,11 +1,14 @@
 use std::{collections::HashMap, sync::OnceLock};
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use uuid::Uuid;
 
 use crate::game::{
     ability::{SkillActivationMode, SkillId},
-    battle::types::DeploymentAffinity,
+    battle::{
+        tile_range::{TileRangePattern, TileRangePolicy},
+        types::DeploymentAffinity,
+    },
     data::{
         abnormality_data::{BasicAttackDef, MovementDef, ResonanceDef},
         build_string_index, build_uuid_index, once_lock_with,
@@ -17,11 +20,30 @@ fn default_magic_resist() -> i32 {
     0
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum CorrodedEmployeeProfileRole {
+    #[default]
+    Normal,
+    Special,
+    LegacyEcho,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct CorrodedEmployeeBasicAttackRangePresetDef {
+    pub id: String,
+    pub range: TileRangePattern,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CorrodedEmployeeProfileMetadata {
     pub id: String,
     pub uuid: Uuid,
     pub name: String,
+    #[serde(default)]
+    pub profile_role: CorrodedEmployeeProfileRole,
+    #[serde(default)]
+    pub basic_attack_range_preset: Option<String>,
     pub max_health: u32,
     pub attack: u32,
     pub defense: i32,
@@ -68,8 +90,10 @@ impl CorrodedEmployeeProfileMetadata {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct CorrodedEmployeeProfileDatabase {
+    #[serde(default)]
+    pub range_presets: Vec<CorrodedEmployeeBasicAttackRangePresetDef>,
     pub profiles: Vec<CorrodedEmployeeProfileMetadata>,
     #[serde(skip)]
     by_id: OnceLock<HashMap<String, usize>>,
@@ -79,6 +103,13 @@ pub struct CorrodedEmployeeProfileDatabase {
 
 impl CorrodedEmployeeProfileDatabase {
     pub fn new(profiles: Vec<CorrodedEmployeeProfileMetadata>) -> Self {
+        Self::with_range_presets(Vec::new(), profiles)
+    }
+
+    pub fn with_range_presets(
+        range_presets: Vec<CorrodedEmployeeBasicAttackRangePresetDef>,
+        profiles: Vec<CorrodedEmployeeProfileMetadata>,
+    ) -> Self {
         let by_id = once_lock_with(build_string_index(
             &profiles,
             "corroded employee profile id",
@@ -91,6 +122,7 @@ impl CorrodedEmployeeProfileDatabase {
         ));
 
         Self {
+            range_presets,
             profiles,
             by_id,
             by_uuid,
@@ -116,6 +148,19 @@ impl CorrodedEmployeeProfileDatabase {
     }
 
     pub(crate) fn validate_indexes(&self) {
+        let preset_index = build_string_index(
+            &self.range_presets,
+            "corroded employee basic attack range preset id",
+            |preset| &preset.id,
+        );
+        for preset in &self.range_presets {
+            preset.range.validate().unwrap_or_else(|error| {
+                panic!(
+                    "corroded employee basic attack range preset '{}' is invalid: {}",
+                    preset.id, error
+                )
+            });
+        }
         let _ = self.by_id();
         let _ = self.by_uuid();
         for profile in &self.profiles {
@@ -127,6 +172,32 @@ impl CorrodedEmployeeProfileDatabase {
             profile
                 .basic_attack
                 .validate_runtime_contract(format!("corroded employee profile '{}'", profile.id));
+            if profile.profile_role == CorrodedEmployeeProfileRole::Normal {
+                assert!(
+                    profile.basic_attack_range_preset.is_some(),
+                    "normal corroded employee profile '{}' must declare basic_attack_range_preset",
+                    profile.id
+                );
+                assert!(
+                    profile.basic_attack.range_policy != TileRangePolicy::WholeFieldValidTiles,
+                    "normal corroded employee profile '{}' must not use WholeFieldValidTiles",
+                    profile.id
+                );
+            }
+            if let Some(preset_id) = &profile.basic_attack_range_preset {
+                assert!(
+                    preset_index.contains_key(preset_id),
+                    "corroded employee profile '{}' references unknown basic_attack_range_preset '{}'",
+                    profile.id,
+                    preset_id
+                );
+                assert!(
+                    profile.basic_attack.defense_tile_range.is_some(),
+                    "corroded employee profile '{}' preset '{}' was not resolved into basic_attack.defense_tile_range",
+                    profile.id,
+                    preset_id
+                );
+            }
         }
     }
 
@@ -140,6 +211,117 @@ impl CorrodedEmployeeProfileDatabase {
         self.by_uuid()
             .get(uuid)
             .and_then(|&index| self.profiles.get(index))
+    }
+}
+
+impl<'de> Deserialize<'de> for CorrodedEmployeeProfileDatabase {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let raw = RawCorrodedEmployeeProfileDatabase::deserialize(deserializer)?;
+        Ok(raw.into_database())
+    }
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename = "CorrodedEmployeeProfileDatabase")]
+struct RawCorrodedEmployeeProfileDatabase {
+    #[serde(default)]
+    range_presets: Vec<CorrodedEmployeeBasicAttackRangePresetDef>,
+    profiles: Vec<RawCorrodedEmployeeProfileMetadata>,
+}
+
+#[derive(Debug, Deserialize)]
+struct RawCorrodedEmployeeProfileMetadata {
+    id: String,
+    uuid: Uuid,
+    name: String,
+    #[serde(default)]
+    profile_role: CorrodedEmployeeProfileRole,
+    #[serde(default)]
+    basic_attack_range_preset: Option<String>,
+    max_health: u32,
+    attack: u32,
+    defense: i32,
+    #[serde(default = "default_magic_resist")]
+    magic_resist: i32,
+    #[serde(default)]
+    movement: MovementDef,
+    #[serde(default)]
+    basic_attack: BasicAttackDef,
+    #[serde(default)]
+    resonance: ResonanceDef,
+    #[serde(default)]
+    skill_id: Option<SkillId>,
+}
+
+impl RawCorrodedEmployeeProfileDatabase {
+    fn into_database(self) -> CorrodedEmployeeProfileDatabase {
+        let preset_index = build_string_index(
+            &self.range_presets,
+            "corroded employee basic attack range preset id",
+            |preset| &preset.id,
+        );
+        for preset in &self.range_presets {
+            preset.range.validate().unwrap_or_else(|error| {
+                panic!(
+                    "corroded employee basic attack range preset '{}' is invalid: {}",
+                    preset.id, error
+                )
+            });
+        }
+
+        let profiles = self
+            .profiles
+            .into_iter()
+            .map(|profile| profile.into_profile(&self.range_presets, &preset_index))
+            .collect();
+        CorrodedEmployeeProfileDatabase::with_range_presets(self.range_presets, profiles)
+    }
+}
+
+impl RawCorrodedEmployeeProfileMetadata {
+    fn into_profile(
+        self,
+        presets: &[CorrodedEmployeeBasicAttackRangePresetDef],
+        preset_index: &HashMap<String, usize>,
+    ) -> CorrodedEmployeeProfileMetadata {
+        let mut basic_attack = self.basic_attack;
+        if let Some(preset_id) = &self.basic_attack_range_preset {
+            if basic_attack.defense_tile_range.is_some() {
+                panic!(
+                    "corroded employee profile '{}' defines both basic_attack.defense_tile_range and basic_attack_range_preset '{}'",
+                    self.id, preset_id
+                );
+            }
+            let preset = preset_index
+                .get(preset_id)
+                .and_then(|&index| presets.get(index))
+                .unwrap_or_else(|| {
+                    panic!(
+                        "corroded employee profile '{}' references unknown basic_attack_range_preset '{}'",
+                        self.id, preset_id
+                    )
+                });
+            basic_attack.defense_tile_range = Some(preset.range.clone());
+        }
+
+        CorrodedEmployeeProfileMetadata {
+            id: self.id,
+            uuid: self.uuid,
+            name: self.name,
+            profile_role: self.profile_role,
+            basic_attack_range_preset: self.basic_attack_range_preset,
+            max_health: self.max_health,
+            attack: self.attack,
+            defense: self.defense,
+            magic_resist: self.magic_resist,
+            movement: self.movement,
+            basic_attack,
+            resonance: self.resonance,
+            skill_id: self.skill_id,
+        }
     }
 }
 
@@ -174,5 +356,109 @@ mod tests {
         assert_eq!(combat_profile.block_capacity, 0);
         assert_eq!(combat_profile.block_radius_units, 0.0);
         assert!(combat_profile.blockable);
+    }
+
+    #[test]
+    fn corroded_employee_database_resolves_basic_attack_range_presets() {
+        let database: CorrodedEmployeeProfileDatabase = ron::de::from_str(
+            r#"CorrodedEmployeeProfileDatabase(
+                range_presets: [
+                    (
+                        id: "melee_front_1",
+                        range: (
+                            include_anchor_tile: true,
+                            rows: [
+                                ".X.",
+                                ".@.",
+                                "...",
+                            ],
+                        ),
+                    ),
+                ],
+                profiles: [
+                    (
+                        id: "broken_guard",
+                        uuid: "90000000-0000-4000-8000-000000000001",
+                        name: "Broken Guard",
+                        profile_role: normal,
+                        basic_attack_range_preset: Some("melee_front_1"),
+                        max_health: 90,
+                        attack: 11,
+                        defense: 2,
+                        basic_attack: (range_units: 1.0, interval_ms: 1400),
+                    ),
+                ],
+            )"#,
+        )
+        .expect("database should deserialize");
+
+        database.validate_indexes();
+        let profile = database
+            .get_by_id("broken_guard")
+            .expect("profile should exist");
+        assert_eq!(
+            profile.basic_attack_range_preset.as_deref(),
+            Some("melee_front_1")
+        );
+        assert!(profile.basic_attack.defense_tile_range.is_some());
+    }
+
+    #[test]
+    #[should_panic(expected = "must declare basic_attack_range_preset")]
+    fn normal_corroded_employee_profile_requires_basic_attack_range_preset() {
+        let database = CorrodedEmployeeProfileDatabase::with_range_presets(
+            Vec::new(),
+            vec![CorrodedEmployeeProfileMetadata {
+                id: "broken_guard".to_string(),
+                uuid: Uuid::from_u128(0x9000_0000_0000_4000_8000_0000_0000_0001),
+                name: "Broken Guard".to_string(),
+                profile_role: CorrodedEmployeeProfileRole::Normal,
+                basic_attack_range_preset: None,
+                max_health: 90,
+                attack: 11,
+                defense: 2,
+                magic_resist: 0,
+                movement: Default::default(),
+                basic_attack: BasicAttackDef::default(),
+                resonance: Default::default(),
+                skill_id: None,
+            }],
+        );
+
+        database.validate_indexes();
+    }
+
+    #[test]
+    #[should_panic(expected = "must not use WholeFieldValidTiles")]
+    fn normal_corroded_employee_profile_rejects_whole_field_basic_attack() {
+        let database = CorrodedEmployeeProfileDatabase::with_range_presets(
+            vec![CorrodedEmployeeBasicAttackRangePresetDef {
+                id: "melee_front_1".to_string(),
+                range: TileRangePattern {
+                    include_anchor_tile: true,
+                    rows: vec![".X.".to_string(), ".@.".to_string(), "...".to_string()],
+                },
+            }],
+            vec![CorrodedEmployeeProfileMetadata {
+                id: "broken_guard".to_string(),
+                uuid: Uuid::from_u128(0x9000_0000_0000_4000_8000_0000_0000_0002),
+                name: "Broken Guard".to_string(),
+                profile_role: CorrodedEmployeeProfileRole::Normal,
+                basic_attack_range_preset: Some("melee_front_1".to_string()),
+                max_health: 90,
+                attack: 11,
+                defense: 2,
+                magic_resist: 0,
+                movement: Default::default(),
+                basic_attack: BasicAttackDef {
+                    range_policy: TileRangePolicy::WholeFieldValidTiles,
+                    ..Default::default()
+                },
+                resonance: Default::default(),
+                skill_id: None,
+            }],
+        );
+
+        database.validate_indexes();
     }
 }

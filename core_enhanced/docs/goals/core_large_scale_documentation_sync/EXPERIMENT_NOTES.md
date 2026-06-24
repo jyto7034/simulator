@@ -1,0 +1,25 @@
+# Experiment Notes
+
+- This goal is a documentation/contract synchronization goal, not a gameplay refactor goal.
+- The most important source document for workflow is `docs/code_documentation_sync_guidelines.md`.
+- External Unity canonical documents live outside this repo under `/mnt/f/unity projects/ark/docs`. Do not create local stale copies as a shortcut.
+- The likely highest-priority sync item is battle event/checkpoint contract drift caused by event log version 27 and lifecycle changes:
+  - `RuntimeUnitLifecycle::{Active, Withdrawn, Dead}`;
+  - retained inactive runtime units;
+  - `UnitWithdrawn` / `UnitDied` position fields;
+  - Active-only checkpoint units;
+  - withdrawal as strong evasion against opponent hostile projectiles.
+- The second high-priority sync item is server/snapshot/error contract wording:
+  - `RunSnapshotDto` root ownership;
+  - `PlayerStateSnapshotDto` selected-event enrichment only;
+  - `StaticObstacleBlocked` vs `PositionOccupied`.
+- The final audit must compare changed docs back against current runtime code and tests. Do not call the goal complete just because docs were edited.
+- If external Unity canonical docs are not writable from the current sandbox, record that as an operational blocker and ask for permission rather than updating local copies.
+- External Unity docs were writable in this run; edited the canonical files directly rather than creating local copies.
+- `battle_resync` remains a top-level server message, but the old gameplay payload `request_battle_resync { known_seq, need_setup }` is no longer the documented command shape. The current shape is:
+  - catch-up: command envelope `battle_response: "battle_resync"` + `behavior.type == "request_battle_state"` + `since_seq`;
+  - setup-loss: `behavior.type == "recover_battle_setup_loss"`.
+- `BattleResync` no longer serializes `setup: null`; docs should not include a nullable setup field for the current DTO.
+- `checkpoint.units` wording should say Active-only, not merely "alive", because withdrawn runtime units can be alive but inactive and retained for debug/admin/replay.
+- Redeploy HP policy is not Unity-computed display state. Unity should show the redeployed actor from new events/checkpoint and read `stats.current_health` after redeploy.
+- A tiny code wording fix was in scope because the server error string was still using the old field name `known_seq`; the DTO/request field is `since_seq`.

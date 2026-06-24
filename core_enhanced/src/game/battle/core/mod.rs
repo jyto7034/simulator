@@ -7,20 +7,22 @@ use uuid::Uuid;
 
 use crate::game::{
     battle::{
-        battlefield::Battlefield,
+        battlefield::BattlefieldLayout,
         core::movement::{
             engine::ContinuousMovementBackend,
-            types::{TimelineVec2, UnitBody, WorldVec2},
+            types::{EventLogVec2, UnitBody, WorldVec2},
         },
         enums::BattleEvent,
+        event_log::{BattleEventCause, BattleEventLog, BattleLogEvent},
         ids::UnitInstanceId,
         scenario::{BattleScenario, ScenarioGroupId, ScenarioUnitRef},
-        timeline::{Timeline, TimelineCause, TimelineEvent},
         types::UnitSnapshot,
     },
     data::GameDataBase,
+    resources::Position,
 };
 
+mod basic_attack;
 pub mod build;
 pub mod commands;
 pub mod ids;
@@ -28,6 +30,7 @@ pub mod movement;
 pub mod sim;
 pub mod skill_runtime;
 pub mod spatial;
+mod target_usefulness;
 pub mod targeting;
 pub mod triggers;
 pub mod types;
@@ -35,7 +38,7 @@ pub mod types;
 use self::types::{
     AbilityProcKey, AbilityProcState, ActiveBuff, ActiveProjectileRuntime, ActiveSkillCast,
     ActiveSkillCastDebugState, AreaRuntime, BuffInstanceKey, ProjectileRecord, RuntimeArtifact,
-    RuntimeItem, RuntimeUnit, TriggerSource,
+    RuntimeItem, RuntimeUnit, RuntimeUnitLifecycle, TriggerSource,
 };
 
 pub struct BattleCore {
@@ -60,23 +63,33 @@ pub struct BattleCore {
     block_state: BlockRuntimeState,
     last_continuous_movement_tick_ms: Option<u64>,
     movement_backend: ContinuousMovementBackend,
-    pub battlefield: Battlefield,
+    pub battlefield: BattlefieldLayout,
     live_signals: Vec<sim::BattleLiveSignal>,
 
     pub game_data: Arc<GameDataBase>,
 
-    pub timeline: Timeline,
-    pub timeline_seq: u64,
+    pub event_log: BattleEventLog,
+    pub event_log_seq: u64,
     pub projectile_seq: u64,
     pub area_seq: u64,
     pub seed: u64,
-    pub recording_cause_stack: Vec<TimelineCause>,
+    pub recording_cause_stack: Vec<BattleEventCause>,
+    pub recording_source_command_stack: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct InactiveRuntimeUnitDebugSnapshot {
+    pub unit_instance_id: UnitInstanceId,
+    pub owner: crate::game::enums::Side,
+    pub lifecycle: RuntimeUnitLifecycle,
+    pub world_position: EventLogVec2,
+    pub position: Position,
+    pub current_health: u32,
+    pub max_health: u32,
 }
 
 #[derive(Debug, Clone, Copy)]
 struct ActiveMovementSegment {
-    timeline_index: usize,
-    velocity: TimelineVec2,
     start: WorldVec2,
     target: WorldVec2,
     started_at_ms: u64,
@@ -118,6 +131,10 @@ pub(in crate::game::battle::core) struct BlockRuntimeState {
 }
 
 impl BattleCore {
+    pub fn scenario(&self) -> &BattleScenario {
+        &self.scenario
+    }
+
     pub fn new_from_scenario(
         scenario: BattleScenario,
         game_data: Arc<GameDataBase>,
@@ -143,15 +160,20 @@ impl BattleCore {
             block_state: BlockRuntimeState::default(),
             last_continuous_movement_tick_ms: None,
             movement_backend: ContinuousMovementBackend::default(),
-            battlefield: Battlefield::new_with_valid_tiles(field_size.0, field_size.1, valid_tiles),
+            battlefield: BattlefieldLayout::new_with_valid_tiles(
+                field_size.0,
+                field_size.1,
+                valid_tiles,
+            ),
             live_signals: Vec::new(),
             game_data,
-            timeline: Timeline::new(),
-            timeline_seq: 0,
+            event_log: BattleEventLog::new(),
+            event_log_seq: 1,
             projectile_seq: 0,
             area_seq: 0,
             seed,
             recording_cause_stack: Vec::new(),
+            recording_source_command_stack: Vec::new(),
         }
     }
 
@@ -170,11 +192,27 @@ impl BattleCore {
             .map(RuntimeUnit::world_position)
     }
 
+    pub fn unit_projected_tile(&self, unit_instance_id: UnitInstanceId) -> Option<Position> {
+        self.units
+            .get(&unit_instance_id)
+            .map(|unit| unit.body.projected_tile())
+    }
+
+    pub(in crate::game::battle::core) fn live_unit_projected_tile(
+        &self,
+        unit_instance_id: UnitInstanceId,
+    ) -> Option<Position> {
+        self.units
+            .get(&unit_instance_id)
+            .filter(|unit| unit.is_active())
+            .map(|unit| unit.body.projected_tile())
+    }
+
     pub fn live_unit_bodies(&self) -> Vec<(UnitInstanceId, UnitBody)> {
         let mut bodies: Vec<_> = self
             .units
             .values()
-            .filter(|unit| !unit.is_dead())
+            .filter(|unit| unit.is_active())
             .map(|unit| (unit.instance_id, unit.movement_body_view()))
             .collect();
         bodies.sort_by(|a, b| a.0.as_bytes().cmp(b.0.as_bytes()));
@@ -225,6 +263,31 @@ impl BattleCore {
             .map(ActiveSkillCastDebugState::from)
     }
 
+    /// Read-only debug/replay snapshot of retained inactive runtime units.
+    ///
+    /// Official gameplay checkpoints intentionally expose Active units only.
+    /// This query exists for debug/admin/replay inspection of retained
+    /// `Withdrawn` and `Dead` runtime entities without making them gameplay
+    /// presentation sources.
+    pub fn debug_inactive_units(&self) -> Vec<InactiveRuntimeUnitDebugSnapshot> {
+        let mut units = self
+            .units
+            .values()
+            .filter(|unit| !unit.is_active())
+            .map(|unit| InactiveRuntimeUnitDebugSnapshot {
+                unit_instance_id: unit.instance_id,
+                owner: unit.owner,
+                lifecycle: unit.lifecycle,
+                world_position: unit.body.position.quantized_milli(),
+                position: unit.body.projected_tile(),
+                current_health: unit.stats.current_health,
+                max_health: unit.stats.max_health,
+            })
+            .collect::<Vec<_>>();
+        units.sort_by(|left, right| left.unit_instance_id.cmp(&right.unit_instance_id));
+        units
+    }
+
     fn can_gain_resonance(unit: &RuntimeUnit, now_ms: u64) -> bool {
         unit.action_locks.can_gain_resonance(now_ms)
     }
@@ -239,7 +302,7 @@ impl BattleCore {
         if !unit.is_combatant() {
             return false;
         }
-        if unit.is_dead() {
+        if !unit.is_active() {
             return false;
         }
         true
@@ -257,11 +320,17 @@ impl BattleCore {
         }
 
         let (before, after, max) = {
+            if self
+                .active_hard_cc_release_time_ms(unit_instance_id, now_ms)
+                .is_some()
+            {
+                return;
+            }
             let Some(unit) = self.units.get_mut(&unit_instance_id) else {
                 return;
             };
 
-            if unit.is_dead() {
+            if !unit.is_active() {
                 return;
             }
 
@@ -289,9 +358,9 @@ impl BattleCore {
             (before, after, max)
         };
 
-        self.record_timeline(
+        self.record_event_log(
             now_ms,
-            TimelineEvent::ResonanceChanged {
+            BattleLogEvent::ResonanceChanged {
                 unit_instance_id,
                 before,
                 after,
@@ -326,7 +395,7 @@ impl BattleCore {
                 return;
             };
 
-            if unit.is_dead() {
+            if !unit.is_active() {
                 return;
             }
 
@@ -342,9 +411,9 @@ impl BattleCore {
             (before, after, max)
         };
 
-        self.record_timeline(
+        self.record_event_log(
             now_ms,
-            TimelineEvent::ResonanceChanged {
+            BattleLogEvent::ResonanceChanged {
                 unit_instance_id,
                 before,
                 after,
@@ -368,6 +437,37 @@ impl BattleCore {
         })
     }
 
+    fn is_hard_cc_kind(kind: crate::game::battle::buffs::BuffKind) -> bool {
+        matches!(
+            kind,
+            crate::game::battle::buffs::BuffKind::Stun
+                | crate::game::battle::buffs::BuffKind::Freeze
+        )
+    }
+
+    fn active_hard_cc_expires_at(&self, unit_instance_id: UnitInstanceId) -> Option<u64> {
+        self.buffs
+            .iter()
+            .filter_map(|(key, active)| {
+                if key.target_instance_id != unit_instance_id {
+                    return None;
+                }
+                let def = self.game_data.buff_data.get(key.buff_id)?;
+                Self::is_hard_cc_kind(def.kind).then_some(active.expires_at_ms)
+            })
+            .max()
+    }
+
+    pub(in crate::game::battle::core) fn active_hard_cc_release_time_ms(
+        &self,
+        unit_instance_id: UnitInstanceId,
+        now_ms: u64,
+    ) -> Option<u64> {
+        self.active_hard_cc_expires_at(unit_instance_id)
+            .filter(|expires_at_ms| now_ms <= *expires_at_ms)
+            .map(|expires_at_ms| expires_at_ms.saturating_add(1))
+    }
+
     fn schedule_pending_autocast_for(&mut self, caster_instance_id: UnitInstanceId, now_ms: u64) {
         let fallback = self.recording_cause().unwrap_or_default();
 
@@ -375,6 +475,12 @@ impl BattleCore {
             caster_instance_id,
             crate::game::battle::buffs::BuffKind::Silence,
         ) {
+            return;
+        }
+        if self
+            .active_hard_cc_release_time_ms(caster_instance_id, now_ms)
+            .is_some()
+        {
             return;
         }
 
@@ -409,7 +515,7 @@ impl BattleCore {
             .units
             .iter()
             .filter_map(|(id, unit)| {
-                if unit.pending_cast && !unit.is_dead() {
+                if unit.pending_cast && unit.is_active() {
                     Some(*id)
                 } else {
                     None
@@ -443,15 +549,19 @@ mod tests {
     };
     use crate::game::battle::buffs::BuffId;
     use crate::game::battle::core::movement::{types::WorldVec2, ActionState};
-    use crate::game::battle::core::types::RuntimeUnit;
-    use crate::game::battle::damage::BattleCommand;
+    use crate::game::battle::core::types::{PendingSkillCast, RuntimeUnit, RuntimeUnitLifecycle};
+    use crate::game::battle::damage::{BattleCommand, DamageSource, DamageType};
     use crate::game::battle::enums::BattleEvent;
+    use crate::game::battle::event_log::{
+        AttackKind, BattleEventCause, BattleEventRootCause, BattleLogEvent, BuffExpireReason,
+        SkillCastCancelReason, SkillCastTarget,
+    };
     use crate::game::battle::scenario::BattleScenario;
-    use crate::game::battle::tile_range::{FacingDirection, TileRangePattern};
-    use crate::game::battle::timeline::{SkillCastTarget, TimelineCause, TimelineEvent};
+    use crate::game::battle::tile_range::{FacingDirection, TileRangePattern, TileRangePolicy};
     use crate::game::battle::types::{
         BattleUnitDraft, BattleUnitSource, DeploymentAffinity, MobilityKind, UnitCombatProfile,
     };
+    use crate::game::data::run_policy_data::RunPolicyData;
     use crate::game::data::{
         abnormality_data::AbnormalityMetadata, skill_data::SkillDatabase, GameDataBase,
         GameDataBuilder,
@@ -477,11 +587,6 @@ mod tests {
         core.active_movement_segments.insert(
             unit_id,
             ActiveMovementSegment {
-                timeline_index: 7,
-                velocity: TimelineVec2 {
-                    x_milli: 1_000,
-                    y_milli: 0,
-                },
                 start: WorldVec2::ZERO,
                 target: WorldVec2::new(3.0, 0.0),
                 started_at_ms: 10,
@@ -597,8 +702,8 @@ mod tests {
             result.winner,
             crate::game::battle::types::BattleWinner::Player
         );
-        assert!(result.timeline.entries.iter().any(|entry| {
-            entry.time_ms == 1_000 && matches!(entry.event, TimelineEvent::UnitSpawned { .. })
+        assert!(result.event_log.entries.iter().any(|entry| {
+            entry.time_ms == 1_000 && matches!(entry.event, BattleLogEvent::UnitSpawned { .. })
         }));
     }
 
@@ -655,9 +760,181 @@ mod tests {
         assert!(execution.is_finalized());
         assert_eq!(stepped_result.winner, full_result.winner);
         assert_eq!(
-            stepped_result.timeline.to_json_string().unwrap(),
-            full_result.timeline.to_json_string().unwrap()
+            stepped_result.event_log.to_json_string().unwrap(),
+            full_result.event_log.to_json_string().unwrap()
         );
+    }
+
+    #[test]
+    fn protect_unit_until_wins_at_timer_even_with_enemy_alive() {
+        let protected_group_id = crate::game::battle::scenario::ScenarioGroupId::new("protected");
+        let enemy_group_id = crate::game::battle::scenario::ScenarioGroupId::new("enemy");
+        let protected_ref = crate::game::battle::scenario::ScenarioUnitRef::new("black_box");
+        let enemy_ref = crate::game::battle::scenario::ScenarioUnitRef::new("enemy_0");
+
+        let scenario = crate::game::battle::scenario::BattleScenario {
+            battlefield: crate::game::battle::scenario::BattleFieldSpec {
+                width: 4,
+                height: 4,
+                valid_tiles: Vec::new(),
+                obstacles: Vec::new(),
+            },
+            artifacts: Vec::new(),
+            groups: vec![
+                crate::game::battle::scenario::ScenarioSpawnGroup {
+                    id: protected_group_id.clone(),
+                    side: Side::Player,
+                    required_for_victory: false,
+                    enemy_movement_plan: None,
+                    spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
+                        unit_ref: protected_ref.clone(),
+                        side: Side::Player,
+                        draft: fixture_draft(
+                            Uuid::from_u128(0x901),
+                            Uuid::from_u128(0x902),
+                            100,
+                            0,
+                        ),
+                        position: Position::new(0, 0),
+                        instance_salt: 0,
+                    }],
+                },
+                crate::game::battle::scenario::ScenarioSpawnGroup {
+                    id: enemy_group_id.clone(),
+                    side: Side::Opponent,
+                    required_for_victory: true,
+                    enemy_movement_plan: None,
+                    spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
+                        unit_ref: enemy_ref,
+                        side: Side::Opponent,
+                        draft: fixture_draft(
+                            Uuid::from_u128(0x903),
+                            Uuid::from_u128(0x904),
+                            100,
+                            0,
+                        ),
+                        position: Position::new(3, 3),
+                        instance_salt: 0,
+                    }],
+                },
+            ],
+            events: vec![
+                crate::game::battle::scenario::ScenarioEvent {
+                    id: crate::game::battle::scenario::ScenarioEventId::new("spawn_protected"),
+                    trigger: crate::game::battle::scenario::ScenarioTrigger::AtBattleStart,
+                    action: crate::game::battle::scenario::ScenarioAction::SpawnGroup {
+                        group_id: protected_group_id,
+                    },
+                    once: true,
+                },
+                crate::game::battle::scenario::ScenarioEvent {
+                    id: crate::game::battle::scenario::ScenarioEventId::new("spawn_enemy"),
+                    trigger: crate::game::battle::scenario::ScenarioTrigger::AtBattleStart,
+                    action: crate::game::battle::scenario::ScenarioAction::SpawnGroup {
+                        group_id: enemy_group_id,
+                    },
+                    once: true,
+                },
+            ],
+            win_condition: crate::game::battle::scenario::WinCondition::ProtectUnitUntil {
+                unit_ref: protected_ref,
+                time_ms: 1_000,
+            },
+            tactical_plan: crate::game::battle::scenario::TacticalPlan::default(),
+        };
+
+        let mut core = BattleCore::new_from_scenario(scenario, empty_game_data(), 123);
+        let mut execution = core
+            .start_battle_execution()
+            .expect("battle execution should start");
+
+        let outcome = core
+            .step_battle_execution_by(&mut execution, 1_000)
+            .expect("timer step should finish");
+
+        assert!(matches!(
+            outcome,
+            crate::game::battle::core::sim::BattleStepOutcome::Finished(finish)
+                if finish.winner == crate::game::battle::types::BattleWinner::Player
+        ));
+        assert!(core
+            .units
+            .values()
+            .any(|unit| unit.owner == Side::Opponent && unit.is_active()));
+    }
+
+    #[test]
+    fn protect_unit_until_loses_when_objective_is_destroyed_before_timer() {
+        let protected_group_id = crate::game::battle::scenario::ScenarioGroupId::new("protected");
+        let protected_ref = crate::game::battle::scenario::ScenarioUnitRef::new("black_box");
+
+        let scenario = crate::game::battle::scenario::BattleScenario {
+            battlefield: crate::game::battle::scenario::BattleFieldSpec {
+                width: 4,
+                height: 4,
+                valid_tiles: Vec::new(),
+                obstacles: Vec::new(),
+            },
+            artifacts: Vec::new(),
+            groups: vec![crate::game::battle::scenario::ScenarioSpawnGroup {
+                id: protected_group_id.clone(),
+                side: Side::Player,
+                required_for_victory: false,
+                enemy_movement_plan: None,
+                spawns: vec![crate::game::battle::scenario::ScenarioUnitSpawn {
+                    unit_ref: protected_ref.clone(),
+                    side: Side::Player,
+                    draft: fixture_draft(Uuid::from_u128(0x911), Uuid::from_u128(0x912), 100, 0),
+                    position: Position::new(0, 0),
+                    instance_salt: 0,
+                }],
+            }],
+            events: vec![crate::game::battle::scenario::ScenarioEvent {
+                id: crate::game::battle::scenario::ScenarioEventId::new("spawn_protected"),
+                trigger: crate::game::battle::scenario::ScenarioTrigger::AtBattleStart,
+                action: crate::game::battle::scenario::ScenarioAction::SpawnGroup {
+                    group_id: protected_group_id,
+                },
+                once: true,
+            }],
+            win_condition: crate::game::battle::scenario::WinCondition::ProtectUnitUntil {
+                unit_ref: protected_ref.clone(),
+                time_ms: 1_000,
+            },
+            tactical_plan: crate::game::battle::scenario::TacticalPlan::default(),
+        };
+
+        let mut core = BattleCore::new_from_scenario(scenario, empty_game_data(), 123);
+        let mut execution = core
+            .start_battle_execution()
+            .expect("battle execution should start");
+        let initial_outcome = core
+            .step_battle_execution_by(&mut execution, 0)
+            .expect("battle start spawn should process");
+        assert!(matches!(
+            initial_outcome,
+            crate::game::battle::core::sim::BattleStepOutcome::Running
+        ));
+        let protected_id = core.scenario_runtime.unit_refs[&protected_ref];
+        core.units
+            .get_mut(&protected_id)
+            .expect("protected unit should exist")
+            .stats
+            .current_health = 0;
+        core.units
+            .get_mut(&protected_id)
+            .expect("protected unit should exist")
+            .lifecycle = RuntimeUnitLifecycle::Dead;
+
+        let outcome = core
+            .step_battle_execution_by(&mut execution, 100)
+            .expect("objective destruction should finish");
+
+        assert!(matches!(
+            outcome,
+            crate::game::battle::core::sim::BattleStepOutcome::Finished(finish)
+                if finish.winner == crate::game::battle::types::BattleWinner::Opponent
+        ));
     }
 
     #[test]
@@ -688,6 +965,7 @@ mod tests {
                     facing: crate::game::battle::tile_range::FacingDirection::Right,
                     instance_salt: 7,
                     time_ms: 250,
+                    current_hp_policy: None,
                 },
             )
             .expect("live deploy command should succeed");
@@ -704,20 +982,38 @@ mod tests {
         };
 
         assert!(core.units.contains_key(&unit_id));
-        assert!(core.timeline.entries.iter().any(|entry| {
+        assert!(core.event_log.entries.iter().any(|entry| {
             entry.time_ms == 250
                 && matches!(
                     entry.event,
-                    TimelineEvent::UnitSpawned {
+                    BattleLogEvent::UnitSpawned {
                         unit_instance_id,
                         ..
                     } if unit_instance_id == unit_id
                 )
         }));
+        assert!(core.event_log.entries.iter().any(|entry| {
+            entry.time_ms == 250
+                && matches!(
+                    entry.event,
+                    BattleLogEvent::UnitDeployed {
+                        employee_uuid,
+                        unit_instance_id,
+                        position,
+                        facing,
+                    } if employee_uuid == Uuid::from_u128(10)
+                        && unit_instance_id == unit_id
+                        && position == Position::new(1, 1)
+                        && facing == crate::game::battle::tile_range::FacingDirection::Right
+                )
+        }));
 
         let withdrawn = core
             .apply_live_command(
-                crate::game::battle::core::sim::BattleLiveCommand::WithdrawUnit { unit_id },
+                crate::game::battle::core::sim::BattleLiveCommand::WithdrawUnit {
+                    unit_id,
+                    time_ms: 25,
+                },
             )
             .expect("live withdraw command should succeed");
 
@@ -725,8 +1021,382 @@ mod tests {
             withdrawn,
             crate::game::battle::core::sim::BattleLiveCommandOutcome::UnitWithdrawn { unit_id }
         );
-        assert!(!core.units.contains_key(&unit_id));
-        assert!(core.battlefield.position_of(unit_id).is_none());
+        assert_eq!(
+            core.units.get(&unit_id).map(|unit| unit.lifecycle),
+            Some(RuntimeUnitLifecycle::Withdrawn)
+        );
+        assert_eq!(core.unit_projected_tile(unit_id), Some(Position::new(1, 1)));
+        assert!(core.event_log.entries.iter().any(|entry| {
+            entry.time_ms == 25
+                && matches!(
+                    entry.event,
+                    BattleLogEvent::UnitWithdrawn {
+                        unit_instance_id,
+                        world_position,
+                        position,
+                    } if unit_instance_id == unit_id
+                        && world_position.x_milli == 1500
+                        && world_position.y_milli == 1500
+                        && position == Position::new(1, 1)
+                )
+        }));
+    }
+
+    #[test]
+    fn debug_inactive_units_lists_retained_non_active_units_with_lifecycle_and_position() {
+        let mut core = new_core();
+        let active_id: UnitInstanceId = Uuid::from_u128(0xDD01).into();
+        let withdrawn_id: UnitInstanceId = Uuid::from_u128(0xDD02).into();
+        let dead_id: UnitInstanceId = Uuid::from_u128(0xDD03).into();
+
+        let mut active = runtime_unit(active_id, Side::Player);
+        active.set_world_position(WorldVec2::from_tile_center(Position::new(0, 0)));
+        core.units.insert(active_id, active);
+
+        let mut withdrawn = runtime_unit(withdrawn_id, Side::Player);
+        withdrawn.lifecycle = RuntimeUnitLifecycle::Withdrawn;
+        withdrawn.set_world_position(WorldVec2::from_tile_center(Position::new(1, 2)));
+        core.units.insert(withdrawn_id, withdrawn);
+
+        let mut dead = runtime_unit(dead_id, Side::Opponent);
+        dead.lifecycle = RuntimeUnitLifecycle::Dead;
+        dead.stats.current_health = 0;
+        dead.set_world_position(WorldVec2::from_tile_center(Position::new(2, 3)));
+        core.units.insert(dead_id, dead);
+
+        let inactive = core.debug_inactive_units();
+
+        assert_eq!(inactive.len(), 2);
+        assert!(inactive
+            .iter()
+            .all(|unit| unit.unit_instance_id != active_id));
+        assert!(inactive.iter().any(|unit| {
+            unit.unit_instance_id == withdrawn_id
+                && unit.lifecycle == RuntimeUnitLifecycle::Withdrawn
+                && unit.position == Position::new(1, 2)
+                && unit.world_position.x_milli == 1500
+                && unit.world_position.y_milli == 2500
+                && unit.current_health == 10
+        }));
+        assert!(inactive.iter().any(|unit| {
+            unit.unit_instance_id == dead_id
+                && unit.lifecycle == RuntimeUnitLifecycle::Dead
+                && unit.position == Position::new(2, 3)
+                && unit.world_position.x_milli == 2500
+                && unit.world_position.y_milli == 3500
+                && unit.current_health == 0
+        }));
+    }
+
+    #[test]
+    fn withdraw_clears_runtime_buffs_with_withdrawn_reasons() {
+        let mut core = new_core();
+        let caster_id: UnitInstanceId = Uuid::from_u128(0xCD11).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(0xCD12).into();
+        core.units
+            .insert(caster_id, runtime_unit(caster_id, Side::Player));
+        core.units
+            .insert(target_id, runtime_unit(target_id, Side::Opponent));
+        let poison_id = BuffId::from_name("poison");
+
+        core.process_event(
+            BattleEvent::ApplyBuff {
+                time_ms: 0,
+                caster_instance_id: caster_id,
+                target_instance_id: target_id,
+                buff_id: poison_id,
+                duration_ms: 100,
+                cause: BattleEventCause::default(),
+            },
+            0,
+        )
+        .unwrap();
+        core.process_event(
+            BattleEvent::ApplyBuff {
+                time_ms: 0,
+                caster_instance_id: target_id,
+                target_instance_id: caster_id,
+                buff_id: poison_id,
+                duration_ms: 100,
+                cause: BattleEventCause::default(),
+            },
+            0,
+        )
+        .unwrap();
+
+        core.withdraw_unit(target_id, 10).unwrap();
+
+        assert!(core.buffs.is_empty());
+        assert!(core.event_log.entries.iter().any(|entry| matches!(
+            entry.event,
+            BattleLogEvent::BuffExpired {
+                caster_instance_id,
+                target_instance_id,
+                buff_id,
+                reason: BuffExpireReason::TargetWithdrawn,
+            } if entry.time_ms == 10
+                && caster_instance_id == caster_id
+                && target_instance_id == target_id
+                && buff_id == poison_id
+        )));
+        assert!(core.event_log.entries.iter().any(|entry| matches!(
+            entry.event,
+            BattleLogEvent::BuffExpired {
+                caster_instance_id,
+                target_instance_id,
+                buff_id,
+                reason: BuffExpireReason::CasterWithdrawn,
+            } if entry.time_ms == 10
+                && caster_instance_id == target_id
+                && target_instance_id == caster_id
+                && buff_id == poison_id
+        )));
+    }
+
+    #[test]
+    fn withdraw_cancels_pending_skill_cast_with_cancelled_event() {
+        let mut core = new_core();
+        let caster_id: UnitInstanceId = Uuid::from_u128(0xCD21).into();
+        core.units
+            .insert(caster_id, runtime_unit(caster_id, Side::Player));
+        let skill_id = SkillId::from("pending_withdraw_skill");
+        let start_seq = core.record_event_log(
+            0,
+            BattleLogEvent::AutoCastStart {
+                caster_instance_id: caster_id,
+                skill_id: Some(skill_id.clone()),
+                target: None,
+            },
+        );
+        core.units.get_mut(&caster_id).unwrap().pending_skill_cast = Some(PendingSkillCast {
+            skill_id: skill_id.clone(),
+            cast_target: None,
+            start_seq,
+        });
+
+        core.withdraw_unit(caster_id, 10).unwrap();
+
+        assert!(core
+            .units
+            .get(&caster_id)
+            .unwrap()
+            .pending_skill_cast
+            .is_none());
+        assert!(core.event_log.entries.iter().any(|entry| matches!(
+            &entry.event,
+            BattleLogEvent::SkillCastCancelled {
+                caster_instance_id,
+                interrupted_skill_id,
+                interrupted_cast_seq,
+                reason: SkillCastCancelReason::Withdrawn,
+            } if entry.time_ms == 10
+                && *caster_instance_id == caster_id
+                && interrupted_skill_id == &skill_id
+                && *interrupted_cast_seq == start_seq
+        )));
+    }
+
+    #[test]
+    fn withdraw_cancels_active_skill_cast_with_cancelled_event() {
+        let mut core = new_core();
+        let caster_id: UnitInstanceId = Uuid::from_u128(0xCD31).into();
+        core.units
+            .insert(caster_id, runtime_unit(caster_id, Side::Player));
+        let skill_id = SkillId::from("active_withdraw_skill");
+        let cast_seq = core.record_event_log(
+            0,
+            BattleLogEvent::AbilityCast {
+                skill_id: skill_id.clone(),
+                caster_instance_id: caster_id,
+                target_instance_id: None,
+            },
+        );
+        core.active_skill_casts.insert(
+            cast_seq,
+            ActiveSkillCast {
+                caster_instance_id: caster_id,
+                skill_id: skill_id.clone(),
+                caster_owner: Side::Player,
+                anchor_position: Position::new(1, 1),
+                cast_target_anchor_position: None,
+                cast_target_anchor_world_position: None,
+                allow_dead_caster: false,
+                total_steps: 1,
+                step_progress: Default::default(),
+                deferred_steps: Default::default(),
+                impact_contexts_by_step: Default::default(),
+                last_impact_context: None,
+                active_area_ids: Vec::new(),
+            },
+        );
+
+        core.withdraw_unit(caster_id, 10).unwrap();
+
+        assert!(!core.active_skill_casts.contains_key(&cast_seq));
+        assert!(core.event_log.entries.iter().any(|entry| matches!(
+            &entry.event,
+            BattleLogEvent::SkillCastCancelled {
+                caster_instance_id,
+                interrupted_skill_id,
+                interrupted_cast_seq,
+                reason: SkillCastCancelReason::Withdrawn,
+            } if entry.time_ms == 10
+                && *caster_instance_id == caster_id
+                && interrupted_skill_id == &skill_id
+                && *interrupted_cast_seq == cast_seq
+        )));
+    }
+
+    #[test]
+    fn battle_runtime_policy_controls_max_battle_time() {
+        let mut policy = RunPolicyData::builtin();
+        policy.battle_runtime.movement_tick_ms = 5;
+        policy.battle_runtime.max_battle_time_ms = 10;
+        let game_data = GameDataBuilder::live_defaults()
+            .with_run_policy(policy)
+            .build_arc();
+        let scenario = crate::game::battle::scenario::BattleScenario {
+            battlefield: crate::game::battle::scenario::BattleFieldSpec {
+                width: 4,
+                height: 4,
+                valid_tiles: Vec::new(),
+                obstacles: Vec::new(),
+            },
+            artifacts: Vec::new(),
+            groups: Vec::new(),
+            events: vec![crate::game::battle::scenario::ScenarioEvent {
+                id: crate::game::battle::scenario::ScenarioEventId::new("late_force_end"),
+                trigger: crate::game::battle::scenario::ScenarioTrigger::AtTimeMs(100),
+                action: crate::game::battle::scenario::ScenarioAction::EndBattle {
+                    winner: crate::game::battle::types::BattleWinner::Player,
+                },
+                once: true,
+            }],
+            win_condition: crate::game::battle::scenario::WinCondition::SurviveUntil {
+                time_ms: 1_000,
+            },
+            tactical_plan: crate::game::battle::scenario::TacticalPlan::default(),
+        };
+        let mut core = BattleCore::new_from_scenario(scenario, game_data, 123);
+
+        let result = core
+            .run_battle()
+            .expect("battle should finish at runtime cap");
+
+        assert_eq!(
+            result.winner,
+            crate::game::battle::types::BattleWinner::Draw
+        );
+        assert!(result.event_log.entries.iter().any(|entry| {
+            entry.time_ms == 10 && matches!(entry.event, BattleLogEvent::BattleEnd { .. })
+        }));
+    }
+
+    #[test]
+    fn movement_tick_schedule_uses_run_policy_interval() {
+        let mut policy = RunPolicyData::builtin();
+        policy.battle_runtime.movement_tick_ms = 25;
+        let game_data = GameDataBuilder::live_defaults()
+            .with_run_policy(policy)
+            .build_arc();
+        let mut core = BattleCore::new_from_scenario(BattleScenario::empty((4, 4)), game_data, 123);
+
+        core.last_continuous_movement_tick_ms = Some(100);
+        core.schedule_continuous_movement_tick(124);
+        assert!(!core.event_queue.iter().any(|event| matches!(
+            event,
+            BattleEvent::ContinuousMovementTick { time_ms } if *time_ms == 124
+        )));
+
+        core.schedule_continuous_movement_tick(125);
+        assert!(core.event_queue.iter().any(|event| matches!(
+            event,
+            BattleEvent::ContinuousMovementTick { time_ms } if *time_ms == 125
+        )));
+    }
+
+    #[test]
+    fn same_timestamp_attack_resolve_is_drained_before_battle_end() {
+        let mut core = new_core();
+        let mut execution = core
+            .start_battle_execution()
+            .expect("battle execution should start");
+        let attacker_id = UnitInstanceId::from(Uuid::from_u128(0xA55A));
+        let target_id = UnitInstanceId::from(Uuid::from_u128(0xB55B));
+        core.units
+            .insert(attacker_id, runtime_unit(attacker_id, Side::Player));
+        core.units
+            .insert(target_id, runtime_unit(target_id, Side::Opponent));
+        let cause = BattleEventCause::Root {
+            kind: BattleEventRootCause::System,
+        };
+
+        core.event_queue.push(BattleEvent::EndBattle {
+            time_ms: 10,
+            winner: crate::game::battle::types::BattleWinner::Player,
+            cause,
+        });
+        core.event_queue.push(BattleEvent::AttackResolve {
+            time_ms: 10,
+            attacker_instance_id: attacker_id,
+            target_instance_id: target_id,
+            source_snapshot: core
+                .damage_source_snapshot_for_unit(
+                    attacker_id,
+                    target_id,
+                    DamageSource::BasicAttack,
+                    DamageType::Physical,
+                    1,
+                    Default::default(),
+                    1,
+                    10,
+                    true,
+                )
+                .expect("source snapshot"),
+            kind: AttackKind::Auto,
+            delivery: crate::game::battle::event_log::AttackDelivery::Instant,
+            cause,
+        });
+
+        let finish = match core
+            .step_battle_execution_until(&mut execution, 10)
+            .expect("battle step should process same-time bucket")
+        {
+            crate::game::battle::core::sim::BattleStepOutcome::Finished(finish) => finish,
+            crate::game::battle::core::sim::BattleStepOutcome::Running => {
+                panic!("forced winner should finish after same-time bucket")
+            }
+        };
+        let result = core
+            .finalize_battle_execution(&mut execution, finish)
+            .expect("finished battle should finalize");
+
+        let attack_resolve_index = result
+            .event_log
+            .entries
+            .iter()
+            .position(|entry| {
+                entry.time_ms == 10
+                    && matches!(
+                        entry.event,
+                        BattleLogEvent::AttackResolve {
+                            attacker_instance_id,
+                            target_instance_id,
+                            ..
+                        } if attacker_instance_id == attacker_id && target_instance_id == target_id
+                    )
+            })
+            .expect("same-time AttackResolve should be recorded");
+        let battle_end_index = result
+            .event_log
+            .entries
+            .iter()
+            .position(|entry| {
+                entry.time_ms == 10 && matches!(entry.event, BattleLogEvent::BattleEnd { .. })
+            })
+            .expect("BattleEnd should be recorded at the same timestamp");
+
+        assert!(attack_resolve_index < battle_end_index);
     }
 
     #[test]
@@ -750,13 +1420,17 @@ mod tests {
             id: SkillId::from("manual_guard"),
             name: "Manual Guard".to_string(),
             kind: SkillKind::Targeted,
-            cast_targeting: SkillCastTargetingDef::FirstStepTarget,
+            cast_targeting: explicit_cast_targeting(
+                SkillTarget::SelfUnit,
+                Default::default(),
+                None,
+            ),
             focus_time_ms: 50,
             focus_permissions: Default::default(),
             steps: vec![SkillStepDef {
                 id: "step".to_string(),
                 delay_ms: 0,
-                range_units: 1.0,
+                range_policy: Default::default(),
                 defense_tile_range: None,
                 air_capable: false,
                 target: SkillTarget::SelfUnit,
@@ -783,6 +1457,7 @@ mod tests {
         let draft = BattleUnitDraft {
             owned_uuid: Uuid::from_u128(20),
             source: BattleUnitSource::Employee(profile),
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Normal,
             level: crate::game::enums::Tier::I,
             growth_stacks: Default::default(),
             equipped_items: vec![],
@@ -797,6 +1472,7 @@ mod tests {
                     facing: crate::game::battle::tile_range::FacingDirection::Right,
                     instance_salt: 8,
                     time_ms: 250,
+                    current_hp_policy: None,
                 },
             )
             .expect("live deploy command should succeed");
@@ -821,10 +1497,10 @@ mod tests {
             activated,
             crate::game::battle::core::sim::BattleLiveCommandOutcome::SkillActivated { unit_id }
         );
-        assert!(core.timeline.entries.iter().any(|entry| {
+        assert!(core.event_log.entries.iter().any(|entry| {
             matches!(
                 &entry.event,
-                TimelineEvent::ManualCastStart {
+                BattleLogEvent::ManualCastStart {
                     caster_instance_id,
                     skill_id,
                     ..
@@ -834,10 +1510,10 @@ mod tests {
 
         core.step_battle_execution_until(&mut execution, 351)
             .expect("manual cast end should be processed");
-        assert!(core.timeline.entries.iter().any(|entry| {
+        assert!(core.event_log.entries.iter().any(|entry| {
             matches!(
                 &entry.event,
-                TimelineEvent::AbilityCast {
+                BattleLogEvent::AbilityCast {
                     caster_instance_id,
                     skill_id,
                     ..
@@ -924,8 +1600,8 @@ mod tests {
             crate::game::battle::core::sim::BattleStepOutcome::Running
         ));
         assert_eq!(execution.last_event_time_ms(), 100);
-        assert!(core.timeline.entries.iter().all(|entry| {
-            !matches!(entry.event, TimelineEvent::UnitSpawned { .. }) || entry.time_ms != 1_000
+        assert!(core.event_log.entries.iter().all(|entry| {
+            !matches!(entry.event, BattleLogEvent::UnitSpawned { .. }) || entry.time_ms != 1_000
         }));
 
         let outcome = core
@@ -936,8 +1612,8 @@ mod tests {
             crate::game::battle::core::sim::BattleStepOutcome::Running
         ));
         assert_eq!(execution.last_event_time_ms(), 1_000);
-        assert!(core.timeline.entries.iter().any(|entry| {
-            entry.time_ms == 1_000 && matches!(entry.event, TimelineEvent::UnitSpawned { .. })
+        assert!(core.event_log.entries.iter().any(|entry| {
+            entry.time_ms == 1_000 && matches!(entry.event, BattleLogEvent::UnitSpawned { .. })
         }));
     }
 
@@ -957,11 +1633,16 @@ mod tests {
         };
         RuntimeUnit {
             instance_id: unit_id,
+            lifecycle: RuntimeUnitLifecycle::Active,
             spawn_order: u64::from(unit_id.as_bytes()[15]),
             source_owned_uuid: unit_id.as_uuid(),
             owner,
             role: crate::game::battle::types::BattleUnitRole::Combatant,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Normal,
             base_uuid: Uuid::nil(),
+            source_identity: crate::game::battle::types::BattleUnitSourceIdentity::TestFixture {
+                base_uuid: Uuid::nil(),
+            },
             stats: UnitStats::with_values(10, 10, 1, 0, 1),
             incoming_damage_modifiers: Default::default(),
             basic_attack,
@@ -982,6 +1663,7 @@ mod tests {
             current_target: None,
             next_basic_attack_ms: 0,
             pending_basic_attack: false,
+            ranged_reposition_until_ms: 0,
             resonance_current: 0,
             resonance_max: 100,
             resonance_lock_ms: 0,
@@ -1001,6 +1683,7 @@ mod tests {
         BattleUnitDraft {
             owned_uuid,
             source: BattleUnitSource::TestFixture { base_uuid, profile },
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Normal,
             level: crate::game::enums::Tier::I,
             growth_stacks: crate::game::growth::GrowthStack::new(),
             equipped_items: Vec::new(),
@@ -1056,6 +1739,66 @@ mod tests {
     }
 
     #[test]
+    fn opponent_spawn_uses_authored_position_even_when_occupied() {
+        let group_id = crate::game::battle::scenario::ScenarioGroupId::new("enemy");
+        let position = Position::new(2, 2);
+        let scenario = crate::game::battle::scenario::BattleScenario {
+            battlefield: crate::game::battle::scenario::BattleFieldSpec {
+                width: 4,
+                height: 4,
+                valid_tiles: Vec::new(),
+                obstacles: Vec::new(),
+            },
+            artifacts: Vec::new(),
+            groups: vec![crate::game::battle::scenario::ScenarioSpawnGroup {
+                id: group_id.clone(),
+                side: Side::Opponent,
+                required_for_victory: true,
+                enemy_movement_plan: None,
+                spawns: vec![
+                    crate::game::battle::scenario::ScenarioUnitSpawn {
+                        unit_ref: crate::game::battle::scenario::ScenarioUnitRef::new("enemy_a"),
+                        side: Side::Opponent,
+                        draft: fixture_draft(
+                            Uuid::from_u128(0xA100),
+                            Uuid::from_u128(0xB100),
+                            100,
+                            10,
+                        ),
+                        position,
+                        instance_salt: 0,
+                    },
+                    crate::game::battle::scenario::ScenarioUnitSpawn {
+                        unit_ref: crate::game::battle::scenario::ScenarioUnitRef::new("enemy_b"),
+                        side: Side::Opponent,
+                        draft: fixture_draft(
+                            Uuid::from_u128(0xA101),
+                            Uuid::from_u128(0xB101),
+                            100,
+                            10,
+                        ),
+                        position,
+                        instance_salt: 1,
+                    },
+                ],
+            }],
+            events: Vec::new(),
+            win_condition:
+                crate::game::battle::scenario::WinCondition::AllRequiredEnemyGroupsDefeated,
+            tactical_plan: Default::default(),
+        };
+        let mut core = BattleCore::new_from_scenario(scenario, empty_game_data(), 123);
+
+        let spawned = core
+            .spawn_scenario_group(&group_id)
+            .expect("opponent overlap should use authored spawn positions");
+
+        assert_eq!(spawned.len(), 2);
+        assert_eq!(core.unit_projected_tile(spawned[0]), Some(position));
+        assert_eq!(core.unit_projected_tile(spawned[1]), Some(position));
+    }
+
+    #[test]
     fn platform_only_spawned_unit_cannot_block_even_if_profile_has_capacity() {
         let group_id = crate::game::battle::scenario::ScenarioGroupId::new("player");
         let unit_ref = crate::game::battle::scenario::ScenarioUnitRef::new("platform_unit");
@@ -1106,7 +1849,7 @@ mod tests {
     }
 
     fn sync_unit_to_battlefield_tile_center(core: &mut BattleCore, unit_id: UnitInstanceId) {
-        let Some(position) = core.battlefield.position_of(unit_id) else {
+        let Some(position) = core.unit_projected_tile(unit_id) else {
             return;
         };
         if let Some(unit) = core.units.get_mut(&unit_id) {
@@ -1121,13 +1864,23 @@ mod tests {
     ) -> RuntimeUnit {
         let mut unit = runtime_unit(unit_id, owner);
         unit.base_uuid = base_uuid;
+        unit.source_identity =
+            crate::game::battle::types::BattleUnitSourceIdentity::TestFixture { base_uuid };
         unit
     }
 
     fn place_unit(core: &mut BattleCore, unit_id: UnitInstanceId, pos: Position) {
-        core.battlefield.place(unit_id, pos).unwrap();
+        core.battlefield.ensure_walkable_tile(pos).unwrap();
         let unit = core.units.get_mut(&unit_id).unwrap();
         unit.set_world_position(WorldVec2::new(pos.x as f32, pos.y as f32));
+    }
+
+    fn explicit_cast_targeting(
+        target: SkillTarget,
+        range_policy: TileRangePolicy,
+        defense_tile_range: Option<TileRangePattern>,
+    ) -> SkillCastTargetingDef {
+        SkillCastTargetingDef::explicit(target, range_policy, defense_tile_range, false)
     }
 
     fn abnormality_with_basic_attack(
@@ -1145,6 +1898,7 @@ mod tests {
             attack: 1,
             defense: 0,
             magic_resist: 0,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
             movement: Default::default(),
             basic_attack: crate::game::data::abnormality_data::BasicAttackDef {
                 range_units: f32::from(range_units),
@@ -1188,21 +1942,26 @@ mod tests {
             })
             .collect();
         let include_anchor_tile = radius == 0;
+        let defense_tile_range = TileRangePattern {
+            include_anchor_tile,
+            rows: defense_tile_rows,
+        };
         SkillDef {
             id: SkillId::from(id),
             name: id.to_string(),
             kind: SkillKind::Targeted,
-            cast_targeting: SkillCastTargetingDef::FirstStepTarget,
+            cast_targeting: explicit_cast_targeting(
+                target.clone(),
+                Default::default(),
+                Some(defense_tile_range.clone()),
+            ),
             focus_time_ms,
             focus_permissions: Default::default(),
             steps: vec![SkillStepDef {
                 id: "step_01".to_string(),
                 delay_ms: 0,
-                range_units: f32::from(range_units),
-                defense_tile_range: Some(TileRangePattern {
-                    include_anchor_tile,
-                    rows: defense_tile_rows,
-                }),
+                range_policy: Default::default(),
+                defense_tile_range: Some(defense_tile_range),
                 air_capable: false,
                 target,
                 targeting: StepTargetingMode::ReuseCastTarget,
@@ -1213,6 +1972,42 @@ mod tests {
                 presentation: SkillPresentationDef::default(),
             }],
         }
+    }
+
+    fn damage_effect() -> SkillEffectDef {
+        SkillEffectDef::Damage {
+            amount: 1,
+            damage_type: DamageType::Magic,
+        }
+    }
+
+    fn zero_damage_effect() -> SkillEffectDef {
+        SkillEffectDef::Damage {
+            amount: 0,
+            damage_type: DamageType::Magic,
+        }
+    }
+
+    fn enemy_tile_area_skill(id: &str, effects: Vec<SkillEffectDef>) -> SkillDef {
+        single_step_skill(
+            id,
+            SkillTarget::SelfUnit,
+            1,
+            0,
+            DeliveryDef::TileArea {
+                area: SkillTileAreaDeliveryDef {
+                    anchor: SkillAreaAnchorSource::Caster,
+                    tile_origin: SkillTileAreaOrigin::Caster,
+                    tracking: SkillAreaTracking::GroundFixed,
+                    hit_targets: crate::game::ability::SkillHitTargetFilter::Enemies,
+                    include_caster: false,
+                    tick_policy: crate::game::ability::SkillAreaTickPolicy::EveryTick,
+                    duration_ms: 0,
+                    tick_interval_ms: None,
+                },
+            },
+            effects,
+        )
     }
 
     fn core_with_skill_data(
@@ -1289,7 +2084,7 @@ mod tests {
         core.units.insert(caster_small, u1);
         core.units.insert(caster_large, u2);
 
-        let cause = TimelineCause::Parent { seq: 42 };
+        let cause = BattleEventCause::Parent { seq: 42 };
         core.recording_cause_stack.push(cause);
 
         core.schedule_pending_autocasts(100);
@@ -1318,7 +2113,7 @@ mod tests {
             BattleEvent::AutoCastStart {
                 time_ms: 100,
                 caster_instance_id,
-                cause: TimelineCause::Parent { seq: 42 },
+                cause: BattleEventCause::Parent { seq: 42 },
             } if caster_instance_id == caster_small
         ));
         assert!(matches!(
@@ -1326,7 +2121,7 @@ mod tests {
             BattleEvent::AutoCastStart {
                 time_ms: 100,
                 caster_instance_id,
-                cause: TimelineCause::Parent { seq: 42 },
+                cause: BattleEventCause::Parent { seq: 42 },
             } if caster_instance_id == caster_large
         ));
     }
@@ -1347,6 +2142,7 @@ mod tests {
         // Dead unit never schedules.
         core.units.get_mut(&unit_id).unwrap().next_action_time = 0;
         core.units.get_mut(&unit_id).unwrap().stats.current_health = 0;
+        core.units.get_mut(&unit_id).unwrap().lifecycle = RuntimeUnitLifecycle::Dead;
         core.schedule_pending_autocasts(300);
         assert!(core.event_queue.is_empty());
     }
@@ -1424,6 +2220,7 @@ mod tests {
             .unwrap()
             .stats
             .current_health = 0;
+        core.units.get_mut(&locked_target_id).unwrap().lifecycle = RuntimeUnitLifecycle::Dead;
 
         place_unit(&mut core, attacker_id, Position::new(0, 0));
         place_unit(&mut core, locked_target_id, Position::new(1, 0));
@@ -1476,7 +2273,7 @@ mod tests {
                 attacker_instance_id: attacker_id,
                 target_instance_id: None,
                 schedule_next: true,
-                cause: TimelineCause::default(),
+                cause: BattleEventCause::default(),
             },
             0,
         )
@@ -1518,7 +2315,7 @@ mod tests {
                 attacker_instance_id: attacker_id,
                 target_instance_id: Some(hinted_target_id),
                 schedule_next: false,
-                cause: TimelineCause::default(),
+                cause: BattleEventCause::default(),
             },
             0,
         )
@@ -1560,7 +2357,7 @@ mod tests {
                 attacker_instance_id: attacker_id,
                 target_instance_id: Some(hinted_target_id),
                 schedule_next: false,
-                cause: TimelineCause::default(),
+                cause: BattleEventCause::default(),
             },
             0,
         )
@@ -1600,6 +2397,7 @@ mod tests {
             .unwrap()
             .stats
             .current_health = 0;
+        core.units.get_mut(&dead_target_id).unwrap().lifecycle = RuntimeUnitLifecycle::Dead;
 
         place_unit(&mut core, attacker_id, Position::new(0, 0));
         place_unit(&mut core, dead_target_id, Position::new(1, 0));
@@ -1611,7 +2409,7 @@ mod tests {
                 attacker_instance_id: attacker_id,
                 target_instance_id: None,
                 schedule_next: true,
-                cause: TimelineCause::default(),
+                cause: BattleEventCause::default(),
             },
             0,
         )
@@ -1658,7 +2456,7 @@ mod tests {
                 attacker_instance_id: attacker_id,
                 target_instance_id: None,
                 schedule_next: true,
-                cause: TimelineCause::default(),
+                cause: BattleEventCause::default(),
             },
             0,
         )
@@ -1680,6 +2478,12 @@ mod tests {
                 attacker_base_uuid,
                 DeliveryDef::Projectile {
                     speed_units_per_ms: 1_000,
+                    hit_policy: crate::game::ability::ProjectileHitPolicy::TargetLocked,
+                    allow_targetless_cast: false,
+                    max_range_tiles: None,
+                    max_lifetime_ms: None,
+                    max_kills: None,
+                    max_pierces: None,
                     collision: Default::default(),
                 },
                 3,
@@ -1689,6 +2493,12 @@ mod tests {
                 ranged_enemy_base_uuid,
                 DeliveryDef::Projectile {
                     speed_units_per_ms: 1_000,
+                    hit_policy: crate::game::ability::ProjectileHitPolicy::TargetLocked,
+                    allow_targetless_cast: false,
+                    max_range_tiles: None,
+                    max_lifetime_ms: None,
+                    max_kills: None,
+                    max_pierces: None,
                     collision: Default::default(),
                 },
                 3,
@@ -1757,79 +2567,6 @@ mod tests {
     }
 
     #[test]
-    fn choose_enemy_target_in_range_units_prefers_melee_enemy_when_distance_is_equal() {
-        let melee_enemy_base_uuid = Uuid::from_u128(0xAA08);
-        let ranged_enemy_base_uuid = Uuid::from_u128(0xAA09);
-        let mut core = core_with_abnormalities(vec![
-            abnormality_with_basic_attack(melee_enemy_base_uuid, DeliveryDef::Instant, 1),
-            abnormality_with_basic_attack(
-                ranged_enemy_base_uuid,
-                DeliveryDef::Projectile {
-                    speed_units_per_ms: 1_000,
-                    collision: Default::default(),
-                },
-                3,
-            ),
-        ]);
-        let caster_id: UnitInstanceId = Uuid::from_u128(82).into();
-        let melee_enemy_id: UnitInstanceId = Uuid::from_u128(83).into();
-        let ranged_enemy_id: UnitInstanceId = Uuid::from_u128(84).into();
-
-        core.units
-            .insert(caster_id, runtime_unit(caster_id, Side::Player));
-        core.units.insert(
-            melee_enemy_id,
-            runtime_unit_with_base(melee_enemy_id, Side::Opponent, melee_enemy_base_uuid),
-        );
-        core.units.insert(
-            ranged_enemy_id,
-            runtime_unit_with_base(ranged_enemy_id, Side::Opponent, ranged_enemy_base_uuid),
-        );
-
-        place_unit(&mut core, caster_id, Position::new(0, 0));
-        place_unit(&mut core, melee_enemy_id, Position::new(1, 0));
-        place_unit(&mut core, ranged_enemy_id, Position::new(0, 1));
-
-        assert_eq!(
-            core.choose_enemy_target_in_range_units(caster_id, Side::Player, 3.0, false),
-            Some(melee_enemy_id)
-        );
-    }
-
-    #[test]
-    fn choose_enemy_target_in_range_units_prefers_nearest_enemy_by_continuous_distance() {
-        let enemy_base_uuid = Uuid::from_u128(0xAA12);
-        let mut core = core_with_abnormalities(vec![abnormality_with_basic_attack(
-            enemy_base_uuid,
-            DeliveryDef::Instant,
-            1,
-        )]);
-        let caster_id: UnitInstanceId = Uuid::from_u128(93).into();
-        let diagonal_enemy_id: UnitInstanceId = Uuid::from_u128(94).into();
-        let straight_enemy_id: UnitInstanceId = Uuid::from_u128(95).into();
-
-        core.units
-            .insert(caster_id, runtime_unit(caster_id, Side::Player));
-        core.units.insert(
-            diagonal_enemy_id,
-            runtime_unit_with_base(diagonal_enemy_id, Side::Opponent, enemy_base_uuid),
-        );
-        core.units.insert(
-            straight_enemy_id,
-            runtime_unit_with_base(straight_enemy_id, Side::Opponent, enemy_base_uuid),
-        );
-
-        place_unit(&mut core, caster_id, Position::new(2, 2));
-        place_unit(&mut core, diagonal_enemy_id, Position::new(1, 1));
-        place_unit(&mut core, straight_enemy_id, Position::new(2, 1));
-
-        assert_eq!(
-            core.choose_enemy_target_in_range_units(caster_id, Side::Player, 1.0, false),
-            Some(straight_enemy_id)
-        );
-    }
-
-    #[test]
     fn fixed_defense_player_basic_attack_uses_facing_tile_pattern_not_continuous_radius() {
         let attacker_base_uuid = Uuid::from_u128(0xAA03);
         let mut core = core_with_abnormalities(vec![abnormality_with_basic_attack(
@@ -1869,6 +2606,30 @@ mod tests {
         );
         assert!(core.resolve_basic_attack(attacker_id, forward_target_id, 0));
         assert!(!core.resolve_basic_attack(attacker_id, side_target_id, 0));
+    }
+
+    #[test]
+    fn basic_attack_uses_tile_range_not_range_units() {
+        let attacker_id: UnitInstanceId = Uuid::from_u128(0xAA30).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(0xAA31).into();
+        let mut core = new_core();
+
+        let mut attacker = runtime_unit(attacker_id, Side::Player);
+        attacker.facing_direction = Some(FacingDirection::Right);
+        attacker.basic_attack.range_units = 99.0;
+        attacker.basic_attack.defense_tile_range = Some(TileRangePattern {
+            include_anchor_tile: false,
+            rows: vec![".X.".to_string(), ".@.".to_string(), "...".to_string()],
+        });
+        core.units.insert(attacker_id, attacker);
+        core.units
+            .insert(target_id, runtime_unit(target_id, Side::Opponent));
+
+        place_unit(&mut core, attacker_id, Position::new(1, 1));
+        place_unit(&mut core, target_id, Position::new(1, 0));
+
+        assert_eq!(core.choose_attack_target_in_range(attacker_id), None);
+        assert!(!core.resolve_basic_attack(attacker_id, target_id, 0));
     }
 
     #[test]
@@ -1914,7 +2675,7 @@ mod tests {
     }
 
     #[test]
-    fn fixed_defense_player_basic_attack_requires_tile_pattern_and_facing() {
+    fn fixed_defense_player_basic_attack_uses_default_pattern_but_requires_facing() {
         let attacker_id: UnitInstanceId = Uuid::from_u128(84).into();
         let target_id: UnitInstanceId = Uuid::from_u128(85).into();
         let mut core = new_core();
@@ -1931,7 +2692,10 @@ mod tests {
         place_unit(&mut core, attacker_id, Position::new(1, 1));
         place_unit(&mut core, target_id, Position::new(2, 1));
 
-        assert_eq!(core.choose_attack_target_in_range(attacker_id), None);
+        assert_eq!(
+            core.choose_attack_target_in_range(attacker_id),
+            Some(target_id)
+        );
 
         core.units
             .get_mut(&attacker_id)
@@ -1948,21 +2712,28 @@ mod tests {
 
     #[test]
     fn fixed_defense_player_skill_target_uses_facing_tile_pattern() {
+        let tile_range = TileRangePattern {
+            include_anchor_tile: false,
+            rows: vec![".X.".to_string(), ".@.".to_string(), "...".to_string()],
+        };
         let skill = SkillDef {
             id: SkillId::from("tile_skill"),
             name: "tile_skill".to_string(),
             kind: SkillKind::Targeted,
-            cast_targeting: SkillCastTargetingDef::FirstStepTarget,
+            cast_targeting: explicit_cast_targeting(
+                SkillTarget::EnemySingle {
+                    rule: UnitTargetRule::Nearest,
+                },
+                Default::default(),
+                Some(tile_range.clone()),
+            ),
             focus_time_ms: 0,
             focus_permissions: Default::default(),
             steps: vec![SkillStepDef {
                 id: "hit".to_string(),
                 delay_ms: 0,
-                range_units: 99.0,
-                defense_tile_range: Some(TileRangePattern {
-                    include_anchor_tile: false,
-                    rows: vec![".X.".to_string(), ".@.".to_string(), "...".to_string()],
-                }),
+                range_policy: Default::default(),
+                defense_tile_range: Some(tile_range),
                 air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::Nearest,
@@ -1971,7 +2742,7 @@ mod tests {
                 when: Default::default(),
                 repeat: Default::default(),
                 delivery: DeliveryDef::Instant,
-                effects: Vec::new(),
+                effects: vec![damage_effect()],
                 presentation: Default::default(),
             }],
         };
@@ -1998,12 +2769,19 @@ mod tests {
 
         assert_eq!(
             core.resolve_skill_cast_target(&skill, caster_id, Side::Player, Position::new(1, 1)),
-            Some(crate::game::battle::timeline::SkillCastTarget::Unit {
+            Some(crate::game::battle::event_log::SkillCastTarget::Unit {
                 unit_instance_id: right_target_id
             })
         );
 
         let mut missing_pattern_skill = skill.clone();
+        missing_pattern_skill.cast_targeting = explicit_cast_targeting(
+            SkillTarget::EnemySingle {
+                rule: UnitTargetRule::Nearest,
+            },
+            Default::default(),
+            None,
+        );
         missing_pattern_skill.steps[0].defense_tile_range = None;
         assert_eq!(
             core.resolve_skill_cast_target(
@@ -2013,6 +2791,116 @@ mod tests {
                 Position::new(1, 1)
             ),
             None
+        );
+    }
+
+    #[test]
+    fn skill_enemy_single_uses_tile_range_not_range_units() {
+        let tile_range = TileRangePattern {
+            include_anchor_tile: false,
+            rows: vec![".X.".to_string(), ".@.".to_string(), "...".to_string()],
+        };
+        let skill = SkillDef {
+            id: SkillId::from("tile_skill_without_continuous_fallback"),
+            name: "tile_skill_without_continuous_fallback".to_string(),
+            kind: SkillKind::Targeted,
+            cast_targeting: explicit_cast_targeting(
+                SkillTarget::EnemySingle {
+                    rule: UnitTargetRule::Nearest,
+                },
+                Default::default(),
+                Some(tile_range.clone()),
+            ),
+            focus_time_ms: 0,
+            focus_permissions: Default::default(),
+            steps: vec![SkillStepDef {
+                id: "hit".to_string(),
+                delay_ms: 0,
+                range_policy: Default::default(),
+                defense_tile_range: Some(tile_range),
+                air_capable: false,
+                target: SkillTarget::EnemySingle {
+                    rule: UnitTargetRule::Nearest,
+                },
+                targeting: StepTargetingMode::ReuseCastTarget,
+                when: Default::default(),
+                repeat: Default::default(),
+                delivery: DeliveryDef::Instant,
+                effects: vec![damage_effect()],
+                presentation: Default::default(),
+            }],
+        };
+        let mut core = core_with_skill_data(vec![], vec![skill.clone()]);
+
+        let caster_id: UnitInstanceId = Uuid::from_u128(0xAA40).into();
+        let outside_tile_target_id: UnitInstanceId = Uuid::from_u128(0xAA41).into();
+        let mut caster = runtime_unit(caster_id, Side::Player);
+        caster.facing_direction = Some(FacingDirection::Right);
+        core.units.insert(caster_id, caster);
+        core.units.insert(
+            outside_tile_target_id,
+            runtime_unit(outside_tile_target_id, Side::Opponent),
+        );
+
+        place_unit(&mut core, caster_id, Position::new(1, 1));
+        place_unit(&mut core, outside_tile_target_id, Position::new(1, 0));
+
+        assert_eq!(
+            core.resolve_skill_cast_target(&skill, caster_id, Side::Player, Position::new(1, 1)),
+            None
+        );
+    }
+
+    #[test]
+    fn skill_enemy_single_whole_field_uses_valid_tiles_without_facing() {
+        let skill = SkillDef {
+            id: SkillId::from("whole_field_target"),
+            name: "whole_field_target".to_string(),
+            kind: SkillKind::Targeted,
+            cast_targeting: explicit_cast_targeting(
+                SkillTarget::EnemySingle {
+                    rule: UnitTargetRule::Nearest,
+                },
+                TileRangePolicy::WholeFieldValidTiles,
+                None,
+            ),
+            focus_time_ms: 0,
+            focus_permissions: Default::default(),
+            steps: vec![SkillStepDef {
+                id: "hit".to_string(),
+                delay_ms: 0,
+                range_policy: TileRangePolicy::WholeFieldValidTiles,
+                defense_tile_range: None,
+                air_capable: false,
+                target: SkillTarget::EnemySingle {
+                    rule: UnitTargetRule::Nearest,
+                },
+                targeting: StepTargetingMode::ReuseCastTarget,
+                when: Default::default(),
+                repeat: Default::default(),
+                delivery: DeliveryDef::Instant,
+                effects: vec![damage_effect()],
+                presentation: Default::default(),
+            }],
+        };
+        let mut core = core_with_skill_data(vec![], vec![skill.clone()]);
+
+        let caster_id: UnitInstanceId = Uuid::from_u128(0xAA50).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(0xAA51).into();
+        let mut caster = runtime_unit(caster_id, Side::Player);
+        caster.facing_direction = None;
+        core.units.insert(caster_id, caster);
+        core.units
+            .insert(target_id, runtime_unit(target_id, Side::Opponent));
+
+        place_unit(&mut core, caster_id, Position::new(1, 1));
+        place_unit(&mut core, target_id, Position::new(4, 2));
+
+        assert_eq!(
+            core.resolve_skill_cast_target(&skill, caster_id, Side::Player, Position::new(1, 1)),
+            Some(SkillCastTarget::Unit {
+                unit_instance_id: target_id
+            })
         );
     }
 
@@ -2043,7 +2931,7 @@ mod tests {
                 target_instance_id: attacker_id,
                 buff_id: BuffId::from_name("stun"),
                 duration_ms: 50,
-                cause: TimelineCause::default(),
+                cause: BattleEventCause::default(),
             },
             0,
         )
@@ -2057,7 +2945,7 @@ mod tests {
                 attacker_instance_id: attacker_id,
                 target_instance_id: None,
                 schedule_next: true,
-                cause: TimelineCause::default(),
+                cause: BattleEventCause::default(),
             },
             51,
         )
@@ -2066,6 +2954,198 @@ mod tests {
         assert_eq!(
             core.units.get(&attacker_id).unwrap().current_target,
             Some(new_target_id)
+        );
+    }
+
+    #[test]
+    fn hard_cc_replacement_records_explicit_buff_expired_reason() {
+        let mut core = new_core();
+        let first_caster_id: UnitInstanceId = Uuid::from_u128(0xCC01).into();
+        let second_caster_id: UnitInstanceId = Uuid::from_u128(0xCC02).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(0xCC03).into();
+        core.units.insert(
+            first_caster_id,
+            runtime_unit(first_caster_id, Side::Opponent),
+        );
+        core.units.insert(
+            second_caster_id,
+            runtime_unit(second_caster_id, Side::Opponent),
+        );
+        core.units
+            .insert(target_id, runtime_unit(target_id, Side::Player));
+
+        let stun_id = BuffId::from_name("stun");
+        let freeze_id = BuffId::from_name("freeze");
+        core.process_event(
+            BattleEvent::ApplyBuff {
+                time_ms: 0,
+                caster_instance_id: first_caster_id,
+                target_instance_id: target_id,
+                buff_id: stun_id,
+                duration_ms: 100,
+                cause: BattleEventCause::default(),
+            },
+            0,
+        )
+        .unwrap();
+        core.process_event(
+            BattleEvent::ApplyBuff {
+                time_ms: 10,
+                caster_instance_id: second_caster_id,
+                target_instance_id: target_id,
+                buff_id: freeze_id,
+                duration_ms: 20,
+                cause: BattleEventCause::default(),
+            },
+            10,
+        )
+        .unwrap();
+
+        let hard_cc_events = core
+            .event_log
+            .entries
+            .iter()
+            .filter_map(|entry| match entry.event {
+                BattleLogEvent::BuffApplied { buff_id, .. }
+                    if buff_id == stun_id || buff_id == freeze_id =>
+                {
+                    Some((entry.time_ms, "applied", buff_id, None))
+                }
+                BattleLogEvent::BuffExpired {
+                    buff_id, reason, ..
+                } if buff_id == stun_id || buff_id == freeze_id => {
+                    Some((entry.time_ms, "expired", buff_id, Some(reason)))
+                }
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+
+        assert_eq!(
+            hard_cc_events,
+            vec![
+                (0, "applied", stun_id, None),
+                (10, "expired", stun_id, Some(BuffExpireReason::Replaced)),
+                (10, "applied", freeze_id, None),
+            ]
+        );
+        assert!(!core.has_buff_kind(target_id, crate::game::battle::buffs::BuffKind::Stun));
+        assert!(core.has_buff_kind(target_id, crate::game::battle::buffs::BuffKind::Freeze));
+        assert_eq!(
+            core.units.get(&target_id).unwrap().action_locks,
+            Default::default()
+        );
+    }
+
+    #[test]
+    fn unit_death_clears_target_and_caster_active_buffs_with_reasons() {
+        let mut core = new_core();
+        let caster_id: UnitInstanceId = Uuid::from_u128(0xCD01).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(0xCD02).into();
+        core.units
+            .insert(caster_id, runtime_unit(caster_id, Side::Player));
+        core.units
+            .insert(target_id, runtime_unit(target_id, Side::Opponent));
+        let poison_id = BuffId::from_name("poison");
+
+        core.process_event(
+            BattleEvent::ApplyBuff {
+                time_ms: 0,
+                caster_instance_id: caster_id,
+                target_instance_id: target_id,
+                buff_id: poison_id,
+                duration_ms: 100,
+                cause: BattleEventCause::default(),
+            },
+            0,
+        )
+        .unwrap();
+        core.process_event(
+            BattleEvent::ApplyBuff {
+                time_ms: 0,
+                caster_instance_id: target_id,
+                target_instance_id: caster_id,
+                buff_id: poison_id,
+                duration_ms: 100,
+                cause: BattleEventCause::default(),
+            },
+            0,
+        )
+        .unwrap();
+
+        core.process_commands(
+            vec![BattleCommand::ApplyDamage {
+                target_id,
+                source_snapshot: core
+                    .damage_source_snapshot_for_unit(
+                        caster_id,
+                        target_id,
+                        DamageSource::Ability,
+                        DamageType::True,
+                        99,
+                        Default::default(),
+                        0,
+                        10,
+                        false,
+                    )
+                    .expect("source snapshot"),
+            }],
+            10,
+        );
+
+        assert!(core.buffs.is_empty());
+        assert!(core.event_log.entries.iter().any(|entry| matches!(
+            entry.event,
+            BattleLogEvent::BuffExpired {
+                caster_instance_id,
+                target_instance_id,
+                buff_id,
+                reason: BuffExpireReason::TargetDied,
+            } if entry.time_ms == 10
+                && caster_instance_id == caster_id
+                && target_instance_id == target_id
+                && buff_id == poison_id
+        )));
+        assert!(core.event_log.entries.iter().any(|entry| matches!(
+            entry.event,
+            BattleLogEvent::BuffExpired {
+                caster_instance_id,
+                target_instance_id,
+                buff_id,
+                reason: BuffExpireReason::CasterDied,
+            } if entry.time_ms == 10
+                && caster_instance_id == target_id
+                && target_instance_id == caster_id
+                && buff_id == poison_id
+        )));
+    }
+
+    #[test]
+    fn move_speed_modifier_updates_runtime_body_speed_for_next_movement_tick() {
+        let mut core = new_core();
+        let unit_id: UnitInstanceId = Uuid::from_u128(0xCE01).into();
+        let mut unit = runtime_unit(unit_id, Side::Player);
+        unit.stats.move_speed_units_per_ms = 1;
+        unit.body.move_speed =
+            1_000.0 / crate::game::battle::core::movement::types::DATA_UNITS_PER_WORLD;
+        core.units.insert(unit_id, unit);
+
+        core.process_commands(
+            vec![BattleCommand::ApplyModifier {
+                target_id: unit_id,
+                modifier: StatModifier {
+                    stat: StatId::MoveSpeedUnitsPerMs,
+                    kind: StatModifierKind::Flat,
+                    value: 2,
+                },
+            }],
+            0,
+        );
+
+        let unit = core.units.get(&unit_id).unwrap();
+        assert_eq!(unit.stats.move_speed_units_per_ms, 3);
+        assert_eq!(
+            unit.body.move_speed,
+            3_000.0 / crate::game::battle::core::movement::types::DATA_UNITS_PER_WORLD
         );
     }
 
@@ -2100,7 +3180,7 @@ mod tests {
             2,
             0,
             DeliveryDef::Instant,
-            vec![],
+            vec![damage_effect()],
         );
 
         let target =
@@ -2108,7 +3188,7 @@ mod tests {
 
         assert!(matches!(
             target,
-            Some(crate::game::battle::timeline::SkillCastTarget::Unit { unit_instance_id })
+            Some(crate::game::battle::event_log::SkillCastTarget::Unit { unit_instance_id })
                 if unit_instance_id == locked_target_id
         ));
     }
@@ -2144,7 +3224,7 @@ mod tests {
             3,
             0,
             DeliveryDef::Instant,
-            vec![],
+            vec![damage_effect()],
         );
 
         let target =
@@ -2152,7 +3232,7 @@ mod tests {
 
         assert!(matches!(
             target,
-            Some(crate::game::battle::timeline::SkillCastTarget::Unit { unit_instance_id })
+            Some(crate::game::battle::event_log::SkillCastTarget::Unit { unit_instance_id })
                 if unit_instance_id == locked_target_id
         ));
     }
@@ -2188,7 +3268,7 @@ mod tests {
             1,
             0,
             DeliveryDef::Instant,
-            vec![],
+            vec![damage_effect()],
         );
 
         let target =
@@ -2196,7 +3276,7 @@ mod tests {
 
         assert!(matches!(
             target,
-            Some(crate::game::battle::timeline::SkillCastTarget::Unit { unit_instance_id })
+            Some(crate::game::battle::event_log::SkillCastTarget::Unit { unit_instance_id })
                 if unit_instance_id == nearer_target_id
         ));
     }
@@ -2229,7 +3309,7 @@ mod tests {
             2,
             0,
             DeliveryDef::Instant,
-            vec![],
+            vec![damage_effect()],
         );
 
         let target =
@@ -2237,9 +3317,631 @@ mod tests {
 
         assert!(matches!(
             target,
-            Some(crate::game::battle::timeline::SkillCastTarget::Unit { unit_instance_id })
+            Some(crate::game::battle::event_log::SkillCastTarget::Unit { unit_instance_id })
                 if unit_instance_id == weak_id
         ));
+    }
+
+    #[test]
+    fn hostile_skill_targeting_excludes_zero_damage_without_hostile_effect() {
+        let mut core = new_core();
+        let caster_id: UnitInstanceId = Uuid::from_u128(0x5101).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(0x5102).into();
+        core.units
+            .insert(caster_id, runtime_unit(caster_id, Side::Player));
+        core.units
+            .insert(target_id, runtime_unit(target_id, Side::Opponent));
+        place_unit(&mut core, caster_id, Position::new(0, 0));
+        place_unit(&mut core, target_id, Position::new(1, 0));
+
+        let skill = single_step_skill(
+            "zero_damage_no_effect",
+            SkillTarget::EnemySingle {
+                rule: UnitTargetRule::Nearest,
+            },
+            2,
+            0,
+            DeliveryDef::Instant,
+            vec![zero_damage_effect()],
+        );
+
+        assert_eq!(
+            core.resolve_skill_cast_target(&skill, caster_id, Side::Player, Position::new(0, 0)),
+            None
+        );
+    }
+
+    #[test]
+    fn hostile_skill_targeting_allows_zero_damage_hostile_buff() {
+        let mut core = new_core();
+        let caster_id: UnitInstanceId = Uuid::from_u128(0x5111).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(0x5112).into();
+        core.units
+            .insert(caster_id, runtime_unit(caster_id, Side::Player));
+        core.units
+            .insert(target_id, runtime_unit(target_id, Side::Opponent));
+        place_unit(&mut core, caster_id, Position::new(0, 0));
+        place_unit(&mut core, target_id, Position::new(1, 0));
+
+        let skill = single_step_skill(
+            "zero_damage_stun",
+            SkillTarget::EnemySingle {
+                rule: UnitTargetRule::Nearest,
+            },
+            2,
+            0,
+            DeliveryDef::Instant,
+            vec![
+                zero_damage_effect(),
+                SkillEffectDef::ApplyBuff {
+                    buff_id: "stun".to_string(),
+                    duration_ms: 500,
+                },
+            ],
+        );
+
+        assert_eq!(
+            core.resolve_skill_cast_target(&skill, caster_id, Side::Player, Position::new(0, 0)),
+            Some(SkillCastTarget::Unit {
+                unit_instance_id: target_id
+            })
+        );
+    }
+
+    #[test]
+    fn hostile_skill_targeting_excludes_enemy_heal_without_damage_or_hostile_effect() {
+        let mut core = new_core();
+        let caster_id: UnitInstanceId = Uuid::from_u128(0x5121).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(0x5122).into();
+        core.units
+            .insert(caster_id, runtime_unit(caster_id, Side::Player));
+        core.units
+            .insert(target_id, runtime_unit(target_id, Side::Opponent));
+        place_unit(&mut core, caster_id, Position::new(0, 0));
+        place_unit(&mut core, target_id, Position::new(1, 0));
+
+        let skill = single_step_skill(
+            "enemy_heal_is_not_hostile",
+            SkillTarget::EnemySingle {
+                rule: UnitTargetRule::Nearest,
+            },
+            2,
+            0,
+            DeliveryDef::Instant,
+            vec![SkillEffectDef::Heal { amount: 5 }],
+        );
+
+        assert_eq!(
+            core.resolve_skill_cast_target(&skill, caster_id, Side::Player, Position::new(0, 0)),
+            None
+        );
+    }
+
+    #[test]
+    fn automatic_enemy_tile_area_cast_waits_without_useful_hostile_target() {
+        let caster_base_uuid = Uuid::from_u128(0x5130);
+        let skill = enemy_tile_area_skill("area_no_useful_target", vec![zero_damage_effect()]);
+        let abnormality = AbnormalityMetadata {
+            id: "area_caster".to_string(),
+            uuid: caster_base_uuid,
+            name: "area caster".to_string(),
+            risk_level: crate::game::enums::RiskLevel::ZAYIN,
+            price: 0,
+            max_health: 10,
+            attack: 1,
+            defense: 0,
+            magic_resist: 0,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            movement: Default::default(),
+            basic_attack: Default::default(),
+            resonance: Default::default(),
+            skill_id: Some(skill.id.clone()),
+            mobility_kind: Default::default(),
+            target_traits: Vec::new(),
+        };
+        let mut core = core_with_skill_data(vec![abnormality], vec![skill]);
+        let caster_id: UnitInstanceId = Uuid::from_u128(0x5131).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(0x5132).into();
+        let mut caster = runtime_unit(caster_id, Side::Player);
+        caster.base_uuid = caster_base_uuid;
+        core.units.insert(caster_id, caster);
+        core.units
+            .insert(target_id, runtime_unit(target_id, Side::Opponent));
+        place_unit(&mut core, caster_id, Position::new(1, 1));
+        place_unit(&mut core, target_id, Position::new(2, 1));
+
+        core.process_event(
+            BattleEvent::AutoCastStart {
+                time_ms: 0,
+                caster_instance_id: caster_id,
+                cause: BattleEventCause::default(),
+            },
+            0,
+        )
+        .unwrap();
+
+        assert!(core.units.get(&caster_id).unwrap().pending_cast);
+        assert!(!core
+            .event_queue
+            .iter()
+            .any(|event| matches!(event, BattleEvent::AutoCastEnd { .. })));
+        assert!(!core.event_log.entries.iter().any(|entry| {
+            matches!(entry.event, BattleLogEvent::AutoCastStart { .. })
+                || matches!(entry.event, BattleLogEvent::SkillAreaDeclared { .. })
+        }));
+    }
+
+    #[test]
+    fn automatic_enemy_tile_area_cast_allows_zero_damage_hostile_buff() {
+        let caster_base_uuid = Uuid::from_u128(0x5140);
+        let skill = enemy_tile_area_skill(
+            "area_hostile_buff",
+            vec![SkillEffectDef::ApplyBuff {
+                buff_id: "stun".to_string(),
+                duration_ms: 500,
+            }],
+        );
+        let abnormality = AbnormalityMetadata {
+            id: "area_caster".to_string(),
+            uuid: caster_base_uuid,
+            name: "area caster".to_string(),
+            risk_level: crate::game::enums::RiskLevel::ZAYIN,
+            price: 0,
+            max_health: 10,
+            attack: 1,
+            defense: 0,
+            magic_resist: 0,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            movement: Default::default(),
+            basic_attack: Default::default(),
+            resonance: Default::default(),
+            skill_id: Some(skill.id.clone()),
+            mobility_kind: Default::default(),
+            target_traits: Vec::new(),
+        };
+        let mut core = core_with_skill_data(vec![abnormality], vec![skill.clone()]);
+        let caster_id: UnitInstanceId = Uuid::from_u128(0x5141).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(0x5142).into();
+        let mut caster = runtime_unit(caster_id, Side::Player);
+        caster.base_uuid = caster_base_uuid;
+        core.units.insert(caster_id, caster);
+        core.units
+            .insert(target_id, runtime_unit(target_id, Side::Opponent));
+        place_unit(&mut core, caster_id, Position::new(1, 1));
+        place_unit(&mut core, target_id, Position::new(2, 1));
+
+        core.process_event(
+            BattleEvent::AutoCastStart {
+                time_ms: 0,
+                caster_instance_id: caster_id,
+                cause: BattleEventCause::default(),
+            },
+            0,
+        )
+        .unwrap();
+        let end = core.event_queue.pop().expect("missing AutoCastEnd");
+        core.process_event(end, 1).unwrap();
+        let step = core.event_queue.pop().expect("missing SkillStep");
+        core.process_event(step, 1).unwrap();
+
+        assert!(core.event_log.entries.iter().any(|entry| {
+            matches!(entry.event, BattleLogEvent::SkillAreaDeclared { ref skill_id, .. }
+                if skill_id == &skill.id)
+        }));
+    }
+
+    #[test]
+    fn manual_pending_cast_can_be_interrupted_and_stale_end_is_ignored() {
+        let skill = single_step_skill(
+            "manual_interrupt_victim",
+            SkillTarget::SelfUnit,
+            0,
+            5,
+            DeliveryDef::Instant,
+            vec![SkillEffectDef::Heal { amount: 1 }],
+        );
+        let mut core = core_with_skill_data(vec![], vec![skill.clone()]);
+        let caster_id: UnitInstanceId = Uuid::from_u128(0x5151).into();
+        let interrupter_id: UnitInstanceId = Uuid::from_u128(0x5152).into();
+        let mut caster = runtime_unit(caster_id, Side::Player);
+        caster.skill_id = Some(skill.id.clone());
+        caster.skill_activation_mode = SkillActivationMode::Manual;
+        caster.resonance_current = 100;
+        core.units.insert(caster_id, caster);
+        core.units
+            .insert(interrupter_id, runtime_unit(interrupter_id, Side::Opponent));
+        place_unit(&mut core, caster_id, Position::new(1, 1));
+        place_unit(&mut core, interrupter_id, Position::new(2, 1));
+
+        core.start_manual_skill_cast(0, caster_id, skill.id.clone(), None)
+            .expect("manual cast should start");
+        let scheduled_end = core.event_queue.pop().expect("manual end scheduled");
+        let BattleEvent::ManualCastEnd { cause, .. } = scheduled_end else {
+            panic!("expected ManualCastEnd, got {scheduled_end:?}");
+        };
+        let start_seq = match cause {
+            BattleEventCause::Parent { seq } => seq,
+            other => panic!("expected parent cause, got {other:?}"),
+        };
+
+        core.process_commands(
+            vec![BattleCommand::InterruptCast {
+                source_id: interrupter_id,
+                target_id: caster_id,
+            }],
+            1,
+        );
+
+        assert!(core
+            .units
+            .get(&caster_id)
+            .unwrap()
+            .pending_skill_cast
+            .is_none());
+        assert!(core.event_log.entries.iter().any(|entry| {
+            entry.time_ms == 1
+                && matches!(
+                    &entry.event,
+                    BattleLogEvent::SkillCastInterrupted {
+                        interrupter_instance_id,
+                        caster_instance_id,
+                        interrupted_skill_id,
+                        interrupted_cast_seq,
+                    } if *interrupter_instance_id == interrupter_id
+                        && *caster_instance_id == caster_id
+                        && interrupted_skill_id == &skill.id
+                        && *interrupted_cast_seq == start_seq
+                )
+        }));
+
+        core.process_event(
+            BattleEvent::ManualCastEnd {
+                time_ms: 5,
+                caster_instance_id: caster_id,
+                cause,
+            },
+            5,
+        )
+        .expect("stale manual end should be ignored");
+
+        assert!(!core.event_log.entries.iter().any(|entry| {
+            matches!(
+                entry.event,
+                BattleLogEvent::AbilityCast {
+                    caster_instance_id,
+                    ..
+                } if caster_instance_id == caster_id
+            ) || matches!(
+                entry.event,
+                BattleLogEvent::ManualCastEnd {
+                    caster_instance_id,
+                } if caster_instance_id == caster_id
+            )
+        }));
+    }
+
+    #[test]
+    fn auto_pending_cast_can_be_interrupted_and_stale_end_is_ignored() {
+        let skill = single_step_skill(
+            "auto_interrupt_victim",
+            SkillTarget::SelfUnit,
+            0,
+            5,
+            DeliveryDef::Instant,
+            vec![SkillEffectDef::ModifyResonance { amount: -10 }],
+        );
+        let mut core = core_with_skill_data(vec![], vec![skill.clone()]);
+        let caster_id: UnitInstanceId = Uuid::from_u128(0x5161).into();
+        let interrupter_id: UnitInstanceId = Uuid::from_u128(0x5162).into();
+        let mut caster = runtime_unit(caster_id, Side::Opponent);
+        caster.skill_id = Some(skill.id.clone());
+        caster.skill_activation_mode = SkillActivationMode::Auto;
+        core.units.insert(caster_id, caster);
+        core.units
+            .insert(interrupter_id, runtime_unit(interrupter_id, Side::Player));
+        place_unit(&mut core, caster_id, Position::new(1, 1));
+        place_unit(&mut core, interrupter_id, Position::new(2, 1));
+
+        core.process_event(
+            BattleEvent::AutoCastStart {
+                time_ms: 0,
+                caster_instance_id: caster_id,
+                cause: BattleEventCause::default(),
+            },
+            0,
+        )
+        .expect("auto cast should start");
+        let scheduled_end = core.event_queue.pop().expect("auto end scheduled");
+        let BattleEvent::AutoCastEnd { cause, .. } = scheduled_end else {
+            panic!("expected AutoCastEnd, got {scheduled_end:?}");
+        };
+        let start_seq = match cause {
+            BattleEventCause::Parent { seq } => seq,
+            other => panic!("expected parent cause, got {other:?}"),
+        };
+
+        core.process_commands(
+            vec![BattleCommand::InterruptCast {
+                source_id: interrupter_id,
+                target_id: caster_id,
+            }],
+            1,
+        );
+        core.process_event(
+            BattleEvent::AutoCastEnd {
+                time_ms: 5,
+                caster_instance_id: caster_id,
+                cause,
+            },
+            5,
+        )
+        .expect("stale auto end should be ignored");
+
+        assert!(core.event_log.entries.iter().any(|entry| {
+            matches!(
+                &entry.event,
+                BattleLogEvent::SkillCastInterrupted {
+                    interrupted_cast_seq,
+                    ..
+                } if *interrupted_cast_seq == start_seq
+            )
+        }));
+        assert!(!core.event_log.entries.iter().any(|entry| {
+            matches!(
+                entry.event,
+                BattleLogEvent::AbilityCast {
+                    caster_instance_id,
+                    ..
+                } if caster_instance_id == caster_id
+            ) || matches!(
+                entry.event,
+                BattleLogEvent::AutoCastEnd {
+                    caster_instance_id,
+                } if caster_instance_id == caster_id
+            )
+        }));
+    }
+
+    #[test]
+    fn stale_cast_end_does_not_invoke_newer_cast_on_same_caster() {
+        let old_skill = single_step_skill(
+            "old_cast",
+            SkillTarget::SelfUnit,
+            0,
+            5,
+            DeliveryDef::Instant,
+            vec![SkillEffectDef::Heal { amount: 1 }],
+        );
+        let new_skill = single_step_skill(
+            "new_cast",
+            SkillTarget::SelfUnit,
+            0,
+            5,
+            DeliveryDef::Instant,
+            vec![SkillEffectDef::Heal { amount: 2 }],
+        );
+        let mut core = core_with_skill_data(vec![], vec![old_skill.clone(), new_skill.clone()]);
+        let caster_id: UnitInstanceId = Uuid::from_u128(0x5171).into();
+        let interrupter_id: UnitInstanceId = Uuid::from_u128(0x5172).into();
+        let mut caster = runtime_unit(caster_id, Side::Player);
+        caster.skill_activation_mode = SkillActivationMode::Manual;
+        caster.skill_id = Some(old_skill.id.clone());
+        caster.resonance_current = 100;
+        core.units.insert(caster_id, caster);
+        core.units
+            .insert(interrupter_id, runtime_unit(interrupter_id, Side::Opponent));
+        place_unit(&mut core, caster_id, Position::new(1, 1));
+        place_unit(&mut core, interrupter_id, Position::new(2, 1));
+
+        core.start_manual_skill_cast(0, caster_id, old_skill.id.clone(), None)
+            .expect("old manual cast should start");
+        let old_end = core.event_queue.pop().expect("old manual end scheduled");
+        let BattleEvent::ManualCastEnd {
+            cause: old_cause, ..
+        } = old_end
+        else {
+            panic!("expected old ManualCastEnd, got {old_end:?}");
+        };
+        core.process_commands(
+            vec![BattleCommand::InterruptCast {
+                source_id: interrupter_id,
+                target_id: caster_id,
+            }],
+            1,
+        );
+
+        {
+            let caster = core.units.get_mut(&caster_id).unwrap();
+            caster.skill_id = Some(new_skill.id.clone());
+            caster.resonance_current = 100;
+        }
+        core.start_manual_skill_cast(5, caster_id, new_skill.id.clone(), None)
+            .expect("new manual cast should start");
+        let new_start_seq = core
+            .units
+            .get(&caster_id)
+            .and_then(|unit| unit.pending_skill_cast.as_ref())
+            .map(|pending| pending.start_seq)
+            .expect("new cast should be pending");
+
+        core.process_event(
+            BattleEvent::ManualCastEnd {
+                time_ms: 5,
+                caster_instance_id: caster_id,
+                cause: old_cause,
+            },
+            5,
+        )
+        .expect("old stale end should not affect the new cast");
+
+        let pending = core
+            .units
+            .get(&caster_id)
+            .and_then(|unit| unit.pending_skill_cast.as_ref())
+            .expect("new cast should still be pending");
+        assert_eq!(pending.start_seq, new_start_seq);
+        assert_eq!(pending.skill_id, new_skill.id);
+        assert!(!core.event_log.entries.iter().any(|entry| {
+            matches!(
+                &entry.event,
+                BattleLogEvent::AbilityCast {
+                    skill_id,
+                    caster_instance_id,
+                    ..
+                } if *caster_instance_id == caster_id && skill_id == &new_skill.id
+            )
+        }));
+    }
+
+    #[test]
+    fn silence_blocks_new_casts_but_does_not_interrupt_pending_casts() {
+        let skill = single_step_skill(
+            "silence_pending_cast",
+            SkillTarget::SelfUnit,
+            0,
+            5,
+            DeliveryDef::Instant,
+            vec![SkillEffectDef::Heal { amount: 1 }],
+        );
+        let mut core = core_with_skill_data(vec![], vec![skill.clone()]);
+        let caster_id: UnitInstanceId = Uuid::from_u128(0x5181).into();
+        let mut caster = runtime_unit(caster_id, Side::Player);
+        caster.skill_id = Some(skill.id.clone());
+        caster.skill_activation_mode = SkillActivationMode::Manual;
+        caster.resonance_current = 100;
+        core.units.insert(caster_id, caster);
+        place_unit(&mut core, caster_id, Position::new(1, 1));
+
+        core.start_manual_skill_cast(0, caster_id, skill.id.clone(), None)
+            .expect("manual cast should start before silence");
+        core.process_event(
+            BattleEvent::ApplyBuff {
+                time_ms: 1,
+                caster_instance_id: caster_id,
+                target_instance_id: caster_id,
+                buff_id: BuffId::from_name("silence"),
+                duration_ms: 10,
+                cause: BattleEventCause::default(),
+            },
+            1,
+        )
+        .expect("silence should apply");
+
+        let scheduled_end = core.event_queue.pop().expect("manual end scheduled");
+        core.process_event(scheduled_end, 5)
+            .expect("silence must not cancel already pending cast");
+
+        assert!(core.event_log.entries.iter().any(|entry| {
+            matches!(
+                &entry.event,
+                BattleLogEvent::AbilityCast {
+                    skill_id,
+                    caster_instance_id,
+                    ..
+                } if *caster_instance_id == caster_id && skill_id == &skill.id
+            )
+        }));
+    }
+
+    #[test]
+    fn interrupt_only_skill_targets_only_currently_casting_enemies() {
+        let skill = single_step_skill(
+            "interrupt_only",
+            SkillTarget::EnemySingle {
+                rule: UnitTargetRule::Nearest,
+            },
+            2,
+            0,
+            DeliveryDef::Instant,
+            vec![SkillEffectDef::InterruptCast],
+        );
+        let mut core = core_with_skill_data(vec![], vec![skill.clone()]);
+        let caster_id: UnitInstanceId = Uuid::from_u128(0x5191).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(0x5192).into();
+        core.units
+            .insert(caster_id, runtime_unit(caster_id, Side::Player));
+        core.units
+            .insert(target_id, runtime_unit(target_id, Side::Opponent));
+        place_unit(&mut core, caster_id, Position::new(1, 1));
+        place_unit(&mut core, target_id, Position::new(2, 1));
+
+        assert_eq!(
+            core.resolve_skill_cast_target(&skill, caster_id, Side::Player, Position::new(1, 1)),
+            None
+        );
+
+        core.units.get_mut(&target_id).unwrap().pending_skill_cast = Some(PendingSkillCast {
+            skill_id: SkillId::from("target_cast"),
+            cast_target: None,
+            start_seq: 42,
+        });
+
+        assert_eq!(
+            core.resolve_skill_cast_target(&skill, caster_id, Side::Player, Position::new(1, 1)),
+            Some(SkillCastTarget::Unit {
+                unit_instance_id: target_id
+            })
+        );
+    }
+
+    #[test]
+    fn interrupt_cast_skill_effect_cancels_pending_cast() {
+        let skill = single_step_skill(
+            "interrupt_effect",
+            SkillTarget::EnemySingle {
+                rule: UnitTargetRule::Nearest,
+            },
+            2,
+            0,
+            DeliveryDef::Instant,
+            vec![SkillEffectDef::InterruptCast],
+        );
+        let mut core = core_with_skill_data(vec![], vec![skill.clone()]);
+        let caster_id: UnitInstanceId = Uuid::from_u128(0x51A1).into();
+        let target_id: UnitInstanceId = Uuid::from_u128(0x51A2).into();
+        core.units
+            .insert(caster_id, runtime_unit(caster_id, Side::Player));
+        let mut target = runtime_unit(target_id, Side::Opponent);
+        target.pending_skill_cast = Some(PendingSkillCast {
+            skill_id: SkillId::from("target_pending_skill"),
+            cast_target: None,
+            start_seq: 77,
+        });
+        core.units.insert(target_id, target);
+
+        let (commands, _result) =
+            core.build_skill_step_commands(caster_id, &skill.steps[0], &[target_id], 0, None);
+        assert!(matches!(
+            commands.as_slice(),
+            [BattleCommand::InterruptCast {
+                source_id,
+                target_id: command_target_id,
+            }] if *source_id == caster_id && *command_target_id == target_id
+        ));
+
+        core.process_commands(commands, 10);
+
+        assert!(core
+            .units
+            .get(&target_id)
+            .unwrap()
+            .pending_skill_cast
+            .is_none());
+        assert!(core.event_log.entries.iter().any(|entry| {
+            entry.time_ms == 10
+                && matches!(
+                    &entry.event,
+                    BattleLogEvent::SkillCastInterrupted {
+                        interrupter_instance_id,
+                        caster_instance_id,
+                        interrupted_skill_id,
+                        interrupted_cast_seq,
+                    } if *interrupter_instance_id == caster_id
+                        && *caster_instance_id == target_id
+                        && interrupted_skill_id.as_str() == "target_pending_skill"
+                        && *interrupted_cast_seq == 77
+                )
+        }));
     }
 
     #[test]
@@ -2262,15 +3964,9 @@ mod tests {
             runtime_unit(enemy_near_but_outside_id, Side::Opponent),
         );
 
-        core.battlefield
-            .place(caster_id, Position::new(1, 1))
-            .unwrap();
-        core.battlefield
-            .place(enemy_on_tile_id, Position::new(2, 1))
-            .unwrap();
-        core.battlefield
-            .place(enemy_near_but_outside_id, Position::new(1, 0))
-            .unwrap();
+        place_unit(&mut core, caster_id, Position::new(1, 1));
+        place_unit(&mut core, enemy_on_tile_id, Position::new(2, 1));
+        place_unit(&mut core, enemy_near_but_outside_id, Position::new(1, 0));
         sync_unit_to_battlefield_tile_center(&mut core, caster_id);
         sync_unit_to_battlefield_tile_center(&mut core, enemy_on_tile_id);
         sync_unit_to_battlefield_tile_center(&mut core, enemy_near_but_outside_id);
@@ -2298,7 +3994,7 @@ mod tests {
                 cast_seq,
                 0,
                 caster_id,
-                Some(crate::game::battle::timeline::SkillCastTarget::Tile {
+                Some(crate::game::battle::event_log::SkillCastTarget::Tile {
                     position: cast_target_tile,
                 }),
                 &tile_range,
@@ -2310,6 +4006,69 @@ mod tests {
         assert_eq!(affected_tiles, vec![Position::new(2, 1)]);
         assert!(targets.contains(&enemy_on_tile_id));
         assert!(!targets.contains(&enemy_near_but_outside_id));
+    }
+
+    #[test]
+    fn instant_tile_area_affected_tiles_clip_to_valid_battlefield_tiles() {
+        let scenario = BattleScenario {
+            battlefield: crate::game::battle::scenario::BattleFieldSpec {
+                width: 4,
+                height: 3,
+                valid_tiles: vec![Position::new(1, 1), Position::new(2, 1)],
+                obstacles: Vec::new(),
+            },
+            artifacts: Vec::new(),
+            groups: Vec::new(),
+            events: Vec::new(),
+            win_condition: crate::game::battle::scenario::WinCondition::SurviveUntil {
+                time_ms: 1_000,
+            },
+            tactical_plan: Default::default(),
+        };
+        let mut core = BattleCore::new_from_scenario(scenario, empty_game_data(), 123);
+        core.battlefield =
+            crate::game::battle::battlefield::BattlefieldLayout::new_with_valid_tiles(
+                4,
+                3,
+                vec![Position::new(1, 1), Position::new(2, 1)],
+            );
+        let cast_seq = 103;
+        let caster_id: UnitInstanceId = Uuid::from_u128(0xAD01).into();
+        let enemy_on_valid_tile_id: UnitInstanceId = Uuid::from_u128(0xAD02).into();
+
+        core.units
+            .insert(caster_id, runtime_unit(caster_id, Side::Player));
+        core.units.insert(
+            enemy_on_valid_tile_id,
+            runtime_unit(enemy_on_valid_tile_id, Side::Opponent),
+        );
+        place_unit(&mut core, caster_id, Position::new(1, 1));
+        place_unit(&mut core, enemy_on_valid_tile_id, Position::new(2, 1));
+        sync_unit_to_battlefield_tile_center(&mut core, caster_id);
+        sync_unit_to_battlefield_tile_center(&mut core, enemy_on_valid_tile_id);
+        core.units.get_mut(&caster_id).unwrap().facing_direction = Some(FacingDirection::Up);
+
+        let tile_range = TileRangePattern {
+            include_anchor_tile: false,
+            rows: vec!["X@X".to_string()],
+        };
+        let area = SkillTileAreaDeliveryDef {
+            anchor: SkillAreaAnchorSource::Caster,
+            tile_origin: SkillTileAreaOrigin::Caster,
+            tracking: SkillAreaTracking::GroundFixed,
+            hit_targets: crate::game::ability::SkillHitTargetFilter::Enemies,
+            include_caster: false,
+            tick_policy: crate::game::ability::SkillAreaTickPolicy::EveryTick,
+            duration_ms: 0,
+            tick_interval_ms: None,
+        };
+
+        let (_, _, _, affected_tiles, targets) = core
+            .resolve_instant_tile_area_targets(0, cast_seq, 0, caster_id, None, &tile_range, &area)
+            .expect("tile area target resolution");
+
+        assert_eq!(affected_tiles, vec![Position::new(2, 1)]);
+        assert_eq!(targets, vec![enemy_on_valid_tile_id]);
     }
 
     #[test]
@@ -2330,15 +4089,13 @@ mod tests {
             enemy_near_caster_id,
             runtime_unit(enemy_near_caster_id, Side::Opponent),
         );
-        core.battlefield
-            .place(caster_id, Position::new(1, 1))
-            .unwrap();
-        core.battlefield
-            .place(enemy_near_caster_id, Position::new(2, 1))
-            .unwrap();
-        core.battlefield
-            .place(enemy_on_anchor_projected_tile_id, Position::new(3, 2))
-            .unwrap();
+        place_unit(&mut core, caster_id, Position::new(1, 1));
+        place_unit(&mut core, enemy_near_caster_id, Position::new(2, 1));
+        place_unit(
+            &mut core,
+            enemy_on_anchor_projected_tile_id,
+            Position::new(3, 2),
+        );
         sync_unit_to_battlefield_tile_center(&mut core, caster_id);
         sync_unit_to_battlefield_tile_center(&mut core, enemy_near_caster_id);
         sync_unit_to_battlefield_tile_center(&mut core, enemy_on_anchor_projected_tile_id);
@@ -2365,7 +4122,7 @@ mod tests {
                 cast_seq,
                 0,
                 caster_id,
-                Some(crate::game::battle::timeline::SkillCastTarget::Tile {
+                Some(crate::game::battle::event_log::SkillCastTarget::Tile {
                     position: Position::new(2, 2),
                 }),
                 &tile_range,
@@ -2399,6 +4156,7 @@ mod tests {
             cast_seq,
             ActiveSkillCast {
                 caster_instance_id: caster_id,
+                skill_id: SkillId::from("impact_context_fixture"),
                 caster_owner: Side::Player,
                 anchor_position: Position::new(1, 1),
                 cast_target_anchor_position: None,
@@ -2417,7 +4175,7 @@ mod tests {
     }
 
     #[test]
-    fn targeted_execute_keeps_locked_target_when_target_leaves_range() {
+    fn targeted_execute_drops_locked_target_when_target_leaves_range() {
         let mut core = new_core();
         let caster_id: UnitInstanceId = Uuid::from_u128(65).into();
         let locked_target_id: UnitInstanceId = Uuid::from_u128(66).into();
@@ -2448,7 +4206,7 @@ mod tests {
             2,
             50,
             DeliveryDef::Instant,
-            vec![],
+            vec![damage_effect()],
         );
 
         let start_target =
@@ -2464,7 +4222,7 @@ mod tests {
             skill.first_step().unwrap(),
             start_target,
         );
-        assert_eq!(targets, vec![locked_target_id]);
+        assert_eq!(targets, Vec::<UnitInstanceId>::new());
     }
 
     #[test]
@@ -2487,13 +4245,9 @@ mod tests {
         );
 
         let caster_pos = Position::new(0, 0);
-        core.battlefield.place(caster_id, caster_pos).unwrap();
-        core.battlefield
-            .place(locked_target_id, Position::new(1, 0))
-            .unwrap();
-        core.battlefield
-            .place(other_target_id, Position::new(1, 1))
-            .unwrap();
+        place_unit(&mut core, caster_id, caster_pos);
+        place_unit(&mut core, locked_target_id, Position::new(1, 0));
+        place_unit(&mut core, other_target_id, Position::new(1, 1));
 
         let skill = single_step_skill(
             "locked_target_death",
@@ -2503,17 +4257,17 @@ mod tests {
             2,
             50,
             DeliveryDef::Instant,
-            vec![],
+            vec![damage_effect()],
         );
 
         let start_target =
             core.resolve_skill_cast_target(&skill, caster_id, Side::Player, caster_pos);
-        core.battlefield.remove(locked_target_id);
         core.units
             .get_mut(&locked_target_id)
             .unwrap()
             .stats
             .current_health = 0;
+        core.units.get_mut(&locked_target_id).unwrap().lifecycle = RuntimeUnitLifecycle::Dead;
 
         let targets = core.resolve_skill_step_targets(
             0,
@@ -2547,7 +4301,7 @@ mod tests {
             2,
             0,
             DeliveryDef::Instant,
-            vec![],
+            vec![damage_effect()],
         );
 
         assert_eq!(
@@ -2555,6 +4309,15 @@ mod tests {
             None
         );
 
+        skill.cast_targeting = explicit_cast_targeting(
+            SkillTarget::EnemySingle {
+                rule: UnitTargetRule::Nearest,
+            },
+            Default::default(),
+            skill.steps[0].defense_tile_range.clone(),
+        );
+        let SkillCastTargetingDef::Explicit { air_capable, .. } = &mut skill.cast_targeting;
+        *air_capable = true;
         skill.steps[0].air_capable = true;
 
         assert_eq!(
@@ -2586,7 +4349,7 @@ mod tests {
             2,
             0,
             DeliveryDef::Instant,
-            vec![],
+            vec![damage_effect()],
         );
         let cast_target = Some(SkillCastTarget::Unit {
             unit_instance_id: airborne_target_id,
@@ -2657,6 +4420,7 @@ mod tests {
             attack: 1,
             defense: 0,
             magic_resist: 0,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -2679,7 +4443,7 @@ mod tests {
                 target_instance_id: caster_id,
                 buff_id: BuffId::from_name("silence"),
                 duration_ms: 10,
-                cause: TimelineCause::default(),
+                cause: BattleEventCause::default(),
             },
             0,
         )
@@ -2697,7 +4461,7 @@ mod tests {
                 caster_instance_id: caster_id,
                 target_instance_id: caster_id,
                 buff_id: BuffId::from_name("silence"),
-                cause: TimelineCause::default(),
+                cause: BattleEventCause::default(),
             },
             10,
         )
@@ -2734,6 +4498,7 @@ mod tests {
             attack: 1,
             defense: 0,
             magic_resist: 0,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -2748,15 +4513,13 @@ mod tests {
         caster.base_uuid = caster_base_uuid;
         caster.resonance_current = 100;
         core.units.insert(caster_id, caster);
-        core.battlefield
-            .place(caster_id, Position::new(0, 0))
-            .unwrap();
+        place_unit(&mut core, caster_id, Position::new(0, 0));
 
         core.process_event(
             BattleEvent::AutoCastStart {
                 time_ms: 0,
                 caster_instance_id: caster_id,
-                cause: TimelineCause::default(),
+                cause: BattleEventCause::default(),
             },
             0,
         )
@@ -2786,7 +4549,7 @@ mod tests {
                 target_instance_id: caster_id,
                 buff_id: BuffId::from_name("stun"),
                 duration_ms: 10,
-                cause: TimelineCause::default(),
+                cause: BattleEventCause::default(),
             },
             1,
         )
@@ -2803,10 +4566,10 @@ mod tests {
         .unwrap();
 
         assert!(!core
-            .timeline
+            .event_log
             .entries
             .iter()
-            .any(|entry| matches!(entry.event, TimelineEvent::AbilityCast { .. })));
+            .any(|entry| matches!(entry.event, BattleLogEvent::AbilityCast { .. })));
 
         let buff_expire = core.event_queue.pop().expect("missing BuffExpire");
         assert!(matches!(
@@ -2822,11 +4585,11 @@ mod tests {
         ));
         core.process_event(delayed_end, 12).unwrap();
 
-        assert!(core.timeline.entries.iter().any(|entry| {
+        assert!(core.event_log.entries.iter().any(|entry| {
             entry.time_ms == 12
                 && matches!(
                     entry.event,
-                    TimelineEvent::AbilityCast {
+                    BattleLogEvent::AbilityCast {
                         caster_instance_id,
                         ..
                     } if caster_instance_id == caster_id
@@ -2855,6 +4618,7 @@ mod tests {
             attack: 1,
             defense: 0,
             magic_resist: 0,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -2871,21 +4635,17 @@ mod tests {
         caster.base_uuid = caster_base_uuid;
         caster.stats.attack_interval_ms = 10;
         core.units.insert(caster_id, caster);
-        core.battlefield
-            .place(caster_id, Position::new(0, 0))
-            .unwrap();
+        place_unit(&mut core, caster_id, Position::new(0, 0));
 
         core.units
             .insert(target_id, runtime_unit(target_id, Side::Opponent));
-        core.battlefield
-            .place(target_id, Position::new(1, 0))
-            .unwrap();
+        place_unit(&mut core, target_id, Position::new(1, 0));
 
         core.process_event(
             BattleEvent::AutoCastStart {
                 time_ms: 0,
                 caster_instance_id: caster_id,
-                cause: TimelineCause::default(),
+                cause: BattleEventCause::default(),
             },
             0,
         )
@@ -2924,8 +4684,8 @@ mod tests {
                 attacker_instance_id: caster_id,
                 target_instance_id: Some(target_id),
                 schedule_next: true,
-                cause: TimelineCause::Root {
-                    kind: crate::game::battle::timeline::TimelineRootCause::Period,
+                cause: BattleEventCause::Root {
+                    kind: crate::game::battle::event_log::BattleEventRootCause::Period,
                 },
             },
             5,
@@ -2941,11 +4701,11 @@ mod tests {
                 ..
             } if *attacker_instance_id == caster_id
         )));
-        assert!(!core.timeline.entries.iter().any(|entry| {
+        assert!(!core.event_log.entries.iter().any(|entry| {
             entry.time_ms == 5
                 && matches!(
                     entry.event,
-                    TimelineEvent::AttackStart {
+                    BattleLogEvent::AttackStart {
                         attacker_instance_id,
                         ..
                     } if attacker_instance_id == caster_id
@@ -2968,9 +4728,7 @@ mod tests {
         let mut core = core_with_skill_data(vec![], vec![skill.clone()]);
         core.units
             .insert(caster_id, runtime_unit(caster_id, Side::Player));
-        core.battlefield
-            .place(caster_id, Position::new(1, 1))
-            .unwrap();
+        place_unit(&mut core, caster_id, Position::new(1, 1));
         sync_unit_to_battlefield_tile_center(&mut core, caster_id);
 
         core.invoke_ability(
@@ -2978,7 +4736,7 @@ mod tests {
             caster_id,
             &skill.id,
             None,
-            TimelineCause::default(),
+            BattleEventCause::default(),
             false,
         );
 

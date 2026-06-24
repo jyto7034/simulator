@@ -6,31 +6,44 @@ use serde::{Deserialize, Serialize};
 use crate::game::data::consumable_data::{
     ConsumableDurationPolicy, ConsumableEffect, ConsumableMetadata, ConsumableTier,
 };
-use crate::game::enums::Tier;
 use crate::game::resources::item_slot::ItemSlot;
 use crate::game::{
     battle::types::UnitCombatProfile,
     behavior::GameError,
-    data::skill_fragment_data::{SkillFragmentDatabase, SkillFragmentId},
+    data::{
+        run_policy_data::RunPolicyData,
+        skill_fragment_data::{SkillFragmentDatabase, SkillFragmentId},
+    },
     employee_trust::EmployeeTrustState,
-    growth::{GrowthId, GrowthStack},
+    growth::GrowthStack,
     skill_fragment::{SkillFragmentInventory, SkillFragmentLoadout},
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub enum EmployeeGrade {
-    Junior,
-    Regular,
-    Senior,
+pub struct StarterEmployeeLoadout {
+    #[serde(default)]
+    pub equipment_ids: Vec<String>,
+    #[serde(default)]
+    pub baseline_skill_fragment_ids: Vec<SkillFragmentId>,
+}
+
+impl Default for StarterEmployeeLoadout {
+    fn default() -> Self {
+        Self {
+            equipment_ids: Vec::new(),
+            baseline_skill_fragment_ids: Vec::new(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct StarterEmployeeCandidate {
     pub id: String,
     pub name: String,
-    pub grade: EmployeeGrade,
     pub role: String,
     pub background: String,
+    #[serde(default)]
+    pub starter_loadout: StarterEmployeeLoadout,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -58,7 +71,6 @@ pub struct EmployeeLoadout {
 
 #[derive(Debug, Clone)]
 pub struct EmployeeCombatProfile {
-    pub grade: EmployeeGrade,
     pub battle_profile: UnitCombatProfile,
     pub growth_stacks: GrowthStack,
 }
@@ -96,7 +108,6 @@ impl ActiveConsumableModifier {
 impl Default for EmployeeCombatProfile {
     fn default() -> Self {
         Self {
-            grade: EmployeeGrade::Junior,
             battle_profile: UnitCombatProfile::employee_default(),
             growth_stacks: GrowthStack::new(),
         }
@@ -161,17 +172,37 @@ impl Employee {
     }
 
     pub fn from_starter_candidate(uuid: Uuid, candidate: &StarterEmployeeCandidate) -> Self {
-        let combat_profile = EmployeeCombatProfile {
-            grade: candidate.grade.clone(),
-            ..EmployeeCombatProfile::default()
-        };
-        Self::with_combat_profile(uuid, candidate.name.clone(), combat_profile)
+        Self::with_combat_profile_and_skill_fragments(
+            uuid,
+            candidate.name.clone(),
+            EmployeeCombatProfile::default(),
+            SkillFragmentLoadout::with_baseline_ids(
+                candidate
+                    .starter_loadout
+                    .baseline_skill_fragment_ids
+                    .clone(),
+            ),
+        )
     }
 
     fn with_combat_profile(
         uuid: Uuid,
         name: impl Into<String>,
         combat_profile: EmployeeCombatProfile,
+    ) -> Self {
+        Self::with_combat_profile_and_skill_fragments(
+            uuid,
+            name,
+            combat_profile,
+            SkillFragmentLoadout::default(),
+        )
+    }
+
+    fn with_combat_profile_and_skill_fragments(
+        uuid: Uuid,
+        name: impl Into<String>,
+        combat_profile: EmployeeCombatProfile,
+        skill_fragments: SkillFragmentLoadout,
     ) -> Self {
         let health = EmployeeHealthState::new(combat_profile.battle_profile.stats.max_health);
         Self {
@@ -185,7 +216,7 @@ impl Employee {
             injuries: Vec::new(),
             health,
             loadout: EmployeeLoadout::default(),
-            skill_fragments: SkillFragmentLoadout::starter(),
+            skill_fragments,
             active_consumable_modifier: None,
             combat_profile,
             trust: EmployeeTrustState::new_for_employee(uuid),
@@ -202,12 +233,8 @@ impl Employee {
         self.life_state == EmployeeLifeState::Alive
     }
 
-    pub fn battle_tier(&self) -> Tier {
-        match self.combat_profile.grade {
-            EmployeeGrade::Junior => Tier::I,
-            EmployeeGrade::Regular => Tier::II,
-            EmployeeGrade::Senior => Tier::III,
-        }
+    pub fn battle_tier(&self, policy: &RunPolicyData) -> crate::game::enums::Tier {
+        policy.battle_tier_for_level(self.level)
     }
 
     pub fn combat_profile_for_battle(
@@ -215,14 +242,11 @@ impl Employee {
         skill_fragments: &SkillFragmentDatabase,
         fragment_inventory: &SkillFragmentInventory,
     ) -> Result<UnitCombatProfile, GameError> {
-        let mut profile = self.skill_fragments.apply_to_profile(
+        crate::game::battle::stat_pipeline::employee_combat_profile_for_battle(
+            self,
             skill_fragments,
             fragment_inventory,
-            &self.combat_profile.battle_profile,
-        )?;
-        profile.stats.current_health = self.battle_start_hp_for_max(profile.stats.max_health);
-        self.apply_consumable_battle_profile_effects(&mut profile);
-        Ok(profile)
+        )
     }
 
     pub fn battle_start_hp_for_max(&self, battle_max_hp: u32) -> u32 {
@@ -242,45 +266,6 @@ impl Employee {
             / u64::from(Self::TRAUMA_DEATH_THRESHOLD);
 
         (trauma_scaled_hp as u32).max(1).min(battle_max_hp)
-    }
-
-    fn apply_consumable_battle_profile_effects(&self, profile: &mut UnitCombatProfile) {
-        let Some(modifier) = self.active_consumable_modifier.as_ref() else {
-            return;
-        };
-
-        match &modifier.effect {
-            ConsumableEffect::BattleHpSetup { bonus_percent } => {
-                let bonus = percent_amount_ceil(profile.stats.max_health, *bonus_percent);
-                profile.stats.current_health = profile
-                    .stats
-                    .current_health
-                    .saturating_add(bonus)
-                    .min(profile.stats.max_health);
-            }
-            ConsumableEffect::OffenseBoost {
-                attack_bonus_percent,
-            } if modifier.tier.allows_offense_boost() => {
-                let bonus = percent_amount_ceil(profile.stats.attack, *attack_bonus_percent);
-                profile.stats.attack = profile.stats.attack.saturating_add(bonus);
-            }
-            ConsumableEffect::InitialSkillCharge { percent } => {
-                let bonus = percent_amount_ceil(profile.resonance.max, *percent);
-                profile.resonance.start = profile
-                    .resonance
-                    .start
-                    .saturating_add(bonus)
-                    .min(profile.resonance.max);
-            }
-            ConsumableEffect::DefenseMitigation { percent } => {
-                let percent = (*percent).min(i32::MAX as u32) as i32;
-                profile.incoming_damage_modifiers.damage_reduction_percent = profile
-                    .incoming_damage_modifiers
-                    .damage_reduction_percent
-                    .saturating_add(percent);
-            }
-            _ => {}
-        }
     }
 
     pub fn apply_consumable_modifier(
@@ -343,19 +328,11 @@ impl Employee {
         Ok(())
     }
 
-    pub fn add_experience(&mut self, amount: u32) {
+    pub fn add_experience_with_policy(&mut self, amount: u32, policy: &RunPolicyData) {
         self.experience = self.experience.saturating_add(amount);
-        while self.experience >= self.experience_required_for_next_level() {
-            self.experience -= self.experience_required_for_next_level();
+        while self.experience >= policy.xp_required_for_next_level(self.level) {
+            self.experience -= policy.xp_required_for_next_level(self.level);
             self.level = self.level.saturating_add(1);
-            self.combat_profile
-                .growth_stacks
-                .add(GrowthId::PveWinStack, 1);
-            self.combat_profile.grade = match self.level {
-                0..=2 => EmployeeGrade::Junior,
-                3..=5 => EmployeeGrade::Regular,
-                _ => EmployeeGrade::Senior,
-            };
         }
     }
 
@@ -428,13 +405,9 @@ impl Employee {
             false
         }
     }
-
-    fn experience_required_for_next_level(&self) -> u32 {
-        100
-    }
 }
 
-fn percent_amount_ceil(value: u32, percent: u32) -> u32 {
+pub(crate) fn percent_amount_ceil(value: u32, percent: u32) -> u32 {
     if value == 0 || percent == 0 {
         return 0;
     }

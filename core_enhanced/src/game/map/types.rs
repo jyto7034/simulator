@@ -50,7 +50,7 @@ fn default_headquarters_candidate_count() -> usize {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SupportNodeType {
-    Medical,
+    SavePoint,
     Rest,
 }
 
@@ -63,13 +63,6 @@ pub enum SupportNodeMode {
 
 fn default_support_node_mode() -> SupportNodeMode {
     SupportNodeMode::Known
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum MedicalTreatmentKind {
-    EmergencyCare,
-    Counseling,
-    BalancedCare,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -128,14 +121,13 @@ pub struct MapNode {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MapNodeDefinition {
     pub kind_id: MapNodeKindId,
     pub category: MapNodeCategory,
     pub weight: u32,
     pub min_depth: u8,
     pub max_depth: Option<u8>,
-    #[serde(default)]
-    pub tags: Vec<String>,
     #[serde(default)]
     pub payload: MapNodePayload,
 }
@@ -253,17 +245,34 @@ impl RunMap {
                 node.outgoing
                     .iter()
                     .copied()
-                    .map(|to| MapEdgeDto { from: node.id, to })
+                    .map(|to| MapEdgeDto {
+                        from_node_id: node.id,
+                        to_node_id: to,
+                    })
             })
             .collect::<Vec<_>>();
-        edges.sort_by_key(|edge| (edge.from.0.as_u128(), edge.to.0.as_u128()));
+        edges.sort_by_key(|edge| {
+            (
+                edge.from_node_id.0.as_u128(),
+                edge.to_node_id.0.as_u128(),
+            )
+        });
         edges
     }
+}
+
+pub fn map_template_id_for_act(act_index: u8) -> String {
+    format!("act_{:02}_floor_a", u16::from(act_index) + 1)
+}
+
+pub fn map_slot_id_for_node(node: &MapNode) -> String {
+    format!("depth_{:02}_lane_{:02}", node.depth, node.lane)
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MapNodeDto {
     pub id: MapNodeId,
+    pub slot_id: String,
     pub depth: u8,
     pub lane: u8,
     pub kind_id: MapNodeKindId,
@@ -276,6 +285,7 @@ impl From<&MapNode> for MapNodeDto {
     fn from(value: &MapNode) -> Self {
         Self {
             id: value.id,
+            slot_id: map_slot_id_for_node(value),
             depth: value.depth,
             lane: value.lane,
             kind_id: value.kind_id.clone(),
@@ -288,18 +298,17 @@ impl From<&MapNode> for MapNodeDto {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MapEdgeDto {
-    pub from: MapNodeId,
-    pub to: MapNodeId,
+    pub from_node_id: MapNodeId,
+    pub to_node_id: MapNodeId,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MapViewDto {
+    pub map_template_id: String,
     pub act_index: u8,
     pub max_acts: u8,
     pub nodes: Vec<MapNodeDto>,
     pub edges: Vec<MapEdgeDto>,
     pub current_node_id: Option<MapNodeId>,
-    pub available_node_ids: Vec<MapNodeId>,
-    pub completed_node_ids: Vec<MapNodeId>,
     pub boss_node_id: MapNodeId,
 }

@@ -4,8 +4,8 @@ use uuid::Uuid;
 
 use crate::game::{
     battle::{
+        event_log::{BattleEventLog, BattleLogEvent, SkillCastTarget},
         ids::UnitInstanceId,
-        timeline::{SkillCastTarget, Timeline, TimelineEvent},
     },
     enums::Side,
     stats::UnitStats,
@@ -14,12 +14,12 @@ use crate::game::{
 use super::{
     battlefield::BattlefieldSize,
     types::{
-        TimelineExpectedCounts, TimelineValidatorConfig, TimelineViolation, TimelineViolationKind,
+        EventLogExpectedCounts, EventLogValidatorConfig, EventLogViolation, EventLogViolationKind,
     },
 };
 
 pub(super) struct ExtractedSpawns {
-    pub(super) counts: TimelineExpectedCounts,
+    pub(super) counts: EventLogExpectedCounts,
     pub(super) unit_spawn_index: HashMap<UnitInstanceId, usize>,
     pub(super) unit_spawn_time_ms: HashMap<UnitInstanceId, u64>,
     pub(super) unit_spawn_stats: HashMap<UnitInstanceId, UnitStats>,
@@ -32,13 +32,13 @@ pub(super) struct ExtractedSpawns {
 }
 
 pub(super) fn extract_spawns(
-    timeline: &Timeline,
+    event_log: &BattleEventLog,
     battlefield: &Option<BattlefieldSize>,
-    violations: &mut Vec<TimelineViolation>,
-    config: &TimelineValidatorConfig,
+    violations: &mut Vec<EventLogViolation>,
+    config: &EventLogValidatorConfig,
 ) -> ExtractedSpawns {
     let mut extracted = ExtractedSpawns {
-        counts: TimelineExpectedCounts::default(),
+        counts: EventLogExpectedCounts::default(),
         unit_spawn_index: HashMap::new(),
         unit_spawn_time_ms: HashMap::new(),
         unit_spawn_stats: HashMap::new(),
@@ -50,9 +50,9 @@ pub(super) fn extract_spawns(
         artifact_owner_by_instance: HashMap::new(),
     };
 
-    for (index, entry) in timeline.entries.iter().enumerate() {
+    for (index, entry) in event_log.entries.iter().enumerate() {
         match entry.event {
-            TimelineEvent::UnitSpawned {
+            BattleLogEvent::UnitSpawned {
                 unit_instance_id,
                 owner,
                 base_uuid,
@@ -79,8 +79,8 @@ pub(super) fn extract_spawns(
                     .insert(unit_instance_id, owner)
                     .is_some()
                 {
-                    violations.push(TimelineViolation {
-                        kind: TimelineViolationKind::DuplicateUnitSpawn,
+                    violations.push(EventLogViolation {
+                        kind: EventLogViolationKind::DuplicateUnitSpawn,
                         message: format!("unit {} spawned multiple times", unit_instance_id),
                         entry_index: Some(index),
                     });
@@ -91,7 +91,7 @@ pub(super) fn extract_spawns(
 
                 let _ = (battlefield, config);
             }
-            TimelineEvent::ItemSpawned {
+            BattleLogEvent::ItemSpawned {
                 item_instance_id,
                 owner,
                 owner_unit_instance_id,
@@ -108,8 +108,8 @@ pub(super) fn extract_spawns(
                     .insert(item_instance_id, owner)
                     .is_some()
                 {
-                    violations.push(TimelineViolation {
-                        kind: TimelineViolationKind::DuplicateItemSpawn,
+                    violations.push(EventLogViolation {
+                        kind: EventLogViolationKind::DuplicateItemSpawn,
                         message: format!("item {} spawned multiple times", item_instance_id),
                         entry_index: Some(index),
                     });
@@ -119,8 +119,8 @@ pub(super) fn extract_spawns(
                     .unit_owner_by_instance
                     .get(&owner_unit_instance_id)
                 else {
-                    violations.push(TimelineViolation {
-                        kind: TimelineViolationKind::UnknownUnitReference,
+                    violations.push(EventLogViolation {
+                        kind: EventLogViolationKind::UnknownUnitReference,
                         message: format!(
                             "item {} spawned for unknown unit {}",
                             item_instance_id, owner_unit_instance_id
@@ -131,8 +131,8 @@ pub(super) fn extract_spawns(
                 };
 
                 if unit_side != owner {
-                    violations.push(TimelineViolation {
-                        kind: TimelineViolationKind::UnknownUnitReference,
+                    violations.push(EventLogViolation {
+                        kind: EventLogViolationKind::UnknownUnitReference,
                         message: format!(
                             "item {} owner side {:?} mismatches owner unit side {:?} (unit={})",
                             item_instance_id, owner, unit_side, owner_unit_instance_id
@@ -141,7 +141,7 @@ pub(super) fn extract_spawns(
                     });
                 }
             }
-            TimelineEvent::ArtifactSpawned {
+            BattleLogEvent::ArtifactSpawned {
                 artifact_instance_id,
                 owner,
                 ..
@@ -157,8 +157,8 @@ pub(super) fn extract_spawns(
                     .insert(artifact_instance_id, owner)
                     .is_some()
                 {
-                    violations.push(TimelineViolation {
-                        kind: TimelineViolationKind::DuplicateArtifactSpawn,
+                    violations.push(EventLogViolation {
+                        kind: EventLogViolationKind::DuplicateArtifactSpawn,
                         message: format!(
                             "artifact {} spawned multiple times",
                             artifact_instance_id
@@ -175,17 +175,17 @@ pub(super) fn extract_spawns(
 }
 
 pub(super) fn validate_spawn_counts(
-    actual: TimelineExpectedCounts,
-    expected: Option<TimelineExpectedCounts>,
-    violations: &mut Vec<TimelineViolation>,
+    actual: EventLogExpectedCounts,
+    expected: Option<EventLogExpectedCounts>,
+    violations: &mut Vec<EventLogViolation>,
 ) {
     let Some(expected) = expected else {
         return;
     };
 
     if actual.units != expected.units {
-        violations.push(TimelineViolation {
-            kind: TimelineViolationKind::UnitSpawnCountMismatch,
+        violations.push(EventLogViolation {
+            kind: EventLogViolationKind::UnitSpawnCountMismatch,
             message: format!(
                 "unit spawn count mismatch: expected={}, got={}",
                 expected.units, actual.units
@@ -194,8 +194,8 @@ pub(super) fn validate_spawn_counts(
         });
     }
     if actual.items != expected.items {
-        violations.push(TimelineViolation {
-            kind: TimelineViolationKind::ItemSpawnCountMismatch,
+        violations.push(EventLogViolation {
+            kind: EventLogViolationKind::ItemSpawnCountMismatch,
             message: format!(
                 "item spawn count mismatch: expected={}, got={}",
                 expected.items, actual.items
@@ -204,8 +204,8 @@ pub(super) fn validate_spawn_counts(
         });
     }
     if actual.artifacts != expected.artifacts {
-        violations.push(TimelineViolation {
-            kind: TimelineViolationKind::ArtifactSpawnCountMismatch,
+        violations.push(EventLogViolation {
+            kind: EventLogViolationKind::ArtifactSpawnCountMismatch,
             message: format!(
                 "artifact spawn count mismatch: expected={}, got={}",
                 expected.artifacts, actual.artifacts
@@ -216,20 +216,26 @@ pub(super) fn validate_spawn_counts(
 }
 
 pub(super) fn validate_reference_spawn_order(
-    timeline: &Timeline,
+    event_log: &BattleEventLog,
     extracted: &ExtractedSpawns,
-    violations: &mut Vec<TimelineViolation>,
+    violations: &mut Vec<EventLogViolation>,
 ) {
-    for (index, entry) in timeline.entries.iter().enumerate() {
+    for (index, entry) in event_log.entries.iter().enumerate() {
         let time_ms = entry.time_ms;
         let entry_desc = match &entry.event {
-            TimelineEvent::BattleStart { .. } => "BattleStart".to_string(),
-            TimelineEvent::BattleEnd { .. } => "BattleEnd".to_string(),
+            BattleLogEvent::BattleStart { .. } => "BattleStart".to_string(),
+            BattleLogEvent::BattleEnd { .. } => "BattleEnd".to_string(),
             other => format!("{:?}", other),
         };
 
         match &entry.event {
-            TimelineEvent::UnitSpawned {
+            BattleLogEvent::UnitSpawned {
+                unit_instance_id, ..
+            }
+            | BattleLogEvent::UnitDeployed {
+                unit_instance_id, ..
+            }
+            | BattleLogEvent::UnitWithdrawn {
                 unit_instance_id, ..
             } => {
                 validate_unit_reference_spawned(
@@ -241,10 +247,10 @@ pub(super) fn validate_reference_spawn_order(
                     violations,
                 );
             }
-            TimelineEvent::MovementSegmentStarted {
+            BattleLogEvent::MovementSegmentStarted {
                 unit_instance_id, ..
             }
-            | TimelineEvent::MovementStopped {
+            | BattleLogEvent::MovementStopped {
                 unit_instance_id, ..
             } => {
                 validate_unit_reference_spawned(
@@ -256,32 +262,27 @@ pub(super) fn validate_reference_spawn_order(
                     violations,
                 );
             }
-            TimelineEvent::AttackStart {
+            BattleLogEvent::AttackStart {
                 attacker_instance_id,
                 target_instance_id,
                 ..
             }
-            | TimelineEvent::AttackResolve {
+            | BattleLogEvent::AttackResolve {
                 attacker_instance_id,
                 target_instance_id,
                 ..
             }
-            | TimelineEvent::AttackMiss {
+            | BattleLogEvent::AttackMiss {
                 attacker_instance_id,
                 target_instance_id,
                 ..
             }
-            | TimelineEvent::ProjectileMiss {
+            | BattleLogEvent::BasicAttackProjectileLaunched {
                 attacker_instance_id,
                 target_instance_id,
                 ..
             }
-            | TimelineEvent::BasicAttackProjectileLaunched {
-                attacker_instance_id,
-                target_instance_id,
-                ..
-            }
-            | TimelineEvent::BasicAttackProjectileImpacted {
+            | BattleLogEvent::BasicAttackProjectileImpacted {
                 attacker_instance_id,
                 target_instance_id,
                 ..
@@ -303,119 +304,12 @@ pub(super) fn validate_reference_spawn_order(
                     violations,
                 );
             }
-            TimelineEvent::AutoCastStart {
+            BattleLogEvent::AutoCastStart {
                 caster_instance_id,
                 target,
                 ..
             }
-            | TimelineEvent::ManualCastStart {
-                caster_instance_id,
-                target,
-                ..
-            } => {
-                validate_unit_reference_spawned(
-                    extracted,
-                    *caster_instance_id,
-                    index,
-                    time_ms,
-                    &entry_desc,
-                    violations,
-                );
-                if let Some(SkillCastTarget::Unit { unit_instance_id }) = target {
-                    validate_unit_reference_spawned(
-                        extracted,
-                        *unit_instance_id,
-                        index,
-                        time_ms,
-                        &entry_desc,
-                        violations,
-                    );
-                }
-            }
-            TimelineEvent::AutoCastEnd { caster_instance_id }
-            | TimelineEvent::ManualCastEnd { caster_instance_id } => {
-                validate_unit_reference_spawned(
-                    extracted,
-                    *caster_instance_id,
-                    index,
-                    time_ms,
-                    &entry_desc,
-                    violations,
-                );
-            }
-            TimelineEvent::TriggeredAbilityProc {
-                caster_instance_id,
-                target_instance_id,
-                ..
-            } => {
-                validate_unit_reference_spawned(
-                    extracted,
-                    *caster_instance_id,
-                    index,
-                    time_ms,
-                    &entry_desc,
-                    violations,
-                );
-                if let Some(target_id) = target_instance_id {
-                    validate_unit_reference_spawned(
-                        extracted,
-                        *target_id,
-                        index,
-                        time_ms,
-                        &entry_desc,
-                        violations,
-                    );
-                }
-            }
-            TimelineEvent::AbilityCast {
-                caster_instance_id,
-                target_instance_id,
-                ..
-            } => {
-                validate_unit_reference_spawned(
-                    extracted,
-                    *caster_instance_id,
-                    index,
-                    time_ms,
-                    &entry_desc,
-                    violations,
-                );
-                if let Some(target_id) = target_instance_id {
-                    validate_unit_reference_spawned(
-                        extracted,
-                        *target_id,
-                        index,
-                        time_ms,
-                        &entry_desc,
-                        violations,
-                    );
-                }
-            }
-            TimelineEvent::AbilityStepTriggered {
-                caster_instance_id,
-                target_instance_id,
-                ..
-            } => {
-                validate_unit_reference_spawned(
-                    extracted,
-                    *caster_instance_id,
-                    index,
-                    time_ms,
-                    &entry_desc,
-                    violations,
-                );
-                if let Some(target_id) = target_instance_id {
-                    validate_unit_reference_spawned(
-                        extracted,
-                        *target_id,
-                        index,
-                        time_ms,
-                        &entry_desc,
-                        violations,
-                    );
-                }
-            }
-            TimelineEvent::SkillAreaDeclared {
+            | BattleLogEvent::ManualCastStart {
                 caster_instance_id,
                 target,
                 ..
@@ -439,7 +333,124 @@ pub(super) fn validate_reference_spawn_order(
                     );
                 }
             }
-            TimelineEvent::SkillProjectileLaunched {
+            BattleLogEvent::AutoCastEnd { caster_instance_id }
+            | BattleLogEvent::ManualCastEnd { caster_instance_id } => {
+                validate_unit_reference_spawned(
+                    extracted,
+                    *caster_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+            }
+            BattleLogEvent::SkillCastInterrupted {
+                interrupter_instance_id,
+                caster_instance_id,
+                ..
+            } => {
+                validate_unit_reference_spawned(
+                    extracted,
+                    *interrupter_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+                validate_unit_reference_spawned(
+                    extracted,
+                    *caster_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+            }
+            BattleLogEvent::SkillCastCancelled {
+                caster_instance_id, ..
+            } => {
+                validate_unit_reference_spawned(
+                    extracted,
+                    *caster_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+            }
+            BattleLogEvent::TriggeredAbilityProc {
+                caster_instance_id,
+                target_instance_id,
+                ..
+            } => {
+                validate_unit_reference_spawned(
+                    extracted,
+                    *caster_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+                if let Some(target_id) = target_instance_id {
+                    validate_unit_reference_spawned(
+                        extracted,
+                        *target_id,
+                        index,
+                        time_ms,
+                        &entry_desc,
+                        violations,
+                    );
+                }
+            }
+            BattleLogEvent::AbilityCast {
+                caster_instance_id,
+                target_instance_id,
+                ..
+            } => {
+                validate_unit_reference_spawned(
+                    extracted,
+                    *caster_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+                if let Some(target_id) = target_instance_id {
+                    validate_unit_reference_spawned(
+                        extracted,
+                        *target_id,
+                        index,
+                        time_ms,
+                        &entry_desc,
+                        violations,
+                    );
+                }
+            }
+            BattleLogEvent::AbilityStepTriggered {
+                caster_instance_id,
+                target_instance_id,
+                ..
+            } => {
+                validate_unit_reference_spawned(
+                    extracted,
+                    *caster_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+                if let Some(target_id) = target_instance_id {
+                    validate_unit_reference_spawned(
+                        extracted,
+                        *target_id,
+                        index,
+                        time_ms,
+                        &entry_desc,
+                        violations,
+                    );
+                }
+            }
+            BattleLogEvent::SkillAreaDeclared {
                 caster_instance_id,
                 target,
                 ..
@@ -463,7 +474,31 @@ pub(super) fn validate_reference_spawn_order(
                     );
                 }
             }
-            TimelineEvent::SkillProjectileImpacted {
+            BattleLogEvent::SkillProjectileLaunched {
+                caster_instance_id,
+                target,
+                ..
+            } => {
+                validate_unit_reference_spawned(
+                    extracted,
+                    *caster_instance_id,
+                    index,
+                    time_ms,
+                    &entry_desc,
+                    violations,
+                );
+                if let Some(SkillCastTarget::Unit { unit_instance_id }) = target {
+                    validate_unit_reference_spawned(
+                        extracted,
+                        *unit_instance_id,
+                        index,
+                        time_ms,
+                        &entry_desc,
+                        violations,
+                    );
+                }
+            }
+            BattleLogEvent::SkillProjectileImpacted {
                 caster_instance_id,
                 first_hit_unit_id,
                 ..
@@ -487,17 +522,17 @@ pub(super) fn validate_reference_spawn_order(
                     );
                 }
             }
-            TimelineEvent::BuffApplied {
+            BattleLogEvent::BuffApplied {
                 caster_instance_id,
                 target_instance_id,
                 ..
             }
-            | TimelineEvent::BuffTick {
+            | BattleLogEvent::BuffTick {
                 caster_instance_id,
                 target_instance_id,
                 ..
             }
-            | TimelineEvent::BuffExpired {
+            | BattleLogEvent::BuffExpired {
                 caster_instance_id,
                 target_instance_id,
                 ..
@@ -519,7 +554,7 @@ pub(super) fn validate_reference_spawn_order(
                     violations,
                 );
             }
-            TimelineEvent::HpChanged {
+            BattleLogEvent::HpChanged {
                 source_instance_id,
                 target_instance_id,
                 ..
@@ -543,7 +578,7 @@ pub(super) fn validate_reference_spawn_order(
                     violations,
                 );
             }
-            TimelineEvent::StatChanged {
+            BattleLogEvent::StatChanged {
                 source_instance_id,
                 target_instance_id,
                 ..
@@ -567,7 +602,7 @@ pub(super) fn validate_reference_spawn_order(
                     violations,
                 );
             }
-            TimelineEvent::ResonanceChanged {
+            BattleLogEvent::ResonanceChanged {
                 unit_instance_id, ..
             } => {
                 validate_unit_reference_spawned(
@@ -579,7 +614,7 @@ pub(super) fn validate_reference_spawn_order(
                     violations,
                 );
             }
-            TimelineEvent::UnitDied {
+            BattleLogEvent::UnitDied {
                 unit_instance_id,
                 killer_instance_id,
                 ..
@@ -603,7 +638,7 @@ pub(super) fn validate_reference_spawn_order(
                     );
                 }
             }
-            TimelineEvent::ItemSpawned {
+            BattleLogEvent::ItemSpawned {
                 owner_unit_instance_id,
                 ..
             } => {
@@ -616,9 +651,9 @@ pub(super) fn validate_reference_spawn_order(
                     violations,
                 );
             }
-            TimelineEvent::ArtifactSpawned { .. }
-            | TimelineEvent::BattleStart { .. }
-            | TimelineEvent::BattleEnd { .. } => {}
+            BattleLogEvent::ArtifactSpawned { .. }
+            | BattleLogEvent::BattleStart { .. }
+            | BattleLogEvent::BattleEnd { .. } => {}
         }
     }
 }
@@ -629,11 +664,11 @@ fn validate_unit_reference_spawned(
     reference_index: usize,
     reference_time_ms: u64,
     entry_desc: &str,
-    violations: &mut Vec<TimelineViolation>,
+    violations: &mut Vec<EventLogViolation>,
 ) {
     let Some(&spawn_index) = extracted.unit_spawn_index.get(&unit_id) else {
-        violations.push(TimelineViolation {
-            kind: TimelineViolationKind::UnknownUnitReference,
+        violations.push(EventLogViolation {
+            kind: EventLogViolationKind::UnknownUnitReference,
             message: format!("{entry_desc} references unknown unit {}", unit_id),
             entry_index: Some(reference_index),
         });
@@ -646,8 +681,8 @@ fn validate_unit_reference_spawned(
         .unwrap_or_default();
 
     if spawn_index > reference_index || spawn_time_ms > reference_time_ms {
-        violations.push(TimelineViolation {
-            kind: TimelineViolationKind::UnitReferencedBeforeSpawn,
+        violations.push(EventLogViolation {
+            kind: EventLogViolationKind::UnitReferencedBeforeSpawn,
             message: format!(
                 "unit {} referenced before spawn (ref_index={} ref_time_ms={} spawn_index={} spawn_time_ms={})",
                 unit_id, reference_index, reference_time_ms, spawn_index, spawn_time_ms

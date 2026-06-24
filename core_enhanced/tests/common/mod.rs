@@ -11,8 +11,7 @@ use game_core::game::ability::{
     DeliveryDef, SkillCastTargetingDef, SkillDef, SkillId, SkillKind, SkillPresentationDef,
     SkillStepDef, SkillTarget, StepTargetingMode,
 };
-use game_core::game::battle::{buffs::BuffDatabase, timeline::Timeline};
-use game_core::game::combat_preview::EnemyKind;
+use game_core::game::battle::{buffs::BuffDatabase, event_log::BattleEventLog};
 use game_core::game::data::abnormality_data::{AbnormalityDatabase, AbnormalityMetadata};
 use game_core::game::data::artifact_data::{ArtifactDatabase, ArtifactMetadata};
 use game_core::game::data::consumable_data::ConsumableDatabase;
@@ -22,9 +21,10 @@ use game_core::game::data::employee_data::{
 };
 use game_core::game::data::equipment_data::{EquipmentDatabase, EquipmentMetadata, EquipmentType};
 use game_core::game::data::pve_data::{
-    PveEncounter, PveEncounterDatabase, PveWaveData, PveWaveEnemyData,
+    PveEncounter, PveEncounterDatabase, PveWaveData, PveWaveEnemyData, PveWaveSource,
 };
 use game_core::game::data::reward_data::{RewardDatabase, RewardMetadata, RewardPoolMetadata};
+use game_core::game::data::run_policy_data::RunPolicyData;
 use game_core::game::data::shop_data::{ShopDatabase, ShopMetadata, ShopPoolMetadata, ShopType};
 use game_core::game::data::skill_data::SkillDatabase;
 use game_core::game::data::skill_fragment_data::SkillFragmentDatabase;
@@ -37,7 +37,7 @@ pub fn debug_event_log_exports_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("debug_event_log_exports")
 }
 
-pub fn write_debug_event_log_export(name: &str, timeline: &Timeline) -> PathBuf {
+pub fn write_debug_event_log_export(name: &str, event_log: &BattleEventLog) -> PathBuf {
     let out_dir = debug_event_log_exports_dir();
     let out_path = out_dir.join(format!("{name}.json"));
     let parent_dir = out_path.parent().unwrap_or_else(|| {
@@ -47,7 +47,7 @@ pub fn write_debug_event_log_export(name: &str, timeline: &Timeline) -> PathBuf 
         )
     });
     std::fs::create_dir_all(parent_dir).expect("create debug_event_log_exports directory");
-    timeline
+    event_log
         .write_pretty_json(&out_path)
         .expect("write debug event log json");
     out_path
@@ -60,7 +60,8 @@ pub fn empty_game_data() -> Arc<GameDataBase> {
 /// 테스트용 `GameDataBase` 생성 (작고 결정적인 데이터).
 ///
 /// - 리롤 가능한 상점 1개 (visible/hidden 구성)
-/// - Equipment/Artifact/Abnormality 최소 1개
+/// - Equipment/Artifact 최소 1개
+/// - Abnormality combat metadata 최소 1개
 /// - Reward/PvE encounter 최소 1개
 pub fn create_test_game_data() -> Arc<GameDataBase> {
     let shop_uuid = Uuid::from_u128(1);
@@ -121,13 +122,18 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         id: skill_id.clone(),
         name: "test_skill".to_string(),
         kind: SkillKind::Targeted,
-        cast_targeting: SkillCastTargetingDef::FirstStepTarget,
+        cast_targeting: SkillCastTargetingDef::explicit(
+            SkillTarget::SelfUnit,
+            Default::default(),
+            None,
+            false,
+        ),
         focus_time_ms: 0,
         focus_permissions: Default::default(),
         steps: vec![SkillStepDef {
             id: "step_01".to_string(),
             delay_ms: 0,
-            range_units: 1.0,
+            range_policy: Default::default(),
             defense_tile_range: None,
             air_capable: false,
             target: SkillTarget::SelfUnit,
@@ -150,6 +156,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         attack: 30,
         defense: 5,
         magic_resist: 0,
+        threat_class: game_core::game::battle::types::BattleUnitThreatClass::Elite,
         movement: Default::default(),
         basic_attack: Default::default(),
         resonance: Default::default(),
@@ -167,6 +174,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         attack: 20,
         defense: 4,
         magic_resist: 0,
+        threat_class: game_core::game::battle::types::BattleUnitThreatClass::Elite,
         movement: Default::default(),
         basic_attack: Default::default(),
         resonance: Default::default(),
@@ -184,6 +192,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         attack: 18,
         defense: 3,
         magic_resist: 0,
+        threat_class: game_core::game::battle::types::BattleUnitThreatClass::Elite,
         movement: Default::default(),
         basic_attack: Default::default(),
         resonance: Default::default(),
@@ -199,7 +208,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         shop_type: ShopType::Shop,
         can_reroll: true,
         visible_items: vec![artifact1.uuid, equipment1.uuid],
-        hidden_items: vec![artifact2.uuid, equipment2.uuid, abnormality1.uuid],
+        hidden_items: vec![artifact2.uuid, equipment2.uuid],
     };
 
     let reward = RewardMetadata {
@@ -208,7 +217,6 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         name: "Test Enkephalin Reward".to_string(),
         description: "Grants fixed Enkephalin".to_string(),
         icon: "enkephalin_icon.png".to_string(),
-        tags: Vec::new(),
         effects: vec![RewardEffect::GrantEnkephalin { amount: 100 }],
     };
 
@@ -244,6 +252,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
             reward_uuids: vec![reward_uuid],
             node_type: None,
             mission_variant: None,
+            survive_timer_ms: None,
             battlefield: None,
             tactical_plan: None,
             win_condition: None,
@@ -253,14 +262,11 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
                 spawn_zone_ids: Vec::new(),
                 route_id: None,
                 required_for_victory: true,
-                source: None,
-                enemies: vec![PveWaveEnemyData {
-                    kind: EnemyKind::Abnormality,
-                    profile_id: None,
+                source: PveWaveSource::Manual(vec![PveWaveEnemyData::Abnormality {
                     abnormality_id: abnormality1.id.clone(),
                     tier: game_core::game::enums::Tier::I,
                     count: 1,
-                }],
+                }]),
             }],
             static_obstacles: vec![],
         },
@@ -273,6 +279,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
             reward_uuids: vec![reward_uuid],
             node_type: None,
             mission_variant: None,
+            survive_timer_ms: None,
             battlefield: None,
             tactical_plan: None,
             win_condition: None,
@@ -282,14 +289,11 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
                 spawn_zone_ids: Vec::new(),
                 route_id: None,
                 required_for_victory: true,
-                source: None,
-                enemies: vec![PveWaveEnemyData {
-                    kind: EnemyKind::Abnormality,
-                    profile_id: None,
+                source: PveWaveSource::Manual(vec![PveWaveEnemyData::Abnormality {
                     abnormality_id: abnormality2.id.clone(),
                     tier: game_core::game::enums::Tier::I,
                     count: 1,
-                }],
+                }]),
             }],
             static_obstacles: vec![],
         },
@@ -302,6 +306,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
             reward_uuids: vec![reward_uuid],
             node_type: None,
             mission_variant: None,
+            survive_timer_ms: None,
             battlefield: None,
             tactical_plan: None,
             win_condition: None,
@@ -311,14 +316,11 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
                 spawn_zone_ids: Vec::new(),
                 route_id: None,
                 required_for_victory: true,
-                source: None,
-                enemies: vec![PveWaveEnemyData {
-                    kind: EnemyKind::Abnormality,
-                    profile_id: None,
+                source: PveWaveSource::Manual(vec![PveWaveEnemyData::Abnormality {
                     abnormality_id: abnormality3.id.clone(),
                     tier: game_core::game::enums::Tier::I,
                     count: 1,
-                }],
+                }]),
             }],
             static_obstacles: vec![],
         },
@@ -369,6 +371,7 @@ pub fn load_game_data_from_ron() -> Arc<GameDataBase> {
     let skills_ron = include_str!("../../../game_resources/data/skills/base.ron");
     let skill_fragments_ron = include_str!("../../../game_resources/data/skill_fragments/base.ron");
     let pve_ron = include_str!("../../../game_resources/data/pve/encounters.ron");
+    let run_policy_ron = include_str!("../../../game_resources/data/run/policy.ron");
 
     // When: RON 역직렬화
     let shops_db: ShopDatabase =
@@ -411,6 +414,8 @@ pub fn load_game_data_from_ron() -> Arc<GameDataBase> {
 
     let pve_db: PveEncounterDatabase =
         ron::de::from_str(pve_ron).expect("Failed to deserialize pve encounters.ron");
+    let run_policy =
+        RunPolicyData::from_ron_str(run_policy_ron).expect("Failed to deserialize run/policy.ron");
 
     GameDataBuilder::empty()
         .with_abnormality_data(Arc::new(abnormalities_db))
@@ -424,10 +429,9 @@ pub fn load_game_data_from_ron() -> Arc<GameDataBase> {
         .with_shop_data(Arc::new(shops_db))
         .with_reward_data(Arc::new(rewards_db))
         .with_pve_data(Arc::new(pve_db))
+        .with_run_policy_data(Arc::new(run_policy))
         .with_buff_data(Arc::new(buffs_db))
         .with_skill_data(Arc::new(skill_db))
-        .with_skill_fragment_data(Arc::new(SkillFragmentDatabase::with_builtin_starter(
-            skill_fragment_db.fragments,
-        )))
+        .with_skill_fragment_data(Arc::new(skill_fragment_db))
         .build_arc()
 }

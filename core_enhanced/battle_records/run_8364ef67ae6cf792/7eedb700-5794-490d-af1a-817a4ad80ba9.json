@@ -1,0 +1,6170 @@
+{
+  "version": 1,
+  "run_seed": 9467955545226672018,
+  "battle_uuid": "7eedb700-5794-490d-af1a-817a4ad80ba9",
+  "abnormality_id": "o-04-66_porcubbus",
+  "encounter_id": "suppress_porcubbus",
+  "node_type": "Defense",
+  "mission_variant": "Defense",
+  "winner": "Player",
+  "participant_results": [
+    {
+      "unit_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+      "owned_uuid": "def00000-0000-0000-0000-000000000001",
+      "side": "Player",
+      "survived": true,
+      "final_hp": 116,
+      "max_hp": 350,
+      "became_incapacitated": false
+    },
+    {
+      "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+      "owned_uuid": "e7c38597-1ab6-4da0-a5c4-ec7adc7fba21",
+      "side": "Player",
+      "survived": true,
+      "final_hp": 180,
+      "max_hp": 180,
+      "became_incapacitated": false
+    },
+    {
+      "unit_instance_id": "be3e5eb7-74a0-4d3d-8ffd-fc5e9e23ae55",
+      "owned_uuid": "e7c38597-1ab6-4da0-84fe-081e89c54c54",
+      "side": "Player",
+      "survived": true,
+      "final_hp": 180,
+      "max_hp": 180,
+      "became_incapacitated": false
+    },
+    {
+      "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+      "owned_uuid": "aaad33fc-caff-4f1a-bba4-f3500aacb01d",
+      "side": "Opponent",
+      "survived": false,
+      "final_hp": 0,
+      "max_hp": 90,
+      "became_incapacitated": true
+    },
+    {
+      "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+      "owned_uuid": "aaad33fc-caff-4f1a-a065-24a9b88d4193",
+      "side": "Opponent",
+      "survived": false,
+      "final_hp": 0,
+      "max_hp": 90,
+      "became_incapacitated": true
+    }
+  ],
+  "result_stats": {
+    "battle": {
+      "duration_ms": 32950,
+      "winner": "Player",
+      "killed_enemy_count": 2
+    },
+    "employees": [
+      {
+        "employee_uuid": "e7c38597-1ab6-4da0-84fe-081e89c54c54",
+        "unit_instance_id": "be3e5eb7-74a0-4d3d-8ffd-fc5e9e23ae55",
+        "survived": true,
+        "became_incapacitated": false,
+        "final_hp": 180,
+        "max_hp": 180,
+        "damage_dealt": 0,
+        "damage_taken": 0,
+        "kill_count": 0,
+        "basic_attack_count": 0,
+        "skill_cast_count": 0,
+        "deployed_count": 1,
+        "withdrawn_count": 0,
+        "deployed_time_ms": 32850
+      },
+      {
+        "employee_uuid": "e7c38597-1ab6-4da0-a5c4-ec7adc7fba21",
+        "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+        "survived": true,
+        "became_incapacitated": false,
+        "final_hp": 180,
+        "max_hp": 180,
+        "damage_dealt": 180,
+        "damage_taken": 0,
+        "kill_count": 2,
+        "basic_attack_count": 18,
+        "skill_cast_count": 0,
+        "deployed_count": 1,
+        "withdrawn_count": 0,
+        "deployed_time_ms": 32850
+      }
+    ],
+    "mvp": {
+      "employee_uuid": "e7c38597-1ab6-4da0-a5c4-ec7adc7fba21",
+      "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+      "score": 430,
+      "title": "Most Kills",
+      "highlighted_metrics": [
+        {
+          "metric": "KillCount",
+          "value": 2,
+          "weighted_score": 200,
+          "title": "Most Kills"
+        }
+      ]
+    }
+  },
+  "event_log": {
+    "version": 27,
+    "entries": [
+      {
+        "time_ms": 0,
+        "seq": 1,
+        "cause": {
+          "cause_type": "root",
+          "kind": "init"
+        },
+        "event": {
+          "type": "BattleStart",
+          "width": 9,
+          "height": 9
+        }
+      },
+      {
+        "time_ms": 0,
+        "seq": 2,
+        "cause": {
+          "cause_type": "root",
+          "kind": "init"
+        },
+        "event": {
+          "type": "UnitSpawned",
+          "unit_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "owner": "Player",
+          "role": "defense_object",
+          "threat_class": "normal",
+          "mobility_kind": "ground",
+          "base_uuid": "def00000-0000-0000-0000-000000000002",
+          "unit_source": {
+            "kind": "defense_object",
+            "base_uuid": "def00000-0000-0000-0000-000000000002"
+          },
+          "world_position": {
+            "x_milli": 2500,
+            "y_milli": 6500
+          },
+          "stats": {
+            "max_health": 350,
+            "current_health": 350,
+            "attack": 0,
+            "defense": 8,
+            "magic_resist": 8,
+            "attack_interval_ms": 1500,
+            "move_speed_units_per_ms": 0
+          }
+        }
+      },
+      {
+        "time_ms": 100,
+        "seq": 3,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "source_command_id": "req-005-deploy-unit",
+        "event": {
+          "type": "UnitSpawned",
+          "unit_instance_id": "be3e5eb7-74a0-4d3d-8ffd-fc5e9e23ae55",
+          "owner": "Player",
+          "role": "combatant",
+          "threat_class": "normal",
+          "mobility_kind": "ground",
+          "base_uuid": "e7c38597-1ab6-4da0-84fe-081e89c54c54",
+          "unit_source": {
+            "kind": "employee",
+            "employee_uuid": "e7c38597-1ab6-4da0-84fe-081e89c54c54",
+            "base_uuid": "e7c38597-1ab6-4da0-84fe-081e89c54c54"
+          },
+          "world_position": {
+            "x_milli": 500,
+            "y_milli": 6500
+          },
+          "stats": {
+            "max_health": 180,
+            "current_health": 180,
+            "attack": 12,
+            "defense": 5,
+            "magic_resist": 0,
+            "attack_interval_ms": 1500,
+            "move_speed_units_per_ms": 3000
+          }
+        }
+      },
+      {
+        "time_ms": 100,
+        "seq": 4,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "source_command_id": "req-005-deploy-unit",
+        "event": {
+          "type": "ItemSpawned",
+          "item_instance_id": "c27453b4-d465-4e0a-88ea-a7160213ae20",
+          "owner": "Player",
+          "owner_unit_instance_id": "be3e5eb7-74a0-4d3d-8ffd-fc5e9e23ae55",
+          "base_uuid": "650e8400-e29b-41d4-a716-446655440031"
+        }
+      },
+      {
+        "time_ms": 100,
+        "seq": 5,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "source_command_id": "req-005-deploy-unit",
+        "event": {
+          "type": "UnitDeployed",
+          "employee_uuid": "e7c38597-1ab6-4da0-84fe-081e89c54c54",
+          "unit_instance_id": "be3e5eb7-74a0-4d3d-8ffd-fc5e9e23ae55",
+          "position": {
+            "x": 0,
+            "y": 6
+          },
+          "facing": "right"
+        }
+      },
+      {
+        "time_ms": 100,
+        "seq": 6,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "source_command_id": "req-005-extra-deploy-1",
+        "event": {
+          "type": "UnitSpawned",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "owner": "Player",
+          "role": "combatant",
+          "threat_class": "normal",
+          "mobility_kind": "ground",
+          "base_uuid": "e7c38597-1ab6-4da0-a5c4-ec7adc7fba21",
+          "unit_source": {
+            "kind": "employee",
+            "employee_uuid": "e7c38597-1ab6-4da0-a5c4-ec7adc7fba21",
+            "base_uuid": "e7c38597-1ab6-4da0-a5c4-ec7adc7fba21"
+          },
+          "world_position": {
+            "x_milli": 1500,
+            "y_milli": 6500
+          },
+          "stats": {
+            "max_health": 180,
+            "current_health": 180,
+            "attack": 12,
+            "defense": 5,
+            "magic_resist": 0,
+            "attack_interval_ms": 1500,
+            "move_speed_units_per_ms": 3000
+          }
+        }
+      },
+      {
+        "time_ms": 100,
+        "seq": 7,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "source_command_id": "req-005-extra-deploy-1",
+        "event": {
+          "type": "ItemSpawned",
+          "item_instance_id": "3d866b44-3f26-4710-b62a-4f2a8468a490",
+          "owner": "Player",
+          "owner_unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "base_uuid": "650e8400-e29b-41d4-a716-446655440031"
+        }
+      },
+      {
+        "time_ms": 100,
+        "seq": 8,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "source_command_id": "req-005-extra-deploy-1",
+        "event": {
+          "type": "UnitDeployed",
+          "employee_uuid": "e7c38597-1ab6-4da0-a5c4-ec7adc7fba21",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "position": {
+            "x": 1,
+            "y": 6
+          },
+          "facing": "right"
+        }
+      },
+      {
+        "time_ms": 5000,
+        "seq": 9,
+        "cause": {
+          "cause_type": "root",
+          "kind": "init"
+        },
+        "event": {
+          "type": "UnitSpawned",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "owner": "Opponent",
+          "role": "combatant",
+          "threat_class": "normal",
+          "mobility_kind": "ground",
+          "base_uuid": "91000000-0000-4000-8000-000000000001",
+          "unit_source": {
+            "kind": "corroded_employee",
+            "profile_id": "corroded_guard",
+            "base_uuid": "91000000-0000-4000-8000-000000000001"
+          },
+          "world_position": {
+            "x_milli": 1500,
+            "y_milli": 500
+          },
+          "stats": {
+            "max_health": 90,
+            "current_health": 90,
+            "attack": 10,
+            "defense": 2,
+            "magic_resist": 0,
+            "attack_interval_ms": 1500,
+            "move_speed_units_per_ms": 2600
+          }
+        }
+      },
+      {
+        "time_ms": 5000,
+        "seq": 10,
+        "cause": {
+          "cause_type": "root",
+          "kind": "init"
+        },
+        "event": {
+          "type": "UnitSpawned",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "owner": "Opponent",
+          "role": "combatant",
+          "threat_class": "normal",
+          "mobility_kind": "ground",
+          "base_uuid": "91000000-0000-4000-8000-000000000001",
+          "unit_source": {
+            "kind": "corroded_employee",
+            "profile_id": "corroded_guard",
+            "base_uuid": "91000000-0000-4000-8000-000000000001"
+          },
+          "world_position": {
+            "x_milli": 500,
+            "y_milli": 500
+          },
+          "stats": {
+            "max_health": 90,
+            "current_health": 90,
+            "attack": 10,
+            "defense": 2,
+            "magic_resist": 0,
+            "attack_interval_ms": 1500,
+            "move_speed_units_per_ms": 2600
+          }
+        }
+      },
+      {
+        "time_ms": 5000,
+        "seq": 11,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 1500,
+            "y_milli": 500
+          },
+          "target": {
+            "x_milli": 1592,
+            "y_milli": 592
+          },
+          "started_at_ms": 5000,
+          "ends_at_ms": 5050,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5000,
+        "seq": 12,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 500,
+            "y_milli": 500
+          },
+          "target": {
+            "x_milli": 616,
+            "y_milli": 558
+          },
+          "started_at_ms": 5000,
+          "ends_at_ms": 5050,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5050,
+        "seq": 13,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 1592,
+            "y_milli": 592
+          },
+          "target": {
+            "x_milli": 1684,
+            "y_milli": 684
+          },
+          "started_at_ms": 5050,
+          "ends_at_ms": 5100,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5050,
+        "seq": 14,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 616,
+            "y_milli": 558
+          },
+          "target": {
+            "x_milli": 733,
+            "y_milli": 616
+          },
+          "started_at_ms": 5050,
+          "ends_at_ms": 5100,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5100,
+        "seq": 15,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 1684,
+            "y_milli": 684
+          },
+          "target": {
+            "x_milli": 1776,
+            "y_milli": 776
+          },
+          "started_at_ms": 5100,
+          "ends_at_ms": 5150,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5100,
+        "seq": 16,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 733,
+            "y_milli": 616
+          },
+          "target": {
+            "x_milli": 849,
+            "y_milli": 674
+          },
+          "started_at_ms": 5100,
+          "ends_at_ms": 5150,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5150,
+        "seq": 17,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 1776,
+            "y_milli": 776
+          },
+          "target": {
+            "x_milli": 1868,
+            "y_milli": 868
+          },
+          "started_at_ms": 5150,
+          "ends_at_ms": 5200,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5150,
+        "seq": 18,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 849,
+            "y_milli": 674
+          },
+          "target": {
+            "x_milli": 965,
+            "y_milli": 733
+          },
+          "started_at_ms": 5150,
+          "ends_at_ms": 5200,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5200,
+        "seq": 19,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 1868,
+            "y_milli": 868
+          },
+          "target": {
+            "x_milli": 1960,
+            "y_milli": 960
+          },
+          "started_at_ms": 5200,
+          "ends_at_ms": 5250,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5200,
+        "seq": 20,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 965,
+            "y_milli": 733
+          },
+          "target": {
+            "x_milli": 1081,
+            "y_milli": 791
+          },
+          "started_at_ms": 5200,
+          "ends_at_ms": 5250,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5250,
+        "seq": 21,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 1960,
+            "y_milli": 960
+          },
+          "target": {
+            "x_milli": 2052,
+            "y_milli": 1052
+          },
+          "started_at_ms": 5250,
+          "ends_at_ms": 5300,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5250,
+        "seq": 22,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 1081,
+            "y_milli": 791
+          },
+          "target": {
+            "x_milli": 1198,
+            "y_milli": 849
+          },
+          "started_at_ms": 5250,
+          "ends_at_ms": 5300,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5300,
+        "seq": 23,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2052,
+            "y_milli": 1052
+          },
+          "target": {
+            "x_milli": 2143,
+            "y_milli": 1143
+          },
+          "started_at_ms": 5300,
+          "ends_at_ms": 5350,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5300,
+        "seq": 24,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 1198,
+            "y_milli": 849
+          },
+          "target": {
+            "x_milli": 1314,
+            "y_milli": 907
+          },
+          "started_at_ms": 5300,
+          "ends_at_ms": 5350,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5350,
+        "seq": 25,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2143,
+            "y_milli": 1143
+          },
+          "target": {
+            "x_milli": 2235,
+            "y_milli": 1235
+          },
+          "started_at_ms": 5350,
+          "ends_at_ms": 5400,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5350,
+        "seq": 26,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 1314,
+            "y_milli": 907
+          },
+          "target": {
+            "x_milli": 1430,
+            "y_milli": 965
+          },
+          "started_at_ms": 5350,
+          "ends_at_ms": 5400,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5400,
+        "seq": 27,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2235,
+            "y_milli": 1235
+          },
+          "target": {
+            "x_milli": 2327,
+            "y_milli": 1327
+          },
+          "started_at_ms": 5400,
+          "ends_at_ms": 5450,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5400,
+        "seq": 28,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 1430,
+            "y_milli": 965
+          },
+          "target": {
+            "x_milli": 1546,
+            "y_milli": 1023
+          },
+          "started_at_ms": 5400,
+          "ends_at_ms": 5450,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5450,
+        "seq": 29,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2327,
+            "y_milli": 1327
+          },
+          "target": {
+            "x_milli": 2346,
+            "y_milli": 1456
+          },
+          "started_at_ms": 5450,
+          "ends_at_ms": 5500,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5450,
+        "seq": 30,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 1546,
+            "y_milli": 1023
+          },
+          "target": {
+            "x_milli": 1663,
+            "y_milli": 1081
+          },
+          "started_at_ms": 5450,
+          "ends_at_ms": 5500,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5500,
+        "seq": 31,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2346,
+            "y_milli": 1456
+          },
+          "target": {
+            "x_milli": 2365,
+            "y_milli": 1585
+          },
+          "started_at_ms": 5500,
+          "ends_at_ms": 5550,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5500,
+        "seq": 32,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 1663,
+            "y_milli": 1081
+          },
+          "target": {
+            "x_milli": 1779,
+            "y_milli": 1140
+          },
+          "started_at_ms": 5500,
+          "ends_at_ms": 5550,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5550,
+        "seq": 33,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2365,
+            "y_milli": 1585
+          },
+          "target": {
+            "x_milli": 2384,
+            "y_milli": 1713
+          },
+          "started_at_ms": 5550,
+          "ends_at_ms": 5600,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5550,
+        "seq": 34,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 1779,
+            "y_milli": 1140
+          },
+          "target": {
+            "x_milli": 1895,
+            "y_milli": 1198
+          },
+          "started_at_ms": 5550,
+          "ends_at_ms": 5600,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5600,
+        "seq": 35,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2384,
+            "y_milli": 1713
+          },
+          "target": {
+            "x_milli": 2403,
+            "y_milli": 1842
+          },
+          "started_at_ms": 5600,
+          "ends_at_ms": 5650,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5600,
+        "seq": 36,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 1895,
+            "y_milli": 1198
+          },
+          "target": {
+            "x_milli": 2012,
+            "y_milli": 1256
+          },
+          "started_at_ms": 5600,
+          "ends_at_ms": 5650,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5650,
+        "seq": 37,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2403,
+            "y_milli": 1842
+          },
+          "target": {
+            "x_milli": 2422,
+            "y_milli": 1970
+          },
+          "started_at_ms": 5650,
+          "ends_at_ms": 5700,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5650,
+        "seq": 38,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2012,
+            "y_milli": 1256
+          },
+          "target": {
+            "x_milli": 2059,
+            "y_milli": 1377
+          },
+          "started_at_ms": 5650,
+          "ends_at_ms": 5700,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5700,
+        "seq": 39,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2422,
+            "y_milli": 1970
+          },
+          "target": {
+            "x_milli": 2441,
+            "y_milli": 2099
+          },
+          "started_at_ms": 5700,
+          "ends_at_ms": 5750,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5700,
+        "seq": 40,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2059,
+            "y_milli": 1377
+          },
+          "target": {
+            "x_milli": 2107,
+            "y_milli": 1498
+          },
+          "started_at_ms": 5700,
+          "ends_at_ms": 5750,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5750,
+        "seq": 41,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2441,
+            "y_milli": 2099
+          },
+          "target": {
+            "x_milli": 2460,
+            "y_milli": 2228
+          },
+          "started_at_ms": 5750,
+          "ends_at_ms": 5800,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5750,
+        "seq": 42,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2107,
+            "y_milli": 1498
+          },
+          "target": {
+            "x_milli": 2154,
+            "y_milli": 1619
+          },
+          "started_at_ms": 5750,
+          "ends_at_ms": 5800,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5800,
+        "seq": 43,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2460,
+            "y_milli": 2228
+          },
+          "target": {
+            "x_milli": 2479,
+            "y_milli": 2356
+          },
+          "started_at_ms": 5800,
+          "ends_at_ms": 5850,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5800,
+        "seq": 44,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2154,
+            "y_milli": 1619
+          },
+          "target": {
+            "x_milli": 2202,
+            "y_milli": 1740
+          },
+          "started_at_ms": 5800,
+          "ends_at_ms": 5850,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5850,
+        "seq": 45,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2479,
+            "y_milli": 2356
+          },
+          "target": {
+            "x_milli": 2481,
+            "y_milli": 2486
+          },
+          "started_at_ms": 5850,
+          "ends_at_ms": 5900,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5850,
+        "seq": 46,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2202,
+            "y_milli": 1740
+          },
+          "target": {
+            "x_milli": 2249,
+            "y_milli": 1861
+          },
+          "started_at_ms": 5850,
+          "ends_at_ms": 5900,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5900,
+        "seq": 47,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2481,
+            "y_milli": 2486
+          },
+          "target": {
+            "x_milli": 2484,
+            "y_milli": 2616
+          },
+          "started_at_ms": 5900,
+          "ends_at_ms": 5950,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5900,
+        "seq": 48,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2249,
+            "y_milli": 1861
+          },
+          "target": {
+            "x_milli": 2297,
+            "y_milli": 1982
+          },
+          "started_at_ms": 5900,
+          "ends_at_ms": 5950,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5950,
+        "seq": 49,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2484,
+            "y_milli": 2616
+          },
+          "target": {
+            "x_milli": 2486,
+            "y_milli": 2746
+          },
+          "started_at_ms": 5950,
+          "ends_at_ms": 6000,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 5950,
+        "seq": 50,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2297,
+            "y_milli": 1982
+          },
+          "target": {
+            "x_milli": 2344,
+            "y_milli": 2103
+          },
+          "started_at_ms": 5950,
+          "ends_at_ms": 6000,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6000,
+        "seq": 51,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2486,
+            "y_milli": 2746
+          },
+          "target": {
+            "x_milli": 2488,
+            "y_milli": 2876
+          },
+          "started_at_ms": 6000,
+          "ends_at_ms": 6050,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6000,
+        "seq": 52,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2344,
+            "y_milli": 2103
+          },
+          "target": {
+            "x_milli": 2392,
+            "y_milli": 2224
+          },
+          "started_at_ms": 6000,
+          "ends_at_ms": 6050,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6050,
+        "seq": 53,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2488,
+            "y_milli": 2876
+          },
+          "target": {
+            "x_milli": 2491,
+            "y_milli": 3006
+          },
+          "started_at_ms": 6050,
+          "ends_at_ms": 6100,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6050,
+        "seq": 54,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2392,
+            "y_milli": 2224
+          },
+          "target": {
+            "x_milli": 2439,
+            "y_milli": 2345
+          },
+          "started_at_ms": 6050,
+          "ends_at_ms": 6100,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6100,
+        "seq": 55,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2491,
+            "y_milli": 3006
+          },
+          "target": {
+            "x_milli": 2493,
+            "y_milli": 3136
+          },
+          "started_at_ms": 6100,
+          "ends_at_ms": 6150,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6100,
+        "seq": 56,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2439,
+            "y_milli": 2345
+          },
+          "target": {
+            "x_milli": 2446,
+            "y_milli": 2475
+          },
+          "started_at_ms": 6100,
+          "ends_at_ms": 6150,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6150,
+        "seq": 57,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2493,
+            "y_milli": 3136
+          },
+          "target": {
+            "x_milli": 2496,
+            "y_milli": 3266
+          },
+          "started_at_ms": 6150,
+          "ends_at_ms": 6200,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6150,
+        "seq": 58,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2446,
+            "y_milli": 2475
+          },
+          "target": {
+            "x_milli": 2453,
+            "y_milli": 2605
+          },
+          "started_at_ms": 6150,
+          "ends_at_ms": 6200,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6200,
+        "seq": 59,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2496,
+            "y_milli": 3266
+          },
+          "target": {
+            "x_milli": 2496,
+            "y_milli": 3396
+          },
+          "started_at_ms": 6200,
+          "ends_at_ms": 6250,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6200,
+        "seq": 60,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2453,
+            "y_milli": 2605
+          },
+          "target": {
+            "x_milli": 2460,
+            "y_milli": 2734
+          },
+          "started_at_ms": 6200,
+          "ends_at_ms": 6250,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6250,
+        "seq": 61,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2496,
+            "y_milli": 3396
+          },
+          "target": {
+            "x_milli": 2497,
+            "y_milli": 3526
+          },
+          "started_at_ms": 6250,
+          "ends_at_ms": 6300,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6250,
+        "seq": 62,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2460,
+            "y_milli": 2734
+          },
+          "target": {
+            "x_milli": 2466,
+            "y_milli": 2864
+          },
+          "started_at_ms": 6250,
+          "ends_at_ms": 6300,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6300,
+        "seq": 63,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2497,
+            "y_milli": 3526
+          },
+          "target": {
+            "x_milli": 2497,
+            "y_milli": 3656
+          },
+          "started_at_ms": 6300,
+          "ends_at_ms": 6350,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6300,
+        "seq": 64,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2466,
+            "y_milli": 2864
+          },
+          "target": {
+            "x_milli": 2473,
+            "y_milli": 2994
+          },
+          "started_at_ms": 6300,
+          "ends_at_ms": 6350,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6350,
+        "seq": 65,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2497,
+            "y_milli": 3656
+          },
+          "target": {
+            "x_milli": 2497,
+            "y_milli": 3786
+          },
+          "started_at_ms": 6350,
+          "ends_at_ms": 6400,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6350,
+        "seq": 66,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2473,
+            "y_milli": 2994
+          },
+          "target": {
+            "x_milli": 2480,
+            "y_milli": 3124
+          },
+          "started_at_ms": 6350,
+          "ends_at_ms": 6400,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6400,
+        "seq": 67,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2497,
+            "y_milli": 3786
+          },
+          "target": {
+            "x_milli": 2498,
+            "y_milli": 3916
+          },
+          "started_at_ms": 6400,
+          "ends_at_ms": 6450,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6400,
+        "seq": 68,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2480,
+            "y_milli": 3124
+          },
+          "target": {
+            "x_milli": 2487,
+            "y_milli": 3254
+          },
+          "started_at_ms": 6400,
+          "ends_at_ms": 6450,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6450,
+        "seq": 69,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2498,
+            "y_milli": 3916
+          },
+          "target": {
+            "x_milli": 2498,
+            "y_milli": 4046
+          },
+          "started_at_ms": 6450,
+          "ends_at_ms": 6500,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6450,
+        "seq": 70,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2487,
+            "y_milli": 3254
+          },
+          "target": {
+            "x_milli": 2488,
+            "y_milli": 3384
+          },
+          "started_at_ms": 6450,
+          "ends_at_ms": 6500,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6500,
+        "seq": 71,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2498,
+            "y_milli": 4046
+          },
+          "target": {
+            "x_milli": 2499,
+            "y_milli": 4176
+          },
+          "started_at_ms": 6500,
+          "ends_at_ms": 6550,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6500,
+        "seq": 72,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2488,
+            "y_milli": 3384
+          },
+          "target": {
+            "x_milli": 2490,
+            "y_milli": 3514
+          },
+          "started_at_ms": 6500,
+          "ends_at_ms": 6550,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6550,
+        "seq": 73,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2499,
+            "y_milli": 4176
+          },
+          "target": {
+            "x_milli": 2499,
+            "y_milli": 4306
+          },
+          "started_at_ms": 6550,
+          "ends_at_ms": 6600,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6550,
+        "seq": 74,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2490,
+            "y_milli": 3514
+          },
+          "target": {
+            "x_milli": 2491,
+            "y_milli": 3644
+          },
+          "started_at_ms": 6550,
+          "ends_at_ms": 6600,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6600,
+        "seq": 75,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2499,
+            "y_milli": 4306
+          },
+          "target": {
+            "x_milli": 2499,
+            "y_milli": 4436
+          },
+          "started_at_ms": 6600,
+          "ends_at_ms": 6650,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6600,
+        "seq": 76,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2491,
+            "y_milli": 3644
+          },
+          "target": {
+            "x_milli": 2492,
+            "y_milli": 3774
+          },
+          "started_at_ms": 6600,
+          "ends_at_ms": 6650,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6650,
+        "seq": 77,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2499,
+            "y_milli": 4436
+          },
+          "target": {
+            "x_milli": 2499,
+            "y_milli": 4566
+          },
+          "started_at_ms": 6650,
+          "ends_at_ms": 6700,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6650,
+        "seq": 78,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2492,
+            "y_milli": 3774
+          },
+          "target": {
+            "x_milli": 2494,
+            "y_milli": 3904
+          },
+          "started_at_ms": 6650,
+          "ends_at_ms": 6700,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6700,
+        "seq": 79,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2499,
+            "y_milli": 4566
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 4696
+          },
+          "started_at_ms": 6700,
+          "ends_at_ms": 6750,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6700,
+        "seq": 80,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2494,
+            "y_milli": 3904
+          },
+          "target": {
+            "x_milli": 2495,
+            "y_milli": 4034
+          },
+          "started_at_ms": 6700,
+          "ends_at_ms": 6750,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6750,
+        "seq": 81,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 4696
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 4826
+          },
+          "started_at_ms": 6750,
+          "ends_at_ms": 6800,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6750,
+        "seq": 82,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2495,
+            "y_milli": 4034
+          },
+          "target": {
+            "x_milli": 2496,
+            "y_milli": 4164
+          },
+          "started_at_ms": 6750,
+          "ends_at_ms": 6800,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6800,
+        "seq": 83,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 4826
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 4956
+          },
+          "started_at_ms": 6800,
+          "ends_at_ms": 6850,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6800,
+        "seq": 84,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2496,
+            "y_milli": 4164
+          },
+          "target": {
+            "x_milli": 2498,
+            "y_milli": 4294
+          },
+          "started_at_ms": 6800,
+          "ends_at_ms": 6850,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6850,
+        "seq": 85,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 4956
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 5086
+          },
+          "started_at_ms": 6850,
+          "ends_at_ms": 6900,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6850,
+        "seq": 86,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2498,
+            "y_milli": 4294
+          },
+          "target": {
+            "x_milli": 2498,
+            "y_milli": 4424
+          },
+          "started_at_ms": 6850,
+          "ends_at_ms": 6900,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6900,
+        "seq": 87,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 5086
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 5216
+          },
+          "started_at_ms": 6900,
+          "ends_at_ms": 6950,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6900,
+        "seq": 88,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2498,
+            "y_milli": 4424
+          },
+          "target": {
+            "x_milli": 2498,
+            "y_milli": 4554
+          },
+          "started_at_ms": 6900,
+          "ends_at_ms": 6950,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6950,
+        "seq": 89,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 5216
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 5346
+          },
+          "started_at_ms": 6950,
+          "ends_at_ms": 7000,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 6950,
+        "seq": 90,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2498,
+            "y_milli": 4554
+          },
+          "target": {
+            "x_milli": 2499,
+            "y_milli": 4684
+          },
+          "started_at_ms": 6950,
+          "ends_at_ms": 7000,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7000,
+        "seq": 91,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 5346
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 5476
+          },
+          "started_at_ms": 7000,
+          "ends_at_ms": 7050,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7000,
+        "seq": 92,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2499,
+            "y_milli": 4684
+          },
+          "target": {
+            "x_milli": 2499,
+            "y_milli": 4814
+          },
+          "started_at_ms": 7000,
+          "ends_at_ms": 7050,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7050,
+        "seq": 93,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 5476
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 5606
+          },
+          "started_at_ms": 7050,
+          "ends_at_ms": 7100,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7050,
+        "seq": 94,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2499,
+            "y_milli": 4814
+          },
+          "target": {
+            "x_milli": 2499,
+            "y_milli": 4944
+          },
+          "started_at_ms": 7050,
+          "ends_at_ms": 7100,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7100,
+        "seq": 95,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 5606
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 5736
+          },
+          "started_at_ms": 7100,
+          "ends_at_ms": 7150,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7100,
+        "seq": 96,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2499,
+            "y_milli": 4944
+          },
+          "target": {
+            "x_milli": 2499,
+            "y_milli": 5074
+          },
+          "started_at_ms": 7100,
+          "ends_at_ms": 7150,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7150,
+        "seq": 97,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 5736
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 5866
+          },
+          "started_at_ms": 7150,
+          "ends_at_ms": 7200,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7150,
+        "seq": 98,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2499,
+            "y_milli": 5074
+          },
+          "target": {
+            "x_milli": 2499,
+            "y_milli": 5204
+          },
+          "started_at_ms": 7150,
+          "ends_at_ms": 7200,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7200,
+        "seq": 99,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 5866
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 5996
+          },
+          "started_at_ms": 7200,
+          "ends_at_ms": 7250,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7200,
+        "seq": 100,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2499,
+            "y_milli": 5204
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 5334
+          },
+          "started_at_ms": 7200,
+          "ends_at_ms": 7250,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7250,
+        "seq": 101,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 5996
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 6126
+          },
+          "started_at_ms": 7250,
+          "ends_at_ms": 7300,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7250,
+        "seq": 102,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 5334
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 5464
+          },
+          "started_at_ms": 7250,
+          "ends_at_ms": 7300,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7250,
+        "seq": 103,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 7300,
+        "seq": 104,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 6126
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 6256
+          },
+          "started_at_ms": 7300,
+          "ends_at_ms": 7350,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7300,
+        "seq": 105,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 5464
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 5594
+          },
+          "started_at_ms": 7300,
+          "ends_at_ms": 7350,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7300,
+        "seq": 106,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 7350,
+        "seq": 107,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 5594
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 5724
+          },
+          "started_at_ms": 7350,
+          "ends_at_ms": 7400,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7400,
+        "seq": 108,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 5724
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 5854
+          },
+          "started_at_ms": 7400,
+          "ends_at_ms": 7450,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7450,
+        "seq": 109,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 103
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 7450,
+        "seq": 110,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 109
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "before": 0,
+          "after": 10,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 7450,
+        "seq": 111,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 109
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "before": 10,
+          "after": 11,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 7450,
+        "seq": 112,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 109
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "delta": -11,
+          "hp_before": 90,
+          "hp_after": 79,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 12,
+          "final_damage": 11,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 12,
+              "final_damage": 11,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 7450,
+        "seq": 113,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 109
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "before": 0,
+          "after": 1,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 7450,
+        "seq": 114,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 5854
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 5984
+          },
+          "started_at_ms": 7450,
+          "ends_at_ms": 7500,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7500,
+        "seq": 115,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 5984
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 6114
+          },
+          "started_at_ms": 7500,
+          "ends_at_ms": 7550,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7520,
+        "seq": 116,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 106
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 7520,
+        "seq": 117,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 116
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "before": 1,
+          "after": 11,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 7520,
+        "seq": 118,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 116
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 350,
+          "hp_after": 341,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 7550,
+        "seq": 119,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 6114
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 6244
+          },
+          "started_at_ms": 7550,
+          "ends_at_ms": 7600,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7600,
+        "seq": 120,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "MovementSegmentStarted",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "start": {
+            "x_milli": 2500,
+            "y_milli": 6244
+          },
+          "target": {
+            "x_milli": 2500,
+            "y_milli": 6374
+          },
+          "started_at_ms": 7600,
+          "ends_at_ms": 7650,
+          "end_kind": "Boundary"
+        }
+      },
+      {
+        "time_ms": 7600,
+        "seq": 121,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 7820,
+        "seq": 122,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 121
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 7820,
+        "seq": 123,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 122
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "before": 0,
+          "after": 10,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 7820,
+        "seq": 124,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 122
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 341,
+          "hp_after": 332,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 8750,
+        "seq": 125,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 8800,
+        "seq": 126,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 8950,
+        "seq": 127,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 125
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 8950,
+        "seq": 128,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 127
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "before": 11,
+          "after": 21,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 8950,
+        "seq": 129,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 127
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "before": 21,
+          "after": 22,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 8950,
+        "seq": 130,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 127
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "delta": -11,
+          "hp_before": 90,
+          "hp_after": 79,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 12,
+          "final_damage": 11,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 12,
+              "final_damage": 11,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 8950,
+        "seq": 131,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 127
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "before": 10,
+          "after": 11,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 9020,
+        "seq": 132,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 126
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 9020,
+        "seq": 133,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 132
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "before": 11,
+          "after": 21,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 9020,
+        "seq": 134,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 132
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 332,
+          "hp_after": 323,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 9100,
+        "seq": 135,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 9320,
+        "seq": 136,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 135
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 9320,
+        "seq": 137,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 136
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "before": 11,
+          "after": 21,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 9320,
+        "seq": 138,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 136
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 323,
+          "hp_after": 314,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 10250,
+        "seq": 139,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 10300,
+        "seq": 140,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 10450,
+        "seq": 141,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 139
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 10450,
+        "seq": 142,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 141
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "before": 22,
+          "after": 32,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 10450,
+        "seq": 143,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 141
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "before": 32,
+          "after": 33,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 10450,
+        "seq": 144,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 141
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "delta": -11,
+          "hp_before": 79,
+          "hp_after": 68,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 12,
+          "final_damage": 11,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 12,
+              "final_damage": 11,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 10450,
+        "seq": 145,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 141
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "before": 21,
+          "after": 22,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 10520,
+        "seq": 146,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 140
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 10520,
+        "seq": 147,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 146
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "before": 21,
+          "after": 31,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 10520,
+        "seq": 148,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 146
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 314,
+          "hp_after": 305,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 10600,
+        "seq": 149,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 10820,
+        "seq": 150,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 149
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 10820,
+        "seq": 151,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 150
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "before": 22,
+          "after": 32,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 10820,
+        "seq": 152,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 150
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 305,
+          "hp_after": 296,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 11750,
+        "seq": 153,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 11800,
+        "seq": 154,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 11950,
+        "seq": 155,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 153
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 11950,
+        "seq": 156,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 155
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "before": 33,
+          "after": 43,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 11950,
+        "seq": 157,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 155
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "before": 43,
+          "after": 44,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 11950,
+        "seq": 158,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 155
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "delta": -11,
+          "hp_before": 68,
+          "hp_after": 57,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 12,
+          "final_damage": 11,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 12,
+              "final_damage": 11,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 11950,
+        "seq": 159,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 155
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "before": 32,
+          "after": 33,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 12020,
+        "seq": 160,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 154
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 12020,
+        "seq": 161,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 160
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "before": 31,
+          "after": 41,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 12020,
+        "seq": 162,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 160
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 296,
+          "hp_after": 287,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 12100,
+        "seq": 163,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 12320,
+        "seq": 164,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 163
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 12320,
+        "seq": 165,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 164
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "before": 33,
+          "after": 43,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 12320,
+        "seq": 166,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 164
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 287,
+          "hp_after": 278,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 13250,
+        "seq": 167,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 13300,
+        "seq": 168,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 13450,
+        "seq": 169,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 167
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 13450,
+        "seq": 170,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 169
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "before": 44,
+          "after": 54,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 13450,
+        "seq": 171,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 169
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "before": 54,
+          "after": 55,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 13450,
+        "seq": 172,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 169
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "delta": -11,
+          "hp_before": 57,
+          "hp_after": 46,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 12,
+          "final_damage": 11,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 12,
+              "final_damage": 11,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 13450,
+        "seq": 173,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 169
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "before": 43,
+          "after": 44,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 13520,
+        "seq": 174,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 168
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 13520,
+        "seq": 175,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 174
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "before": 41,
+          "after": 51,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 13520,
+        "seq": 176,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 174
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 278,
+          "hp_after": 269,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 13600,
+        "seq": 177,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 13820,
+        "seq": 178,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 177
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 13820,
+        "seq": 179,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 178
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "before": 44,
+          "after": 54,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 13820,
+        "seq": 180,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 178
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 269,
+          "hp_after": 260,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 14750,
+        "seq": 181,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 14800,
+        "seq": 182,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 14950,
+        "seq": 183,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 181
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 14950,
+        "seq": 184,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 183
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "before": 55,
+          "after": 65,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 14950,
+        "seq": 185,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 183
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "before": 65,
+          "after": 66,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 14950,
+        "seq": 186,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 183
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "delta": -11,
+          "hp_before": 46,
+          "hp_after": 35,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 12,
+          "final_damage": 11,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 12,
+              "final_damage": 11,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 14950,
+        "seq": 187,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 183
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "before": 54,
+          "after": 55,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 15020,
+        "seq": 188,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 182
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 15020,
+        "seq": 189,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 188
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "before": 51,
+          "after": 61,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 15020,
+        "seq": 190,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 188
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 260,
+          "hp_after": 251,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 15100,
+        "seq": 191,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 15320,
+        "seq": 192,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 191
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 15320,
+        "seq": 193,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 192
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "before": 55,
+          "after": 65,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 15320,
+        "seq": 194,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 192
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 251,
+          "hp_after": 242,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 16250,
+        "seq": 195,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 16300,
+        "seq": 196,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 16450,
+        "seq": 197,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 195
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 16450,
+        "seq": 198,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 197
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "before": 66,
+          "after": 76,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 16450,
+        "seq": 199,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 197
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "before": 76,
+          "after": 77,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 16450,
+        "seq": 200,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 197
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "delta": -11,
+          "hp_before": 35,
+          "hp_after": 24,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 12,
+          "final_damage": 11,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 12,
+              "final_damage": 11,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 16450,
+        "seq": 201,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 197
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "before": 65,
+          "after": 66,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 16520,
+        "seq": 202,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 196
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 16520,
+        "seq": 203,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 202
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "before": 61,
+          "after": 71,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 16520,
+        "seq": 204,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 202
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 242,
+          "hp_after": 233,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 16600,
+        "seq": 205,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 16820,
+        "seq": 206,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 205
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 16820,
+        "seq": 207,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 206
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "before": 66,
+          "after": 76,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 16820,
+        "seq": 208,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 206
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 233,
+          "hp_after": 224,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 17750,
+        "seq": 209,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 17800,
+        "seq": 210,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 17950,
+        "seq": 211,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 209
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 17950,
+        "seq": 212,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 211
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "before": 77,
+          "after": 87,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 17950,
+        "seq": 213,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 211
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "before": 87,
+          "after": 88,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 17950,
+        "seq": 214,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 211
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "delta": -11,
+          "hp_before": 24,
+          "hp_after": 13,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 12,
+          "final_damage": 11,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 12,
+              "final_damage": 11,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 17950,
+        "seq": 215,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 211
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "before": 76,
+          "after": 77,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 18020,
+        "seq": 216,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 210
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 18020,
+        "seq": 217,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 216
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "before": 71,
+          "after": 81,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 18020,
+        "seq": 218,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 216
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 224,
+          "hp_after": 215,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 18100,
+        "seq": 219,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 18320,
+        "seq": 220,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 219
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 18320,
+        "seq": 221,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 220
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "before": 77,
+          "after": 87,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 18320,
+        "seq": 222,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 220
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 215,
+          "hp_after": 206,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 19250,
+        "seq": 223,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 19300,
+        "seq": 224,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 19450,
+        "seq": 225,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 223
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 19450,
+        "seq": 226,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 225
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "before": 88,
+          "after": 98,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 19450,
+        "seq": 227,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 225
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "before": 98,
+          "after": 99,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 19450,
+        "seq": 228,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 225
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "delta": -11,
+          "hp_before": 13,
+          "hp_after": 2,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 12,
+          "final_damage": 11,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 12,
+              "final_damage": 11,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 19450,
+        "seq": 229,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 225
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "before": 87,
+          "after": 88,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 19520,
+        "seq": 230,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 224
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 19520,
+        "seq": 231,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 230
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "before": 81,
+          "after": 91,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 19520,
+        "seq": 232,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 230
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 206,
+          "hp_after": 197,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 19600,
+        "seq": 233,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 19820,
+        "seq": 234,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 233
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 19820,
+        "seq": 235,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 234
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "before": 88,
+          "after": 98,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 19820,
+        "seq": 236,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 234
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 197,
+          "hp_after": 188,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 20750,
+        "seq": 237,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 20800,
+        "seq": 238,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 20950,
+        "seq": 239,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 237
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 20950,
+        "seq": 240,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 239
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "before": 99,
+          "after": 100,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 20950,
+        "seq": 241,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 239
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "delta": -2,
+          "hp_before": 2,
+          "hp_after": 0,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 12,
+          "final_damage": 11,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 12,
+              "final_damage": 11,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 20950,
+        "seq": 242,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 239
+        },
+        "event": {
+          "type": "MovementStopped",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "reason": "died",
+          "world_position": {
+            "x_milli": 2500,
+            "y_milli": 6374
+          }
+        }
+      },
+      {
+        "time_ms": 20950,
+        "seq": 243,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 239
+        },
+        "event": {
+          "type": "UnitDied",
+          "unit_instance_id": "a1fbb727-5065-44b3-b248-2cd9e88a484a",
+          "owner": "Opponent",
+          "killer_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "world_position": {
+            "x_milli": 2500,
+            "y_milli": 6374
+          },
+          "position": {
+            "x": 2,
+            "y": 6
+          }
+        }
+      },
+      {
+        "time_ms": 21020,
+        "seq": 244,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 238
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 21020,
+        "seq": 245,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 244
+        },
+        "event": {
+          "type": "ResonanceChanged",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "before": 91,
+          "after": 100,
+          "max": 100
+        }
+      },
+      {
+        "time_ms": 21020,
+        "seq": 246,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 244
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 188,
+          "hp_after": 179,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 22250,
+        "seq": 247,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 22300,
+        "seq": 248,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 22450,
+        "seq": 249,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 247
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 22450,
+        "seq": 250,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 249
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "delta": -11,
+          "hp_before": 79,
+          "hp_after": 68,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 12,
+          "final_damage": 11,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 12,
+              "final_damage": 11,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 22520,
+        "seq": 251,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 248
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 22520,
+        "seq": 252,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 251
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 179,
+          "hp_after": 170,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 23750,
+        "seq": 253,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 23800,
+        "seq": 254,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 23950,
+        "seq": 255,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 253
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 23950,
+        "seq": 256,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 255
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "delta": -11,
+          "hp_before": 68,
+          "hp_after": 57,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 12,
+          "final_damage": 11,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 12,
+              "final_damage": 11,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 24020,
+        "seq": 257,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 254
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 24020,
+        "seq": 258,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 257
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 170,
+          "hp_after": 161,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 25250,
+        "seq": 259,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 25300,
+        "seq": 260,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 25450,
+        "seq": 261,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 259
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 25450,
+        "seq": 262,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 261
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "delta": -11,
+          "hp_before": 57,
+          "hp_after": 46,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 12,
+          "final_damage": 11,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 12,
+              "final_damage": 11,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 25520,
+        "seq": 263,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 260
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 25520,
+        "seq": 264,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 263
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 161,
+          "hp_after": 152,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 26750,
+        "seq": 265,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 26800,
+        "seq": 266,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 26950,
+        "seq": 267,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 265
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 26950,
+        "seq": 268,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 267
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "delta": -11,
+          "hp_before": 46,
+          "hp_after": 35,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 12,
+          "final_damage": 11,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 12,
+              "final_damage": 11,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 27020,
+        "seq": 269,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 266
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 27020,
+        "seq": 270,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 269
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 152,
+          "hp_after": 143,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 28250,
+        "seq": 271,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 28300,
+        "seq": 272,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 28450,
+        "seq": 273,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 271
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 28450,
+        "seq": 274,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 273
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "delta": -11,
+          "hp_before": 35,
+          "hp_after": 24,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 12,
+          "final_damage": 11,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 12,
+              "final_damage": 11,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 28520,
+        "seq": 275,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 272
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 28520,
+        "seq": 276,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 275
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 143,
+          "hp_after": 134,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 29750,
+        "seq": 277,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 29800,
+        "seq": 278,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 29950,
+        "seq": 279,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 277
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 29950,
+        "seq": 280,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 279
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "delta": -11,
+          "hp_before": 24,
+          "hp_after": 13,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 12,
+          "final_damage": 11,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 12,
+              "final_damage": 11,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 30020,
+        "seq": 281,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 278
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 30020,
+        "seq": 282,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 281
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 134,
+          "hp_after": 125,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 31250,
+        "seq": 283,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 31300,
+        "seq": 284,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 31450,
+        "seq": 285,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 283
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 31450,
+        "seq": 286,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 285
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "delta": -11,
+          "hp_before": 13,
+          "hp_after": 2,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 12,
+          "final_damage": 11,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 12,
+              "final_damage": 11,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 31520,
+        "seq": 287,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 284
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 31520,
+        "seq": 288,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 287
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "delta": -9,
+          "hp_before": 125,
+          "hp_after": 116,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 10,
+          "final_damage": 9,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 10,
+              "final_damage": 9,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 32750,
+        "seq": 289,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 32800,
+        "seq": 290,
+        "cause": {
+          "cause_type": "root",
+          "kind": "period"
+        },
+        "event": {
+          "type": "AttackStart",
+          "attacker_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "target_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 32950,
+        "seq": 291,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 289
+        },
+        "event": {
+          "type": "AttackResolve",
+          "attacker_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "kind": "Auto",
+          "delivery": "instant"
+        }
+      },
+      {
+        "time_ms": 32950,
+        "seq": 292,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 291
+        },
+        "event": {
+          "type": "HpChanged",
+          "source_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "target_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "delta": -2,
+          "hp_before": 2,
+          "hp_after": 0,
+          "reason": "BasicAttack",
+          "damage_source": "BasicAttack",
+          "damage_type": "Physical",
+          "raw_damage": 12,
+          "final_damage": 11,
+          "damage_breakdown": [
+            {
+              "damage_type": "Physical",
+              "raw_damage": 12,
+              "final_damage": 11,
+              "critical": false
+            }
+          ],
+          "critical": false,
+          "feedback_tags": []
+        }
+      },
+      {
+        "time_ms": 32950,
+        "seq": 293,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 291
+        },
+        "event": {
+          "type": "MovementStopped",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "reason": "died",
+          "world_position": {
+            "x_milli": 2500,
+            "y_milli": 6256
+          }
+        }
+      },
+      {
+        "time_ms": 32950,
+        "seq": 294,
+        "cause": {
+          "cause_type": "parent",
+          "seq": 291
+        },
+        "event": {
+          "type": "UnitDied",
+          "unit_instance_id": "3a9fe0ed-8b96-4e1f-9288-0e9335733045",
+          "owner": "Opponent",
+          "killer_instance_id": "8b21590c-e914-4f8d-8d60-6251cfbbbdef",
+          "world_position": {
+            "x_milli": 2500,
+            "y_milli": 6256
+          },
+          "position": {
+            "x": 2,
+            "y": 6
+          }
+        }
+      },
+      {
+        "time_ms": 32950,
+        "seq": 295,
+        "cause": {
+          "cause_type": "root",
+          "kind": "system"
+        },
+        "event": {
+          "type": "BattleEnd",
+          "winner": "Player"
+        }
+      }
+    ]
+  }
+}

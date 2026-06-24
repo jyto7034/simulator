@@ -6,10 +6,24 @@ use crate::{game::behavior::ActionKind, game::resources::GameState};
 /// payload 유효성은 각 액션 validator가 별도로 검사한다.
 pub struct ActionScheduler;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct AllowedActionContext {
+    pub reward_can_skip: bool,
+    pub in_maintenance_node: bool,
+    pub run_checkpoint_can_load: bool,
+}
+
 impl ActionScheduler {
     /// 게임 상태에 따라 허용된 행동 종류 반환
     pub fn get_allowed_actions(state: &GameState) -> Vec<ActionKind> {
-        match state {
+        Self::get_allowed_actions_for_context(state, AllowedActionContext::default())
+    }
+
+    pub fn get_allowed_actions_for_context(
+        state: &GameState,
+        context: AllowedActionContext,
+    ) -> Vec<ActionKind> {
+        let mut allowed = match state {
             GameState::NotStarted => {
                 // 게임 시작 전: StartNewGame만 가능
                 vec![ActionKind::StartNewGame]
@@ -18,7 +32,7 @@ impl ActionScheduler {
                 vec![ActionKind::SelectStarterEmployees]
             }
             GameState::ViewingMap => {
-                vec![
+                let mut actions = vec![
                     ActionKind::RequestMapData,
                     ActionKind::SelectMapNode,
                     ActionKind::EquipItem,
@@ -27,7 +41,11 @@ impl ActionScheduler {
                     ActionKind::EquipSkillFragment,
                     ActionKind::UnequipSkillFragment,
                     ActionKind::MoveRosterUnit,
-                ]
+                ];
+                if context.run_checkpoint_can_load {
+                    actions.push(ActionKind::LoadRunCheckpoint);
+                }
+                actions
             }
             GameState::NodeConfirm { .. } => {
                 vec![
@@ -46,8 +64,6 @@ impl ActionScheduler {
                 vec![
                     ActionKind::CompleteNode,
                     ActionKind::ChooseSupport,
-                    ActionKind::SelectSupportTarget,
-                    ActionKind::SelectMedicalTreatment,
                     ActionKind::RecruitEmployee,
                     ActionKind::RequestEmergencySupplies,
                     ActionKind::OpenHeadquartersShop,
@@ -76,6 +92,8 @@ impl ActionScheduler {
             GameState::InBattle { .. } => {
                 vec![
                     ActionKind::RequestBattleState,
+                    ActionKind::RecoverBattleSetupLoss,
+                    ActionKind::RequestDeploymentRangePreview,
                     ActionKind::DeployUnit,
                     ActionKind::WithdrawUnit,
                     ActionKind::ActivateSkill,
@@ -88,7 +106,31 @@ impl ActionScheduler {
             GameState::GameOver | GameState::RunComplete | GameState::RunFailed { .. } => {
                 vec![]
             }
+        };
+
+        if matches!(state, GameState::InReward { .. }) && !context.reward_can_skip {
+            allowed.retain(|action| *action != ActionKind::ExitReward);
         }
+
+        if matches!(state, GameState::InNode { .. }) && context.in_maintenance_node {
+            for action in [
+                ActionKind::EquipItem,
+                ActionKind::UnEquipItem,
+                ActionKind::EquipSkillFragment,
+                ActionKind::UnequipSkillFragment,
+                ActionKind::UpgradeSkillFragment,
+                ActionKind::AwakenSkillFragment,
+                ActionKind::DismantleSkillFragment,
+                ActionKind::DismantleEquipment,
+                ActionKind::EnhanceEquipment,
+            ] {
+                if !allowed.contains(&action) {
+                    allowed.push(action);
+                }
+            }
+        }
+
+        allowed
     }
 }
 
@@ -144,8 +186,10 @@ mod tests {
         };
         let allowed = ActionScheduler::get_allowed_actions(&state);
 
-        assert_eq!(allowed.len(), 8);
+        assert_eq!(allowed.len(), 10);
         assert!(allowed.contains(&ActionKind::RequestBattleState));
+        assert!(allowed.contains(&ActionKind::RecoverBattleSetupLoss));
+        assert!(allowed.contains(&ActionKind::RequestDeploymentRangePreview));
         assert!(allowed.contains(&ActionKind::DeployUnit));
         assert!(allowed.contains(&ActionKind::WithdrawUnit));
         assert!(allowed.contains(&ActionKind::ActivateSkill));
@@ -223,5 +267,92 @@ mod tests {
         for state in states {
             let _ = ActionScheduler::get_allowed_actions(&state);
         }
+    }
+
+    #[test]
+    fn reward_context_hides_exit_reward_when_reward_cannot_skip() {
+        let state = GameState::InReward {
+            reward_uuid: Uuid::nil(),
+        };
+
+        let allowed = ActionScheduler::get_allowed_actions_for_context(
+            &state,
+            AllowedActionContext {
+                reward_can_skip: false,
+                in_maintenance_node: false,
+                run_checkpoint_can_load: false,
+            },
+        );
+
+        assert!(allowed.contains(&ActionKind::SelectReward));
+        assert!(allowed.contains(&ActionKind::ClaimReward));
+        assert!(!allowed.contains(&ActionKind::ExitReward));
+    }
+
+    #[test]
+    fn reward_context_keeps_exit_reward_when_reward_can_skip() {
+        let state = GameState::InReward {
+            reward_uuid: Uuid::nil(),
+        };
+
+        let allowed = ActionScheduler::get_allowed_actions_for_context(
+            &state,
+            AllowedActionContext {
+                reward_can_skip: true,
+                in_maintenance_node: false,
+                run_checkpoint_can_load: false,
+            },
+        );
+
+        assert!(allowed.contains(&ActionKind::ExitReward));
+    }
+
+    #[test]
+    fn maintenance_context_adds_loadout_and_maintenance_actions_to_in_node() {
+        let state = GameState::InNode {
+            node_id: MapNodeId::new(Uuid::nil()),
+            kind_id: MapNodeKindId::new("maintenance"),
+            category: MapNodeCategory::Maintenance,
+        };
+
+        let allowed = ActionScheduler::get_allowed_actions_for_context(
+            &state,
+            AllowedActionContext {
+                reward_can_skip: false,
+                in_maintenance_node: true,
+                run_checkpoint_can_load: false,
+            },
+        );
+
+        for action in [
+            ActionKind::EquipItem,
+            ActionKind::UnEquipItem,
+            ActionKind::EquipSkillFragment,
+            ActionKind::UnequipSkillFragment,
+            ActionKind::UpgradeSkillFragment,
+            ActionKind::AwakenSkillFragment,
+            ActionKind::DismantleSkillFragment,
+            ActionKind::DismantleEquipment,
+            ActionKind::EnhanceEquipment,
+        ] {
+            assert!(allowed.contains(&action), "missing {action:?}");
+        }
+    }
+
+    #[test]
+    fn maintenance_context_does_not_add_actions_outside_in_node() {
+        let state = GameState::ViewingMap;
+
+        let allowed = ActionScheduler::get_allowed_actions_for_context(
+            &state,
+            AllowedActionContext {
+                reward_can_skip: false,
+                in_maintenance_node: true,
+                run_checkpoint_can_load: false,
+            },
+        );
+
+        assert!(!allowed.contains(&ActionKind::UpgradeSkillFragment));
+        assert!(!allowed.contains(&ActionKind::EnhanceEquipment));
     }
 }

@@ -1,3 +1,5 @@
+use super::state::RunCheckpointPayload;
+use super::support::StagedSupportEffect;
 use super::{map_encounters, GameCore, RunState};
 use crate::game::behavior::{BehaviorResult, GameError};
 use crate::game::map::{
@@ -5,6 +7,30 @@ use crate::game::map::{
     MapProgression, MapViewDto, RunMap, RunProgression,
 };
 use crate::game::resources::{ActiveNodeContent, GameState};
+
+pub(super) enum StagedNodeCompletion {
+    NodeCompleted {
+        map: RunMap,
+        progression: MapProgression,
+        completing_node_id: Option<MapNodeId>,
+        support_effect: StagedSupportEffect,
+        view: MapViewDto,
+    },
+    ActComplete {
+        next_map: RunMap,
+        next_progression: MapProgression,
+        run_progression: RunProgression,
+        support_effect: StagedSupportEffect,
+        view: MapViewDto,
+    },
+    RunComplete {
+        map: RunMap,
+        progression: MapProgression,
+        run_progression: RunProgression,
+        support_effect: StagedSupportEffect,
+        view: MapViewDto,
+    },
+}
 
 impl GameCore {
     pub(super) fn current_map_view(&self) -> Result<MapViewDto, GameError> {
@@ -150,6 +176,14 @@ impl GameCore {
     }
 
     pub(super) fn handle_complete_node(&mut self) -> Result<BehaviorResult, GameError> {
+        let completion = self.plan_complete_current_node(true)?;
+        self.commit_staged_node_completion(completion)
+    }
+
+    pub(super) fn plan_complete_current_node(
+        &mut self,
+        apply_support_effect: bool,
+    ) -> Result<StagedNodeCompletion, GameError> {
         if self
             .state
             .active_node_content
@@ -164,7 +198,11 @@ impl GameCore {
         let run_progression = self.run_state()?.run_progression.clone();
         let completing_node_id = progression.current_node_id;
 
-        self.apply_current_support_node_effect(&map, &progression)?;
+        let support_effect = if apply_support_effect {
+            self.plan_current_support_node_effect(&map, &progression)?
+        } else {
+            StagedSupportEffect::None
+        };
 
         let boss_completed = progression
             .complete_current_node(&mut map)
@@ -172,19 +210,12 @@ impl GameCore {
 
         if !boss_completed {
             let view = progression.view(&map, &run_progression);
-            if let Some(run) = self.state.run.as_mut() {
-                run.map = map;
-                run.map_progression = progression;
-                if let Some(node_id) = completing_node_id {
-                    run.clear_abnormality_attempt(node_id);
-                }
-            }
-            self.state.node_session = None;
-            self.state.active_node_content = None;
-            self.transition_to(GameState::ViewingMap)?;
-            return Ok(BehaviorResult::NodeCompleted {
-                map: view,
-                outcome: None,
+            return Ok(StagedNodeCompletion::NodeCompleted {
+                map,
+                progression,
+                completing_node_id,
+                support_effect,
+                view,
             });
         }
 
@@ -193,25 +224,159 @@ impl GameCore {
         if run_progression.advance_act() {
             let (next_map, next_progression) = self.generate_current_act_map(&run_progression);
             let view = next_progression.view(&next_map, &run_progression);
-            self.state.run = Some(RunState::new(
+            Ok(StagedNodeCompletion::ActComplete {
                 next_map,
                 next_progression,
-                run_progression.clone(),
-            ));
-            self.state.node_session = None;
-            self.state.active_node_content = None;
-            self.transition_to(GameState::ViewingMap)?;
-            Ok(BehaviorResult::ActComplete {
-                act_index: run_progression.act_index,
-                map: view,
+                run_progression,
+                support_effect,
+                view,
             })
         } else {
             let view = progression.view(&map, &run_progression);
-            self.state.run = Some(RunState::new(map, progression, run_progression));
-            self.state.node_session = None;
-            self.state.active_node_content = None;
-            self.transition_to(GameState::RunComplete)?;
-            Ok(BehaviorResult::RunComplete { map: view })
+            Ok(StagedNodeCompletion::RunComplete {
+                map,
+                progression,
+                run_progression,
+                support_effect,
+                view,
+            })
         }
+    }
+
+    pub(super) fn commit_staged_node_completion(
+        &mut self,
+        completion: StagedNodeCompletion,
+    ) -> Result<BehaviorResult, GameError> {
+        match completion {
+            StagedNodeCompletion::NodeCompleted {
+                map,
+                progression,
+                completing_node_id,
+                support_effect,
+                view,
+            } => {
+                if let Some(run) = self.state.run.as_mut() {
+                    run.map = map;
+                    run.map_progression = progression;
+                    if let Some(node_id) = completing_node_id {
+                        run.clear_abnormality_attempt(node_id);
+                    }
+                }
+                self.apply_staged_support_effect(support_effect)?;
+                self.state.node_session = None;
+                self.state.active_node_content = None;
+                self.transition_to(GameState::ViewingMap)?;
+                if support_effect == StagedSupportEffect::SavePoint {
+                    self.save_run_checkpoint()?;
+                }
+                return Ok(BehaviorResult::NodeCompleted {
+                    map: view,
+                    outcome: None,
+                });
+            }
+            StagedNodeCompletion::ActComplete {
+                next_map,
+                next_progression,
+                run_progression,
+                support_effect,
+                view,
+            } => {
+                self.state.run = Some(RunState::new(
+                    next_map,
+                    next_progression,
+                    run_progression.clone(),
+                ));
+                self.apply_staged_support_effect(support_effect)?;
+                self.state.node_session = None;
+                self.state.active_node_content = None;
+                self.transition_to(GameState::ViewingMap)?;
+                if support_effect == StagedSupportEffect::SavePoint {
+                    self.save_run_checkpoint()?;
+                }
+                Ok(BehaviorResult::ActComplete {
+                    act_index: run_progression.act_index,
+                    map: view,
+                })
+            }
+            StagedNodeCompletion::RunComplete {
+                map,
+                progression,
+                run_progression,
+                support_effect,
+                view,
+            } => {
+                self.state.run = Some(RunState::new(map, progression, run_progression));
+                self.apply_staged_support_effect(support_effect)?;
+                self.state.node_session = None;
+                self.state.active_node_content = None;
+                self.transition_to(GameState::RunComplete)?;
+                if support_effect == StagedSupportEffect::SavePoint {
+                    self.save_run_checkpoint()?;
+                }
+                Ok(BehaviorResult::RunComplete { map: view })
+            }
+        }
+    }
+
+    pub(super) fn save_run_checkpoint(&mut self) -> Result<(), GameError> {
+        let run = self.run_state()?;
+        self.state.run_checkpoint.payload = Some(RunCheckpointPayload {
+            map: run.map.clone(),
+            map_progression: run.map_progression.clone(),
+            run_progression: run.run_progression.clone(),
+            combat_previews: run.combat_previews.clone(),
+            abnormality_attempts: run.abnormality_attempts.clone(),
+            enkephalin: self.state.enkephalin.clone(),
+            inventory: self.state.inventory.clone(),
+            roster_order: self.state.roster_order.clone(),
+            roster: self.state.roster.clone(),
+            skill_fragments: self.state.skill_fragments.clone(),
+            uuid_manager: self.state.uuid_manager.clone(),
+        });
+        self.refresh_allowed_actions();
+        Ok(())
+    }
+
+    pub(super) fn handle_load_run_checkpoint(&mut self) -> Result<BehaviorResult, GameError> {
+        if !matches!(self.state.game_state, GameState::ViewingMap) {
+            return Err(GameError::InvalidAction);
+        }
+        if !self.state.run_checkpoint.can_load() {
+            return Err(GameError::InvalidAction);
+        }
+        let payload = self
+            .state
+            .run_checkpoint
+            .payload
+            .clone()
+            .ok_or(GameError::InvalidAction)?;
+        let preserved_battle_records = self
+            .state
+            .run
+            .as_ref()
+            .map(|run| run.battle_records.clone())
+            .unwrap_or_default();
+
+        self.state.run = Some(RunState {
+            map: payload.map,
+            map_progression: payload.map_progression,
+            run_progression: payload.run_progression,
+            combat_previews: payload.combat_previews,
+            abnormality_attempts: payload.abnormality_attempts,
+            battle_records: preserved_battle_records,
+        });
+        self.state.enkephalin = payload.enkephalin;
+        self.state.inventory = payload.inventory;
+        self.state.roster_order = payload.roster_order;
+        self.state.roster = payload.roster;
+        self.state.skill_fragments = payload.skill_fragments;
+        self.state.uuid_manager = payload.uuid_manager;
+        self.state.node_session = None;
+        self.state.active_node_content = None;
+        self.state.active_battle = None;
+        self.state.run_checkpoint.loads_used =
+            self.state.run_checkpoint.loads_used.saturating_add(1);
+        self.transition_to(GameState::ViewingMap)?;
+        self.handle_request_map_data()
     }
 }

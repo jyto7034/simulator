@@ -22,16 +22,28 @@ use crate::{
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
-pub struct PveWaveEnemyData {
-    #[serde(default = "default_enemy_kind")]
-    pub kind: EnemyKind,
-    #[serde(default)]
-    pub profile_id: Option<String>,
-    pub abnormality_id: String,
-    #[serde(default = "default_tier")]
-    pub tier: Tier,
-    #[serde(default = "default_count")]
-    pub count: u32,
+pub enum PveWaveEnemyData {
+    Abnormality {
+        abnormality_id: String,
+        #[serde(default = "default_tier")]
+        tier: Tier,
+        #[serde(default = "default_count")]
+        count: u32,
+    },
+    CorrodedEmployee {
+        profile_id: String,
+        #[serde(default = "default_tier")]
+        tier: Tier,
+        #[serde(default = "default_count")]
+        count: u32,
+    },
+    FacilityEntity {
+        profile_id: String,
+        #[serde(default = "default_tier")]
+        tier: Tier,
+        #[serde(default = "default_count")]
+        count: u32,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -57,10 +69,7 @@ pub struct PveWaveData {
     pub route_id: Option<String>,
     #[serde(default = "default_required_for_victory")]
     pub required_for_victory: bool,
-    #[serde(default)]
-    pub source: Option<PveWaveSource>,
-    #[serde(default)]
-    pub enemies: Vec<PveWaveEnemyData>,
+    pub source: PveWaveSource,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -86,7 +95,6 @@ pub struct PveTacticalPointData {
 pub enum PveBattleObjectiveData {
     DefeatBoss { unit_ref: String },
     ProtectUnit { unit_ref: String },
-    Survive { time_ms: u64 },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -94,7 +102,6 @@ pub enum PveWinConditionData {
     AllRequiredEnemyGroupsDefeated,
     DefeatUnit { unit_ref: String },
     ProtectUnit { unit_ref: String },
-    SurviveUntil { time_ms: u64 },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -107,10 +114,6 @@ pub struct PveTacticalPlanData {
 
 fn default_tier() -> Tier {
     Tier::I
-}
-
-fn default_enemy_kind() -> EnemyKind {
-    EnemyKind::Abnormality
 }
 
 fn default_reward_mode() -> RewardMode {
@@ -147,6 +150,8 @@ pub struct PveEncounter {
     pub node_type: Option<CombatNodeType>,
     #[serde(default)]
     pub mission_variant: Option<CombatMissionVariant>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub survive_timer_ms: Option<u64>,
     #[serde(default = "default_reward_mode")]
     pub reward_mode: RewardMode,
     #[serde(default)]
@@ -197,9 +202,50 @@ impl PveEncounter {
 impl PveWaveData {
     pub fn manual_enemies(&self) -> &[PveWaveEnemyData] {
         match &self.source {
-            Some(PveWaveSource::Manual(enemies)) => enemies,
-            Some(PveWaveSource::GeneratedCorroded { .. }) => &[],
-            None => &self.enemies,
+            PveWaveSource::Manual(enemies) => enemies,
+            PveWaveSource::GeneratedCorroded { .. } => &[],
+        }
+    }
+}
+
+impl PveWaveEnemyData {
+    pub fn kind(&self) -> EnemyKind {
+        match self {
+            Self::Abnormality { .. } => EnemyKind::Abnormality,
+            Self::CorrodedEmployee { .. } => EnemyKind::CorrodedEmployee,
+            Self::FacilityEntity { .. } => EnemyKind::FacilityEntity,
+        }
+    }
+
+    pub fn tier(&self) -> Tier {
+        match self {
+            Self::Abnormality { tier, .. }
+            | Self::CorrodedEmployee { tier, .. }
+            | Self::FacilityEntity { tier, .. } => *tier,
+        }
+    }
+
+    pub fn count(&self) -> u32 {
+        match self {
+            Self::Abnormality { count, .. }
+            | Self::CorrodedEmployee { count, .. }
+            | Self::FacilityEntity { count, .. } => *count,
+        }
+    }
+
+    pub fn abnormality_id(&self) -> Option<&str> {
+        match self {
+            Self::Abnormality { abnormality_id, .. } => Some(abnormality_id.as_str()),
+            Self::CorrodedEmployee { .. } | Self::FacilityEntity { .. } => None,
+        }
+    }
+
+    pub fn profile_id(&self) -> Option<&str> {
+        match self {
+            Self::Abnormality { .. } => None,
+            Self::CorrodedEmployee { profile_id, .. } | Self::FacilityEntity { profile_id, .. } => {
+                Some(profile_id.as_str())
+            }
         }
     }
 }
@@ -213,7 +259,6 @@ impl PveBattleObjectiveData {
             Self::ProtectUnit { unit_ref } => BattleObjective::ProtectUnit {
                 unit_ref: crate::game::battle::scenario::ScenarioUnitRef::new(unit_ref.clone()),
             },
-            Self::Survive { time_ms } => BattleObjective::Survive { time_ms: *time_ms },
         }
     }
 }
@@ -228,7 +273,6 @@ impl PveWinConditionData {
             Self::ProtectUnit { unit_ref } => WinCondition::ProtectUnit {
                 unit_ref: crate::game::battle::scenario::ScenarioUnitRef::new(unit_ref.clone()),
             },
-            Self::SurviveUntil { time_ms } => WinCondition::SurviveUntil { time_ms: *time_ms },
         }
     }
 }
@@ -336,25 +380,19 @@ fn validate_encounter_authoring_contract(encounter: &PveEncounter) {
             encounter.id
         );
         match &wave.source {
-            Some(PveWaveSource::Manual(enemies)) => {
+            PveWaveSource::Manual(enemies) => {
                 assert!(
                     !enemies.is_empty(),
                     "manual wave '{}' in pve encounter '{}' must contain at least one enemy entry",
                     wave.id,
                     encounter.id
                 );
-                assert!(
-                    wave.enemies.is_empty(),
-                    "manual source wave '{}' in pve encounter '{}' must not also use legacy enemies",
-                    wave.id,
-                    encounter.id
-                );
             }
-            Some(PveWaveSource::GeneratedCorroded {
+            PveWaveSource::GeneratedCorroded {
                 preset_id,
                 budget_override,
                 ..
-            }) => {
+            } => {
                 assert!(
                     !preset_id.trim().is_empty(),
                     "generated corroded wave '{}' in pve encounter '{}' must reference a preset",
@@ -369,20 +407,6 @@ fn validate_encounter_authoring_contract(encounter: &PveEncounter) {
                         encounter.id
                     );
                 }
-                assert!(
-                    wave.enemies.is_empty(),
-                    "generated corroded wave '{}' in pve encounter '{}' must not also use legacy enemies",
-                    wave.id,
-                    encounter.id
-                );
-            }
-            None => {
-                assert!(
-                    !wave.enemies.is_empty(),
-                    "wave '{}' in pve encounter '{}' must contain at least one enemy entry",
-                    wave.id,
-                    encounter.id
-                );
             }
         }
         let mut spawn_zone_ids = HashSet::new();
@@ -408,20 +432,39 @@ fn validate_encounter_authoring_contract(encounter: &PveEncounter) {
                 wave.id,
                 encounter.id
             );
+        } else if encounter.node_type == Some(CombatNodeType::Defense) {
+            panic!(
+                "defense wave '{}' in pve encounter '{}' must define route_id",
+                wave.id, encounter.id
+            );
         }
         for enemy in wave.manual_enemies() {
+            match enemy {
+                PveWaveEnemyData::Abnormality { abnormality_id, .. } => assert!(
+                    !abnormality_id.trim().is_empty(),
+                    "wave '{}' in pve encounter '{}' has empty enemy abnormality id",
+                    wave.id,
+                    encounter.id
+                ),
+                PveWaveEnemyData::CorrodedEmployee { profile_id, .. } => assert!(
+                    !profile_id.trim().is_empty(),
+                    "wave '{}' in pve encounter '{}' has empty corroded employee profile id",
+                    wave.id,
+                    encounter.id
+                ),
+                PveWaveEnemyData::FacilityEntity { profile_id, .. } => assert!(
+                    !profile_id.trim().is_empty(),
+                    "wave '{}' in pve encounter '{}' has empty facility entity profile id",
+                    wave.id,
+                    encounter.id
+                ),
+            }
             assert!(
-                !enemy.abnormality_id.trim().is_empty(),
-                "wave '{}' in pve encounter '{}' has empty enemy abnormality id",
-                wave.id,
-                encounter.id
-            );
-            assert!(
-                enemy.count > 0,
-                "wave '{}' in pve encounter '{}' enemy '{}' count must be greater than zero",
+                enemy.count() > 0,
+                "wave '{}' in pve encounter '{}' enemy {:?} count must be greater than zero",
                 wave.id,
                 encounter.id,
-                enemy.abnormality_id
+                enemy
             );
         }
     }
@@ -468,7 +511,6 @@ enum ObjectiveWinContract {
     DefeatAllRequiredEnemies,
     DefeatUnit(String),
     ProtectUnit(String),
-    Survive,
 }
 
 impl ObjectiveWinContract {
@@ -478,7 +520,6 @@ impl ObjectiveWinContract {
             PveBattleObjectiveData::ProtectUnit { unit_ref } => {
                 Some(Self::ProtectUnit(unit_ref.clone()))
             }
-            PveBattleObjectiveData::Survive { .. } => Some(Self::Survive),
         }
     }
 
@@ -487,7 +528,6 @@ impl ObjectiveWinContract {
             PveWinConditionData::AllRequiredEnemyGroupsDefeated => Self::DefeatAllRequiredEnemies,
             PveWinConditionData::DefeatUnit { unit_ref } => Self::DefeatUnit(unit_ref.clone()),
             PveWinConditionData::ProtectUnit { unit_ref } => Self::ProtectUnit(unit_ref.clone()),
-            PveWinConditionData::SurviveUntil { .. } => Self::Survive,
         }
     }
 }
@@ -542,17 +582,17 @@ mod tests {
                         time_ms: 0,
                         spawn_zone_ids: ["north_entry"],
                         required_for_victory: true,
-                        enemies: [
-                            (kind: CorrodedEmployee, abnormality_id: "enemy_a", tier: I, count: 2),
-                            (abnormality_id: "enemy_b", tier: II, count: 1),
-                        ],
+                        source: Manual([
+                            CorrodedEmployee(profile_id: "enemy_a", tier: I, count: 2),
+                            Abnormality(abnormality_id: "enemy_b", tier: II, count: 1),
+                        ]),
                     ),
                     (
                         id: "wave_1",
                         time_ms: 15000,
-                        enemies: [
-                            (abnormality_id: "enemy_c"),
-                        ],
+                        source: Manual([
+                            Abnormality(abnormality_id: "enemy_c"),
+                        ]),
                     ),
                 ],
             )"#,
@@ -563,14 +603,17 @@ mod tests {
         assert_eq!(encounter.waves[0].spawn_zone_ids, ["north_entry"]);
         assert!(encounter.waves[0].required_for_victory);
         assert!(encounter.waves[1].required_for_victory);
-        assert_eq!(encounter.waves[0].enemies[0].count, 2);
-        assert_eq!(
-            encounter.waves[0].enemies[0].kind,
-            EnemyKind::CorrodedEmployee
-        );
-        assert_eq!(encounter.waves[0].enemies[1].kind, EnemyKind::Abnormality);
-        assert_eq!(encounter.waves[1].enemies[0].tier, Tier::I);
-        assert_eq!(encounter.waves[1].enemies[0].kind, EnemyKind::Abnormality);
+        let PveWaveSource::Manual(first_wave) = &encounter.waves[0].source else {
+            panic!("first wave should be manual");
+        };
+        let PveWaveSource::Manual(second_wave) = &encounter.waves[1].source else {
+            panic!("second wave should be manual");
+        };
+        assert_eq!(first_wave[0].count(), 2);
+        assert_eq!(first_wave[0].kind(), EnemyKind::CorrodedEmployee);
+        assert_eq!(first_wave[1].kind(), EnemyKind::Abnormality);
+        assert_eq!(second_wave[0].tier(), Tier::I);
+        assert_eq!(second_wave[0].kind(), EnemyKind::Abnormality);
         assert_eq!(encounter.wave_definitions(), encounter.waves);
     }
 
@@ -583,6 +626,7 @@ mod tests {
                 difficulty: 2,
                 risk_level: HE,
                 node_type: Some(Defense),
+                survive_timer_ms: Some(45000),
                 battlefield: Some((
                     archetype: Some(ChokePoint),
                     size_class: Some(Small),
@@ -600,9 +644,9 @@ mod tests {
                         time_ms: 0,
                         spawn_zone_ids: ["north_entry"],
                         required_for_victory: false,
-                        enemies: [
-                            (abnormality_id: "enemy", tier: I, count: 1),
-                        ],
+                        source: Manual([
+                            Abnormality(abnormality_id: "enemy", tier: I, count: 1),
+                        ]),
                     ),
                 ],
             )"#,
@@ -610,6 +654,7 @@ mod tests {
         .expect("scenario authoring overrides should deserialize");
 
         assert_eq!(encounter.node_type, Some(CombatNodeType::Defense));
+        assert_eq!(encounter.survive_timer_ms, Some(45_000));
         assert_eq!(
             encounter
                 .battlefield
@@ -659,15 +704,15 @@ mod tests {
                 difficulty: 2,
                 risk_level: HE,
                 tactical_plan: Some((
-                    objective: Some(Survive(time_ms: 30000)),
+                    objective: Some(ProtectUnit(unit_ref: "black_box")),
                 )),
                 win_condition: Some(AllRequiredEnemyGroupsDefeated),
                 waves: [
                     (
                         id: "wave_0",
-                        enemies: [
-                            (abnormality_id: "enemy"),
-                        ],
+                        source: Manual([
+                            Abnormality(abnormality_id: "enemy"),
+                        ]),
                     ),
                 ],
             )"#,

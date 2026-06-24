@@ -4,8 +4,8 @@ use game_core::{
         battle::{
             buffs::BuffId,
             core::movement::types::WorldVec2,
+            event_log::{AttackKind, BattleEventLog, BattleEventLogEntry, BattleLogEvent},
             ids::UnitInstanceId,
-            timeline::{AttackKind, Timeline, TimelineEntry, TimelineEvent},
         },
         enums::Side,
         stats::{StatId, StatModifierKind},
@@ -13,14 +13,14 @@ use game_core::{
 };
 
 pub fn find_unit_spawn_at(
-    timeline: &Timeline,
+    event_log: &BattleEventLog,
     position: Position,
     owner: Option<Side>,
-) -> Option<&TimelineEntry> {
-    timeline.entries.iter().find(|entry| {
+) -> Option<&BattleEventLogEntry> {
+    event_log.entries.iter().find(|entry| {
         matches!(
             &entry.event,
-            TimelineEvent::UnitSpawned {
+            BattleLogEvent::UnitSpawned {
                 world_position,
                 owner: entry_owner,
                 ..
@@ -31,7 +31,7 @@ pub fn find_unit_spawn_at(
 }
 
 fn spawn_matches_tile_center(
-    world_position: game_core::game::battle::core::movement::types::TimelineVec2,
+    world_position: game_core::game::battle::core::movement::types::EventLogVec2,
     position: Position,
 ) -> bool {
     world_position
@@ -41,12 +41,12 @@ fn spawn_matches_tile_center(
 }
 
 pub fn find_unit_instance_at(
-    timeline: &Timeline,
+    event_log: &BattleEventLog,
     position: Position,
     owner: Option<Side>,
 ) -> Option<UnitInstanceId> {
-    find_unit_spawn_at(timeline, position, owner).and_then(|entry| match entry.event {
-        TimelineEvent::UnitSpawned {
+    find_unit_spawn_at(event_log, position, owner).and_then(|entry| match entry.event {
+        BattleLogEvent::UnitSpawned {
             unit_instance_id, ..
         } => Some(unit_instance_id),
         _ => None,
@@ -54,14 +54,14 @@ pub fn find_unit_instance_at(
 }
 
 pub fn find_first_ability_cast<'a>(
-    timeline: &'a Timeline,
+    event_log: &'a BattleEventLog,
     caster_instance_id: UnitInstanceId,
     skill_id: &str,
-) -> Option<&'a TimelineEntry> {
-    timeline.entries.iter().find(|entry| {
+) -> Option<&'a BattleEventLogEntry> {
+    event_log.entries.iter().find(|entry| {
         matches!(
             &entry.event,
-            TimelineEvent::AbilityCast {
+            BattleLogEvent::AbilityCast {
                 skill_id: actual_skill_id,
                 caster_instance_id: actual_caster_id,
                 ..
@@ -70,15 +70,19 @@ pub fn find_first_ability_cast<'a>(
     })
 }
 
-pub fn descendants_of(timeline: &Timeline, parent_seq: u64) -> Vec<&TimelineEntry> {
-    timeline
+pub fn descendants_of(event_log: &BattleEventLog, parent_seq: u64) -> Vec<&BattleEventLogEntry> {
+    event_log
         .entries
         .iter()
-        .filter(|entry| entry_caused_by_seq(timeline, entry, parent_seq))
+        .filter(|entry| entry_caused_by_seq(event_log, entry, parent_seq))
         .collect()
 }
 
-pub fn entry_caused_by_seq(timeline: &Timeline, entry: &TimelineEntry, expected_seq: u64) -> bool {
+pub fn entry_caused_by_seq(
+    event_log: &BattleEventLog,
+    entry: &BattleEventLogEntry,
+    expected_seq: u64,
+) -> bool {
     let Some(parent_seq) = entry.cause.parent_seq() else {
         return false;
     };
@@ -86,31 +90,34 @@ pub fn entry_caused_by_seq(timeline: &Timeline, entry: &TimelineEntry, expected_
         return true;
     }
 
-    timeline
+    event_log
         .entries
         .iter()
         .find(|entry| entry.seq == parent_seq)
         .is_some_and(|parent| {
-            matches!(parent.event, TimelineEvent::SkillAreaDeclared { .. })
+            matches!(parent.event, BattleLogEvent::SkillAreaDeclared { .. })
                 && parent.cause.parent_seq() == Some(expected_seq)
         })
 }
 
-pub fn step_entries_for_cast(timeline: &Timeline, cast_seq: u64) -> Vec<&TimelineEntry> {
-    timeline
+pub fn step_entries_for_cast(
+    event_log: &BattleEventLog,
+    cast_seq: u64,
+) -> Vec<&BattleEventLogEntry> {
+    event_log
         .entries
         .iter()
         .filter(|entry| {
-            matches!(entry.event, TimelineEvent::AbilityStepTriggered { .. })
+            matches!(entry.event, BattleLogEvent::AbilityStepTriggered { .. })
                 && entry.cause.parent_seq() == Some(cast_seq)
         })
         .collect()
 }
 
-pub fn focused_timeline_for_cast(timeline: &Timeline, cast_seq: u64) -> Timeline {
+pub fn focused_event_log_for_cast(event_log: &BattleEventLog, cast_seq: u64) -> BattleEventLog {
     let mut relevant_seqs = vec![cast_seq];
 
-    for entry in &timeline.entries {
+    for entry in &event_log.entries {
         if entry
             .cause
             .parent_seq()
@@ -120,7 +127,7 @@ pub fn focused_timeline_for_cast(timeline: &Timeline, cast_seq: u64) -> Timeline
         }
     }
 
-    let max_relevant_time_ms = timeline
+    let max_relevant_time_ms = event_log
         .entries
         .iter()
         .filter(|entry| relevant_seqs.contains(&entry.seq))
@@ -128,9 +135,9 @@ pub fn focused_timeline_for_cast(timeline: &Timeline, cast_seq: u64) -> Timeline
         .max()
         .unwrap_or_default();
 
-    Timeline {
-        version: timeline.version,
-        entries: timeline
+    BattleEventLog {
+        version: event_log.version,
+        entries: event_log
             .entries
             .iter()
             .filter(|entry| entry.time_ms <= max_relevant_time_ms)
@@ -140,16 +147,16 @@ pub fn focused_timeline_for_cast(timeline: &Timeline, cast_seq: u64) -> Timeline
 }
 
 pub fn hp_changes_for_unit(
-    timeline: &Timeline,
+    event_log: &BattleEventLog,
     unit_instance_id: UnitInstanceId,
-) -> Vec<&TimelineEntry> {
-    timeline
+) -> Vec<&BattleEventLogEntry> {
+    event_log
         .entries
         .iter()
         .filter(|entry| {
             matches!(
                 entry.event,
-                TimelineEvent::HpChanged {
+                BattleLogEvent::HpChanged {
                     target_instance_id: changed_unit,
                     ..
                 } if changed_unit == unit_instance_id
@@ -158,101 +165,118 @@ pub fn hp_changes_for_unit(
         .collect()
 }
 
-pub fn hp_changes_caused_by(timeline: &Timeline, parent_seq: u64) -> Vec<&TimelineEntry> {
-    timeline
+pub fn hp_changes_caused_by(
+    event_log: &BattleEventLog,
+    parent_seq: u64,
+) -> Vec<&BattleEventLogEntry> {
+    event_log
         .entries
         .iter()
         .filter(|entry| {
-            entry_caused_by_seq(timeline, entry, parent_seq)
-                && matches!(entry.event, TimelineEvent::HpChanged { .. })
+            entry_caused_by_seq(event_log, entry, parent_seq)
+                && matches!(entry.event, BattleLogEvent::HpChanged { .. })
         })
         .collect()
 }
 
-pub fn damage_hp_changes_caused_by(timeline: &Timeline, parent_seq: u64) -> Vec<&TimelineEntry> {
-    hp_changes_caused_by(timeline, parent_seq)
+pub fn damage_hp_changes_caused_by(
+    event_log: &BattleEventLog,
+    parent_seq: u64,
+) -> Vec<&BattleEventLogEntry> {
+    hp_changes_caused_by(event_log, parent_seq)
         .into_iter()
         .filter(|entry| {
             matches!(
                 entry.event,
-                TimelineEvent::HpChanged { delta, .. } if delta < 0
+                BattleLogEvent::HpChanged { delta, .. } if delta < 0
             )
         })
         .collect()
 }
 
-pub fn healing_hp_changes_caused_by(timeline: &Timeline, parent_seq: u64) -> Vec<&TimelineEntry> {
-    hp_changes_caused_by(timeline, parent_seq)
+pub fn healing_hp_changes_caused_by(
+    event_log: &BattleEventLog,
+    parent_seq: u64,
+) -> Vec<&BattleEventLogEntry> {
+    hp_changes_caused_by(event_log, parent_seq)
         .into_iter()
         .filter(|entry| {
             matches!(
                 entry.event,
-                TimelineEvent::HpChanged { delta, .. } if delta > 0
+                BattleLogEvent::HpChanged { delta, .. } if delta > 0
             )
         })
         .collect()
 }
 
-pub fn stat_changes_caused_by(timeline: &Timeline, parent_seq: u64) -> Vec<&TimelineEntry> {
-    timeline
+pub fn stat_changes_caused_by(
+    event_log: &BattleEventLog,
+    parent_seq: u64,
+) -> Vec<&BattleEventLogEntry> {
+    event_log
         .entries
         .iter()
         .filter(|entry| {
-            entry_caused_by_seq(timeline, entry, parent_seq)
-                && matches!(entry.event, TimelineEvent::StatChanged { .. })
+            entry_caused_by_seq(event_log, entry, parent_seq)
+                && matches!(entry.event, BattleLogEvent::StatChanged { .. })
         })
         .collect()
 }
 
-pub fn buffs_applied_by(timeline: &Timeline, parent_seq: u64) -> Vec<&TimelineEntry> {
-    timeline
+pub fn buffs_applied_by(event_log: &BattleEventLog, parent_seq: u64) -> Vec<&BattleEventLogEntry> {
+    event_log
         .entries
         .iter()
         .filter(|entry| {
-            entry_caused_by_seq(timeline, entry, parent_seq)
-                && matches!(entry.event, TimelineEvent::BuffApplied { .. })
+            entry_caused_by_seq(event_log, entry, parent_seq)
+                && matches!(entry.event, BattleLogEvent::BuffApplied { .. })
         })
         .collect()
 }
 
-pub fn buff_ids(entries: &[&TimelineEntry]) -> Vec<BuffId> {
+pub fn buff_ids(entries: &[&BattleEventLogEntry]) -> Vec<BuffId> {
     entries
         .iter()
         .filter_map(|entry| match entry.event {
-            TimelineEvent::BuffApplied { buff_id, .. } => Some(buff_id),
+            BattleLogEvent::BuffApplied { buff_id, .. } => Some(buff_id),
             _ => None,
         })
         .collect()
 }
 
-pub fn attack_starts_caused_by(timeline: &Timeline, parent_seq: u64) -> Vec<&TimelineEntry> {
-    timeline
+pub fn attack_starts_caused_by(
+    event_log: &BattleEventLog,
+    parent_seq: u64,
+) -> Vec<&BattleEventLogEntry> {
+    event_log
         .entries
         .iter()
         .filter(|entry| {
-            entry_caused_by_seq(timeline, entry, parent_seq)
-                && matches!(entry.event, TimelineEvent::AttackStart { .. })
+            entry_caused_by_seq(event_log, entry, parent_seq)
+                && matches!(entry.event, BattleLogEvent::AttackStart { .. })
         })
         .collect()
 }
 
-pub fn attack_kinds(entries: &[&TimelineEntry]) -> Vec<Option<AttackKind>> {
+pub fn attack_kinds(entries: &[&BattleEventLogEntry]) -> Vec<Option<AttackKind>> {
     entries
         .iter()
         .filter_map(|entry| match entry.event {
-            TimelineEvent::AttackStart { kind, .. }
-            | TimelineEvent::AttackResolve { kind, .. }
-            | TimelineEvent::AttackMiss { kind, .. } => Some(kind),
+            BattleLogEvent::AttackStart { kind, .. }
+            | BattleLogEvent::AttackResolve { kind, .. }
+            | BattleLogEvent::AttackMiss { kind, .. } => Some(kind),
             _ => None,
         })
         .collect()
 }
 
-pub fn stat_modifier_summaries(entries: &[&TimelineEntry]) -> Vec<(StatId, StatModifierKind, i32)> {
+pub fn stat_modifier_summaries(
+    entries: &[&BattleEventLogEntry],
+) -> Vec<(StatId, StatModifierKind, i32)> {
     entries
         .iter()
         .filter_map(|entry| match entry.event {
-            TimelineEvent::StatChanged { modifier, .. } => {
+            BattleLogEvent::StatChanged { modifier, .. } => {
                 Some((modifier.stat, modifier.kind, modifier.value))
             }
             _ => None,
@@ -260,36 +284,36 @@ pub fn stat_modifier_summaries(entries: &[&TimelineEntry]) -> Vec<(StatId, StatM
         .collect()
 }
 
-pub fn step_ids<'a>(entries: &'a [&'a TimelineEntry]) -> Vec<&'a str> {
+pub fn step_ids<'a>(entries: &'a [&'a BattleEventLogEntry]) -> Vec<&'a str> {
     entries
         .iter()
         .filter_map(|entry| match &entry.event {
-            TimelineEvent::AbilityStepTriggered { step_id, .. } => Some(step_id.as_str()),
+            BattleLogEvent::AbilityStepTriggered { step_id, .. } => Some(step_id.as_str()),
             _ => None,
         })
         .collect()
 }
 
-pub fn target_unit_ids(entries: &[&TimelineEntry]) -> Vec<UnitInstanceId> {
+pub fn target_unit_ids(entries: &[&BattleEventLogEntry]) -> Vec<UnitInstanceId> {
     entries
         .iter()
         .filter_map(|entry| match entry.event {
-            TimelineEvent::HpChanged {
+            BattleLogEvent::HpChanged {
                 target_instance_id, ..
             }
-            | TimelineEvent::StatChanged {
+            | BattleLogEvent::StatChanged {
                 target_instance_id, ..
             }
-            | TimelineEvent::BuffApplied {
+            | BattleLogEvent::BuffApplied {
                 target_instance_id, ..
             }
-            | TimelineEvent::AttackStart {
+            | BattleLogEvent::AttackStart {
                 target_instance_id, ..
             }
-            | TimelineEvent::AttackResolve {
+            | BattleLogEvent::AttackResolve {
                 target_instance_id, ..
             }
-            | TimelineEvent::AttackMiss {
+            | BattleLogEvent::AttackMiss {
                 target_instance_id, ..
             } => Some(target_instance_id),
             _ => None,
@@ -297,11 +321,11 @@ pub fn target_unit_ids(entries: &[&TimelineEntry]) -> Vec<UnitInstanceId> {
         .collect()
 }
 
-pub fn hp_deltas(entries: &[&TimelineEntry]) -> Vec<i32> {
+pub fn hp_deltas(entries: &[&BattleEventLogEntry]) -> Vec<i32> {
     entries
         .iter()
         .filter_map(|entry| match entry.event {
-            TimelineEvent::HpChanged { delta, .. } => Some(delta),
+            BattleLogEvent::HpChanged { delta, .. } => Some(delta),
             _ => None,
         })
         .collect()

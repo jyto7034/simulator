@@ -1,4 +1,4 @@
-use super::{GameCore, RUN_SYSTEM_POLICY};
+use super::GameCore;
 use crate::game::behavior::{
     BehaviorResult, GameError, MaintenanceItemPreviewDto, MaintenanceMaterialAmountDto,
     MaintenanceOperationPreviewDto, MaintenanceOperationsDto, MaintenanceOptionsDto,
@@ -8,9 +8,15 @@ use crate::game::behavior::{
 use crate::game::data::equipment_data::EquipmentType;
 use crate::game::employee::EmployeeLifeState;
 use crate::game::employee_trust::{EmployeeTrustResolver, TrustEvent, TrustEventKind};
-use crate::game::map::{MapProgression, MedicalTreatmentKind, RunMap, SupportNodeType};
+use crate::game::map::{MapProgression, RunMap, SupportNodeType};
 use crate::game::resources::{MaintenanceSessionState, SupportSessionState};
-use uuid::Uuid;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum StagedSupportEffect {
+    None,
+    SavePoint,
+    Rest,
+}
 
 impl GameCore {
     pub(super) fn handle_choose_support(
@@ -26,7 +32,6 @@ impl GameCore {
                 .as_support_mut()?;
             support.select(support_type)?;
         }
-        let candidates = self.support_target_candidates(support_type)?;
         let support = {
             let support = self
                 .state
@@ -34,49 +39,12 @@ impl GameCore {
                 .as_mut()
                 .ok_or(GameError::InvalidAction)?
                 .as_support_mut()?;
-            support.set_target_candidates(candidates);
             support.clone()
         };
         let result = self.support_state_result(&support);
         self.refresh_allowed_actions();
 
         Ok(result)
-    }
-
-    pub(super) fn handle_select_support_target(
-        &mut self,
-        employee_uuid: Uuid,
-    ) -> Result<BehaviorResult, GameError> {
-        let support = {
-            let support = self
-                .state
-                .active_node_content
-                .as_mut()
-                .ok_or(GameError::InvalidAction)?
-                .as_support_mut()?;
-            support.select_target(employee_uuid)?;
-            support.clone()
-        };
-
-        Ok(self.support_state_result(&support))
-    }
-
-    pub(super) fn handle_select_medical_treatment(
-        &mut self,
-        treatment: MedicalTreatmentKind,
-    ) -> Result<BehaviorResult, GameError> {
-        let support = {
-            let support = self
-                .state
-                .active_node_content
-                .as_mut()
-                .ok_or(GameError::InvalidAction)?
-                .as_support_mut()?;
-            support.select_medical_treatment(treatment)?;
-            support.clone()
-        };
-
-        Ok(self.support_state_result(&support))
     }
 
     pub(super) fn support_state_result(&self, support: &SupportSessionState) -> BehaviorResult {
@@ -94,9 +62,6 @@ impl GameCore {
             support_type: support.support_type,
             choices: support.choices.clone(),
             selected_support_type: support.selected_support_type,
-            target_candidates: support.target_candidates.clone(),
-            selected_employee_uuid: support.selected_employee_uuid,
-            selected_medical_treatment: support.selected_medical_treatment,
             research_deliveries,
         }
     }
@@ -260,20 +225,21 @@ impl GameCore {
                     .collect::<Vec<_>>()
             })
             .unwrap_or_default();
-        let can_execute = self
-            .game_data
-            .equipment_data
-            .get_dismantle_recipe_by_equipment_id(&equipment.meta.id)
-            .is_some_and(|recipe| {
-                recipe.yields.iter().all(|material| {
-                    let current = self
-                        .state
-                        .inventory
-                        .equipment_materials
-                        .amount(&material.material_id);
-                    current <= u32::MAX.saturating_sub(material.amount)
-                })
-            });
+        let can_execute = !equipment.meta.bound
+            && self
+                .game_data
+                .equipment_data
+                .get_dismantle_recipe_by_equipment_id(&equipment.meta.id)
+                .is_some_and(|recipe| {
+                    recipe.yields.iter().all(|material| {
+                        let current = self
+                            .state
+                            .inventory
+                            .equipment_materials
+                            .amount(&material.material_id);
+                        current <= u32::MAX.saturating_sub(material.amount)
+                    })
+                });
         MaintenanceOperationPreviewDto {
             can_execute,
             disabled_reason: (!can_execute).then(|| "cannot_dismantle_equipment".to_string()),
@@ -310,20 +276,21 @@ impl GameCore {
                     .collect::<Vec<_>>()
             })
             .unwrap_or_default();
-        let can_execute = self
-            .game_data
-            .equipment_data
-            .get_enhancement_recipe_by_equipment_id(&equipment.meta.id)
-            .is_some_and(|recipe| {
-                equipment.enhancement_level < recipe.max_level
-                    && recipe.costs_per_level.iter().all(|cost| {
-                        self.state
-                            .inventory
-                            .equipment_materials
-                            .amount(&cost.material_id)
-                            >= cost.amount
-                    })
-            });
+        let can_execute = !equipment.meta.bound
+            && self
+                .game_data
+                .equipment_data
+                .get_enhancement_recipe_by_equipment_id(&equipment.meta.id)
+                .is_some_and(|recipe| {
+                    equipment.enhancement_level < recipe.max_level
+                        && recipe.costs_per_level.iter().all(|cost| {
+                            self.state
+                                .inventory
+                                .equipment_materials
+                                .amount(&cost.material_id)
+                                >= cost.amount
+                        })
+                });
         MaintenanceOperationPreviewDto {
             can_execute,
             disabled_reason: (!can_execute).then(|| "cannot_enhance_equipment".to_string()),
@@ -528,43 +495,8 @@ impl GameCore {
         }
     }
 
-    pub(super) fn refresh_support_target_candidates(
-        &self,
-        support: &mut SupportSessionState,
-    ) -> Result<(), GameError> {
-        let support_type = support.resolved_support_type().ok();
-        let candidates = support_type
-            .map(|support_type| self.support_target_candidates(support_type))
-            .transpose()?
-            .unwrap_or_default();
-        support.set_target_candidates(candidates);
-        Ok(())
-    }
-
-    fn support_target_candidates(
-        &self,
-        support_type: SupportNodeType,
-    ) -> Result<Vec<Uuid>, GameError> {
-        let roster = self.roster()?;
-        let mut candidates = match support_type {
-            SupportNodeType::Medical => roster
-                .iter()
-                .filter(|employee| employee.life_state == EmployeeLifeState::Alive)
-                .filter(|employee| {
-                    employee.health.current_hp < employee.health.max_hp
-                        || employee.trauma > 0
-                        || !employee.injuries.is_empty()
-                })
-                .map(|employee| employee.uuid)
-                .collect::<Vec<_>>(),
-            SupportNodeType::Rest => Vec::new(),
-        };
-        candidates.sort();
-        Ok(candidates)
-    }
-
     pub(super) fn default_support_choices() -> Vec<SupportNodeType> {
-        vec![SupportNodeType::Medical, SupportNodeType::Rest]
+        vec![SupportNodeType::SavePoint, SupportNodeType::Rest]
     }
 
     pub(super) fn is_in_maintenance_node(&self) -> bool {
@@ -574,16 +506,16 @@ impl GameCore {
             .is_some_and(|selected| selected.as_maintenance().is_ok())
     }
 
-    pub(super) fn apply_current_support_node_effect(
-        &mut self,
+    pub(super) fn plan_current_support_node_effect(
+        &self,
         map: &RunMap,
         progression: &MapProgression,
-    ) -> Result<(), GameError> {
+    ) -> Result<StagedSupportEffect, GameError> {
         let Some(node_id) = progression.current_node_id else {
-            return Ok(());
+            return Ok(StagedSupportEffect::None);
         };
         let Some(node) = map.node(node_id) else {
-            return Ok(());
+            return Ok(StagedSupportEffect::None);
         };
         let support_session = self
             .state
@@ -599,83 +531,51 @@ impl GameCore {
             ) {
                 return Err(GameError::InvalidAction);
             }
-            return Ok(());
+            return Ok(StagedSupportEffect::None);
         };
         let support_type = support_session.resolved_support_type()?;
-        if support_session.needs_target_selection()? {
-            return Err(GameError::InvalidAction);
-        }
-        if support_session.needs_medical_treatment_selection()? {
-            return Err(GameError::InvalidAction);
-        }
-        let selected_employee_uuid = support_session.selected_employee_uuid;
-        let selected_medical_treatment = support_session.selected_medical_treatment;
-
-        match support_type {
-            SupportNodeType::Medical => {
-                self.support_medical_heal(selected_employee_uuid, selected_medical_treatment)
-            }
-            SupportNodeType::Rest => self.support_rest(),
-        }
+        Ok(match support_type {
+            SupportNodeType::SavePoint => StagedSupportEffect::SavePoint,
+            SupportNodeType::Rest => StagedSupportEffect::Rest,
+        })
     }
 
-    fn support_medical_heal(
+    pub(super) fn apply_staged_support_effect(
         &mut self,
-        target_employee_uuid: Option<Uuid>,
-        treatment: Option<MedicalTreatmentKind>,
+        effect: StagedSupportEffect,
     ) -> Result<(), GameError> {
-        let trust_policy = self.state.employee_trust_policy.clone();
-        let roster = self.roster_mut()?;
-        let Some(target_employee_uuid) = target_employee_uuid else {
-            return Ok(());
-        };
-        let treatment = treatment.ok_or(GameError::InvalidAction)?;
-        let employee = roster
-            .get_mut(&target_employee_uuid)
-            .ok_or(GameError::UnitNotFound)?;
-        if employee.life_state != EmployeeLifeState::Alive {
-            return Err(GameError::InvalidAction);
+        match effect {
+            StagedSupportEffect::None => Ok(()),
+            StagedSupportEffect::SavePoint => self.support_save_point(),
+            StagedSupportEffect::Rest => self.support_rest(),
         }
-
-        match treatment {
-            MedicalTreatmentKind::EmergencyCare => {
-                employee
-                    .health
-                    .restore_hp_percent(RUN_SYSTEM_POLICY.support.medical_hp_heal_percent);
-            }
-            MedicalTreatmentKind::Counseling => {
-                employee.trauma = employee
-                    .trauma
-                    .saturating_sub(RUN_SYSTEM_POLICY.support.medical_trauma_heal);
-            }
-            MedicalTreatmentKind::BalancedCare => {
-                employee
-                    .health
-                    .restore_hp_percent(RUN_SYSTEM_POLICY.support.medical_balanced_hp_heal_percent);
-                employee.trauma = employee
-                    .trauma
-                    .saturating_sub(RUN_SYSTEM_POLICY.support.medical_trauma_heal / 2);
-            }
-        }
-
-        let reaction = EmployeeTrustResolver::apply_event(
-            TrustEvent::new(employee.uuid, TrustEventKind::TreatedAfterIncapacitation),
-            &trust_policy,
-        );
-        employee.trust.apply_reaction(&reaction);
-        Ok(())
     }
 
-    fn support_rest(&mut self) -> Result<(), GameError> {
-        let trust_policy = self.state.employee_trust_policy.clone();
+    fn support_save_point(&mut self) -> Result<(), GameError> {
+        let reduction_percent = self
+            .run_policy()
+            .support
+            .save_point_trauma_reduction_percent;
         let roster = self.roster_mut()?;
         for employee in roster
             .iter_mut()
             .filter(|employee| employee.life_state == EmployeeLifeState::Alive)
         {
-            employee.trauma = employee
-                .trauma
-                .saturating_sub(RUN_SYSTEM_POLICY.support.rest_trauma_heal);
+            let reduction = employee.trauma.saturating_mul(reduction_percent) / 100;
+            employee.trauma = employee.trauma.saturating_sub(reduction);
+        }
+        Ok(())
+    }
+
+    fn support_rest(&mut self) -> Result<(), GameError> {
+        let trust_policy = self.state.employee_trust_policy.clone();
+        let rest_trauma_heal = self.run_policy().support.rest_trauma_heal;
+        let roster = self.roster_mut()?;
+        for employee in roster
+            .iter_mut()
+            .filter(|employee| employee.life_state == EmployeeLifeState::Alive)
+        {
+            employee.trauma = employee.trauma.saturating_sub(rest_trauma_heal);
             let reaction = EmployeeTrustResolver::apply_event(
                 TrustEvent::new(employee.uuid, TrustEventKind::RestedAtSupportRest),
                 &trust_policy,

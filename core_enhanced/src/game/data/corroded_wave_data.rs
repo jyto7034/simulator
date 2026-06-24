@@ -3,7 +3,7 @@ use std::{collections::HashMap, sync::OnceLock};
 use serde::{Deserialize, Serialize};
 
 use crate::game::{
-    combat_preview::{CombatNodeType, EnemyKind},
+    combat_preview::CombatNodeType,
     data::{build_string_index, once_lock_with},
     enums::{RiskLevel, Tier},
 };
@@ -145,10 +145,8 @@ impl CorrodedWavePresetDatabase {
 
 impl CorrodedWaveRoleWeight {
     pub fn to_enemy_data(&self, count: u32) -> crate::game::data::pve_data::PveWaveEnemyData {
-        crate::game::data::pve_data::PveWaveEnemyData {
-            kind: EnemyKind::CorrodedEmployee,
-            profile_id: Some(self.profile_id.clone()),
-            abnormality_id: self.profile_id.clone(),
+        crate::game::data::pve_data::PveWaveEnemyData::CorrodedEmployee {
+            profile_id: self.profile_id.clone(),
             tier: self.tier,
             count,
         }

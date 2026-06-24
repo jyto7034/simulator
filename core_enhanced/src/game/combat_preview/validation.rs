@@ -2,7 +2,7 @@ use std::collections::{HashSet, VecDeque};
 
 use crate::game::resources::Position;
 
-use super::{BattlefieldInstance, CombatMissionVariant, CombatNodeType};
+use super::{BattlefieldInstance, BattlefieldTileKind, CombatNodeType};
 
 pub(super) fn validate_instance(instance: &BattlefieldInstance) -> Result<(), &'static str> {
     if instance.width <= 0 || instance.height <= 0 {
@@ -29,6 +29,27 @@ pub(super) fn validate_instance(instance: &BattlefieldInstance) -> Result<(), &'
     {
         return Err("valid tile is out of battlefield bounds");
     }
+    let tile_positions = instance
+        .tiles
+        .iter()
+        .map(|tile| tile.position)
+        .collect::<HashSet<_>>();
+    if tile_positions.is_empty() {
+        return Err("battlefield must expose canonical tiles");
+    }
+    if tile_positions.len() != instance.tiles.len() {
+        return Err("duplicate canonical battlefield tile");
+    }
+    if tile_positions != valid_cells {
+        return Err("canonical battlefield tiles must match valid tiles");
+    }
+    if instance
+        .tiles
+        .iter()
+        .any(|tile| !in_bounds(tile.position, instance.width, instance.height))
+    {
+        return Err("canonical battlefield tile is out of battlefield bounds");
+    }
 
     let obstacle_cells = instance.obstacles.iter().copied().collect::<HashSet<_>>();
     if obstacle_cells.len() != instance.obstacles.len() {
@@ -46,6 +67,15 @@ pub(super) fn validate_instance(instance: &BattlefieldInstance) -> Result<(), &'
         .any(|cell| !valid_cells.contains(cell))
     {
         return Err("obstacle is outside valid battlefield tiles");
+    }
+    let obstacle_tile_cells = instance
+        .tiles
+        .iter()
+        .filter(|tile| tile.kind == BattlefieldTileKind::Obstacle)
+        .map(|tile| tile.position)
+        .collect::<HashSet<_>>();
+    if obstacle_tile_cells != obstacle_cells {
+        return Err("canonical obstacle tiles must match obstacles");
     }
     if has_duplicate_ids(
         instance
@@ -124,11 +154,15 @@ pub(super) fn validate_instance(instance: &BattlefieldInstance) -> Result<(), &'
         if route.cells.iter().any(|cell| obstacle_cells.contains(cell)) {
             return Err("route overlaps obstacle");
         }
+        if route
+            .cells
+            .windows(2)
+            .any(|window| !is_cardinal_adjacent(window[0], window[1]))
+        {
+            return Err("route cells must be cardinal-adjacent");
+        }
     }
-    if instance.node_type == CombatNodeType::Defense
-        && instance.mission_variant == CombatMissionVariant::Defense
-        && !instance.routes.is_empty()
-    {
+    if instance.node_type == CombatNodeType::Defense && !instance.routes.is_empty() {
         let defense_endpoint = instance.routes[0].end;
         if instance
             .routes
@@ -161,9 +195,7 @@ pub(super) fn validate_instance(instance: &BattlefieldInstance) -> Result<(), &'
             if !route_ids.contains(route_id.as_str()) {
                 return Err("spawn wave references missing route");
             }
-        } else if instance.node_type == CombatNodeType::Defense
-            && instance.mission_variant == CombatMissionVariant::Defense
-        {
+        } else if instance.node_type == CombatNodeType::Defense {
             return Err("defense spawn wave must reference a route");
         }
     }
@@ -199,6 +231,10 @@ fn has_duplicate_ids<'a>(mut ids: impl Iterator<Item = &'a str>) -> bool {
 
 fn in_bounds(position: Position, width: i32, height: i32) -> bool {
     position.x >= 0 && position.y >= 0 && position.x < width && position.y < height
+}
+
+fn is_cardinal_adjacent(left: Position, right: Position) -> bool {
+    (left.x - right.x).abs() + (left.y - right.y).abs() == 1
 }
 
 fn has_path(

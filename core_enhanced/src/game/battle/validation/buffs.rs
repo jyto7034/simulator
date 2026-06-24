@@ -2,11 +2,11 @@ use std::collections::HashMap;
 
 use crate::game::battle::{
     buffs::{BuffDatabase, BuffId, BuffKind, BuffReapplyPolicy},
+    event_log::{BattleEventLog, BattleLogEvent, BuffExpireReason},
     ids::UnitInstanceId,
-    timeline::{Timeline, TimelineEvent},
 };
 
-use super::types::{TimelineViolation, TimelineViolationKind};
+use super::types::{EventLogViolation, EventLogViolationKind};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 struct BuffInstanceKey {
@@ -27,23 +27,23 @@ fn is_exclusive_hard_cc(kind: BuffKind) -> bool {
 }
 
 pub(super) fn validate_buffs(
-    timeline: &Timeline,
+    event_log: &BattleEventLog,
     buff_data: &BuffDatabase,
-    violations: &mut Vec<TimelineViolation>,
+    violations: &mut Vec<EventLogViolation>,
 ) {
     let mut active_buffs: HashMap<BuffInstanceKey, ActiveBuff> = HashMap::new();
 
-    for (index, entry) in timeline.entries.iter().enumerate() {
+    for (index, entry) in event_log.entries.iter().enumerate() {
         match entry.event {
-            TimelineEvent::BuffApplied {
+            BattleLogEvent::BuffApplied {
                 caster_instance_id,
                 target_instance_id,
                 buff_id,
                 duration_ms,
             } => {
                 let Some(def) = buff_data.get(buff_id) else {
-                    violations.push(TimelineViolation {
-                        kind: TimelineViolationKind::UnknownBuffId,
+                    violations.push(EventLogViolation {
+                        kind: EventLogViolationKind::UnknownBuffId,
                         message: format!("unknown buff_id {} on BuffApplied", buff_id.as_u64()),
                         entry_index: Some(index),
                     });
@@ -51,8 +51,8 @@ pub(super) fn validate_buffs(
                 };
 
                 if duration_ms == 0 {
-                    violations.push(TimelineViolation {
-                        kind: TimelineViolationKind::BuffAppliedDurationZero,
+                    violations.push(EventLogViolation {
+                        kind: EventLogViolationKind::BuffAppliedDurationZero,
                         message: "BuffApplied has duration_ms == 0".to_string(),
                         entry_index: Some(index),
                     });
@@ -67,16 +67,21 @@ pub(super) fn validate_buffs(
                 let expires_at_ms = entry.time_ms.saturating_add(duration_ms);
                 let max_stacks = def.max_stacks.max(1);
 
-                if is_exclusive_hard_cc(def.kind) {
-                    active_buffs.retain(|active_key, _| {
-                        if active_key.target_instance_id != target_instance_id {
-                            return true;
-                        }
-                        let Some(active_def) = buff_data.get(active_key.buff_id) else {
-                            return true;
-                        };
-                        !is_exclusive_hard_cc(active_def.kind)
+                if is_exclusive_hard_cc(def.kind)
+                    && active_buffs.keys().any(|active_key| {
+                        active_key.target_instance_id == target_instance_id
+                            && *active_key != key
+                            && buff_data
+                                .get(active_key.buff_id)
+                                .is_some_and(|active_def| is_exclusive_hard_cc(active_def.kind))
+                    })
+                {
+                    violations.push(EventLogViolation {
+                        kind: EventLogViolationKind::BuffExpiredInvalid,
+                        message: "hard CC BuffApplied replaced an active hard CC without an explicit BuffExpired(reason=Replaced)".to_string(),
+                        entry_index: Some(index),
                     });
+                    continue;
                 }
 
                 let active = active_buffs.entry(key).or_insert(ActiveBuff {
@@ -102,14 +107,14 @@ pub(super) fn validate_buffs(
                     }
                 }
             }
-            TimelineEvent::BuffTick {
+            BattleLogEvent::BuffTick {
                 caster_instance_id,
                 target_instance_id,
                 buff_id,
             } => {
                 let Some(def) = buff_data.get(buff_id) else {
-                    violations.push(TimelineViolation {
-                        kind: TimelineViolationKind::UnknownBuffId,
+                    violations.push(EventLogViolation {
+                        kind: EventLogViolationKind::UnknownBuffId,
                         message: format!("unknown buff_id {} on BuffTick", buff_id.as_u64()),
                         entry_index: Some(index),
                     });
@@ -117,8 +122,8 @@ pub(super) fn validate_buffs(
                 };
 
                 if def.tick_interval_ms == 0 {
-                    violations.push(TimelineViolation {
-                        kind: TimelineViolationKind::BuffTickInvalid,
+                    violations.push(EventLogViolation {
+                        kind: EventLogViolationKind::BuffTickInvalid,
                         message: "BuffTick recorded for buff with tick_interval_ms == 0"
                             .to_string(),
                         entry_index: Some(index),
@@ -133,8 +138,8 @@ pub(super) fn validate_buffs(
                 };
 
                 let Some(active) = active_buffs.get_mut(&key) else {
-                    violations.push(TimelineViolation {
-                        kind: TimelineViolationKind::BuffTickInvalid,
+                    violations.push(EventLogViolation {
+                        kind: EventLogViolationKind::BuffTickInvalid,
                         message: format!(
                             "BuffTick recorded without an active BuffApplied (buff_id={})",
                             buff_id.as_u64()
@@ -145,8 +150,8 @@ pub(super) fn validate_buffs(
                 };
 
                 if entry.time_ms >= active.expires_at_ms {
-                    violations.push(TimelineViolation {
-                        kind: TimelineViolationKind::BuffTickInvalid,
+                    violations.push(EventLogViolation {
+                        kind: EventLogViolationKind::BuffTickInvalid,
                         message: format!(
                             "BuffTick at {}ms is at/after expires_at_ms {}",
                             entry.time_ms, active.expires_at_ms
@@ -157,8 +162,8 @@ pub(super) fn validate_buffs(
                 }
 
                 if active.next_tick_ms != Some(entry.time_ms) {
-                    violations.push(TimelineViolation {
-                        kind: TimelineViolationKind::BuffTickInvalid,
+                    violations.push(EventLogViolation {
+                        kind: EventLogViolationKind::BuffTickInvalid,
                         message: format!(
                             "BuffTick at {}ms does not match expected next_tick_ms {:?}",
                             entry.time_ms, active.next_tick_ms
@@ -175,14 +180,15 @@ pub(super) fn validate_buffs(
                     None
                 };
             }
-            TimelineEvent::BuffExpired {
+            BattleLogEvent::BuffExpired {
                 caster_instance_id,
                 target_instance_id,
                 buff_id,
+                reason,
             } => {
                 let Some(_def) = buff_data.get(buff_id) else {
-                    violations.push(TimelineViolation {
-                        kind: TimelineViolationKind::UnknownBuffId,
+                    violations.push(EventLogViolation {
+                        kind: EventLogViolationKind::UnknownBuffId,
                         message: format!("unknown buff_id {} on BuffExpired", buff_id.as_u64()),
                         entry_index: Some(index),
                     });
@@ -196,8 +202,8 @@ pub(super) fn validate_buffs(
                 };
 
                 let Some(active) = active_buffs.remove(&key) else {
-                    violations.push(TimelineViolation {
-                        kind: TimelineViolationKind::BuffExpiredInvalid,
+                    violations.push(EventLogViolation {
+                        kind: EventLogViolationKind::BuffExpiredInvalid,
                         message: format!(
                             "BuffExpired recorded without an active BuffApplied (buff_id={})",
                             buff_id.as_u64()
@@ -207,12 +213,23 @@ pub(super) fn validate_buffs(
                     continue;
                 };
 
-                if entry.time_ms != active.expires_at_ms {
-                    violations.push(TimelineViolation {
-                        kind: TimelineViolationKind::BuffExpiredInvalid,
+                if reason == BuffExpireReason::Natural && entry.time_ms != active.expires_at_ms {
+                    violations.push(EventLogViolation {
+                        kind: EventLogViolationKind::BuffExpiredInvalid,
                         message: format!(
                             "BuffExpired at {}ms does not match expected expires_at_ms {}",
                             entry.time_ms, active.expires_at_ms
+                        ),
+                        entry_index: Some(index),
+                    });
+                } else if reason != BuffExpireReason::Natural
+                    && entry.time_ms > active.expires_at_ms
+                {
+                    violations.push(EventLogViolation {
+                        kind: EventLogViolationKind::BuffExpiredInvalid,
+                        message: format!(
+                            "BuffExpired(reason={:?}) at {}ms is after expires_at_ms {}",
+                            reason, entry.time_ms, active.expires_at_ms
                         ),
                         entry_index: Some(index),
                     });

@@ -94,9 +94,19 @@ pub struct ScenarioEvent {
 #[derive(Debug, Clone)]
 pub enum WinCondition {
     AllRequiredEnemyGroupsDefeated,
-    DefeatUnit { unit_ref: ScenarioUnitRef },
-    ProtectUnit { unit_ref: ScenarioUnitRef },
-    SurviveUntil { time_ms: u64 },
+    DefeatUnit {
+        unit_ref: ScenarioUnitRef,
+    },
+    ProtectUnit {
+        unit_ref: ScenarioUnitRef,
+    },
+    ProtectUnitUntil {
+        unit_ref: ScenarioUnitRef,
+        time_ms: u64,
+    },
+    SurviveUntil {
+        time_ms: u64,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -345,7 +355,9 @@ impl BattleScenario {
 
         match &self.win_condition {
             WinCondition::AllRequiredEnemyGroupsDefeated | WinCondition::SurviveUntil { .. } => {}
-            WinCondition::DefeatUnit { unit_ref } | WinCondition::ProtectUnit { unit_ref } => {
+            WinCondition::DefeatUnit { unit_ref }
+            | WinCondition::ProtectUnit { unit_ref }
+            | WinCondition::ProtectUnitUntil { unit_ref, .. } => {
                 ensure_unit_ref_exists(&unit_refs, unit_ref, "win condition")?;
             }
         }

@@ -122,25 +122,24 @@ impl RecruitmentEmployeeCandidateDatabase {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::game::employee::EmployeeGrade;
 
     #[test]
     fn starter_employee_candidates_deserialize_from_ron() {
         let db: StarterEmployeeCandidateDatabase = ron::de::from_str(
             r#"(
                 candidates: [
-                    (id: "a", name: "A", grade: Junior, role: "R", background: "B"),
-                    (id: "b", name: "B", grade: Junior, role: "R", background: "B"),
-                    (id: "c", name: "C", grade: Junior, role: "R", background: "B"),
-                    (id: "d", name: "D", grade: Junior, role: "R", background: "B"),
-                    (id: "e", name: "E", grade: Junior, role: "R", background: "B"),
+                    (id: "a", name: "A", role: "R", background: "B", starter_loadout: (equipment_ids: ["standard_armor"], baseline_skill_fragment_ids: ["starter_basic_attack_enhancement"])),
+                    (id: "b", name: "B", role: "R", background: "B", starter_loadout: (equipment_ids: ["standard_armor"], baseline_skill_fragment_ids: ["starter_basic_attack_enhancement"])),
+                    (id: "c", name: "C", role: "R", background: "B", starter_loadout: (equipment_ids: ["standard_armor"], baseline_skill_fragment_ids: ["starter_basic_attack_enhancement"])),
+                    (id: "d", name: "D", role: "R", background: "B", starter_loadout: (equipment_ids: ["standard_armor"], baseline_skill_fragment_ids: ["starter_basic_attack_enhancement"])),
+                    (id: "e", name: "E", role: "R", background: "B", starter_loadout: (equipment_ids: ["standard_armor"], baseline_skill_fragment_ids: ["starter_basic_attack_enhancement"])),
                 ],
             )"#,
         )
         .expect("starter candidates should deserialize");
 
         db.validate_indexes();
-        assert_eq!(db.get_by_id("a").unwrap().grade, EmployeeGrade::Junior);
+        assert_eq!(db.get_by_id("a").unwrap().name, "A");
     }
 
     #[test]
@@ -148,7 +147,7 @@ mod tests {
         let db: RecruitmentEmployeeCandidateDatabase = ron::de::from_str(
             r#"(
                 candidates: [
-                    (id: "relay_guard", name: "Relay Guard", grade: Junior, role: "R", background: "B"),
+                    (id: "relay_guard", name: "Relay Guard", role: "R", background: "B"),
                 ],
             )"#,
         )

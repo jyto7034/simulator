@@ -1,8 +1,8 @@
 use crate::game::battle::scenario::BattleScenario;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum TimelineViolationKind {
-    TimelineVersionMismatch,
+pub enum EventLogViolationKind {
+    EventLogVersionMismatch,
     MissingEntries,
     MissingBattleStart,
     MissingBattleEnd,
@@ -42,20 +42,20 @@ pub enum TimelineViolationKind {
 }
 
 #[derive(Debug, Clone)]
-pub struct TimelineViolation {
-    pub kind: TimelineViolationKind,
+pub struct EventLogViolation {
+    pub kind: EventLogViolationKind,
     pub message: String,
     pub entry_index: Option<usize>,
 }
 
 #[derive(Debug, Clone, Copy, Default)]
-pub struct TimelineExpectedCounts {
+pub struct EventLogExpectedCounts {
     pub units: usize,
     pub items: usize,
     pub artifacts: usize,
 }
 
-impl TimelineExpectedCounts {
+impl EventLogExpectedCounts {
     pub fn from_scenario(scenario: &BattleScenario) -> Self {
         let units = scenario.groups.iter().map(|group| group.spawns.len()).sum();
         let items = scenario
@@ -74,7 +74,7 @@ impl TimelineExpectedCounts {
 }
 
 #[derive(Debug, Clone)]
-pub struct TimelineValidatorConfig {
+pub struct EventLogValidatorConfig {
     pub require_battle_start_end: bool,
     pub require_contiguous_seq: bool,
     pub require_non_decreasing_time: bool,
@@ -93,7 +93,7 @@ pub struct TimelineValidatorConfig {
     pub auto_attack_timing_tolerance_ms: u64,
 }
 
-impl Default for TimelineValidatorConfig {
+impl Default for EventLogValidatorConfig {
     fn default() -> Self {
         Self {
             require_battle_start_end: true,

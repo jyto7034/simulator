@@ -24,7 +24,6 @@
 게임 규칙과 core 정책:
 
 - `docs/game_rulebook.md`
-- `docs/core_policy_decisions_2026_06.md`
 - 도메인별 계약 문서
 
 Unity-facing 계약/구현 문서:
@@ -38,10 +37,14 @@ F:\unity projects\ark\docs
 
 - `F:\unity projects\ark\docs\unity_core_contract.md`
 - `F:\unity projects\ark\docs\unity_client_implementation_goal.md`
+- `F:\unity projects\ark\docs\core_unity_battle_transport_contract.md`
 - `/mnt/f/unity projects/ark/docs/unity_core_contract.md`
 - `/mnt/f/unity projects/ark/docs/unity_client_implementation_goal.md`
+- `/mnt/f/unity projects/ark/docs/core_unity_battle_transport_contract.md`
 
-이 저장소 안의 `docs/unity_core_contract.md`, `docs/unity_client_implementation_goal.md`는 stale copy일 수 있다. Unity-facing 계약을 바꿀 때는 외부 canonical 문서를 확인하고 갱신한다.
+`core_unity_battle_transport_contract.md`가 현재 live battle transport의 canonical 통합 문서다. setup/update 분리 문서는 과거 논의와 migration context 확인용으로 남을 수 있지만, 새 battle transport 계약을 바꿀 때는 통합 문서를 우선 갱신한다.
+
+이 저장소 안에는 `docs/unity_core_contract.md`, `docs/unity_client_implementation_goal.md` 같은 local copy를 보관하지 않는다. 같은 이름의 문서가 다시 생기면 stale copy로 간주하고, Unity-facing 계약을 바꿀 때는 외부 canonical 문서를 확인하고 갱신한다.
 
 ## 코드와 문서 동기화 규칙
 
@@ -64,14 +67,15 @@ F:\unity projects\ark\docs
 | --- | --- | --- |
 | `PlayerBehavior` request 추가/변경 | 외부 `unity_core_contract.md`, 관련 goal/정책 문서 | server message deserialize test, focused core test, 필요 시 WebSocket probe |
 | `BehaviorResult` 추가/변경 | 외부 `unity_core_contract.md`, 관련 snapshot/command 계약 문서 | `game_server` result mapping test, focused core test |
-| `selected_event` snapshot 변경 | 외부 `unity_core_contract.md`, 필요 시 `unity_noncombat_node_ws_contract.md` | snapshot shape test, Python probe |
-| admin command 추가/변경 | 외부 `unity_admin_debug_command_contract.md` | `cargo test -p game_server admin -- --nocapture`, admin probe |
+| `selected_event` snapshot 변경 | 외부 `unity_core_contract.md`, 필요 시 해당 도메인의 외부 Unity 계약 문서 | snapshot shape test, Python probe |
+| admin command 추가/변경 | 외부 `unity_core_contract.md`, 필요 시 admin 전용 외부 Unity 계약 문서 | `cargo test -p game_server admin -- --nocapture`, 사용 가능한 admin probe |
 | Unity-facing DTO field 추가/삭제/의미 변경 | 외부 `unity_core_contract.md` | DTO shape test, server mapping test, 필요 시 probe |
 | live RON schema 변경 | `docs/game_rulebook.md` 또는 도메인 계약 문서 | `cargo test -p game_core --test ron_loading -- --nocapture` |
 | live RON content 의미 변경 | `docs/game_rulebook.md`, 도메인 문서 | live RON loading, focused gameplay/data validation test |
-| gameplay rule 변경 | `docs/game_rulebook.md`, `docs/core_policy_decisions_2026_06.md` 또는 도메인 문서 | focused gameplay flow test |
-| battle runtime/timeline/damage event 변경 | `docs/game_rulebook.md`, 외부 `unity_core_contract.md` | battle focused test, server delta/snapshot mapping test |
-| Maintenance/Shop/Reward/Support 같은 non-combat node 계약 변경 | 외부 `unity_noncombat_node_ws_contract.md`, 외부 `unity_core_contract.md` | node focused test, Python non-combat/admin probe |
+| gameplay rule 변경 | `docs/game_rulebook.md` 또는 도메인 문서 | focused gameplay flow test |
+| battle setup snapshot 변경 | `docs/game_rulebook.md`, 외부 `core_unity_battle_transport_contract.md`, 외부 `unity_core_contract.md` | battle setup DTO shape test, server message order test, 필요 시 WebSocket probe |
+| battle update/checkpoint/event 변경 | `docs/game_rulebook.md`, 외부 `core_unity_battle_transport_contract.md`, 외부 `unity_core_contract.md` | battle focused test, server delta/snapshot mapping test, 필요 시 WebSocket probe |
+| Maintenance/Shop/Reward/Support 같은 non-combat node 계약 변경 | 외부 `unity_core_contract.md`, 필요 시 해당 도메인의 외부 Unity 계약 문서 | node focused test, Python non-combat/admin probe |
 | Unity 구현 목표/UX 정책 변경 | 외부 `unity_client_implementation_goal.md` | Unity 쪽 goal/test/probe, core 계약과 충돌 여부 확인 |
 
 매트릭스에 없는 변경이라도 Unity가 표시하거나 command로 호출하는 표면이면 Unity-facing 계약 변경으로 취급한다.
@@ -95,11 +99,11 @@ F:\unity projects\ark\docs
 
 ## Stale 문서 방지 규칙
 
-이 저장소의 `docs/unity_core_contract.md`, `docs/unity_client_implementation_goal.md`는 보조 문서일 수 있다.
+이 저장소에는 `docs/unity_core_contract.md`, `docs/unity_client_implementation_goal.md`를 보관하지 않는다.
 
 - Unity-facing 계약의 canonical은 외부 Unity 프로젝트 문서다.
-- 로컬 문서를 갱신했더라도 외부 canonical 문서를 갱신하지 않으면 작업은 완료되지 않는다.
-- 외부 문서를 갱신했는데 로컬 stale copy가 다음 작업자를 오도할 가능성이 있으면 로컬 문서도 최소한의 충돌 문구를 정리한다.
+- 로컬 stale copy를 갱신하는 방식으로 작업을 완료하지 않는다.
+- 외부 문서를 갱신했는데 로컬 stale copy가 다음 작업자를 오도할 가능성이 있으면 로컬 문서는 제거한다.
 - 문서 검색 시 같은 제목의 문서가 여러 위치에 있으면 외부 canonical 문서를 우선한다.
 - 완료 보고에는 어떤 문서를 갱신했는지 경로를 명시한다.
 
@@ -186,7 +190,7 @@ WebSocket/admin probe 예시:
 
 ```text
 APP__SERVER__BIND_ADDRESS=127.0.0.1 APP__SERVER__PORT=18083 ENABLE_ADMIN_COMMANDS=true ADMIN_COMMAND_TOKEN=dev cargo run -p game_server
-ADMIN_COMMAND_TOKEN=dev WS_PORT=18083 python3 "/mnt/f/unity projects/ark/docs/unity_admin_debug_command_probe.py"
+ADMIN_COMMAND_TOKEN=dev WS_PORT=18083 python3 "<available-admin-probe-path>"
 ```
 
 probe 실행 후 생성된 로그/임시 파일이 있다면 내가 만든 부산물만 정리한다.

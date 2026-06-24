@@ -16,12 +16,14 @@ use crate::{
                 types::{UnitBody, WorldVec2},
                 ActionState,
             },
-            damage::DamageModifiers,
-            damage::DamageType,
+            damage::{DamageModifiers, DamageSourceSnapshot, DamageType},
+            event_log::{BattleEventCause, SkillCastTarget},
             ids::UnitInstanceId,
             tile_range::{FacingDirection, TileRangePattern},
-            timeline::{SkillCastTarget, TimelineCause},
-            types::{BattleUnitRole, MobilityKind, UnitSnapshot, UnitTargetTrait},
+            types::{
+                BattleUnitRole, BattleUnitSourceIdentity, MobilityKind, UnitSnapshot,
+                UnitTargetTrait,
+            },
         },
         data::abnormality_data::BasicAttackDef,
         enums::Side,
@@ -38,11 +40,13 @@ pub enum ProjectileGuidance {
 pub type SkillDeliveryId = Uuid;
 pub type AreaInstanceId = Uuid;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct ProjectileRecord {
     pub fired_at_ms: u64,
     pub last_reevaluation_ms: u64,
     pub attacker_instance_id: UnitInstanceId,
+    pub attacker_owner_at_launch: Side,
+    pub air_capable_at_launch: bool,
     pub target_instance_id: UnitInstanceId,
     pub start: WorldVec2,
     pub current_position: WorldVec2,
@@ -50,6 +54,9 @@ pub struct ProjectileRecord {
     pub speed_units_per_ms: u32,
     pub guidance: ProjectileGuidance,
     pub damage_type: DamageType,
+    pub source_snapshot: DamageSourceSnapshot,
+    pub max_travel_ms: u64,
+    pub cause: BattleEventCause,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -68,13 +75,16 @@ pub struct ActiveProjectileRuntime {
     pub speed_units_per_ms: u32,
     pub guidance: ProjectileGuidance,
     pub target_unit_id: Option<UnitInstanceId>,
+    pub source_snapshot: DamageSourceSnapshot,
     pub collision: SkillProjectileCollisionDef,
     pub hit_unit_ids: Vec<UnitInstanceId>,
+    pub killed_unit_count: u32,
+    pub max_kills: Option<u32>,
     pub impact_vfx_id: Option<String>,
     pub last_reevaluation_ms: Option<u64>,
     pub next_reevaluation_ms: u64,
     pub max_travel_ms: u64,
-    pub cause: TimelineCause,
+    pub cause: BattleEventCause,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -179,6 +189,7 @@ pub(super) enum TriggerSource {
 pub(super) struct PendingSkillCast {
     pub(super) skill_id: SkillId,
     pub(super) cast_target: Option<SkillCastTarget>,
+    pub(super) start_seq: u64,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -229,12 +240,13 @@ pub(super) struct DeferredSkillStep {
     pub(super) skill_id: SkillId,
     pub(super) step_id: String,
     pub(super) cast_target: Option<SkillCastTarget>,
-    pub(super) cause: TimelineCause,
+    pub(super) cause: BattleEventCause,
 }
 
 #[derive(Debug, Clone, Copy, Default)]
 pub(super) struct CommandExecutionSummary {
     pub(super) actual_damage_target_count: usize,
+    pub(super) killed_target_count: usize,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
@@ -288,6 +300,7 @@ pub struct ActiveSkillCastDebugState {
 pub(super) struct ActiveSkillCast {
     #[allow(dead_code)]
     pub(super) caster_instance_id: UnitInstanceId,
+    pub(super) skill_id: SkillId,
     pub(super) caster_owner: Side,
     pub(super) anchor_position: Position,
     pub(super) cast_target_anchor_position: Option<Position>,
@@ -335,13 +348,33 @@ pub(super) struct AbilityProcState {
     pub(super) next_ready_ms: u64,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum RuntimeUnitLifecycle {
+    Active,
+    Withdrawn,
+    Dead,
+}
+
+impl RuntimeUnitLifecycle {
+    pub fn is_active(self) -> bool {
+        matches!(self, RuntimeUnitLifecycle::Active)
+    }
+
+    pub fn is_dead(self) -> bool {
+        matches!(self, RuntimeUnitLifecycle::Dead)
+    }
+}
+
 pub struct RuntimeUnit {
     pub instance_id: UnitInstanceId,
+    pub lifecycle: RuntimeUnitLifecycle,
     pub spawn_order: u64,
     pub source_owned_uuid: Uuid,
     pub owner: Side,
     pub role: BattleUnitRole,
+    pub threat_class: crate::game::battle::types::BattleUnitThreatClass,
     pub base_uuid: Uuid,
+    pub source_identity: BattleUnitSourceIdentity,
     pub stats: UnitStats,
     pub incoming_damage_modifiers: DamageModifiers,
     pub basic_attack: BasicAttackDef,
@@ -362,12 +395,13 @@ pub struct RuntimeUnit {
     pub current_target: Option<UnitInstanceId>,
     pub next_basic_attack_ms: u64,
     pub pending_basic_attack: bool,
+    pub ranged_reposition_until_ms: u64,
     pub resonance_current: u32,
     pub resonance_max: u32,
     pub resonance_lock_ms: u64,
     pub next_action_time: u64,
     pub pending_cast: bool,
-    pub pending_cast_cause: Option<TimelineCause>,
+    pub pending_cast_cause: Option<BattleEventCause>,
     pub(super) pending_skill_cast: Option<PendingSkillCast>,
 }
 
@@ -378,6 +412,7 @@ impl RuntimeUnit {
             id: self.instance_id,
             owner: self.owner,
             role: self.role,
+            threat_class: self.threat_class,
             mobility_kind: self.mobility_kind,
             position,
             world_position: self.body.position,
@@ -404,7 +439,11 @@ impl RuntimeUnit {
     }
 
     pub fn is_dead(&self) -> bool {
-        self.stats.current_health == 0
+        self.lifecycle.is_dead()
+    }
+
+    pub fn is_active(&self) -> bool {
+        self.lifecycle.is_active()
     }
 
     pub fn is_combatant(&self) -> bool {
@@ -416,11 +455,11 @@ impl RuntimeUnit {
     }
 
     pub fn can_basic_attack(&self) -> bool {
-        self.is_combatant()
+        self.is_active() && self.is_combatant()
     }
 
     pub fn can_move(&self) -> bool {
-        self.is_combatant() && self.stats.move_speed_units_per_ms > 0
+        self.is_active() && self.is_combatant() && self.stats.move_speed_units_per_ms > 0
     }
 }
 

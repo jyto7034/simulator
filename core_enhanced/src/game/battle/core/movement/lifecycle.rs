@@ -1,7 +1,7 @@
 use crate::game::battle::{
     core::{movement::ActionState, BattleCore},
+    event_log::{BattleLogEvent, MovementStopReason},
     ids::UnitInstanceId,
-    timeline::{MovementStopReason, TimelineEvent},
 };
 
 impl BattleCore {
@@ -41,9 +41,9 @@ impl BattleCore {
         let Some(unit) = self.units.get(&unit_instance_id) else {
             return;
         };
-        self.record_timeline(
+        self.record_event_log(
             time_ms,
-            TimelineEvent::MovementStopped {
+            BattleLogEvent::MovementStopped {
                 unit_instance_id,
                 reason,
                 world_position: unit.body.position.quantized_milli(),

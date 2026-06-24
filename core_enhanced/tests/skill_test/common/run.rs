@@ -4,7 +4,7 @@ use game_core::{
         battle::{
             core::BattleCore,
             enums::BattleEvent,
-            timeline::{Timeline, TimelineCause, TimelineRootCause},
+            event_log::{BattleEventCause, BattleEventLog, BattleEventRootCause},
             types::BattleResult,
         },
         data::abnormality_data::AbnormalityMetadata,
@@ -26,8 +26,8 @@ pub struct ScenarioRunResult {
 }
 
 impl ScenarioRunResult {
-    pub fn timeline(&self) -> &Timeline {
-        &self.battle_result.timeline
+    pub fn event_log(&self) -> &BattleEventLog {
+        &self.battle_result.event_log
     }
 
     pub fn caster_instance_id(&self) -> game_core::game::battle::ids::UnitInstanceId {
@@ -38,8 +38,8 @@ impl ScenarioRunResult {
     pub fn first_cast_of(
         &self,
         skill_id: &str,
-    ) -> &game_core::game::battle::timeline::TimelineEntry {
-        find_first_ability_cast(self.timeline(), self.caster_instance_id(), skill_id)
+    ) -> &game_core::game::battle::event_log::BattleEventLogEntry {
+        find_first_ability_cast(self.event_log(), self.caster_instance_id(), skill_id)
             .unwrap_or_else(|| {
                 panic!(
                     "{} ({}) never cast skill {} on configured board",
@@ -51,9 +51,9 @@ impl ScenarioRunResult {
     pub fn first_cast_steps(
         &self,
         skill_id: &str,
-    ) -> Vec<&game_core::game::battle::timeline::TimelineEntry> {
+    ) -> Vec<&game_core::game::battle::event_log::BattleEventLogEntry> {
         let cast = self.first_cast_of(skill_id);
-        step_entries_for_cast(self.timeline(), cast.seq)
+        step_entries_for_cast(self.event_log(), cast.seq)
     }
 
     pub fn winner(&self) -> game_core::game::battle::types::BattleWinner {
@@ -65,7 +65,7 @@ impl ScenarioRunResult {
         position: Position,
         owner: Option<Side>,
     ) -> Option<game_core::game::battle::ids::UnitInstanceId> {
-        find_unit_instance_at(self.timeline(), position, owner)
+        find_unit_instance_at(self.event_log(), position, owner)
     }
 }
 
@@ -74,29 +74,15 @@ fn apply_runtime_start_patch(
     position: Position,
     patch: &RuntimeStartPatch,
 ) -> Result<(), String> {
-    let unit_id = battle
-        .battlefield
-        .occupant(position)
-        .map_err(|error| format!("failed to inspect position {:?}: {:?}", position, error))?
+    let unit_id = runtime_unit_at(battle, position)
         .ok_or_else(|| format!("no unit placed at {:?}", position))?;
     let current_target_id = if let Some(target_position) = patch.current_target_position {
-        Some(
-            battle
-                .battlefield
-                .occupant(target_position)
-                .map_err(|error| {
-                    format!(
-                        "failed to inspect current_target position {:?}: {:?}",
-                        target_position, error
-                    )
-                })?
-                .ok_or_else(|| {
-                    format!(
-                        "no unit placed at current_target position {:?}",
-                        target_position
-                    )
-                })?,
-        )
+        Some(runtime_unit_at(battle, target_position).ok_or_else(|| {
+            format!(
+                "no unit placed at current_target position {:?}",
+                target_position
+            )
+        })?)
     } else {
         None
     };
@@ -138,8 +124,8 @@ fn apply_runtime_start_patch(
         battle.enqueue_event(BattleEvent::AutoCastStart {
             time_ms: 0,
             caster_instance_id: unit_id,
-            cause: TimelineCause::Root {
-                kind: TimelineRootCause::Period,
+            cause: BattleEventCause::Root {
+                kind: BattleEventRootCause::Period,
             },
         });
     }
@@ -147,7 +133,21 @@ fn apply_runtime_start_patch(
     Ok(())
 }
 
-fn sanitize_timeline_export_name(name: &str) -> String {
+fn runtime_unit_at(
+    battle: &BattleCore,
+    position: Position,
+) -> Option<game_core::game::battle::ids::UnitInstanceId> {
+    let mut unit_ids = battle
+        .units
+        .values()
+        .filter(|unit| unit.is_active() && unit.body.projected_tile() == position)
+        .map(|unit| unit.instance_id)
+        .collect::<Vec<_>>();
+    unit_ids.sort_by(|left, right| left.as_bytes().cmp(right.as_bytes()));
+    unit_ids.into_iter().next()
+}
+
+fn sanitize_event_log_export_name(name: &str) -> String {
     let mut out = String::with_capacity(name.len());
     let mut prev_was_sep = false;
 
@@ -164,18 +164,18 @@ fn sanitize_timeline_export_name(name: &str) -> String {
     out.trim_matches('_').to_string()
 }
 
-fn timeline_export_stem(
+fn event_log_export_stem(
     abnormality: &AbnormalityMetadata,
     game_data: &game_core::game::data::GameDataBase,
 ) -> String {
     let mut parts = vec![
         abnormality.id.clone(),
-        sanitize_timeline_export_name(&abnormality.name),
+        sanitize_event_log_export_name(&abnormality.name),
     ];
 
     if let Some(skill_id) = abnormality.skill_id.as_deref() {
         if let Some(skill) = game_data.skill_data.get_by_id(skill_id) {
-            let skill_name = sanitize_timeline_export_name(&skill.name);
+            let skill_name = sanitize_event_log_export_name(&skill.name);
             if !skill_name.is_empty() && parts.last().is_none_or(|last| last != &skill_name) {
                 parts.push(skill_name);
             }
@@ -214,9 +214,9 @@ pub fn run_abnormality_scenario(abnormality_id: &str, board: BoardScenario) -> S
     common::write_debug_event_log_export(
         &format!(
             "skill_test/{}",
-            timeline_export_stem(&resolved.abnormality, resolved.game_data.as_ref())
+            event_log_export_stem(&resolved.abnormality, resolved.game_data.as_ref())
         ),
-        &battle_result.timeline,
+        &battle_result.event_log,
     );
 
     ScenarioRunResult {

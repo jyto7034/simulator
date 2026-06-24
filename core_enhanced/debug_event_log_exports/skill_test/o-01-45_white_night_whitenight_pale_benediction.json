@@ -1,9 +1,9 @@
 {
-  "version": 23,
+  "version": 27,
   "entries": [
     {
       "time_ms": 0,
-      "seq": 0,
+      "seq": 1,
       "cause": {
         "cause_type": "root",
         "kind": "init"
@@ -16,7 +16,7 @@
     },
     {
       "time_ms": 0,
-      "seq": 1,
+      "seq": 2,
       "cause": {
         "cause_type": "root",
         "kind": "init"
@@ -26,40 +26,17 @@
         "unit_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
         "owner": "Opponent",
         "role": "combatant",
+        "threat_class": "elite",
         "mobility_kind": "ground",
         "base_uuid": "d00d1000-0000-0000-0000-000000030002",
+        "unit_source": {
+          "kind": "abnormality",
+          "abnormality_id": "skill_test_dummy_3_2",
+          "base_uuid": "d00d1000-0000-0000-0000-000000030002"
+        },
         "world_position": {
           "x_milli": 3500,
           "y_milli": 2500
-        },
-        "stats": {
-          "max_health": 900,
-          "current_health": 900,
-          "attack": 1,
-          "defense": 0,
-          "magic_resist": 0,
-          "attack_interval_ms": 5000,
-          "move_speed_units_per_ms": 0
-        }
-      }
-    },
-    {
-      "time_ms": 0,
-      "seq": 2,
-      "cause": {
-        "cause_type": "root",
-        "kind": "init"
-      },
-      "event": {
-        "type": "UnitSpawned",
-        "unit_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
-        "owner": "Opponent",
-        "role": "combatant",
-        "mobility_kind": "ground",
-        "base_uuid": "d00d1000-0000-0000-0000-000000030000",
-        "world_position": {
-          "x_milli": 3500,
-          "y_milli": 500
         },
         "stats": {
           "max_health": 900,
@@ -81,14 +58,20 @@
       },
       "event": {
         "type": "UnitSpawned",
-        "unit_instance_id": "aee4e951-dbe2-4ac9-adbc-95b8a2a2548e",
+        "unit_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "owner": "Opponent",
         "role": "combatant",
+        "threat_class": "elite",
         "mobility_kind": "ground",
-        "base_uuid": "d00d1000-0000-0000-0000-000000040002",
+        "base_uuid": "d00d1000-0000-0000-0000-000000030000",
+        "unit_source": {
+          "kind": "abnormality",
+          "abnormality_id": "skill_test_dummy_3_0",
+          "base_uuid": "d00d1000-0000-0000-0000-000000030000"
+        },
         "world_position": {
-          "x_milli": 4500,
-          "y_milli": 2500
+          "x_milli": 3500,
+          "y_milli": 500
         },
         "stats": {
           "max_health": 900,
@@ -110,18 +93,24 @@
       },
       "event": {
         "type": "UnitSpawned",
-        "unit_instance_id": "1cec88da-040b-46c3-a527-3ef2629f1827",
-        "owner": "Player",
+        "unit_instance_id": "aee4e951-dbe2-4ac9-adbc-95b8a2a2548e",
+        "owner": "Opponent",
         "role": "combatant",
+        "threat_class": "elite",
         "mobility_kind": "ground",
-        "base_uuid": "d00d1000-0000-0000-0000-000000030001",
+        "base_uuid": "d00d1000-0000-0000-0000-000000040002",
+        "unit_source": {
+          "kind": "abnormality",
+          "abnormality_id": "skill_test_dummy_4_2",
+          "base_uuid": "d00d1000-0000-0000-0000-000000040002"
+        },
         "world_position": {
-          "x_milli": 3500,
-          "y_milli": 1500
+          "x_milli": 4500,
+          "y_milli": 2500
         },
         "stats": {
-          "max_health": 300,
-          "current_health": 300,
+          "max_health": 900,
+          "current_health": 900,
           "attack": 1,
           "defense": 0,
           "magic_resist": 0,
@@ -139,13 +128,19 @@
       },
       "event": {
         "type": "UnitSpawned",
-        "unit_instance_id": "de8eb82f-825b-412f-9045-6504304ad35c",
+        "unit_instance_id": "1cec88da-040b-46c3-a527-3ef2629f1827",
         "owner": "Player",
         "role": "combatant",
+        "threat_class": "elite",
         "mobility_kind": "ground",
-        "base_uuid": "d00d1000-0000-0000-0000-000000040001",
+        "base_uuid": "d00d1000-0000-0000-0000-000000030001",
+        "unit_source": {
+          "kind": "abnormality",
+          "abnormality_id": "skill_test_dummy_3_1",
+          "base_uuid": "d00d1000-0000-0000-0000-000000030001"
+        },
         "world_position": {
-          "x_milli": 4500,
+          "x_milli": 3500,
           "y_milli": 1500
         },
         "stats": {
@@ -168,11 +163,52 @@
       },
       "event": {
         "type": "UnitSpawned",
+        "unit_instance_id": "de8eb82f-825b-412f-9045-6504304ad35c",
+        "owner": "Player",
+        "role": "combatant",
+        "threat_class": "elite",
+        "mobility_kind": "ground",
+        "base_uuid": "d00d1000-0000-0000-0000-000000040001",
+        "unit_source": {
+          "kind": "abnormality",
+          "abnormality_id": "skill_test_dummy_4_1",
+          "base_uuid": "d00d1000-0000-0000-0000-000000040001"
+        },
+        "world_position": {
+          "x_milli": 4500,
+          "y_milli": 1500
+        },
+        "stats": {
+          "max_health": 300,
+          "current_health": 300,
+          "attack": 1,
+          "defense": 0,
+          "magic_resist": 0,
+          "attack_interval_ms": 5000,
+          "move_speed_units_per_ms": 0
+        }
+      }
+    },
+    {
+      "time_ms": 0,
+      "seq": 7,
+      "cause": {
+        "cause_type": "root",
+        "kind": "init"
+      },
+      "event": {
+        "type": "UnitSpawned",
         "unit_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "owner": "Player",
         "role": "combatant",
+        "threat_class": "elite",
         "mobility_kind": "ground",
         "base_uuid": "0b014500-0000-0000-0000-000000000110",
+        "unit_source": {
+          "kind": "abnormality",
+          "abnormality_id": "o-01-45_white_night",
+          "base_uuid": "0b014500-0000-0000-0000-000000000110"
+        },
         "world_position": {
           "x_milli": 2500,
           "y_milli": 1500
@@ -190,21 +226,6 @@
     },
     {
       "time_ms": 0,
-      "seq": 7,
-      "cause": {
-        "cause_type": "root",
-        "kind": "period"
-      },
-      "event": {
-        "type": "AttackStart",
-        "attacker_instance_id": "1cec88da-040b-46c3-a527-3ef2629f1827",
-        "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
-        "kind": "Auto",
-        "delivery": "instant"
-      }
-    },
-    {
-      "time_ms": 0,
       "seq": 8,
       "cause": {
         "cause_type": "root",
@@ -212,7 +233,7 @@
       },
       "event": {
         "type": "AttackStart",
-        "attacker_instance_id": "de8eb82f-825b-412f-9045-6504304ad35c",
+        "attacker_instance_id": "1cec88da-040b-46c3-a527-3ef2629f1827",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "kind": "Auto",
         "delivery": "instant"
@@ -227,6 +248,21 @@
       },
       "event": {
         "type": "AttackStart",
+        "attacker_instance_id": "de8eb82f-825b-412f-9045-6504304ad35c",
+        "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 0,
+      "seq": 10,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "kind": "Auto",
@@ -235,10 +271,10 @@
     },
     {
       "time_ms": 200,
-      "seq": 10,
+      "seq": 11,
       "cause": {
         "cause_type": "parent",
-        "seq": 7
+        "seq": 8
       },
       "event": {
         "type": "AttackResolve",
@@ -250,10 +286,10 @@
     },
     {
       "time_ms": 200,
-      "seq": 11,
+      "seq": 12,
       "cause": {
         "cause_type": "parent",
-        "seq": 10
+        "seq": 11
       },
       "event": {
         "type": "ResonanceChanged",
@@ -265,10 +301,10 @@
     },
     {
       "time_ms": 200,
-      "seq": 12,
+      "seq": 13,
       "cause": {
         "cause_type": "parent",
-        "seq": 10
+        "seq": 11
       },
       "event": {
         "type": "HpChanged",
@@ -296,10 +332,10 @@
     },
     {
       "time_ms": 200,
-      "seq": 13,
+      "seq": 14,
       "cause": {
         "cause_type": "parent",
-        "seq": 8
+        "seq": 9
       },
       "event": {
         "type": "AttackResolve",
@@ -311,10 +347,10 @@
     },
     {
       "time_ms": 200,
-      "seq": 14,
+      "seq": 15,
       "cause": {
         "cause_type": "parent",
-        "seq": 13
+        "seq": 14
       },
       "event": {
         "type": "ResonanceChanged",
@@ -326,10 +362,10 @@
     },
     {
       "time_ms": 200,
-      "seq": 15,
+      "seq": 16,
       "cause": {
         "cause_type": "parent",
-        "seq": 13
+        "seq": 14
       },
       "event": {
         "type": "HpChanged",
@@ -357,10 +393,10 @@
     },
     {
       "time_ms": 330,
-      "seq": 16,
+      "seq": 17,
       "cause": {
         "cause_type": "parent",
-        "seq": 9
+        "seq": 10
       },
       "event": {
         "type": "AttackResolve",
@@ -372,10 +408,10 @@
     },
     {
       "time_ms": 330,
-      "seq": 17,
+      "seq": 18,
       "cause": {
         "cause_type": "parent",
-        "seq": 16
+        "seq": 17
       },
       "event": {
         "type": "ResonanceChanged",
@@ -387,14 +423,14 @@
     },
     {
       "time_ms": 330,
-      "seq": 18,
+      "seq": 19,
       "cause": {
         "cause_type": "parent",
-        "seq": 16
+        "seq": 17
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "7230057e-bbf8-48c7-b262-de7eb4874b03",
+        "projectile_id": "c91ae34a-8ecc-44d5-8a27-7a6a38843bda",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "start": {
@@ -410,30 +446,30 @@
       }
     },
     {
-      "time_ms": 466,
-      "seq": 19,
+      "time_ms": 508,
+      "seq": 20,
       "cause": {
         "cause_type": "parent",
-        "seq": 16
+        "seq": 17
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "7230057e-bbf8-48c7-b262-de7eb4874b03",
+        "projectile_id": "c91ae34a-8ecc-44d5-8a27-7a6a38843bda",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 924
+          "x_milli": 3253,
+          "y_milli": 747
         },
         "hit": true
       }
     },
     {
-      "time_ms": 466,
-      "seq": 20,
+      "time_ms": 508,
+      "seq": 21,
       "cause": {
         "cause_type": "parent",
-        "seq": 16
+        "seq": 17
       },
       "event": {
         "type": "HpChanged",
@@ -460,11 +496,11 @@
       }
     },
     {
-      "time_ms": 466,
-      "seq": 21,
+      "time_ms": 508,
+      "seq": 22,
       "cause": {
         "cause_type": "parent",
-        "seq": 16
+        "seq": 17
       },
       "event": {
         "type": "ResonanceChanged",
@@ -475,11 +511,11 @@
       }
     },
     {
-      "time_ms": 466,
-      "seq": 22,
+      "time_ms": 508,
+      "seq": 23,
       "cause": {
         "cause_type": "parent",
-        "seq": 16
+        "seq": 17
       },
       "event": {
         "type": "AutoCastStart",
@@ -492,11 +528,11 @@
       }
     },
     {
-      "time_ms": 1166,
-      "seq": 23,
+      "time_ms": 1208,
+      "seq": 24,
       "cause": {
         "cause_type": "parent",
-        "seq": 22
+        "seq": 23
       },
       "event": {
         "type": "AbilityCast",
@@ -506,11 +542,11 @@
       }
     },
     {
-      "time_ms": 1166,
-      "seq": 24,
+      "time_ms": 1208,
+      "seq": 25,
       "cause": {
         "cause_type": "parent",
-        "seq": 22
+        "seq": 23
       },
       "event": {
         "type": "AutoCastEnd",
@@ -518,11 +554,11 @@
       }
     },
     {
-      "time_ms": 1166,
-      "seq": 25,
+      "time_ms": 1208,
+      "seq": 26,
       "cause": {
         "cause_type": "parent",
-        "seq": 23
+        "seq": 24
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -538,15 +574,15 @@
       }
     },
     {
-      "time_ms": 1166,
-      "seq": 26,
+      "time_ms": 1208,
+      "seq": 27,
       "cause": {
         "cause_type": "parent",
-        "seq": 25
+        "seq": 26
       },
       "event": {
         "type": "SkillAreaDeclared",
-        "area_id": "5071b296-9e29-4728-9388-45010ea635dc",
+        "area_id": "325fabaa-d444-4db3-8796-f1660bd0d6a8",
         "skill_id": "white_night_pale_benediction",
         "step_id": "ally_salvation",
         "caster_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
@@ -599,7 +635,7 @@
           "x_milli": 2500,
           "y_milli": 500
         },
-        "start_time_ms": 1166,
+        "start_time_ms": 1208,
         "duration_ms": 0,
         "display_duration_ms": 250,
         "warning_ms": 0,
@@ -610,11 +646,11 @@
       }
     },
     {
-      "time_ms": 1166,
-      "seq": 27,
+      "time_ms": 1208,
+      "seq": 28,
       "cause": {
         "cause_type": "parent",
-        "seq": 26
+        "seq": 27
       },
       "event": {
         "type": "HpChanged",
@@ -628,11 +664,11 @@
       }
     },
     {
-      "time_ms": 1166,
-      "seq": 28,
+      "time_ms": 1208,
+      "seq": 29,
       "cause": {
         "cause_type": "parent",
-        "seq": 26
+        "seq": 27
       },
       "event": {
         "type": "HpChanged",
@@ -646,11 +682,11 @@
       }
     },
     {
-      "time_ms": 1166,
-      "seq": 29,
+      "time_ms": 1208,
+      "seq": 30,
       "cause": {
         "cause_type": "parent",
-        "seq": 26
+        "seq": 27
       },
       "event": {
         "type": "HpChanged",
@@ -664,11 +700,11 @@
       }
     },
     {
-      "time_ms": 1206,
-      "seq": 30,
+      "time_ms": 1248,
+      "seq": 31,
       "cause": {
         "cause_type": "parent",
-        "seq": 23
+        "seq": 24
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -684,15 +720,15 @@
       }
     },
     {
-      "time_ms": 1206,
-      "seq": 31,
+      "time_ms": 1248,
+      "seq": 32,
       "cause": {
         "cause_type": "parent",
-        "seq": 30
+        "seq": 31
       },
       "event": {
         "type": "SkillAreaDeclared",
-        "area_id": "743e491e-1742-468a-8796-f1660bd0d6a8",
+        "area_id": "a7d41f11-2b82-4a82-88f9-1ae218845907",
         "skill_id": "white_night_pale_benediction",
         "step_id": "ally_blessing",
         "caster_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
@@ -745,7 +781,7 @@
           "x_milli": 2500,
           "y_milli": 500
         },
-        "start_time_ms": 1206,
+        "start_time_ms": 1248,
         "duration_ms": 0,
         "display_duration_ms": 250,
         "warning_ms": 0,
@@ -756,11 +792,11 @@
       }
     },
     {
-      "time_ms": 1206,
-      "seq": 32,
+      "time_ms": 1248,
+      "seq": 33,
       "cause": {
         "cause_type": "parent",
-        "seq": 31
+        "seq": 32
       },
       "event": {
         "type": "StatChanged",
@@ -792,11 +828,11 @@
       }
     },
     {
-      "time_ms": 1206,
-      "seq": 33,
+      "time_ms": 1248,
+      "seq": 34,
       "cause": {
         "cause_type": "parent",
-        "seq": 31
+        "seq": 32
       },
       "event": {
         "type": "StatChanged",
@@ -828,11 +864,11 @@
       }
     },
     {
-      "time_ms": 1206,
-      "seq": 34,
+      "time_ms": 1248,
+      "seq": 35,
       "cause": {
         "cause_type": "parent",
-        "seq": 31
+        "seq": 32
       },
       "event": {
         "type": "StatChanged",
@@ -864,11 +900,11 @@
       }
     },
     {
-      "time_ms": 1306,
-      "seq": 35,
+      "time_ms": 1348,
+      "seq": 36,
       "cause": {
         "cause_type": "parent",
-        "seq": 23
+        "seq": 24
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -884,15 +920,15 @@
       }
     },
     {
-      "time_ms": 1306,
-      "seq": 36,
+      "time_ms": 1348,
+      "seq": 37,
       "cause": {
         "cause_type": "parent",
-        "seq": 35
+        "seq": 36
       },
       "event": {
         "type": "SkillAreaDeclared",
-        "area_id": "1f6915af-f857-4361-be6e-ad28df208d57",
+        "area_id": "add833ad-d05d-4268-ba51-c2da56f32aa3",
         "skill_id": "white_night_pale_benediction",
         "step_id": "enemy_judgement",
         "caster_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
@@ -941,7 +977,7 @@
           "x_milli": 2500,
           "y_milli": 500
         },
-        "start_time_ms": 1306,
+        "start_time_ms": 1348,
         "duration_ms": 0,
         "display_duration_ms": 250,
         "warning_ms": 0,
@@ -952,11 +988,11 @@
       }
     },
     {
-      "time_ms": 1306,
-      "seq": 37,
+      "time_ms": 1348,
+      "seq": 38,
       "cause": {
         "cause_type": "parent",
-        "seq": 36
+        "seq": 37
       },
       "event": {
         "type": "HpChanged",
@@ -983,11 +1019,11 @@
       }
     },
     {
-      "time_ms": 1306,
-      "seq": 38,
+      "time_ms": 1348,
+      "seq": 39,
       "cause": {
         "cause_type": "parent",
-        "seq": 36
+        "seq": 37
       },
       "event": {
         "type": "HpChanged",
@@ -1014,11 +1050,11 @@
       }
     },
     {
-      "time_ms": 1306,
-      "seq": 39,
+      "time_ms": 1348,
+      "seq": 40,
       "cause": {
         "cause_type": "parent",
-        "seq": 36
+        "seq": 37
       },
       "event": {
         "type": "HpChanged",
@@ -1045,8 +1081,8 @@
       }
     },
     {
-      "time_ms": 3216,
-      "seq": 40,
+      "time_ms": 3258,
+      "seq": 41,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -1060,11 +1096,11 @@
       }
     },
     {
-      "time_ms": 3546,
-      "seq": 41,
+      "time_ms": 3588,
+      "seq": 42,
       "cause": {
         "cause_type": "parent",
-        "seq": 40
+        "seq": 41
       },
       "event": {
         "type": "AttackResolve",
@@ -1075,11 +1111,11 @@
       }
     },
     {
-      "time_ms": 3546,
-      "seq": 42,
+      "time_ms": 3588,
+      "seq": 43,
       "cause": {
         "cause_type": "parent",
-        "seq": 41
+        "seq": 42
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1090,15 +1126,15 @@
       }
     },
     {
-      "time_ms": 3546,
-      "seq": 43,
+      "time_ms": 3588,
+      "seq": 44,
       "cause": {
         "cause_type": "parent",
-        "seq": 41
+        "seq": 42
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "57ba301a-57d5-4f53-8b6b-b8a97aa72440",
+        "projectile_id": "42add6bc-305e-48fc-b7e3-0633230e09fc",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "start": {
@@ -1109,35 +1145,35 @@
           "x_milli": 3500,
           "y_milli": 500
         },
-        "fired_at_ms": 3546,
-        "expected_impact_time_ms": 3782
+        "fired_at_ms": 3588,
+        "expected_impact_time_ms": 3824
       }
     },
     {
-      "time_ms": 3682,
-      "seq": 44,
+      "time_ms": 3766,
+      "seq": 45,
       "cause": {
         "cause_type": "parent",
-        "seq": 41
+        "seq": 42
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "57ba301a-57d5-4f53-8b6b-b8a97aa72440",
+        "projectile_id": "42add6bc-305e-48fc-b7e3-0633230e09fc",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 924
+          "x_milli": 3253,
+          "y_milli": 747
         },
         "hit": true
       }
     },
     {
-      "time_ms": 3682,
-      "seq": 45,
+      "time_ms": 3766,
+      "seq": 46,
       "cause": {
         "cause_type": "parent",
-        "seq": 41
+        "seq": 42
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1148,11 +1184,11 @@
       }
     },
     {
-      "time_ms": 3682,
-      "seq": 46,
+      "time_ms": 3766,
+      "seq": 47,
       "cause": {
         "cause_type": "parent",
-        "seq": 41
+        "seq": 42
       },
       "event": {
         "type": "HpChanged",
@@ -1179,11 +1215,11 @@
       }
     },
     {
-      "time_ms": 3682,
-      "seq": 47,
+      "time_ms": 3766,
+      "seq": 48,
       "cause": {
         "cause_type": "parent",
-        "seq": 41
+        "seq": 42
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1195,7 +1231,7 @@
     },
     {
       "time_ms": 5000,
-      "seq": 48,
+      "seq": 49,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -1210,7 +1246,7 @@
     },
     {
       "time_ms": 5000,
-      "seq": 49,
+      "seq": 50,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -1225,10 +1261,10 @@
     },
     {
       "time_ms": 5200,
-      "seq": 50,
+      "seq": 51,
       "cause": {
         "cause_type": "parent",
-        "seq": 48
+        "seq": 49
       },
       "event": {
         "type": "AttackResolve",
@@ -1240,10 +1276,10 @@
     },
     {
       "time_ms": 5200,
-      "seq": 51,
+      "seq": 52,
       "cause": {
         "cause_type": "parent",
-        "seq": 50
+        "seq": 51
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1255,10 +1291,10 @@
     },
     {
       "time_ms": 5200,
-      "seq": 52,
+      "seq": 53,
       "cause": {
         "cause_type": "parent",
-        "seq": 50
+        "seq": 51
       },
       "event": {
         "type": "HpChanged",
@@ -1286,10 +1322,10 @@
     },
     {
       "time_ms": 5200,
-      "seq": 53,
+      "seq": 54,
       "cause": {
         "cause_type": "parent",
-        "seq": 49
+        "seq": 50
       },
       "event": {
         "type": "AttackResolve",
@@ -1301,10 +1337,10 @@
     },
     {
       "time_ms": 5200,
-      "seq": 54,
+      "seq": 55,
       "cause": {
         "cause_type": "parent",
-        "seq": 53
+        "seq": 54
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1316,10 +1352,10 @@
     },
     {
       "time_ms": 5200,
-      "seq": 55,
+      "seq": 56,
       "cause": {
         "cause_type": "parent",
-        "seq": 53
+        "seq": 54
       },
       "event": {
         "type": "HpChanged",
@@ -1346,8 +1382,8 @@
       }
     },
     {
-      "time_ms": 5266,
-      "seq": 56,
+      "time_ms": 5308,
+      "seq": 57,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -1361,11 +1397,11 @@
       }
     },
     {
-      "time_ms": 5596,
-      "seq": 57,
+      "time_ms": 5638,
+      "seq": 58,
       "cause": {
         "cause_type": "parent",
-        "seq": 56
+        "seq": 57
       },
       "event": {
         "type": "AttackResolve",
@@ -1376,11 +1412,11 @@
       }
     },
     {
-      "time_ms": 5596,
-      "seq": 58,
+      "time_ms": 5638,
+      "seq": 59,
       "cause": {
         "cause_type": "parent",
-        "seq": 57
+        "seq": 58
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1391,15 +1427,15 @@
       }
     },
     {
-      "time_ms": 5596,
-      "seq": 59,
+      "time_ms": 5638,
+      "seq": 60,
       "cause": {
         "cause_type": "parent",
-        "seq": 57
+        "seq": 58
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "c29341b6-e121-48a2-9de9-0715a43e5121",
+        "projectile_id": "cb21a4ea-61bd-4eac-a12a-f47ea1577813",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "start": {
@@ -1410,35 +1446,35 @@
           "x_milli": 3500,
           "y_milli": 500
         },
-        "fired_at_ms": 5596,
-        "expected_impact_time_ms": 5832
+        "fired_at_ms": 5638,
+        "expected_impact_time_ms": 5874
       }
     },
     {
-      "time_ms": 5732,
-      "seq": 60,
+      "time_ms": 5816,
+      "seq": 61,
       "cause": {
         "cause_type": "parent",
-        "seq": 57
+        "seq": 58
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "c29341b6-e121-48a2-9de9-0715a43e5121",
+        "projectile_id": "cb21a4ea-61bd-4eac-a12a-f47ea1577813",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 924
+          "x_milli": 3253,
+          "y_milli": 747
         },
         "hit": true
       }
     },
     {
-      "time_ms": 5732,
-      "seq": 61,
+      "time_ms": 5816,
+      "seq": 62,
       "cause": {
         "cause_type": "parent",
-        "seq": 57
+        "seq": 58
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1449,11 +1485,11 @@
       }
     },
     {
-      "time_ms": 5732,
-      "seq": 62,
+      "time_ms": 5816,
+      "seq": 63,
       "cause": {
         "cause_type": "parent",
-        "seq": 57
+        "seq": 58
       },
       "event": {
         "type": "HpChanged",
@@ -1480,11 +1516,11 @@
       }
     },
     {
-      "time_ms": 5732,
-      "seq": 63,
+      "time_ms": 5816,
+      "seq": 64,
       "cause": {
         "cause_type": "parent",
-        "seq": 57
+        "seq": 58
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1495,8 +1531,8 @@
       }
     },
     {
-      "time_ms": 7316,
-      "seq": 64,
+      "time_ms": 7358,
+      "seq": 65,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -1510,11 +1546,11 @@
       }
     },
     {
-      "time_ms": 7646,
-      "seq": 65,
+      "time_ms": 7688,
+      "seq": 66,
       "cause": {
         "cause_type": "parent",
-        "seq": 64
+        "seq": 65
       },
       "event": {
         "type": "AttackResolve",
@@ -1525,11 +1561,11 @@
       }
     },
     {
-      "time_ms": 7646,
-      "seq": 66,
+      "time_ms": 7688,
+      "seq": 67,
       "cause": {
         "cause_type": "parent",
-        "seq": 65
+        "seq": 66
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1540,15 +1576,15 @@
       }
     },
     {
-      "time_ms": 7646,
-      "seq": 67,
+      "time_ms": 7688,
+      "seq": 68,
       "cause": {
         "cause_type": "parent",
-        "seq": 65
+        "seq": 66
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "a453bd77-1e80-4a86-8e87-0f5be74c0973",
+        "projectile_id": "56eb3c4f-9b3a-4217-8513-e9550162404b",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "start": {
@@ -1559,35 +1595,35 @@
           "x_milli": 3500,
           "y_milli": 500
         },
-        "fired_at_ms": 7646,
-        "expected_impact_time_ms": 7882
+        "fired_at_ms": 7688,
+        "expected_impact_time_ms": 7924
       }
     },
     {
-      "time_ms": 7782,
-      "seq": 68,
+      "time_ms": 7866,
+      "seq": 69,
       "cause": {
         "cause_type": "parent",
-        "seq": 65
+        "seq": 66
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "a453bd77-1e80-4a86-8e87-0f5be74c0973",
+        "projectile_id": "56eb3c4f-9b3a-4217-8513-e9550162404b",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 924
+          "x_milli": 3253,
+          "y_milli": 747
         },
         "hit": true
       }
     },
     {
-      "time_ms": 7782,
-      "seq": 69,
+      "time_ms": 7866,
+      "seq": 70,
       "cause": {
         "cause_type": "parent",
-        "seq": 65
+        "seq": 66
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1598,11 +1634,11 @@
       }
     },
     {
-      "time_ms": 7782,
-      "seq": 70,
+      "time_ms": 7866,
+      "seq": 71,
       "cause": {
         "cause_type": "parent",
-        "seq": 65
+        "seq": 66
       },
       "event": {
         "type": "HpChanged",
@@ -1629,11 +1665,11 @@
       }
     },
     {
-      "time_ms": 7782,
-      "seq": 71,
+      "time_ms": 7866,
+      "seq": 72,
       "cause": {
         "cause_type": "parent",
-        "seq": 65
+        "seq": 66
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1644,8 +1680,8 @@
       }
     },
     {
-      "time_ms": 9366,
-      "seq": 72,
+      "time_ms": 9408,
+      "seq": 73,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -1659,11 +1695,11 @@
       }
     },
     {
-      "time_ms": 9696,
-      "seq": 73,
+      "time_ms": 9738,
+      "seq": 74,
       "cause": {
         "cause_type": "parent",
-        "seq": 72
+        "seq": 73
       },
       "event": {
         "type": "AttackResolve",
@@ -1674,11 +1710,11 @@
       }
     },
     {
-      "time_ms": 9696,
-      "seq": 74,
+      "time_ms": 9738,
+      "seq": 75,
       "cause": {
         "cause_type": "parent",
-        "seq": 73
+        "seq": 74
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1689,15 +1725,15 @@
       }
     },
     {
-      "time_ms": 9696,
-      "seq": 75,
+      "time_ms": 9738,
+      "seq": 76,
       "cause": {
         "cause_type": "parent",
-        "seq": 73
+        "seq": 74
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "a46bbdb9-268a-4bf3-b5bc-81042bde57d7",
+        "projectile_id": "3fa6f482-308a-40b8-8e76-fd13c394f2b5",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "start": {
@@ -1708,35 +1744,35 @@
           "x_milli": 3500,
           "y_milli": 500
         },
-        "fired_at_ms": 9696,
-        "expected_impact_time_ms": 9932
+        "fired_at_ms": 9738,
+        "expected_impact_time_ms": 9974
       }
     },
     {
-      "time_ms": 9832,
-      "seq": 76,
+      "time_ms": 9916,
+      "seq": 77,
       "cause": {
         "cause_type": "parent",
-        "seq": 73
+        "seq": 74
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "a46bbdb9-268a-4bf3-b5bc-81042bde57d7",
+        "projectile_id": "3fa6f482-308a-40b8-8e76-fd13c394f2b5",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 924
+          "x_milli": 3253,
+          "y_milli": 747
         },
         "hit": true
       }
     },
     {
-      "time_ms": 9832,
-      "seq": 77,
+      "time_ms": 9916,
+      "seq": 78,
       "cause": {
         "cause_type": "parent",
-        "seq": 73
+        "seq": 74
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1747,11 +1783,11 @@
       }
     },
     {
-      "time_ms": 9832,
-      "seq": 78,
+      "time_ms": 9916,
+      "seq": 79,
       "cause": {
         "cause_type": "parent",
-        "seq": 73
+        "seq": 74
       },
       "event": {
         "type": "HpChanged",
@@ -1778,11 +1814,11 @@
       }
     },
     {
-      "time_ms": 9832,
-      "seq": 79,
+      "time_ms": 9916,
+      "seq": 80,
       "cause": {
         "cause_type": "parent",
-        "seq": 73
+        "seq": 74
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1794,7 +1830,7 @@
     },
     {
       "time_ms": 10000,
-      "seq": 80,
+      "seq": 81,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -1809,7 +1845,7 @@
     },
     {
       "time_ms": 10000,
-      "seq": 81,
+      "seq": 82,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -1824,10 +1860,10 @@
     },
     {
       "time_ms": 10200,
-      "seq": 82,
+      "seq": 83,
       "cause": {
         "cause_type": "parent",
-        "seq": 80
+        "seq": 81
       },
       "event": {
         "type": "AttackResolve",
@@ -1839,10 +1875,10 @@
     },
     {
       "time_ms": 10200,
-      "seq": 83,
+      "seq": 84,
       "cause": {
         "cause_type": "parent",
-        "seq": 82
+        "seq": 83
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1854,10 +1890,10 @@
     },
     {
       "time_ms": 10200,
-      "seq": 84,
+      "seq": 85,
       "cause": {
         "cause_type": "parent",
-        "seq": 82
+        "seq": 83
       },
       "event": {
         "type": "HpChanged",
@@ -1885,10 +1921,10 @@
     },
     {
       "time_ms": 10200,
-      "seq": 85,
+      "seq": 86,
       "cause": {
         "cause_type": "parent",
-        "seq": 81
+        "seq": 82
       },
       "event": {
         "type": "AttackResolve",
@@ -1900,10 +1936,10 @@
     },
     {
       "time_ms": 10200,
-      "seq": 86,
+      "seq": 87,
       "cause": {
         "cause_type": "parent",
-        "seq": 85
+        "seq": 86
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1915,10 +1951,10 @@
     },
     {
       "time_ms": 10200,
-      "seq": 87,
+      "seq": 88,
       "cause": {
         "cause_type": "parent",
-        "seq": 85
+        "seq": 86
       },
       "event": {
         "type": "HpChanged",
@@ -1945,8 +1981,8 @@
       }
     },
     {
-      "time_ms": 11416,
-      "seq": 88,
+      "time_ms": 11458,
+      "seq": 89,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -1960,11 +1996,11 @@
       }
     },
     {
-      "time_ms": 11746,
-      "seq": 89,
+      "time_ms": 11788,
+      "seq": 90,
       "cause": {
         "cause_type": "parent",
-        "seq": 88
+        "seq": 89
       },
       "event": {
         "type": "AttackResolve",
@@ -1975,11 +2011,11 @@
       }
     },
     {
-      "time_ms": 11746,
-      "seq": 90,
+      "time_ms": 11788,
+      "seq": 91,
       "cause": {
         "cause_type": "parent",
-        "seq": 89
+        "seq": 90
       },
       "event": {
         "type": "ResonanceChanged",
@@ -1990,15 +2026,15 @@
       }
     },
     {
-      "time_ms": 11746,
-      "seq": 91,
+      "time_ms": 11788,
+      "seq": 92,
       "cause": {
         "cause_type": "parent",
-        "seq": 89
+        "seq": 90
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "fa97d580-cb72-4aa3-a35e-7e8ea154c298",
+        "projectile_id": "1d9c33fa-be8f-425f-8b1f-a53c97fff55f",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "start": {
@@ -2009,35 +2045,35 @@
           "x_milli": 3500,
           "y_milli": 500
         },
-        "fired_at_ms": 11746,
-        "expected_impact_time_ms": 11982
+        "fired_at_ms": 11788,
+        "expected_impact_time_ms": 12024
       }
     },
     {
-      "time_ms": 11882,
-      "seq": 92,
+      "time_ms": 11966,
+      "seq": 93,
       "cause": {
         "cause_type": "parent",
-        "seq": 89
+        "seq": 90
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "fa97d580-cb72-4aa3-a35e-7e8ea154c298",
+        "projectile_id": "1d9c33fa-be8f-425f-8b1f-a53c97fff55f",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 924
+          "x_milli": 3253,
+          "y_milli": 747
         },
         "hit": true
       }
     },
     {
-      "time_ms": 11882,
-      "seq": 93,
+      "time_ms": 11966,
+      "seq": 94,
       "cause": {
         "cause_type": "parent",
-        "seq": 89
+        "seq": 90
       },
       "event": {
         "type": "ResonanceChanged",
@@ -2048,11 +2084,11 @@
       }
     },
     {
-      "time_ms": 11882,
-      "seq": 94,
+      "time_ms": 11966,
+      "seq": 95,
       "cause": {
         "cause_type": "parent",
-        "seq": 89
+        "seq": 90
       },
       "event": {
         "type": "HpChanged",
@@ -2079,11 +2115,11 @@
       }
     },
     {
-      "time_ms": 11882,
-      "seq": 95,
+      "time_ms": 11966,
+      "seq": 96,
       "cause": {
         "cause_type": "parent",
-        "seq": 89
+        "seq": 90
       },
       "event": {
         "type": "ResonanceChanged",
@@ -2094,8 +2130,8 @@
       }
     },
     {
-      "time_ms": 13466,
-      "seq": 96,
+      "time_ms": 13508,
+      "seq": 97,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -2109,11 +2145,11 @@
       }
     },
     {
-      "time_ms": 13796,
-      "seq": 97,
+      "time_ms": 13838,
+      "seq": 98,
       "cause": {
         "cause_type": "parent",
-        "seq": 96
+        "seq": 97
       },
       "event": {
         "type": "AttackResolve",
@@ -2124,11 +2160,11 @@
       }
     },
     {
-      "time_ms": 13796,
-      "seq": 98,
+      "time_ms": 13838,
+      "seq": 99,
       "cause": {
         "cause_type": "parent",
-        "seq": 97
+        "seq": 98
       },
       "event": {
         "type": "ResonanceChanged",
@@ -2139,15 +2175,15 @@
       }
     },
     {
-      "time_ms": 13796,
-      "seq": 99,
+      "time_ms": 13838,
+      "seq": 100,
       "cause": {
         "cause_type": "parent",
-        "seq": 97
+        "seq": 98
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "c6995259-ae36-44a9-9c2a-dd414e93ef01",
+        "projectile_id": "06c87ed8-5fd6-40bd-80e4-80d272cbbfbe",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "start": {
@@ -2158,35 +2194,35 @@
           "x_milli": 3500,
           "y_milli": 500
         },
-        "fired_at_ms": 13796,
-        "expected_impact_time_ms": 14032
+        "fired_at_ms": 13838,
+        "expected_impact_time_ms": 14074
       }
     },
     {
-      "time_ms": 13932,
-      "seq": 100,
+      "time_ms": 14016,
+      "seq": 101,
       "cause": {
         "cause_type": "parent",
-        "seq": 97
+        "seq": 98
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "c6995259-ae36-44a9-9c2a-dd414e93ef01",
+        "projectile_id": "06c87ed8-5fd6-40bd-80e4-80d272cbbfbe",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 924
+          "x_milli": 3253,
+          "y_milli": 747
         },
         "hit": true
       }
     },
     {
-      "time_ms": 13932,
-      "seq": 101,
+      "time_ms": 14016,
+      "seq": 102,
       "cause": {
         "cause_type": "parent",
-        "seq": 97
+        "seq": 98
       },
       "event": {
         "type": "ResonanceChanged",
@@ -2197,11 +2233,11 @@
       }
     },
     {
-      "time_ms": 13932,
-      "seq": 102,
+      "time_ms": 14016,
+      "seq": 103,
       "cause": {
         "cause_type": "parent",
-        "seq": 97
+        "seq": 98
       },
       "event": {
         "type": "HpChanged",
@@ -2228,11 +2264,11 @@
       }
     },
     {
-      "time_ms": 13932,
-      "seq": 103,
+      "time_ms": 14016,
+      "seq": 104,
       "cause": {
         "cause_type": "parent",
-        "seq": 97
+        "seq": 98
       },
       "event": {
         "type": "ResonanceChanged",
@@ -2244,7 +2280,7 @@
     },
     {
       "time_ms": 15000,
-      "seq": 104,
+      "seq": 105,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -2259,7 +2295,7 @@
     },
     {
       "time_ms": 15000,
-      "seq": 105,
+      "seq": 106,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -2274,10 +2310,10 @@
     },
     {
       "time_ms": 15200,
-      "seq": 106,
+      "seq": 107,
       "cause": {
         "cause_type": "parent",
-        "seq": 104
+        "seq": 105
       },
       "event": {
         "type": "AttackResolve",
@@ -2289,10 +2325,10 @@
     },
     {
       "time_ms": 15200,
-      "seq": 107,
+      "seq": 108,
       "cause": {
         "cause_type": "parent",
-        "seq": 106
+        "seq": 107
       },
       "event": {
         "type": "ResonanceChanged",
@@ -2304,10 +2340,10 @@
     },
     {
       "time_ms": 15200,
-      "seq": 108,
+      "seq": 109,
       "cause": {
         "cause_type": "parent",
-        "seq": 106
+        "seq": 107
       },
       "event": {
         "type": "HpChanged",
@@ -2335,10 +2371,10 @@
     },
     {
       "time_ms": 15200,
-      "seq": 109,
+      "seq": 110,
       "cause": {
         "cause_type": "parent",
-        "seq": 105
+        "seq": 106
       },
       "event": {
         "type": "AttackResolve",
@@ -2350,10 +2386,10 @@
     },
     {
       "time_ms": 15200,
-      "seq": 110,
+      "seq": 111,
       "cause": {
         "cause_type": "parent",
-        "seq": 109
+        "seq": 110
       },
       "event": {
         "type": "ResonanceChanged",
@@ -2365,10 +2401,10 @@
     },
     {
       "time_ms": 15200,
-      "seq": 111,
+      "seq": 112,
       "cause": {
         "cause_type": "parent",
-        "seq": 109
+        "seq": 110
       },
       "event": {
         "type": "HpChanged",
@@ -2395,8 +2431,8 @@
       }
     },
     {
-      "time_ms": 15516,
-      "seq": 112,
+      "time_ms": 15558,
+      "seq": 113,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -2410,11 +2446,11 @@
       }
     },
     {
-      "time_ms": 15846,
-      "seq": 113,
+      "time_ms": 15888,
+      "seq": 114,
       "cause": {
         "cause_type": "parent",
-        "seq": 112
+        "seq": 113
       },
       "event": {
         "type": "AttackResolve",
@@ -2425,11 +2461,11 @@
       }
     },
     {
-      "time_ms": 15846,
-      "seq": 114,
+      "time_ms": 15888,
+      "seq": 115,
       "cause": {
         "cause_type": "parent",
-        "seq": 113
+        "seq": 114
       },
       "event": {
         "type": "ResonanceChanged",
@@ -2440,15 +2476,15 @@
       }
     },
     {
-      "time_ms": 15846,
-      "seq": 115,
+      "time_ms": 15888,
+      "seq": 116,
       "cause": {
         "cause_type": "parent",
-        "seq": 113
+        "seq": 114
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "f4b69262-4ed2-4818-b2e2-741f08bea0e5",
+        "projectile_id": "dbc7ebf0-96e4-42b1-8671-b281c7578a26",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "start": {
@@ -2459,35 +2495,35 @@
           "x_milli": 3500,
           "y_milli": 500
         },
-        "fired_at_ms": 15846,
-        "expected_impact_time_ms": 16082
+        "fired_at_ms": 15888,
+        "expected_impact_time_ms": 16124
       }
     },
     {
-      "time_ms": 15982,
-      "seq": 116,
+      "time_ms": 16066,
+      "seq": 117,
       "cause": {
         "cause_type": "parent",
-        "seq": 113
+        "seq": 114
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "f4b69262-4ed2-4818-b2e2-741f08bea0e5",
+        "projectile_id": "dbc7ebf0-96e4-42b1-8671-b281c7578a26",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 924
+          "x_milli": 3253,
+          "y_milli": 747
         },
         "hit": true
       }
     },
     {
-      "time_ms": 15982,
-      "seq": 117,
+      "time_ms": 16066,
+      "seq": 118,
       "cause": {
         "cause_type": "parent",
-        "seq": 113
+        "seq": 114
       },
       "event": {
         "type": "HpChanged",
@@ -2514,11 +2550,11 @@
       }
     },
     {
-      "time_ms": 15982,
-      "seq": 118,
+      "time_ms": 16066,
+      "seq": 119,
       "cause": {
         "cause_type": "parent",
-        "seq": 113
+        "seq": 114
       },
       "event": {
         "type": "ResonanceChanged",
@@ -2529,11 +2565,11 @@
       }
     },
     {
-      "time_ms": 15982,
-      "seq": 119,
+      "time_ms": 16066,
+      "seq": 120,
       "cause": {
         "cause_type": "parent",
-        "seq": 113
+        "seq": 114
       },
       "event": {
         "type": "AutoCastStart",
@@ -2546,11 +2582,11 @@
       }
     },
     {
-      "time_ms": 16682,
-      "seq": 120,
+      "time_ms": 16766,
+      "seq": 121,
       "cause": {
         "cause_type": "parent",
-        "seq": 119
+        "seq": 120
       },
       "event": {
         "type": "AbilityCast",
@@ -2560,11 +2596,11 @@
       }
     },
     {
-      "time_ms": 16682,
-      "seq": 121,
+      "time_ms": 16766,
+      "seq": 122,
       "cause": {
         "cause_type": "parent",
-        "seq": 119
+        "seq": 120
       },
       "event": {
         "type": "AutoCastEnd",
@@ -2572,11 +2608,11 @@
       }
     },
     {
-      "time_ms": 16682,
-      "seq": 122,
+      "time_ms": 16766,
+      "seq": 123,
       "cause": {
         "cause_type": "parent",
-        "seq": 120
+        "seq": 121
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -2592,15 +2628,15 @@
       }
     },
     {
-      "time_ms": 16682,
-      "seq": 123,
+      "time_ms": 16766,
+      "seq": 124,
       "cause": {
         "cause_type": "parent",
-        "seq": 122
+        "seq": 123
       },
       "event": {
         "type": "SkillAreaDeclared",
-        "area_id": "3dec0e4a-5591-48d1-9e3e-cfdc07e34916",
+        "area_id": "dc60338b-cdbc-4354-bb80-396c8762f72b",
         "skill_id": "white_night_pale_benediction",
         "step_id": "ally_salvation",
         "caster_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
@@ -2653,7 +2689,7 @@
           "x_milli": 2500,
           "y_milli": 500
         },
-        "start_time_ms": 16682,
+        "start_time_ms": 16766,
         "duration_ms": 0,
         "display_duration_ms": 250,
         "warning_ms": 0,
@@ -2664,11 +2700,11 @@
       }
     },
     {
-      "time_ms": 16682,
-      "seq": 124,
+      "time_ms": 16766,
+      "seq": 125,
       "cause": {
         "cause_type": "parent",
-        "seq": 123
+        "seq": 124
       },
       "event": {
         "type": "HpChanged",
@@ -2682,11 +2718,11 @@
       }
     },
     {
-      "time_ms": 16682,
-      "seq": 125,
+      "time_ms": 16766,
+      "seq": 126,
       "cause": {
         "cause_type": "parent",
-        "seq": 123
+        "seq": 124
       },
       "event": {
         "type": "HpChanged",
@@ -2700,11 +2736,11 @@
       }
     },
     {
-      "time_ms": 16682,
-      "seq": 126,
+      "time_ms": 16766,
+      "seq": 127,
       "cause": {
         "cause_type": "parent",
-        "seq": 123
+        "seq": 124
       },
       "event": {
         "type": "HpChanged",
@@ -2718,11 +2754,11 @@
       }
     },
     {
-      "time_ms": 16722,
-      "seq": 127,
+      "time_ms": 16806,
+      "seq": 128,
       "cause": {
         "cause_type": "parent",
-        "seq": 120
+        "seq": 121
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -2738,15 +2774,15 @@
       }
     },
     {
-      "time_ms": 16722,
-      "seq": 128,
+      "time_ms": 16806,
+      "seq": 129,
       "cause": {
         "cause_type": "parent",
-        "seq": 127
+        "seq": 128
       },
       "event": {
         "type": "SkillAreaDeclared",
-        "area_id": "2c720017-81da-4fdf-a51f-d1dda09f7e0a",
+        "area_id": "cd20ddcc-8b47-4be7-8d98-f0d0f463f17a",
         "skill_id": "white_night_pale_benediction",
         "step_id": "ally_blessing",
         "caster_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
@@ -2799,7 +2835,7 @@
           "x_milli": 2500,
           "y_milli": 500
         },
-        "start_time_ms": 16722,
+        "start_time_ms": 16806,
         "duration_ms": 0,
         "display_duration_ms": 250,
         "warning_ms": 0,
@@ -2810,11 +2846,11 @@
       }
     },
     {
-      "time_ms": 16722,
-      "seq": 129,
+      "time_ms": 16806,
+      "seq": 130,
       "cause": {
         "cause_type": "parent",
-        "seq": 128
+        "seq": 129
       },
       "event": {
         "type": "StatChanged",
@@ -2846,11 +2882,11 @@
       }
     },
     {
-      "time_ms": 16722,
-      "seq": 130,
+      "time_ms": 16806,
+      "seq": 131,
       "cause": {
         "cause_type": "parent",
-        "seq": 128
+        "seq": 129
       },
       "event": {
         "type": "StatChanged",
@@ -2882,11 +2918,11 @@
       }
     },
     {
-      "time_ms": 16722,
-      "seq": 131,
+      "time_ms": 16806,
+      "seq": 132,
       "cause": {
         "cause_type": "parent",
-        "seq": 128
+        "seq": 129
       },
       "event": {
         "type": "StatChanged",
@@ -2918,11 +2954,11 @@
       }
     },
     {
-      "time_ms": 16822,
-      "seq": 132,
+      "time_ms": 16906,
+      "seq": 133,
       "cause": {
         "cause_type": "parent",
-        "seq": 120
+        "seq": 121
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -2938,15 +2974,15 @@
       }
     },
     {
-      "time_ms": 16822,
-      "seq": 133,
+      "time_ms": 16906,
+      "seq": 134,
       "cause": {
         "cause_type": "parent",
-        "seq": 132
+        "seq": 133
       },
       "event": {
         "type": "SkillAreaDeclared",
-        "area_id": "842cf6a2-61b0-44a5-ba53-39c2ff218f2a",
+        "area_id": "e7de81e5-6637-480e-9d2e-9b875a6f1938",
         "skill_id": "white_night_pale_benediction",
         "step_id": "enemy_judgement",
         "caster_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
@@ -2995,7 +3031,7 @@
           "x_milli": 2500,
           "y_milli": 500
         },
-        "start_time_ms": 16822,
+        "start_time_ms": 16906,
         "duration_ms": 0,
         "display_duration_ms": 250,
         "warning_ms": 0,
@@ -3006,11 +3042,11 @@
       }
     },
     {
-      "time_ms": 16822,
-      "seq": 134,
+      "time_ms": 16906,
+      "seq": 135,
       "cause": {
         "cause_type": "parent",
-        "seq": 133
+        "seq": 134
       },
       "event": {
         "type": "HpChanged",
@@ -3037,11 +3073,11 @@
       }
     },
     {
-      "time_ms": 16822,
-      "seq": 135,
+      "time_ms": 16906,
+      "seq": 136,
       "cause": {
         "cause_type": "parent",
-        "seq": 133
+        "seq": 134
       },
       "event": {
         "type": "HpChanged",
@@ -3068,11 +3104,11 @@
       }
     },
     {
-      "time_ms": 16822,
-      "seq": 136,
+      "time_ms": 16906,
+      "seq": 137,
       "cause": {
         "cause_type": "parent",
-        "seq": 133
+        "seq": 134
       },
       "event": {
         "type": "HpChanged",
@@ -3099,8 +3135,8 @@
       }
     },
     {
-      "time_ms": 18732,
-      "seq": 137,
+      "time_ms": 18816,
+      "seq": 138,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -3114,11 +3150,11 @@
       }
     },
     {
-      "time_ms": 19062,
-      "seq": 138,
+      "time_ms": 19146,
+      "seq": 139,
       "cause": {
         "cause_type": "parent",
-        "seq": 137
+        "seq": 138
       },
       "event": {
         "type": "AttackResolve",
@@ -3129,11 +3165,11 @@
       }
     },
     {
-      "time_ms": 19062,
-      "seq": 139,
+      "time_ms": 19146,
+      "seq": 140,
       "cause": {
         "cause_type": "parent",
-        "seq": 138
+        "seq": 139
       },
       "event": {
         "type": "ResonanceChanged",
@@ -3144,15 +3180,15 @@
       }
     },
     {
-      "time_ms": 19062,
-      "seq": 140,
+      "time_ms": 19146,
+      "seq": 141,
       "cause": {
         "cause_type": "parent",
-        "seq": 138
+        "seq": 139
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "84bd938f-2886-4e0a-8815-986754101afc",
+        "projectile_id": "10f0c39d-96d9-4b98-bd26-3bb3db380bf3",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "start": {
@@ -3163,35 +3199,35 @@
           "x_milli": 3500,
           "y_milli": 500
         },
-        "fired_at_ms": 19062,
-        "expected_impact_time_ms": 19298
+        "fired_at_ms": 19146,
+        "expected_impact_time_ms": 19382
       }
     },
     {
-      "time_ms": 19198,
-      "seq": 141,
+      "time_ms": 19324,
+      "seq": 142,
       "cause": {
         "cause_type": "parent",
-        "seq": 138
+        "seq": 139
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "84bd938f-2886-4e0a-8815-986754101afc",
+        "projectile_id": "10f0c39d-96d9-4b98-bd26-3bb3db380bf3",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 924
+          "x_milli": 3253,
+          "y_milli": 747
         },
         "hit": true
       }
     },
     {
-      "time_ms": 19198,
-      "seq": 142,
+      "time_ms": 19324,
+      "seq": 143,
       "cause": {
         "cause_type": "parent",
-        "seq": 138
+        "seq": 139
       },
       "event": {
         "type": "ResonanceChanged",
@@ -3202,11 +3238,11 @@
       }
     },
     {
-      "time_ms": 19198,
-      "seq": 143,
+      "time_ms": 19324,
+      "seq": 144,
       "cause": {
         "cause_type": "parent",
-        "seq": 138
+        "seq": 139
       },
       "event": {
         "type": "HpChanged",
@@ -3233,11 +3269,11 @@
       }
     },
     {
-      "time_ms": 19198,
-      "seq": 144,
+      "time_ms": 19324,
+      "seq": 145,
       "cause": {
         "cause_type": "parent",
-        "seq": 138
+        "seq": 139
       },
       "event": {
         "type": "ResonanceChanged",
@@ -3249,7 +3285,7 @@
     },
     {
       "time_ms": 20000,
-      "seq": 145,
+      "seq": 146,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -3264,7 +3300,7 @@
     },
     {
       "time_ms": 20000,
-      "seq": 146,
+      "seq": 147,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -3279,10 +3315,10 @@
     },
     {
       "time_ms": 20200,
-      "seq": 147,
+      "seq": 148,
       "cause": {
         "cause_type": "parent",
-        "seq": 145
+        "seq": 146
       },
       "event": {
         "type": "AttackResolve",
@@ -3294,10 +3330,10 @@
     },
     {
       "time_ms": 20200,
-      "seq": 148,
+      "seq": 149,
       "cause": {
         "cause_type": "parent",
-        "seq": 147
+        "seq": 148
       },
       "event": {
         "type": "ResonanceChanged",
@@ -3309,10 +3345,10 @@
     },
     {
       "time_ms": 20200,
-      "seq": 149,
+      "seq": 150,
       "cause": {
         "cause_type": "parent",
-        "seq": 147
+        "seq": 148
       },
       "event": {
         "type": "HpChanged",
@@ -3340,10 +3376,10 @@
     },
     {
       "time_ms": 20200,
-      "seq": 150,
+      "seq": 151,
       "cause": {
         "cause_type": "parent",
-        "seq": 146
+        "seq": 147
       },
       "event": {
         "type": "AttackResolve",
@@ -3355,10 +3391,10 @@
     },
     {
       "time_ms": 20200,
-      "seq": 151,
+      "seq": 152,
       "cause": {
         "cause_type": "parent",
-        "seq": 150
+        "seq": 151
       },
       "event": {
         "type": "ResonanceChanged",
@@ -3370,10 +3406,10 @@
     },
     {
       "time_ms": 20200,
-      "seq": 152,
+      "seq": 153,
       "cause": {
         "cause_type": "parent",
-        "seq": 150
+        "seq": 151
       },
       "event": {
         "type": "HpChanged",
@@ -3400,8 +3436,8 @@
       }
     },
     {
-      "time_ms": 20782,
-      "seq": 153,
+      "time_ms": 20866,
+      "seq": 154,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -3415,11 +3451,11 @@
       }
     },
     {
-      "time_ms": 21112,
-      "seq": 154,
+      "time_ms": 21196,
+      "seq": 155,
       "cause": {
         "cause_type": "parent",
-        "seq": 153
+        "seq": 154
       },
       "event": {
         "type": "AttackResolve",
@@ -3430,11 +3466,11 @@
       }
     },
     {
-      "time_ms": 21112,
-      "seq": 155,
+      "time_ms": 21196,
+      "seq": 156,
       "cause": {
         "cause_type": "parent",
-        "seq": 154
+        "seq": 155
       },
       "event": {
         "type": "ResonanceChanged",
@@ -3445,15 +3481,15 @@
       }
     },
     {
-      "time_ms": 21112,
-      "seq": 156,
+      "time_ms": 21196,
+      "seq": 157,
       "cause": {
         "cause_type": "parent",
-        "seq": 154
+        "seq": 155
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "559c02c9-0436-4f6f-9ba4-1ed60f8e8e07",
+        "projectile_id": "b2681c1e-976e-4ed2-842e-50a55012f3a5",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "start": {
@@ -3464,35 +3500,35 @@
           "x_milli": 3500,
           "y_milli": 500
         },
-        "fired_at_ms": 21112,
-        "expected_impact_time_ms": 21348
+        "fired_at_ms": 21196,
+        "expected_impact_time_ms": 21432
       }
     },
     {
-      "time_ms": 21248,
-      "seq": 157,
+      "time_ms": 21374,
+      "seq": 158,
       "cause": {
         "cause_type": "parent",
-        "seq": 154
+        "seq": 155
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "559c02c9-0436-4f6f-9ba4-1ed60f8e8e07",
+        "projectile_id": "b2681c1e-976e-4ed2-842e-50a55012f3a5",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 924
+          "x_milli": 3253,
+          "y_milli": 747
         },
         "hit": true
       }
     },
     {
-      "time_ms": 21248,
-      "seq": 158,
+      "time_ms": 21374,
+      "seq": 159,
       "cause": {
         "cause_type": "parent",
-        "seq": 154
+        "seq": 155
       },
       "event": {
         "type": "ResonanceChanged",
@@ -3503,11 +3539,11 @@
       }
     },
     {
-      "time_ms": 21248,
-      "seq": 159,
+      "time_ms": 21374,
+      "seq": 160,
       "cause": {
         "cause_type": "parent",
-        "seq": 154
+        "seq": 155
       },
       "event": {
         "type": "HpChanged",
@@ -3534,11 +3570,11 @@
       }
     },
     {
-      "time_ms": 21248,
-      "seq": 160,
+      "time_ms": 21374,
+      "seq": 161,
       "cause": {
         "cause_type": "parent",
-        "seq": 154
+        "seq": 155
       },
       "event": {
         "type": "ResonanceChanged",
@@ -3549,8 +3585,8 @@
       }
     },
     {
-      "time_ms": 22832,
-      "seq": 161,
+      "time_ms": 22916,
+      "seq": 162,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -3564,11 +3600,11 @@
       }
     },
     {
-      "time_ms": 23162,
-      "seq": 162,
+      "time_ms": 23246,
+      "seq": 163,
       "cause": {
         "cause_type": "parent",
-        "seq": 161
+        "seq": 162
       },
       "event": {
         "type": "AttackResolve",
@@ -3579,11 +3615,11 @@
       }
     },
     {
-      "time_ms": 23162,
-      "seq": 163,
+      "time_ms": 23246,
+      "seq": 164,
       "cause": {
         "cause_type": "parent",
-        "seq": 162
+        "seq": 163
       },
       "event": {
         "type": "ResonanceChanged",
@@ -3594,15 +3630,15 @@
       }
     },
     {
-      "time_ms": 23162,
-      "seq": 164,
+      "time_ms": 23246,
+      "seq": 165,
       "cause": {
         "cause_type": "parent",
-        "seq": 162
+        "seq": 163
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "7d5cf0a0-f044-4964-9cf2-b53c08dbdfed",
+        "projectile_id": "3138ebda-c544-4dcf-8c23-ae94201bd3ae",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "start": {
@@ -3613,35 +3649,35 @@
           "x_milli": 3500,
           "y_milli": 500
         },
-        "fired_at_ms": 23162,
-        "expected_impact_time_ms": 23398
+        "fired_at_ms": 23246,
+        "expected_impact_time_ms": 23482
       }
     },
     {
-      "time_ms": 23298,
-      "seq": 165,
+      "time_ms": 23424,
+      "seq": 166,
       "cause": {
         "cause_type": "parent",
-        "seq": 162
+        "seq": 163
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "7d5cf0a0-f044-4964-9cf2-b53c08dbdfed",
+        "projectile_id": "3138ebda-c544-4dcf-8c23-ae94201bd3ae",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 924
+          "x_milli": 3253,
+          "y_milli": 747
         },
         "hit": true
       }
     },
     {
-      "time_ms": 23298,
-      "seq": 166,
+      "time_ms": 23424,
+      "seq": 167,
       "cause": {
         "cause_type": "parent",
-        "seq": 162
+        "seq": 163
       },
       "event": {
         "type": "ResonanceChanged",
@@ -3652,11 +3688,11 @@
       }
     },
     {
-      "time_ms": 23298,
-      "seq": 167,
+      "time_ms": 23424,
+      "seq": 168,
       "cause": {
         "cause_type": "parent",
-        "seq": 162
+        "seq": 163
       },
       "event": {
         "type": "HpChanged",
@@ -3683,11 +3719,11 @@
       }
     },
     {
-      "time_ms": 23298,
-      "seq": 168,
+      "time_ms": 23424,
+      "seq": 169,
       "cause": {
         "cause_type": "parent",
-        "seq": 162
+        "seq": 163
       },
       "event": {
         "type": "ResonanceChanged",
@@ -3698,8 +3734,8 @@
       }
     },
     {
-      "time_ms": 24882,
-      "seq": 169,
+      "time_ms": 24966,
+      "seq": 170,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -3714,7 +3750,7 @@
     },
     {
       "time_ms": 25000,
-      "seq": 170,
+      "seq": 171,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -3729,7 +3765,7 @@
     },
     {
       "time_ms": 25000,
-      "seq": 171,
+      "seq": 172,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -3744,10 +3780,10 @@
     },
     {
       "time_ms": 25200,
-      "seq": 172,
+      "seq": 173,
       "cause": {
         "cause_type": "parent",
-        "seq": 170
+        "seq": 171
       },
       "event": {
         "type": "AttackResolve",
@@ -3759,10 +3795,10 @@
     },
     {
       "time_ms": 25200,
-      "seq": 173,
+      "seq": 174,
       "cause": {
         "cause_type": "parent",
-        "seq": 172
+        "seq": 173
       },
       "event": {
         "type": "ResonanceChanged",
@@ -3774,10 +3810,10 @@
     },
     {
       "time_ms": 25200,
-      "seq": 174,
+      "seq": 175,
       "cause": {
         "cause_type": "parent",
-        "seq": 172
+        "seq": 173
       },
       "event": {
         "type": "HpChanged",
@@ -3805,10 +3841,10 @@
     },
     {
       "time_ms": 25200,
-      "seq": 175,
+      "seq": 176,
       "cause": {
         "cause_type": "parent",
-        "seq": 171
+        "seq": 172
       },
       "event": {
         "type": "AttackResolve",
@@ -3820,10 +3856,10 @@
     },
     {
       "time_ms": 25200,
-      "seq": 176,
+      "seq": 177,
       "cause": {
         "cause_type": "parent",
-        "seq": 175
+        "seq": 176
       },
       "event": {
         "type": "ResonanceChanged",
@@ -3835,10 +3871,10 @@
     },
     {
       "time_ms": 25200,
-      "seq": 177,
+      "seq": 178,
       "cause": {
         "cause_type": "parent",
-        "seq": 175
+        "seq": 176
       },
       "event": {
         "type": "HpChanged",
@@ -3865,11 +3901,11 @@
       }
     },
     {
-      "time_ms": 25212,
-      "seq": 178,
+      "time_ms": 25296,
+      "seq": 179,
       "cause": {
         "cause_type": "parent",
-        "seq": 169
+        "seq": 170
       },
       "event": {
         "type": "AttackResolve",
@@ -3880,11 +3916,11 @@
       }
     },
     {
-      "time_ms": 25212,
-      "seq": 179,
+      "time_ms": 25296,
+      "seq": 180,
       "cause": {
         "cause_type": "parent",
-        "seq": 178
+        "seq": 179
       },
       "event": {
         "type": "ResonanceChanged",
@@ -3895,15 +3931,15 @@
       }
     },
     {
-      "time_ms": 25212,
-      "seq": 180,
+      "time_ms": 25296,
+      "seq": 181,
       "cause": {
         "cause_type": "parent",
-        "seq": 178
+        "seq": 179
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "3b60d89d-aa9f-4ff9-81c9-ab65880ab583",
+        "projectile_id": "c059f07a-7e8a-4870-9563-dd8632d1099a",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "start": {
@@ -3914,35 +3950,35 @@
           "x_milli": 3500,
           "y_milli": 500
         },
-        "fired_at_ms": 25212,
-        "expected_impact_time_ms": 25448
+        "fired_at_ms": 25296,
+        "expected_impact_time_ms": 25532
       }
     },
     {
-      "time_ms": 25348,
-      "seq": 181,
+      "time_ms": 25474,
+      "seq": 182,
       "cause": {
         "cause_type": "parent",
-        "seq": 178
+        "seq": 179
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "3b60d89d-aa9f-4ff9-81c9-ab65880ab583",
+        "projectile_id": "c059f07a-7e8a-4870-9563-dd8632d1099a",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 924
+          "x_milli": 3253,
+          "y_milli": 747
         },
         "hit": true
       }
     },
     {
-      "time_ms": 25348,
-      "seq": 182,
+      "time_ms": 25474,
+      "seq": 183,
       "cause": {
         "cause_type": "parent",
-        "seq": 178
+        "seq": 179
       },
       "event": {
         "type": "ResonanceChanged",
@@ -3953,11 +3989,11 @@
       }
     },
     {
-      "time_ms": 25348,
-      "seq": 183,
+      "time_ms": 25474,
+      "seq": 184,
       "cause": {
         "cause_type": "parent",
-        "seq": 178
+        "seq": 179
       },
       "event": {
         "type": "HpChanged",
@@ -3984,11 +4020,11 @@
       }
     },
     {
-      "time_ms": 25348,
-      "seq": 184,
+      "time_ms": 25474,
+      "seq": 185,
       "cause": {
         "cause_type": "parent",
-        "seq": 178
+        "seq": 179
       },
       "event": {
         "type": "ResonanceChanged",
@@ -3999,8 +4035,8 @@
       }
     },
     {
-      "time_ms": 26932,
-      "seq": 185,
+      "time_ms": 27016,
+      "seq": 186,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -4014,11 +4050,11 @@
       }
     },
     {
-      "time_ms": 27262,
-      "seq": 186,
+      "time_ms": 27346,
+      "seq": 187,
       "cause": {
         "cause_type": "parent",
-        "seq": 185
+        "seq": 186
       },
       "event": {
         "type": "AttackResolve",
@@ -4029,11 +4065,11 @@
       }
     },
     {
-      "time_ms": 27262,
-      "seq": 187,
+      "time_ms": 27346,
+      "seq": 188,
       "cause": {
         "cause_type": "parent",
-        "seq": 186
+        "seq": 187
       },
       "event": {
         "type": "ResonanceChanged",
@@ -4044,15 +4080,15 @@
       }
     },
     {
-      "time_ms": 27262,
-      "seq": 188,
+      "time_ms": 27346,
+      "seq": 189,
       "cause": {
         "cause_type": "parent",
-        "seq": 186
+        "seq": 187
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "5db9e90f-e616-4033-a22c-68e951f22fcf",
+        "projectile_id": "bb998c1f-8d69-4444-b87f-c5dea2a8a5c3",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "start": {
@@ -4063,35 +4099,35 @@
           "x_milli": 3500,
           "y_milli": 500
         },
-        "fired_at_ms": 27262,
-        "expected_impact_time_ms": 27498
+        "fired_at_ms": 27346,
+        "expected_impact_time_ms": 27582
       }
     },
     {
-      "time_ms": 27398,
-      "seq": 189,
+      "time_ms": 27524,
+      "seq": 190,
       "cause": {
         "cause_type": "parent",
-        "seq": 186
+        "seq": 187
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "5db9e90f-e616-4033-a22c-68e951f22fcf",
+        "projectile_id": "bb998c1f-8d69-4444-b87f-c5dea2a8a5c3",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 924
+          "x_milli": 3253,
+          "y_milli": 747
         },
         "hit": true
       }
     },
     {
-      "time_ms": 27398,
-      "seq": 190,
+      "time_ms": 27524,
+      "seq": 191,
       "cause": {
         "cause_type": "parent",
-        "seq": 186
+        "seq": 187
       },
       "event": {
         "type": "ResonanceChanged",
@@ -4102,11 +4138,11 @@
       }
     },
     {
-      "time_ms": 27398,
-      "seq": 191,
+      "time_ms": 27524,
+      "seq": 192,
       "cause": {
         "cause_type": "parent",
-        "seq": 186
+        "seq": 187
       },
       "event": {
         "type": "HpChanged",
@@ -4133,11 +4169,11 @@
       }
     },
     {
-      "time_ms": 27398,
-      "seq": 192,
+      "time_ms": 27524,
+      "seq": 193,
       "cause": {
         "cause_type": "parent",
-        "seq": 186
+        "seq": 187
       },
       "event": {
         "type": "ResonanceChanged",
@@ -4148,8 +4184,8 @@
       }
     },
     {
-      "time_ms": 28982,
-      "seq": 193,
+      "time_ms": 29066,
+      "seq": 194,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -4163,11 +4199,11 @@
       }
     },
     {
-      "time_ms": 29312,
-      "seq": 194,
+      "time_ms": 29396,
+      "seq": 195,
       "cause": {
         "cause_type": "parent",
-        "seq": 193
+        "seq": 194
       },
       "event": {
         "type": "AttackResolve",
@@ -4178,11 +4214,11 @@
       }
     },
     {
-      "time_ms": 29312,
-      "seq": 195,
+      "time_ms": 29396,
+      "seq": 196,
       "cause": {
         "cause_type": "parent",
-        "seq": 194
+        "seq": 195
       },
       "event": {
         "type": "ResonanceChanged",
@@ -4193,15 +4229,15 @@
       }
     },
     {
-      "time_ms": 29312,
-      "seq": 196,
+      "time_ms": 29396,
+      "seq": 197,
       "cause": {
         "cause_type": "parent",
-        "seq": 194
+        "seq": 195
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "0ade57a6-9e3e-46ee-97ce-5b0771f2b67d",
+        "projectile_id": "79db54a0-bcc5-471b-b778-feb80bb2200d",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "start": {
@@ -4212,35 +4248,35 @@
           "x_milli": 3500,
           "y_milli": 500
         },
-        "fired_at_ms": 29312,
-        "expected_impact_time_ms": 29548
+        "fired_at_ms": 29396,
+        "expected_impact_time_ms": 29632
       }
     },
     {
-      "time_ms": 29448,
-      "seq": 197,
+      "time_ms": 29574,
+      "seq": 198,
       "cause": {
         "cause_type": "parent",
-        "seq": 194
+        "seq": 195
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "0ade57a6-9e3e-46ee-97ce-5b0771f2b67d",
+        "projectile_id": "79db54a0-bcc5-471b-b778-feb80bb2200d",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 924
+          "x_milli": 3253,
+          "y_milli": 747
         },
         "hit": true
       }
     },
     {
-      "time_ms": 29448,
-      "seq": 198,
+      "time_ms": 29574,
+      "seq": 199,
       "cause": {
         "cause_type": "parent",
-        "seq": 194
+        "seq": 195
       },
       "event": {
         "type": "HpChanged",
@@ -4267,11 +4303,11 @@
       }
     },
     {
-      "time_ms": 29448,
-      "seq": 199,
+      "time_ms": 29574,
+      "seq": 200,
       "cause": {
         "cause_type": "parent",
-        "seq": 194
+        "seq": 195
       },
       "event": {
         "type": "MovementStopped",
@@ -4284,22 +4320,30 @@
       }
     },
     {
-      "time_ms": 29448,
-      "seq": 200,
+      "time_ms": 29574,
+      "seq": 201,
       "cause": {
         "cause_type": "parent",
-        "seq": 194
+        "seq": 195
       },
       "event": {
         "type": "UnitDied",
         "unit_instance_id": "aa9e36ea-eb0b-4c7e-a00e-7d1e82256ad9",
         "owner": "Opponent",
-        "killer_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984"
+        "killer_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
+        "world_position": {
+          "x_milli": 3500,
+          "y_milli": 500
+        },
+        "position": {
+          "x": 3,
+          "y": 0
+        }
       }
     },
     {
       "time_ms": 30000,
-      "seq": 201,
+      "seq": 202,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -4314,7 +4358,7 @@
     },
     {
       "time_ms": 30000,
-      "seq": 202,
+      "seq": 203,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -4329,10 +4373,10 @@
     },
     {
       "time_ms": 30200,
-      "seq": 203,
+      "seq": 204,
       "cause": {
         "cause_type": "parent",
-        "seq": 201
+        "seq": 202
       },
       "event": {
         "type": "AttackResolve",
@@ -4344,10 +4388,10 @@
     },
     {
       "time_ms": 30200,
-      "seq": 204,
+      "seq": 205,
       "cause": {
         "cause_type": "parent",
-        "seq": 203
+        "seq": 204
       },
       "event": {
         "type": "ResonanceChanged",
@@ -4359,10 +4403,10 @@
     },
     {
       "time_ms": 30200,
-      "seq": 205,
+      "seq": 206,
       "cause": {
         "cause_type": "parent",
-        "seq": 203
+        "seq": 204
       },
       "event": {
         "type": "HpChanged",
@@ -4390,10 +4434,10 @@
     },
     {
       "time_ms": 30200,
-      "seq": 206,
+      "seq": 207,
       "cause": {
         "cause_type": "parent",
-        "seq": 202
+        "seq": 203
       },
       "event": {
         "type": "AttackResolve",
@@ -4405,10 +4449,10 @@
     },
     {
       "time_ms": 30200,
-      "seq": 207,
+      "seq": 208,
       "cause": {
         "cause_type": "parent",
-        "seq": 206
+        "seq": 207
       },
       "event": {
         "type": "ResonanceChanged",
@@ -4420,10 +4464,10 @@
     },
     {
       "time_ms": 30200,
-      "seq": 208,
+      "seq": 209,
       "cause": {
         "cause_type": "parent",
-        "seq": 206
+        "seq": 207
       },
       "event": {
         "type": "HpChanged",
@@ -4450,8 +4494,8 @@
       }
     },
     {
-      "time_ms": 31032,
-      "seq": 209,
+      "time_ms": 31116,
+      "seq": 210,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -4465,11 +4509,11 @@
       }
     },
     {
-      "time_ms": 31362,
-      "seq": 210,
+      "time_ms": 31446,
+      "seq": 211,
       "cause": {
         "cause_type": "parent",
-        "seq": 209
+        "seq": 210
       },
       "event": {
         "type": "AttackResolve",
@@ -4480,11 +4524,11 @@
       }
     },
     {
-      "time_ms": 31362,
-      "seq": 211,
+      "time_ms": 31446,
+      "seq": 212,
       "cause": {
         "cause_type": "parent",
-        "seq": 210
+        "seq": 211
       },
       "event": {
         "type": "ResonanceChanged",
@@ -4495,15 +4539,15 @@
       }
     },
     {
-      "time_ms": 31362,
-      "seq": 212,
+      "time_ms": 31446,
+      "seq": 213,
       "cause": {
         "cause_type": "parent",
-        "seq": 210
+        "seq": 211
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "a98ea0ae-9b06-41de-8771-2c722f6aa48a",
+        "projectile_id": "58c64e52-beb3-4811-adf5-dd37de9fcf65",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
         "start": {
@@ -4514,35 +4558,35 @@
           "x_milli": 3500,
           "y_milli": 2500
         },
-        "fired_at_ms": 31362,
-        "expected_impact_time_ms": 31598
+        "fired_at_ms": 31446,
+        "expected_impact_time_ms": 31682
       }
     },
     {
-      "time_ms": 31498,
-      "seq": 213,
+      "time_ms": 31624,
+      "seq": 214,
       "cause": {
         "cause_type": "parent",
-        "seq": 210
+        "seq": 211
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "a98ea0ae-9b06-41de-8771-2c722f6aa48a",
+        "projectile_id": "58c64e52-beb3-4811-adf5-dd37de9fcf65",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 2076
+          "x_milli": 3253,
+          "y_milli": 2253
         },
         "hit": true
       }
     },
     {
-      "time_ms": 31498,
-      "seq": 214,
+      "time_ms": 31624,
+      "seq": 215,
       "cause": {
         "cause_type": "parent",
-        "seq": 210
+        "seq": 211
       },
       "event": {
         "type": "HpChanged",
@@ -4569,11 +4613,11 @@
       }
     },
     {
-      "time_ms": 31498,
-      "seq": 215,
+      "time_ms": 31624,
+      "seq": 216,
       "cause": {
         "cause_type": "parent",
-        "seq": 210
+        "seq": 211
       },
       "event": {
         "type": "ResonanceChanged",
@@ -4584,11 +4628,11 @@
       }
     },
     {
-      "time_ms": 31498,
-      "seq": 216,
+      "time_ms": 31624,
+      "seq": 217,
       "cause": {
         "cause_type": "parent",
-        "seq": 210
+        "seq": 211
       },
       "event": {
         "type": "AutoCastStart",
@@ -4601,11 +4645,11 @@
       }
     },
     {
-      "time_ms": 32198,
-      "seq": 217,
+      "time_ms": 32324,
+      "seq": 218,
       "cause": {
         "cause_type": "parent",
-        "seq": 216
+        "seq": 217
       },
       "event": {
         "type": "AbilityCast",
@@ -4615,11 +4659,11 @@
       }
     },
     {
-      "time_ms": 32198,
-      "seq": 218,
+      "time_ms": 32324,
+      "seq": 219,
       "cause": {
         "cause_type": "parent",
-        "seq": 216
+        "seq": 217
       },
       "event": {
         "type": "AutoCastEnd",
@@ -4627,11 +4671,11 @@
       }
     },
     {
-      "time_ms": 32198,
-      "seq": 219,
+      "time_ms": 32324,
+      "seq": 220,
       "cause": {
         "cause_type": "parent",
-        "seq": 217
+        "seq": 218
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -4647,15 +4691,15 @@
       }
     },
     {
-      "time_ms": 32198,
-      "seq": 220,
+      "time_ms": 32324,
+      "seq": 221,
       "cause": {
         "cause_type": "parent",
-        "seq": 219
+        "seq": 220
       },
       "event": {
         "type": "SkillAreaDeclared",
-        "area_id": "86c274d2-41b7-4352-8c83-41bf242b3786",
+        "area_id": "24a54a1b-1909-4f00-b096-4825235179b9",
         "skill_id": "white_night_pale_benediction",
         "step_id": "ally_salvation",
         "caster_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
@@ -4708,7 +4752,7 @@
           "x_milli": 2500,
           "y_milli": 500
         },
-        "start_time_ms": 32198,
+        "start_time_ms": 32324,
         "duration_ms": 0,
         "display_duration_ms": 250,
         "warning_ms": 0,
@@ -4719,11 +4763,11 @@
       }
     },
     {
-      "time_ms": 32198,
-      "seq": 221,
+      "time_ms": 32324,
+      "seq": 222,
       "cause": {
         "cause_type": "parent",
-        "seq": 220
+        "seq": 221
       },
       "event": {
         "type": "HpChanged",
@@ -4737,11 +4781,11 @@
       }
     },
     {
-      "time_ms": 32198,
-      "seq": 222,
+      "time_ms": 32324,
+      "seq": 223,
       "cause": {
         "cause_type": "parent",
-        "seq": 220
+        "seq": 221
       },
       "event": {
         "type": "HpChanged",
@@ -4755,11 +4799,11 @@
       }
     },
     {
-      "time_ms": 32198,
-      "seq": 223,
+      "time_ms": 32324,
+      "seq": 224,
       "cause": {
         "cause_type": "parent",
-        "seq": 220
+        "seq": 221
       },
       "event": {
         "type": "HpChanged",
@@ -4773,11 +4817,11 @@
       }
     },
     {
-      "time_ms": 32238,
-      "seq": 224,
+      "time_ms": 32364,
+      "seq": 225,
       "cause": {
         "cause_type": "parent",
-        "seq": 217
+        "seq": 218
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -4793,15 +4837,15 @@
       }
     },
     {
-      "time_ms": 32238,
-      "seq": 225,
+      "time_ms": 32364,
+      "seq": 226,
       "cause": {
         "cause_type": "parent",
-        "seq": 224
+        "seq": 225
       },
       "event": {
         "type": "SkillAreaDeclared",
-        "area_id": "afffbc65-93c3-4ece-b5b8-a0aa3a94af44",
+        "area_id": "16728aac-2967-4ae9-bfa8-ea8dc915c80e",
         "skill_id": "white_night_pale_benediction",
         "step_id": "ally_blessing",
         "caster_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
@@ -4854,7 +4898,7 @@
           "x_milli": 2500,
           "y_milli": 500
         },
-        "start_time_ms": 32238,
+        "start_time_ms": 32364,
         "duration_ms": 0,
         "display_duration_ms": 250,
         "warning_ms": 0,
@@ -4865,11 +4909,11 @@
       }
     },
     {
-      "time_ms": 32238,
-      "seq": 226,
+      "time_ms": 32364,
+      "seq": 227,
       "cause": {
         "cause_type": "parent",
-        "seq": 225
+        "seq": 226
       },
       "event": {
         "type": "StatChanged",
@@ -4901,11 +4945,11 @@
       }
     },
     {
-      "time_ms": 32238,
-      "seq": 227,
+      "time_ms": 32364,
+      "seq": 228,
       "cause": {
         "cause_type": "parent",
-        "seq": 225
+        "seq": 226
       },
       "event": {
         "type": "StatChanged",
@@ -4937,11 +4981,11 @@
       }
     },
     {
-      "time_ms": 32238,
-      "seq": 228,
+      "time_ms": 32364,
+      "seq": 229,
       "cause": {
         "cause_type": "parent",
-        "seq": 225
+        "seq": 226
       },
       "event": {
         "type": "StatChanged",
@@ -4973,11 +5017,11 @@
       }
     },
     {
-      "time_ms": 32338,
-      "seq": 229,
+      "time_ms": 32464,
+      "seq": 230,
       "cause": {
         "cause_type": "parent",
-        "seq": 217
+        "seq": 218
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -4993,15 +5037,15 @@
       }
     },
     {
-      "time_ms": 32338,
-      "seq": 230,
+      "time_ms": 32464,
+      "seq": 231,
       "cause": {
         "cause_type": "parent",
-        "seq": 229
+        "seq": 230
       },
       "event": {
         "type": "SkillAreaDeclared",
-        "area_id": "36709851-df02-4de8-9c8c-574949558779",
+        "area_id": "706c82e3-142d-4aef-bd31-4e5c67b16302",
         "skill_id": "white_night_pale_benediction",
         "step_id": "enemy_judgement",
         "caster_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
@@ -5050,7 +5094,7 @@
           "x_milli": 2500,
           "y_milli": 500
         },
-        "start_time_ms": 32338,
+        "start_time_ms": 32464,
         "duration_ms": 0,
         "display_duration_ms": 250,
         "warning_ms": 0,
@@ -5061,11 +5105,11 @@
       }
     },
     {
-      "time_ms": 32338,
-      "seq": 231,
+      "time_ms": 32464,
+      "seq": 232,
       "cause": {
         "cause_type": "parent",
-        "seq": 230
+        "seq": 231
       },
       "event": {
         "type": "HpChanged",
@@ -5092,11 +5136,11 @@
       }
     },
     {
-      "time_ms": 32338,
-      "seq": 232,
+      "time_ms": 32464,
+      "seq": 233,
       "cause": {
         "cause_type": "parent",
-        "seq": 230
+        "seq": 231
       },
       "event": {
         "type": "HpChanged",
@@ -5123,8 +5167,8 @@
       }
     },
     {
-      "time_ms": 34248,
-      "seq": 233,
+      "time_ms": 34374,
+      "seq": 234,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -5138,11 +5182,11 @@
       }
     },
     {
-      "time_ms": 34578,
-      "seq": 234,
+      "time_ms": 34704,
+      "seq": 235,
       "cause": {
         "cause_type": "parent",
-        "seq": 233
+        "seq": 234
       },
       "event": {
         "type": "AttackResolve",
@@ -5153,11 +5197,11 @@
       }
     },
     {
-      "time_ms": 34578,
-      "seq": 235,
+      "time_ms": 34704,
+      "seq": 236,
       "cause": {
         "cause_type": "parent",
-        "seq": 234
+        "seq": 235
       },
       "event": {
         "type": "ResonanceChanged",
@@ -5168,15 +5212,15 @@
       }
     },
     {
-      "time_ms": 34578,
-      "seq": 236,
+      "time_ms": 34704,
+      "seq": 237,
       "cause": {
         "cause_type": "parent",
-        "seq": 234
+        "seq": 235
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "5bf7f9a7-a6b4-4cfc-b0ec-ab02cfdaac59",
+        "projectile_id": "f7532a5b-eb1e-4198-9948-25a0aff2cb27",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
         "start": {
@@ -5187,35 +5231,35 @@
           "x_milli": 3500,
           "y_milli": 2500
         },
-        "fired_at_ms": 34578,
-        "expected_impact_time_ms": 34814
+        "fired_at_ms": 34704,
+        "expected_impact_time_ms": 34940
       }
     },
     {
-      "time_ms": 34714,
-      "seq": 237,
+      "time_ms": 34882,
+      "seq": 238,
       "cause": {
         "cause_type": "parent",
-        "seq": 234
+        "seq": 235
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "5bf7f9a7-a6b4-4cfc-b0ec-ab02cfdaac59",
+        "projectile_id": "f7532a5b-eb1e-4198-9948-25a0aff2cb27",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 2076
+          "x_milli": 3253,
+          "y_milli": 2253
         },
         "hit": true
       }
     },
     {
-      "time_ms": 34714,
-      "seq": 238,
+      "time_ms": 34882,
+      "seq": 239,
       "cause": {
         "cause_type": "parent",
-        "seq": 234
+        "seq": 235
       },
       "event": {
         "type": "ResonanceChanged",
@@ -5226,11 +5270,11 @@
       }
     },
     {
-      "time_ms": 34714,
-      "seq": 239,
+      "time_ms": 34882,
+      "seq": 240,
       "cause": {
         "cause_type": "parent",
-        "seq": 234
+        "seq": 235
       },
       "event": {
         "type": "HpChanged",
@@ -5257,11 +5301,11 @@
       }
     },
     {
-      "time_ms": 34714,
-      "seq": 240,
+      "time_ms": 34882,
+      "seq": 241,
       "cause": {
         "cause_type": "parent",
-        "seq": 234
+        "seq": 235
       },
       "event": {
         "type": "ResonanceChanged",
@@ -5273,7 +5317,7 @@
     },
     {
       "time_ms": 35000,
-      "seq": 241,
+      "seq": 242,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -5288,7 +5332,7 @@
     },
     {
       "time_ms": 35000,
-      "seq": 242,
+      "seq": 243,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -5303,10 +5347,10 @@
     },
     {
       "time_ms": 35200,
-      "seq": 243,
+      "seq": 244,
       "cause": {
         "cause_type": "parent",
-        "seq": 241
+        "seq": 242
       },
       "event": {
         "type": "AttackResolve",
@@ -5318,10 +5362,10 @@
     },
     {
       "time_ms": 35200,
-      "seq": 244,
+      "seq": 245,
       "cause": {
         "cause_type": "parent",
-        "seq": 243
+        "seq": 244
       },
       "event": {
         "type": "ResonanceChanged",
@@ -5333,10 +5377,10 @@
     },
     {
       "time_ms": 35200,
-      "seq": 245,
+      "seq": 246,
       "cause": {
         "cause_type": "parent",
-        "seq": 243
+        "seq": 244
       },
       "event": {
         "type": "HpChanged",
@@ -5364,10 +5408,10 @@
     },
     {
       "time_ms": 35200,
-      "seq": 246,
+      "seq": 247,
       "cause": {
         "cause_type": "parent",
-        "seq": 242
+        "seq": 243
       },
       "event": {
         "type": "AttackResolve",
@@ -5379,10 +5423,10 @@
     },
     {
       "time_ms": 35200,
-      "seq": 247,
+      "seq": 248,
       "cause": {
         "cause_type": "parent",
-        "seq": 246
+        "seq": 247
       },
       "event": {
         "type": "ResonanceChanged",
@@ -5394,10 +5438,10 @@
     },
     {
       "time_ms": 35200,
-      "seq": 248,
+      "seq": 249,
       "cause": {
         "cause_type": "parent",
-        "seq": 246
+        "seq": 247
       },
       "event": {
         "type": "HpChanged",
@@ -5424,8 +5468,8 @@
       }
     },
     {
-      "time_ms": 36298,
-      "seq": 249,
+      "time_ms": 36424,
+      "seq": 250,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -5439,11 +5483,11 @@
       }
     },
     {
-      "time_ms": 36628,
-      "seq": 250,
+      "time_ms": 36754,
+      "seq": 251,
       "cause": {
         "cause_type": "parent",
-        "seq": 249
+        "seq": 250
       },
       "event": {
         "type": "AttackResolve",
@@ -5454,11 +5498,11 @@
       }
     },
     {
-      "time_ms": 36628,
-      "seq": 251,
+      "time_ms": 36754,
+      "seq": 252,
       "cause": {
         "cause_type": "parent",
-        "seq": 250
+        "seq": 251
       },
       "event": {
         "type": "ResonanceChanged",
@@ -5469,15 +5513,15 @@
       }
     },
     {
-      "time_ms": 36628,
-      "seq": 252,
+      "time_ms": 36754,
+      "seq": 253,
       "cause": {
         "cause_type": "parent",
-        "seq": 250
+        "seq": 251
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "6f4434ec-370f-40d1-97e6-69a37ab3c12f",
+        "projectile_id": "4eda292c-a848-4a7e-a4a1-6b4c2935d455",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
         "start": {
@@ -5488,35 +5532,35 @@
           "x_milli": 3500,
           "y_milli": 2500
         },
-        "fired_at_ms": 36628,
-        "expected_impact_time_ms": 36864
+        "fired_at_ms": 36754,
+        "expected_impact_time_ms": 36990
       }
     },
     {
-      "time_ms": 36764,
-      "seq": 253,
+      "time_ms": 36932,
+      "seq": 254,
       "cause": {
         "cause_type": "parent",
-        "seq": 250
+        "seq": 251
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "6f4434ec-370f-40d1-97e6-69a37ab3c12f",
+        "projectile_id": "4eda292c-a848-4a7e-a4a1-6b4c2935d455",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 2076
+          "x_milli": 3253,
+          "y_milli": 2253
         },
         "hit": true
       }
     },
     {
-      "time_ms": 36764,
-      "seq": 254,
+      "time_ms": 36932,
+      "seq": 255,
       "cause": {
         "cause_type": "parent",
-        "seq": 250
+        "seq": 251
       },
       "event": {
         "type": "ResonanceChanged",
@@ -5527,11 +5571,11 @@
       }
     },
     {
-      "time_ms": 36764,
-      "seq": 255,
+      "time_ms": 36932,
+      "seq": 256,
       "cause": {
         "cause_type": "parent",
-        "seq": 250
+        "seq": 251
       },
       "event": {
         "type": "HpChanged",
@@ -5558,11 +5602,11 @@
       }
     },
     {
-      "time_ms": 36764,
-      "seq": 256,
+      "time_ms": 36932,
+      "seq": 257,
       "cause": {
         "cause_type": "parent",
-        "seq": 250
+        "seq": 251
       },
       "event": {
         "type": "ResonanceChanged",
@@ -5573,8 +5617,8 @@
       }
     },
     {
-      "time_ms": 38348,
-      "seq": 257,
+      "time_ms": 38474,
+      "seq": 258,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -5588,11 +5632,11 @@
       }
     },
     {
-      "time_ms": 38678,
-      "seq": 258,
+      "time_ms": 38804,
+      "seq": 259,
       "cause": {
         "cause_type": "parent",
-        "seq": 257
+        "seq": 258
       },
       "event": {
         "type": "AttackResolve",
@@ -5603,11 +5647,11 @@
       }
     },
     {
-      "time_ms": 38678,
-      "seq": 259,
+      "time_ms": 38804,
+      "seq": 260,
       "cause": {
         "cause_type": "parent",
-        "seq": 258
+        "seq": 259
       },
       "event": {
         "type": "ResonanceChanged",
@@ -5618,15 +5662,15 @@
       }
     },
     {
-      "time_ms": 38678,
-      "seq": 260,
+      "time_ms": 38804,
+      "seq": 261,
       "cause": {
         "cause_type": "parent",
-        "seq": 258
+        "seq": 259
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "4084d946-f537-4391-81b7-47fa9ce341c2",
+        "projectile_id": "39fcf9e5-9b12-4dc7-8c94-1f6d7606f529",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
         "start": {
@@ -5637,35 +5681,35 @@
           "x_milli": 3500,
           "y_milli": 2500
         },
-        "fired_at_ms": 38678,
-        "expected_impact_time_ms": 38914
+        "fired_at_ms": 38804,
+        "expected_impact_time_ms": 39040
       }
     },
     {
-      "time_ms": 38814,
-      "seq": 261,
+      "time_ms": 38982,
+      "seq": 262,
       "cause": {
         "cause_type": "parent",
-        "seq": 258
+        "seq": 259
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "4084d946-f537-4391-81b7-47fa9ce341c2",
+        "projectile_id": "39fcf9e5-9b12-4dc7-8c94-1f6d7606f529",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 2076
+          "x_milli": 3253,
+          "y_milli": 2253
         },
         "hit": true
       }
     },
     {
-      "time_ms": 38814,
-      "seq": 262,
+      "time_ms": 38982,
+      "seq": 263,
       "cause": {
         "cause_type": "parent",
-        "seq": 258
+        "seq": 259
       },
       "event": {
         "type": "ResonanceChanged",
@@ -5676,11 +5720,11 @@
       }
     },
     {
-      "time_ms": 38814,
-      "seq": 263,
+      "time_ms": 38982,
+      "seq": 264,
       "cause": {
         "cause_type": "parent",
-        "seq": 258
+        "seq": 259
       },
       "event": {
         "type": "HpChanged",
@@ -5707,11 +5751,11 @@
       }
     },
     {
-      "time_ms": 38814,
-      "seq": 264,
+      "time_ms": 38982,
+      "seq": 265,
       "cause": {
         "cause_type": "parent",
-        "seq": 258
+        "seq": 259
       },
       "event": {
         "type": "ResonanceChanged",
@@ -5723,7 +5767,7 @@
     },
     {
       "time_ms": 40000,
-      "seq": 265,
+      "seq": 266,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -5738,7 +5782,7 @@
     },
     {
       "time_ms": 40000,
-      "seq": 266,
+      "seq": 267,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -5753,10 +5797,10 @@
     },
     {
       "time_ms": 40200,
-      "seq": 267,
+      "seq": 268,
       "cause": {
         "cause_type": "parent",
-        "seq": 265
+        "seq": 266
       },
       "event": {
         "type": "AttackResolve",
@@ -5768,10 +5812,10 @@
     },
     {
       "time_ms": 40200,
-      "seq": 268,
+      "seq": 269,
       "cause": {
         "cause_type": "parent",
-        "seq": 267
+        "seq": 268
       },
       "event": {
         "type": "ResonanceChanged",
@@ -5783,10 +5827,10 @@
     },
     {
       "time_ms": 40200,
-      "seq": 269,
+      "seq": 270,
       "cause": {
         "cause_type": "parent",
-        "seq": 267
+        "seq": 268
       },
       "event": {
         "type": "HpChanged",
@@ -5814,10 +5858,10 @@
     },
     {
       "time_ms": 40200,
-      "seq": 270,
+      "seq": 271,
       "cause": {
         "cause_type": "parent",
-        "seq": 266
+        "seq": 267
       },
       "event": {
         "type": "AttackResolve",
@@ -5829,10 +5873,10 @@
     },
     {
       "time_ms": 40200,
-      "seq": 271,
+      "seq": 272,
       "cause": {
         "cause_type": "parent",
-        "seq": 270
+        "seq": 271
       },
       "event": {
         "type": "ResonanceChanged",
@@ -5844,10 +5888,10 @@
     },
     {
       "time_ms": 40200,
-      "seq": 272,
+      "seq": 273,
       "cause": {
         "cause_type": "parent",
-        "seq": 270
+        "seq": 271
       },
       "event": {
         "type": "HpChanged",
@@ -5874,8 +5918,8 @@
       }
     },
     {
-      "time_ms": 40398,
-      "seq": 273,
+      "time_ms": 40524,
+      "seq": 274,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -5889,11 +5933,11 @@
       }
     },
     {
-      "time_ms": 40728,
-      "seq": 274,
+      "time_ms": 40854,
+      "seq": 275,
       "cause": {
         "cause_type": "parent",
-        "seq": 273
+        "seq": 274
       },
       "event": {
         "type": "AttackResolve",
@@ -5904,11 +5948,11 @@
       }
     },
     {
-      "time_ms": 40728,
-      "seq": 275,
+      "time_ms": 40854,
+      "seq": 276,
       "cause": {
         "cause_type": "parent",
-        "seq": 274
+        "seq": 275
       },
       "event": {
         "type": "ResonanceChanged",
@@ -5919,15 +5963,15 @@
       }
     },
     {
-      "time_ms": 40728,
-      "seq": 276,
+      "time_ms": 40854,
+      "seq": 277,
       "cause": {
         "cause_type": "parent",
-        "seq": 274
+        "seq": 275
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "bac77e78-9887-4d70-804c-d6e6578f724a",
+        "projectile_id": "61f4ee59-af0f-49f4-ab3e-472075bbe4b4",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
         "start": {
@@ -5938,35 +5982,35 @@
           "x_milli": 3500,
           "y_milli": 2500
         },
-        "fired_at_ms": 40728,
-        "expected_impact_time_ms": 40964
+        "fired_at_ms": 40854,
+        "expected_impact_time_ms": 41090
       }
     },
     {
-      "time_ms": 40864,
-      "seq": 277,
+      "time_ms": 41032,
+      "seq": 278,
       "cause": {
         "cause_type": "parent",
-        "seq": 274
+        "seq": 275
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "bac77e78-9887-4d70-804c-d6e6578f724a",
+        "projectile_id": "61f4ee59-af0f-49f4-ab3e-472075bbe4b4",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 2076
+          "x_milli": 3253,
+          "y_milli": 2253
         },
         "hit": true
       }
     },
     {
-      "time_ms": 40864,
-      "seq": 278,
+      "time_ms": 41032,
+      "seq": 279,
       "cause": {
         "cause_type": "parent",
-        "seq": 274
+        "seq": 275
       },
       "event": {
         "type": "ResonanceChanged",
@@ -5977,11 +6021,11 @@
       }
     },
     {
-      "time_ms": 40864,
-      "seq": 279,
+      "time_ms": 41032,
+      "seq": 280,
       "cause": {
         "cause_type": "parent",
-        "seq": 274
+        "seq": 275
       },
       "event": {
         "type": "HpChanged",
@@ -6008,11 +6052,11 @@
       }
     },
     {
-      "time_ms": 40864,
-      "seq": 280,
+      "time_ms": 41032,
+      "seq": 281,
       "cause": {
         "cause_type": "parent",
-        "seq": 274
+        "seq": 275
       },
       "event": {
         "type": "ResonanceChanged",
@@ -6023,8 +6067,8 @@
       }
     },
     {
-      "time_ms": 42448,
-      "seq": 281,
+      "time_ms": 42574,
+      "seq": 282,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -6038,11 +6082,11 @@
       }
     },
     {
-      "time_ms": 42778,
-      "seq": 282,
+      "time_ms": 42904,
+      "seq": 283,
       "cause": {
         "cause_type": "parent",
-        "seq": 281
+        "seq": 282
       },
       "event": {
         "type": "AttackResolve",
@@ -6053,11 +6097,11 @@
       }
     },
     {
-      "time_ms": 42778,
-      "seq": 283,
+      "time_ms": 42904,
+      "seq": 284,
       "cause": {
         "cause_type": "parent",
-        "seq": 282
+        "seq": 283
       },
       "event": {
         "type": "ResonanceChanged",
@@ -6068,15 +6112,15 @@
       }
     },
     {
-      "time_ms": 42778,
-      "seq": 284,
+      "time_ms": 42904,
+      "seq": 285,
       "cause": {
         "cause_type": "parent",
-        "seq": 282
+        "seq": 283
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "a7dfed52-987b-4f19-9277-2af0f1ebfdfe",
+        "projectile_id": "872d2e2d-146d-4683-8cd8-777da7aa8950",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
         "start": {
@@ -6087,35 +6131,35 @@
           "x_milli": 3500,
           "y_milli": 2500
         },
-        "fired_at_ms": 42778,
-        "expected_impact_time_ms": 43014
+        "fired_at_ms": 42904,
+        "expected_impact_time_ms": 43140
       }
     },
     {
-      "time_ms": 42914,
-      "seq": 285,
+      "time_ms": 43082,
+      "seq": 286,
       "cause": {
         "cause_type": "parent",
-        "seq": 282
+        "seq": 283
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "a7dfed52-987b-4f19-9277-2af0f1ebfdfe",
+        "projectile_id": "872d2e2d-146d-4683-8cd8-777da7aa8950",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 2076
+          "x_milli": 3253,
+          "y_milli": 2253
         },
         "hit": true
       }
     },
     {
-      "time_ms": 42914,
-      "seq": 286,
+      "time_ms": 43082,
+      "seq": 287,
       "cause": {
         "cause_type": "parent",
-        "seq": 282
+        "seq": 283
       },
       "event": {
         "type": "ResonanceChanged",
@@ -6126,11 +6170,11 @@
       }
     },
     {
-      "time_ms": 42914,
-      "seq": 287,
+      "time_ms": 43082,
+      "seq": 288,
       "cause": {
         "cause_type": "parent",
-        "seq": 282
+        "seq": 283
       },
       "event": {
         "type": "HpChanged",
@@ -6157,11 +6201,11 @@
       }
     },
     {
-      "time_ms": 42914,
-      "seq": 288,
+      "time_ms": 43082,
+      "seq": 289,
       "cause": {
         "cause_type": "parent",
-        "seq": 282
+        "seq": 283
       },
       "event": {
         "type": "ResonanceChanged",
@@ -6172,8 +6216,8 @@
       }
     },
     {
-      "time_ms": 44498,
-      "seq": 289,
+      "time_ms": 44624,
+      "seq": 290,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -6187,11 +6231,11 @@
       }
     },
     {
-      "time_ms": 44828,
-      "seq": 290,
+      "time_ms": 44954,
+      "seq": 291,
       "cause": {
         "cause_type": "parent",
-        "seq": 289
+        "seq": 290
       },
       "event": {
         "type": "AttackResolve",
@@ -6202,11 +6246,11 @@
       }
     },
     {
-      "time_ms": 44828,
-      "seq": 291,
+      "time_ms": 44954,
+      "seq": 292,
       "cause": {
         "cause_type": "parent",
-        "seq": 290
+        "seq": 291
       },
       "event": {
         "type": "ResonanceChanged",
@@ -6217,15 +6261,15 @@
       }
     },
     {
-      "time_ms": 44828,
-      "seq": 292,
+      "time_ms": 44954,
+      "seq": 293,
       "cause": {
         "cause_type": "parent",
-        "seq": 290
+        "seq": 291
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "91338311-fa3d-4a97-905d-6fd471d7486c",
+        "projectile_id": "bc430905-bc75-4781-819c-15fac1e65f93",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
         "start": {
@@ -6236,35 +6280,65 @@
           "x_milli": 3500,
           "y_milli": 2500
         },
-        "fired_at_ms": 44828,
-        "expected_impact_time_ms": 45064
+        "fired_at_ms": 44954,
+        "expected_impact_time_ms": 45190
       }
     },
     {
-      "time_ms": 44964,
-      "seq": 293,
+      "time_ms": 45000,
+      "seq": 294,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "1cec88da-040b-46c3-a527-3ef2629f1827",
+        "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 45000,
+      "seq": 295,
+      "cause": {
+        "cause_type": "root",
+        "kind": "period"
+      },
+      "event": {
+        "type": "AttackStart",
+        "attacker_instance_id": "de8eb82f-825b-412f-9045-6504304ad35c",
+        "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
+        "kind": "Auto",
+        "delivery": "instant"
+      }
+    },
+    {
+      "time_ms": 45132,
+      "seq": 296,
       "cause": {
         "cause_type": "parent",
-        "seq": 290
+        "seq": 291
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "91338311-fa3d-4a97-905d-6fd471d7486c",
+        "projectile_id": "bc430905-bc75-4781-819c-15fac1e65f93",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 2076
+          "x_milli": 3253,
+          "y_milli": 2253
         },
         "hit": true
       }
     },
     {
-      "time_ms": 44964,
-      "seq": 294,
+      "time_ms": 45132,
+      "seq": 297,
       "cause": {
         "cause_type": "parent",
-        "seq": 290
+        "seq": 291
       },
       "event": {
         "type": "HpChanged",
@@ -6291,11 +6365,11 @@
       }
     },
     {
-      "time_ms": 44964,
-      "seq": 295,
+      "time_ms": 45132,
+      "seq": 298,
       "cause": {
         "cause_type": "parent",
-        "seq": 290
+        "seq": 291
       },
       "event": {
         "type": "ResonanceChanged",
@@ -6306,11 +6380,11 @@
       }
     },
     {
-      "time_ms": 44964,
-      "seq": 296,
+      "time_ms": 45132,
+      "seq": 299,
       "cause": {
         "cause_type": "parent",
-        "seq": 290
+        "seq": 291
       },
       "event": {
         "type": "AutoCastStart",
@@ -6323,41 +6397,11 @@
       }
     },
     {
-      "time_ms": 45000,
-      "seq": 297,
-      "cause": {
-        "cause_type": "root",
-        "kind": "period"
-      },
-      "event": {
-        "type": "AttackStart",
-        "attacker_instance_id": "1cec88da-040b-46c3-a527-3ef2629f1827",
-        "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
-        "kind": "Auto",
-        "delivery": "instant"
-      }
-    },
-    {
-      "time_ms": 45000,
-      "seq": 298,
-      "cause": {
-        "cause_type": "root",
-        "kind": "period"
-      },
-      "event": {
-        "type": "AttackStart",
-        "attacker_instance_id": "de8eb82f-825b-412f-9045-6504304ad35c",
-        "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
-        "kind": "Auto",
-        "delivery": "instant"
-      }
-    },
-    {
       "time_ms": 45200,
-      "seq": 299,
+      "seq": 300,
       "cause": {
         "cause_type": "parent",
-        "seq": 297
+        "seq": 294
       },
       "event": {
         "type": "AttackResolve",
@@ -6369,10 +6413,10 @@
     },
     {
       "time_ms": 45200,
-      "seq": 300,
+      "seq": 301,
       "cause": {
         "cause_type": "parent",
-        "seq": 299
+        "seq": 300
       },
       "event": {
         "type": "ResonanceChanged",
@@ -6384,10 +6428,10 @@
     },
     {
       "time_ms": 45200,
-      "seq": 301,
+      "seq": 302,
       "cause": {
         "cause_type": "parent",
-        "seq": 299
+        "seq": 300
       },
       "event": {
         "type": "HpChanged",
@@ -6415,10 +6459,10 @@
     },
     {
       "time_ms": 45200,
-      "seq": 302,
+      "seq": 303,
       "cause": {
         "cause_type": "parent",
-        "seq": 298
+        "seq": 295
       },
       "event": {
         "type": "AttackResolve",
@@ -6430,10 +6474,10 @@
     },
     {
       "time_ms": 45200,
-      "seq": 303,
+      "seq": 304,
       "cause": {
         "cause_type": "parent",
-        "seq": 302
+        "seq": 303
       },
       "event": {
         "type": "ResonanceChanged",
@@ -6445,10 +6489,10 @@
     },
     {
       "time_ms": 45200,
-      "seq": 304,
+      "seq": 305,
       "cause": {
         "cause_type": "parent",
-        "seq": 302
+        "seq": 303
       },
       "event": {
         "type": "HpChanged",
@@ -6475,11 +6519,11 @@
       }
     },
     {
-      "time_ms": 45664,
-      "seq": 305,
+      "time_ms": 45832,
+      "seq": 306,
       "cause": {
         "cause_type": "parent",
-        "seq": 296
+        "seq": 299
       },
       "event": {
         "type": "AbilityCast",
@@ -6489,11 +6533,11 @@
       }
     },
     {
-      "time_ms": 45664,
-      "seq": 306,
+      "time_ms": 45832,
+      "seq": 307,
       "cause": {
         "cause_type": "parent",
-        "seq": 296
+        "seq": 299
       },
       "event": {
         "type": "AutoCastEnd",
@@ -6501,11 +6545,11 @@
       }
     },
     {
-      "time_ms": 45664,
-      "seq": 307,
+      "time_ms": 45832,
+      "seq": 308,
       "cause": {
         "cause_type": "parent",
-        "seq": 305
+        "seq": 306
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -6521,15 +6565,15 @@
       }
     },
     {
-      "time_ms": 45664,
-      "seq": 308,
+      "time_ms": 45832,
+      "seq": 309,
       "cause": {
         "cause_type": "parent",
-        "seq": 307
+        "seq": 308
       },
       "event": {
         "type": "SkillAreaDeclared",
-        "area_id": "03d9041d-80e2-402f-a3dd-d586cbb47d63",
+        "area_id": "f3d08de5-c192-473a-b331-91e55da14041",
         "skill_id": "white_night_pale_benediction",
         "step_id": "ally_salvation",
         "caster_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
@@ -6582,7 +6626,7 @@
           "x_milli": 2500,
           "y_milli": 500
         },
-        "start_time_ms": 45664,
+        "start_time_ms": 45832,
         "duration_ms": 0,
         "display_duration_ms": 250,
         "warning_ms": 0,
@@ -6593,11 +6637,11 @@
       }
     },
     {
-      "time_ms": 45664,
-      "seq": 309,
+      "time_ms": 45832,
+      "seq": 310,
       "cause": {
         "cause_type": "parent",
-        "seq": 308
+        "seq": 309
       },
       "event": {
         "type": "HpChanged",
@@ -6611,11 +6655,11 @@
       }
     },
     {
-      "time_ms": 45664,
-      "seq": 310,
+      "time_ms": 45832,
+      "seq": 311,
       "cause": {
         "cause_type": "parent",
-        "seq": 308
+        "seq": 309
       },
       "event": {
         "type": "HpChanged",
@@ -6629,11 +6673,11 @@
       }
     },
     {
-      "time_ms": 45664,
-      "seq": 311,
+      "time_ms": 45832,
+      "seq": 312,
       "cause": {
         "cause_type": "parent",
-        "seq": 308
+        "seq": 309
       },
       "event": {
         "type": "HpChanged",
@@ -6647,11 +6691,11 @@
       }
     },
     {
-      "time_ms": 45704,
-      "seq": 312,
+      "time_ms": 45872,
+      "seq": 313,
       "cause": {
         "cause_type": "parent",
-        "seq": 305
+        "seq": 306
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -6667,15 +6711,15 @@
       }
     },
     {
-      "time_ms": 45704,
-      "seq": 313,
+      "time_ms": 45872,
+      "seq": 314,
       "cause": {
         "cause_type": "parent",
-        "seq": 312
+        "seq": 313
       },
       "event": {
         "type": "SkillAreaDeclared",
-        "area_id": "cd5584f9-db94-418b-a815-5f2e0d03510f",
+        "area_id": "69a2bf37-fa81-4d87-987b-a3affbeee671",
         "skill_id": "white_night_pale_benediction",
         "step_id": "ally_blessing",
         "caster_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
@@ -6728,7 +6772,7 @@
           "x_milli": 2500,
           "y_milli": 500
         },
-        "start_time_ms": 45704,
+        "start_time_ms": 45872,
         "duration_ms": 0,
         "display_duration_ms": 250,
         "warning_ms": 0,
@@ -6739,11 +6783,11 @@
       }
     },
     {
-      "time_ms": 45704,
-      "seq": 314,
+      "time_ms": 45872,
+      "seq": 315,
       "cause": {
         "cause_type": "parent",
-        "seq": 313
+        "seq": 314
       },
       "event": {
         "type": "StatChanged",
@@ -6775,11 +6819,11 @@
       }
     },
     {
-      "time_ms": 45704,
-      "seq": 315,
+      "time_ms": 45872,
+      "seq": 316,
       "cause": {
         "cause_type": "parent",
-        "seq": 313
+        "seq": 314
       },
       "event": {
         "type": "StatChanged",
@@ -6811,11 +6855,11 @@
       }
     },
     {
-      "time_ms": 45704,
-      "seq": 316,
+      "time_ms": 45872,
+      "seq": 317,
       "cause": {
         "cause_type": "parent",
-        "seq": 313
+        "seq": 314
       },
       "event": {
         "type": "StatChanged",
@@ -6847,11 +6891,11 @@
       }
     },
     {
-      "time_ms": 45804,
-      "seq": 317,
+      "time_ms": 45972,
+      "seq": 318,
       "cause": {
         "cause_type": "parent",
-        "seq": 305
+        "seq": 306
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -6867,15 +6911,15 @@
       }
     },
     {
-      "time_ms": 45804,
-      "seq": 318,
+      "time_ms": 45972,
+      "seq": 319,
       "cause": {
         "cause_type": "parent",
-        "seq": 317
+        "seq": 318
       },
       "event": {
         "type": "SkillAreaDeclared",
-        "area_id": "ce0f6b9a-0889-40ff-82b6-239c48b30cd2",
+        "area_id": "acdb0c85-08bd-44f3-a3a6-4e8645d60c27",
         "skill_id": "white_night_pale_benediction",
         "step_id": "enemy_judgement",
         "caster_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
@@ -6924,7 +6968,7 @@
           "x_milli": 2500,
           "y_milli": 500
         },
-        "start_time_ms": 45804,
+        "start_time_ms": 45972,
         "duration_ms": 0,
         "display_duration_ms": 250,
         "warning_ms": 0,
@@ -6935,11 +6979,11 @@
       }
     },
     {
-      "time_ms": 45804,
-      "seq": 319,
+      "time_ms": 45972,
+      "seq": 320,
       "cause": {
         "cause_type": "parent",
-        "seq": 318
+        "seq": 319
       },
       "event": {
         "type": "HpChanged",
@@ -6966,11 +7010,11 @@
       }
     },
     {
-      "time_ms": 45804,
-      "seq": 320,
+      "time_ms": 45972,
+      "seq": 321,
       "cause": {
         "cause_type": "parent",
-        "seq": 318
+        "seq": 319
       },
       "event": {
         "type": "HpChanged",
@@ -6997,8 +7041,8 @@
       }
     },
     {
-      "time_ms": 47714,
-      "seq": 321,
+      "time_ms": 47882,
+      "seq": 322,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -7012,11 +7056,11 @@
       }
     },
     {
-      "time_ms": 48044,
-      "seq": 322,
+      "time_ms": 48212,
+      "seq": 323,
       "cause": {
         "cause_type": "parent",
-        "seq": 321
+        "seq": 322
       },
       "event": {
         "type": "AttackResolve",
@@ -7027,11 +7071,11 @@
       }
     },
     {
-      "time_ms": 48044,
-      "seq": 323,
+      "time_ms": 48212,
+      "seq": 324,
       "cause": {
         "cause_type": "parent",
-        "seq": 322
+        "seq": 323
       },
       "event": {
         "type": "ResonanceChanged",
@@ -7042,15 +7086,15 @@
       }
     },
     {
-      "time_ms": 48044,
-      "seq": 324,
+      "time_ms": 48212,
+      "seq": 325,
       "cause": {
         "cause_type": "parent",
-        "seq": 322
+        "seq": 323
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "39df7848-aaf4-4839-9dcc-546227548077",
+        "projectile_id": "089a1e38-1f3e-4d31-816e-113776e17f47",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
         "start": {
@@ -7061,35 +7105,35 @@
           "x_milli": 3500,
           "y_milli": 2500
         },
-        "fired_at_ms": 48044,
-        "expected_impact_time_ms": 48280
+        "fired_at_ms": 48212,
+        "expected_impact_time_ms": 48448
       }
     },
     {
-      "time_ms": 48180,
-      "seq": 325,
+      "time_ms": 48390,
+      "seq": 326,
       "cause": {
         "cause_type": "parent",
-        "seq": 322
+        "seq": 323
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "39df7848-aaf4-4839-9dcc-546227548077",
+        "projectile_id": "089a1e38-1f3e-4d31-816e-113776e17f47",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 2076
+          "x_milli": 3253,
+          "y_milli": 2253
         },
         "hit": true
       }
     },
     {
-      "time_ms": 48180,
-      "seq": 326,
+      "time_ms": 48390,
+      "seq": 327,
       "cause": {
         "cause_type": "parent",
-        "seq": 322
+        "seq": 323
       },
       "event": {
         "type": "ResonanceChanged",
@@ -7100,11 +7144,11 @@
       }
     },
     {
-      "time_ms": 48180,
-      "seq": 327,
+      "time_ms": 48390,
+      "seq": 328,
       "cause": {
         "cause_type": "parent",
-        "seq": 322
+        "seq": 323
       },
       "event": {
         "type": "HpChanged",
@@ -7131,11 +7175,11 @@
       }
     },
     {
-      "time_ms": 48180,
-      "seq": 328,
+      "time_ms": 48390,
+      "seq": 329,
       "cause": {
         "cause_type": "parent",
-        "seq": 322
+        "seq": 323
       },
       "event": {
         "type": "ResonanceChanged",
@@ -7146,8 +7190,8 @@
       }
     },
     {
-      "time_ms": 49764,
-      "seq": 329,
+      "time_ms": 49932,
+      "seq": 330,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -7162,7 +7206,7 @@
     },
     {
       "time_ms": 50000,
-      "seq": 330,
+      "seq": 331,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -7177,7 +7221,7 @@
     },
     {
       "time_ms": 50000,
-      "seq": 331,
+      "seq": 332,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -7191,65 +7235,11 @@
       }
     },
     {
-      "time_ms": 50094,
-      "seq": 332,
-      "cause": {
-        "cause_type": "parent",
-        "seq": 329
-      },
-      "event": {
-        "type": "AttackResolve",
-        "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
-        "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
-        "kind": "Auto",
-        "delivery": "projectile"
-      }
-    },
-    {
-      "time_ms": 50094,
+      "time_ms": 50200,
       "seq": 333,
       "cause": {
         "cause_type": "parent",
-        "seq": 332
-      },
-      "event": {
-        "type": "ResonanceChanged",
-        "unit_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
-        "before": 20,
-        "after": 30,
-        "max": 100
-      }
-    },
-    {
-      "time_ms": 50094,
-      "seq": 334,
-      "cause": {
-        "cause_type": "parent",
-        "seq": 332
-      },
-      "event": {
-        "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "c6ba3439-f29a-4863-a60f-041c61162ab3",
-        "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
-        "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
-        "start": {
-          "x_milli": 2500,
-          "y_milli": 1500
-        },
-        "aim": {
-          "x_milli": 3500,
-          "y_milli": 2500
-        },
-        "fired_at_ms": 50094,
-        "expected_impact_time_ms": 50330
-      }
-    },
-    {
-      "time_ms": 50200,
-      "seq": 335,
-      "cause": {
-        "cause_type": "parent",
-        "seq": 330
+        "seq": 331
       },
       "event": {
         "type": "AttackResolve",
@@ -7261,10 +7251,10 @@
     },
     {
       "time_ms": 50200,
-      "seq": 336,
+      "seq": 334,
       "cause": {
         "cause_type": "parent",
-        "seq": 335
+        "seq": 333
       },
       "event": {
         "type": "HpChanged",
@@ -7292,10 +7282,10 @@
     },
     {
       "time_ms": 50200,
-      "seq": 337,
+      "seq": 335,
       "cause": {
         "cause_type": "parent",
-        "seq": 331
+        "seq": 332
       },
       "event": {
         "type": "AttackResolve",
@@ -7307,10 +7297,10 @@
     },
     {
       "time_ms": 50200,
-      "seq": 338,
+      "seq": 336,
       "cause": {
         "cause_type": "parent",
-        "seq": 337
+        "seq": 335
       },
       "event": {
         "type": "HpChanged",
@@ -7337,30 +7327,84 @@
       }
     },
     {
-      "time_ms": 50230,
+      "time_ms": 50262,
+      "seq": 337,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 330
+      },
+      "event": {
+        "type": "AttackResolve",
+        "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
+        "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
+        "kind": "Auto",
+        "delivery": "projectile"
+      }
+    },
+    {
+      "time_ms": 50262,
+      "seq": 338,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 337
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
+        "before": 20,
+        "after": 30,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 50262,
       "seq": 339,
       "cause": {
         "cause_type": "parent",
-        "seq": 332
+        "seq": 337
+      },
+      "event": {
+        "type": "BasicAttackProjectileLaunched",
+        "projectile_id": "a3fa1b0a-f337-40bb-9ec0-3b65f51279fa",
+        "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
+        "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
+        "start": {
+          "x_milli": 2500,
+          "y_milli": 1500
+        },
+        "aim": {
+          "x_milli": 3500,
+          "y_milli": 2500
+        },
+        "fired_at_ms": 50262,
+        "expected_impact_time_ms": 50498
+      }
+    },
+    {
+      "time_ms": 50440,
+      "seq": 340,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 337
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "c6ba3439-f29a-4863-a60f-041c61162ab3",
+        "projectile_id": "a3fa1b0a-f337-40bb-9ec0-3b65f51279fa",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
         "impact_position": {
-          "x_milli": 3076,
-          "y_milli": 2076
+          "x_milli": 3253,
+          "y_milli": 2253
         },
         "hit": true
       }
     },
     {
-      "time_ms": 50230,
-      "seq": 340,
+      "time_ms": 50440,
+      "seq": 341,
       "cause": {
         "cause_type": "parent",
-        "seq": 332
+        "seq": 337
       },
       "event": {
         "type": "ResonanceChanged",
@@ -7371,11 +7415,11 @@
       }
     },
     {
-      "time_ms": 50230,
-      "seq": 341,
+      "time_ms": 50440,
+      "seq": 342,
       "cause": {
         "cause_type": "parent",
-        "seq": 332
+        "seq": 337
       },
       "event": {
         "type": "HpChanged",
@@ -7402,11 +7446,26 @@
       }
     },
     {
-      "time_ms": 50230,
-      "seq": 342,
+      "time_ms": 50440,
+      "seq": 343,
       "cause": {
         "cause_type": "parent",
-        "seq": 332
+        "seq": 337
+      },
+      "event": {
+        "type": "ResonanceChanged",
+        "unit_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
+        "before": 65,
+        "after": 73,
+        "max": 100
+      }
+    },
+    {
+      "time_ms": 50440,
+      "seq": 344,
+      "cause": {
+        "cause_type": "parent",
+        "seq": 337
       },
       "event": {
         "type": "MovementStopped",
@@ -7419,22 +7478,30 @@
       }
     },
     {
-      "time_ms": 50230,
-      "seq": 343,
+      "time_ms": 50440,
+      "seq": 345,
       "cause": {
         "cause_type": "parent",
-        "seq": 332
+        "seq": 337
       },
       "event": {
         "type": "UnitDied",
         "unit_instance_id": "7d7331ac-180a-4bfb-9b48-cf5823c65bee",
         "owner": "Opponent",
-        "killer_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984"
+        "killer_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
+        "world_position": {
+          "x_milli": 3500,
+          "y_milli": 2500
+        },
+        "position": {
+          "x": 3,
+          "y": 2
+        }
       }
     },
     {
-      "time_ms": 51814,
-      "seq": 344,
+      "time_ms": 51982,
+      "seq": 346,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -7448,11 +7515,11 @@
       }
     },
     {
-      "time_ms": 52144,
-      "seq": 345,
+      "time_ms": 52312,
+      "seq": 347,
       "cause": {
         "cause_type": "parent",
-        "seq": 344
+        "seq": 346
       },
       "event": {
         "type": "AttackResolve",
@@ -7463,11 +7530,11 @@
       }
     },
     {
-      "time_ms": 52144,
-      "seq": 346,
+      "time_ms": 52312,
+      "seq": 348,
       "cause": {
         "cause_type": "parent",
-        "seq": 345
+        "seq": 347
       },
       "event": {
         "type": "ResonanceChanged",
@@ -7478,15 +7545,15 @@
       }
     },
     {
-      "time_ms": 52144,
-      "seq": 347,
+      "time_ms": 52312,
+      "seq": 349,
       "cause": {
         "cause_type": "parent",
-        "seq": 345
+        "seq": 347
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "070bd886-a535-4360-a482-53c72340112e",
+        "projectile_id": "7cbcb6bf-7064-4b17-8100-1d8c889dc4dc",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aee4e951-dbe2-4ac9-adbc-95b8a2a2548e",
         "start": {
@@ -7497,35 +7564,35 @@
           "x_milli": 4500,
           "y_milli": 2500
         },
-        "fired_at_ms": 52144,
-        "expected_impact_time_ms": 52517
+        "fired_at_ms": 52312,
+        "expected_impact_time_ms": 52685
       }
     },
     {
-      "time_ms": 52417,
-      "seq": 348,
+      "time_ms": 52627,
+      "seq": 350,
       "cause": {
         "cause_type": "parent",
-        "seq": 345
+        "seq": 347
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "070bd886-a535-4360-a482-53c72340112e",
+        "projectile_id": "7cbcb6bf-7064-4b17-8100-1d8c889dc4dc",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aee4e951-dbe2-4ac9-adbc-95b8a2a2548e",
         "impact_position": {
-          "x_milli": 3963,
-          "y_milli": 2232
+          "x_milli": 4187,
+          "y_milli": 2343
         },
         "hit": true
       }
     },
     {
-      "time_ms": 52417,
-      "seq": 349,
+      "time_ms": 52627,
+      "seq": 351,
       "cause": {
         "cause_type": "parent",
-        "seq": 345
+        "seq": 347
       },
       "event": {
         "type": "ResonanceChanged",
@@ -7536,11 +7603,11 @@
       }
     },
     {
-      "time_ms": 52417,
-      "seq": 350,
+      "time_ms": 52627,
+      "seq": 352,
       "cause": {
         "cause_type": "parent",
-        "seq": 345
+        "seq": 347
       },
       "event": {
         "type": "HpChanged",
@@ -7567,11 +7634,11 @@
       }
     },
     {
-      "time_ms": 52417,
-      "seq": 351,
+      "time_ms": 52627,
+      "seq": 353,
       "cause": {
         "cause_type": "parent",
-        "seq": 345
+        "seq": 347
       },
       "event": {
         "type": "ResonanceChanged",
@@ -7582,8 +7649,8 @@
       }
     },
     {
-      "time_ms": 53864,
-      "seq": 352,
+      "time_ms": 54032,
+      "seq": 354,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -7597,11 +7664,11 @@
       }
     },
     {
-      "time_ms": 54194,
-      "seq": 353,
+      "time_ms": 54362,
+      "seq": 355,
       "cause": {
         "cause_type": "parent",
-        "seq": 352
+        "seq": 354
       },
       "event": {
         "type": "AttackResolve",
@@ -7612,11 +7679,11 @@
       }
     },
     {
-      "time_ms": 54194,
-      "seq": 354,
+      "time_ms": 54362,
+      "seq": 356,
       "cause": {
         "cause_type": "parent",
-        "seq": 353
+        "seq": 355
       },
       "event": {
         "type": "ResonanceChanged",
@@ -7627,15 +7694,15 @@
       }
     },
     {
-      "time_ms": 54194,
-      "seq": 355,
+      "time_ms": 54362,
+      "seq": 357,
       "cause": {
         "cause_type": "parent",
-        "seq": 353
+        "seq": 355
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "bb41f5eb-78ef-4fae-b19d-c3a026afbb50",
+        "projectile_id": "96c924f5-7f3c-4495-9eff-cb3097ce53fb",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aee4e951-dbe2-4ac9-adbc-95b8a2a2548e",
         "start": {
@@ -7646,35 +7713,35 @@
           "x_milli": 4500,
           "y_milli": 2500
         },
-        "fired_at_ms": 54194,
-        "expected_impact_time_ms": 54567
+        "fired_at_ms": 54362,
+        "expected_impact_time_ms": 54735
       }
     },
     {
-      "time_ms": 54467,
-      "seq": 356,
+      "time_ms": 54677,
+      "seq": 358,
       "cause": {
         "cause_type": "parent",
-        "seq": 353
+        "seq": 355
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "bb41f5eb-78ef-4fae-b19d-c3a026afbb50",
+        "projectile_id": "96c924f5-7f3c-4495-9eff-cb3097ce53fb",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aee4e951-dbe2-4ac9-adbc-95b8a2a2548e",
         "impact_position": {
-          "x_milli": 3963,
-          "y_milli": 2232
+          "x_milli": 4187,
+          "y_milli": 2343
         },
         "hit": true
       }
     },
     {
-      "time_ms": 54467,
-      "seq": 357,
+      "time_ms": 54677,
+      "seq": 359,
       "cause": {
         "cause_type": "parent",
-        "seq": 353
+        "seq": 355
       },
       "event": {
         "type": "ResonanceChanged",
@@ -7685,11 +7752,11 @@
       }
     },
     {
-      "time_ms": 54467,
-      "seq": 358,
+      "time_ms": 54677,
+      "seq": 360,
       "cause": {
         "cause_type": "parent",
-        "seq": 353
+        "seq": 355
       },
       "event": {
         "type": "HpChanged",
@@ -7716,11 +7783,11 @@
       }
     },
     {
-      "time_ms": 54467,
-      "seq": 359,
+      "time_ms": 54677,
+      "seq": 361,
       "cause": {
         "cause_type": "parent",
-        "seq": 353
+        "seq": 355
       },
       "event": {
         "type": "ResonanceChanged",
@@ -7732,7 +7799,7 @@
     },
     {
       "time_ms": 55000,
-      "seq": 360,
+      "seq": 362,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -7747,7 +7814,7 @@
     },
     {
       "time_ms": 55000,
-      "seq": 361,
+      "seq": 363,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -7762,10 +7829,10 @@
     },
     {
       "time_ms": 55200,
-      "seq": 362,
+      "seq": 364,
       "cause": {
         "cause_type": "parent",
-        "seq": 360
+        "seq": 362
       },
       "event": {
         "type": "AttackResolve",
@@ -7777,10 +7844,10 @@
     },
     {
       "time_ms": 55200,
-      "seq": 363,
+      "seq": 365,
       "cause": {
         "cause_type": "parent",
-        "seq": 362
+        "seq": 364
       },
       "event": {
         "type": "HpChanged",
@@ -7808,10 +7875,10 @@
     },
     {
       "time_ms": 55200,
-      "seq": 364,
+      "seq": 366,
       "cause": {
         "cause_type": "parent",
-        "seq": 361
+        "seq": 363
       },
       "event": {
         "type": "AttackResolve",
@@ -7823,10 +7890,10 @@
     },
     {
       "time_ms": 55200,
-      "seq": 365,
+      "seq": 367,
       "cause": {
         "cause_type": "parent",
-        "seq": 364
+        "seq": 366
       },
       "event": {
         "type": "HpChanged",
@@ -7853,8 +7920,8 @@
       }
     },
     {
-      "time_ms": 55914,
-      "seq": 366,
+      "time_ms": 56082,
+      "seq": 368,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -7868,11 +7935,11 @@
       }
     },
     {
-      "time_ms": 56244,
-      "seq": 367,
+      "time_ms": 56412,
+      "seq": 369,
       "cause": {
         "cause_type": "parent",
-        "seq": 366
+        "seq": 368
       },
       "event": {
         "type": "AttackResolve",
@@ -7883,11 +7950,11 @@
       }
     },
     {
-      "time_ms": 56244,
-      "seq": 368,
+      "time_ms": 56412,
+      "seq": 370,
       "cause": {
         "cause_type": "parent",
-        "seq": 367
+        "seq": 369
       },
       "event": {
         "type": "ResonanceChanged",
@@ -7898,15 +7965,15 @@
       }
     },
     {
-      "time_ms": 56244,
-      "seq": 369,
+      "time_ms": 56412,
+      "seq": 371,
       "cause": {
         "cause_type": "parent",
-        "seq": 367
+        "seq": 369
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "820a083a-9a50-435b-9d62-d6c3e4b4738a",
+        "projectile_id": "84d933bb-0ccc-48e4-a015-0cb4bd9b7d4e",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aee4e951-dbe2-4ac9-adbc-95b8a2a2548e",
         "start": {
@@ -7917,35 +7984,35 @@
           "x_milli": 4500,
           "y_milli": 2500
         },
-        "fired_at_ms": 56244,
-        "expected_impact_time_ms": 56617
+        "fired_at_ms": 56412,
+        "expected_impact_time_ms": 56785
       }
     },
     {
-      "time_ms": 56517,
-      "seq": 370,
+      "time_ms": 56727,
+      "seq": 372,
       "cause": {
         "cause_type": "parent",
-        "seq": 367
+        "seq": 369
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "820a083a-9a50-435b-9d62-d6c3e4b4738a",
+        "projectile_id": "84d933bb-0ccc-48e4-a015-0cb4bd9b7d4e",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aee4e951-dbe2-4ac9-adbc-95b8a2a2548e",
         "impact_position": {
-          "x_milli": 3963,
-          "y_milli": 2232
+          "x_milli": 4187,
+          "y_milli": 2343
         },
         "hit": true
       }
     },
     {
-      "time_ms": 56517,
-      "seq": 371,
+      "time_ms": 56727,
+      "seq": 373,
       "cause": {
         "cause_type": "parent",
-        "seq": 367
+        "seq": 369
       },
       "event": {
         "type": "ResonanceChanged",
@@ -7956,11 +8023,11 @@
       }
     },
     {
-      "time_ms": 56517,
-      "seq": 372,
+      "time_ms": 56727,
+      "seq": 374,
       "cause": {
         "cause_type": "parent",
-        "seq": 367
+        "seq": 369
       },
       "event": {
         "type": "HpChanged",
@@ -7987,11 +8054,11 @@
       }
     },
     {
-      "time_ms": 56517,
-      "seq": 373,
+      "time_ms": 56727,
+      "seq": 375,
       "cause": {
         "cause_type": "parent",
-        "seq": 367
+        "seq": 369
       },
       "event": {
         "type": "ResonanceChanged",
@@ -8002,8 +8069,8 @@
       }
     },
     {
-      "time_ms": 57964,
-      "seq": 374,
+      "time_ms": 58132,
+      "seq": 376,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -8017,11 +8084,11 @@
       }
     },
     {
-      "time_ms": 58294,
-      "seq": 375,
+      "time_ms": 58462,
+      "seq": 377,
       "cause": {
         "cause_type": "parent",
-        "seq": 374
+        "seq": 376
       },
       "event": {
         "type": "AttackResolve",
@@ -8032,11 +8099,11 @@
       }
     },
     {
-      "time_ms": 58294,
-      "seq": 376,
+      "time_ms": 58462,
+      "seq": 378,
       "cause": {
         "cause_type": "parent",
-        "seq": 375
+        "seq": 377
       },
       "event": {
         "type": "ResonanceChanged",
@@ -8047,15 +8114,15 @@
       }
     },
     {
-      "time_ms": 58294,
-      "seq": 377,
+      "time_ms": 58462,
+      "seq": 379,
       "cause": {
         "cause_type": "parent",
-        "seq": 375
+        "seq": 377
       },
       "event": {
         "type": "BasicAttackProjectileLaunched",
-        "projectile_id": "258ff499-a583-420a-9c4e-42cb22050458",
+        "projectile_id": "b7c8a1c6-e616-409e-ade5-e5f42556393d",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aee4e951-dbe2-4ac9-adbc-95b8a2a2548e",
         "start": {
@@ -8066,35 +8133,35 @@
           "x_milli": 4500,
           "y_milli": 2500
         },
-        "fired_at_ms": 58294,
-        "expected_impact_time_ms": 58667
+        "fired_at_ms": 58462,
+        "expected_impact_time_ms": 58835
       }
     },
     {
-      "time_ms": 58567,
-      "seq": 378,
+      "time_ms": 58777,
+      "seq": 380,
       "cause": {
         "cause_type": "parent",
-        "seq": 375
+        "seq": 377
       },
       "event": {
         "type": "BasicAttackProjectileImpacted",
-        "projectile_id": "258ff499-a583-420a-9c4e-42cb22050458",
+        "projectile_id": "b7c8a1c6-e616-409e-ade5-e5f42556393d",
         "attacker_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
         "target_instance_id": "aee4e951-dbe2-4ac9-adbc-95b8a2a2548e",
         "impact_position": {
-          "x_milli": 3963,
-          "y_milli": 2232
+          "x_milli": 4187,
+          "y_milli": 2343
         },
         "hit": true
       }
     },
     {
-      "time_ms": 58567,
-      "seq": 379,
+      "time_ms": 58777,
+      "seq": 381,
       "cause": {
         "cause_type": "parent",
-        "seq": 375
+        "seq": 377
       },
       "event": {
         "type": "HpChanged",
@@ -8121,11 +8188,11 @@
       }
     },
     {
-      "time_ms": 58567,
-      "seq": 380,
+      "time_ms": 58777,
+      "seq": 382,
       "cause": {
         "cause_type": "parent",
-        "seq": 375
+        "seq": 377
       },
       "event": {
         "type": "ResonanceChanged",
@@ -8136,11 +8203,11 @@
       }
     },
     {
-      "time_ms": 58567,
-      "seq": 381,
+      "time_ms": 58777,
+      "seq": 383,
       "cause": {
         "cause_type": "parent",
-        "seq": 375
+        "seq": 377
       },
       "event": {
         "type": "AutoCastStart",
@@ -8153,11 +8220,11 @@
       }
     },
     {
-      "time_ms": 59267,
-      "seq": 382,
+      "time_ms": 59477,
+      "seq": 384,
       "cause": {
         "cause_type": "parent",
-        "seq": 381
+        "seq": 383
       },
       "event": {
         "type": "AbilityCast",
@@ -8167,11 +8234,11 @@
       }
     },
     {
-      "time_ms": 59267,
-      "seq": 383,
+      "time_ms": 59477,
+      "seq": 385,
       "cause": {
         "cause_type": "parent",
-        "seq": 381
+        "seq": 383
       },
       "event": {
         "type": "AutoCastEnd",
@@ -8179,11 +8246,11 @@
       }
     },
     {
-      "time_ms": 59267,
-      "seq": 384,
+      "time_ms": 59477,
+      "seq": 386,
       "cause": {
         "cause_type": "parent",
-        "seq": 382
+        "seq": 384
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -8199,15 +8266,15 @@
       }
     },
     {
-      "time_ms": 59267,
-      "seq": 385,
+      "time_ms": 59477,
+      "seq": 387,
       "cause": {
         "cause_type": "parent",
-        "seq": 384
+        "seq": 386
       },
       "event": {
         "type": "SkillAreaDeclared",
-        "area_id": "154df30b-18e6-4af5-b6de-01d0214a54b5",
+        "area_id": "f1713b3d-26e0-4a7e-803f-aac2ce98c5e8",
         "skill_id": "white_night_pale_benediction",
         "step_id": "ally_salvation",
         "caster_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
@@ -8260,7 +8327,7 @@
           "x_milli": 2500,
           "y_milli": 500
         },
-        "start_time_ms": 59267,
+        "start_time_ms": 59477,
         "duration_ms": 0,
         "display_duration_ms": 250,
         "warning_ms": 0,
@@ -8271,11 +8338,11 @@
       }
     },
     {
-      "time_ms": 59267,
-      "seq": 386,
+      "time_ms": 59477,
+      "seq": 388,
       "cause": {
         "cause_type": "parent",
-        "seq": 385
+        "seq": 387
       },
       "event": {
         "type": "HpChanged",
@@ -8289,11 +8356,11 @@
       }
     },
     {
-      "time_ms": 59267,
-      "seq": 387,
+      "time_ms": 59477,
+      "seq": 389,
       "cause": {
         "cause_type": "parent",
-        "seq": 385
+        "seq": 387
       },
       "event": {
         "type": "HpChanged",
@@ -8307,11 +8374,11 @@
       }
     },
     {
-      "time_ms": 59267,
-      "seq": 388,
+      "time_ms": 59477,
+      "seq": 390,
       "cause": {
         "cause_type": "parent",
-        "seq": 385
+        "seq": 387
       },
       "event": {
         "type": "HpChanged",
@@ -8325,11 +8392,11 @@
       }
     },
     {
-      "time_ms": 59307,
-      "seq": 389,
+      "time_ms": 59517,
+      "seq": 391,
       "cause": {
         "cause_type": "parent",
-        "seq": 382
+        "seq": 384
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -8345,15 +8412,15 @@
       }
     },
     {
-      "time_ms": 59307,
-      "seq": 390,
+      "time_ms": 59517,
+      "seq": 392,
       "cause": {
         "cause_type": "parent",
-        "seq": 389
+        "seq": 391
       },
       "event": {
         "type": "SkillAreaDeclared",
-        "area_id": "0a6ba9f2-40f5-408e-841f-825e73528de7",
+        "area_id": "fbba4b0e-6a3d-42e2-85ee-f9106ec7106e",
         "skill_id": "white_night_pale_benediction",
         "step_id": "ally_blessing",
         "caster_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
@@ -8406,7 +8473,7 @@
           "x_milli": 2500,
           "y_milli": 500
         },
-        "start_time_ms": 59307,
+        "start_time_ms": 59517,
         "duration_ms": 0,
         "display_duration_ms": 250,
         "warning_ms": 0,
@@ -8417,11 +8484,11 @@
       }
     },
     {
-      "time_ms": 59307,
-      "seq": 391,
+      "time_ms": 59517,
+      "seq": 393,
       "cause": {
         "cause_type": "parent",
-        "seq": 390
+        "seq": 392
       },
       "event": {
         "type": "StatChanged",
@@ -8453,11 +8520,11 @@
       }
     },
     {
-      "time_ms": 59307,
-      "seq": 392,
+      "time_ms": 59517,
+      "seq": 394,
       "cause": {
         "cause_type": "parent",
-        "seq": 390
+        "seq": 392
       },
       "event": {
         "type": "StatChanged",
@@ -8489,11 +8556,11 @@
       }
     },
     {
-      "time_ms": 59307,
-      "seq": 393,
+      "time_ms": 59517,
+      "seq": 395,
       "cause": {
         "cause_type": "parent",
-        "seq": 390
+        "seq": 392
       },
       "event": {
         "type": "StatChanged",
@@ -8525,11 +8592,11 @@
       }
     },
     {
-      "time_ms": 59407,
-      "seq": 394,
+      "time_ms": 59617,
+      "seq": 396,
       "cause": {
         "cause_type": "parent",
-        "seq": 382
+        "seq": 384
       },
       "event": {
         "type": "AbilityStepTriggered",
@@ -8545,15 +8612,15 @@
       }
     },
     {
-      "time_ms": 59407,
-      "seq": 395,
+      "time_ms": 59617,
+      "seq": 397,
       "cause": {
         "cause_type": "parent",
-        "seq": 394
+        "seq": 396
       },
       "event": {
         "type": "SkillAreaDeclared",
-        "area_id": "6ae8a912-b9c7-4755-9431-6dd48f20cad7",
+        "area_id": "d568d6af-781d-41bd-afeb-4bc178a4caa8",
         "skill_id": "white_night_pale_benediction",
         "step_id": "enemy_judgement",
         "caster_instance_id": "f3a02d5c-ce15-4e0e-b5fb-e96875708984",
@@ -8602,7 +8669,7 @@
           "x_milli": 2500,
           "y_milli": 500
         },
-        "start_time_ms": 59407,
+        "start_time_ms": 59617,
         "duration_ms": 0,
         "display_duration_ms": 250,
         "warning_ms": 0,
@@ -8613,11 +8680,11 @@
       }
     },
     {
-      "time_ms": 59407,
-      "seq": 396,
+      "time_ms": 59617,
+      "seq": 398,
       "cause": {
         "cause_type": "parent",
-        "seq": 395
+        "seq": 397
       },
       "event": {
         "type": "HpChanged",
@@ -8645,7 +8712,7 @@
     },
     {
       "time_ms": 60000,
-      "seq": 397,
+      "seq": 399,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -8660,7 +8727,7 @@
     },
     {
       "time_ms": 60000,
-      "seq": 398,
+      "seq": 400,
       "cause": {
         "cause_type": "root",
         "kind": "period"
@@ -8675,7 +8742,7 @@
     },
     {
       "time_ms": 60000,
-      "seq": 399,
+      "seq": 401,
       "cause": {
         "cause_type": "root",
         "kind": "system"

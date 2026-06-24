@@ -186,17 +186,6 @@ impl SkillFragmentInventory {
             return Err(GameError::InvalidAction);
         }
 
-        if existing_count > 0
-            && matches!(
-                policy.stacking,
-                SkillFragmentStackingPolicy::ConvertAdditionalCopiesToResource
-            )
-        {
-            return Err(GameError::NotImplemented(
-                "skill fragment additional copy conversion",
-            ));
-        }
-
         let stack = self
             .stacks
             .entry(fragment_id.clone())
@@ -361,15 +350,19 @@ impl SkillFragmentInventory {
         })
     }
 
-    pub fn dismantle(
+    pub fn remove_copy_for_dismantle(
         &mut self,
         fragment_id: &SkillFragmentId,
         database: &SkillFragmentDatabase,
     ) -> Result<SkillFragmentDismantleResult, GameError> {
-        self.dismantle_with_policy(fragment_id, database, &SkillFragmentPolicy::default())
+        self.remove_copy_for_dismantle_with_policy(
+            fragment_id,
+            database,
+            &SkillFragmentPolicy::default(),
+        )
     }
 
-    pub fn dismantle_with_policy(
+    pub fn remove_copy_for_dismantle_with_policy(
         &mut self,
         fragment_id: &SkillFragmentId,
         database: &SkillFragmentDatabase,
@@ -389,7 +382,6 @@ impl SkillFragmentInventory {
         if remaining_count == 0 {
             self.stacks.remove(fragment_id);
         }
-        self.fragment_dust = self.fragment_dust.saturating_add(dust_gained);
 
         Ok(SkillFragmentDismantleResult {
             remaining_count,
@@ -409,7 +401,6 @@ pub enum SkillFragmentActiveReplacementPolicy {
 pub enum SkillFragmentStackingPolicy {
     RejectAdditionalCopies,
     StackCopies,
-    ConvertAdditionalCopiesToResource,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -704,9 +695,14 @@ pub struct SkillFragmentLoadout {
 }
 
 impl SkillFragmentLoadout {
+    #[cfg(test)]
     pub fn starter() -> Self {
+        Self::with_baseline_ids(vec![starter_basic_attack_fragment_id()])
+    }
+
+    pub fn with_baseline_ids(baseline_ids: Vec<SkillFragmentId>) -> Self {
         Self {
-            baseline_ids: vec![starter_basic_attack_fragment_id()],
+            baseline_ids,
             active_fragment_id: None,
         }
     }
@@ -746,7 +742,11 @@ impl SkillFragmentLoadout {
         fragment_id: &SkillFragmentId,
         policy: &SkillFragmentPolicy,
     ) -> Result<(), GameError> {
-        if !inventory.contains(fragment_id) && fragment_id != &starter_basic_attack_fragment_id() {
+        if self.baseline_ids.iter().any(|id| id == fragment_id) {
+            return Ok(());
+        }
+
+        if !inventory.contains(fragment_id) {
             return Err(GameError::InvalidAction);
         }
 
@@ -755,10 +755,6 @@ impl SkillFragmentLoadout {
                 "employee loadout references missing skill fragment '{fragment_id}'"
             ))
         })?;
-
-        if self.baseline_ids.iter().any(|id| id == fragment_id) {
-            return Ok(());
-        }
 
         if !matches!(metadata.effect, SkillFragmentEffectDef::ActiveSkill { .. }) {
             return Err(GameError::InvalidAction);
@@ -911,6 +907,8 @@ mod tests {
             name: "Active".to_string(),
             description: "test".to_string(),
             rarity: crate::game::data::skill_fragment_data::SkillFragmentRarity::Rare,
+            equip_limit:
+                crate::game::data::skill_fragment_data::SkillFragmentEquipLimit::OwnedCopies,
             origin: None,
             sources: vec![
                 crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
@@ -955,6 +953,7 @@ mod tests {
                 name: id.to_string(),
                 description: "test".to_string(),
                 rarity: crate::game::data::skill_fragment_data::SkillFragmentRarity::Rare,
+                equip_limit: crate::game::data::skill_fragment_data::SkillFragmentEquipLimit::OwnedCopies,
                 origin: None,
                 sources: vec![
                     crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
@@ -995,6 +994,8 @@ mod tests {
             name: "Duplicate".to_string(),
             description: "test".to_string(),
             rarity: crate::game::data::skill_fragment_data::SkillFragmentRarity::Rare,
+            equip_limit:
+                crate::game::data::skill_fragment_data::SkillFragmentEquipLimit::OwnedCopies,
             origin: None,
             sources: vec![
                 crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
@@ -1032,6 +1033,8 @@ mod tests {
             name: "Upgrade Target".to_string(),
             description: "test".to_string(),
             rarity: crate::game::data::skill_fragment_data::SkillFragmentRarity::Rare,
+            equip_limit:
+                crate::game::data::skill_fragment_data::SkillFragmentEquipLimit::OwnedCopies,
             origin: None,
             sources: vec![
                 crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
@@ -1099,6 +1102,8 @@ mod tests {
             name: "Delivery Target".to_string(),
             description: "test".to_string(),
             rarity: crate::game::data::skill_fragment_data::SkillFragmentRarity::Rare,
+            equip_limit:
+                crate::game::data::skill_fragment_data::SkillFragmentEquipLimit::OwnedCopies,
             origin: None,
             sources: vec![
                 crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
@@ -1155,6 +1160,8 @@ mod tests {
             name: "Target".to_string(),
             description: "test".to_string(),
             rarity: crate::game::data::skill_fragment_data::SkillFragmentRarity::Rare,
+            equip_limit:
+                crate::game::data::skill_fragment_data::SkillFragmentEquipLimit::OwnedCopies,
             origin: None,
             sources: vec![
                 crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
@@ -1187,6 +1194,8 @@ mod tests {
             name: "Awakening Target".to_string(),
             description: "test".to_string(),
             rarity: crate::game::data::skill_fragment_data::SkillFragmentRarity::Rare,
+            equip_limit:
+                crate::game::data::skill_fragment_data::SkillFragmentEquipLimit::OwnedCopies,
             origin: None,
             sources: vec![
                 crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
@@ -1220,6 +1229,8 @@ mod tests {
             name: "No Awakening Target".to_string(),
             description: "test".to_string(),
             rarity: crate::game::data::skill_fragment_data::SkillFragmentRarity::Rare,
+            equip_limit:
+                crate::game::data::skill_fragment_data::SkillFragmentEquipLimit::OwnedCopies,
             origin: None,
             sources: vec![
                 crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
@@ -1253,6 +1264,8 @@ mod tests {
             name: "Variant Target".to_string(),
             description: "test".to_string(),
             rarity: crate::game::data::skill_fragment_data::SkillFragmentRarity::Rare,
+            equip_limit:
+                crate::game::data::skill_fragment_data::SkillFragmentEquipLimit::OwnedCopies,
             origin: None,
             sources: vec![
                 crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,

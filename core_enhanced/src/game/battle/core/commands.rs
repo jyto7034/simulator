@@ -4,14 +4,14 @@ use crate::game::ability::{DeliveryDef, SkillHitTargetFilter};
 use crate::game::battle::cooldown::{SourcedAbilityActivation, SourcedEffect};
 use crate::game::battle::core::BattleCore;
 use crate::game::battle::damage::{
-    apply_damage_to_unit, calculate_damage, BattleCommand, DamageContext, DamageModifiers,
-    DamageRequest, DamageResult, DamageSource, DamageType,
+    apply_damage_to_unit, calculate_damage, BattleCommand, DamageBonusSnapshot, DamageContext,
+    DamageModifiers, DamageResult, DamageSource, DamageSourceSnapshot, DamageType,
 };
 use crate::game::battle::enums::BattleEvent;
-use crate::game::battle::ids::UnitInstanceId;
-use crate::game::battle::timeline::{
-    HpChangeReason, MovementStopReason, TimelineCause, TimelineEvent,
+use crate::game::battle::event_log::{
+    BattleEventCause, BattleLogEvent, BuffExpireReason, HpChangeReason, MovementStopReason,
 };
+use crate::game::battle::ids::UnitInstanceId;
 use crate::game::determinism;
 use crate::game::enums::Side;
 use crate::game::stats::{Effect, TriggerEffectTarget, TriggerType};
@@ -21,29 +21,23 @@ use super::{
         types::{WorldVec2, DATA_UNITS_PER_WORLD},
         ActionState,
     },
-    spatial::{moving_circle_sweep_hit_fraction, DEFAULT_UNIT_HITBOX_RADIUS_UNITS},
-    types::{CommandExecutionSummary, ProjectileGuidance},
+    spatial::moving_circle_sweep_hit_fraction,
+    types::{CommandExecutionSummary, ProjectileGuidance, RuntimeUnitLifecycle},
 };
-
-const BASIC_ATTACK_PROJECTILE_REEVALUATION_TICK_MS: u64 = 1;
 
 #[derive(Debug, Clone)]
 pub(super) struct ProjectileLaunch {
     pub(super) fired_at_ms: u64,
     pub(super) attacker_instance_id: UnitInstanceId,
+    pub(super) attacker_owner_at_launch: Side,
+    pub(super) air_capable_at_launch: bool,
     pub(super) target_instance_id: UnitInstanceId,
     pub(super) attacker_origin: WorldVec2,
     pub(super) target_aim: WorldVec2,
     pub(super) speed_units_per_ms: u32,
     pub(super) guidance: ProjectileGuidance,
     pub(super) damage_type: DamageType,
-}
-
-#[derive(Debug, Clone, Copy)]
-struct AttackSourceSnapshot {
-    instance_id: UnitInstanceId,
-    owner: Side,
-    attack: u32,
+    pub(super) source_snapshot: DamageSourceSnapshot,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -57,12 +51,10 @@ struct AttackTargetSnapshot {
     max_hp: u32,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 struct BasicAttackDamageSnapshot {
-    attacker: AttackSourceSnapshot,
+    source: DamageSourceSnapshot,
     target: AttackTargetSnapshot,
-    damage_type: DamageType,
-    time_ms: u64,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -95,6 +87,16 @@ fn projectile_flight_ms_between_world_points(
     projectile_flight_ms(distance_units, speed_units_per_ms)
 }
 
+const BASIC_ATTACK_PROJECTILE_REEVALUATION_TICK_MS: u64 = 1;
+
+fn projectile_impact_position_at_hit_fraction(
+    window_start: WorldVec2,
+    window_end: WorldVec2,
+    hit_fraction: f32,
+) -> WorldVec2 {
+    window_start + (window_end - window_start) * hit_fraction.clamp(0.0, 1.0)
+}
+
 pub(super) fn projectile_flight_ms_for_delivery(
     distance_units: u64,
     speed_units_per_ms: u32,
@@ -114,6 +116,140 @@ impl BattleCore {
         self.graveyard
             .get(&unit_instance_id)
             .map(|snapshot| snapshot.world_position)
+    }
+
+    fn damage_effect_snapshot_from_triggers(
+        effects: Vec<SourcedEffect>,
+    ) -> (DamageModifiers, Vec<DamageBonusSnapshot>) {
+        let mut modifiers = DamageModifiers::default();
+        let mut bonus_damage = Vec::new();
+        for sourced in effects {
+            match sourced.effect {
+                Effect::ModifyDamage(effect_modifiers) => {
+                    modifiers = modifiers.merge(effect_modifiers);
+                }
+                Effect::BonusDamage {
+                    flat,
+                    percent,
+                    damage_type,
+                } => {
+                    bonus_damage.push(DamageBonusSnapshot {
+                        flat,
+                        percent,
+                        damage_type,
+                    });
+                }
+                Effect::Modifier(_) | Effect::Heal { .. } | Effect::ApplyBuff { .. } => {}
+            }
+        }
+        (modifiers, bonus_damage)
+    }
+
+    fn damage_effects_from_source_snapshot(snapshot: &DamageSourceSnapshot) -> Vec<SourcedEffect> {
+        let mut effects = Vec::new();
+        if snapshot.on_attack_modifiers != DamageModifiers::default() {
+            effects.push(SourcedEffect {
+                source: crate::game::battle::cooldown::CooldownSource::Unit {
+                    unit_instance_id: snapshot.source_id,
+                },
+                target: TriggerEffectTarget::SelfUnit,
+                effect: Effect::ModifyDamage(snapshot.on_attack_modifiers),
+            });
+        }
+        effects.extend(
+            snapshot
+                .on_attack_bonus_damage
+                .iter()
+                .map(|bonus| SourcedEffect {
+                    source: crate::game::battle::cooldown::CooldownSource::Unit {
+                        unit_instance_id: snapshot.source_id,
+                    },
+                    target: TriggerEffectTarget::SelfUnit,
+                    effect: Effect::BonusDamage {
+                        flat: bonus.flat,
+                        percent: bonus.percent,
+                        damage_type: bonus.damage_type,
+                    },
+                }),
+        );
+        effects
+    }
+
+    pub(in crate::game::battle::core) fn damage_source_snapshot_for_unit(
+        &self,
+        source_id: UnitInstanceId,
+        target_id: UnitInstanceId,
+        damage_source: DamageSource,
+        damage_type: DamageType,
+        base_damage: u32,
+        modifiers: DamageModifiers,
+        minimum_damage: u32,
+        committed_at_ms: u64,
+        include_on_attack_damage_effects: bool,
+    ) -> Option<DamageSourceSnapshot> {
+        let mut snapshot = self.damage_source_snapshot_template_for_unit(
+            source_id,
+            damage_source,
+            damage_type,
+            base_damage,
+            modifiers,
+            minimum_damage,
+            committed_at_ms,
+            include_on_attack_damage_effects,
+        )?;
+        snapshot.crit_roll_percent = Some(self.damage_roll_percent_with_event_log_seq(
+            source_id,
+            target_id,
+            committed_at_ms,
+            damage_source,
+            snapshot.crit_roll_event_log_seq,
+        ));
+        Some(snapshot)
+    }
+
+    pub(in crate::game::battle::core) fn damage_source_snapshot_template_for_unit(
+        &self,
+        source_id: UnitInstanceId,
+        damage_source: DamageSource,
+        damage_type: DamageType,
+        base_damage: u32,
+        modifiers: DamageModifiers,
+        minimum_damage: u32,
+        committed_at_ms: u64,
+        include_on_attack_damage_effects: bool,
+    ) -> Option<DamageSourceSnapshot> {
+        let (source_side, source_attack) = self
+            .units
+            .get(&source_id)
+            .map(|unit| (unit.owner, unit.stats.attack))
+            .or_else(|| {
+                self.graveyard
+                    .get(&source_id)
+                    .map(|unit| (unit.owner, unit.stats.attack))
+            })?;
+        let (on_attack_modifiers, on_attack_bonus_damage) = if include_on_attack_damage_effects {
+            Self::damage_effect_snapshot_from_triggers(
+                self.collect_all_triggers(source_id, TriggerType::OnAttack),
+            )
+        } else {
+            (DamageModifiers::default(), Vec::new())
+        };
+
+        Some(DamageSourceSnapshot {
+            source_id,
+            source_side,
+            source_attack,
+            source: damage_source,
+            damage_type,
+            base_damage,
+            modifiers,
+            crit_roll_percent: None,
+            crit_roll_event_log_seq: self.event_log_seq,
+            minimum_damage,
+            committed_at_ms,
+            on_attack_modifiers,
+            on_attack_bonus_damage,
+        })
     }
 
     pub(super) fn activation_commands_from_bindings(
@@ -213,18 +349,18 @@ impl BattleCore {
             TriggerEffectTarget::AllAllies => self
                 .units
                 .values()
-                .filter(|unit| unit.owner == owner && !unit.is_dead())
+                .filter(|unit| unit.owner == owner && unit.is_active())
                 .map(|unit| unit.instance_id)
                 .collect(),
             TriggerEffectTarget::AllEnemies => self
                 .units
                 .values()
-                .filter(|unit| unit.owner != owner && !unit.is_dead())
+                .filter(|unit| unit.owner != owner && unit.is_active())
                 .map(|unit| unit.instance_id)
                 .collect(),
         };
 
-        resolved.retain(|unit_id| self.units.get(unit_id).is_some_and(|unit| !unit.is_dead()));
+        resolved.retain(|unit_id| self.units.get(unit_id).is_some_and(|unit| unit.is_active()));
         resolved.sort_by(|a, b| a.as_bytes().cmp(b.as_bytes()));
         resolved.dedup();
         resolved
@@ -301,7 +437,7 @@ impl BattleCore {
             .units
             .values()
             .filter(|unit| {
-                unit.instance_id != dead_unit_id && unit.owner == dead_owner && !unit.is_dead()
+                unit.instance_id != dead_unit_id && unit.owner == dead_owner && unit.is_active()
             })
             .map(|unit| unit.instance_id)
             .collect();
@@ -343,6 +479,8 @@ impl BattleCore {
         );
         if !interrupted {
             if let Some(target) = self.units.get_mut(&target_instance_id) {
+                target.lifecycle = RuntimeUnitLifecycle::Dead;
+                target.stats.current_health = 0;
                 target.move_epoch = target.move_epoch.wrapping_add(1);
                 target.action_state = ActionState::Dead;
             }
@@ -353,19 +491,36 @@ impl BattleCore {
                 None,
             );
         }
-
-        if let Some(position) = self.battlefield.remove(target_instance_id) {
-            if let Some(target) = self.units.get(&target_instance_id) {
-                self.graveyard
-                    .insert(target_instance_id, target.to_snapshot(position));
+        if interrupted {
+            if let Some(target) = self.units.get_mut(&target_instance_id) {
+                target.lifecycle = RuntimeUnitLifecycle::Dead;
+                target.stats.current_health = 0;
+                target.action_state = ActionState::Dead;
             }
         }
-        let death_seq = self.record_timeline(
+
+        self.clear_active_buffs_for_dead_unit(time_ms, target_instance_id);
+
+        if let Some(target) = self.units.get(&target_instance_id) {
+            self.graveyard.insert(
+                target_instance_id,
+                target.to_snapshot(target.body.projected_tile()),
+            );
+        }
+        let target = self
+            .units
+            .get(&target_instance_id)
+            .expect("finalize_unit_death requires an existing runtime unit");
+        let world_position = target.body.position;
+        let position = target.body.projected_tile();
+        let death_seq = self.record_event_log(
             time_ms,
-            TimelineEvent::UnitDied {
+            BattleLogEvent::UnitDied {
                 unit_instance_id: target_instance_id,
                 owner: target_owner,
                 killer_instance_id: source_instance_id,
+                world_position: world_position.quantized_milli(),
+                position,
             },
         );
 
@@ -379,6 +534,49 @@ impl BattleCore {
 
         // Death changes both occupancy and target validity globally.
         self.schedule_continuous_movement_tick(time_ms.saturating_add(1));
+    }
+
+    fn clear_active_buffs_for_dead_unit(&mut self, time_ms: u64, dead_unit_id: UnitInstanceId) {
+        let mut expired = self
+            .buffs
+            .keys()
+            .copied()
+            .filter_map(|key| {
+                if key.target_instance_id == dead_unit_id {
+                    Some((key, BuffExpireReason::TargetDied))
+                } else if key.caster_instance_id == dead_unit_id {
+                    Some((key, BuffExpireReason::CasterDied))
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<_>>();
+        expired.sort_by(|(left_key, left_reason), (right_key, right_reason)| {
+            left_key
+                .target_instance_id
+                .cmp(&right_key.target_instance_id)
+                .then_with(|| {
+                    left_key
+                        .caster_instance_id
+                        .cmp(&right_key.caster_instance_id)
+                })
+                .then_with(|| left_key.buff_id.as_u64().cmp(&right_key.buff_id.as_u64()))
+                .then_with(|| (*left_reason as u8).cmp(&(*right_reason as u8)))
+        });
+        for (key, reason) in expired {
+            if self.buffs.remove(&key).is_none() {
+                continue;
+            }
+            self.record_event_log(
+                time_ms,
+                BattleLogEvent::BuffExpired {
+                    caster_instance_id: key.caster_instance_id,
+                    target_instance_id: key.target_instance_id,
+                    buff_id: key.buff_id,
+                    reason,
+                },
+            );
+        }
     }
 
     pub(super) fn spawn_basic_attack_projectile(&mut self, launch: ProjectileLaunch) {
@@ -410,6 +608,8 @@ impl BattleCore {
                 fired_at_ms: launch.fired_at_ms,
                 last_reevaluation_ms: launch.fired_at_ms,
                 attacker_instance_id: launch.attacker_instance_id,
+                attacker_owner_at_launch: launch.attacker_owner_at_launch,
+                air_capable_at_launch: launch.air_capable_at_launch,
                 target_instance_id: launch.target_instance_id,
                 start: launch.attacker_origin,
                 current_position: launch.attacker_origin,
@@ -417,12 +617,15 @@ impl BattleCore {
                 speed_units_per_ms: launch.speed_units_per_ms,
                 guidance: launch.guidance,
                 damage_type: launch.damage_type,
+                source_snapshot: launch.source_snapshot,
+                max_travel_ms: flight_ms,
+                cause: self.recording_cause().unwrap_or_default(),
             },
         );
 
-        self.record_timeline(
+        self.record_event_log(
             launch.fired_at_ms,
-            TimelineEvent::BasicAttackProjectileLaunched {
+            BattleLogEvent::BasicAttackProjectileLaunched {
                 projectile_id,
                 attacker_instance_id: launch.attacker_instance_id,
                 target_instance_id: launch.target_instance_id,
@@ -435,9 +638,7 @@ impl BattleCore {
 
         self.event_queue
             .push(BattleEvent::BasicAttackProjectileAdvance {
-                time_ms: launch
-                    .fired_at_ms
-                    .saturating_add(BASIC_ATTACK_PROJECTILE_REEVALUATION_TICK_MS.min(flight_ms)),
+                time_ms: launch.fired_at_ms,
                 projectile_id,
                 cause: self.recording_cause().unwrap_or_default(),
             });
@@ -458,7 +659,7 @@ impl BattleCore {
         let Some(target) = self.units.get(&target_id) else {
             return false;
         };
-        if target.is_dead() {
+        if !target.is_active() {
             return false;
         }
 
@@ -497,71 +698,52 @@ impl BattleCore {
         &mut self,
         snapshot: BasicAttackDamageSnapshot,
     ) -> DamageResult {
-        let on_attack_effects =
-            self.collect_all_triggers(snapshot.attacker.instance_id, TriggerType::OnAttack);
         let on_hit_effects =
             self.collect_all_triggers(snapshot.target.instance_id, TriggerType::OnHit);
-        let mut trigger_effect_commands = self.trigger_commands_from_effects(
-            on_attack_effects.clone(),
-            TriggerEffectContext {
-                trigger_unit_id: snapshot.attacker.instance_id,
-                counterpart_unit_id: Some(snapshot.target.instance_id),
-            },
-            Some(snapshot.target.instance_id),
-            false,
-        );
+        let snapshot_on_attack_effects =
+            Self::damage_effects_from_source_snapshot(&snapshot.source);
+        let source_live = self
+            .units
+            .get(&snapshot.source.source_id)
+            .is_some_and(|unit| unit.is_active());
+
+        let mut trigger_effect_commands = Vec::new();
+        if source_live {
+            let on_attack_effects =
+                self.collect_all_triggers(snapshot.source.source_id, TriggerType::OnAttack);
+            trigger_effect_commands.extend(self.trigger_commands_from_effects(
+                on_attack_effects,
+                TriggerEffectContext {
+                    trigger_unit_id: snapshot.source.source_id,
+                    counterpart_unit_id: Some(snapshot.target.instance_id),
+                },
+                Some(snapshot.target.instance_id),
+                false,
+            ));
+        }
         trigger_effect_commands.extend(self.trigger_commands_from_effects(
             on_hit_effects.clone(),
             TriggerEffectContext {
                 trigger_unit_id: snapshot.target.instance_id,
-                counterpart_unit_id: Some(snapshot.attacker.instance_id),
+                counterpart_unit_id: Some(snapshot.source.source_id),
             },
-            Some(snapshot.attacker.instance_id),
+            Some(snapshot.source.source_id),
             false,
         ));
-        let mut trigger_ability_commands = Self::activation_commands_from_bindings(
-            self.collect_all_trigger_activations(
-                snapshot.attacker.instance_id,
-                TriggerType::OnAttack,
-            ),
-            snapshot.attacker.instance_id,
-            Some(snapshot.target.instance_id),
-        );
-        trigger_ability_commands.extend(Self::activation_commands_from_bindings(
-            self.collect_all_trigger_activations(snapshot.target.instance_id, TriggerType::OnHit),
-            snapshot.target.instance_id,
-            Some(snapshot.attacker.instance_id),
-        ));
-
         let ctx = DamageContext {
-            attacker_side: snapshot.attacker.owner,
+            attacker_side: snapshot.source.source_side,
             target_side: snapshot.target.owner,
-            attacker_attack: snapshot.attacker.attack,
+            attacker_attack: snapshot.source.source_attack,
             target_armor: snapshot.target.defense,
             target_magic_resist: snapshot.target.magic_resist,
             target_incoming_modifiers: snapshot.target.incoming_damage_modifiers,
             target_current_hp: snapshot.target.current_hp,
             target_max_hp: snapshot.target.max_hp,
-            on_attack_effects: &on_attack_effects,
+            on_attack_effects: &snapshot_on_attack_effects,
             on_hit_effects: &on_hit_effects,
         };
 
-        let request = DamageRequest {
-            source: DamageSource::BasicAttack,
-            damage_type: snapshot.damage_type,
-            modifiers: Default::default(),
-            crit_roll_percent: Some(self.damage_roll_percent(
-                snapshot.attacker.instance_id,
-                snapshot.target.instance_id,
-                snapshot.time_ms,
-                DamageSource::BasicAttack,
-            )),
-            attacker_id: snapshot.attacker.instance_id,
-            target_id: snapshot.target.instance_id,
-            base_damage: snapshot.attacker.attack,
-            minimum_damage: 1,
-            time_ms: snapshot.time_ms,
-        };
+        let request = snapshot.source.request(snapshot.target.instance_id);
 
         let mut result = calculate_damage(&request, &ctx);
         result
@@ -570,12 +752,13 @@ impl BattleCore {
         result
     }
 
-    fn damage_roll_percent(
+    fn damage_roll_percent_with_event_log_seq(
         &self,
         source_id: UnitInstanceId,
         target_id: UnitInstanceId,
         time_ms: u64,
         source: DamageSource,
+        event_log_seq: u64,
     ) -> u8 {
         const DAMAGE_ROLL_NS: u64 = 0x444D_4752_4F4C_4C53u64; // "DMGROLLS"
 
@@ -596,9 +779,26 @@ impl BattleCore {
             ^ unit_tag(target_id).rotate_left(29)
             ^ source_tag.rotate_left(43)
             ^ time_ms.wrapping_mul(0x9E37_79B9_7F4A_7C15)
-            ^ self.timeline_seq.wrapping_mul(0xD1B5_4A32_D192_ED03);
+            ^ event_log_seq.wrapping_mul(0xD1B5_4A32_D192_ED03);
 
-        determinism::uuid_v4_from_seed(seed, DAMAGE_ROLL_NS, self.timeline_seq).as_bytes()[0] % 100
+        determinism::uuid_v4_from_seed(seed, DAMAGE_ROLL_NS, event_log_seq).as_bytes()[0] % 100
+    }
+
+    pub(in crate::game::battle::core) fn materialize_damage_source_snapshot_for_target(
+        &self,
+        mut snapshot: DamageSourceSnapshot,
+        target_id: UnitInstanceId,
+    ) -> DamageSourceSnapshot {
+        if snapshot.crit_roll_percent.is_none() {
+            snapshot.crit_roll_percent = Some(self.damage_roll_percent_with_event_log_seq(
+                snapshot.source_id,
+                target_id,
+                snapshot.committed_at_ms,
+                snapshot.source,
+                snapshot.crit_roll_event_log_seq,
+            ));
+        }
+        snapshot
     }
 
     fn apply_damage_result_and_record(
@@ -613,7 +813,7 @@ impl BattleCore {
             let Some(target) = self.units.get(&target_instance_id) else {
                 return;
             };
-            if target.is_dead() {
+            if !target.is_active() {
                 return;
             }
             (target.owner, target.stats.current_health)
@@ -627,9 +827,9 @@ impl BattleCore {
         let hp_after = target.stats.current_health;
         let delta = hp_after as i32 - hp_before as i32;
 
-        self.record_timeline(
+        self.record_event_log(
             time_ms,
-            TimelineEvent::HpChanged {
+            BattleLogEvent::HpChanged {
                 source_instance_id,
                 target_instance_id,
                 delta,
@@ -679,7 +879,7 @@ impl BattleCore {
             let Some(target) = self.units.get(&target_instance_id) else {
                 return;
             };
-            if target.is_dead() {
+            if !target.is_active() {
                 return;
             }
             (
@@ -703,9 +903,9 @@ impl BattleCore {
         target.stats.current_health = hp_after;
 
         let applied_delta = hp_after as i32 - hp_before as i32;
-        self.record_timeline(
+        self.record_event_log(
             time_ms,
-            TimelineEvent::HpChanged {
+            BattleLogEvent::HpChanged {
                 source_instance_id,
                 target_instance_id,
                 delta: applied_delta,
@@ -744,12 +944,58 @@ impl BattleCore {
             return;
         };
 
+        let reevaluation_time_ms = time_ms
+            .min(
+                projectile
+                    .fired_at_ms
+                    .saturating_add(projectile.max_travel_ms),
+            )
+            .max(projectile.fired_at_ms);
+
+        if reevaluation_time_ms <= projectile.last_reevaluation_ms
+            && projectile.max_travel_ms > 0
+            && time_ms > projectile.fired_at_ms
+        {
+            self.projectiles.insert(projectile_id, projectile);
+            return;
+        }
+
+        let Some(target) = self.units.get(&projectile.target_instance_id) else {
+            self.record_basic_attack_projectile_miss(
+                reevaluation_time_ms,
+                projectile_id,
+                projectile.attacker_instance_id,
+                projectile.target_instance_id,
+                projectile.damage_type,
+                projectile.current_position,
+            );
+            return;
+        };
+
+        if !target.is_active()
+            || target.owner == projectile.attacker_owner_at_launch
+            || !self.single_target_can_target_unit(
+                projectile.target_instance_id,
+                projectile.air_capable_at_launch,
+            )
+        {
+            self.record_basic_attack_projectile_miss(
+                reevaluation_time_ms,
+                projectile_id,
+                projectile.attacker_instance_id,
+                projectile.target_instance_id,
+                projectile.damage_type,
+                projectile.current_position,
+            );
+            return;
+        }
+
         let from_time_ms = projectile.last_reevaluation_ms;
         let Some(target_body_start) =
             self.sample_unit_body_at(projectile.target_instance_id, from_time_ms)
         else {
             self.record_basic_attack_projectile_miss(
-                time_ms,
+                reevaluation_time_ms,
                 projectile_id,
                 projectile.attacker_instance_id,
                 projectile.target_instance_id,
@@ -759,10 +1005,10 @@ impl BattleCore {
             return;
         };
         let Some(target_body_end) =
-            self.sample_unit_body_at(projectile.target_instance_id, time_ms)
+            self.sample_unit_body_at(projectile.target_instance_id, reevaluation_time_ms)
         else {
             self.record_basic_attack_projectile_miss(
-                time_ms,
+                reevaluation_time_ms,
                 projectile_id,
                 projectile.attacker_instance_id,
                 projectile.target_instance_id,
@@ -771,41 +1017,28 @@ impl BattleCore {
             );
             return;
         };
-        if self
-            .units
-            .get(&projectile.target_instance_id)
-            .is_none_or(|target| target.is_dead())
-        {
-            self.record_basic_attack_projectile_miss(
-                time_ms,
-                projectile_id,
-                projectile.attacker_instance_id,
-                projectile.target_instance_id,
-                projectile.damage_type,
-                projectile.current_position,
-            );
-            return;
-        }
 
-        let elapsed_ms = time_ms.saturating_sub(projectile.last_reevaluation_ms);
+        let window_duration_ms = reevaluation_time_ms.saturating_sub(from_time_ms);
         let aim = match projectile.guidance {
             ProjectileGuidance::Homing => target_body_end.position,
             ProjectileGuidance::Fixed => projectile.aim,
         };
-        let delta = aim - projectile.current_position;
-        let distance = delta.length();
+        let direction = aim - projectile.current_position;
+        let distance = direction.length();
         let speed_world_per_ms = projectile.speed_units_per_ms as f32 / DATA_UNITS_PER_WORLD;
-        let max_step = speed_world_per_ms * elapsed_ms as f32;
+        let max_step = speed_world_per_ms * window_duration_ms as f32;
         let next_position = if distance <= f32::EPSILON
             || projectile.speed_units_per_ms == 0
             || max_step >= distance
         {
             aim
         } else {
-            projectile.current_position + delta * (max_step / distance)
+            projectile.current_position + direction * (max_step / distance)
         };
-        let projectile_radius = DEFAULT_UNIT_HITBOX_RADIUS_UNITS as f32 / DATA_UNITS_PER_WORLD;
-        let reach = target_body_start.radius.max(target_body_end.radius) + projectile_radius;
+        let reach = target_body_start
+            .radius
+            .max(target_body_end.radius)
+            .max(0.0);
 
         if let Some(hit_fraction) = moving_circle_sweep_hit_fraction(
             projectile.current_position,
@@ -814,14 +1047,19 @@ impl BattleCore {
             target_body_start.position,
             target_body_end.position,
         ) {
-            let impact_position = projectile.current_position
-                + (next_position - projectile.current_position) * hit_fraction.clamp(0.0, 1.0);
+            let elapsed_delta = ((window_duration_ms as f32) * hit_fraction).ceil() as u64;
+            let impact_time_ms = from_time_ms.saturating_add(elapsed_delta.min(window_duration_ms));
+            let impact_position = projectile_impact_position_at_hit_fraction(
+                projectile.current_position,
+                next_position,
+                hit_fraction,
+            );
             self.apply_basic_attack_projectile_hit_at(
-                time_ms,
+                impact_time_ms,
                 projectile_id,
                 projectile.attacker_instance_id,
                 projectile.target_instance_id,
-                projectile.damage_type,
+                projectile.source_snapshot,
                 impact_position,
             );
             return;
@@ -829,14 +1067,33 @@ impl BattleCore {
 
         projectile.current_position = next_position;
         projectile.aim = aim;
-        projectile.last_reevaluation_ms = time_ms;
-        self.projectiles.insert(projectile_id, projectile);
+        projectile.last_reevaluation_ms = reevaluation_time_ms;
+
+        let expired = reevaluation_time_ms
+            >= projectile
+                .fired_at_ms
+                .saturating_add(projectile.max_travel_ms);
+        if expired {
+            self.record_basic_attack_projectile_miss(
+                reevaluation_time_ms,
+                projectile_id,
+                projectile.attacker_instance_id,
+                projectile.target_instance_id,
+                projectile.damage_type,
+                projectile.current_position,
+            );
+            return;
+        }
+
+        let next_reevaluation_ms =
+            reevaluation_time_ms.saturating_add(BASIC_ATTACK_PROJECTILE_REEVALUATION_TICK_MS);
         self.event_queue
             .push(BattleEvent::BasicAttackProjectileAdvance {
-                time_ms: time_ms.saturating_add(BASIC_ATTACK_PROJECTILE_REEVALUATION_TICK_MS),
+                time_ms: next_reevaluation_ms,
                 projectile_id,
-                cause: self.recording_cause().unwrap_or_default(),
+                cause: projectile.cause.clone(),
             });
+        self.projectiles.insert(projectile_id, projectile);
     }
 
     fn record_basic_attack_projectile_miss(
@@ -848,22 +1105,14 @@ impl BattleCore {
         _damage_type: DamageType,
         impact_position: WorldVec2,
     ) {
-        self.record_timeline(
+        self.record_event_log(
             time_ms,
-            TimelineEvent::BasicAttackProjectileImpacted {
+            BattleLogEvent::BasicAttackProjectileImpacted {
                 projectile_id,
                 attacker_instance_id,
                 target_instance_id,
                 impact_position: impact_position.quantized_milli(),
                 hit: false,
-            },
-        );
-        self.record_timeline(
-            time_ms,
-            TimelineEvent::ProjectileMiss {
-                projectile_id,
-                attacker_instance_id,
-                target_instance_id,
             },
         );
     }
@@ -874,20 +1123,9 @@ impl BattleCore {
         projectile_id: Uuid,
         attacker_instance_id: UnitInstanceId,
         target_instance_id: UnitInstanceId,
-        damage_type: DamageType,
+        source_snapshot: DamageSourceSnapshot,
         impact_position: WorldVec2,
     ) {
-        self.record_timeline(
-            time_ms,
-            TimelineEvent::BasicAttackProjectileImpacted {
-                projectile_id,
-                attacker_instance_id,
-                target_instance_id,
-                impact_position: impact_position.quantized_milli(),
-                hit: true,
-            },
-        );
-
         let (
             target_owner,
             target_defense,
@@ -897,9 +1135,25 @@ impl BattleCore {
             target_max_hp,
         ) = {
             let Some(target) = self.units.get(&target_instance_id) else {
+                self.record_basic_attack_projectile_miss(
+                    time_ms,
+                    projectile_id,
+                    attacker_instance_id,
+                    target_instance_id,
+                    source_snapshot.damage_type,
+                    impact_position,
+                );
                 return;
             };
-            if target.is_dead() {
+            if !target.is_active() {
+                self.record_basic_attack_projectile_miss(
+                    time_ms,
+                    projectile_id,
+                    attacker_instance_id,
+                    target_instance_id,
+                    source_snapshot.damage_type,
+                    impact_position,
+                );
                 return;
             }
             (
@@ -912,78 +1166,36 @@ impl BattleCore {
             )
         };
 
-        let attacker_live = matches!(
-            self.units.get(&attacker_instance_id),
-            Some(unit) if !unit.is_dead()
-        );
-
-        let attacker_attack = if let Some(unit) = self.units.get(&attacker_instance_id) {
-            unit.stats.attack
-        } else {
-            self.graveyard
-                .get(&attacker_instance_id)
-                .map(|s| s.stats.attack)
-                .unwrap_or(0)
-        };
-
-        if !attacker_live {
-            // 피격 시점에 공격자가 죽었다면, 기본 공격 데미지만 입힘.
-            let ctx = DamageContext {
-                attacker_side: target_owner,
-                target_side: target_owner,
-                attacker_attack,
-                target_armor: target_defense,
-                target_magic_resist,
-                target_incoming_modifiers,
-                target_current_hp,
-                target_max_hp,
-                on_attack_effects: &[],
-                on_hit_effects: &[],
-            };
-            let request = DamageRequest {
-                source: DamageSource::BasicAttack,
-                damage_type,
-                modifiers: Default::default(),
-                crit_roll_percent: Some(self.damage_roll_percent(
-                    attacker_instance_id,
-                    target_instance_id,
-                    time_ms,
-                    DamageSource::BasicAttack,
-                )),
-                attacker_id: attacker_instance_id,
-                target_id: target_instance_id,
-                base_damage: attacker_attack,
-                minimum_damage: 1,
-                time_ms,
-            };
-            let result = calculate_damage(&request, &ctx);
-            self.apply_damage_result_and_record(
-                Some(attacker_instance_id),
-                &result,
-                time_ms,
-                HpChangeReason::BasicAttack,
-            );
-            self.schedule_pending_autocasts(time_ms);
-            return;
-        }
-
-        let attacker_owner = match self.units.get(&attacker_instance_id) {
-            Some(unit) => unit.owner,
-            None => target_owner,
-        };
-
-        let on_attack_effects =
-            self.collect_all_triggers(attacker_instance_id, TriggerType::OnAttack);
-        let on_hit_effects = self.collect_all_triggers(target_instance_id, TriggerType::OnHit);
-        let mut trigger_effect_commands = self.trigger_commands_from_effects(
-            on_attack_effects.clone(),
-            TriggerEffectContext {
-                trigger_unit_id: attacker_instance_id,
-                counterpart_unit_id: Some(target_instance_id),
+        self.record_event_log(
+            time_ms,
+            BattleLogEvent::BasicAttackProjectileImpacted {
+                projectile_id,
+                attacker_instance_id,
+                target_instance_id,
+                impact_position: impact_position.quantized_milli(),
+                hit: true,
             },
-            Some(target_instance_id),
-            false,
         );
+
+        let attacker_live = self
+            .units
+            .get(&attacker_instance_id)
+            .is_some_and(|unit| unit.is_active());
+        let snapshot_on_attack_effects =
+            Self::damage_effects_from_source_snapshot(&source_snapshot);
+        let on_hit_effects = self.collect_all_triggers(target_instance_id, TriggerType::OnHit);
+        let mut trigger_effect_commands = Vec::new();
+        if attacker_live {
+            trigger_effect_commands.extend(self.trigger_commands_from_effects(
+                self.collect_all_triggers(attacker_instance_id, TriggerType::OnAttack),
+                TriggerEffectContext {
+                    trigger_unit_id: attacker_instance_id,
+                    counterpart_unit_id: Some(target_instance_id),
+                },
+                Some(target_instance_id),
+                false,
+            ));
+        }
         trigger_effect_commands.extend(self.trigger_commands_from_effects(
             on_hit_effects.clone(),
             TriggerEffectContext {
@@ -993,11 +1205,15 @@ impl BattleCore {
             Some(attacker_instance_id),
             false,
         ));
-        let mut trigger_ability_commands = Self::activation_commands_from_bindings(
-            self.collect_all_trigger_activations(attacker_instance_id, TriggerType::OnAttack),
-            attacker_instance_id,
-            Some(target_instance_id),
-        );
+        let mut trigger_ability_commands = if attacker_live {
+            Self::activation_commands_from_bindings(
+                self.collect_all_trigger_activations(attacker_instance_id, TriggerType::OnAttack),
+                attacker_instance_id,
+                Some(target_instance_id),
+            )
+        } else {
+            Vec::new()
+        };
         trigger_ability_commands.extend(Self::activation_commands_from_bindings(
             self.collect_all_trigger_activations(target_instance_id, TriggerType::OnHit),
             target_instance_id,
@@ -1005,35 +1221,19 @@ impl BattleCore {
         ));
 
         let ctx = DamageContext {
-            attacker_side: attacker_owner,
+            attacker_side: source_snapshot.source_side,
             target_side: target_owner,
-            attacker_attack,
+            attacker_attack: source_snapshot.source_attack,
             target_armor: target_defense,
             target_magic_resist,
             target_incoming_modifiers,
             target_current_hp,
             target_max_hp,
-            on_attack_effects: &on_attack_effects,
+            on_attack_effects: &snapshot_on_attack_effects,
             on_hit_effects: &on_hit_effects,
         };
 
-        let request = DamageRequest {
-            source: DamageSource::BasicAttack,
-            damage_type,
-            modifiers: Default::default(),
-            crit_roll_percent: Some(self.damage_roll_percent(
-                attacker_instance_id,
-                target_instance_id,
-                time_ms,
-                DamageSource::BasicAttack,
-            )),
-            attacker_id: attacker_instance_id,
-            target_id: target_instance_id,
-            base_damage: attacker_attack,
-            minimum_damage: 1,
-            time_ms,
-        };
-
+        let request = source_snapshot.request(target_instance_id);
         let result = calculate_damage(&request, &ctx);
 
         let dealt = target_current_hp.saturating_sub(result.target_remaining_hp);
@@ -1061,26 +1261,52 @@ impl BattleCore {
         self.schedule_pending_autocasts(time_ms);
     }
 
+    #[cfg(test)]
     pub(super) fn resolve_basic_attack(
         &mut self,
         attacker_instance_id: UnitInstanceId,
         target_id: UnitInstanceId,
         current_time_ms: u64,
     ) -> bool {
-        let (attacker_owner, attacker_attack, basic) = {
-            let Some(attacker) = self.units.get(&attacker_instance_id) else {
-                return false;
-            };
-            if attacker.is_dead() {
-                return false;
-            }
-            (
-                attacker.owner,
-                attacker.stats.attack,
-                attacker.basic_attack.clone(),
-            )
+        let delivery = self.basic_attack_delivery_for_unit(attacker_instance_id);
+        let Some((source_attack, damage_type)) = self
+            .units
+            .get(&attacker_instance_id)
+            .filter(|unit| unit.is_active())
+            .map(|unit| (unit.stats.attack, unit.basic_attack.damage_type))
+        else {
+            return false;
         };
+        let Some(source_snapshot) = self.damage_source_snapshot_for_unit(
+            attacker_instance_id,
+            target_id,
+            DamageSource::BasicAttack,
+            damage_type,
+            source_attack,
+            DamageModifiers::default(),
+            1,
+            current_time_ms,
+            true,
+        ) else {
+            return false;
+        };
+        self.resolve_committed_basic_attack(
+            attacker_instance_id,
+            target_id,
+            source_snapshot,
+            delivery,
+            current_time_ms,
+        )
+    }
 
+    pub(super) fn resolve_committed_basic_attack(
+        &mut self,
+        attacker_instance_id: UnitInstanceId,
+        target_id: UnitInstanceId,
+        source_snapshot: DamageSourceSnapshot,
+        delivery: crate::game::battle::event_log::AttackDelivery,
+        current_time_ms: u64,
+    ) -> bool {
         let (
             target_owner,
             target_defense,
@@ -1092,7 +1318,7 @@ impl BattleCore {
             let Some(target) = self.units.get(&target_id) else {
                 return false;
             };
-            if target.is_dead() {
+            if !target.is_active() {
                 return false;
             }
             (
@@ -1105,26 +1331,26 @@ impl BattleCore {
             )
         };
 
-        if target_owner == attacker_owner {
+        if target_owner == source_snapshot.source_side {
             return false;
         }
 
-        if !self.is_basic_attack_target_in_range(attacker_instance_id, target_id) {
+        let attacker_live = self
+            .units
+            .get(&attacker_instance_id)
+            .is_some_and(|unit| unit.is_active());
+        if attacker_live && !self.is_basic_attack_target_in_range(attacker_instance_id, target_id) {
             return false;
         }
 
-        match basic.delivery {
-            DeliveryDef::Instant => {
+        match delivery {
+            crate::game::battle::event_log::AttackDelivery::Instant => {
                 // Immediate resonance gain on attack release.
                 self.add_resonance(attacker_instance_id, 10, current_time_ms, true);
 
                 let result =
                     self.calculate_basic_attack_damage_snapshot(BasicAttackDamageSnapshot {
-                        attacker: AttackSourceSnapshot {
-                            instance_id: attacker_instance_id,
-                            owner: attacker_owner,
-                            attack: attacker_attack,
-                        },
+                        source: source_snapshot,
                         target: AttackTargetSnapshot {
                             instance_id: target_id,
                             owner: target_owner,
@@ -1134,8 +1360,6 @@ impl BattleCore {
                             current_hp: target_current_hp,
                             max_hp: target_max_hp,
                         },
-                        damage_type: basic.damage_type,
-                        time_ms: current_time_ms,
                     });
 
                 // Resonance gain: 10% of actual HP decrease dealt.
@@ -1155,14 +1379,18 @@ impl BattleCore {
                 if !result.triggered_commands.is_empty() {
                     self.process_commands(result.triggered_commands, current_time_ms);
                 }
-                let mut trigger_ability_commands = Self::activation_commands_from_bindings(
-                    self.collect_all_trigger_activations(
+                let mut trigger_ability_commands = if attacker_live {
+                    Self::activation_commands_from_bindings(
+                        self.collect_all_trigger_activations(
+                            attacker_instance_id,
+                            TriggerType::OnAttack,
+                        ),
                         attacker_instance_id,
-                        TriggerType::OnAttack,
-                    ),
-                    attacker_instance_id,
-                    Some(target_id),
-                );
+                        Some(target_id),
+                    )
+                } else {
+                    Vec::new()
+                };
                 trigger_ability_commands.extend(Self::activation_commands_from_bindings(
                     self.collect_all_trigger_activations(target_id, TriggerType::OnHit),
                     target_id,
@@ -1176,19 +1404,46 @@ impl BattleCore {
                 true
             }
 
-            DeliveryDef::Projectile {
-                speed_units_per_ms, ..
-            } => {
-                let Some(attacker_pos) = self.battlefield.position_of(attacker_instance_id) else {
+            crate::game::battle::event_log::AttackDelivery::Projectile => {
+                let Some((basic, source_attack)) = self
+                    .units
+                    .get(&attacker_instance_id)
+                    .filter(|unit| unit.is_active())
+                    .map(|unit| (unit.basic_attack.clone(), unit.stats.attack))
+                else {
                     return false;
                 };
-                let Some(target_pos) = self.battlefield.position_of(target_id) else {
+                let DeliveryDef::Projectile {
+                    speed_units_per_ms, ..
+                } = basic.delivery
+                else {
+                    return false;
+                };
+                let Some(attacker_pos) = self.live_unit_projected_tile(attacker_instance_id) else {
+                    return false;
+                };
+                let Some(target_pos) = self.live_unit_projected_tile(target_id) else {
                     return false;
                 };
                 self.add_resonance(attacker_instance_id, 10, current_time_ms, true);
+                let Some(launch_source_snapshot) = self.damage_source_snapshot_for_unit(
+                    attacker_instance_id,
+                    target_id,
+                    DamageSource::BasicAttack,
+                    basic.damage_type,
+                    source_attack,
+                    DamageModifiers::default(),
+                    1,
+                    current_time_ms,
+                    true,
+                ) else {
+                    return false;
+                };
                 self.spawn_basic_attack_projectile(ProjectileLaunch {
                     fired_at_ms: current_time_ms,
                     attacker_instance_id,
+                    attacker_owner_at_launch: launch_source_snapshot.source_side,
+                    air_capable_at_launch: basic.air_capable,
                     target_instance_id: target_id,
                     attacker_origin: self
                         .unit_world_position_or_tile_center(attacker_instance_id)
@@ -1199,13 +1454,9 @@ impl BattleCore {
                     speed_units_per_ms,
                     guidance: ProjectileGuidance::Homing,
                     damage_type: basic.damage_type,
+                    source_snapshot: launch_source_snapshot,
                 });
                 true
-            }
-            DeliveryDef::TileArea { .. } => {
-                // BasicAttackDef validation rejects TileArea. Do not silently
-                // reinterpret invalid authoring data as a single-target hit.
-                false
             }
         }
     }
@@ -1247,11 +1498,11 @@ impl BattleCore {
                     }
 
                     let explicit_target = target_id.map(|unit_instance_id| {
-                        crate::game::battle::timeline::SkillCastTarget::Unit { unit_instance_id }
+                        crate::game::battle::event_log::SkillCastTarget::Unit { unit_instance_id }
                     });
-                    let proc_seq = self.record_timeline(
+                    let proc_seq = self.record_event_log(
                         current_time_ms,
-                        TimelineEvent::TriggeredAbilityProc {
+                        BattleLogEvent::TriggeredAbilityProc {
                             skill_id: skill_id.clone(),
                             caster_instance_id: caster_id,
                             target_instance_id: target_id,
@@ -1264,7 +1515,7 @@ impl BattleCore {
                         caster_id,
                         &skill_id,
                         explicit_target,
-                        TimelineCause::Parent { seq: proc_seq },
+                        BattleEventCause::Parent { seq: proc_seq },
                         allow_dead_caster,
                     );
                 }
@@ -1275,17 +1526,19 @@ impl BattleCore {
                     let Some(target) = self.units.get_mut(&target_id) else {
                         continue;
                     };
-                    if target.is_dead() {
+                    if !target.is_active() {
                         continue;
                     }
 
                     let before = target.stats;
                     target.stats.apply_modifier(modifier);
+                    target.body.move_speed = target.stats.move_speed_units_per_ms as f32 * 1_000.0
+                        / DATA_UNITS_PER_WORLD;
                     let after = target.stats;
 
-                    self.record_timeline(
+                    self.record_event_log(
                         current_time_ms,
-                        TimelineEvent::StatChanged {
+                        BattleLogEvent::StatChanged {
                             source_instance_id: None,
                             target_instance_id: target_id,
                             modifier,
@@ -1295,65 +1548,36 @@ impl BattleCore {
                     );
                 }
                 BattleCommand::ApplyDamage {
-                    source_id,
                     target_id,
-                    amount,
-                    damage_type,
-                    modifiers,
-                    source,
-                    minimum_damage,
+                    source_snapshot,
                 } => {
                     let Some(target) = self.units.get(&target_id) else {
                         continue;
                     };
-                    if target.is_dead() {
+                    if !target.is_active() {
                         continue;
                     }
 
-                    let source_owner = self
-                        .units
-                        .get(&source_id)
-                        .map(|unit| unit.owner)
-                        .or_else(|| self.graveyard.get(&source_id).map(|unit| unit.owner))
-                        .unwrap_or(target.owner);
-                    let source_attack = self
-                        .units
-                        .get(&source_id)
-                        .map(|unit| unit.stats.attack)
-                        .or_else(|| self.graveyard.get(&source_id).map(|unit| unit.stats.attack))
-                        .unwrap_or(0);
-
+                    let snapshot_on_attack_effects =
+                        Self::damage_effects_from_source_snapshot(&source_snapshot);
                     let ctx = DamageContext {
-                        attacker_side: source_owner,
+                        attacker_side: source_snapshot.source_side,
                         target_side: target.owner,
-                        attacker_attack: source_attack,
+                        attacker_attack: source_snapshot.source_attack,
                         target_armor: target.stats.defense,
                         target_magic_resist: target.stats.magic_resist,
                         target_incoming_modifiers: target.incoming_damage_modifiers,
                         target_current_hp: target.stats.current_health,
                         target_max_hp: target.stats.max_health,
-                        on_attack_effects: &[],
+                        on_attack_effects: &snapshot_on_attack_effects,
                         on_hit_effects: &[],
                     };
-                    let request = DamageRequest {
-                        source,
-                        damage_type,
-                        modifiers,
-                        crit_roll_percent: Some(self.damage_roll_percent(
-                            source_id,
-                            target_id,
-                            current_time_ms,
-                            source,
-                        )),
-                        attacker_id: source_id,
-                        target_id,
-                        base_damage: amount,
-                        minimum_damage,
-                        time_ms: current_time_ms,
-                    };
+                    let request = source_snapshot.request(target_id);
                     let result = calculate_damage(&request, &ctx);
+                    let killed_target =
+                        ctx.target_current_hp > 0 && result.target_remaining_hp == 0;
                     self.apply_damage_result_and_record(
-                        Some(source_id),
+                        Some(source_snapshot.source_id),
                         &result,
                         current_time_ms,
                         HpChangeReason::Command,
@@ -1367,10 +1591,47 @@ impl BattleCore {
                         summary.actual_damage_target_count =
                             summary.actual_damage_target_count.saturating_add(1);
                     }
+                    if killed_target {
+                        summary.killed_target_count = summary.killed_target_count.saturating_add(1);
+                    }
 
                     if !result.triggered_commands.is_empty() {
                         self.process_commands(result.triggered_commands, current_time_ms);
                     }
+                }
+                BattleCommand::InterruptCast {
+                    source_id,
+                    target_id,
+                } => {
+                    let Some(target) = self.units.get(&target_id) else {
+                        continue;
+                    };
+                    if !target.is_active() {
+                        continue;
+                    }
+
+                    let Some(pending) = self
+                        .units
+                        .get_mut(&target_id)
+                        .and_then(|unit| unit.pending_skill_cast.take())
+                    else {
+                        continue;
+                    };
+
+                    if let Some(unit) = self.units.get_mut(&target_id) {
+                        unit.pending_cast = false;
+                        unit.pending_cast_cause = None;
+                    }
+
+                    self.record_event_log(
+                        current_time_ms,
+                        BattleLogEvent::SkillCastInterrupted {
+                            interrupter_instance_id: source_id,
+                            caster_instance_id: target_id,
+                            interrupted_skill_id: pending.skill_id,
+                            interrupted_cast_seq: pending.start_seq,
+                        },
+                    );
                 }
                 BattleCommand::ApplyHeal {
                     target_id,
@@ -1379,7 +1640,7 @@ impl BattleCore {
                     source_id,
                 } => {
                     let max_health = match self.units.get(&target_id) {
-                        Some(unit) if !unit.is_dead() => unit.stats.max_health.max(1),
+                        Some(unit) if unit.is_active() => unit.stats.max_health.max(1),
                         _ => continue,
                     };
 
@@ -1464,18 +1725,21 @@ mod tests {
         SkillDef, SkillId, SkillStepDef, SkillTarget, StepTargetingMode, UnitTargetRule,
     };
     use crate::game::battle::core::movement::{
-        types::{TimelineVec2, UnitBody, WorldVec2, DATA_UNITS_PER_WORLD},
+        types::{UnitBody, WorldVec2, DATA_UNITS_PER_WORLD},
         ActionState, MovementSegmentEndKind,
     };
-    use crate::game::battle::core::types::{ProjectileGuidance, RuntimeUnit};
+    use crate::game::battle::core::types::{ProjectileGuidance, RuntimeUnit, RuntimeUnitLifecycle};
     use crate::game::battle::core::{ActiveMovementSegment, ProjectileRecord};
     use crate::game::battle::damage::{
-        BattleCommand, DamageFeedbackTag, DamageModifiers, DamageSource, DamageType,
+        BattleCommand, DamageFeedbackTag, DamageModifiers, DamageSource, DamageSourceSnapshot,
+        DamageType,
+    };
+    use crate::game::battle::enums::BattleEvent;
+    use crate::game::battle::event_log::{
+        AttackDelivery, AttackKind, BattleEventCause, BattleEventLog, BattleLogEvent,
+        HpChangeReason, MovementStopReason,
     };
     use crate::game::battle::scenario::BattleScenario;
-    use crate::game::battle::timeline::{
-        HpChangeReason, MovementStopReason, Timeline, TimelineEvent,
-    };
     use crate::game::data::{
         abnormality_data::AbnormalityMetadata,
         equipment_data::{EquipmentMetadata, EquipmentType},
@@ -1489,6 +1753,31 @@ mod tests {
     use std::path::PathBuf;
     use std::sync::Arc;
     use uuid::Uuid;
+
+    fn test_damage_source_snapshot(
+        source_id: crate::game::battle::ids::UnitInstanceId,
+        _target_id: crate::game::battle::ids::UnitInstanceId,
+        damage_source: DamageSource,
+        damage_type: DamageType,
+        base_damage: u32,
+        time_ms: u64,
+    ) -> DamageSourceSnapshot {
+        DamageSourceSnapshot {
+            source_id,
+            source_side: Side::Player,
+            source_attack: base_damage,
+            source: damage_source,
+            damage_type,
+            base_damage,
+            modifiers: DamageModifiers::default(),
+            crit_roll_percent: None,
+            crit_roll_event_log_seq: 0,
+            minimum_damage: 0,
+            committed_at_ms: time_ms,
+            on_attack_modifiers: DamageModifiers::default(),
+            on_attack_bonus_damage: Vec::new(),
+        }
+    }
 
     #[test]
     fn projectile_flight_ms_is_zero_when_speed_is_zero() {
@@ -1520,25 +1809,118 @@ mod tests {
         core.spawn_basic_attack_projectile(super::ProjectileLaunch {
             fired_at_ms: 100,
             attacker_instance_id: attacker_id,
+            attacker_owner_at_launch: Side::Player,
+            air_capable_at_launch: false,
             target_instance_id: target_id,
             attacker_origin: WorldVec2::new(0.0001, 0.0002),
             target_aim: WorldVec2::new(0.0009, 0.0002),
             speed_units_per_ms: 1000,
             guidance: ProjectileGuidance::Homing,
             damage_type: DamageType::Physical,
+            source_snapshot: test_damage_source_snapshot(
+                attacker_id,
+                target_id,
+                DamageSource::BasicAttack,
+                DamageType::Physical,
+                10,
+                100,
+            ),
         });
 
         let stored = core
             .projectiles
             .values()
             .next()
-            .copied()
+            .cloned()
             .expect("missing projectile record");
         assert_eq!(stored.attacker_instance_id, attacker_id);
+        assert_eq!(stored.attacker_owner_at_launch, Side::Player);
+        assert!(!stored.air_capable_at_launch);
         assert_eq!(stored.target_instance_id, target_id);
         assert_eq!(stored.start, WorldVec2::new(0.0001, 0.0002));
         assert_eq!(stored.aim, WorldVec2::new(0.0009, 0.0002));
         assert_eq!(stored.guidance, ProjectileGuidance::Homing);
+        assert_eq!(stored.max_travel_ms, 1);
+    }
+
+    #[test]
+    fn committed_instant_basic_attack_snapshot_survives_same_timestamp_source_death() {
+        let mut core = new_test_core(empty_game_data(), 1);
+        let player_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xD01));
+        let opponent_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xD02));
+
+        let mut player = test_runtime_unit(
+            player_id,
+            Side::Player,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 100, 0, 1),
+        );
+        player.body = UnitBody::new_at(WorldVec2::ZERO, 0.10, 1.0);
+        let mut opponent = test_runtime_unit(
+            opponent_id,
+            Side::Opponent,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 100, 0, 1),
+        );
+        opponent.body = UnitBody::new_at(WorldVec2::new(1.0, 0.0), 0.10, 1.0);
+        core.units.insert(player_id, player);
+        core.units.insert(opponent_id, opponent);
+        place_test_unit(&mut core, player_id, Position::new(0, 0));
+        place_test_unit(&mut core, opponent_id, Position::new(1, 0));
+
+        let player_snapshot = core
+            .damage_source_snapshot_for_unit(
+                player_id,
+                opponent_id,
+                DamageSource::BasicAttack,
+                DamageType::Physical,
+                100,
+                DamageModifiers::default(),
+                1,
+                10,
+                true,
+            )
+            .expect("player snapshot");
+        let opponent_snapshot = core
+            .damage_source_snapshot_for_unit(
+                opponent_id,
+                player_id,
+                DamageSource::BasicAttack,
+                DamageType::Physical,
+                100,
+                DamageModifiers::default(),
+                1,
+                10,
+                true,
+            )
+            .expect("opponent snapshot");
+
+        for event in [
+            BattleEvent::AttackResolve {
+                time_ms: 10,
+                attacker_instance_id: player_id,
+                target_instance_id: opponent_id,
+                source_snapshot: player_snapshot,
+                kind: AttackKind::Auto,
+                delivery: AttackDelivery::Instant,
+                cause: BattleEventCause::default(),
+            },
+            BattleEvent::AttackResolve {
+                time_ms: 10,
+                attacker_instance_id: opponent_id,
+                target_instance_id: player_id,
+                source_snapshot: opponent_snapshot,
+                kind: AttackKind::Auto,
+                delivery: AttackDelivery::Instant,
+                cause: BattleEventCause::default(),
+            },
+        ] {
+            core.process_event(event, 10)
+                .expect("process attack resolve");
+        }
+
+        assert!(core.graveyard.contains_key(&player_id));
+        assert!(core.graveyard.contains_key(&opponent_id));
     }
 
     #[test]
@@ -1554,10 +1936,9 @@ mod tests {
         unit.body = UnitBody::new_at(WorldVec2::new(10.0, 0.0), 0.35, 1.0);
         core.units.insert(unit_id, unit);
 
-        let timeline_index = core.timeline.entries.len();
-        core.record_timeline(
+        core.record_event_log(
             0,
-            TimelineEvent::MovementSegmentStarted {
+            BattleLogEvent::MovementSegmentStarted {
                 unit_instance_id: unit_id,
                 start: WorldVec2::ZERO.quantized_milli(),
                 target: WorldVec2::new(10.0, 0.0).quantized_milli(),
@@ -1569,11 +1950,6 @@ mod tests {
         core.active_movement_segments.insert(
             unit_id,
             ActiveMovementSegment {
-                timeline_index,
-                velocity: TimelineVec2 {
-                    x_milli: 100_000,
-                    y_milli: 0,
-                },
                 start: WorldVec2::ZERO,
                 target: WorldVec2::new(10.0, 0.0),
                 started_at_ms: 0,
@@ -1592,10 +1968,11 @@ mod tests {
     }
 
     #[test]
-    fn advance_basic_attack_projectile_hits_target_crossing_path_between_reevaluations() {
+    fn advance_basic_attack_projectile_is_target_locked_not_path_collision() {
         let mut core = new_test_core(empty_game_data(), 1);
         let attacker_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(46));
         let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(47));
+        let bystander_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(48));
 
         let mut attacker = test_runtime_unit(
             attacker_id,
@@ -1610,24 +1987,18 @@ mod tests {
             Uuid::nil(),
             UnitStats::with_values(100, 100, 0, 0, 1),
         );
-        target.body = UnitBody::new_at(WorldVec2::new(5.0, -2.0), 0.10, 1.0);
+        target.body = UnitBody::new_at(WorldVec2::new(10.0, 0.0), 0.10, 1.0);
+        let mut bystander = test_runtime_unit(
+            bystander_id,
+            Side::Opponent,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 0, 0, 1),
+        );
+        bystander.body = UnitBody::new_at(WorldVec2::new(5.0, 0.0), 0.10, 1.0);
 
         core.units.insert(attacker_id, attacker);
         core.units.insert(target_id, target);
-        core.active_movement_segments.insert(
-            target_id,
-            ActiveMovementSegment {
-                timeline_index: 0,
-                velocity: TimelineVec2 {
-                    x_milli: 0,
-                    y_milli: -400,
-                },
-                start: WorldVec2::new(5.0, 2.0),
-                target: WorldVec2::new(5.0, -2.0),
-                started_at_ms: 0,
-                ends_at_ms: 10,
-            },
-        );
+        core.units.insert(bystander_id, bystander);
 
         let projectile_id = Uuid::from_u128(0xBEEF);
         core.projectiles.insert(
@@ -1636,13 +2007,25 @@ mod tests {
                 fired_at_ms: 0,
                 last_reevaluation_ms: 0,
                 attacker_instance_id: attacker_id,
+                attacker_owner_at_launch: Side::Player,
+                air_capable_at_launch: false,
                 target_instance_id: target_id,
                 start: WorldVec2::ZERO,
                 current_position: WorldVec2::ZERO,
                 aim: WorldVec2::new(10.0, 0.0),
                 speed_units_per_ms: DATA_UNITS_PER_WORLD as u32,
-                guidance: ProjectileGuidance::Fixed,
+                guidance: ProjectileGuidance::Homing,
                 damage_type: DamageType::Physical,
+                source_snapshot: test_damage_source_snapshot(
+                    attacker_id,
+                    target_id,
+                    DamageSource::BasicAttack,
+                    DamageType::Physical,
+                    10,
+                    0,
+                ),
+                max_travel_ms: 10,
+                cause: BattleEventCause::default(),
             },
         );
 
@@ -1653,6 +2036,502 @@ mod tests {
             .units
             .get(&target_id)
             .is_some_and(|target| target.stats.current_health < 100));
+        assert!(core
+            .units
+            .get(&bystander_id)
+            .is_some_and(|bystander| bystander.stats.current_health == 100));
+    }
+
+    #[test]
+    fn advance_basic_attack_projectile_hits_moving_locked_target_by_sweep() {
+        let mut core = new_test_core(empty_game_data(), 1);
+        let attacker_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(61));
+        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(62));
+
+        let mut attacker = test_runtime_unit(
+            attacker_id,
+            Side::Player,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 10, 0, 1),
+        );
+        attacker.body = UnitBody::new_at(WorldVec2::ZERO, 0.10, 1.0);
+        let mut target = test_runtime_unit(
+            target_id,
+            Side::Opponent,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 0, 0, 1),
+        );
+        target.body = UnitBody::new_at(WorldVec2::new(5.0, 2.0), 0.15, 1.0);
+
+        core.units.insert(attacker_id, attacker);
+        core.units.insert(target_id, target);
+        core.active_movement_segments.insert(
+            target_id,
+            ActiveMovementSegment {
+                start: WorldVec2::new(5.0, 2.0),
+                target: WorldVec2::new(5.0, 0.0),
+                started_at_ms: 0,
+                ends_at_ms: 6,
+            },
+        );
+
+        let projectile_id = Uuid::from_u128(0xCAFE);
+        core.projectiles.insert(
+            projectile_id,
+            ProjectileRecord {
+                fired_at_ms: 0,
+                last_reevaluation_ms: 0,
+                attacker_instance_id: attacker_id,
+                attacker_owner_at_launch: Side::Player,
+                air_capable_at_launch: false,
+                target_instance_id: target_id,
+                start: WorldVec2::ZERO,
+                current_position: WorldVec2::ZERO,
+                aim: WorldVec2::new(5.0, 2.0),
+                speed_units_per_ms: DATA_UNITS_PER_WORLD as u32,
+                guidance: ProjectileGuidance::Homing,
+                damage_type: DamageType::Physical,
+                source_snapshot: test_damage_source_snapshot(
+                    attacker_id,
+                    target_id,
+                    DamageSource::BasicAttack,
+                    DamageType::Physical,
+                    10,
+                    0,
+                ),
+                max_travel_ms: 6,
+                cause: BattleEventCause::default(),
+            },
+        );
+
+        core.advance_basic_attack_projectile(6, projectile_id);
+
+        assert!(!core.projectiles.contains_key(&projectile_id));
+        assert!(core
+            .units
+            .get(&target_id)
+            .is_some_and(|target| target.stats.current_health < 100));
+        assert!(core.event_log.entries.iter().any(|entry| matches!(
+            &entry.event,
+            BattleLogEvent::BasicAttackProjectileImpacted {
+                projectile_id: id,
+                target_instance_id,
+                hit: true,
+                ..
+            } if *id == projectile_id && *target_instance_id == target_id
+        )));
+    }
+
+    #[test]
+    fn advance_basic_attack_projectile_misses_when_locked_target_dies_before_contact() {
+        let mut core = new_test_core(empty_game_data(), 1);
+        let attacker_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(63));
+        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(64));
+
+        let mut attacker = test_runtime_unit(
+            attacker_id,
+            Side::Player,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 10, 0, 1),
+        );
+        attacker.body = UnitBody::new_at(WorldVec2::ZERO, 0.10, 1.0);
+        let mut target = test_runtime_unit(
+            target_id,
+            Side::Opponent,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 0, 0, 1),
+        );
+        target.body = UnitBody::new_at(WorldVec2::new(5.0, 0.0), 0.15, 1.0);
+
+        core.units.insert(attacker_id, attacker);
+        core.units.insert(target_id, target);
+        core.apply_hp_delta_and_record(None, target_id, -999, 0, HpChangeReason::Command);
+
+        let projectile_id = Uuid::from_u128(0xDEAD);
+        core.projectiles.insert(
+            projectile_id,
+            ProjectileRecord {
+                fired_at_ms: 0,
+                last_reevaluation_ms: 0,
+                attacker_instance_id: attacker_id,
+                attacker_owner_at_launch: Side::Player,
+                air_capable_at_launch: false,
+                target_instance_id: target_id,
+                start: WorldVec2::ZERO,
+                current_position: WorldVec2::ZERO,
+                aim: WorldVec2::new(5.0, 0.0),
+                speed_units_per_ms: DATA_UNITS_PER_WORLD as u32,
+                guidance: ProjectileGuidance::Homing,
+                damage_type: DamageType::Physical,
+                source_snapshot: test_damage_source_snapshot(
+                    attacker_id,
+                    target_id,
+                    DamageSource::BasicAttack,
+                    DamageType::Physical,
+                    10,
+                    0,
+                ),
+                max_travel_ms: 5,
+                cause: BattleEventCause::default(),
+            },
+        );
+
+        core.advance_basic_attack_projectile(5, projectile_id);
+
+        assert!(!core.projectiles.contains_key(&projectile_id));
+        assert!(core.event_log.entries.iter().any(|entry| matches!(
+            &entry.event,
+            BattleLogEvent::BasicAttackProjectileImpacted {
+                projectile_id: id,
+                target_instance_id,
+                hit: false,
+                ..
+            } if *id == projectile_id && *target_instance_id == target_id
+        )));
+        assert!(!core.event_log.entries.iter().any(|entry| matches!(
+            &entry.event,
+            BattleLogEvent::HpChanged {
+                source_instance_id: Some(source),
+                target_instance_id,
+                reason: HpChangeReason::BasicAttack,
+                ..
+            } if *source == attacker_id && *target_instance_id == target_id
+        )));
+    }
+
+    #[test]
+    fn advance_basic_attack_projectile_misses_when_locked_target_withdraws_before_contact() {
+        let mut core = new_test_core(empty_game_data(), 1);
+        let attacker_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0x6401));
+        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0x6402));
+
+        let mut attacker = test_runtime_unit(
+            attacker_id,
+            Side::Opponent,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 10, 0, 1),
+        );
+        attacker.body = UnitBody::new_at(WorldVec2::ZERO, 0.10, 1.0);
+        let mut target = test_runtime_unit(
+            target_id,
+            Side::Player,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 0, 0, 1),
+        );
+        target.body = UnitBody::new_at(WorldVec2::new(5.0, 0.0), 0.15, 1.0);
+
+        core.units.insert(attacker_id, attacker);
+        core.units.insert(target_id, target);
+
+        let projectile_id = Uuid::from_u128(0x6403);
+        core.projectiles.insert(
+            projectile_id,
+            ProjectileRecord {
+                fired_at_ms: 0,
+                last_reevaluation_ms: 0,
+                attacker_instance_id: attacker_id,
+                attacker_owner_at_launch: Side::Opponent,
+                air_capable_at_launch: false,
+                target_instance_id: target_id,
+                start: WorldVec2::ZERO,
+                current_position: WorldVec2::ZERO,
+                aim: WorldVec2::new(5.0, 0.0),
+                speed_units_per_ms: DATA_UNITS_PER_WORLD as u32,
+                guidance: ProjectileGuidance::Homing,
+                damage_type: DamageType::Physical,
+                source_snapshot: test_damage_source_snapshot(
+                    attacker_id,
+                    target_id,
+                    DamageSource::BasicAttack,
+                    DamageType::Physical,
+                    10,
+                    0,
+                ),
+                max_travel_ms: 5,
+                cause: BattleEventCause::default(),
+            },
+        );
+
+        core.units.get_mut(&target_id).unwrap().lifecycle = RuntimeUnitLifecycle::Withdrawn;
+
+        core.advance_basic_attack_projectile(5, projectile_id);
+
+        let target = core.units.get(&target_id).unwrap();
+        assert_eq!(target.lifecycle, RuntimeUnitLifecycle::Withdrawn);
+        assert_eq!(target.stats.current_health, 100);
+        assert!(!core.projectiles.contains_key(&projectile_id));
+        assert!(core.event_log.entries.iter().any(|entry| matches!(
+            &entry.event,
+            BattleLogEvent::BasicAttackProjectileImpacted {
+                projectile_id: id,
+                target_instance_id,
+                hit: false,
+                ..
+            } if *id == projectile_id && *target_instance_id == target_id
+        )));
+        assert!(!core.event_log.entries.iter().any(|entry| matches!(
+            &entry.event,
+            BattleLogEvent::HpChanged {
+                source_instance_id: Some(source),
+                target_instance_id,
+                reason: HpChangeReason::BasicAttack,
+                ..
+            } if *source == attacker_id && *target_instance_id == target_id
+        )));
+    }
+
+    #[test]
+    fn advance_basic_attack_projectile_does_not_recheck_tile_range_at_arrival() {
+        let mut core = new_test_core(empty_game_data(), 1);
+        let attacker_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(65));
+        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(66));
+
+        let mut attacker = test_runtime_unit(
+            attacker_id,
+            Side::Player,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 10, 0, 1),
+        );
+        attacker.body = UnitBody::new_at(WorldVec2::ZERO, 0.10, 1.0);
+        let mut target = test_runtime_unit(
+            target_id,
+            Side::Opponent,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 0, 0, 1),
+        );
+        target.body = UnitBody::new_at(WorldVec2::new(1.0, 0.0), 0.15, 1.0);
+
+        core.units.insert(attacker_id, attacker);
+        core.units.insert(target_id, target);
+        place_test_unit(&mut core, attacker_id, Position::new(0, 0));
+        place_test_unit(&mut core, target_id, Position::new(1, 0));
+        core.units.get_mut(&attacker_id).unwrap().body =
+            UnitBody::new_at(WorldVec2::ZERO, 0.10, 1.0);
+        core.units.get_mut(&target_id).unwrap().body =
+            UnitBody::new_at(WorldVec2::new(1.0, 0.0), 0.15, 1.0);
+
+        let projectile_id = Uuid::from_u128(0xFACE);
+        core.projectiles.insert(
+            projectile_id,
+            ProjectileRecord {
+                fired_at_ms: 0,
+                last_reevaluation_ms: 0,
+                attacker_instance_id: attacker_id,
+                attacker_owner_at_launch: Side::Player,
+                air_capable_at_launch: false,
+                target_instance_id: target_id,
+                start: WorldVec2::ZERO,
+                current_position: WorldVec2::ZERO,
+                aim: WorldVec2::new(1.0, 0.0),
+                speed_units_per_ms: DATA_UNITS_PER_WORLD as u32,
+                guidance: ProjectileGuidance::Homing,
+                damage_type: DamageType::Physical,
+                source_snapshot: test_damage_source_snapshot(
+                    attacker_id,
+                    target_id,
+                    DamageSource::BasicAttack,
+                    DamageType::Physical,
+                    10,
+                    0,
+                ),
+                max_travel_ms: 1,
+                cause: BattleEventCause::default(),
+            },
+        );
+
+        core.advance_basic_attack_projectile(1, projectile_id);
+
+        assert!(core
+            .units
+            .get(&target_id)
+            .is_some_and(|target| target.stats.current_health < 100));
+    }
+
+    #[test]
+    fn basic_attack_projectile_uses_launch_source_attack_after_stat_drift() {
+        let mut core = new_test_core(empty_game_data(), 1);
+        let attacker_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xD11));
+        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xD12));
+
+        let mut attacker = test_runtime_unit(
+            attacker_id,
+            Side::Player,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 10, 0, 1),
+        );
+        attacker.body = UnitBody::new_at(WorldVec2::ZERO, 0.10, 1.0);
+        let mut target = test_runtime_unit(
+            target_id,
+            Side::Opponent,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 0, 0, 1),
+        );
+        target.body = UnitBody::new_at(WorldVec2::new(1.0, 0.0), 0.10, 1.0);
+        core.units.insert(attacker_id, attacker);
+        core.units.insert(target_id, target);
+
+        let projectile_id = Uuid::from_u128(0xD13);
+        core.projectiles.insert(
+            projectile_id,
+            ProjectileRecord {
+                fired_at_ms: 0,
+                last_reevaluation_ms: 0,
+                attacker_instance_id: attacker_id,
+                attacker_owner_at_launch: Side::Player,
+                air_capable_at_launch: false,
+                target_instance_id: target_id,
+                start: WorldVec2::ZERO,
+                current_position: WorldVec2::ZERO,
+                aim: WorldVec2::new(1.0, 0.0),
+                speed_units_per_ms: DATA_UNITS_PER_WORLD as u32,
+                guidance: ProjectileGuidance::Homing,
+                damage_type: DamageType::Physical,
+                source_snapshot: test_damage_source_snapshot(
+                    attacker_id,
+                    target_id,
+                    DamageSource::BasicAttack,
+                    DamageType::Physical,
+                    10,
+                    0,
+                ),
+                max_travel_ms: 1,
+                cause: BattleEventCause::default(),
+            },
+        );
+
+        core.units.get_mut(&attacker_id).unwrap().stats.attack = 100;
+        core.advance_basic_attack_projectile(1, projectile_id);
+
+        assert_eq!(core.units.get(&target_id).unwrap().stats.current_health, 90);
+    }
+
+    #[test]
+    fn basic_attack_projectile_uses_live_target_defense_at_impact() {
+        let mut core = new_test_core(empty_game_data(), 1);
+        let attacker_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xD21));
+        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xD22));
+
+        let mut attacker = test_runtime_unit(
+            attacker_id,
+            Side::Player,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 100, 0, 1),
+        );
+        attacker.body = UnitBody::new_at(WorldVec2::ZERO, 0.10, 1.0);
+        let mut target = test_runtime_unit(
+            target_id,
+            Side::Opponent,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 0, 0, 1),
+        );
+        target.body = UnitBody::new_at(WorldVec2::new(1.0, 0.0), 0.10, 1.0);
+        core.units.insert(attacker_id, attacker);
+        core.units.insert(target_id, target);
+
+        let projectile_id = Uuid::from_u128(0xD23);
+        core.projectiles.insert(
+            projectile_id,
+            ProjectileRecord {
+                fired_at_ms: 0,
+                last_reevaluation_ms: 0,
+                attacker_instance_id: attacker_id,
+                attacker_owner_at_launch: Side::Player,
+                air_capable_at_launch: false,
+                target_instance_id: target_id,
+                start: WorldVec2::ZERO,
+                current_position: WorldVec2::ZERO,
+                aim: WorldVec2::new(1.0, 0.0),
+                speed_units_per_ms: DATA_UNITS_PER_WORLD as u32,
+                guidance: ProjectileGuidance::Homing,
+                damage_type: DamageType::Physical,
+                source_snapshot: test_damage_source_snapshot(
+                    attacker_id,
+                    target_id,
+                    DamageSource::BasicAttack,
+                    DamageType::Physical,
+                    100,
+                    0,
+                ),
+                max_travel_ms: 1,
+                cause: BattleEventCause::default(),
+            },
+        );
+
+        core.units.get_mut(&target_id).unwrap().stats.defense = 100;
+        core.advance_basic_attack_projectile(1, projectile_id);
+
+        assert_eq!(core.units.get(&target_id).unwrap().stats.current_health, 50);
+    }
+
+    #[test]
+    fn advance_basic_attack_projectile_uses_launch_side_after_attacker_death() {
+        let mut core = new_test_core(empty_game_data(), 1);
+        let attacker_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(67));
+        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(68));
+
+        let mut attacker = test_runtime_unit(
+            attacker_id,
+            Side::Player,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 10, 0, 1),
+        );
+        attacker.body = UnitBody::new_at(WorldVec2::ZERO, 0.10, 1.0);
+        let mut target = test_runtime_unit(
+            target_id,
+            Side::Opponent,
+            Uuid::nil(),
+            UnitStats::with_values(100, 100, 0, 0, 1),
+        );
+        target.body = UnitBody::new_at(WorldVec2::new(1.0, 0.0), 0.15, 1.0);
+
+        core.units.insert(attacker_id, attacker);
+        core.units.insert(target_id, target);
+        core.apply_hp_delta_and_record(None, attacker_id, -999, 0, HpChangeReason::Command);
+
+        let projectile_id = Uuid::from_u128(0xBADA);
+        core.projectiles.insert(
+            projectile_id,
+            ProjectileRecord {
+                fired_at_ms: 0,
+                last_reevaluation_ms: 0,
+                attacker_instance_id: attacker_id,
+                attacker_owner_at_launch: Side::Player,
+                air_capable_at_launch: false,
+                target_instance_id: target_id,
+                start: WorldVec2::ZERO,
+                current_position: WorldVec2::ZERO,
+                aim: WorldVec2::new(1.0, 0.0),
+                speed_units_per_ms: DATA_UNITS_PER_WORLD as u32,
+                guidance: ProjectileGuidance::Homing,
+                damage_type: DamageType::Physical,
+                source_snapshot: test_damage_source_snapshot(
+                    attacker_id,
+                    target_id,
+                    DamageSource::BasicAttack,
+                    DamageType::Physical,
+                    10,
+                    0,
+                ),
+                max_travel_ms: 1,
+                cause: BattleEventCause::default(),
+            },
+        );
+
+        core.advance_basic_attack_projectile(1, projectile_id);
+
+        assert!(core
+            .units
+            .get(&target_id)
+            .is_some_and(|target| target.stats.current_health < 100));
+        assert!(core.event_log.entries.iter().any(|entry| matches!(
+            &entry.event,
+            BattleLogEvent::BasicAttackProjectileImpacted {
+                projectile_id: id,
+                target_instance_id,
+                hit: true,
+                ..
+            } if *id == projectile_id && *target_instance_id == target_id
+        )));
     }
 
     fn empty_game_data() -> Arc<GameDataBase> {
@@ -1677,6 +2556,7 @@ mod tests {
             attack: 10,
             defense: 0,
             magic_resist: 0,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -1694,6 +2574,7 @@ mod tests {
             attack: 1,
             defense: 0,
             magic_resist: 0,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -1739,6 +2620,7 @@ mod tests {
             attack: 10,
             defense: 0,
             magic_resist: 0,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -1756,6 +2638,7 @@ mod tests {
             attack: 1,
             defense: 0,
             magic_resist: 0,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -1785,13 +2668,21 @@ mod tests {
             id: SkillId::from(id),
             name: id.to_string(),
             kind: Default::default(),
-            cast_targeting: SkillCastTargetingDef::FirstStepTarget,
+            cast_targeting: SkillCastTargetingDef::explicit(
+                SkillTarget::EnemySingle {
+                    rule: UnitTargetRule::CurrentTarget,
+                },
+                crate::game::battle::tile_range::TileRangePolicy::WholeFieldValidTiles,
+                None,
+                false,
+            ),
             focus_time_ms: 0,
             focus_permissions: Default::default(),
             steps: vec![SkillStepDef {
                 id: "hit".to_string(),
                 delay_ms: 0,
-                range_units: 1.0,
+                range_policy:
+                    crate::game::battle::tile_range::TileRangePolicy::WholeFieldValidTiles,
                 defense_tile_range: None,
                 air_capable: false,
                 target: SkillTarget::EnemySingle {
@@ -1831,11 +2722,16 @@ mod tests {
         };
         RuntimeUnit {
             instance_id,
+            lifecycle: RuntimeUnitLifecycle::Active,
             spawn_order: u64::from(instance_id.as_bytes()[15]),
             source_owned_uuid: instance_id.as_uuid(),
             owner,
             role: crate::game::battle::types::BattleUnitRole::Combatant,
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Normal,
             base_uuid,
+            source_identity: crate::game::battle::types::BattleUnitSourceIdentity::TestFixture {
+                base_uuid,
+            },
             stats,
             incoming_damage_modifiers: Default::default(),
             basic_attack,
@@ -1856,6 +2752,7 @@ mod tests {
             current_target: None,
             next_basic_attack_ms: 0,
             pending_basic_attack: false,
+            ranged_reposition_until_ms: 0,
             resonance_current: 0,
             resonance_max: 100,
             resonance_lock_ms: 0,
@@ -1866,11 +2763,11 @@ mod tests {
         }
     }
 
-    fn write_debug_event_log_export(name: &str, timeline: &Timeline) -> PathBuf {
+    fn write_debug_event_log_export(name: &str, event_log: &BattleEventLog) -> PathBuf {
         let out_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("debug_event_log_exports");
         std::fs::create_dir_all(&out_dir).expect("create debug_event_log_exports directory");
         let out_path = out_dir.join(format!("{name}.json"));
-        timeline
+        event_log
             .write_pretty_json(&out_path)
             .expect("write debug event log json");
         out_path
@@ -1914,23 +2811,25 @@ mod tests {
 
         core.process_commands(
             vec![BattleCommand::ApplyDamage {
-                source_id: attacker_id,
                 target_id,
-                amount: 100,
-                damage_type: DamageType::True,
-                modifiers: DamageModifiers::default(),
-                source: DamageSource::Ability,
-                minimum_damage: 0,
+                source_snapshot: test_damage_source_snapshot(
+                    attacker_id,
+                    target_id,
+                    DamageSource::Ability,
+                    DamageType::True,
+                    100,
+                    50,
+                ),
             }],
             50,
         );
 
         let feedback_tags = core
-            .timeline
+            .event_log
             .entries
             .iter()
             .find_map(|entry| match &entry.event {
-                TimelineEvent::HpChanged {
+                BattleLogEvent::HpChanged {
                     source_instance_id,
                     target_instance_id,
                     reason,
@@ -1951,12 +2850,148 @@ mod tests {
         assert_eq!(feedback_tags, vec![DamageFeedbackTag::FixedDamage]);
     }
 
+    #[test]
+    fn skill_projectile_impact_uses_launch_source_snapshot_after_caster_death() {
+        let mut core = new_test_core(empty_game_data(), 1);
+        let caster_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xD31));
+        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xD32));
+        let skill = damage_proc_skill("projectile_snapshot_test", 25);
+
+        core.units.insert(
+            caster_id,
+            test_runtime_unit(
+                caster_id,
+                Side::Player,
+                Uuid::nil(),
+                UnitStats::with_values(100, 100, 1, 0, 1000),
+            ),
+        );
+        core.units.insert(
+            target_id,
+            test_runtime_unit(
+                target_id,
+                Side::Opponent,
+                Uuid::nil(),
+                UnitStats::with_values(100, 100, 1, 0, 1000),
+            ),
+        );
+        let launch_snapshot = core
+            .damage_source_snapshot_template_for_unit(
+                caster_id,
+                DamageSource::Ability,
+                DamageType::Magic,
+                0,
+                DamageModifiers::default(),
+                0,
+                10,
+                false,
+            )
+            .expect("launch snapshot");
+        core.units.remove(&caster_id);
+
+        let (commands, _) = core.build_skill_step_commands(
+            caster_id,
+            &skill.steps[0],
+            &[target_id],
+            launch_snapshot.committed_at_ms,
+            Some(&launch_snapshot),
+        );
+        core.process_commands(commands, 20);
+
+        assert_eq!(core.units.get(&target_id).unwrap().stats.current_health, 75);
+    }
+
+    #[test]
+    fn skill_projectile_impact_does_not_hit_withdrawn_target() {
+        let caster_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xD41));
+        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xD42));
+        let delivery_id = Uuid::from_u128(0xD43);
+        let skill = damage_proc_skill("withdrawn_projectile_target_test", 25);
+        let skill_id = skill.id.clone();
+        let mut core = new_test_core(
+            GameDataBuilder::empty()
+                .with_skills(SkillDatabase::new(vec![skill]))
+                .build_arc(),
+            1,
+        );
+
+        core.units.insert(
+            caster_id,
+            test_runtime_unit(
+                caster_id,
+                Side::Opponent,
+                Uuid::nil(),
+                UnitStats::with_values(100, 100, 1, 0, 1000),
+            ),
+        );
+        core.units.insert(
+            target_id,
+            test_runtime_unit(
+                target_id,
+                Side::Player,
+                Uuid::nil(),
+                UnitStats::with_values(100, 100, 1, 0, 1000),
+            ),
+        );
+        core.units.get_mut(&target_id).unwrap().lifecycle = RuntimeUnitLifecycle::Withdrawn;
+
+        let launch_snapshot = core
+            .damage_source_snapshot_template_for_unit(
+                caster_id,
+                DamageSource::Ability,
+                DamageType::Magic,
+                0,
+                DamageModifiers::default(),
+                0,
+                10,
+                false,
+            )
+            .expect("launch snapshot");
+
+        core.apply_skill_projectile_impact(
+            20,
+            delivery_id,
+            1,
+            0,
+            skill_id.clone(),
+            "hit".to_string(),
+            caster_id,
+            launch_snapshot,
+            WorldVec2::new(1.0, 0.0),
+            Some(target_id),
+            None,
+            true,
+        );
+
+        assert_eq!(
+            core.units.get(&target_id).unwrap().stats.current_health,
+            100
+        );
+        assert!(core.event_log.entries.iter().any(|entry| matches!(
+            &entry.event,
+            BattleLogEvent::SkillProjectileImpacted {
+                delivery_id: id,
+                skill_id: event_skill_id,
+                first_hit_unit_id: None,
+                terminal: true,
+                ..
+            } if *id == delivery_id && *event_skill_id == skill_id
+        )));
+        assert!(!core.event_log.entries.iter().any(|entry| matches!(
+            &entry.event,
+            BattleLogEvent::HpChanged {
+                target_instance_id,
+                ..
+            } if *target_instance_id == target_id
+        )));
+    }
+
     fn place_test_unit(
         core: &mut super::BattleCore,
         unit_id: crate::game::battle::ids::UnitInstanceId,
         position: Position,
     ) {
-        core.battlefield.place(unit_id, position).unwrap();
+        core.battlefield.ensure_walkable_tile(position).unwrap();
         if let Some(unit) = core.units.get_mut(&unit_id) {
             unit.set_world_position(WorldVec2::from_tile_center(position));
         }
@@ -1978,11 +3013,17 @@ mod tests {
             attacker_id,
             RuntimeUnit {
                 instance_id: attacker_id,
+                lifecycle: RuntimeUnitLifecycle::Active,
                 spawn_order: 0,
                 source_owned_uuid: attacker_id.as_uuid(),
                 owner: Side::Player,
                 role: crate::game::battle::types::BattleUnitRole::Combatant,
+                threat_class: crate::game::battle::types::BattleUnitThreatClass::Normal,
                 base_uuid: Uuid::nil(),
+                source_identity:
+                    crate::game::battle::types::BattleUnitSourceIdentity::TestFixture {
+                        base_uuid: Uuid::nil(),
+                    },
                 stats: attacker_stats,
                 incoming_damage_modifiers: Default::default(),
                 basic_attack: Default::default(),
@@ -2003,6 +3044,7 @@ mod tests {
                 current_target: None,
                 next_basic_attack_ms: 0,
                 pending_basic_attack: false,
+                ranged_reposition_until_ms: 0,
                 resonance_current: 0,
                 resonance_max: 100,
                 resonance_lock_ms: 0,
@@ -2017,11 +3059,17 @@ mod tests {
             target_id,
             RuntimeUnit {
                 instance_id: target_id,
+                lifecycle: RuntimeUnitLifecycle::Active,
                 spawn_order: 1,
                 source_owned_uuid: target_id.as_uuid(),
                 owner: Side::Opponent,
                 role: crate::game::battle::types::BattleUnitRole::Combatant,
+                threat_class: crate::game::battle::types::BattleUnitThreatClass::Normal,
                 base_uuid: Uuid::nil(),
+                source_identity:
+                    crate::game::battle::types::BattleUnitSourceIdentity::TestFixture {
+                        base_uuid: Uuid::nil(),
+                    },
                 stats: target_stats,
                 incoming_damage_modifiers: Default::default(),
                 basic_attack: Default::default(),
@@ -2042,6 +3090,7 @@ mod tests {
                 current_target: None,
                 next_basic_attack_ms: 0,
                 pending_basic_attack: false,
+                ranged_reposition_until_ms: 0,
                 resonance_current: 0,
                 resonance_max: 100,
                 resonance_lock_ms: 0,
@@ -2052,20 +3101,8 @@ mod tests {
             },
         );
 
-        core.battlefield
-            .place(attacker_id, Position::new(0, 0))
-            .unwrap();
-        core.units
-            .get_mut(&attacker_id)
-            .unwrap()
-            .set_world_position(WorldVec2::new(0.0, 0.0));
-        core.battlefield
-            .place(target_id, Position::new(1, 0))
-            .unwrap();
-        core.units
-            .get_mut(&target_id)
-            .unwrap()
-            .set_world_position(WorldVec2::new(1.0, 0.0));
+        place_test_unit(&mut core, attacker_id, Position::new(0, 0));
+        place_test_unit(&mut core, target_id, Position::new(1, 0));
         core.units.get_mut(&attacker_id).unwrap().body =
             UnitBody::new_at(WorldVec2::new(0.0, 0.0), 0.10, 1.0);
         core.units.get_mut(&target_id).unwrap().body =
@@ -2078,6 +3115,8 @@ mod tests {
                 fired_at_ms: 0,
                 last_reevaluation_ms: 0,
                 attacker_instance_id: attacker_id,
+                attacker_owner_at_launch: Side::Player,
+                air_capable_at_launch: false,
                 target_instance_id: target_id,
                 start: WorldVec2::new(0.0, 0.0),
                 current_position: WorldVec2::new(0.0, 0.0),
@@ -2085,6 +3124,16 @@ mod tests {
                 speed_units_per_ms: DATA_UNITS_PER_WORLD as u32,
                 guidance: ProjectileGuidance::Homing,
                 damage_type: DamageType::Physical,
+                source_snapshot: test_damage_source_snapshot(
+                    attacker_id,
+                    target_id,
+                    DamageSource::BasicAttack,
+                    DamageType::Physical,
+                    10,
+                    0,
+                ),
+                max_travel_ms: 1,
+                cause: BattleEventCause::default(),
             },
         );
 
@@ -2107,11 +3156,11 @@ mod tests {
         assert_eq!(hp_after_first, hp_after_second);
 
         let hits = core
-            .timeline
+            .event_log
             .entries
             .iter()
             .filter(|entry| match &entry.event {
-                crate::game::battle::timeline::TimelineEvent::HpChanged {
+                crate::game::battle::event_log::BattleLogEvent::HpChanged {
                     source_instance_id,
                     target_instance_id,
                     reason,
@@ -2128,11 +3177,11 @@ mod tests {
         assert_eq!(hits, 1);
 
         let hp_changed = core
-            .timeline
+            .event_log
             .entries
             .iter()
             .find_map(|entry| match &entry.event {
-                crate::game::battle::timeline::TimelineEvent::HpChanged {
+                crate::game::battle::event_log::BattleLogEvent::HpChanged {
                     source_instance_id,
                     target_instance_id,
                     reason,
@@ -2172,7 +3221,7 @@ mod tests {
 
         write_debug_event_log_export(
             "advance_basic_attack_projectile_is_idempotent_for_same_projectile_id",
-            &core.timeline,
+            &core.event_log,
         );
     }
 
@@ -2188,11 +3237,17 @@ mod tests {
             target_id,
             RuntimeUnit {
                 instance_id: target_id,
+                lifecycle: RuntimeUnitLifecycle::Active,
                 spawn_order: 0,
                 source_owned_uuid: target_id.as_uuid(),
                 owner: Side::Opponent,
                 role: crate::game::battle::types::BattleUnitRole::Combatant,
+                threat_class: crate::game::battle::types::BattleUnitThreatClass::Normal,
                 base_uuid: Uuid::nil(),
+                source_identity:
+                    crate::game::battle::types::BattleUnitSourceIdentity::TestFixture {
+                        base_uuid: Uuid::nil(),
+                    },
                 stats: target_stats,
                 incoming_damage_modifiers: Default::default(),
                 basic_attack: Default::default(),
@@ -2213,6 +3268,7 @@ mod tests {
                 current_target: None,
                 next_basic_attack_ms: 0,
                 pending_basic_attack: false,
+                ranged_reposition_until_ms: 0,
                 resonance_current: 0,
                 resonance_max: 100,
                 resonance_lock_ms: 0,
@@ -2222,9 +3278,7 @@ mod tests {
                 pending_skill_cast: None,
             },
         );
-        core.battlefield
-            .place(target_id, Position::new(0, 0))
-            .unwrap();
+        place_test_unit(&mut core, target_id, Position::new(0, 0));
         core.units.get_mut(&target_id).unwrap().set_world_position(
             crate::game::battle::core::movement::types::WorldVec2::new(0.05, 0.0),
         );
@@ -2248,14 +3302,14 @@ mod tests {
         );
 
         let stop_entry = core
-            .timeline
+            .event_log
             .entries
             .iter()
-            .find(|entry| matches!(entry.event, TimelineEvent::MovementStopped { .. }))
+            .find(|entry| matches!(entry.event, BattleLogEvent::MovementStopped { .. }))
             .expect("missing MovementStopped");
 
         match &stop_entry.event {
-            TimelineEvent::MovementStopped {
+            BattleLogEvent::MovementStopped {
                 reason,
                 world_position,
                 ..
@@ -2267,12 +3321,34 @@ mod tests {
             _ => unreachable!("expected MovementStopped"),
         }
 
+        let death_entry = core
+            .event_log
+            .entries
+            .iter()
+            .find(|entry| matches!(entry.event, BattleLogEvent::UnitDied { .. }))
+            .expect("missing UnitDied");
+
+        match &death_entry.event {
+            BattleLogEvent::UnitDied {
+                unit_instance_id,
+                world_position,
+                position,
+                ..
+            } => {
+                assert_eq!(*unit_instance_id, target_id);
+                assert_eq!(world_position.x_milli, 50);
+                assert_eq!(world_position.y_milli, 0);
+                assert_eq!(*position, Position::new(0, 0));
+            }
+            _ => unreachable!("expected UnitDied"),
+        }
+
         let hp_feedback_tags = core
-            .timeline
+            .event_log
             .entries
             .iter()
             .find_map(|entry| match &entry.event {
-                TimelineEvent::HpChanged {
+                BattleLogEvent::HpChanged {
                     target_instance_id,
                     feedback_tags,
                     ..
@@ -2346,10 +3422,10 @@ mod tests {
         drain_event_queue(&mut core);
         let target_hp = core.units.get(&target_id).unwrap().stats.current_health;
         assert_eq!(target_hp, 85);
-        assert!(core.timeline.entries.iter().any(|entry| {
+        assert!(core.event_log.entries.iter().any(|entry| {
             matches!(
                 &entry.event,
-                TimelineEvent::AbilityCast { skill_id, caster_instance_id, target_instance_id }
+                BattleLogEvent::AbilityCast { skill_id, caster_instance_id, target_instance_id }
                 if skill_id.as_str() == "item_proc"
                     && *caster_instance_id == attacker_id
                     && *target_instance_id == Some(target_id)
@@ -2422,9 +3498,9 @@ mod tests {
         drain_event_queue(&mut core);
 
         let poison = crate::game::battle::buffs::BuffId::from_name("poison");
-        assert!(core.timeline.entries.iter().any(|entry| matches!(
+        assert!(core.event_log.entries.iter().any(|entry| matches!(
             &entry.event,
-            TimelineEvent::BuffApplied {
+            BattleLogEvent::BuffApplied {
                 caster_instance_id,
                 target_instance_id,
                 buff_id,
@@ -2433,9 +3509,9 @@ mod tests {
                 && *target_instance_id == target_id
                 && *buff_id == poison
         )));
-        assert!(!core.timeline.entries.iter().any(|entry| matches!(
+        assert!(!core.event_log.entries.iter().any(|entry| matches!(
             &entry.event,
-            TimelineEvent::BuffApplied {
+            BattleLogEvent::BuffApplied {
                 target_instance_id,
                 buff_id,
                 ..
@@ -2586,13 +3662,13 @@ mod tests {
         let target_hp = core.units.get(&target_id).unwrap().stats.current_health;
         assert_eq!(target_hp, 75);
         let proc_casts = core
-            .timeline
+            .event_log
             .entries
             .iter()
             .filter(|entry| {
                 matches!(
                     &entry.event,
-                    TimelineEvent::AbilityCast { skill_id, .. } if skill_id.as_str() == "proc_icd"
+                    BattleLogEvent::AbilityCast { skill_id, .. } if skill_id.as_str() == "proc_icd"
                 )
             })
             .count();

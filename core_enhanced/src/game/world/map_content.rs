@@ -2,7 +2,7 @@ use tracing::info;
 
 use super::GameCore;
 use crate::game::behavior::{BehaviorResult, GameError};
-use crate::game::data::reward_data::RewardTag;
+use crate::game::data::reward_data::RewardGrantKind;
 use crate::game::determinism;
 use crate::game::enums::{RewardMode, ShopEventOption};
 use crate::game::map::{MapNodeCategory, MapNodeId, MapNodePayload, SupportNodeMode};
@@ -172,8 +172,8 @@ impl GameCore {
         let candidates = candidates
             .into_iter()
             .filter(|reward| {
-                let tags = reward.resolved_tags();
-                !tags.contains(&RewardTag::Forbidden) && !tags.contains(&RewardTag::Experience)
+                let grant_kinds = reward.grant_kinds();
+                !grant_kinds.contains(&RewardGrantKind::Experience)
             })
             .collect::<Vec<_>>();
 
@@ -258,8 +258,6 @@ impl GameCore {
                 } else {
                     SupportSessionState::known(node_id, support_type)
                 };
-                let mut support_session = support_session;
-                self.refresh_support_target_candidates(&mut support_session)?;
                 let result = self
                     .support_state_result_with_deliveries(&support_session, research_deliveries);
                 self.state.active_node_content = Some(ActiveNodeContent::Support(support_session));

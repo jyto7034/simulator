@@ -6,9 +6,10 @@ use crate::game::ability::SkillId;
 
 use super::buffs::BuffId;
 use super::core::movement::types::WorldVec2;
+use super::damage::DamageSourceSnapshot;
+use super::event_log::{AttackDelivery, AttackKind, BattleEventCause, SkillCastTarget};
 use super::ids::UnitInstanceId;
 use super::scenario::ScenarioGroupId;
-use super::timeline::{AttackKind, SkillCastTarget, TimelineCause};
 use super::types::BattleWinner;
 
 /// 전투 이벤트
@@ -20,12 +21,12 @@ pub enum BattleEvent {
     SpawnGroup {
         time_ms: u64,
         group_id: ScenarioGroupId,
-        cause: TimelineCause,
+        cause: BattleEventCause,
     },
     EndBattle {
         time_ms: u64,
         winner: BattleWinner,
-        cause: TimelineCause,
+        cause: BattleEventCause,
     },
     AttackStart {
         time_ms: u64,
@@ -34,19 +35,21 @@ pub enum BattleEvent {
         target_instance_id: Option<UnitInstanceId>,
         /// 자동 공격(반복 스케줄) 여부. false면 1회성 공격으로 처리.
         schedule_next: bool,
-        cause: TimelineCause,
+        cause: BattleEventCause,
     },
     AttackResolve {
         time_ms: u64,
         attacker_instance_id: UnitInstanceId,
         target_instance_id: UnitInstanceId,
+        source_snapshot: DamageSourceSnapshot,
         kind: AttackKind,
-        cause: TimelineCause,
+        delivery: AttackDelivery,
+        cause: BattleEventCause,
     },
     BasicAttackProjectileAdvance {
         time_ms: u64,
         projectile_id: Uuid,
-        cause: TimelineCause,
+        cause: BattleEventCause,
     },
     SkillProjectileImpact {
         time_ms: u64,
@@ -56,16 +59,17 @@ pub enum BattleEvent {
         skill_id: SkillId,
         step_id: String,
         caster_instance_id: UnitInstanceId,
+        source_snapshot: DamageSourceSnapshot,
         impact_position: WorldVec2,
         first_hit_unit_id: Option<UnitInstanceId>,
         impact_vfx_id: Option<String>,
         terminal: bool,
-        cause: TimelineCause,
+        cause: BattleEventCause,
     },
     SkillProjectileAdvance {
         time_ms: u64,
         delivery_id: Uuid,
-        cause: TimelineCause,
+        cause: BattleEventCause,
     },
     SkillAreaTick {
         time_ms: u64,
@@ -75,7 +79,7 @@ pub enum BattleEvent {
         skill_id: SkillId,
         step_id: String,
         center: WorldVec2,
-        cause: TimelineCause,
+        cause: BattleEventCause,
     },
     SkillAreaExpire {
         time_ms: u64,
@@ -84,25 +88,25 @@ pub enum BattleEvent {
         step_index: usize,
         skill_id: SkillId,
         step_id: String,
-        cause: TimelineCause,
+        cause: BattleEventCause,
     },
     /// 공명(=마나) 만땅 시 자동 시전 시작
     AutoCastStart {
         time_ms: u64,
         caster_instance_id: UnitInstanceId,
-        cause: TimelineCause,
+        cause: BattleEventCause,
     },
     /// 자동 시전 종료 훅 (공명 리셋/락 적용)
     AutoCastEnd {
         time_ms: u64,
         caster_instance_id: UnitInstanceId,
-        cause: TimelineCause,
+        cause: BattleEventCause,
     },
     /// 플레이어 명령으로 시작한 수동 스킬 시전 종료 훅
     ManualCastEnd {
         time_ms: u64,
         caster_instance_id: UnitInstanceId,
-        cause: TimelineCause,
+        cause: BattleEventCause,
     },
     SkillStep {
         time_ms: u64,
@@ -112,7 +116,7 @@ pub enum BattleEvent {
         skill_id: SkillId,
         step_id: String,
         cast_target: Option<SkillCastTarget>,
-        cause: TimelineCause,
+        cause: BattleEventCause,
     },
     ApplyBuff {
         time_ms: u64,
@@ -120,21 +124,21 @@ pub enum BattleEvent {
         target_instance_id: UnitInstanceId,
         buff_id: BuffId,
         duration_ms: u64,
-        cause: TimelineCause,
+        cause: BattleEventCause,
     },
     BuffTick {
         time_ms: u64,
         caster_instance_id: UnitInstanceId,
         target_instance_id: UnitInstanceId,
         buff_id: BuffId,
-        cause: TimelineCause,
+        cause: BattleEventCause,
     },
     BuffExpire {
         time_ms: u64,
         caster_instance_id: UnitInstanceId,
         target_instance_id: UnitInstanceId,
         buff_id: BuffId,
-        cause: TimelineCause,
+        cause: BattleEventCause,
     },
     /// Advance the continuous movement engine by one fixed tick.
     ContinuousMovementTick { time_ms: u64 },
@@ -419,14 +423,14 @@ impl PartialOrd for BattleEvent {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::game::battle::timeline::{TimelineCause, TimelineRootCause};
+    use crate::game::battle::event_log::{BattleEventCause, BattleEventRootCause};
     use std::collections::BinaryHeap;
     use uuid::Uuid;
 
     #[test]
     fn battle_event_heap_orders_by_time_then_priority_then_ids() {
-        let cause = TimelineCause::Root {
-            kind: TimelineRootCause::System,
+        let cause = BattleEventCause::Root {
+            kind: BattleEventRootCause::System,
         };
 
         let attacker_early: UnitInstanceId = Uuid::from_u128(1).into();

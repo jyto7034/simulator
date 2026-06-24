@@ -10,11 +10,10 @@ use rapier2d::prelude::{
 use crate::game::battle::ids::UnitInstanceId;
 
 use super::engine::{
-    canonicalize_movement_units, DirectContinuousMovement, MovementEngine, MovementOutput,
-    MovementStaticObstacle, MovementStopReasonContinuous, MovementTickInput, MovementTickResult,
+    run_continuous_movement_tick, ContinuousMovementResolver, DirectContinuousMovement,
+    MovementEngine, MovementStaticObstacle, MovementTickInput, MovementTickResult,
     MovementUnitInput,
 };
-use super::steering;
 use super::types::WorldVec2;
 
 /// Rapier-side handles owned by the continuous movement backend.
@@ -427,25 +426,6 @@ impl RapierMovementWorld {
         body.set_next_kinematic_translation(to_rapier_vector(position));
         Some(())
     }
-
-    fn push_body_moved_if_changed(
-        outputs: &mut Vec<MovementOutput>,
-        unit_id: UnitInstanceId,
-        from: WorldVec2,
-        to: WorldVec2,
-        dt_seconds: f32,
-    ) {
-        if (to - from).length_squared() <= f32::EPSILON {
-            return;
-        }
-
-        outputs.push(MovementOutput::BodyMoved {
-            unit_id,
-            from,
-            to,
-            velocity: steering::movement_velocity(from, to, dt_seconds),
-        });
-    }
 }
 
 impl Default for RapierMovementWorld {
@@ -474,142 +454,50 @@ impl Default for RapierMovementWorld {
 
 impl MovementEngine for RapierMovementWorld {
     fn tick(&mut self, input: MovementTickInput) -> MovementTickResult {
-        let mut units = input.units;
-        canonicalize_movement_units(&mut units);
+        run_continuous_movement_tick(self, input)
+    }
+}
 
-        self.sync_units(&units);
-        self.sync_static_obstacles(&input.static_obstacles);
+impl ContinuousMovementResolver for RapierMovementWorld {
+    fn prepare_tick(
+        &mut self,
+        units: &[MovementUnitInput],
+        static_obstacles: &[MovementStaticObstacle],
+    ) {
+        self.sync_units(units);
+        self.sync_static_obstacles(static_obstacles);
+    }
 
-        let mut outputs = Vec::new();
-        let dt_seconds = input.dt_ms as f32 / 1_000.0;
-        let original_positions: HashMap<UnitInstanceId, WorldVec2> = units
-            .iter()
-            .map(|unit| (unit.unit_id, unit.body.position))
-            .collect();
-
-        // Movement is intentionally resolved in canonical unit id order, not as
-        // a simultaneous physics step. If this becomes visible in gameplay, the
-        // fix should be a deliberate two-phase movement model, not ad-hoc
-        // shuffling that breaks replay determinism.
-        for unit in &units {
-            let original_position = original_positions
-                .get(&unit.unit_id)
-                .copied()
-                .unwrap_or(unit.body.position);
-
-            if unit.is_dead {
-                outputs.push(MovementOutput::MovementStopped {
-                    unit_id: unit.unit_id,
-                    position: unit.body.position,
-                    reason: MovementStopReasonContinuous::Dead,
-                });
-                continue;
-            }
-
-            if !unit.can_move {
-                self.apply_unit_translation(unit.unit_id, unit.body.position);
-                Self::push_body_moved_if_changed(
-                    &mut outputs,
-                    unit.unit_id,
-                    original_position,
-                    unit.body.position,
-                    dt_seconds,
-                );
-                outputs.push(MovementOutput::MovementStopped {
-                    unit_id: unit.unit_id,
-                    position: unit.body.position,
-                    reason: MovementStopReasonContinuous::MovementLocked,
-                });
-                continue;
-            }
-
-            if let Some(reached) = steering::reached_goal(unit, &units) {
-                self.apply_unit_translation(unit.unit_id, unit.body.position);
-                Self::push_body_moved_if_changed(
-                    &mut outputs,
-                    unit.unit_id,
-                    original_position,
-                    unit.body.position,
-                    dt_seconds,
-                );
-                outputs.push(reached);
-                continue;
-            }
-
-            let Some(target) = steering::goal_target_position(unit, &units) else {
-                self.apply_unit_translation(unit.unit_id, unit.body.position);
-                Self::push_body_moved_if_changed(
-                    &mut outputs,
-                    unit.unit_id,
-                    original_position,
-                    unit.body.position,
-                    dt_seconds,
-                );
-                outputs.push(MovementOutput::MovementStopped {
-                    unit_id: unit.unit_id,
-                    position: unit.body.position,
-                    reason: MovementStopReasonContinuous::NoGoal,
-                });
-                continue;
-            };
-
-            let desired_displacement = steering::steered_displacement(unit, target, dt_seconds);
-            let desired_to = DirectContinuousMovement::clamp_to_board(
-                unit.body.position + desired_displacement,
-                unit.body.radius,
-                input.board_width_units,
-                input.board_height_units,
-            );
-            let desired_translation = desired_to - unit.body.position;
-            let corrected_translation = if unit.terrain_policy.applies_static_obstacles() {
-                self.corrected_ground_static_obstacle_translation_for(
-                    unit.unit_id,
-                    desired_translation,
-                    dt_seconds,
-                )
-                .unwrap_or(desired_translation)
-            } else {
-                desired_translation
-            };
-            let to = DirectContinuousMovement::clamp_to_board(
-                unit.body.position + corrected_translation,
-                unit.body.radius,
-                input.board_width_units,
-                input.board_height_units,
-            );
-            self.apply_unit_translation(unit.unit_id, to);
-
-            if (to - unit.body.position).length_squared() <= f32::EPSILON {
-                Self::push_body_moved_if_changed(
-                    &mut outputs,
-                    unit.unit_id,
-                    original_position,
-                    to,
-                    dt_seconds,
-                );
-                if unit.terrain_policy.applies_static_obstacles()
-                    && !input.static_obstacles.is_empty()
-                    && desired_translation.length_squared() > f32::EPSILON
-                {
-                    outputs.push(MovementOutput::MovementStopped {
-                        unit_id: unit.unit_id,
-                        position: to,
-                        reason: MovementStopReasonContinuous::StaticObstacleBlocked,
-                    });
-                }
-                continue;
-            }
-
-            Self::push_body_moved_if_changed(
-                &mut outputs,
+    fn corrected_position(
+        &mut self,
+        unit: &MovementUnitInput,
+        desired_to: WorldVec2,
+        board_width_units: f32,
+        board_height_units: f32,
+        _static_obstacles: &[MovementStaticObstacle],
+        dt_seconds: f32,
+    ) -> WorldVec2 {
+        let desired_translation = desired_to - unit.body.position;
+        let corrected_translation = if unit.terrain_policy.applies_static_obstacles() {
+            self.corrected_ground_static_obstacle_translation_for(
                 unit.unit_id,
-                original_position,
-                to,
+                desired_translation,
                 dt_seconds,
-            );
-        }
+            )
+            .unwrap_or(desired_translation)
+        } else {
+            desired_translation
+        };
+        DirectContinuousMovement::clamp_to_board(
+            unit.body.position + corrected_translation,
+            unit.body.radius,
+            board_width_units,
+            board_height_units,
+        )
+    }
 
-        MovementTickResult { outputs }
+    fn apply_position(&mut self, unit_id: UnitInstanceId, position: WorldVec2) {
+        self.apply_unit_translation(unit_id, position);
     }
 }
 

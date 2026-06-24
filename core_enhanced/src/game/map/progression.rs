@@ -1,7 +1,9 @@
 use serde::{Deserialize, Serialize};
 
 use crate::game::determinism;
-use crate::game::map::types::{MapNodeDto, MapNodeId, MapNodeState, MapViewDto, RunMap};
+use crate::game::map::types::{
+    map_template_id_for_act, MapNodeDto, MapNodeId, MapNodeState, MapViewDto, RunMap,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MapProgressionError {
@@ -69,6 +71,15 @@ impl MapProgression {
             return Err(MapProgressionError::NodeUnavailable);
         }
 
+        for available_id in self.available_node_ids.iter().copied() {
+            if available_id == node_id {
+                continue;
+            }
+            if let Some(node) = map.node_mut(available_id) {
+                node.state = MapNodeState::Revealed;
+            }
+        }
+
         let node = map
             .node_mut(node_id)
             .ok_or(MapProgressionError::MissingNode)?;
@@ -120,13 +131,12 @@ impl MapProgression {
         nodes.sort_by_key(|node| (node.depth, node.lane, node.id.0.as_u128()));
 
         MapViewDto {
+            map_template_id: map_template_id_for_act(run.act_index),
             act_index: run.act_index,
             max_acts: run.max_acts,
             nodes,
             edges: map.edge_dtos(),
             current_node_id: self.current_node_id,
-            available_node_ids: self.available_node_ids.clone(),
-            completed_node_ids: self.completed_node_ids.clone(),
             boss_node_id: map.boss_node_id,
         }
     }

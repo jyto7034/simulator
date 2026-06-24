@@ -7,12 +7,12 @@ use serde::{Deserialize, Deserializer, Serialize};
 
 use crate::game::{
     ability::{
-        DeliveryDef, FocusPermissions, SkillAreaAnchorSource, SkillCastTargetingDef, SkillDef,
-        SkillEffectDef, SkillKind, SkillPresentationDef, SkillStepCondition, SkillStepDef,
-        SkillStepRepeat, SkillTarget, StepTargetingMode,
+        DeliveryDef, FocusPermissions, ProjectileHitPolicy, SkillAreaAnchorSource,
+        SkillCastTargetingDef, SkillDef, SkillEffectDef, SkillKind, SkillPresentationDef,
+        SkillStepCondition, SkillStepDef, SkillStepRepeat, SkillTarget, StepTargetingMode,
     },
     battle::buffs::BuffDatabase,
-    battle::tile_range::TileRangePattern,
+    battle::tile_range::{TileRangePattern, TileRangePolicy},
     data::{build_string_index, once_lock_with},
 };
 
@@ -99,6 +99,7 @@ struct RawSkillDatabase {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 #[serde(rename = "SkillDef")]
 struct RawSkillDef {
     id: crate::game::ability::SkillId,
@@ -106,7 +107,6 @@ struct RawSkillDef {
     name: String,
     #[serde(default)]
     kind: SkillKind,
-    #[serde(default)]
     cast_targeting: RawSkillCastTargetingDef,
     #[serde(default)]
     focus_time_ms: u32,
@@ -116,14 +116,13 @@ struct RawSkillDef {
     steps: Vec<RawSkillStepDef>,
 }
 
-#[derive(Debug, Deserialize, Default)]
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 enum RawSkillCastTargetingDef {
-    #[default]
-    FirstStepTarget,
     Explicit {
-        #[serde(default = "raw_default_step_range_units")]
-        range_units: f32,
         target: SkillTarget,
+        #[serde(default)]
+        range_policy: TileRangePolicy,
         #[serde(default)]
         defense_tile_range: Option<TileRangePattern>,
         #[serde(default)]
@@ -134,14 +133,15 @@ enum RawSkillCastTargetingDef {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 #[serde(rename = "SkillStepDef")]
 struct RawSkillStepDef {
     #[serde(default = "raw_default_step_id")]
     id: String,
     #[serde(default)]
     delay_ms: u32,
-    #[serde(default = "raw_default_step_range_units")]
-    range_units: f32,
+    #[serde(default)]
+    range_policy: TileRangePolicy,
     #[serde(default)]
     defense_tile_range: Option<TileRangePattern>,
     #[serde(default)]
@@ -169,10 +169,6 @@ fn raw_default_skill_name() -> String {
 
 fn raw_default_step_id() -> String {
     "step".to_string()
-}
-
-fn raw_default_step_range_units() -> f32 {
-    1.0
 }
 
 impl RawSkillDatabase {
@@ -236,16 +232,15 @@ impl RawSkillCastTargetingDef {
         preset_index: &HashMap<String, usize>,
     ) -> SkillCastTargetingDef {
         match self {
-            RawSkillCastTargetingDef::FirstStepTarget => SkillCastTargetingDef::FirstStepTarget,
             RawSkillCastTargetingDef::Explicit {
-                range_units,
                 target,
+                range_policy,
                 defense_tile_range,
                 defense_tile_range_preset,
                 air_capable,
             } => SkillCastTargetingDef::Explicit {
-                range_units,
                 target,
+                range_policy,
                 defense_tile_range: resolve_skill_range_source(
                     "explicit cast_targeting",
                     defense_tile_range,
@@ -269,7 +264,7 @@ impl RawSkillStepDef {
         SkillStepDef {
             id: step_id.clone(),
             delay_ms: self.delay_ms,
-            range_units: self.range_units,
+            range_policy: self.range_policy,
             defense_tile_range: resolve_skill_range_source(
                 &format!("step '{step_id}'"),
                 self.defense_tile_range,
@@ -344,18 +339,23 @@ fn validate_skill_contracts(skills: &[SkillDef]) {
             "skill '{}' must define at least one step",
             skill.id
         );
-        if let crate::game::ability::SkillCastTargetingDef::Explicit {
-            defense_tile_range: Some(pattern),
+        let crate::game::ability::SkillCastTargetingDef::Explicit {
+            range_policy,
+            target,
+            defense_tile_range,
             ..
-        } = &skill.cast_targeting
-        {
-            pattern.validate().unwrap_or_else(|error| {
-                panic!(
-                    "skill '{}' explicit cast_targeting has invalid defense_tile_range: {}",
-                    skill.id, error
-                )
-            });
-        }
+        } = &skill.cast_targeting;
+        validate_skill_range_policy(
+            &format!("skill '{}' explicit cast_targeting", skill.id),
+            *range_policy,
+            defense_tile_range.as_ref(),
+        );
+        assert!(
+            !matches!(range_policy, TileRangePolicy::WholeFieldValidTiles)
+                || !matches!(target, SkillTarget::SelfUnit),
+            "skill '{}' explicit cast_targeting uses WholeFieldValidTiles without an explicit non-self targeting rule",
+            skill.id
+        );
         let mut step_ids = HashSet::new();
 
         for (step_index, step) in skill.steps.iter().enumerate() {
@@ -367,6 +367,18 @@ fn validate_skill_contracts(skills: &[SkillDef]) {
                     )
                 });
             }
+            validate_skill_range_policy(
+                &format!("skill '{}' step '{}'", skill.id, step.id),
+                step.range_policy,
+                step.defense_tile_range.as_ref(),
+            );
+            assert!(
+                !matches!(step.range_policy, TileRangePolicy::WholeFieldValidTiles)
+                    || !matches!(step.target, SkillTarget::SelfUnit),
+                "skill '{}' step '{}' uses WholeFieldValidTiles without an explicit non-self targeting rule",
+                skill.id,
+                step.id
+            );
             assert!(
                 step_ids.insert(step.id.clone()),
                 "skill '{}' contains duplicate step id '{}'",
@@ -379,6 +391,7 @@ fn validate_skill_contracts(skills: &[SkillDef]) {
             for effect in &step.effects {
                 match effect {
                     crate::game::ability::SkillEffectDef::ApplyBuff { .. } => {}
+                    crate::game::ability::SkillEffectDef::InterruptCast => {}
                     crate::game::ability::SkillEffectDef::Damage { amount, .. } => {
                         has_damage_effect = true;
                         assert!(
@@ -403,19 +416,63 @@ fn validate_skill_contracts(skills: &[SkillDef]) {
             );
 
             match &step.delivery {
-                DeliveryDef::Projectile { collision, .. } => {
+                DeliveryDef::Projectile {
+                    hit_policy,
+                    allow_targetless_cast,
+                    max_range_tiles,
+                    max_lifetime_ms,
+                    max_kills,
+                    max_pierces,
+                    collision,
+                    ..
+                } => {
                     collision.validate_runtime_contract();
-                    if matches!(skill.kind, SkillKind::Targeted)
-                        && matches!(step.target, SkillTarget::EnemySingle { .. })
-                    {
-                        collision.validate_homing_runtime_contract();
+                    match hit_policy {
+                        ProjectileHitPolicy::TargetLocked => {
+                            assert!(
+                                !allow_targetless_cast,
+                                "skill '{}' step '{}' target-locked projectile must not allow targetless cast",
+                                skill.id,
+                                step.id
+                            );
+                            assert!(
+                                max_range_tiles.is_none()
+                                    && max_lifetime_ms.is_none()
+                                    && max_kills.is_none()
+                                    && max_pierces.is_none(),
+                                "skill '{}' step '{}' target-locked projectile must not define directional stop policy fields",
+                                skill.id,
+                                step.id
+                            );
+                            collision.validate_homing_runtime_contract();
+                        }
+                        ProjectileHitPolicy::DirectionalCollision => {
+                            assert!(
+                                max_range_tiles.is_some()
+                                    || max_lifetime_ms.is_some(),
+                                "skill '{}' step '{}' DirectionalCollision projectile requires max_range_tiles or max_lifetime_ms to define its endpoint",
+                                skill.id,
+                                step.id
+                            );
+                            assert!(
+                                max_kills.is_some()
+                                    || max_pierces.is_some()
+                                    || collision.max_hits.is_some()
+                                    || max_range_tiles.is_some()
+                                    || max_lifetime_ms.is_some(),
+                                "skill '{}' step '{}' DirectionalCollision projectile requires at least one stop policy",
+                                skill.id,
+                                step.id
+                            );
+                        }
                     }
                 }
                 DeliveryDef::TileArea { area } => {
                     area.validate_runtime_contract();
                     assert!(
-                        step.defense_tile_range.is_some(),
-                        "skill '{}' step '{}' uses TileArea but is missing defense_tile_range",
+                        step.range_policy == TileRangePolicy::WholeFieldValidTiles
+                            || step.defense_tile_range.is_some(),
+                        "skill '{}' step '{}' uses TileArea but is missing defense_tile_range or WholeFieldValidTiles range_policy",
                         skill.id,
                         step.id
                     );
@@ -446,22 +503,59 @@ fn validate_skill_contracts(skills: &[SkillDef]) {
     }
 }
 
+fn validate_skill_range_policy(
+    context: &str,
+    range_policy: TileRangePolicy,
+    defense_tile_range: Option<&TileRangePattern>,
+) {
+    match range_policy {
+        TileRangePolicy::Pattern => {
+            if let Some(pattern) = defense_tile_range {
+                pattern.validate().unwrap_or_else(|error| {
+                    panic!("{context} has invalid defense_tile_range: {error}")
+                });
+            }
+        }
+        TileRangePolicy::WholeFieldValidTiles => {
+            assert!(
+                defense_tile_range.is_none(),
+                "{context} uses WholeFieldValidTiles and must not also define defense_tile_range"
+            );
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::game::ability::{
-        DeliveryDef, SkillAreaAnchorSource, SkillCastTargetingDef, SkillEffectDef, SkillId,
-        SkillProjectileCollisionDef, SkillStepDef, SkillTileAreaDeliveryDef, UnitTargetRule,
+        DeliveryDef, ProjectileHitPolicy, SkillAreaAnchorSource, SkillCastTargetingDef,
+        SkillEffectDef, SkillId, SkillProjectileCollisionDef, SkillStepDef,
+        SkillTileAreaDeliveryDef, UnitTargetRule,
     };
     use crate::game::battle::buffs::BuffDatabase;
     use crate::game::battle::damage::{DamageModifiers, DamageType};
-    use crate::game::battle::tile_range::TileRangePattern;
+    use crate::game::battle::tile_range::{TileRangePattern, TileRangePolicy};
+
+    fn explicit_cast_targeting(target: SkillTarget) -> SkillCastTargetingDef {
+        SkillCastTargetingDef::explicit(target, Default::default(), None, false)
+    }
+
+    fn explicit_enemy_cast_targeting() -> SkillCastTargetingDef {
+        explicit_cast_targeting(SkillTarget::EnemySingle {
+            rule: UnitTargetRule::Nearest,
+        })
+    }
+
+    fn explicit_self_cast_targeting() -> SkillCastTargetingDef {
+        explicit_cast_targeting(SkillTarget::SelfUnit)
+    }
 
     fn projectile_step(collision: SkillProjectileCollisionDef) -> SkillStepDef {
         SkillStepDef {
             id: "shot".to_string(),
             delay_ms: 0,
-            range_units: 3.0,
+            range_policy: Default::default(),
             defense_tile_range: None,
             air_capable: false,
             target: SkillTarget::EnemySingle {
@@ -472,6 +566,12 @@ mod tests {
             repeat: Default::default(),
             delivery: DeliveryDef::Projectile {
                 speed_units_per_ms: 1_000,
+                hit_policy: ProjectileHitPolicy::TargetLocked,
+                allow_targetless_cast: false,
+                max_range_tiles: None,
+                max_lifetime_ms: None,
+                max_kills: None,
+                max_pierces: None,
                 collision,
             },
             effects: vec![],
@@ -483,7 +583,7 @@ mod tests {
         SkillStepDef {
             id: id.to_string(),
             delay_ms: 0,
-            range_units: 3.0,
+            range_policy: Default::default(),
             defense_tile_range: Some(TileRangePattern {
                 include_anchor_tile: true,
                 rows: vec![".@.".to_string()],
@@ -511,7 +611,7 @@ mod tests {
                 id: SkillId::from("empty"),
                 name: "empty".to_string(),
                 kind: SkillKind::Untargeted,
-                cast_targeting: SkillCastTargetingDef::FirstStepTarget,
+                cast_targeting: explicit_self_cast_targeting(),
                 focus_time_ms: 0,
                 focus_permissions: Default::default(),
                 steps: vec![],
@@ -528,7 +628,7 @@ mod tests {
                 id: SkillId::from("homing"),
                 name: "homing".to_string(),
                 kind: SkillKind::Targeted,
-                cast_targeting: SkillCastTargetingDef::FirstStepTarget,
+                cast_targeting: explicit_enemy_cast_targeting(),
                 focus_time_ms: 0,
                 focus_permissions: Default::default(),
                 steps: vec![projectile_step(SkillProjectileCollisionDef {
@@ -545,13 +645,51 @@ mod tests {
     }
 
     #[test]
+    fn skill_database_rejects_whole_field_with_authored_tile_pattern() {
+        let result = std::panic::catch_unwind(|| {
+            SkillDatabase::new(vec![SkillDef {
+                id: SkillId::from("ambiguous_whole_field"),
+                name: "ambiguous_whole_field".to_string(),
+                kind: SkillKind::Targeted,
+                cast_targeting: explicit_enemy_cast_targeting(),
+                focus_time_ms: 0,
+                focus_permissions: Default::default(),
+                steps: vec![SkillStepDef {
+                    id: "hit".to_string(),
+                    delay_ms: 0,
+                    range_policy: TileRangePolicy::WholeFieldValidTiles,
+                    defense_tile_range: Some(TileRangePattern {
+                        include_anchor_tile: false,
+                        rows: vec![".X.".to_string(), ".@.".to_string(), "...".to_string()],
+                    }),
+                    air_capable: false,
+                    target: SkillTarget::EnemySingle {
+                        rule: UnitTargetRule::Nearest,
+                    },
+                    targeting: Default::default(),
+                    when: Default::default(),
+                    repeat: Default::default(),
+                    delivery: DeliveryDef::Instant,
+                    effects: vec![],
+                    presentation: Default::default(),
+                }],
+            }]);
+        });
+
+        assert!(
+            result.is_err(),
+            "WholeFieldValidTiles must not also define defense_tile_range"
+        );
+    }
+
+    #[test]
     fn skill_database_rejects_duplicate_step_ids() {
         let result = std::panic::catch_unwind(|| {
             SkillDatabase::new(vec![SkillDef {
                 id: SkillId::from("duplicate_steps"),
                 name: "duplicate_steps".to_string(),
                 kind: SkillKind::Untargeted,
-                cast_targeting: SkillCastTargetingDef::FirstStepTarget,
+                cast_targeting: explicit_enemy_cast_targeting(),
                 focus_time_ms: 0,
                 focus_permissions: Default::default(),
                 steps: vec![
@@ -570,13 +708,13 @@ mod tests {
             id: SkillId::from("unknown_buff"),
             name: "unknown_buff".to_string(),
             kind: SkillKind::Untargeted,
-            cast_targeting: SkillCastTargetingDef::FirstStepTarget,
+            cast_targeting: explicit_self_cast_targeting(),
             focus_time_ms: 0,
             focus_permissions: Default::default(),
             steps: vec![SkillStepDef {
                 id: "step".to_string(),
                 delay_ms: 0,
-                range_units: 1.0,
+                range_policy: Default::default(),
                 defense_tile_range: None,
                 air_capable: false,
                 target: SkillTarget::SelfUnit,
@@ -613,13 +751,13 @@ mod tests {
                 id: SkillId::from("negative_damage"),
                 name: "negative_damage".to_string(),
                 kind: SkillKind::Untargeted,
-                cast_targeting: SkillCastTargetingDef::FirstStepTarget,
+                cast_targeting: explicit_enemy_cast_targeting(),
                 focus_time_ms: 0,
                 focus_permissions: Default::default(),
                 steps: vec![SkillStepDef {
                     id: "hit".to_string(),
                     delay_ms: 0,
-                    range_units: 1.0,
+                    range_policy: Default::default(),
                     defense_tile_range: None,
                     air_capable: false,
                     target: SkillTarget::EnemySingle {
@@ -648,13 +786,13 @@ mod tests {
                 id: SkillId::from("dangling_modify_damage"),
                 name: "dangling_modify_damage".to_string(),
                 kind: SkillKind::Untargeted,
-                cast_targeting: SkillCastTargetingDef::FirstStepTarget,
+                cast_targeting: explicit_enemy_cast_targeting(),
                 focus_time_ms: 0,
                 focus_permissions: Default::default(),
                 steps: vec![SkillStepDef {
                     id: "modifier_only".to_string(),
                     delay_ms: 0,
-                    range_units: 1.0,
+                    range_policy: Default::default(),
                     defense_tile_range: None,
                     air_capable: false,
                     target: SkillTarget::EnemySingle {
@@ -688,7 +826,7 @@ mod tests {
                 id: SkillId::from("dangling_impact_context"),
                 name: "dangling_impact_context".to_string(),
                 kind: SkillKind::Untargeted,
-                cast_targeting: SkillCastTargetingDef::FirstStepTarget,
+                cast_targeting: explicit_cast_targeting(SkillTarget::CastTarget),
                 focus_time_ms: 0,
                 focus_permissions: Default::default(),
                 steps: vec![tile_area_step("area", SkillAreaAnchorSource::ImpactContext)],
@@ -715,6 +853,10 @@ mod tests {
                 skills: [
                     SkillDef(
                         id: "preset_skill",
+                        cast_targeting: Explicit(
+                            target: EnemySingle(rule: Nearest),
+                            defense_tile_range_preset: Some("front_1"),
+                        ),
                         steps: [
                             SkillStepDef(
                                 id: "hit",
@@ -734,6 +876,53 @@ mod tests {
         let range = skill.steps[0].defense_tile_range.as_ref().unwrap();
         assert_eq!(range.rows, vec![".@X"]);
         assert_eq!(database.range_presets.len(), 1);
+    }
+
+    #[test]
+    fn skill_database_rejects_implicit_cast_targeting_and_range_units() {
+        let missing_cast_targeting = ron::de::from_str::<SkillDatabase>(
+            r#"
+            SkillDatabase(
+                skills: [
+                    SkillDef(
+                        id: "implicit_skill",
+                        steps: [
+                            SkillStepDef(
+                                id: "hit",
+                                target: EnemySingle(rule: Nearest),
+                                delivery: Instant,
+                            ),
+                        ],
+                    ),
+                ],
+            )
+            "#,
+        );
+        assert!(missing_cast_targeting.is_err());
+
+        let legacy_range_units = ron::de::from_str::<SkillDatabase>(
+            r#"
+            SkillDatabase(
+                skills: [
+                    SkillDef(
+                        id: "legacy_range_skill",
+                        cast_targeting: Explicit(
+                            target: EnemySingle(rule: Nearest),
+                        ),
+                        steps: [
+                            SkillStepDef(
+                                id: "hit",
+                                range_units: 3,
+                                target: EnemySingle(rule: Nearest),
+                                delivery: Instant,
+                            ),
+                        ],
+                    ),
+                ],
+            )
+            "#,
+        );
+        assert!(legacy_range_units.is_err());
     }
 
     #[test]

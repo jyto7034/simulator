@@ -64,8 +64,16 @@ Unity-facing 계약/구현 문서의 canonical 위치는 이 저장소가 아니
 특히 아래 문서는 외부 canonical 위치를 기준으로 확인하고 갱신하라.
 - F:\unity projects\ark\docs\unity_core_contract.md
 - F:\unity projects\ark\docs\unity_client_implementation_goal.md
+- F:\unity projects\ark\docs\core_unity_battle_transport_contract.md
+- /mnt/f/unity projects/ark/docs/unity_core_contract.md
+- /mnt/f/unity projects/ark/docs/unity_client_implementation_goal.md
+- /mnt/f/unity projects/ark/docs/core_unity_battle_transport_contract.md
 
-이 저장소 안의 docs/unity_core_contract.md, docs/unity_client_implementation_goal.md는 stale copy일 수 있다.
+기존 `core_unity_battle_setup_snapshot_contract.md`와 `core_unity_battle_update_contract.md`는 현재 `core_unity_battle_transport_contract.md`로 통합되었다.
+분리 문서가 남아 있더라도 새 전투 transport 계약을 바꿀 때는 통합 문서를 우선한다.
+
+이 저장소 안에는 docs/unity_core_contract.md, docs/unity_client_implementation_goal.md를 보관하지 않는다.
+같은 이름의 문서가 다시 생기면 stale copy로 간주하고 외부 canonical을 확인하라.
 
 다음 항목은 사용자 결정이 필요한 정책으로 간주하고 임의로 확정하지 마라.
 - Unity-facing DTO shape 변경

@@ -2,11 +2,14 @@ use std::sync::Arc;
 use tracing::{debug, info, warn};
 use uuid::Uuid;
 
-use crate::game::behavior::{ActionKind, BehaviorResult, GameError, PlayerBehavior, RosterSlotDto};
-use crate::game::data::GameDataBase;
+use crate::game::behavior::{
+    ActionKind, BehaviorResult, CombatResultEventLogAttachmentDto, GameError, PlayerBehavior,
+    RosterSlotDto,
+};
+use crate::game::data::{run_policy_data::RunPolicyData, GameDataBase};
 use crate::game::enums::{RewardAction, ShopAction};
 use crate::game::map::RunProgression;
-use crate::game::resources::{ActiveNodeContent, GameState, Qliphoth};
+use crate::game::resources::{ActiveNodeContent, GameState};
 
 mod admin;
 mod combat;
@@ -22,7 +25,7 @@ mod snapshot;
 mod state;
 mod support;
 
-use state::{GameCoreState, LiveBattleDeploymentPolicy, RunState};
+use state::{GameCoreState, RunState};
 
 pub use admin::{AdminCommand, AdminCommandOutput};
 
@@ -33,73 +36,6 @@ pub struct GameCore {
 }
 
 const ROSTER_ORDER_SLOTS: usize = 8;
-
-#[derive(Debug, Clone, Copy)]
-struct RunSystemPolicy {
-    setup: RunSetupPolicy,
-    live_deployment: LiveBattleDeploymentPolicy,
-    post_battle: PostBattleResolutionPolicy,
-    support: SupportPolicy,
-    headquarters: HeadquartersPolicy,
-}
-
-#[derive(Debug, Clone, Copy)]
-struct RunSetupPolicy {
-    default_max_acts: u8,
-    starter_employee_count: usize,
-    starter_enkephalin: u32,
-}
-
-#[derive(Debug, Clone, Copy)]
-struct PostBattleResolutionPolicy {
-    survival_xp: u32,
-    incapacitation_trauma: u32,
-    incapacitation_run_hp_loss_percent: u32,
-}
-
-#[derive(Debug, Clone, Copy)]
-struct SupportPolicy {
-    medical_hp_heal_percent: u32,
-    medical_trauma_heal: u32,
-    medical_balanced_hp_heal_percent: u32,
-    rest_trauma_heal: u32,
-}
-
-#[derive(Debug, Clone, Copy)]
-struct HeadquartersPolicy {
-    emergency_enkephalin: u32,
-}
-
-const RUN_SYSTEM_POLICY: RunSystemPolicy = RunSystemPolicy {
-    setup: RunSetupPolicy {
-        default_max_acts: 3,
-        starter_employee_count: 3,
-        starter_enkephalin: 500,
-    },
-    live_deployment: LiveBattleDeploymentPolicy {
-        initial_cost: 20,
-        max_cost: 99,
-        cost_per_second: 1,
-        base_deploy_cost: 10,
-        redeploy_cooldown_ms: 30_000,
-        redeploy_cost_multiplier_pct: 150,
-        first_instance_salt: 10_000,
-    },
-    post_battle: PostBattleResolutionPolicy {
-        survival_xp: 10,
-        incapacitation_trauma: 40,
-        incapacitation_run_hp_loss_percent: 25,
-    },
-    support: SupportPolicy {
-        medical_hp_heal_percent: 50,
-        medical_trauma_heal: 40,
-        medical_balanced_hp_heal_percent: 25,
-        rest_trauma_heal: 10,
-    },
-    headquarters: HeadquartersPolicy {
-        emergency_enkephalin: 120,
-    },
-};
 
 impl GameCore {
     /// GameCore 생성
@@ -118,16 +54,29 @@ impl GameCore {
         }
     }
 
+    pub(super) fn run_policy(&self) -> &RunPolicyData {
+        &self.game_data.run_policy
+    }
+
     pub fn execute(
         &mut self,
         player_id: Uuid,
         behavior: PlayerBehavior,
     ) -> Result<BehaviorResult, GameError> {
+        self.execute_with_source_command_id(player_id, behavior, None)
+    }
+
+    pub fn execute_with_source_command_id(
+        &mut self,
+        player_id: Uuid,
+        behavior: PlayerBehavior,
+        source_command_id: Option<&str>,
+    ) -> Result<BehaviorResult, GameError> {
         debug!("Executing behavior {:?} for player {}", behavior, player_id);
         let action_kind = behavior.kind();
 
         // 1. 상태 기반 액션 게이트
-        if !self.state.action_validator.is_kind_allowed(action_kind) {
+        if !self.get_allowed_actions().contains(&action_kind) {
             warn!(
                 "Rejected behavior {:?} for player {} (action kind {:?} not allowed in current state)",
                 behavior, player_id, action_kind
@@ -153,12 +102,7 @@ impl GameCore {
             PlayerBehavior::ChooseSupport { support_type } => {
                 self.handle_choose_support(support_type)
             }
-            PlayerBehavior::SelectSupportTarget { employee_uuid } => {
-                self.handle_select_support_target(employee_uuid)
-            }
-            PlayerBehavior::SelectMedicalTreatment { treatment } => {
-                self.handle_select_medical_treatment(treatment)
-            }
+            PlayerBehavior::LoadRunCheckpoint => self.handle_load_run_checkpoint(),
             PlayerBehavior::RecruitEmployee { candidate_id } => {
                 self.handle_recruit_employee(&candidate_id)
             }
@@ -224,19 +168,24 @@ impl GameCore {
             PlayerBehavior::RequestBattleState { since_seq } => {
                 self.handle_request_battle_state(since_seq)
             }
+            PlayerBehavior::RecoverBattleSetupLoss => self.handle_recover_battle_setup_loss(),
+            PlayerBehavior::RequestDeploymentRangePreview {
+                employee_uuid,
+                position,
+            } => self.handle_request_deployment_range_preview(employee_uuid, position),
             PlayerBehavior::DeployUnit {
                 employee_uuid,
                 position,
                 facing,
-            } => self.handle_deploy_unit(employee_uuid, position, facing),
+            } => self.handle_deploy_unit(employee_uuid, position, facing, source_command_id),
             PlayerBehavior::WithdrawUnit { employee_uuid } => {
-                self.handle_withdraw_unit(employee_uuid)
+                self.handle_withdraw_unit(employee_uuid, source_command_id)
             }
             PlayerBehavior::ActivateSkill {
                 employee_uuid,
                 skill_id,
                 target,
-            } => self.handle_activate_skill(employee_uuid, skill_id, target),
+            } => self.handle_activate_skill(employee_uuid, skill_id, target, source_command_id),
             PlayerBehavior::RetreatBattle => self.handle_retreat_battle(),
             PlayerBehavior::PauseBattle => self.handle_pause_battle(),
             PlayerBehavior::ResumeBattle => self.handle_resume_battle(),
@@ -266,13 +215,14 @@ impl GameCore {
     // 플레이어가 게임에 첫 진입을 하였을 때.
     // 바로 런을 시작하지 않고, 본부가 제시한 시작 직원 후보 선택 단계로 진입한다.
     fn handle_start_new_game(&mut self, player_id: Uuid) -> Result<BehaviorResult, GameError> {
+        let setup_policy = self.run_policy().setup;
         // 플레이어 생성
         self.initial_player(player_id);
         self.state.starter_candidates = self.game_data.starter_employee_data.candidates.clone();
-        if self.state.starter_candidates.len() < RUN_SYSTEM_POLICY.setup.starter_employee_count {
+        if self.state.starter_candidates.len() < setup_policy.starter_employee_count {
             return Err(GameError::InvalidStaticData(format!(
                 "starter employee candidate data must contain at least {} candidates, got {}",
-                RUN_SYSTEM_POLICY.setup.starter_employee_count,
+                setup_policy.starter_employee_count,
                 self.state.starter_candidates.len()
             )));
         }
@@ -286,7 +236,7 @@ impl GameCore {
 
         Ok(BehaviorResult::StartNewGame {
             candidates: self.state.starter_candidates.clone(),
-            required_count: RUN_SYSTEM_POLICY.setup.starter_employee_count,
+            required_count: setup_policy.starter_employee_count,
         })
     }
 
@@ -294,22 +244,20 @@ impl GameCore {
         &mut self,
         candidate_ids: Vec<String>,
     ) -> Result<BehaviorResult, GameError> {
+        let setup_policy = self.run_policy().setup;
         let employee_uuids = self.initialize_selected_starter_employees(&candidate_ids)?;
         self.sync_roster_order_with_owned_units()?;
 
         // 기초 자원 지급: 첫 안전 노드에서 상점에 들어가도 하나는 살 수 있도록 여유 있게.
-        self.state.enkephalin.amount = self
-            .state
+        self.state
             .enkephalin
-            .amount
-            .saturating_add(RUN_SYSTEM_POLICY.setup.starter_enkephalin);
+            .checked_add(setup_policy.starter_enkephalin)?;
         info!(
             "Granted starter enkephalin: amount={}, total={}",
-            RUN_SYSTEM_POLICY.setup.starter_enkephalin, self.state.enkephalin.amount
+            setup_policy.starter_enkephalin, self.state.enkephalin.amount
         );
 
-        let run_progression =
-            RunProgression::new(self.run_seed, RUN_SYSTEM_POLICY.setup.default_max_acts);
+        let run_progression = RunProgression::new(self.run_seed, setup_policy.default_max_acts);
         let (run_map, progression) = self.generate_current_act_map(&run_progression);
         self.state.run = Some(RunState::new(run_map, progression, run_progression));
         self.state.node_session = None;
@@ -379,16 +327,12 @@ impl GameCore {
         self.state.enkephalin.amount = amount;
     }
 
-    pub fn get_qliphoth(&self) -> Result<Qliphoth, GameError> {
-        Ok(self.state.qliphoth.clone())
-    }
-
     /// 현재 허용된 액션 capability 목록 조회
     ///
     /// # Returns
     /// 현재 허용된 ActionKind 목록
     pub fn get_allowed_actions(&self) -> Vec<ActionKind> {
-        self.state.action_validator.allowed_actions()
+        self.allowed_actions_for_state_context(&self.state.game_state)
     }
 
     /// 특정 행동 종류가 허용되는지 확인
@@ -399,7 +343,7 @@ impl GameCore {
     /// # Returns
     /// payload와 무관한 capability가 허용되면 true, 아니면 false
     pub fn is_action_allowed(&self, action: &PlayerBehavior) -> bool {
-        self.state.action_validator.is_action_allowed(action)
+        self.get_allowed_actions().contains(&action.kind())
     }
 
     pub fn game_state_name(&self) -> &'static str {
@@ -420,33 +364,29 @@ impl GameCore {
         }
     }
 
-    pub fn qliphoth_level_name(
+    pub fn get_combat_result_event_log_attachment(
         &self,
-        level: crate::game::resources::QliphothLevel,
-    ) -> &'static str {
-        match level {
-            crate::game::resources::QliphothLevel::Stable => "stable",
-            crate::game::resources::QliphothLevel::Caution => "caution",
-            crate::game::resources::QliphothLevel::Critical => "critical",
-            crate::game::resources::QliphothLevel::Meltdown => "meltdown",
-        }
-    }
-
-    pub fn get_combat_result_event_log(
-        &self,
-    ) -> Option<(
-        crate::game::battle::types::BattleWinner,
-        crate::game::battle::timeline::Timeline,
-    )> {
+    ) -> Option<CombatResultEventLogAttachmentDto> {
         self.state
             .active_node_content
             .as_ref()
             .and_then(|selected| match selected {
                 ActiveNodeContent::CombatBattle(battle) => {
-                    Some((battle.winner, battle.timeline.clone()))
+                    Some(CombatResultEventLogAttachmentDto {
+                        winner: battle.winner,
+                        event_log: battle.event_log.clone(),
+                    })
                 }
                 _ => None,
             })
+    }
+
+    pub fn battle_records(&self) -> &[crate::game::resources::CombatBattleState] {
+        self.state
+            .run
+            .as_ref()
+            .map(|run| run.battle_records.as_slice())
+            .unwrap_or(&[])
     }
 }
 

@@ -57,6 +57,12 @@ pub enum SkillFragmentRarity {
     Exceptional,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SkillFragmentEquipLimit {
+    OwnedCopies,
+    GlobalExclusive,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SkillFragmentAcquisitionSource {
     AbnormalityContainment { abnormality_id: String },
@@ -367,6 +373,7 @@ pub struct SkillFragmentMetadata {
     pub name: String,
     pub description: String,
     pub rarity: SkillFragmentRarity,
+    pub equip_limit: SkillFragmentEquipLimit,
     #[serde(default)]
     pub origin: Option<SkillFragmentOrigin>,
     pub sources: Vec<SkillFragmentAcquisitionSource>,
@@ -398,6 +405,7 @@ impl SkillFragmentMetadata {
         }
     }
 
+    #[cfg(test)]
     pub fn starter_basic_attack() -> Self {
         Self {
             id: SkillFragmentId::from("starter_basic_attack_enhancement"),
@@ -407,6 +415,7 @@ impl SkillFragmentMetadata {
                 "A baseline fragment that lets employees perform reinforced basic attacks."
                     .to_string(),
             rarity: SkillFragmentRarity::Common,
+            equip_limit: SkillFragmentEquipLimit::OwnedCopies,
             origin: Some(SkillFragmentOrigin::Concept {
                 concept_id: "employee_baseline_training".to_string(),
             }),
@@ -452,6 +461,7 @@ impl SkillFragmentDatabase {
         }
     }
 
+    #[cfg(test)]
     pub fn with_builtin_starter(mut fragments: Vec<SkillFragmentMetadata>) -> Self {
         if !fragments
             .iter()
@@ -524,23 +534,24 @@ mod tests {
     #[test]
     fn metadata_preserves_sources_and_dependencies_for_future_concepts() {
         let metadata = SkillFragmentMetadata {
-            id: SkillFragmentId::from("one_sin_fragment"),
+            id: SkillFragmentId::from("freischutz_fragment"),
             uuid: Uuid::from_u128(10),
-            name: "One Sin Fragment".to_string(),
+            name: "Freischutz Fragment".to_string(),
             description: "desc".to_string(),
             rarity: SkillFragmentRarity::Rare,
+            equip_limit: SkillFragmentEquipLimit::OwnedCopies,
             origin: Some(SkillFragmentOrigin::Abnormality {
-                abnormality_id: "one_sin".to_string(),
+                abnormality_id: "t-02-43_freischutz".to_string(),
             }),
             sources: vec![SkillFragmentAcquisitionSource::AbnormalityContainment {
-                abnormality_id: "one_sin".to_string(),
+                abnormality_id: "t-02-43_freischutz".to_string(),
             }],
             dependencies: vec![SkillFragmentDependency::SourceAbnormality {
-                abnormality_id: "one_sin".to_string(),
+                abnormality_id: "t-02-43_freischutz".to_string(),
             }],
             compatibility: SkillFragmentCompatibilityRequirements::default(),
             effect: SkillFragmentEffectDef::ActiveSkill {
-                imitation_skill_id: SkillId::from("fragment_one_sin_penitence"),
+                imitation_skill_id: SkillId::from("fragment_freischutz_black_round"),
                 upgrade_skill_ids: BTreeMap::new(),
                 awakened_skill_id: None,
             },

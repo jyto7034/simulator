@@ -6,6 +6,7 @@ pub const HALF_TILE_UNITS: u64 = TILE_UNITS_PER_TILE / 2;
 mod blocking;
 pub mod engine;
 mod lifecycle;
+mod path;
 pub mod planner;
 pub mod rapier_backend;
 pub mod steering;

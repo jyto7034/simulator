@@ -1,11 +1,12 @@
 use std::collections::{HashMap, HashSet};
 
-use crate::game::{data::pve_data::PveEncounter, resources::Position};
+use crate::game::resources::Position;
 
 use super::{
-    confidence_for_hidden, unique_positions, BattlefieldRoute, BattlefieldRouteDefinition,
-    BattlefieldTemplateDefinition, DeploymentZone, DeploymentZoneKind, ParsedBattlefieldTemplate,
-    SpawnZone, SpawnZoneKind, ZoneConfidence,
+    confidence_for_hidden, unique_positions, unique_tiles, BattlefieldRoute,
+    BattlefieldRouteDefinition, BattlefieldTemplateDefinition, BattlefieldTile,
+    BattlefieldTileKind, DeploymentZone, DeploymentZoneKind, ParsedBattlefieldTemplate, SpawnZone,
+    SpawnZoneKind, ZoneConfidence,
 };
 
 pub(super) fn parse_battlefield_template(
@@ -39,6 +40,7 @@ pub(super) fn parse_battlefield_template(
     }
 
     let mut valid_tiles = Vec::new();
+    let mut tiles = Vec::new();
     let mut ground_deployment_cells = Vec::new();
     let mut platform_deployment_cells = Vec::new();
     let mut obstacles = Vec::new();
@@ -58,6 +60,23 @@ pub(super) fn parse_battlefield_template(
 
             let position = Position::new(x as i32, y as i32);
             valid_tiles.push(position);
+            let tile_kind = match tile {
+                '.' | 'P' | 'N' | 'L' | 'Q' | 'A' | 'B' | 'W' | 'R' | 'X' | 'Y' | 'Z' => {
+                    BattlefieldTileKind::Ground
+                }
+                'T' => BattlefieldTileKind::Platform,
+                '#' => BattlefieldTileKind::Obstacle,
+                other => {
+                    return Err(format!(
+                        "battlefield template '{}' contains unsupported tile '{}'",
+                        template.id, other
+                    ));
+                }
+            };
+            tiles.push(BattlefieldTile {
+                position,
+                kind: tile_kind,
+            });
             match tile {
                 '.' => {}
                 '#' => obstacles.push(position),
@@ -71,17 +90,13 @@ pub(super) fn parse_battlefield_template(
                 'W' => west_reinforcement.push(position),
                 'R' => east_reinforcement.push(position),
                 'X' | 'Y' | 'Z' => {}
-                other => {
-                    return Err(format!(
-                        "battlefield template '{}' contains unsupported tile '{}'",
-                        template.id, other
-                    ));
-                }
+                _ => unreachable!("unsupported battlefield tile was rejected above"),
             }
         }
     }
 
     let valid_tiles = unique_positions(valid_tiles);
+    let tiles = unique_tiles(tiles);
     let ground_deployment_cells = unique_positions(ground_deployment_cells);
     let platform_deployment_cells = unique_positions(platform_deployment_cells);
     if ground_deployment_cells.is_empty() && platform_deployment_cells.is_empty() {
@@ -185,6 +200,7 @@ pub(super) fn parse_battlefield_template(
         size_class: template.size_class,
         width,
         height,
+        tiles,
         valid_tiles,
         deployment_zones,
         spawn_zones,
@@ -498,24 +514,4 @@ fn push_spawn_zone(
         cells: unique_positions(cells),
         revealed_details: Vec::new(),
     });
-}
-
-pub(super) fn apply_authored_static_obstacles(
-    template: &mut ParsedBattlefieldTemplate,
-    encounter: Option<&PveEncounter>,
-) {
-    let Some(authored_obstacles) = encounter
-        .map(|encounter| {
-            encounter
-                .static_obstacles
-                .iter()
-                .map(|obstacle| obstacle.position.into())
-                .collect::<Vec<_>>()
-        })
-        .filter(|obstacles| !obstacles.is_empty())
-    else {
-        return;
-    };
-
-    template.obstacles = unique_positions(authored_obstacles);
 }

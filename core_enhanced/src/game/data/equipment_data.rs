@@ -53,7 +53,6 @@ pub enum TargetingProfile {
     AirFirst,
     LowDefenseFirst,
     LowMagicResistFirst,
-    SplashClusterFirst,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -70,6 +69,8 @@ pub struct WeaponCombatProfile {
     pub interval_ms: u64,
     #[serde(default = "default_weapon_attack_windup_ms")]
     pub windup_ms: u32,
+    #[serde(default = "default_weapon_attack_reposition_ms")]
+    pub ranged_reposition_ms: u64,
     #[serde(default = "default_weapon_attack_delivery")]
     pub delivery: crate::game::ability::DeliveryDef,
 }
@@ -89,6 +90,7 @@ impl Default for WeaponCombatProfile {
             },
             interval_ms: default_weapon_attack_interval_ms(),
             windup_ms: default_weapon_attack_windup_ms(),
+            ranged_reposition_ms: default_weapon_attack_reposition_ms(),
             delivery: default_weapon_attack_delivery(),
         }
     }
@@ -100,6 +102,10 @@ fn default_weapon_attack_interval_ms() -> u64 {
 
 fn default_weapon_attack_windup_ms() -> u32 {
     crate::game::data::abnormality_data::DEFAULT_INSTANT_BASIC_ATTACK_WINDUP_MS
+}
+
+fn default_weapon_attack_reposition_ms() -> u64 {
+    1000
 }
 
 fn default_weapon_attack_delivery() -> crate::game::ability::DeliveryDef {

@@ -81,6 +81,7 @@ pub(crate) fn skill_test_dummy_metadata() -> AbnormalityMetadata {
         attack: 10,
         defense: 0,
         magic_resist: 0,
+        threat_class: game_core::game::battle::types::BattleUnitThreatClass::Elite,
         movement: MovementDef {
             speed_units_per_ms: 0,
             radius_units: 350_000,
@@ -266,6 +267,7 @@ fn build_spawn_group(
                     source: BattleUnitSource::Abnormality {
                         base_uuid: unit.base_uuid,
                     },
+                    threat_class: game_core::game::battle::types::BattleUnitThreatClass::Elite,
                     level: Tier::I,
                     growth_stacks: GrowthStack::new(),
                     equipped_items: vec![],

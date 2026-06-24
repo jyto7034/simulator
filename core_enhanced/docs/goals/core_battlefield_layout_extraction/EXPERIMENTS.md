@@ -1,0 +1,9 @@
+# Experiments
+
+| Date | Attempt | Result | Follow-up |
+|---|---|---|---|
+| 2026-06-23 | Goal setup | Created the subgoal document for static battlefield layout extraction. | Start with a full call-site inventory before editing. |
+| 2026-06-23 | Dynamic battlefield position API removal | Renamed `Battlefield` to `BattlefieldLayout`, removed `unit_pos`, tile `occupant`, `position_of`, `place`, `remove`, and `units_at`, and moved tile position consumers to `RuntimeUnit.body.projected_tile()` / `UnitBody::projected_tile()`. | Run focused tests and completion review before moving to lifecycle work. |
+| 2026-06-23 | Valid/walkable API cleanup | Replaced `in_bounds` with `is_valid_tile`, added `position_in_bounds`, `ensure_valid_tile`, and `ensure_walkable_tile`, and kept static obstacles as layout-owned walkability blockers. | Keep range preview and skill area clipping on `is_valid_tile`. |
+| 2026-06-23 | Projectile fixture failure | `cargo test advance_basic_attack_projectile_does_not_recheck_tile_range_at_arrival --lib -- --test-threads=1` failed because the new test helper moved the target body to the tile center, away from the projectile path. | Restored the test's world-space body positions after layout validation; rerun passed. |
+| 2026-06-23 | Focused validation | `cargo check`, `cargo check -p game_server`, `cargo test battlefield --lib -- --test-threads=1`, `cargo test static_obstacles_block_placement --lib -- --test-threads=1`, `cargo test advance_basic_attack_projectile_does_not_recheck_tile_range_at_arrival --lib -- --test-threads=1`, `cargo test instant_tile_area --lib -- --test-threads=1`, and `cargo test live_deployment_reconciles_defeated_player_unit_before_state_dto --lib -- --test-threads=1` passed. | Perform completion review with `docs/goal_completion_review_guide.md`. |

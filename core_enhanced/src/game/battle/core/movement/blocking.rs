@@ -1,8 +1,8 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use crate::game::{
     battle::{
-        core::{movement::types::WorldVec2, BattleCore, BlockRuntimeState},
+        core::{BattleCore, BlockRuntimeState},
         ids::UnitInstanceId,
         scenario::{EnemyMovementPlan, PlayerMovementPlan, WinCondition},
         types::BattleUnitRole,
@@ -10,26 +10,22 @@ use crate::game::{
     enums::Side,
 };
 
+use super::path::{route_progress_along_cells, route_total_length};
+
 impl BattleCore {
     pub(in crate::game::battle::core) fn refresh_block_state(&mut self) {
         if !matches!(
             self.scenario.tactical_plan.player_plan,
             PlayerMovementPlan::FixedDefense
         ) {
-            self.block_state = BlockRuntimeState::default();
+            self.replace_block_state(BlockRuntimeState::default());
             return;
         }
 
         let mut blocker_ids = self
             .units
             .values()
-            .filter(|unit| {
-                unit.owner == Side::Player
-                    && unit.is_combatant()
-                    && !unit.is_dead()
-                    && unit.block_capacity > 0
-                    && unit.block_radius_units > 0.0
-            })
+            .filter(|unit| self.is_valid_blocker(unit.instance_id))
             .map(|unit| unit.instance_id)
             .collect::<Vec<_>>();
         blocker_ids.sort_by(|a, b| a.as_bytes().cmp(b.as_bytes()));
@@ -37,13 +33,7 @@ impl BattleCore {
         let mut enemy_ids = self
             .units
             .values()
-            .filter(|unit| {
-                unit.owner == Side::Opponent
-                    && unit.is_combatant()
-                    && !unit.is_dead()
-                    && unit.blockable
-                    && !unit.is_airborne()
-            })
+            .filter(|unit| self.is_valid_blockable_enemy(unit.instance_id))
             .map(|unit| unit.instance_id)
             .collect::<Vec<_>>();
         enemy_ids.sort_by(|a, b| self.compare_enemy_block_priority(*a, *b));
@@ -58,7 +48,42 @@ impl BattleCore {
             .collect::<HashMap<_, _>>();
         let mut block_state = BlockRuntimeState::default();
 
+        let mut existing_engagements = self
+            .block_state
+            .enemy_to_blocker
+            .iter()
+            .map(|(enemy_id, blocker_id)| (*enemy_id, *blocker_id))
+            .collect::<Vec<_>>();
+        existing_engagements.sort_by(|(left_enemy, left_blocker), (right_enemy, right_blocker)| {
+            left_blocker
+                .as_bytes()
+                .cmp(right_blocker.as_bytes())
+                .then_with(|| left_enemy.as_bytes().cmp(right_enemy.as_bytes()))
+        });
+
+        for (enemy_id, blocker_id) in existing_engagements {
+            if !self.is_valid_blocker(blocker_id) || !self.is_valid_blockable_enemy(enemy_id) {
+                continue;
+            }
+            let Some(capacity) = remaining_capacity.get_mut(&blocker_id) else {
+                continue;
+            };
+            if *capacity == 0 {
+                continue;
+            }
+            *capacity = capacity.saturating_sub(1);
+            block_state
+                .blocker_to_enemies
+                .entry(blocker_id)
+                .or_default()
+                .push(enemy_id);
+            block_state.enemy_to_blocker.insert(enemy_id, blocker_id);
+        }
+
         for enemy_id in enemy_ids {
+            if block_state.enemy_to_blocker.contains_key(&enemy_id) {
+                continue;
+            }
             let Some(blocker_id) =
                 self.closest_available_blocker(enemy_id, &blocker_ids, &remaining_capacity)
             else {
@@ -79,7 +104,12 @@ impl BattleCore {
             enemy_ids.sort_by(|a, b| self.compare_enemy_block_priority(*a, *b));
         }
 
-        self.block_state = block_state;
+        self.replace_block_state(block_state);
+    }
+
+    fn replace_block_state(&mut self, next_state: BlockRuntimeState) {
+        let previous_state = std::mem::replace(&mut self.block_state, next_state);
+        self.clear_released_block_target_preferences(&previous_state);
         self.apply_block_target_preferences();
     }
 
@@ -117,7 +147,8 @@ impl BattleCore {
 
     pub(in crate::game::battle::core) fn protected_unit_id(&self) -> Option<UnitInstanceId> {
         let unit_ref = match &self.scenario.win_condition {
-            WinCondition::ProtectUnit { unit_ref } => Some(unit_ref),
+            WinCondition::ProtectUnit { unit_ref }
+            | WinCondition::ProtectUnitUntil { unit_ref, .. } => Some(unit_ref),
             _ => None,
         };
 
@@ -126,7 +157,7 @@ impl BattleCore {
             .or_else(|| {
                 self.units
                     .values()
-                    .filter(|unit| unit.role == BattleUnitRole::DefenseObject && !unit.is_dead())
+                    .filter(|unit| unit.role == BattleUnitRole::DefenseObject && unit.is_active())
                     .map(|unit| unit.instance_id)
                     .min_by(|a, b| a.as_bytes().cmp(b.as_bytes()))
             })
@@ -180,6 +211,26 @@ impl BattleCore {
                     .total_cmp(&self.block_distance_sq(*b, enemy_id).unwrap_or(f32::MAX));
                 distance_order.then_with(|| a.as_bytes().cmp(b.as_bytes()))
             })
+    }
+
+    fn is_valid_blocker(&self, blocker_id: UnitInstanceId) -> bool {
+        self.units.get(&blocker_id).is_some_and(|unit| {
+            unit.owner == Side::Player
+                && unit.is_combatant()
+                && unit.is_active()
+                && unit.block_capacity > 0
+                && unit.block_radius_units > 0.0
+        })
+    }
+
+    fn is_valid_blockable_enemy(&self, enemy_id: UnitInstanceId) -> bool {
+        self.units.get(&enemy_id).is_some_and(|unit| {
+            unit.owner == Side::Opponent
+                && unit.is_combatant()
+                && unit.is_active()
+                && unit.blockable
+                && !unit.is_airborne()
+        })
     }
 
     fn compare_enemy_block_priority(
@@ -268,6 +319,35 @@ impl BattleCore {
         Some(blocker.body.position.distance_squared(enemy.body.position))
     }
 
+    fn clear_released_block_target_preferences(&mut self, previous_state: &BlockRuntimeState) {
+        let active_pairs = self
+            .block_state
+            .enemy_to_blocker
+            .iter()
+            .map(|(enemy_id, blocker_id)| (*enemy_id, *blocker_id))
+            .collect::<HashSet<_>>();
+
+        for (enemy_id, blocker_id) in previous_state
+            .enemy_to_blocker
+            .iter()
+            .map(|(enemy_id, blocker_id)| (*enemy_id, *blocker_id))
+        {
+            if active_pairs.contains(&(enemy_id, blocker_id)) {
+                continue;
+            }
+            if let Some(enemy) = self.units.get_mut(&enemy_id) {
+                if enemy.current_target == Some(blocker_id) {
+                    enemy.current_target = None;
+                }
+            }
+            if let Some(blocker) = self.units.get_mut(&blocker_id) {
+                if blocker.current_target == Some(enemy_id) {
+                    blocker.current_target = None;
+                }
+            }
+        }
+    }
+
     fn apply_block_target_preferences(&mut self) {
         let blocker_targets = self
             .block_state
@@ -290,75 +370,4 @@ impl BattleCore {
             }
         }
     }
-}
-
-fn route_progress_along_cells(
-    cells: &[crate::game::resources::Position],
-    position: WorldVec2,
-) -> Option<f32> {
-    if cells.is_empty() {
-        return None;
-    }
-    if cells.len() == 1 {
-        return Some(0.0);
-    }
-
-    let centers = cells
-        .iter()
-        .copied()
-        .map(WorldVec2::from_tile_center)
-        .collect::<Vec<_>>();
-    let mut cumulative = 0.0;
-    let mut best_distance_sq = f32::MAX;
-    let mut best_progress = 0.0;
-
-    for segment in centers.windows(2) {
-        let start = segment[0];
-        let end = segment[1];
-        let delta = end - start;
-        let length_sq = delta.length_squared();
-        if length_sq <= f32::EPSILON {
-            continue;
-        }
-        let segment_length = length_sq.sqrt();
-        let to_position = position - start;
-        let t = dot(to_position, delta) / length_sq;
-        let t = t.clamp(0.0, 1.0);
-        let projected = start + delta * t;
-        let distance_sq = position.distance_squared(projected);
-        let progress = cumulative + segment_length * t;
-
-        if distance_sq < best_distance_sq - f32::EPSILON
-            || ((distance_sq - best_distance_sq).abs() <= f32::EPSILON && progress > best_progress)
-        {
-            best_distance_sq = distance_sq;
-            best_progress = progress;
-        }
-
-        cumulative += segment_length;
-    }
-
-    Some(best_progress)
-}
-
-fn route_total_length(cells: &[crate::game::resources::Position]) -> Option<f32> {
-    if cells.len() < 2 {
-        return Some(0.0);
-    }
-
-    let centers = cells
-        .iter()
-        .copied()
-        .map(WorldVec2::from_tile_center)
-        .collect::<Vec<_>>();
-    Some(
-        centers
-            .windows(2)
-            .map(|segment| segment[0].distance(segment[1]))
-            .sum(),
-    )
-}
-
-fn dot(a: WorldVec2, b: WorldVec2) -> f32 {
-    a.x * b.x + a.y * b.y
 }

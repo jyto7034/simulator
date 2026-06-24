@@ -1,28 +1,28 @@
-use crate::game::battle::{timeline::Timeline, timeline::TimelineEvent};
+use crate::game::battle::{event_log::BattleEventLog, event_log::BattleLogEvent};
 
 use super::{
     spawns::ExtractedSpawns,
-    types::{TimelineViolation, TimelineViolationKind},
+    types::{EventLogViolation, EventLogViolationKind},
 };
 
 pub(super) fn validate_attacks(
-    timeline: &Timeline,
+    event_log: &BattleEventLog,
     extracted: &ExtractedSpawns,
-    violations: &mut Vec<TimelineViolation>,
+    violations: &mut Vec<EventLogViolation>,
 ) {
-    for (index, entry) in timeline.entries.iter().enumerate() {
+    for (index, entry) in event_log.entries.iter().enumerate() {
         let (attacker_instance_id, target_instance_id) = match &entry.event {
-            TimelineEvent::AttackStart {
+            BattleLogEvent::AttackStart {
                 attacker_instance_id,
                 target_instance_id,
                 ..
             }
-            | TimelineEvent::AttackResolve {
+            | BattleLogEvent::AttackResolve {
                 attacker_instance_id,
                 target_instance_id,
                 ..
             }
-            | TimelineEvent::AttackMiss {
+            | BattleLogEvent::AttackMiss {
                 attacker_instance_id,
                 target_instance_id,
                 ..
@@ -31,8 +31,8 @@ pub(super) fn validate_attacks(
         };
 
         if attacker_instance_id == target_instance_id {
-            violations.push(TimelineViolation {
-                kind: TimelineViolationKind::AttackTargetsSameUnit,
+            violations.push(EventLogViolation {
+                kind: EventLogViolationKind::AttackTargetsSameUnit,
                 message: "attack targets the same unit".to_string(),
                 entry_index: Some(index),
             });
@@ -41,8 +41,8 @@ pub(super) fn validate_attacks(
 
         let Some(&attacker_owner) = extracted.unit_owner_by_instance.get(&attacker_instance_id)
         else {
-            violations.push(TimelineViolation {
-                kind: TimelineViolationKind::UnknownUnitReference,
+            violations.push(EventLogViolation {
+                kind: EventLogViolationKind::UnknownUnitReference,
                 message: format!(
                     "attack references unknown attacker {}",
                     attacker_instance_id
@@ -53,8 +53,8 @@ pub(super) fn validate_attacks(
         };
 
         let Some(&target_owner) = extracted.unit_owner_by_instance.get(&target_instance_id) else {
-            violations.push(TimelineViolation {
-                kind: TimelineViolationKind::UnknownUnitReference,
+            violations.push(EventLogViolation {
+                kind: EventLogViolationKind::UnknownUnitReference,
                 message: format!("attack references unknown target {}", target_instance_id),
                 entry_index: Some(index),
             });
@@ -62,8 +62,8 @@ pub(super) fn validate_attacks(
         };
 
         if attacker_owner == target_owner {
-            violations.push(TimelineViolation {
-                kind: TimelineViolationKind::AttackTargetsAlly,
+            violations.push(EventLogViolation {
+                kind: EventLogViolationKind::AttackTargetsAlly,
                 message: format!(
                     "attack targets ally: attacker_owner={:?} target_owner={:?}",
                     attacker_owner, target_owner
