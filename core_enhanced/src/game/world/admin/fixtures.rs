@@ -5,7 +5,8 @@ use crate::game::{
     enums::RewardMode,
     map::{
         HeadquartersContactOption, MapNode, MapNodeCategory, MapNodeId, MapNodeKindId,
-        MapNodePayload, MapNodeState, NodeSession, SupportNodeMode, SupportNodeType,
+        MapNodePayload, MapNodeState, MapNodeVisibility, MapSlotId, NodeSession, SupportNodeMode,
+        SupportNodeType,
     },
     resources::{ActiveNodeContent, GameState, HeadquartersContactSessionState},
 };
@@ -34,23 +35,21 @@ impl GameCore {
         kind_id: impl Into<String>,
         payload: MapNodePayload,
     ) -> Result<NodeSession, GameError> {
-        let outgoing = self
-            .state
+        self.state
             .run
             .as_ref()
-            .ok_or(GameError::MissingResource("RunState"))?
-            .map_progression
-            .available_node_ids
-            .clone();
+            .ok_or(GameError::MissingResource("RunState"))?;
         let node = MapNode {
             id: node_id,
             depth: 0,
             lane: 0,
+            slot_id: MapSlotId::for_grid_position(0, 0),
             kind_id: MapNodeKindId::new(kind_id),
             category,
-            state: MapNodeState::Revealed,
-            outgoing,
+            state: MapNodeState::Unavailable,
+            visibility: MapNodeVisibility::Revealed,
             payload: payload.clone(),
+            omen: None,
         };
 
         let session = NodeSession::from(&node);

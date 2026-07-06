@@ -52,6 +52,7 @@ impl CombatMissionPolicy {
         matches!(
             (node_type, mission_variant),
             (CombatNodeType::Defense, CombatMissionVariant::Defense)
+                | (CombatNodeType::Boss, CombatMissionVariant::Boss)
         )
     }
 
@@ -137,7 +138,8 @@ impl CombatMissionPolicy {
 
     pub fn default_tactical_plan_for_preview(combat_preview: &CombatPreview) -> TacticalPlan {
         match (combat_preview.node_type, combat_preview.mission_variant) {
-            (CombatNodeType::Defense, CombatMissionVariant::Defense) => {
+            (CombatNodeType::Defense, CombatMissionVariant::Defense)
+            | (CombatNodeType::Boss, CombatMissionVariant::Boss) => {
                 default_defense_tactical_plan(combat_preview)
             }
             _ => TacticalPlan::default(),
@@ -150,7 +152,10 @@ impl CombatMissionPolicy {
         tactical_plan: &TacticalPlan,
         survive_timer_ms: Option<u64>,
     ) -> WinCondition {
-        if mission_variant == CombatMissionVariant::Defense {
+        if matches!(
+            mission_variant,
+            CombatMissionVariant::Defense | CombatMissionVariant::Boss
+        ) {
             if let BattleObjective::ProtectUnit { unit_ref } = &tactical_plan.objective {
                 if let Some(time_ms) = survive_timer_ms {
                     return WinCondition::ProtectUnitUntil {
@@ -258,7 +263,7 @@ mod tests {
             CombatNodeType::Defense,
             CombatMissionVariant::Defense
         ));
-        assert!(!CombatMissionPolicy::starts_as_live_battle(
+        assert!(CombatMissionPolicy::starts_as_live_battle(
             CombatNodeType::Boss,
             CombatMissionVariant::Boss
         ));

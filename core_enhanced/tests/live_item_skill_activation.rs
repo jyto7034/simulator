@@ -34,6 +34,8 @@ fn test_abnormality(id: &str, uuid: Uuid, max_health: u32, attack: u32) -> Abnor
         defense: 0,
         magic_resist: 0,
         threat_class: game_core::game::battle::types::BattleUnitThreatClass::Elite,
+        omen_chain_id: None,
+        response_complete_skill_fragment_id: None,
         movement: Default::default(),
         basic_attack: game_core::game::data::abnormality_data::BasicAttackDef {
             defense_tile_range: Some(TileRangePattern {
@@ -55,6 +57,7 @@ fn unit_draft(owned_uuid: Uuid, base_uuid: Uuid, equipped_items: Vec<Uuid>) -> B
         source: BattleUnitSource::Abnormality { base_uuid },
         threat_class: game_core::game::battle::types::BattleUnitThreatClass::Elite,
         level: Tier::I,
+        stat_scale: Default::default(),
         growth_stacks: GrowthStack::new(),
         equipped_items,
         equipped_item_enhancements: vec![],

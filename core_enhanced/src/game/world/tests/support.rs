@@ -100,6 +100,16 @@ fn load_run_checkpoint_restores_visible_run_state_but_not_load_count() {
 
     let checkpoint_trauma = core.roster().unwrap().get(&employee_uuid).unwrap().trauma;
     assert_eq!(checkpoint_trauma, 68);
+    assert_eq!(
+        core.state
+            .run_checkpoint
+            .payload
+            .as_ref()
+            .unwrap()
+            .run_progression
+            .game_mode,
+        GameMode::Standard
+    );
     assert_eq!(core.state.run_checkpoint.loads_used, 0);
 
     core.state.enkephalin.amount = 999;
@@ -114,8 +124,13 @@ fn load_run_checkpoint_restores_visible_run_state_but_not_load_count() {
     let employee = core.roster().unwrap().get(&employee_uuid).unwrap();
     assert_eq!(employee.trauma, checkpoint_trauma);
     assert_eq!(core.state.enkephalin.amount, 500);
+    assert_eq!(
+        core.state.run.as_ref().unwrap().run_progression.game_mode,
+        GameMode::Standard
+    );
     assert_eq!(core.state.run_checkpoint.loads_used, 1);
     let snapshot = core.get_run_snapshot_json().unwrap();
+    assert_eq!(snapshot["run_progression"]["game_mode"], "Standard");
     assert_eq!(snapshot["run_checkpoint"]["loads_used"], 1);
     assert_eq!(snapshot["run_checkpoint"]["remaining_loads"], 2);
     assert_eq!(snapshot["run_checkpoint"]["can_load"], true);

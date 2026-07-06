@@ -143,6 +143,34 @@ impl std::ops::Mul<f32> for WorldVec2 {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
+pub(in crate::game::battle::core) struct ActiveMovementSegment {
+    pub(in crate::game::battle::core) start: WorldVec2,
+    pub(in crate::game::battle::core) target: WorldVec2,
+    pub(in crate::game::battle::core) started_at_ms: u64,
+    pub(in crate::game::battle::core) ends_at_ms: u64,
+}
+
+impl ActiveMovementSegment {
+    pub(in crate::game::battle::core) fn sample_position_at(&self, time_ms: u64) -> WorldVec2 {
+        if time_ms <= self.started_at_ms {
+            return self.start;
+        }
+        if time_ms >= self.ends_at_ms {
+            return self.target;
+        }
+
+        let duration_ms = self.ends_at_ms.saturating_sub(self.started_at_ms);
+        if duration_ms == 0 {
+            return self.target;
+        }
+
+        let elapsed_ms = time_ms.saturating_sub(self.started_at_ms);
+        let t = elapsed_ms as f32 / duration_ms as f32;
+        self.start + (self.target - self.start) * t
+    }
+}
+
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct EventLogVec2 {
     pub x_milli: i32,
@@ -174,15 +202,8 @@ impl Default for MovementMode {
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub enum MovementGoal {
-    AttackUnit {
-        target_id: UnitInstanceId,
-        desired_range: f32,
-        approach_point: Option<WorldVec2>,
-    },
-    MoveToPoint {
-        point: WorldVec2,
-        stop_radius: f32,
-    },
+    AttackUnit { target_id: UnitInstanceId },
+    MoveToPoint { point: WorldVec2, stop_radius: f32 },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

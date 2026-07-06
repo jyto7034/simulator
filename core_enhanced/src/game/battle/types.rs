@@ -65,9 +65,27 @@ pub struct BattleUnitDraft {
     pub source: BattleUnitSource,
     pub threat_class: BattleUnitThreatClass,
     pub level: Tier,
+    pub stat_scale: BattleUnitStatScale,
     pub growth_stacks: GrowthStack,
     pub equipped_items: Vec<Uuid>,
     pub equipped_item_enhancements: Vec<BattleEquipmentEnhancement>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct BattleUnitStatScale {
+    pub max_health_percent: u32,
+    pub attack_percent: u32,
+    pub defense_percent: u32,
+}
+
+impl Default for BattleUnitStatScale {
+    fn default() -> Self {
+        Self {
+            max_health_percent: 100,
+            attack_percent: 100,
+            defense_percent: 100,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -522,6 +540,8 @@ mod tests {
             defense: 5,
             magic_resist: 0,
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            response_complete_skill_fragment_id: None,
+            omen_chain_id: None,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -557,6 +577,8 @@ mod tests {
             defense: 5,
             magic_resist: 0,
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            response_complete_skill_fragment_id: None,
+            omen_chain_id: None,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -593,6 +615,8 @@ mod tests {
             defense: 5,
             magic_resist: 0,
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            response_complete_skill_fragment_id: None,
+            omen_chain_id: None,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -661,6 +685,7 @@ mod tests {
             },
             threat_class: BattleUnitThreatClass::Elite,
             level: Tier::I,
+            stat_scale: Default::default(),
             growth_stacks: growth,
             equipped_items: vec![item_uuid],
             equipped_item_enhancements: vec![],
@@ -690,6 +715,8 @@ mod tests {
             defense: 5,
             magic_resist: 0,
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            response_complete_skill_fragment_id: None,
+            omen_chain_id: None,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -751,6 +778,7 @@ mod tests {
             },
             threat_class: BattleUnitThreatClass::Elite,
             level: Tier::I,
+            stat_scale: Default::default(),
             growth_stacks: GrowthStack::new(),
             equipped_items: vec![item_uuid],
             equipped_item_enhancements: vec![BattleEquipmentEnhancement {
@@ -774,6 +802,7 @@ mod tests {
             },
             threat_class: BattleUnitThreatClass::Elite,
             level: Tier::I,
+            stat_scale: Default::default(),
             growth_stacks: GrowthStack::new(),
             equipped_items: vec![],
             equipped_item_enhancements: vec![],
@@ -801,6 +830,8 @@ mod tests {
             defense: 5,
             magic_resist: 0,
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            response_complete_skill_fragment_id: None,
+            omen_chain_id: None,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -831,6 +862,8 @@ mod tests {
             defense: 5,
             magic_resist: 0,
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            response_complete_skill_fragment_id: None,
+            omen_chain_id: None,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -874,6 +907,7 @@ mod tests {
             },
             threat_class: BattleUnitThreatClass::Elite,
             level: Tier::I,
+            stat_scale: Default::default(),
             growth_stacks: GrowthStack::new(),
             equipped_items: vec![],
             equipped_item_enhancements: vec![],

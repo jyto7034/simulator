@@ -178,6 +178,7 @@ fn battle_unit_draft_for_employee_from_item_slot(
         ),
         threat_class: BattleUnitThreatClass::Normal,
         level: employee.battle_tier(game_data.run_policy.as_ref()),
+        stat_scale: Default::default(),
         growth_stacks: employee.combat_profile.growth_stacks.clone(),
         equipped_items,
         equipped_item_enhancements,

@@ -11,30 +11,27 @@ use game_core::game::ability::{
     DeliveryDef, SkillCastTargetingDef, SkillDef, SkillId, SkillKind, SkillPresentationDef,
     SkillStepDef, SkillTarget, StepTargetingMode,
 };
-use game_core::game::battle::{buffs::BuffDatabase, event_log::BattleEventLog};
+use game_core::game::battle::event_log::BattleEventLog;
 use game_core::game::data::abnormality_data::{AbnormalityDatabase, AbnormalityMetadata};
 use game_core::game::data::artifact_data::{ArtifactDatabase, ArtifactMetadata};
-use game_core::game::data::consumable_data::ConsumableDatabase;
 use game_core::game::data::corroded_employee_data::CorrodedEmployeeProfileDatabase;
-use game_core::game::data::employee_data::{
-    RecruitmentEmployeeCandidateDatabase, StarterEmployeeCandidateDatabase,
-};
 use game_core::game::data::equipment_data::{EquipmentDatabase, EquipmentMetadata, EquipmentType};
 use game_core::game::data::pve_data::{
-    PveEncounter, PveEncounterDatabase, PveWaveData, PveWaveEnemyData, PveWaveSource,
+    PveEncounter, PveEncounterClass, PveEncounterDatabase, PveWaveData, PveWaveEnemyData,
+    PveWaveSource,
 };
 use game_core::game::data::reward_data::{RewardDatabase, RewardMetadata, RewardPoolMetadata};
-use game_core::game::data::run_policy_data::RunPolicyData;
 use game_core::game::data::shop_data::{ShopDatabase, ShopMetadata, ShopPoolMetadata, ShopType};
 use game_core::game::data::skill_data::SkillDatabase;
-use game_core::game::data::skill_fragment_data::SkillFragmentDatabase;
 use game_core::game::data::{GameDataBase, GameDataBuilder};
 use game_core::game::enums::{RewardMode, RiskLevel};
 use game_core::game::reward::RewardEffect;
 use uuid::Uuid;
 
 pub fn debug_event_log_exports_dir() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("debug_event_log_exports")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("target")
+        .join("debug_event_log_exports")
 }
 
 pub fn write_debug_event_log_export(name: &str, event_log: &BattleEventLog) -> PathBuf {
@@ -157,6 +154,8 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         defense: 5,
         magic_resist: 0,
         threat_class: game_core::game::battle::types::BattleUnitThreatClass::Elite,
+        omen_chain_id: None,
+        response_complete_skill_fragment_id: None,
         movement: Default::default(),
         basic_attack: Default::default(),
         resonance: Default::default(),
@@ -175,6 +174,8 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         defense: 4,
         magic_resist: 0,
         threat_class: game_core::game::battle::types::BattleUnitThreatClass::Elite,
+        omen_chain_id: None,
+        response_complete_skill_fragment_id: None,
         movement: Default::default(),
         basic_attack: Default::default(),
         resonance: Default::default(),
@@ -193,6 +194,8 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         defense: 3,
         magic_resist: 0,
         threat_class: game_core::game::battle::types::BattleUnitThreatClass::Elite,
+        omen_chain_id: None,
+        response_complete_skill_fragment_id: None,
         movement: Default::default(),
         basic_attack: Default::default(),
         resonance: Default::default(),
@@ -245,11 +248,12 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
     let pve_db = PveEncounterDatabase::new(vec![
         PveEncounter {
             id: "pve_test_1".to_string(),
-            abnormality_id: abnormality1.id.clone(),
-            difficulty: 1,
+            encounter_class: PveEncounterClass::Elite,
+            primary_abnormality_id: Some(abnormality1.id.clone()),
             risk_level: RiskLevel::ZAYIN,
             reward_mode: RewardMode::ChooseOne,
             reward_uuids: vec![reward_uuid],
+            suppression_research: None,
             node_type: None,
             mission_variant: None,
             survive_timer_ms: None,
@@ -272,11 +276,12 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         },
         PveEncounter {
             id: "pve_test_2".to_string(),
-            abnormality_id: abnormality2.id.clone(),
-            difficulty: 1,
+            encounter_class: PveEncounterClass::Elite,
+            primary_abnormality_id: Some(abnormality2.id.clone()),
             risk_level: RiskLevel::TETH,
             reward_mode: RewardMode::ChooseOne,
             reward_uuids: vec![reward_uuid],
+            suppression_research: None,
             node_type: None,
             mission_variant: None,
             survive_timer_ms: None,
@@ -299,11 +304,12 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         },
         PveEncounter {
             id: "pve_test_3".to_string(),
-            abnormality_id: abnormality3.id.clone(),
-            difficulty: 1,
+            encounter_class: PveEncounterClass::Elite,
+            primary_abnormality_id: Some(abnormality3.id.clone()),
             risk_level: RiskLevel::ZAYIN,
             reward_mode: RewardMode::ChooseOne,
             reward_uuids: vec![reward_uuid],
+            suppression_research: None,
             node_type: None,
             mission_variant: None,
             survive_timer_ms: None,
@@ -341,97 +347,18 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
 /// 실제 RON 파일에서 GameDataBase 로드
 ///
 /// 통합 테스트나 실제 서버에서 사용합니다.
-/// - 상점 데이터 (shops.ron)
+/// - 상점 데이터 (events/shops/base.ron)
 /// - 보상 데이터 (rewards.ron)
 /// - 환상체 데이터 (abnormalities.ron)
 /// - 장비 데이터 (equipments.ron)
-/// - 아티팩트 데이터 (artifacts.ron)
+/// - 아티팩트 데이터 (artifacts/base.ron)
 /// - 섭취 아이템 데이터 (consumables/base.ron)
 /// - 시작 직원 후보 데이터 (employees/starter_candidates.ron)
 /// - 런 중 채용 후보 데이터 (employees/recruitment_candidates.ron)
 /// - 스킬 파편 데이터 (skill_fragments/base.ron)
+/// - 이벤트 노드 데이터 (events/story/base.ron)
+/// - 보스 전조 체인 데이터 (boss_omen/chains.ron)
 #[allow(dead_code)]
 pub fn load_game_data_from_ron() -> Arc<GameDataBase> {
-    // Given: RON 파일 include_str! 로 포함 (컴파일 타임)
-    let shops_ron = include_str!("../../../game_resources/data/events/shops/base.ron");
-    let rewards_ron = include_str!("../../../game_resources/data/events/rewards/base.ron");
-    let abnormalities_ron = include_str!("../../../game_resources/data/abnormalities/base.ron");
-    let corroded_employees_ron =
-        include_str!("../../../game_resources/data/enemies/corroded_employees.ron");
-    let corroded_wave_presets_ron =
-        include_str!("../../../game_resources/data/enemies/corroded_wave_presets.ron");
-    let starter_candidates_ron =
-        include_str!("../../../game_resources/data/employees/starter_candidates.ron");
-    let recruitment_candidates_ron =
-        include_str!("../../../game_resources/data/employees/recruitment_candidates.ron");
-    let equipments_ron = include_str!("../../../game_resources/data/equipments/base.ron");
-    let artifacts_ron = include_str!("../../../game_resources/data/artifacts/base.ron");
-    let consumables_ron = include_str!("../../../game_resources/data/consumables/base.ron");
-    let buffs_ron = include_str!("../../../game_resources/data/buffs/base.ron");
-    let skills_ron = include_str!("../../../game_resources/data/skills/base.ron");
-    let skill_fragments_ron = include_str!("../../../game_resources/data/skill_fragments/base.ron");
-    let pve_ron = include_str!("../../../game_resources/data/pve/encounters.ron");
-    let run_policy_ron = include_str!("../../../game_resources/data/run/policy.ron");
-
-    // When: RON 역직렬화
-    let shops_db: ShopDatabase =
-        ron::de::from_str(shops_ron).expect("Failed to deserialize shops.ron");
-
-    let rewards_db: RewardDatabase =
-        ron::de::from_str(rewards_ron).expect("Failed to deserialize rewards.ron");
-
-    let abnormalities_db: AbnormalityDatabase =
-        ron::de::from_str(abnormalities_ron).expect("Failed to deserialize abnormalities.ron");
-    let corroded_employee_db: CorrodedEmployeeProfileDatabase =
-        ron::de::from_str(corroded_employees_ron)
-            .expect("Failed to deserialize corroded_employees.ron");
-    let corroded_wave_db: game_core::game::data::corroded_wave_data::CorrodedWavePresetDatabase =
-        ron::de::from_str(corroded_wave_presets_ron)
-            .expect("Failed to deserialize corroded_wave_presets.ron");
-    let starter_employee_db: StarterEmployeeCandidateDatabase =
-        ron::de::from_str(starter_candidates_ron)
-            .expect("Failed to deserialize starter_candidates.ron");
-    let recruitment_employee_db: RecruitmentEmployeeCandidateDatabase =
-        ron::de::from_str(recruitment_candidates_ron)
-            .expect("Failed to deserialize recruitment_candidates.ron");
-
-    let equipments_db: EquipmentDatabase =
-        ron::de::from_str(equipments_ron).expect("Failed to deserialize equipments.ron");
-
-    let artifacts_db: ArtifactDatabase =
-        ron::de::from_str(artifacts_ron).expect("Failed to deserialize artifacts.ron");
-
-    let consumables_db: ConsumableDatabase =
-        ron::de::from_str(consumables_ron).expect("Failed to deserialize consumables/base.ron");
-
-    let buffs_db: BuffDatabase =
-        ron::de::from_str(buffs_ron).expect("Failed to deserialize buffs/base.ron");
-
-    let skill_db: SkillDatabase =
-        ron::de::from_str(skills_ron).expect("Failed to deserialize skills.ron");
-    let skill_fragment_db: SkillFragmentDatabase = ron::de::from_str(skill_fragments_ron)
-        .expect("Failed to deserialize skill_fragments/base.ron");
-
-    let pve_db: PveEncounterDatabase =
-        ron::de::from_str(pve_ron).expect("Failed to deserialize pve encounters.ron");
-    let run_policy =
-        RunPolicyData::from_ron_str(run_policy_ron).expect("Failed to deserialize run/policy.ron");
-
-    GameDataBuilder::empty()
-        .with_abnormality_data(Arc::new(abnormalities_db))
-        .with_corroded_employee_data(Arc::new(corroded_employee_db))
-        .with_corroded_wave_data(Arc::new(corroded_wave_db))
-        .with_starter_employee_data(Arc::new(starter_employee_db))
-        .with_recruitment_employee_data(Arc::new(recruitment_employee_db))
-        .with_artifact_data(Arc::new(artifacts_db))
-        .with_consumable_data(Arc::new(consumables_db))
-        .with_equipment_data(Arc::new(equipments_db))
-        .with_shop_data(Arc::new(shops_db))
-        .with_reward_data(Arc::new(rewards_db))
-        .with_pve_data(Arc::new(pve_db))
-        .with_run_policy_data(Arc::new(run_policy))
-        .with_buff_data(Arc::new(buffs_db))
-        .with_skill_data(Arc::new(skill_db))
-        .with_skill_fragment_data(Arc::new(skill_fragment_db))
-        .build_arc()
+    GameDataBase::load_live_embedded()
 }

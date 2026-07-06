@@ -5,20 +5,22 @@ use uuid::Uuid;
 use crate::game::{
     ability::{DeliveryDef, SkillDef, SkillTarget},
     battle::{buffs::BuffDatabase, tile_range::TileRangePolicy, types::BattleUnitThreatClass},
-    combat_mission_policy::CombatMissionPolicy,
     combat_preview::{
         required_briefing_warning_tags_for_spawn_waves, CombatMissionVariant, CombatNodeType,
         CombatPreview, ThreatWarningSource,
     },
+    combat_setup::mission_policy::CombatMissionPolicy,
     data::{
         abnormality_data::AbnormalityDatabase,
         artifact_data::ArtifactDatabase,
+        boss_omen_data::{BossOmenChainDatabase, BossOmenSourceKind},
         consumable_data::ConsumableDatabase,
         corroded_employee_data::CorrodedEmployeeProfileDatabase,
         corroded_wave_data::CorrodedWavePresetDatabase,
         employee_data::StarterEmployeeCandidateDatabase,
         equipment_data::EquipmentDatabase,
-        pve_data::{PveEncounterDatabase, PveWaveSource},
+        event_data::{EventChoiceEffect, EventDatabase},
+        pve_data::{PveEncounterClass, PveEncounterDatabase, PveWaveSource},
         reward_data::RewardDatabase,
         shop_data::ShopDatabase,
         skill_data::SkillDatabase,
@@ -44,14 +46,21 @@ pub(super) fn validate_data_references(
     consumable_data: &ConsumableDatabase,
     equipment_data: &EquipmentDatabase,
     reward_data: &RewardDatabase,
+    event_data: &EventDatabase,
     pve_data: &PveEncounterDatabase,
+    boss_omen_data: &BossOmenChainDatabase,
     skill_data: &SkillDatabase,
     buff_data: &BuffDatabase,
     skill_fragment_data: &skill_fragment_data::SkillFragmentDatabase,
 ) {
     skill_data.validate_buff_references(buff_data);
     validate_skill_fragment_skill_references(skill_fragment_data, abnormality_data, skill_data);
-    validate_unit_skill_references(abnormality_data, corroded_employee_data, skill_data);
+    validate_unit_skill_references(
+        abnormality_data,
+        corroded_employee_data,
+        skill_data,
+        skill_fragment_data,
+    );
     validate_reward_references(
         reward_data,
         equipment_data,
@@ -66,6 +75,8 @@ pub(super) fn validate_data_references(
         corroded_wave_data,
         reward_data,
     );
+    validate_event_combat_references(event_data, pve_data);
+    validate_boss_omen_references(boss_omen_data, abnormality_data, event_data, pve_data);
 }
 
 pub(super) fn validate_shop_item_references(
@@ -184,12 +195,12 @@ fn validate_skill_fragment_skill_references(
         }
 
         let (imitation_skill_id, upgrade_skill_ids, awakened_skill_id) = match &fragment.effect {
+            SkillFragmentEffectDef::BasicAttackModifier { .. } => continue,
             SkillFragmentEffectDef::ActiveSkill {
                 imitation_skill_id,
                 upgrade_skill_ids,
                 awakened_skill_id,
             } => (imitation_skill_id, upgrade_skill_ids, awakened_skill_id),
-            _ => continue,
         };
 
         let imitation_skill = skill_data.get_by_id(imitation_skill_id);
@@ -257,6 +268,7 @@ fn validate_unit_skill_references(
     abnormality_data: &AbnormalityDatabase,
     corroded_employee_data: &CorrodedEmployeeProfileDatabase,
     skill_data: &SkillDatabase,
+    skill_fragment_data: &skill_fragment_data::SkillFragmentDatabase,
 ) {
     for abnormality in &abnormality_data.items {
         assert!(
@@ -264,6 +276,25 @@ fn validate_unit_skill_references(
             "abnormality '{}' must use Elite or Boss threat_class",
             abnormality.id
         );
+        if !skill_fragment_data.fragments.is_empty() {
+            let response_fragment_id = abnormality
+                .response_complete_skill_fragment_id
+                .as_ref()
+                .unwrap_or_else(|| {
+                    panic!(
+                        "abnormality '{}' must declare response_complete_skill_fragment_id",
+                        abnormality.id
+                    )
+                });
+            assert!(
+                skill_fragment_data
+                    .get_by_id(response_fragment_id)
+                    .is_some(),
+                "abnormality '{}' references unknown response_complete_skill_fragment_id '{}'",
+                abnormality.id,
+                response_fragment_id
+            );
+        }
         if let Some(skill_id) = &abnormality.skill_id {
             let skill = skill_data.get_by_id(skill_id);
             assert!(
@@ -434,6 +465,61 @@ fn validate_pve_enemy_references(
     reward_data: &RewardDatabase,
 ) {
     for encounter in &pve_data.encounters {
+        match encounter.encounter_class {
+            PveEncounterClass::Normal => {
+                assert!(
+                    encounter.primary_abnormality_id().is_none(),
+                    "normal pve encounter '{}' must not define primary_abnormality_id",
+                    encounter.id
+                );
+            }
+            PveEncounterClass::Elite
+            | PveEncounterClass::NormalBoss
+            | PveEncounterClass::FinalBoss => {
+                let primary_abnormality_id =
+                    encounter.primary_abnormality_id().unwrap_or_else(|| {
+                        panic!(
+                            "{:?} pve encounter '{}' must define primary_abnormality_id",
+                            encounter.encounter_class, encounter.id
+                        )
+                    });
+                let abnormality = abnormality_data
+                    .get_by_id(primary_abnormality_id)
+                    .unwrap_or_else(|| {
+                        panic!(
+                            "pve encounter '{}' references missing primary abnormality '{}'",
+                            encounter.id, primary_abnormality_id
+                        )
+                    });
+                match encounter.encounter_class {
+                    PveEncounterClass::Elite => assert_eq!(
+                        abnormality.threat_class,
+                        BattleUnitThreatClass::Elite,
+                        "elite pve encounter '{}' primary abnormality '{}' must be Elite",
+                        encounter.id,
+                        primary_abnormality_id
+                    ),
+                    PveEncounterClass::NormalBoss | PveEncounterClass::FinalBoss => assert_eq!(
+                        abnormality.threat_class,
+                        BattleUnitThreatClass::Boss,
+                        "{:?} pve encounter '{}' primary abnormality '{}' must be Boss",
+                        encounter.encounter_class,
+                        encounter.id,
+                        primary_abnormality_id
+                    ),
+                    PveEncounterClass::Normal => unreachable!(),
+                }
+            }
+        }
+
+        if encounter.has_bonus_objectives() {
+            assert!(
+                encounter.primary_abnormality_id().is_some(),
+                "pve encounter '{}' defines bonus objectives but has no primary abnormality",
+                encounter.id
+            );
+        }
+
         for wave in &encounter.waves {
             if let PveWaveSource::GeneratedCorroded { preset_id, .. } = &wave.source {
                 let preset = corroded_wave_data.get_by_id(preset_id).unwrap_or_else(|| {
@@ -545,20 +631,182 @@ fn validate_pve_enemy_references(
     }
 }
 
+fn validate_boss_omen_references(
+    boss_omen_data: &BossOmenChainDatabase,
+    abnormality_data: &AbnormalityDatabase,
+    event_data: &EventDatabase,
+    pve_data: &PveEncounterDatabase,
+) {
+    let chain_ids = boss_omen_data
+        .chains
+        .iter()
+        .map(|chain| chain.id.as_str())
+        .collect::<HashSet<_>>();
+
+    for abnormality in &abnormality_data.items {
+        let Some(omen_chain_id) = &abnormality.omen_chain_id else {
+            continue;
+        };
+        assert!(
+            chain_ids.contains(omen_chain_id.as_str()),
+            "abnormality '{}' references unknown omen_chain_id '{}'",
+            abnormality.id,
+            omen_chain_id.as_str()
+        );
+    }
+
+    for chain in &boss_omen_data.chains {
+        let abnormality = abnormality_data
+            .get_by_id(&chain.boss_abnormality_id)
+            .unwrap_or_else(|| {
+                panic!(
+                    "boss omen chain '{}' references missing boss abnormality '{}'",
+                    chain.id.as_str(),
+                    chain.boss_abnormality_id
+                )
+            });
+        assert!(
+            abnormality
+                .omen_chain_id
+                .as_ref()
+                .is_some_and(|id| id == &chain.id),
+            "boss omen chain '{}' boss abnormality '{}' must reference it through omen_chain_id",
+            chain.id.as_str(),
+            abnormality.id
+        );
+
+        let boss_encounter = pve_data
+            .get_by_id(&chain.boss_encounter_id)
+            .unwrap_or_else(|| {
+                panic!(
+                    "boss omen chain '{}' references missing boss encounter '{}'",
+                    chain.id.as_str(),
+                    chain.boss_encounter_id
+                )
+            });
+        assert_eq!(
+            boss_encounter.primary_abnormality_id(),
+            Some(chain.boss_abnormality_id.as_str()),
+            "boss omen chain '{}' boss encounter '{}' must target abnormality '{}'",
+            chain.id.as_str(),
+            boss_encounter.id,
+            chain.boss_abnormality_id
+        );
+        assert!(
+            matches!(boss_encounter.encounter_class, PveEncounterClass::FinalBoss),
+            "boss omen chain '{}' boss encounter '{}' must be FinalBoss",
+            chain.id.as_str(),
+            boss_encounter.id
+        );
+
+        for step in &chain.steps {
+            match step.source_kind {
+                BossOmenSourceKind::Event => {
+                    let event_id = step
+                        .event_id
+                        .as_ref()
+                        .expect("event step must have event_id after local validation");
+                    assert!(
+                        event_data.get_by_id(event_id.as_str()).is_some(),
+                        "boss omen chain '{}' step '{}' references missing event '{}'",
+                        chain.id.as_str(),
+                        step.id.as_str(),
+                        event_id.as_str()
+                    );
+                }
+                BossOmenSourceKind::Combat => {
+                    let encounter_id = step
+                        .encounter_id
+                        .as_ref()
+                        .expect("combat step must have encounter_id after local validation");
+                    let encounter = pve_data.get_by_id(encounter_id).unwrap_or_else(|| {
+                        panic!(
+                            "boss omen chain '{}' step '{}' references missing encounter '{}'",
+                            chain.id.as_str(),
+                            step.id.as_str(),
+                            encounter_id
+                        )
+                    });
+                    assert!(
+                        matches!(
+                            encounter.encounter_class,
+                            PveEncounterClass::Elite
+                                | PveEncounterClass::NormalBoss
+                                | PveEncounterClass::FinalBoss
+                        ),
+                        "boss omen chain '{}' step '{}' combat encounter '{}' must be abnormality-bearing",
+                        chain.id.as_str(),
+                        step.id.as_str(),
+                        encounter.id
+                    );
+                }
+            }
+        }
+    }
+}
+
+fn validate_event_combat_references(event_data: &EventDatabase, pve_data: &PveEncounterDatabase) {
+    for event in &event_data.events {
+        for scene in &event.scenes {
+            let crate::game::data::event_data::EventSceneNext::Choices { choices } = &scene.next
+            else {
+                continue;
+            };
+            for choice in choices {
+                for effect in &choice.effects {
+                    let EventChoiceEffect::StartCombat {
+                        encounter_id,
+                        primary_abnormality_id,
+                    } = effect
+                    else {
+                        continue;
+                    };
+                    let encounter = pve_data.get_by_id(encounter_id).unwrap_or_else(|| {
+                        panic!(
+                            "event '{}' choice '{}' references missing combat encounter '{}'",
+                            event.id.as_str(),
+                            choice.id.as_str(),
+                            encounter_id
+                        )
+                    });
+                    if let Some(primary_abnormality_id) = primary_abnormality_id {
+                        assert_eq!(
+                            encounter.primary_abnormality_id(),
+                            Some(primary_abnormality_id.as_str()),
+                            "event '{}' choice '{}' primary_abnormality_id '{}' does not match encounter '{}'",
+                            event.id.as_str(),
+                            choice.id.as_str(),
+                            primary_abnormality_id,
+                            encounter_id
+                        );
+                    }
+                }
+            }
+        }
+    }
+}
+
 fn validate_combat_preview_threat_warning_contract(game_data: &GameDataBase) {
     const PREVIEW_VALIDATION_SEEDS: [u64; 5] = [0, 1, 17, 41, 99];
 
     for encounter in &game_data.pve_data.encounters {
         for seed in PREVIEW_VALIDATION_SEEDS {
-            let preview = CombatPreview::generate_for_node(
-                MapNodeId::new(Uuid::from_u128(
-                    0xADAD_0000_0000_0000_0000_0000_0000_0000_u128 + u128::from(seed),
-                )),
+            let node_id = MapNodeId::new(Uuid::from_u128(
+                0xADAD_0000_0000_0000_0000_0000_0000_0000_u128 + u128::from(seed),
+            ));
+            let preview = CombatPreview::try_generate_for_node(
+                node_id,
                 MapNodeCategory::Combat,
                 Some(encounter.id.as_str()),
                 game_data,
                 seed,
-            );
+            )
+            .unwrap_or_else(|error| {
+                panic!(
+                    "combat preview generation failed for pve encounter '{}' seed {}: {:?}",
+                    encounter.id, seed, error
+                )
+            });
             let required =
                 required_briefing_warning_tags_for_spawn_waves(&preview.spawn_waves, game_data);
             let briefing_tags = preview

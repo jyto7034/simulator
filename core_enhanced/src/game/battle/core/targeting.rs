@@ -25,14 +25,6 @@ pub(in crate::game::battle::core) struct BasicAttackRangePolicy {
 }
 
 impl BattleCore {
-    pub(in crate::game::battle::core) fn compare_enemy_target_preference(
-        &self,
-        a: UnitInstanceId,
-        b: UnitInstanceId,
-    ) -> Ordering {
-        a.as_bytes().cmp(b.as_bytes())
-    }
-
     fn basic_attack_target_distance_sq_world(
         &self,
         attacker_instance_id: UnitInstanceId,
@@ -161,32 +153,9 @@ impl BattleCore {
             candidates.push(unit.instance_id);
         }
 
-        if attacker_owner != Side::Player {
-            return candidates.into_iter().min_by(|a, b| {
-                self.compare_nearest_basic_attack_target(attacker_instance_id, *a, *b)
-            });
-        }
-
         candidates
             .into_iter()
             .min_by(|a, b| self.compare_targeting_profile_candidate(targeting_profile, *a, *b))
-    }
-
-    fn compare_nearest_basic_attack_target(
-        &self,
-        attacker_instance_id: UnitInstanceId,
-        left: UnitInstanceId,
-        right: UnitInstanceId,
-    ) -> Ordering {
-        let left_distance = self
-            .basic_attack_target_distance_sq_world(attacker_instance_id, left)
-            .unwrap_or(f32::MAX);
-        let right_distance = self
-            .basic_attack_target_distance_sq_world(attacker_instance_id, right)
-            .unwrap_or(f32::MAX);
-        left_distance
-            .total_cmp(&right_distance)
-            .then_with(|| self.compare_enemy_target_preference(left, right))
     }
 
     fn compare_targeting_profile_candidate(
@@ -337,15 +306,6 @@ impl BattleCore {
             .map(|unit| unit.instance_id)
     }
 
-    pub fn basic_attack_range_units(&self, unit_base_uuid: Uuid) -> f32 {
-        self.game_data
-            .abnormality_data
-            .get_by_uuid(&unit_base_uuid)
-            .map(|m| m.basic_attack.range_units)
-            .unwrap_or(1.0)
-            .max(0.0)
-    }
-
     pub fn basic_attack_delivery(&self, unit_base_uuid: Uuid) -> AttackDelivery {
         match self
             .game_data
@@ -409,7 +369,7 @@ mod tests {
                 types::RuntimeUnit,
             },
             damage::DamageModifiers,
-            scenario::{BattleScenario, EnemyMovementPlan},
+            scenario::{BattleScenario, EnemyMovementPlan, PlayerMovementPlan},
             tile_range::FacingDirection,
             types::{BattleUnitRole, MobilityKind},
         },
@@ -496,6 +456,21 @@ mod tests {
         attacker.basic_attack.targeting_profile = profile;
         core.units.insert(attacker_id, attacker);
         attacker_id
+    }
+
+    fn add_enemy_attacker(core: &mut BattleCore, profile: TargetingProfile) -> UnitInstanceId {
+        let attacker_id = UnitInstanceId::from(Uuid::from_u128(1));
+        let mut attacker = unit(1, Side::Opponent, WorldVec2::new(0.0, 1.0));
+        attacker.basic_attack.targeting_profile = profile;
+        core.units.insert(attacker_id, attacker);
+        attacker_id
+    }
+
+    fn add_player_target(core: &mut BattleCore, id: u128, position: WorldVec2) -> UnitInstanceId {
+        let target_id = UnitInstanceId::from(Uuid::from_u128(id));
+        core.units
+            .insert(target_id, unit(id, Side::Player, position));
+        target_id
     }
 
     fn add_enemy(
@@ -642,6 +617,96 @@ mod tests {
         assert_eq!(
             resist_core.choose_attack_target_in_range(resist_attacker),
             Some(low_resist)
+        );
+    }
+
+    #[test]
+    fn enemy_ranged_low_defense_profile_beats_nearest_target() {
+        let mut core = test_core();
+        let attacker_id = add_enemy_attacker(&mut core, TargetingProfile::LowDefenseFirst);
+        let near_sturdy = add_player_target(&mut core, 10, WorldVec2::new(1.0, 1.0));
+        let far_fragile = add_player_target(&mut core, 11, WorldVec2::new(4.0, 1.0));
+        core.units.get_mut(&near_sturdy).unwrap().stats.defense = 50;
+        core.units.get_mut(&far_fragile).unwrap().stats.defense = -5;
+
+        assert_eq!(
+            core.choose_attack_target_in_range(attacker_id),
+            Some(far_fragile)
+        );
+    }
+
+    #[test]
+    fn enemy_ranged_low_magic_resist_profile_beats_nearest_target() {
+        let mut core = test_core();
+        let attacker_id = add_enemy_attacker(&mut core, TargetingProfile::LowMagicResistFirst);
+        let near_resistant = add_player_target(&mut core, 20, WorldVec2::new(1.0, 1.0));
+        let far_vulnerable = add_player_target(&mut core, 21, WorldVec2::new(4.0, 1.0));
+        core.units
+            .get_mut(&near_resistant)
+            .unwrap()
+            .stats
+            .magic_resist = 70;
+        core.units
+            .get_mut(&far_vulnerable)
+            .unwrap()
+            .stats
+            .magic_resist = -10;
+
+        assert_eq!(
+            core.choose_attack_target_in_range(attacker_id),
+            Some(far_vulnerable)
+        );
+    }
+
+    #[test]
+    fn enemy_ranged_blocker_overrides_targeting_profile() {
+        let mut core = test_core();
+        core.scenario.tactical_plan.player_plan = PlayerMovementPlan::FixedDefense;
+        let attacker_id = add_enemy_attacker(&mut core, TargetingProfile::LowDefenseFirst);
+        let blocker_id = add_player_target(&mut core, 10, WorldVec2::new(1.0, 1.0));
+        let fragile_id = add_player_target(&mut core, 11, WorldVec2::new(4.0, 1.0));
+        core.units.get_mut(&blocker_id).unwrap().stats.defense = 50;
+        core.units.get_mut(&fragile_id).unwrap().stats.defense = -5;
+        let blocker = core.units.get_mut(&blocker_id).unwrap();
+        blocker.block_capacity = 1;
+        blocker.block_radius_units = 2.0;
+        core.refresh_block_state();
+
+        assert_eq!(core.blocked_by(attacker_id), Some(blocker_id));
+        assert_eq!(
+            core.select_basic_attack_target(attacker_id, None, None),
+            Some(blocker_id)
+        );
+    }
+
+    #[test]
+    fn enemy_ranged_persisted_target_overrides_new_profile_selection() {
+        let mut core = test_core();
+        core.scenario.tactical_plan.player_plan = PlayerMovementPlan::FixedDefense;
+        let attacker_id = add_enemy_attacker(&mut core, TargetingProfile::LowDefenseFirst);
+        let persisted_id = add_player_target(&mut core, 20, WorldVec2::new(1.0, 1.0));
+        let fragile_id = add_player_target(&mut core, 21, WorldVec2::new(4.0, 1.0));
+        core.units.get_mut(&persisted_id).unwrap().stats.defense = 50;
+        core.units.get_mut(&fragile_id).unwrap().stats.defense = -5;
+
+        assert_eq!(
+            core.select_basic_attack_target(attacker_id, Some(persisted_id), None),
+            Some(persisted_id)
+        );
+    }
+
+    #[test]
+    fn enemy_ranged_profile_selection_excludes_out_of_range_targets() {
+        let mut core = test_core();
+        let attacker_id = add_enemy_attacker(&mut core, TargetingProfile::LowDefenseFirst);
+        let in_range_id = add_player_target(&mut core, 30, WorldVec2::new(1.0, 1.0));
+        let out_of_range_id = add_player_target(&mut core, 31, WorldVec2::new(7.0, 1.0));
+        core.units.get_mut(&in_range_id).unwrap().stats.defense = 50;
+        core.units.get_mut(&out_of_range_id).unwrap().stats.defense = -5;
+
+        assert_eq!(
+            core.choose_attack_target_in_range(attacker_id),
+            Some(in_range_id)
         );
     }
 }

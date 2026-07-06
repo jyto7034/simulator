@@ -6,10 +6,13 @@ pub mod types;
 
 pub use executor::{MapNodeEnterResult, MapNodeExecutor};
 pub use generator::{MapGenerationConfig, MapGenerationPolicyData, MapGenerator};
-pub use progression::{MapProgression, MapProgressionError, RunProgression};
+pub use progression::{
+    GameMode, MapProgression, MapProgressionError, RunProgression, RunProgressionModeState,
+};
 pub use session::NodeSession;
 pub use types::{
-    HeadquartersContactOption, MapEdgeDto, MapNode, MapNodeCategory, MapNodeDefinition,
-    MapNodeDefinitionDatabase, MapNodeDto, MapNodeId, MapNodeKindId, MapNodePayload, MapNodeState,
-    MapViewDto, RunMap, SupportNodeMode, SupportNodeType,
+    HeadquartersContactOption, MapEdgeDirection, MapEdgeDto, MapNode, MapNodeCategory,
+    MapNodeDefinition, MapNodeDefinitionDatabase, MapNodeDto, MapNodeId, MapNodeKindId,
+    MapNodeOmenOverlayDto, MapNodePayload, MapNodeState, MapNodeVisibility, MapSlotId,
+    MapTemplateId, MapViewDto, RunMap, SupportNodeMode, SupportNodeType, DEFAULT_MAP_TEMPLATE_ID,
 };

@@ -22,9 +22,10 @@
 | 문서 | 역할 | 우선 읽는 경우 |
 | --- | --- | --- |
 | `docs/README.md` | 문서 지도. 각 문서의 역할과 source-of-truth 계층을 설명한다. | 문서 탐색을 시작할 때 |
-| `docs/game_rulebook.md` | 현재 게임 규칙의 최상위 룰북. 런 흐름, 노드, 전투, 보상, 직원/장비/스킬 파편, 실패/후퇴 정책을 게임 루프 순서로 설명하고, 세부 구현 계약은 전문 문서로 연결한다. | gameplay rule, 노드 흐름, 보상/소비/성장, 전투 모드 정책을 바꿀 때 |
+| `docs/game_rulebook.md` | 현재 게임 규칙의 최상위 룰북. 런 흐름, 시설형 Node Map 탐사 규칙, 노드, 전투, 보상, 직원/장비/스킬 파편, 끝없는 탐사 연구/반복 조우/bonus objective, 보스 전조, 실패/후퇴 정책을 게임 루프 순서로 설명하고, 세부 구현 계약은 전문 문서로 연결한다. | gameplay rule, 노드 흐름, Node Map 진행/visibility/selectability, 보상/소비/성장, 전투 모드/Endless 연구 정책을 바꿀 때 |
 | `docs/skill_target_contract.md` | 스킬/평타 타겟팅과 DefenseRoute 범위 계약의 도메인 source of truth. 내부 authoring source인 `defense_tile_range`, Unity-facing 최종 `range_previews` cell DTO, `StepTargetingMode`, 자동 적대 타겟 유용성, `TileArea` 의미를 설명한다. | 스킬 타겟, 범위 표시, 자동 시전, 면역/무효 대상 필터를 다룰 때 |
 | `docs/refactor_preparation_plan.md` | 리팩토링 판단 기준. source of truth 축소, 레거시 제거, 과도한 추상화 방지, debug 산출물 분류를 설명한다. | 구조 정리, 파일 이동, 레거시 제거, 큰 goal을 시작할 때 |
+| `docs/data_loading_contract.md` | embedded RON/live data loader ownership 계약. `GameDataBase::load_live_embedded()`가 소유하는 live bundle, map/combat-preview/run-policy domain builtin, test-only direct load의 경계를 설명한다. | RON loader, `include_str!`, live data ownership, server/test data loading 경계를 바꿀 때 |
 | `docs/code_documentation_sync_guidelines.md` | 코드 변경 시 문서/테스트를 함께 갱신하기 위한 상위 작업 지침. source-of-truth 순서, 변경 유형별 갱신 문서, 완료 전 체크리스트를 포함한다. | 코드 변경이 문서/Unity 계약/테스트에 영향을 줄 때 |
 | `docs/codex_goal_command.md` | 새 goal을 Codex에게 맡길 때 붙여 넣는 표준 명령어와 goal skeleton. | 장기 작업 goal 문서를 만들거나 Codex 작업 규칙을 통일할 때 |
 
@@ -36,6 +37,7 @@
 | --- | --- | --- |
 | `docs/component_design_review.md` | 2026-06-12 기준 컴포넌트 설계 검토와 refactor 후보 목록. | 리팩토링 후보를 고르거나 과거 설계 판단 맥락을 볼 때 |
 | `docs/goal_completion_review_guide.md` | 완료 처리된 master/subgoal 항목이 실제 runtime/data/DTO/test까지 구현됐는지, 그리고 장기 방향에 맞는지 재검토하는 감사 절차. | 완료된 goal 체크박스를 검증하거나 후속 correction/refactor goal을 만들 때 |
+| `docs/boss_omen_chain_policy_draft.md` | Phase 5 Boss Omen/Event 정책 초안의 과거 기록. 안정화된 정책은 `game_rulebook.md`와 `skills/skill_fragment_system.md`에 흡수됐으므로 source of truth가 아니다. | Phase 5 정책 결정 맥락이나 과거 질문을 추적할 때 |
 
 ## 외부 Unity Canonical 문서
 
@@ -50,7 +52,7 @@ F:\unity projects\ark\docs
 
 | 외부 문서 | 역할 |
 | --- | --- |
-| `/mnt/f/unity projects/ark/docs/unity_core_contract.md` | Unity 클라이언트와 `/game` WebSocket의 통합 계약. snapshot, command, server message, enum casing, live battle transport를 설명한다. |
+| `/mnt/f/unity projects/ark/docs/unity_core_contract.md` | Unity 클라이언트와 `/game` WebSocket의 통합 계약. snapshot, command, server message, enum casing, Node Map DTO, live battle transport를 설명한다. |
 | `/mnt/f/unity projects/ark/docs/unity_client_implementation_goal.md` | Unity 클라이언트 구현 goal 지침. UI/scene 구현 순서, WebSocket 수신 파이프라인, 검증 기준을 설명한다. |
 | `/mnt/f/unity projects/ark/docs/core_unity_battle_transport_contract.md` | core <-> Unity 전투 통신의 canonical 통합 계약. `battle_setup_snapshot`, `battle_update.events_delta`, `battle_update.checkpoint`, `battle_resync`, 전투 종료 snapshot 흐름을 함께 설명한다. |
 | `/mnt/f/unity projects/ark/docs/core_unity_battle_setup_snapshot_contract.md` | 과거 setup snapshot 분리 계약. 현재는 transport 통합 문서가 supersede하며, migration context 확인용으로만 본다. |
@@ -125,12 +127,14 @@ goal 완료 후 유지해야 할 정책은 `game_rulebook.md`, `skill_target_con
 
 ## 문서 선택 가이드
 
-- 게임 규칙, 노드 흐름, 보상, 직원 성장, 전투 성공/실패 판정: `docs/game_rulebook.md`
+- 게임 규칙, 시설형 Node Map 진행/visibility/selectability, 노드 흐름, 보상, 직원 성장, 전투 성공/실패 판정: `docs/game_rulebook.md`
+- Node Map JSON DTO, `map_template_id`, `slot_id`, `map_navigation.selectable_node_ids`, Unity 렌더링/선택 계약: 외부 `unity_core_contract.md`
 - 스킬/평타 타겟팅, 범위, 자동 시전, 유효 적대 대상 정책: `docs/skill_target_contract.md`
 - Unity WebSocket, DTO shape, command/result: 외부 `unity_core_contract.md`
 - 전투 시작, live update, checkpoint, resync, 전투 종료 snapshot 흐름: 외부 `core_unity_battle_transport_contract.md`
 - Unity 구현 순서와 클라이언트 작업 지침: 외부 `unity_client_implementation_goal.md`
 - 리팩토링 방향, 레거시 제거, debug 산출물 분류: `docs/refactor_preparation_plan.md`
+- embedded RON loader ownership, `GameDataBase::load_live_embedded()`, domain-owned builtin loader 경계: `docs/data_loading_contract.md`
 - 코드 변경 시 문서/테스트 동기화 규칙: `docs/code_documentation_sync_guidelines.md`
 - 새 Codex goal을 만들 때 붙여 넣을 명령: `docs/codex_goal_command.md`
 - 환상체/파편/장비 콘텐츠 설계: `docs/skills/*`

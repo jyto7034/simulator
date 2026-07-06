@@ -10,7 +10,7 @@ use crate::game::{
         battlefield::BattlefieldLayout,
         core::movement::{
             engine::ContinuousMovementBackend,
-            types::{EventLogVec2, UnitBody, WorldVec2},
+            types::{ActiveMovementSegment, EventLogVec2, UnitBody, WorldVec2},
         },
         enums::BattleEvent,
         event_log::{BattleEventCause, BattleEventLog, BattleLogEvent},
@@ -23,10 +23,15 @@ use crate::game::{
 };
 
 mod basic_attack;
+mod basic_attack_projectile;
 pub mod build;
 pub mod commands;
+mod damage_runtime;
+mod death_runtime;
 pub mod ids;
 pub mod movement;
+mod projectile_math;
+mod resonance_runtime;
 pub mod sim;
 pub mod skill_runtime;
 pub mod spatial;
@@ -86,34 +91,6 @@ pub struct InactiveRuntimeUnitDebugSnapshot {
     pub position: Position,
     pub current_health: u32,
     pub max_health: u32,
-}
-
-#[derive(Debug, Clone, Copy)]
-struct ActiveMovementSegment {
-    start: WorldVec2,
-    target: WorldVec2,
-    started_at_ms: u64,
-    ends_at_ms: u64,
-}
-
-impl ActiveMovementSegment {
-    fn sample_position_at(&self, time_ms: u64) -> WorldVec2 {
-        if time_ms <= self.started_at_ms {
-            return self.start;
-        }
-        if time_ms >= self.ends_at_ms {
-            return self.target;
-        }
-
-        let duration_ms = self.ends_at_ms.saturating_sub(self.started_at_ms);
-        if duration_ms == 0 {
-            return self.target;
-        }
-
-        let elapsed_ms = time_ms.saturating_sub(self.started_at_ms);
-        let t = elapsed_ms as f32 / duration_ms as f32;
-        self.start + (self.target - self.start) * t
-    }
 }
 
 #[derive(Debug, Clone, Default)]
@@ -1459,6 +1436,7 @@ mod tests {
             source: BattleUnitSource::Employee(profile),
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Normal,
             level: crate::game::enums::Tier::I,
+            stat_scale: Default::default(),
             growth_stacks: Default::default(),
             equipped_items: vec![],
             equipped_item_enhancements: vec![],
@@ -1685,6 +1663,7 @@ mod tests {
             source: BattleUnitSource::TestFixture { base_uuid, profile },
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Normal,
             level: crate::game::enums::Tier::I,
+            stat_scale: Default::default(),
             growth_stacks: crate::game::growth::GrowthStack::new(),
             equipped_items: Vec::new(),
             equipped_item_enhancements: Vec::new(),
@@ -1899,6 +1878,8 @@ mod tests {
             defense: 0,
             magic_resist: 0,
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            response_complete_skill_fragment_id: None,
+            omen_chain_id: None,
             movement: Default::default(),
             basic_attack: crate::game::data::abnormality_data::BasicAttackDef {
                 range_units: f32::from(range_units),
@@ -3432,6 +3413,8 @@ mod tests {
             defense: 0,
             magic_resist: 0,
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            response_complete_skill_fragment_id: None,
+            omen_chain_id: None,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -3492,6 +3475,8 @@ mod tests {
             defense: 0,
             magic_resist: 0,
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            response_complete_skill_fragment_id: None,
+            omen_chain_id: None,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -4421,6 +4406,8 @@ mod tests {
             defense: 0,
             magic_resist: 0,
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            response_complete_skill_fragment_id: None,
+            omen_chain_id: None,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -4499,6 +4486,8 @@ mod tests {
             defense: 0,
             magic_resist: 0,
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            response_complete_skill_fragment_id: None,
+            omen_chain_id: None,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -4619,6 +4608,8 @@ mod tests {
             defense: 0,
             magic_resist: 0,
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            response_complete_skill_fragment_id: None,
+            omen_chain_id: None,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),

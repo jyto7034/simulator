@@ -31,32 +31,18 @@ pub(super) fn steered_displacement(
 
 pub(super) fn goal_target_position(
     unit: &MovementUnitInput,
-    units: &[MovementUnitInput],
+    _units: &[MovementUnitInput],
 ) -> Option<WorldVec2> {
     match unit.body.goal {
         Some(MovementGoal::MoveToPoint { point, .. }) => Some(point),
-        Some(MovementGoal::AttackUnit {
-            target_id,
-            desired_range,
-            approach_point,
-        }) => {
-            if let Some(point) = approach_point {
-                return Some(point);
-            }
-
-            let target = units
-                .iter()
-                .find(|candidate| candidate.unit_id == target_id)?;
-            let away = (unit.body.position - target.body.position).normalized_or_zero();
-            Some(target.body.position + away * desired_range)
-        }
+        Some(MovementGoal::AttackUnit { .. }) => None,
         None => None,
     }
 }
 
 pub(super) fn reached_goal(
     unit: &MovementUnitInput,
-    units: &[MovementUnitInput],
+    _units: &[MovementUnitInput],
 ) -> Option<MovementOutput> {
     match unit.body.goal {
         Some(MovementGoal::MoveToPoint { point, stop_radius }) => {
@@ -70,23 +56,10 @@ pub(super) fn reached_goal(
                 None
             }
         }
-        Some(MovementGoal::AttackUnit {
+        Some(MovementGoal::AttackUnit { target_id }) => Some(MovementOutput::TargetReached {
+            unit_id: unit.unit_id,
             target_id,
-            desired_range,
-            approach_point: _,
-        }) => {
-            let target = units
-                .iter()
-                .find(|candidate| candidate.unit_id == target_id)?;
-            if unit.body.can_reach(&target.body, desired_range) {
-                Some(MovementOutput::TargetReached {
-                    unit_id: unit.unit_id,
-                    target_id,
-                })
-            } else {
-                None
-            }
-        }
+        }),
         None => Some(MovementOutput::MovementStopped {
             unit_id: unit.unit_id,
             position: unit.body.position,

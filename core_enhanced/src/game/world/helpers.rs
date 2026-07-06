@@ -4,8 +4,8 @@ use tracing::{debug, info};
 use uuid::Uuid;
 
 use super::GameCore;
-use crate::game::behavior::{ActionKind, BehaviorResult, GameError, PlayerBehavior};
-use crate::game::combat_player_spawns::{
+use crate::game::behavior::{ActionKind, BehaviorResult, GameError};
+use crate::game::combat_setup::player_spawns::{
     effective_combat_profile_for_employee, effective_combat_profile_for_employee_with_item_slot,
 };
 use crate::game::data::skill_fragment_data::{
@@ -144,85 +144,6 @@ impl GameCore {
             .collect())
     }
 
-    pub(super) fn validate_behavior_payload(
-        &self,
-        behavior: &PlayerBehavior,
-    ) -> Result<(), GameError> {
-        match behavior {
-            PlayerBehavior::StartNewGame
-            | PlayerBehavior::RequestMapData
-            | PlayerBehavior::ConfirmEnterNode
-            | PlayerBehavior::CancelSelectedNode
-            | PlayerBehavior::CompleteNode
-            | PlayerBehavior::ChooseSupport { .. }
-            | PlayerBehavior::LoadRunCheckpoint
-            | PlayerBehavior::RecruitEmployee { .. }
-            | PlayerBehavior::RequestEmergencySupplies
-            | PlayerBehavior::OpenHeadquartersShop
-            | PlayerBehavior::RerollShop
-            | PlayerBehavior::ExitShop
-            | PlayerBehavior::ClaimReward
-            | PlayerBehavior::ExitReward
-            | PlayerBehavior::CompleteCombatResult
-            | PlayerBehavior::RequestBattleState { .. }
-            | PlayerBehavior::RecoverBattleSetupLoss
-            | PlayerBehavior::RequestDeploymentRangePreview { .. }
-            | PlayerBehavior::DeployUnit { .. }
-            | PlayerBehavior::WithdrawUnit { .. }
-            | PlayerBehavior::ActivateSkill { .. }
-            | PlayerBehavior::RetreatBattle
-            | PlayerBehavior::PauseBattle
-            | PlayerBehavior::ResumeBattle
-            | PlayerBehavior::SetBattleSpeed { .. } => Ok(()),
-            PlayerBehavior::SelectStarterEmployees { candidate_ids } => {
-                self.validate_starter_employee_selection(candidate_ids)
-            }
-            PlayerBehavior::SelectReward { reward_id } => {
-                self.validate_select_reward_payload(*reward_id)
-            }
-            PlayerBehavior::SelectMapNode { node_id } => self.validate_select_map_node(*node_id),
-            PlayerBehavior::EquipItem {
-                item_uuid,
-                target_unit,
-            } => self.validate_equip_item_payload(*item_uuid, *target_unit),
-            PlayerBehavior::UnEquipItem {
-                item_uuid,
-                target_unit,
-            } => self.validate_unequip_item_payload(*item_uuid, *target_unit),
-            PlayerBehavior::UseConsumableItem {
-                item_uuid,
-                target_employee_uuid,
-            } => self.validate_use_consumable_item_payload(*item_uuid, *target_employee_uuid),
-            PlayerBehavior::EquipSkillFragment {
-                employee_uuid,
-                fragment_id,
-            } => self.validate_equip_skill_fragment_payload(*employee_uuid, fragment_id),
-            PlayerBehavior::UnequipSkillFragment {
-                employee_uuid,
-                fragment_id,
-            } => self.validate_unequip_skill_fragment_payload(*employee_uuid, fragment_id),
-            PlayerBehavior::UpgradeSkillFragment { target_fragment_id } => {
-                self.validate_upgrade_skill_fragment_payload(target_fragment_id)
-            }
-            PlayerBehavior::AwakenSkillFragment { target_fragment_id } => {
-                self.validate_awaken_skill_fragment_payload(target_fragment_id)
-            }
-            PlayerBehavior::DismantleSkillFragment { fragment_id } => {
-                self.validate_dismantle_skill_fragment_payload(fragment_id)
-            }
-            PlayerBehavior::DismantleEquipment { item_uuid } => {
-                self.validate_dismantle_equipment_payload(*item_uuid)
-            }
-            PlayerBehavior::EnhanceEquipment { item_uuid } => {
-                self.validate_enhance_equipment_payload(*item_uuid)
-            }
-            PlayerBehavior::MoveRosterUnit {
-                target_unit_uuid, ..
-            } => self.validate_owned_unit_exists(*target_unit_uuid),
-            PlayerBehavior::PurchaseItem { .. } | PlayerBehavior::SellItem { .. } => Ok(()),
-        }
-    }
-
     pub(super) fn validate_select_reward_payload(&self, reward_id: Uuid) -> Result<(), GameError> {
         let selected = self
             .state
@@ -245,7 +166,7 @@ impl GameCore {
 
     pub(super) fn validate_select_map_node(&self, node_id: MapNodeId) -> Result<(), GameError> {
         let run = self.run_state()?;
-        if run.map_progression.available_node_ids.contains(&node_id) {
+        if run.map_progression.is_node_selectable(&run.map, node_id) {
             Ok(())
         } else {
             Err(GameError::InvalidAction)

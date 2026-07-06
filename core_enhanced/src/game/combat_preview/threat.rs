@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use crate::game::{
-    combat_balance::{is_fast_breakthrough_speed, is_high_defense, is_high_magic_resist},
+    combat_setup::balance::{is_fast_breakthrough_speed, is_high_defense, is_high_magic_resist},
     data::GameDataBase,
     determinism,
 };

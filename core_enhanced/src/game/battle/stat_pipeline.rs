@@ -133,6 +133,8 @@ pub(crate) fn effective_stats_for_draft(
             })?;
     }
 
+    apply_draft_stat_scale(&mut stats, draft.stat_scale);
+
     stats.current_health = if base_current_health == 0 {
         0
     } else {
@@ -141,6 +143,25 @@ pub(crate) fn effective_stats_for_draft(
     };
 
     Ok(stats)
+}
+
+fn apply_draft_stat_scale(
+    stats: &mut crate::game::stats::UnitStats,
+    scale: crate::game::battle::types::BattleUnitStatScale,
+) {
+    stats.max_health = percent_amount_ceil(stats.max_health, scale.max_health_percent);
+    stats.attack = percent_amount_ceil(stats.attack, scale.attack_percent);
+    stats.defense = scale_i32_percent_ceil(stats.defense, scale.defense_percent);
+}
+
+fn scale_i32_percent_ceil(value: i32, percent: u32) -> i32 {
+    if value == 0 || percent == 100 {
+        return value;
+    }
+    let sign = value.signum();
+    let magnitude = value.unsigned_abs();
+    let scaled = percent_amount_ceil(magnitude, percent).min(i32::MAX as u32) as i32;
+    scaled.saturating_mul(sign)
 }
 
 fn apply_consumable_battle_profile_effects(employee: &Employee, profile: &mut UnitCombatProfile) {
@@ -255,6 +276,8 @@ mod tests {
             defense: 0,
             magic_resist: 0,
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            response_complete_skill_fragment_id: None,
+            omen_chain_id: None,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -315,6 +338,7 @@ mod tests {
             },
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
             level: Tier::I,
+            stat_scale: Default::default(),
             growth_stacks,
             equipped_items: vec![weapon_uuid],
             equipped_item_enhancements: vec![],
@@ -323,6 +347,41 @@ mod tests {
         let stats = effective_stats_for_draft(&draft, &game_data, &[]).unwrap();
 
         assert_eq!(stats.attack, 121);
+    }
+
+    #[test]
+    fn draft_stats_pipeline_applies_floor_stat_scale_to_enemy_stats() {
+        let abno_uuid = Uuid::from_u128(11);
+        let mut abnormality = abnormality(abno_uuid, 10);
+        abnormality.max_health = 101;
+        abnormality.defense = 3;
+        let game_data = GameDataBuilder::empty()
+            .with_abnormalities(vec![abnormality])
+            .build();
+        let draft = BattleUnitDraft {
+            owned_uuid: Uuid::from_u128(12),
+            source: BattleUnitSource::Abnormality {
+                base_uuid: abno_uuid,
+            },
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            level: Tier::I,
+            stat_scale: crate::game::battle::types::BattleUnitStatScale {
+                max_health_percent: 150,
+                attack_percent: 125,
+                defense_percent: 150,
+            },
+            growth_stacks: GrowthStack::new(),
+            equipped_items: vec![],
+            equipped_item_enhancements: vec![],
+        };
+
+        let stats = effective_stats_for_draft(&draft, &game_data, &[]).unwrap();
+
+        assert_eq!(stats.max_health, 152);
+        assert_eq!(stats.current_health, 152);
+        assert_eq!(stats.attack, 13);
+        assert_eq!(stats.defense, 5);
+        assert_eq!(stats.magic_resist, 0);
     }
 
     #[test]
@@ -362,6 +421,7 @@ mod tests {
             source: BattleUnitSource::Employee(profile),
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Normal,
             level: Tier::I,
+            stat_scale: Default::default(),
             growth_stacks: GrowthStack::new(),
             equipped_items: vec![weapon_uuid],
             equipped_item_enhancements: vec![],

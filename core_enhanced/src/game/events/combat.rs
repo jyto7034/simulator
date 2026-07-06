@@ -8,16 +8,16 @@ use crate::{
     game::{
         battle::{core::BattleCore, scenario::BattleScenario},
         behavior::GameError,
-        combat_battlefield_plan::{
+        combat_preview::{CombatNodeType, CombatPreview},
+        combat_setup::battlefield_plan::{
             validate_static_obstacles_do_not_overlap_scenario, BattleStartPlan,
         },
-        combat_defense_object::defense_object_group_for_win_condition,
-        combat_enemy_spawns::enemy_spawn_groups_from_preview,
-        combat_mission_policy::CombatMissionPolicy,
-        combat_player_spawns::{player_scenario_start_from_positions, PlayerScenarioStart},
-        combat_preview::{CombatNodeType, CombatPreview},
-        combat_rewards::resolve_combat_rewards_from_encounter,
-        combat_scenario_groups::{push_start_spawn_group, push_timed_spawn_group},
+        combat_setup::defense_object::defense_object_group_for_win_condition,
+        combat_setup::enemy_spawns::enemy_spawn_groups_from_preview,
+        combat_setup::mission_policy::CombatMissionPolicy,
+        combat_setup::player_spawns::{player_scenario_start_from_positions, PlayerScenarioStart},
+        combat_setup::rewards::resolve_combat_rewards_from_encounter,
+        combat_setup::scenario_groups::{push_start_spawn_group, push_timed_spawn_group},
         data::GameDataBase,
         employee::EmployeeRoster,
         enums::RewardMode,
@@ -32,7 +32,7 @@ use crate::game::{
         scenario::{ScenarioGroupId, ScenarioSpawnGroup, ScenarioUnitRef, ScenarioUnitSpawn},
         types::{BattleUnitDraft, BattleUnitSource, BattleUnitThreatClass},
     },
-    combat_player_spawns::scenario_artifacts_from_inventory,
+    combat_setup::player_spawns::scenario_artifacts_from_inventory,
     enums::Side,
     growth::GrowthStack,
 };
@@ -54,7 +54,7 @@ impl CombatExecutor {
         inventory: &Inventory,
         skill_fragments: &SkillFragmentInventory,
         game_data: Arc<GameDataBase>,
-        abnormality_id: &str,
+        primary_abnormality_id: Option<&str>,
         encounter_id: &str,
         movement_seed: u64,
         combat_preview: &CombatPreview,
@@ -66,7 +66,7 @@ impl CombatExecutor {
             inventory,
             skill_fragments,
             game_data,
-            abnormality_id,
+            primary_abnormality_id,
             encounter_id,
             movement_seed,
             plan,
@@ -80,7 +80,7 @@ impl CombatExecutor {
         inventory: &Inventory,
         skill_fragments: &SkillFragmentInventory,
         game_data: Arc<GameDataBase>,
-        abnormality_id: &str,
+        primary_abnormality_id: Option<&str>,
         encounter_id: &str,
         movement_seed: u64,
         plan: BattleStartPlan,
@@ -88,8 +88,8 @@ impl CombatExecutor {
         deployment_positions: &HashMap<Uuid, Position>,
     ) -> Result<BattleCore, GameError> {
         info!(
-            "Starting node combat for abnormality={} encounter={} field_size={:?}",
-            abnormality_id, encounter_id, plan.field_size
+            "Starting node combat for primary_abnormality={:?} encounter={} field_size={:?}",
+            primary_abnormality_id, encounter_id, plan.field_size
         );
 
         let player_start = player_scenario_start_from_positions(
@@ -205,6 +205,7 @@ impl CombatExecutor {
                 },
                 threat_class: BattleUnitThreatClass::Elite,
                 level: fixture.level,
+                stat_scale: Default::default(),
                 growth_stacks: GrowthStack::new(),
                 equipped_items: vec![],
                 equipped_item_enhancements: vec![],
@@ -331,9 +332,9 @@ mod tests {
     use crate::game::battle::scenario::{
         EnemyMovementPlan, PlayerMovementPlan, ScenarioAction, ScenarioTrigger, WinCondition,
     };
-    use crate::game::combat_defense_object::DEFAULT_DEFENSE_OBJECT_GROUP;
-    use crate::game::combat_mission_policy::DEFAULT_DEFENSE_OBJECT_REF;
     use crate::game::combat_preview::{BattlefieldArchetype, BattlefieldSizeClass, CombatPreview};
+    use crate::game::combat_setup::defense_object::DEFAULT_DEFENSE_OBJECT_GROUP;
+    use crate::game::combat_setup::mission_policy::DEFAULT_DEFENSE_OBJECT_REF;
     use crate::game::data::{
         abnormality_data::AbnormalityMetadata,
         pve_data::{
@@ -372,6 +373,8 @@ mod tests {
             defense: 0,
             magic_resist: 0,
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            response_complete_skill_fragment_id: None,
+            omen_chain_id: None,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -431,11 +434,12 @@ mod tests {
             vec![enemy],
             vec![PveEncounter {
                 id: "boss_contract".to_string(),
-                abnormality_id: "enemy".to_string(),
-                difficulty: 1,
+                encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
+                primary_abnormality_id: Some("enemy".to_string()),
                 risk_level: RiskLevel::ZAYIN,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
+                suppression_research: None,
                 node_type: Some(CombatNodeType::Boss),
                 mission_variant: None,
                 survive_timer_ms: None,
@@ -482,11 +486,12 @@ mod tests {
             vec![enemy],
             vec![PveEncounter {
                 id: "preview_encounter".to_string(),
-                abnormality_id: "enemy".to_string(),
-                difficulty: 1,
+                encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
+                primary_abnormality_id: Some("enemy".to_string()),
                 risk_level: RiskLevel::ZAYIN,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
+                suppression_research: None,
                 node_type: None,
                 mission_variant: None,
                 survive_timer_ms: None,
@@ -529,7 +534,7 @@ mod tests {
             &inventory,
             &skill_fragments,
             game_data,
-            "enemy",
+            Some("enemy"),
             "preview_encounter",
             7,
             &preview,
@@ -553,11 +558,12 @@ mod tests {
             vec![enemy],
             vec![PveEncounter {
                 id: "strict_preview_encounter".to_string(),
-                abnormality_id: "enemy".to_string(),
-                difficulty: 1,
+                encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
+                primary_abnormality_id: Some("enemy".to_string()),
                 risk_level: RiskLevel::ZAYIN,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
+                suppression_research: None,
                 node_type: None,
                 mission_variant: None,
                 survive_timer_ms: None,
@@ -601,7 +607,7 @@ mod tests {
             &inventory,
             &skill_fragments,
             game_data,
-            "enemy",
+            Some("enemy"),
             "strict_preview_encounter",
             7,
             &preview,
@@ -625,11 +631,12 @@ mod tests {
         let enemy_b = abnormality("enemy_b", Uuid::from_u128(0x226), 1);
         let encounter_a = PveEncounter {
             id: "encounter_a".to_string(),
-            abnormality_id: "enemy_a".to_string(),
-            difficulty: 1,
+            encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
+            primary_abnormality_id: Some("enemy_a".to_string()),
             risk_level: RiskLevel::ZAYIN,
             reward_mode: RewardMode::ClaimAll,
             reward_uuids: vec![],
+            suppression_research: None,
             node_type: Some(CombatNodeType::Defense),
             mission_variant: None,
             survive_timer_ms: None,
@@ -652,7 +659,7 @@ mod tests {
         };
         let mut encounter_b = encounter_a.clone();
         encounter_b.id = "encounter_b".to_string();
-        encounter_b.abnormality_id = "enemy_b".to_string();
+        encounter_b.primary_abnormality_id = Some("enemy_b".to_string());
         let PveWaveSource::Manual(enemies) = &mut encounter_b.waves[0].source else {
             panic!("test encounter should use a manual wave");
         };
@@ -682,7 +689,7 @@ mod tests {
             &Inventory::new(),
             &SkillFragmentInventory::new(),
             game_data,
-            "enemy_b",
+            Some("enemy_b"),
             "encounter_b",
             7,
             &preview,
@@ -708,11 +715,12 @@ mod tests {
             vec![enemy],
             vec![PveEncounter {
                 id: "defense_encounter".to_string(),
-                abnormality_id: "enemy".to_string(),
-                difficulty: 1,
+                encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
+                primary_abnormality_id: Some("enemy".to_string()),
                 risk_level: RiskLevel::ZAYIN,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
+                suppression_research: None,
                 node_type: Some(CombatNodeType::Defense),
                 mission_variant: None,
                 survive_timer_ms: None,
@@ -756,7 +764,7 @@ mod tests {
             &Inventory::new(),
             &SkillFragmentInventory::new(),
             game_data,
-            "enemy",
+            Some("enemy"),
             "defense_encounter",
             7,
             &preview,
@@ -783,11 +791,12 @@ mod tests {
             vec![enemy],
             vec![PveEncounter {
                 id: "wave_encounter".to_string(),
-                abnormality_id: "enemy".to_string(),
-                difficulty: 1,
+                encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
+                primary_abnormality_id: Some("enemy".to_string()),
                 risk_level: RiskLevel::ZAYIN,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
+                suppression_research: None,
                 node_type: None,
                 mission_variant: None,
                 survive_timer_ms: None,
@@ -890,6 +899,7 @@ mod tests {
             obstacles: Vec::new(),
             enemy_briefing: Vec::new(),
             threat_warnings: Vec::new(),
+            enemy_stat_scale: Default::default(),
         };
 
         let inventory = Inventory::new();
@@ -950,11 +960,12 @@ mod tests {
             vec![player, enemy],
             vec![PveEncounter {
                 id: "tactical_encounter".to_string(),
-                abnormality_id: "enemy".to_string(),
-                difficulty: 1,
+                encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
+                primary_abnormality_id: Some("enemy".to_string()),
                 risk_level: RiskLevel::ZAYIN,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
+                suppression_research: None,
                 node_type: Some(CombatNodeType::Defense),
                 mission_variant: None,
                 survive_timer_ms: None,
@@ -1057,11 +1068,12 @@ mod tests {
             vec![player, enemy],
             vec![PveEncounter {
                 id: "default_defense_encounter".to_string(),
-                abnormality_id: "enemy".to_string(),
-                difficulty: 1,
+                encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
+                primary_abnormality_id: Some("enemy".to_string()),
                 risk_level: RiskLevel::ZAYIN,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
+                suppression_research: None,
                 node_type: Some(CombatNodeType::Defense),
                 mission_variant: None,
                 survive_timer_ms: None,
@@ -1183,11 +1195,12 @@ mod tests {
             vec![player, enemy],
             vec![PveEncounter {
                 id: "generated_route_encounter".to_string(),
-                abnormality_id: "route_enemy".to_string(),
-                difficulty: 1,
+                encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
+                primary_abnormality_id: Some("route_enemy".to_string()),
                 risk_level: RiskLevel::ZAYIN,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
+                suppression_research: None,
                 node_type: Some(CombatNodeType::Defense),
                 mission_variant: None,
                 survive_timer_ms: None,
@@ -1219,7 +1232,7 @@ mod tests {
             game_data.as_ref(),
             2,
         );
-        assert_eq!(preview.battlefield_template_id, "corridor_medium_hook_01");
+        assert_eq!(preview.battlefield_template_id, "corridor_switchback_01");
         let route_cells = preview
             .routes
             .first()
@@ -1303,11 +1316,12 @@ mod tests {
             vec![player, enemy],
             vec![PveEncounter {
                 id: "default_defense_encounter".to_string(),
-                abnormality_id: "enemy".to_string(),
-                difficulty: 1,
+                encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
+                primary_abnormality_id: Some("enemy".to_string()),
                 risk_level: RiskLevel::ZAYIN,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
+                suppression_research: None,
                 node_type: Some(CombatNodeType::Defense),
                 mission_variant: None,
                 survive_timer_ms: None,
@@ -1391,11 +1405,12 @@ mod tests {
             vec![player, enemy],
             vec![PveEncounter {
                 id: "survival_timer_encounter".to_string(),
-                abnormality_id: "enemy".to_string(),
-                difficulty: 1,
+                encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
+                primary_abnormality_id: Some("enemy".to_string()),
                 risk_level: RiskLevel::ZAYIN,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
+                suppression_research: None,
                 node_type: Some(CombatNodeType::Defense),
                 mission_variant: None,
                 survive_timer_ms: Some(45_000),
@@ -1476,11 +1491,12 @@ mod tests {
             vec![enemy],
             vec![PveEncounter {
                 id: "surrounded_default_defense".to_string(),
-                abnormality_id: "enemy".to_string(),
-                difficulty: 1,
+                encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
+                primary_abnormality_id: Some("enemy".to_string()),
                 risk_level: RiskLevel::ZAYIN,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
+                suppression_research: None,
                 node_type: Some(CombatNodeType::Defense),
                 mission_variant: None,
                 survive_timer_ms: None,
@@ -1581,11 +1597,12 @@ mod tests {
             vec![player, enemy],
             vec![PveEncounter {
                 id: "fixture_encounter".to_string(),
-                abnormality_id: "enemy".to_string(),
-                difficulty: 1,
+                encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
+                primary_abnormality_id: Some("enemy".to_string()),
                 risk_level: RiskLevel::ZAYIN,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
+                suppression_research: None,
                 node_type: None,
                 mission_variant: None,
                 survive_timer_ms: None,

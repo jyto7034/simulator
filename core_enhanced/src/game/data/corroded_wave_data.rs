@@ -25,12 +25,14 @@ fn default_tier() -> Tier {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
 pub struct CorrodedWaveCountRange {
     pub min: u32,
     pub max: u32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
 pub struct CorrodedWaveRoleWeight {
     pub profile_id: String,
     #[serde(default = "default_role_weight")]
@@ -46,9 +48,9 @@ pub struct CorrodedWaveRoleWeight {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
 pub struct CorrodedWavePreset {
     pub id: String,
-    pub difficulty: u8,
     pub pressure: String,
     #[serde(default)]
     pub preferred_node_types: Vec<CombatNodeType>,
@@ -60,6 +62,7 @@ pub struct CorrodedWavePreset {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct CorrodedWavePresetDatabase {
     pub presets: Vec<CorrodedWavePreset>,
     #[serde(skip)]
@@ -150,5 +153,44 @@ impl CorrodedWaveRoleWeight {
             tier: self.tier,
             count,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn live_corroded_wave_presets_parse_without_difficulty() {
+        let database: CorrodedWavePresetDatabase = ron::de::from_str(include_str!(
+            "../../../../game_resources/data/enemies/corroded_wave_presets.ron"
+        ))
+        .expect("live corroded_wave_presets.ron should parse");
+
+        assert!(!database.presets.is_empty());
+    }
+
+    #[test]
+    fn stale_difficulty_field_is_rejected() {
+        let stale = r#"
+            CorrodedWavePresetDatabase(
+                presets: [
+                    CorrodedWavePreset(
+                        id: "stale",
+                        difficulty: 1,
+                        pressure: "test",
+                        budget: 1,
+                        count_range: (min: 1, max: 1),
+                        role_mix: [
+                            (profile_id: "corroded_guard"),
+                        ],
+                    ),
+                ],
+            )
+        "#;
+
+        let result = ron::de::from_str::<CorrodedWavePresetDatabase>(stale);
+
+        assert!(result.is_err(), "stale difficulty field must not parse");
     }
 }

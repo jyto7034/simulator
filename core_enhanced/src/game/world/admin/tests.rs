@@ -25,8 +25,9 @@ use crate::game::{
     },
     enums::{RewardMode, RiskLevel},
     map::{
-        MapNode, MapNodeCategory, MapNodeId, MapNodeKindId, MapNodePayload, MapNodeState,
-        MapProgression, NodeSession, RunMap, RunProgression,
+        GameMode, MapNode, MapNodeCategory, MapNodeId, MapNodeKindId, MapNodePayload, MapNodeState,
+        MapNodeVisibility, MapProgression, MapSlotId, MapTemplateId, NodeSession, RunMap,
+        RunProgression, DEFAULT_MAP_TEMPLATE_ID,
     },
     resources::GameState,
     reward::RewardEffect,
@@ -37,20 +38,24 @@ fn core_with_run(game_data: Arc<GameDataBase>) -> GameCore {
     let mut core = GameCore::new(game_data, 123);
     let boss_id = MapNodeId::new(Uuid::from_u128(0xB055));
     let map = RunMap {
+        map_template_id: MapTemplateId::new(DEFAULT_MAP_TEMPLATE_ID),
+        edges: vec![],
         nodes: vec![MapNode {
             id: boss_id,
             depth: 1,
             lane: 0,
+            slot_id: MapSlotId::for_grid_position(1, 0),
             kind_id: MapNodeKindId::new("boss"),
             category: MapNodeCategory::Boss,
-            state: MapNodeState::Hidden,
-            outgoing: vec![],
+            state: MapNodeState::Unavailable,
+            visibility: MapNodeVisibility::Concealed,
             payload: MapNodePayload::Encounter { encounter_id: None },
+            omen: None,
         }],
         start_node_ids: vec![],
-        boss_node_id: boss_id,
+        terminal_node_id: boss_id,
     };
-    let run_progression = RunProgression::new(123, 1);
+    let run_progression = RunProgression::new(123, GameMode::Standard, 1);
     core.state.run = Some(RunState::new(
         map,
         MapProgression::default(),

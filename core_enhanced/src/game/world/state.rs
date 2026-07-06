@@ -2,6 +2,9 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, fs::File, io::BufWriter, path::PathBuf};
 use uuid::Uuid;
 
+use crate::game::abnormality_research::{
+    RunAbnormalityEncounterHistory, RunAbnormalityResearchState,
+};
 use crate::game::battle::{
     core::{
         sim::{BattleDeployCurrentHpPolicy, BattleExecutionState, BattleLiveSignal},
@@ -23,6 +26,7 @@ use crate::game::behavior::{
     LiveBattleUnitHudDto, LiveBattleUpdateDto, LiveBattleUpdateMessageType,
     RunCheckpointSnapshotDto,
 };
+use crate::game::boss_omen::BossOmenRunState;
 use crate::game::combat_preview::{CombatMissionVariant, CombatNodeType, CombatPreview};
 use crate::game::data::run_policy_data::LiveBattleDeploymentPolicy;
 use crate::game::employee::{EmployeeRoster, StarterEmployeeCandidate};
@@ -30,11 +34,11 @@ use crate::game::employee_trust::EmployeeTrustPolicy;
 use crate::game::enums::RewardMode;
 use crate::game::managers::action_scheduler::ActionScheduler;
 use crate::game::managers::uuid_manager::UuidManager;
-use crate::game::map::{MapProgression, NodeSession, RunMap, RunProgression};
+use crate::game::map::{GameMode, MapProgression, NodeSession, RunMap, RunProgression};
 use crate::game::range_preview::range_previews_for_runtime_unit;
 use crate::game::resources::{
-    ActionValidator, ActiveNodeContent, CombatBattleState, Enkephalin, GameState, Inventory,
-    RosterOrder,
+    ActionValidator, ActiveNodeContent, CombatBattleState, Enkephalin, EventSessionState,
+    GameState, Inventory, RosterOrder,
 };
 use crate::game::reward::RewardOption;
 use crate::game::skill_fragment::{
@@ -111,6 +115,7 @@ pub struct GameCoreState {
     pub roster_order: RosterOrder,
     pub roster: EmployeeRoster,
     pub starter_candidates: Vec<StarterEmployeeCandidate>,
+    pub pending_game_mode: Option<GameMode>,
     pub skill_fragments: SkillFragmentInventory,
     pub skill_fragment_policy: SkillFragmentPolicy,
     pub research_delivery_policy: ResearchDeliveryPolicy,
@@ -132,6 +137,10 @@ pub struct RunCheckpointPayload {
     pub map: RunMap,
     pub map_progression: MapProgression,
     pub run_progression: RunProgression,
+    pub abnormality_research: RunAbnormalityResearchState,
+    pub abnormality_encounter_history: RunAbnormalityEncounterHistory,
+    pub boss_omen: BossOmenRunState,
+    pub event_sessions: HashMap<crate::game::map::MapNodeId, EventSessionState>,
     pub combat_previews: HashMap<crate::game::map::MapNodeId, CombatPreview>,
     pub abnormality_attempts: HashMap<crate::game::map::MapNodeId, AbnormalityAttemptState>,
     pub enkephalin: Enkephalin,
@@ -161,7 +170,7 @@ impl RunCheckpointState {
 
 pub struct ActiveBattleSession {
     pub battle_uuid: Uuid,
-    pub abnormality_id: String,
+    pub primary_abnormality_id: Option<String>,
     pub encounter_id: String,
     pub node_type: CombatNodeType,
     pub mission_variant: CombatMissionVariant,
@@ -359,7 +368,11 @@ impl ActiveBattleSession {
         }
         tactical_points.sort_by(|left, right| left.id.cmp(&right.id));
 
-        let mut abnormality_ids = vec![self.abnormality_id.clone()];
+        let mut abnormality_ids = self
+            .primary_abnormality_id
+            .iter()
+            .cloned()
+            .collect::<Vec<_>>();
         abnormality_ids.extend(
             self.combat_preview
                 .enemy_briefing
@@ -604,23 +617,33 @@ pub struct RunState {
     pub map: RunMap,
     pub map_progression: MapProgression,
     pub run_progression: RunProgression,
+    pub abnormality_research: RunAbnormalityResearchState,
+    pub abnormality_encounter_history: RunAbnormalityEncounterHistory,
+    pub boss_omen: BossOmenRunState,
+    pub event_sessions: HashMap<crate::game::map::MapNodeId, EventSessionState>,
     pub combat_previews: HashMap<crate::game::map::MapNodeId, CombatPreview>,
     pub abnormality_attempts: HashMap<crate::game::map::MapNodeId, AbnormalityAttemptState>,
+    /// Run-local abnormality codex/observation records.
+    ///
+    /// This intentionally stores one representative combat record per
+    /// `abnormality_uuid`. It is not a per-battle timeline archive; individual
+    /// timeline exports must use a separate battle-uuid keyed store.
     pub battle_records: Vec<CombatBattleState>,
 }
 
 #[derive(Debug, Serialize)]
-struct BattleRecordExport<'a> {
+struct AbnormalityBattleRecordDebugExport<'a> {
     version: u32,
     run_seed: u64,
-    battle_uuid: Uuid,
-    abnormality_id: &'a str,
+    abnormality_uuid: Uuid,
+    primary_abnormality_id: Option<&'a str>,
     encounter_id: &'a str,
     node_type: CombatNodeType,
     mission_variant: CombatMissionVariant,
     winner: BattleWinner,
     participant_results: &'a [ParticipantBattleResult],
     result_stats: &'a BattleResultStatsDto,
+    bonus_objectives: &'a [crate::game::pve_bonus_objectives::PveBonusObjectiveOutcomeDto],
     event_log: &'a BattleEventLog,
 }
 
@@ -634,71 +657,104 @@ impl RunState {
             map,
             map_progression,
             run_progression,
+            abnormality_research: RunAbnormalityResearchState::default(),
+            abnormality_encounter_history: RunAbnormalityEncounterHistory::default(),
+            boss_omen: BossOmenRunState::default(),
+            event_sessions: HashMap::new(),
             combat_previews: HashMap::new(),
             abnormality_attempts: HashMap::new(),
             battle_records: Vec::new(),
         }
     }
 
-    pub fn battle_record_root_dir(&self) -> PathBuf {
+    pub fn with_abnormality_research(
+        mut self,
+        abnormality_research: RunAbnormalityResearchState,
+    ) -> Self {
+        self.abnormality_research = abnormality_research;
+        self
+    }
+
+    pub fn with_abnormality_encounter_history(
+        mut self,
+        abnormality_encounter_history: RunAbnormalityEncounterHistory,
+    ) -> Self {
+        self.abnormality_encounter_history = abnormality_encounter_history;
+        self
+    }
+
+    pub fn with_boss_omen(mut self, boss_omen: BossOmenRunState) -> Self {
+        self.boss_omen = boss_omen;
+        self
+    }
+
+    pub fn battle_record_debug_export_root_dir(&self) -> PathBuf {
         PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("target")
             .join("battle_records")
             .join(format!("run_{:016x}", self.run_progression.run_seed))
     }
 
-    pub fn battle_record_path(&self, battle_uuid: Uuid) -> PathBuf {
-        self.battle_record_root_dir()
-            .join(format!("{battle_uuid}.json"))
+    pub fn battle_record_debug_export_path(&self, abnormality_uuid: Uuid) -> PathBuf {
+        self.battle_record_debug_export_root_dir()
+            .join(format!("{abnormality_uuid}.json"))
     }
 
-    pub fn record_battle(&mut self, battle: &CombatBattleState) -> Result<(), GameError> {
+    pub fn store_abnormality_battle_record(&mut self, battle: &CombatBattleState) -> bool {
+        // Codex records are keyed by abnormality, not by battle UUID. Repeated
+        // fights against the same abnormality keep the first representative
+        // observation record.
         if self
             .battle_records
             .iter()
             .any(|record| record.abnormality_uuid == battle.abnormality_uuid)
         {
-            return Ok(());
+            return false;
         }
-        self.write_battle_record_file(battle)?;
         self.battle_records.push(battle.clone());
-        Ok(())
+        true
     }
 
-    fn write_battle_record_file(&self, battle: &CombatBattleState) -> Result<(), GameError> {
-        let out_dir = self.battle_record_root_dir();
+    pub fn export_abnormality_battle_record_debug_json(
+        &self,
+        battle: &CombatBattleState,
+    ) -> Result<PathBuf, GameError> {
+        let out_dir = self.battle_record_debug_export_root_dir();
         std::fs::create_dir_all(&out_dir).map_err(|error| {
             GameError::InvalidStaticData(format!(
-                "failed to create battle record directory '{}': {error}",
+                "failed to create battle record debug export directory '{}': {error}",
                 out_dir.display()
             ))
         })?;
-        let out_path = self.battle_record_path(battle.abnormality_uuid);
+        let out_path = self.battle_record_debug_export_path(battle.abnormality_uuid);
         let file = File::create(&out_path).map_err(|error| {
             GameError::InvalidStaticData(format!(
-                "failed to create battle record file '{}': {error}",
+                "failed to create battle record debug export file '{}': {error}",
                 out_path.display()
             ))
         })?;
         let writer = BufWriter::new(file);
-        let export = BattleRecordExport {
+        let export = AbnormalityBattleRecordDebugExport {
             version: 1,
             run_seed: self.run_progression.run_seed,
-            battle_uuid: battle.abnormality_uuid,
-            abnormality_id: &battle.abnormality_id,
+            abnormality_uuid: battle.abnormality_uuid,
+            primary_abnormality_id: battle.primary_abnormality_id.as_deref(),
             encounter_id: &battle.encounter_id,
             node_type: battle.node_type,
             mission_variant: battle.mission_variant,
             winner: battle.winner,
             participant_results: &battle.participant_results,
             result_stats: &battle.result_stats,
+            bonus_objectives: &battle.bonus_objectives,
             event_log: &battle.event_log,
         };
         serde_json::to_writer_pretty(writer, &export).map_err(|error| {
             GameError::InvalidStaticData(format!(
-                "failed to write battle record file '{}': {error}",
+                "failed to write battle record debug export file '{}': {error}",
                 out_path.display()
             ))
-        })
+        })?;
+        Ok(out_path)
     }
 
     pub fn abnormality_attempt_state(
@@ -753,6 +809,7 @@ impl GameCoreState {
             roster_order: RosterOrder::new(super::ROSTER_ORDER_SLOTS),
             roster: EmployeeRoster::new(),
             starter_candidates: Vec::new(),
+            pending_game_mode: None,
             skill_fragments: SkillFragmentInventory::new(),
             skill_fragment_policy: SkillFragmentPolicy::default_run_policy(),
             research_delivery_policy: ResearchDeliveryPolicy::default(),

@@ -42,7 +42,7 @@ impl GameCore {
             .state
             .run
             .as_ref()
-            .map(|run| run.run_progression.current_act_seed())
+            .map(|run| run.run_progression.current_floor_seed())
             .unwrap_or(self.run_seed);
         determinism::seed_with_uuid(act_seed, namespace, node_id.0)
     }
@@ -232,6 +232,26 @@ impl GameCore {
                 self.state.active_node_content = Some(ActiveNodeContent::Reward(reward));
                 self.transition_to(GameState::InReward { reward_uuid })?;
                 Ok(Some(result))
+            }
+            MapNodeCategory::Event => {
+                let MapNodePayload::Event { event_id } = payload else {
+                    return Ok(None);
+                };
+                let event_id = event_id.clone().unwrap_or_else(|| {
+                    self.game_data
+                        .event_data
+                        .events
+                        .first()
+                        .map(|event| event.id.clone())
+                        .unwrap_or_else(|| {
+                            panic!("event map node has no event_id and EventDatabase is empty")
+                        })
+                });
+                Ok(Some(self.enter_event_node(
+                    node_id,
+                    event_id,
+                    research_deliveries,
+                )?))
             }
             MapNodeCategory::Support => {
                 let MapNodePayload::Support {

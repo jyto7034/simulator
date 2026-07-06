@@ -45,8 +45,8 @@ use crate::{
         employee::StarterEmployeeCandidate,
         enums::{RewardMode, RiskLevel, ShopEventOption, Side},
         map::{
-            HeadquartersContactOption, MapNodeCategory, MapNodeId, MapNodeKindId, MapNodePayload,
-            MapViewDto, NodeSession, SupportNodeMode, SupportNodeType,
+            GameMode, HeadquartersContactOption, MapNodeCategory, MapNodeId, MapNodeKindId,
+            MapNodePayload, MapViewDto, NodeSession, SupportNodeMode, SupportNodeType,
         },
         reward::{
             RewardEffect, RewardOption, SkillFragmentGrantDiffDto, SkillFragmentResearchDiffDto,
@@ -260,6 +260,8 @@ pub enum ActionKind {
     ExitShop,
     ClaimReward,
     ExitReward,
+    AdvanceEventScene,
+    SelectEventChoice,
     CompleteCombatResult,
     RequestBattleState,
     RecoverBattleSetupLoss,
@@ -276,14 +278,62 @@ pub enum ActionKind {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RunProgressionSnapshotDto {
     pub run_seed: u64,
-    pub act_index: u8,
-    pub max_acts: u8,
-    pub current_act_seed: u64,
+    pub game_mode: GameMode,
+    pub floor_index: u32,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub max_floors: Option<u8>,
+    pub current_floor_seed: u64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct MapProgressionSnapshotDto {
-    pub current_node_id: Option<MapNodeId>,
+pub struct RunAbnormalityResearchSnapshotDto {
+    pub entries: Vec<RunAbnormalityResearchEntrySnapshotDto>,
+    pub all_response_complete: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RunAbnormalityResearchEntrySnapshotDto {
+    pub abnormality_id: String,
+    pub research_points: u32,
+    pub research_required: u32,
+    pub response_complete: bool,
+    pub suppression_wins: u32,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub last_encountered_floor: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub completed_at_floor: Option<u32>,
+    pub unique_fragment_granted: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub response_complete_skill_fragment_id: Option<SkillFragmentId>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MapNavigationSnapshotDto {
+    pub current_node_id: MapNodeId,
+    pub selectable_node_ids: Vec<MapNodeId>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EventSceneSnapshotDto {
+    pub event_id: crate::game::data::event_data::EventId,
+    pub current_scene_id: crate::game::data::event_data::EventSceneId,
+    pub background_id: String,
+    pub script_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub speaker_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub portrait_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub committed_choice_id: Option<crate::game::data::event_data::EventChoiceId>,
+    pub choices: Vec<EventChoiceSnapshotDto>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EventChoiceSnapshotDto {
+    pub choice_id: crate::game::data::event_data::EventChoiceId,
+    pub label_id: String,
+    pub preview: crate::game::data::event_data::EventChoicePreview,
+    pub selectable: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -580,9 +630,7 @@ pub enum SelectedEventSnapshotDto {
         shop_type: ShopType,
         can_reroll: bool,
         visible_items: Vec<DisplayItemSnapshotDto>,
-        hidden_items: Vec<DisplayItemSnapshotDto>,
         visible_item_uuids: Vec<Uuid>,
-        hidden_item_uuids: Vec<Uuid>,
     },
     Reward {
         stage_uuid: Uuid,
@@ -608,8 +656,12 @@ pub enum SelectedEventSnapshotDto {
         recruitment_candidates: Vec<StarterEmployeeCandidate>,
         shop_pool_id: Option<String>,
     },
+    Event {
+        node_id: MapNodeId,
+        event: EventSceneSnapshotDto,
+    },
     CombatBattle {
-        abnormality_id: String,
+        primary_abnormality_id: Option<String>,
         encounter_id: String,
         node_type: CombatNodeType,
         mission_variant: CombatMissionVariant,
@@ -618,6 +670,7 @@ pub enum SelectedEventSnapshotDto {
         reward_mode: RewardMode,
         rewards: Vec<RewardOptionSnapshotDto>,
         result_stats: BattleResultStatsDto,
+        bonus_objectives: Vec<crate::game::pve_bonus_objectives::PveBonusObjectiveOutcomeDto>,
         has_event_log: bool,
     },
 }
@@ -643,6 +696,8 @@ pub enum GameStateContextDto {
         category: MapNodeCategory,
         combat_preview: Option<CombatPreview>,
         abnormality_attempt: Option<AbnormalityAttemptDto>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        omen: Option<crate::game::boss_omen::NodeConfirmOmenDto>,
     },
     InNode {
         node_id: MapNodeId,
@@ -687,7 +742,8 @@ pub struct RunSnapshotDto<SelectedEvent = SelectedEventSnapshotDto> {
     pub allowed_actions: Vec<ActionKind>,
     pub run_checkpoint: RunCheckpointSnapshotDto,
     pub run_progression: Option<RunProgressionSnapshotDto>,
-    pub map_progression: Option<MapProgressionSnapshotDto>,
+    pub abnormality_research: Option<RunAbnormalityResearchSnapshotDto>,
+    pub map_navigation: Option<MapNavigationSnapshotDto>,
     pub map: Option<MapViewDto>,
     pub current_node_session: Option<NodeSession>,
     pub selected_event: Option<SelectedEvent>,
@@ -709,7 +765,8 @@ impl<SelectedEvent> RunSnapshotDto<SelectedEvent> {
             allowed_actions,
             run_checkpoint,
             run_progression,
-            map_progression,
+            abnormality_research,
+            map_navigation,
             map,
             current_node_session,
             selected_event,
@@ -726,7 +783,8 @@ impl<SelectedEvent> RunSnapshotDto<SelectedEvent> {
             allowed_actions,
             run_checkpoint,
             run_progression,
-            map_progression,
+            abnormality_research,
+            map_navigation,
             map,
             current_node_session,
             selected_event: f(selected_event),
@@ -756,7 +814,9 @@ pub enum PlayerBehavior {
     // 게임 관련 행동
     // ============================================================
     /// 새 게임 시작
-    StartNewGame,
+    StartNewGame {
+        game_mode: GameMode,
+    },
     /// 시작 후보 직원 중 이번 런에 투입할 3명을 선택
     SelectStarterEmployees {
         candidate_ids: Vec<String>,
@@ -864,6 +924,18 @@ pub enum PlayerBehavior {
     ClaimReward,
     /// 보상 화면 나가기
     ExitReward,
+    /// 선택지가 없는 Event scene을 다음 scene으로 진행
+    AdvanceEventScene {
+        node_id: MapNodeId,
+        event_id: crate::game::data::event_data::EventId,
+        current_scene_id: crate::game::data::event_data::EventSceneId,
+    },
+    /// Event scene 선택지를 확정
+    SelectEventChoice {
+        node_id: MapNodeId,
+        event_id: crate::game::data::event_data::EventId,
+        choice_id: crate::game::data::event_data::EventChoiceId,
+    },
     /// 전투 결과 확인 완료
     CompleteCombatResult,
     /// 실시간 전투 상태 요청
@@ -910,7 +982,7 @@ pub enum PlayerBehavior {
 impl PlayerBehavior {
     pub fn kind(&self) -> ActionKind {
         match self {
-            PlayerBehavior::StartNewGame => ActionKind::StartNewGame,
+            PlayerBehavior::StartNewGame { .. } => ActionKind::StartNewGame,
             PlayerBehavior::SelectStarterEmployees { .. } => ActionKind::SelectStarterEmployees,
             PlayerBehavior::UnEquipItem { .. } => ActionKind::UnEquipItem,
             PlayerBehavior::EquipItem { .. } => ActionKind::EquipItem,
@@ -940,6 +1012,8 @@ impl PlayerBehavior {
             PlayerBehavior::ExitShop => ActionKind::ExitShop,
             PlayerBehavior::ClaimReward => ActionKind::ClaimReward,
             PlayerBehavior::ExitReward => ActionKind::ExitReward,
+            PlayerBehavior::AdvanceEventScene { .. } => ActionKind::AdvanceEventScene,
+            PlayerBehavior::SelectEventChoice { .. } => ActionKind::SelectEventChoice,
             PlayerBehavior::CompleteCombatResult => ActionKind::CompleteCombatResult,
             PlayerBehavior::RequestBattleState { .. } => ActionKind::RequestBattleState,
             PlayerBehavior::RecoverBattleSetupLoss => ActionKind::RecoverBattleSetupLoss,
@@ -1308,6 +1382,7 @@ pub struct SkillCatalogTileAreaDto {
 pub enum BehaviorResult {
     /// 새 게임 시작
     StartNewGame {
+        game_mode: GameMode,
         candidates: Vec<StarterEmployeeCandidate>,
         required_count: usize,
     },
@@ -1368,9 +1443,10 @@ pub enum BehaviorResult {
         shop_pool_id: Option<String>,
         research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
-    /// 보스 노드 완료로 다음 Act에 진입
-    ActComplete {
-        act_index: u8,
+    /// Gate 노드 완료로 다음 Floor에 진입
+    FloorAdvanced {
+        game_mode: GameMode,
+        floor_index: u32,
         map: MapViewDto,
     },
     /// 보스 노드 완료로 런 클리어
@@ -1470,6 +1546,13 @@ pub enum BehaviorResult {
         enkephalin: u32,
         inventory_diff: InventoryDiffDto,
         completion: Box<BehaviorResult>,
+    },
+
+    /// Event node의 현재 scene 상태
+    EventState {
+        node_id: MapNodeId,
+        event: EventSceneSnapshotDto,
+        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
 
     /// 보상 수령 결과 (자원 및 인벤토리 변경)
@@ -1604,6 +1687,7 @@ pub enum CommandResultPayloadContract {
 #[derive(Debug, Clone)]
 pub enum RunCommandResult {
     StartNewGame {
+        game_mode: GameMode,
         candidates: Vec<StarterEmployeeCandidate>,
         required_count: usize,
     },
@@ -1612,8 +1696,9 @@ pub enum RunCommandResult {
         employee_uuids: Vec<Uuid>,
         map: MapViewDto,
     },
-    ActComplete {
-        act_index: u8,
+    FloorAdvanced {
+        game_mode: GameMode,
+        floor_index: u32,
         map: MapViewDto,
     },
     RunComplete {
@@ -1653,6 +1738,11 @@ pub enum NodeCommandResult {
     NodeCompleted {
         map: MapViewDto,
         outcome: Option<NodeOutcomeSummary>,
+    },
+    EventState {
+        node_id: MapNodeId,
+        event: EventSceneSnapshotDto,
+        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
 }
 
@@ -1810,10 +1900,12 @@ impl BehaviorResult {
     pub fn into_command_result_contract(self) -> BehaviorCommandResultContract {
         match self {
             BehaviorResult::StartNewGame {
+                game_mode,
                 candidates,
                 required_count,
             } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Run(
                 RunCommandResult::StartNewGame {
+                    game_mode,
                     candidates,
                     required_count,
                 },
@@ -1873,6 +1965,17 @@ impl BehaviorResult {
                     NodeCommandResult::NodeCompleted { map, outcome },
                 ))
             }
+            BehaviorResult::EventState {
+                node_id,
+                event,
+                research_deliveries,
+            } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Node(
+                NodeCommandResult::EventState {
+                    node_id,
+                    event,
+                    research_deliveries,
+                },
+            )),
             BehaviorResult::SupportState {
                 node_id,
                 support_mode,
@@ -1918,11 +2021,17 @@ impl BehaviorResult {
                     },
                 ),
             ),
-            BehaviorResult::ActComplete { act_index, map } => {
-                BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Run(
-                    RunCommandResult::ActComplete { act_index, map },
-                ))
-            }
+            BehaviorResult::FloorAdvanced {
+                game_mode,
+                floor_index,
+                map,
+            } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Run(
+                RunCommandResult::FloorAdvanced {
+                    game_mode,
+                    floor_index,
+                    map,
+                },
+            )),
             BehaviorResult::RunComplete { map } => BehaviorCommandResultContract::CommandPayload(
                 CommandResultPayloadContract::Run(RunCommandResult::RunComplete { map }),
             ),
@@ -2321,7 +2430,7 @@ impl RunCommandResult {
         match self {
             RunCommandResult::StartNewGame { .. } => "StartNewGame",
             RunCommandResult::StarterEmployeesSelected { .. } => "StarterEmployeesSelected",
-            RunCommandResult::ActComplete { .. } => "ActComplete",
+            RunCommandResult::FloorAdvanced { .. } => "FloorAdvanced",
             RunCommandResult::RunComplete { .. } => "RunComplete",
             RunCommandResult::RunFailed { .. } => "RunFailed",
         }
@@ -2330,9 +2439,11 @@ impl RunCommandResult {
     fn payload_value(&self) -> serde_json::Result<Value> {
         match self {
             RunCommandResult::StartNewGame {
+                game_mode,
                 candidates,
                 required_count,
             } => Ok(json!({
+                "game_mode": game_mode,
                 "candidates": candidates,
                 "required_count": required_count,
             })),
@@ -2345,8 +2456,13 @@ impl RunCommandResult {
                 "employee_uuids": employee_uuids,
                 "map": map,
             })),
-            RunCommandResult::ActComplete { act_index, map } => Ok(json!({
-                "act_index": act_index,
+            RunCommandResult::FloorAdvanced {
+                game_mode,
+                floor_index,
+                map,
+            } => Ok(json!({
+                "game_mode": game_mode,
+                "floor_index": floor_index,
                 "map": map,
             })),
             RunCommandResult::RunComplete { map } => serde_json::to_value(map),
@@ -2382,6 +2498,7 @@ impl NodeCommandResult {
             NodeCommandResult::NodePreview { .. } => "NodePreview",
             NodeCommandResult::NodeEntered { .. } => "NodeEntered",
             NodeCommandResult::NodeCompleted { .. } => "NodeCompleted",
+            NodeCommandResult::EventState { .. } => "EventState",
         }
     }
 
@@ -2422,6 +2539,15 @@ impl NodeCommandResult {
             NodeCommandResult::NodeCompleted { map, outcome } => Ok(json!({
                 "map": map,
                 "outcome": outcome,
+            })),
+            NodeCommandResult::EventState {
+                node_id,
+                event,
+                research_deliveries,
+            } => Ok(json!({
+                "node_id": node_id,
+                "event": event,
+                "research_deliveries": research_deliveries,
             })),
         }
     }
@@ -2805,6 +2931,7 @@ mod tests {
     #[test]
     fn behavior_result_helpers_match_variants() {
         assert!(BehaviorResult::StartNewGame {
+            game_mode: GameMode::Standard,
             candidates: Vec::new(),
             required_count: 3,
         }

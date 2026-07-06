@@ -55,6 +55,7 @@ pub fn defense_object_group_for_win_condition(
                 },
                 threat_class: BattleUnitThreatClass::Normal,
                 level: Tier::I,
+                stat_scale: Default::default(),
                 growth_stacks: GrowthStack::new(),
                 equipped_items: vec![],
                 equipped_item_enhancements: vec![],

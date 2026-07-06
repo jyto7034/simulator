@@ -12,11 +12,13 @@ use crate::game::{
     data::{
         abnormality_data::{AbnormalityDatabase, AbnormalityMetadata},
         artifact_data::{ArtifactDatabase, ArtifactMetadata},
+        boss_omen_data::BossOmenChainDatabase,
         consumable_data::{ConsumableDatabase, ConsumableMetadata},
         corroded_employee_data::CorrodedEmployeeProfileDatabase,
         corroded_wave_data::CorrodedWavePresetDatabase,
         employee_data::{RecruitmentEmployeeCandidateDatabase, StarterEmployeeCandidateDatabase},
         equipment_data::{EquipmentDatabase, EquipmentMetadata},
+        event_data::EventDatabase,
         pve_data::PveEncounterDatabase,
         reward_data::RewardDatabase,
         run_policy_data::RunPolicyData,
@@ -32,6 +34,9 @@ pub mod abnormality_data;
 // 아티팩트 정보
 pub mod artifact_data;
 
+// 끝없는 탐사 보스 전조 체인 데이터
+pub mod boss_omen_data;
+
 // 섭취 아이템 정보
 pub mod consumable_data;
 
@@ -46,6 +51,9 @@ pub mod corroded_wave_data;
 
 // 시작 직원 후보 데이터
 pub mod employee_data;
+
+// 비주얼 노벨식 Event node 데이터
+pub mod event_data;
 
 // PvE 전투 데이터
 pub mod pve_data;
@@ -128,8 +136,14 @@ pub struct GameDataBase {
     pub shop_data: Arc<ShopDatabase>,
     pub reward_data: Arc<RewardDatabase>,
 
+    /// 비주얼 노벨식 Event node 데이터
+    pub event_data: Arc<EventDatabase>,
+
     /// PvE 전투(Suppress) 데이터
     pub pve_data: Arc<PveEncounterDatabase>,
+
+    /// 끝없는 탐사 보스 전조 체인 데이터
+    pub boss_omen_data: Arc<BossOmenChainDatabase>,
 
     /// 런/월드 진행 정책 데이터
     pub run_policy: Arc<RunPolicyData>,
@@ -158,7 +172,9 @@ pub struct GameDataBaseParts {
     pub equipment_data: Arc<EquipmentDatabase>,
     pub shop_data: Arc<ShopDatabase>,
     pub reward_data: Arc<RewardDatabase>,
+    pub event_data: Arc<EventDatabase>,
     pub pve_data: Arc<PveEncounterDatabase>,
+    pub boss_omen_data: Arc<BossOmenChainDatabase>,
     pub run_policy: Arc<RunPolicyData>,
     pub skill_data: Arc<SkillDatabase>,
     pub buff_data: Arc<BuffDatabase>,
@@ -176,7 +192,9 @@ pub struct GameDataBuilder {
     equipment_data: Arc<EquipmentDatabase>,
     shop_data: Arc<ShopDatabase>,
     reward_data: Arc<RewardDatabase>,
+    event_data: Arc<EventDatabase>,
     pve_data: Arc<PveEncounterDatabase>,
+    boss_omen_data: Arc<BossOmenChainDatabase>,
     run_policy: Arc<RunPolicyData>,
     skill_data: Arc<SkillDatabase>,
     buff_data: Arc<BuffDatabase>,
@@ -196,7 +214,9 @@ impl GameDataBuilder {
             equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
             shop_data: Arc::new(ShopDatabase::new(vec![])),
             reward_data: Arc::new(RewardDatabase::new(vec![])),
+            event_data: Arc::new(EventDatabase::new(vec![])),
             pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
+            boss_omen_data: Arc::new(BossOmenChainDatabase::new(vec![])),
             run_policy: Arc::new(RunPolicyData::builtin()),
             skill_data: Arc::new(SkillDatabase::new(vec![])),
             buff_data: Arc::new(BuffDatabase::new(vec![])),
@@ -204,8 +224,14 @@ impl GameDataBuilder {
         }
     }
 
+    /// Build a minimal fixture-oriented builder with embedded live buff data.
+    ///
+    /// This is not the production live bundle loader. Production/server code
+    /// must use `GameDataBase::load_live_embedded()`. Tests use this helper
+    /// when they need live buff definitions without pulling in the full live
+    /// game-data bundle.
     pub fn live_defaults() -> Self {
-        Self::empty().with_buffs(BuffDatabase::live_default())
+        Self::empty().with_buffs(load_embedded_live_buff_data())
     }
 
     pub fn with_abnormalities(mut self, items: Vec<AbnormalityMetadata>) -> Self {
@@ -326,6 +352,16 @@ impl GameDataBuilder {
         self
     }
 
+    pub fn with_events(mut self, data: EventDatabase) -> Self {
+        self.event_data = Arc::new(data);
+        self
+    }
+
+    pub fn with_event_data(mut self, data: Arc<EventDatabase>) -> Self {
+        self.event_data = data;
+        self
+    }
+
     pub fn with_pve(mut self, data: PveEncounterDatabase) -> Self {
         self.pve_data = Arc::new(data);
         self
@@ -333,6 +369,16 @@ impl GameDataBuilder {
 
     pub fn with_pve_data(mut self, data: Arc<PveEncounterDatabase>) -> Self {
         self.pve_data = data;
+        self
+    }
+
+    pub fn with_boss_omen_chains(mut self, data: BossOmenChainDatabase) -> Self {
+        self.boss_omen_data = Arc::new(data);
+        self
+    }
+
+    pub fn with_boss_omen_data(mut self, data: Arc<BossOmenChainDatabase>) -> Self {
+        self.boss_omen_data = data;
         self
     }
 
@@ -388,7 +434,9 @@ impl GameDataBuilder {
             equipment_data: self.equipment_data,
             shop_data: self.shop_data,
             reward_data: self.reward_data,
+            event_data: self.event_data,
             pve_data: self.pve_data,
+            boss_omen_data: self.boss_omen_data,
             run_policy: self.run_policy,
             skill_data: self.skill_data,
             buff_data: self.buff_data,
@@ -653,6 +701,98 @@ fn insert_item_index(by_uuid: &mut HashMap<Uuid, ItemIndex>, uuid: Uuid, new_ind
 }
 
 impl GameDataBase {
+    /// Load the production live RON bundle embedded at compile time.
+    ///
+    /// This is the single official live-data loader. It intentionally uses
+    /// `include_str!`; RON edits require recompilation and this is not a hot
+    /// reload or filesystem data-pack path.
+    pub fn load_live_embedded() -> Arc<Self> {
+        let shops_db: ShopDatabase = ron::de::from_str(include_str!(
+            "../../../../game_resources/data/events/shops/base.ron"
+        ))
+        .expect("Failed to deserialize events/shops/base.ron");
+        let rewards_db: RewardDatabase = ron::de::from_str(include_str!(
+            "../../../../game_resources/data/events/rewards/base.ron"
+        ))
+        .expect("Failed to deserialize events/rewards/base.ron");
+        let event_db: EventDatabase = ron::de::from_str(include_str!(
+            "../../../../game_resources/data/events/story/base.ron"
+        ))
+        .expect("Failed to deserialize events/story/base.ron");
+        let boss_omen_db: BossOmenChainDatabase = ron::de::from_str(include_str!(
+            "../../../../game_resources/data/boss_omen/chains.ron"
+        ))
+        .expect("Failed to deserialize boss_omen/chains.ron");
+        let abnormalities_db: AbnormalityDatabase = ron::de::from_str(include_str!(
+            "../../../../game_resources/data/abnormalities/base.ron"
+        ))
+        .expect("Failed to deserialize abnormalities/base.ron");
+        let corroded_employee_db: CorrodedEmployeeProfileDatabase = ron::de::from_str(
+            include_str!("../../../../game_resources/data/enemies/corroded_employees.ron"),
+        )
+        .expect("Failed to deserialize enemies/corroded_employees.ron");
+        let corroded_wave_db: CorrodedWavePresetDatabase = ron::de::from_str(include_str!(
+            "../../../../game_resources/data/enemies/corroded_wave_presets.ron"
+        ))
+        .expect("Failed to deserialize enemies/corroded_wave_presets.ron");
+        let starter_employee_db: StarterEmployeeCandidateDatabase = ron::de::from_str(
+            include_str!("../../../../game_resources/data/employees/starter_candidates.ron"),
+        )
+        .expect("Failed to deserialize employees/starter_candidates.ron");
+        let recruitment_employee_db: RecruitmentEmployeeCandidateDatabase = ron::de::from_str(
+            include_str!("../../../../game_resources/data/employees/recruitment_candidates.ron"),
+        )
+        .expect("Failed to deserialize employees/recruitment_candidates.ron");
+        let equipments_db: EquipmentDatabase = ron::de::from_str(include_str!(
+            "../../../../game_resources/data/equipments/base.ron"
+        ))
+        .expect("Failed to deserialize equipments/base.ron");
+        let artifacts_db: ArtifactDatabase = ron::de::from_str(include_str!(
+            "../../../../game_resources/data/artifacts/base.ron"
+        ))
+        .expect("Failed to deserialize artifacts/base.ron");
+        let consumables_db: ConsumableDatabase = ron::de::from_str(include_str!(
+            "../../../../game_resources/data/consumables/base.ron"
+        ))
+        .expect("Failed to deserialize consumables/base.ron");
+        let buffs_db = load_embedded_live_buff_data();
+        let skill_db: SkillDatabase = ron::de::from_str(include_str!(
+            "../../../../game_resources/data/skills/base.ron"
+        ))
+        .expect("Failed to deserialize skills/base.ron");
+        let skill_fragment_db: SkillFragmentDatabase = ron::de::from_str(include_str!(
+            "../../../../game_resources/data/skill_fragments/base.ron"
+        ))
+        .expect("Failed to deserialize skill_fragments/base.ron");
+        let pve_db: PveEncounterDatabase = ron::de::from_str(include_str!(
+            "../../../../game_resources/data/pve/encounters.ron"
+        ))
+        .expect("Failed to deserialize pve/encounters.ron");
+        let run_policy = RunPolicyData::builtin();
+
+        let game_data = GameDataBuilder::empty()
+            .with_abnormality_data(Arc::new(abnormalities_db))
+            .with_corroded_employee_data(Arc::new(corroded_employee_db))
+            .with_corroded_wave_data(Arc::new(corroded_wave_db))
+            .with_starter_employee_data(Arc::new(starter_employee_db))
+            .with_recruitment_employee_data(Arc::new(recruitment_employee_db))
+            .with_artifact_data(Arc::new(artifacts_db))
+            .with_consumable_data(Arc::new(consumables_db))
+            .with_equipment_data(Arc::new(equipments_db))
+            .with_shop_data(Arc::new(shops_db))
+            .with_reward_data(Arc::new(rewards_db))
+            .with_event_data(Arc::new(event_db))
+            .with_pve_data(Arc::new(pve_db))
+            .with_boss_omen_data(Arc::new(boss_omen_db))
+            .with_run_policy_data(Arc::new(run_policy))
+            .with_buff_data(Arc::new(buffs_db))
+            .with_skill_data(Arc::new(skill_db))
+            .with_skill_fragment_data(Arc::new(skill_fragment_db))
+            .build_arc();
+        game_data.validate_generated_combat_preview_contracts();
+        game_data
+    }
+
     pub fn new(parts: GameDataBaseParts) -> Self {
         let GameDataBaseParts {
             abnormality_data,
@@ -665,7 +805,9 @@ impl GameDataBase {
             equipment_data,
             shop_data,
             reward_data,
+            event_data,
             pve_data,
+            boss_omen_data,
             run_policy,
             skill_data,
             buff_data,
@@ -682,7 +824,9 @@ impl GameDataBase {
         equipment_data.validate_indexes();
         shop_data.validate_indexes();
         reward_data.validate_indexes();
+        event_data.validate_indexes();
         pve_data.validate_indexes();
+        boss_omen_data.validate_indexes();
         run_policy
             .validate_contract()
             .expect("run policy data must satisfy contract");
@@ -697,7 +841,9 @@ impl GameDataBase {
             &consumable_data,
             &equipment_data,
             &reward_data,
+            &event_data,
             &pve_data,
+            &boss_omen_data,
             &skill_data,
             &buff_data,
             &skill_fragment_data,
@@ -722,7 +868,9 @@ impl GameDataBase {
             equipment_data,
             shop_data,
             reward_data,
+            event_data,
             pve_data,
+            boss_omen_data,
             run_policy,
             skill_data,
             buff_data,
@@ -751,6 +899,13 @@ impl GameDataBase {
     pub fn validate_generated_combat_preview_contracts(&self) {
         validation::validate_generated_combat_preview_contracts(self);
     }
+}
+
+fn load_embedded_live_buff_data() -> BuffDatabase {
+    ron::de::from_str(include_str!(
+        "../../../../game_resources/data/buffs/base.ron"
+    ))
+    .expect("Failed to deserialize buffs/base.ron")
 }
 
 #[cfg(test)]
@@ -843,6 +998,8 @@ mod tests {
             defense: 1,
             magic_resist: 0,
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            response_complete_skill_fragment_id: None,
+            omen_chain_id: None,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -907,6 +1064,8 @@ mod tests {
             defense: 1,
             magic_resist: 0,
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            response_complete_skill_fragment_id: None,
+            omen_chain_id: None,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),
@@ -972,7 +1131,10 @@ mod tests {
 
     #[test]
     fn game_data_base_accepts_fragment_origin_and_independent_imitation_skill() {
-        let abno = minimal_abnormality("t-02-43_freischutz", 1, Some("freischutz_magic_bullet"));
+        let mut abno =
+            minimal_abnormality("t-02-43_freischutz", 1, Some("freischutz_magic_bullet"));
+        abno.response_complete_skill_fragment_id =
+            Some(SkillFragmentId::from("fragment_freischutz_black_round"));
         let original_skill = minimal_skill("freischutz_magic_bullet");
         let imitation_skill = minimal_skill("fragment_freischutz_black_round");
         let fragment = active_fragment(
@@ -1013,7 +1175,10 @@ mod tests {
     #[test]
     #[should_panic(expected = "references unknown imitation skill")]
     fn game_data_base_rejects_fragment_unknown_imitation_skill() {
-        let abno = minimal_abnormality("t-02-43_freischutz", 1, Some("freischutz_magic_bullet"));
+        let mut abno =
+            minimal_abnormality("t-02-43_freischutz", 1, Some("freischutz_magic_bullet"));
+        abno.response_complete_skill_fragment_id =
+            Some(SkillFragmentId::from("fragment_freischutz_black_round"));
         let fragment = active_fragment(
             "fragment_freischutz_black_round",
             "t-02-43_freischutz",

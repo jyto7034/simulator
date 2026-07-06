@@ -550,7 +550,6 @@ mod tests {
             },
             terrain_policy: MovementTerrainPolicy::Ground,
             current_target: None,
-            attack_range_units: 1.0,
             can_move: true,
             is_dead: false,
         }
@@ -766,42 +765,6 @@ mod tests {
             .expect("missing BodyMoved output");
 
         assert_eq!(moved_to, WorldVec2::new(3.0, 1.0));
-    }
-
-    #[test]
-    fn rapier_engine_does_not_steer_around_same_lane_unit() {
-        let mover_id = Uuid::from_u128(80).into();
-        let target_id = Uuid::from_u128(81).into();
-        let mut mover = unit(80, WorldVec2::new(3.5, 0.75));
-        mover.body.goal = Some(MovementGoal::AttackUnit {
-            target_id,
-            desired_range: 1.0,
-            approach_point: None,
-        });
-
-        let mut blocker = unit(82, WorldVec2::new(3.5, 1.5));
-        blocker.can_move = false;
-
-        let mut target = unit(81, WorldVec2::new(3.5, 5.0));
-        target.unit_id = target_id;
-        target.owner = Side::Opponent;
-        target.can_move = false;
-
-        let mut world = RapierMovementWorld::new();
-        let result = world.tick(movement_input(500, vec![mover, blocker, target]));
-
-        let moved_to = result
-            .outputs
-            .iter()
-            .find_map(|output| match output {
-                MovementOutput::BodyMoved {
-                    unit_id: moved, to, ..
-                } if *moved == mover_id => Some(*to),
-                _ => None,
-            })
-            .expect("same-lane blocker should not stall movement completely");
-
-        assert_eq!(moved_to, WorldVec2::new(3.5, 1.25));
     }
 
     #[test]

@@ -10,8 +10,11 @@ use crate::game::{
         tile_range::{TileRangePattern, TileRangePolicy},
         types::{BattleUnitThreatClass, MobilityKind, UnitTargetTrait},
     },
+    data::boss_omen_data::BossOmenChainId,
     data::equipment_data::{TargetingProfile, WeaponRangeRole},
-    data::{build_string_index, build_uuid_index, once_lock_with},
+    data::{
+        build_string_index, build_uuid_index, once_lock_with, skill_fragment_data::SkillFragmentId,
+    },
     enums::RiskLevel,
 };
 
@@ -231,6 +234,14 @@ pub struct AbnormalityMetadata {
     #[serde(default = "default_abnormality_threat_class")]
     pub threat_class: BattleUnitThreatClass,
 
+    /// 이 환상체의 run-local response completion이 처음 달성될 때 지급할 고유 스킬 파편.
+    #[serde(default)]
+    pub response_complete_skill_fragment_id: Option<SkillFragmentId>,
+
+    /// 끝없는 탐사 보스 전조 체인 id. 명시된 환상체만 전조 후보가 된다.
+    #[serde(default)]
+    pub omen_chain_id: Option<BossOmenChainId>,
+
     /// 이동 스펙
     #[serde(default)]
     pub movement: MovementDef,
@@ -329,6 +340,8 @@ mod tests {
             defense: 1,
             magic_resist: 0,
             threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            response_complete_skill_fragment_id: None,
+            omen_chain_id: None,
             movement: Default::default(),
             basic_attack: Default::default(),
             resonance: Default::default(),

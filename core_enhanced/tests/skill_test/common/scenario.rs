@@ -82,6 +82,8 @@ pub(crate) fn skill_test_dummy_metadata() -> AbnormalityMetadata {
         defense: 0,
         magic_resist: 0,
         threat_class: game_core::game::battle::types::BattleUnitThreatClass::Elite,
+        omen_chain_id: None,
+        response_complete_skill_fragment_id: None,
         movement: MovementDef {
             speed_units_per_ms: 0,
             radius_units: 350_000,
@@ -269,6 +271,7 @@ fn build_spawn_group(
                     },
                     threat_class: game_core::game::battle::types::BattleUnitThreatClass::Elite,
                     level: Tier::I,
+                    stat_scale: Default::default(),
                     growth_stacks: GrowthStack::new(),
                     equipped_items: vec![],
                     equipped_item_enhancements: vec![],

@@ -3,7 +3,9 @@ use crate::game::battle::ids::UnitInstanceId;
 use crate::game::ability::SkillId;
 #[cfg(test)]
 use crate::game::stats::TriggerEffectTarget;
-use crate::game::{combat_balance::is_damage_mitigated_for_feedback, enums::Side, stats::Effect};
+use crate::game::{
+    combat_setup::balance::is_damage_mitigated_for_feedback, enums::Side, stats::Effect,
+};
 use serde::{Deserialize, Serialize};
 
 use super::buffs::BuffId;

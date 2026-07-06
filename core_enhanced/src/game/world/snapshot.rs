@@ -12,14 +12,15 @@ use crate::game::behavior::{
     EmployeeTrustSnapshotDto, GameError, GameStateContextDto,
     InventoryEquipmentMaterialSnapshotDto, InventoryEquipmentSnapshotDto,
     InventorySkillFragmentProgressSnapshotDto, InventorySkillFragmentSnapshotDto,
-    InventorySnapshotDto, MapProgressionSnapshotDto, PendingResearchDeliverySnapshotDto,
+    InventorySnapshotDto, MapNavigationSnapshotDto, PendingResearchDeliverySnapshotDto,
     RewardOptionSnapshotDto, RosterOrderSlotSnapshotDto, RosterOrderSnapshotDto,
+    RunAbnormalityResearchEntrySnapshotDto, RunAbnormalityResearchSnapshotDto,
     RunProgressionSnapshotDto, RunResourcesSnapshotDto, RunSnapshotDto, SelectedEventSnapshotDto,
     SkillCatalogCastTargetDto, SkillCatalogDeliveryKind, SkillCatalogDto, SkillCatalogSkillDto,
     SkillCatalogStepDto, SkillCatalogTileAreaDto, SkillFragmentProgressSnapshotDto,
     SnapshotErrorDto,
 };
-use crate::game::combat_player_spawns::effective_combat_profile_for_employee;
+use crate::game::combat_setup::player_spawns::effective_combat_profile_for_employee;
 use crate::game::data::ItemRef;
 use crate::game::resources::{ActiveNodeContent, GameState};
 use crate::game::reward::RewardOption;
@@ -65,21 +66,57 @@ impl GameCore {
             .state
             .run
             .as_ref()
-            .map(|run| run.map_progression.view(&run.map, &run.run_progression));
+            .map(|run| run.map_progression.view(&run.map));
         let run_progression = self.state.run.as_ref().map(|state| {
             let run = &state.run_progression;
             RunProgressionSnapshotDto {
                 run_seed: run.run_seed,
-                act_index: run.act_index,
-                max_acts: run.max_acts,
-                current_act_seed: run.current_act_seed(),
+                game_mode: run.game_mode,
+                floor_index: run.floor_index(),
+                max_floors: run.max_floors(),
+                current_floor_seed: run.current_floor_seed(),
             }
         });
-        let map_progression = self.state.run.as_ref().map(|state| {
-            let progression = &state.map_progression;
-            MapProgressionSnapshotDto {
-                current_node_id: progression.current_node_id,
+        let abnormality_research = self.state.run.as_ref().map(|state| {
+            let mut entries = state
+                .abnormality_research
+                .entries
+                .iter()
+                .map(|(abnormality_id, entry)| {
+                    let response_complete_skill_fragment_id = self
+                        .game_data
+                        .abnormality_data
+                        .get_by_id(abnormality_id)
+                        .and_then(|abnormality| {
+                            abnormality.response_complete_skill_fragment_id.clone()
+                        });
+                    RunAbnormalityResearchEntrySnapshotDto {
+                        abnormality_id: abnormality_id.clone(),
+                        research_points: entry.research_points,
+                        research_required: entry.research_required,
+                        response_complete: entry.response_complete,
+                        suppression_wins: entry.suppression_wins,
+                        last_encountered_floor: entry.last_encountered_floor,
+                        completed_at_floor: entry.completed_at_floor,
+                        unique_fragment_granted: entry.unique_fragment_granted,
+                        response_complete_skill_fragment_id,
+                    }
+                })
+                .collect::<Vec<_>>();
+            entries.sort_by(|left, right| left.abnormality_id.cmp(&right.abnormality_id));
+            RunAbnormalityResearchSnapshotDto {
+                entries,
+                all_response_complete: state.abnormality_research.all_response_complete(),
             }
+        });
+        let map_navigation = self.state.run.as_ref().and_then(|state| {
+            let progression = &state.map_progression;
+            progression
+                .current_node_id
+                .map(|current_node_id| MapNavigationSnapshotDto {
+                    current_node_id,
+                    selectable_node_ids: progression.selectable_node_ids(&state.map),
+                })
         });
         let enkephalin = self.state.enkephalin.amount;
         Ok(RunSnapshotDto {
@@ -88,7 +125,8 @@ impl GameCore {
             allowed_actions: self.get_allowed_actions(),
             run_checkpoint: self.state.run_checkpoint.to_dto(),
             run_progression,
-            map_progression,
+            abnormality_research,
+            map_navigation,
             map,
             current_node_session: self.state.node_session.clone(),
             selected_event: self.get_selected_event_snapshot_dto()?,
@@ -123,7 +161,13 @@ impl GameCore {
                 let run = self.state.run.as_ref();
                 let combat_preview = run.and_then(|run| run.combat_previews.get(&node_id).cloned());
                 let abnormality_attempt = run
-                    .filter(|_| matches!(category, crate::game::map::MapNodeCategory::Combat))
+                    .filter(|_| {
+                        matches!(
+                            category,
+                            crate::game::map::MapNodeCategory::Combat
+                                | crate::game::map::MapNodeCategory::Boss
+                        )
+                    })
                     .map(|run| run.abnormality_attempt_dto(node_id));
                 GameStateContextDto::NodeConfirm {
                     node_id,
@@ -131,6 +175,7 @@ impl GameCore {
                     category,
                     combat_preview,
                     abnormality_attempt,
+                    omen: run.and_then(|run| run.boss_omen.node_confirm_omen(node_id)),
                 }
             }
             GameState::InNode {
@@ -153,20 +198,11 @@ impl GameCore {
             GameState::InBattle { battle_uuid } => {
                 let active = self.state.active_battle.as_ref();
                 let abnormality_attempt = active.and_then(|battle| {
-                    (battle.node_type != crate::game::combat_preview::CombatNodeType::Boss).then(
-                        || {
-                            self.state.run.as_ref().map(|run| {
-                                run.abnormality_attempt_dto(crate::game::map::MapNodeId(
-                                    battle.battle_uuid,
-                                ))
-                            })
-                        },
-                    )?
+                    self.state.run.as_ref().map(|run| {
+                        run.abnormality_attempt_dto(crate::game::map::MapNodeId(battle.battle_uuid))
+                    })
                 });
-                let can_retreat = active.is_some_and(|battle| {
-                    battle.node_type != crate::game::combat_preview::CombatNodeType::Boss
-                        && !battle.execution.is_finished()
-                });
+                let can_retreat = active.is_some_and(|battle| !battle.execution.is_finished());
                 GameStateContextDto::InBattle {
                     battle_uuid,
                     node_type: active.map(|battle| battle.node_type),
@@ -693,9 +729,7 @@ impl GameCore {
                 shop_type: shop.shop_type,
                 can_reroll: shop.can_reroll,
                 visible_items: self.display_items_snapshot_dto(&shop.visible_items)?,
-                hidden_items: self.display_items_snapshot_dto(&shop.hidden_items)?,
                 visible_item_uuids: shop.visible_items.clone(),
-                hidden_item_uuids: shop.hidden_items.clone(),
             },
             ActiveNodeContent::Reward(reward) => SelectedEventSnapshotDto::Reward {
                 stage_uuid: reward.stage_uuid,
@@ -707,6 +741,10 @@ impl GameCore {
                     .collect::<Vec<_>>(),
                 selected_reward_uuid: reward.selected_reward_uuid,
                 can_skip: reward.can_skip,
+            },
+            ActiveNodeContent::Event(event) => SelectedEventSnapshotDto::Event {
+                node_id: event.node_id,
+                event: self.event_scene_snapshot(event)?,
             },
             ActiveNodeContent::Support(support) => SelectedEventSnapshotDto::Support {
                 node_id: support.node_id,
@@ -728,7 +766,7 @@ impl GameCore {
                 }
             }
             ActiveNodeContent::CombatBattle(battle) => SelectedEventSnapshotDto::CombatBattle {
-                abnormality_id: battle.abnormality_id.clone(),
+                primary_abnormality_id: battle.primary_abnormality_id.clone(),
                 encounter_id: battle.encounter_id.clone(),
                 node_type: battle.node_type,
                 mission_variant: battle.mission_variant,
@@ -741,6 +779,7 @@ impl GameCore {
                     .map(display_reward_option_snapshot_dto)
                     .collect::<Vec<_>>(),
                 result_stats: battle.result_stats.clone(),
+                bonus_objectives: battle.bonus_objectives.clone(),
                 has_event_log: true,
             },
         };

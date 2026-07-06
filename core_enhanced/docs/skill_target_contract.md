@@ -56,7 +56,7 @@ range preview 제외:
 ```text
 range_role: Melee | Ranged
 weapon_archetype: Sword | Spear | Shield | Bow | Gun | Staff
-targeting_profile: DefaultForward | AirFirst | LowDefenseFirst | LowMagicResistFirst | SplashClusterFirst | ...
+targeting_profile: DefaultForward | AirFirst | LowDefenseFirst | LowMagicResistFirst | ...
 ```
 
 현재 live RON에서 사용하는 기본 무기 아키타입은 `Sword`, `Spear`, `Shield`, `Bow`, `Gun`, `Staff`다. `GrenadeLauncher`는 runtime enum에 남아 있는 미사용/미래 후보이며, 현재 live 장비/파편 설계의 기본 후보로 취급하지 않는다. `Axe`, `Crossbow`, `Shotgun` 같은 추가 아키타입은 별도 구현 goal에서 enum, live RON, Unity 표시 계약을 함께 확정한 뒤 추가한다.
@@ -78,6 +78,10 @@ targeting_profile: DefaultForward | AirFirst | LowDefenseFirst | LowMagicResistF
 ## Basic Attack Range Authoring
 
 기본 공격 범위는 런타임에서 `range_units`나 연속좌표 거리로 추론하지 않는다. 기본 공격이 대상을 고를 수 있는지는 최종 타일 범위에만 의존한다.
+
+기본 공격 때문에 이동을 멈출지, 어떤 대상에게 공격 intent를 만들지도 같은 타일 범위 판정을 따른다. route-following 유닛은 유효한 target이 최종 타일 범위 안에 있을 때만 basic-attack stop/attack goal을 만들며, `range_units`, body radius, world distance로 기본 공격용 정지 위치를 계산하지 않는다.
+
+저지 중인 적은 blocker-first 규칙으로 자신을 저지한 유닛을 우선 공격한다. 이는 연속좌표 거리 예외가 아니라 같은 logical tile 안에서 발생하는 blocker engagement로 취급한다.
 
 직원 기본 공격 범위:
 
@@ -171,7 +175,7 @@ targeting_profile: DefaultForward | AirFirst | LowDefenseFirst | LowMagicResistF
 
 자동 적대 타겟팅은 피해 또는 적대적 대상 효과 중 하나라도 기대할 수 있는 대상만 고른다.
 
-이 필터는 기본 공격, 스킬 cast target 선택, `RetargetOnStep` 재타겟팅, `TileArea` 시전 가능성 판단에 동일하게 적용한다. 후보 필터 이후의 정렬은 기존 `targeting_profile`, 거리, route progress, 위협도, deterministic tie-breaker를 그대로 사용한다. 데미지 가능 대상과 효과만 가능한 대상 사이에 별도 우선순위 규칙을 추가하지 않는다.
+이 필터는 기본 공격, 스킬 cast target 선택, `RetargetOnStep` 재타겟팅, `TileArea` 시전 가능성 판단에 동일하게 적용한다. 후보 필터 이후의 정렬은 `targeting_profile`과 해당 profile의 fallback 규칙(route progress, threat, deterministic tie-breaker 등)을 사용한다. 데미지 가능 대상과 효과만 가능한 대상 사이에 별도 우선순위 규칙을 추가하지 않는다.
 
 유효 후보 규칙:
 
@@ -221,11 +225,8 @@ targeting_profile: DefaultForward | AirFirst | LowDefenseFirst | LowMagicResistF
 | `AirFirst` | 공중 적 우선, 없으면 `DefaultForward` |
 | `LowDefenseFirst` | 방어력이 가장 낮은 적 우선, 동률이면 `DefaultForward` |
 | `LowMagicResistFirst` | 마법 저항이 가장 낮은 적 우선, 동률이면 `DefaultForward` |
-| `SplashClusterFirst` | 직접 대상 주변에 함께 맞는 유효 적 수 또는 예상 피해 기대값이 큰 대상 우선, 동률이면 `DefaultForward` |
 
 `DefaultForward`의 route 기준은 단순 직선거리가 아니라 적이 지정 route를 따라 얼마나 진행했는지다. 같은 route 안에서는 route progress가 큰 적이 우선이다. 여러 route가 섞이면 각 적의 현재 route에서 종료 지점까지 남은 진행 거리를 비교한다. 이 값이 동률이거나 계산 불가능하면 먼저 spawn된 적, 그다음 unit id 순으로 처리한다.
-
-`SplashClusterFirst`는 범위 안의 모든 적을 실제로 맞추는 `TileArea`와 다르다. 이 프로필은 “직접 대상 하나를 고르는 규칙”이며, 해당 직접 대상 주변 splash 기대값을 고려할 뿐이다. 실제 다중 피격 여부는 스킬 delivery와 `defense_tile_range`가 결정한다.
 
 추후 필요하면 `EliteFirst`, `LowestHpFirst`, `HighestBlockWeightFirst`, `BossFirst`, `ClosestFirst` 같은 프로필을 추가할 수 있다. 단 새 프로필은 실제 무기/스킬 파편 수요가 확인된 뒤 추가한다.
 

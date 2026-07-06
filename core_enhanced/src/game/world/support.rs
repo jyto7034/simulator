@@ -16,6 +16,7 @@ pub(super) enum StagedSupportEffect {
     None,
     SavePoint,
     Rest,
+    GateTransition,
 }
 
 impl GameCore {
@@ -548,6 +549,7 @@ impl GameCore {
             StagedSupportEffect::None => Ok(()),
             StagedSupportEffect::SavePoint => self.support_save_point(),
             StagedSupportEffect::Rest => self.support_rest(),
+            StagedSupportEffect::GateTransition => self.support_gate_transition(),
         }
     }
 
@@ -581,6 +583,22 @@ impl GameCore {
                 &trust_policy,
             );
             employee.trust.apply_reaction(&reaction);
+        }
+        Ok(())
+    }
+
+    fn support_gate_transition(&mut self) -> Result<(), GameError> {
+        let reduction_percent = self
+            .run_policy()
+            .support
+            .gate_transition_trauma_recovery_percent;
+        let roster = self.roster_mut()?;
+        for employee in roster
+            .iter_mut()
+            .filter(|employee| employee.life_state == EmployeeLifeState::Alive)
+        {
+            let reduction = employee.trauma.saturating_mul(reduction_percent) / 100;
+            employee.trauma = employee.trauma.saturating_sub(reduction);
         }
         Ok(())
     }

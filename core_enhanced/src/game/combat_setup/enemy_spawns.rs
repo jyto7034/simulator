@@ -48,6 +48,7 @@ pub fn enemy_spawn_groups_from_preview(
         let drafts = enemy_drafts_for_wave(
             game_data,
             &wave.enemy_entries,
+            combat_preview.enemy_stat_scale,
             wave_index,
             &mut global_spawn_index,
         )?;
@@ -114,6 +115,7 @@ fn enemy_movement_plan_for_wave(
 fn enemy_drafts_for_wave(
     game_data: &GameDataBase,
     enemy_entries: &[SpawnWaveEnemyEntry],
+    stat_scale: crate::game::battle::types::BattleUnitStatScale,
     wave_index: usize,
     global_spawn_index: &mut usize,
 ) -> Result<Vec<(BattleUnitDraft, u32)>, GameError> {
@@ -180,6 +182,7 @@ fn enemy_drafts_for_wave(
                     source,
                     threat_class,
                     level: entry.tier,
+                    stat_scale,
                     growth_stacks: GrowthStack::new(),
                     equipped_items: vec![],
                     equipped_item_enhancements: vec![],

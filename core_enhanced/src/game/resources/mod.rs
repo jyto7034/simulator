@@ -11,7 +11,8 @@ pub use board::{Position, RosterOrder};
 pub use economy::Enkephalin;
 pub use inventory::*;
 pub use selection::{
-    ActiveNodeContent, CombatBattleState, HeadquartersContactSessionState, MaintenanceSessionState,
-    RewardSessionState, ShopSessionState, SupportSessionState,
+    ActiveNodeContent, CombatBattleState, EventSessionState, EventStartedCombatState,
+    HeadquartersContactSessionState, MaintenanceSessionState, RewardSessionState, ShopSessionState,
+    SupportSessionState,
 };
 pub use state::{GameState, RunFailureReason};

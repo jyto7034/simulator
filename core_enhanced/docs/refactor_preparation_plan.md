@@ -38,7 +38,7 @@
 - `battle_update.events_delta`는 아직 클라이언트가 presentation event log에 적용하지 않은 event log entry 구간이다.
 - Unity-facing live field rename은 이미 새 계약으로 완료됐으므로, 별도 정책 논의 없이 구형 `timeline_delta`/`battle_delta` 전송을 다시 만들지 않는다.
 - `run_battle()` 같은 전체 실행 helper는 저수준 battle core test에는 사용할 수 있지만, 공식 게임 흐름의 기준으로 삼지 않는다.
-- `event_log_exports/`, `debug_event_log_exports/`는 debug output이다. golden fixture나 gameplay source of truth로 보지 않는다.
+- `target/event_log_exports/`, `target/debug_event_log_exports/`, `target/battle_records/`는 debug output이다. golden fixture나 gameplay source of truth로 보지 않는다.
 - replay-only 테스트나 문구가 새로 발견되면 live state, event log delta, client-facing contract를 검증하는 테스트/문서로 교체한다.
 
 ## 범위 판단
@@ -169,7 +169,8 @@ docs에는 현재 의사결정과 client-facing 계약만 남긴다.
 - `src/game/**/tests/`: 해당 runtime module의 공식 unit/integration-style test 위치다. 큰 테스트 파일은 주제별 하위 파일로 나눈다.
 - `tests_bak/`: 현재 Cargo test 대상이 아닌 레거시 백업 테스트다. 공식 fixture나 정책 source of truth로 사용하지 않는다. 되살릴 필요가 있는 테스트는 현재 정책 기준으로 `tests/` 또는 해당 module test로 재작성한 뒤, 원본 삭제 여부는 별도 사용자 확인을 거친다.
 - `event_log_exports/`: 테스트/디버그 실행으로 생성되는 event log 산출물이다. `.gitignore` 대상이며 golden fixture가 아니다.
-- `debug_event_log_exports/`: 테스트/디버그 실행으로 생성되는 event log 산출물이다. 현재 일부 파일이 git에 추적되어 있지만, 정책상 golden fixture로 보지 않는다. 검증에 필요하면 테스트 assertion으로 고정하고, 파일은 재생성 가능한 debug output으로 취급한다.
+- `target/debug_event_log_exports/`: 테스트/디버그 실행으로 생성되는 event log 산출물이다. 과거 repo-root `debug_event_log_exports/` 아래에 일부 추적 파일이 남아 있더라도 정책상 golden fixture로 보지 않는다. 검증에 필요하면 테스트 assertion으로 고정하고, 파일은 재생성 가능한 debug output으로 취급한다.
+- `target/battle_records/`: run-local 환상체 도감/관찰 기록의 debug JSON export 위치다. 런타임 source of truth는 `RunState.battle_records`이며, JSON export는 `abnormality_uuid` keyed debug artifact다.
 - `logs/`: runtime log 산출물이다. 정책/fixture/source-of-truth가 아니다.
 - `tmp/`: 임시 작업 디렉토리다. repo 정책 또는 테스트 계약을 담지 않는다.
 - `src/old/`: 존재한다면 레거시 코드 보관 위치로 간주한다. live code가 참조하지 않는 이상 source of truth로 사용하지 않는다.

@@ -9,8 +9,8 @@ use crate::game::{
     },
     battle::{
         core::{
-            commands::projectile_flight_ms_for_delivery,
             movement::types::{WorldVec2, DATA_UNITS_PER_WORLD, WORLD_UNITS_PER_TILE},
+            projectile_math::projectile_flight_ms,
             spatial::{data_units_to_world, moving_circle_sweep_hit_fraction},
             types::{ActiveProjectileRuntime, ProjectileGuidance, SkillImpactContext},
             BattleCore,
@@ -67,7 +67,7 @@ fn sample_projectile_position_at(
 
 fn projectile_travel_ms(start: WorldVec2, aim: WorldVec2, speed_units_per_ms: u32) -> u64 {
     let distance_units = (start.distance(aim) * DATA_UNITS_PER_WORLD).ceil() as u64;
-    projectile_flight_ms_for_delivery(distance_units, speed_units_per_ms)
+    projectile_flight_ms(distance_units, speed_units_per_ms)
 }
 
 fn projectile_impact_position_at_hit_fraction(
@@ -789,7 +789,7 @@ impl BattleCore {
                     let target_aim = self
                         .unit_world_position_or_tile_center(unit_instance_id)
                         .unwrap_or_else(|| WorldVec2::from_tile_center(target_pos));
-                    let travel_time_ms = projectile_flight_ms_for_delivery(
+                    let travel_time_ms = projectile_flight_ms(
                         (caster_origin.distance(target_aim) * DATA_UNITS_PER_WORLD).ceil() as u64,
                         *speed_units_per_ms,
                     );

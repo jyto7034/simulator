@@ -4,6 +4,7 @@ use tracing::info;
 use uuid::Uuid;
 
 use super::{
+    node_flow::CombatResultNodeCompletion,
     state::{
         ActiveBattleSession, LiveBattleDeployedUnitState, LiveBattleDeploymentState,
         LiveBattleRedeployState,
@@ -11,6 +12,7 @@ use super::{
     GameCore,
 };
 use crate::game::ability::{DeliveryDef, SkillTarget};
+use crate::game::abnormality_research::RunAbnormalityResearchState;
 use crate::game::battle::{
     core::sim::{
         BattleDeployCurrentHpPolicy, BattleLiveCommand, BattleLiveCommandOutcome, BattleStepOutcome,
@@ -25,21 +27,23 @@ use crate::game::behavior::{
     DeploymentRangePreviewFacingsDto, DeploymentRangePreviewResultDto, GameError,
     LiveBattleRangePreviewsDto, NodeOutcomeEmployeeChange, NodeOutcomeSummary,
 };
-use crate::game::combat_player_spawns::battle_unit_draft_for_employee;
-use crate::game::combat_preview::{CombatNodeType, CombatPreview, DeploymentZoneKind};
+use crate::game::combat_preview::{CombatPreview, DeploymentZoneKind};
+use crate::game::combat_setup::player_spawns::battle_unit_draft_for_employee;
 use crate::game::employee::{EmployeeInjury, EmployeeLifeState, EmployeeRoster};
 use crate::game::employee_trust::EmployeeTrustResolver;
 use crate::game::enums::{RewardMode, Side};
 use crate::game::events::combat::CombatExecutor;
 use crate::game::managers::uuid_manager::UuidManager;
-use crate::game::map::{MapNodeCategory, MapNodeExecutor, MapNodeId, MapNodePayload};
+use crate::game::map::{GameMode, MapNodeCategory, MapNodeExecutor, MapNodeId, MapNodePayload};
+use crate::game::pve_bonus_objectives::{evaluate_pve_bonus_objectives, satisfied_research_bonus};
 use crate::game::range_preview::range_previews_for_combat_profile;
 use crate::game::resources::{
     ActiveNodeContent, CombatBattleState, Enkephalin, GameState, Inventory, InventoryDiffDto,
     Position, RunFailureReason,
 };
 use crate::game::reward::{
-    ExperienceTargetPolicy, GrantExecutionContext, GrantExecutor, RewardEffect,
+    EmployeeExperienceDiffDto, ExperienceTargetPolicy, GrantExecutionContext, GrantExecutor,
+    RewardEffect, SkillFragmentGrantDiffDto, SkillFragmentResearchDiffDto,
 };
 use crate::game::skill_fragment::SkillFragmentInventory;
 
@@ -59,12 +63,31 @@ struct StagedCombatResultState {
     enkephalin: Enkephalin,
 }
 
+enum PlannedPlayerVictoryCombatResultCompletion {
+    RunFailure {
+        staged: StagedCombatResultState,
+        reason: RunFailureReason,
+    },
+    RewardsGranted {
+        staged: StagedCombatResultState,
+        abnormality_research_after_victory: Option<RunAbnormalityResearchState>,
+        node_completion: CombatResultNodeCompletion,
+        endless_response_complete: bool,
+        enkephalin: u32,
+        inventory_diff: InventoryDiffDto,
+        skill_fragment_diffs: Vec<SkillFragmentGrantDiffDto>,
+        skill_fragment_research_diffs: Vec<SkillFragmentResearchDiffDto>,
+        employee_experience_diffs: Vec<EmployeeExperienceDiffDto>,
+        outcome: NodeOutcomeSummary,
+    },
+}
+
 impl GameCore {
     pub(super) fn combat_preview_for_node(
         &mut self,
         node_id: MapNodeId,
     ) -> Result<Option<CombatPreview>, GameError> {
-        let (category, encounter_id, existing) = {
+        let (category, encounter_id, existing, floor_index) = {
             let run = self.run_state()?;
             let node = run.map.node(node_id).ok_or(GameError::InvalidAction)?;
             let encounter_id = match &node.payload {
@@ -75,23 +98,25 @@ impl GameCore {
                 node.category,
                 encounter_id.map(str::to_string),
                 run.combat_previews.get(&node_id).cloned(),
+                run.run_progression.floor_index(),
             )
         };
 
-        if !matches!(category, MapNodeCategory::Combat | MapNodeCategory::Boss) {
-            return Ok(None);
-        }
         if let Some(existing) = existing {
             return Ok(Some(existing));
         }
+        if !matches!(category, MapNodeCategory::Combat | MapNodeCategory::Boss) {
+            return Ok(None);
+        }
 
         let seed = self.node_seed(node_id, 0x5052_4556); // "PREV"
-        let preview = CombatPreview::try_generate_for_node(
+        let preview = CombatPreview::try_generate_for_node_at_floor(
             node_id,
             category,
             encounter_id.as_deref(),
             self.game_data.as_ref(),
             seed,
+            floor_index,
         )?;
         self.run_state_mut()?
             .combat_previews
@@ -135,7 +160,62 @@ impl GameCore {
     pub(super) fn handle_map_combat_node(
         &mut self,
         node_id: MapNodeId,
-        abnormality_id: String,
+        primary_abnormality_id: Option<String>,
+        encounter_id: String,
+    ) -> Result<BehaviorResult, GameError> {
+        let category = self
+            .run_state()?
+            .map
+            .node(node_id)
+            .ok_or(GameError::InvalidAction)?
+            .category;
+        self.handle_explicit_combat_node(node_id, category, primary_abnormality_id, encounter_id)
+    }
+
+    pub(super) fn handle_event_combat_node(
+        &mut self,
+        node_id: MapNodeId,
+        primary_abnormality_id: Option<String>,
+        encounter_id: String,
+    ) -> Result<BehaviorResult, GameError> {
+        self.handle_explicit_combat_node(
+            node_id,
+            MapNodeCategory::Combat,
+            primary_abnormality_id,
+            encounter_id,
+        )
+    }
+
+    fn explicit_combat_preview_for_node(
+        &mut self,
+        node_id: MapNodeId,
+        category: MapNodeCategory,
+        encounter_id: &str,
+    ) -> Result<CombatPreview, GameError> {
+        if let Some(existing) = self.run_state()?.combat_previews.get(&node_id).cloned() {
+            return Ok(existing);
+        }
+        let floor_index = self.run_state()?.run_progression.floor_index();
+        let seed = self.node_seed(node_id, 0x5052_4556);
+        let preview = CombatPreview::try_generate_for_node_at_floor(
+            node_id,
+            category,
+            Some(encounter_id),
+            self.game_data.as_ref(),
+            seed,
+            floor_index,
+        )?;
+        self.run_state_mut()?
+            .combat_previews
+            .insert(node_id, preview.clone());
+        Ok(preview)
+    }
+
+    fn handle_explicit_combat_node(
+        &mut self,
+        node_id: MapNodeId,
+        category: MapNodeCategory,
+        primary_abnormality_id: Option<String>,
         encounter_id: String,
     ) -> Result<BehaviorResult, GameError> {
         if let Some(result) = self.block_or_fail_undeployable_combat_selection()? {
@@ -143,13 +223,12 @@ impl GameCore {
         }
         let selected_uuid = node_id.0;
         info!(
-            "Starting map combat node for abnormality={} encounter={} node={}",
-            abnormality_id, encounter_id, selected_uuid
+            "Starting map combat node for primary_abnormality={:?} encounter={} node={}",
+            primary_abnormality_id, encounter_id, selected_uuid
         );
 
-        let combat_preview = self
-            .combat_preview_for_node(node_id)?
-            .ok_or(GameError::InvalidAction)?;
+        let combat_preview =
+            self.explicit_combat_preview_for_node(node_id, category, &encounter_id)?;
         let node_type = combat_preview.node_type;
         let mission_variant = combat_preview.mission_variant;
         let (reward_mode, rewards) = CombatExecutor::resolve_rewards_for_mission(
@@ -165,7 +244,7 @@ impl GameCore {
             ))
         })?;
 
-        if crate::game::combat_mission_policy::CombatMissionPolicy::starts_as_live_battle(
+        if crate::game::combat_setup::mission_policy::CombatMissionPolicy::starts_as_live_battle(
             node_type,
             mission_variant,
         ) {
@@ -175,25 +254,24 @@ impl GameCore {
                 self.inventory()?,
                 &self.state.skill_fragments,
                 self.game_data.clone(),
-                &abnormality_id,
+                primary_abnormality_id.as_deref(),
                 &encounter_id,
                 self.run_seed,
                 &combat_preview,
                 &empty_deployment,
             )?;
             let execution = battle.start_battle_execution()?;
-            if node_type != CombatNodeType::Boss
-                && self
-                    .run_state_mut()?
-                    .start_abnormality_attempt(node_id)
-                    .is_none()
+            if self
+                .run_state_mut()?
+                .start_abnormality_attempt(node_id)
+                .is_none()
             {
                 return Err(GameError::InvalidAction);
             }
             let live_deployment_policy = self.run_policy().live_deployment;
             self.state.active_battle = Some(ActiveBattleSession {
                 battle_uuid: selected_uuid,
-                abnormality_id,
+                primary_abnormality_id,
                 encounter_id,
                 node_type,
                 mission_variant,
@@ -217,6 +295,17 @@ impl GameCore {
             "combat encounter '{}' uses unsupported non-live combat mission {:?}/{:?}; official combat flow is DefenseRoute live battle only",
             encounter_id, node_type, mission_variant
         )))
+    }
+
+    fn is_final_boss_node(&self, node_id: MapNodeId) -> Result<bool, GameError> {
+        let run = self.run_state()?;
+        let is_standard_final_boss = run.run_progression.is_final_standard_floor()
+            && run.map.terminal_node_id == node_id
+            && run
+                .map
+                .node(node_id)
+                .is_some_and(|node| node.category == MapNodeCategory::Boss);
+        Ok(is_standard_final_boss || run.boss_omen.forced_boss_node_id() == Some(node_id))
     }
 
     pub(super) fn apply_post_battle_resolution(
@@ -509,7 +598,7 @@ impl GameCore {
         };
         if !matches!(
             session.category,
-            MapNodeCategory::Combat | MapNodeCategory::Boss
+            MapNodeCategory::Combat | MapNodeCategory::Boss | MapNodeCategory::Event
         ) {
             return false;
         }
@@ -630,6 +719,7 @@ impl GameCore {
         event_log: BattleEventLog,
         participant_results: Vec<ParticipantBattleResult>,
         result_stats_policy: &crate::game::data::run_policy_data::BattleResultStatsPolicy,
+        game_data: &crate::game::data::GameDataBase,
     ) -> CombatBattleState {
         let result_stats = collect_battle_result_stats(
             winner,
@@ -637,8 +727,15 @@ impl GameCore {
             &participant_results,
             result_stats_policy,
         );
+        let bonus_objectives = game_data
+            .pve_data
+            .get_by_id(&active.encounter_id)
+            .map(|encounter| {
+                evaluate_pve_bonus_objectives(encounter, winner, &event_log, &result_stats)
+            })
+            .unwrap_or_default();
         CombatBattleState {
-            abnormality_id: active.abnormality_id.clone(),
+            primary_abnormality_id: active.primary_abnormality_id.clone(),
             encounter_id: active.encounter_id.clone(),
             node_type: active.node_type,
             mission_variant: active.mission_variant,
@@ -646,6 +743,7 @@ impl GameCore {
             winner,
             event_log,
             result_stats,
+            bonus_objectives,
             reward_mode: active.reward_mode,
             rewards: active.rewards.clone(),
             participant_results,
@@ -657,10 +755,24 @@ impl GameCore {
         battle: CombatBattleState,
     ) -> Result<(), GameError> {
         let battle_uuid = battle.abnormality_uuid;
-        self.run_state_mut()?.record_battle(&battle)?;
+        self.store_and_export_abnormality_battle_record(&battle)?;
         self.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
         self.state.active_battle = None;
         self.transition_to(GameState::CombatResult { battle_uuid })
+    }
+
+    fn store_and_export_abnormality_battle_record(
+        &mut self,
+        battle: &CombatBattleState,
+    ) -> Result<(), GameError> {
+        let inserted = self
+            .run_state_mut()?
+            .store_abnormality_battle_record(battle);
+        if inserted {
+            self.run_state()?
+                .export_abnormality_battle_record_debug_json(battle)?;
+        }
+        Ok(())
     }
 
     pub fn advance_active_battle_by(&mut self, delta_ms: u64) -> Result<BehaviorResult, GameError> {
@@ -674,6 +786,7 @@ impl GameCore {
     ) -> Result<BehaviorResult, GameError> {
         let roster = self.state.roster.clone();
         let result_stats_policy = self.run_policy().battle_result_stats.clone();
+        let game_data = self.game_data.clone();
         let (result, completed_battle) = {
             let active = self
                 .state
@@ -695,6 +808,7 @@ impl GameCore {
                         battle_result.event_log,
                         battle_result.participant_results,
                         &result_stats_policy,
+                        game_data.as_ref(),
                     ))
                 }
             };
@@ -733,6 +847,7 @@ impl GameCore {
     ) -> Result<BehaviorResult, GameError> {
         let roster = self.state.roster.clone();
         let result_stats_policy = self.run_policy().battle_result_stats.clone();
+        let game_data = self.game_data.clone();
         let (result, completed_battle) = {
             let active = self
                 .state
@@ -752,6 +867,7 @@ impl GameCore {
                         battle_result.event_log,
                         battle_result.participant_results,
                         &result_stats_policy,
+                        game_data.as_ref(),
                     ))
                 }
             };
@@ -1003,7 +1119,7 @@ impl GameCore {
         let Some(active) = self.state.active_battle.as_ref() else {
             return Err(GameError::InvalidAction);
         };
-        if !crate::game::combat_mission_policy::CombatMissionPolicy::starts_as_live_battle(
+        if !crate::game::combat_setup::mission_policy::CombatMissionPolicy::starts_as_live_battle(
             active.node_type,
             active.mission_variant,
         ) {
@@ -1238,54 +1354,27 @@ impl GameCore {
     }
 
     pub(super) fn handle_retreat_battle(&mut self) -> Result<BehaviorResult, GameError> {
-        let (node_id, mut combat_preview, attempts_exhausted) = {
+        let (node_id, mut combat_preview, attempts_exhausted, final_boss) = {
             let Some(active) = self.state.active_battle.as_ref() else {
                 return Err(GameError::InvalidAction);
             };
-            if active.node_type == CombatNodeType::Boss {
-                return Err(GameError::InvalidAction);
-            }
             let node_id = MapNodeId(active.battle_uuid);
             let attempts_exhausted = self
                 .run_state()?
                 .abnormality_attempt_state(node_id)
                 .is_exhausted();
-            (node_id, active.combat_preview.clone(), attempts_exhausted)
+            let final_boss = self.is_final_boss_node(node_id)?;
+            (
+                node_id,
+                active.combat_preview.clone(),
+                attempts_exhausted,
+                final_boss,
+            )
         };
 
         if !attempts_exhausted {
             combat_preview.disprove_rumor_warnings();
-            let (kind_id, category, payload, session) = {
-                let run = self.run_state()?;
-                let node = run.map.node(node_id).ok_or(GameError::InvalidAction)?;
-                let enter_result = MapNodeExecutor::enter(node);
-                (
-                    enter_result.kind_id,
-                    enter_result.category,
-                    enter_result.payload,
-                    enter_result.session,
-                )
-            };
-            self.run_state_mut()?
-                .combat_previews
-                .insert(node_id, combat_preview.clone());
-            self.state.active_battle = None;
-            self.state.active_node_content = None;
-            self.state.node_session = Some(session.clone());
-            self.transition_to(GameState::NodeConfirm {
-                node_id,
-                kind_id: kind_id.clone(),
-                category,
-            })?;
-            return Ok(BehaviorResult::NodePreview {
-                node_id,
-                kind_id,
-                category,
-                payload,
-                session,
-                map: self.current_map_view()?,
-                combat_preview: Some(combat_preview),
-            });
+            return self.return_to_node_confirm_for_combat_retry(node_id, combat_preview);
         }
 
         let battle = {
@@ -1295,16 +1384,18 @@ impl GameCore {
                 .as_ref()
                 .ok_or(GameError::InvalidAction)?;
             let result_stats_policy = self.run_policy().battle_result_stats.clone();
+            let game_data = self.game_data.clone();
             Self::combat_battle_state_from_live_result(
                 active,
                 BattleWinner::Draw,
                 active.battle.event_log.clone(),
                 Vec::new(),
                 &result_stats_policy,
+                game_data.as_ref(),
             )
         };
         self.state.active_battle = None;
-        self.run_state_mut()?.record_battle(&battle)?;
+        self.store_and_export_abnormality_battle_record(&battle)?;
         let outcome = self.combat_node_outcome_summary_with_resolution(
             &battle,
             false,
@@ -1314,6 +1405,9 @@ impl GameCore {
             InventoryDiffDto::default(),
         )?;
         self.decrement_consumables_after_combat_node()?;
+        if final_boss {
+            return self.fail_run_with_outcome(RunFailureReason::BossDefeated, Some(outcome));
+        }
         let completion = self.handle_complete_node()?;
         Ok(match completion {
             BehaviorResult::NodeCompleted { map, .. } => BehaviorResult::NodeCompleted {
@@ -1321,6 +1415,44 @@ impl GameCore {
                 outcome: Some(outcome),
             },
             other => other,
+        })
+    }
+
+    fn return_to_node_confirm_for_combat_retry(
+        &mut self,
+        node_id: MapNodeId,
+        combat_preview: CombatPreview,
+    ) -> Result<BehaviorResult, GameError> {
+        let (kind_id, category, payload, session) = {
+            let run = self.run_state()?;
+            let node = run.map.node(node_id).ok_or(GameError::InvalidAction)?;
+            let enter_result = MapNodeExecutor::enter(node);
+            (
+                enter_result.kind_id,
+                enter_result.category,
+                enter_result.payload,
+                enter_result.session,
+            )
+        };
+        self.run_state_mut()?
+            .combat_previews
+            .insert(node_id, combat_preview.clone());
+        self.state.active_battle = None;
+        self.state.active_node_content = None;
+        self.state.node_session = Some(session.clone());
+        self.transition_to(GameState::NodeConfirm {
+            node_id,
+            kind_id: kind_id.clone(),
+            category,
+        })?;
+        Ok(BehaviorResult::NodePreview {
+            node_id,
+            kind_id,
+            category,
+            payload,
+            session,
+            map: self.current_map_view()?,
+            combat_preview: Some(combat_preview),
         })
     }
 
@@ -1333,10 +1465,16 @@ impl GameCore {
                 .ok_or(GameError::InvalidAction)?;
             content.as_combat_battle()?.clone()
         };
+        let battle_node_id = self
+            .state
+            .node_session
+            .as_ref()
+            .map(|session| session.node_id)
+            .ok_or(GameError::InvalidAction)?;
 
         let employee_before = self.employee_outcome_before(&battle.participant_results)?;
 
-        if battle.node_type == CombatNodeType::Boss && battle.winner != BattleWinner::Player {
+        if self.is_final_boss_node(battle_node_id)? && battle.winner != BattleWinner::Player {
             self.apply_post_battle_resolution(&battle.participant_results)?;
             self.decrement_consumables_after_combat_node()?;
             let employee_changes =
@@ -1362,6 +1500,18 @@ impl GameCore {
                 battle.winner
             );
             if self.state.node_session.is_some() {
+                let node_id = battle_node_id;
+                if !self
+                    .run_state()?
+                    .abnormality_attempt_state(node_id)
+                    .is_exhausted()
+                {
+                    let combat_preview = self
+                        .combat_preview_for_node(node_id)?
+                        .ok_or(GameError::InvalidAction)?;
+                    return self.return_to_node_confirm_for_combat_retry(node_id, combat_preview);
+                }
+
                 let failure_reason = self.current_run_failure_reason()?;
                 match failure_reason {
                     Some(
@@ -1430,29 +1580,67 @@ impl GameCore {
             return Ok(result);
         }
 
-        if self.state.node_session.is_none() {
-            return Err(GameError::InvalidAction);
-        }
+        let planned = self.plan_player_victory_combat_result_completion(
+            &battle,
+            battle_node_id,
+            employee_before,
+        )?;
+        self.commit_planned_player_victory_combat_result_completion(planned)
+    }
 
-        let completion = self.plan_complete_current_node(false)?;
+    fn plan_player_victory_combat_result_completion(
+        &mut self,
+        battle: &CombatBattleState,
+        battle_node_id: MapNodeId,
+        employee_before: HashMap<Uuid, EmployeeOutcomeBefore>,
+    ) -> Result<PlannedPlayerVictoryCombatResultCompletion, GameError> {
+        let node_completion =
+            CombatResultNodeCompletion::try_from(self.plan_complete_current_node(false)?)?;
+        let mut abnormality_research_after_victory = None;
+        let mut abnormality_research_reward_effects = Vec::new();
+        let mut endless_response_complete = false;
+        if self.run_state()?.run_progression.game_mode == GameMode::Endless {
+            let mut research = self.run_state()?.abnormality_research.clone();
+            let bonus_research_gain = satisfied_research_bonus(&battle.bonus_objectives);
+            if let Some(primary_abnormality_id) = battle.primary_abnormality_id.as_deref() {
+                let outcome = research
+                    .apply_suppression_victory_with_bonus(
+                        self.game_data.as_ref(),
+                        primary_abnormality_id,
+                        self.run_state()?.run_progression.floor_index(),
+                        self.is_final_boss_node(battle_node_id)?,
+                        bonus_research_gain,
+                    )
+                    .map_err(GameError::InvalidStaticData)?;
+                abnormality_research_reward_effects = outcome.reward_effects;
+                endless_response_complete = research.all_response_complete();
+                abnormality_research_after_victory = Some(research);
+            }
+        }
         let mut staged = self.staged_combat_result_state();
         self.apply_post_battle_resolution_to_state(&mut staged, &battle.participant_results)?;
         Self::decrement_consumables_after_combat_node_in_roster(&mut staged.roster);
 
         match Self::current_run_failure_reason_for_roster(&staged.roster) {
             Some(RunFailureReason::NoLivingEmployees) => {
-                self.commit_staged_combat_result_state(staged);
-                return self.fail_run(RunFailureReason::NoLivingEmployees);
+                return Ok(PlannedPlayerVictoryCombatResultCompletion::RunFailure {
+                    staged,
+                    reason: RunFailureReason::NoLivingEmployees,
+                });
             }
             Some(RunFailureReason::NoDeployableEmployees)
                 if !self.can_recover_no_deployable_with_checkpoint() =>
             {
-                self.commit_staged_combat_result_state(staged);
-                return self.fail_run(RunFailureReason::NoDeployableEmployees);
+                return Ok(PlannedPlayerVictoryCombatResultCompletion::RunFailure {
+                    staged,
+                    reason: RunFailureReason::NoDeployableEmployees,
+                });
             }
             Some(RunFailureReason::BossDefeated) => {
-                self.commit_staged_combat_result_state(staged);
-                return self.fail_run(RunFailureReason::BossDefeated);
+                return Ok(PlannedPlayerVictoryCombatResultCompletion::RunFailure {
+                    staged,
+                    reason: RunFailureReason::BossDefeated,
+                });
             }
             Some(RunFailureReason::NoDeployableEmployees) | None => {}
         }
@@ -1491,6 +1679,26 @@ impl GameCore {
             &mut staged.uuid_manager,
             &mut staged.enkephalin,
         )?;
+        let mut inventory_diff = inventory_diff;
+        let mut skill_fragment_diffs = skill_fragment_diffs;
+        let mut skill_fragment_research_diffs = skill_fragment_research_diffs;
+        if !abnormality_research_reward_effects.is_empty() {
+            let granted = GrantExecutor::grant_effects_with_state(
+                &mut staged.inventory,
+                &mut staged.skill_fragments,
+                &mut staged.roster,
+                &mut staged.uuid_manager,
+                &mut staged.enkephalin,
+                &self.game_data,
+                &self.state.skill_fragment_policy,
+                &GrantExecutionContext::default(),
+                &abnormality_research_reward_effects,
+                self.run_seed ^ 0xABAD_0BAD_ABAD_0BAD,
+            )?;
+            Self::merge_inventory_diff(&mut inventory_diff, granted.inventory_diff);
+            skill_fragment_diffs.extend(granted.skill_fragment_diffs);
+            skill_fragment_research_diffs.extend(granted.skill_fragment_research_diffs);
+        }
         let enkephalin = staged.enkephalin.amount;
         let employee_changes = Self::employee_outcome_changes_from_roster(
             &staged.roster,
@@ -1503,16 +1711,65 @@ impl GameCore {
             employee_changes,
             inventory_diff.clone(),
         )?;
-        self.commit_staged_combat_result_state(staged);
-        let completion = self.commit_staged_node_completion(completion)?;
-        Ok(BehaviorResult::CombatRewardsGranted {
+
+        Ok(PlannedPlayerVictoryCombatResultCompletion::RewardsGranted {
+            staged,
+            abnormality_research_after_victory,
+            node_completion,
+            endless_response_complete,
             enkephalin,
             inventory_diff,
             skill_fragment_diffs,
             skill_fragment_research_diffs,
             employee_experience_diffs,
             outcome,
-            completion: Box::new(completion),
         })
+    }
+
+    fn commit_planned_player_victory_combat_result_completion(
+        &mut self,
+        planned: PlannedPlayerVictoryCombatResultCompletion,
+    ) -> Result<BehaviorResult, GameError> {
+        match planned {
+            PlannedPlayerVictoryCombatResultCompletion::RunFailure { staged, reason } => {
+                self.commit_staged_combat_result_state(staged);
+                self.fail_run(reason)
+            }
+            PlannedPlayerVictoryCombatResultCompletion::RewardsGranted {
+                staged,
+                abnormality_research_after_victory,
+                node_completion,
+                endless_response_complete,
+                enkephalin,
+                inventory_diff,
+                skill_fragment_diffs,
+                skill_fragment_research_diffs,
+                employee_experience_diffs,
+                outcome,
+            } => {
+                self.commit_staged_combat_result_state(staged);
+                if let Some(research) = abnormality_research_after_victory {
+                    self.run_state_mut()?.abnormality_research = research;
+                }
+                let completion = self.commit_combat_result_node_completion(node_completion)?;
+                let completion = if endless_response_complete {
+                    self.transition_to(GameState::RunComplete)?;
+                    BehaviorResult::RunComplete {
+                        map: self.current_map_view()?,
+                    }
+                } else {
+                    completion
+                };
+                Ok(BehaviorResult::CombatRewardsGranted {
+                    enkephalin,
+                    inventory_diff,
+                    skill_fragment_diffs,
+                    skill_fragment_research_diffs,
+                    employee_experience_diffs,
+                    outcome,
+                    completion: Box::new(completion),
+                })
+            }
+        }
     }
 }

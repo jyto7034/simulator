@@ -2,17 +2,21 @@ use std::sync::Arc;
 use tracing::{debug, info, warn};
 use uuid::Uuid;
 
+use crate::game::abnormality_research::{
+    RunAbnormalityEncounterHistory, RunAbnormalityResearchState,
+};
 use crate::game::behavior::{
     ActionKind, BehaviorResult, CombatResultEventLogAttachmentDto, GameError, PlayerBehavior,
     RosterSlotDto,
 };
 use crate::game::data::{run_policy_data::RunPolicyData, GameDataBase};
 use crate::game::enums::{RewardAction, ShopAction};
-use crate::game::map::RunProgression;
+use crate::game::map::{GameMode, RunProgression};
 use crate::game::resources::{ActiveNodeContent, GameState};
 
 mod admin;
 mod combat;
+mod event_node;
 mod headquarters;
 mod helpers;
 mod maintenance;
@@ -75,7 +79,19 @@ impl GameCore {
         debug!("Executing behavior {:?} for player {}", behavior, player_id);
         let action_kind = behavior.kind();
 
-        // 1. 상태 기반 액션 게이트
+        self.gate_behavior_action(player_id, &behavior, action_kind)?;
+        let result =
+            self.execute_validated_behavior_domain(player_id, behavior, source_command_id)?;
+        self.postprocess_behavior_execution()?;
+        Ok(result)
+    }
+
+    fn gate_behavior_action(
+        &self,
+        player_id: Uuid,
+        behavior: &PlayerBehavior,
+        action_kind: ActionKind,
+    ) -> Result<(), GameError> {
         if !self.get_allowed_actions().contains(&action_kind) {
             warn!(
                 "Rejected behavior {:?} for player {} (action kind {:?} not allowed in current state)",
@@ -83,36 +99,141 @@ impl GameCore {
             );
             return Err(GameError::InvalidAction);
         }
+        Ok(())
+    }
 
-        // 2. payload 검증
-        self.validate_behavior_payload(&behavior)?;
+    fn execute_validated_behavior_domain(
+        &mut self,
+        player_id: Uuid,
+        behavior: PlayerBehavior,
+        source_command_id: Option<&str>,
+    ) -> Result<BehaviorResult, GameError> {
+        match behavior {
+            PlayerBehavior::StartNewGame { .. }
+            | PlayerBehavior::SelectStarterEmployees { .. }
+            | PlayerBehavior::RequestMapData
+            | PlayerBehavior::SelectMapNode { .. }
+            | PlayerBehavior::ConfirmEnterNode
+            | PlayerBehavior::CancelSelectedNode
+            | PlayerBehavior::CompleteNode
+            | PlayerBehavior::LoadRunCheckpoint => {
+                self.execute_map_run_behavior(player_id, behavior)
+            }
 
-        // 3. 행동 처리
-        let result = match behavior {
-            // 복잡한 행동
-            PlayerBehavior::StartNewGame => self.handle_start_new_game(player_id),
+            PlayerBehavior::ChooseSupport { .. }
+            | PlayerBehavior::RecruitEmployee { .. }
+            | PlayerBehavior::RequestEmergencySupplies
+            | PlayerBehavior::OpenHeadquartersShop => {
+                self.execute_support_headquarters_behavior(behavior)
+            }
+
+            PlayerBehavior::EquipItem { .. }
+            | PlayerBehavior::UnEquipItem { .. }
+            | PlayerBehavior::UseConsumableItem { .. }
+            | PlayerBehavior::EquipSkillFragment { .. }
+            | PlayerBehavior::UnequipSkillFragment { .. }
+            | PlayerBehavior::UpgradeSkillFragment { .. }
+            | PlayerBehavior::AwakenSkillFragment { .. }
+            | PlayerBehavior::DismantleSkillFragment { .. }
+            | PlayerBehavior::DismantleEquipment { .. }
+            | PlayerBehavior::EnhanceEquipment { .. }
+            | PlayerBehavior::MoveRosterUnit { .. } => {
+                self.execute_equipment_maintenance_behavior(behavior)
+            }
+
+            PlayerBehavior::PurchaseItem { .. }
+            | PlayerBehavior::SellItem { .. }
+            | PlayerBehavior::RerollShop
+            | PlayerBehavior::ExitShop => self.execute_shop_behavior(behavior),
+
+            PlayerBehavior::SelectReward { .. }
+            | PlayerBehavior::ClaimReward
+            | PlayerBehavior::ExitReward => self.execute_reward_behavior(behavior),
+
+            PlayerBehavior::AdvanceEventScene { .. } | PlayerBehavior::SelectEventChoice { .. } => {
+                self.execute_event_behavior(behavior)
+            }
+
+            PlayerBehavior::CompleteCombatResult
+            | PlayerBehavior::RequestBattleState { .. }
+            | PlayerBehavior::RecoverBattleSetupLoss
+            | PlayerBehavior::RequestDeploymentRangePreview { .. }
+            | PlayerBehavior::DeployUnit { .. }
+            | PlayerBehavior::WithdrawUnit { .. }
+            | PlayerBehavior::ActivateSkill { .. }
+            | PlayerBehavior::RetreatBattle
+            | PlayerBehavior::PauseBattle
+            | PlayerBehavior::ResumeBattle
+            | PlayerBehavior::SetBattleSpeed { .. } => {
+                self.execute_battle_behavior(behavior, source_command_id)
+            }
+        }
+    }
+
+    fn postprocess_behavior_execution(&mut self) -> Result<(), GameError> {
+        self.sync_roster_order_with_owned_units()?;
+        Ok(())
+    }
+
+    fn execute_map_run_behavior(
+        &mut self,
+        player_id: Uuid,
+        behavior: PlayerBehavior,
+    ) -> Result<BehaviorResult, GameError> {
+        match behavior {
+            PlayerBehavior::StartNewGame { game_mode } => {
+                self.handle_start_new_game(player_id, game_mode)
+            }
             PlayerBehavior::SelectStarterEmployees { candidate_ids } => {
+                self.validate_starter_employee_selection(&candidate_ids)?;
                 self.handle_select_starter_employees(candidate_ids)
             }
             PlayerBehavior::RequestMapData => self.handle_request_map_data(),
-            PlayerBehavior::SelectMapNode { node_id } => self.handle_select_map_node(node_id),
+            PlayerBehavior::SelectMapNode { node_id } => {
+                self.validate_select_map_node(node_id)?;
+                self.handle_select_map_node(node_id)
+            }
             PlayerBehavior::ConfirmEnterNode => self.handle_confirm_enter_node(),
             PlayerBehavior::CancelSelectedNode => self.handle_cancel_selected_node(),
             PlayerBehavior::CompleteNode => self.handle_complete_node(),
+            PlayerBehavior::LoadRunCheckpoint => self.handle_load_run_checkpoint(),
+            _ => unreachable!("behavior routed to map/run domain incorrectly"),
+        }
+    }
+
+    fn execute_support_headquarters_behavior(
+        &mut self,
+        behavior: PlayerBehavior,
+    ) -> Result<BehaviorResult, GameError> {
+        match behavior {
             PlayerBehavior::ChooseSupport { support_type } => {
                 self.handle_choose_support(support_type)
             }
-            PlayerBehavior::LoadRunCheckpoint => self.handle_load_run_checkpoint(),
             PlayerBehavior::RecruitEmployee { candidate_id } => {
                 self.handle_recruit_employee(&candidate_id)
             }
             PlayerBehavior::RequestEmergencySupplies => self.handle_request_emergency_supplies(),
             PlayerBehavior::OpenHeadquartersShop => self.handle_open_headquarters_shop(),
-            PlayerBehavior::SelectReward { reward_id } => self.handle_select_reward(reward_id),
+            _ => unreachable!("behavior routed to support/headquarters domain incorrectly"),
+        }
+    }
+
+    fn execute_equipment_maintenance_behavior(
+        &mut self,
+        behavior: PlayerBehavior,
+    ) -> Result<BehaviorResult, GameError> {
+        match behavior {
             PlayerBehavior::EquipItem {
                 item_uuid,
                 target_unit,
-            } => self.handle_equip_item(item_uuid, target_unit),
+            } => {
+                self.validate_equip_item_payload(item_uuid, target_unit)?;
+                self.handle_equip_item(item_uuid, target_unit)
+            }
+            PlayerBehavior::UnEquipItem {
+                item_uuid,
+                target_unit,
+            } => self.handle_unequip_item(item_uuid, target_unit),
             PlayerBehavior::UseConsumableItem {
                 item_uuid,
                 target_employee_uuid,
@@ -140,17 +261,20 @@ impl GameCore {
             PlayerBehavior::EnhanceEquipment { item_uuid } => {
                 self.handle_enhance_equipment(item_uuid)
             }
-            PlayerBehavior::UnEquipItem {
-                item_uuid,
-                target_unit,
-            } => self.handle_unequip_item(item_uuid, target_unit),
             PlayerBehavior::MoveRosterUnit {
                 target_unit_uuid,
                 dest_slot,
                 swap_with_unit_uuid,
             } => self.handle_move_roster_unit(target_unit_uuid, dest_slot, swap_with_unit_uuid),
+            _ => unreachable!("behavior routed to equipment/maintenance domain incorrectly"),
+        }
+    }
 
-            // 상점 관련 행동
+    fn execute_shop_behavior(
+        &mut self,
+        behavior: PlayerBehavior,
+    ) -> Result<BehaviorResult, GameError> {
+        match behavior {
             PlayerBehavior::PurchaseItem { item_uuid } => {
                 self.execute_shop_action(ShopAction::Purchase { item_uuid })
             }
@@ -159,11 +283,50 @@ impl GameCore {
             }
             PlayerBehavior::RerollShop => self.execute_shop_action(ShopAction::Reroll),
             PlayerBehavior::ExitShop => self.execute_shop_action(ShopAction::Exit),
+            _ => unreachable!("behavior routed to shop domain incorrectly"),
+        }
+    }
 
-            // 보너스 관련 행동
+    fn execute_reward_behavior(
+        &mut self,
+        behavior: PlayerBehavior,
+    ) -> Result<BehaviorResult, GameError> {
+        match behavior {
+            PlayerBehavior::SelectReward { reward_id } => {
+                self.validate_select_reward_payload(reward_id)?;
+                self.handle_select_reward(reward_id)
+            }
             PlayerBehavior::ClaimReward => self.execute_reward_action(RewardAction::Claim),
             PlayerBehavior::ExitReward => self.execute_reward_action(RewardAction::Exit),
+            _ => unreachable!("behavior routed to reward domain incorrectly"),
+        }
+    }
 
+    fn execute_event_behavior(
+        &mut self,
+        behavior: PlayerBehavior,
+    ) -> Result<BehaviorResult, GameError> {
+        match behavior {
+            PlayerBehavior::AdvanceEventScene {
+                node_id,
+                event_id,
+                current_scene_id,
+            } => self.handle_advance_event_scene(node_id, event_id, current_scene_id),
+            PlayerBehavior::SelectEventChoice {
+                node_id,
+                event_id,
+                choice_id,
+            } => self.handle_select_event_choice(node_id, event_id, choice_id),
+            _ => unreachable!("behavior routed to event domain incorrectly"),
+        }
+    }
+
+    fn execute_battle_behavior(
+        &mut self,
+        behavior: PlayerBehavior,
+        source_command_id: Option<&str>,
+    ) -> Result<BehaviorResult, GameError> {
+        match behavior {
             PlayerBehavior::CompleteCombatResult => self.handle_complete_combat_result(),
             PlayerBehavior::RequestBattleState { since_seq } => {
                 self.handle_request_battle_state(since_seq)
@@ -190,10 +353,8 @@ impl GameCore {
             PlayerBehavior::PauseBattle => self.handle_pause_battle(),
             PlayerBehavior::ResumeBattle => self.handle_resume_battle(),
             PlayerBehavior::SetBattleSpeed { speed } => self.handle_set_battle_speed(speed),
-        }?;
-
-        self.sync_roster_order_with_owned_units()?;
-        Ok(result)
+            _ => unreachable!("behavior routed to battle domain incorrectly"),
+        }
     }
 }
 
@@ -214,7 +375,11 @@ impl GameCore {
 
     // 플레이어가 게임에 첫 진입을 하였을 때.
     // 바로 런을 시작하지 않고, 본부가 제시한 시작 직원 후보 선택 단계로 진입한다.
-    fn handle_start_new_game(&mut self, player_id: Uuid) -> Result<BehaviorResult, GameError> {
+    fn handle_start_new_game(
+        &mut self,
+        player_id: Uuid,
+        game_mode: GameMode,
+    ) -> Result<BehaviorResult, GameError> {
         let setup_policy = self.run_policy().setup;
         // 플레이어 생성
         self.initial_player(player_id);
@@ -230,11 +395,16 @@ impl GameCore {
         self.state.run = None;
         self.state.node_session = None;
         self.state.active_node_content = None;
+        self.state.pending_game_mode = Some(game_mode);
         self.transition_to(GameState::SelectingStarterEmployees)?;
 
-        info!("Starter employee selection opened for player {}", player_id);
+        info!(
+            "Starter employee selection opened for player {} in {:?} mode",
+            player_id, game_mode
+        );
 
         Ok(BehaviorResult::StartNewGame {
+            game_mode,
             candidates: self.state.starter_candidates.clone(),
             required_count: setup_policy.starter_employee_count,
         })
@@ -257,9 +427,28 @@ impl GameCore {
             setup_policy.starter_enkephalin, self.state.enkephalin.amount
         );
 
-        let run_progression = RunProgression::new(self.run_seed, setup_policy.default_max_acts);
-        let (run_map, progression) = self.generate_current_act_map(&run_progression);
-        self.state.run = Some(RunState::new(run_map, progression, run_progression));
+        let game_mode = self
+            .state
+            .pending_game_mode
+            .take()
+            .ok_or(GameError::InvalidAction)?;
+        let run_progression =
+            RunProgression::new(self.run_seed, game_mode, setup_policy.standard_floor_count);
+        let abnormality_research = RunAbnormalityResearchState::initialize(self.game_data.as_ref());
+        let abnormality_encounter_history = RunAbnormalityEncounterHistory::default();
+        let mut boss_omen = crate::game::boss_omen::BossOmenRunState::default();
+        let (run_map, progression) = self.generate_current_floor_map(
+            &run_progression,
+            &abnormality_research,
+            &abnormality_encounter_history,
+            &mut boss_omen,
+        );
+        self.state.run = Some(
+            RunState::new(run_map, progression, run_progression)
+                .with_abnormality_research(abnormality_research)
+                .with_abnormality_encounter_history(abnormality_encounter_history)
+                .with_boss_omen(boss_omen),
+        );
         self.state.node_session = None;
         self.state.active_node_content = None;
         self.transition_to(GameState::ViewingMap)?;

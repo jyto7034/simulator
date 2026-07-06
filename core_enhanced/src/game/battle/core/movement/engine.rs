@@ -4,7 +4,7 @@ use crate::{
     game::resources::Position,
     game::{
         battle::{
-            core::{ActiveMovementSegment, BattleCore},
+            core::{movement::types::ActiveMovementSegment, BattleCore},
             event_log::BattleLogEvent,
             ids::UnitInstanceId,
         },
@@ -41,7 +41,6 @@ pub struct MovementUnitInput {
     pub body: UnitBody,
     pub terrain_policy: MovementTerrainPolicy,
     pub current_target: Option<UnitInstanceId>,
-    pub attack_range_units: f32,
     pub can_move: bool,
     pub is_dead: bool,
 }
@@ -610,7 +609,6 @@ impl BattleCore {
                         MovementTerrainPolicy::Ground
                     },
                     current_target: unit.current_target,
-                    attack_range_units: unit.basic_attack.range_units.max(0.0),
                     can_move: unit.action_locks.can_move(now_ms)
                         && unit.can_move()
                         && !is_blocked
@@ -744,7 +742,6 @@ mod tests {
             },
             terrain_policy: MovementTerrainPolicy::Ground,
             current_target: None,
-            attack_range_units: 1.0,
             can_move: true,
             is_dead: false,
         }
@@ -1134,11 +1131,7 @@ mod tests {
     fn direct_engine_reports_attack_target_reached() {
         let target_id = Uuid::from_u128(2).into();
         let mut mover = unit(1, WorldVec2::new(0.0, 0.0));
-        mover.body.goal = Some(MovementGoal::AttackUnit {
-            target_id,
-            desired_range: 1.0,
-            approach_point: None,
-        });
+        mover.body.goal = Some(MovementGoal::AttackUnit { target_id });
 
         let mut target = unit(2, WorldVec2::new(1.6, 0.0));
         target.unit_id = target_id;

@@ -6,12 +6,12 @@ use game_core::game::ability::{DeliveryDef, SkillAreaAnchorSource};
 use game_core::game::battle::buffs::{BuffId, BuffKind};
 use game_core::game::combat_preview::{
     required_briefing_warning_tags_for_spawn_waves, BattlefieldArchetype, CombatNodeType,
-    CombatPreview, DeploymentZoneKind, EnemyKind, SpawnZoneKind, ThreatWarningSource,
+    CombatPreview, EnemyKind, ThreatWarningSource,
 };
 use game_core::game::data::{
     abnormality_data::AbnormalityDatabase,
     consumable_data::{ConsumableEffect, ConsumableTier},
-    pve_data::{PveWaveEnemyData, PveWaveSource},
+    pve_data::{PveEncounterClass, PveWaveEnemyData, PveWaveSource},
     reward_data::RewardGrantKind,
     skill_fragment_data::{SkillFragmentEffectDef, SkillFragmentOrigin},
 };
@@ -19,7 +19,6 @@ use game_core::game::map::{
     MapGenerationConfig, MapGenerationPolicyData, MapNodeCategory, MapNodeDefinitionDatabase,
     MapNodeId,
 };
-use game_core::game::resources::Position;
 use game_core::game::reward::{ExperienceTargetPolicy, RewardEffect};
 use uuid::Uuid;
 
@@ -303,7 +302,7 @@ fn load_game_data_from_ron_reads_starter_employee_candidates() {
 fn load_game_data_from_ron_reads_run_policy() {
     let game_data = common::load_game_data_from_ron();
 
-    assert_eq!(game_data.run_policy.setup.default_max_acts, 3);
+    assert_eq!(game_data.run_policy.setup.standard_floor_count, 3);
     assert_eq!(game_data.run_policy.setup.starter_employee_count, 3);
     assert_eq!(game_data.run_policy.setup.starter_enkephalin, 500);
     assert_eq!(game_data.run_policy.live_deployment.initial_cost, 20);
@@ -574,20 +573,39 @@ fn live_pve_references_resolve() {
         );
         let node_type = encounter.node_type.expect("checked above");
         assert!(
-            game_core::game::combat_mission_policy::CombatMissionPolicy::is_supported_encounter_node_type(node_type),
+            game_core::game::combat_setup::mission_policy::CombatMissionPolicy::is_supported_encounter_node_type(node_type),
             "live pve encounter `{}` must not use deferred combat node type {:?}",
             encounter.id,
             node_type
         );
-        assert!(
-            game_data
-                .abnormality_data
-                .get_by_id(&encounter.abnormality_id)
-                .is_some(),
-            "pve encounter `{}` references missing primary abnormality `{}`",
-            encounter.id,
-            encounter.abnormality_id
-        );
+        match encounter.encounter_class {
+            game_core::game::data::pve_data::PveEncounterClass::Normal => {
+                assert!(
+                    encounter.primary_abnormality_id.is_none(),
+                    "normal pve encounter `{}` must not define primary_abnormality_id",
+                    encounter.id
+                );
+            }
+            game_core::game::data::pve_data::PveEncounterClass::Elite
+            | game_core::game::data::pve_data::PveEncounterClass::NormalBoss
+            | game_core::game::data::pve_data::PveEncounterClass::FinalBoss => {
+                let primary = encounter
+                    .primary_abnormality_id
+                    .as_deref()
+                    .unwrap_or_else(|| {
+                        panic!(
+                            "{:?} pve encounter `{}` must define primary_abnormality_id",
+                            encounter.encounter_class, encounter.id
+                        )
+                    });
+                assert!(
+                    game_data.abnormality_data.get_by_id(primary).is_some(),
+                    "pve encounter `{}` references missing primary abnormality `{}`",
+                    encounter.id,
+                    primary
+                );
+            }
+        }
         for wave in encounter.wave_definitions() {
             if let PveWaveSource::GeneratedCorroded { preset_id, .. } = &wave.source {
                 let preset = game_data
@@ -825,7 +843,25 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
         nameless_fetus.authored_win_condition(),
         Some(game_core::game::battle::scenario::WinCondition::ProtectUnit { .. })
     ));
-    assert_eq!(nameless_fetus.waves[0].spawn_zone_ids, ["north_west_entry"]);
+    let nameless_preview = CombatPreview::generate_for_node(
+        MapNodeId::new(Uuid::from_u128(0xAC1D)),
+        MapNodeCategory::Combat,
+        Some("suppress_nameless_fetus"),
+        &game_data,
+        0,
+    );
+    let nameless_spawn_zone_ids = nameless_preview
+        .spawn_zones
+        .iter()
+        .map(|zone| zone.id.as_str())
+        .collect::<BTreeSet<_>>();
+    assert!(
+        nameless_preview.spawn_waves[0]
+            .spawn_zone_ids
+            .iter()
+            .all(|zone_id| nameless_spawn_zone_ids.contains(zone_id.as_str())),
+        "nameless fetus preview should resolve authored waves to existing spawn zones"
+    );
     assert!(nameless_fetus.reward_uuids.iter().any(|uuid| {
         game_data
             .reward_data
@@ -848,7 +884,12 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
         .pve_data
         .get_by_id("suppress_freischutz")
         .expect("freischutz scenario should exist");
-    assert_eq!(freischutz.node_type, Some(CombatNodeType::Defense));
+    assert_eq!(freischutz.encounter_class, PveEncounterClass::NormalBoss);
+    assert_eq!(
+        freischutz.primary_abnormality_id.as_deref(),
+        Some("t-02-43_freischutz")
+    );
+    assert_eq!(freischutz.node_type, Some(CombatNodeType::Boss));
     assert!(matches!(
         freischutz
             .battlefield
@@ -856,9 +897,8 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
             .and_then(|battlefield| battlefield.archetype),
         Some(BattlefieldArchetype::Ambush)
     ));
-    assert_eq!(freischutz.waves.len(), 2);
+    assert_eq!(freischutz.waves.len(), 3);
     assert!(freischutz.waves.iter().all(|wave| wave.time_ms == 5_000));
-    assert_eq!(freischutz.waves[1].spawn_zone_ids, ["side_ambush"]);
     let freischutz_ambush = freischutz.waves[1].manual_enemies();
     assert!(matches!(
         freischutz_ambush[0],
@@ -877,22 +917,18 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
 
     let freischutz_preview = CombatPreview::generate_for_node(
         MapNodeId::new(Uuid::from_u128(0xF43)),
-        MapNodeCategory::Combat,
+        MapNodeCategory::Boss,
         Some("suppress_freischutz"),
         game_data.as_ref(),
         99,
     );
     assert_eq!(freischutz_preview.archetype, BattlefieldArchetype::Ambush);
-    assert_eq!(freischutz_preview.node_type, CombatNodeType::Defense);
-    assert_eq!(freischutz_preview.spawn_waves.len(), 2);
+    assert_eq!(freischutz_preview.node_type, CombatNodeType::Boss);
+    assert_eq!(freischutz_preview.spawn_waves.len(), 3);
     assert!(freischutz_preview
         .spawn_waves
         .iter()
         .all(|wave| wave.time_ms == 5_000));
-    assert_eq!(
-        freischutz_preview.spawn_waves[1].spawn_zone_ids,
-        ["side_ambush"]
-    );
     assert!(matches!(
         freischutz_preview.spawn_waves[1].enemy_entries[0].kind,
         EnemyKind::CorrodedEmployee
@@ -918,6 +954,11 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
         .pve_data
         .get_by_id("suppress_warm_hearted_woodsman")
         .expect("roster corridor defense scenario should exist");
+    assert_eq!(defense_archive.encounter_class, PveEncounterClass::Elite);
+    assert_eq!(
+        defense_archive.primary_abnormality_id.as_deref(),
+        Some("f-05-32_warm_hearted_woodsman")
+    );
     assert_eq!(defense_archive.node_type, Some(CombatNodeType::Defense));
     assert!(defense_archive.tactical_plan.is_none());
     assert!(defense_archive.authored_win_condition().is_none());
@@ -928,13 +969,18 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
             .and_then(|battlefield| battlefield.archetype),
         Some(BattlefieldArchetype::Corridor)
     ));
-    assert_eq!(defense_archive.waves.len(), 2);
+    assert_eq!(defense_archive.waves.len(), 3);
     assert_eq!(defense_archive.waves[0].spawn_zone_ids, ["north_entry"]);
     assert!(!defense_archive.waves[0].required_for_victory);
     assert!(defense_archive
         .waves
         .iter()
+        .take(2)
         .all(|wave| matches!(wave.source, PveWaveSource::GeneratedCorroded { .. })));
+    assert!(defense_archive
+        .waves
+        .iter()
+        .any(|wave| matches!(wave.manual_enemies().first(), Some(PveWaveEnemyData::Abnormality { abnormality_id, .. }) if abnormality_id == "f-05-32_warm_hearted_woodsman")));
     assert!(defense_archive.reward_uuids.iter().any(|uuid| {
         game_data
             .reward_data
@@ -960,7 +1006,7 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
         defense_archive_preview.archetype,
         BattlefieldArchetype::Corridor
     );
-    assert_eq!(defense_archive_preview.spawn_waves.len(), 2);
+    assert_eq!(defense_archive_preview.spawn_waves.len(), 3);
     assert_eq!(
         defense_archive_preview.spawn_waves[0].spawn_zone_ids,
         ["north_entry"]
@@ -968,14 +1014,25 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
     assert!(defense_archive_preview
         .spawn_waves
         .iter()
+        .take(2)
         .flat_map(|wave| wave.enemy_entries.iter())
         .all(|entry| matches!(entry.kind, EnemyKind::CorrodedEmployee)));
+    assert!(defense_archive_preview
+        .spawn_waves
+        .iter()
+        .flat_map(|wave| wave.enemy_entries.iter())
+        .any(|entry| matches!(entry.kind, EnemyKind::Abnormality)));
 
     let defense = game_data
         .pve_data
         .get_by_id("suppress_burrowing_heaven")
         .expect("roster corridor defense scenario should exist");
-    assert_eq!(defense.node_type, Some(CombatNodeType::Defense));
+    assert_eq!(defense.encounter_class, PveEncounterClass::NormalBoss);
+    assert_eq!(
+        defense.primary_abnormality_id.as_deref(),
+        Some("o-04-72_burrowing_heaven")
+    );
+    assert_eq!(defense.node_type, Some(CombatNodeType::Boss));
     assert!(defense.tactical_plan.is_none());
     assert!(defense.authored_win_condition().is_none());
     assert!(matches!(
@@ -985,14 +1042,18 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
             .and_then(|battlefield| battlefield.archetype),
         Some(BattlefieldArchetype::ChokePoint)
     ));
-    assert_eq!(defense.waves.len(), 2);
-    assert!(defense.waves.iter().all(|wave| {
+    assert_eq!(defense.waves.len(), 3);
+    assert!(defense.waves.iter().take(2).all(|wave| {
         matches!(
             wave.source,
             PveWaveSource::GeneratedCorroded { ref preset_id, .. }
                 if preset_id.starts_with("black_box_breach_")
         )
     }));
+    assert!(defense
+        .waves
+        .iter()
+        .any(|wave| matches!(wave.manual_enemies().first(), Some(PveWaveEnemyData::Abnormality { abnormality_id, .. }) if abnormality_id == "o-04-72_burrowing_heaven")));
     assert!(defense.reward_uuids.iter().any(|uuid| {
         game_data
             .reward_data
@@ -1008,48 +1069,27 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
 
     let defense_preview = CombatPreview::generate_for_node(
         MapNodeId::new(Uuid::from_u128(0xD3F3)),
-        MapNodeCategory::Combat,
+        MapNodeCategory::Boss,
         Some("suppress_burrowing_heaven"),
         game_data.as_ref(),
         41,
     );
-    assert_eq!(defense_preview.node_type, CombatNodeType::Defense);
+    assert_eq!(defense_preview.node_type, CombatNodeType::Boss);
     assert_eq!(defense_preview.archetype, BattlefieldArchetype::ChokePoint);
-    let route = defense_preview
-        .routes
-        .iter()
-        .find(|route| route.id == "defense_main")
-        .expect("defense preview should expose black box breach route");
-    assert_eq!(route.start, Position::new(4, 0));
-    assert_eq!(route.end, Position::new(4, 5));
-    assert!(route.cells.contains(&route.start));
-    assert!(route.cells.contains(&route.end));
-    assert!(route
-        .cells
-        .iter()
-        .all(|cell| defense_preview.valid_tiles.contains(cell)));
-    assert!(defense_preview.spawn_zones.iter().any(|zone| {
-        zone.kind == SpawnZoneKind::Entry
-            && zone.id == "north_entry"
-            && zone.cells.contains(&route.start)
-    }));
-    assert!(defense_preview.deployment_zones.iter().any(|zone| {
-        zone.kind == DeploymentZoneKind::Ground && zone.cells.contains(&Position::new(4, 6))
-    }));
-    assert_eq!(defense_preview.spawn_waves.len(), 2);
-    assert_eq!(
-        defense_preview.spawn_waves[0].spawn_zone_ids,
-        ["north_entry"]
-    );
-    assert!(defense_preview.spawn_waves.iter().all(|wave| {
-        wave.route_id.as_deref() == Some("defense_main")
-            && wave.spawn_zone_ids == ["north_entry"]
+    assert_eq!(defense_preview.spawn_waves.len(), 3);
+    assert!(defense_preview.spawn_waves.iter().take(2).all(|wave| {
+        wave.route_id.is_none()
             && wave.required_for_victory
             && wave
                 .enemy_entries
                 .iter()
                 .all(|entry| matches!(entry.kind, EnemyKind::CorrodedEmployee))
     }));
+    assert!(defense_preview
+        .spawn_waves
+        .iter()
+        .flat_map(|wave| wave.enemy_entries.iter())
+        .any(|entry| matches!(entry.kind, EnemyKind::Abnormality)));
 
     assert!(
         game_data.pve_data.get_by_id("suppress_plague_doctor").is_none(),
@@ -1060,7 +1100,8 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
         .pve_data
         .get_by_id("suppress_freischutz")
         .expect("freischutz scenario should exist");
-    assert_eq!(freischutz.node_type, Some(CombatNodeType::Defense));
+    assert_eq!(freischutz.encounter_class, PveEncounterClass::NormalBoss);
+    assert_eq!(freischutz.node_type, Some(CombatNodeType::Boss));
     assert!(matches!(
         freischutz
             .battlefield

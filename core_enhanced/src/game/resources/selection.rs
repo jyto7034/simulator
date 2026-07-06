@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::game::data::shop_data::{ShopMetadata, ShopType};
@@ -9,6 +10,7 @@ use crate::game::{
     },
     behavior::GameError,
     combat_preview::{CombatMissionVariant, CombatNodeType},
+    data::event_data::{EventChoiceId, EventId, EventSceneId},
     employee::StarterEmployeeCandidate,
     enums::{RewardMode, ShopEventOption},
     map::{HeadquartersContactOption, MapNodeId, SupportNodeMode, SupportNodeType},
@@ -194,9 +196,38 @@ impl HeadquartersContactSessionState {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct EventStartedCombatState {
+    pub encounter_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub primary_abnormality_id: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct EventSessionState {
+    pub node_id: MapNodeId,
+    pub event_id: EventId,
+    pub current_scene_id: EventSceneId,
+    pub committed_choice_id: Option<EventChoiceId>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub started_combat: Option<EventStartedCombatState>,
+}
+
+impl EventSessionState {
+    pub fn new(node_id: MapNodeId, event_id: EventId, current_scene_id: EventSceneId) -> Self {
+        Self {
+            node_id,
+            event_id,
+            current_scene_id,
+            committed_choice_id: None,
+            started_combat: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct CombatBattleState {
-    pub abnormality_id: String,
+    pub primary_abnormality_id: Option<String>,
     pub encounter_id: String,
     pub node_type: CombatNodeType,
     pub mission_variant: CombatMissionVariant,
@@ -204,6 +235,7 @@ pub struct CombatBattleState {
     pub winner: BattleWinner,
     pub event_log: BattleEventLog,
     pub result_stats: BattleResultStatsDto,
+    pub bonus_objectives: Vec<crate::game::pve_bonus_objectives::PveBonusObjectiveOutcomeDto>,
     pub reward_mode: RewardMode,
     pub rewards: Vec<RewardOption>,
     pub participant_results: Vec<ParticipantBattleResult>,
@@ -213,6 +245,7 @@ pub struct CombatBattleState {
 pub enum ActiveNodeContent {
     Shop(ShopSessionState),
     Reward(RewardSessionState),
+    Event(EventSessionState),
     Support(SupportSessionState),
     Maintenance(MaintenanceSessionState),
     HeadquartersContact(HeadquartersContactSessionState),
@@ -244,6 +277,20 @@ impl ActiveNodeContent {
     pub fn as_reward_mut(&mut self) -> Result<&mut RewardSessionState, GameError> {
         match self {
             ActiveNodeContent::Reward(reward) => Ok(reward),
+            _ => Err(GameError::EventTypeMismatch),
+        }
+    }
+
+    pub fn as_event(&self) -> Result<&EventSessionState, GameError> {
+        match self {
+            ActiveNodeContent::Event(event) => Ok(event),
+            _ => Err(GameError::EventTypeMismatch),
+        }
+    }
+
+    pub fn as_event_mut(&mut self) -> Result<&mut EventSessionState, GameError> {
+        match self {
+            ActiveNodeContent::Event(event) => Ok(event),
             _ => Err(GameError::EventTypeMismatch),
         }
     }

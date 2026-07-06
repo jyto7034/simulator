@@ -81,13 +81,6 @@ impl BuffDatabase {
         database
     }
 
-    pub fn live_default() -> Self {
-        ron::de::from_str(include_str!(
-            "../../../../game_resources/data/buffs/base.ron"
-        ))
-        .expect("Failed to deserialize buffs/base.ron")
-    }
-
     fn build_registry(&self) -> HashMap<BuffId, BuffDef> {
         let mut names = HashSet::new();
         self.buffs
@@ -165,7 +158,10 @@ mod tests {
 
     #[test]
     fn registry_contains_known_buffs_and_limits_hard_cc_to_single_stack() {
-        let database = BuffDatabase::live_default();
+        let database: BuffDatabase = ron::de::from_str(include_str!(
+            "../../../../game_resources/data/buffs/base.ron"
+        ))
+        .expect("test fixture buffs/base.ron should deserialize");
         let poison = database.get(BuffId::from_name("poison")).unwrap();
         assert_eq!(poison.name, "poison");
         assert!(matches!(poison.kind, BuffKind::PeriodicDamage { .. }));

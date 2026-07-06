@@ -51,6 +51,7 @@ impl ShopMetadata {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
 struct ShopMetadataRaw {
     id: String,
     name: String,
@@ -59,8 +60,6 @@ struct ShopMetadataRaw {
     can_reroll: bool,
     #[serde(default)]
     visible_items: Vec<Uuid>,
-    #[serde(default)]
-    hidden_items: Vec<Uuid>,
     #[serde(default)]
     stock_items: Vec<Uuid>,
 }
@@ -76,18 +75,10 @@ impl TryFrom<ShopMetadataRaw> for ShopMetadata {
             shop_type,
             can_reroll,
             visible_items,
-            hidden_items,
             stock_items,
         } = raw;
 
-        if !stock_items.is_empty() && !hidden_items.is_empty() {
-            return Err(format!(
-                "shop '{}' cannot define both hidden_items and stock_items",
-                id
-            ));
-        }
-
-        let hidden_items = if !stock_items.is_empty() {
+        let hidden_items: Vec<Uuid> = {
             let mut stock_seen = HashSet::new();
             for item_uuid in &stock_items {
                 if !stock_seen.insert(*item_uuid) {
@@ -119,15 +110,14 @@ impl TryFrom<ShopMetadataRaw> for ShopMetadata {
                 .into_iter()
                 .filter(|item_uuid| !visible_lookup.contains(item_uuid))
                 .collect()
-        } else {
-            if can_reroll && hidden_items.is_empty() {
-                return Err(format!(
-                    "rerollable shop '{}' must define stock_items or hidden_items",
-                    id
-                ));
-            }
-            hidden_items
         };
+
+        if can_reroll && hidden_items.is_empty() {
+            return Err(format!(
+                "rerollable shop '{}' must define stock_items with reserve stock",
+                id
+            ));
+        }
 
         Ok(ShopMetadata {
             id,
@@ -306,9 +296,7 @@ mod tests {
                         uuid: "00000000-0000-0000-0000-000000000001",
                         shop_type: Shop,
                         can_reroll: true,
-                        visible_items: [
-                            "00000000-0000-0000-0000-000000000010",
-                        ],
+                        visible_items: [],
                     ),
                 ],
             )
@@ -318,7 +306,38 @@ mod tests {
 
         assert!(
             err.to_string()
-                .contains("must define stock_items or hidden_items"),
+                .contains("must define stock_items with reserve stock"),
+            "unexpected error: {err}"
+        );
+    }
+
+    #[test]
+    fn deserializing_shop_with_raw_hidden_items_is_rejected() {
+        let err = ron::de::from_str::<ShopDatabase>(
+            r#"
+            ShopDatabase(
+                shops: [
+                    (
+                        id: "shop",
+                        name: "Shop",
+                        uuid: "00000000-0000-0000-0000-000000000001",
+                        shop_type: Shop,
+                        can_reroll: true,
+                        visible_items: [
+                            "00000000-0000-0000-0000-000000000010",
+                        ],
+                        hidden_items: [
+                            "00000000-0000-0000-0000-000000000011",
+                        ],
+                    ),
+                ],
+            )
+            "#,
+        )
+        .expect_err("raw hidden_items authoring should fail");
+
+        assert!(
+            err.to_string().contains("hidden_items"),
             "unexpected error: {err}"
         );
     }

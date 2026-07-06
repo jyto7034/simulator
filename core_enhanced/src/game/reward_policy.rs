@@ -1,6 +1,6 @@
 use crate::game::{
-    combat_mission_policy::CombatMissionPolicy,
     combat_preview::{CombatMissionVariant, CombatNodeType},
+    combat_setup::mission_policy::CombatMissionPolicy,
     data::reward_data::RewardGrantKind,
     reward::RewardOption,
 };

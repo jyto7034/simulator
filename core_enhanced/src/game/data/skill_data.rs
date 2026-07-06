@@ -390,9 +390,7 @@ fn validate_skill_contracts(skills: &[SkillDef]) {
             let mut has_modify_damage_effect = false;
             for effect in &step.effects {
                 match effect {
-                    crate::game::ability::SkillEffectDef::ApplyBuff { .. } => {}
-                    crate::game::ability::SkillEffectDef::InterruptCast => {}
-                    crate::game::ability::SkillEffectDef::Damage { amount, .. } => {
+                    SkillEffectDef::Damage { amount, .. } => {
                         has_damage_effect = true;
                         assert!(
                             *amount >= 0,
@@ -402,10 +400,16 @@ fn validate_skill_contracts(skills: &[SkillDef]) {
                             amount
                         );
                     }
-                    crate::game::ability::SkillEffectDef::ModifyDamage { .. } => {
+                    SkillEffectDef::ModifyDamage { .. } => {
                         has_modify_damage_effect = true;
                     }
-                    _ => {}
+                    SkillEffectDef::Heal { .. }
+                    | SkillEffectDef::ModifyResonance { .. }
+                    | SkillEffectDef::ModifyStabilization { .. }
+                    | SkillEffectDef::ModifyStats { .. }
+                    | SkillEffectDef::ApplyBuff { .. }
+                    | SkillEffectDef::InterruptCast
+                    | SkillEffectDef::ExtraAttack { .. } => {}
                 }
             }
             assert!(

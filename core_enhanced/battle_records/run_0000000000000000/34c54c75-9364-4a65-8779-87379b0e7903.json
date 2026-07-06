@@ -33,38 +33,8 @@
       "winner": "Player",
       "killed_enemy_count": 0
     },
-    "employees": [
-      {
-        "employee_uuid": "def00000-0000-0000-0000-000000000001",
-        "unit_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
-        "survived": true,
-        "became_incapacitated": false,
-        "final_hp": 350,
-        "max_hp": 350,
-        "damage_dealt": 0,
-        "damage_taken": 0,
-        "kill_count": 0,
-        "basic_attack_count": 0,
-        "skill_cast_count": 0,
-        "deployed_count": 0,
-        "withdrawn_count": 0,
-        "deployed_time_ms": 0
-      }
-    ],
-    "mvp": {
-      "employee_uuid": "def00000-0000-0000-0000-000000000001",
-      "unit_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
-      "score": 50,
-      "title": "Survivor",
-      "highlighted_metrics": [
-        {
-          "metric": "Survived",
-          "value": 1,
-          "weighted_score": 50,
-          "title": "Survivor"
-        }
-      ]
-    }
+    "employees": [],
+    "mvp": null
   },
   "event_log": {
     "version": 27,

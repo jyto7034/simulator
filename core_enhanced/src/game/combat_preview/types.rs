@@ -1,6 +1,6 @@
 use crate::game::{
-    battle::types::DeploymentAffinity,
-    combat_mission_policy::CombatMissionPolicy,
+    battle::types::{BattleUnitStatScale, DeploymentAffinity},
+    combat_setup::mission_policy::CombatMissionPolicy,
     enums::{RiskLevel, Tier},
     map::{MapNodeCategory, MapNodeId},
     resources::Position,
@@ -227,6 +227,8 @@ pub struct BattlefieldInstance {
     pub obstacles: Vec<Position>,
     pub enemy_briefing: Vec<EnemyBriefing>,
     pub threat_warnings: Vec<ThreatWarning>,
+    #[serde(skip)]
+    pub enemy_stat_scale: BattleUnitStatScale,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -234,6 +236,7 @@ pub struct BattlefieldGenerationRequest<'a> {
     pub category: MapNodeCategory,
     pub encounter_id: Option<&'a str>,
     pub seed: u64,
+    pub floor_index: u32,
 }
 
 pub struct BattlefieldGenerator;
@@ -262,4 +265,6 @@ pub struct CombatPreview {
     pub enemy_briefing: Vec<EnemyBriefing>,
     #[serde(default)]
     pub threat_warnings: Vec<ThreatWarning>,
+    #[serde(skip)]
+    pub enemy_stat_scale: BattleUnitStatScale,
 }

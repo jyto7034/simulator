@@ -9,34 +9,32 @@ use crate::game::combat_preview::{
     ThreatWarning, ThreatWarningSource, ThreatWarningStatus, ThreatWarningTag,
 };
 use crate::game::data::{
-    abnormality_data::{
-        AbnormalityDatabase, AbnormalityMetadata, BasicAttackDef, MovementDef, ResonanceDef,
-    },
-    artifact_data::{ArtifactDatabase, ArtifactMetadata},
+    abnormality_data::{AbnormalityMetadata, BasicAttackDef, MovementDef, ResonanceDef},
+    artifact_data::ArtifactMetadata,
     consumable_data::{
         ConsumableDatabase, ConsumableDurationPolicy, ConsumableEffect, ConsumableMetadata,
         ConsumableTargetPolicy, ConsumableTier,
     },
-    corroded_employee_data::CorrodedEmployeeProfileDatabase,
-    corroded_wave_data::CorrodedWavePresetDatabase,
+    corroded_employee_data::{
+        CorrodedEmployeeProfileDatabase, CorrodedEmployeeProfileMetadata,
+        CorrodedEmployeeProfileRole,
+    },
     employee_data::{RecruitmentEmployeeCandidateDatabase, StarterEmployeeCandidateDatabase},
     equipment_data::{
         EquipmentDatabase, EquipmentDismantleRecipeMetadata, EquipmentEnhancementRecipeMetadata,
-        EquipmentMaterialCost, EquipmentMaterialMetadata, EquipmentMaterialType, EquipmentMetadata,
-        EquipmentRecipeMetadata, EquipmentType, WeaponArchetype, WeaponCombatProfile,
-        WeaponRangeRole,
+        EquipmentMaterialMetadata, EquipmentMetadata, EquipmentRecipeMetadata, EquipmentType,
+        WeaponArchetype, WeaponCombatProfile, WeaponRangeRole,
     },
     pve_data::{
-        PveBattlefieldOverrideData, PveEncounter, PveEncounterDatabase, PveWaveData,
-        PveWaveEnemyData, PveWaveSource,
+        PveBattlefieldOverrideData, PveEncounter, PveEncounterClass, PveEncounterDatabase,
+        PveWaveData, PveWaveEnemyData, PveWaveSource,
     },
     reward_data::{RewardDatabase, RewardMetadata, RewardPoolMetadata},
     run_policy_data::RunPolicyData,
     shop_data::{ShopDatabase, ShopMetadata, ShopPoolMetadata, ShopType},
     skill_data::SkillDatabase,
     skill_fragment_data::{
-        SkillFragmentAcquisitionSource, SkillFragmentCompatibilityFailureCode,
-        SkillFragmentCompatibilityRequirements, SkillFragmentDatabase, SkillFragmentEffectDef,
+        SkillFragmentAcquisitionSource, SkillFragmentDatabase, SkillFragmentEffectDef,
         SkillFragmentEquipLimit, SkillFragmentId, SkillFragmentMetadata, SkillFragmentRarity,
     },
     GameDataBase, GameDataBuilder,
@@ -46,8 +44,9 @@ use crate::game::employee::{
 };
 use crate::game::enums::RewardMode;
 use crate::game::map::{
-    MapGenerationConfig, MapGenerator, MapNode, MapNodeCategory, MapNodeId, MapNodeKindId,
-    MapNodePayload, MapNodeState, MapViewDto, RunMap, SupportNodeMode, SupportNodeType,
+    GameMode, MapGenerationConfig, MapGenerator, MapNode, MapNodeCategory, MapNodeId,
+    MapNodeKindId, MapNodePayload, MapNodeState, MapNodeVisibility, MapSlotId, MapTemplateId,
+    MapViewDto, RunMap, SupportNodeMode, SupportNodeType, DEFAULT_MAP_TEMPLATE_ID,
 };
 use crate::game::resources::item_slot::EquippedRef;
 use crate::game::resources::{
@@ -116,17 +115,23 @@ fn test_recruitment_candidate_database() -> RecruitmentEmployeeCandidateDatabase
     )
 }
 
-fn start_new_game_with_default_starters(core: &mut GameCore, player_id: Uuid) -> BehaviorResult {
+fn start_new_game_with_mode_and_default_starters(
+    core: &mut GameCore,
+    player_id: Uuid,
+    game_mode: GameMode,
+) -> BehaviorResult {
     let start = core
-        .execute(player_id, PlayerBehavior::StartNewGame)
+        .execute(player_id, PlayerBehavior::StartNewGame { game_mode })
         .expect("start new game should open starter selection");
     let BehaviorResult::StartNewGame {
+        game_mode: returned_game_mode,
         candidates,
         required_count,
     } = start
     else {
         panic!("start new game should return starter candidates");
     };
+    assert_eq!(returned_game_mode, game_mode);
     let candidate_ids = candidates
         .into_iter()
         .take(required_count)
@@ -139,25 +144,54 @@ fn start_new_game_with_default_starters(core: &mut GameCore, player_id: Uuid) ->
     .expect("default starter employee selection should start the run")
 }
 
+fn start_new_game_with_default_starters(core: &mut GameCore, player_id: Uuid) -> BehaviorResult {
+    start_new_game_with_mode_and_default_starters(core, player_id, GameMode::Standard)
+}
+
 fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
     test_game_data_builder()
         .with_abnormalities(vec![
             test_abnormality_meta("low_risk_abno", 20_001),
-            test_abnormality_meta("boss_risk_abno", 20_002),
+            test_boss_abnormality_meta("boss_risk_abno", 20_002),
             test_abnormality_meta("elite_risk_abno", 20_003),
             test_abnormality_meta("ambush_risk_abno", 20_004),
             test_abnormality_meta("defense_risk_abno", 20_005),
             test_abnormality_meta("defense_route_abno", 20_006),
             test_abnormality_meta("defense_corridor_abno", 20_007),
+            test_boss_abnormality_meta("final_boss_risk_abno", 20_008),
         ])
+        .with_corroded_employee_data(Arc::new(CorrodedEmployeeProfileDatabase::new(vec![
+            test_corroded_employee_profile("corroded_guard", 21_001),
+        ])))
         .with_pve(PveEncounterDatabase::new(vec![
             PveEncounter {
-                id: "low_risk_encounter".to_string(),
-                abnormality_id: "low_risk_abno".to_string(),
-                difficulty: 1,
+                id: "normal_corroded_encounter".to_string(),
+                encounter_class: PveEncounterClass::Normal,
+                primary_abnormality_id: None,
                 risk_level: crate::game::enums::RiskLevel::ZAYIN,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
+                suppression_research: None,
+                node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
+                mission_variant: None,
+                survive_timer_ms: None,
+                battlefield: Some(PveBattlefieldOverrideData {
+                    archetype: Some(crate::game::combat_preview::BattlefieldArchetype::OpenHall),
+                    size_class: Some(crate::game::combat_preview::BattlefieldSizeClass::Small),
+                }),
+                tactical_plan: None,
+                win_condition: None,
+                waves: vec![test_corroded_pve_wave("corroded_guard")],
+                static_obstacles: vec![],
+            },
+            PveEncounter {
+                id: "low_risk_encounter".to_string(),
+                encounter_class: PveEncounterClass::Elite,
+                primary_abnormality_id: Some("low_risk_abno".to_string()),
+                risk_level: crate::game::enums::RiskLevel::ZAYIN,
+                reward_mode: RewardMode::ClaimAll,
+                reward_uuids: vec![],
+                suppression_research: None,
                 node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
                 mission_variant: None,
                 survive_timer_ms: None,
@@ -172,11 +206,12 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
             },
             PveEncounter {
                 id: "boss_risk_encounter".to_string(),
-                abnormality_id: "boss_risk_abno".to_string(),
-                difficulty: 9,
+                encounter_class: PveEncounterClass::NormalBoss,
+                primary_abnormality_id: Some("boss_risk_abno".to_string()),
                 risk_level: crate::game::enums::RiskLevel::ALEPH,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
+                suppression_research: None,
                 node_type: Some(crate::game::combat_preview::CombatNodeType::Boss),
                 mission_variant: None,
                 survive_timer_ms: None,
@@ -187,12 +222,30 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
                 static_obstacles: vec![],
             },
             PveEncounter {
+                id: "final_boss_risk_encounter".to_string(),
+                encounter_class: PveEncounterClass::FinalBoss,
+                primary_abnormality_id: Some("final_boss_risk_abno".to_string()),
+                risk_level: crate::game::enums::RiskLevel::ALEPH,
+                reward_mode: RewardMode::ClaimAll,
+                reward_uuids: vec![],
+                suppression_research: None,
+                node_type: Some(crate::game::combat_preview::CombatNodeType::Boss),
+                mission_variant: None,
+                survive_timer_ms: None,
+                battlefield: None,
+                tactical_plan: None,
+                win_condition: None,
+                waves: vec![test_pve_wave("final_boss_risk_abno")],
+                static_obstacles: vec![],
+            },
+            PveEncounter {
                 id: "elite_risk_encounter".to_string(),
-                abnormality_id: "elite_risk_abno".to_string(),
-                difficulty: 4,
+                encounter_class: PveEncounterClass::Elite,
+                primary_abnormality_id: Some("elite_risk_abno".to_string()),
                 risk_level: crate::game::enums::RiskLevel::WAW,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
+                suppression_research: None,
                 node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
                 mission_variant: None,
                 survive_timer_ms: None,
@@ -204,11 +257,12 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
             },
             PveEncounter {
                 id: "elite_survival_timer_encounter".to_string(),
-                abnormality_id: "ambush_risk_abno".to_string(),
-                difficulty: 4,
+                encounter_class: PveEncounterClass::Elite,
+                primary_abnormality_id: Some("ambush_risk_abno".to_string()),
                 risk_level: crate::game::enums::RiskLevel::WAW,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
+                suppression_research: None,
                 node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
                 mission_variant: None,
                 survive_timer_ms: Some(45_000),
@@ -220,11 +274,12 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
             },
             PveEncounter {
                 id: "defense_encounter".to_string(),
-                abnormality_id: "defense_risk_abno".to_string(),
-                difficulty: 3,
+                encounter_class: PveEncounterClass::Elite,
+                primary_abnormality_id: Some("defense_risk_abno".to_string()),
                 risk_level: crate::game::enums::RiskLevel::HE,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
+                suppression_research: None,
                 node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
                 mission_variant: None,
                 survive_timer_ms: None,
@@ -242,11 +297,12 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
             },
             PveEncounter {
                 id: "defense_route_encounter".to_string(),
-                abnormality_id: "defense_route_abno".to_string(),
-                difficulty: 3,
+                encounter_class: PveEncounterClass::Elite,
+                primary_abnormality_id: Some("defense_route_abno".to_string()),
                 risk_level: crate::game::enums::RiskLevel::HE,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
+                suppression_research: None,
                 node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
                 mission_variant: None,
                 survive_timer_ms: None,
@@ -261,11 +317,12 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
             },
             PveEncounter {
                 id: "defense_corridor_encounter".to_string(),
-                abnormality_id: "defense_corridor_abno".to_string(),
-                difficulty: 2,
+                encounter_class: PveEncounterClass::Elite,
+                primary_abnormality_id: Some("defense_corridor_abno".to_string()),
                 risk_level: crate::game::enums::RiskLevel::TETH,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
+                suppression_research: None,
                 node_type: Some(crate::game::combat_preview::CombatNodeType::Defense),
                 mission_variant: None,
                 survive_timer_ms: None,
@@ -283,82 +340,30 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
 }
 
 fn live_game_data_from_ron() -> Arc<GameDataBase> {
-    let shops_db: ShopDatabase = ron::de::from_str(include_str!(
-        "../../../../../game_resources/data/events/shops/base.ron"
-    ))
-    .expect("shops/base.ron should deserialize");
-    let rewards_db: RewardDatabase = ron::de::from_str(include_str!(
-        "../../../../../game_resources/data/events/rewards/base.ron"
-    ))
-    .expect("rewards/base.ron should deserialize");
-    let abnormalities_db: AbnormalityDatabase = ron::de::from_str(include_str!(
-        "../../../../../game_resources/data/abnormalities/base.ron"
-    ))
-    .expect("abnormalities/base.ron should deserialize");
-    let corroded_employee_db: CorrodedEmployeeProfileDatabase = ron::de::from_str(include_str!(
-        "../../../../../game_resources/data/enemies/corroded_employees.ron"
-    ))
-    .expect("corroded_employees.ron should deserialize");
-    let corroded_wave_db: CorrodedWavePresetDatabase = ron::de::from_str(include_str!(
-        "../../../../../game_resources/data/enemies/corroded_wave_presets.ron"
-    ))
-    .expect("corroded_wave_presets.ron should deserialize");
-    let starter_employee_db: StarterEmployeeCandidateDatabase = ron::de::from_str(include_str!(
-        "../../../../../game_resources/data/employees/starter_candidates.ron"
-    ))
-    .expect("starter_candidates.ron should deserialize");
-    let recruitment_employee_db: RecruitmentEmployeeCandidateDatabase = ron::de::from_str(
-        include_str!("../../../../../game_resources/data/employees/recruitment_candidates.ron"),
-    )
-    .expect("recruitment_candidates.ron should deserialize");
-    let equipments_db: EquipmentDatabase = ron::de::from_str(include_str!(
-        "../../../../../game_resources/data/equipments/base.ron"
-    ))
-    .expect("equipments/base.ron should deserialize");
-    let artifacts_db: ArtifactDatabase = ron::de::from_str(include_str!(
-        "../../../../../game_resources/data/artifacts/base.ron"
-    ))
-    .expect("artifacts/base.ron should deserialize");
-    let buffs_db: BuffDatabase = ron::de::from_str(include_str!(
-        "../../../../../game_resources/data/buffs/base.ron"
-    ))
-    .expect("buffs/base.ron should deserialize");
-    let skill_db: SkillDatabase = ron::de::from_str(include_str!(
-        "../../../../../game_resources/data/skills/base.ron"
-    ))
-    .expect("skills/base.ron should deserialize");
-    let skill_fragment_db: SkillFragmentDatabase = ron::de::from_str(include_str!(
-        "../../../../../game_resources/data/skill_fragments/base.ron"
-    ))
-    .expect("skill_fragments/base.ron should deserialize");
-    let pve_db: PveEncounterDatabase = ron::de::from_str(include_str!(
-        "../../../../../game_resources/data/pve/encounters.ron"
-    ))
-    .expect("pve/encounters.ron should deserialize");
-    let run_policy = RunPolicyData::from_ron_str(include_str!(
-        "../../../../../game_resources/data/run/policy.ron"
-    ))
-    .expect("run/policy.ron should deserialize");
-
-    GameDataBuilder::empty()
-        .with_abnormality_data(Arc::new(abnormalities_db))
-        .with_corroded_employee_data(Arc::new(corroded_employee_db))
-        .with_corroded_wave_data(Arc::new(corroded_wave_db))
-        .with_starter_employee_data(Arc::new(starter_employee_db))
-        .with_recruitment_employee_data(Arc::new(recruitment_employee_db))
-        .with_artifact_data(Arc::new(artifacts_db))
-        .with_equipment_data(Arc::new(equipments_db))
-        .with_shop_data(Arc::new(shops_db))
-        .with_reward_data(Arc::new(rewards_db))
-        .with_pve_data(Arc::new(pve_db))
-        .with_run_policy_data(Arc::new(run_policy))
-        .with_buff_data(Arc::new(buffs_db))
-        .with_skill_data(Arc::new(skill_db))
-        .with_skill_fragment_data(Arc::new(skill_fragment_db))
-        .build_arc()
+    GameDataBase::load_live_embedded()
 }
 
 fn test_abnormality_meta(id: &str, uuid: u128) -> AbnormalityMetadata {
+    test_abnormality_meta_with_threat_class(
+        id,
+        uuid,
+        crate::game::battle::types::BattleUnitThreatClass::Elite,
+    )
+}
+
+fn test_boss_abnormality_meta(id: &str, uuid: u128) -> AbnormalityMetadata {
+    test_abnormality_meta_with_threat_class(
+        id,
+        uuid,
+        crate::game::battle::types::BattleUnitThreatClass::Boss,
+    )
+}
+
+fn test_abnormality_meta_with_threat_class(
+    id: &str,
+    uuid: u128,
+    threat_class: crate::game::battle::types::BattleUnitThreatClass,
+) -> AbnormalityMetadata {
     AbnormalityMetadata {
         id: id.to_string(),
         uuid: Uuid::from_u128(uuid),
@@ -369,13 +374,33 @@ fn test_abnormality_meta(id: &str, uuid: u128) -> AbnormalityMetadata {
         attack: 0,
         defense: 0,
         magic_resist: 0,
-        threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+        threat_class,
+        response_complete_skill_fragment_id: Some(starter_basic_attack_fragment_id()),
+        omen_chain_id: None,
         movement: MovementDef::default(),
         basic_attack: BasicAttackDef::default(),
         resonance: ResonanceDef::default(),
         skill_id: None,
         mobility_kind: Default::default(),
         target_traits: Vec::new(),
+    }
+}
+
+fn test_corroded_employee_profile(id: &str, uuid: u128) -> CorrodedEmployeeProfileMetadata {
+    CorrodedEmployeeProfileMetadata {
+        id: id.to_string(),
+        uuid: Uuid::from_u128(uuid),
+        name: id.to_string(),
+        profile_role: CorrodedEmployeeProfileRole::Special,
+        basic_attack_range_preset: None,
+        max_health: 10,
+        attack: 1,
+        defense: 0,
+        magic_resist: 0,
+        movement: MovementDef::default(),
+        basic_attack: BasicAttackDef::default(),
+        resonance: ResonanceDef::default(),
+        skill_id: None,
     }
 }
 
@@ -388,6 +413,21 @@ fn test_pve_wave(abnormality_id: &str) -> PveWaveData {
         required_for_victory: true,
         source: PveWaveSource::Manual(vec![PveWaveEnemyData::Abnormality {
             abnormality_id: abnormality_id.to_string(),
+            tier: crate::game::enums::Tier::I,
+            count: 1,
+        }]),
+    }
+}
+
+fn test_corroded_pve_wave(profile_id: &str) -> PveWaveData {
+    PveWaveData {
+        id: "wave_0".to_string(),
+        time_ms: 0,
+        spawn_zone_ids: Vec::new(),
+        route_id: Some("defense_main".to_string()),
+        required_for_victory: true,
+        source: PveWaveSource::Manual(vec![PveWaveEnemyData::CorrodedEmployee {
+            profile_id: profile_id.to_string(),
             tier: crate::game::enums::Tier::I,
             count: 1,
         }]),
@@ -467,6 +507,8 @@ fn abnormality_meta(uuid: u128) -> Arc<AbnormalityMetadata> {
         defense: 1,
         magic_resist: 0,
         threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+        response_complete_skill_fragment_id: Some(starter_basic_attack_fragment_id()),
+        omen_chain_id: None,
         movement: MovementDef::default(),
         basic_attack: BasicAttackDef::default(),
         resonance: ResonanceDef::default(),
@@ -920,8 +962,9 @@ fn write_world_debug_event_log_export(
     name: &str,
     event_log: &BattleEventLog,
 ) -> std::path::PathBuf {
-    let out_dir =
-        std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("debug_event_log_exports");
+    let out_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("target")
+        .join("debug_event_log_exports");
     let out_path = out_dir.join(format!("{name}.json"));
     std::fs::create_dir_all(&out_dir).expect("create debug_event_log_exports directory");
     event_log

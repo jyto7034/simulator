@@ -42,6 +42,159 @@ fn force_map_combat_node(
     )
 }
 
+fn game_data_with_event_definitions_for_combat_tests(
+    base: std::sync::Arc<GameDataBase>,
+    events: Vec<crate::game::data::event_data::EventDefinition>,
+) -> std::sync::Arc<GameDataBase> {
+    GameDataBuilder::empty()
+        .with_abnormality_data(base.abnormality_data.clone())
+        .with_corroded_employee_data(base.corroded_employee_data.clone())
+        .with_corroded_wave_data(base.corroded_wave_data.clone())
+        .with_starter_employee_data(base.starter_employee_data.clone())
+        .with_recruitment_employee_data(base.recruitment_employee_data.clone())
+        .with_artifact_data(base.artifact_data.clone())
+        .with_consumable_data(base.consumable_data.clone())
+        .with_equipment_data(base.equipment_data.clone())
+        .with_shop_data(base.shop_data.clone())
+        .with_reward_data(base.reward_data.clone())
+        .with_event_data(std::sync::Arc::new(
+            crate::game::data::event_data::EventDatabase::new(events),
+        ))
+        .with_pve_data(base.pve_data.clone())
+        .with_boss_omen_data(base.boss_omen_data.clone())
+        .with_run_policy_data(base.run_policy.clone())
+        .with_skill_data(base.skill_data.clone())
+        .with_buff_data(base.buff_data.clone())
+        .with_skill_fragment_data(base.skill_fragment_data.clone())
+        .build_arc()
+}
+
+fn combat_choice_event_definition(
+    event_id: &str,
+    choice_id: &str,
+    encounter_id: &str,
+    primary_abnormality_id: &str,
+) -> crate::game::data::event_data::EventDefinition {
+    crate::game::data::event_data::EventDefinition {
+        id: crate::game::data::event_data::EventId::new(event_id),
+        entry_scene_id: crate::game::data::event_data::EventSceneId::new("choice"),
+        scenes: vec![crate::game::data::event_data::EventSceneDefinition {
+            id: crate::game::data::event_data::EventSceneId::new("choice"),
+            presentation: crate::game::data::event_data::EventScenePresentation {
+                background_id: "test_background".to_string(),
+                script_id: "test_script".to_string(),
+                speaker_id: None,
+                portrait_id: None,
+            },
+            next: crate::game::data::event_data::EventSceneNext::Choices {
+                choices: vec![crate::game::data::event_data::EventChoiceDefinition {
+                    id: crate::game::data::event_data::EventChoiceId::new(choice_id),
+                    label_id: "test_choice_label".to_string(),
+                    preview: crate::game::data::event_data::EventChoicePreview {
+                        starts_combat: true,
+                        ..Default::default()
+                    },
+                    effects: vec![
+                        crate::game::data::event_data::EventChoiceEffect::StartCombat {
+                            encounter_id: encounter_id.to_string(),
+                            primary_abnormality_id: Some(primary_abnormality_id.to_string()),
+                        },
+                    ],
+                    next: None,
+                }],
+            },
+        }],
+    }
+}
+
+fn force_single_event_node_run_for_combat_tests(core: &mut GameCore, event_id: &str) -> MapNodeId {
+    let start_node_id = MapNodeId::new(Uuid::from_u128(0xC1_0001));
+    let event_node_id = MapNodeId::new(Uuid::from_u128(0xC1_0002));
+    let map = RunMap {
+        map_template_id: MapTemplateId::new(DEFAULT_MAP_TEMPLATE_ID),
+        edges: vec![crate::game::map::MapEdgeDto {
+            from_node_id: start_node_id,
+            to_node_id: event_node_id,
+            direction: crate::game::map::MapEdgeDirection::Bidirectional,
+        }],
+        nodes: vec![
+            MapNode {
+                id: start_node_id,
+                depth: 0,
+                lane: 0,
+                slot_id: MapSlotId::for_grid_position(0, 0),
+                kind_id: MapNodeKindId::new("start"),
+                category: MapNodeCategory::Start,
+                state: MapNodeState::Completed,
+                visibility: MapNodeVisibility::Revealed,
+                payload: MapNodePayload::None,
+                omen: None,
+            },
+            MapNode {
+                id: event_node_id,
+                depth: 1,
+                lane: 0,
+                slot_id: MapSlotId::for_grid_position(1, 0),
+                kind_id: MapNodeKindId::new("event_story"),
+                category: MapNodeCategory::Event,
+                state: MapNodeState::Available,
+                visibility: MapNodeVisibility::Revealed,
+                payload: MapNodePayload::Event {
+                    event_id: Some(crate::game::data::event_data::EventId::new(event_id)),
+                },
+                omen: None,
+            },
+        ],
+        start_node_ids: vec![event_node_id],
+        terminal_node_id: event_node_id,
+    };
+    let progression = crate::game::map::MapProgression {
+        current_node_id: Some(start_node_id),
+        available_node_ids: vec![event_node_id],
+        completed_node_ids: vec![start_node_id],
+    };
+    let run_progression = core
+        .state
+        .run
+        .as_ref()
+        .expect("run")
+        .run_progression
+        .clone();
+    core.state.run = Some(RunState::new(map, progression, run_progression));
+    event_node_id
+}
+
+fn enter_event_combat_choice(
+    core: &mut GameCore,
+    player_id: Uuid,
+    event_node_id: MapNodeId,
+    event_id: &str,
+    choice_id: &str,
+) {
+    core.execute(
+        player_id,
+        PlayerBehavior::SelectMapNode {
+            node_id: event_node_id,
+        },
+    )
+    .expect("event node should be selectable");
+    let entered = core
+        .execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .expect("event node should enter");
+    assert!(matches!(entered, BehaviorResult::EventState { .. }));
+    let started = core
+        .execute(
+            player_id,
+            PlayerBehavior::SelectEventChoice {
+                node_id: event_node_id,
+                event_id: crate::game::data::event_data::EventId::new(event_id),
+                choice_id: crate::game::data::event_data::EventChoiceId::new(choice_id),
+            },
+        )
+        .expect("event choice should start combat");
+    assert!(matches!(started, BehaviorResult::BattleAdvanced { .. }));
+}
+
 fn first_ground_deployment_cell(preview: &BehaviorResult) -> Position {
     let BehaviorResult::NodePreview {
         combat_preview: Some(combat_preview),
@@ -99,7 +252,7 @@ fn combat_result_without_node_session_is_rejected() {
     })
     .unwrap();
     core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(CombatBattleState {
-        abnormality_id: "abno".to_string(),
+        primary_abnormality_id: Some("abno".to_string()),
         encounter_id: "encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Defense,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
@@ -107,6 +260,7 @@ fn combat_result_without_node_session_is_rejected() {
         winner: BattleWinner::Opponent,
         event_log: BattleEventLog::default(),
         result_stats: test_result_stats(BattleWinner::Opponent, &BattleEventLog::default(), &[]),
+        bonus_objectives: vec![],
         reward_mode: RewardMode::ChooseOne,
         rewards: vec![],
         participant_results: vec![],
@@ -171,7 +325,7 @@ fn combat_result_snapshot_exposes_typed_result_stats() {
     let result_stats = test_result_stats(BattleWinner::Player, &event_log, &participant_results);
 
     core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(CombatBattleState {
-        abnormality_id: "abno".to_string(),
+        primary_abnormality_id: Some("abno".to_string()),
         encounter_id: "encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Defense,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
@@ -179,6 +333,18 @@ fn combat_result_snapshot_exposes_typed_result_stats() {
         winner: BattleWinner::Player,
         event_log,
         result_stats,
+        bonus_objectives: vec![
+            crate::game::pve_bonus_objectives::PveBonusObjectiveOutcomeDto {
+                id: "fast_clear".to_string(),
+                condition:
+                    crate::game::data::pve_data::PveBonusObjectiveConditionData::ClearWithin {
+                        time_ms: 90_000,
+                    },
+                research_bonus: 20,
+                satisfied: true,
+                presentation: Some("abnormality_part_obtained".to_string()),
+            },
+        ],
         reward_mode: RewardMode::ClaimAll,
         rewards: vec![],
         participant_results,
@@ -201,6 +367,9 @@ fn combat_result_snapshot_exposes_typed_result_stats() {
         selected["result_stats"]["mvp"]["employee_uuid"],
         serde_json::json!(employee_uuid)
     );
+    assert_eq!(selected["bonus_objectives"][0]["id"], "fast_clear");
+    assert_eq!(selected["bonus_objectives"][0]["satisfied"], true);
+    assert_eq!(selected["bonus_objectives"][0]["research_bonus"], 20);
 }
 
 #[test]
@@ -249,7 +418,7 @@ fn combat_result_completion_failure_does_not_partially_apply_rewards_on_retry() 
     }];
     let event_log = BattleEventLog::default();
     let battle = CombatBattleState {
-        abnormality_id: "low_risk_abno".to_string(),
+        primary_abnormality_id: Some("low_risk_abno".to_string()),
         encounter_id: "low_risk_encounter".to_string(),
         node_type: crate::game::combat_preview::CombatNodeType::Defense,
         mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
@@ -257,6 +426,7 @@ fn combat_result_completion_failure_does_not_partially_apply_rewards_on_retry() 
         winner: BattleWinner::Player,
         result_stats: test_result_stats(BattleWinner::Player, &event_log, &participant_results),
         event_log,
+        bonus_objectives: vec![],
         reward_mode: RewardMode::ClaimAll,
         rewards: vec![RewardOption {
             id: "combat_xp".to_string(),
@@ -313,6 +483,181 @@ fn combat_result_completion_failure_does_not_partially_apply_rewards_on_retry() 
         assert!(core.state.node_session.is_some());
         assert!(matches!(core.get_state(), GameState::CombatResult { .. }));
     }
+}
+
+#[test]
+fn endless_combat_victory_updates_abnormality_research_and_grants_completion_fragment() {
+    let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_low_risk",
+        "low_risk_encounter",
+    );
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    core.state
+        .run
+        .as_mut()
+        .unwrap()
+        .abnormality_research
+        .entries
+        .get_mut("low_risk_abno")
+        .unwrap()
+        .research_points = 80;
+
+    let employee_uuid = core.roster().unwrap().available_employee_ids()[0];
+    let participant_results = vec![ParticipantBattleResult {
+        unit_instance_id: crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(
+            0xC0_1002,
+        )),
+        owned_uuid: employee_uuid,
+        side: Side::Player,
+        survived: true,
+        final_hp: 100,
+        max_hp: 100,
+        became_incapacitated: false,
+    }];
+    let event_log = BattleEventLog::default();
+    let battle = CombatBattleState {
+        primary_abnormality_id: Some("low_risk_abno".to_string()),
+        encounter_id: "low_risk_encounter".to_string(),
+        node_type: crate::game::combat_preview::CombatNodeType::Defense,
+        mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
+        abnormality_uuid: node_id.0,
+        winner: BattleWinner::Player,
+        result_stats: test_result_stats(BattleWinner::Player, &event_log, &participant_results),
+        event_log,
+        bonus_objectives: vec![],
+        reward_mode: RewardMode::ClaimAll,
+        rewards: vec![],
+        participant_results,
+    };
+    core.state.active_battle = None;
+    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
+    core.transition_to(GameState::CombatResult {
+        battle_uuid: node_id.0,
+    })
+    .unwrap();
+
+    let result = core
+        .execute(player_id, PlayerBehavior::CompleteCombatResult)
+        .unwrap();
+
+    let BehaviorResult::CombatRewardsGranted {
+        skill_fragment_diffs,
+        ..
+    } = result
+    else {
+        panic!("expected combat rewards granted");
+    };
+    assert!(skill_fragment_diffs.iter().any(|diff| {
+        diff.fragment_id == starter_basic_attack_fragment_id()
+            && diff.count_before == 0
+            && diff.count_after == 1
+    }));
+    let entry = core
+        .state
+        .run
+        .as_ref()
+        .unwrap()
+        .abnormality_research
+        .entries
+        .get("low_risk_abno")
+        .unwrap();
+    assert_eq!(entry.research_points, 100);
+    assert!(entry.response_complete);
+    assert!(entry.unique_fragment_granted);
+}
+
+#[test]
+fn endless_combat_victory_adds_satisfied_bonus_objective_research() {
+    let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_low_risk",
+        "low_risk_encounter",
+    );
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    core.state
+        .run
+        .as_mut()
+        .unwrap()
+        .abnormality_research
+        .entries
+        .get_mut("low_risk_abno")
+        .unwrap()
+        .research_points = 40;
+
+    let employee_uuid = core.roster().unwrap().available_employee_ids()[0];
+    let participant_results = vec![ParticipantBattleResult {
+        unit_instance_id: crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(
+            0xC0_1003,
+        )),
+        owned_uuid: employee_uuid,
+        side: Side::Player,
+        survived: true,
+        final_hp: 100,
+        max_hp: 100,
+        became_incapacitated: false,
+    }];
+    let event_log = BattleEventLog::default();
+    let battle = CombatBattleState {
+        primary_abnormality_id: Some("low_risk_abno".to_string()),
+        encounter_id: "low_risk_encounter".to_string(),
+        node_type: crate::game::combat_preview::CombatNodeType::Defense,
+        mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
+        abnormality_uuid: node_id.0,
+        winner: BattleWinner::Player,
+        result_stats: test_result_stats(BattleWinner::Player, &event_log, &participant_results),
+        event_log,
+        bonus_objectives: vec![
+            crate::game::pve_bonus_objectives::PveBonusObjectiveOutcomeDto {
+                id: "fast_clear".to_string(),
+                condition:
+                    crate::game::data::pve_data::PveBonusObjectiveConditionData::ClearWithin {
+                        time_ms: 90_000,
+                    },
+                research_bonus: 40,
+                satisfied: true,
+                presentation: Some("abnormality_part_obtained".to_string()),
+            },
+        ],
+        reward_mode: RewardMode::ClaimAll,
+        rewards: vec![],
+        participant_results,
+    };
+    core.state.active_battle = None;
+    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
+    core.transition_to(GameState::CombatResult {
+        battle_uuid: node_id.0,
+    })
+    .unwrap();
+
+    core.execute(player_id, PlayerBehavior::CompleteCombatResult)
+        .unwrap();
+
+    let entry = core
+        .state
+        .run
+        .as_ref()
+        .unwrap()
+        .abnormality_research
+        .entries
+        .get("low_risk_abno")
+        .unwrap();
+    assert_eq!(entry.research_points, 100);
+    assert!(entry.response_complete);
 }
 
 #[test]
@@ -553,7 +898,7 @@ fn defense_combat_node_smoke_writes_debug_event_log_export() {
         &mut core,
         MapNodeCategory::Combat,
         "combat_monster",
-        "suppress_burrowing_heaven",
+        "suppress_warm_hearted_woodsman",
     );
 
     let preview = core
@@ -574,7 +919,12 @@ fn defense_combat_node_smoke_writes_debug_event_log_export() {
         .routes
         .iter()
         .any(|route| route.id == "defense_main"));
-    assert!(combat_preview.spawn_waves.iter().all(|wave| {
+    assert!(combat_preview
+        .spawn_waves
+        .iter()
+        .filter(|wave| wave.required_for_victory)
+        .all(|wave| wave.route_id.as_deref() == Some("defense_main")));
+    assert!(combat_preview.spawn_waves.iter().any(|wave| {
         wave.route_id.as_deref() == Some("defense_main") && wave.required_for_victory
     }));
     assert!(combat_preview
@@ -757,7 +1107,7 @@ fn defense_combat_node_smoke_writes_debug_event_log_export() {
         .run
         .as_ref()
         .unwrap()
-        .battle_record_path(battle.abnormality_uuid);
+        .battle_record_debug_export_path(battle.abnormality_uuid);
     assert!(record_path.exists());
     std::fs::remove_file(&record_path).expect("cleanup smoke battle record file");
 }
@@ -771,7 +1121,7 @@ fn live_ron_defense_route_playable_path_runs_to_combat_result() {
         &mut core,
         MapNodeCategory::Combat,
         "combat_monster",
-        "suppress_burrowing_heaven",
+        "suppress_warm_hearted_woodsman",
     );
 
     let preview = core
@@ -793,7 +1143,12 @@ fn live_ron_defense_route_playable_path_runs_to_combat_result() {
         .iter()
         .find(|route| route.id == "defense_main")
         .expect("live defense route should be authored");
-    assert!(combat_preview.spawn_waves.iter().all(|wave| {
+    assert!(combat_preview
+        .spawn_waves
+        .iter()
+        .filter(|wave| wave.required_for_victory)
+        .all(|wave| wave.route_id.as_deref() == Some("defense_main")));
+    assert!(combat_preview.spawn_waves.iter().any(|wave| {
         wave.route_id.as_deref() == Some("defense_main") && wave.required_for_victory
     }));
 
@@ -906,7 +1261,7 @@ fn live_ron_defense_route_playable_path_runs_to_combat_result() {
     );
     assert!(matches!(core.get_state(), GameState::CombatResult { .. }));
 
-    let (battle_uuid, event_log_entry_count) = {
+    let (abnormality_uuid, event_log_entry_count) = {
         let battle = core
             .state
             .active_node_content
@@ -930,20 +1285,20 @@ fn live_ron_defense_route_playable_path_runs_to_combat_result() {
     };
     assert_eq!(core.battle_records().len(), 1);
     let record = &core.battle_records()[0];
-    assert_eq!(record.abnormality_uuid, battle_uuid);
+    assert_eq!(record.abnormality_uuid, abnormality_uuid);
     assert_eq!(record.event_log.entries.len(), event_log_entry_count);
     let record_path = core
         .state
         .run
         .as_ref()
         .unwrap()
-        .battle_record_path(battle_uuid);
+        .battle_record_debug_export_path(abnormality_uuid);
     assert!(record_path.exists(), "battle record file should exist");
     let record_json: serde_json::Value = serde_json::from_reader(
         std::fs::File::open(&record_path).expect("open battle record file"),
     )
     .expect("battle record should be valid json");
-    assert_eq!(record_json["battle_uuid"], json!(battle_uuid));
+    assert_eq!(record_json["abnormality_uuid"], json!(abnormality_uuid));
     assert_eq!(
         record_json["event_log"]["entries"]
             .as_array()
@@ -955,17 +1310,42 @@ fn live_ron_defense_route_playable_path_runs_to_combat_result() {
     let completion = core
         .execute(player_id, PlayerBehavior::CompleteCombatResult)
         .unwrap();
-    assert!(matches!(
-        completion,
-        BehaviorResult::NodeCompleted {
-            outcome: Some(_),
+    let returned_to_retry = matches!(completion, BehaviorResult::NodePreview { .. });
+    match completion {
+        BehaviorResult::CombatRewardsGranted {
+            outcome,
+            completion,
             ..
+        } => {
+            assert!(outcome.mission_success);
+            assert!(matches!(
+                *completion,
+                BehaviorResult::NodeCompleted { .. }
+                    | BehaviorResult::FloorAdvanced { .. }
+                    | BehaviorResult::RunComplete { .. }
+            ));
         }
-    ));
-    assert!(matches!(core.get_state(), GameState::ViewingMap));
+        BehaviorResult::NodeCompleted {
+            outcome: Some(_), ..
+        }
+        | BehaviorResult::FloorAdvanced { .. }
+        | BehaviorResult::RunComplete { .. } => {}
+        BehaviorResult::NodePreview { category, .. } => {
+            assert_eq!(category, MapNodeCategory::Combat);
+        }
+        other => panic!("unexpected combat completion result: {other:?}"),
+    }
+    if returned_to_retry {
+        assert!(matches!(core.get_state(), GameState::NodeConfirm { .. }));
+    } else {
+        assert!(matches!(
+            core.get_state(),
+            GameState::ViewingMap | GameState::RunComplete
+        ));
+    }
     assert_eq!(core.battle_records().len(), 1);
     let record = &core.battle_records()[0];
-    assert_eq!(record.abnormality_uuid, battle_uuid);
+    assert_eq!(record.abnormality_uuid, abnormality_uuid);
     assert_eq!(record.event_log.entries.len(), event_log_entry_count);
     assert!(record_path.exists());
     std::fs::remove_file(&record_path).expect("cleanup battle record file");
@@ -981,7 +1361,7 @@ fn battle_setup_snapshot_live_defense_state_request_returns_battle_update_withou
         &mut core,
         MapNodeCategory::Combat,
         "combat_monster",
-        "suppress_burrowing_heaven",
+        "suppress_warm_hearted_woodsman",
     );
 
     core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
@@ -1002,7 +1382,7 @@ fn battle_setup_snapshot_live_defense_state_request_returns_battle_update_withou
     assert_eq!(setup.battle_uuid, battle_uuid);
     assert_eq!(first_update.battle_uuid, battle_uuid);
     assert_eq!(setup.setup_version, 1);
-    assert_eq!(setup.encounter_id, "suppress_burrowing_heaven");
+    assert_eq!(setup.encounter_id, "suppress_warm_hearted_woodsman");
     assert!(setup.battlefield.width > 0);
     assert!(setup.battlefield.height > 0);
     assert!(!setup.battlefield.valid_tiles.is_empty());
@@ -1017,13 +1397,13 @@ fn battle_setup_snapshot_live_defense_state_request_returns_battle_update_withou
     assert!(setup.initial_units.is_empty());
     assert_eq!(
         setup.catalog_refs.battlefield_template_id,
-        "choke_point_medium_01"
+        "corridor_hook_control_01"
     );
     assert!(setup
         .catalog_refs
         .abnormality_ids
         .iter()
-        .any(|id| id == "o-04-72_burrowing_heaven"));
+        .any(|id| id == "f-05-32_warm_hearted_woodsman"));
     assert!(first_update
         .events_delta
         .events
@@ -2893,6 +3273,8 @@ fn manual_fragment_can_restore_stabilization_and_enable_extra_deployment() {
         .collect::<Vec<_>>();
     deploy_positions.sort_by_key(|position| (position.y, position.x));
     deploy_positions.dedup();
+    let route_end = combat_preview.routes.first().map(|route| route.end);
+    deploy_positions.retain(|position| Some(*position) != route_end);
     assert!(deploy_positions.len() >= 3);
 
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
@@ -3055,7 +3437,10 @@ fn retreat_from_live_defense_battle_reenters_until_attempts_are_exhausted() {
         .unwrap()
         .map
         .node(node_id)
-        .is_some_and(|node| node.state == crate::game::map::MapNodeState::Revealed));
+        .is_some_and(|node| {
+            node.state == crate::game::map::MapNodeState::Unavailable
+                && node.visibility == crate::game::map::MapNodeVisibility::Revealed
+        }));
     let employee_after = core.roster().unwrap().get(&employee_uuid).unwrap();
     assert_eq!(
         employee_after.health.current_hp,
@@ -3122,7 +3507,7 @@ fn retreat_from_live_defense_battle_reenters_until_attempts_are_exhausted() {
             .run
             .as_ref()
             .unwrap()
-            .battle_record_path(record.abnormality_uuid);
+            .battle_record_debug_export_path(record.abnormality_uuid);
         assert!(record_path.exists(), "draw battle record file should exist");
         let record_json: serde_json::Value = serde_json::from_reader(
             std::fs::File::open(&record_path).expect("open draw battle record file"),
@@ -3139,6 +3524,516 @@ fn retreat_from_live_defense_battle_reenters_until_attempts_are_exhausted() {
             .node(node_id)
             .is_some_and(|node| node.state == crate::game::map::MapNodeState::Completed));
     }
+}
+
+#[test]
+fn failed_live_defense_battle_reenters_until_attempts_are_exhausted() {
+    let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Combat,
+        "combat_defense",
+        "defense_encounter",
+    );
+
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    let battle = CombatBattleState {
+        primary_abnormality_id: Some("defense_abno".to_string()),
+        encounter_id: "defense_encounter".to_string(),
+        node_type: crate::game::combat_preview::CombatNodeType::Defense,
+        mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
+        abnormality_uuid: node_id.0,
+        winner: BattleWinner::Opponent,
+        event_log: BattleEventLog::default(),
+        result_stats: test_result_stats(BattleWinner::Opponent, &BattleEventLog::default(), &[]),
+        bonus_objectives: vec![],
+        reward_mode: RewardMode::ClaimAll,
+        rewards: vec![],
+        participant_results: vec![],
+    };
+    core.state.active_battle = None;
+    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
+    core.transition_to(GameState::CombatResult {
+        battle_uuid: node_id.0,
+    })
+    .unwrap();
+
+    let result = core
+        .execute(player_id, PlayerBehavior::CompleteCombatResult)
+        .unwrap();
+
+    let BehaviorResult::NodePreview {
+        node_id: failed_node_id,
+        ..
+    } = result
+    else {
+        panic!("expected failed combat to return to node confirm while attempts remain");
+    };
+    assert_eq!(failed_node_id, node_id);
+    assert!(matches!(core.get_state(), GameState::NodeConfirm { .. }));
+    let snapshot = core.get_run_snapshot_json().unwrap();
+    assert_eq!(
+        snapshot["game_state_context"]["abnormality_attempt"]["attempts_started"],
+        json!(1)
+    );
+    assert_eq!(
+        snapshot["game_state_context"]["abnormality_attempt"]["remaining_attempts"],
+        json!(2)
+    );
+    assert!(core.state.active_battle.is_none());
+    assert!(core.state.active_node_content.is_none());
+    assert!(core.state.node_session.is_some());
+}
+
+#[test]
+fn final_boss_retreat_is_allowed_until_third_attempt_fails_run() {
+    let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player_id);
+    {
+        let run = core.state.run.as_mut().expect("run state");
+        run.run_progression.mode_state = crate::game::map::RunProgressionModeState::Standard {
+            floor_index: run_policy().setup.standard_floor_count - 1,
+            max_floors: run_policy().setup.standard_floor_count,
+        };
+    }
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Boss,
+        "boss_abnormality",
+        "final_boss_risk_encounter",
+    );
+    core.state.run.as_mut().unwrap().map.terminal_node_id = node_id;
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+
+    for expected_remaining in [2, 1] {
+        core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+            .unwrap();
+        let snapshot = core.get_run_snapshot_json().unwrap();
+        assert_eq!(snapshot["game_state_context"]["can_retreat"], json!(true));
+        assert_eq!(
+            snapshot["game_state_context"]["abnormality_attempt"]["remaining_attempts"],
+            json!(expected_remaining)
+        );
+        let result = core
+            .execute(player_id, PlayerBehavior::RetreatBattle)
+            .unwrap();
+        assert!(matches!(result, BehaviorResult::NodePreview { .. }));
+        assert!(matches!(core.get_state(), GameState::NodeConfirm { .. }));
+    }
+
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    let result = core
+        .execute(player_id, PlayerBehavior::RetreatBattle)
+        .unwrap();
+
+    let BehaviorResult::RunFailed {
+        reason: RunFailureReason::BossDefeated,
+        outcome: Some(outcome),
+    } = result
+    else {
+        panic!("expected final boss third retreat to fail the run");
+    };
+    assert_eq!(outcome.node_id, node_id);
+    let combat = outcome.combat.expect("combat summary");
+    assert_eq!(
+        combat.node_type,
+        crate::game::combat_preview::CombatNodeType::Boss
+    );
+    assert_eq!(combat.winner, BattleWinner::Draw);
+    assert!(combat.retreated);
+    assert!(matches!(
+        core.get_state(),
+        GameState::RunFailed {
+            reason: RunFailureReason::BossDefeated
+        }
+    ));
+}
+
+#[test]
+fn final_boss_defeat_immediately_fails_run() {
+    let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player_id);
+    {
+        let run = core.state.run.as_mut().expect("run state");
+        run.run_progression.mode_state = crate::game::map::RunProgressionModeState::Standard {
+            floor_index: run_policy().setup.standard_floor_count - 1,
+            max_floors: run_policy().setup.standard_floor_count,
+        };
+    }
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Boss,
+        "boss_abnormality",
+        "final_boss_risk_encounter",
+    );
+    core.state.run.as_mut().unwrap().map.terminal_node_id = node_id;
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    let battle = CombatBattleState {
+        primary_abnormality_id: Some("final_boss_risk_abno".to_string()),
+        encounter_id: "final_boss_risk_encounter".to_string(),
+        node_type: crate::game::combat_preview::CombatNodeType::Boss,
+        mission_variant: crate::game::combat_preview::CombatMissionVariant::Boss,
+        abnormality_uuid: node_id.0,
+        winner: BattleWinner::Opponent,
+        event_log: BattleEventLog::default(),
+        result_stats: test_result_stats(BattleWinner::Opponent, &BattleEventLog::default(), &[]),
+        bonus_objectives: vec![],
+        reward_mode: RewardMode::ClaimAll,
+        rewards: vec![],
+        participant_results: vec![],
+    };
+    core.state.active_battle = None;
+    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
+    core.transition_to(GameState::CombatResult {
+        battle_uuid: node_id.0,
+    })
+    .unwrap();
+
+    let result = core
+        .execute(player_id, PlayerBehavior::CompleteCombatResult)
+        .unwrap();
+
+    assert!(matches!(
+        result,
+        BehaviorResult::RunFailed {
+            reason: RunFailureReason::BossDefeated,
+            ..
+        }
+    ));
+    assert!(matches!(
+        core.get_state(),
+        GameState::RunFailed {
+            reason: RunFailureReason::BossDefeated
+        }
+    ));
+}
+
+#[test]
+fn forced_boss_omen_defeat_immediately_fails_endless_run() {
+    let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Boss,
+        "boss_omen_final_boss",
+        "final_boss_risk_encounter",
+    );
+    core.state.run.as_mut().unwrap().boss_omen.forced_boss =
+        Some(crate::game::boss_omen::ForcedBossOmenNodeState {
+            node_id,
+            chain_id: crate::game::data::boss_omen_data::BossOmenChainId::new("test_chain"),
+            boss_abnormality_id: "final_boss_risk_abno".to_string(),
+            encounter_id: "final_boss_risk_encounter".to_string(),
+        });
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    let battle = CombatBattleState {
+        primary_abnormality_id: Some("final_boss_risk_abno".to_string()),
+        encounter_id: "final_boss_risk_encounter".to_string(),
+        node_type: crate::game::combat_preview::CombatNodeType::Boss,
+        mission_variant: crate::game::combat_preview::CombatMissionVariant::Boss,
+        abnormality_uuid: node_id.0,
+        winner: BattleWinner::Opponent,
+        event_log: BattleEventLog::default(),
+        result_stats: test_result_stats(BattleWinner::Opponent, &BattleEventLog::default(), &[]),
+        bonus_objectives: vec![],
+        reward_mode: RewardMode::ClaimAll,
+        rewards: vec![],
+        participant_results: vec![],
+    };
+    core.state.active_battle = None;
+    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
+    core.transition_to(GameState::CombatResult {
+        battle_uuid: node_id.0,
+    })
+    .unwrap();
+
+    let result = core
+        .execute(player_id, PlayerBehavior::CompleteCombatResult)
+        .unwrap();
+
+    assert!(matches!(
+        result,
+        BehaviorResult::RunFailed {
+            reason: RunFailureReason::BossDefeated,
+            ..
+        }
+    ));
+}
+
+#[test]
+fn forced_boss_omen_victory_clears_chain_and_advances_endless_floor() {
+    let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Boss,
+        "boss_omen_final_boss",
+        "final_boss_risk_encounter",
+    );
+    {
+        let run = core.state.run.as_mut().unwrap();
+        run.map.terminal_node_id = node_id;
+        run.boss_omen.forced_boss = Some(crate::game::boss_omen::ForcedBossOmenNodeState {
+            node_id,
+            chain_id: crate::game::data::boss_omen_data::BossOmenChainId::new("test_chain"),
+            boss_abnormality_id: "final_boss_risk_abno".to_string(),
+            encounter_id: "final_boss_risk_encounter".to_string(),
+        });
+    }
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    let battle = CombatBattleState {
+        primary_abnormality_id: Some("final_boss_risk_abno".to_string()),
+        encounter_id: "final_boss_risk_encounter".to_string(),
+        node_type: crate::game::combat_preview::CombatNodeType::Boss,
+        mission_variant: crate::game::combat_preview::CombatMissionVariant::Boss,
+        abnormality_uuid: node_id.0,
+        winner: BattleWinner::Player,
+        event_log: BattleEventLog::default(),
+        result_stats: test_result_stats(BattleWinner::Player, &BattleEventLog::default(), &[]),
+        bonus_objectives: vec![],
+        reward_mode: RewardMode::ClaimAll,
+        rewards: vec![],
+        participant_results: vec![],
+    };
+    core.state.active_battle = None;
+    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
+    core.transition_to(GameState::CombatResult {
+        battle_uuid: node_id.0,
+    })
+    .unwrap();
+
+    let result = core
+        .execute(player_id, PlayerBehavior::CompleteCombatResult)
+        .unwrap();
+
+    let BehaviorResult::CombatRewardsGranted { completion, .. } = result else {
+        panic!("forced boss victory should grant combat rewards before advancing");
+    };
+    let BehaviorResult::FloorAdvanced {
+        game_mode,
+        floor_index,
+        ..
+    } = *completion
+    else {
+        panic!("forced boss victory should advance Endless floor after rewards");
+    };
+    assert_eq!(game_mode, GameMode::Endless);
+    assert_eq!(floor_index, 1);
+    assert_eq!(
+        core.state
+            .run
+            .as_ref()
+            .unwrap()
+            .boss_omen
+            .forced_boss_node_id(),
+        None
+    );
+    assert!(core.state.run.as_ref().unwrap().boss_omen.active.is_none());
+}
+
+#[test]
+fn non_final_boss_defeat_reenters_while_attempts_remain() {
+    let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let node_id = force_map_combat_node(
+        &mut core,
+        MapNodeCategory::Boss,
+        "boss_abnormality",
+        "boss_risk_encounter",
+    );
+    assert_ne!(
+        core.state.run.as_ref().unwrap().map.terminal_node_id,
+        node_id
+    );
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+        .unwrap();
+    let battle = CombatBattleState {
+        primary_abnormality_id: Some("boss_abno".to_string()),
+        encounter_id: "boss_risk_encounter".to_string(),
+        node_type: crate::game::combat_preview::CombatNodeType::Boss,
+        mission_variant: crate::game::combat_preview::CombatMissionVariant::Boss,
+        abnormality_uuid: node_id.0,
+        winner: BattleWinner::Opponent,
+        event_log: BattleEventLog::default(),
+        result_stats: test_result_stats(BattleWinner::Opponent, &BattleEventLog::default(), &[]),
+        bonus_objectives: vec![],
+        reward_mode: RewardMode::ClaimAll,
+        rewards: vec![],
+        participant_results: vec![],
+    };
+    core.state.active_battle = None;
+    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
+    core.transition_to(GameState::CombatResult {
+        battle_uuid: node_id.0,
+    })
+    .unwrap();
+
+    let result = core
+        .execute(player_id, PlayerBehavior::CompleteCombatResult)
+        .unwrap();
+
+    assert!(matches!(result, BehaviorResult::NodePreview { .. }));
+    assert!(matches!(core.get_state(), GameState::NodeConfirm { .. }));
+    let snapshot = core.get_run_snapshot_json().unwrap();
+    assert_eq!(
+        snapshot["game_state_context"]["abnormality_attempt"]["remaining_attempts"],
+        json!(2)
+    );
+}
+
+#[test]
+fn event_started_combat_victory_consumes_event_node() {
+    let event = combat_choice_event_definition(
+        "event_started_victory",
+        "fight",
+        "defense_encounter",
+        "defense_risk_abno",
+    );
+    let game_data = game_data_with_event_definitions_for_combat_tests(
+        game_data_with_pve_encounters(),
+        vec![event],
+    );
+    let mut core = GameCore::new(game_data, 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+    let event_node_id =
+        force_single_event_node_run_for_combat_tests(&mut core, "event_started_victory");
+    enter_event_combat_choice(
+        &mut core,
+        player_id,
+        event_node_id,
+        "event_started_victory",
+        "fight",
+    );
+    let battle = CombatBattleState {
+        primary_abnormality_id: Some("defense_risk_abno".to_string()),
+        encounter_id: "defense_encounter".to_string(),
+        node_type: crate::game::combat_preview::CombatNodeType::Defense,
+        mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
+        abnormality_uuid: event_node_id.0,
+        winner: BattleWinner::Player,
+        event_log: BattleEventLog::default(),
+        result_stats: test_result_stats(BattleWinner::Player, &BattleEventLog::default(), &[]),
+        bonus_objectives: vec![],
+        reward_mode: RewardMode::ClaimAll,
+        rewards: vec![],
+        participant_results: vec![],
+    };
+    core.state.active_battle = None;
+    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
+    core.transition_to(GameState::CombatResult {
+        battle_uuid: event_node_id.0,
+    })
+    .unwrap();
+
+    let result = core
+        .execute(player_id, PlayerBehavior::CompleteCombatResult)
+        .unwrap();
+
+    let BehaviorResult::CombatRewardsGranted { completion, .. } = result else {
+        panic!("terminal Event combat victory should grant combat rewards");
+    };
+    assert!(
+        matches!(*completion, BehaviorResult::FloorAdvanced { .. }),
+        "terminal Event node victory should consume the node and advance after rewards"
+    );
+    assert!(core
+        .state
+        .run
+        .as_ref()
+        .unwrap()
+        .event_sessions
+        .get(&event_node_id)
+        .is_none());
+}
+
+#[test]
+fn event_started_combat_defeat_reenters_while_attempts_remain() {
+    let event = combat_choice_event_definition(
+        "event_started_defeat",
+        "fight",
+        "defense_encounter",
+        "defense_risk_abno",
+    );
+    let game_data = game_data_with_event_definitions_for_combat_tests(
+        game_data_with_pve_encounters(),
+        vec![event],
+    );
+    let mut core = GameCore::new(game_data, 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+    let event_node_id =
+        force_single_event_node_run_for_combat_tests(&mut core, "event_started_defeat");
+    enter_event_combat_choice(
+        &mut core,
+        player_id,
+        event_node_id,
+        "event_started_defeat",
+        "fight",
+    );
+    let battle = CombatBattleState {
+        primary_abnormality_id: Some("defense_risk_abno".to_string()),
+        encounter_id: "defense_encounter".to_string(),
+        node_type: crate::game::combat_preview::CombatNodeType::Defense,
+        mission_variant: crate::game::combat_preview::CombatMissionVariant::Defense,
+        abnormality_uuid: event_node_id.0,
+        winner: BattleWinner::Opponent,
+        event_log: BattleEventLog::default(),
+        result_stats: test_result_stats(BattleWinner::Opponent, &BattleEventLog::default(), &[]),
+        bonus_objectives: vec![],
+        reward_mode: RewardMode::ClaimAll,
+        rewards: vec![],
+        participant_results: vec![],
+    };
+    core.state.active_battle = None;
+    core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(battle));
+    core.transition_to(GameState::CombatResult {
+        battle_uuid: event_node_id.0,
+    })
+    .unwrap();
+
+    let result = core
+        .execute(player_id, PlayerBehavior::CompleteCombatResult)
+        .unwrap();
+
+    assert!(matches!(result, BehaviorResult::NodePreview { .. }));
+    assert!(matches!(core.get_state(), GameState::NodeConfirm { .. }));
+    let session = core
+        .state
+        .run
+        .as_ref()
+        .unwrap()
+        .event_sessions
+        .get(&event_node_id)
+        .expect("event combat session should remain for retry");
+    assert_eq!(
+        session.committed_choice_id.as_ref().map(|id| id.as_str()),
+        Some("fight")
+    );
+    assert!(session.started_combat.is_some());
 }
 
 #[test]

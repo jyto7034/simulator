@@ -63,6 +63,8 @@ impl ActionScheduler {
             GameState::InNode { .. } => {
                 vec![
                     ActionKind::CompleteNode,
+                    ActionKind::AdvanceEventScene,
+                    ActionKind::SelectEventChoice,
                     ActionKind::ChooseSupport,
                     ActionKind::RecruitEmployee,
                     ActionKind::RequestEmergencySupplies,

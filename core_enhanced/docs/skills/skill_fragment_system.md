@@ -37,12 +37,15 @@
 보스 연동 파편은 `game_rulebook.md`의 끝없는 탐사 모드 정책 위에서 다음 구조를 권장한다.
 
 1. 끝없는 탐사 모드에서 범용 `BossOmen` 정책에 따라 특정 보스 계열 징조 source가 등장한다.
-2. 징조 source는 독립 노드 카테고리로 고정하지 않고, 전투/지원/상점/보상/이벤트 등 기존 노드나 이벤트 계열 위에 얹을 수 있다.
-3. 플레이어가 징조 source에 진입하면 해당 보스 체인이 확정되고, source가 정의한 효과/비용/위험/도박/진행도가 적용된다.
-4. 같은 보스 계열 source 선택을 반복하면 숨은 조건 또는 보스별 진행도가 누적될 수 있다.
-5. 조건이 완성되면 보스 방이 강제 생성되고 다음 노드 선택지가 잠길 수 있다.
-6. 보스를 클리어하면 해당 보스 스킬 파편을 획득한다.
-7. 획득한 파편은 매우 강력하지만, 전투 중 별도 실패 조건을 동반한다.
+2. 징조 source는 새 node로 추가되지 않고, live RON의 `source_kind`에 맞는 기존 Floor node 위에 덧씌워진다.
+3. 초기 source kind는 `Event`와 `Combat`이다. Event source는 Event node 위에, Combat source는 일반 Combat node 위에 덧씌워진다.
+4. 덧씌워진 노드는 기존 방 위치와 연결 구조를 유지하되, 표시와 source content가 보스 전조 성격으로 바뀐다.
+5. 지원/상점/보상/본부연락 기반 전조는 보스별 특수 기믹이 필요할 때 별도 정책으로 추가한다.
+6. 플레이어가 징조 source를 해결하면 해당 보스 체인이 확정되고, source가 정의한 효과/비용/위험/도박/진행도가 적용된다.
+7. 같은 보스 계열 source 선택을 반복하면 숨은 조건 또는 보스별 진행도가 누적될 수 있다.
+8. 조건이 완성되면 별도 동적 보스 방이 강제 생성되고 다음 노드 선택지가 잠길 수 있다.
+9. 보스를 클리어하면 해당 보스 스킬 파편을 획득한다.
+10. 획득한 파편은 매우 강력하지만, 전투 중 별도 실패 조건을 동반한다.
 
 ## WhiteNight Fragment
 
@@ -50,7 +53,7 @@
 
 `백야` 스킬 파편은 백야를 격리하는 데 성공한 결과로 얻는 특수 파편이다.
 
-최종 보상 파편 id는 placeholder/흔적 파편과 분리한다. `fragment_white_night_trace`는 백야 흔적 또는 임시 콘텐츠에 사용할 수 있지만, 백야 보스 격리 보상은 별도 최종 id를 사용한다. 권장 id는 `fragment_white_night_containment`다.
+최종 보상 파편 id는 placeholder/흔적 파편과 분리한다. 현재 live RON은 백야 보스 격리 보상의 임시 콘텐츠로 `fragment_white_night_trace`를 사용한다. 백야 전용 보스 기믹과 최종 파편 효과가 확정되면 별도 최종 id로 교체한다. 권장 id는 `fragment_white_night_containment`다.
 
 플레이어는 백야의 힘을 파편 형태로 빌려 쓰지만, 발동 중 통제에 실패하면 백야가 격리를 탈출하고 런이 실패한다.
 
@@ -66,11 +69,11 @@
 
 백야 체인은 끝없는 탐사의 범용 `BossOmen` 정책 위에서 작동한다.
 
-백야가 `provisional_boss`로 선정되면 현재 층에 백야 계열 징조 source가 1개 배치될 수 있다. 이 source는 독립 노드 카테고리로 고정하지 않는다. 지원 노드, 이벤트성 노드, 보상/상점 변형, 또는 추후 재도입될 RandomEvent처럼 기존 노드/이벤트 계열 중 하나로 표현할 수 있다.
+백야가 `provisional_boss`로 선정되면 현재 층에 백야 계열 징조 source가 1개 배치될 수 있다. 이 source는 새 노드로 추가되지 않고, BossOmen step의 `source_kind`에 맞는 기존 노드 위에 덧씌워진다. 백야 고해소/거짓 고해 구조는 Event source가 자연스럽지만, 최종 source kind는 live RON의 BossOmenChain step 정의가 결정한다.
 
 이 source는 강제가 아닌 선택 대상이다. 플레이어는 다른 노드로 이동해 백야 징조를 피해갈 수 있다. 다만 플레이어가 백야 징조 source에 진입하고 효과 대상을 선택했다면, 그 결과는 되돌릴 수 없다.
 
-백야 징조 source를 무시하고 다음 층에 진입하면 백야가 다음 provisional boss roll에서 제외되고, 해당 source가 제공하던 모든 효과와 기회는 포기한다.
+첫 백야 징조 source를 무시하고 다음 층에 진입하면 provisional boss는 boss pool에 다시 push 예약되고 체인은 확정되지 않는다. 다음 층에서는 BossOmen 후보를 다시 roll한다. 현재 live data처럼 백야만 유일한 final-boss chain인 경우에는 같은 백야가 다시 나타날 수 있다.
 
 진입 전 명시적 위험 경고는 제공하지 않는다. 맵에는 플레이어가 본 적 없는 `???` 성격의 미지 source로 나타날 수 있으며, 플레이어의 선택에 의해 진입한다.
 
@@ -206,7 +209,8 @@ Combat state:
 
 Inventory/fragment state:
 
-- `fragment_white_night_containment` 같은 별도 최종 id
+- 현재 live placeholder인 `fragment_white_night_trace`
+- 백야 최종 파편 효과 확정 후 교체할 `fragment_white_night_containment` 같은 별도 최종 id
 - 보스 격리 보상으로 지급되었는지 여부
 - 발동 가능 조건
 - 전투 중 실패 조건 metadata

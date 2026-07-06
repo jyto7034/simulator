@@ -35,7 +35,9 @@ impl MapNodeExecutor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::game::map::types::{MapNodeState, SupportNodeMode, SupportNodeType};
+    use crate::game::map::types::{
+        MapNodeState, MapNodeVisibility, MapSlotId, SupportNodeMode, SupportNodeType,
+    };
     use uuid::Uuid;
 
     #[test]
@@ -44,15 +46,17 @@ mod tests {
             id: MapNodeId::new(Uuid::from_u128(77)),
             depth: 2,
             lane: 1,
+            slot_id: MapSlotId::for_grid_position(2, 1),
             kind_id: MapNodeKindId::new("support_choice"),
             category: MapNodeCategory::Support,
             state: MapNodeState::Available,
-            outgoing: vec![],
+            visibility: MapNodeVisibility::Revealed,
             payload: MapNodePayload::Support {
                 support_type: SupportNodeType::Rest,
                 support_mode: SupportNodeMode::LimitedChoice,
                 choices: vec![SupportNodeType::SavePoint, SupportNodeType::Rest],
             },
+            omen: None,
         };
 
         let result = MapNodeExecutor::enter(&node);

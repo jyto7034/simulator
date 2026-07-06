@@ -39,6 +39,7 @@ fn unit_draft(owned_uuid: Uuid, base_uuid: Uuid) -> BattleUnitDraft {
         source: BattleUnitSource::Abnormality { base_uuid },
         threat_class: game_core::game::battle::types::BattleUnitThreatClass::Elite,
         level: Tier::I,
+        stat_scale: Default::default(),
         growth_stacks: GrowthStack::new(),
         equipped_items: vec![],
         equipped_item_enhancements: vec![],
@@ -180,6 +181,8 @@ fn make_abnormality(
         defense,
         magic_resist: 0,
         threat_class: game_core::game::battle::types::BattleUnitThreatClass::Elite,
+        omen_chain_id: None,
+        response_complete_skill_fragment_id: None,
         movement: MovementDef {
             speed_units_per_ms: 3000,
             radius_units: 350_000,
@@ -2251,7 +2254,7 @@ fn ron_added_abnormalities_emit_expected_skill_event_categories_in_battle_smoke(
     for abnormality in &mut abnormalities {
         abnormality.basic_attack.defense_tile_range = Some(broad_defense_tile_range());
     }
-    abnormalities.push(make_abnormality(
+    let mut training_dummy = make_abnormality(
         "skill_test_dummy",
         training_dummy_uuid,
         None,
@@ -2262,7 +2265,13 @@ fn ron_added_abnormalities_emit_expected_skill_event_categories_in_battle_smoke(
         1,
         DeliveryDef::Instant,
         100,
-    ));
+    );
+    training_dummy.response_complete_skill_fragment_id = Some(
+        game_core::game::data::skill_fragment_data::SkillFragmentId::from(
+            "starter_basic_attack_enhancement",
+        ),
+    );
+    abnormalities.push(training_dummy);
 
     let game_data = GameDataBuilder::live_defaults()
         .with_abnormalities(abnormalities)
@@ -2272,7 +2281,9 @@ fn ron_added_abnormalities_emit_expected_skill_event_categories_in_battle_smoke(
         .with_equipment_data(Arc::clone(&base_game_data.equipment_data))
         .with_shop_data(Arc::clone(&base_game_data.shop_data))
         .with_reward_data(Arc::clone(&base_game_data.reward_data))
+        .with_event_data(Arc::clone(&base_game_data.event_data))
         .with_pve_data(Arc::clone(&base_game_data.pve_data))
+        .with_boss_omen_data(Arc::clone(&base_game_data.boss_omen_data))
         .with_skills(SkillDatabase::new(
             base_game_data
                 .skill_data

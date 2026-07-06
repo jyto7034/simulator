@@ -1,3 +1,10 @@
+use crate::game::data::{
+    equipment_data::{EquipmentMaterialCost, EquipmentMaterialType},
+    skill_fragment_data::{
+        SkillFragmentCompatibilityFailureCode, SkillFragmentCompatibilityRequirements,
+    },
+};
+
 use super::*;
 
 #[test]

@@ -15,6 +15,22 @@ pub fn resolve_pve_wave_enemy_data(
     preview_seed: u64,
     wave_index: usize,
 ) -> Vec<PveWaveEnemyData> {
+    resolve_pve_wave_enemy_data_with_budget_multiplier(
+        wave,
+        game_data,
+        preview_seed,
+        wave_index,
+        100,
+    )
+}
+
+pub fn resolve_pve_wave_enemy_data_with_budget_multiplier(
+    wave: &PveWaveData,
+    game_data: &GameDataBase,
+    preview_seed: u64,
+    wave_index: usize,
+    generated_budget_multiplier_percent: u32,
+) -> Vec<PveWaveEnemyData> {
     match &wave.source {
         PveWaveSource::Manual(enemies) => enemies.clone(),
         PveWaveSource::GeneratedCorroded {
@@ -31,9 +47,14 @@ pub fn resolve_pve_wave_enemy_data(
                         wave.id, preset_id
                     )
                 });
+            let scaled_budget = budget_override
+                .unwrap_or(preset.budget)
+                .saturating_mul(generated_budget_multiplier_percent)
+                .saturating_add(99)
+                / 100;
             generate_corroded_wave(
                 preset,
-                *budget_override,
+                Some(scaled_budget.max(1)),
                 *seed_salt,
                 preview_seed,
                 wave_index,
@@ -150,4 +171,116 @@ fn generated_corroded_seed(
     seed = determinism::seed_with_namespace(seed, seed_salt.unwrap_or(0));
     seed = determinism::seed_with_namespace(seed, wave_index as u64);
     determinism::seed_with_namespace(seed, step)
+}
+
+#[cfg(test)]
+mod tests {
+    use std::sync::Arc;
+
+    use super::*;
+    use crate::game::{
+        data::{
+            abnormality_data::{BasicAttackDef, MovementDef, ResonanceDef},
+            corroded_employee_data::{
+                CorrodedEmployeeProfileDatabase, CorrodedEmployeeProfileMetadata,
+                CorrodedEmployeeProfileRole,
+            },
+            corroded_wave_data::{CorrodedWaveCountRange, CorrodedWavePresetDatabase},
+            GameDataBuilder,
+        },
+        enums::Tier,
+    };
+    use uuid::Uuid;
+
+    fn test_profile() -> CorrodedEmployeeProfileMetadata {
+        CorrodedEmployeeProfileMetadata {
+            id: "corroded_guard".to_string(),
+            uuid: Uuid::from_u128(0xC0A),
+            name: "Corroded Guard".to_string(),
+            profile_role: CorrodedEmployeeProfileRole::Special,
+            basic_attack_range_preset: None,
+            max_health: 10,
+            attack: 1,
+            defense: 0,
+            magic_resist: 0,
+            movement: MovementDef::default(),
+            basic_attack: BasicAttackDef::default(),
+            resonance: ResonanceDef::default(),
+            skill_id: None,
+        }
+    }
+
+    fn test_game_data() -> GameDataBase {
+        GameDataBuilder::empty()
+            .with_corroded_employee_data(Arc::new(CorrodedEmployeeProfileDatabase::new(vec![
+                test_profile(),
+            ])))
+            .with_corroded_wave_presets(CorrodedWavePresetDatabase::new(vec![CorrodedWavePreset {
+                id: "basic".to_string(),
+                pressure: "test".to_string(),
+                preferred_node_types: vec![],
+                preferred_risk_levels: vec![],
+                budget: 1,
+                count_range: CorrodedWaveCountRange { min: 10, max: 10 },
+                role_mix: vec![CorrodedWaveRoleWeight {
+                    profile_id: "corroded_guard".to_string(),
+                    weight: 1,
+                    cost: 1,
+                    min_count: 0,
+                    max_count: None,
+                    tier: Tier::I,
+                }],
+            }]))
+            .build()
+    }
+
+    fn total_count(enemies: &[PveWaveEnemyData]) -> u32 {
+        enemies.iter().map(PveWaveEnemyData::count).sum()
+    }
+
+    #[test]
+    fn generated_wave_budget_scaling_uses_ceiling_and_minimum_one() {
+        let game_data = test_game_data();
+        let wave = PveWaveData {
+            id: "generated".to_string(),
+            time_ms: 0,
+            spawn_zone_ids: vec![],
+            route_id: None,
+            required_for_victory: true,
+            source: PveWaveSource::GeneratedCorroded {
+                preset_id: "basic".to_string(),
+                budget_override: None,
+                seed_salt: None,
+            },
+        };
+
+        let scaled_up =
+            resolve_pve_wave_enemy_data_with_budget_multiplier(&wave, &game_data, 123, 0, 150);
+        assert_eq!(total_count(&scaled_up), 2);
+
+        let scaled_down =
+            resolve_pve_wave_enemy_data_with_budget_multiplier(&wave, &game_data, 123, 0, 1);
+        assert_eq!(total_count(&scaled_down), 1);
+    }
+
+    #[test]
+    fn manual_wave_counts_are_not_scaled_by_floor_budget_multiplier() {
+        let game_data = test_game_data();
+        let wave = PveWaveData {
+            id: "manual".to_string(),
+            time_ms: 0,
+            spawn_zone_ids: vec![],
+            route_id: None,
+            required_for_victory: true,
+            source: PveWaveSource::Manual(vec![PveWaveEnemyData::CorrodedEmployee {
+                profile_id: "corroded_guard".to_string(),
+                tier: Tier::I,
+                count: 2,
+            }]),
+        };
+
+        let enemies =
+            resolve_pve_wave_enemy_data_with_budget_multiplier(&wave, &game_data, 123, 0, 500);
+        assert_eq!(total_count(&enemies), 2);
+    }
 }

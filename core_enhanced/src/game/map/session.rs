@@ -24,7 +24,9 @@ impl From<&MapNode> for NodeSession {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::game::map::types::{MapNodeState, SupportNodeMode, SupportNodeType};
+    use crate::game::map::types::{
+        MapNodeState, MapNodeVisibility, MapSlotId, SupportNodeMode, SupportNodeType,
+    };
     use uuid::Uuid;
 
     fn support_node() -> MapNode {
@@ -32,15 +34,17 @@ mod tests {
             id: MapNodeId::new(Uuid::from_u128(42)),
             depth: 1,
             lane: 2,
+            slot_id: MapSlotId::for_grid_position(1, 2),
             kind_id: MapNodeKindId::new("support_rest"),
             category: MapNodeCategory::Support,
             state: MapNodeState::Available,
-            outgoing: vec![],
+            visibility: MapNodeVisibility::Revealed,
             payload: MapNodePayload::Support {
                 support_type: SupportNodeType::Rest,
                 support_mode: SupportNodeMode::Known,
                 choices: vec![],
             },
+            omen: None,
         }
     }
 

@@ -416,13 +416,6 @@ impl EventLogValidator {
         }
     }
 
-    pub fn with_live_buff_data(config: EventLogValidatorConfig) -> Self {
-        Self {
-            config,
-            buff_data: Arc::new(BuffDatabase::live_default()),
-        }
-    }
-
     pub fn with_buff_data(config: EventLogValidatorConfig, buff_data: Arc<BuffDatabase>) -> Self {
         Self { config, buff_data }
     }

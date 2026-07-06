@@ -49,7 +49,7 @@
 - 현재 live RON의 기본 원거리 예시는 활, 총, 스태프다.
 - 도끼, 석궁, 샷건, 유탄 계열은 미래 후보이며 현재 기본 장비/파편 설계 후보로 취급하지 않는다.
 - 무기 아키타입은 기본 공격 타입, 사거리, 공격 범위, 공중 공격 가능 여부, 기본 `targeting_profile`을 제공한다.
-- 초기 타겟팅 프로필은 `DefaultForward`, `AirFirst`, `LowDefenseFirst`, `LowMagicResistFirst`, `SplashClusterFirst`로 시작한다.
+- 초기 타겟팅 프로필은 `DefaultForward`, `AirFirst`, `LowDefenseFirst`, `LowMagicResistFirst`로 시작한다.
 
 초기 무기/타겟팅 매핑:
 

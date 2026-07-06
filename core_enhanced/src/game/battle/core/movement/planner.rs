@@ -65,14 +65,8 @@ impl BattleCore {
 
     fn fixed_defense_goal(&self, unit_id: UnitInstanceId) -> Option<MovementGoal> {
         let unit = self.units.get(&unit_id)?;
-        let target_id = self
-            .first_blocked_enemy(unit_id)
-            .or_else(|| self.closest_enemy_in_attack_range(unit_id))?;
-        Some(MovementGoal::AttackUnit {
-            target_id,
-            desired_range: unit.basic_attack.range_units.max(0.0),
-            approach_point: None,
-        })
+        let target_id = self.select_basic_attack_target(unit_id, unit.current_target, None)?;
+        Some(MovementGoal::AttackUnit { target_id })
     }
 
     fn path_along_cells_goal(
@@ -93,38 +87,18 @@ impl BattleCore {
         }
         if unit.is_airborne() {
             if let Some(target_id) = self.airborne_enemy_basic_attack_target_in_range(unit_id) {
-                return Some(MovementGoal::AttackUnit {
-                    target_id,
-                    desired_range: unit.basic_attack.range_units.max(0.0),
-                    approach_point: None,
-                });
+                return Some(MovementGoal::AttackUnit { target_id });
             }
         }
 
         if self.is_fixed_defense_route_enemy(unit_id) {
-            if unit.basic_attack.range_role
-                == crate::game::data::equipment_data::WeaponRangeRole::Ranged
+            if let Some(target_id) =
+                self.select_basic_attack_target(unit_id, unit.current_target, None)
             {
-                if let Some(target_id) = self.choose_attack_target_in_range(unit_id) {
-                    return Some(MovementGoal::AttackUnit {
-                        target_id,
-                        desired_range: unit.basic_attack.range_units.max(0.0),
-                        approach_point: None,
-                    });
-                }
-            } else if let Some(target_id) = self.fixed_defense_route_end_target_for_enemy(unit_id) {
-                return Some(MovementGoal::AttackUnit {
-                    target_id,
-                    desired_range: unit.basic_attack.range_units.max(0.0),
-                    approach_point: None,
-                });
+                return Some(MovementGoal::AttackUnit { target_id });
             }
-        } else if let Some(target_id) = self.closest_enemy_in_attack_range(unit_id) {
-            return Some(MovementGoal::AttackUnit {
-                target_id,
-                desired_range: unit.basic_attack.range_units.max(0.0),
-                approach_point: None,
-            });
+        } else if let Some(target_id) = self.choose_attack_target_in_range(unit_id) {
+            return Some(MovementGoal::AttackUnit { target_id });
         }
 
         let target = next_cell_path_target(unit.body.position, cells, 0.25)?;
@@ -132,26 +106,6 @@ impl BattleCore {
             point: target,
             stop_radius: 0.1,
         })
-    }
-
-    fn closest_enemy_in_attack_range(&self, unit_id: UnitInstanceId) -> Option<UnitInstanceId> {
-        let unit = self.units.get(&unit_id)?;
-        let desired_range = unit.basic_attack.range_units.max(0.0);
-        self.units
-            .values()
-            .filter(|candidate| {
-                candidate.is_active()
-                    && candidate.owner != unit.owner
-                    && unit.body.can_reach(&candidate.body, desired_range)
-            })
-            .min_by(|a, b| {
-                unit.body
-                    .position
-                    .distance_squared(a.body.position)
-                    .total_cmp(&unit.body.position.distance_squared(b.body.position))
-                    .then_with(|| a.instance_id.as_bytes().cmp(b.instance_id.as_bytes()))
-            })
-            .map(|target| target.instance_id)
     }
 }
 
@@ -174,7 +128,7 @@ mod tests {
             event_log::BattleLogEvent,
             ids::UnitInstanceId,
             scenario::{BattleScenario, EnemyMovementPlan, PlayerMovementPlan, TacticalPlan},
-            tile_range::FacingDirection,
+            tile_range::{FacingDirection, TileRangePattern},
             types::MobilityKind,
         },
         data::{abnormality_data::BasicAttackDef, GameDataBase, GameDataBuilder},
@@ -312,11 +266,7 @@ mod tests {
 
         assert!(matches!(
             goals.get(&player_id),
-            Some(MovementGoal::AttackUnit {
-                target_id,
-                approach_point: None,
-                ..
-            }) if *target_id == enemy_id
+            Some(MovementGoal::AttackUnit { target_id }) if *target_id == enemy_id
         ));
     }
 
@@ -338,6 +288,32 @@ mod tests {
         assert!(
             !goals.contains_key(&player_id),
             "fixed defense must preserve deployment instead of chasing"
+        );
+    }
+
+    #[test]
+    fn fixed_defense_player_stop_goal_uses_tile_range_not_range_units() {
+        let mut core = core_with_player_plan(PlayerMovementPlan::FixedDefense);
+        let player_id = UnitInstanceId::from(Uuid::from_u128(1));
+        let enemy_id = UnitInstanceId::from(Uuid::from_u128(2));
+        let mut player = runtime_unit(1, Side::Player, WorldVec2::new(1.5, 1.5), None);
+        player.facing_direction = Some(FacingDirection::Right);
+        player.basic_attack.range_units = 99.0;
+        player.basic_attack.defense_tile_range = Some(TileRangePattern {
+            include_anchor_tile: false,
+            rows: vec![".X.".to_string(), ".@.".to_string(), "...".to_string()],
+        });
+        core.units.insert(player_id, player);
+        core.units.insert(
+            enemy_id,
+            runtime_unit(2, Side::Opponent, WorldVec2::new(1.5, 0.5), None),
+        );
+
+        let goals = core.build_continuous_attack_goals();
+
+        assert!(
+            !goals.contains_key(&player_id),
+            "large range_units must not create a basic-attack stop goal outside tile range"
         );
     }
 
@@ -449,8 +425,6 @@ mod tests {
             goals.get(&enemy_id),
             Some(MovementGoal::AttackUnit {
                 target_id: actual_target,
-                approach_point: None,
-                ..
             }) if *actual_target == target_id
         ));
     }
@@ -465,6 +439,31 @@ mod tests {
         core.units.insert(
             UnitInstanceId::from(Uuid::from_u128(2)),
             runtime_unit(2, Side::Player, WorldVec2::new(3.0, 1.0), None),
+        );
+
+        let goals = core.build_continuous_attack_goals();
+
+        assert!(matches!(
+            goals.get(&enemy_id),
+            Some(MovementGoal::MoveToPoint { .. })
+        ));
+    }
+
+    #[test]
+    fn airborne_route_enemy_continues_route_when_only_range_units_matches() {
+        let mut core = fixed_defense_core_with_enemy_exit();
+        let enemy_id = UnitInstanceId::from(Uuid::from_u128(1));
+        let mut enemy = airborne_enemy(1, WorldVec2::new(1.5, 1.5));
+        enemy.basic_attack.range_units = 99.0;
+        enemy.facing_direction = Some(FacingDirection::Right);
+        enemy.basic_attack.defense_tile_range = Some(TileRangePattern {
+            include_anchor_tile: false,
+            rows: vec![".X.".to_string(), ".@.".to_string(), "...".to_string()],
+        });
+        core.units.insert(enemy_id, enemy);
+        core.units.insert(
+            UnitInstanceId::from(Uuid::from_u128(2)),
+            runtime_unit(2, Side::Player, WorldVec2::new(1.5, 0.5), None),
         );
 
         let goals = core.build_continuous_attack_goals();
@@ -578,11 +577,7 @@ mod tests {
 
         assert!(matches!(
             goals.get(&blocker_id),
-            Some(MovementGoal::AttackUnit {
-                target_id,
-                approach_point: None,
-                ..
-            }) if *target_id == enemy_id
+            Some(MovementGoal::AttackUnit { target_id }) if *target_id == enemy_id
         ));
         assert!(
             !goals.contains_key(&enemy_id),
@@ -897,11 +892,7 @@ mod tests {
 
         assert!(matches!(
             goals.get(&enemy_id),
-            Some(MovementGoal::AttackUnit {
-                target_id,
-                approach_point: None,
-                ..
-            }) if *target_id == object_id
+            Some(MovementGoal::AttackUnit { target_id }) if *target_id == object_id
         ));
         assert_eq!(
             core.select_basic_attack_target(enemy_id, None, None),
@@ -928,11 +919,7 @@ mod tests {
 
         assert!(matches!(
             goals.get(&enemy_id),
-            Some(MovementGoal::AttackUnit {
-                target_id,
-                approach_point: None,
-                ..
-            }) if *target_id == object_id
+            Some(MovementGoal::AttackUnit { target_id }) if *target_id == object_id
         ));
         assert_eq!(
             core.select_basic_attack_target(enemy_id, None, None),

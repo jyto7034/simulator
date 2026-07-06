@@ -6,8 +6,9 @@ use serde::{Deserialize, Serialize};
 use crate::game::{
     determinism,
     map::types::{
-        MapNode, MapNodeCategory, MapNodeDefinition, MapNodeDefinitionDatabase, MapNodeId,
-        MapNodeKindId, MapNodePayload, MapNodeState, RunMap,
+        MapEdgeDirection, MapEdgeDto, MapNode, MapNodeCategory, MapNodeDefinition,
+        MapNodeDefinitionDatabase, MapNodeId, MapNodeKindId, MapNodePayload, MapNodeState,
+        MapNodeVisibility, MapSlotId, MapTemplateId, RunMap, DEFAULT_MAP_TEMPLATE_ID,
     },
 };
 
@@ -16,6 +17,8 @@ pub struct MapGenerationConfig {
     pub depth_count: u8,
     pub min_width: u8,
     pub max_width: u8,
+    pub terminal_category: MapNodeCategory,
+    pub pre_terminal_kind_id: Option<&'static str>,
 }
 
 impl Default for MapGenerationConfig {
@@ -24,6 +27,8 @@ impl Default for MapGenerationConfig {
             depth_count: 8,
             min_width: 3,
             max_width: 5,
+            terminal_category: MapNodeCategory::Boss,
+            pre_terminal_kind_id: None,
         }
     }
 }
@@ -58,6 +63,11 @@ impl MapGenerationPolicyData {
         ron::de::from_str(input).map_err(|err| err.to_string())
     }
 
+    /// Load the embedded map generation policy.
+    ///
+    /// This policy is owned by the map generator domain. It is intentionally
+    /// kept outside `GameDataBase` so map topology generation does not depend
+    /// on the full gameplay data bundle.
     pub fn builtin() -> Self {
         let policy = Self::from_ron_str(include_str!(
             "../../../../game_resources/data/map/generation_policy.ron"
@@ -95,7 +105,7 @@ fn validate_category_weights(name: &str, weights: &[MapCategoryWeight]) -> Resul
     for entry in weights {
         if matches!(
             entry.category,
-            MapNodeCategory::Start | MapNodeCategory::Boss
+            MapNodeCategory::Start | MapNodeCategory::Boss | MapNodeCategory::Gate
         ) {
             return Err(format!(
                 "{name} must not route generated playable rows to {:?}",
@@ -120,7 +130,10 @@ fn validate_safe_categories(name: &str, categories: &[MapNodeCategory]) -> Resul
     for category in categories {
         if matches!(
             category,
-            MapNodeCategory::Start | MapNodeCategory::Boss | MapNodeCategory::Combat
+            MapNodeCategory::Start
+                | MapNodeCategory::Boss
+                | MapNodeCategory::Gate
+                | MapNodeCategory::Combat
         ) {
             return Err(format!(
                 "{name} must only contain non-combat replacement categories, found {:?}",
@@ -169,7 +182,7 @@ impl MapGenerator {
         const MAP_NS: u64 = 0x524D_4150; // "RMAP"
         let seed = determinism::seed_with_namespace(run_seed, MAP_NS);
         let mut rng = StdRng::seed_from_u64(seed);
-        let boss_depth = config.depth_count;
+        let terminal_depth = config.depth_count;
         let mut rows: BTreeMap<u8, BTreeMap<u8, MapNodeId>> = BTreeMap::new();
         let mut nodes = Vec::new();
         let mut node_index = 0_u64;
@@ -180,15 +193,17 @@ impl MapGenerator {
             id: start_id,
             depth: 0,
             lane: config.max_width / 2,
+            slot_id: MapSlotId::for_grid_position(0, config.max_width / 2),
             kind_id: MapNodeKindId::new("start"),
             category: MapNodeCategory::Start,
             state: MapNodeState::Completed,
-            outgoing: Vec::new(),
+            visibility: MapNodeVisibility::Revealed,
             payload: MapNodePayload::None,
+            omen: None,
         });
 
-        let path_lanes = Self::generate_path_lanes(config, boss_depth, &mut rng);
-        for depth in 1..boss_depth {
+        let path_lanes = Self::generate_path_lanes(config, terminal_depth, &mut rng);
+        for depth in 1..terminal_depth {
             let mut lanes = path_lanes
                 .iter()
                 .filter_map(|path| path.get(depth as usize - 1).copied())
@@ -198,28 +213,35 @@ impl MapGenerator {
             for lane in lanes {
                 let id = MapNodeId::new(determinism::uuid_v4_from_seed(seed, MAP_NS, node_index));
                 node_index += 1;
-                let definition =
-                    Self::roll_node_definition(depth, boss_depth, definitions, policy, &mut rng);
+                let definition = Self::roll_node_definition(
+                    depth,
+                    terminal_depth,
+                    definitions,
+                    policy,
+                    &mut rng,
+                );
                 rows.entry(depth).or_default().insert(lane, id);
                 nodes.push(MapNode {
                     id,
                     depth,
                     lane,
+                    slot_id: MapSlotId::for_grid_position(depth, lane),
                     kind_id: definition.kind_id.clone(),
                     category: definition.category,
                     state: if depth == 1 {
                         MapNodeState::Available
                     } else {
-                        MapNodeState::Hidden
+                        MapNodeState::Unavailable
                     },
-                    outgoing: Vec::new(),
+                    visibility: MapNodeVisibility::Revealed,
                     payload: definition.payload.clone(),
+                    omen: None,
                 });
             }
 
             Self::repair_row_distribution(
                 depth,
-                boss_depth,
+                terminal_depth,
                 &mut nodes,
                 definitions,
                 policy,
@@ -227,43 +249,57 @@ impl MapGenerator {
             );
         }
 
-        let boss_id = MapNodeId::new(determinism::uuid_v4_from_seed(seed, MAP_NS, node_index));
-        let boss_definition = Self::roll_boss_definition(definitions, &mut rng);
-        rows.entry(boss_depth)
+        Self::ensure_event_node(&mut nodes, terminal_depth, definitions, &mut rng);
+        if let Some(kind_id) = config.pre_terminal_kind_id {
+            Self::force_pre_terminal_definition(&mut nodes, terminal_depth, definitions, kind_id);
+        }
+
+        let terminal_id = MapNodeId::new(determinism::uuid_v4_from_seed(seed, MAP_NS, node_index));
+        let terminal_definition =
+            Self::roll_terminal_definition(definitions, config.terminal_category, &mut rng);
+        rows.entry(terminal_depth)
             .or_default()
-            .insert(config.max_width / 2, boss_id);
+            .insert(config.max_width / 2, terminal_id);
         nodes.push(MapNode {
-            id: boss_id,
-            depth: boss_depth,
+            id: terminal_id,
+            depth: terminal_depth,
             lane: config.max_width / 2,
-            kind_id: boss_definition.kind_id.clone(),
-            category: boss_definition.category,
-            state: MapNodeState::Hidden,
-            outgoing: Vec::new(),
-            payload: boss_definition.payload.clone(),
+            slot_id: MapSlotId::for_grid_position(terminal_depth, config.max_width / 2),
+            kind_id: terminal_definition.kind_id.clone(),
+            category: terminal_definition.category,
+            state: MapNodeState::Unavailable,
+            visibility: MapNodeVisibility::Revealed,
+            payload: terminal_definition.payload.clone(),
+            omen: None,
         });
 
         let first_row_ids = rows
             .get(&1)
             .map(|row| row.values().copied().collect::<Vec<_>>())
             .unwrap_or_default();
-        Self::set_outgoing(&mut nodes, start_id, first_row_ids.clone());
+        let mut edges = Vec::new();
+        Self::push_edges(&mut edges, start_id, first_row_ids.clone());
 
-        for depth in 1..boss_depth {
+        for depth in 1..terminal_depth {
             let Some(from_row) = rows.get(&depth) else {
                 continue;
             };
             let Some(to_row) = rows.get(&(depth + 1)) else {
                 continue;
             };
-            Self::connect_rows(&mut nodes, from_row, to_row, &mut rng);
+            Self::connect_rows(&mut edges, from_row, to_row, &mut rng);
         }
 
-        RunMap {
+        let map = RunMap {
+            map_template_id: MapTemplateId::new(DEFAULT_MAP_TEMPLATE_ID),
+            edges,
             nodes,
             start_node_ids: first_row_ids,
-            boss_node_id: boss_id,
-        }
+            terminal_node_id: terminal_id,
+        };
+        map.validate_facility_template_contract()
+            .expect("generated map must satisfy facility template contract");
+        map
     }
 
     fn generate_path_lanes(
@@ -301,7 +337,7 @@ impl MapGenerator {
     }
 
     fn connect_rows(
-        nodes: &mut [MapNode],
+        edges: &mut Vec<MapEdgeDto>,
         from_row: &BTreeMap<u8, MapNodeId>,
         to_row: &BTreeMap<u8, MapNodeId>,
         rng: &mut StdRng,
@@ -322,13 +358,13 @@ impl MapGenerator {
             } else {
                 2
             };
-            let outgoing = candidates
+            let targets = candidates
                 .into_iter()
                 .take(target_count)
                 .map(|candidate| candidate.3)
                 .collect::<Vec<_>>();
-            incoming.extend(outgoing.iter().map(|id| id.0.as_u128()));
-            Self::set_outgoing(nodes, *from_id, outgoing);
+            incoming.extend(targets.iter().map(|id| id.0.as_u128()));
+            Self::push_edges(edges, *from_id, targets);
         }
 
         for (to_lane, to_id) in to_row {
@@ -339,25 +375,36 @@ impl MapGenerator {
                 .iter()
                 .min_by_key(|(from_lane, _)| from_lane.abs_diff(*to_lane))
             {
-                Self::push_outgoing(nodes, *from_id, *to_id);
+                Self::push_edge(edges, *from_id, *to_id);
             }
         }
     }
 
-    fn set_outgoing(nodes: &mut [MapNode], node_id: MapNodeId, mut outgoing: Vec<MapNodeId>) {
-        outgoing.sort_by_key(|id| id.0.as_u128());
-        outgoing.dedup();
-        if let Some(node) = nodes.iter_mut().find(|node| node.id == node_id) {
-            node.outgoing = outgoing;
+    fn push_edges(
+        edges: &mut Vec<MapEdgeDto>,
+        from_node_id: MapNodeId,
+        mut targets: Vec<MapNodeId>,
+    ) {
+        targets.sort_by_key(|id| id.0.as_u128());
+        targets.dedup();
+        for target_id in targets {
+            Self::push_edge(edges, from_node_id, target_id);
         }
     }
 
-    fn push_outgoing(nodes: &mut [MapNode], node_id: MapNodeId, target_id: MapNodeId) {
-        if let Some(node) = nodes.iter_mut().find(|node| node.id == node_id) {
-            node.outgoing.push(target_id);
-            node.outgoing.sort_by_key(|id| id.0.as_u128());
-            node.outgoing.dedup();
+    fn push_edge(edges: &mut Vec<MapEdgeDto>, from_node_id: MapNodeId, to_node_id: MapNodeId) {
+        if edges
+            .iter()
+            .any(|edge| edge.from_node_id == from_node_id && edge.to_node_id == to_node_id)
+        {
+            return;
         }
+        edges.push(MapEdgeDto {
+            from_node_id,
+            to_node_id,
+            direction: MapEdgeDirection::Bidirectional,
+        });
+        edges.sort_by_key(|edge| (edge.from_node_id.0.as_u128(), edge.to_node_id.0.as_u128()));
     }
 
     fn roll_node_definition<'a>(
@@ -486,6 +533,75 @@ impl MapGenerator {
         }
     }
 
+    fn ensure_event_node(
+        nodes: &mut [MapNode],
+        terminal_depth: u8,
+        definitions: &MapNodeDefinitionDatabase,
+        rng: &mut StdRng,
+    ) {
+        if nodes
+            .iter()
+            .any(|node| node.category == MapNodeCategory::Event)
+        {
+            return;
+        }
+
+        let event_definition = Self::roll_weighted_definition(
+            definitions.weighted_candidates(1, Some(MapNodeCategory::Event), false),
+            rng,
+        )
+        .expect("map node definitions must include weighted Event entries");
+
+        let Some(index) = nodes
+            .iter()
+            .enumerate()
+            .filter(|(_, node)| node.depth > 0 && node.depth < terminal_depth)
+            .filter(|(_, node)| {
+                !matches!(
+                    node.category,
+                    MapNodeCategory::Start | MapNodeCategory::Boss | MapNodeCategory::Gate
+                )
+            })
+            .min_by_key(|(_, node)| (node.depth, node.lane))
+            .map(|(index, _)| index)
+        else {
+            panic!("generated map has no eligible node to guarantee an Event node");
+        };
+
+        nodes[index].kind_id = event_definition.kind_id.clone();
+        nodes[index].category = event_definition.category;
+        nodes[index].payload = event_definition.payload.clone();
+    }
+
+    fn force_pre_terminal_definition(
+        nodes: &mut [MapNode],
+        terminal_depth: u8,
+        definitions: &MapNodeDefinitionDatabase,
+        kind_id: &str,
+    ) {
+        let definition = definitions
+            .nodes
+            .iter()
+            .find(|definition| definition.kind_id.as_str() == kind_id)
+            .unwrap_or_else(|| {
+                panic!("map node definitions must include pre-terminal kind {kind_id}")
+            });
+        let mut changed = 0_usize;
+        for node in nodes
+            .iter_mut()
+            .filter(|node| node.depth + 1 == terminal_depth)
+        {
+            node.kind_id = definition.kind_id.clone();
+            node.category = definition.category;
+            node.payload = definition.payload.clone();
+            changed += 1;
+        }
+        assert!(
+            changed > 0,
+            "generated map must include at least one pre-terminal node"
+        );
+    }
+
     fn roll_safe_definition<'a>(
         depth: u8,
         boss_depth: u8,
@@ -505,13 +621,22 @@ impl MapGenerator {
         Self::roll_weighted_definition(candidates, rng)
     }
 
-    fn roll_boss_definition<'a>(
+    fn roll_terminal_definition<'a>(
         definitions: &'a MapNodeDefinitionDatabase,
+        terminal_category: MapNodeCategory,
         rng: &mut StdRng,
     ) -> &'a MapNodeDefinition {
-        let boss_candidates = definitions.boss_candidates();
-        Self::roll_weighted_definition(boss_candidates, rng)
-            .expect("map node definitions must include at least one boss entry")
+        let candidates = definitions.category_candidates(terminal_category);
+        if terminal_category == MapNodeCategory::Boss {
+            return Self::roll_weighted_definition(candidates, rng)
+                .expect("map node definitions must include at least one boss entry");
+        }
+        assert!(
+            !candidates.is_empty(),
+            "map node definitions must include at least one terminal category entry"
+        );
+        let index = rng.gen_range(0..candidates.len());
+        candidates[index]
     }
 
     fn roll_weighted_definition<'a>(
@@ -573,13 +698,44 @@ mod tests {
     }
 
     #[test]
-    fn generated_map_has_single_boss_at_last_depth() {
+    fn generated_map_has_single_terminal_boss_at_last_depth() {
         let map = MapGenerator::generate(42, MapGenerationConfig::default());
-        let boss = map.node(map.boss_node_id).expect("boss node exists");
+        let boss = map
+            .node(map.terminal_node_id)
+            .expect("terminal node exists");
         assert_eq!(boss.category, MapNodeCategory::Boss);
         assert_eq!(boss.kind_id.as_str(), "boss_abnormality");
         assert_eq!(boss.depth, MapGenerationConfig::default().depth_count);
-        assert!(boss.outgoing.is_empty());
+        assert!(!map.edges.iter().any(|edge| edge.from_node_id == boss.id));
+    }
+
+    #[test]
+    fn generated_gate_map_can_force_pre_terminal_elite_row() {
+        let config = MapGenerationConfig {
+            terminal_category: MapNodeCategory::Gate,
+            pre_terminal_kind_id: Some("combat_elite"),
+            ..MapGenerationConfig::default()
+        };
+        let map = MapGenerator::generate(42, config);
+        let gate = map
+            .node(map.terminal_node_id)
+            .expect("terminal node exists");
+        assert_eq!(gate.category, MapNodeCategory::Gate);
+
+        let parent_ids = map
+            .edges
+            .iter()
+            .filter_map(|edge| {
+                (edge.to_node_id == map.terminal_node_id).then_some(edge.from_node_id)
+            })
+            .collect::<Vec<_>>();
+        assert!(!parent_ids.is_empty(), "gate must have incoming parents");
+        for parent_id in parent_ids {
+            let parent = map.node(parent_id).expect("gate parent exists");
+            assert_eq!(parent.depth + 1, gate.depth);
+            assert_eq!(parent.category, MapNodeCategory::Combat);
+            assert_eq!(parent.kind_id.as_str(), "combat_elite");
+        }
     }
 
     #[test]
@@ -593,9 +749,15 @@ mod tests {
 
         assert_eq!(start.depth, 0);
         assert_eq!(start.state, MapNodeState::Completed);
-        assert_eq!(start.outgoing.len(), map.start_node_ids.len());
+        let start_targets = map
+            .edges
+            .iter()
+            .filter(|edge| edge.from_node_id == start.id)
+            .map(|edge| edge.to_node_id)
+            .collect::<Vec<_>>();
+        assert_eq!(start_targets.len(), map.start_node_ids.len());
         assert!(map.start_node_ids.iter().all(|node_id| {
-            start.outgoing.contains(node_id)
+            start_targets.contains(node_id)
                 && map
                     .node(*node_id)
                     .is_some_and(|node| node.depth == 1 && node.state == MapNodeState::Available)
@@ -623,6 +785,19 @@ mod tests {
             assert!(
                 combat_count <= (row.len() / policy.row_repair.max_combat_per_row_divisor).max(1),
                 "depth {depth} has too many combat nodes"
+            );
+        }
+    }
+
+    #[test]
+    fn generated_map_always_contains_an_event_node() {
+        for seed in [0, 1, 2, 42, 99, 1234] {
+            let map = MapGenerator::generate(seed, MapGenerationConfig::default());
+            assert!(
+                map.nodes
+                    .iter()
+                    .any(|node| node.category == MapNodeCategory::Event),
+                "generated map for seed {seed} must include at least one Event node"
             );
         }
     }
