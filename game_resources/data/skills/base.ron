@@ -10,148 +10,19 @@ SkillDatabase(
         ),
     ],
     skills: [
-        SkillDef(
-            id: "scorched_explosion",
-            name: "Scorched Explosion",
-            kind: Targeted,
-            focus_time_ms: 300,
-            steps: [
-                SkillStepDef(
-                    id: "explode",
-                    delay_ms: 0,
-                    range_units: 2,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: Nearest),
-                    delivery: Instant,
-                    effects: [
-                        Damage(amount: 50, damage_type: Magic),
-                    ],
-                ),
-            ],
-        ),
-        SkillDef(
-            id: "plague_mass_heal",
-            name: "Plague Mass Heal",
-            kind: Untargeted,
-            focus_time_ms: 500,
-            steps: [
-                SkillStepDef(
-                    id: "mass_heal",
-                    delay_ms: 0,
-                    range_units: 3,
-                    defense_tile_range_preset: Some("front_3x2_include_anchor"),
-                    target: SelfUnit,
-                    delivery: TileArea(area: (
-                        anchor: CastTarget,
-                        hit_targets: Allies,
-                        include_caster: true,
-                    )),
-                    effects: [
-                        Heal(amount: 40),
-                    ],
-                ),
-            ],
-        ),
-        SkillDef(
-            id: "red_shoes_berserk",
-            name: "Red Shoes Berserk",
-            kind: Targeted,
-            focus_time_ms: 200,
-            steps: [
-                SkillStepDef(
-                    id: "berserk",
-                    delay_ms: 0,
-                    range_units: 2,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: Nearest),
-                    delivery: Instant,
-                    effects: [
-                        ExtraAttack(count: 2),
-                    ],
-                ),
-            ],
-        ),
-        SkillDef(
-            id: "fragment_universe_nova",
-            name: "Fragment Nova",
-            kind: Untargeted,
-            focus_time_ms: 600,
-            steps: [
-                SkillStepDef(
-                    id: "nova",
-                    delay_ms: 0,
-                    range_units: 2,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: Nearest),
-                    delivery: TileArea(area: (
-                        anchor: CastTarget,
-                        hit_targets: Enemies,
-                    )),
-                    effects: [
-                        Damage(amount: 35, damage_type: Magic),
-                    ],
-                ),
-            ],
-        ),
-        SkillDef(
-            id: "spider_bud_poison_stack",
-            name: "Poison Stack",
-            kind: Targeted,
-            focus_time_ms: 250,
-            steps: [
-                SkillStepDef(
-                    id: "poison_apply",
-                    delay_ms: 0,
-                    range_units: 2,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: Nearest),
-                    delivery: Instant,
-                    effects: [
-                        ApplyBuff(buff_id: "poison", duration_ms: 5000),
-                    ],
-                ),
-            ],
-        ),
-        SkillDef(
-            id: "fairy_festival_blessing",
-            name: "Fairy Blessing",
-            kind: Untargeted,
-            focus_time_ms: 400,
-            steps: [
-                SkillStepDef(
-                    id: "fairy_bless",
-                    delay_ms: 0,
-                    range_units: 3,
-                    defense_tile_range_preset: Some("front_3x2_include_anchor"),
-                    target: SelfUnit,
-                    delivery: TileArea(area: (
-                        anchor: CastTarget,
-                        hit_targets: Allies,
-                        include_caster: true,
-                    )),
-                    effects: [
-                        Heal(amount: 20),
-                        ModifyStats(
-                            modifier: (
-                                stat: Attack,
-                                kind: Percent,
-                                value: 15,
-                            ),
-                        ),
-                    ],
-                ),
-            ],
-        ),
-        SkillDef(
+                                                SkillDef(
             id: "unknown_distortion_strike",
             name: "Unknown Distortion Strike",
             kind: Targeted,
             focus_time_ms: 350,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: Nearest),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "strike",
                     delay_ms: 0,
-                    range_units: 2,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
                     delivery: Instant,
@@ -161,219 +32,19 @@ SkillDatabase(
                 ),
             ],
         ),
-        SkillDef(
-            id: "one_sin_penitence",
-            name: "Penitence",
-            kind: Targeted,
-            focus_time_ms: 320,
-            steps: [
-                SkillStepDef(
-                    id: "penitence_judgement",
-                    delay_ms: 0,
-                    range_units: 4,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: LowestHealthEnemy),
-                    delivery: Projectile(speed_units_per_ms: 6000),
-                    effects: [
-                        Damage(amount: 38, damage_type: Magic),
-                    ],
-                    presentation: (
-                        cast_state: Some("Cast"),
-                        projectile_vfx_id: Some("one_sin_penitence_judgement"),
-                        impact_vfx_id: Some("one_sin_penitence_judgement_hit"),
-                        target_anchor: Some("Head"),
-                    ),
-                ),
-                SkillStepDef(
-                    id: "penitence_absolution",
-                    delay_ms: 180,
-                    range_units: 1,
-                    target: SelfUnit,
-                    when: IfPreviousStepDealtDamage,
-                    delivery: Instant,
-                    effects: [
-                        Heal(amount: 18),
-                    ],
-                    presentation: (
-                        cast_state: Some("Cast"),
-                        impact_vfx_id: Some("one_sin_penitence_absolution"),
-                        target_anchor: Some("Body"),
-                    ),
-                ),
-            ],
-        ),
-        SkillDef(
-            id: "fragment_one_sin_penitence",
-            name: "Penitence Fragment",
-            kind: Targeted,
-            focus_time_ms: 220,
-            steps: [
-                SkillStepDef(
-                    id: "fragment_penitence_judgement",
-                    delay_ms: 0,
-                    range_units: 3,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: LowestHealthEnemy),
-                    delivery: Projectile(speed_units_per_ms: 6000),
-                    effects: [
-                        Damage(amount: 22, damage_type: Magic),
-                    ],
-                    presentation: (
-                        cast_state: Some("Cast"),
-                        projectile_vfx_id: Some("fragment_one_sin_penitence_judgement"),
-                        impact_vfx_id: Some("fragment_one_sin_penitence_judgement_hit"),
-                        target_anchor: Some("Head"),
-                    ),
-                ),
-                SkillStepDef(
-                    id: "fragment_penitence_absolution",
-                    delay_ms: 140,
-                    range_units: 1,
-                    target: SelfUnit,
-                    when: IfPreviousStepDealtDamage,
-                    delivery: Instant,
-                    effects: [
-                        Heal(amount: 6),
-                    ],
-                    presentation: (
-                        cast_state: Some("Cast"),
-                        impact_vfx_id: Some("fragment_one_sin_penitence_absolution"),
-                        target_anchor: Some("Body"),
-                    ),
-                ),
-            ],
-        ),
-        SkillDef(
-            id: "punishing_bird_rapid_peck",
-            name: "Rapid Peck",
-            kind: Targeted,
-            focus_time_ms: 180,
-            steps: [
-                SkillStepDef(
-                    id: "peck_opening",
-                    delay_ms: 0,
-                    range_units: 1,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: CurrentTarget),
-                    delivery: Instant,
-                    effects: [
-                        ExtraAttack(count: 1),
-                    ],
-                ),
-                SkillStepDef(
-                    id: "peck_flurry",
-                    delay_ms: 120,
-                    range_units: 1,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: CurrentTarget),
-                    targeting: RetargetOnStep,
-                    repeat: Times(count: 2),
-                    delivery: Instant,
-                    effects: [
-                        ExtraAttack(count: 1),
-                    ],
-                ),
-            ],
-        ),
-        SkillDef(
-            id: "big_bird_dark_lamp",
-            name: "Dark Lamp",
-            kind: Untargeted,
-            focus_time_ms: 450,
-            steps: [
-                SkillStepDef(
-                    id: "lamp_gaze",
-                    delay_ms: 0,
-                    range_units: 1,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: Nearest),
-                    delivery: TileArea(area: (
-                        anchor: CastTarget,
-                        hit_targets: Enemies,
-                    )),
-                    effects: [
-                        ApplyBuff(buff_id: "silence", duration_ms: 1200),
-                    ],
-                    presentation: (
-                        cast_state: Some("Cast"),
-                        impact_vfx_id: Some("big_bird_dark_lamp_gaze"),
-                        target_anchor: Some("Head"),
-                    ),
-                ),
-                SkillStepDef(
-                    id: "lamp_burst",
-                    delay_ms: 90,
-                    range_units: 1,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: CastTarget,
-                    delivery: TileArea(area: (
-                        anchor: CastTarget,
-                        hit_targets: Enemies,
-                    )),
-                    effects: [
-                        Damage(amount: 70, damage_type: Magic),
-                    ],
-                    presentation: (
-                        cast_state: Some("Attack"),
-                        impact_vfx_id: Some("big_bird_dark_lamp_burst"),
-                        target_anchor: Some("Body"),
-                    ),
-                ),
-            ],
-        ),
-        SkillDef(
-            id: "judgement_bird_scales",
-            name: "Scales of Sin",
-            kind: Targeted,
-            focus_time_ms: 420,
-            steps: [
-                SkillStepDef(
-                    id: "weigh_sins",
-                    delay_ms: 0,
-                    range_units: 4,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: LowestHealthEnemy),
-                    delivery: Instant,
-                    effects: [
-                        Damage(amount: 20, damage_type: Magic),
-                        ApplyBuff(buff_id: "stun", duration_ms: 800),
-                    ],
-                    presentation: (
-                        cast_state: Some("Cast"),
-                        impact_vfx_id: Some("judgement_bird_scales_weigh"),
-                        target_anchor: Some("Head"),
-                    ),
-                ),
-                SkillStepDef(
-                    id: "final_verdict",
-                    delay_ms: 90,
-                    range_units: 4,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: LowestHealthEnemy),
-                    targeting: RetargetOnStep,
-                    when: IfPreviousStepDealtDamage,
-                    delivery: Instant,
-                    effects: [
-                        Damage(amount: 65, damage_type: Magic),
-                    ],
-                    presentation: (
-                        cast_state: Some("Attack"),
-                        impact_vfx_id: Some("judgement_bird_scales_verdict"),
-                        target_anchor: Some("Body"),
-                    ),
-                ),
-            ],
-        ),
-        SkillDef(
+                                                SkillDef(
             id: "queen_of_hatred_magical_beam",
             name: "Magical Beam",
             kind: Untargeted,
             focus_time_ms: 650,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: Nearest),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "beam_trace",
                     delay_ms: 0,
-                    range_units: 5,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
                     delivery: TileArea(area: (
@@ -392,7 +63,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "beam_overdrive",
                     delay_ms: 80,
-                    range_units: 5,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
                     repeat: Times(count: 2),
@@ -416,11 +86,14 @@ SkillDatabase(
             name: "Hunt the Prey",
             kind: Targeted,
             focus_time_ms: 300,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: CurrentTarget),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "marked_shot",
                     delay_ms: 0,
-                    range_units: 4,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Projectile(speed_units_per_ms: 7500),
@@ -437,7 +110,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "hunt_finish",
                     delay_ms: 160,
-                    range_units: 4,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     targeting: RetargetOnStep,
@@ -460,11 +132,14 @@ SkillDatabase(
             name: "Mass Consumption",
             kind: Untargeted,
             focus_time_ms: 500,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: Nearest),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "consume_burst",
                     delay_ms: 0,
-                    range_units: 1,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
                     delivery: TileArea(area: (
@@ -483,7 +158,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "consume_growth",
                     delay_ms: 20,
-                    range_units: 1,
                     target: SelfUnit,
                     when: IfPreviousStepDealtDamage,
                     delivery: Instant,
@@ -505,7 +179,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "consume_heal",
                     delay_ms: 60,
-                    range_units: 1,
                     target: SelfUnit,
                     delivery: Instant,
                     effects: [
@@ -524,11 +197,14 @@ SkillDatabase(
             name: "Slime Infection",
             kind: Targeted,
             focus_time_ms: 420,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: LowestHealthEnemy),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "slime_orb",
                     delay_ms: 0,
-                    range_units: 4,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Projectile(speed_units_per_ms: 5600),
@@ -546,7 +222,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "slime_spread",
                     delay_ms: 220,
-                    range_units: 4,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
                     when: IfPreviousStepDealtDamage,
@@ -571,11 +246,14 @@ SkillDatabase(
             name: "Goodbye",
             kind: Targeted,
             focus_time_ms: 500,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: CurrentTarget),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "tear_open",
                     delay_ms: 0,
-                    range_units: 1,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Instant,
@@ -591,7 +269,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "mimic_adaptation",
                     delay_ms: 20,
-                    range_units: 1,
                     target: SelfUnit,
                     when: IfPreviousStepDealtDamage,
                     delivery: Instant,
@@ -613,7 +290,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "goodbye_finish",
                     delay_ms: 100,
-                    range_units: 1,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     targeting: RetargetOnStep,
@@ -635,11 +311,14 @@ SkillDatabase(
             name: "Pale Benediction",
             kind: Untargeted,
             focus_time_ms: 700,
+            cast_targeting: Explicit(
+                target: SelfUnit,
+                defense_tile_range_preset: Some("front_3x2_include_anchor"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "ally_salvation",
                     delay_ms: 0,
-                    range_units: 3,
                     defense_tile_range_preset: Some("front_3x2_include_anchor"),
                     target: SelfUnit,
                     delivery: TileArea(area: (
@@ -659,7 +338,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "ally_blessing",
                     delay_ms: 40,
-                    range_units: 3,
                     defense_tile_range_preset: Some("front_3x2_include_anchor"),
                     target: CastTarget,
                     delivery: TileArea(area: (
@@ -685,7 +363,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "enemy_judgement",
                     delay_ms: 140,
-                    range_units: 3,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
                     delivery: TileArea(area: (
@@ -703,96 +380,19 @@ SkillDatabase(
                 ),
             ],
         ),
-        SkillDef(
-            id: "singing_machine_rhythmic_grinder",
-            name: "Rhythmic Grinder",
-            kind: Untargeted,
-            focus_time_ms: 420,
-            steps: [
-                SkillStepDef(
-                    id: "metal_chorus",
-                    delay_ms: 0,
-                    range_units: 1,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: Nearest),
-                    delivery: TileArea(area: (
-                        anchor: CastTarget,
-                        hit_targets: Enemies,
-                    )),
-                    effects: [
-                        Damage(amount: 44, damage_type: Physical),
-                    ],
-                ),
-                SkillStepDef(
-                    id: "machine_tempo",
-                    delay_ms: 40,
-                    range_units: 1,
-                    target: SelfUnit,
-                    when: IfPreviousStepDealtDamage,
-                    delivery: Instant,
-                    effects: [
-                        ModifyStats(
-                            modifier: (
-                                stat: AttackIntervalMs,
-                                kind: Flat,
-                                value: -90,
-                            ),
-                        ),
-                    ],
-                ),
-            ],
-        ),
-        SkillDef(
-            id: "all_around_helper_grinder_mk4",
-            name: "Grinder Mk4",
-            kind: Untargeted,
-            focus_time_ms: 420,
-            steps: [
-                SkillStepDef(
-                    id: "cleaning_spin",
-                    delay_ms: 0,
-                    range_units: 2,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: Nearest),
-                    delivery: TileArea(area: (
-                        anchor: Caster,
-                        hit_targets: Enemies,
-                        duration_ms: 600,
-                        tick_interval_ms: Some(300),
-                        tick_policy: EveryTick,
-                    )),
-                    effects: [
-                        Damage(amount: 26, damage_type: Physical),
-                    ],
-                ),
-                SkillStepDef(
-                    id: "cleaning_protocol",
-                    delay_ms: 40,
-                    range_units: 1,
-                    target: SelfUnit,
-                    delivery: Instant,
-                    effects: [
-                        ModifyStats(
-                            modifier: (
-                                stat: MoveSpeedUnitsPerMs,
-                                kind: Flat,
-                                value: 300,
-                            ),
-                        ),
-                    ],
-                ),
-            ],
-        ),
-        SkillDef(
+                        SkillDef(
             id: "freischutz_magic_bullet",
             name: "Magic Bullet",
             kind: Targeted,
             focus_time_ms: 360,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: LowestHealthEnemy),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "seventh_bullet",
                     delay_ms: 0,
-                    range_units: 5,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Projectile(speed_units_per_ms: 7600),
@@ -803,7 +403,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "smoke_recoil",
                     delay_ms: 90,
-                    range_units: 1,
                     target: SelfUnit,
                     delivery: Instant,
                     effects: [
@@ -823,11 +422,14 @@ SkillDatabase(
             name: "Eulogy Volley",
             kind: Targeted,
             focus_time_ms: 380,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: CurrentTarget),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "mourning_shot",
                     delay_ms: 0,
-                    range_units: 4,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Projectile(speed_units_per_ms: 6400),
@@ -838,7 +440,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "black_funeral",
                     delay_ms: 120,
-                    range_units: 4,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     targeting: RetargetOnStep,
@@ -856,11 +457,14 @@ SkillDatabase(
             name: "Surprise Gift",
             kind: Targeted,
             focus_time_ms: 300,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: Nearest),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "gift_box",
                     delay_ms: 0,
-                    range_units: 4,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
                     delivery: Projectile(speed_units_per_ms: 5200),
@@ -872,7 +476,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "gift_pop",
                     delay_ms: 180,
-                    range_units: 4,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
                     when: IfPreviousStepDealtDamage,
@@ -891,11 +494,14 @@ SkillDatabase(
             name: "Crystal Prison",
             kind: Targeted,
             focus_time_ms: 460,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: CurrentTarget),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "frost_brand",
                     delay_ms: 0,
-                    range_units: 4,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Projectile(speed_units_per_ms: 5800),
@@ -907,7 +513,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "ice_shatter",
                     delay_ms: 160,
-                    range_units: 4,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     when: IfPreviousStepDealtDamage,
@@ -923,11 +528,14 @@ SkillDatabase(
             name: "Sleigh Charge",
             kind: Untargeted,
             focus_time_ms: 360,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: Nearest),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "bells_line",
                     delay_ms: 0,
-                    range_units: 4,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
                     delivery: TileArea(area: (
@@ -941,7 +549,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "holiday_crash",
                     delay_ms: 80,
-                    range_units: 4,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
                     delivery: TileArea(area: (
@@ -954,197 +561,19 @@ SkillDatabase(
                 ),
             ],
         ),
-        SkillDef(
-            id: "meat_lantern_lure_trap",
-            name: "Lure Trap",
-            kind: Targeted,
-            focus_time_ms: 260,
-            steps: [
-                SkillStepDef(
-                    id: "sweet_lure",
-                    delay_ms: 0,
-                    range_units: 3,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: Nearest),
-                    delivery: Instant,
-                    effects: [
-                        ApplyBuff(buff_id: "stun", duration_ms: 550),
-                    ],
-                ),
-                SkillStepDef(
-                    id: "hidden_jaws",
-                    delay_ms: 110,
-                    range_units: 1,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: CurrentTarget),
-                    targeting: RetargetOnStep,
-                    delivery: Instant,
-                    effects: [
-                        Damage(amount: 70, damage_type: Physical),
-                    ],
-                ),
-            ],
-        ),
-        SkillDef(
-            id: "dreaming_current_coral_surge",
-            name: "Coral Surge",
-            kind: Untargeted,
-            focus_time_ms: 420,
-            steps: [
-                SkillStepDef(
-                    id: "current_sweep",
-                    delay_ms: 0,
-                    range_units: 5,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: Nearest),
-                    delivery: TileArea(area: (
-                        anchor: CastTarget,
-                        hit_targets: Enemies,
-                    )),
-                    effects: [
-                        Damage(amount: 38, damage_type: Magic),
-                    ],
-                ),
-                SkillStepDef(
-                    id: "accelerating_stream",
-                    delay_ms: 40,
-                    range_units: 1,
-                    target: SelfUnit,
-                    delivery: Instant,
-                    effects: [
-                        ModifyStats(
-                            modifier: (
-                                stat: MoveSpeedUnitsPerMs,
-                                kind: Flat,
-                                value: 350,
-                            ),
-                        ),
-                    ],
-                ),
-            ],
-        ),
-        SkillDef(
-            id: "alriune_flower_burial",
-            name: "Flower Burial",
-            kind: Untargeted,
-            focus_time_ms: 500,
-            steps: [
-                SkillStepDef(
-                    id: "petal_field",
-                    delay_ms: 0,
-                    range_units: 3,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: Nearest),
-                    delivery: TileArea(area: (
-                        anchor: CastTarget,
-                        hit_targets: Enemies,
-                    )),
-                    effects: [
-                        Damage(amount: 26, damage_type: Magic),
-                        ApplyBuff(buff_id: "silence", duration_ms: 1000),
-                    ],
-                ),
-                SkillStepDef(
-                    id: "last_fragrance",
-                    delay_ms: 100,
-                    range_units: 3,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: SelfUnit,
-                    delivery: TileArea(area: (
-                        anchor: Caster,
-                        hit_targets: Allies,
-                        include_caster: true,
-                    )),
-                    effects: [
-                        Heal(amount: 22),
-                    ],
-                ),
-            ],
-        ),
-        SkillDef(
-            id: "naked_nest_skin_burst",
-            name: "Skin Burst",
-            kind: Targeted,
-            focus_time_ms: 330,
-            steps: [
-                SkillStepDef(
-                    id: "spore_injection",
-                    delay_ms: 0,
-                    range_units: 3,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: Nearest),
-                    delivery: Projectile(speed_units_per_ms: 5000),
-                    effects: [
-                        Damage(amount: 30, damage_type: Magic),
-                        ApplyBuff(buff_id: "poison", duration_ms: 5000),
-                    ],
-                ),
-                SkillStepDef(
-                    id: "nest_eruption",
-                    delay_ms: 220,
-                    range_units: 3,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: CastTarget,
-                    when: IfPreviousStepDealtDamage,
-                    delivery: TileArea(area: (
-                        anchor: ImpactContext,
-                        hit_targets: Enemies,
-                    )),
-                    effects: [
-                        Damage(amount: 20, damage_type: Magic),
-                        ApplyBuff(buff_id: "poison", duration_ms: 3000),
-                    ],
-                ),
-            ],
-        ),
-        SkillDef(
-            id: "blue_star_gravity_chant",
-            name: "Gravity Chant",
-            kind: Untargeted,
-            focus_time_ms: 780,
-            steps: [
-                SkillStepDef(
-                    id: "pulling_hymn",
-                    delay_ms: 0,
-                    range_units: 4,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: Nearest),
-                    delivery: TileArea(area: (
-                        anchor: CastTarget,
-                        hit_targets: Enemies,
-                    )),
-                    effects: [
-                        Damage(amount: 34, damage_type: Magic),
-                        ApplyBuff(buff_id: "stun", duration_ms: 600),
-                    ],
-                ),
-                SkillStepDef(
-                    id: "distant_salvation",
-                    delay_ms: 80,
-                    range_units: 3,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: SelfUnit,
-                    delivery: TileArea(area: (
-                        anchor: Caster,
-                        hit_targets: Allies,
-                        include_caster: true,
-                    )),
-                    effects: [
-                        Heal(amount: 30),
-                    ],
-                ),
-            ],
-        ),
-        SkillDef(
+                                                SkillDef(
             id: "silent_orchestra_finale",
             name: "Silent Finale",
             kind: Untargeted,
             focus_time_ms: 900,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: Nearest),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "first_movement",
                     delay_ms: 0,
-                    range_units: 3,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
                     delivery: TileArea(area: (
@@ -1158,7 +587,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "crescendo",
                     delay_ms: 120,
-                    range_units: 3,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
                     delivery: TileArea(area: (
@@ -1173,7 +601,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "grand_finale",
                     delay_ms: 240,
-                    range_units: 3,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
                     delivery: TileArea(area: (
@@ -1191,11 +618,14 @@ SkillDatabase(
             name: "Mind Break",
             kind: Targeted,
             focus_time_ms: 520,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: CurrentTarget),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "redacted_presence",
                     delay_ms: 0,
-                    range_units: 1,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Instant,
@@ -1207,7 +637,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "panic_feedback",
                     delay_ms: 40,
-                    range_units: 1,
                     target: SelfUnit,
                     when: IfPreviousStepDealtDamage,
                     delivery: Instant,
@@ -1228,11 +657,14 @@ SkillDatabase(
             name: "Black Pulse",
             kind: Untargeted,
             focus_time_ms: 430,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: Nearest),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "dark_wave",
                     delay_ms: 0,
-                    range_units: 3,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
                     delivery: TileArea(area: (
@@ -1247,7 +679,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "balance_return",
                     delay_ms: 80,
-                    range_units: 1,
                     target: SelfUnit,
                     delivery: Instant,
                     effects: [
@@ -1261,11 +692,14 @@ SkillDatabase(
             name: "White Resonance",
             kind: Untargeted,
             focus_time_ms: 430,
+            cast_targeting: Explicit(
+                target: SelfUnit,
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "white_wave",
                     delay_ms: 0,
-                    range_units: 3,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: SelfUnit,
                     delivery: TileArea(area: (
@@ -1280,7 +714,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "white_judgement",
                     delay_ms: 100,
-                    range_units: 3,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
                     delivery: TileArea(area: (
@@ -1298,11 +731,14 @@ SkillDatabase(
             name: "Gaze Punishment",
             kind: Targeted,
             focus_time_ms: 480,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: CurrentTarget),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "root_watch",
                     delay_ms: 0,
-                    range_units: 4,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Projectile(speed_units_per_ms: 6200),
@@ -1314,7 +750,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "heaven_burrows",
                     delay_ms: 160,
-                    range_units: 4,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
                     when: IfPreviousStepDealtDamage,
@@ -1333,11 +768,14 @@ SkillDatabase(
             name: "Root Blessing",
             kind: Untargeted,
             focus_time_ms: 520,
+            cast_targeting: Explicit(
+                target: SelfUnit,
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "false_blessing",
                     delay_ms: 0,
-                    range_units: 3,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: SelfUnit,
                     delivery: TileArea(area: (
@@ -1359,7 +797,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "root_tax",
                     delay_ms: 120,
-                    range_units: 3,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
                     delivery: TileArea(area: (
@@ -1377,11 +814,14 @@ SkillDatabase(
             name: "Spore Bloom",
             kind: Untargeted,
             focus_time_ms: 340,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: Nearest),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "laughing_spores",
                     delay_ms: 0,
-                    range_units: 2,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
                     delivery: TileArea(area: (
@@ -1396,7 +836,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "toxic_laughter",
                     delay_ms: 100,
-                    range_units: 2,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
                     delivery: TileArea(area: (
@@ -1414,11 +853,14 @@ SkillDatabase(
             name: "Wisdom Reap",
             kind: Targeted,
             focus_time_ms: 310,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: LowestHealthEnemy),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "brain_pick",
                     delay_ms: 0,
-                    range_units: 1,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Instant,
@@ -1430,7 +872,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "stolen_wisdom",
                     delay_ms: 30,
-                    range_units: 1,
                     target: SelfUnit,
                     when: IfPreviousStepDealtDamage,
                     delivery: Instant,
@@ -1451,11 +892,14 @@ SkillDatabase(
             name: "Heart Rip",
             kind: Targeted,
             focus_time_ms: 390,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: CurrentTarget),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "axe_cleave",
                     delay_ms: 0,
-                    range_units: 1,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Instant,
@@ -1466,7 +910,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "borrowed_heart",
                     delay_ms: 60,
-                    range_units: 1,
                     target: SelfUnit,
                     when: IfPreviousStepDealtDamage,
                     delivery: Instant,
@@ -1488,11 +931,14 @@ SkillDatabase(
             name: "Paradise Lost Judgement",
             kind: Targeted,
             focus_time_ms: 0,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: CurrentTarget),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "judgement_strike",
                     delay_ms: 0,
-                    range_units: 1,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Instant,
@@ -1503,60 +949,18 @@ SkillDatabase(
                 ),
             ],
         ),
-        SkillDef(
-            id: "fourth_match_ember",
-            name: "Fourth Match Ember",
-            kind: Targeted,
-            focus_time_ms: 0,
-            steps: [
-                SkillStepDef(
-                    id: "ember_bite",
-                    delay_ms: 0,
-                    range_units: 1,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: CurrentTarget),
-                    delivery: Instant,
-                    effects: [
-                        Damage(amount: 10, damage_type: Magic),
-                        ApplyBuff(buff_id: "poison", duration_ms: 3000),
-                    ],
-                ),
-            ],
-        ),
-        SkillDef(
-            id: "penitence_guard",
-            name: "Penitence Guard",
-            kind: Untargeted,
-            focus_time_ms: 0,
-            steps: [
-                SkillStepDef(
-                    id: "guard_plate",
-                    delay_ms: 0,
-                    range_units: 1,
-                    target: SelfUnit,
-                    delivery: Instant,
-                    effects: [
-                        ModifyStats(
-                            modifier: (
-                                stat: Defense,
-                                kind: Flat,
-                                value: 8,
-                            ),
-                        ),
-                    ],
-                ),
-            ],
-        ),
-        SkillDef(
+                        SkillDef(
             id: "resonance_pendant_opening_focus",
             name: "Opening Focus",
             kind: Untargeted,
             focus_time_ms: 0,
+            cast_targeting: Explicit(
+                target: SelfUnit,
+            ),
             steps: [
                 SkillStepDef(
                     id: "focus_charge",
                     delay_ms: 0,
-                    range_units: 1,
                     target: SelfUnit,
                     delivery: Instant,
                     effects: [
@@ -1565,118 +969,19 @@ SkillDatabase(
                 ),
             ],
         ),
-        SkillDef(
-            id: "red_ribbon_haste",
-            name: "Red Ribbon Haste",
-            kind: Untargeted,
-            focus_time_ms: 0,
-            steps: [
-                SkillStepDef(
-                    id: "scarlet_haste",
-                    delay_ms: 0,
-                    range_units: 1,
-                    target: SelfUnit,
-                    delivery: Instant,
-                    effects: [
-                        ModifyStats(
-                            modifier: (
-                                stat: AttackIntervalMs,
-                                kind: Flat,
-                                value: -100,
-                            ),
-                        ),
-                        ModifyStats(
-                            modifier: (
-                                stat: MoveSpeedUnitsPerMs,
-                                kind: Flat,
-                                value: 250,
-                            ),
-                        ),
-                    ],
-                ),
-            ],
-        ),
-        SkillDef(
-            id: "fragment_scorched_spark",
-            name: "Scorched Spark Fragment",
-            kind: Targeted,
-            focus_time_ms: 240,
-            steps: [
-                SkillStepDef(
-                    id: "fragment_scorched_spark",
-                    delay_ms: 0,
-                    range_units: 3,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: Nearest),
-                    delivery: Projectile(speed_units_per_ms: 5200),
-                    effects: [
-                        Damage(amount: 26, damage_type: Magic),
-                    ],
-                    presentation: (
-                        cast_state: Some("Cast"),
-                        projectile_vfx_id: Some("fragment_scorched_spark"),
-                        impact_vfx_id: Some("fragment_scorched_spark_hit"),
-                        target_anchor: Some("Body"),
-                    ),
-                ),
-            ],
-        ),
-        SkillDef(
-            id: "fragment_red_shoes_impulse",
-            name: "Red Shoes Impulse Fragment",
-            kind: Targeted,
-            focus_time_ms: 180,
-            steps: [
-                SkillStepDef(
-                    id: "fragment_crimson_impulse",
-                    delay_ms: 0,
-                    range_units: 1,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: CurrentTarget),
-                    delivery: Instant,
-                    effects: [
-                        ExtraAttack(count: 1),
-                    ],
-                    presentation: (
-                        cast_state: Some("Attack"),
-                        impact_vfx_id: Some("fragment_red_shoes_impulse"),
-                        target_anchor: Some("Legs"),
-                    ),
-                ),
-                SkillStepDef(
-                    id: "fragment_restless_step",
-                    delay_ms: 80,
-                    range_units: 1,
-                    target: SelfUnit,
-                    when: IfPreviousStepDealtDamage,
-                    delivery: Instant,
-                    effects: [
-                        ModifyStats(
-                            modifier: (
-                                stat: MoveSpeedUnitsPerMs,
-                                kind: Flat,
-                                value: 180,
-                            ),
-                        ),
-                    ],
-                    presentation: (
-                        cast_state: Some("Cast"),
-                        impact_vfx_id: Some("fragment_red_shoes_step"),
-                        target_anchor: Some("Legs"),
-                    ),
-                ),
-            ],
-        ),
-        SkillDef(
+                                SkillDef(
             id: "fragment_freischutz_black_round",
             name: "Black Round Fragment",
             kind: Targeted,
             focus_time_ms: 320,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: LowestHealthEnemy),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "fragment_black_round",
                     delay_ms: 0,
-                    range_units: 5,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Projectile(speed_units_per_ms: 7000),
@@ -1693,7 +998,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "fragment_smoke_focus",
                     delay_ms: 100,
-                    range_units: 1,
                     target: SelfUnit,
                     delivery: Instant,
                     effects: [
@@ -1713,42 +1017,19 @@ SkillDatabase(
                 ),
             ],
         ),
-        SkillDef(
-            id: "fragment_spider_bud_red_eyes",
-            name: "Red Eyes Fragment",
-            kind: Targeted,
-            focus_time_ms: 220,
-            steps: [
-                SkillStepDef(
-                    id: "fragment_venom_thread",
-                    delay_ms: 0,
-                    range_units: 3,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: CurrentTarget),
-                    delivery: Projectile(speed_units_per_ms: 5600),
-                    effects: [
-                        Damage(amount: 16, damage_type: Physical),
-                        ApplyBuff(buff_id: "poison", duration_ms: 3500),
-                    ],
-                    presentation: (
-                        cast_state: Some("Cast"),
-                        projectile_vfx_id: Some("fragment_spider_bud_red_eyes"),
-                        impact_vfx_id: Some("fragment_spider_bud_red_eyes_hit"),
-                        target_anchor: Some("Body"),
-                    ),
-                ),
-            ],
-        ),
-        SkillDef(
+                SkillDef(
             id: "fragment_funeral_butterfly_eulogy",
             name: "Butterfly Eulogy Fragment",
             kind: Targeted,
             focus_time_ms: 300,
+            cast_targeting: Explicit(
+                target: EnemySingle(rule: LowestHealthEnemy),
+                defense_tile_range_preset: Some("front_3x2"),
+            ),
             steps: [
                 SkillStepDef(
                     id: "fragment_pale_shot",
                     delay_ms: 0,
-                    range_units: 4,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Projectile(speed_units_per_ms: 6200),
@@ -1765,7 +1046,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "fragment_quiet_lament",
                     delay_ms: 120,
-                    range_units: 4,
                     defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     targeting: RetargetOnStep,
@@ -1782,66 +1062,5 @@ SkillDatabase(
                 ),
             ],
         ),
-        SkillDef(
-            id: "fragment_helper_grinder_trace",
-            name: "Grinder Trace Fragment",
-            kind: Untargeted,
-            focus_time_ms: 260,
-            steps: [
-                SkillStepDef(
-                    id: "fragment_short_cleaning_spin",
-                    delay_ms: 0,
-                    range_units: 1,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: Nearest),
-                    delivery: TileArea(area: (
-                        anchor: Caster,
-                        hit_targets: Enemies,
-                        duration_ms: 300,
-                        tick_interval_ms: Some(300),
-                        tick_policy: OncePerArea,
-                    )),
-                    effects: [
-                        Damage(amount: 28, damage_type: Physical),
                     ],
-                    presentation: (
-                        cast_state: Some("Attack"),
-                        impact_vfx_id: Some("fragment_helper_grinder_trace"),
-                        target_anchor: Some("Body"),
-                    ),
-                ),
-            ],
-        ),
-        SkillDef(
-            id: "fragment_alriune_faint_aroma",
-            name: "Faint Aroma Fragment",
-            kind: Untargeted,
-            focus_time_ms: 360,
-            steps: [
-                SkillStepDef(
-                    id: "fragment_petal_haze",
-                    delay_ms: 0,
-                    range_units: 3,
-                    defense_tile_range_preset: Some("front_3x2"),
-                    target: EnemySingle(rule: Nearest),
-                    delivery: TileArea(area: (
-                        anchor: CastTarget,
-                        hit_targets: Enemies,
-                        duration_ms: 900,
-                        tick_interval_ms: Some(450),
-                        tick_policy: OnEnter,
-                    )),
-                    effects: [
-                        Damage(amount: 18, damage_type: Magic),
-                        ApplyBuff(buff_id: "silence", duration_ms: 500),
-                    ],
-                    presentation: (
-                        cast_state: Some("Cast"),
-                        impact_vfx_id: Some("fragment_alriune_faint_aroma"),
-                        target_anchor: Some("Body"),
-                    ),
-                ),
-            ],
-        ),
-    ],
 )

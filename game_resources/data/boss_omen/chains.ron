@@ -1,0 +1,22 @@
+BossOmenChainDatabase(
+    chains: [
+        BossOmenChain(
+            id: "white_night",
+            boss_abnormality_id: "o-01-45_white_night",
+            min_floor: 3,
+            required_steps: 1,
+            boss_encounter_id: "suppress_white_night",
+            steps: [
+                BossOmenStep(
+                    id: "confession_01",
+                    source_kind: Event,
+                    hint_id: "white_night_confession",
+                    title_id: "white_night_confession_title",
+                    description_id: "white_night_confession_01",
+                    event_id: Some("white_night_confession_01"),
+                    encounter_id: None,
+                ),
+            ],
+        ),
+    ],
+)

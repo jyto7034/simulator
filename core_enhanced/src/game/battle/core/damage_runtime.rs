@@ -3,8 +3,9 @@ use crate::game::{
         cooldown::SourcedEffect,
         core::{commands::TriggerEffectContext, BattleCore},
         damage::{
-            apply_damage_to_unit, calculate_damage, DamageBonusSnapshot, DamageContext,
-            DamageModifiers, DamageResult, DamageSource, DamageSourceSnapshot,
+            apply_damage_to_unit, calculate_damage, CombatRollIdentity, CombatRollKind,
+            DamageBonusSnapshot, DamageContext, DamageModifiers, DamageResult, DamageSource,
+            DamageSourceSnapshot,
         },
         event_log::HpChangeReason,
         ids::UnitInstanceId,
@@ -91,7 +92,7 @@ impl BattleCore {
     }
 
     pub(in crate::game::battle::core) fn damage_source_snapshot_for_unit(
-        &self,
+        &mut self,
         source_id: UnitInstanceId,
         target_id: UnitInstanceId,
         damage_source: DamageSource,
@@ -112,18 +113,12 @@ impl BattleCore {
             committed_at_ms,
             include_on_attack_damage_effects,
         )?;
-        snapshot.crit_roll_percent = Some(self.damage_roll_percent_with_event_log_seq(
-            source_id,
-            target_id,
-            committed_at_ms,
-            damage_source,
-            snapshot.crit_roll_event_log_seq,
-        ));
+        snapshot = self.materialize_damage_source_snapshot_for_target(snapshot, target_id);
         Some(snapshot)
     }
 
     pub(in crate::game::battle::core) fn damage_source_snapshot_template_for_unit(
-        &self,
+        &mut self,
         source_id: UnitInstanceId,
         damage_source: DamageSource,
         damage_type: crate::game::battle::damage::DamageType,
@@ -159,7 +154,17 @@ impl BattleCore {
             base_damage,
             modifiers,
             crit_roll_percent: None,
-            crit_roll_event_log_seq: self.event_log_seq,
+            crit_roll_identity: CombatRollIdentity::new(
+                CombatRollKind::for_damage_source(damage_source),
+                Some(source_id),
+                self.damage_source_instance_id(
+                    source_id,
+                    damage_source,
+                    damage_type,
+                    base_damage,
+                    committed_at_ms,
+                ),
+            ),
             minimum_damage,
             committed_at_ms,
             on_attack_modifiers,
@@ -225,51 +230,113 @@ impl BattleCore {
         result
     }
 
-    fn damage_roll_percent_with_event_log_seq(
-        &self,
-        source_id: UnitInstanceId,
-        target_id: UnitInstanceId,
-        time_ms: u64,
-        source: DamageSource,
-        event_log_seq: u64,
-    ) -> u8 {
-        const DAMAGE_ROLL_NS: u64 = 0x444D_4752_4F4C_4C53u64; // "DMGROLLS"
+    fn unit_tag(unit_id: UnitInstanceId) -> u64 {
+        let mut high = [0u8; 8];
+        let mut low = [0u8; 8];
+        high.copy_from_slice(&unit_id.as_bytes()[..8]);
+        low.copy_from_slice(&unit_id.as_bytes()[8..]);
+        u64::from_be_bytes(high) ^ u64::from_be_bytes(low).rotate_left(17)
+    }
 
-        fn unit_tag(unit_id: UnitInstanceId) -> u64 {
-            let mut bytes = [0u8; 8];
-            bytes.copy_from_slice(&unit_id.as_bytes()[..8]);
-            u64::from_be_bytes(bytes)
-        }
+    fn uuid_tag(uuid: uuid::Uuid) -> u64 {
+        let mut high = [0u8; 8];
+        let mut low = [0u8; 8];
+        high.copy_from_slice(&uuid.as_bytes()[..8]);
+        low.copy_from_slice(&uuid.as_bytes()[8..]);
+        u64::from_be_bytes(high) ^ u64::from_be_bytes(low).rotate_left(31)
+    }
 
-        let source_tag = match source {
-            DamageSource::BasicAttack => 1_u64,
+    fn damage_source_tag(source: DamageSource) -> u64 {
+        match source {
+            DamageSource::BasicAttack => 1,
             DamageSource::Ability => 2,
             DamageSource::BuffTick => 3,
             DamageSource::Environment => 4,
-        };
-        let seed = self.seed
-            ^ unit_tag(source_id).rotate_left(11)
-            ^ unit_tag(target_id).rotate_left(29)
-            ^ source_tag.rotate_left(43)
-            ^ time_ms.wrapping_mul(0x9E37_79B9_7F4A_7C15)
-            ^ event_log_seq.wrapping_mul(0xD1B5_4A32_D192_ED03);
+        }
+    }
 
-        determinism::uuid_v4_from_seed(seed, DAMAGE_ROLL_NS, event_log_seq).as_bytes()[0] % 100
+    fn damage_type_tag(damage_type: crate::game::battle::damage::DamageType) -> u64 {
+        match damage_type {
+            crate::game::battle::damage::DamageType::Physical => 1,
+            crate::game::battle::damage::DamageType::Magic => 2,
+            crate::game::battle::damage::DamageType::True => 3,
+        }
+    }
+
+    fn roll_kind_tag(kind: CombatRollKind) -> u64 {
+        match kind {
+            CombatRollKind::BasicAttackCrit => 1,
+            CombatRollKind::SkillCrit => 2,
+            CombatRollKind::StatusProc => 3,
+            CombatRollKind::EnvironmentCrit => 4,
+        }
+    }
+
+    fn damage_source_instance_id(
+        &mut self,
+        source_id: UnitInstanceId,
+        source: DamageSource,
+        damage_type: crate::game::battle::damage::DamageType,
+        base_damage: u32,
+        committed_at_ms: u64,
+    ) -> uuid::Uuid {
+        const DAMAGE_SOURCE_INSTANCE_NS: u64 = 0x444D_4753_5243_4944u64; // "DMGSRCID"
+
+        let seed = self.seed
+            ^ Self::unit_tag(source_id).rotate_left(11)
+            ^ Self::damage_source_tag(source).rotate_left(23)
+            ^ Self::damage_type_tag(damage_type).rotate_left(31)
+            ^ u64::from(base_damage).rotate_left(41)
+            ^ committed_at_ms.wrapping_mul(0x9E37_79B9_7F4A_7C15)
+            ^ self.damage_source_seq.rotate_left(53);
+
+        let source_instance_id =
+            determinism::uuid_v4_from_seed(seed, DAMAGE_SOURCE_INSTANCE_NS, self.damage_source_seq);
+        self.damage_source_seq = self.damage_source_seq.wrapping_add(1);
+        source_instance_id
+    }
+
+    fn damage_roll_percent(&self, identity: CombatRollIdentity) -> u8 {
+        const DAMAGE_ROLL_NS: u64 = 0x444D_4752_4F4C_4C53u64; // "DMGROLLS"
+
+        let mut seed = self.seed
+            ^ Self::roll_kind_tag(identity.roll_kind).rotate_left(5)
+            ^ Self::uuid_tag(identity.source_instance_id).rotate_left(17)
+            ^ u64::from(identity.hit_index).rotate_left(47);
+
+        if let Some(source_unit_id) = identity.source_unit_id {
+            seed ^= Self::unit_tag(source_unit_id).rotate_left(23);
+        }
+        if let Some(target_unit_id) = identity.target_unit_id {
+            seed ^= Self::unit_tag(target_unit_id).rotate_left(37);
+        }
+
+        determinism::uuid_v4_from_seed(seed, DAMAGE_ROLL_NS, u64::from(identity.hit_index))
+            .as_bytes()[0]
+            % 100
     }
 
     pub(in crate::game::battle::core) fn materialize_damage_source_snapshot_for_target(
         &self,
-        mut snapshot: DamageSourceSnapshot,
+        snapshot: DamageSourceSnapshot,
         target_id: UnitInstanceId,
     ) -> DamageSourceSnapshot {
+        self.materialize_damage_source_snapshot_for_target_hit(snapshot, target_id, 0)
+    }
+
+    pub(in crate::game::battle::core) fn materialize_damage_source_snapshot_for_target_hit(
+        &self,
+        mut snapshot: DamageSourceSnapshot,
+        target_id: UnitInstanceId,
+        hit_index: u32,
+    ) -> DamageSourceSnapshot {
+        snapshot.crit_roll_identity = snapshot
+            .crit_roll_identity
+            .with_target(target_id)
+            .with_hit_index(hit_index);
         if snapshot.crit_roll_percent.is_none() {
-            snapshot.crit_roll_percent = Some(self.damage_roll_percent_with_event_log_seq(
-                snapshot.source_id,
-                target_id,
-                snapshot.committed_at_ms,
-                snapshot.source,
-                snapshot.crit_roll_event_log_seq,
-            ));
+            snapshot.crit_roll_percent =
+                Some(self.damage_roll_percent(snapshot.crit_roll_identity));
         }
         snapshot
     }

@@ -6,7 +6,6 @@
             weight: 45,
             min_depth: 0,
             max_depth: None,
-            tags: ["combat", "normal"],
             payload: Encounter(encounter_id: None),
         ),
         (
@@ -15,7 +14,6 @@
             weight: 8,
             min_depth: 2,
             max_depth: None,
-            tags: ["combat", "elite"],
             payload: Encounter(encounter_id: None),
         ),
         (
@@ -24,9 +22,8 @@
             weight: 22,
             min_depth: 1,
             max_depth: None,
-            tags: ["support", "choice", "full"],
             payload: Support(
-                support_type: Medical,
+                support_type: SavePoint,
                 support_mode: FullChoice,
                 choices: [],
             ),
@@ -37,22 +34,20 @@
             weight: 4,
             min_depth: 2,
             max_depth: None,
-            tags: ["support", "choice"],
             payload: Support(
-                support_type: Medical,
+                support_type: SavePoint,
                 support_mode: LimitedChoice,
-                choices: [Medical, Rest],
+                choices: [SavePoint, Rest],
             ),
         ),
         (
-            kind_id: "support_medical",
+            kind_id: "support_save_point",
             category: Support,
             weight: 4,
             min_depth: 1,
             max_depth: None,
-            tags: ["support", "medical"],
             payload: Support(
-                support_type: Medical,
+                support_type: SavePoint,
                 support_mode: Known,
                 choices: [],
             ),
@@ -63,7 +58,6 @@
             weight: 4,
             min_depth: 1,
             max_depth: None,
-            tags: ["support", "rest"],
             payload: Support(
                 support_type: Rest,
                 support_mode: Known,
@@ -76,7 +70,6 @@
             weight: 4,
             min_depth: 1,
             max_depth: None,
-            tags: ["maintenance", "safe"],
             payload: Maintenance,
         ),
         (
@@ -85,7 +78,6 @@
             weight: 8,
             min_depth: 1,
             max_depth: None,
-            tags: ["headquarters", "safe", "choice"],
             payload: HeadquartersContact(
                 shop_pool_id: Some("headquarters_basic_supplies"),
                 candidate_count: 3,
@@ -97,7 +89,6 @@
             weight: 4,
             min_depth: 2,
             max_depth: None,
-            tags: ["shop", "mysterious_merchant", "rare"],
             payload: Shop(shop_id: None, shop_pool_id: Some("default_shops")),
         ),
         (
@@ -106,8 +97,23 @@
             weight: 10,
             min_depth: 1,
             max_depth: None,
-            tags: ["reward", "treasure"],
             payload: Reward(reward_pool_id: Some("default_treasures")),
+        ),
+        (
+            kind_id: "event_story",
+            category: Event,
+            weight: 12,
+            min_depth: 1,
+            max_depth: None,
+            payload: Event(event_id: Some("white_night_confession_01")),
+        ),
+        (
+            kind_id: "gate_stairs",
+            category: Gate,
+            weight: 0,
+            min_depth: 0,
+            max_depth: None,
+            payload: None,
         ),
         (
             kind_id: "boss_abnormality",
@@ -115,7 +121,6 @@
             weight: 1,
             min_depth: 0,
             max_depth: None,
-            tags: ["boss", "abnormality"],
             payload: Encounter(encounter_id: None),
         ),
     ],

@@ -105,7 +105,7 @@ core_enhanced 설계 리뷰 (종합)
 
 - 좋음: ASCII 보드 DSL(테스트가 곧 문서), live 스킬 카탈로그 감사 매니페스트(스킬 추가 시 커버리지 갱신을 CI로 강제), 원자성 계약 테스트(부분
   적용 방지, catch_unwind 검증), 정책 상수 파생 단언.
-- 문제: combat_setup 계층(enemy_spawns, defense_object, balance 등 7개 파일) 단위 테스트 0개. 동일 (scenario, seed) → 동일 event_log의 전투 리플레이 결정론 계약 테스트 부재 — battle_records 재생이 제품 기능인데 가장 비싼 회귀를 못 잡습니다. world/tests/combat.rs의 내부 상태 직접 주입 패턴(상태 머신 우회)과 재배치 코스트 자연 회복 미검증. 테스트가 리포지토리 파일(battle_records/, debug_event_log_exports/)을 오염시켜 git diff 노이즈 발생. skill_refactor_validation.rs는 이름과 달리 현역 계약 테스트이므로 삭제 금지, 개명 대상.
+- 문제: combat_setup 계층(enemy_spawns, defense_object, balance 등 7개 파일) 단위 테스트 0개. 동일 (scenario, seed) → 동일 event_log의 전투 리플레이 결정론 계약 테스트 부재 — battle_records 재생이 제품 기능인데 가장 비싼 회귀를 못 잡습니다. world/tests/combat.rs의 내부 상태 직접 주입 패턴(상태 머신 우회)과 재배치 코스트 자연 회복 미검증. 테스트가 리포지토리 파일(battle_records/, debug_event_log_exports/)을 오염시켜 git diff 노이즈 발생. skill_runtime_contract.rs는 현역 계약 테스트이므로 삭제 금지.
 
 ---
 
@@ -173,7 +173,7 @@ core_enhanced 설계 리뷰 (종합)
 ├───────────────────────────────────────────────────────────────┼──────────────────────────────────────┤
 │ Concealed guard 의도 확정 후 죽은 arm 정리 │ progression.rs:301-313 │
 ├─────────────────────────────────────────────────────────────────────────┤
-│ skill_refactor_validation.rs → skill_step_pipeline.rs 개명 │ tests/ │
+│ skill_runtime_contract.rs 계약 테스트 유지 │ tests/ │
 └───────────────────────────────────────────────────────────────┴──────────────────────────────────────┘
 
 중간 규모 (수일)

@@ -2,8 +2,9 @@
 //!
 //! `BattleEventLog` is the append-only log of battle events produced by the
 //! current DefenseRoute live battle model. It is not an offline replay driver;
-//! it powers live `events_delta` payloads, battle result records, debug exports,
-//! and behavior tests.
+//! it powers battle result records, debug exports, and behavior tests. Live
+//! `battle_update.events_delta` payloads are converted to explicit wire DTOs at
+//! the transport boundary.
 
 use serde::{Deserialize, Serialize};
 use std::{

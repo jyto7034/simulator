@@ -16,7 +16,10 @@ use crate::{
         },
         battle::{
             core::movement::types::WorldVec2,
-            event_log::{BattleEventLog, BattleEventLogEntry, SkillCastTarget},
+            event_log::{
+                BattleEventCause, BattleEventLog, BattleEventLogEntry, BattleLogEvent,
+                SkillCastTarget,
+            },
             ids::UnitInstanceId,
             result_stats::BattleResultStatsDto,
             tile_range::{FacingDirection, TileRangePattern, TileRangePolicy},
@@ -1194,7 +1197,35 @@ impl LiveBattleSetupSnapshotDto {
 pub struct LiveBattleEventDeltaDto {
     pub after_seq: u64,
     pub to_seq: u64,
-    pub events: Vec<BattleEventLogEntry>,
+    pub events: Vec<LiveBattlePresentationEventDto>,
+}
+
+/// Unity-facing presentation event entry for live `battle_update.events_delta`.
+///
+/// This intentionally mirrors the stable JSON fields Unity consumes without
+/// exposing the internal append-only `BattleEventLogEntry` type as the wire
+/// boundary.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LiveBattlePresentationEventDto {
+    pub time_ms: u64,
+    pub seq: u64,
+    #[serde(default)]
+    pub cause: BattleEventCause,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_command_id: Option<String>,
+    pub event: BattleLogEvent,
+}
+
+impl From<BattleEventLogEntry> for LiveBattlePresentationEventDto {
+    fn from(value: BattleEventLogEntry) -> Self {
+        Self {
+            time_ms: value.time_ms,
+            seq: value.seq,
+            cause: value.cause,
+            source_command_id: value.source_command_id,
+            event: value.event,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -2925,6 +2956,7 @@ pub enum GameError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::game::battle::event_log::{BattleEventCause, BattleEventRootCause, BattleLogEvent};
     use crate::game::data::shop_data::ShopType;
     use crate::game::resources::InventoryDiffDto;
 
@@ -2968,5 +3000,33 @@ mod tests {
             research_deliveries: vec![],
         };
         assert_eq!(shop_state.as_shop_state(), Some(&shop));
+    }
+
+    #[test]
+    fn live_battle_presentation_event_dto_keeps_stable_wire_shape() {
+        let entry = BattleEventLogEntry {
+            time_ms: 100,
+            seq: 7,
+            cause: BattleEventCause::Root {
+                kind: BattleEventRootCause::Period,
+            },
+            source_command_id: Some("command-1".to_string()),
+            event: BattleLogEvent::BattleStart {
+                width: 9,
+                height: 7,
+            },
+        };
+
+        let dto = LiveBattlePresentationEventDto::from(entry);
+        let json = serde_json::to_value(dto).expect("presentation event dto should serialize");
+
+        assert_eq!(json["time_ms"], 100);
+        assert_eq!(json["seq"], 7);
+        assert_eq!(json["cause"]["cause_type"], "root");
+        assert_eq!(json["cause"]["kind"], "period");
+        assert_eq!(json["source_command_id"], "command-1");
+        assert_eq!(json["event"]["type"], "BattleStart");
+        assert_eq!(json["event"]["width"], 9);
+        assert_eq!(json["event"]["height"], 7);
     }
 }

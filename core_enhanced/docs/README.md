@@ -24,6 +24,7 @@
 | `docs/README.md` | 문서 지도. 각 문서의 역할과 source-of-truth 계층을 설명한다. | 문서 탐색을 시작할 때 |
 | `docs/game_rulebook.md` | 현재 게임 규칙의 최상위 룰북. 런 흐름, 시설형 Node Map 탐사 규칙, 노드, 전투, 보상, 직원/장비/스킬 파편, 끝없는 탐사 연구/반복 조우/bonus objective, 보스 전조, 실패/후퇴 정책을 게임 루프 순서로 설명하고, 세부 구현 계약은 전문 문서로 연결한다. | gameplay rule, 노드 흐름, Node Map 진행/visibility/selectability, 보상/소비/성장, 전투 모드/Endless 연구 정책을 바꿀 때 |
 | `docs/skill_target_contract.md` | 스킬/평타 타겟팅과 DefenseRoute 범위 계약의 도메인 source of truth. 내부 authoring source인 `defense_tile_range`, Unity-facing 최종 `range_previews` cell DTO, `StepTargetingMode`, 자동 적대 타겟 유용성, `TileArea` 의미를 설명한다. | 스킬 타겟, 범위 표시, 자동 시전, 면역/무효 대상 필터를 다룰 때 |
+| `docs/core_runtime_contract.md` | core runtime 구현 계약. 전투 결정론/RNG seed 규칙, `event_log_seq`와 gameplay 판정 분리, BattleEventLog/checkpoint 경계, battle record/result source, actor identity/HUD/range preview source-of-truth를 설명한다. | 전투 runtime, event log, RNG, checkpoint, battle record, actor identity, Unity 표시 source 경계를 바꿀 때 |
 | `docs/refactor_preparation_plan.md` | 리팩토링 판단 기준. source of truth 축소, 레거시 제거, 과도한 추상화 방지, debug 산출물 분류를 설명한다. | 구조 정리, 파일 이동, 레거시 제거, 큰 goal을 시작할 때 |
 | `docs/data_loading_contract.md` | embedded RON/live data loader ownership 계약. `GameDataBase::load_live_embedded()`가 소유하는 live bundle, map/combat-preview/run-policy domain builtin, test-only direct load의 경계를 설명한다. | RON loader, `include_str!`, live data ownership, server/test data loading 경계를 바꿀 때 |
 | `docs/code_documentation_sync_guidelines.md` | 코드 변경 시 문서/테스트를 함께 갱신하기 위한 상위 작업 지침. source-of-truth 순서, 변경 유형별 갱신 문서, 완료 전 체크리스트를 포함한다. | 코드 변경이 문서/Unity 계약/테스트에 영향을 줄 때 |
@@ -130,6 +131,7 @@ goal 완료 후 유지해야 할 정책은 `game_rulebook.md`, `skill_target_con
 - 게임 규칙, 시설형 Node Map 진행/visibility/selectability, 노드 흐름, 보상, 직원 성장, 전투 성공/실패 판정: `docs/game_rulebook.md`
 - Node Map JSON DTO, `map_template_id`, `slot_id`, `map_navigation.selectable_node_ids`, Unity 렌더링/선택 계약: 외부 `unity_core_contract.md`
 - 스킬/평타 타겟팅, 범위, 자동 시전, 유효 적대 대상 정책: `docs/skill_target_contract.md`
+- 전투 runtime 결정론/RNG, `event_log_seq`와 판정 분리, BattleEventLog/checkpoint/battle record/actor identity 구현 계약: `docs/core_runtime_contract.md`
 - Unity WebSocket, DTO shape, command/result: 외부 `unity_core_contract.md`
 - 전투 시작, live update, checkpoint, resync, 전투 종료 snapshot 흐름: 외부 `core_unity_battle_transport_contract.md`
 - Unity 구현 순서와 클라이언트 작업 지침: 외부 `unity_client_implementation_goal.md`

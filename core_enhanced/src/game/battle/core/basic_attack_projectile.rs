@@ -380,7 +380,14 @@ impl BattleCore {
             Self::activation_commands_from_bindings(
                 self.collect_all_trigger_activations(attacker_instance_id, TriggerType::OnAttack),
                 attacker_instance_id,
-                Some(target_instance_id),
+                super::commands::TriggerAbilityContext {
+                    trigger_type: TriggerType::OnAttack,
+                    trigger_unit_id: attacker_instance_id,
+                    counterpart_unit_id: Some(target_instance_id),
+                    target_id: Some(target_instance_id),
+                    occurrence_id: projectile_id,
+                    occurrence_index: 0,
+                },
             )
         } else {
             Vec::new()
@@ -388,7 +395,14 @@ impl BattleCore {
         trigger_ability_commands.extend(Self::activation_commands_from_bindings(
             self.collect_all_trigger_activations(target_instance_id, TriggerType::OnHit),
             target_instance_id,
-            Some(attacker_instance_id),
+            super::commands::TriggerAbilityContext {
+                trigger_type: TriggerType::OnHit,
+                trigger_unit_id: target_instance_id,
+                counterpart_unit_id: Some(attacker_instance_id),
+                target_id: Some(attacker_instance_id),
+                occurrence_id: projectile_id,
+                occurrence_index: 0,
+            },
         ));
 
         let ctx = DamageContext {

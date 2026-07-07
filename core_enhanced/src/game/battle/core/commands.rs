@@ -3,13 +3,15 @@ use crate::game::battle::cooldown::{SourcedAbilityActivation, SourcedEffect};
 use crate::game::battle::core::BattleCore;
 use crate::game::battle::damage::{
     calculate_damage, BattleCommand, DamageContext, DamageModifiers, DamageSource,
-    DamageSourceSnapshot,
+    DamageSourceSnapshot, ProcRollIdentity,
 };
 use crate::game::battle::enums::BattleEvent;
 use crate::game::battle::event_log::{BattleEventCause, BattleLogEvent, HpChangeReason};
 use crate::game::battle::ids::UnitInstanceId;
+use crate::game::determinism;
 use crate::game::enums::Side;
 use crate::game::stats::{Effect, TriggerEffectTarget, TriggerType};
+use uuid::Uuid;
 
 use super::{
     basic_attack_projectile::ProjectileLaunch,
@@ -22,6 +24,16 @@ use super::{
 pub(in crate::game::battle::core) struct TriggerEffectContext {
     pub(in crate::game::battle::core) trigger_unit_id: UnitInstanceId,
     pub(in crate::game::battle::core) counterpart_unit_id: Option<UnitInstanceId>,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub(in crate::game::battle::core) struct TriggerAbilityContext {
+    pub(in crate::game::battle::core) trigger_type: TriggerType,
+    pub(in crate::game::battle::core) trigger_unit_id: UnitInstanceId,
+    pub(in crate::game::battle::core) counterpart_unit_id: Option<UnitInstanceId>,
+    pub(in crate::game::battle::core) target_id: Option<UnitInstanceId>,
+    pub(in crate::game::battle::core) occurrence_id: Uuid,
+    pub(in crate::game::battle::core) occurrence_index: u32,
 }
 
 impl BattleCore {
@@ -41,29 +53,88 @@ impl BattleCore {
     pub(super) fn activation_commands_from_bindings(
         bindings: Vec<SourcedAbilityActivation>,
         caster_id: UnitInstanceId,
-        target_id: Option<UnitInstanceId>,
+        context: TriggerAbilityContext,
     ) -> Vec<BattleCommand> {
         bindings
             .into_iter()
-            .map(|sourced| match sourced.binding.activation {
+            .enumerate()
+            .map(|(local_index, sourced)| match sourced.binding.activation {
                 crate::game::ability::AbilityActivationDef::TriggerProc {
                     proc_chance_percent,
                     internal_cooldown_ms,
                     max_triggers_per_battle,
                     ..
-                } => BattleCommand::TriggerAbility {
-                    skill_id: sourced.binding.ability_id,
-                    caster_id,
-                    target_id,
-                    activation_source: sourced.source,
-                    binding_index: sourced.binding_index,
-                    proc_chance_percent,
-                    internal_cooldown_ms,
-                    max_triggers_per_battle,
-                    allow_dead_caster: false,
-                },
+                } => {
+                    let skill_id = sourced.binding.ability_id;
+                    let identity = ProcRollIdentity {
+                        trigger_type: context.trigger_type,
+                        activation_source: sourced.source,
+                        ability_id: skill_id.clone(),
+                        binding_index: sourced.binding_index,
+                        caster_id,
+                        trigger_unit_id: context.trigger_unit_id,
+                        counterpart_unit_id: context.counterpart_unit_id,
+                        target_id: context.target_id,
+                        occurrence_id: context.occurrence_id,
+                        occurrence_index: context
+                            .occurrence_index
+                            .saturating_add(local_index as u32),
+                    };
+                    BattleCommand::TriggerAbility {
+                        skill_id,
+                        caster_id,
+                        target_id: context.target_id,
+                        activation_source: sourced.source,
+                        binding_index: sourced.binding_index,
+                        proc_roll_identity: identity,
+                        proc_chance_percent,
+                        internal_cooldown_ms,
+                        max_triggers_per_battle,
+                        allow_dead_caster: false,
+                    }
+                }
             })
             .collect()
+    }
+
+    fn proc_occurrence_trigger_type_tag(trigger_type: TriggerType) -> u64 {
+        match trigger_type {
+            TriggerType::Permanent => 0x5045_524D_414E_454Eu64,
+            TriggerType::OnAttack => 0x4F4E_4154_5441_434Bu64,
+            TriggerType::OnHit => 0x4F4E_4849_545F_5F5Fu64,
+            TriggerType::OnKill => 0x4F4E_4B49_4C4C_5F5Fu64,
+            TriggerType::OnDeath => 0x4F4E_4445_4154_48u64,
+            TriggerType::OnBattleStart => 0x4241_5454_4C45_5354u64,
+            TriggerType::OnAllyDeath => 0x414C_4C59_4445_4144u64,
+        }
+    }
+
+    pub(in crate::game::battle::core) fn proc_occurrence_id(
+        &self,
+        trigger_type: TriggerType,
+        trigger_unit_id: UnitInstanceId,
+        counterpart_unit_id: Option<UnitInstanceId>,
+        time_ms: u64,
+        salt: u64,
+    ) -> Uuid {
+        const PROC_OCCURRENCE_NS: u64 = 0x5052_4F43_4F43_4352u64; // "PROCOCCR"
+
+        fn unit_tag(unit_id: UnitInstanceId) -> u64 {
+            let mut bytes = [0u8; 8];
+            bytes.copy_from_slice(&unit_id.as_bytes()[..8]);
+            u64::from_be_bytes(bytes)
+        }
+
+        let mut seed = self.seed
+            ^ Self::proc_occurrence_trigger_type_tag(trigger_type).rotate_left(7)
+            ^ unit_tag(trigger_unit_id).rotate_left(19)
+            ^ time_ms.wrapping_mul(0x9E37_79B9_7F4A_7C15)
+            ^ salt.rotate_left(41);
+        if let Some(counterpart_unit_id) = counterpart_unit_id {
+            seed ^= unit_tag(counterpart_unit_id).rotate_left(31);
+        }
+
+        determinism::uuid_v4_from_seed(seed, PROC_OCCURRENCE_NS, salt)
     }
 
     pub(in crate::game::battle::core) fn trigger_commands_from_effects(
@@ -287,6 +358,7 @@ impl BattleCore {
         match delivery {
             crate::game::battle::event_log::AttackDelivery::Instant => {
                 self.grant_basic_attack_release_resonance(attacker_instance_id, current_time_ms);
+                let attack_occurrence_id = source_snapshot.crit_roll_identity.source_instance_id;
 
                 let result =
                     self.calculate_basic_attack_damage_snapshot(BasicAttackDamageSnapshot {
@@ -326,7 +398,14 @@ impl BattleCore {
                             TriggerType::OnAttack,
                         ),
                         attacker_instance_id,
-                        Some(target_id),
+                        TriggerAbilityContext {
+                            trigger_type: TriggerType::OnAttack,
+                            trigger_unit_id: attacker_instance_id,
+                            counterpart_unit_id: Some(target_id),
+                            target_id: Some(target_id),
+                            occurrence_id: attack_occurrence_id,
+                            occurrence_index: 0,
+                        },
                     )
                 } else {
                     Vec::new()
@@ -334,7 +413,14 @@ impl BattleCore {
                 trigger_ability_commands.extend(Self::activation_commands_from_bindings(
                     self.collect_all_trigger_activations(target_id, TriggerType::OnHit),
                     target_id,
-                    Some(attacker_instance_id),
+                    TriggerAbilityContext {
+                        trigger_type: TriggerType::OnHit,
+                        trigger_unit_id: target_id,
+                        counterpart_unit_id: Some(attacker_instance_id),
+                        target_id: Some(attacker_instance_id),
+                        occurrence_id: attack_occurrence_id,
+                        occurrence_index: 0,
+                    },
                 ));
                 if !trigger_ability_commands.is_empty() {
                     self.process_commands(trigger_ability_commands, current_time_ms);
@@ -418,6 +504,7 @@ impl BattleCore {
                     target_id,
                     activation_source,
                     binding_index,
+                    proc_roll_identity,
                     proc_chance_percent,
                     internal_cooldown_ms,
                     max_triggers_per_battle,
@@ -425,9 +512,7 @@ impl BattleCore {
                 } => {
                     if !self.should_fire_triggered_ability(
                         super::sim::TriggeredAbilityProcContext {
-                            source: activation_source,
-                            ability_id: &skill_id,
-                            binding_index,
+                            proc_roll_identity: &proc_roll_identity,
                             current_time_ms,
                             proc_chance_percent,
                             internal_cooldown_ms,
@@ -663,6 +748,7 @@ mod tests {
         AbilityActivationBinding, AbilityActivationDef, DeliveryDef, SkillCastTargetingDef,
         SkillDef, SkillId, SkillStepDef, SkillTarget, StepTargetingMode, UnitTargetRule,
     };
+    use crate::game::battle::cooldown::{CooldownSource, SourcedAbilityActivation};
     use crate::game::battle::core::movement::{
         types::{ActiveMovementSegment, UnitBody, WorldVec2, DATA_UNITS_PER_WORLD},
         ActionState, MovementSegmentEndKind,
@@ -671,8 +757,8 @@ mod tests {
     use crate::game::battle::core::types::{ProjectileGuidance, RuntimeUnit, RuntimeUnitLifecycle};
     use crate::game::battle::core::ProjectileRecord;
     use crate::game::battle::damage::{
-        BattleCommand, DamageFeedbackTag, DamageModifiers, DamageSource, DamageSourceSnapshot,
-        DamageType,
+        BattleCommand, CombatRollIdentity, CombatRollKind, DamageFeedbackTag, DamageModifiers,
+        DamageSource, DamageSourceSnapshot, DamageType, ProcRollIdentity,
     };
     use crate::game::battle::enums::BattleEvent;
     use crate::game::battle::event_log::{
@@ -711,7 +797,16 @@ mod tests {
             base_damage,
             modifiers: DamageModifiers::default(),
             crit_roll_percent: None,
-            crit_roll_event_log_seq: 0,
+            crit_roll_identity: CombatRollIdentity::new(
+                CombatRollKind::for_damage_source(damage_source),
+                Some(source_id),
+                Uuid::from_u128(
+                    0xC011_0000_0000_0000_0000_0000_0000_0000u128
+                        ^ source_id.as_uuid().as_u128()
+                        ^ (time_ms as u128),
+                ),
+            )
+            .with_target(_target_id),
             minimum_damage: 0,
             committed_at_ms: time_ms,
             on_attack_modifiers: DamageModifiers::default(),
@@ -861,6 +956,298 @@ mod tests {
 
         assert!(core.graveyard.contains_key(&player_id));
         assert!(core.graveyard.contains_key(&opponent_id));
+    }
+
+    #[test]
+    fn damage_crit_roll_is_independent_from_event_log_sequence() {
+        let attacker_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xD11));
+        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xD12));
+
+        fn core_with_attacker_and_target(
+            attacker_id: crate::game::battle::ids::UnitInstanceId,
+            target_id: crate::game::battle::ids::UnitInstanceId,
+        ) -> super::BattleCore {
+            let mut core = new_test_core(empty_game_data(), 7);
+            core.units.insert(
+                attacker_id,
+                test_runtime_unit(
+                    attacker_id,
+                    Side::Player,
+                    Uuid::nil(),
+                    UnitStats::with_values(100, 100, 100, 0, 1),
+                ),
+            );
+            core.units.insert(
+                target_id,
+                test_runtime_unit(
+                    target_id,
+                    Side::Opponent,
+                    Uuid::nil(),
+                    UnitStats::with_values(100, 100, 100, 0, 1),
+                ),
+            );
+            core
+        }
+
+        let mut control = core_with_attacker_and_target(attacker_id, target_id);
+        let mut with_extra_log = core_with_attacker_and_target(attacker_id, target_id);
+
+        let control_snapshot = control
+            .damage_source_snapshot_for_unit(
+                attacker_id,
+                target_id,
+                DamageSource::BasicAttack,
+                DamageType::Physical,
+                100,
+                DamageModifiers::default(),
+                1,
+                10,
+                true,
+            )
+            .expect("control snapshot");
+
+        with_extra_log.record_event_log(
+            5,
+            BattleLogEvent::BattleStart {
+                width: 4,
+                height: 4,
+            },
+        );
+
+        let after_extra_log = with_extra_log
+            .damage_source_snapshot_for_unit(
+                attacker_id,
+                target_id,
+                DamageSource::BasicAttack,
+                DamageType::Physical,
+                100,
+                DamageModifiers::default(),
+                1,
+                10,
+                true,
+            )
+            .expect("snapshot after extra log");
+
+        assert_ne!(with_extra_log.event_log_seq, control.event_log_seq);
+        assert_eq!(
+            control_snapshot.crit_roll_identity,
+            after_extra_log.crit_roll_identity
+        );
+        assert_eq!(
+            control_snapshot.crit_roll_percent,
+            after_extra_log.crit_roll_percent
+        );
+    }
+
+    #[test]
+    fn delayed_damage_materialization_uses_hit_index_identity_not_event_log_sequence() {
+        let mut core = new_test_core(empty_game_data(), 9);
+        let caster_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xD21));
+        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xD22));
+
+        core.units.insert(
+            caster_id,
+            test_runtime_unit(
+                caster_id,
+                Side::Player,
+                Uuid::nil(),
+                UnitStats::with_values(100, 100, 100, 0, 1),
+            ),
+        );
+        core.units.insert(
+            target_id,
+            test_runtime_unit(
+                target_id,
+                Side::Opponent,
+                Uuid::nil(),
+                UnitStats::with_values(100, 100, 100, 0, 1),
+            ),
+        );
+
+        let template = core
+            .damage_source_snapshot_template_for_unit(
+                caster_id,
+                DamageSource::Ability,
+                DamageType::Magic,
+                33,
+                DamageModifiers::default(),
+                0,
+                20,
+                false,
+            )
+            .expect("source template");
+
+        core.record_event_log(
+            15,
+            BattleLogEvent::BattleStart {
+                width: 4,
+                height: 4,
+            },
+        );
+
+        let first_hit =
+            core.materialize_damage_source_snapshot_for_target_hit(template.clone(), target_id, 0);
+        let second_hit =
+            core.materialize_damage_source_snapshot_for_target_hit(template, target_id, 1);
+
+        assert_eq!(first_hit.crit_roll_identity.target_unit_id, Some(target_id));
+        assert_eq!(first_hit.crit_roll_identity.hit_index, 0);
+        assert_eq!(
+            second_hit.crit_roll_identity.target_unit_id,
+            Some(target_id)
+        );
+        assert_eq!(second_hit.crit_roll_identity.hit_index, 1);
+        assert_ne!(first_hit.crit_roll_identity, second_hit.crit_roll_identity);
+    }
+
+    fn test_proc_roll_identity(
+        ability_id: &str,
+        occurrence_id: Uuid,
+        occurrence_index: u32,
+    ) -> ProcRollIdentity {
+        let caster_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xCA57));
+        let trigger_unit_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xAA));
+        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xBB));
+        let item_instance_id = Uuid::from_u128(0x1234);
+        ProcRollIdentity {
+            trigger_type: TriggerType::OnAttack,
+            activation_source: CooldownSource::Item { item_instance_id },
+            ability_id: SkillId::from(ability_id),
+            binding_index: 0,
+            caster_id,
+            trigger_unit_id,
+            counterpart_unit_id: Some(target_id),
+            target_id: Some(target_id),
+            occurrence_id,
+            occurrence_index,
+        }
+    }
+
+    #[test]
+    fn proc_roll_percent_is_independent_from_event_log_sequence() {
+        let identity = test_proc_roll_identity("proc_roll_log_test", Uuid::from_u128(0x9001), 0);
+        let control = new_test_core(empty_game_data(), 99);
+        let mut with_extra_log = new_test_core(empty_game_data(), 99);
+
+        with_extra_log.record_event_log(
+            5,
+            BattleLogEvent::BattleStart {
+                width: 4,
+                height: 4,
+            },
+        );
+
+        assert_ne!(control.event_log_seq, with_extra_log.event_log_seq);
+        assert_eq!(
+            control.proc_roll_percent(&identity),
+            with_extra_log.proc_roll_percent(&identity)
+        );
+    }
+
+    #[test]
+    fn proc_roll_percent_uses_occurrence_identity_not_success_count() {
+        let core = new_test_core(empty_game_data(), 123);
+        let first =
+            test_proc_roll_identity("proc_roll_occurrence_test", Uuid::from_u128(0x9002), 0);
+        let same_again =
+            test_proc_roll_identity("proc_roll_occurrence_test", Uuid::from_u128(0x9002), 0);
+        assert_eq!(
+            core.proc_roll_percent(&first),
+            core.proc_roll_percent(&same_again)
+        );
+
+        let first_roll = core.proc_roll_percent(&first);
+        let distinct_occurrence = (1..64)
+            .map(|index| {
+                test_proc_roll_identity("proc_roll_occurrence_test", Uuid::from_u128(0x9002), index)
+            })
+            .find(|identity| core.proc_roll_percent(identity) != first_roll)
+            .expect("occurrence identity should be able to produce an independent roll");
+
+        assert_ne!(first, distinct_occurrence);
+        assert_ne!(
+            first_roll,
+            core.proc_roll_percent(&distinct_occurrence),
+            "different occurrence identity should not be collapsed to successful count"
+        );
+    }
+
+    #[test]
+    fn activation_commands_carry_trigger_proc_roll_identity() {
+        let item_instance_id = Uuid::from_u128(0x5678);
+        let caster_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xC001));
+        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(0xC002));
+        let occurrence_id = Uuid::from_u128(0xBEEF);
+        let binding = SourcedAbilityActivation {
+            source: CooldownSource::Item { item_instance_id },
+            binding: AbilityActivationBinding {
+                ability_id: SkillId::from("identity_proc"),
+                activation: AbilityActivationDef::TriggerProc {
+                    trigger: TriggerType::OnAttack,
+                    proc_chance_percent: 75,
+                    internal_cooldown_ms: 250,
+                    max_triggers_per_battle: Some(3),
+                },
+            },
+            binding_index: 4,
+        };
+
+        let commands = super::BattleCore::activation_commands_from_bindings(
+            vec![binding],
+            caster_id,
+            super::TriggerAbilityContext {
+                trigger_type: TriggerType::OnAttack,
+                trigger_unit_id: caster_id,
+                counterpart_unit_id: Some(target_id),
+                target_id: Some(target_id),
+                occurrence_id,
+                occurrence_index: 9,
+            },
+        );
+
+        assert_eq!(commands.len(), 1);
+        let BattleCommand::TriggerAbility {
+            skill_id,
+            caster_id: command_caster_id,
+            target_id: command_target_id,
+            activation_source,
+            binding_index,
+            proc_roll_identity,
+            proc_chance_percent,
+            internal_cooldown_ms,
+            max_triggers_per_battle,
+            allow_dead_caster,
+        } = &commands[0]
+        else {
+            panic!("expected TriggerAbility command");
+        };
+
+        assert_eq!(skill_id.as_str(), "identity_proc");
+        assert_eq!(*command_caster_id, caster_id);
+        assert_eq!(*command_target_id, Some(target_id));
+        assert_eq!(
+            *activation_source,
+            CooldownSource::Item { item_instance_id }
+        );
+        assert_eq!(*binding_index, 4);
+        assert_eq!(*proc_chance_percent, 75);
+        assert_eq!(*internal_cooldown_ms, 250);
+        assert_eq!(*max_triggers_per_battle, Some(3));
+        assert!(!allow_dead_caster);
+
+        assert_eq!(proc_roll_identity.trigger_type, TriggerType::OnAttack);
+        assert_eq!(
+            proc_roll_identity.activation_source,
+            CooldownSource::Item { item_instance_id }
+        );
+        assert_eq!(proc_roll_identity.ability_id.as_str(), "identity_proc");
+        assert_eq!(proc_roll_identity.binding_index, 4);
+        assert_eq!(proc_roll_identity.caster_id, caster_id);
+        assert_eq!(proc_roll_identity.trigger_unit_id, caster_id);
+        assert_eq!(proc_roll_identity.counterpart_unit_id, Some(target_id));
+        assert_eq!(proc_roll_identity.target_id, Some(target_id));
+        assert_eq!(proc_roll_identity.occurrence_id, occurrence_id);
+        assert_eq!(proc_roll_identity.occurrence_index, 9);
     }
 
     #[test]
@@ -2619,6 +3006,83 @@ mod tests {
                 matches!(
                     &entry.event,
                     BattleLogEvent::AbilityCast { skill_id, .. } if skill_id.as_str() == "proc_icd"
+                )
+            })
+            .count();
+        assert_eq!(proc_casts, 1);
+    }
+
+    #[test]
+    fn item_activation_proc_respects_max_triggers_per_battle() {
+        let attacker_base_uuid = Uuid::from_u128(0x12);
+        let target_base_uuid = Uuid::from_u128(0x22);
+        let item_base_uuid = Uuid::from_u128(0x32);
+        let attacker_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(21));
+        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(22));
+        let item_instance_id = Uuid::from_u128(23);
+
+        let activation = AbilityActivationBinding {
+            ability_id: SkillId::from("proc_max_once"),
+            activation: AbilityActivationDef::TriggerProc {
+                trigger: TriggerType::OnAttack,
+                proc_chance_percent: 100,
+                internal_cooldown_ms: 0,
+                max_triggers_per_battle: Some(1),
+            },
+        };
+        let game_data = battle_test_game_data(
+            attacker_base_uuid,
+            target_base_uuid,
+            item_base_uuid,
+            HashMap::new(),
+            vec![activation],
+            vec![damage_proc_skill("proc_max_once", 5)],
+        );
+
+        let mut core = new_test_core(game_data, 8);
+
+        let mut attacker_stats = UnitStats::with_values(100, 100, 10, 0, 1000);
+        attacker_stats.move_speed_units_per_ms = 1;
+        let mut target_stats = UnitStats::with_values(100, 100, 1, 0, 1000);
+        target_stats.move_speed_units_per_ms = 1;
+
+        core.units.insert(
+            attacker_id,
+            test_runtime_unit(
+                attacker_id,
+                Side::Player,
+                attacker_base_uuid,
+                attacker_stats,
+            ),
+        );
+        core.units.insert(
+            target_id,
+            test_runtime_unit(target_id, Side::Opponent, target_base_uuid, target_stats),
+        );
+        core.items.insert(
+            item_instance_id,
+            crate::game::battle::core::RuntimeItem {
+                instance_id: item_instance_id,
+                owner: Side::Player,
+                owner_unit_instance: attacker_id,
+                base_uuid: item_base_uuid,
+            },
+        );
+        place_test_unit(&mut core, attacker_id, Position::new(0, 0));
+        place_test_unit(&mut core, target_id, Position::new(1, 0));
+
+        assert!(core.resolve_basic_attack(attacker_id, target_id, 0));
+        assert!(core.resolve_basic_attack(attacker_id, target_id, 10));
+        drain_event_queue(&mut core);
+
+        let proc_casts = core
+            .event_log
+            .entries
+            .iter()
+            .filter(|entry| {
+                matches!(
+                    &entry.event,
+                    BattleLogEvent::AbilityCast { skill_id, .. } if skill_id.as_str() == "proc_max_once"
                 )
             })
             .count();

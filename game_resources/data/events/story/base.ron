@@ -1,0 +1,65 @@
+EventDatabase(
+    events: [
+        EventDefinition(
+            id: "white_night_confession_01",
+            entry_scene_id: "start",
+            scenes: [
+                EventSceneDefinition(
+                    id: "start",
+                    presentation: EventScenePresentation(
+                        background_id: "white_night_chapel",
+                        script_id: "white_night_confession_intro",
+                        speaker_id: Some("white_night"),
+                        portrait_id: Some("white_night_veil"),
+                    ),
+                    next: Scene(scene_id: "choice"),
+                ),
+                EventSceneDefinition(
+                    id: "choice",
+                    presentation: EventScenePresentation(
+                        background_id: "white_night_chapel",
+                        script_id: "white_night_confession_choice",
+                        speaker_id: Some("white_night"),
+                        portrait_id: Some("white_night_veil"),
+                    ),
+                    next: Choices(choices: [
+                        EventChoiceDefinition(
+                            id: "listen",
+                            label_id: "white_night_choice_listen",
+                            preview: EventChoicePreview(
+                                risk: Some("High"),
+                                starts_combat: false,
+                                reward_hint_id: None,
+                                penalty_hint_id: Some("white_night_mark_hint"),
+                            ),
+                            effects: [],
+                            next: Some(Scene(scene_id: "end")),
+                        ),
+                        EventChoiceDefinition(
+                            id: "turn_away",
+                            label_id: "white_night_choice_turn_away",
+                            preview: EventChoicePreview(
+                                risk: Some("Low"),
+                                starts_combat: false,
+                                reward_hint_id: None,
+                                penalty_hint_id: None,
+                            ),
+                            effects: [],
+                            next: Some(End),
+                        ),
+                    ]),
+                ),
+                EventSceneDefinition(
+                    id: "end",
+                    presentation: EventScenePresentation(
+                        background_id: "white_night_chapel",
+                        script_id: "white_night_confession_result",
+                        speaker_id: Some("white_night"),
+                        portrait_id: Some("white_night_veil"),
+                    ),
+                    next: End,
+                ),
+            ],
+        ),
+    ],
+)

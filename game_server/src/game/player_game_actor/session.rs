@@ -17,9 +17,9 @@ use crate::{
         load_balance_actor::messages::GetOrCreatePlayerActor,
         player_game_actor::{
             messages::{
-                AttachSession, DetachSession, ExecuteAdminCommand, ExecutePlayerBehavior,
-                ForceDisconnect, PlayerGameClientMessage, PlayerGameServerMessage,
-                QuitPlayerActor,
+                AttachSession, DetachSession, EnsureLiveBattleTick, ExecuteAdminCommand,
+                ExecutePlayerBehavior, ForceDisconnect, PlayerBehaviorCommand,
+                PlayerGameClientMessage, PlayerGameServerMessage, QuitPlayerActor,
             },
             state::PlayerGameActorError,
             PlayerGameActor,
@@ -147,12 +147,13 @@ impl PlayerGameSession {
         .map(move |result, act, ctx| match result {
             Ok((actor, snapshot)) => {
                 act.player_id = Some(player_id);
-                act.player_actor = Some(actor);
+                act.player_actor = Some(actor.clone());
                 Self::send_json(ctx, &PlayerGameServerMessage::Authed { player_id });
                 Self::send_json(
                     ctx,
                     &PlayerGameServerMessage::StateSnapshot { state: snapshot },
                 );
+                actor.do_send(EnsureLiveBattleTick);
             }
             Err(error) => {
                 Self::send_json(ctx, &error.to_server_message(None));
@@ -167,7 +168,7 @@ impl PlayerGameSession {
         &mut self,
         ctx: &mut Ctx,
         request_id: String,
-        behavior: game_core::game::behavior::PlayerBehavior,
+        command: PlayerBehaviorCommand,
     ) {
         let Some(actor) = self.player_actor.clone() else {
             self.send_error(
@@ -185,18 +186,25 @@ impl PlayerGameSession {
             .send(ExecutePlayerBehavior {
                 session_id,
                 request_id: request_id.clone(),
-                behavior,
+                behavior: command.behavior,
+                battle_side_message: command.battle_side_message,
             })
             .into_actor(self)
             .map(move |result, _act, ctx| match result {
                 Ok(Ok(result)) => {
                     Self::send_json(ctx, &result.response);
-                    Self::send_json(
-                        ctx,
-                        &PlayerGameServerMessage::StateSnapshot {
-                            state: result.state_snapshot,
-                        },
-                    );
+                    for side_message in &result.side_messages {
+                        Self::send_json(ctx, side_message);
+                    }
+                    if let Some(state_snapshot) = result.state_snapshot {
+                        Self::send_json(
+                            ctx,
+                            &PlayerGameServerMessage::StateSnapshot {
+                                state: state_snapshot,
+                            },
+                        );
+                    }
+                    actor.do_send(EnsureLiveBattleTick);
                 }
                 Ok(Err(error)) => {
                     Self::send_json(ctx, &error.to_server_message(Some(request_id.clone())))
@@ -244,12 +252,15 @@ impl PlayerGameSession {
             .map(move |result, _act, ctx| match result {
                 Ok(Ok(result)) => {
                     Self::send_json(ctx, &result.response);
-                    Self::send_json(
-                        ctx,
-                        &PlayerGameServerMessage::StateSnapshot {
-                            state: result.state_snapshot,
-                        },
-                    );
+                    if let Some(state_snapshot) = result.state_snapshot {
+                        Self::send_json(
+                            ctx,
+                            &PlayerGameServerMessage::StateSnapshot {
+                                state: state_snapshot,
+                            },
+                        );
+                    }
+                    actor.do_send(EnsureLiveBattleTick);
                 }
                 Ok(Err(error)) => {
                     Self::send_json(ctx, &error.to_server_message(Some(request_id.clone())))
@@ -324,9 +335,13 @@ impl StreamHandler<Result<Message, ProtocolError>> for PlayerGameSession {
                     Ok(PlayerGameClientMessage::Command {
                         request_id,
                         behavior,
-                    }) => {
-                        self.handle_command(ctx, request_id, behavior.into());
-                    }
+                        battle_response,
+                    }) => match PlayerBehaviorCommand::from_transport(behavior, battle_response) {
+                        Ok(command) => self.handle_command(ctx, request_id, command),
+                        Err(error) => {
+                            Self::send_json(ctx, &error.to_server_message(Some(request_id)))
+                        }
+                    },
                     Ok(PlayerGameClientMessage::AdminCommand {
                         request_id,
                         admin,
@@ -404,9 +419,7 @@ fn admin_command_access(
     configured_token: Option<&str>,
     supplied_token: Option<&str>,
 ) -> Result<(), PlayerGameActorError> {
-    if run_mode
-        .is_some_and(|value| value.eq_ignore_ascii_case("production"))
-    {
+    if run_mode.is_some_and(|value| value.eq_ignore_ascii_case("production")) {
         return Err(PlayerGameActorError::new(
             "admin_commands_disabled",
             "Admin commands are disabled in production",

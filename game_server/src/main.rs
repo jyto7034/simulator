@@ -1,24 +1,7 @@
 use actix::Actor;
 use actix_web::{get, web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
-use game_core::game::{
-    battle::buffs::BuffDatabase,
-    data::{
-        abnormality_data::AbnormalityDatabase,
-        artifact_data::ArtifactDatabase,
-        consumable_data::ConsumableDatabase,
-        corroded_employee_data::CorrodedEmployeeProfileDatabase,
-        corroded_wave_data::CorrodedWavePresetDatabase,
-        employee_data::{RecruitmentEmployeeCandidateDatabase, StarterEmployeeCandidateDatabase},
-        equipment_data::EquipmentDatabase,
-        pve_data::PveEncounterDatabase,
-        reward_data::RewardDatabase,
-        shop_data::ShopDatabase,
-        skill_data::SkillDatabase,
-        skill_fragment_data::SkillFragmentDatabase,
-        GameDataBase, GameDataBuilder,
-    },
-};
+use game_core::game::data::GameDataBase;
 use game_server::{
     env::Settings,
     game::{load_balance_actor::LoadBalanceActor, player_game_actor::session::PlayerGameSession},
@@ -155,76 +138,5 @@ async fn main() -> std::io::Result<()> {
 }
 
 fn load_game_data_from_ron() -> Arc<GameDataBase> {
-    let shops_ron = include_str!("../../game_resources/data/events/shops/base.ron");
-    let rewards_ron = include_str!("../../game_resources/data/events/rewards/base.ron");
-    let abnormalities_ron = include_str!("../../game_resources/data/abnormalities/base.ron");
-    let corroded_employees_ron =
-        include_str!("../../game_resources/data/enemies/corroded_employees.ron");
-    let corroded_wave_presets_ron =
-        include_str!("../../game_resources/data/enemies/corroded_wave_presets.ron");
-    let starter_candidates_ron =
-        include_str!("../../game_resources/data/employees/starter_candidates.ron");
-    let recruitment_candidates_ron =
-        include_str!("../../game_resources/data/employees/recruitment_candidates.ron");
-    let equipments_ron = include_str!("../../game_resources/data/equipments/base.ron");
-    let artifacts_ron = include_str!("../../game_resources/data/artifacts/base.ron");
-    let consumables_ron = include_str!("../../game_resources/data/consumables/base.ron");
-    let buffs_ron = include_str!("../../game_resources/data/buffs/base.ron");
-    let skills_ron = include_str!("../../game_resources/data/skills/base.ron");
-    let skill_fragments_ron = include_str!("../../game_resources/data/skill_fragments/base.ron");
-    let pve_ron = include_str!("../../game_resources/data/pve/encounters.ron");
-
-    let shops_db: ShopDatabase =
-        ron::de::from_str(shops_ron).expect("Failed to deserialize shops/base.ron");
-
-    let rewards_db: RewardDatabase =
-        ron::de::from_str(rewards_ron).expect("Failed to deserialize rewards/base.ron");
-
-    let abnormalities_db: AbnormalityDatabase =
-        ron::de::from_str(abnormalities_ron).expect("Failed to deserialize abnormalities/base.ron");
-    let corroded_employee_db: CorrodedEmployeeProfileDatabase =
-        ron::de::from_str(corroded_employees_ron)
-            .expect("Failed to deserialize corroded_employees.ron");
-    let corroded_wave_db: CorrodedWavePresetDatabase = ron::de::from_str(corroded_wave_presets_ron)
-        .expect("Failed to deserialize corroded_wave_presets.ron");
-    let starter_employee_db: StarterEmployeeCandidateDatabase =
-        ron::de::from_str(starter_candidates_ron)
-            .expect("Failed to deserialize starter_candidates.ron");
-    let recruitment_employee_db: RecruitmentEmployeeCandidateDatabase =
-        ron::de::from_str(recruitment_candidates_ron)
-            .expect("Failed to deserialize recruitment_candidates.ron");
-
-    let equipments_db: EquipmentDatabase =
-        ron::de::from_str(equipments_ron).expect("Failed to deserialize equipments/base.ron");
-    let artifacts_db: ArtifactDatabase =
-        ron::de::from_str(artifacts_ron).expect("Failed to deserialize artifacts/base.ron");
-    let consumables_db: ConsumableDatabase =
-        ron::de::from_str(consumables_ron).expect("Failed to deserialize consumables/base.ron");
-    let buffs_db: BuffDatabase =
-        ron::de::from_str(buffs_ron).expect("Failed to deserialize buffs/base.ron");
-    let skill_db: SkillDatabase =
-        ron::de::from_str(skills_ron).expect("Failed to deserialize skills/base.ron");
-    let skill_fragment_db: SkillFragmentDatabase = ron::de::from_str(skill_fragments_ron)
-        .expect("Failed to deserialize skill_fragments/base.ron");
-    let pve_db: PveEncounterDatabase =
-        ron::de::from_str(pve_ron).expect("Failed to deserialize pve/encounters.ron");
-
-    GameDataBuilder::empty()
-        .with_abnormality_data(Arc::new(abnormalities_db))
-        .with_corroded_employee_data(Arc::new(corroded_employee_db))
-        .with_corroded_wave_data(Arc::new(corroded_wave_db))
-        .with_starter_employee_data(Arc::new(starter_employee_db))
-        .with_recruitment_employee_data(Arc::new(recruitment_employee_db))
-        .with_artifact_data(Arc::new(artifacts_db))
-        .with_consumable_data(Arc::new(consumables_db))
-        .with_equipment_data(Arc::new(equipments_db))
-        .with_shop_data(Arc::new(shops_db))
-        .with_reward_data(Arc::new(rewards_db))
-        .with_pve_data(Arc::new(pve_db))
-        .with_buff_data(Arc::new(buffs_db))
-        .with_skill_data(Arc::new(skill_db))
-        .with_skill_fragment_data(Arc::new(SkillFragmentDatabase::with_builtin_starter(
-            skill_fragment_db.fragments,
-        )))
-        .build_arc()
+    GameDataBase::load_live_embedded()
 }

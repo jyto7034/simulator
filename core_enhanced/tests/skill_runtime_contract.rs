@@ -33,6 +33,12 @@ use game_core::game::resources::Position;
 use game_core::game::stats::{StatId, StatModifier, StatModifierKind};
 use uuid::Uuid;
 
+#[test]
+fn debug_event_log_exports_are_quarantined_under_target() {
+    let path = common::debug_event_log_exports_dir();
+    assert!(path.ends_with("target/debug_event_log_exports"));
+}
+
 fn unit_draft(owned_uuid: Uuid, base_uuid: Uuid) -> BattleUnitDraft {
     BattleUnitDraft {
         owned_uuid,

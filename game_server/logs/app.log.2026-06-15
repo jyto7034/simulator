@@ -1,0 +1,39 @@
+  2026-06-15T19:03:45.462060Z  INFO  Logger initialization complete: console and file (logs/app.log) output enabled
+    at game_server\src\lib.rs:94 on main ThreadId(1)
+
+  2026-06-15T19:03:45.462192Z  INFO  Logger initialized
+    at game_server\src\main.rs:57 on main ThreadId(1)
+
+  2026-06-15T19:03:45.462289Z  INFO  Retry config initialized
+    at game_server\src\main.rs:61 on main ThreadId(1)
+
+  2026-06-15T19:03:45.479492Z  INFO  Shop: []
+    at core_enhanced\src\game\data\shop_data.rs:167 on main ThreadId(1)
+
+  2026-06-15T19:03:45.480561Z  INFO  Game data loaded for meta-game sessions
+    at game_server\src\main.rs:64 on main ThreadId(1)
+
+  2026-06-15T19:03:45.480799Z  INFO  Metrics initialized and registered
+    at game_server\src\main.rs:69 on main ThreadId(1)
+
+  2026-06-15T19:03:45.481018Z  INFO  LoadBalanceActor started
+    at game_server\src\main.rs:73 on main ThreadId(1)
+
+  2026-06-15T19:03:45.481090Z  INFO  Starting HTTP server on 0.0.0.0:8081
+    at game_server\src\main.rs:89 on main ThreadId(1)
+
+  2026-06-15T19:03:45.483580Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on main ThreadId(1)
+
+  2026-06-15T19:03:45.483675Z  INFO  Game Server is running on 0.0.0.0:8081
+    at game_server\src\main.rs:135 on main ThreadId(1)
+
+  2026-06-15T19:03:45.483775Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on main ThreadId(1)
+
+  2026-06-15T19:03:45.483876Z  INFO  starting service: "actix-web-service-0.0.0.0:8081", workers: 32, listening on: 0.0.0.0:8081
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on main ThreadId(1)
+
+  2026-06-15T19:03:45.491484Z  INFO  LoadBalanceActor started
+    at game_server\src\game\load_balance_actor\mod.rs:28 on main ThreadId(1)
+

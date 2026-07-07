@@ -1,79 +1,11 @@
 ArtifactDatabase(
     items: [
         // 아티팩트 상인 라헬의 상품
-        ArtifactMetadata(
-            id: "one_sin",
-            uuid: "650e8400-e29b-41d4-a716-446655440011",
-            name: "One Sin and Hundreds of Good Deeds",
-            description: "A mysterious skull that grants absolution. Revives once upon death.",
-            rarity: WAW,
-            price: 100,
-            triggered_effects: {
-                Permanent: [
-                    (
-                        target: SelfUnit,
-                        effect: Modifier(StatModifier(
-                        stat: Defense,
-                        kind: Flat,
-                        value: 10,
-                    )),
-                    ),
-                ],
-            },
-        ),
-        ArtifactMetadata(
-            id: "fairy_festival",
-            uuid: "650e8400-e29b-41d4-a716-446655440012",
-            name: "Fairy Festival",
-            description: "An invitation to the eternal festival. Gently bolsters the whole team's vitality.",
-            rarity: WAW,
-            price: 120,
-            triggered_effects: {
-                Permanent: [
-                    (
-                        target: SelfUnit,
-                        effect: Modifier(StatModifier(
-                        stat: MaxHealth,
-                        kind: Percent,
-                        value: 10,
-                    )),
-                    ),
-                ],
-            },
-        ),
-        ArtifactMetadata(
-            id: "beauty_and_beast",
-            uuid: "650e8400-e29b-41d4-a716-446655440013",
-            name: "Beauty and the Beast",
-            description: "A cursed mirror showing true nature. Massively boosts stats but at a cost.",
-            rarity: ALEPH,
-            price: 200,
-            triggered_effects: {
-                Permanent: [
-                    (
-                        target: SelfUnit,
-                        effect: Modifier(StatModifier(
-                        stat: Attack,
-                        kind: Percent,
-                        value: 20,
-                    )),
-                    ),
-                    (
-                        target: SelfUnit,
-                        effect: Modifier(StatModifier(
-                        stat: MaxHealth,
-                        kind: Percent,
-                        value: 15,
-                    )),
-                    ),
-                ],
-            },
-        ),
-        ArtifactMetadata(
+                                ArtifactMetadata(
             id: "fragment_immortality",
             uuid: "a0000001-0000-0000-0000-000000000001",
             name: "Fragment of Immortality",
-            description: "A piece of the Plague Doctor's mask. Grants protection against instant death.",
+            description: "A piece of WhiteNight's doctor-form mask. Grants protection against instant death.",
             rarity: ALEPH,
             price: 350,
             triggered_effects: {
@@ -97,35 +29,7 @@ ArtifactDatabase(
                 ],
             },
         ),
-        ArtifactMetadata(
-            id: "red_ribbon",
-            uuid: "a0000002-0000-0000-0000-000000000002",
-            name: "Red Ribbon",
-            description: "A ribbon stained with blood. Increases movement speed.",
-            rarity: WAW,
-            price: 180,
-            triggered_effects: {
-                Permanent: [
-                    (
-                        target: SelfUnit,
-                        effect: Modifier(StatModifier(
-                        stat: MoveSpeedUnitsPerMs,
-                        kind: Flat,
-                        value: 500,
-                    )),
-                    ),
-                ],
-            },
-            ability_activations: [
-                (
-                    ability_id: "red_ribbon_haste",
-                    activation: TriggerProc(
-                        trigger: OnBattleStart,
-                    ),
-                ),
-            ],
-        ),
-        ArtifactMetadata(
+                ArtifactMetadata(
             id: "manager_manual",
             uuid: "a0000003-0000-0000-0000-000000000003",
             name: "Manager's Manual",
@@ -313,25 +217,5 @@ ArtifactDatabase(
                 ],
             },
         ),
-        ArtifactMetadata(
-            id: "singing_machine_record",
-            uuid: "a0000012-0000-0000-0000-000000000012",
-            name: "Singing Machine Record",
-            description: "An upbeat record that should not be played near machinery.",
-            rarity: WAW,
-            price: 250,
-            triggered_effects: {
-                OnAttack: [
-                    (
-                        target: SelfUnit,
-                        effect: Modifier(StatModifier(
-                            stat: AttackIntervalMs,
-                            kind: Flat,
-                            value: -12,
-                        )),
-                    ),
-                ],
-            },
-        ),
-    ]
+            ]
 )

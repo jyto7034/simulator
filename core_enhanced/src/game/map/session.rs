@@ -2,6 +2,11 @@ use serde::{Deserialize, Serialize};
 
 use crate::game::map::types::{MapNode, MapNodeCategory, MapNodeId, MapNodeKindId, MapNodePayload};
 
+/// Current node session snapshot.
+///
+/// This is intentionally part of the run snapshot wire contract. It carries the
+/// selected node identity/routing category plus the authored payload needed to
+/// resume or confirm the current node; it is not a hidden runtime-only state bag.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct NodeSession {
     pub node_id: MapNodeId,

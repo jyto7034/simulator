@@ -469,7 +469,7 @@ fn employee_roster_snapshot_surfaces_effective_profile_errors() {
     assert!(combat_profile["effective_profile_error"]["message"]
         .as_str()
         .unwrap()
-        .contains("InventoryItemNotFound"));
+        .contains("inventory item not found"));
     assert_eq!(combat_profile["effective_stats"], Value::Null);
     assert_eq!(combat_profile["effective_weapon_profile"], Value::Null);
     assert_eq!(combat_profile["effective_deployment_affinity"], Value::Null);

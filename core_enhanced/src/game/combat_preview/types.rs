@@ -227,6 +227,8 @@ pub struct BattlefieldInstance {
     pub obstacles: Vec<Position>,
     pub enemy_briefing: Vec<EnemyBriefing>,
     pub threat_warnings: Vec<ThreatWarning>,
+    /// Internal battle setup scale. Serialized previews are UI hints and must
+    /// not be round-tripped into battle setup as the scaling source of truth.
     #[serde(skip)]
     pub enemy_stat_scale: BattleUnitStatScale,
 }
@@ -241,6 +243,11 @@ pub struct BattlefieldGenerationRequest<'a> {
 
 pub struct BattlefieldGenerator;
 
+/// Unity-facing pre-battle preview DTO and battle setup seed.
+///
+/// This struct is intentionally serialized in `game_state_context.combat_preview`
+/// for node confirmation and preview UI. Internal-only setup fields must stay
+/// out of the wire contract, or be explicitly marked as skipped.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CombatPreview {
     pub node_id: MapNodeId,
@@ -265,6 +272,8 @@ pub struct CombatPreview {
     pub enemy_briefing: Vec<EnemyBriefing>,
     #[serde(default)]
     pub threat_warnings: Vec<ThreatWarning>,
+    /// Internal battle setup scale. Serialized previews are UI hints and must
+    /// not be round-tripped into battle setup as the scaling source of truth.
     #[serde(skip)]
     pub enemy_stat_scale: BattleUnitStatScale,
 }

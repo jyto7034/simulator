@@ -80,6 +80,7 @@ pub struct EventScenePresentation {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub enum EventSceneNext {
     Scene { scene_id: EventSceneId },
     Choices { choices: Vec<EventChoiceDefinition> },
@@ -113,12 +114,14 @@ pub struct EventChoicePreview {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub enum EventChoiceNext {
     Scene { scene_id: EventSceneId },
     End,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub enum EventChoiceEffect {
     Grant {
         effects: Vec<RewardEffect>,
@@ -132,6 +135,7 @@ pub enum EventChoiceEffect {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EventDatabase {
     pub events: Vec<EventDefinition>,
     #[serde(skip)]
@@ -396,4 +400,53 @@ fn visit_scene(
     }
     visiting.remove(scene_id);
     visited.insert(scene_id.to_string());
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn event_database_rejects_unknown_choice_effect_fields() {
+        let err = ron::de::from_str::<EventDatabase>(
+            r#"
+            EventDatabase(
+                events: [
+                    (
+                        id: "event_a",
+                        entry_scene_id: "scene_a",
+                        scenes: [
+                            (
+                                id: "scene_a",
+                                presentation: (
+                                    background_id: "bg",
+                                    script_id: "script",
+                                ),
+                                next: Choices(choices: [
+                                    (
+                                        id: "choice_a",
+                                        label_id: "label",
+                                        effects: [
+                                            StartCombat(
+                                                encounter_id: "encounter_a",
+                                                fallback_encounter_id: "encounter_b",
+                                            ),
+                                        ],
+                                        next: Some(End),
+                                    ),
+                                ]),
+                            ),
+                        ],
+                    ),
+                ],
+            )
+            "#,
+        )
+        .expect_err("unknown event effect fields should fail");
+
+        assert!(
+            err.to_string().contains("fallback_encounter_id"),
+            "unexpected error: {err}"
+        );
+    }
 }

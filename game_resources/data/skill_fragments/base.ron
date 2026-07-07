@@ -1,75 +1,30 @@
 SkillFragmentDatabase(
     fragments: [
         SkillFragmentMetadata(
-            id: "fragment_one_sin_penitence",
-            uuid: "710e8400-e29b-41d4-a716-446655441001",
-            name: "Penitence Fragment",
-            description: "A skill fragment derived from One Sin and Hundreds of Good Deeds. Employees imitate the original Penitence skill through a weaker, independent skill definition.",
-            rarity: Rare,
-            origin: Some(Abnormality(abnormality_id: "o-03-03_one_sin")),
+            id: "starter_basic_attack_enhancement",
+            uuid: "53544152-5445-525f-4652-414700000001",
+            name: "Starter Basic Attack Enhancement",
+            description: "A baseline fragment that lets employees perform reinforced basic attacks.",
+            rarity: Common,
+            equip_limit: OwnedCopies,
+            origin: Some(Concept(concept_id: "employee_baseline_training")),
             sources: [
-                AbnormalityContainment(abnormality_id: "o-03-03_one_sin"),
+                DependentConcept(concept_id: "employee_baseline_training"),
             ],
-            dependencies: [
-                SourceAbnormality(abnormality_id: "o-03-03_one_sin"),
-            ],
-            effect: ActiveSkill(
-                imitation_skill_id: "fragment_one_sin_penitence",
-                upgrade_skill_ids: {},
-                awakened_skill_id: None,
+            dependencies: [],
+            compatibility: (),
+            effect: BasicAttackModifier(
+                attack_bonus: 2,
+                attack_interval_ms_reduction: 0,
             ),
         ),
-        SkillFragmentMetadata(
-            id: "fragment_scorched_spark",
-            uuid: "710e8400-e29b-41d4-a716-446655441002",
-            name: "Scorched Spark Fragment",
-            description: "A skill fragment derived from Scorched Girl. It imitates a small, unstable spark rather than reproducing the original explosion.",
-            rarity: Rare,
-            origin: Some(Abnormality(abnormality_id: "f-01-02")),
-            sources: [
-                AbnormalityContainment(abnormality_id: "f-01-02"),
-            ],
-            dependencies: [
-                SourceAbnormality(abnormality_id: "f-01-02"),
-            ],
-            compatibility: (
-                allowed_range_roles: [Ranged],
-                allowed_weapon_archetypes: [GrenadeLauncher, Staff],
-            ),
-            effect: ActiveSkill(
-                imitation_skill_id: "fragment_scorched_spark",
-                upgrade_skill_ids: {},
-                awakened_skill_id: None,
-            ),
-        ),
-        SkillFragmentMetadata(
-            id: "fragment_red_shoes_impulse",
-            uuid: "710e8400-e29b-41d4-a716-446655441003",
-            name: "Red Shoes Impulse Fragment",
-            description: "A skill fragment derived from Red Shoes. It grants a short violent impulse and restless movement instead of the original berserk effect.",
-            rarity: Rare,
-            origin: Some(Abnormality(abnormality_id: "t-09-09")),
-            sources: [
-                AbnormalityContainment(abnormality_id: "t-09-09"),
-            ],
-            dependencies: [
-                SourceAbnormality(abnormality_id: "t-09-09"),
-            ],
-            compatibility: (
-                allowed_range_roles: [Melee],
-            ),
-            effect: ActiveSkill(
-                imitation_skill_id: "fragment_red_shoes_impulse",
-                upgrade_skill_ids: {},
-                awakened_skill_id: None,
-            ),
-        ),
-        SkillFragmentMetadata(
+                                SkillFragmentMetadata(
             id: "fragment_freischutz_black_round",
             uuid: "710e8400-e29b-41d4-a716-446655441004",
             name: "Black Round Fragment",
             description: "A skill fragment derived from Der Freischutz. It imitates a weaker black bullet and a brief focus recoil as an independent skill.",
             rarity: Rare,
+            equip_limit: OwnedCopies,
             origin: Some(Abnormality(abnormality_id: "t-02-43_freischutz")),
             sources: [
                 AbnormalityContainment(abnormality_id: "t-02-43_freischutz"),
@@ -84,34 +39,16 @@ SkillFragmentDatabase(
             effect: ActiveSkill(
                 imitation_skill_id: "fragment_freischutz_black_round",
                 upgrade_skill_ids: {},
-                awakened_skill_id: None,
+                awakened_skill_id: Some("freischutz_magic_bullet"),
             ),
         ),
-        SkillFragmentMetadata(
-            id: "fragment_spider_bud_red_eyes",
-            uuid: "710e8400-e29b-41d4-a716-446655441005",
-            name: "Red Eyes Fragment",
-            description: "A skill fragment derived from Spider Bud. It imitates a controlled venom thread instead of the original ambush and capture pattern.",
-            rarity: Rare,
-            origin: Some(Abnormality(abnormality_id: "o-01-45")),
-            sources: [
-                AbnormalityContainment(abnormality_id: "o-01-45"),
-            ],
-            dependencies: [
-                SourceAbnormality(abnormality_id: "o-01-45"),
-            ],
-            effect: ActiveSkill(
-                imitation_skill_id: "fragment_spider_bud_red_eyes",
-                upgrade_skill_ids: {},
-                awakened_skill_id: None,
-            ),
-        ),
-        SkillFragmentMetadata(
+                SkillFragmentMetadata(
             id: "fragment_funeral_butterfly_eulogy",
             uuid: "710e8400-e29b-41d4-a716-446655441006",
             name: "Butterfly Eulogy Fragment",
             description: "A skill fragment derived from Funeral of the Dead Butterflies. It imitates a restrained eulogy shot rather than the original execution volley.",
             rarity: Rare,
+            equip_limit: OwnedCopies,
             origin: Some(Abnormality(abnormality_id: "t-02-99_funeral_butterfly")),
             sources: [
                 AbnormalityContainment(abnormality_id: "t-02-99_funeral_butterfly"),
@@ -126,49 +63,542 @@ SkillFragmentDatabase(
             effect: ActiveSkill(
                 imitation_skill_id: "fragment_funeral_butterfly_eulogy",
                 upgrade_skill_ids: {},
-                awakened_skill_id: None,
+                awakened_skill_id: Some("funeral_butterfly_eulogy_volley"),
+            ),
+        ),
+
+
+        // S/A/B급 환상체 placeholder skill fragments
+        SkillFragmentMetadata(
+            id: "fragment_white_night_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440001",
+            name: "WhiteNight Trace Fragment",
+            description: "A simple skill fragment placeholder derived from WhiteNight. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Exceptional,
+            equip_limit: GlobalExclusive,
+            origin: Some(Abnormality(abnormality_id: "o-01-45_white_night")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "o-01-45_white_night"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "o-01-45_white_night"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 6,
+                attack_interval_ms_reduction: 60,
             ),
         ),
         SkillFragmentMetadata(
-            id: "fragment_helper_grinder_trace",
-            uuid: "710e8400-e29b-41d4-a716-446655441007",
-            name: "Grinder Trace Fragment",
-            description: "A skill fragment derived from All-Around Helper. It imitates a short cleaning spin instead of the original uncontrolled grinder protocol.",
-            rarity: Rare,
-            origin: Some(Abnormality(abnormality_id: "t-05-41_all_around_helper")),
+            id: "fragment_nothing_there_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440003",
+            name: "Nothing There Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Nothing There. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Exceptional,
+            equip_limit: GlobalExclusive,
+            origin: Some(Abnormality(abnormality_id: "o-06-20_nothing_there")),
             sources: [
-                AbnormalityContainment(abnormality_id: "t-05-41_all_around_helper"),
+                AbnormalityContainment(abnormality_id: "o-06-20_nothing_there"),
             ],
             dependencies: [
-                SourceAbnormality(abnormality_id: "t-05-41_all_around_helper"),
+                SourceAbnormality(abnormality_id: "o-06-20_nothing_there"),
             ],
-            compatibility: (
-                allowed_range_roles: [Melee],
-                allowed_weapon_archetypes: [Sword, Spear],
-            ),
-            effect: ActiveSkill(
-                imitation_skill_id: "fragment_helper_grinder_trace",
-                upgrade_skill_ids: {},
-                awakened_skill_id: None,
+            effect: BasicAttackModifier(
+                attack_bonus: 6,
+                attack_interval_ms_reduction: 60,
             ),
         ),
         SkillFragmentMetadata(
-            id: "fragment_alriune_faint_aroma",
-            uuid: "710e8400-e29b-41d4-a716-446655441008",
-            name: "Faint Aroma Fragment",
-            description: "A skill fragment derived from Alriune. It imitates a narrow petal haze rather than the original broad flower burial.",
-            rarity: Rare,
-            origin: Some(Abnormality(abnormality_id: "t-04-53_alriune")),
+            id: "fragment_apocalypse_bird_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440004",
+            name: "Apocalypse Bird Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Apocalypse Bird. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Exceptional,
+            equip_limit: GlobalExclusive,
+            origin: Some(Abnormality(abnormality_id: "o-02-63_apocalypse_bird")),
             sources: [
-                AbnormalityContainment(abnormality_id: "t-04-53_alriune"),
+                AbnormalityContainment(abnormality_id: "o-02-63_apocalypse_bird"),
             ],
             dependencies: [
-                SourceAbnormality(abnormality_id: "t-04-53_alriune"),
+                SourceAbnormality(abnormality_id: "o-02-63_apocalypse_bird"),
             ],
-            effect: ActiveSkill(
-                imitation_skill_id: "fragment_alriune_faint_aroma",
-                upgrade_skill_ids: {},
-                awakened_skill_id: None,
+            effect: BasicAttackModifier(
+                attack_bonus: 6,
+                attack_interval_ms_reduction: 60,
+            ),
+        ),
+                                SkillFragmentMetadata(
+            id: "fragment_queen_of_hatred_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440008",
+            name: "Queen of Hatred Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Queen of Hatred. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Exceptional,
+            equip_limit: GlobalExclusive,
+            origin: Some(Abnormality(abnormality_id: "o-01-04_queen_of_hatred")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "o-01-04_queen_of_hatred"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "o-01-04_queen_of_hatred"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 6,
+                attack_interval_ms_reduction: 60,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_king_of_greed_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440009",
+            name: "King of Greed Trace Fragment",
+            description: "A simple skill fragment placeholder derived from King of Greed. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Exceptional,
+            equip_limit: GlobalExclusive,
+            origin: Some(Abnormality(abnormality_id: "o-01-64_king_of_greed")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "o-01-64_king_of_greed"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "o-01-64_king_of_greed"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 6,
+                attack_interval_ms_reduction: 60,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_knight_of_despair_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440010",
+            name: "Knight of Despair Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Knight of Despair. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Exceptional,
+            equip_limit: GlobalExclusive,
+            origin: Some(Abnormality(abnormality_id: "o-01-73_knight_of_despair")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "o-01-73_knight_of_despair"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "o-01-73_knight_of_despair"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 6,
+                attack_interval_ms_reduction: 60,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_mountain_smiling_bodies_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440011",
+            name: "Mountain of Smiling Bodies Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Mountain of Smiling Bodies. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Exceptional,
+            equip_limit: GlobalExclusive,
+            origin: Some(Abnormality(abnormality_id: "t-01-75_mountain")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "t-01-75_mountain"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "t-01-75_mountain"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 6,
+                attack_interval_ms_reduction: 60,
+            ),
+        ),
+                SkillFragmentMetadata(
+            id: "fragment_censored_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440013",
+            name: "CENSORED Trace Fragment",
+            description: "A simple skill fragment placeholder derived from CENSORED. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Exceptional,
+            equip_limit: GlobalExclusive,
+            origin: Some(Abnormality(abnormality_id: "o-03-89_censored")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "o-03-89_censored"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "o-03-89_censored"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 6,
+                attack_interval_ms_reduction: 60,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_silent_orchestra_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440014",
+            name: "The Silent Orchestra Trace Fragment",
+            description: "A simple skill fragment placeholder derived from The Silent Orchestra. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Exceptional,
+            equip_limit: GlobalExclusive,
+            origin: Some(Abnormality(abnormality_id: "t-01-31_silent_orchestra")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "t-01-31_silent_orchestra"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "t-01-31_silent_orchestra"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 6,
+                attack_interval_ms_reduction: 60,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_melting_love_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440015",
+            name: "Melting Love Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Melting Love. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Exceptional,
+            equip_limit: GlobalExclusive,
+            origin: Some(Abnormality(abnormality_id: "d-03-109_melting_love")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "d-03-109_melting_love"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "d-03-109_melting_love"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 6,
+                attack_interval_ms_reduction: 60,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_little_red_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440018",
+            name: "Little Red Riding Hooded Mercenary Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Little Red Riding Hooded Mercenary. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Rare,
+            equip_limit: OwnedCopies,
+            origin: Some(Abnormality(abnormality_id: "f-01-57_little_red")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "f-01-57_little_red"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "f-01-57_little_red"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 4,
+                attack_interval_ms_reduction: 40,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_big_bad_wolf_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440019",
+            name: "Big and Will be Bad Wolf Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Big and Will be Bad Wolf. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Rare,
+            equip_limit: OwnedCopies,
+            origin: Some(Abnormality(abnormality_id: "f-02-58_big_bad_wolf")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "f-02-58_big_bad_wolf"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "f-02-58_big_bad_wolf"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 4,
+                attack_interval_ms_reduction: 40,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_laetitia_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440020",
+            name: "Laetitia Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Laetitia. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Rare,
+            equip_limit: OwnedCopies,
+            origin: Some(Abnormality(abnormality_id: "o-01-67_laetitia")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "o-01-67_laetitia"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "o-01-67_laetitia"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 4,
+                attack_interval_ms_reduction: 40,
+            ),
+        ),
+                        SkillFragmentMetadata(
+            id: "fragment_burrowing_heaven_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440025",
+            name: "The Burrowing Heaven Trace Fragment",
+            description: "A simple skill fragment placeholder derived from The Burrowing Heaven. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Rare,
+            equip_limit: OwnedCopies,
+            origin: Some(Abnormality(abnormality_id: "o-04-72_burrowing_heaven")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "o-04-72_burrowing_heaven"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "o-04-72_burrowing_heaven"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 4,
+                attack_interval_ms_reduction: 40,
+            ),
+        ),
+                        SkillFragmentMetadata(
+            id: "fragment_warm_hearted_woodsman_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440031",
+            name: "Warm-hearted Woodsman Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Warm-hearted Woodsman. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Common,
+            equip_limit: OwnedCopies,
+            origin: Some(Abnormality(abnormality_id: "f-05-32_warm_hearted_woodsman")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "f-05-32_warm_hearted_woodsman"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "f-05-32_warm_hearted_woodsman"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 3,
+                attack_interval_ms_reduction: 20,
+            ),
+        ),
+                                SkillFragmentMetadata(
+            id: "fragment_queen_bee_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440035",
+            name: "Queen Bee Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Queen Bee. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Common,
+            equip_limit: OwnedCopies,
+            origin: Some(Abnormality(abnormality_id: "t-04-50_queen_bee")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "t-04-50_queen_bee"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "t-04-50_queen_bee"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 3,
+                attack_interval_ms_reduction: 20,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_black_swan_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440036",
+            name: "Dream of a Black Swan Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Dream of a Black Swan. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Common,
+            equip_limit: OwnedCopies,
+            origin: Some(Abnormality(abnormality_id: "f-02-70_black_swan")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "f-02-70_black_swan"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "f-02-70_black_swan"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 3,
+                attack_interval_ms_reduction: 20,
+            ),
+        ),
+                        SkillFragmentMetadata(
+            id: "fragment_yin_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440039",
+            name: "Yin Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Yin. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Common,
+            equip_limit: OwnedCopies,
+            origin: Some(Abnormality(abnormality_id: "o-01-64_yin")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "o-01-64_yin"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "o-01-64_yin"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 3,
+                attack_interval_ms_reduction: 20,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_yang_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440040",
+            name: "Yang Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Yang. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Common,
+            equip_limit: OwnedCopies,
+            origin: Some(Abnormality(abnormality_id: "o-05-102_yang")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "o-05-102_yang"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "o-05-102_yang"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 3,
+                attack_interval_ms_reduction: 20,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_schadenfreude_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440042",
+            name: "Schadenfreude Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Schadenfreude. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Common,
+            equip_limit: OwnedCopies,
+            origin: Some(Abnormality(abnormality_id: "o-05-76_schadenfreude")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "o-05-76_schadenfreude"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "o-05-76_schadenfreude"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 3,
+                attack_interval_ms_reduction: 20,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_snow_queen_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440043",
+            name: "Snow Queen Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Snow Queen. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Common,
+            equip_limit: OwnedCopies,
+            origin: Some(Abnormality(abnormality_id: "f-01-87_snow_queen")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "f-01-87_snow_queen"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "f-01-87_snow_queen"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 3,
+                attack_interval_ms_reduction: 20,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_rudolta_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440044",
+            name: "Rudolta Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Rudolta of the Sleigh. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Common,
+            equip_limit: OwnedCopies,
+            origin: Some(Abnormality(abnormality_id: "f-02-49_rudolta")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "f-02-49_rudolta"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "f-02-49_rudolta"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 3,
+                attack_interval_ms_reduction: 20,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_parasite_tree_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440045",
+            name: "Parasite Tree Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Parasite Tree. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Common,
+            equip_limit: OwnedCopies,
+            origin: Some(Abnormality(abnormality_id: "d-04-108_parasite_tree")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "d-04-108_parasite_tree"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "d-04-108_parasite_tree"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 3,
+                attack_interval_ms_reduction: 20,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_porcubbus_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440046",
+            name: "Porcubbus Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Porcubbus. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Common,
+            equip_limit: OwnedCopies,
+            origin: Some(Abnormality(abnormality_id: "o-04-66_porcubbus")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "o-04-66_porcubbus"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "o-04-66_porcubbus"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 3,
+                attack_interval_ms_reduction: 20,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_scarecrow_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440047",
+            name: "Scarecrow Searching for Wisdom Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Scarecrow Searching for Wisdom. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Common,
+            equip_limit: OwnedCopies,
+            origin: Some(Abnormality(abnormality_id: "f-01-18_scarecrow")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "f-01-18_scarecrow"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "f-01-18_scarecrow"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 3,
+                attack_interval_ms_reduction: 20,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_moonlit_wail_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440048",
+            name: "Moonlit Wail Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Moonlit Wail. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Rare,
+            equip_limit: OwnedCopies,
+            origin: Some(Abnormality(abnormality_id: "t-06-27_moonlit_wail")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "t-06-27_moonlit_wail"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "t-06-27_moonlit_wail"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 4,
+                attack_interval_ms_reduction: 40,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_nameless_fetus_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440049",
+            name: "Nameless Fetus Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Nameless Fetus. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Common,
+            equip_limit: OwnedCopies,
+            origin: Some(Abnormality(abnormality_id: "o-01-15_nameless_fetus")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "o-01-15_nameless_fetus"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "o-01-15_nameless_fetus"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 3,
+                attack_interval_ms_reduction: 20,
+            ),
+        ),
+        SkillFragmentMetadata(
+            id: "fragment_clouded_monk_trace",
+            uuid: "730e8400-e29b-41d4-a716-446655440050",
+            name: "Clouded Monk Trace Fragment",
+            description: "A simple skill fragment placeholder derived from Clouded Monk. It provides a small basic attack improvement until a dedicated fragment skill is designed.",
+            rarity: Common,
+            equip_limit: OwnedCopies,
+            origin: Some(Abnormality(abnormality_id: "d-01-110_clouded_monk")),
+            sources: [
+                AbnormalityContainment(abnormality_id: "d-01-110_clouded_monk"),
+            ],
+            dependencies: [
+                SourceAbnormality(abnormality_id: "d-01-110_clouded_monk"),
+            ],
+            effect: BasicAttackModifier(
+                attack_bonus: 3,
+                attack_interval_ms_reduction: 20,
             ),
         ),
     ],

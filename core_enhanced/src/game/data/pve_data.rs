@@ -30,6 +30,7 @@ pub enum PveEncounterClass {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
 pub enum PveWaveEnemyData {
     Abnormality {
         abnormality_id: String,
@@ -55,6 +56,7 @@ pub enum PveWaveEnemyData {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
 pub enum PveWaveSource {
     Manual(Vec<PveWaveEnemyData>),
     GeneratedCorroded {
@@ -67,6 +69,7 @@ pub enum PveWaveSource {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
 pub struct PveWaveData {
     pub id: String,
     #[serde(default)]
@@ -81,11 +84,13 @@ pub struct PveWaveData {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct PveStaticObstacleData {
     pub position: PvePosition,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(deny_unknown_fields)]
 pub struct PveBattlefieldOverrideData {
     #[serde(default)]
     pub archetype: Option<BattlefieldArchetype>,
@@ -94,18 +99,21 @@ pub struct PveBattlefieldOverrideData {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct PveTacticalPointData {
     pub id: String,
     pub position: PvePosition,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub enum PveBattleObjectiveData {
     DefeatBoss { unit_ref: String },
     ProtectUnit { unit_ref: String },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub enum PveWinConditionData {
     AllRequiredEnemyGroupsDefeated,
     DefeatUnit { unit_ref: String },
@@ -113,12 +121,14 @@ pub enum PveWinConditionData {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct PveSuppressionResearchData {
     #[serde(default)]
     pub bonus_objectives: Vec<PveBonusObjectiveData>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct PveBonusObjectiveData {
     pub id: String,
     pub condition: PveBonusObjectiveConditionData,
@@ -128,6 +138,7 @@ pub struct PveBonusObjectiveData {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub enum PveBonusObjectiveConditionData {
     ClearWithin {
         time_ms: u64,
@@ -138,6 +149,7 @@ pub enum PveBonusObjectiveConditionData {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(deny_unknown_fields)]
 pub struct PveTacticalPlanData {
     #[serde(default)]
     pub points: Vec<PveTacticalPointData>,
@@ -162,6 +174,7 @@ fn default_required_for_victory() -> bool {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct PvePosition {
     pub x: i32,
     pub y: i32,
@@ -174,6 +187,7 @@ impl From<PvePosition> for Position {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct PveEncounter {
     pub id: String,
     pub encounter_class: PveEncounterClass,
@@ -336,6 +350,7 @@ impl PveWinConditionData {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct PveEncounterDatabase {
     pub encounters: Vec<PveEncounter>,
     #[serde(skip)]
@@ -720,6 +735,66 @@ mod tests {
         )
         .expect("encounter without obstacles should deserialize");
         assert!(without_obstacle.static_obstacles.is_empty());
+    }
+
+    #[test]
+    fn pve_encounter_rejects_unknown_authoring_fields() {
+        let result = ron::de::from_str::<PveEncounter>(
+            r#"(
+                id: "typo_contract",
+                encounter_class: Normal,
+                risk_level: ZAYIN,
+                encounter_difficulty: 3,
+                waves: [
+                    (
+                        id: "wave_0",
+                        source: Manual([
+                            CorrodedEmployee(profile_id: "corroded_guard"),
+                        ]),
+                    ),
+                ],
+            )"#,
+        );
+
+        assert!(
+            result.is_err(),
+            "unknown gameplay authoring fields must not deserialize"
+        );
+        let error = result.expect_err("unknown field should be rejected");
+        assert!(
+            error.to_string().contains("encounter_difficulty"),
+            "unexpected error: {error}"
+        );
+    }
+
+    #[test]
+    fn pve_wave_rejects_unknown_nested_authoring_fields() {
+        let result = ron::de::from_str::<PveEncounter>(
+            r#"(
+                id: "typo_wave_contract",
+                encounter_class: Normal,
+                risk_level: ZAYIN,
+                waves: [
+                    (
+                        id: "wave_0",
+                        spawn_delay_ms: 1000,
+                        source: Manual([
+                            CorrodedEmployee(profile_id: "corroded_guard"),
+                        ]),
+                    ),
+                ],
+            )"#,
+        );
+
+        assert!(
+            result.is_err(),
+            "unknown nested wave fields must not deserialize"
+        );
+        let error = result.expect_err("unknown nested field should be rejected");
+        assert!(
+            error.to_string().contains("spawn_delay_ms"),
+            "unexpected error: {error}"
+        );
     }
 
     #[test]

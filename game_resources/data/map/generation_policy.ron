@@ -1,0 +1,31 @@
+(
+    early_depth_category_weights: [
+        (category: Combat, weight: 50),
+        (category: Support, weight: 25),
+        (category: HeadquartersContact, weight: 20),
+        (category: Event, weight: 5),
+    ],
+    pre_boss_category_weights: [
+        (category: Support, weight: 65),
+        (category: Combat, weight: 35),
+    ],
+    normal_safe_categories: [
+        Support,
+        HeadquartersContact,
+        Reward,
+        Shop,
+        Event,
+    ],
+    pre_boss_safe_categories: [
+        Support,
+        Reward,
+        HeadquartersContact,
+        Shop,
+        Event,
+    ],
+    row_repair: (
+        max_combat_per_row_divisor: 2,
+        ensure_combat_each_row: true,
+        ensure_support_before_boss: true,
+    ),
+)

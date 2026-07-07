@@ -2,7 +2,6 @@ CorrodedWavePresetDatabase(
     presets: [
         CorrodedWavePreset(
             id: "archive_sentry_pair",
-            difficulty: 1,
             pressure: "guarded_objective",
             preferred_node_types: [Defense],
             preferred_risk_levels: [TETH, HE],
@@ -29,7 +28,6 @@ CorrodedWavePresetDatabase(
         ),
         CorrodedWavePreset(
             id: "breach_response_light",
-            difficulty: 1,
             pressure: "fast_reinforcement",
             preferred_node_types: [Defense],
             preferred_risk_levels: [TETH, HE],
@@ -48,7 +46,6 @@ CorrodedWavePresetDatabase(
         ),
         CorrodedWavePreset(
             id: "black_box_breach_probe",
-            difficulty: 2,
             pressure: "objective_probe",
             preferred_node_types: [Defense],
             preferred_risk_levels: [TETH, HE],
@@ -75,7 +72,6 @@ CorrodedWavePresetDatabase(
         ),
         CorrodedWavePreset(
             id: "black_box_breach_pressure",
-            difficulty: 2,
             pressure: "objective_pressure",
             preferred_node_types: [Defense],
             preferred_risk_levels: [HE, WAW],

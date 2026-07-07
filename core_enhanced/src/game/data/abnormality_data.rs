@@ -1,6 +1,6 @@
 use std::{collections::HashMap, sync::OnceLock};
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use uuid::Uuid;
 
 use crate::game::{
@@ -114,6 +114,55 @@ pub struct BasicAttackDef {
     pub ranged_reposition_ms: u64,
     #[serde(default = "default_attack_delivery")]
     pub delivery: DeliveryDef,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct AuthoredBasicAttackDef {
+    range_units: f32,
+    range_policy: TileRangePolicy,
+    defense_tile_range: RequiredOption<TileRangePattern>,
+    damage_type: DamageType,
+    targeting_profile: TargetingProfile,
+    air_capable: bool,
+    range_role: WeaponRangeRole,
+    interval_ms: u64,
+    windup_ms: u32,
+    ranged_reposition_ms: u64,
+    delivery: DeliveryDef,
+}
+
+#[derive(Debug, Clone)]
+struct RequiredOption<T>(Option<T>);
+
+impl<'de, T> Deserialize<'de> for RequiredOption<T>
+where
+    T: Deserialize<'de>,
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        Ok(Self(Option::<T>::deserialize(deserializer)?))
+    }
+}
+
+impl From<AuthoredBasicAttackDef> for BasicAttackDef {
+    fn from(value: AuthoredBasicAttackDef) -> Self {
+        Self {
+            range_units: value.range_units,
+            range_policy: value.range_policy,
+            defense_tile_range: value.defense_tile_range.0,
+            damage_type: value.damage_type,
+            targeting_profile: value.targeting_profile,
+            air_capable: value.air_capable,
+            range_role: value.range_role,
+            interval_ms: value.interval_ms,
+            windup_ms: value.windup_ms,
+            ranged_reposition_ms: value.ranged_reposition_ms,
+            delivery: value.delivery,
+        }
+    }
 }
 
 impl Default for BasicAttackDef {
@@ -259,13 +308,99 @@ pub struct AbnormalityMetadata {
     pub skill_id: Option<SkillId>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct AbnormalityDatabase {
     pub items: Vec<AbnormalityMetadata>,
     #[serde(skip)]
     by_id: OnceLock<HashMap<String, usize>>,
     #[serde(skip)]
     by_uuid: OnceLock<HashMap<Uuid, usize>>,
+}
+
+impl<'de> Deserialize<'de> for AbnormalityDatabase {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let raw = RawAbnormalityDatabase::deserialize(deserializer)?;
+        Ok(raw.into_database())
+    }
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename = "AbnormalityDatabase")]
+#[serde(deny_unknown_fields)]
+struct RawAbnormalityDatabase {
+    items: Vec<RawAbnormalityMetadata>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename = "AbnormalityMetadata")]
+#[serde(deny_unknown_fields)]
+struct RawAbnormalityMetadata {
+    id: String,
+    uuid: Uuid,
+    name: String,
+    risk_level: RiskLevel,
+    price: u32,
+    max_health: u32,
+    attack: u32,
+    defense: i32,
+    #[serde(default = "default_magic_resist")]
+    magic_resist: i32,
+    #[serde(default)]
+    target_traits: Vec<UnitTargetTrait>,
+    #[serde(default)]
+    mobility_kind: MobilityKind,
+    #[serde(default = "default_abnormality_threat_class")]
+    threat_class: BattleUnitThreatClass,
+    #[serde(default)]
+    response_complete_skill_fragment_id: Option<SkillFragmentId>,
+    #[serde(default)]
+    omen_chain_id: Option<BossOmenChainId>,
+    #[serde(default)]
+    movement: MovementDef,
+    basic_attack: AuthoredBasicAttackDef,
+    #[serde(default)]
+    resonance: ResonanceDef,
+    #[serde(default)]
+    skill_id: Option<SkillId>,
+}
+
+impl RawAbnormalityDatabase {
+    fn into_database(self) -> AbnormalityDatabase {
+        AbnormalityDatabase::new(
+            self.items
+                .into_iter()
+                .map(RawAbnormalityMetadata::into_metadata)
+                .collect(),
+        )
+    }
+}
+
+impl RawAbnormalityMetadata {
+    fn into_metadata(self) -> AbnormalityMetadata {
+        AbnormalityMetadata {
+            id: self.id,
+            uuid: self.uuid,
+            name: self.name,
+            risk_level: self.risk_level,
+            price: self.price,
+            max_health: self.max_health,
+            attack: self.attack,
+            defense: self.defense,
+            magic_resist: self.magic_resist,
+            target_traits: self.target_traits,
+            mobility_kind: self.mobility_kind,
+            threat_class: self.threat_class,
+            response_complete_skill_fragment_id: self.response_complete_skill_fragment_id,
+            omen_chain_id: self.omen_chain_id,
+            movement: self.movement,
+            basic_attack: self.basic_attack.into(),
+            resonance: self.resonance,
+            skill_id: self.skill_id,
+        }
+    }
 }
 
 impl AbnormalityDatabase {
@@ -380,5 +515,47 @@ mod tests {
         };
 
         basic_attack.validate_runtime_contract("test unit");
+    }
+
+    #[test]
+    fn abnormality_database_rejects_implicit_basic_attack_authoring() {
+        let result = ron::de::from_str::<AbnormalityDatabase>(
+            r#"AbnormalityDatabase(
+                items: [
+                    AbnormalityMetadata(
+                        id: "o-00-00_test",
+                        uuid: "00000000-0000-0000-0000-000000000001",
+                        name: "Test",
+                        risk_level: ZAYIN,
+                        price: 1,
+                        max_health: 10,
+                        attack: 1,
+                        defense: 0,
+                        basic_attack: (
+                            range_units: 1.0,
+                            range_policy: pattern,
+                            defense_tile_range: None,
+                            damage_type: Physical,
+                            targeting_profile: DefaultForward,
+                            air_capable: false,
+                            range_role: Melee,
+                            interval_ms: 1500,
+                            windup_ms: 200,
+                            delivery: Instant,
+                        ),
+                    ),
+                ],
+            )"#,
+        );
+
+        assert!(
+            result.is_err(),
+            "live abnormality basic_attack authoring must reject missing combat fields"
+        );
+        let error = result.expect_err("missing field should be rejected");
+        assert!(
+            error.to_string().contains("ranged_reposition_ms"),
+            "unexpected error: {error}"
+        );
     }
 }

@@ -19,8 +19,8 @@ use crate::game::battle::{
 use crate::game::behavior::{
     AbnormalityAttemptDto, ActionKind, BattlePlaybackState, GameError, LiveBattleDeployedUnitDto,
     LiveBattleDeploymentDto, LiveBattleEventDeltaDto, LiveBattleHudBarMode,
-    LiveBattleRedeployUnitDto, LiveBattleSetupBattlefieldDto, LiveBattleSetupCatalogRefsDto,
-    LiveBattleSetupSnapshotDto, LiveBattleSetupSnapshotMessageType,
+    LiveBattlePresentationEventDto, LiveBattleRedeployUnitDto, LiveBattleSetupBattlefieldDto,
+    LiveBattleSetupCatalogRefsDto, LiveBattleSetupSnapshotDto, LiveBattleSetupSnapshotMessageType,
     LiveBattleSetupTacticalPointDto, LiveBattleSetupTacticalPointType,
     LiveBattleStateCheckpointDto, LiveBattleUnitCheckpointDto, LiveBattleUnitDeployCostDto,
     LiveBattleUnitHudDto, LiveBattleUpdateDto, LiveBattleUpdateMessageType,
@@ -546,7 +546,10 @@ impl ActiveBattleSession {
             events_delta: LiveBattleEventDeltaDto {
                 after_seq,
                 to_seq,
-                events,
+                events: events
+                    .into_iter()
+                    .map(LiveBattlePresentationEventDto::from)
+                    .collect(),
             },
             checkpoint: self.live_checkpoint_dto(to_seq, roster),
         }

@@ -1216,6 +1216,51 @@ mod tests {
     }
 
     #[test]
+    fn combat_preview_enemy_stat_scale_is_internal_not_wire_contract() {
+        let data = GameDataBuilder::empty()
+            .with_abnormalities(vec![preview_test_abnormality("scaled_enemy", 0xC0_51C1)])
+            .with_pve(PveEncounterDatabase::new(vec![PveEncounter {
+                id: "scaled_encounter".to_string(),
+                encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
+                primary_abnormality_id: Some("scaled_enemy".to_string()),
+                risk_level: RiskLevel::ZAYIN,
+                reward_mode: crate::game::enums::RewardMode::ClaimAll,
+                reward_uuids: Vec::new(),
+                suppression_research: None,
+                node_type: Some(CombatNodeType::Defense),
+                mission_variant: None,
+                survive_timer_ms: None,
+                battlefield: None,
+                tactical_plan: None,
+                win_condition: None,
+                waves: vec![preview_wave("scaled_enemy", Some("defense_main"))],
+                static_obstacles: Vec::new(),
+            }]))
+            .build();
+        let preview = CombatPreview::try_generate_for_node_at_floor(
+            MapNodeId::new(Uuid::from_u128(0xC0_51C1)),
+            MapNodeCategory::Combat,
+            Some("scaled_encounter"),
+            &data,
+            51,
+            6,
+        )
+        .expect("combat preview should generate from live data");
+
+        assert_ne!(preview.enemy_stat_scale, BattleUnitStatScale::default());
+
+        let value = serde_json::to_value(&preview).expect("serialize combat preview");
+        assert!(value.get("enemy_stat_scale").is_none());
+
+        let round_tripped: CombatPreview =
+            serde_json::from_value(value).expect("deserialize combat preview");
+        assert_eq!(
+            round_tripped.enemy_stat_scale,
+            BattleUnitStatScale::default()
+        );
+    }
+
+    #[test]
     fn rumor_threat_warning_uses_only_currently_detectable_missing_tags() {
         let implemented_tags = HashSet::from([
             ThreatWarningTag::ArmoredEnemyPossible,

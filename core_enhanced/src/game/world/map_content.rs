@@ -237,16 +237,12 @@ impl GameCore {
                 let MapNodePayload::Event { event_id } = payload else {
                     return Ok(None);
                 };
-                let event_id = event_id.clone().unwrap_or_else(|| {
-                    self.game_data
-                        .event_data
-                        .events
-                        .first()
-                        .map(|event| event.id.clone())
-                        .unwrap_or_else(|| {
-                            panic!("event map node has no event_id and EventDatabase is empty")
-                        })
-                });
+                let event_id = event_id.clone().ok_or_else(|| {
+                    GameError::InvalidStaticData(format!(
+                        "event map node {:?} must define event_id",
+                        node_id
+                    ))
+                })?;
                 Ok(Some(self.enter_event_node(
                     node_id,
                     event_id,

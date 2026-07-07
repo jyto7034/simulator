@@ -843,6 +843,22 @@ mod tests {
     }
 
     #[test]
+    fn event_node_definitions_require_explicit_event_id() {
+        let mut definitions = MapNodeDefinitionDatabase::builtin();
+        let event_definition = definitions
+            .nodes
+            .iter_mut()
+            .find(|definition| definition.category == MapNodeCategory::Event)
+            .expect("builtin definitions include an event node");
+        event_definition.payload = crate::game::map::MapNodePayload::Event { event_id: None };
+
+        let error = definitions
+            .validate_contract()
+            .expect_err("event node definitions must not use implicit event fallback");
+        assert!(error.contains("must define event_id"));
+    }
+
+    #[test]
     fn builtin_generation_policy_validate_contract() {
         let policy = MapGenerationPolicyData::builtin();
         assert!(policy.validate_contract().is_ok());

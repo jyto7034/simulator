@@ -1,0 +1,1410 @@
+  2026-06-17T12:22:12.895556Z  INFO  SIGINT received; starting forced shutdown
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:333 on main ThreadId(1)
+
+  2026-06-17T12:22:12.895846Z  INFO  accept thread stopped
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\accept.rs:143 on actix-server acceptor ThreadId(35)
+
+  2026-06-17T12:22:12.896251Z  INFO  Ctrl+C received. Initiating graceful shutdown...
+    at game_server\src\main.rs:146 on main ThreadId(1)
+
+  2026-06-17T12:22:12.896329Z  INFO  System has shut down gracefully
+    at game_server\src\main.rs:150 on main ThreadId(1)
+
+  2026-06-17T12:22:12.909796Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2026-06-17T12:22:12.909899Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:11 ThreadId(14)
+
+  2026-06-17T12:22:12.909975Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2026-06-17T12:22:12.910047Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:27 ThreadId(30)
+
+  2026-06-17T12:22:12.910148Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2026-06-17T12:22:12.910202Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:14 ThreadId(17)
+
+  2026-06-17T12:22:12.910260Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:28 ThreadId(31)
+
+  2026-06-17T12:22:12.910309Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:30 ThreadId(33)
+
+  2026-06-17T12:22:12.910385Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:9 ThreadId(12)
+
+  2026-06-17T12:22:12.910463Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:8 ThreadId(11)
+
+  2026-06-17T12:22:12.910519Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:6 ThreadId(9)
+
+  2026-06-17T12:22:12.910561Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:5 ThreadId(8)
+
+  2026-06-17T12:22:12.910604Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:29 ThreadId(32)
+
+  2026-06-17T12:22:12.910660Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:17 ThreadId(20)
+
+  2026-06-17T12:22:12.910715Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:15 ThreadId(18)
+
+  2026-06-17T12:22:12.910763Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:31 ThreadId(34)
+
+  2026-06-17T12:22:12.910824Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:12 ThreadId(15)
+
+  2026-06-17T12:22:12.910874Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:20 ThreadId(23)
+
+  2026-06-17T12:22:12.910950Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:22 ThreadId(25)
+
+  2026-06-17T12:22:12.911008Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:26 ThreadId(29)
+
+  2026-06-17T12:22:12.911054Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:4 ThreadId(7)
+
+  2026-06-17T12:22:12.911107Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:21 ThreadId(24)
+
+  2026-06-17T12:22:12.911175Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:25 ThreadId(28)
+
+  2026-06-17T12:22:12.911231Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:19 ThreadId(22)
+
+  2026-06-17T12:22:12.911300Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:13 ThreadId(16)
+
+  2026-06-17T12:22:12.911350Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:18 ThreadId(21)
+
+  2026-06-17T12:22:12.911409Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:10 ThreadId(13)
+
+  2026-06-17T12:22:12.911484Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:7 ThreadId(10)
+
+  2026-06-17T12:22:12.911570Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:3 ThreadId(6)
+
+  2026-06-17T12:22:12.911626Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:24 ThreadId(27)
+
+  2026-06-17T12:22:32.505759Z  INFO  Logger initialization complete: console and file (logs/app.log) output enabled
+    at game_server\src\lib.rs:94 on main ThreadId(1)
+
+  2026-06-17T12:22:32.505906Z  INFO  Logger initialized
+    at game_server\src\main.rs:57 on main ThreadId(1)
+
+  2026-06-17T12:22:32.506116Z  INFO  Retry config initialized
+    at game_server\src\main.rs:61 on main ThreadId(1)
+
+  2026-06-17T12:22:32.524012Z  INFO  Shop: []
+    at core_enhanced\src\game\data\shop_data.rs:167 on main ThreadId(1)
+
+  2026-06-17T12:22:32.525087Z  INFO  Game data loaded for meta-game sessions
+    at game_server\src\main.rs:64 on main ThreadId(1)
+
+  2026-06-17T12:22:32.525246Z  INFO  Metrics initialized and registered
+    at game_server\src\main.rs:69 on main ThreadId(1)
+
+  2026-06-17T12:22:32.525371Z  INFO  LoadBalanceActor started
+    at game_server\src\main.rs:73 on main ThreadId(1)
+
+  2026-06-17T12:22:32.525429Z  INFO  Starting HTTP server on 0.0.0.0:8081
+    at game_server\src\main.rs:89 on main ThreadId(1)
+
+  2026-06-17T12:22:32.528149Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on main ThreadId(1)
+
+  2026-06-17T12:22:32.528254Z  INFO  Game Server is running on 0.0.0.0:8081
+    at game_server\src\main.rs:135 on main ThreadId(1)
+
+  2026-06-17T12:22:32.528360Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on main ThreadId(1)
+
+  2026-06-17T12:22:32.528458Z  INFO  starting service: "actix-web-service-0.0.0.0:8081", workers: 32, listening on: 0.0.0.0:8081
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on main ThreadId(1)
+
+  2026-06-17T12:22:32.537077Z  INFO  LoadBalanceActor started
+    at game_server\src\game\load_balance_actor\mod.rs:28 on main ThreadId(1)
+
+  2026-06-17T12:22:32.606745Z  INFO  PlayerGameSession started: f195e86b-2f7f-4324-b5d9-f11bdc4d578c
+    at game_server\src\game\player_game_actor\session.rs:282 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2026-06-17T12:22:32.614566Z  INFO  Creating PlayerGameActor for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:43 on main ThreadId(1)
+
+  2026-06-17T12:22:32.614653Z  INFO  Initializing GameCore with run_seed=1898098881952570243
+    at core_enhanced\src\game\world.rs:110 on main ThreadId(1)
+
+  2026-06-17T12:22:32.614866Z  INFO  PlayerGameActor started for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\player_game_actor\mod.rs:69 on main ThreadId(1)
+
+  2026-06-17T12:22:35.722484Z  INFO  Initializing player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world\helpers.rs:612 on main ThreadId(1)
+
+  2026-06-17T12:22:35.722574Z  INFO  Game state transition: NotStarted -> SelectingStarterEmployees
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T12:22:35.722666Z  INFO  Starter employee selection opened for player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world.rs:295 on main ThreadId(1)
+
+  2026-06-17T12:22:37.851441Z  INFO  Initialized selected starter employee roster with 3 employees
+    at core_enhanced\src\game\world\helpers.rs:670 on main ThreadId(1)
+
+  2026-06-17T12:22:37.851551Z  INFO  Granted starter enkephalin: amount=500, total=500
+    at core_enhanced\src\game\world.rs:316 on main ThreadId(1)
+
+  2026-06-17T12:22:37.852273Z  INFO  Game state transition: SelectingStarterEmployees -> ViewingMap
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T12:22:38.576384Z  INFO  Game state transition: ViewingMap -> NodeConfirm { node_id: MapNodeId(4592e79c-03a6-4025-8164-0b57d293f352), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T12:22:38.920643Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(4592e79c-03a6-4025-8164-0b57d293f352), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InNode { node_id: MapNodeId(4592e79c-03a6-4025-8164-0b57d293f352), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T12:22:38.920780Z  INFO  Starting map combat node for abnormality=o-01-45 encounter=suppress_spider_bud node=4592e79c-03a6-4025-8164-0b57d293f352
+    at core_enhanced\src\game\world\combat.rs:129 on main ThreadId(1)
+
+  2026-06-17T12:22:38.920949Z  INFO  Starting node combat for abnormality=o-01-45 encounter=suppress_spider_bud field_size=(9, 9)
+    at core_enhanced\src\game\events\combat.rs:90 on main ThreadId(1)
+
+  2026-06-17T12:22:38.921394Z  INFO  Game state transition: InNode { node_id: MapNodeId(4592e79c-03a6-4025-8164-0b57d293f352), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InBattle { battle_uuid: 4592e79c-03a6-4025-8164-0b57d293f352 }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T12:22:38.921689Z  INFO  Game state transition: InBattle { battle_uuid: 4592e79c-03a6-4025-8164-0b57d293f352 } -> CombatResult { battle_uuid: 4592e79c-03a6-4025-8164-0b57d293f352 }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T12:28:49.751540Z  INFO  Deregistering player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:22 on main ThreadId(1)
+
+  2026-06-17T13:50:44.411898Z  INFO  Ctrl+C received. Initiating graceful shutdown...
+    at game_server\src\main.rs:146 on main ThreadId(1)
+
+  2026-06-17T13:50:44.411986Z  INFO  System has shut down gracefully
+    at game_server\src\main.rs:150 on main ThreadId(1)
+
+  2026-06-17T16:22:55.255498Z  INFO  Logger initialization complete: console and file (logs/app.log) output enabled
+    at game_server\src\lib.rs:94 on main ThreadId(1)
+
+  2026-06-17T16:22:55.255649Z  INFO  Logger initialized
+    at game_server\src\main.rs:57 on main ThreadId(1)
+
+  2026-06-17T16:22:55.255757Z  INFO  Retry config initialized
+    at game_server\src\main.rs:61 on main ThreadId(1)
+
+  2026-06-17T16:22:55.272140Z  INFO  Shop: []
+    at core_enhanced\src\game\data\shop_data.rs:167 on main ThreadId(1)
+
+  2026-06-17T16:22:55.273111Z  INFO  Game data loaded for meta-game sessions
+    at game_server\src\main.rs:64 on main ThreadId(1)
+
+  2026-06-17T16:22:55.273262Z  INFO  Metrics initialized and registered
+    at game_server\src\main.rs:69 on main ThreadId(1)
+
+  2026-06-17T16:22:55.273388Z  INFO  LoadBalanceActor started
+    at game_server\src\main.rs:73 on main ThreadId(1)
+
+  2026-06-17T16:22:55.273449Z  INFO  Starting HTTP server on 0.0.0.0:8081
+    at game_server\src\main.rs:89 on main ThreadId(1)
+
+  2026-06-17T16:22:55.275939Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on main ThreadId(1)
+
+  2026-06-17T16:22:55.276037Z  INFO  Game Server is running on 0.0.0.0:8081
+    at game_server\src\main.rs:135 on main ThreadId(1)
+
+  2026-06-17T16:22:55.276139Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on main ThreadId(1)
+
+  2026-06-17T16:22:55.276219Z  INFO  starting service: "actix-web-service-0.0.0.0:8081", workers: 32, listening on: 0.0.0.0:8081
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on main ThreadId(1)
+
+  2026-06-17T16:22:55.283341Z  INFO  LoadBalanceActor started
+    at game_server\src\game\load_balance_actor\mod.rs:28 on main ThreadId(1)
+
+  2026-06-17T16:22:58.332390Z  INFO  PlayerGameSession started: 6eef9642-d157-494e-b00b-b42fac406adc
+    at game_server\src\game\player_game_actor\session.rs:282 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2026-06-17T16:22:58.400783Z  INFO  Creating PlayerGameActor for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:43 on main ThreadId(1)
+
+  2026-06-17T16:22:58.400917Z  INFO  Initializing GameCore with run_seed=425527721072730869
+    at core_enhanced\src\game\world.rs:110 on main ThreadId(1)
+
+  2026-06-17T16:22:58.401152Z  INFO  PlayerGameActor started for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\player_game_actor\mod.rs:69 on main ThreadId(1)
+
+  2026-06-17T16:23:01.161678Z  INFO  Initializing player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world\helpers.rs:612 on main ThreadId(1)
+
+  2026-06-17T16:23:01.161766Z  INFO  Game state transition: NotStarted -> SelectingStarterEmployees
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T16:23:01.161875Z  INFO  Starter employee selection opened for player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world.rs:295 on main ThreadId(1)
+
+  2026-06-17T16:23:03.194622Z  INFO  Initialized selected starter employee roster with 3 employees
+    at core_enhanced\src\game\world\helpers.rs:670 on main ThreadId(1)
+
+  2026-06-17T16:23:03.194854Z  INFO  Granted starter enkephalin: amount=500, total=500
+    at core_enhanced\src\game\world.rs:316 on main ThreadId(1)
+
+  2026-06-17T16:23:03.195718Z  INFO  Game state transition: SelectingStarterEmployees -> ViewingMap
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T16:23:04.093775Z  INFO  Game state transition: ViewingMap -> NodeConfirm { node_id: MapNodeId(bfa528e1-f7fa-433a-a451-af81f14a6860), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T16:23:04.447123Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(bfa528e1-f7fa-433a-a451-af81f14a6860), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InNode { node_id: MapNodeId(bfa528e1-f7fa-433a-a451-af81f14a6860), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T16:23:04.447283Z  INFO  Starting map combat node for abnormality=t-01-54_meat_lantern encounter=suppress_meat_lantern node=bfa528e1-f7fa-433a-a451-af81f14a6860
+    at core_enhanced\src\game\world\combat.rs:129 on main ThreadId(1)
+
+  2026-06-17T16:23:04.447505Z  INFO  Starting node combat for abnormality=t-01-54_meat_lantern encounter=suppress_meat_lantern field_size=(9, 9)
+    at core_enhanced\src\game\events\combat.rs:90 on main ThreadId(1)
+
+  2026-06-17T16:23:04.447945Z  INFO  Game state transition: InNode { node_id: MapNodeId(bfa528e1-f7fa-433a-a451-af81f14a6860), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InBattle { battle_uuid: bfa528e1-f7fa-433a-a451-af81f14a6860 }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T16:27:01.326053Z  INFO  PlayerGameSession started: 4af40edf-bc48-4a63-b701-4c41fe02de73
+    at game_server\src\game\player_game_actor\session.rs:282 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2026-06-17T16:27:01.335326Z  INFO  Game state transition: InBattle { battle_uuid: bfa528e1-f7fa-433a-a451-af81f14a6860 } -> NodeConfirm { node_id: MapNodeId(bfa528e1-f7fa-433a-a451-af81f14a6860), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T16:27:02.495359Z  INFO  PlayerGameSession started: 32441492-b6c0-4ee3-adbd-b7f05637844f
+    at game_server\src\game\player_game_actor\session.rs:282 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2026-06-17T16:27:03.850745Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(bfa528e1-f7fa-433a-a451-af81f14a6860), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InNode { node_id: MapNodeId(bfa528e1-f7fa-433a-a451-af81f14a6860), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T16:27:03.850909Z  INFO  Starting map combat node for abnormality=t-01-54_meat_lantern encounter=suppress_meat_lantern node=bfa528e1-f7fa-433a-a451-af81f14a6860
+    at core_enhanced\src\game\world\combat.rs:129 on main ThreadId(1)
+
+  2026-06-17T16:27:03.851141Z  INFO  Starting node combat for abnormality=t-01-54_meat_lantern encounter=suppress_meat_lantern field_size=(9, 9)
+    at core_enhanced\src\game\events\combat.rs:90 on main ThreadId(1)
+
+  2026-06-17T16:27:03.851436Z  INFO  Game state transition: InNode { node_id: MapNodeId(bfa528e1-f7fa-433a-a451-af81f14a6860), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InBattle { battle_uuid: bfa528e1-f7fa-433a-a451-af81f14a6860 }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T16:30:51.005677Z  INFO  Ctrl+C received. Initiating graceful shutdown...
+    at game_server\src\main.rs:146 on main ThreadId(1)
+
+  2026-06-17T16:30:51.005752Z  INFO  System has shut down gracefully
+    at game_server\src\main.rs:150 on main ThreadId(1)
+
+  2026-06-17T16:30:52.284459Z  INFO  Logger initialization complete: console and file (logs/app.log) output enabled
+    at game_server\src\lib.rs:94 on main ThreadId(1)
+
+  2026-06-17T16:30:52.284567Z  INFO  Logger initialized
+    at game_server\src\main.rs:57 on main ThreadId(1)
+
+  2026-06-17T16:30:52.284682Z  INFO  Retry config initialized
+    at game_server\src\main.rs:61 on main ThreadId(1)
+
+  2026-06-17T16:30:52.301116Z  INFO  Shop: []
+    at core_enhanced\src\game\data\shop_data.rs:167 on main ThreadId(1)
+
+  2026-06-17T16:30:52.302038Z  INFO  Game data loaded for meta-game sessions
+    at game_server\src\main.rs:64 on main ThreadId(1)
+
+  2026-06-17T16:30:52.302182Z  INFO  Metrics initialized and registered
+    at game_server\src\main.rs:69 on main ThreadId(1)
+
+  2026-06-17T16:30:52.302287Z  INFO  LoadBalanceActor started
+    at game_server\src\main.rs:73 on main ThreadId(1)
+
+  2026-06-17T16:30:52.302353Z  INFO  Starting HTTP server on 0.0.0.0:8081
+    at game_server\src\main.rs:89 on main ThreadId(1)
+
+  2026-06-17T16:30:52.304616Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on main ThreadId(1)
+
+  2026-06-17T16:30:52.304713Z  INFO  Game Server is running on 0.0.0.0:8081
+    at game_server\src\main.rs:135 on main ThreadId(1)
+
+  2026-06-17T16:30:52.304815Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on main ThreadId(1)
+
+  2026-06-17T16:30:52.304896Z  INFO  starting service: "actix-web-service-0.0.0.0:8081", workers: 32, listening on: 0.0.0.0:8081
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on main ThreadId(1)
+
+  2026-06-17T16:30:52.312101Z  INFO  LoadBalanceActor started
+    at game_server\src\game\load_balance_actor\mod.rs:28 on main ThreadId(1)
+
+  2026-06-17T16:31:03.595048Z  INFO  PlayerGameSession started: d5eed592-af4e-4e8d-9e92-081981b4ec38
+    at game_server\src\game\player_game_actor\session.rs:282 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2026-06-17T16:31:03.637354Z  INFO  Creating PlayerGameActor for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:43 on main ThreadId(1)
+
+  2026-06-17T16:31:03.637433Z  INFO  Initializing GameCore with run_seed=11906871267548621739
+    at core_enhanced\src\game\world.rs:110 on main ThreadId(1)
+
+  2026-06-17T16:31:03.637603Z  INFO  PlayerGameActor started for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\player_game_actor\mod.rs:69 on main ThreadId(1)
+
+  2026-06-17T16:31:05.712553Z  INFO  Initializing player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world\helpers.rs:612 on main ThreadId(1)
+
+  2026-06-17T16:31:05.712714Z  INFO  Game state transition: NotStarted -> SelectingStarterEmployees
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T16:31:05.712893Z  INFO  Starter employee selection opened for player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world.rs:295 on main ThreadId(1)
+
+  2026-06-17T16:31:07.538837Z  INFO  Initialized selected starter employee roster with 3 employees
+    at core_enhanced\src\game\world\helpers.rs:670 on main ThreadId(1)
+
+  2026-06-17T16:31:07.538981Z  INFO  Granted starter enkephalin: amount=500, total=500
+    at core_enhanced\src\game\world.rs:316 on main ThreadId(1)
+
+  2026-06-17T16:31:07.539950Z  INFO  Game state transition: SelectingStarterEmployees -> ViewingMap
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T16:31:09.147316Z  INFO  Game state transition: ViewingMap -> NodeConfirm { node_id: MapNodeId(a0e8fbea-2bd6-4b31-9ded-0d5deee380dd), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T16:31:09.543685Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(a0e8fbea-2bd6-4b31-9ded-0d5deee380dd), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InNode { node_id: MapNodeId(a0e8fbea-2bd6-4b31-9ded-0d5deee380dd), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T16:31:09.543829Z  INFO  Starting map combat node for abnormality=f-01-02 encounter=suppress_scorched_girl node=a0e8fbea-2bd6-4b31-9ded-0d5deee380dd
+    at core_enhanced\src\game\world\combat.rs:129 on main ThreadId(1)
+
+  2026-06-17T16:31:09.544010Z  INFO  Starting node combat for abnormality=f-01-02 encounter=suppress_scorched_girl field_size=(7, 7)
+    at core_enhanced\src\game\events\combat.rs:90 on main ThreadId(1)
+
+  2026-06-17T16:31:09.544360Z  INFO  Game state transition: InNode { node_id: MapNodeId(a0e8fbea-2bd6-4b31-9ded-0d5deee380dd), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InBattle { battle_uuid: a0e8fbea-2bd6-4b31-9ded-0d5deee380dd }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T16:31:24.447663Z  INFO  Game state transition: InBattle { battle_uuid: a0e8fbea-2bd6-4b31-9ded-0d5deee380dd } -> CombatResult { battle_uuid: a0e8fbea-2bd6-4b31-9ded-0d5deee380dd }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T16:36:25.950282Z  INFO  Deregistering player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:22 on main ThreadId(1)
+
+  2026-06-17T17:22:27.862295Z  INFO  PlayerGameSession started: b1823060-8401-4a19-834c-9f3e9ee4c01e
+    at game_server\src\game\player_game_actor\session.rs:282 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2026-06-17T17:22:27.907961Z  INFO  Creating PlayerGameActor for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:43 on main ThreadId(1)
+
+  2026-06-17T17:22:27.908051Z  INFO  Initializing GameCore with run_seed=11906871267548621739
+    at core_enhanced\src\game\world.rs:110 on main ThreadId(1)
+
+  2026-06-17T17:22:27.908212Z  INFO  PlayerGameActor started for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\player_game_actor\mod.rs:69 on main ThreadId(1)
+
+  2026-06-17T17:22:29.429877Z  INFO  Initializing player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world\helpers.rs:612 on main ThreadId(1)
+
+  2026-06-17T17:22:29.430010Z  INFO  Game state transition: NotStarted -> SelectingStarterEmployees
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T17:22:29.430089Z  INFO  Starter employee selection opened for player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world.rs:295 on main ThreadId(1)
+
+  2026-06-17T17:22:31.303032Z  INFO  Initialized selected starter employee roster with 3 employees
+    at core_enhanced\src\game\world\helpers.rs:670 on main ThreadId(1)
+
+  2026-06-17T17:22:31.303153Z  INFO  Granted starter enkephalin: amount=500, total=500
+    at core_enhanced\src\game\world.rs:316 on main ThreadId(1)
+
+  2026-06-17T17:22:31.303930Z  INFO  Game state transition: SelectingStarterEmployees -> ViewingMap
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T17:22:32.185577Z  INFO  Game state transition: ViewingMap -> NodeConfirm { node_id: MapNodeId(a0e8fbea-2bd6-4b31-9ded-0d5deee380dd), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T17:22:32.550625Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(a0e8fbea-2bd6-4b31-9ded-0d5deee380dd), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InNode { node_id: MapNodeId(a0e8fbea-2bd6-4b31-9ded-0d5deee380dd), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T17:22:32.550767Z  INFO  Starting map combat node for abnormality=f-01-02 encounter=suppress_scorched_girl node=a0e8fbea-2bd6-4b31-9ded-0d5deee380dd
+    at core_enhanced\src\game\world\combat.rs:129 on main ThreadId(1)
+
+  2026-06-17T17:22:32.550898Z  INFO  Starting node combat for abnormality=f-01-02 encounter=suppress_scorched_girl field_size=(7, 7)
+    at core_enhanced\src\game\events\combat.rs:90 on main ThreadId(1)
+
+  2026-06-17T17:22:32.551146Z  INFO  Game state transition: InNode { node_id: MapNodeId(a0e8fbea-2bd6-4b31-9ded-0d5deee380dd), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InBattle { battle_uuid: a0e8fbea-2bd6-4b31-9ded-0d5deee380dd }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T17:27:45.124877Z  INFO  Deregistering player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:22 on main ThreadId(1)
+
+  2026-06-17T19:29:44.687857Z  INFO  SIGINT received; starting forced shutdown
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:333 on main ThreadId(1)
+
+  2026-06-17T19:29:44.688214Z  INFO  accept thread stopped
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\accept.rs:143 on actix-server acceptor ThreadId(35)
+
+  2026-06-17T19:29:44.688278Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2026-06-17T19:29:44.688348Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:9 ThreadId(12)
+
+  2026-06-17T19:29:44.688429Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:6 ThreadId(9)
+
+  2026-06-17T19:29:44.688549Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2026-06-17T19:29:44.688632Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:17 ThreadId(20)
+
+  2026-06-17T19:29:44.688730Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:4 ThreadId(7)
+
+  2026-06-17T19:29:44.688823Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:26 ThreadId(29)
+
+  2026-06-17T19:29:44.688910Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:31 ThreadId(34)
+
+  2026-06-17T19:29:44.688997Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:8 ThreadId(11)
+
+  2026-06-17T19:29:44.689086Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:21 ThreadId(24)
+
+  2026-06-17T19:29:44.689157Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:19 ThreadId(22)
+
+  2026-06-17T19:29:44.689228Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:23 ThreadId(26)
+
+  2026-06-17T19:29:44.689281Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:20 ThreadId(23)
+
+  2026-06-17T19:29:44.689340Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:30 ThreadId(33)
+
+  2026-06-17T19:29:44.689427Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:12 ThreadId(15)
+
+  2026-06-17T19:29:44.689494Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2026-06-17T19:29:44.689542Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:10 ThreadId(13)
+
+  2026-06-17T19:29:44.689625Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:28 ThreadId(31)
+
+  2026-06-17T19:29:44.689678Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:27 ThreadId(30)
+
+  2026-06-17T19:29:44.689755Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:7 ThreadId(10)
+
+  2026-06-17T19:29:44.689804Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:29 ThreadId(32)
+
+  2026-06-17T19:29:44.689858Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:13 ThreadId(16)
+
+  2026-06-17T19:29:44.689926Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:16 ThreadId(19)
+
+  2026-06-17T19:29:44.689971Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:18 ThreadId(21)
+
+  2026-06-17T19:29:44.690024Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:5 ThreadId(8)
+
+  2026-06-17T19:29:44.690085Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:3 ThreadId(6)
+
+  2026-06-17T19:29:44.690143Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:22 ThreadId(25)
+
+  2026-06-17T19:29:44.690198Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:15 ThreadId(18)
+
+  2026-06-17T19:29:44.690244Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:25 ThreadId(28)
+
+  2026-06-17T19:29:44.690310Z  INFO  Ctrl+C received. Initiating graceful shutdown...
+    at game_server\src\main.rs:146 on main ThreadId(1)
+
+  2026-06-17T19:29:44.690362Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:11 ThreadId(14)
+
+  2026-06-17T19:29:44.690415Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:24 ThreadId(27)
+
+  2026-06-17T19:29:44.690468Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:14 ThreadId(17)
+
+  2026-06-17T19:30:03.334457Z  INFO  Logger initialization complete: console and file (logs/app.log) output enabled
+    at game_server\src\lib.rs:94 on main ThreadId(1)
+
+  2026-06-17T19:30:03.334603Z  INFO  Logger initialized
+    at game_server\src\main.rs:57 on main ThreadId(1)
+
+  2026-06-17T19:30:03.334731Z  INFO  Retry config initialized
+    at game_server\src\main.rs:61 on main ThreadId(1)
+
+  2026-06-17T19:30:03.351928Z  INFO  Shop: []
+    at core_enhanced\src\game\data\shop_data.rs:167 on main ThreadId(1)
+
+  2026-06-17T19:30:03.352975Z  INFO  Game data loaded for meta-game sessions
+    at game_server\src\main.rs:64 on main ThreadId(1)
+
+  2026-06-17T19:30:03.353137Z  INFO  Metrics initialized and registered
+    at game_server\src\main.rs:69 on main ThreadId(1)
+
+  2026-06-17T19:30:03.353286Z  INFO  LoadBalanceActor started
+    at game_server\src\main.rs:73 on main ThreadId(1)
+
+  2026-06-17T19:30:03.353372Z  INFO  Starting HTTP server on 0.0.0.0:8081
+    at game_server\src\main.rs:89 on main ThreadId(1)
+
+  2026-06-17T19:30:03.355829Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on main ThreadId(1)
+
+  2026-06-17T19:30:03.355933Z  INFO  Game Server is running on 0.0.0.0:8081
+    at game_server\src\main.rs:135 on main ThreadId(1)
+
+  2026-06-17T19:30:03.356041Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on main ThreadId(1)
+
+  2026-06-17T19:30:03.356132Z  INFO  starting service: "actix-web-service-0.0.0.0:8081", workers: 32, listening on: 0.0.0.0:8081
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on main ThreadId(1)
+
+  2026-06-17T19:30:03.364313Z  INFO  LoadBalanceActor started
+    at game_server\src\game\load_balance_actor\mod.rs:28 on main ThreadId(1)
+
+  2026-06-17T19:30:04.838726Z  INFO  PlayerGameSession started: 877f68d8-1921-4b16-8ba4-03c17fe36306
+    at game_server\src\game\player_game_actor\session.rs:282 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2026-06-17T19:30:04.887698Z  INFO  Creating PlayerGameActor for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:43 on main ThreadId(1)
+
+  2026-06-17T19:30:04.887819Z  INFO  Initializing GameCore with run_seed=13595952541911250355
+    at core_enhanced\src\game\world.rs:110 on main ThreadId(1)
+
+  2026-06-17T19:30:04.888037Z  INFO  PlayerGameActor started for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\player_game_actor\mod.rs:69 on main ThreadId(1)
+
+  2026-06-17T19:30:07.866307Z  INFO  Initializing player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world\helpers.rs:612 on main ThreadId(1)
+
+  2026-06-17T19:30:07.866491Z  INFO  Game state transition: NotStarted -> SelectingStarterEmployees
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T19:30:07.866641Z  INFO  Starter employee selection opened for player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world.rs:295 on main ThreadId(1)
+
+  2026-06-17T19:30:09.850439Z  INFO  Initialized selected starter employee roster with 3 employees
+    at core_enhanced\src\game\world\helpers.rs:670 on main ThreadId(1)
+
+  2026-06-17T19:30:09.850606Z  INFO  Granted starter enkephalin: amount=500, total=500
+    at core_enhanced\src\game\world.rs:316 on main ThreadId(1)
+
+  2026-06-17T19:30:09.851931Z  INFO  Game state transition: SelectingStarterEmployees -> ViewingMap
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T19:30:10.679620Z  INFO  Game state transition: ViewingMap -> NodeConfirm { node_id: MapNodeId(4b314627-7891-4437-85ee-930c9281cc43), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T19:30:11.073327Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(4b314627-7891-4437-85ee-930c9281cc43), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InNode { node_id: MapNodeId(4b314627-7891-4437-85ee-930c9281cc43), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T19:30:11.073502Z  INFO  Starting map combat node for abnormality=t-01-68_singing_machine encounter=suppress_singing_machine node=4b314627-7891-4437-85ee-930c9281cc43
+    at core_enhanced\src\game\world\combat.rs:129 on main ThreadId(1)
+
+  2026-06-17T19:30:11.073749Z  INFO  Starting node combat for abnormality=t-01-68_singing_machine encounter=suppress_singing_machine field_size=(9, 9)
+    at core_enhanced\src\game\events\combat.rs:90 on main ThreadId(1)
+
+  2026-06-17T19:30:11.074249Z  INFO  Game state transition: InNode { node_id: MapNodeId(4b314627-7891-4437-85ee-930c9281cc43), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InBattle { battle_uuid: 4b314627-7891-4437-85ee-930c9281cc43 }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T19:35:26.669689Z  INFO  Deregistering player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:22 on main ThreadId(1)
+
+  2026-06-17T19:39:35.153853Z  INFO  PlayerGameSession started: a894d68c-8e4f-4d9b-a875-71fb53b76144
+    at game_server\src\game\player_game_actor\session.rs:282 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2026-06-17T19:39:35.204481Z  INFO  Creating PlayerGameActor for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:43 on main ThreadId(1)
+
+  2026-06-17T19:39:35.204629Z  INFO  Initializing GameCore with run_seed=13595952541911250355
+    at core_enhanced\src\game\world.rs:110 on main ThreadId(1)
+
+  2026-06-17T19:39:35.204918Z  INFO  PlayerGameActor started for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\player_game_actor\mod.rs:69 on main ThreadId(1)
+
+  2026-06-17T19:39:36.557374Z  INFO  Initializing player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world\helpers.rs:612 on main ThreadId(1)
+
+  2026-06-17T19:39:36.557525Z  INFO  Game state transition: NotStarted -> SelectingStarterEmployees
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T19:39:36.557654Z  INFO  Starter employee selection opened for player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world.rs:295 on main ThreadId(1)
+
+  2026-06-17T19:39:38.309668Z  INFO  Initialized selected starter employee roster with 3 employees
+    at core_enhanced\src\game\world\helpers.rs:670 on main ThreadId(1)
+
+  2026-06-17T19:39:38.309892Z  INFO  Granted starter enkephalin: amount=500, total=500
+    at core_enhanced\src\game\world.rs:316 on main ThreadId(1)
+
+  2026-06-17T19:39:38.310691Z  INFO  Game state transition: SelectingStarterEmployees -> ViewingMap
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T19:39:38.941309Z  INFO  Game state transition: ViewingMap -> NodeConfirm { node_id: MapNodeId(4b314627-7891-4437-85ee-930c9281cc43), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T19:39:39.302081Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(4b314627-7891-4437-85ee-930c9281cc43), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InNode { node_id: MapNodeId(4b314627-7891-4437-85ee-930c9281cc43), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T19:39:39.302292Z  INFO  Starting map combat node for abnormality=t-01-68_singing_machine encounter=suppress_singing_machine node=4b314627-7891-4437-85ee-930c9281cc43
+    at core_enhanced\src\game\world\combat.rs:129 on main ThreadId(1)
+
+  2026-06-17T19:39:39.302501Z  INFO  Starting node combat for abnormality=t-01-68_singing_machine encounter=suppress_singing_machine field_size=(9, 9)
+    at core_enhanced\src\game\events\combat.rs:90 on main ThreadId(1)
+
+  2026-06-17T19:39:39.302775Z  INFO  Game state transition: InNode { node_id: MapNodeId(4b314627-7891-4437-85ee-930c9281cc43), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InBattle { battle_uuid: 4b314627-7891-4437-85ee-930c9281cc43 }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T19:43:03.483860Z  INFO  PlayerGameSession started: f2eefe76-8b03-48ae-93fb-18e8eb9ca476
+    at game_server\src\game\player_game_actor\session.rs:282 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2026-06-17T19:43:03.556984Z  INFO  Game state transition: InBattle { battle_uuid: 4b314627-7891-4437-85ee-930c9281cc43 } -> NodeConfirm { node_id: MapNodeId(4b314627-7891-4437-85ee-930c9281cc43), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T19:43:04.571885Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(4b314627-7891-4437-85ee-930c9281cc43), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InNode { node_id: MapNodeId(4b314627-7891-4437-85ee-930c9281cc43), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T19:43:04.572025Z  INFO  Starting map combat node for abnormality=t-01-68_singing_machine encounter=suppress_singing_machine node=4b314627-7891-4437-85ee-930c9281cc43
+    at core_enhanced\src\game\world\combat.rs:129 on main ThreadId(1)
+
+  2026-06-17T19:43:04.572149Z  INFO  Starting node combat for abnormality=t-01-68_singing_machine encounter=suppress_singing_machine field_size=(9, 9)
+    at core_enhanced\src\game\events\combat.rs:90 on main ThreadId(1)
+
+  2026-06-17T19:43:04.572519Z  INFO  Game state transition: InNode { node_id: MapNodeId(4b314627-7891-4437-85ee-930c9281cc43), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InBattle { battle_uuid: 4b314627-7891-4437-85ee-930c9281cc43 }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T19:48:14.066608Z  INFO  Deregistering player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:22 on main ThreadId(1)
+
+  2026-06-17T20:50:28.516537Z  INFO  SIGINT received; starting forced shutdown
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:333 on main ThreadId(1)
+
+  2026-06-17T20:50:28.516890Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2026-06-17T20:50:28.517002Z  INFO  accept thread stopped
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\accept.rs:143 on actix-server acceptor ThreadId(35)
+
+  2026-06-17T20:50:28.517065Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2026-06-17T20:50:28.517143Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:10 ThreadId(13)
+
+  2026-06-17T20:50:28.517189Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:23 ThreadId(26)
+
+  2026-06-17T20:50:28.517265Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:12 ThreadId(15)
+
+  2026-06-17T20:50:28.517326Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:4 ThreadId(7)
+
+  2026-06-17T20:50:28.517376Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:5 ThreadId(8)
+
+  2026-06-17T20:50:28.517431Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:21 ThreadId(24)
+
+  2026-06-17T20:50:28.517482Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:29 ThreadId(32)
+
+  2026-06-17T20:50:28.517544Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:6 ThreadId(9)
+
+  2026-06-17T20:50:28.517617Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:3 ThreadId(6)
+
+  2026-06-17T20:50:28.517682Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:28 ThreadId(31)
+
+  2026-06-17T20:50:28.517739Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:27 ThreadId(30)
+
+  2026-06-17T20:50:28.517786Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:30 ThreadId(33)
+
+  2026-06-17T20:50:28.517831Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:31 ThreadId(34)
+
+  2026-06-17T20:50:28.517870Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:18 ThreadId(21)
+
+  2026-06-17T20:50:28.517938Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:15 ThreadId(18)
+
+  2026-06-17T20:50:28.518000Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:8 ThreadId(11)
+
+  2026-06-17T20:50:28.518049Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2026-06-17T20:50:28.518094Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:22 ThreadId(25)
+
+  2026-06-17T20:50:28.518144Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:19 ThreadId(22)
+
+  2026-06-17T20:50:28.518184Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:20 ThreadId(23)
+
+  2026-06-17T20:50:28.518239Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:14 ThreadId(17)
+
+  2026-06-17T20:50:28.518306Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:11 ThreadId(14)
+
+  2026-06-17T20:50:28.518362Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:24 ThreadId(27)
+
+  2026-06-17T20:50:28.518412Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:26 ThreadId(29)
+
+  2026-06-17T20:50:28.518471Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:7 ThreadId(10)
+
+  2026-06-17T20:50:28.518527Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:13 ThreadId(16)
+
+  2026-06-17T20:50:28.518572Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:25 ThreadId(28)
+
+  2026-06-17T20:50:28.518614Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:17 ThreadId(20)
+
+  2026-06-17T20:50:28.518667Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:16 ThreadId(19)
+
+  2026-06-17T20:50:28.518718Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:9 ThreadId(12)
+
+  2026-06-17T20:50:28.518779Z  INFO  Ctrl+C received. Initiating graceful shutdown...
+    at game_server\src\main.rs:146 on main ThreadId(1)
+
+  2026-06-17T20:54:52.399808Z  INFO  Logger initialization complete: console and file (logs/app.log) output enabled
+    at game_server/src/lib.rs:94 on main ThreadId(1)
+
+  2026-06-17T20:54:52.400520Z  INFO  Logger initialized
+    at game_server/src/main.rs:57 on main ThreadId(1)
+
+  2026-06-17T20:54:52.400856Z  INFO  Retry config initialized
+    at game_server/src/main.rs:61 on main ThreadId(1)
+
+  2026-06-17T20:54:52.428100Z  INFO  Shop: []
+    at core_enhanced/src/game/data/shop_data.rs:167 on main ThreadId(1)
+
+  2026-06-17T20:54:52.430516Z  INFO  Game data loaded for meta-game sessions
+    at game_server/src/main.rs:64 on main ThreadId(1)
+
+  2026-06-17T20:54:52.431141Z  INFO  Metrics initialized and registered
+    at game_server/src/main.rs:69 on main ThreadId(1)
+
+  2026-06-17T20:54:52.431429Z  INFO  LoadBalanceActor started
+    at game_server/src/main.rs:73 on main ThreadId(1)
+
+  2026-06-17T20:54:52.431798Z  INFO  Starting HTTP server on 0.0.0.0:8081
+    at game_server/src/main.rs:89 on main ThreadId(1)
+
+  2026-06-17T20:54:52.435599Z  INFO  starting 32 workers
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/builder.rs:310 on main ThreadId(1)
+
+  2026-06-17T20:54:52.435885Z  INFO  Game Server is running on 0.0.0.0:8081
+    at game_server/src/main.rs:135 on main ThreadId(1)
+
+  2026-06-17T20:54:52.435931Z  INFO  Actix runtime found; starting in Actix runtime
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/server.rs:191 on main ThreadId(1)
+
+  2026-06-17T20:54:52.436125Z  INFO  starting service: "actix-web-service-0.0.0.0:8081", workers: 32, listening on: 0.0.0.0:8081
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/server.rs:197 on main ThreadId(1)
+
+  2026-06-17T20:54:52.489490Z  INFO  LoadBalanceActor started
+    at game_server/src/game/load_balance_actor/mod.rs:28 on main ThreadId(1)
+
+  2026-06-17T20:55:19.236084Z  INFO  PlayerGameSession started: b3ed6a77-2e96-47d0-aa90-13f05d5c82b6
+    at game_server/src/game/player_game_actor/session.rs:282 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2026-06-17T20:55:19.238126Z  INFO  Creating PlayerGameActor for player 85a591ae-ed80-4cea-81d7-38d4d73324cd
+    at game_server/src/game/load_balance_actor/handlers.rs:43 on main ThreadId(1)
+
+  2026-06-17T20:55:19.238368Z  INFO  Initializing GameCore with run_seed=1785298517373547833
+    at core_enhanced/src/game/world.rs:110 on main ThreadId(1)
+
+  2026-06-17T20:55:19.238841Z  INFO  PlayerGameActor started for player 85a591ae-ed80-4cea-81d7-38d4d73324cd
+    at game_server/src/game/player_game_actor/mod.rs:69 on main ThreadId(1)
+
+  2026-06-17T20:55:19.245918Z  INFO  Initializing player 85a591ae-ed80-4cea-81d7-38d4d73324cd
+    at core_enhanced/src/game/world/helpers.rs:612 on main ThreadId(1)
+
+  2026-06-17T20:55:19.245946Z  INFO  Game state transition: NotStarted -> SelectingStarterEmployees
+    at core_enhanced/src/game/world/helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T20:55:19.245962Z  INFO  Starter employee selection opened for player 85a591ae-ed80-4cea-81d7-38d4d73324cd
+    at core_enhanced/src/game/world.rs:295 on main ThreadId(1)
+
+  2026-06-17T20:55:19.250816Z  INFO  Initialized selected starter employee roster with 3 employees
+    at core_enhanced/src/game/world/helpers.rs:670 on main ThreadId(1)
+
+  2026-06-17T20:55:19.250878Z  INFO  Granted starter enkephalin: amount=500, total=500
+    at core_enhanced/src/game/world.rs:316 on main ThreadId(1)
+
+  2026-06-17T20:55:19.254280Z  INFO  Game state transition: SelectingStarterEmployees -> ViewingMap
+    at core_enhanced/src/game/world/helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T20:55:19.262907Z  INFO  Game state transition: ViewingMap -> NodeConfirm { node_id: MapNodeId(e6d8e797-44b5-48e5-a27f-d669ad9b6a18), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced/src/game/world/helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T20:55:19.269630Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(e6d8e797-44b5-48e5-a27f-d669ad9b6a18), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InNode { node_id: MapNodeId(e6d8e797-44b5-48e5-a27f-d669ad9b6a18), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced/src/game/world/helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T20:55:19.269679Z  INFO  Starting map combat node for abnormality=t-01-54_meat_lantern encounter=suppress_meat_lantern node=e6d8e797-44b5-48e5-a27f-d669ad9b6a18
+    at core_enhanced/src/game/world/combat.rs:129 on main ThreadId(1)
+
+  2026-06-17T20:55:19.269721Z  INFO  Starting node combat for abnormality=t-01-54_meat_lantern encounter=suppress_meat_lantern field_size=(9, 9)
+    at core_enhanced/src/game/events/combat.rs:90 on main ThreadId(1)
+
+  2026-06-17T20:55:19.270726Z  INFO  Game state transition: InNode { node_id: MapNodeId(e6d8e797-44b5-48e5-a27f-d669ad9b6a18), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InBattle { battle_uuid: e6d8e797-44b5-48e5-a27f-d669ad9b6a18 }
+    at core_enhanced/src/game/world/helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T20:55:33.429029Z  INFO  SIGTERM received; starting graceful shutdown
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/server.rs:342 on main ThreadId(1)
+
+  2026-06-17T20:55:33.429132Z  INFO  accept thread stopped
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/accept.rs:143 on actix-server acceptor ThreadId(35)
+
+  2026-06-17T20:55:33.429164Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2026-06-17T20:55:33.429167Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2026-06-17T20:55:33.429193Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:4 ThreadId(7)
+
+  2026-06-17T20:55:33.429252Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:11 ThreadId(14)
+
+  2026-06-17T20:55:33.429260Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:10 ThreadId(13)
+
+  2026-06-17T20:55:33.429267Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:18 ThreadId(21)
+
+  2026-06-17T20:55:33.429278Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:16 ThreadId(19)
+
+  2026-06-17T20:55:33.429283Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:14 ThreadId(17)
+
+  2026-06-17T20:55:33.429282Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:8 ThreadId(11)
+
+  2026-06-17T20:55:33.429284Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:9 ThreadId(12)
+
+  2026-06-17T20:55:33.429285Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2026-06-17T20:55:33.429298Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:15 ThreadId(18)
+
+  2026-06-17T20:55:33.429310Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:12 ThreadId(15)
+
+  2026-06-17T20:55:33.429310Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:6 ThreadId(9)
+
+  2026-06-17T20:55:33.429312Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:7 ThreadId(10)
+
+  2026-06-17T20:55:33.429317Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:3 ThreadId(6)
+
+  2026-06-17T20:55:33.429327Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:20 ThreadId(23)
+
+  2026-06-17T20:55:33.429321Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:5 ThreadId(8)
+
+  2026-06-17T20:55:33.429334Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:13 ThreadId(16)
+
+  2026-06-17T20:55:33.429340Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:17 ThreadId(20)
+
+  2026-06-17T20:55:33.429344Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:23 ThreadId(26)
+
+  2026-06-17T20:55:33.429366Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:22 ThreadId(25)
+
+  2026-06-17T20:55:33.429371Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:25 ThreadId(28)
+
+  2026-06-17T20:55:33.429394Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:24 ThreadId(27)
+
+  2026-06-17T20:55:33.429460Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:21 ThreadId(24)
+
+  2026-06-17T20:55:33.429484Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:28 ThreadId(31)
+
+  2026-06-17T20:55:33.429504Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:31 ThreadId(34)
+
+  2026-06-17T20:55:33.429556Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:29 ThreadId(32)
+
+  2026-06-17T20:55:33.429577Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:27 ThreadId(30)
+
+  2026-06-17T20:55:33.429607Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:26 ThreadId(29)
+
+  2026-06-17T20:55:33.429630Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:19 ThreadId(22)
+
+  2026-06-17T20:55:33.429692Z  INFO  shutting down idle worker
+    at /home/acr0tic/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/actix-server-2.6.0/src/worker.rs:593 on actix-rt|system:0|arbiter:30 ThreadId(33)
+
+  2026-06-17T21:09:07.719789Z  INFO  Logger initialization complete: console and file (logs/app.log) output enabled
+    at game_server\src\lib.rs:94 on main ThreadId(1)
+
+  2026-06-17T21:09:07.719917Z  INFO  Logger initialized
+    at game_server\src\main.rs:57 on main ThreadId(1)
+
+  2026-06-17T21:09:07.720018Z  INFO  Retry config initialized
+    at game_server\src\main.rs:61 on main ThreadId(1)
+
+  2026-06-17T21:09:07.736634Z  INFO  Shop: []
+    at core_enhanced\src\game\data\shop_data.rs:167 on main ThreadId(1)
+
+  2026-06-17T21:09:07.737617Z  INFO  Game data loaded for meta-game sessions
+    at game_server\src\main.rs:64 on main ThreadId(1)
+
+  2026-06-17T21:09:07.737771Z  INFO  Metrics initialized and registered
+    at game_server\src\main.rs:69 on main ThreadId(1)
+
+  2026-06-17T21:09:07.737900Z  INFO  LoadBalanceActor started
+    at game_server\src\main.rs:73 on main ThreadId(1)
+
+  2026-06-17T21:09:07.737967Z  INFO  Starting HTTP server on 0.0.0.0:8081
+    at game_server\src\main.rs:89 on main ThreadId(1)
+
+  2026-06-17T21:09:07.740247Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on main ThreadId(1)
+
+  2026-06-17T21:09:07.740327Z  INFO  Game Server is running on 0.0.0.0:8081
+    at game_server\src\main.rs:135 on main ThreadId(1)
+
+  2026-06-17T21:09:07.740388Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on main ThreadId(1)
+
+  2026-06-17T21:09:07.740456Z  INFO  starting service: "actix-web-service-0.0.0.0:8081", workers: 32, listening on: 0.0.0.0:8081
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on main ThreadId(1)
+
+  2026-06-17T21:09:07.748475Z  INFO  LoadBalanceActor started
+    at game_server\src\game\load_balance_actor\mod.rs:28 on main ThreadId(1)
+
+  2026-06-17T21:09:16.960428Z  INFO  PlayerGameSession started: 03c8dcb8-b6e2-4019-891b-0be6f4474680
+    at game_server\src\game\player_game_actor\session.rs:282 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2026-06-17T21:09:17.017397Z  INFO  Creating PlayerGameActor for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:43 on main ThreadId(1)
+
+  2026-06-17T21:09:17.017529Z  INFO  Initializing GameCore with run_seed=5301261339408376669
+    at core_enhanced\src\game\world.rs:110 on main ThreadId(1)
+
+  2026-06-17T21:09:17.017650Z  INFO  PlayerGameActor started for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\player_game_actor\mod.rs:69 on main ThreadId(1)
+
+  2026-06-17T21:09:19.072604Z  INFO  Initializing player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world\helpers.rs:612 on main ThreadId(1)
+
+  2026-06-17T21:09:19.072693Z  INFO  Game state transition: NotStarted -> SelectingStarterEmployees
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:09:19.072833Z  INFO  Starter employee selection opened for player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world.rs:295 on main ThreadId(1)
+
+  2026-06-17T21:09:20.584167Z  INFO  Initialized selected starter employee roster with 3 employees
+    at core_enhanced\src\game\world\helpers.rs:670 on main ThreadId(1)
+
+  2026-06-17T21:09:20.584390Z  INFO  Granted starter enkephalin: amount=500, total=500
+    at core_enhanced\src\game\world.rs:316 on main ThreadId(1)
+
+  2026-06-17T21:09:20.585042Z  INFO  Game state transition: SelectingStarterEmployees -> ViewingMap
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:09:21.261442Z  INFO  Game state transition: ViewingMap -> NodeConfirm { node_id: MapNodeId(741e7ad9-a699-4f03-ab26-db3d0bafa967), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:09:21.665486Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(741e7ad9-a699-4f03-ab26-db3d0bafa967), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InNode { node_id: MapNodeId(741e7ad9-a699-4f03-ab26-db3d0bafa967), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:09:21.665658Z  INFO  Starting map combat node for abnormality=t-01-54_meat_lantern encounter=suppress_meat_lantern node=741e7ad9-a699-4f03-ab26-db3d0bafa967
+    at core_enhanced\src\game\world\combat.rs:129 on main ThreadId(1)
+
+  2026-06-17T21:09:21.665788Z  INFO  Starting node combat for abnormality=t-01-54_meat_lantern encounter=suppress_meat_lantern field_size=(9, 9)
+    at core_enhanced\src\game\events\combat.rs:90 on main ThreadId(1)
+
+  2026-06-17T21:09:21.666144Z  INFO  Game state transition: InNode { node_id: MapNodeId(741e7ad9-a699-4f03-ab26-db3d0bafa967), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InBattle { battle_uuid: 741e7ad9-a699-4f03-ab26-db3d0bafa967 }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:14:30.491548Z  INFO  Deregistering player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:22 on main ThreadId(1)
+
+  2026-06-17T21:35:34.578436Z  INFO  PlayerGameSession started: 63efd5b7-9968-4ee7-aceb-2a8e37316fa2
+    at game_server\src\game\player_game_actor\session.rs:282 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2026-06-17T21:35:34.585320Z  INFO  Creating PlayerGameActor for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:43 on main ThreadId(1)
+
+  2026-06-17T21:35:34.585376Z  INFO  Initializing GameCore with run_seed=5301261339408376669
+    at core_enhanced\src\game\world.rs:110 on main ThreadId(1)
+
+  2026-06-17T21:35:34.585471Z  INFO  PlayerGameActor started for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\player_game_actor\mod.rs:69 on main ThreadId(1)
+
+  2026-06-17T21:35:36.186855Z  INFO  Initializing player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world\helpers.rs:612 on main ThreadId(1)
+
+  2026-06-17T21:35:36.186948Z  INFO  Game state transition: NotStarted -> SelectingStarterEmployees
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:35:36.187025Z  INFO  Starter employee selection opened for player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world.rs:295 on main ThreadId(1)
+
+  2026-06-17T21:35:37.795660Z  INFO  Initialized selected starter employee roster with 3 employees
+    at core_enhanced\src\game\world\helpers.rs:670 on main ThreadId(1)
+
+  2026-06-17T21:35:37.795783Z  INFO  Granted starter enkephalin: amount=500, total=500
+    at core_enhanced\src\game\world.rs:316 on main ThreadId(1)
+
+  2026-06-17T21:35:37.796539Z  INFO  Game state transition: SelectingStarterEmployees -> ViewingMap
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:35:38.545286Z  INFO  Game state transition: ViewingMap -> NodeConfirm { node_id: MapNodeId(741e7ad9-a699-4f03-ab26-db3d0bafa967), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:35:38.960608Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(741e7ad9-a699-4f03-ab26-db3d0bafa967), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InNode { node_id: MapNodeId(741e7ad9-a699-4f03-ab26-db3d0bafa967), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:35:38.960730Z  INFO  Starting map combat node for abnormality=t-01-54_meat_lantern encounter=suppress_meat_lantern node=741e7ad9-a699-4f03-ab26-db3d0bafa967
+    at core_enhanced\src\game\world\combat.rs:129 on main ThreadId(1)
+
+  2026-06-17T21:35:38.960834Z  INFO  Starting node combat for abnormality=t-01-54_meat_lantern encounter=suppress_meat_lantern field_size=(9, 9)
+    at core_enhanced\src\game\events\combat.rs:90 on main ThreadId(1)
+
+  2026-06-17T21:35:38.961175Z  INFO  Game state transition: InNode { node_id: MapNodeId(741e7ad9-a699-4f03-ab26-db3d0bafa967), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InBattle { battle_uuid: 741e7ad9-a699-4f03-ab26-db3d0bafa967 }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:35:53.274080Z  INFO  Game state transition: InBattle { battle_uuid: 741e7ad9-a699-4f03-ab26-db3d0bafa967 } -> CombatResult { battle_uuid: 741e7ad9-a699-4f03-ab26-db3d0bafa967 }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:38:34.737258Z  INFO  PlayerGameSession started: 725a11c8-957b-4a84-bde5-d4e90669cc26
+    at game_server\src\game\player_game_actor\session.rs:282 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2026-06-17T21:38:36.476516Z  INFO  Combat result finished without player victory (winner=Opponent); skipping rewards
+    at core_enhanced\src\game\world\combat.rs:1213 on main ThreadId(1)
+
+  2026-06-17T21:38:36.476699Z  INFO  Game state transition: CombatResult { battle_uuid: 741e7ad9-a699-4f03-ab26-db3d0bafa967 } -> ViewingMap
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:38:37.386821Z  INFO  Game state transition: ViewingMap -> NodeConfirm { node_id: MapNodeId(741e7ad9-a699-4f03-b0a5-81b98d5b41cf), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:38:37.889341Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(741e7ad9-a699-4f03-b0a5-81b98d5b41cf), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InNode { node_id: MapNodeId(741e7ad9-a699-4f03-b0a5-81b98d5b41cf), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:38:37.889449Z  INFO  Starting map combat node for abnormality=o-01-45 encounter=suppress_spider_bud node=741e7ad9-a699-4f03-b0a5-81b98d5b41cf
+    at core_enhanced\src\game\world\combat.rs:129 on main ThreadId(1)
+
+  2026-06-17T21:38:37.889587Z  INFO  Starting node combat for abnormality=o-01-45 encounter=suppress_spider_bud field_size=(9, 9)
+    at core_enhanced\src\game\events\combat.rs:90 on main ThreadId(1)
+
+  2026-06-17T21:38:37.889881Z  INFO  Game state transition: InNode { node_id: MapNodeId(741e7ad9-a699-4f03-b0a5-81b98d5b41cf), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InBattle { battle_uuid: 741e7ad9-a699-4f03-b0a5-81b98d5b41cf }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:39:01.392498Z  INFO  Game state transition: InBattle { battle_uuid: 741e7ad9-a699-4f03-b0a5-81b98d5b41cf } -> CombatResult { battle_uuid: 741e7ad9-a699-4f03-b0a5-81b98d5b41cf }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:43:59.433858Z  INFO  PlayerGameSession started: 07071788-8c2f-4edc-a556-d1fb6dc2ccc5
+    at game_server\src\game\player_game_actor\session.rs:282 on actix-rt|system:0|arbiter:3 ThreadId(6)
+
+  2026-06-17T21:44:03.945357Z  INFO  Combat result finished without player victory (winner=Opponent); skipping rewards
+    at core_enhanced\src\game\world\combat.rs:1213 on main ThreadId(1)
+
+  2026-06-17T21:44:03.945522Z  INFO  Game state transition: CombatResult { battle_uuid: 741e7ad9-a699-4f03-b0a5-81b98d5b41cf } -> ViewingMap
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:44:07.712072Z  INFO  PlayerGameSession started: 9ba74c33-dae5-4a37-925c-a2ed85f2ee98
+    at game_server\src\game\player_game_actor\session.rs:282 on actix-rt|system:0|arbiter:4 ThreadId(7)
+
+  2026-06-17T21:44:09.178569Z  INFO  SIGINT received; starting forced shutdown
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:333 on main ThreadId(1)
+
+  2026-06-17T21:44:09.178781Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2026-06-17T21:44:09.178846Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:24 ThreadId(27)
+
+  2026-06-17T21:44:09.178910Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:19 ThreadId(22)
+
+  2026-06-17T21:44:09.178958Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:31 ThreadId(34)
+
+  2026-06-17T21:44:09.179010Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:6 ThreadId(9)
+
+  2026-06-17T21:44:09.179099Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:7 ThreadId(10)
+
+  2026-06-17T21:44:09.179154Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:9 ThreadId(12)
+
+  2026-06-17T21:44:09.179208Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:8 ThreadId(11)
+
+  2026-06-17T21:44:09.179251Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:16 ThreadId(19)
+
+  2026-06-17T21:44:09.179306Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:4 ThreadId(7)
+
+  2026-06-17T21:44:09.179352Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:5 ThreadId(8)
+
+  2026-06-17T21:44:09.179430Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:13 ThreadId(16)
+
+  2026-06-17T21:44:09.179483Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:14 ThreadId(17)
+
+  2026-06-17T21:44:09.179538Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:12 ThreadId(15)
+
+  2026-06-17T21:44:09.179587Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:3 ThreadId(6)
+
+  2026-06-17T21:44:09.179647Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:23 ThreadId(26)
+
+  2026-06-17T21:44:09.179707Z  INFO  accept thread stopped
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\accept.rs:143 on actix-server acceptor ThreadId(35)
+
+  2026-06-17T21:44:09.179765Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:11 ThreadId(14)
+
+  2026-06-17T21:44:09.179821Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:17 ThreadId(20)
+
+  2026-06-17T21:44:09.179866Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:15 ThreadId(18)
+
+  2026-06-17T21:44:09.179915Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:22 ThreadId(25)
+
+  2026-06-17T21:44:09.179953Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:26 ThreadId(29)
+
+  2026-06-17T21:44:09.180024Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:10 ThreadId(13)
+
+  2026-06-17T21:44:09.180070Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:20 ThreadId(23)
+
+  2026-06-17T21:44:09.180122Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:25 ThreadId(28)
+
+  2026-06-17T21:44:09.180175Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2026-06-17T21:44:09.180224Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:27 ThreadId(30)
+
+  2026-06-17T21:44:09.180273Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:29 ThreadId(32)
+
+  2026-06-17T21:44:09.180323Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:28 ThreadId(31)
+
+  2026-06-17T21:44:09.180367Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:30 ThreadId(33)
+
+  2026-06-17T21:44:09.180425Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:18 ThreadId(21)
+
+  2026-06-17T21:44:09.180462Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:21 ThreadId(24)
+
+  2026-06-17T21:44:09.180507Z  INFO  shutting down idle worker
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\worker.rs:593 on actix-rt|system:0|arbiter:2 ThreadId(5)
+
+  2026-06-17T21:44:09.180552Z  INFO  Ctrl+C received. Initiating graceful shutdown...
+    at game_server\src\main.rs:146 on main ThreadId(1)
+
+  2026-06-17T21:44:10.243138Z  INFO  Logger initialization complete: console and file (logs/app.log) output enabled
+    at game_server\src\lib.rs:94 on main ThreadId(1)
+
+  2026-06-17T21:44:10.243244Z  INFO  Logger initialized
+    at game_server\src\main.rs:57 on main ThreadId(1)
+
+  2026-06-17T21:44:10.243331Z  INFO  Retry config initialized
+    at game_server\src\main.rs:61 on main ThreadId(1)
+
+  2026-06-17T21:44:10.259562Z  INFO  Shop: []
+    at core_enhanced\src\game\data\shop_data.rs:167 on main ThreadId(1)
+
+  2026-06-17T21:44:10.260454Z  INFO  Game data loaded for meta-game sessions
+    at game_server\src\main.rs:64 on main ThreadId(1)
+
+  2026-06-17T21:44:10.260579Z  INFO  Metrics initialized and registered
+    at game_server\src\main.rs:69 on main ThreadId(1)
+
+  2026-06-17T21:44:10.260700Z  INFO  LoadBalanceActor started
+    at game_server\src\main.rs:73 on main ThreadId(1)
+
+  2026-06-17T21:44:10.260771Z  INFO  Starting HTTP server on 0.0.0.0:8081
+    at game_server\src\main.rs:89 on main ThreadId(1)
+
+  2026-06-17T21:44:10.263010Z  INFO  starting 32 workers
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\builder.rs:310 on main ThreadId(1)
+
+  2026-06-17T21:44:10.263096Z  INFO  Game Server is running on 0.0.0.0:8081
+    at game_server\src\main.rs:135 on main ThreadId(1)
+
+  2026-06-17T21:44:10.263179Z  INFO  Actix runtime found; starting in Actix runtime
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:191 on main ThreadId(1)
+
+  2026-06-17T21:44:10.263238Z  INFO  starting service: "actix-web-service-0.0.0.0:8081", workers: 32, listening on: 0.0.0.0:8081
+    at C:\Users\blast\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\actix-server-2.6.0\src\server.rs:197 on main ThreadId(1)
+
+  2026-06-17T21:44:10.270489Z  INFO  LoadBalanceActor started
+    at game_server\src\game\load_balance_actor\mod.rs:28 on main ThreadId(1)
+
+  2026-06-17T21:44:11.662239Z  INFO  PlayerGameSession started: ae1264d0-1880-44c8-91f4-bfeb5a1e94bc
+    at game_server\src\game\player_game_actor\session.rs:282 on actix-rt|system:0|arbiter:0 ThreadId(3)
+
+  2026-06-17T21:44:11.701715Z  INFO  Creating PlayerGameActor for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:43 on main ThreadId(1)
+
+  2026-06-17T21:44:11.701815Z  INFO  Initializing GameCore with run_seed=1837749236287942474
+    at core_enhanced\src\game\world.rs:110 on main ThreadId(1)
+
+  2026-06-17T21:44:11.701965Z  INFO  PlayerGameActor started for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\player_game_actor\mod.rs:69 on main ThreadId(1)
+
+  2026-06-17T21:44:13.753011Z  INFO  Initializing player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world\helpers.rs:612 on main ThreadId(1)
+
+  2026-06-17T21:44:13.753118Z  INFO  Game state transition: NotStarted -> SelectingStarterEmployees
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:44:13.753243Z  INFO  Starter employee selection opened for player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world.rs:295 on main ThreadId(1)
+
+  2026-06-17T21:44:15.480481Z  INFO  Initialized selected starter employee roster with 3 employees
+    at core_enhanced\src\game\world\helpers.rs:670 on main ThreadId(1)
+
+  2026-06-17T21:44:15.480591Z  INFO  Granted starter enkephalin: amount=500, total=500
+    at core_enhanced\src\game\world.rs:316 on main ThreadId(1)
+
+  2026-06-17T21:44:15.481354Z  INFO  Game state transition: SelectingStarterEmployees -> ViewingMap
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:44:16.234981Z  INFO  Game state transition: ViewingMap -> NodeConfirm { node_id: MapNodeId(41c7a2d0-a620-448a-b75b-e98a523a93fa), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:44:16.632929Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(41c7a2d0-a620-448a-b75b-e98a523a93fa), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InNode { node_id: MapNodeId(41c7a2d0-a620-448a-b75b-e98a523a93fa), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:44:16.633079Z  INFO  Starting map combat node for abnormality=o-02-56_punishing_bird encounter=defend_black_box_relay node=41c7a2d0-a620-448a-b75b-e98a523a93fa
+    at core_enhanced\src\game\world\combat.rs:129 on main ThreadId(1)
+
+  2026-06-17T21:44:16.633266Z  INFO  Starting node combat for abnormality=o-02-56_punishing_bird encounter=defend_black_box_relay field_size=(9, 9)
+    at core_enhanced\src\game\events\combat.rs:90 on main ThreadId(1)
+
+  2026-06-17T21:44:16.633736Z  INFO  Game state transition: InNode { node_id: MapNodeId(41c7a2d0-a620-448a-b75b-e98a523a93fa), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InBattle { battle_uuid: 41c7a2d0-a620-448a-b75b-e98a523a93fa }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:44:35.550330Z  INFO  Game state transition: InBattle { battle_uuid: 41c7a2d0-a620-448a-b75b-e98a523a93fa } -> CombatResult { battle_uuid: 41c7a2d0-a620-448a-b75b-e98a523a93fa }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:50:41.870582Z  INFO  Deregistering player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:22 on main ThreadId(1)
+
+  2026-06-17T21:53:13.823834Z  INFO  PlayerGameSession started: f80b8ee9-0d27-4c33-ba64-f4fa78049f8f
+    at game_server\src\game\player_game_actor\session.rs:282 on actix-rt|system:0|arbiter:1 ThreadId(4)
+
+  2026-06-17T21:53:13.867430Z  INFO  Creating PlayerGameActor for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\load_balance_actor\handlers.rs:43 on main ThreadId(1)
+
+  2026-06-17T21:53:13.867515Z  INFO  Initializing GameCore with run_seed=1837749236287942474
+    at core_enhanced\src\game\world.rs:110 on main ThreadId(1)
+
+  2026-06-17T21:53:13.867753Z  INFO  PlayerGameActor started for player 00000000-0000-0000-0000-000000000001
+    at game_server\src\game\player_game_actor\mod.rs:69 on main ThreadId(1)
+
+  2026-06-17T21:53:16.553758Z  INFO  Initializing player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world\helpers.rs:612 on main ThreadId(1)
+
+  2026-06-17T21:53:16.553878Z  INFO  Game state transition: NotStarted -> SelectingStarterEmployees
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:53:16.553978Z  INFO  Starter employee selection opened for player 00000000-0000-0000-0000-000000000001
+    at core_enhanced\src\game\world.rs:295 on main ThreadId(1)
+
+  2026-06-17T21:53:18.619361Z  INFO  Initialized selected starter employee roster with 3 employees
+    at core_enhanced\src\game\world\helpers.rs:670 on main ThreadId(1)
+
+  2026-06-17T21:53:18.619475Z  INFO  Granted starter enkephalin: amount=500, total=500
+    at core_enhanced\src\game\world.rs:316 on main ThreadId(1)
+
+  2026-06-17T21:53:18.620098Z  INFO  Game state transition: SelectingStarterEmployees -> ViewingMap
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:53:19.436855Z  INFO  Game state transition: ViewingMap -> NodeConfirm { node_id: MapNodeId(41c7a2d0-a620-448a-b75b-e98a523a93fa), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:53:19.867286Z  INFO  Game state transition: NodeConfirm { node_id: MapNodeId(41c7a2d0-a620-448a-b75b-e98a523a93fa), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InNode { node_id: MapNodeId(41c7a2d0-a620-448a-b75b-e98a523a93fa), kind_id: MapNodeKindId("combat_monster"), category: Combat }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+
+  2026-06-17T21:53:19.867397Z  INFO  Starting map combat node for abnormality=o-02-56_punishing_bird encounter=defend_black_box_relay node=41c7a2d0-a620-448a-b75b-e98a523a93fa
+    at core_enhanced\src\game\world\combat.rs:129 on main ThreadId(1)
+
+  2026-06-17T21:53:19.867530Z  INFO  Starting node combat for abnormality=o-02-56_punishing_bird encounter=defend_black_box_relay field_size=(9, 9)
+    at core_enhanced\src\game\events\combat.rs:90 on main ThreadId(1)
+
+  2026-06-17T21:53:19.867872Z  INFO  Game state transition: InNode { node_id: MapNodeId(41c7a2d0-a620-448a-b75b-e98a523a93fa), kind_id: MapNodeKindId("combat_monster"), category: Combat } -> InBattle { battle_uuid: 41c7a2d0-a620-448a-b75b-e98a523a93fa }
+    at core_enhanced\src\game\world\helpers.rs:601 on main ThreadId(1)
+

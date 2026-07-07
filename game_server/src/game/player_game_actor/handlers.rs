@@ -5,13 +5,13 @@ use tracing::{info, warn};
 
 use crate::game::player_game_actor::{
     messages::{
-        AttachSession, CommandExecutionResult, DetachSession, ExecuteAdminCommand,
-        ExecutePlayerBehavior, ForceDisconnect, PlayerGameServerMessage, PushServerMessage,
-        QuitPlayerActor,
+        AttachSession, CommandExecutionResult, DetachSession, EnsureLiveBattleTick,
+        ExecuteAdminCommand, ExecutePlayerBehavior, ForceDisconnect, PlayerGameServerMessage,
+        PushServerMessage, QuitPlayerActor,
     },
     state::{
-        behavior_result_payload, behavior_result_to_command_result, compress_battle_event_log_payload,
-        PlayerGameActorError,
+        battle_update_from_behavior_result, behavior_result_to_command_result,
+        compress_combat_result_event_log_attachment, PlayerGameActorError, PlayerStateSnapshotDto,
     },
     PlayerGameActor,
 };
@@ -33,10 +33,22 @@ impl Handler<AttachSession> for PlayerGameActor {
             }
         }
 
+        if matches!(
+            self.game_core.get_state(),
+            game_core::game::resources::GameState::InBattle { .. }
+        ) {
+            self.stop_live_battle_tick(ctx);
+            self.game_core
+                .execute(
+                    self.player_id,
+                    game_core::game::behavior::PlayerBehavior::RecoverBattleSetupLoss,
+                )
+                .map_err(PlayerGameActorError::from)?;
+        }
+
         self.active_session_id = Some(msg.session_id);
         self.socket = Some(msg.socket);
         self.session_control = Some(msg.control);
-        self.ensure_live_battle_tick(ctx);
         self.build_state_snapshot()
     }
 }
@@ -69,18 +81,21 @@ impl Handler<DetachSession> for PlayerGameActor {
 impl Handler<ExecutePlayerBehavior> for PlayerGameActor {
     type Result = Result<CommandExecutionResult, PlayerGameActorError>;
 
-    fn handle(&mut self, msg: ExecutePlayerBehavior, ctx: &mut Self::Context) -> Self::Result {
+    fn handle(&mut self, msg: ExecutePlayerBehavior, _ctx: &mut Self::Context) -> Self::Result {
         self.ensure_active_session(msg.session_id)?;
         let result = self
             .game_core
-            .execute(self.player_id, msg.behavior)
+            .execute_with_source_command_id(self.player_id, msg.behavior, Some(&msg.request_id))
             .map_err(PlayerGameActorError::from)?;
-        let response = behavior_result_to_command_result(msg.request_id, result)?;
-        let state_snapshot = self.build_state_snapshot()?;
-        self.ensure_live_battle_tick(ctx);
-
+        let command_result =
+            behavior_result_to_command_result(msg.request_id, result, msg.battle_side_message)?;
+        let state_snapshot = command_result
+            .send_state_snapshot
+            .then(|| self.build_state_snapshot())
+            .transpose()?;
         Ok(CommandExecutionResult {
-            response,
+            response: command_result.response,
+            side_messages: command_result.side_messages,
             state_snapshot,
         })
     }
@@ -89,7 +104,7 @@ impl Handler<ExecutePlayerBehavior> for PlayerGameActor {
 impl Handler<ExecuteAdminCommand> for PlayerGameActor {
     type Result = Result<CommandExecutionResult, PlayerGameActorError>;
 
-    fn handle(&mut self, msg: ExecuteAdminCommand, ctx: &mut Self::Context) -> Self::Result {
+    fn handle(&mut self, msg: ExecuteAdminCommand, _ctx: &mut Self::Context) -> Self::Result {
         self.ensure_active_session(msg.session_id)?;
         let result = self
             .game_core
@@ -102,11 +117,10 @@ impl Handler<ExecuteAdminCommand> for PlayerGameActor {
             payload: result.payload,
         };
         let state_snapshot = self.build_state_snapshot()?;
-        self.ensure_live_battle_tick(ctx);
-
         Ok(CommandExecutionResult {
             response,
-            state_snapshot,
+            side_messages: Vec::new(),
+            state_snapshot: Some(state_snapshot),
         })
     }
 }
@@ -116,6 +130,14 @@ impl Handler<PushServerMessage> for PlayerGameActor {
 
     fn handle(&mut self, msg: PushServerMessage, _ctx: &mut Self::Context) -> Self::Result {
         self.push_to_active_socket(msg.message);
+    }
+}
+
+impl Handler<EnsureLiveBattleTick> for PlayerGameActor {
+    type Result = ();
+
+    fn handle(&mut self, _msg: EnsureLiveBattleTick, ctx: &mut Self::Context) -> Self::Result {
+        self.ensure_live_battle_tick(ctx);
     }
 }
 
@@ -152,26 +174,18 @@ impl PlayerGameActor {
     }
 
     fn build_state_snapshot(&self) -> Result<Value, PlayerGameActorError> {
-        let mut snapshot = self
+        let snapshot = self
             .game_core
-            .get_run_snapshot_json()
+            .get_run_snapshot_dto()
             .map_err(PlayerGameActorError::from)?;
+        let compressed_event_log = self
+            .game_core
+            .get_combat_result_event_log_attachment()
+            .map(|attachment| compress_combat_result_event_log_attachment(&attachment))
+            .transpose()?;
 
-        if let Some((winner, event_log)) = self.game_core.get_combat_result_event_log() {
-            if let Some(root) = snapshot.as_object_mut() {
-                if let Some(Value::Object(selected_event)) = root.get_mut("selected_event") {
-                    selected_event.insert(
-                        "compressed_timeline".to_string(),
-                        serde_json::to_value(compress_battle_event_log_payload(winner, &event_log)?)
-                            .map_err(|error| {
-                                PlayerGameActorError::new("serialization_failed", error.to_string())
-                            })?,
-                    );
-                }
-            }
-        }
-
-        Ok(snapshot)
+        serde_json::to_value(PlayerStateSnapshotDto::new(snapshot, compressed_event_log))
+            .map_err(|error| PlayerGameActorError::new("serialization_failed", error.to_string()))
     }
 
     fn push_to_active_socket(&self, message: super::messages::PlayerGameServerMessage) {
@@ -234,31 +248,30 @@ impl PlayerGameActor {
             game_core::game::behavior::BehaviorResult::BattleAdvanced { finished: true, .. }
         );
 
-        match behavior_result_payload(result) {
-            Ok((result_type, payload)) => {
-                self.push_to_active_socket(PlayerGameServerMessage::Notification {
-                    notification_type: "battle_delta".to_string(),
-                    payload: serde_json::json!({
-                        "result_type": result_type,
-                        "payload": payload,
-                    }),
-                });
-            }
-            Err(error) => {
-                self.push_to_active_socket(error.to_server_message(None));
-                self.stop_live_battle_tick(ctx);
-                return;
-            }
+        if let Some(battle_update) = battle_update_from_behavior_result(&result) {
+            self.push_to_active_socket(PlayerGameServerMessage::battle_update(battle_update));
+        } else {
+            self.push_to_active_socket(
+                PlayerGameActorError::new(
+                    "missing_battle_update",
+                    "Live battle tick did not produce a battle_update payload",
+                )
+                .to_server_message(None),
+            );
+            self.stop_live_battle_tick(ctx);
+            return;
         }
 
-        match self.build_state_snapshot() {
-            Ok(state) => {
-                self.push_to_active_socket(PlayerGameServerMessage::StateSnapshot { state });
-            }
-            Err(error) => {
-                self.push_to_active_socket(error.to_server_message(None));
-                self.stop_live_battle_tick(ctx);
-                return;
+        if finished {
+            match self.build_state_snapshot() {
+                Ok(state) => {
+                    self.push_to_active_socket(PlayerGameServerMessage::StateSnapshot { state });
+                }
+                Err(error) => {
+                    self.push_to_active_socket(error.to_server_message(None));
+                    self.stop_live_battle_tick(ctx);
+                    return;
+                }
             }
         }
 
@@ -274,7 +287,10 @@ mod tests {
     use crate::game::{
         load_balance_actor::{messages::Register, LoadBalanceActor},
         player_game_actor::{
-            messages::{AttachSession, DetachSession, ForceDisconnect, PlayerGameServerMessage},
+            messages::{
+                AttachSession, BattleSideMessageKind, DetachSession, EnsureLiveBattleTick,
+                ForceDisconnect, PlayerGameServerMessage,
+            },
             PlayerGameActor,
         },
     };
@@ -282,21 +298,27 @@ mod tests {
     use actix_web::rt::time;
     use game_core::game::{
         behavior::{BehaviorResult, PlayerBehavior},
-        combat_preview::{BattlefieldArchetype, BattlefieldSizeClass, CombatNodeType, EnemyKind},
+        combat_preview::{BattlefieldArchetype, BattlefieldSizeClass, CombatNodeType},
         data::{
             abnormality_data::{AbnormalityMetadata, BasicAttackDef, MovementDef, ResonanceDef},
             employee_data::{
                 RecruitmentEmployeeCandidateDatabase, StarterEmployeeCandidateDatabase,
             },
+            equipment_data::{EquipmentMetadata, EquipmentType},
             pve_data::{
-                PveBattlefieldOverrideData, PveEncounter, PveEncounterDatabase, PveWaveData,
-                PveWaveEnemyData,
+                PveBattlefieldOverrideData, PveEncounter, PveEncounterClass, PveEncounterDatabase,
+                PveWaveData, PveWaveEnemyData, PveWaveSource,
+            },
+            skill_fragment_data::{
+                SkillFragmentAcquisitionSource, SkillFragmentCompatibilityRequirements,
+                SkillFragmentDatabase, SkillFragmentEffectDef, SkillFragmentEquipLimit,
+                SkillFragmentId, SkillFragmentMetadata, SkillFragmentOrigin, SkillFragmentRarity,
             },
             GameDataBase, GameDataBuilder,
         },
-        employee::{EmployeeGrade, StarterEmployeeCandidate},
+        employee::{StarterEmployeeCandidate, StarterEmployeeLoadout},
         enums::{RewardMode, RiskLevel, Tier},
-        map::MapNodeCategory,
+        map::{GameMode, MapNodeCategory, MapNodeState},
         world::GameCore,
     };
     use std::{
@@ -356,18 +378,79 @@ mod tests {
         (addr, disconnects, messages)
     }
 
+    fn starter_test_loadout() -> StarterEmployeeLoadout {
+        StarterEmployeeLoadout {
+            equipment_ids: vec!["standard_armor".to_string()],
+            baseline_skill_fragment_ids: vec![SkillFragmentId::from(
+                "starter_basic_attack_enhancement",
+            )],
+        }
+    }
+
+    fn starter_test_equipment() -> EquipmentMetadata {
+        EquipmentMetadata {
+            id: "standard_armor".to_string(),
+            uuid: Uuid::parse_str("650e8400-e29b-41d4-a716-446655440031")
+                .expect("standard armor uuid should be valid"),
+            name: "Standard Training E.G.O Armor".to_string(),
+            equipment_type: EquipmentType::Armor,
+            rarity: RiskLevel::TETH,
+            price: 80,
+            allow_duplicate_equip: true,
+            bound: false,
+            cannot_unequip_reason: "equipment_bound".to_string(),
+            triggered_effects: Default::default(),
+            ability_activations: Vec::new(),
+            weapon_profile: None,
+        }
+    }
+
+    fn starter_test_skill_fragment() -> SkillFragmentMetadata {
+        SkillFragmentMetadata {
+            id: SkillFragmentId::from("starter_basic_attack_enhancement"),
+            uuid: Uuid::parse_str("53544152-5445-525f-4652-414700000001")
+                .expect("starter basic attack fragment uuid should be valid"),
+            name: "Starter Basic Attack Enhancement".to_string(),
+            description:
+                "A baseline fragment that lets employees perform reinforced basic attacks."
+                    .to_string(),
+            rarity: SkillFragmentRarity::Common,
+            equip_limit: SkillFragmentEquipLimit::OwnedCopies,
+            origin: Some(SkillFragmentOrigin::Concept {
+                concept_id: "employee_baseline_training".to_string(),
+            }),
+            sources: vec![SkillFragmentAcquisitionSource::DependentConcept {
+                concept_id: "employee_baseline_training".to_string(),
+            }],
+            dependencies: Vec::new(),
+            compatibility: SkillFragmentCompatibilityRequirements::default(),
+            effect: SkillFragmentEffectDef::BasicAttackModifier {
+                attack_bonus: 2,
+                attack_interval_ms_reduction: 0,
+            },
+        }
+    }
+
+    fn starter_policy_game_data_builder() -> GameDataBuilder {
+        GameDataBuilder::empty()
+            .with_equipment(vec![starter_test_equipment()])
+            .with_skill_fragments(SkillFragmentDatabase::new(vec![
+                starter_test_skill_fragment(),
+            ]))
+    }
+
     fn empty_game_data() -> Arc<GameDataBase> {
         let candidates = (0..5)
             .map(|index| StarterEmployeeCandidate {
                 id: format!("candidate_{index}"),
                 name: format!("Candidate {index}"),
-                grade: EmployeeGrade::Junior,
                 role: "Test Role".to_string(),
                 background: "Test Background".to_string(),
+                starter_loadout: starter_test_loadout(),
             })
             .collect();
 
-        GameDataBuilder::empty()
+        starter_policy_game_data_builder()
             .with_starter_employee_candidates(StarterEmployeeCandidateDatabase::new(candidates))
             .build_arc()
     }
@@ -385,6 +468,11 @@ mod tests {
             magic_resist: 0,
             target_traits: Vec::new(),
             mobility_kind: Default::default(),
+            threat_class: game_core::game::battle::types::BattleUnitThreatClass::Elite,
+            response_complete_skill_fragment_id: Some(SkillFragmentId::from(
+                "starter_basic_attack_enhancement",
+            )),
+            omen_chain_id: None,
             movement: MovementDef::default(),
             basic_attack: BasicAttackDef::default(),
             resonance: ResonanceDef::default(),
@@ -397,29 +485,30 @@ mod tests {
             id: "wave_0".to_string(),
             time_ms: 0,
             spawn_zone_ids: Vec::new(),
-            route_id: Some("black_box_breach_main".to_string()),
+            route_id: Some("defense_main".to_string()),
             required_for_victory: true,
-            source: None,
-            enemies: vec![PveWaveEnemyData {
-                kind: EnemyKind::Abnormality,
-                profile_id: None,
+            source: PveWaveSource::Manual(vec![PveWaveEnemyData::Abnormality {
                 abnormality_id: abnormality_id.to_string(),
                 tier: Tier::I,
                 count: 1,
-            }],
+            }]),
         }
     }
 
     fn defense_game_data() -> Arc<GameDataBase> {
-        GameDataBuilder::empty()
+        defense_game_data_with_survive_timer(None)
+    }
+
+    fn defense_game_data_with_survive_timer(survive_timer_ms: Option<u64>) -> Arc<GameDataBase> {
+        starter_policy_game_data_builder()
             .with_starter_employee_candidates(StarterEmployeeCandidateDatabase::new(
                 (0..6)
                     .map(|index| StarterEmployeeCandidate {
                         id: format!("candidate_{index}"),
                         name: format!("Candidate {index}"),
-                        grade: EmployeeGrade::Junior,
                         role: "Test Role".to_string(),
                         background: "Test Background".to_string(),
+                        starter_loadout: starter_test_loadout(),
                     })
                     .collect(),
             ))
@@ -427,17 +516,19 @@ mod tests {
             .with_abnormalities(vec![test_abnormality_meta("defense_risk_abno", 20_005)])
             .with_pve(PveEncounterDatabase::new(vec![PveEncounter {
                 id: "defense_encounter".to_string(),
-                abnormality_id: "defense_risk_abno".to_string(),
-                difficulty: 3,
+                encounter_class: PveEncounterClass::Elite,
+                primary_abnormality_id: Some("defense_risk_abno".to_string()),
                 risk_level: RiskLevel::HE,
                 reward_mode: RewardMode::ClaimAll,
                 reward_uuids: vec![],
+                suppression_research: None,
                 node_type: Some(CombatNodeType::Defense),
                 mission_variant: None,
                 battlefield: Some(PveBattlefieldOverrideData {
                     archetype: Some(BattlefieldArchetype::ChokePoint),
                     size_class: Some(BattlefieldSizeClass::Small),
                 }),
+                survive_timer_ms,
                 tactical_plan: None,
                 win_condition: None,
                 waves: vec![test_pve_wave("defense_risk_abno")],
@@ -451,11 +542,17 @@ mod tests {
         player_id: Uuid,
     ) -> BehaviorResult {
         let start = core
-            .execute(player_id, PlayerBehavior::StartNewGame)
+            .execute(
+                player_id,
+                PlayerBehavior::StartNewGame {
+                    game_mode: GameMode::Standard,
+                },
+            )
             .expect("start new game should open starter selection");
         let BehaviorResult::StartNewGame {
             candidates,
             required_count,
+            ..
         } = start
         else {
             panic!("start new game should return starter candidates");
@@ -473,7 +570,20 @@ mod tests {
     }
 
     fn game_core_waiting_on_live_defense_node(player_id: Uuid) -> GameCore {
-        let game_data = defense_game_data();
+        game_core_waiting_on_live_defense_node_with_data(player_id, defense_game_data())
+    }
+
+    fn game_core_waiting_on_live_survival_defense_node(player_id: Uuid) -> GameCore {
+        game_core_waiting_on_live_defense_node_with_data(
+            player_id,
+            defense_game_data_with_survive_timer(Some(1)),
+        )
+    }
+
+    fn game_core_waiting_on_live_defense_node_with_data(
+        player_id: Uuid,
+        game_data: Arc<GameDataBase>,
+    ) -> GameCore {
         for seed in 0..1_000 {
             let mut core = GameCore::new(game_data.clone(), seed);
             let BehaviorResult::StarterEmployeesSelected { mut map, .. } =
@@ -483,7 +593,13 @@ mod tests {
             };
 
             for _ in 0..3 {
-                for node_id in map.available_node_ids.clone() {
+                let available_node_ids = map
+                    .nodes
+                    .iter()
+                    .filter(|node| node.state == MapNodeState::Available)
+                    .map(|node| node.id)
+                    .collect::<Vec<_>>();
+                for node_id in available_node_ids {
                     let preview = core
                         .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
                         .expect("available node preview should succeed");
@@ -502,11 +618,15 @@ mod tests {
                         .expect("non-defense node preview should be cancellable");
                 }
 
-                let Some(start_node_id) = map.available_node_ids.iter().copied().find(|node_id| {
-                    map.nodes
-                        .iter()
-                        .any(|node| node.id == *node_id && node.category == MapNodeCategory::Start)
-                }) else {
+                let Some(start_node_id) = map
+                    .nodes
+                    .iter()
+                    .find(|node| {
+                        node.state == MapNodeState::Available
+                            && node.category == MapNodeCategory::Start
+                    })
+                    .map(|node| node.id)
+                else {
                     break;
                 };
                 let preview = core
@@ -547,6 +667,43 @@ mod tests {
         panic!("expected at least one generated run seed to start near a live Defense node");
     }
 
+    #[test]
+    fn player_state_snapshot_preserves_core_snapshot_root_fields() {
+        let core = GameCore::new(empty_game_data(), 7);
+        let core_snapshot = core
+            .get_run_snapshot_dto()
+            .expect("core snapshot should build");
+        let core_json = serde_json::to_value(&core_snapshot).expect("core snapshot should serialize");
+        let player_json = serde_json::to_value(PlayerStateSnapshotDto::new(core_snapshot, None))
+            .expect("player snapshot should serialize");
+
+        let core_fields = core_json
+            .as_object()
+            .expect("core snapshot should be an object")
+            .keys()
+            .cloned()
+            .collect::<std::collections::BTreeSet<_>>();
+        let player_fields = player_json
+            .as_object()
+            .expect("player snapshot should be an object")
+            .keys()
+            .cloned()
+            .collect::<std::collections::BTreeSet<_>>();
+
+        assert_eq!(
+            player_fields, core_fields,
+            "server snapshot wrapper must not maintain a second root field list"
+        );
+
+        for field in core_fields {
+            assert_eq!(
+                player_json.get(&field),
+                core_json.get(&field),
+                "server snapshot should preserve core field `{field}` when no transport attachment is added"
+            );
+        }
+    }
+
     #[actix_web::test]
     async fn execute_behavior_returns_updated_state_snapshot() {
         let load_balance = LoadBalanceActor::new().start();
@@ -576,7 +733,10 @@ mod tests {
             .send(ExecutePlayerBehavior {
                 session_id,
                 request_id: "req-1".to_string(),
-                behavior: PlayerBehavior::StartNewGame,
+                behavior: PlayerBehavior::StartNewGame {
+                    game_mode: GameMode::Standard,
+                },
+                battle_side_message: BattleSideMessageKind::BattleUpdate,
             })
             .await
             .expect("execute request should complete")
@@ -595,7 +755,9 @@ mod tests {
         }
 
         assert_eq!(
-            result.state_snapshot["game_state"],
+            result
+                .state_snapshot
+                .expect("non-battle commands should send state_snapshot")["game_state"],
             "selecting_starter_employees"
         );
     }
@@ -689,7 +851,7 @@ mod tests {
     }
 
     #[actix_web::test]
-    async fn live_battle_tick_pushes_delta_and_snapshot_after_confirm_enter() {
+    async fn live_battle_tick_pushes_update_without_state_snapshot_after_confirm_enter() {
         let load_balance = LoadBalanceActor::new().start();
         let player_id = Uuid::from_u128(0xD3F3_51DE);
         let actor = PlayerGameActor::new(
@@ -718,6 +880,7 @@ mod tests {
                 session_id,
                 request_id: "enter-live-defense".to_string(),
                 behavior: PlayerBehavior::ConfirmEnterNode,
+                battle_side_message: BattleSideMessageKind::BattleUpdate,
             })
             .await
             .expect("confirm enter request should complete")
@@ -729,40 +892,291 @@ mod tests {
                 payload,
                 ..
             } => {
-                assert_eq!(result_type, "BattleAdvanced");
-                assert_eq!(payload["node_type"], "Defense");
-                assert!(payload["battle_uuid"].is_string());
-                assert!(payload["encounter_id"].is_string());
+                assert_eq!(result_type, "CommandAccepted");
+                assert_eq!(payload["command_id"], "enter-live-defense");
+                assert_eq!(payload["accepted_at_battle_time_ms"], 0);
             }
-            other => panic!("expected BattleAdvanced command result, got {other:?}"),
+            other => panic!("expected CommandAccepted command result, got {other:?}"),
         }
-        assert_eq!(
-            result.state_snapshot["game_state_context"]["type"],
-            "in_battle"
+        assert!(matches!(
+            result.side_messages.as_slice(),
+            [
+                PlayerGameServerMessage::BattleSetupSnapshot {
+                    battle_uuid: setup_battle_uuid,
+                    setup_version: 1,
+                    routes,
+                    deployment_zones,
+                    ..
+                },
+                PlayerGameServerMessage::BattleUpdate {
+                    battle_uuid,
+                    server_battle_time_ms: 0,
+                    events_delta,
+                    checkpoint,
+                }
+            ] if !battle_uuid.is_nil()
+                && setup_battle_uuid == battle_uuid
+                && !routes.is_empty()
+                && !deployment_zones.is_empty()
+                && events_delta.after_seq == 0
+                && events_delta.to_seq == checkpoint.at_seq
+                && checkpoint.battle_time_ms == 0
+        ));
+        assert!(
+            result.state_snapshot.is_none(),
+            "battle start is represented by battle_setup_snapshot plus battle_update, not full state_snapshot"
+        );
+        time::sleep(Duration::from_millis(20)).await;
+        {
+            let messages = messages.lock().expect("messages mutex should be lockable");
+            assert!(!messages
+                .iter()
+                .any(|message| matches!(message, PlayerGameServerMessage::BattleUpdate { .. })));
+        }
+        actor.do_send(EnsureLiveBattleTick);
+
+        let resync = actor
+            .send(ExecutePlayerBehavior {
+                session_id,
+                request_id: "resync-live-defense".to_string(),
+                behavior: PlayerBehavior::RequestBattleState { since_seq: Some(0) },
+                battle_side_message: BattleSideMessageKind::BattleResync,
+            })
+            .await
+            .expect("resync request should complete")
+            .expect("resync should succeed");
+        match resync.response {
+            PlayerGameServerMessage::CommandResult {
+                result_type,
+                payload,
+                ..
+            } => {
+                assert_eq!(result_type, "CommandAccepted");
+                assert_eq!(payload["command_id"], "resync-live-defense");
+            }
+            other => panic!("expected CommandAccepted resync result, got {other:?}"),
+        }
+        assert!(resync.side_messages.iter().any(|message| matches!(
+            message,
+            PlayerGameServerMessage::BattleResync {
+                update,
+                ..
+            } if update.events_delta.after_seq == 0
+                && update.events_delta.to_seq == update.checkpoint.at_seq
+                && !update.events_delta.events.is_empty()
+        )));
+        assert!(
+            resync.state_snapshot.is_none(),
+            "catch-up battle_resync is a battle side message and must not be followed by full state_snapshot"
         );
 
         time::sleep(Duration::from_millis(60)).await;
 
         let messages = messages.lock().expect("messages mutex should be lockable");
-        let battle_delta = messages.iter().find_map(|message| match message {
-            PlayerGameServerMessage::Notification {
-                notification_type,
-                payload,
-            } if notification_type == "battle_delta" => Some(payload),
+        let battle_update = messages.iter().find_map(|message| match message {
+            PlayerGameServerMessage::BattleUpdate {
+                battle_uuid,
+                events_delta,
+                checkpoint,
+                ..
+            } => Some((battle_uuid, events_delta, checkpoint)),
             _ => None,
         });
-        let battle_delta = battle_delta.expect("live battle tick should push battle_delta");
-        assert_eq!(battle_delta["result_type"], "BattleAdvanced");
-        assert_eq!(battle_delta["payload"]["node_type"], "Defense");
-        assert!(battle_delta["payload"]["battle_uuid"].is_string());
-        assert!(battle_delta["payload"]["encounter_id"].is_string());
+        let (battle_uuid, events_delta, checkpoint) =
+            battle_update.expect("live battle tick should push battle_update");
+        assert!(!battle_uuid.is_nil());
+        assert_eq!(events_delta.to_seq, checkpoint.at_seq);
 
-        assert!(messages.iter().any(|message| matches!(
-            message,
-            PlayerGameServerMessage::StateSnapshot { state }
-                if state["game_state_context"]["type"] == "in_battle"
-                    || state["game_state_context"]["type"] == "combat_result"
-        )));
+        assert!(!messages
+            .iter()
+            .any(|message| matches!(message, PlayerGameServerMessage::StateSnapshot { .. })));
+    }
+
+    #[actix_web::test]
+    async fn finished_live_battle_tick_pushes_combat_result_snapshot_after_final_update() {
+        let load_balance = LoadBalanceActor::new().start();
+        let player_id = Uuid::from_u128(0xD3F3_51E2);
+        let actor = PlayerGameActor::new(
+            player_id,
+            game_core_waiting_on_live_survival_defense_node(player_id),
+            load_balance,
+        )
+        .with_live_battle_tick_interval(Duration::from_millis(5))
+        .start();
+
+        let (probe, _, messages) = spawn_probe();
+        let session_id = Uuid::new_v4();
+
+        actor
+            .send(AttachSession {
+                session_id,
+                socket: probe.clone().recipient(),
+                control: probe.recipient(),
+            })
+            .await
+            .expect("attach request should complete")
+            .expect("attach should succeed");
+
+        actor
+            .send(ExecutePlayerBehavior {
+                session_id,
+                request_id: "enter-live-survival-defense".to_string(),
+                behavior: PlayerBehavior::ConfirmEnterNode,
+                battle_side_message: BattleSideMessageKind::BattleUpdate,
+            })
+            .await
+            .expect("confirm enter request should complete")
+            .expect("confirm enter should start live battle");
+
+        actor.do_send(EnsureLiveBattleTick);
+
+        for _ in 0..20 {
+            time::sleep(Duration::from_millis(20)).await;
+            let messages = messages.lock().expect("messages mutex should be lockable");
+            if messages
+                .iter()
+                .any(|message| matches!(message, PlayerGameServerMessage::StateSnapshot { .. }))
+            {
+                break;
+            }
+        }
+
+        let messages = messages.lock().expect("messages mutex should be lockable");
+        let final_snapshot_index = messages
+            .iter()
+            .position(|message| {
+                matches!(
+                    message,
+                    PlayerGameServerMessage::StateSnapshot { state }
+                        if state["game_state_context"]["type"] == "combat_result"
+                            && state["selected_event"]["type"] == "combat_battle"
+                            && state["selected_event"]["result_stats"].is_object()
+                            && state["selected_event"]["compressed_event_log"].is_object()
+                )
+            })
+            .expect("finished live tick should push combat_result state_snapshot");
+        let final_update_index = messages
+            .iter()
+            .position(|message| matches!(message, PlayerGameServerMessage::BattleUpdate { .. }))
+            .expect("finished live tick should push final battle_update");
+
+        assert!(
+            final_update_index < final_snapshot_index,
+            "final battle_update must arrive before combat_result state_snapshot"
+        );
+    }
+
+    #[actix_web::test]
+    async fn live_battle_resync_rejects_future_since_seq() {
+        let load_balance = LoadBalanceActor::new().start();
+        let player_id = Uuid::from_u128(0xD3F3_51E0);
+        let actor = PlayerGameActor::new(
+            player_id,
+            game_core_waiting_on_live_defense_node(player_id),
+            load_balance,
+        )
+        .start();
+
+        let (probe, _, _) = spawn_probe();
+        let session_id = Uuid::new_v4();
+
+        actor
+            .send(AttachSession {
+                session_id,
+                socket: probe.clone().recipient(),
+                control: probe.recipient(),
+            })
+            .await
+            .expect("attach request should complete")
+            .expect("attach should succeed");
+
+        actor
+            .send(ExecutePlayerBehavior {
+                session_id,
+                request_id: "enter-live-defense".to_string(),
+                behavior: PlayerBehavior::ConfirmEnterNode,
+                battle_side_message: BattleSideMessageKind::BattleUpdate,
+            })
+            .await
+            .expect("confirm enter request should complete")
+            .expect("confirm enter should start live battle");
+
+        let err = actor
+            .send(ExecutePlayerBehavior {
+                session_id,
+                request_id: "future-resync".to_string(),
+                behavior: PlayerBehavior::RequestBattleState {
+                    since_seq: Some(u64::MAX),
+                },
+                battle_side_message: BattleSideMessageKind::BattleResync,
+            })
+            .await
+            .expect("future resync request should complete")
+            .expect_err("future since_seq should be rejected");
+
+        assert_eq!(err.code, "invalid_battle_resync_seq");
+    }
+
+    #[actix_web::test]
+    async fn attaching_to_active_battle_recovers_to_node_confirm_snapshot() {
+        let load_balance = LoadBalanceActor::new().start();
+        let player_id = Uuid::from_u128(0xD3F3_51E1);
+        let actor = PlayerGameActor::new(
+            player_id,
+            game_core_waiting_on_live_defense_node(player_id),
+            load_balance,
+        )
+        .with_live_battle_tick_interval(Duration::from_millis(50))
+        .start();
+
+        let (probe_one, disconnects_one, _) = spawn_probe();
+        let session_one = Uuid::new_v4();
+
+        actor
+            .send(AttachSession {
+                session_id: session_one,
+                socket: probe_one.clone().recipient(),
+                control: probe_one.recipient(),
+            })
+            .await
+            .expect("first attach request should complete")
+            .expect("first attach should succeed");
+
+        actor
+            .send(ExecutePlayerBehavior {
+                session_id: session_one,
+                request_id: "enter-live-defense".to_string(),
+                behavior: PlayerBehavior::ConfirmEnterNode,
+                battle_side_message: BattleSideMessageKind::BattleUpdate,
+            })
+            .await
+            .expect("confirm enter request should complete")
+            .expect("confirm enter should start live battle");
+
+        let (probe_two, _, _) = spawn_probe();
+        let session_two = Uuid::new_v4();
+        let snapshot = actor
+            .send(AttachSession {
+                session_id: session_two,
+                socket: probe_two.clone().recipient(),
+                control: probe_two.recipient(),
+            })
+            .await
+            .expect("second attach request should complete")
+            .expect("second attach should succeed");
+
+        assert_eq!(snapshot["game_state_context"]["type"], "node_confirm");
+        assert!(snapshot["game_state_context"]["combat_preview"].is_object());
+        assert!(snapshot["allowed_actions"]
+            .as_array()
+            .is_some_and(|actions| actions.iter().any(|action| action == "ConfirmEnterNode")));
+
+        let disconnects = disconnects_one
+            .lock()
+            .expect("disconnects mutex should be lockable");
+        assert!(disconnects
+            .iter()
+            .any(|(code, _)| code == "session_replaced"));
     }
 
     #[actix_web::test]
@@ -795,16 +1209,19 @@ mod tests {
                 session_id,
                 request_id: "enter-live-defense".to_string(),
                 behavior: PlayerBehavior::ConfirmEnterNode,
+                battle_side_message: BattleSideMessageKind::BattleUpdate,
             })
             .await
             .expect("confirm enter request should complete")
             .expect("confirm enter should start live battle");
+        actor.do_send(EnsureLiveBattleTick);
 
         let paused = actor
             .send(ExecutePlayerBehavior {
                 session_id,
                 request_id: "pause-live-defense".to_string(),
                 behavior: PlayerBehavior::PauseBattle,
+                battle_side_message: BattleSideMessageKind::BattleUpdate,
             })
             .await
             .expect("pause request should complete")
@@ -815,22 +1232,31 @@ mod tests {
                 payload,
                 ..
             } => {
-                assert_eq!(result_type, "BattlePlaybackChanged");
-                assert_eq!(payload["playback"]["paused"], true);
+                assert_eq!(result_type, "CommandAccepted");
+                assert_eq!(payload["command_id"], "pause-live-defense");
             }
-            other => panic!("expected BattlePlaybackChanged command result, got {other:?}"),
+            other => panic!("expected CommandAccepted command result, got {other:?}"),
         }
+        assert!(paused.side_messages.iter().any(|message| matches!(
+            message,
+            PlayerGameServerMessage::BattleUpdate { checkpoint, .. }
+                if checkpoint.playback.paused
+        )));
+        assert!(
+            paused.state_snapshot.is_none(),
+            "battle playback commands must not be followed by full state_snapshot"
+        );
+        assert!(!paused
+            .side_messages
+            .iter()
+            .any(|message| matches!(message, PlayerGameServerMessage::BattleSetupSnapshot { .. })));
 
         time::sleep(Duration::from_millis(120)).await;
         {
             let messages = messages.lock().expect("messages mutex should be lockable");
-            assert!(!messages.iter().any(|message| matches!(
-                message,
-                PlayerGameServerMessage::Notification {
-                    notification_type,
-                    ..
-                } if notification_type == "battle_delta"
-            )));
+            assert!(!messages
+                .iter()
+                .any(|message| matches!(message, PlayerGameServerMessage::BattleUpdate { .. })));
         }
 
         actor
@@ -838,6 +1264,7 @@ mod tests {
                 session_id,
                 request_id: "resume-live-defense".to_string(),
                 behavior: PlayerBehavior::ResumeBattle,
+                battle_side_message: BattleSideMessageKind::BattleUpdate,
             })
             .await
             .expect("resume request should complete")
@@ -847,11 +1274,11 @@ mod tests {
         let messages = messages.lock().expect("messages mutex should be lockable");
         assert!(messages.iter().any(|message| matches!(
             message,
-            PlayerGameServerMessage::Notification {
-                notification_type,
-                payload,
-            } if notification_type == "battle_delta"
-                && payload["result_type"] == "BattleAdvanced"
+            PlayerGameServerMessage::BattleUpdate {
+                events_delta,
+                checkpoint,
+                ..
+            } if events_delta.to_seq == checkpoint.at_seq
         )));
     }
 }

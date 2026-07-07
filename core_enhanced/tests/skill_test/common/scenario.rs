@@ -83,7 +83,11 @@ pub(crate) fn skill_test_dummy_metadata() -> AbnormalityMetadata {
         magic_resist: 0,
         threat_class: game_core::game::battle::types::BattleUnitThreatClass::Elite,
         omen_chain_id: None,
-        response_complete_skill_fragment_id: None,
+        response_complete_skill_fragment_id: Some(
+            game_core::game::data::skill_fragment_data::SkillFragmentId::from(
+                "starter_basic_attack_enhancement",
+            ),
+        ),
         movement: MovementDef {
             speed_units_per_ms: 0,
             radius_units: 350_000,
@@ -241,7 +245,9 @@ fn build_game_data_with_units(
         .with_equipment_data(Arc::clone(&base.equipment_data))
         .with_shop_data(Arc::clone(&base.shop_data))
         .with_reward_data(Arc::clone(&base.reward_data))
+        .with_event_data(Arc::clone(&base.event_data))
         .with_pve_data(Arc::clone(&base.pve_data))
+        .with_boss_omen_data(Arc::clone(&base.boss_omen_data))
         .with_buff_data(Arc::clone(&base.buff_data))
         .with_skill_data(Arc::clone(&base.skill_data))
         .with_skill_fragment_data(Arc::clone(&base.skill_fragment_data))

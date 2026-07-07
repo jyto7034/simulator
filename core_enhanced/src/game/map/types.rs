@@ -242,6 +242,30 @@ impl MapNodeDefinitionDatabase {
                     definition.kind_id.as_str()
                 ));
             }
+            if definition.category == MapNodeCategory::Event {
+                match &definition.payload {
+                    MapNodePayload::Event { event_id: Some(id) }
+                        if !id.as_str().trim().is_empty() => {}
+                    MapNodePayload::Event { event_id: Some(_) } => {
+                        return Err(format!(
+                            "event map node definition '{}' event_id must not be empty",
+                            definition.kind_id.as_str()
+                        ));
+                    }
+                    MapNodePayload::Event { event_id: None } => {
+                        return Err(format!(
+                            "event map node definition '{}' must define event_id",
+                            definition.kind_id.as_str()
+                        ));
+                    }
+                    _ => {
+                        return Err(format!(
+                            "event map node definition '{}' must use Event payload",
+                            definition.kind_id.as_str()
+                        ));
+                    }
+                }
+            }
         }
 
         if !self

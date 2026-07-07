@@ -970,7 +970,11 @@ fn active_boss_omen_chain_overlays_matching_event_node() {
             category: MapNodeCategory::Event,
             state: MapNodeState::Available,
             visibility: MapNodeVisibility::Revealed,
-            payload: MapNodePayload::Event { event_id: None },
+            payload: MapNodePayload::Event {
+                event_id: Some(crate::game::data::event_data::EventId::new(
+                    "white_night_confession_01",
+                )),
+            },
             omen: None,
         }],
         start_node_ids: vec![event_node_id],
@@ -1257,7 +1261,11 @@ fn live_awakened_fragment_can_trigger_boss_omen_overlay() {
             category: MapNodeCategory::Event,
             state: MapNodeState::Available,
             visibility: MapNodeVisibility::Revealed,
-            payload: MapNodePayload::Event { event_id: None },
+            payload: MapNodePayload::Event {
+                event_id: Some(crate::game::data::event_data::EventId::new(
+                    "white_night_confession_01",
+                )),
+            },
             omen: None,
         }],
         start_node_ids: vec![event_node_id],

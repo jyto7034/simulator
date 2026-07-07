@@ -10,7 +10,7 @@ use crate::game::{
         types::DeploymentAffinity,
     },
     data::{
-        abnormality_data::{BasicAttackDef, MovementDef, ResonanceDef},
+        abnormality_data::{AuthoredBasicAttackDef, BasicAttackDef, MovementDef, ResonanceDef},
         build_string_index, build_uuid_index, once_lock_with,
     },
     stats::UnitStats,
@@ -30,12 +30,14 @@ pub enum CorrodedEmployeeProfileRole {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
 pub struct CorrodedEmployeeBasicAttackRangePresetDef {
     pub id: String,
     pub range: TileRangePattern,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct CorrodedEmployeeProfileMetadata {
     pub id: String,
     pub uuid: Uuid,
@@ -226,6 +228,7 @@ impl<'de> Deserialize<'de> for CorrodedEmployeeProfileDatabase {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename = "CorrodedEmployeeProfileDatabase")]
+#[serde(deny_unknown_fields)]
 struct RawCorrodedEmployeeProfileDatabase {
     #[serde(default)]
     range_presets: Vec<CorrodedEmployeeBasicAttackRangePresetDef>,
@@ -233,6 +236,7 @@ struct RawCorrodedEmployeeProfileDatabase {
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 struct RawCorrodedEmployeeProfileMetadata {
     id: String,
     uuid: Uuid,
@@ -248,8 +252,7 @@ struct RawCorrodedEmployeeProfileMetadata {
     magic_resist: i32,
     #[serde(default)]
     movement: MovementDef,
-    #[serde(default)]
-    basic_attack: BasicAttackDef,
+    basic_attack: AuthoredBasicAttackDef,
     #[serde(default)]
     resonance: ResonanceDef,
     #[serde(default)]
@@ -287,7 +290,7 @@ impl RawCorrodedEmployeeProfileMetadata {
         presets: &[CorrodedEmployeeBasicAttackRangePresetDef],
         preset_index: &HashMap<String, usize>,
     ) -> CorrodedEmployeeProfileMetadata {
-        let mut basic_attack = self.basic_attack;
+        let mut basic_attack: BasicAttackDef = self.basic_attack.into();
         if let Some(preset_id) = &self.basic_attack_range_preset {
             if basic_attack.defense_tile_range.is_some() {
                 panic!(
@@ -385,7 +388,19 @@ mod tests {
                         max_health: 90,
                         attack: 11,
                         defense: 2,
-                        basic_attack: (range_units: 1.0, interval_ms: 1400),
+                        basic_attack: (
+                            range_units: 1.0,
+                            range_policy: pattern,
+                            defense_tile_range: None,
+                            damage_type: Physical,
+                            targeting_profile: DefaultForward,
+                            air_capable: false,
+                            range_role: Melee,
+                            interval_ms: 1400,
+                            windup_ms: 200,
+                            ranged_reposition_ms: 1000,
+                            delivery: Instant,
+                        ),
                     ),
                 ],
             )"#,
@@ -401,6 +416,105 @@ mod tests {
             Some("melee_front_1")
         );
         assert!(profile.basic_attack.defense_tile_range.is_some());
+    }
+
+    #[test]
+    fn corroded_employee_database_rejects_unknown_authoring_fields() {
+        let result = ron::de::from_str::<CorrodedEmployeeProfileDatabase>(
+            r#"CorrodedEmployeeProfileDatabase(
+                range_presets: [
+                    (
+                        id: "melee_front_1",
+                        range: (
+                            include_anchor_tile: true,
+                            rows: [
+                                ".X.",
+                                ".@.",
+                                "...",
+                            ],
+                        ),
+                    ),
+                ],
+                profiles: [
+                    (
+                        id: "broken_guard",
+                        uuid: "90000000-0000-4000-8000-000000000001",
+                        name: "Broken Guard",
+                        profile_role: normal,
+                        basic_attack_range_preset: Some("melee_front_1"),
+                        max_health: 90,
+                        attack: 11,
+                        defense: 2,
+                        old_difficulty: 1,
+                    ),
+                ],
+            )"#,
+        );
+
+        assert!(
+            result.is_err(),
+            "unknown corroded employee profile fields must not deserialize"
+        );
+        let error = result.expect_err("unknown field should be rejected");
+        assert!(
+            error.to_string().contains("old_difficulty"),
+            "unexpected error: {error}"
+        );
+    }
+
+    #[test]
+    fn corroded_employee_database_rejects_implicit_basic_attack_authoring() {
+        let result = ron::de::from_str::<CorrodedEmployeeProfileDatabase>(
+            r#"CorrodedEmployeeProfileDatabase(
+                range_presets: [
+                    (
+                        id: "melee_front_1",
+                        range: (
+                            include_anchor_tile: true,
+                            rows: [
+                                ".X.",
+                                ".@.",
+                                "...",
+                            ],
+                        ),
+                    ),
+                ],
+                profiles: [
+                    (
+                        id: "broken_guard",
+                        uuid: "90000000-0000-4000-8000-000000000001",
+                        name: "Broken Guard",
+                        profile_role: normal,
+                        basic_attack_range_preset: Some("melee_front_1"),
+                        max_health: 90,
+                        attack: 11,
+                        defense: 2,
+                        basic_attack: (
+                            range_units: 1.0,
+                            range_policy: pattern,
+                            defense_tile_range: None,
+                            damage_type: Physical,
+                            targeting_profile: DefaultForward,
+                            air_capable: false,
+                            range_role: Melee,
+                            interval_ms: 1400,
+                            windup_ms: 200,
+                            delivery: Instant,
+                        ),
+                    ),
+                ],
+            )"#,
+        );
+
+        assert!(
+            result.is_err(),
+            "live corroded employee basic_attack authoring must reject missing combat fields"
+        );
+        let error = result.expect_err("missing field should be rejected");
+        assert!(
+            error.to_string().contains("ranged_reposition_ms"),
+            "unexpected error: {error}"
+        );
     }
 
     #[test]

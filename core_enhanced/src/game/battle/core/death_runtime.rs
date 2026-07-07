@@ -18,8 +18,11 @@ impl BattleCore {
         killer_id: Option<UnitInstanceId>,
         dead_unit_id: UnitInstanceId,
         dead_owner: Side,
+        time_ms: u64,
     ) -> Vec<BattleCommand> {
         let mut commands = Vec::new();
+        let death_occurrence_id =
+            self.proc_occurrence_id(TriggerType::OnDeath, dead_unit_id, killer_id, time_ms, 0);
 
         commands.extend(self.trigger_commands_from_effects(
             self.collect_all_triggers(dead_unit_id, TriggerType::OnDeath),
@@ -34,7 +37,14 @@ impl BattleCore {
             Self::activation_commands_from_bindings(
                 self.collect_all_trigger_activations(dead_unit_id, TriggerType::OnDeath),
                 dead_unit_id,
-                None,
+                crate::game::battle::core::commands::TriggerAbilityContext {
+                    trigger_type: TriggerType::OnDeath,
+                    trigger_unit_id: dead_unit_id,
+                    counterpart_unit_id: killer_id,
+                    target_id: None,
+                    occurrence_id: death_occurrence_id,
+                    occurrence_index: 0,
+                },
             )
             .into_iter()
             .map(|command| match command {
@@ -44,6 +54,7 @@ impl BattleCore {
                     target_id,
                     activation_source,
                     binding_index,
+                    proc_roll_identity,
                     proc_chance_percent,
                     internal_cooldown_ms,
                     max_triggers_per_battle,
@@ -54,6 +65,7 @@ impl BattleCore {
                     target_id,
                     activation_source,
                     binding_index,
+                    proc_roll_identity,
                     proc_chance_percent,
                     internal_cooldown_ms,
                     max_triggers_per_battle,
@@ -76,7 +88,14 @@ impl BattleCore {
             commands.extend(Self::activation_commands_from_bindings(
                 self.collect_all_trigger_activations(killer_id, TriggerType::OnKill),
                 killer_id,
-                Some(dead_unit_id),
+                crate::game::battle::core::commands::TriggerAbilityContext {
+                    trigger_type: TriggerType::OnKill,
+                    trigger_unit_id: killer_id,
+                    counterpart_unit_id: Some(dead_unit_id),
+                    target_id: Some(dead_unit_id),
+                    occurrence_id: death_occurrence_id,
+                    occurrence_index: 0,
+                },
             ));
         }
 
@@ -103,7 +122,14 @@ impl BattleCore {
             commands.extend(Self::activation_commands_from_bindings(
                 self.collect_all_trigger_activations(ally_id, TriggerType::OnAllyDeath),
                 ally_id,
-                None,
+                crate::game::battle::core::commands::TriggerAbilityContext {
+                    trigger_type: TriggerType::OnAllyDeath,
+                    trigger_unit_id: ally_id,
+                    counterpart_unit_id: Some(dead_unit_id),
+                    target_id: None,
+                    occurrence_id: death_occurrence_id,
+                    occurrence_index: 0,
+                },
             ));
         }
 
@@ -171,8 +197,12 @@ impl BattleCore {
             },
         );
 
-        let death_commands =
-            self.death_trigger_commands(source_instance_id, target_instance_id, target_owner);
+        let death_commands = self.death_trigger_commands(
+            source_instance_id,
+            target_instance_id,
+            target_owner,
+            time_ms,
+        );
         if !death_commands.is_empty() {
             self.with_recording_cause(death_seq, |core| {
                 core.process_commands(death_commands, time_ms);

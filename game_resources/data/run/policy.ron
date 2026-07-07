@@ -1,0 +1,116 @@
+(
+    setup: (
+        standard_floor_count: 3,
+        starter_employee_count: 3,
+        starter_enkephalin: 500,
+    ),
+    growth: (
+        xp_required_per_level: [100],
+        post_battle_survival_xp: 10,
+        battle_tier_by_level: [
+            (min_level: 1, tier: I),
+            (min_level: 3, tier: II),
+            (min_level: 6, tier: III),
+        ],
+    ),
+    abnormality_research: (
+        default_research_required: 100,
+        victory_research_gain: 20,
+        repeat_complete_fragment_dust: (
+            elite: 5,
+            boss: 10,
+            final_boss: 20,
+        ),
+    ),
+    encounter_repeat_weighting: (
+        recent_floor_exclusion_window: 1,
+        response_complete_weight_multiplier_percent: 25,
+        incomplete_weight_multiplier_percent: 100,
+        empty_pool_fallback: ResetSoftRepeatConstraints,
+    ),
+    battle_runtime: (
+        movement_tick_ms: 50,
+        max_battle_time_ms: 60000,
+    ),
+    floor_combat_scaling: (
+        stages: [
+            (
+                min_floor: 1,
+                max_floor: 2,
+                max_health_multiplier_percent: 100,
+                attack_multiplier_percent: 100,
+                defense_multiplier_percent: 100,
+                generated_wave_budget_multiplier_percent: 100,
+                extra_waves: [],
+            ),
+            (
+                min_floor: 3,
+                max_floor: 4,
+                max_health_multiplier_percent: 110,
+                attack_multiplier_percent: 110,
+                defense_multiplier_percent: 110,
+                generated_wave_budget_multiplier_percent: 125,
+                extra_waves: [],
+            ),
+            (
+                min_floor: 5,
+                max_floor: 6,
+                max_health_multiplier_percent: 120,
+                attack_multiplier_percent: 120,
+                defense_multiplier_percent: 120,
+                generated_wave_budget_multiplier_percent: 150,
+                extra_waves: [],
+            ),
+            (
+                min_floor: 7,
+                max_floor: 8,
+                max_health_multiplier_percent: 130,
+                attack_multiplier_percent: 130,
+                defense_multiplier_percent: 130,
+                generated_wave_budget_multiplier_percent: 175,
+                extra_waves: [],
+            ),
+        ],
+        overflow_policy: ClampToLastStage,
+    ),
+    battle_result_stats: (
+        mvp: (
+            metric_weights: [
+                (metric: DamageDealt, weight: 1, title: "Top Damage"),
+                (metric: KillCount, weight: 100, title: "Most Kills"),
+                (metric: SkillCastCount, weight: 25, title: "Skill User"),
+                (metric: Survived, weight: 50, title: "Survivor"),
+            ],
+            tiebreakers: [
+                Score,
+                DamageDealt,
+                KillCount,
+                SkillCastCount,
+                DeployedTimeMs,
+                EmployeeUuid,
+            ],
+        ),
+    ),
+    live_deployment: (
+        initial_cost: 20,
+        max_cost: 99,
+        cost_per_second: 1,
+        base_deploy_cost: 10,
+        withdraw_redeploy_cooldown_ms: 30000,
+        defeat_redeploy_cooldown_ms: 90000,
+        redeploy_cost_multiplier_pct: 150,
+        first_instance_salt: 10000,
+    ),
+    post_battle: (
+        incapacitation_trauma: 40,
+        incapacitation_run_hp_loss_percent: 25,
+    ),
+    support: (
+        save_point_trauma_reduction_percent: 15,
+        rest_trauma_heal: 10,
+        gate_transition_trauma_recovery_percent: 10,
+    ),
+    headquarters: (
+        emergency_enkephalin: 120,
+    ),
+)

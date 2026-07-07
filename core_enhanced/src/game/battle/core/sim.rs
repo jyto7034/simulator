@@ -11,7 +11,7 @@ use crate::{
         },
         battle::{
             cooldown::CooldownSource,
-            damage::{BattleCommand, DamageSource},
+            damage::{BattleCommand, DamageSource, ProcRollIdentity},
             enums::BattleEvent,
             event_log::{
                 BattleEventCause, BattleEventLog, BattleEventRootCause, BattleLogEvent,
@@ -161,9 +161,7 @@ pub enum BattleLiveSignal {
 
 #[derive(Debug, Clone)]
 pub(super) struct TriggeredAbilityProcContext<'a> {
-    pub(super) source: CooldownSource,
-    pub(super) ability_id: &'a str,
-    pub(super) binding_index: usize,
+    pub(super) proc_roll_identity: &'a ProcRollIdentity,
     pub(super) current_time_ms: u64,
     pub(super) proc_chance_percent: u8,
     pub(super) internal_cooldown_ms: u64,
@@ -211,42 +209,71 @@ impl BattleCore {
         })
     }
 
-    fn proc_roll_percent(
-        &self,
-        source: CooldownSource,
-        ability_id: &str,
-        binding_index: usize,
-        trigger_count: u32,
-        time_ms: u64,
-    ) -> u8 {
-        const PROC_ROLL_NS: u64 = 0x5052_4F43_524F_4C4Cu64; // "PROCROLL"
+    fn proc_unit_tag(unit_id: UnitInstanceId) -> u64 {
+        let mut bytes = [0u8; 8];
+        bytes.copy_from_slice(&unit_id.as_bytes()[..8]);
+        u64::from_be_bytes(bytes)
+    }
 
-        let source_tag = match source {
-            CooldownSource::Unit { unit_instance_id } => {
-                let mut bytes = [0u8; 8];
-                bytes.copy_from_slice(&unit_instance_id.as_bytes()[..8]);
-                u64::from_be_bytes(bytes)
-            }
+    fn proc_uuid_tag(uuid: Uuid) -> u64 {
+        let mut bytes = [0u8; 8];
+        bytes.copy_from_slice(&uuid.as_bytes()[..8]);
+        u64::from_be_bytes(bytes)
+    }
+
+    fn proc_cooldown_source_tag(source: CooldownSource) -> u64 {
+        match source {
+            CooldownSource::Unit { unit_instance_id } => Self::proc_unit_tag(unit_instance_id),
             CooldownSource::Item { item_instance_id }
             | CooldownSource::Artifact {
                 artifact_instance_id: item_instance_id,
-            } => {
-                let mut bytes = [0u8; 8];
-                bytes.copy_from_slice(&item_instance_id.as_bytes()[..8]);
-                u64::from_be_bytes(bytes)
-            }
-        };
-        let ability_tag = ability_id.bytes().fold(0u64, |acc, b| {
-            acc.wrapping_mul(131).wrapping_add(u64::from(b))
-        });
-        let seed = self.seed
-            ^ source_tag.rotate_left(13)
-            ^ ability_tag.rotate_left(29)
-            ^ (binding_index as u64).rotate_left(7)
-            ^ time_ms.wrapping_mul(0x9E37_79B9_7F4A_7C15)
-            ^ u64::from(trigger_count).wrapping_mul(0xD1B5_4A32_D192_ED03);
+            } => Self::proc_uuid_tag(item_instance_id),
+        }
+    }
 
-        determinism::uuid_v4_from_seed(seed, PROC_ROLL_NS, u64::from(trigger_count)).as_bytes()[0]
+    fn proc_trigger_type_tag(trigger_type: crate::game::stats::TriggerType) -> u64 {
+        match trigger_type {
+            crate::game::stats::TriggerType::Permanent => 0x5045_524D_414E_454Eu64,
+            crate::game::stats::TriggerType::OnAttack => 0x4F4E_4154_5441_434Bu64,
+            crate::game::stats::TriggerType::OnHit => 0x4F4E_4849_545F_5F5Fu64,
+            crate::game::stats::TriggerType::OnKill => 0x4F4E_4B49_4C4C_5F5Fu64,
+            crate::game::stats::TriggerType::OnDeath => 0x4F4E_4445_4154_48u64,
+            crate::game::stats::TriggerType::OnBattleStart => 0x4241_5454_4C45_5354u64,
+            crate::game::stats::TriggerType::OnAllyDeath => 0x414C_4C59_4445_4144u64,
+        }
+    }
+
+    fn proc_skill_id_tag(skill_id: &SkillId) -> u64 {
+        skill_id.as_str().bytes().fold(0u64, |acc, b| {
+            acc.wrapping_mul(131).wrapping_add(u64::from(b))
+        })
+    }
+
+    pub(in crate::game::battle::core) fn proc_roll_percent(
+        &self,
+        identity: &ProcRollIdentity,
+    ) -> u8 {
+        const PROC_ROLL_NS: u64 = 0x5052_4F43_524F_4C4Cu64; // "PROCROLL"
+
+        let seed = self.seed
+            ^ Self::proc_trigger_type_tag(identity.trigger_type).rotate_left(3)
+            ^ Self::proc_cooldown_source_tag(identity.activation_source).rotate_left(13)
+            ^ Self::proc_skill_id_tag(&identity.ability_id).rotate_left(29)
+            ^ (identity.binding_index as u64).rotate_left(7)
+            ^ Self::proc_unit_tag(identity.caster_id).rotate_left(11)
+            ^ Self::proc_unit_tag(identity.trigger_unit_id).rotate_left(17)
+            ^ Self::proc_uuid_tag(identity.occurrence_id).rotate_left(41)
+            ^ u64::from(identity.occurrence_index).wrapping_mul(0xD1B5_4A32_D192_ED03);
+        let mut seed = seed;
+        if let Some(counterpart_unit_id) = identity.counterpart_unit_id {
+            seed ^= Self::proc_unit_tag(counterpart_unit_id).rotate_left(23);
+        }
+        if let Some(target_id) = identity.target_id {
+            seed ^= Self::proc_unit_tag(target_id).rotate_left(37);
+        }
+
+        determinism::uuid_v4_from_seed(seed, PROC_ROLL_NS, u64::from(identity.occurrence_index))
+            .as_bytes()[0]
             % 100
     }
 
@@ -260,9 +287,9 @@ impl BattleCore {
         }
 
         let key = AbilityProcKey {
-            source: context.source,
-            ability_id: SkillId::from(context.ability_id),
-            binding_index: context.binding_index,
+            source: context.proc_roll_identity.activation_source,
+            ability_id: context.proc_roll_identity.ability_id.clone(),
+            binding_index: context.proc_roll_identity.binding_index,
         };
         let current_count = self
             .ability_proc_states
@@ -285,13 +312,7 @@ impl BattleCore {
             return false;
         }
 
-        let roll = self.proc_roll_percent(
-            context.source,
-            context.ability_id,
-            context.binding_index,
-            current_count,
-            context.current_time_ms,
-        );
+        let roll = self.proc_roll_percent(context.proc_roll_identity);
         if roll >= clamped_chance {
             return false;
         }
@@ -1275,13 +1296,27 @@ impl BattleCore {
         let mut unit_ids: Vec<_> = self.units.keys().copied().collect();
         unit_ids.sort_by(|a, b| a.as_bytes().cmp(b.as_bytes()));
         for unit_id in unit_ids {
+            let occurrence_id = self.proc_occurrence_id(
+                crate::game::stats::TriggerType::OnBattleStart,
+                unit_id,
+                None,
+                0,
+                0,
+            );
             on_battle_start_commands.extend(Self::activation_commands_from_bindings(
                 self.collect_all_trigger_activations(
                     unit_id,
                     crate::game::stats::TriggerType::OnBattleStart,
                 ),
                 unit_id,
-                None,
+                crate::game::battle::core::commands::TriggerAbilityContext {
+                    trigger_type: crate::game::stats::TriggerType::OnBattleStart,
+                    trigger_unit_id: unit_id,
+                    counterpart_unit_id: None,
+                    target_id: None,
+                    occurrence_id,
+                    occurrence_index: 0,
+                },
             ));
         }
         if !on_battle_start_commands.is_empty() {
@@ -1350,6 +1385,7 @@ impl BattleCore {
         self.event_log_seq = 1;
         self.projectile_seq = 0;
         self.area_seq = 0;
+        self.damage_source_seq = 0;
         self.live_signals.clear();
         self.recording_cause_stack.clear();
         self.recording_source_command_stack.clear();
@@ -1682,7 +1718,7 @@ impl BattleCore {
     }
 
     pub(super) fn build_skill_step_commands(
-        &self,
+        &mut self,
         caster_instance_id: UnitInstanceId,
         step: &SkillStepDef,
         targets: &[UnitInstanceId],
@@ -1723,7 +1759,7 @@ impl BattleCore {
                         continue;
                     }
                     let damage_amount = amount.unsigned_abs();
-                    for target_id in targets {
+                    for (hit_index, target_id) in targets.iter().enumerate() {
                         let source_snapshot = if let Some(template) = source_template {
                             let mut snapshot = template.clone();
                             snapshot.source = DamageSource::Ability;
@@ -1731,7 +1767,11 @@ impl BattleCore {
                             snapshot.base_damage = damage_amount;
                             snapshot.modifiers = step_damage_modifiers;
                             snapshot.minimum_damage = 0;
-                            self.materialize_damage_source_snapshot_for_target(snapshot, *target_id)
+                            self.materialize_damage_source_snapshot_for_target_hit(
+                                snapshot,
+                                *target_id,
+                                hit_index as u32,
+                            )
                         } else if let Some(snapshot) = self.damage_source_snapshot_for_unit(
                             caster_instance_id,
                             *target_id,

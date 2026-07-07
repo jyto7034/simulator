@@ -132,6 +132,7 @@ impl TryFrom<ShopMetadataRaw> for ShopMetadata {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ShopDatabase {
     pub shops: Vec<ShopMetadata>,
     #[serde(default)]
@@ -143,6 +144,7 @@ pub struct ShopDatabase {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ShopPoolMetadata {
     pub id: String,
     pub shop_ids: Vec<String>,
@@ -338,6 +340,30 @@ mod tests {
 
         assert!(
             err.to_string().contains("hidden_items"),
+            "unexpected error: {err}"
+        );
+    }
+
+    #[test]
+    fn shop_database_rejects_unknown_pool_authoring_fields() {
+        let err = ron::de::from_str::<ShopDatabase>(
+            r#"
+            ShopDatabase(
+                shops: [],
+                pools: [
+                    (
+                        id: "default",
+                        shop_ids: [],
+                        hidden_shop_ids: [],
+                    ),
+                ],
+            )
+            "#,
+        )
+        .expect_err("unknown pool fields should fail");
+
+        assert!(
+            err.to_string().contains("hidden_shop_ids"),
             "unexpected error: {err}"
         );
     }

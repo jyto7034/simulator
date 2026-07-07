@@ -1,10 +1,13 @@
 use crate::game::battle::ids::UnitInstanceId;
+use uuid::Uuid;
 
 use crate::game::ability::SkillId;
 #[cfg(test)]
 use crate::game::stats::TriggerEffectTarget;
 use crate::game::{
-    combat_setup::balance::is_damage_mitigated_for_feedback, enums::Side, stats::Effect,
+    combat_setup::balance::is_damage_mitigated_for_feedback,
+    enums::Side,
+    stats::{Effect, TriggerType},
 };
 use serde::{Deserialize, Serialize};
 
@@ -42,7 +45,7 @@ pub struct DamageSourceSnapshot {
     pub base_damage: u32,
     pub modifiers: DamageModifiers,
     pub crit_roll_percent: Option<u8>,
-    pub crit_roll_event_log_seq: u64,
+    pub crit_roll_identity: CombatRollIdentity,
     pub minimum_damage: u32,
     pub committed_at_ms: u64,
     pub on_attack_modifiers: DamageModifiers,
@@ -63,6 +66,74 @@ impl DamageSourceSnapshot {
             time_ms: self.committed_at_ms,
         }
     }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CombatRollKind {
+    BasicAttackCrit,
+    SkillCrit,
+    StatusProc,
+    EnvironmentCrit,
+}
+
+impl CombatRollKind {
+    pub fn for_damage_source(source: DamageSource) -> Self {
+        match source {
+            DamageSource::BasicAttack => Self::BasicAttackCrit,
+            DamageSource::Ability => Self::SkillCrit,
+            DamageSource::BuffTick => Self::StatusProc,
+            DamageSource::Environment => Self::EnvironmentCrit,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct CombatRollIdentity {
+    pub roll_kind: CombatRollKind,
+    pub source_unit_id: Option<UnitInstanceId>,
+    pub target_unit_id: Option<UnitInstanceId>,
+    pub source_instance_id: Uuid,
+    pub hit_index: u32,
+}
+
+impl CombatRollIdentity {
+    pub fn new(
+        roll_kind: CombatRollKind,
+        source_unit_id: Option<UnitInstanceId>,
+        source_instance_id: Uuid,
+    ) -> Self {
+        Self {
+            roll_kind,
+            source_unit_id,
+            target_unit_id: None,
+            source_instance_id,
+            hit_index: 0,
+        }
+    }
+
+    pub fn with_target(mut self, target_unit_id: UnitInstanceId) -> Self {
+        self.target_unit_id = Some(target_unit_id);
+        self
+    }
+
+    pub fn with_hit_index(mut self, hit_index: u32) -> Self {
+        self.hit_index = hit_index;
+        self
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ProcRollIdentity {
+    pub trigger_type: TriggerType,
+    pub activation_source: CooldownSource,
+    pub ability_id: SkillId,
+    pub binding_index: usize,
+    pub caster_id: UnitInstanceId,
+    pub trigger_unit_id: UnitInstanceId,
+    pub counterpart_unit_id: Option<UnitInstanceId>,
+    pub target_id: Option<UnitInstanceId>,
+    pub occurrence_id: Uuid,
+    pub occurrence_index: u32,
 }
 
 /// 출처별 2차 데미지 계산 보정값.
@@ -236,6 +307,7 @@ pub enum BattleCommand {
         target_id: Option<UnitInstanceId>,
         activation_source: CooldownSource,
         binding_index: usize,
+        proc_roll_identity: ProcRollIdentity,
         proc_chance_percent: u8,
         internal_cooldown_ms: u64,
         max_triggers_per_battle: Option<u32>,

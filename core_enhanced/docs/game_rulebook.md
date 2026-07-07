@@ -5,6 +5,7 @@
 세부 구현 계약은 이 문서에 모두 풀어 쓰지 않는다. 타겟팅, Unity 통신, 리팩토링 기준처럼 별도 source of truth가 있는 주제는 아래 문서를 우선한다.
 
 - 스킬/평타 타겟팅, 범위, 자동 시전, 유효 적대 대상 판정: `docs/skill_target_contract.md`
+- 전투 runtime source-of-truth, 결정론/RNG, event log, checkpoint, battle record, actor identity 구현 계약: `docs/core_runtime_contract.md`
 - Unity WebSocket, snapshot, command/result 통합 계약: 외부 canonical `/mnt/f/unity projects/ark/docs/unity_core_contract.md`
 - 전투 시작, live update, checkpoint, resync, 전투 종료 snapshot 흐름: 외부 canonical `/mnt/f/unity projects/ark/docs/core_unity_battle_transport_contract.md`
 - 리팩토링, 레거시 제거, debug 산출물 분류: `docs/refactor_preparation_plan.md`
@@ -285,17 +286,9 @@ Event-started combat:
 - 전투 시작 scene construction source는 `battle_setup_snapshot`이다.
 - 전투 중 정확한 연출 타이밍 source는 `battle_update.events_delta`다.
 - 전투 중 현재 상태/복구 source는 `battle_update.checkpoint`다.
-- Unity는 event로 현재 상태를 계산하지 않고, checkpoint로 연출 타이밍을 만들지 않는다.
-- 유닛 이동 연출은 `MovementSegmentStarted`/`MovementStopped` event를 기준으로 한다. 실제 위치 변화가 있는 movement tick은 Unity-facing event로 노출되며, seq가 부여된 live presentation event는 이후 수정되지 않는다.
-- 유닛 철수/사망 연출 위치는 `UnitWithdrawn`/`UnitDied` event의 `world_position`과 projected tile `position`을 기준으로 한다. 철수/사망한 유닛은 official checkpoint `units`에서 빠질 수 있으므로, Unity는 checkpoint에서 inactive unit을 찾아 연출 위치를 추론하지 않는다.
-- `checkpoint.units[*].world_position`은 이동 연출 source가 아니라 event 처리 후 보정할 reconcile target이다.
-- `battle_update.checkpoint.units`는 official gameplay presentation/reconcile source이며 Active unit만 포함한다. inactive runtime unit 조회가 필요하면 debug/admin/replay 전용 query를 사용하고, 해당 query의 결과를 gameplay 표시 source로 사용하지 않는다.
-- 완료된 전투의 event log는 run-local 환상체 도감/관찰용 전투 기록으로 저장한다. 현재 `battle_records`는 모든 개별 전투 timeline archive가 아니라 `abnormality_uuid`별 대표 기록이며, 같은 환상체와 반복 전투해도 하나의 대표 기록만 유지한다. debug JSON export도 `abnormality_uuid` 필드와 `target/battle_records/run_<seed>/<abnormality_uuid>.json` 경로를 사용한다. 개별 전투 replay archive가 필요해지면 `battle_uuid` keyed 저장소를 별도 계약으로 만든다.
-- 전투 결과 화면의 1차 통계 source는 core가 `BattleEventLog`와 `ParticipantBattleResult`에서 전투 종료 시 산출한 `selected_event.result_stats`다. Unity는 MVP, 누적 피해량, 처치 수, 받은 피해량, 기본 공격/스킬 사용 횟수, 배치/철수 횟수, 배치 시간, 최종 HP/생존/전투불능 여부를 raw event log에서 재계산하지 않는다. 압축 event log는 전투 기록/상세 로그/디버그용이다.
-- `selected_event.bonus_objectives`는 PvE encounter가 명시한 추가 연구 목표의 결과 표시 source다. Unity는 이를 달성/미달성 표시와 presentation hint에 사용하되, 연구도 증가나 보상 지급을 로컬에서 재계산하지 않는다. 실제 연구 진행도는 combat result 완료 처리와 뒤따르는 `abnormality_research` snapshot이 source of truth다.
-- 전투 유닛 HUD 표시 정책은 core가 결정한다. Unity는 `checkpoint.units[*].hud.bar_mode`와 `hud.threat_class`를 읽어 HP bar 또는 HP+공명 bar를 그리며, owner/role/base_uuid/encounter를 조합해 추론하지 않는다.
-- live actor 정체성은 `UnitSpawned.unit_source`와 `checkpoint.units[*].unit_source`가 제공한다. Unity는 선택 패널, actor visual, 디버그 표시, 복구 시 이 값을 사용하고, wave 순서나 `base_uuid` 역조회로 적 종류를 추론하지 않는다.
-- `unit_source`는 actor identity source이고, `hud.bar_mode`는 HUD bar source다. 침식 직원/환상체/방어 오브젝트 여부를 보고 Unity가 HUD bar 정책을 다시 계산하지 않는다.
+- 완료된 전투의 event log는 run-local 환상체 도감/관찰용 전투 기록으로 저장한다.
+- 전투 결과 화면의 1차 통계 source는 core가 산출한 `selected_event.result_stats`다.
+- 전투 유닛 HUD 표시 정책과 live actor 정체성은 core가 내려주는 DTO가 source of truth다.
 - 기본 공격/스킬 범위 overlay는 core가 계산한 `range_previews` 최종 cell이 source of truth다. Unity는 `defense_tile_range`, `effective_weapon_profile`, `effective_basic_attack`, skill catalog range metadata를 조합해 범위를 재계산하지 않는다.
 - 범위 overlay는 이동 가능 tile 표시가 아니다. 전장 밖/void/invalid tile은 제외하지만, obstacle/blocked tile은 기본 공격과 스킬 범위 표시에서 제외하지 않는다. 장애물은 지상 이동/배치/pathfinding/충돌에 영향을 주는 정보이며, 실제 피격 가능성은 공격/스킬의 target validation, 공중 대상 가능 여부, 유효 hostile target 규칙이 판단한다.
 - 침식 직원의 기본 공격 범위는 침식 직원 프로필 RON이 basic attack range preset pool에서 선택한 `TileRangePattern`이 source of truth다. core는 침식 직원이 근거리/원거리인지, `range_units`가 얼마인지, projectile을 쓰는지만 보고 범위를 임의 추론하지 않는다.
@@ -305,11 +298,9 @@ Event-started combat:
 - `WholeFieldValidTiles`는 기본 공격과 스킬이 모두 사용할 수 있는 공용 range policy다. 이 정책은 route 유무와 직접 결합되지 않으며, route-following 유닛도 유닛/profile/skill이 명시적으로 허용하면 사용할 수 있다. 보스, 특수 침식 직원, 저격수 같은 특수 유닛이 사용할 수 있으며, 일반 `profile_role: Normal` 침식 직원은 사용할 수 없다. 전체 범위는 후보 타일 범위만 전체라는 뜻이며, 기본 공격은 유닛/basic attack의 `targeting_profile`, 스킬은 명시 skill targeting rule, 그리고 alive/hostile/air_capable/untargetable/유효 hostile target validation을 따른다. `WholeFieldValidTiles` 스킬에 명시 targeting rule이 없으면 validation failure다. 전장 광역 스킬은 `WholeFieldValidTiles` + `TileArea`로 표현할 수 있지만 data에 전장 광역 스킬임이 명시되어야 한다.
 - 침식 직원 profile은 `profile_role` metadata를 가진다. `Normal`은 일반 wave용이며 `WholeFieldValidTiles`를 사용할 수 없다. `Special`은 저격수/특수 침식 직원용, `LegacyEcho`는 죽은 직원 이스터에그/잔향 정예용이며 고유 범위와 스킬을 가질 수 있다.
 - 적군 공격 범위는 플레이어 조작 preview가 아니므로 기본 DTO로 매번 내려보내지 않는다. 보스 경고, 광역 스킬 telegraph, debug처럼 시각적 경고가 필요한 경우에만 core가 실제 피해/효과가 적용될 타일을 별도 event/DTO로 내려보낸다.
-- Battle actor HUD는 유닛 아래쪽 world-space anchor에 표시한다. `hud.threat_class`가 높을수록 HUD 크기와 bar 두께가 커지며, HP/공명 색상은 threat class로 바꾸지 않는다.
-- Unity HUD는 카메라 빌보드 방식으로 정렬하되 화면 기준으로 반듯하게 보이도록 카메라 up vector를 사용한다.
 - 환상체의 `threat_class`는 RON metadata가 source of truth다. 환상체는 `Normal`이 될 수 없고 최소 `Elite`, 보스 환상체만 `Boss`다. 직원, 침식 직원, 방어 오브젝트 같은 비환상체 기본 전투 단위는 `Normal`을 사용한다.
 
-Unity-facing DTO shape, command result, battle update cadence, resync 세부 계약은 외부 canonical 문서를 따른다. 이 룰북은 플레이 규칙 요약만 유지한다.
+전투 runtime source-of-truth, 결정론/RNG, event log, checkpoint, battle record, actor identity 세부 구현 계약은 `docs/core_runtime_contract.md`를 따른다. Unity-facing DTO shape, command result, battle update cadence, resync 세부 계약은 외부 canonical 문서를 따른다. 이 룰북은 플레이 규칙 요약만 유지한다.
 
 ## 전장과 배치
 

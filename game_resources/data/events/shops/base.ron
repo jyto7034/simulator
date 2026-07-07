@@ -15,17 +15,10 @@ ShopDatabase(
             uuid: "550e8400-e29b-41d4-a716-446655440001",
             shop_type: Shop,
             visible_items: [
-                "650e8400-e29b-41d4-a716-446655440011", // one_sin
-                "650e8400-e29b-41d4-a716-446655440013", // beauty_and_beast
-                "a0000002-0000-0000-0000-000000000002", // red_ribbon
                 "a0000005-0000-0000-0000-000000000005", // lobotomy_badge
             ],
             stock_items: [
-                "650e8400-e29b-41d4-a716-446655440011", // one_sin
-                "650e8400-e29b-41d4-a716-446655440012", // fairy_festival
-                "650e8400-e29b-41d4-a716-446655440013", // beauty_and_beast
                 "a0000001-0000-0000-0000-000000000001", // fragment_immortality
-                "a0000002-0000-0000-0000-000000000002", // red_ribbon
                 "a0000003-0000-0000-0000-000000000003", // manager_manual
                 "a0000004-0000-0000-0000-000000000004", // qliphoth_meter
                 "a0000005-0000-0000-0000-000000000005", // lobotomy_badge
@@ -35,7 +28,6 @@ ShopDatabase(
                 "a0000009-0000-0000-0000-000000000009", // pale_halo_fragment
                 "a0000010-0000-0000-0000-000000000010", // red_mist_memory
                 "a0000011-0000-0000-0000-000000000011", // abno_observation_log
-                "a0000012-0000-0000-0000-000000000012", // singing_machine_record
             ],
             can_reroll: true,
         ),
@@ -54,7 +46,6 @@ ShopDatabase(
             stock_items: [
                 "650e8400-e29b-41d4-a716-446655440021", // justitia
                 "650e8400-e29b-41d4-a716-446655440022", // paradise_lost
-                "00000003-0000-0000-0000-000000000003", // fourth_match
                 "e0000000-0000-0000-0000-000000000101", // magic_bullet
                 "e0000000-0000-0000-0000-000000000102", // da_capo
                 "e0000000-0000-0000-0000-000000000103", // solemn_lament
@@ -72,16 +63,11 @@ ShopDatabase(
             shop_type: Shop,
             visible_items: [
                 "650e8400-e29b-41d4-a716-446655440031", // standard_armor
-                "650e8400-e29b-41d4-a716-446655440032", // penitence_armor
-                "e0000000-0000-0000-0000-000000000203", // wingbeat_shell
             ],
             stock_items: [
                 "650e8400-e29b-41d4-a716-446655440031", // standard_armor
-                "650e8400-e29b-41d4-a716-446655440032", // penitence_armor
                 "00000002-0000-0000-0000-000000000002", // smile_armor
                 "e0000000-0000-0000-0000-000000000201", // snow_queen_armor
-                "e0000000-0000-0000-0000-000000000202", // blue_star_vestment
-                "e0000000-0000-0000-0000-000000000203", // wingbeat_shell
                 "e0000000-0000-0000-0000-000000000204", // censored_plate
                 "e0000000-0000-0000-0000-000000000205", // thorned_lantern_guard
             ],
@@ -119,20 +105,11 @@ ShopDatabase(
             uuid: "550e8400-e29b-41d4-a716-446655440005",
             shop_type: Shop,
             visible_items: [
-                "19015400-0000-0000-0000-000000000117", // Meat Lantern
-                "f0118000-0000-0000-0000-000000000129", // Scarecrow
-                "0b046600-0000-0000-0000-000000000128", // Porccubus
             ],
             stock_items: [
-                "f0102000-0000-0000-0000-000000000001", // Scorched Girl
-                "0b014500-0000-0000-0000-000000000005", // Spider Bud
-                "19015400-0000-0000-0000-000000000117", // Meat Lantern
-                "f0118000-0000-0000-0000-000000000129", // Scarecrow
-                "0b046600-0000-0000-0000-000000000128", // Porccubus
-                "19016800-0000-0000-0000-000000000111", // Singing Machine
-                "19024300-0000-0000-0000-000000000112", // Der Freischutz
-                "19029900-0000-0000-0000-000000000113", // Funeral Butterfly
-                "0b016700-0000-0000-0000-000000000114", // Laetitia
+                "e2000000-0000-0000-0000-000000000019", // placeholder_der_freischutz_weapon
+                "e2000000-0000-0000-0000-000000000020", // placeholder_funeral_butterfly_weapon
+                "e2000000-0000-0000-0000-000000000021", // placeholder_laetitia_weapon
             ],
             can_reroll: true,
         ),
@@ -151,7 +128,6 @@ ShopDatabase(
             stock_items: [
                 "e0000000-0000-0000-0000-000000000102", // da_capo
                 "e0000000-0000-0000-0000-000000000105", // goodbye_cleave
-                "e0000000-0000-0000-0000-000000000202", // blue_star_vestment
                 "e0000000-0000-0000-0000-000000000204", // censored_plate
                 "e0000000-0000-0000-0000-000000000305", // orchestra_baton
                 "a0000009-0000-0000-0000-000000000009", // pale_halo_fragment
@@ -167,19 +143,16 @@ ShopDatabase(
             uuid: "550e8400-e29b-41d4-a716-446655440007",
             shop_type: Shop,
             visible_items: [
-                "0b039300-0000-0000-0000-000000000121", // Blue Star
-                "19013100-0000-0000-0000-000000000122", // Silent Orchestra
-                "0b014500-0000-0000-0000-000000000110", // WhiteNight
+                "e2000000-0000-0000-0000-000000000029", // placeholder_silent_orchestra_weapon
+                "e2000000-0000-0000-0000-000000000016", // placeholder_white_night_weapon
             ],
             stock_items: [
-                "0b039300-0000-0000-0000-000000000121", // Blue Star
-                "19013100-0000-0000-0000-000000000122", // Silent Orchestra
-                "0b038900-0000-0000-0000-000000000123", // CENSORED
-                "0b014500-0000-0000-0000-000000000110", // WhiteNight
-                "0b062000-0000-0000-0000-000000000109", // Nothing There
-                "d0310900-0000-0000-0000-000000000108", // Melting Love
+                "e2000000-0000-0000-0000-000000000029", // placeholder_silent_orchestra_weapon
+                "e2000000-0000-0000-0000-000000000030", // placeholder_censored_weapon
+                "e2000000-0000-0000-0000-000000000016", // placeholder_white_night_weapon
+                "e2000000-0000-0000-0000-000000000015", // placeholder_nothing_there_weapon
+                "e2000000-0000-0000-0000-000000000014", // placeholder_melting_love_weapon
                 "e0000000-0000-0000-0000-000000000102", // da_capo
-                "e0000000-0000-0000-0000-000000000202", // blue_star_vestment
                 "a0000009-0000-0000-0000-000000000009", // pale_halo_fragment
                 "a0000010-0000-0000-0000-000000000010", // red_mist_memory
             ],

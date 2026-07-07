@@ -1,17 +1,86 @@
 PveEncounterDatabase(
     encounters: [
-        // Scorched Girl (HE) - 단일 유닛
+        // Generic corroded employee patrol - ordinary combat pool
         PveEncounter(
-            id: "suppress_scorched_girl",
-            abnormality_id: "f-01-02",
-            difficulty: 2,
-            risk_level: HE,
+            id: "normal_corroded_patrol",
+            encounter_class: Normal,
+            risk_level: ZAYIN,
             node_type: Some(Defense),
-            reward_mode: ChooseOne,
+            reward_mode: ClaimAll,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440101",
-                "650e8400-e29b-41d4-a716-446655440117",
-                "650e8400-e29b-41d4-a716-446655440110",
+                "650e8400-e29b-41d4-a716-446655440116",
+            ],
+            waves: [
+                PveWaveData(
+                    id: "archive_sentries",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: GeneratedCorroded(
+                        preset_id: "archive_sentry_pair",
+                    ),
+                ),
+            ],
+        ),
+
+        // Generic breach response - ordinary combat pool
+        PveEncounter(
+            id: "normal_breach_response",
+            encounter_class: Normal,
+            risk_level: TETH,
+            node_type: Some(Defense),
+            reward_mode: ClaimAll,
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440101",
+                "650e8400-e29b-41d4-a716-446655440116",
+            ],
+            waves: [
+                PveWaveData(
+                    id: "breach_response",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: GeneratedCorroded(
+                        preset_id: "breach_response_light",
+                    ),
+                ),
+            ],
+        ),
+
+        // Generic black-box breach pressure - ordinary combat pool
+        PveEncounter(
+            id: "normal_black_box_pressure",
+            encounter_class: Normal,
+            risk_level: HE,
+            node_type: Some(Defense),
+            reward_mode: ClaimAll,
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440101",
+                "650e8400-e29b-41d4-a716-446655440116",
+            ],
+            waves: [
+                PveWaveData(
+                    id: "breach_pressure",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: GeneratedCorroded(
+                        preset_id: "black_box_breach_pressure",
+                    ),
+                ),
+            ],
+        ),
+
+        // Nameless Fetus - early unstable wail defense
+        PveEncounter(
+            id: "suppress_nameless_fetus",
+            encounter_class: Elite,
+            primary_abnormality_id: Some("o-01-15_nameless_fetus"),
+            risk_level: TETH,
+            node_type: Some(Defense),
+            reward_mode: ClaimAll,
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440101",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440118",
             ],
             battlefield: Some((
                 archetype: Some(OpenHall),
@@ -25,329 +94,225 @@ PveEncounterDatabase(
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 0,
-                    spawn_zone_ids: ["north_west_entry"],
-                    required_for_victory: true,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "f-01-02",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_guard",
                             tier: I,
                             count: 1,
                         ),
-                    ],
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "o-01-15_nameless_fetus",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
                 ),
             ],
         ),
 
-        // Plague Doctor (ALEPH) - 본체 + 소환수
+        // Porccubus - early spore pressure
         PveEncounter(
-            id: "suppress_plague_doctor",
-            abnormality_id: "o-02-56",
-            difficulty: 5,
-            risk_level: ALEPH,
-            node_type: Some(Boss),
-            reward_mode: ChooseOne,
+            id: "suppress_porcubbus",
+            encounter_class: Elite,
+            primary_abnormality_id: Some("o-04-66_porcubbus"),
+            risk_level: TETH,
+            node_type: Some(Defense),
+            reward_mode: ClaimAll,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440101",
                 "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440111",
+                "650e8400-e29b-41d4-a716-446655440118",
             ],
-            battlefield: Some((
-                archetype: Some(BossArena),
-                size_class: Some(Large),
-            )),
-            tactical_plan: Some((
-                points: [
-                    (id: "ritual_gate", position: (x: 5, y: 10)),
-                ],
-                objective: Some(DefeatBoss(unit_ref: "enemy_wave_0_0")),
-            )),
-            win_condition: Some(AllRequiredEnemyGroupsDefeated),
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 0,
-                    spawn_zone_ids: ["boss_anchor"],
-                    required_for_victory: true,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "o-02-56",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_guard",
+                            tier: I,
+                            count: 2,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "o-04-66_porcubbus",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+            ],
+        ),
+
+        // Scarecrow - wisdom theft pressure
+        PveEncounter(
+            id: "suppress_scarecrow",
+            encounter_class: Elite,
+            primary_abnormality_id: Some("f-01-18_scarecrow"),
+            risk_level: HE,
+            node_type: Some(Defense),
+            reward_mode: ClaimAll,
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440101",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440118",
+            ],
+            waves: [
+                PveWaveData(
+                    id: "wave_0",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_guard",
                             tier: II,
                             count: 1,
                         ),
-                        PveWaveEnemyData(
-                            kind: CorrodedEmployee,
-                            profile_id: Some("corroded_guard"),
-                            abnormality_id: "corroded_guard",
-                            tier: I,
-                            count: 2,
-                        ),
-                    ],
+                    ]),
                 ),
                 PveWaveData(
-                    id: "apostle_reinforcement",
-                    time_ms: 8000,
-                    spawn_zone_ids: ["west_reinforcement", "east_reinforcement"],
-                    required_for_victory: true,
-                    enemies: [
-                        PveWaveEnemyData(
-                            kind: CorrodedEmployee,
-                            profile_id: Some("corroded_guard"),
-                            abnormality_id: "corroded_guard",
-                            tier: I,
-                            count: 2,
-                        ),
-                    ],
-                ),
-            ],
-        ),
-
-        // Red Shoes (WAW) - 빠른 단일 유닛
-        PveEncounter(
-            id: "suppress_red_shoes",
-            abnormality_id: "t-09-09",
-            difficulty: 3,
-            risk_level: WAW,
-            node_type: Some(Defense),
-            reward_mode: ChooseOne,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440101",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440111",
-            ],
-            waves: [
-                PveWaveData(
-                    id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "t-09-09",
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "f-01-18_scarecrow",
                             tier: I,
                             count: 1,
                         ),
-                    ],
+                    ]),
                 ),
             ],
         ),
 
-        // Fragment of the Universe (TETH) - 초보자용
+        // Warm-Hearted Woodsman - generated corroded corridor defense
         PveEncounter(
-            id: "suppress_fragment_universe",
-            abnormality_id: "f-05-52",
-            difficulty: 1,
-            risk_level: TETH,
+            id: "suppress_warm_hearted_woodsman",
+            encounter_class: Elite,
+            primary_abnormality_id: Some("f-05-32_warm_hearted_woodsman"),
+            risk_level: HE,
             node_type: Some(Defense),
-            reward_mode: ChooseOne,
+            reward_mode: ClaimAll,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440101",
                 "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440118",
-            ],
-            waves: [
-                PveWaveData(
-                    id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "f-05-52",
-                            tier: I,
-                            count: 1,
-                        ),
-                    ],
-                ),
-            ],
-        ),
-
-        // Spider Bud (TETH) - 초보자용
-        PveEncounter(
-            id: "suppress_spider_bud",
-            abnormality_id: "o-01-45",
-            difficulty: 1,
-            risk_level: TETH,
-            node_type: Some(Defense),
-            reward_mode: ChooseOne,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440101",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440118",
-            ],
-            waves: [
-                PveWaveData(
-                    id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "o-01-45",
-                            tier: I,
-                            count: 1,
-                        ),
-                    ],
-                ),
-            ],
-        ),
-
-        // Black Box Archive - DefenseRoute: 기록 장치를 둘러싼 침식 직원 경로 방어
-        PveEncounter(
-            id: "black_box_archive_defense",
-            abnormality_id: "o-03-03_one_sin",
-            difficulty: 2,
-            risk_level: TETH,
-            node_type: Some(Defense),
-            reward_mode: ChooseOne,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440114",
                 "650e8400-e29b-41d4-a716-446655440118",
             ],
             battlefield: Some((
                 archetype: Some(Corridor),
                 size_class: Some(Medium),
             )),
-            tactical_plan: None,
-            win_condition: None,
             waves: [
                 PveWaveData(
                     id: "archive_sentries",
-                    time_ms: 0,
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
                     spawn_zone_ids: ["north_entry"],
                     required_for_victory: false,
-                    source: Some(GeneratedCorroded(
+                    source: GeneratedCorroded(
                         preset_id: "archive_sentry_pair",
-                    )),
+                    ),
                 ),
                 PveWaveData(
                     id: "breach_response",
-                    time_ms: 6000,
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
                     spawn_zone_ids: ["north_entry"],
                     required_for_victory: false,
-                    source: Some(GeneratedCorroded(
+                    source: GeneratedCorroded(
                         preset_id: "breach_response_light",
-                    )),
+                    ),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "f-05-32_warm_hearted_woodsman",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
                 ),
             ],
         ),
 
-        // Black Box Relay - 방어형 전투: 본사 회수 장치가 기록을 추출하는 동안 침식 직원 웨이브 저지
+        // Rudolta - rusher lane pressure
         PveEncounter(
-            id: "defend_black_box_relay",
-            abnormality_id: "o-02-56_punishing_bird",
-            difficulty: 2,
-            risk_level: TETH,
+            id: "suppress_rudolta",
+            encounter_class: Elite,
+            primary_abnormality_id: Some("f-02-49_rudolta"),
+            risk_level: HE,
             node_type: Some(Defense),
-            reward_mode: ChooseOne,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440118",
-                "650e8400-e29b-41d4-a716-446655440113",
-            ],
-            battlefield: Some((
-                archetype: Some(ChokePoint),
-                size_class: Some(Medium),
-            )),
-            tactical_plan: None,
-            win_condition: None,
-            waves: [
-                PveWaveData(
-                    id: "breach_probe",
-                    time_ms: 0,
-                    spawn_zone_ids: ["north_entry"],
-                    route_id: Some("black_box_breach_main"),
-                    required_for_victory: true,
-                    source: Some(GeneratedCorroded(
-                        preset_id: "black_box_breach_probe",
-                    )),
-                ),
-                PveWaveData(
-                    id: "breach_pressure",
-                    time_ms: 10000,
-                    spawn_zone_ids: ["north_entry"],
-                    route_id: Some("black_box_breach_main"),
-                    required_for_victory: true,
-                    source: Some(GeneratedCorroded(
-                        preset_id: "black_box_breach_pressure",
-                    )),
-                ),
-            ],
-        ),
-
-        // Fairy Festival (WAW) - 다수 유닛
-        PveEncounter(
-            id: "suppress_fairy_festival",
-            abnormality_id: "f-01-37",
-            difficulty: 4,
-            risk_level: WAW,
-            node_type: Some(Defense),
-            reward_mode: ChooseOne,
+            reward_mode: ClaimAll,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440101",
                 "650e8400-e29b-41d4-a716-446655440116",
                 "650e8400-e29b-41d4-a716-446655440118",
             ],
+            battlefield: Some((
+                archetype: Some(Corridor),
+                size_class: Some(Medium),
+            )),
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "f-01-37",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_rusher",
                             tier: II,
                             count: 1,
                         ),
-                        PveWaveEnemyData(
-                            kind: CorrodedEmployee,
-                            profile_id: Some("corroded_marksman"),
-                            abnormality_id: "corroded_marksman",
+                        CorrodedEmployee(
+                            profile_id: "corroded_rusher",
                             tier: I,
-                            count: 2,
+                            count: 1,
                         ),
-                    ],
+                    ]),
                 ),
-            ],
-        ),
-
-        // Singing Machine - 근접 광역 압박
-        PveEncounter(
-            id: "suppress_singing_machine",
-            abnormality_id: "t-01-68_singing_machine",
-            difficulty: 2,
-            risk_level: HE,
-            node_type: Some(Defense),
-            reward_mode: ChooseOne,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440101",
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-            ],
-            waves: [
                 PveWaveData(
-                    id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "t-01-68_singing_machine",
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "f-02-49_rudolta",
                             tier: I,
                             count: 1,
                         ),
-                        PveWaveEnemyData(
-                            kind: CorrodedEmployee,
-                            profile_id: Some("corroded_bruiser"),
-                            abnormality_id: "corroded_bruiser",
-                            tier: I,
-                            count: 1,
-                        ),
-                    ],
+                    ]),
                 ),
             ],
         ),
 
-        // Der Freischutz - 원거리 저격
+        // Der Freischutz - marksman ambush contract
         PveEncounter(
             id: "suppress_freischutz",
-            abnormality_id: "t-02-43_freischutz",
-            difficulty: 3,
+            encounter_class: NormalBoss,
+            primary_abnormality_id: Some("t-02-43_freischutz"),
             risk_level: HE,
-            node_type: Some(Defense),
-            reward_mode: ChooseOne,
+            node_type: Some(Boss),
+            mission_variant: Some(Boss),
+            reward_mode: ClaimAll,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440101",
                 "650e8400-e29b-41d4-a716-446655440116",
@@ -367,251 +332,331 @@ PveEncounterDatabase(
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 0,
-                    spawn_zone_ids: ["north_entry"],
-                    required_for_victory: true,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "t-02-43_freischutz",
+                    time_ms: 5000,
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_marksman",
                             tier: II,
                             count: 1,
                         ),
-                    ],
+                    ]),
                 ),
                 PveWaveData(
                     id: "side_ambush",
-                    time_ms: 6000,
-                    spawn_zone_ids: ["side_ambush"],
-                    required_for_victory: true,
-                    enemies: [
-                        PveWaveEnemyData(
-                            kind: CorrodedEmployee,
-                            profile_id: Some("corroded_marksman"),
-                            abnormality_id: "corroded_marksman",
+                    time_ms: 5000,
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_marksman",
                             tier: I,
                             count: 2,
                         ),
-                    ],
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "t-02-43_freischutz",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
                 ),
             ],
         ),
 
-        // Funeral Butterfly - 침묵과 마무리 사격
+        // Funeral Butterfly - execution marksman pressure
         PveEncounter(
             id: "suppress_funeral_butterfly",
-            abnormality_id: "t-02-99_funeral_butterfly",
-            difficulty: 3,
+            encounter_class: NormalBoss,
+            primary_abnormality_id: Some("t-02-99_funeral_butterfly"),
             risk_level: HE,
-            node_type: Some(Defense),
-            reward_mode: ChooseOne,
+            node_type: Some(Boss),
+            mission_variant: Some(Boss),
+            reward_mode: ClaimAll,
+            battlefield: Some((
+                archetype: Some(BossArena),
+                size_class: Some(Large),
+            )),
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440101",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440121",
+            ],
+            waves: [
+                PveWaveData(
+                    id: "wave_0",
+                    time_ms: 5000,
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_marksman",
+                            tier: II,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "t-02-99_funeral_butterfly",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+            ],
+        ),
+
+        // Laetitia - delayed gift pressure
+        PveEncounter(
+            id: "suppress_laetitia",
+            encounter_class: Elite,
+            primary_abnormality_id: Some("o-01-67_laetitia"),
+            risk_level: WAW,
+            node_type: Some(Defense),
+            reward_mode: ClaimAll,
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440105",
                 "650e8400-e29b-41d4-a716-446655440116",
                 "650e8400-e29b-41d4-a716-446655440119",
             ],
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "t-02-99_funeral_butterfly",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_rusher",
                             tier: II,
                             count: 1,
                         ),
-                    ],
-                ),
-            ],
-        ),
-
-        // Laetitia - 독 확산
-        PveEncounter(
-            id: "suppress_laetitia",
-            abnormality_id: "o-01-67_laetitia",
-            difficulty: 4,
-            risk_level: WAW,
-            node_type: Some(Defense),
-            reward_mode: ChooseOne,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440118",
-            ],
-            waves: [
-                PveWaveData(
-                    id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "o-01-67_laetitia",
-                            tier: II,
-                            count: 1,
-                        ),
-                        PveWaveEnemyData(
-                            kind: CorrodedEmployee,
-                            profile_id: Some("corroded_rusher"),
-                            abnormality_id: "corroded_rusher",
+                        CorrodedEmployee(
+                            profile_id: "corroded_rusher",
                             tier: I,
                             count: 2,
                         ),
-                    ],
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "o-01-67_laetitia",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
                 ),
             ],
         ),
 
-        // Snow Queen - 빙결 단일 제압
+        // Snow Queen - prison/marksman pressure
         PveEncounter(
             id: "suppress_snow_queen",
-            abnormality_id: "f-01-87_snow_queen",
-            difficulty: 4,
+            encounter_class: Elite,
+            primary_abnormality_id: Some("f-01-87_snow_queen"),
             risk_level: WAW,
             node_type: Some(Defense),
-            reward_mode: ChooseOne,
+            reward_mode: ClaimAll,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440105",
                 "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440118",
+                "650e8400-e29b-41d4-a716-446655440119",
             ],
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "f-01-87_snow_queen",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_marksman",
                             tier: II,
                             count: 1,
                         ),
-                        PveWaveEnemyData(
-                            kind: CorrodedEmployee,
-                            profile_id: Some("corroded_marksman"),
-                            abnormality_id: "corroded_marksman",
+                        CorrodedEmployee(
+                            profile_id: "corroded_marksman",
                             tier: I,
                             count: 1,
                         ),
-                    ],
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "f-01-87_snow_queen",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
                 ),
             ],
         ),
 
-        // Rudolta - 돌진 라인전
+        // Queen Bee - infection swarm pressure
         PveEncounter(
-            id: "suppress_rudolta",
-            abnormality_id: "f-02-49_rudolta",
-            difficulty: 3,
+            id: "suppress_queen_bee",
+            encounter_class: Elite,
+            primary_abnormality_id: Some("t-04-50_queen_bee"),
+            risk_level: WAW,
+            node_type: Some(Defense),
+            reward_mode: ClaimAll,
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440105",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440119",
+            ],
+            waves: [
+                PveWaveData(
+                    id: "wave_0",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_medic",
+                            tier: II,
+                            count: 1,
+                        ),
+                        CorrodedEmployee(
+                            profile_id: "corroded_rusher",
+                            tier: I,
+                            count: 2,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "t-04-50_queen_bee",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+            ],
+        ),
+
+        // Dream of a Black Swan - polluted family pressure
+        PveEncounter(
+            id: "suppress_black_swan",
+            encounter_class: Elite,
+            primary_abnormality_id: Some("f-02-70_black_swan"),
+            risk_level: WAW,
+            node_type: Some(Defense),
+            reward_mode: ClaimAll,
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440105",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440119",
+            ],
+            battlefield: Some((
+                archetype: Some(Surrounded),
+                size_class: Some(Medium),
+            )),
+            waves: [
+                PveWaveData(
+                    id: "wave_0",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_bruiser",
+                            tier: II,
+                            count: 1,
+                        ),
+                        CorrodedEmployee(
+                            profile_id: "corroded_guard",
+                            tier: I,
+                            count: 2,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "f-02-70_black_swan",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+            ],
+        ),
+
+        // Schadenfreude - gaze pressure
+        PveEncounter(
+            id: "suppress_schadenfreude",
+            encounter_class: Elite,
+            primary_abnormality_id: Some("o-05-76_schadenfreude"),
             risk_level: HE,
             node_type: Some(Defense),
-            reward_mode: ChooseOne,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440101",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440105",
-            ],
-            battlefield: Some((
-                archetype: Some(Corridor),
-                size_class: Some(Medium),
-            )),
-            waves: [
-                PveWaveData(
-                    id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "f-02-49_rudolta",
-                            tier: II,
-                            count: 1,
-                        ),
-                        PveWaveEnemyData(
-                            kind: CorrodedEmployee,
-                            profile_id: Some("corroded_rusher"),
-                            abnormality_id: "corroded_rusher",
-                            tier: I,
-                            count: 1,
-                        ),
-                    ],
-                ),
-            ],
-        ),
-
-        // Meat Lantern - 함정형 초반 진압
-        PveEncounter(
-            id: "suppress_meat_lantern",
-            abnormality_id: "t-01-54_meat_lantern",
-            difficulty: 2,
-            risk_level: TETH,
-            node_type: Some(Defense),
-            reward_mode: ChooseOne,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440101",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440118",
-            ],
-            waves: [
-                PveWaveData(
-                    id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "t-01-54_meat_lantern",
-                            tier: I,
-                            count: 1,
-                        ),
-                    ],
-                ),
-            ],
-        ),
-
-        // Dreaming Current - 빠른 라인 스윕
-        PveEncounter(
-            id: "suppress_dreaming_current",
-            abnormality_id: "o-02-98_dreaming_current",
-            difficulty: 4,
-            risk_level: WAW,
-            node_type: Some(Defense),
-            reward_mode: ChooseOne,
+            reward_mode: ClaimAll,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440105",
                 "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440118",
-            ],
-            battlefield: Some((
-                archetype: Some(Corridor),
-                size_class: Some(Medium),
-            )),
-            waves: [
-                PveWaveData(
-                    id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "o-02-98_dreaming_current",
-                            tier: II,
-                            count: 1,
-                        ),
-                        PveWaveEnemyData(
-                            kind: CorrodedEmployee,
-                            profile_id: Some("corroded_rusher"),
-                            abnormality_id: "corroded_rusher",
-                            tier: I,
-                            count: 1,
-                        ),
-                    ],
-                ),
-            ],
-        ),
-
-        // Alriune - 침묵과 회복
-        PveEncounter(
-            id: "suppress_alriune",
-            abnormality_id: "t-04-53_alriune",
-            difficulty: 4,
-            risk_level: WAW,
-            node_type: Some(Defense),
-            reward_mode: ChooseOne,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
                 "650e8400-e29b-41d4-a716-446655440119",
-                "650e8400-e29b-41d4-a716-446655440118",
+            ],
+            waves: [
+                PveWaveData(
+                    id: "wave_0",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_bruiser",
+                            tier: II,
+                            count: 1,
+                        ),
+                        CorrodedEmployee(
+                            profile_id: "corroded_marksman",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "o-05-76_schadenfreude",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+            ],
+        ),
+
+        // Clouded Monk - survival timer pressure
+        PveEncounter(
+            id: "suppress_clouded_monk",
+            encounter_class: Elite,
+            primary_abnormality_id: Some("d-01-110_clouded_monk"),
+            risk_level: WAW,
+            node_type: Some(Defense),
+            survive_timer_ms: Some(45000),
+            reward_mode: ClaimAll,
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440105",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440119",
             ],
             battlefield: Some((
                 archetype: Some(Surrounded),
@@ -620,411 +665,844 @@ PveEncounterDatabase(
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "t-04-53_alriune",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_veteran",
                             tier: II,
                             count: 1,
                         ),
-                        PveWaveEnemyData(
-                            kind: CorrodedEmployee,
-                            profile_id: Some("corroded_medic"),
-                            abnormality_id: "corroded_medic",
+                        CorrodedEmployee(
+                            profile_id: "corroded_medic",
                             tier: I,
                             count: 1,
                         ),
-                    ],
-                ),
-            ],
-        ),
-
-        // Naked Nest - 독 확산 진압
-        PveEncounter(
-            id: "suppress_naked_nest",
-            abnormality_id: "o-04-84_naked_nest",
-            difficulty: 4,
-            risk_level: WAW,
-            node_type: Some(Defense),
-            reward_mode: ChooseOne,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440119",
-                "650e8400-e29b-41d4-a716-446655440118",
-            ],
-            battlefield: Some((
-                archetype: Some(Surrounded),
-                size_class: Some(Medium),
-            )),
-            waves: [
-                PveWaveData(
-                    id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "o-04-84_naked_nest",
-                            tier: II,
-                            count: 1,
-                        ),
-                        PveWaveEnemyData(
-                            kind: CorrodedEmployee,
-                            profile_id: Some("corroded_bruiser"),
-                            abnormality_id: "corroded_bruiser",
-                            tier: II,
-                            count: 1,
-                        ),
-                    ],
-                ),
-            ],
-        ),
-
-        // Blue Star - ALEPH 광역 압박
-        PveEncounter(
-            id: "suppress_blue_star",
-            abnormality_id: "o-03-93_blue_star",
-            difficulty: 6,
-            risk_level: ALEPH,
-            node_type: Some(Defense),
-            mission_variant: Some(Encirclement),
-            reward_mode: ChooseOne,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440119",
-                "650e8400-e29b-41d4-a716-446655440118",
-            ],
-            waves: [
-                PveWaveData(
-                    id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "o-03-93_blue_star",
-                            tier: II,
-                            count: 1,
-                        ),
-                        PveWaveEnemyData(
-                            kind: CorrodedEmployee,
-                            profile_id: Some("corroded_veteran"),
-                            abnormality_id: "corroded_veteran",
+                        CorrodedEmployee(
+                            profile_id: "corroded_marksman",
                             tier: I,
                             count: 1,
                         ),
-                        PveWaveEnemyData(
-                            kind: CorrodedEmployee,
-                            profile_id: Some("corroded_marksman"),
-                            abnormality_id: "corroded_marksman",
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "d-01-110_clouded_monk",
                             tier: I,
                             count: 1,
                         ),
-                    ],
+                    ]),
                 ),
             ],
         ),
 
-        // Silent Orchestra - 다단계 광역 피해
-        PveEncounter(
-            id: "suppress_silent_orchestra",
-            abnormality_id: "t-01-31_silent_orchestra",
-            difficulty: 6,
-            risk_level: ALEPH,
-            node_type: Some(Defense),
-            reward_mode: ChooseOne,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440119",
-                "650e8400-e29b-41d4-a716-446655440118",
-            ],
-            waves: [
-                PveWaveData(
-                    id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "t-01-31_silent_orchestra",
-                            tier: II,
-                            count: 1,
-                        ),
-                        PveWaveEnemyData(
-                            kind: CorrodedEmployee,
-                            profile_id: Some("corroded_marksman"),
-                            abnormality_id: "corroded_marksman",
-                            tier: II,
-                            count: 1,
-                        ),
-                    ],
-                ),
-            ],
-        ),
-
-        // CENSORED - 고체력 근접 위협
-        PveEncounter(
-            id: "suppress_censored",
-            abnormality_id: "o-03-89_censored",
-            difficulty: 6,
-            risk_level: ALEPH,
-            node_type: Some(Defense),
-            reward_mode: ChooseOne,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440119",
-                "650e8400-e29b-41d4-a716-446655440118",
-            ],
-            waves: [
-                PveWaveData(
-                    id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "o-03-89_censored",
-                            tier: II,
-                            count: 1,
-                        ),
-                        PveWaveEnemyData(
-                            kind: CorrodedEmployee,
-                            profile_id: Some("corroded_bruiser"),
-                            abnormality_id: "corroded_bruiser",
-                            tier: II,
-                            count: 1,
-                        ),
-                    ],
-                ),
-            ],
-        ),
-
-        // Yin - 침묵 파동
-        PveEncounter(
-            id: "suppress_yin",
-            abnormality_id: "o-01-64_yin",
-            difficulty: 4,
-            risk_level: WAW,
-            node_type: Some(Defense),
-            reward_mode: ChooseOne,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440119",
-                "650e8400-e29b-41d4-a716-446655440118",
-            ],
-            waves: [
-                PveWaveData(
-                    id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "o-01-64_yin",
-                            tier: II,
-                            count: 1,
-                        ),
-                        PveWaveEnemyData(
-                            abnormality_id: "o-05-102_yang",
-                            tier: I,
-                            count: 1,
-                        ),
-                    ],
-                ),
-            ],
-        ),
-
-        // Yang - 회복과 광역 판정
-        PveEncounter(
-            id: "suppress_yang",
-            abnormality_id: "o-05-102_yang",
-            difficulty: 4,
-            risk_level: WAW,
-            node_type: Some(Defense),
-            reward_mode: ChooseOne,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440119",
-                "650e8400-e29b-41d4-a716-446655440118",
-            ],
-            waves: [
-                PveWaveData(
-                    id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "o-05-102_yang",
-                            tier: II,
-                            count: 1,
-                        ),
-                        PveWaveEnemyData(
-                            abnormality_id: "o-01-64_yin",
-                            tier: I,
-                            count: 1,
-                        ),
-                    ],
-                ),
-            ],
-        ),
-
-        // Burrowing Heaven - 명중 후 라인 추격
-        PveEncounter(
-            id: "suppress_burrowing_heaven",
-            abnormality_id: "o-04-72_burrowing_heaven",
-            difficulty: 5,
-            risk_level: WAW,
-            node_type: Some(Defense),
-            reward_mode: ChooseOne,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440118",
-            ],
-            battlefield: Some((
-                archetype: Some(Corridor),
-                size_class: Some(Medium),
-            )),
-            waves: [
-                PveWaveData(
-                    id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "o-04-72_burrowing_heaven",
-                            tier: II,
-                            count: 1,
-                        ),
-                        PveWaveEnemyData(
-                            kind: CorrodedEmployee,
-                            profile_id: Some("corroded_rusher"),
-                            abnormality_id: "corroded_rusher",
-                            tier: I,
-                            count: 1,
-                        ),
-                    ],
-                ),
-            ],
-        ),
-
-        // Parasite Tree - 회복과 독 보조
+        // Parasite Tree - root blessing pressure
         PveEncounter(
             id: "suppress_parasite_tree",
-            abnormality_id: "d-04-108_parasite_tree",
-            difficulty: 5,
+            encounter_class: Elite,
+            primary_abnormality_id: Some("d-04-108_parasite_tree"),
             risk_level: WAW,
             node_type: Some(Defense),
-            reward_mode: ChooseOne,
+            reward_mode: ClaimAll,
             reward_uuids: [
                 "650e8400-e29b-41d4-a716-446655440105",
+                "650e8400-e29b-41d4-a716-446655440116",
                 "650e8400-e29b-41d4-a716-446655440119",
-                "650e8400-e29b-41d4-a716-446655440118",
             ],
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_medic",
+                            tier: II,
+                            count: 1,
+                        ),
+                        CorrodedEmployee(
+                            profile_id: "corroded_medic",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        Abnormality(
                             abnormality_id: "d-04-108_parasite_tree",
-                            tier: II,
-                            count: 1,
-                        ),
-                        PveWaveEnemyData(
-                            kind: CorrodedEmployee,
-                            profile_id: Some("corroded_medic"),
-                            abnormality_id: "corroded_medic",
                             tier: I,
                             count: 1,
                         ),
-                    ],
+                    ]),
                 ),
             ],
         ),
 
-        // Porccubus - 초중반 독/침묵
+        // Burrowing Heaven - route defense contract
         PveEncounter(
-            id: "suppress_porcubbus",
-            abnormality_id: "o-04-66_porcubbus",
-            difficulty: 2,
-            risk_level: TETH,
-            node_type: Some(Defense),
-            reward_mode: ChooseOne,
+            id: "suppress_burrowing_heaven",
+            encounter_class: NormalBoss,
+            primary_abnormality_id: Some("o-04-72_burrowing_heaven"),
+            risk_level: WAW,
+            node_type: Some(Boss),
+            mission_variant: Some(Boss),
+            reward_mode: ClaimAll,
             reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440101",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440118",
-            ],
-            waves: [
-                PveWaveData(
-                    id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "o-04-66_porcubbus",
-                            tier: I,
-                            count: 1,
-                        ),
-                        PveWaveEnemyData(
-                            kind: CorrodedEmployee,
-                            profile_id: Some("corroded_guard"),
-                            abnormality_id: "corroded_guard",
-                            tier: I,
-                            count: 1,
-                        ),
-                    ],
-                ),
-            ],
-        ),
-
-        // Scarecrow - 지혜 강탈
-        PveEncounter(
-            id: "suppress_scarecrow",
-            abnormality_id: "f-01-18_scarecrow",
-            difficulty: 3,
-            risk_level: HE,
-            node_type: Some(Defense),
-            reward_mode: ChooseOne,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440101",
-                "650e8400-e29b-41d4-a716-446655440116",
                 "650e8400-e29b-41d4-a716-446655440105",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440119",
             ],
+            battlefield: Some((
+                archetype: Some(ChokePoint),
+                size_class: Some(Medium),
+            )),
             waves: [
                 PveWaveData(
-                    id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "f-01-18_scarecrow",
-                            tier: II,
+                    id: "breach_probe",
+                    time_ms: 5000,
+                    required_for_victory: true,
+                    source: GeneratedCorroded(
+                        preset_id: "black_box_breach_probe",
+                    ),
+                ),
+                PveWaveData(
+                    id: "breach_pressure",
+                    time_ms: 5000,
+                    required_for_victory: true,
+                    source: GeneratedCorroded(
+                        preset_id: "black_box_breach_pressure",
+                    ),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "o-04-72_burrowing_heaven",
+                            tier: I,
                             count: 1,
                         ),
-                    ],
+                    ]),
                 ),
             ],
         ),
 
-        // Warm-Hearted Woodsman - 자가 회복형 근접
+        // Little Red - bounty hunt pressure
         PveEncounter(
-            id: "suppress_warm_hearted_woodsman",
-            abnormality_id: "f-05-32_warm_hearted_woodsman",
-            difficulty: 3,
-            risk_level: HE,
-            node_type: Some(Defense),
-            reward_mode: ChooseOne,
+            id: "suppress_little_red",
+            encounter_class: NormalBoss,
+            primary_abnormality_id: Some("f-01-57_little_red"),
+            risk_level: WAW,
+            node_type: Some(Boss),
+            mission_variant: Some(Boss),
+            reward_mode: ClaimAll,
             reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440101",
-                "650e8400-e29b-41d4-a716-446655440116",
                 "650e8400-e29b-41d4-a716-446655440105",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440119",
+            ],
+            battlefield: Some((
+                archetype: Some(Ambush),
+                size_class: Some(Medium),
+            )),
+            waves: [
+                PveWaveData(
+                    id: "wave_0",
+                    time_ms: 5000,
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_marksman",
+                            tier: II,
+                            count: 1,
+                        ),
+                        CorrodedEmployee(
+                            profile_id: "corroded_rusher",
+                            tier: I,
+                            count: 2,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "f-01-57_little_red",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+            ],
+        ),
+
+        // Big and Will be Bad Wolf - isolation pressure
+        PveEncounter(
+            id: "suppress_big_bad_wolf",
+            encounter_class: NormalBoss,
+            primary_abnormality_id: Some("f-02-58_big_bad_wolf"),
+            risk_level: WAW,
+            node_type: Some(Boss),
+            mission_variant: Some(Boss),
+            reward_mode: ClaimAll,
+            battlefield: Some((
+                archetype: Some(BossArena),
+                size_class: Some(Large),
+            )),
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440105",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440119",
             ],
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 0,
-                    enemies: [
-                        PveWaveEnemyData(
-                            abnormality_id: "f-05-32_warm_hearted_woodsman",
+                    time_ms: 5000,
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_bruiser",
                             tier: II,
                             count: 1,
                         ),
-                        PveWaveEnemyData(
-                            kind: CorrodedEmployee,
-                            profile_id: Some("corroded_bruiser"),
-                            abnormality_id: "corroded_bruiser",
+                        CorrodedEmployee(
+                            profile_id: "corroded_rusher",
+                            tier: I,
+                            count: 2,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "f-02-58_big_bad_wolf",
                             tier: I,
                             count: 1,
                         ),
-                    ],
+                    ]),
+                ),
+            ],
+        ),
+
+        // King of Greed - lane hazard pressure
+        PveEncounter(
+            id: "suppress_king_of_greed",
+            encounter_class: NormalBoss,
+            primary_abnormality_id: Some("o-01-64_king_of_greed"),
+            risk_level: WAW,
+            node_type: Some(Boss),
+            mission_variant: Some(Boss),
+            reward_mode: ClaimAll,
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440105",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440119",
+            ],
+            battlefield: Some((
+                archetype: Some(Corridor),
+                size_class: Some(Medium),
+            )),
+            waves: [
+                PveWaveData(
+                    id: "wave_0",
+                    time_ms: 5000,
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_rusher",
+                            tier: II,
+                            count: 2,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "o-01-64_king_of_greed",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+            ],
+        ),
+
+        // Moonlit Wail - piano resonance pressure
+        PveEncounter(
+            id: "suppress_moonlit_wail",
+            encounter_class: NormalBoss,
+            primary_abnormality_id: Some("t-06-27_moonlit_wail"),
+            risk_level: WAW,
+            node_type: Some(Boss),
+            mission_variant: Some(Boss),
+            reward_mode: ClaimAll,
+            battlefield: Some((
+                archetype: Some(BossArena),
+                size_class: Some(Large),
+            )),
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440105",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440119",
+            ],
+            waves: [
+                PveWaveData(
+                    id: "wave_0",
+                    time_ms: 5000,
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_marksman",
+                            tier: II,
+                            count: 1,
+                        ),
+                        CorrodedEmployee(
+                            profile_id: "corroded_medic",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "t-06-27_moonlit_wail",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+            ],
+        ),
+
+        // Melting Love - outbreak pressure
+        PveEncounter(
+            id: "suppress_melting_love",
+            encounter_class: NormalBoss,
+            primary_abnormality_id: Some("d-03-109_melting_love"),
+            risk_level: ALEPH,
+            node_type: Some(Boss),
+            mission_variant: Some(Boss),
+            reward_mode: ClaimAll,
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440105",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440119",
+            ],
+            battlefield: Some((
+                archetype: Some(Surrounded),
+                size_class: Some(Medium),
+            )),
+            waves: [
+                PveWaveData(
+                    id: "wave_0",
+                    time_ms: 5000,
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_medic",
+                            tier: II,
+                            count: 1,
+                        ),
+                        CorrodedEmployee(
+                            profile_id: "corroded_rusher",
+                            tier: I,
+                            count: 2,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "d-03-109_melting_love",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+            ],
+        ),
+
+        // Nothing There - brute transformation pressure
+        PveEncounter(
+            id: "suppress_nothing_there",
+            encounter_class: NormalBoss,
+            primary_abnormality_id: Some("o-06-20_nothing_there"),
+            risk_level: ALEPH,
+            node_type: Some(Boss),
+            mission_variant: Some(Boss),
+            reward_mode: ClaimAll,
+            battlefield: Some((
+                archetype: Some(BossArena),
+                size_class: Some(Large),
+            )),
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440105",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440119",
+            ],
+            waves: [
+                PveWaveData(
+                    id: "wave_0",
+                    time_ms: 5000,
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_bruiser",
+                            tier: II,
+                            count: 2,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "o-06-20_nothing_there",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+            ],
+        ),
+
+        // CENSORED - fear pressure
+        PveEncounter(
+            id: "suppress_censored",
+            encounter_class: Elite,
+            primary_abnormality_id: Some("o-03-89_censored"),
+            risk_level: ALEPH,
+            node_type: Some(Defense),
+            reward_mode: ClaimAll,
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440105",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440119",
+            ],
+            waves: [
+                PveWaveData(
+                    id: "wave_0",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_bruiser",
+                            tier: II,
+                            count: 2,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    route_id: Some("defense_main"),
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "o-03-89_censored",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+            ],
+        ),
+
+        // Yin - paired resonance pressure
+        PveEncounter(
+            id: "suppress_yin",
+            encounter_class: NormalBoss,
+            primary_abnormality_id: Some("o-01-64_yin"),
+            risk_level: WAW,
+            node_type: Some(Boss),
+            mission_variant: Some(Boss),
+            reward_mode: ClaimAll,
+            battlefield: Some((
+                archetype: Some(BossArena),
+                size_class: Some(Large),
+            )),
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440105",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440119",
+            ],
+            waves: [
+                PveWaveData(
+                    id: "wave_0",
+                    time_ms: 5000,
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_marksman",
+                            tier: II,
+                            count: 1,
+                        ),
+                        CorrodedEmployee(
+                            profile_id: "corroded_medic",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "o-01-64_yin",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+            ],
+        ),
+
+        // Yang - paired resonance pressure
+        PveEncounter(
+            id: "suppress_yang",
+            encounter_class: NormalBoss,
+            primary_abnormality_id: Some("o-05-102_yang"),
+            risk_level: WAW,
+            node_type: Some(Boss),
+            mission_variant: Some(Boss),
+            reward_mode: ClaimAll,
+            battlefield: Some((
+                archetype: Some(BossArena),
+                size_class: Some(Large),
+            )),
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440105",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440119",
+            ],
+            waves: [
+                PveWaveData(
+                    id: "wave_0",
+                    time_ms: 5000,
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_medic",
+                            tier: II,
+                            count: 1,
+                        ),
+                        CorrodedEmployee(
+                            profile_id: "corroded_marksman",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "o-05-102_yang",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+            ],
+        ),
+
+        // Knight of Despair - protection contract pressure
+        PveEncounter(
+            id: "suppress_knight_of_despair",
+            encounter_class: NormalBoss,
+            primary_abnormality_id: Some("o-01-73_knight_of_despair"),
+            risk_level: WAW,
+            node_type: Some(Boss),
+            mission_variant: Some(Boss),
+            reward_mode: ClaimAll,
+            battlefield: Some((
+                archetype: Some(BossArena),
+                size_class: Some(Large),
+            )),
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440105",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440119",
+            ],
+            waves: [
+                PveWaveData(
+                    id: "wave_0",
+                    time_ms: 5000,
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_guard",
+                            tier: II,
+                            count: 1,
+                        ),
+                        CorrodedEmployee(
+                            profile_id: "corroded_medic",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "o-01-73_knight_of_despair",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+            ],
+        ),
+
+        // WhiteNight - final boss placeholder
+        PveEncounter(
+            id: "suppress_white_night",
+            encounter_class: FinalBoss,
+            primary_abnormality_id: Some("o-01-45_white_night"),
+            risk_level: ALEPH,
+            node_type: Some(Boss),
+            mission_variant: Some(Boss),
+            reward_mode: ClaimAll,
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440105",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440119",
+            ],
+            battlefield: Some((
+                archetype: Some(BossArena),
+                size_class: Some(Large),
+            )),
+            waves: [
+                PveWaveData(
+                    id: "wave_0",
+                    time_ms: 5000,
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_veteran",
+                            tier: II,
+                            count: 1,
+                        ),
+                        CorrodedEmployee(
+                            profile_id: "corroded_medic",
+                            tier: I,
+                            count: 2,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "o-01-45_white_night",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+            ],
+        ),
+
+        // Silent Orchestra - final boss placeholder
+        PveEncounter(
+            id: "suppress_silent_orchestra",
+            encounter_class: FinalBoss,
+            primary_abnormality_id: Some("t-01-31_silent_orchestra"),
+            risk_level: ALEPH,
+            node_type: Some(Boss),
+            mission_variant: Some(Boss),
+            reward_mode: ClaimAll,
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440105",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440119",
+            ],
+            battlefield: Some((
+                archetype: Some(BossArena),
+                size_class: Some(Large),
+            )),
+            waves: [
+                PveWaveData(
+                    id: "wave_0",
+                    time_ms: 5000,
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_marksman",
+                            tier: II,
+                            count: 2,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "t-01-31_silent_orchestra",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+            ],
+        ),
+
+        // Apocalypse Bird - final boss placeholder
+        PveEncounter(
+            id: "suppress_apocalypse_bird",
+            encounter_class: FinalBoss,
+            primary_abnormality_id: Some("o-02-63_apocalypse_bird"),
+            risk_level: ALEPH,
+            node_type: Some(Boss),
+            mission_variant: Some(Boss),
+            reward_mode: ClaimAll,
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440105",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440119",
+            ],
+            battlefield: Some((
+                archetype: Some(BossArena),
+                size_class: Some(Large),
+            )),
+            waves: [
+                PveWaveData(
+                    id: "wave_0",
+                    time_ms: 5000,
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_veteran",
+                            tier: II,
+                            count: 1,
+                        ),
+                        CorrodedEmployee(
+                            profile_id: "corroded_bruiser",
+                            tier: I,
+                            count: 2,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "o-02-63_apocalypse_bird",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+            ],
+        ),
+
+        // Queen of Hatred - final boss placeholder
+        PveEncounter(
+            id: "suppress_queen_of_hatred",
+            encounter_class: FinalBoss,
+            primary_abnormality_id: Some("o-01-04_queen_of_hatred"),
+            risk_level: ALEPH,
+            node_type: Some(Boss),
+            mission_variant: Some(Boss),
+            reward_mode: ClaimAll,
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440105",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440119",
+            ],
+            battlefield: Some((
+                archetype: Some(BossArena),
+                size_class: Some(Large),
+            )),
+            waves: [
+                PveWaveData(
+                    id: "wave_0",
+                    time_ms: 5000,
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_marksman",
+                            tier: II,
+                            count: 1,
+                        ),
+                        CorrodedEmployee(
+                            profile_id: "corroded_rusher",
+                            tier: I,
+                            count: 2,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "o-01-04_queen_of_hatred",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+            ],
+        ),
+
+        // Mountain of Smiling Bodies - final boss placeholder
+        PveEncounter(
+            id: "suppress_mountain",
+            encounter_class: FinalBoss,
+            primary_abnormality_id: Some("t-01-75_mountain"),
+            risk_level: ALEPH,
+            node_type: Some(Boss),
+            mission_variant: Some(Boss),
+            reward_mode: ClaimAll,
+            reward_uuids: [
+                "650e8400-e29b-41d4-a716-446655440105",
+                "650e8400-e29b-41d4-a716-446655440116",
+                "650e8400-e29b-41d4-a716-446655440119",
+            ],
+            battlefield: Some((
+                archetype: Some(BossArena),
+                size_class: Some(Large),
+            )),
+            waves: [
+                PveWaveData(
+                    id: "wave_0",
+                    time_ms: 5000,
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_bruiser",
+                            tier: II,
+                            count: 2,
+                        ),
+                        CorrodedEmployee(
+                            profile_id: "corroded_guard",
+                            tier: I,
+                            count: 2,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "primary_abnormality",
+                    time_ms: 5000,
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "t-01-75_mountain",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
                 ),
             ],
         ),

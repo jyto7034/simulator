@@ -77,6 +77,7 @@ pub struct BattleCore {
     pub event_log_seq: u64,
     pub projectile_seq: u64,
     pub area_seq: u64,
+    pub damage_source_seq: u64,
     pub seed: u64,
     pub recording_cause_stack: Vec<BattleEventCause>,
     pub recording_source_command_stack: Vec<String>,
@@ -148,6 +149,7 @@ impl BattleCore {
             event_log_seq: 1,
             projectile_seq: 0,
             area_seq: 0,
+            damage_source_seq: 0,
             seed,
             recording_cause_stack: Vec::new(),
             recording_source_command_stack: Vec::new(),
@@ -1313,23 +1315,24 @@ mod tests {
             winner: crate::game::battle::types::BattleWinner::Player,
             cause,
         });
+        let source_snapshot = core
+            .damage_source_snapshot_for_unit(
+                attacker_id,
+                target_id,
+                DamageSource::BasicAttack,
+                DamageType::Physical,
+                1,
+                Default::default(),
+                1,
+                10,
+                true,
+            )
+            .expect("source snapshot");
         core.event_queue.push(BattleEvent::AttackResolve {
             time_ms: 10,
             attacker_instance_id: attacker_id,
             target_instance_id: target_id,
-            source_snapshot: core
-                .damage_source_snapshot_for_unit(
-                    attacker_id,
-                    target_id,
-                    DamageSource::BasicAttack,
-                    DamageType::Physical,
-                    1,
-                    Default::default(),
-                    1,
-                    10,
-                    true,
-                )
-                .expect("source snapshot"),
+            source_snapshot,
             kind: AttackKind::Auto,
             delivery: crate::game::battle::event_log::AttackDelivery::Instant,
             cause,
@@ -3053,22 +3056,23 @@ mod tests {
         )
         .unwrap();
 
+        let source_snapshot = core
+            .damage_source_snapshot_for_unit(
+                caster_id,
+                target_id,
+                DamageSource::Ability,
+                DamageType::True,
+                99,
+                Default::default(),
+                0,
+                10,
+                false,
+            )
+            .expect("source snapshot");
         core.process_commands(
             vec![BattleCommand::ApplyDamage {
                 target_id,
-                source_snapshot: core
-                    .damage_source_snapshot_for_unit(
-                        caster_id,
-                        target_id,
-                        DamageSource::Ability,
-                        DamageType::True,
-                        99,
-                        Default::default(),
-                        0,
-                        10,
-                        false,
-                    )
-                    .expect("source snapshot"),
+                source_snapshot,
             }],
             10,
         );

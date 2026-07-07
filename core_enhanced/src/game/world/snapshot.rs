@@ -53,10 +53,181 @@ fn snapshot_game_error_code(error: &GameError) -> &'static str {
     }
 }
 
+fn snapshot_game_error_message(error: &GameError) -> String {
+    match error {
+        GameError::EventNotFound => "event not found".to_string(),
+        GameError::EventTypeMismatch => "event type mismatch".to_string(),
+        GameError::InvalidAction => "invalid action".to_string(),
+        GameError::InvalidBattleResyncSeq { requested, latest } => {
+            format!("invalid battle resync seq: requested {requested}, latest {latest}")
+        }
+        GameError::NotInShopState => "not in shop state".to_string(),
+        GameError::NotInRewardState => "not in reward state".to_string(),
+        GameError::ShopRerollNotAllowed => "shop reroll not allowed".to_string(),
+        GameError::ShopItemNotFound => "shop item not found".to_string(),
+        GameError::InventoryFull => "inventory full".to_string(),
+        GameError::InventoryItemNotFound => "inventory item not found".to_string(),
+        GameError::InventoryItemNotRemovable => "inventory item not removable".to_string(),
+        GameError::AlreadyOwnedArtifact => "already owned artifact".to_string(),
+        GameError::InsufficientResources => "insufficient resources".to_string(),
+        GameError::MissingResource(resource) => format!("missing resource: {resource}"),
+        GameError::InvalidUnitStats(reason) => format!("invalid unit stats: {reason}"),
+        GameError::InvalidStaticData(reason) => format!("invalid static data: {reason}"),
+        GameError::NotImplemented(feature) => format!("not implemented: {feature}"),
+        GameError::SkillFragmentIncompatible {
+            fragment_id,
+            failure_codes,
+        } => format!(
+            "skill fragment incompatible: {fragment_id}; failure code count {}",
+            failure_codes.len()
+        ),
+        GameError::OutOfBounds => "out of bounds".to_string(),
+        GameError::PositionOccupied => "position occupied".to_string(),
+        GameError::StaticObstacleBlocked => "static obstacle blocked".to_string(),
+        GameError::UnitAlreadyPlaced => "unit already placed".to_string(),
+        GameError::UnitNotFound => "unit not found".to_string(),
+    }
+}
+
 fn effective_profile_error_dto(error: &GameError) -> SnapshotErrorDto {
     SnapshotErrorDto {
         code: snapshot_game_error_code(error).to_string(),
-        message: format!("{error:?}"),
+        message: snapshot_game_error_message(error),
+    }
+}
+
+fn wire_skill_fragment_effect_label(
+    effect: &crate::game::data::skill_fragment_data::SkillFragmentEffectDef,
+) -> &'static str {
+    match effect {
+        crate::game::data::skill_fragment_data::SkillFragmentEffectDef::BasicAttackModifier {
+            ..
+        } => "BasicAttackModifier",
+        crate::game::data::skill_fragment_data::SkillFragmentEffectDef::ActiveSkill { .. } => {
+            "ActiveSkill"
+        }
+    }
+}
+
+fn wire_equipment_material_type_label(
+    material_type: crate::game::data::equipment_data::EquipmentMaterialType,
+) -> &'static str {
+    match material_type {
+        crate::game::data::equipment_data::EquipmentMaterialType::Fragment => "Fragment",
+        crate::game::data::equipment_data::EquipmentMaterialType::Core => "Core",
+        crate::game::data::equipment_data::EquipmentMaterialType::Blueprint => "Blueprint",
+        crate::game::data::equipment_data::EquipmentMaterialType::Residue => "Residue",
+        crate::game::data::equipment_data::EquipmentMaterialType::Generic => "Generic",
+    }
+}
+
+fn wire_employee_life_state_label(
+    life_state: crate::game::employee::EmployeeLifeState,
+) -> &'static str {
+    match life_state {
+        crate::game::employee::EmployeeLifeState::Alive => "Alive",
+        crate::game::employee::EmployeeLifeState::Dead => "Dead",
+    }
+}
+
+fn wire_employee_availability_label(
+    availability: crate::game::employee::EmployeeAvailability,
+) -> &'static str {
+    match availability {
+        crate::game::employee::EmployeeAvailability::Available => "Available",
+        crate::game::employee::EmployeeAvailability::Unavailable => "Unavailable",
+    }
+}
+
+fn wire_tier_label(tier: crate::game::enums::Tier) -> &'static str {
+    match tier {
+        crate::game::enums::Tier::I => "I",
+        crate::game::enums::Tier::II => "II",
+        crate::game::enums::Tier::III => "III",
+    }
+}
+
+fn wire_trust_band_label(band: crate::game::employee_trust::TrustBand) -> &'static str {
+    match band {
+        crate::game::employee_trust::TrustBand::Distrust => "Distrust",
+        crate::game::employee_trust::TrustBand::Uneasy => "Uneasy",
+        crate::game::employee_trust::TrustBand::Neutral => "Neutral",
+        crate::game::employee_trust::TrustBand::Trusting => "Trusting",
+        crate::game::employee_trust::TrustBand::Devoted => "Devoted",
+    }
+}
+
+fn wire_employee_trait_label(
+    trait_kind: crate::game::employee_trust::EmployeeTrait,
+) -> &'static str {
+    match trait_kind {
+        crate::game::employee_trust::EmployeeTrait::Brave => "Brave",
+        crate::game::employee_trust::EmployeeTrait::Cautious => "Cautious",
+        crate::game::employee_trust::EmployeeTrait::Obedient => "Obedient",
+        crate::game::employee_trust::EmployeeTrait::Defiant => "Defiant",
+        crate::game::employee_trust::EmployeeTrait::Comradely => "Comradely",
+        crate::game::employee_trust::EmployeeTrait::SurvivalInstinct => "SurvivalInstinct",
+    }
+}
+
+fn wire_trust_memory_kind_label(
+    kind: crate::game::employee_trust::TrustMemoryKind,
+) -> &'static str {
+    match kind {
+        crate::game::employee_trust::TrustMemoryKind::TreatedAfterIncapacitation => {
+            "TreatedAfterIncapacitation"
+        }
+        crate::game::employee_trust::TrustMemoryKind::RestedBeforeDanger => "RestedBeforeDanger",
+        crate::game::employee_trust::TrustMemoryKind::PromiseKept => "PromiseKept",
+        crate::game::employee_trust::TrustMemoryKind::ConsistentInvestment => {
+            "ConsistentInvestment"
+        }
+        crate::game::employee_trust::TrustMemoryKind::DeployedWhileInjured => {
+            "DeployedWhileInjured"
+        }
+        crate::game::employee_trust::TrustMemoryKind::IncapacitatedNeglected => {
+            "IncapacitatedNeglected"
+        }
+        crate::game::employee_trust::TrustMemoryKind::ForcedEarlyAwakening => {
+            "ForcedEarlyAwakening"
+        }
+        crate::game::employee_trust::TrustMemoryKind::ForcedRiskFragmentUse => {
+            "ForcedRiskFragmentUse"
+        }
+        crate::game::employee_trust::TrustMemoryKind::AllyDeathThenDanger => "AllyDeathThenDanger",
+        crate::game::employee_trust::TrustMemoryKind::RestedAtSupportRest => "RestedAtSupportRest",
+        crate::game::employee_trust::TrustMemoryKind::NeglectedAtSupportRest => {
+            "NeglectedAtSupportRest"
+        }
+        crate::game::employee_trust::TrustMemoryKind::AllyDeathWitnessed => "AllyDeathWitnessed",
+    }
+}
+
+fn wire_trust_event_kind_label(kind: crate::game::employee_trust::TrustEventKind) -> &'static str {
+    match kind {
+        crate::game::employee_trust::TrustEventKind::TreatedAfterIncapacitation => {
+            "TreatedAfterIncapacitation"
+        }
+        crate::game::employee_trust::TrustEventKind::RestedBeforeDanger => "RestedBeforeDanger",
+        crate::game::employee_trust::TrustEventKind::PromiseKept => "PromiseKept",
+        crate::game::employee_trust::TrustEventKind::ConsistentInvestment => "ConsistentInvestment",
+        crate::game::employee_trust::TrustEventKind::DeployedWhileInjured => "DeployedWhileInjured",
+        crate::game::employee_trust::TrustEventKind::IncapacitatedNeglected => {
+            "IncapacitatedNeglected"
+        }
+        crate::game::employee_trust::TrustEventKind::ForcedEarlyAwakening => "ForcedEarlyAwakening",
+        crate::game::employee_trust::TrustEventKind::ForcedRiskFragmentUse => {
+            "ForcedRiskFragmentUse"
+        }
+        crate::game::employee_trust::TrustEventKind::AllyDeathThenDanger => "AllyDeathThenDanger",
+        crate::game::employee_trust::TrustEventKind::RestedAtSupportRest => "RestedAtSupportRest",
+        crate::game::employee_trust::TrustEventKind::NeglectedAtSupportRest => {
+            "NeglectedAtSupportRest"
+        }
+        crate::game::employee_trust::TrustEventKind::AllyDied => "AllyDied",
+        crate::game::employee_trust::TrustEventKind::BeforeDangerNode => "BeforeDangerNode",
+        crate::game::employee_trust::TrustEventKind::BeforeFinalNode => "BeforeFinalNode",
+        crate::game::employee_trust::TrustEventKind::IncurredTrauma => "IncurredTrauma",
     }
 }
 
@@ -328,7 +499,8 @@ impl GameCore {
                     id: fragment_id.clone(),
                     count: self.state.skill_fragments.count(fragment_id),
                     name: metadata.map(|fragment| fragment.name.clone()),
-                    effect: metadata.map(|fragment| format!("{:?}", fragment.effect)),
+                    effect: metadata
+                        .map(|fragment| wire_skill_fragment_effect_label(&fragment.effect).into()),
                     requirements: metadata.map(|fragment| fragment.compatibility.clone()),
                     progress: Self::skill_fragment_progress_snapshot(&progress),
                 }
@@ -389,7 +561,9 @@ impl GameCore {
                     amount: *amount,
                     name: metadata.map(|material| material.name.clone()),
                     description: metadata.map(|material| material.description.clone()),
-                    material_type: metadata.map(|material| format!("{:?}", material.material_type)),
+                    material_type: metadata.map(|material| {
+                        wire_equipment_material_type_label(material.material_type).into()
+                    }),
                     rarity: metadata.map(|material| material.rarity),
                     equipment_type: metadata.and_then(|material| material.equipment_type),
                 }
@@ -491,8 +665,8 @@ impl GameCore {
                     name: employee.name.clone(),
                     level: employee.level,
                     experience: employee.experience,
-                    life_state: format!("{:?}", employee.life_state),
-                    availability: format!("{:?}", employee.availability),
+                    life_state: wire_employee_life_state_label(employee.life_state).into(),
+                    availability: wire_employee_availability_label(employee.availability).into(),
                     available_for_combat: employee.is_available_for_combat(),
                     trauma: employee.trauma,
                     health: EmployeeHealthSnapshotDto {
@@ -509,19 +683,19 @@ impl GameCore {
                         .collect::<Vec<_>>(),
                     trust: EmployeeTrustSnapshotDto {
                         score: employee.trust.score,
-                        band: format!("{:?}", employee.trust.band()),
+                        band: wire_trust_band_label(employee.trust.band()).into(),
                         traits: employee
                             .trust
                             .traits
                             .iter()
-                            .map(|trait_kind| format!("{:?}", trait_kind))
+                            .map(|trait_kind| wire_employee_trait_label(*trait_kind).into())
                             .collect::<Vec<_>>(),
                         memories: employee
                             .trust
                             .memories
                             .iter()
                             .map(|memory| EmployeeTrustMemorySnapshotDto {
-                                kind: format!("{:?}", memory.kind),
+                                kind: wire_trust_memory_kind_label(memory.kind).into(),
                                 intensity: memory.intensity,
                                 remaining_nodes: memory.remaining_nodes,
                             })
@@ -531,7 +705,7 @@ impl GameCore {
                             .recent_reactions
                             .iter()
                             .map(|reaction| EmployeeTrustReactionSnapshotDto {
-                                event: format!("{:?}", reaction.event),
+                                event: wire_trust_event_kind_label(reaction.event).into(),
                                 trust_delta: reaction.trust_delta,
                                 cue_count: reaction.cue_count,
                                 combat_modifier_count: reaction.combat_modifier_count,
@@ -540,10 +714,10 @@ impl GameCore {
                             .collect::<Vec<_>>(),
                     },
                     combat_profile: EmployeeCombatProfileSnapshotDto {
-                        battle_tier: format!(
-                            "{:?}",
-                            employee.battle_tier(self.game_data.run_policy.as_ref())
-                        ),
+                        battle_tier: wire_tier_label(
+                            employee.battle_tier(self.game_data.run_policy.as_ref()),
+                        )
+                        .into(),
                         base_stats: employee.combat_profile.battle_profile.stats,
                         basic_attack: employee.combat_profile.battle_profile.basic_attack.clone(),
                         deployment_affinity: employee
@@ -576,8 +750,9 @@ impl GameCore {
                                 EmployeeSkillFragmentBriefSnapshotDto {
                                     id: fragment_id.clone(),
                                     name: metadata.map(|fragment| fragment.name.clone()),
-                                    effect: metadata
-                                        .map(|fragment| format!("{:?}", fragment.effect)),
+                                    effect: metadata.map(|fragment| {
+                                        wire_skill_fragment_effect_label(&fragment.effect).into()
+                                    }),
                                 }
                             })
                             .collect::<Vec<_>>(),
@@ -822,5 +997,60 @@ fn display_reward_option_snapshot_dto(reward: &RewardOption) -> RewardOptionSnap
         icon: reward.icon.clone(),
         grant_kinds: reward.grant_kinds(),
         effects: reward.effects.clone(),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn wire_snapshot_string_labels_are_explicit_contract_values() {
+        assert_eq!(
+            wire_skill_fragment_effect_label(
+                &crate::game::data::skill_fragment_data::SkillFragmentEffectDef::BasicAttackModifier {
+                    attack_bonus: 10,
+                    attack_interval_ms_reduction: 50,
+                },
+            ),
+            "BasicAttackModifier"
+        );
+        assert_eq!(
+            wire_equipment_material_type_label(
+                crate::game::data::equipment_data::EquipmentMaterialType::Fragment
+            ),
+            "Fragment"
+        );
+        assert_eq!(
+            wire_employee_life_state_label(crate::game::employee::EmployeeLifeState::Alive),
+            "Alive"
+        );
+        assert_eq!(
+            wire_employee_availability_label(
+                crate::game::employee::EmployeeAvailability::Available
+            ),
+            "Available"
+        );
+        assert_eq!(wire_tier_label(crate::game::enums::Tier::III), "III");
+        assert_eq!(
+            wire_trust_band_label(crate::game::employee_trust::TrustBand::Devoted),
+            "Devoted"
+        );
+        assert_eq!(
+            wire_employee_trait_label(crate::game::employee_trust::EmployeeTrait::SurvivalInstinct),
+            "SurvivalInstinct"
+        );
+        assert_eq!(
+            wire_trust_memory_kind_label(
+                crate::game::employee_trust::TrustMemoryKind::AllyDeathWitnessed
+            ),
+            "AllyDeathWitnessed"
+        );
+        assert_eq!(
+            wire_trust_event_kind_label(
+                crate::game::employee_trust::TrustEventKind::IncurredTrauma
+            ),
+            "IncurredTrauma"
+        );
     }
 }
