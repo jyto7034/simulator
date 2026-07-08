@@ -40,7 +40,6 @@ pub struct ServerSettings {
     pub bind_address: String,
     pub port: u16,
     pub log_level: String,
-    pub metrics_auth_token: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Clone)]

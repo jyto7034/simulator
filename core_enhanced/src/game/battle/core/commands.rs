@@ -2649,11 +2649,13 @@ mod tests {
             BattleLogEvent::MovementStopped {
                 reason,
                 world_position,
+                stopped_at_ms,
                 ..
             } => {
                 assert_eq!(*reason, MovementStopReason::Died);
                 assert_eq!(world_position.x_milli, 50);
                 assert_eq!(world_position.y_milli, 0);
+                assert_eq!(*stopped_at_ms, stop_entry.time_ms);
             }
             _ => unreachable!("expected MovementStopped"),
         }

@@ -1349,6 +1349,70 @@ fn event_choice_effects_are_atomic_when_later_effect_panics() {
 }
 
 #[test]
+fn event_choice_effects_are_not_committed_when_combat_start_fails() {
+    let event = event_choice_definition(
+        "combat_start_failure_event",
+        "fight",
+        vec![
+            crate::game::data::event_data::EventChoiceEffect::Grant {
+                effects: vec![RewardEffect::GrantEnkephalin { amount: 10 }],
+            },
+            crate::game::data::event_data::EventChoiceEffect::StartCombat {
+                encounter_id: "defense_encounter".to_string(),
+                primary_abnormality_id: Some("defense_risk_abno".to_string()),
+            },
+        ],
+    );
+    let game_data = game_data_with_event_definitions(game_data_with_pve_encounters(), vec![event]);
+    let mut core = GameCore::new(game_data, 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+    core.set_enkephalin(5);
+    let event_node_id = force_single_event_node_run(&mut core, "combat_start_failure_event");
+    core.state
+        .run
+        .as_mut()
+        .expect("run")
+        .abnormality_attempts
+        .insert(
+            event_node_id,
+            crate::game::world::state::AbnormalityAttemptState {
+                max_attempts: 3,
+                attempts_started: 3,
+            },
+        );
+    let event_id = enter_single_scene_event(&mut core, player_id, event_node_id);
+
+    let err = core
+        .execute(
+            player_id,
+            PlayerBehavior::SelectEventChoice {
+                node_id: event_node_id,
+                event_id,
+                choice_id: crate::game::data::event_data::EventChoiceId::new("fight"),
+            },
+        )
+        .expect_err("exhausted attempts should reject combat start");
+
+    assert!(matches!(err, GameError::InvalidAction));
+    assert_eq!(core.get_enkephalin(), 5, "Grant must not apply");
+    assert!(
+        core.state.active_battle.is_none(),
+        "failed combat start must not install an active battle"
+    );
+    let session = core
+        .state
+        .run
+        .as_ref()
+        .expect("run")
+        .event_sessions
+        .get(&event_node_id)
+        .expect("event session should remain");
+    assert!(session.committed_choice_id.is_none());
+    assert!(session.started_combat.is_none());
+}
+
+#[test]
 fn apply_boss_omen_step_result_effect_fails_fast_until_implemented() {
     let event = event_choice_definition(
         "boss_omen_result_event",

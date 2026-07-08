@@ -266,6 +266,7 @@ pub enum BattleLogEvent {
         unit_instance_id: UnitInstanceId,
         reason: MovementStopReason,
         world_position: EventLogVec2,
+        stopped_at_ms: u64,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         until_ms: Option<u64>,
     },
@@ -532,5 +533,27 @@ mod tests {
             value["feedback_tags"],
             serde_json::json!(["critical", "mitigated"])
         );
+    }
+
+    #[test]
+    fn movement_stopped_serializes_explicit_stopped_at_ms() {
+        let unit_instance_id = UnitInstanceId::from(Uuid::from_u128(0xA));
+        let event = BattleLogEvent::MovementStopped {
+            unit_instance_id,
+            reason: MovementStopReason::CastStarted,
+            world_position: EventLogVec2 {
+                x_milli: 1_250,
+                y_milli: 2_500,
+            },
+            stopped_at_ms: 1_234,
+            until_ms: Some(2_000),
+        };
+
+        let value = serde_json::to_value(event).expect("serialize MovementStopped");
+
+        assert_eq!(value["type"], "MovementStopped");
+        assert_eq!(value["unit_instance_id"], unit_instance_id.to_string());
+        assert_eq!(value["stopped_at_ms"], 1_234);
+        assert_eq!(value["until_ms"], 2_000);
     }
 }

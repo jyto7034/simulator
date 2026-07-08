@@ -8,7 +8,7 @@ use crate::game::battle::types::{
     BattleUnitRole, BattleUnitSourceIdentity, BattleUnitThreatClass, BattleWinner,
     ParticipantBattleResult,
 };
-use crate::game::behavior::LiveBattleHudBarMode;
+use crate::game::behavior::{LiveBattleHudBarMode, LiveBattlePresentationEventKindDto};
 use crate::game::enums::Side;
 use crate::game::resources::{CombatBattleState, RunFailureReason};
 use crate::game::stats::UnitStats;
@@ -969,7 +969,7 @@ fn defense_combat_node_smoke_writes_debug_event_log_export() {
     let events = &battle_update.events_delta.events;
     assert!(events.iter().any(|entry| matches!(
         entry.event,
-        crate::game::battle::event_log::BattleLogEvent::UnitSpawned {
+        LiveBattlePresentationEventKindDto::UnitSpawned {
             owner: Side::Player,
             threat_class: BattleUnitThreatClass::Normal,
             ..
@@ -977,7 +977,7 @@ fn defense_combat_node_smoke_writes_debug_event_log_export() {
     )));
     assert!(events.iter().any(|entry| matches!(
         entry.event,
-        crate::game::battle::event_log::BattleLogEvent::UnitDeployed {
+        LiveBattlePresentationEventKindDto::UnitDeployed {
             employee_uuid: event_employee_uuid,
             position,
             facing,
@@ -989,7 +989,7 @@ fn defense_combat_node_smoke_writes_debug_event_log_export() {
     assert!(events.iter().any(|entry| {
         matches!(
             entry.event,
-            crate::game::battle::event_log::BattleLogEvent::UnitDeployed { .. }
+            LiveBattlePresentationEventKindDto::UnitDeployed { .. }
         ) && entry.source_command_id.as_deref() == Some(deploy_source_command_id)
     }));
     let deployment = battle_update
@@ -1086,18 +1086,21 @@ fn defense_combat_node_smoke_writes_debug_event_log_export() {
         battle.event_log.version,
         crate::game::battle::event_log::BATTLE_EVENT_LOG_VERSION
     );
-    assert!(battle.event_log.entries.iter().any(|entry| matches!(
-        entry.event,
-        crate::game::battle::event_log::BattleLogEvent::BattleStart { .. }
-    )));
-    assert!(battle.event_log.entries.iter().any(|entry| matches!(
-        entry.event,
-        crate::game::battle::event_log::BattleLogEvent::UnitSpawned { .. }
-    )));
-    assert!(battle.event_log.entries.iter().any(|entry| matches!(
-        entry.event,
-        crate::game::battle::event_log::BattleLogEvent::BattleEnd { .. }
-    )));
+    assert!(battle
+        .event_log
+        .entries
+        .iter()
+        .any(|entry| matches!(entry.event, BattleLogEvent::BattleStart { .. })));
+    assert!(battle
+        .event_log
+        .entries
+        .iter()
+        .any(|entry| matches!(entry.event, BattleLogEvent::UnitSpawned { .. })));
+    assert!(battle
+        .event_log
+        .entries
+        .iter()
+        .any(|entry| matches!(entry.event, BattleLogEvent::BattleEnd { .. })));
 
     let path = write_world_debug_event_log_export("defense_combat_node_smoke", &battle.event_log);
     println!("wrote debug event log: {}", path.display());
@@ -1273,14 +1276,16 @@ fn live_ron_defense_route_playable_path_runs_to_combat_result() {
             battle.node_type,
             crate::game::combat_preview::CombatNodeType::Defense
         );
-        assert!(battle.event_log.entries.iter().any(|entry| matches!(
-            entry.event,
-            crate::game::battle::event_log::BattleLogEvent::BattleEnd { .. }
-        )));
-        assert!(battle.event_log.entries.iter().any(|entry| matches!(
-            entry.event,
-            crate::game::battle::event_log::BattleLogEvent::UnitSpawned { .. }
-        )));
+        assert!(battle
+            .event_log
+            .entries
+            .iter()
+            .any(|entry| matches!(entry.event, BattleLogEvent::BattleEnd { .. })));
+        assert!(battle
+            .event_log
+            .entries
+            .iter()
+            .any(|entry| matches!(entry.event, BattleLogEvent::UnitSpawned { .. })));
         (battle.abnormality_uuid, battle.event_log.entries.len())
     };
     assert_eq!(core.battle_records().len(), 1);
@@ -1410,7 +1415,7 @@ fn battle_setup_snapshot_live_defense_state_request_returns_battle_update_withou
         .iter()
         .any(|entry| matches!(
             entry.event,
-            crate::game::battle::event_log::BattleLogEvent::BattleStart { .. }
+            LiveBattlePresentationEventKindDto::BattleStart { .. }
         )));
     assert!(core
         .get_allowed_actions()
@@ -1489,7 +1494,7 @@ fn battle_setup_snapshot_live_defense_state_request_returns_battle_update_withou
     );
     assert!(events.iter().any(|entry| matches!(
         entry.event,
-        crate::game::battle::event_log::BattleLogEvent::BattleStart { .. }
+        LiveBattlePresentationEventKindDto::BattleStart { .. }
     )));
     assert_eq!(last_seq, events.last().map(|entry| entry.seq).unwrap_or(0));
     assert_eq!(events.first().map(|entry| entry.seq), Some(1));
@@ -1613,7 +1618,7 @@ fn live_battle_update_exposes_adjacent_immutable_movement_segments() {
         .events
         .iter()
         .filter_map(|entry| match &entry.event {
-            crate::game::battle::event_log::BattleLogEvent::MovementSegmentStarted {
+            LiveBattlePresentationEventKindDto::MovementSegmentStarted {
                 unit_instance_id,
                 start,
                 target,
@@ -1645,7 +1650,7 @@ fn live_battle_update_exposes_adjacent_immutable_movement_segments() {
                 .events
                 .iter()
                 .filter_map(|entry| match &entry.event {
-                    crate::game::battle::event_log::BattleLogEvent::MovementSegmentStarted {
+                    LiveBattlePresentationEventKindDto::MovementSegmentStarted {
                         unit_instance_id,
                         start,
                         target,
@@ -1725,7 +1730,7 @@ fn battle_setup_snapshot_exposes_survival_timer_without_encirclement_variant() {
         !battle_update.events_delta.events.iter().any(|entry| {
             matches!(
                 entry.event,
-                crate::game::battle::event_log::BattleLogEvent::UnitSpawned {
+                LiveBattlePresentationEventKindDto::UnitSpawned {
                     owner: Side::Opponent,
                     ..
                 }
@@ -1744,7 +1749,7 @@ fn battle_setup_snapshot_exposes_survival_timer_without_encirclement_variant() {
     assert!(!battle_update.events_delta.events.iter().any(|entry| {
         matches!(
             entry.event,
-            crate::game::battle::event_log::BattleLogEvent::BattleEnd { .. }
+            LiveBattlePresentationEventKindDto::BattleEnd { .. }
         )
     }));
 
@@ -1764,7 +1769,7 @@ fn battle_setup_snapshot_exposes_survival_timer_without_encirclement_variant() {
     assert!(spawn_update.events_delta.events.iter().any(|entry| {
         matches!(
             entry.event,
-            crate::game::battle::event_log::BattleLogEvent::UnitSpawned {
+            LiveBattlePresentationEventKindDto::UnitSpawned {
                 owner: Side::Opponent,
                 threat_class: BattleUnitThreatClass::Normal,
                 ..
@@ -1807,7 +1812,7 @@ fn battle_setup_snapshot_exposes_survival_timer_without_encirclement_variant() {
         .events
         .iter()
         .find_map(|entry| match &entry.event {
-            crate::game::battle::event_log::BattleLogEvent::UnitSpawned {
+            LiveBattlePresentationEventKindDto::UnitSpawned {
                 unit_instance_id,
                 unit_source,
                 ..
@@ -1819,7 +1824,7 @@ fn battle_setup_snapshot_exposes_survival_timer_without_encirclement_variant() {
     assert!(!spawn_update.events_delta.events.iter().any(|entry| {
         matches!(
             entry.event,
-            crate::game::battle::event_log::BattleLogEvent::BattleEnd { .. }
+            LiveBattlePresentationEventKindDto::BattleEnd { .. }
         )
     }));
 }
@@ -2436,7 +2441,7 @@ fn live_defense_deploy_and_withdraw_manage_cost_and_redeploy_lock() {
     assert_eq!(update.checkpoint.at_seq, update.events_delta.to_seq);
     assert!(update.events_delta.events.iter().any(|entry| matches!(
         entry.event,
-        crate::game::battle::event_log::BattleLogEvent::UnitDeployed {
+        LiveBattlePresentationEventKindDto::UnitDeployed {
             employee_uuid: event_employee_uuid,
             unit_instance_id: event_unit_instance_id,
             position,
@@ -3036,7 +3041,7 @@ fn activate_skill_uses_equipped_manual_fragment_in_live_defense() {
     assert!(events.iter().any(|entry| {
         matches!(
             &entry.event,
-            crate::game::battle::event_log::BattleLogEvent::ManualCastStart {
+            LiveBattlePresentationEventKindDto::ManualCastStart {
                 caster_instance_id,
                 skill_id: actual_skill_id,
                 ..
@@ -3052,7 +3057,7 @@ fn activate_skill_uses_equipped_manual_fragment_in_live_defense() {
     assert!(events.iter().any(|entry| {
         matches!(
             &entry.event,
-            crate::game::battle::event_log::BattleLogEvent::AbilityCast {
+            LiveBattlePresentationEventKindDto::AbilityCast {
                 caster_instance_id,
                 skill_id: actual_skill_id,
                 ..
@@ -3498,10 +3503,11 @@ fn retreat_from_live_defense_battle_reenters_until_attempts_are_exhausted() {
             .find(|record| record.abnormality_uuid == node_id.0)
             .expect("exhausted retreat should record the completed draw battle");
         assert_eq!(record.winner, BattleWinner::Draw);
-        assert!(record.event_log.entries.iter().any(|entry| matches!(
-            entry.event,
-            crate::game::battle::event_log::BattleLogEvent::BattleStart { .. }
-        )));
+        assert!(record
+            .event_log
+            .entries
+            .iter()
+            .any(|entry| matches!(entry.event, BattleLogEvent::BattleStart { .. })));
         let record_path = core
             .state
             .run

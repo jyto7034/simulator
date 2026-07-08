@@ -670,6 +670,40 @@ impl RunState {
         }
     }
 
+    /// Build the next floor's run state from an existing run.
+    ///
+    /// Floor-local caches start empty, while run-scoped codex/research history
+    /// is preserved.
+    pub fn for_next_floor_from(
+        previous: &Self,
+        map: RunMap,
+        map_progression: MapProgression,
+        run_progression: RunProgression,
+        boss_omen: BossOmenRunState,
+    ) -> Self {
+        Self::new(map, map_progression, run_progression)
+            .with_persistent_run_state_from(previous)
+            .with_boss_omen(boss_omen)
+    }
+
+    /// Build the terminal run state from an existing run while preserving
+    /// run-scoped records for the final snapshot/result surfaces.
+    pub fn for_run_complete_from(
+        previous: &Self,
+        map: RunMap,
+        map_progression: MapProgression,
+        run_progression: RunProgression,
+    ) -> Self {
+        Self::new(map, map_progression, run_progression).with_persistent_run_state_from(previous)
+    }
+
+    fn with_persistent_run_state_from(mut self, previous: &Self) -> Self {
+        self.abnormality_research = previous.abnormality_research.clone();
+        self.abnormality_encounter_history = previous.abnormality_encounter_history.clone();
+        self.battle_records = previous.battle_records.clone();
+        self
+    }
+
     pub fn with_abnormality_research(
         mut self,
         abnormality_research: RunAbnormalityResearchState,
@@ -790,6 +824,145 @@ impl RunState {
 
     pub fn clear_abnormality_attempt(&mut self, node_id: crate::game::map::MapNodeId) {
         self.abnormality_attempts.remove(&node_id);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::game::{
+        abnormality_research::RunAbnormalityResearchEntry,
+        battle::{result_stats::BattleResultBattleStatsDto, types::BattleWinner},
+        data::event_data::{EventId, EventSceneId},
+        map::{MapGenerationConfig, MapGenerator, MapNodeId},
+    };
+
+    fn generated_run_state(seed: u64, run_progression: RunProgression) -> RunState {
+        let map = MapGenerator::generate(seed, MapGenerationConfig::default());
+        let progression = MapProgression::from_map(&map);
+        RunState::new(map, progression, run_progression)
+    }
+
+    fn test_battle_record(abnormality_uuid: Uuid) -> CombatBattleState {
+        CombatBattleState {
+            primary_abnormality_id: Some("test_abnormality".to_string()),
+            encounter_id: "test_encounter".to_string(),
+            node_type: CombatNodeType::Defense,
+            mission_variant: CombatMissionVariant::Defense,
+            abnormality_uuid,
+            winner: BattleWinner::Player,
+            event_log: BattleEventLog::default(),
+            result_stats: BattleResultStatsDto {
+                battle: BattleResultBattleStatsDto {
+                    duration_ms: 0,
+                    winner: BattleWinner::Player,
+                    killed_enemy_count: 0,
+                },
+                employees: vec![],
+                mvp: None,
+            },
+            bonus_objectives: vec![],
+            reward_mode: RewardMode::ClaimAll,
+            rewards: vec![],
+            participant_results: vec![],
+        }
+    }
+
+    #[test]
+    fn next_floor_run_state_preserves_run_scoped_records_and_resets_node_scoped_state() {
+        let mut previous =
+            generated_run_state(0xA11CE, RunProgression::new(0xBEEF, GameMode::Standard, 3));
+        previous.abnormality_research.entries.insert(
+            "test_abnormality".to_string(),
+            RunAbnormalityResearchEntry {
+                research_points: 20,
+                research_required: 100,
+                response_complete: false,
+                suppression_wins: 1,
+                last_encountered_floor: Some(0),
+                completed_at_floor: None,
+                unique_fragment_granted: false,
+            },
+        );
+        previous
+            .abnormality_encounter_history
+            .last_appeared_floor_by_abnormality
+            .insert("test_abnormality".to_string(), 0);
+        let node_id = MapNodeId::new(Uuid::from_u128(0xF100));
+        previous.event_sessions.insert(
+            node_id,
+            EventSessionState::new(
+                node_id,
+                EventId::new("test_event"),
+                EventSceneId::new("start"),
+            ),
+        );
+        previous.abnormality_attempts.insert(
+            node_id,
+            AbnormalityAttemptState {
+                max_attempts: 3,
+                attempts_started: 2,
+            },
+        );
+        previous
+            .battle_records
+            .push(test_battle_record(Uuid::from_u128(0xB4771E)));
+
+        let mut run_progression = previous.run_progression.clone();
+        assert!(run_progression.advance_floor());
+        let next_map = MapGenerator::generate(0xF100, MapGenerationConfig::default());
+        let next_progression = MapProgression::from_map(&next_map);
+        let next = RunState::for_next_floor_from(
+            &previous,
+            next_map,
+            next_progression,
+            run_progression,
+            BossOmenRunState::default(),
+        );
+
+        assert_eq!(next.abnormality_research, previous.abnormality_research);
+        assert_eq!(
+            next.abnormality_encounter_history,
+            previous.abnormality_encounter_history
+        );
+        assert_eq!(next.battle_records.len(), 1);
+        assert_eq!(
+            next.battle_records[0].abnormality_uuid,
+            Uuid::from_u128(0xB4771E)
+        );
+        assert!(next.event_sessions.is_empty());
+        assert!(next.combat_previews.is_empty());
+        assert!(next.abnormality_attempts.is_empty());
+    }
+
+    #[test]
+    fn run_complete_state_preserves_run_scoped_records() {
+        let mut previous =
+            generated_run_state(0xC0DE, RunProgression::new(0xCAFE, GameMode::Standard, 1));
+        previous
+            .battle_records
+            .push(test_battle_record(Uuid::from_u128(0xC0DEC0DE)));
+        previous
+            .abnormality_encounter_history
+            .last_appeared_floor_by_abnormality
+            .insert("test_abnormality".to_string(), 0);
+
+        let completed = RunState::for_run_complete_from(
+            &previous,
+            previous.map.clone(),
+            previous.map_progression.clone(),
+            previous.run_progression.clone(),
+        );
+
+        assert_eq!(
+            completed.abnormality_encounter_history,
+            previous.abnormality_encounter_history
+        );
+        assert_eq!(completed.battle_records.len(), 1);
+        assert_eq!(
+            completed.battle_records[0].abnormality_uuid,
+            Uuid::from_u128(0xC0DEC0DE)
+        );
     }
 }
 

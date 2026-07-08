@@ -5,15 +5,28 @@ use crate::game::{
         EventChoiceEffect, EventChoiceId, EventChoiceNext, EventDefinition, EventId, EventSceneId,
         EventSceneNext,
     },
+    employee::EmployeeRoster,
+    managers::uuid_manager::UuidManager,
     map::MapNodeId,
     resources::{ActiveNodeContent, EventSessionState, EventStartedCombatState},
+    resources::{Enkephalin, Inventory},
     reward::{GrantExecutionContext, GrantExecutor},
+    skill_fragment::SkillFragmentInventory,
 };
 
 #[derive(Debug, Clone)]
 struct EventCombatStart {
     encounter_id: String,
     primary_abnormality_id: Option<String>,
+}
+
+struct PlannedEventChoiceEffects {
+    combat_start: Option<EventCombatStart>,
+    inventory: Inventory,
+    skill_fragments: SkillFragmentInventory,
+    roster: EmployeeRoster,
+    uuid_manager: UuidManager,
+    enkephalin: Enkephalin,
 }
 
 impl GameCore {
@@ -131,39 +144,40 @@ impl GameCore {
             .ok_or(GameError::InvalidAction)?
             .clone();
 
-        let combat_start = self.apply_event_choice_effects(node_id, &choice.effects)?;
+        let planned_effects = self.plan_event_choice_effects(node_id, &choice.effects)?;
         let next = choice.next.unwrap_or(EventChoiceNext::End);
-        if let Some(combat_start) = combat_start {
-            let updated = {
-                let updated = self.current_event_session_mut()?;
-                updated.committed_choice_id = Some(choice_id);
-                updated.started_combat = Some(EventStartedCombatState {
-                    encounter_id: combat_start.encounter_id.clone(),
-                    primary_abnormality_id: combat_start.primary_abnormality_id.clone(),
-                });
-                updated.clone()
-            };
-            self.run_state_mut()?
-                .event_sessions
-                .insert(node_id, updated);
-            return self.handle_event_combat_node(
+        if let Some(combat_start) = planned_effects.combat_start.clone() {
+            if let Some(result) = self
+                .block_or_fail_undeployable_combat_selection_for_roster(&planned_effects.roster)?
+            {
+                return Ok(result);
+            }
+            let planned_battle = self.plan_event_combat_node_with_state(
                 node_id,
-                combat_start.primary_abnormality_id,
-                combat_start.encounter_id,
-            );
+                combat_start.primary_abnormality_id.clone(),
+                combat_start.encounter_id.clone(),
+                &planned_effects.inventory,
+                &planned_effects.skill_fragments,
+                &planned_effects.roster,
+            )?;
+            let mut updated = session.clone();
+            updated.committed_choice_id = Some(choice_id);
+            updated.started_combat = Some(EventStartedCombatState {
+                encounter_id: combat_start.encounter_id.clone(),
+                primary_abnormality_id: combat_start.primary_abnormality_id.clone(),
+            });
+            self.commit_event_choice_effects(planned_effects);
+            self.commit_event_session(node_id, updated)?;
+            return self.commit_planned_live_battle_start(node_id, planned_battle);
         }
         match next {
             EventChoiceNext::Scene { scene_id } => {
-                let updated = {
-                    let updated = self.current_event_session_mut()?;
-                    updated.committed_choice_id = Some(choice_id);
-                    updated.current_scene_id = scene_id;
-                    updated.clone()
-                };
-                self.run_state_mut()?
-                    .event_sessions
-                    .insert(node_id, updated.clone());
+                let mut updated = session.clone();
+                updated.committed_choice_id = Some(choice_id);
+                updated.current_scene_id = scene_id;
                 let snapshot = self.event_scene_snapshot(&updated)?;
+                self.commit_event_choice_effects(planned_effects);
+                self.commit_event_session(node_id, updated)?;
                 Ok(BehaviorResult::EventState {
                     node_id,
                     event: snapshot,
@@ -171,16 +185,12 @@ impl GameCore {
                 })
             }
             EventChoiceNext::End => {
-                {
-                    let updated = self.current_event_session_mut()?;
-                    updated.committed_choice_id = Some(choice_id);
-                    let updated = updated.clone();
-                    self.run_state_mut()?
-                        .event_sessions
-                        .insert(node_id, updated);
-                }
+                let mut updated = session.clone();
+                updated.committed_choice_id = Some(choice_id);
                 let completion = self.plan_complete_current_node(true)?;
-                self.commit_interactive_node_completion(completion)
+                self.commit_event_choice_effects(planned_effects);
+                self.commit_event_session(node_id, updated)?;
+                return self.commit_interactive_node_completion(completion);
             }
         }
     }
@@ -251,11 +261,11 @@ impl GameCore {
         })
     }
 
-    fn apply_event_choice_effects(
+    fn plan_event_choice_effects(
         &mut self,
         node_id: MapNodeId,
         effects: &[EventChoiceEffect],
-    ) -> Result<Option<EventCombatStart>, GameError> {
+    ) -> Result<PlannedEventChoiceEffects, GameError> {
         let mut combat_start = None;
         let mut staged_inventory = self.state.inventory.clone();
         let mut staged_skill_fragments = self.state.skill_fragments.clone();
@@ -314,13 +324,34 @@ impl GameCore {
             }
         }
 
-        self.state.inventory = staged_inventory;
-        self.state.skill_fragments = staged_skill_fragments;
-        self.state.roster = staged_roster;
-        self.state.uuid_manager = staged_uuid_manager;
-        self.state.enkephalin = staged_enkephalin;
+        Ok(PlannedEventChoiceEffects {
+            combat_start,
+            inventory: staged_inventory,
+            skill_fragments: staged_skill_fragments,
+            roster: staged_roster,
+            uuid_manager: staged_uuid_manager,
+            enkephalin: staged_enkephalin,
+        })
+    }
 
-        Ok(combat_start)
+    fn commit_event_choice_effects(&mut self, planned: PlannedEventChoiceEffects) {
+        self.state.inventory = planned.inventory;
+        self.state.skill_fragments = planned.skill_fragments;
+        self.state.roster = planned.roster;
+        self.state.uuid_manager = planned.uuid_manager;
+        self.state.enkephalin = planned.enkephalin;
+    }
+
+    fn commit_event_session(
+        &mut self,
+        node_id: MapNodeId,
+        session: EventSessionState,
+    ) -> Result<(), GameError> {
+        self.run_state_mut()?
+            .event_sessions
+            .insert(node_id, session.clone());
+        self.state.active_node_content = Some(ActiveNodeContent::Event(session));
+        Ok(())
     }
 }
 

@@ -5,13 +5,8 @@ description = "card backend"
 
 [workspace]
 members = [ 
-    "auth_server",
     "core_enhanced",
-    "test_client",
-    "metrics",
     "game_server",
-    "env",
-    "tools/client_meta_builder"
 ]
 
 resolver = "2"

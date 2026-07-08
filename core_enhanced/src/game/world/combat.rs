@@ -63,6 +63,11 @@ struct StagedCombatResultState {
     enkephalin: Enkephalin,
 }
 
+pub(super) struct PlannedLiveBattleStart {
+    combat_preview: CombatPreview,
+    active_battle: ActiveBattleSession,
+}
+
 enum PlannedPlayerVictoryCombatResultCompletion {
     RunFailure {
         staged: StagedCombatResultState,
@@ -187,7 +192,7 @@ impl GameCore {
     }
 
     fn explicit_combat_preview_for_node(
-        &mut self,
+        &self,
         node_id: MapNodeId,
         category: MapNodeCategory,
         encounter_id: &str,
@@ -205,9 +210,6 @@ impl GameCore {
             seed,
             floor_index,
         )?;
-        self.run_state_mut()?
-            .combat_previews
-            .insert(node_id, preview.clone());
         Ok(preview)
     }
 
@@ -221,6 +223,48 @@ impl GameCore {
         if let Some(result) = self.block_or_fail_undeployable_combat_selection()? {
             return Ok(result);
         }
+        let planned = self.plan_explicit_combat_node_with_state(
+            node_id,
+            category,
+            primary_abnormality_id,
+            encounter_id,
+            &self.state.inventory,
+            &self.state.skill_fragments,
+            &self.state.roster,
+        )?;
+        self.commit_planned_live_battle_start(node_id, planned)
+    }
+
+    pub(super) fn plan_event_combat_node_with_state(
+        &self,
+        node_id: MapNodeId,
+        primary_abnormality_id: Option<String>,
+        encounter_id: String,
+        inventory: &Inventory,
+        skill_fragments: &SkillFragmentInventory,
+        roster: &EmployeeRoster,
+    ) -> Result<PlannedLiveBattleStart, GameError> {
+        self.plan_explicit_combat_node_with_state(
+            node_id,
+            MapNodeCategory::Combat,
+            primary_abnormality_id,
+            encounter_id,
+            inventory,
+            skill_fragments,
+            roster,
+        )
+    }
+
+    fn plan_explicit_combat_node_with_state(
+        &self,
+        node_id: MapNodeId,
+        category: MapNodeCategory,
+        primary_abnormality_id: Option<String>,
+        encounter_id: String,
+        inventory: &Inventory,
+        skill_fragments: &SkillFragmentInventory,
+        roster: &EmployeeRoster,
+    ) -> Result<PlannedLiveBattleStart, GameError> {
         let selected_uuid = node_id.0;
         info!(
             "Starting map combat node for primary_abnormality={:?} encounter={} node={}",
@@ -248,11 +292,19 @@ impl GameCore {
             node_type,
             mission_variant,
         ) {
+            if self
+                .run_state()?
+                .abnormality_attempt_state(node_id)
+                .remaining_attempts()
+                == 0
+            {
+                return Err(GameError::InvalidAction);
+            }
             let empty_deployment = HashMap::new();
             let mut battle = CombatExecutor::build_battle_with_combat_preview(
-                self.roster()?,
-                self.inventory()?,
-                &self.state.skill_fragments,
+                roster,
+                inventory,
+                skill_fragments,
                 self.game_data.clone(),
                 primary_abnormality_id.as_deref(),
                 &encounter_id,
@@ -261,15 +313,8 @@ impl GameCore {
                 &empty_deployment,
             )?;
             let execution = battle.start_battle_execution()?;
-            if self
-                .run_state_mut()?
-                .start_abnormality_attempt(node_id)
-                .is_none()
-            {
-                return Err(GameError::InvalidAction);
-            }
             let live_deployment_policy = self.run_policy().live_deployment;
-            self.state.active_battle = Some(ActiveBattleSession {
+            let active_battle = ActiveBattleSession {
                 battle_uuid: selected_uuid,
                 primary_abnormality_id,
                 encounter_id,
@@ -277,24 +322,46 @@ impl GameCore {
                 mission_variant,
                 reward_mode,
                 rewards,
-                combat_preview,
+                combat_preview: combat_preview.clone(),
                 battle,
                 execution,
                 last_pushed_event_log_seq: None,
                 live_deployment: Some(LiveBattleDeploymentState::new(live_deployment_policy)),
                 playback: BattlePlaybackState::default(),
                 playback_delta_remainder: 0,
+            };
+            return Ok(PlannedLiveBattleStart {
+                combat_preview,
+                active_battle,
             });
-            self.transition_to(GameState::InBattle {
-                battle_uuid: selected_uuid,
-            })?;
-            return self.advance_active_battle_by_internal(0, true);
         }
 
         Err(GameError::InvalidStaticData(format!(
             "combat encounter '{}' uses unsupported non-live combat mission {:?}/{:?}; official combat flow is DefenseRoute live battle only",
             encounter_id, node_type, mission_variant
         )))
+    }
+
+    pub(super) fn commit_planned_live_battle_start(
+        &mut self,
+        node_id: MapNodeId,
+        planned: PlannedLiveBattleStart,
+    ) -> Result<BehaviorResult, GameError> {
+        if self
+            .run_state_mut()?
+            .start_abnormality_attempt(node_id)
+            .is_none()
+        {
+            return Err(GameError::InvalidAction);
+        }
+        self.run_state_mut()?
+            .combat_previews
+            .insert(node_id, planned.combat_preview);
+
+        let battle_uuid = planned.active_battle.battle_uuid;
+        self.state.active_battle = Some(planned.active_battle);
+        self.transition_to(GameState::InBattle { battle_uuid })?;
+        self.advance_active_battle_by_internal(0, true)
     }
 
     fn is_final_boss_node(&self, node_id: MapNodeId) -> Result<bool, GameError> {
@@ -636,7 +703,23 @@ impl GameCore {
     pub(super) fn block_or_fail_undeployable_combat_selection(
         &mut self,
     ) -> Result<Option<BehaviorResult>, GameError> {
-        match self.current_run_failure_reason()? {
+        let reason = self.current_run_failure_reason()?;
+        self.block_or_fail_undeployable_combat_selection_for_reason(reason)
+    }
+
+    pub(super) fn block_or_fail_undeployable_combat_selection_for_roster(
+        &mut self,
+        roster: &EmployeeRoster,
+    ) -> Result<Option<BehaviorResult>, GameError> {
+        let reason = Self::current_run_failure_reason_for_roster(roster);
+        self.block_or_fail_undeployable_combat_selection_for_reason(reason)
+    }
+
+    fn block_or_fail_undeployable_combat_selection_for_reason(
+        &mut self,
+        reason: Option<RunFailureReason>,
+    ) -> Result<Option<BehaviorResult>, GameError> {
+        match reason {
             Some(RunFailureReason::NoLivingEmployees) => {
                 self.fail_run(RunFailureReason::NoLivingEmployees).map(Some)
             }

@@ -73,8 +73,6 @@
 | WhiteNight / 백야 | 런 단위 보스 체인. |
 | The Silent Orchestra / 고요한 오케스트라 | 4개 특수 노드의 심포니 엘리트와 파편으로 지휘자 보스의 악장/피날레를 방해한다. |
 | Apocalypse Bird / 종말새 | 전조 노드와 집합 보스 구조를 사용하는 최종 보스. |
-| Queen of Hatred / 증오의 여왕 | 지원/정의가 적대 압박으로 뒤집히는 마법소녀 보스. |
-| Mountain of Smiling Bodies / 웃는 시체의 산 | 시체/처치 수를 먹고 성장하는 snowball 보스. |
 
 일반 보스급:
 
@@ -86,7 +84,9 @@
 | The Burrowing Heaven / 파고드는 천국 | 관찰/시선 조건을 핵심으로 한 보스. |
 | Little Red Riding Hooded Mercenary / 붉은 두건의 용병 | 표적 추적, 계약 사냥, 늑대와의 관계가 핵심인 보스. |
 | The Funeral of the Dead Butterflies / 죽은 나비들의 장례 | 장례, 처형탄, 지연 field를 쓰는 보스. |
+| Queen of Hatred / 증오의 여왕 | 지원 NPC의 킬카운트 결핍으로 괴물화하는 마법소녀 보스. |
 | Nothing There / 아무 것도 없는 | 의태, 변신, 재생 페이즈를 쓰는 보스. |
+| Mountain of Smiling Bodies / 웃는 시체의 산 | 적 시체를 먹고 성장하는 한 전투 snowball 보스. 장기 전조 체인보다 시체 처리/포식 압박에 집중한다. |
 | 달의 울음 | 음악 계열 보스 후보. 내부 ID와 영문명은 데이터화 시 확정한다. |
 | King of Greed / 탐욕의 왕 | lane hazard, 탐욕 돌진, 포식 압박을 쓰는 보스. |
 | Big and Will be Bad Wolf / 커다랗고 나쁠 늑대 | 삼키기/고립과 Red Hood 연계를 쓰는 보스. |

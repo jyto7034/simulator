@@ -335,12 +335,17 @@ impl GameCore {
         );
         let view = next_progression.view(&next_map);
         self.apply_staged_support_effect(StagedSupportEffect::GateTransition)?;
-        self.state.run = Some(
-            RunState::new(next_map, next_progression, run_progression.clone())
-                .with_abnormality_research(abnormality_research)
-                .with_abnormality_encounter_history(abnormality_encounter_history)
-                .with_boss_omen(boss_omen),
-        );
+        let next_run = {
+            let previous_run = self.run_state()?;
+            RunState::for_next_floor_from(
+                previous_run,
+                next_map,
+                next_progression,
+                run_progression.clone(),
+                boss_omen,
+            )
+        };
+        self.state.run = Some(next_run);
         self.state.node_session = None;
         self.state.active_node_content = None;
         self.transition_to(GameState::ViewingMap)?;
@@ -603,24 +608,17 @@ impl GameCore {
         view: MapViewDto,
         support_effect: StagedSupportEffect,
     ) -> Result<BehaviorResult, GameError> {
-        let abnormality_research = self
-            .state
-            .run
-            .as_ref()
-            .map(|run| run.abnormality_research.clone())
-            .unwrap_or_default();
-        let abnormality_encounter_history = self
-            .state
-            .run
-            .as_ref()
-            .map(|run| run.abnormality_encounter_history.clone())
-            .unwrap_or_default();
-        self.state.run = Some(
-            RunState::new(next_map, next_progression, run_progression.clone())
-                .with_abnormality_research(abnormality_research)
-                .with_abnormality_encounter_history(abnormality_encounter_history)
-                .with_boss_omen(boss_omen),
-        );
+        let next_run = {
+            let previous_run = self.run_state()?;
+            RunState::for_next_floor_from(
+                previous_run,
+                next_map,
+                next_progression,
+                run_progression.clone(),
+                boss_omen,
+            )
+        };
+        self.state.run = Some(next_run);
         self.apply_staged_support_effect(support_effect)?;
         self.state.node_session = None;
         self.state.active_node_content = None;
@@ -657,23 +655,11 @@ impl GameCore {
         view: MapViewDto,
         support_effect: StagedSupportEffect,
     ) -> Result<BehaviorResult, GameError> {
-        let abnormality_research = self
-            .state
-            .run
-            .as_ref()
-            .map(|run| run.abnormality_research.clone())
-            .unwrap_or_default();
-        let abnormality_encounter_history = self
-            .state
-            .run
-            .as_ref()
-            .map(|run| run.abnormality_encounter_history.clone())
-            .unwrap_or_default();
-        self.state.run = Some(
-            RunState::new(map, progression, run_progression)
-                .with_abnormality_research(abnormality_research)
-                .with_abnormality_encounter_history(abnormality_encounter_history),
-        );
+        let completed_run = {
+            let previous_run = self.run_state()?;
+            RunState::for_run_complete_from(previous_run, map, progression, run_progression)
+        };
+        self.state.run = Some(completed_run);
         self.apply_staged_support_effect(support_effect)?;
         self.state.node_session = None;
         self.state.active_node_content = None;

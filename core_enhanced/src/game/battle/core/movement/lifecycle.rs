@@ -47,6 +47,7 @@ impl BattleCore {
                 unit_instance_id,
                 reason,
                 world_position: unit.body.position.quantized_milli(),
+                stopped_at_ms: time_ms,
                 until_ms,
             },
         );

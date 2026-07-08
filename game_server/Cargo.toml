@@ -25,9 +25,7 @@ backoff = { version = "0.4.0", features = ["tokio"] }
 lazy_static = "1.5.0"
 ron = "0.5.1"
 
-metrics = { path = "../metrics" }
 game_core = { path = "../core_enhanced" }
-prometheus = { version = "0.14", features = ["process"] }
 
 [dev-dependencies]
 tokio-test = "0.4"

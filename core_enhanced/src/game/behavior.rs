@@ -11,14 +11,21 @@ use crate::{
     game::{
         ability::{
             FocusPermissions, SkillActivationMode, SkillAreaAnchorSource, SkillAreaTickPolicy,
-            SkillAreaTracking, SkillHitTargetFilter, SkillId, SkillKind, SkillTarget,
-            SkillTileAreaOrigin,
+            SkillAreaTracking, SkillHitTargetFilter, SkillId, SkillKind, SkillPresentationDef,
+            SkillTarget, SkillTileAreaOrigin,
         },
         battle::{
-            core::movement::types::WorldVec2,
+            buffs::BuffId,
+            cooldown::CooldownSource,
+            core::movement::{
+                types::{EventLogVec2, WorldVec2},
+                MovementSegmentEndKind,
+            },
+            damage::{DamageBreakdown, DamageFeedbackTag, DamageSource, DamageType},
             event_log::{
-                BattleEventCause, BattleEventLog, BattleEventLogEntry, BattleLogEvent,
-                SkillCastTarget,
+                AttackDelivery, AttackKind, BattleEventCause, BattleEventLog, BattleEventLogEntry,
+                BattleLogEvent, BattleProjectileGuidance, BattleSkillAreaShape, BuffExpireReason,
+                HpChangeReason, MovementStopReason, SkillCastCancelReason, SkillCastTarget,
             },
             ids::UnitInstanceId,
             result_stats::BattleResultStatsDto,
@@ -55,7 +62,7 @@ use crate::{
             RewardEffect, RewardOption, SkillFragmentGrantDiffDto, SkillFragmentResearchDiffDto,
         },
         skill_fragment::{SkillFragmentProgress, SkillFragmentResearchDelivery},
-        stats::UnitStats,
+        stats::{StatModifier, UnitStats},
     },
 };
 
@@ -1213,7 +1220,694 @@ pub struct LiveBattlePresentationEventDto {
     pub cause: BattleEventCause,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub source_command_id: Option<String>,
-    pub event: BattleLogEvent,
+    pub event: LiveBattlePresentationEventKindDto,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum LiveBattlePresentationEventKindDto {
+    BattleStart {
+        width: u8,
+        height: u8,
+    },
+    ArtifactSpawned {
+        artifact_instance_id: Uuid,
+        owner: Side,
+        base_uuid: Uuid,
+    },
+    ItemSpawned {
+        item_instance_id: Uuid,
+        owner: Side,
+        owner_unit_instance_id: UnitInstanceId,
+        base_uuid: Uuid,
+    },
+    UnitSpawned {
+        unit_instance_id: UnitInstanceId,
+        owner: Side,
+        #[serde(default)]
+        role: BattleUnitRole,
+        #[serde(default)]
+        threat_class: BattleUnitThreatClass,
+        #[serde(default)]
+        mobility_kind: MobilityKind,
+        base_uuid: Uuid,
+        unit_source: BattleUnitSourceIdentity,
+        world_position: EventLogVec2,
+        stats: UnitStats,
+    },
+    UnitDeployed {
+        employee_uuid: Uuid,
+        unit_instance_id: UnitInstanceId,
+        position: Position,
+        facing: FacingDirection,
+    },
+    UnitWithdrawn {
+        unit_instance_id: UnitInstanceId,
+        world_position: EventLogVec2,
+        position: Position,
+    },
+    MovementSegmentStarted {
+        unit_instance_id: UnitInstanceId,
+        start: EventLogVec2,
+        target: EventLogVec2,
+        started_at_ms: u64,
+        ends_at_ms: u64,
+        end_kind: MovementSegmentEndKind,
+    },
+    MovementStopped {
+        unit_instance_id: UnitInstanceId,
+        reason: MovementStopReason,
+        world_position: EventLogVec2,
+        stopped_at_ms: u64,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        until_ms: Option<u64>,
+    },
+    AttackStart {
+        attacker_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        kind: Option<AttackKind>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        delivery: Option<AttackDelivery>,
+    },
+    AttackResolve {
+        attacker_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        kind: Option<AttackKind>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        delivery: Option<AttackDelivery>,
+    },
+    AttackMiss {
+        attacker_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        kind: Option<AttackKind>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        delivery: Option<AttackDelivery>,
+    },
+    BasicAttackProjectileLaunched {
+        projectile_id: Uuid,
+        attacker_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
+        start: EventLogVec2,
+        aim: EventLogVec2,
+        fired_at_ms: u64,
+        expected_impact_time_ms: u64,
+    },
+    BasicAttackProjectileImpacted {
+        projectile_id: Uuid,
+        attacker_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
+        impact_position: EventLogVec2,
+        hit: bool,
+    },
+    AutoCastStart {
+        caster_instance_id: UnitInstanceId,
+        skill_id: Option<SkillId>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        target: Option<SkillCastTarget>,
+    },
+    AutoCastEnd {
+        caster_instance_id: UnitInstanceId,
+    },
+    ManualCastStart {
+        caster_instance_id: UnitInstanceId,
+        skill_id: SkillId,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        target: Option<SkillCastTarget>,
+    },
+    ManualCastEnd {
+        caster_instance_id: UnitInstanceId,
+    },
+    SkillCastInterrupted {
+        interrupter_instance_id: UnitInstanceId,
+        caster_instance_id: UnitInstanceId,
+        interrupted_skill_id: SkillId,
+        interrupted_cast_seq: u64,
+    },
+    SkillCastCancelled {
+        caster_instance_id: UnitInstanceId,
+        interrupted_skill_id: SkillId,
+        interrupted_cast_seq: u64,
+        reason: SkillCastCancelReason,
+    },
+    TriggeredAbilityProc {
+        skill_id: SkillId,
+        caster_instance_id: UnitInstanceId,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        target_instance_id: Option<UnitInstanceId>,
+        activation_source: CooldownSource,
+        binding_index: usize,
+    },
+    AbilityCast {
+        skill_id: SkillId,
+        caster_instance_id: UnitInstanceId,
+        target_instance_id: Option<UnitInstanceId>,
+    },
+    AbilityStepTriggered {
+        skill_id: SkillId,
+        step_id: String,
+        caster_instance_id: UnitInstanceId,
+        target_instance_id: Option<UnitInstanceId>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        presentation: Option<SkillPresentationDef>,
+    },
+    SkillAreaDeclared {
+        area_id: Uuid,
+        skill_id: SkillId,
+        step_id: String,
+        caster_instance_id: UnitInstanceId,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        target: Option<SkillCastTarget>,
+        shape: BattleSkillAreaShape,
+        origin: EventLogVec2,
+        center: EventLogVec2,
+        direction_hint: EventLogVec2,
+        start_time_ms: u64,
+        duration_ms: u32,
+        display_duration_ms: u32,
+        #[serde(default)]
+        warning_ms: u32,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        tick_interval_ms: Option<u32>,
+        tick_policy: SkillAreaTickPolicy,
+        #[serde(default)]
+        tracking: SkillAreaTracking,
+        hit_targets: SkillHitTargetFilter,
+        include_caster: bool,
+    },
+    SkillProjectileLaunched {
+        delivery_id: Uuid,
+        skill_id: SkillId,
+        step_id: String,
+        caster_instance_id: UnitInstanceId,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        target: Option<SkillCastTarget>,
+        guidance: BattleProjectileGuidance,
+        start: EventLogVec2,
+        aim: EventLogVec2,
+        fired_at_ms: u64,
+        expected_end_time_ms: u64,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        projectile_vfx_id: Option<String>,
+    },
+    SkillProjectileImpacted {
+        delivery_id: Uuid,
+        skill_id: SkillId,
+        step_id: String,
+        caster_instance_id: UnitInstanceId,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        first_hit_unit_id: Option<UnitInstanceId>,
+        impact_position: EventLogVec2,
+        terminal: bool,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        impact_vfx_id: Option<String>,
+    },
+    BuffApplied {
+        caster_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
+        buff_id: BuffId,
+        duration_ms: u64,
+    },
+    BuffTick {
+        caster_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
+        buff_id: BuffId,
+    },
+    BuffExpired {
+        caster_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
+        buff_id: BuffId,
+        reason: BuffExpireReason,
+    },
+    HpChanged {
+        source_instance_id: Option<UnitInstanceId>,
+        target_instance_id: UnitInstanceId,
+        delta: i32,
+        hp_before: u32,
+        hp_after: u32,
+        reason: HpChangeReason,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        damage_source: Option<DamageSource>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        damage_type: Option<DamageType>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        raw_damage: Option<u32>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        final_damage: Option<u32>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        damage_breakdown: Option<Vec<DamageBreakdown>>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        critical: Option<bool>,
+        #[serde(default)]
+        feedback_tags: Vec<DamageFeedbackTag>,
+    },
+    StatChanged {
+        source_instance_id: Option<UnitInstanceId>,
+        target_instance_id: UnitInstanceId,
+        modifier: StatModifier,
+        stats_before: UnitStats,
+        stats_after: UnitStats,
+    },
+    ResonanceChanged {
+        unit_instance_id: UnitInstanceId,
+        before: u32,
+        after: u32,
+        max: u32,
+    },
+    UnitDied {
+        unit_instance_id: UnitInstanceId,
+        owner: Side,
+        killer_instance_id: Option<UnitInstanceId>,
+        world_position: EventLogVec2,
+        position: Position,
+    },
+    BattleEnd {
+        winner: BattleWinner,
+    },
+}
+
+impl From<BattleLogEvent> for LiveBattlePresentationEventKindDto {
+    fn from(value: BattleLogEvent) -> Self {
+        match value {
+            BattleLogEvent::BattleStart { width, height } => Self::BattleStart { width, height },
+            BattleLogEvent::ArtifactSpawned {
+                artifact_instance_id,
+                owner,
+                base_uuid,
+            } => Self::ArtifactSpawned {
+                artifact_instance_id,
+                owner,
+                base_uuid,
+            },
+            BattleLogEvent::ItemSpawned {
+                item_instance_id,
+                owner,
+                owner_unit_instance_id,
+                base_uuid,
+            } => Self::ItemSpawned {
+                item_instance_id,
+                owner,
+                owner_unit_instance_id,
+                base_uuid,
+            },
+            BattleLogEvent::UnitSpawned {
+                unit_instance_id,
+                owner,
+                role,
+                threat_class,
+                mobility_kind,
+                base_uuid,
+                unit_source,
+                world_position,
+                stats,
+            } => Self::UnitSpawned {
+                unit_instance_id,
+                owner,
+                role,
+                threat_class,
+                mobility_kind,
+                base_uuid,
+                unit_source,
+                world_position,
+                stats,
+            },
+            BattleLogEvent::UnitDeployed {
+                employee_uuid,
+                unit_instance_id,
+                position,
+                facing,
+            } => Self::UnitDeployed {
+                employee_uuid,
+                unit_instance_id,
+                position,
+                facing,
+            },
+            BattleLogEvent::UnitWithdrawn {
+                unit_instance_id,
+                world_position,
+                position,
+            } => Self::UnitWithdrawn {
+                unit_instance_id,
+                world_position,
+                position,
+            },
+            BattleLogEvent::MovementSegmentStarted {
+                unit_instance_id,
+                start,
+                target,
+                started_at_ms,
+                ends_at_ms,
+                end_kind,
+            } => Self::MovementSegmentStarted {
+                unit_instance_id,
+                start,
+                target,
+                started_at_ms,
+                ends_at_ms,
+                end_kind,
+            },
+            BattleLogEvent::MovementStopped {
+                unit_instance_id,
+                reason,
+                world_position,
+                stopped_at_ms,
+                until_ms,
+            } => Self::MovementStopped {
+                unit_instance_id,
+                reason,
+                world_position,
+                stopped_at_ms,
+                until_ms,
+            },
+            BattleLogEvent::AttackStart {
+                attacker_instance_id,
+                target_instance_id,
+                kind,
+                delivery,
+            } => Self::AttackStart {
+                attacker_instance_id,
+                target_instance_id,
+                kind,
+                delivery,
+            },
+            BattleLogEvent::AttackResolve {
+                attacker_instance_id,
+                target_instance_id,
+                kind,
+                delivery,
+            } => Self::AttackResolve {
+                attacker_instance_id,
+                target_instance_id,
+                kind,
+                delivery,
+            },
+            BattleLogEvent::AttackMiss {
+                attacker_instance_id,
+                target_instance_id,
+                kind,
+                delivery,
+            } => Self::AttackMiss {
+                attacker_instance_id,
+                target_instance_id,
+                kind,
+                delivery,
+            },
+            BattleLogEvent::BasicAttackProjectileLaunched {
+                projectile_id,
+                attacker_instance_id,
+                target_instance_id,
+                start,
+                aim,
+                fired_at_ms,
+                expected_impact_time_ms,
+            } => Self::BasicAttackProjectileLaunched {
+                projectile_id,
+                attacker_instance_id,
+                target_instance_id,
+                start,
+                aim,
+                fired_at_ms,
+                expected_impact_time_ms,
+            },
+            BattleLogEvent::BasicAttackProjectileImpacted {
+                projectile_id,
+                attacker_instance_id,
+                target_instance_id,
+                impact_position,
+                hit,
+            } => Self::BasicAttackProjectileImpacted {
+                projectile_id,
+                attacker_instance_id,
+                target_instance_id,
+                impact_position,
+                hit,
+            },
+            BattleLogEvent::AutoCastStart {
+                caster_instance_id,
+                skill_id,
+                target,
+            } => Self::AutoCastStart {
+                caster_instance_id,
+                skill_id,
+                target,
+            },
+            BattleLogEvent::AutoCastEnd { caster_instance_id } => {
+                Self::AutoCastEnd { caster_instance_id }
+            }
+            BattleLogEvent::ManualCastStart {
+                caster_instance_id,
+                skill_id,
+                target,
+            } => Self::ManualCastStart {
+                caster_instance_id,
+                skill_id,
+                target,
+            },
+            BattleLogEvent::ManualCastEnd { caster_instance_id } => {
+                Self::ManualCastEnd { caster_instance_id }
+            }
+            BattleLogEvent::SkillCastInterrupted {
+                interrupter_instance_id,
+                caster_instance_id,
+                interrupted_skill_id,
+                interrupted_cast_seq,
+            } => Self::SkillCastInterrupted {
+                interrupter_instance_id,
+                caster_instance_id,
+                interrupted_skill_id,
+                interrupted_cast_seq,
+            },
+            BattleLogEvent::SkillCastCancelled {
+                caster_instance_id,
+                interrupted_skill_id,
+                interrupted_cast_seq,
+                reason,
+            } => Self::SkillCastCancelled {
+                caster_instance_id,
+                interrupted_skill_id,
+                interrupted_cast_seq,
+                reason,
+            },
+            BattleLogEvent::TriggeredAbilityProc {
+                skill_id,
+                caster_instance_id,
+                target_instance_id,
+                activation_source,
+                binding_index,
+            } => Self::TriggeredAbilityProc {
+                skill_id,
+                caster_instance_id,
+                target_instance_id,
+                activation_source,
+                binding_index,
+            },
+            BattleLogEvent::AbilityCast {
+                skill_id,
+                caster_instance_id,
+                target_instance_id,
+            } => Self::AbilityCast {
+                skill_id,
+                caster_instance_id,
+                target_instance_id,
+            },
+            BattleLogEvent::AbilityStepTriggered {
+                skill_id,
+                step_id,
+                caster_instance_id,
+                target_instance_id,
+                presentation,
+            } => Self::AbilityStepTriggered {
+                skill_id,
+                step_id,
+                caster_instance_id,
+                target_instance_id,
+                presentation,
+            },
+            BattleLogEvent::SkillAreaDeclared {
+                area_id,
+                skill_id,
+                step_id,
+                caster_instance_id,
+                target,
+                shape,
+                origin,
+                center,
+                direction_hint,
+                start_time_ms,
+                duration_ms,
+                display_duration_ms,
+                warning_ms,
+                tick_interval_ms,
+                tick_policy,
+                tracking,
+                hit_targets,
+                include_caster,
+            } => Self::SkillAreaDeclared {
+                area_id,
+                skill_id,
+                step_id,
+                caster_instance_id,
+                target,
+                shape,
+                origin,
+                center,
+                direction_hint,
+                start_time_ms,
+                duration_ms,
+                display_duration_ms,
+                warning_ms,
+                tick_interval_ms,
+                tick_policy,
+                tracking,
+                hit_targets,
+                include_caster,
+            },
+            BattleLogEvent::SkillProjectileLaunched {
+                delivery_id,
+                skill_id,
+                step_id,
+                caster_instance_id,
+                target,
+                guidance,
+                start,
+                aim,
+                fired_at_ms,
+                expected_end_time_ms,
+                projectile_vfx_id,
+            } => Self::SkillProjectileLaunched {
+                delivery_id,
+                skill_id,
+                step_id,
+                caster_instance_id,
+                target,
+                guidance,
+                start,
+                aim,
+                fired_at_ms,
+                expected_end_time_ms,
+                projectile_vfx_id,
+            },
+            BattleLogEvent::SkillProjectileImpacted {
+                delivery_id,
+                skill_id,
+                step_id,
+                caster_instance_id,
+                first_hit_unit_id,
+                impact_position,
+                terminal,
+                impact_vfx_id,
+            } => Self::SkillProjectileImpacted {
+                delivery_id,
+                skill_id,
+                step_id,
+                caster_instance_id,
+                first_hit_unit_id,
+                impact_position,
+                terminal,
+                impact_vfx_id,
+            },
+            BattleLogEvent::BuffApplied {
+                caster_instance_id,
+                target_instance_id,
+                buff_id,
+                duration_ms,
+            } => Self::BuffApplied {
+                caster_instance_id,
+                target_instance_id,
+                buff_id,
+                duration_ms,
+            },
+            BattleLogEvent::BuffTick {
+                caster_instance_id,
+                target_instance_id,
+                buff_id,
+            } => Self::BuffTick {
+                caster_instance_id,
+                target_instance_id,
+                buff_id,
+            },
+            BattleLogEvent::BuffExpired {
+                caster_instance_id,
+                target_instance_id,
+                buff_id,
+                reason,
+            } => Self::BuffExpired {
+                caster_instance_id,
+                target_instance_id,
+                buff_id,
+                reason,
+            },
+            BattleLogEvent::HpChanged {
+                source_instance_id,
+                target_instance_id,
+                delta,
+                hp_before,
+                hp_after,
+                reason,
+                damage_source,
+                damage_type,
+                raw_damage,
+                final_damage,
+                damage_breakdown,
+                critical,
+                feedback_tags,
+            } => Self::HpChanged {
+                source_instance_id,
+                target_instance_id,
+                delta,
+                hp_before,
+                hp_after,
+                reason,
+                damage_source,
+                damage_type,
+                raw_damage,
+                final_damage,
+                damage_breakdown,
+                critical,
+                feedback_tags,
+            },
+            BattleLogEvent::StatChanged {
+                source_instance_id,
+                target_instance_id,
+                modifier,
+                stats_before,
+                stats_after,
+            } => Self::StatChanged {
+                source_instance_id,
+                target_instance_id,
+                modifier,
+                stats_before,
+                stats_after,
+            },
+            BattleLogEvent::ResonanceChanged {
+                unit_instance_id,
+                before,
+                after,
+                max,
+            } => Self::ResonanceChanged {
+                unit_instance_id,
+                before,
+                after,
+                max,
+            },
+            BattleLogEvent::UnitDied {
+                unit_instance_id,
+                owner,
+                killer_instance_id,
+                world_position,
+                position,
+            } => Self::UnitDied {
+                unit_instance_id,
+                owner,
+                killer_instance_id,
+                world_position,
+                position,
+            },
+            BattleLogEvent::BattleEnd { winner } => Self::BattleEnd { winner },
+        }
+    }
 }
 
 impl From<BattleEventLogEntry> for LiveBattlePresentationEventDto {
@@ -1223,7 +1917,7 @@ impl From<BattleEventLogEntry> for LiveBattlePresentationEventDto {
             seq: value.seq,
             cause: value.cause,
             source_command_id: value.source_command_id,
-            event: value.event,
+            event: value.event.into(),
         }
     }
 }
@@ -3028,5 +3722,27 @@ mod tests {
         assert_eq!(json["event"]["type"], "BattleStart");
         assert_eq!(json["event"]["width"], 9);
         assert_eq!(json["event"]["height"], 7);
+    }
+
+    #[test]
+    fn live_battle_presentation_event_kind_preserves_internal_event_json_shape() {
+        let internal = BattleLogEvent::MovementStopped {
+            unit_instance_id: UnitInstanceId::from(Uuid::from_u128(0xA)),
+            reason: MovementStopReason::CastStarted,
+            world_position: EventLogVec2 {
+                x_milli: 1_250,
+                y_milli: 2_500,
+            },
+            stopped_at_ms: 1_234,
+            until_ms: Some(2_000),
+        };
+        let expected_json =
+            serde_json::to_value(internal.clone()).expect("internal event should serialize");
+        let wire_json = serde_json::to_value(LiveBattlePresentationEventKindDto::from(internal))
+            .expect("wire event should serialize");
+
+        assert_eq!(wire_json, expected_json);
+        assert_eq!(wire_json["type"], "MovementStopped");
+        assert_eq!(wire_json["stopped_at_ms"], 1_234);
     }
 }

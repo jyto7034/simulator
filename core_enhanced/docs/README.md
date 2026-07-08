@@ -22,11 +22,13 @@
 | 문서 | 역할 | 우선 읽는 경우 |
 | --- | --- | --- |
 | `docs/README.md` | 문서 지도. 각 문서의 역할과 source-of-truth 계층을 설명한다. | 문서 탐색을 시작할 때 |
+| `docs/PROJECT_MAP.md` | 클릭 가능한 계층형 프로젝트 지도. runtime/code/data/server/Unity 경계와 change-impact route를 Mermaid와 파일 링크로 연결한다. | 프로젝트 전체 구조를 빠르게 파악하거나 변경 영향 범위를 추적할 때 |
 | `docs/game_rulebook.md` | 현재 게임 규칙의 최상위 룰북. 런 흐름, 시설형 Node Map 탐사 규칙, 노드, 전투, 보상, 직원/장비/스킬 파편, 끝없는 탐사 연구/반복 조우/bonus objective, 보스 전조, 실패/후퇴 정책을 게임 루프 순서로 설명하고, 세부 구현 계약은 전문 문서로 연결한다. | gameplay rule, 노드 흐름, Node Map 진행/visibility/selectability, 보상/소비/성장, 전투 모드/Endless 연구 정책을 바꿀 때 |
 | `docs/skill_target_contract.md` | 스킬/평타 타겟팅과 DefenseRoute 범위 계약의 도메인 source of truth. 내부 authoring source인 `defense_tile_range`, Unity-facing 최종 `range_previews` cell DTO, `StepTargetingMode`, 자동 적대 타겟 유용성, `TileArea` 의미를 설명한다. | 스킬 타겟, 범위 표시, 자동 시전, 면역/무효 대상 필터를 다룰 때 |
 | `docs/core_runtime_contract.md` | core runtime 구현 계약. 전투 결정론/RNG seed 규칙, `event_log_seq`와 gameplay 판정 분리, BattleEventLog/checkpoint 경계, battle record/result source, actor identity/HUD/range preview source-of-truth를 설명한다. | 전투 runtime, event log, RNG, checkpoint, battle record, actor identity, Unity 표시 source 경계를 바꿀 때 |
+| `docs/data_loading_contract.md` | live data loading 계약. `GameDataBase::load_live_embedded()`를 production/server/test 공식 entrypoint로 고정하고, main bundle, domain-owned builtin loader, fixture builder, validation gate 경계를 설명한다. | live RON loader, embedded data ownership, validation entrypoint, fixture builder 경계를 바꿀 때 |
 | `docs/refactor_preparation_plan.md` | 리팩토링 판단 기준. source of truth 축소, 레거시 제거, 과도한 추상화 방지, debug 산출물 분류를 설명한다. | 구조 정리, 파일 이동, 레거시 제거, 큰 goal을 시작할 때 |
-| `docs/data_loading_contract.md` | embedded RON/live data loader ownership 계약. `GameDataBase::load_live_embedded()`가 소유하는 live bundle, map/combat-preview/run-policy domain builtin, test-only direct load의 경계를 설명한다. | RON loader, `include_str!`, live data ownership, server/test data loading 경계를 바꿀 때 |
+| `docs/maps/data-and-content.md` | embedded RON/live data loader와 content/data 탐색 지도. `GameDataBase::load_live_embedded()`, domain-owned builtin loader, live RON 파일, validation/test 위치를 연결한다. 구현 계약은 `docs/data_loading_contract.md`, RON authoring strictness는 `docs/core_runtime_contract.md`를 확인한다. | RON loader, `include_str!`, live data ownership, server/test data loading 경계를 찾을 때 |
 | `docs/code_documentation_sync_guidelines.md` | 코드 변경 시 문서/테스트를 함께 갱신하기 위한 상위 작업 지침. source-of-truth 순서, 변경 유형별 갱신 문서, 완료 전 체크리스트를 포함한다. | 코드 변경이 문서/Unity 계약/테스트에 영향을 줄 때 |
 | `docs/codex_goal_command.md` | 새 goal을 Codex에게 맡길 때 붙여 넣는 표준 명령어와 goal skeleton. | 장기 작업 goal 문서를 만들거나 Codex 작업 규칙을 통일할 때 |
 
@@ -56,8 +58,8 @@ F:\unity projects\ark\docs
 | `/mnt/f/unity projects/ark/docs/unity_core_contract.md` | Unity 클라이언트와 `/game` WebSocket의 통합 계약. snapshot, command, server message, enum casing, Node Map DTO, live battle transport를 설명한다. |
 | `/mnt/f/unity projects/ark/docs/unity_client_implementation_goal.md` | Unity 클라이언트 구현 goal 지침. UI/scene 구현 순서, WebSocket 수신 파이프라인, 검증 기준을 설명한다. |
 | `/mnt/f/unity projects/ark/docs/core_unity_battle_transport_contract.md` | core <-> Unity 전투 통신의 canonical 통합 계약. `battle_setup_snapshot`, `battle_update.events_delta`, `battle_update.checkpoint`, `battle_resync`, 전투 종료 snapshot 흐름을 함께 설명한다. |
-| `/mnt/f/unity projects/ark/docs/core_unity_battle_setup_snapshot_contract.md` | 과거 setup snapshot 분리 계약. 현재는 transport 통합 문서가 supersede하며, migration context 확인용으로만 본다. |
-| `/mnt/f/unity projects/ark/docs/core_unity_battle_update_contract.md` | 과거 battle update 분리 계약. 현재는 transport 통합 문서가 supersede하며, migration context 확인용으로만 본다. |
+
+과거 `core_unity_battle_setup_snapshot_contract.md`, `core_unity_battle_update_contract.md` 분리 문서는 외부 Unity docs에서 제거됐고, 현재는 `core_unity_battle_transport_contract.md`가 supersede한다. goal 기록에서 해당 이름이 나오면 migration context로만 읽는다.
 
 이 저장소 안에는 `docs/unity_core_contract.md`, `docs/unity_client_implementation_goal.md`를 보관하지 않는다. 같은 이름의 문서가 다시 생기면 stale copy로 간주하고 외부 canonical을 확인한다.
 
@@ -136,7 +138,7 @@ goal 완료 후 유지해야 할 정책은 `game_rulebook.md`, `skill_target_con
 - 전투 시작, live update, checkpoint, resync, 전투 종료 snapshot 흐름: 외부 `core_unity_battle_transport_contract.md`
 - Unity 구현 순서와 클라이언트 작업 지침: 외부 `unity_client_implementation_goal.md`
 - 리팩토링 방향, 레거시 제거, debug 산출물 분류: `docs/refactor_preparation_plan.md`
-- embedded RON loader ownership, `GameDataBase::load_live_embedded()`, domain-owned builtin loader 경계: `docs/data_loading_contract.md`
+- embedded RON loader ownership, `GameDataBase::load_live_embedded()`, domain-owned builtin loader 경계: `docs/data_loading_contract.md`; 탐색 지도는 `docs/maps/data-and-content.md`; RON authoring strictness는 `docs/core_runtime_contract.md`
 - 코드 변경 시 문서/테스트 동기화 규칙: `docs/code_documentation_sync_guidelines.md`
 - 새 Codex goal을 만들 때 붙여 넣을 명령: `docs/codex_goal_command.md`
 - 환상체/파편/장비 콘텐츠 설계: `docs/skills/*`

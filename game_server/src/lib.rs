@@ -119,5 +119,4 @@ pub struct AppState {
     pub logger_manager: Arc<LoggerManager>,
     pub current_run_id: Uuid,
     pub game_data: Arc<GameDataBase>,
-    pub metrics_registry: prometheus::Registry,
 }
