@@ -1,5 +1,13 @@
 # Completed Goal Document Retirement
 
+Status: historical_unexecuted
+
+Master goal: none
+
+This standalone cleanup proposal predates the active cross-layer master campaign. It was never the
+active G25 child and is retained only as historical planning input. Current lifecycle, retention and
+canonical-ownership rules live in `docs/engineering_workflow.md` and `docs/README.md`.
+
 ## Objective
 
 Resolve P-012 by reducing confusion between completed goal documents and current canonical policy documents.

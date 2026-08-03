@@ -1,102 +1,119 @@
-# Goal Completion Review Guide
+# Goal 완료 검토 가이드
 
-This document defines a reusable review process for checking whether completed master/subgoal items were actually implemented in the long-term direction.
+이 문서는 완료된 master/subgoal 항목이 장기 방향에 맞게 실제 구현됐는지 확인하는 재사용 가능한
+검토 절차를 정의한다.
 
-It is not a gameplay policy source of truth. Use it as an audit procedure when reviewing completed goal checkboxes, post-policy implementation goals, or broad refactor master goals.
+Gameplay 정책의 source of truth가 아니다. 완료된 goal 체크박스, post-policy 구현 goal, 대규모
+refactor master goal을 감사할 때 사용한다.
 
-## Purpose
+## 문서 책임
 
-A completion review must answer more than "is the checkbox checked?" It must verify:
+| 구분 | 내용 |
+| --- | --- |
+| 문서 등급 | 감사 가이드 |
+| 소유 범위 | 완료 검토 입력, 증거 수집 절차, verdict 분류, cross-component 검토, 검증 기준, 검토 출력 형식 |
+| 소유하지 않는 범위 | gameplay/runtime/data/wire 정책, goal 구현 계획, 현재 프로젝트 상태, runtime과 live data의 최종 권위 |
+| 함께 확인할 문서 | [README.md](README.md), [engineering_workflow.md](engineering_workflow.md), 영향받는 canonical 문서, 검토 대상 goal |
 
-- the documented policy was implemented in runtime behavior,
-- the implementation matches the project's long-term refactor direction,
-- no legacy fallback, compatibility layer, dual schema, or hidden source-of-truth split remains,
-- tests protect user-visible behavior and external contracts,
-- any remaining risk is explicitly classified for follow-up.
+## 목적
 
-## Source Of Truth Order
+완료 검토는 단순히 “체크박스가 선택됐는가?”보다 다음을 확인해야 한다.
 
-Review evidence in this order:
+- 문서화한 정책이 runtime 동작으로 구현됐는가?
+- 구현이 프로젝트의 장기 refactor 방향과 일치하는가?
+- legacy fallback, compatibility layer, dual schema, 숨은 source-of-truth 분리가 남아 있지 않은가?
+- 테스트가 사용자-visible 동작과 외부 계약을 보호하는가?
+- 남은 위험이 후속 작업을 위해 명시적으로 분류됐는가?
 
-1. Actual runtime code.
-2. Live RON/data.
-3. Unity-facing snapshot/command/WebSocket contracts.
-4. Latest policy documents.
-5. Goal documents and historical notes.
+## Source Of Truth 적용
 
-If a goal document says an item is complete but runtime code or live data says otherwise, the review must treat the item as incomplete until proven by code/data behavior.
+프로젝트 전체의 증거 우선순위와 문서 등급은
+[README.md](README.md#source-of-truth-순서)가 소유한다. 완료 검토에서는 그 순서를 다음처럼
+적용한다.
 
-## Review Inputs
+- 실제 runtime code와 live RON/data에서 시작한다.
+- 검토 항목이 Unity 경계를 넘으면 Unity-facing 계약을 확인한다.
+- 의도한 동작의 해석에는 최신 canonical 정책 문서를 사용한다.
+- goal 문서와 과거 기록은 현재 정책이 아니라 주장과 증거 포인터로 취급한다.
 
-For each completed master goal item, collect:
+Goal 문서가 완료를 주장해도 runtime code 또는 live data가 다르게 말하면, code/data 동작으로
+입증할 때까지 해당 항목을 미완료로 판정한다.
 
-- master goal item text,
-- linked subgoal directory,
-- confirmed policy decisions,
-- expected user-visible behavior,
-- affected runtime modules,
-- affected live RON/data files,
-- affected Unity/server DTOs or transport messages,
-- tests and validation commands that supposedly fixed the behavior.
+## 검토 입력
 
-If any of these links are missing, record the missing link as a review finding instead of guessing.
+완료된 각 master goal 항목에서 다음을 수집한다.
 
-## Per-Item Review Procedure
+- master goal 항목 원문
+- 연결된 subgoal 디렉터리
+- 확인된 정책 결정
+- 기대하는 사용자-visible 동작
+- 영향받는 runtime module
+- 영향받는 live RON/data 파일
+- 영향받는 Unity/server DTO 또는 transport message
+- 동작을 고정했다고 주장하는 테스트와 검증 명령
 
-For every completed item:
+연결이 하나라도 빠져 있으면 추측하지 않고 누락 자체를 검토 finding으로 기록한다.
 
-1. Restate the intended policy or refactor outcome in one paragraph.
-2. Identify the expected source of truth after the implementation.
-3. Read the runtime code paths that create, mutate, validate, serialize, and consume that source of truth.
-4. Read the relevant live RON/data and schema/loader validation.
-5. Check Unity-facing DTOs, command payloads, WebSocket messages, snapshots, and timeline/log outputs if the item touches external contracts.
-6. Search for old names, old enum variants, old fields, fallback paths, ignored tests, debug-only bypasses, and compatibility shims.
-7. Read the tests and decide whether they pin behavior rather than private implementation shape.
-8. Run focused validation for the item.
-9. Record a verdict with evidence and remaining risk.
+## 항목별 검토 절차
 
-## Long-Term Direction Review
+완료된 각 항목에 다음 절차를 적용한다.
 
-For each completed item, also inspect whether the implementation is genuinely the long-term design rather than a local patch.
+1. 의도한 정책 또는 refactor 결과를 한 문단으로 다시 쓴다.
+2. 구현 후 기대하는 source of truth를 식별한다.
+3. 해당 source를 생성, 변경, 검증, 직렬화, 소비하는 runtime code path를 읽는다.
+4. 관련 live RON/data와 schema/loader validation을 읽는다.
+5. 외부 계약에 닿는 항목이면 Unity-facing DTO, command payload, WebSocket message, snapshot,
+   timeline/log output을 확인한다.
+6. 구 이름, 구 enum variant, 제거된 field, fallback path, ignored test, debug-only bypass,
+   compatibility shim을 검색한다.
+7. 테스트가 private 구현 모양보다 동작을 고정하는지 판단한다.
+8. 항목에 맞는 focused validation을 실행한다.
+9. 증거와 남은 위험을 포함한 verdict를 기록한다.
 
-Check:
+## 장기 방향 검토
 
-- whether the implementation reduced source-of-truth duplication,
-- whether it introduced any new duplicated state that must be kept in sync,
-- whether it removed obsolete code/data/tests instead of preserving them behind compatibility layers,
-- whether it avoided special-case patches that only satisfy one known test,
-- whether names, types, and module locations match the domain responsibility,
-- whether existing functions could have been composed instead of adding a parallel feature,
-- whether a simpler structure is now possible but was left unrealized,
-- whether responsibilities became clearer across runtime, data loading, validation, Unity DTOs, and tests,
-- whether future content/policy changes can be represented without another migration,
-- whether tests protect the durable contract rather than the current helper layout.
+일반 refactor, legacy 제거와 추상화 판단 기준은
+[engineering_workflow.md](engineering_workflow.md)가 소유한다. 이 절은 그 기준을 감사 질문으로
+적용하며 별도의 engineering 정책을 정의하지 않는다.
 
-Record:
+각 완료 항목이 국소 패치가 아니라 실제 장기 설계인지도 확인한다.
 
-- Long-term fit: high / medium / low.
-- Improvement class: none / follow-up refactor / immediate correction recommended.
-- Reason: concrete code/data/test evidence.
+- source-of-truth 중복을 줄였는가?
+- 동기화해야 하는 중복 상태를 새로 만들지 않았는가?
+- obsolete code/data/test를 compatibility layer 뒤에 보존하지 않고 제거했는가?
+- 알려진 테스트 하나만 만족하는 special-case patch를 피했는가?
+- 이름, 타입, module 위치가 domain 책임과 일치하는가?
+- parallel feature를 추가하는 대신 기존 함수를 조합할 수 있었는가?
+- 더 단순한 구조가 가능해졌는데도 남겨두지 않았는가?
+- runtime, data loading, validation, Unity DTO, test 사이의 책임이 더 명확해졌는가?
+- 미래 content/policy 변경을 또 다른 migration 없이 표현할 수 있는가?
+- 테스트가 현재 helper 배치보다 durable contract를 보호하는가?
 
-## Verdict Categories
+다음을 기록한다.
 
-Use exactly one primary verdict per item:
+- Long-term fit: high / medium / low
+- Improvement class: none / follow-up refactor / immediate correction recommended
+- Reason: 구체적인 code/data/test 증거
 
-- Complete: implemented in code/data/contracts, covered by meaningful validation, no material legacy path remains.
-- Partially complete: main path works, but an edge path, data loader, DTO, validation, or test gap remains.
-- Document-only complete: goal docs mark it complete, but runtime/data behavior does not prove it.
-- Policy decision needed: implementation requires a gameplay/UX/schema/balance decision not settled by current policy.
-- Not applicable: the item became obsolete because a later confirmed policy removed the need.
+## Verdict 분류
 
-Add a secondary long-term fit rating:
+항목마다 다음 primary verdict 중 정확히 하나를 사용한다.
 
-- High: design simplifies ownership and matches the expected future model.
-- Medium: acceptable now, but follow-up simplification or consolidation is likely.
-- Low: works by patching around the old model or leaving a confusing ownership split.
+- `Complete`: code/data/contract에 구현됐고 의미 있는 검증으로 보호되며 material legacy path가 없다.
+- `Partially complete`: main path는 동작하지만 edge path, data loader, DTO, validation 또는 test gap이 남아 있다.
+- `Document-only complete`: goal 문서는 완료로 표시하지만 runtime/data 동작이 입증하지 못한다.
+- `Policy decision needed`: 현재 정책으로 결정되지 않은 gameplay/UX/schema/balance 판단이 필요하다.
+- `Not applicable`: 이후 확정된 정책이 필요성을 제거해 해당 항목이 obsolete가 됐다.
 
-## Evidence Template
+Secondary long-term fit rating도 추가한다.
 
-Use this shape for each reviewed item:
+- `High`: ownership을 단순화하고 예상되는 미래 모델과 일치한다.
+- `Medium`: 현재는 수용 가능하지만 후속 단순화나 통합 가능성이 높다.
+- `Low`: 구 모델을 우회하는 패치거나 혼란스러운 ownership 분리를 남긴다.
+
+## 증거 템플릿
+
+검토 항목마다 다음 형식을 사용한다.
 
 ```md
 ## <Item Name>
@@ -134,44 +151,45 @@ Remaining risk:
 - ...
 ```
 
-## Cross-Component Review
+## Cross-Component 검토
 
-After all items are reviewed individually, perform a second pass across components.
+모든 항목을 개별 검토한 뒤 component 사이를 다시 확인한다.
 
-Check:
+- 완료된 두 항목이 서로 경쟁하는 source of truth를 정의하는가?
+- 한 goal의 DTO 또는 schema 전제가 다른 goal과 충돌하는가?
+- component를 함께 실행하지 않아 테스트가 통과하는 것은 아닌가?
+- live RON/data가 여전히 과거 정책을 따르는가?
+- Unity-facing 문서/계약이 여전히 과거 shape를 설명하는가?
+- debug export/log가 의도대로 debug-only인지, 실수로 runtime source가 됐는가?
 
-- whether two completed items define competing sources of truth,
-- whether one goal's DTO or schema assumptions contradict another goal,
-- whether tests pass only because components are not exercised together,
-- whether live RON/data still follows an older policy,
-- whether Unity-facing docs/contracts still describe an older shape,
-- whether debug exports/logs are intentionally debug-only or accidentally used as runtime source.
+이 단계는 짧은 cross-component finding 목록을 만들어야 한다. Finding을 개별 항목의 note 안에
+숨기지 않는다.
 
-This pass should produce a short list of cross-component findings. Do not bury these inside per-item notes.
+## 검증 기준
 
-## Validation Expectations
+Focused validation을 먼저 실행하고 broad validation을 마지막에 실행한다.
 
-Prefer focused validation first, broad validation last.
+Focused validation은 다음을 다뤄야 한다.
 
-Focused validation should cover:
+- 항목이 변경한 runtime 동작
+- data shape가 바뀌었다면 live RON loading과 validation
+- 외부 계약이 바뀌었다면 Unity/server DTO shape
+- timing/order가 중요하다면 대표 gameplay flow
 
-- the runtime behavior changed by the item,
-- live RON loading and validation when data shape changes,
-- Unity/server DTO shape when external contracts change,
-- representative gameplay flow when timing/order matters.
+Broad validation은 영향 범위를 실행하는 가장 작은 명령 집합을 포함한다. 명령, 실패, 수정과 최종
+결과를 기록한다.
 
-Broad validation should include the smallest command set that exercises the affected blast radius. Record commands, failures, fixes, and final results.
+## 검토 출력
 
-## Review Output
+검토 goal은 다음을 만들어야 한다.
 
-A review goal should produce:
+- 항목별 audit table
+- 불완전하거나 위험한 항목의 상세 evidence section
+- cross-component finding section
+- immediate correction 후보 목록
+- follow-up refactor 후보 목록
+- 검증 명령과 결과
+- 명시적인 정책 질문(있는 경우)
 
-- an item-by-item audit table,
-- detailed evidence sections for incomplete or risky items,
-- a cross-component findings section,
-- a list of immediate correction candidates,
-- a list of follow-up refactor candidates,
-- validation commands and results,
-- explicit policy questions, if any.
-
-Do not silently fix broad issues during the review unless the review goal explicitly includes implementation work. Prefer producing a precise correction plan that can become a dedicated goal.
+검토 goal이 구현까지 명시적으로 포함하지 않았다면 검토 중 광범위한 문제를 조용히 수정하지 않는다.
+전용 goal로 전환할 수 있는 정확한 correction plan을 우선 만든다.

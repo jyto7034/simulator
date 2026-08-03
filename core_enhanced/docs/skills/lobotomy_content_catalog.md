@@ -7,7 +7,7 @@
 - 원작 위키는 환상체를 `스킬 목록` 형태로 정리하지 않는다. 이 문서의 행동 키워드는 작업 피해, 탈출 패턴, 특수 기믹, 장비 컨셉을 우리 게임의 전투/스킬 파편 구조에 맞게 요약한 것이다.
 - 세부 수치, 쿨타임, 범위, 발동 조건은 별도 밸런싱 단계에서 정한다.
 - 사용/도구형 환상체는 전투 조우 후보에서 제외하고 특수 이벤트/정비/지원 노드, 리스크 선택지, 장비/강화 이벤트 후보로 다룬다.
-- 아래 확정 로스터는 콘텐츠 설계 source of truth다. live RON data와 placeholder 장비/파편은 이 로스터를 향해 정리되어야 하며, 아직 데이터화되지 않은 항목은 후속 구현에서 ID와 수치를 확정한다.
+- 아래 확정 로스터는 콘텐츠 설계 정책의 source of truth다. 실제 구현 여부, ID, schema/field shape, 현재 효과는 live RON과 runtime loader/validation을 최종 근거로 확인한다. placeholder 장비·파편 색인은 live RON의 파생 투영이며, 아직 데이터화되지 않은 항목은 후속 구현에서 ID와 수치를 확정한다.
 - 공개/배포/상업화 계획이 있다면 IP 사용 권한 문제를 별도로 확인해야 한다.
 
 ## 콘텐츠 분류 원칙
@@ -22,7 +22,7 @@
 
 - 장비처럼 사용하거나 시설 효과를 내는 환상체.
 - 전투 유닛으로 직접 등장시키기보다 이벤트, 지원 노드, 정비 노드, 리스크 선택지로 다룬다.
-- 확정 도구 로스터: `Giant Tree Sap`, `Portrait of Another World`, `Luminous Bracelet`, `Flesh Idol`, `Crumbling Armor`, `Bloodbath`, `Old Faith and Promise`, `Express Train to Hell`, `Opened Can of WellCheers`.
+- 확정 도구 로스터와 권장 ID, runtime role, failure cost는 아래 `도구형 콘텐츠 색인과 데이터 정책`을 따른다.
 
 스킬 파편 설계 원칙:
 
@@ -34,8 +34,11 @@
 - 무기 아키타입은 파편의 장착 조건과 일부 변형/강화 조건으로만 작동한다.
 - 파편 하나를 모든 무기 아키타입에 완벽 대응시키지 않는다. 호환되지 않는 무기는 장착 불가로 처리한다.
 - 파편 요구 조건은 직업명보다 전투 프로필 기준으로 쓴다. 예: `range_role`, `weapon_archetype`, `damage_type`, `targeting_profile`, `air_capable`, `block_capacity_min`.
-- 파편 효과는 `BasicAttackModifier`, `ActiveSkill`, `PassiveAura`, `OnBlock`, `OnKill`, `OnHit`, `Periodic` 같은 적용 모드로 분류한다.
-- 파편별 variant rule은 1~2개 수준으로 제한한다. 예: 유탄은 폭발 반경 증가, 근거리는 저지 반응, 원거리는 명중 반응, 마법 무기는 마법 저항 감소 추가.
+- Runtime fragment 효과 shape는 `BasicAttackModifier`, `ActiveSkill` 등으로 구분될 수 있지만,
+  정식 fragment 콘텐츠는 active skill을 제공하거나 그 active skill 실행 결과로 효과를 낸다.
+- 현재 다수의 직접 `BasicAttackModifier` trace는 dedicated active skill 제작 전 temporary
+  placeholder다. 이를 정식 설계 규칙이나 완료된 콘텐츠로 사용하지 않는다.
+- 파편별 variant rule은 1~2개 수준으로 제한한다. 예: 근거리는 저지 반응, 원거리는 명중 반응, 마법 무기는 마법 저항 감소 추가.
 - 유명하거나 스킬 파편화하기 좋은 환상체는 특정 무기 아키타입 또는 아키타입 그룹 전용 파편으로 설계해 개성을 살린다.
 - 환상체 정체성이 강한 파편일수록 장착 제한을 좁게 둔다.
 - 환상체 정체성이 약하거나 빌드 보조, 안정화, 자원 순환에 가까운 파편은 범용 호환을 유지한다.
@@ -47,9 +50,20 @@
 - 무기 대분류는 `Melee`와 `Ranged`다.
 - 현재 live RON의 기본 근거리 예시는 검, 창, 방패다.
 - 현재 live RON의 기본 원거리 예시는 활, 총, 스태프다.
+- 기본 저지 수는 직원 분류나 방어구가 아니라 각 무기 RON의 필수 `block_capacity`가 정한다.
+  현재 authoring 기준은 Shield 3, Sword/Spear 1, Bow/Gun/Staff 0이며 무기 없음은 0이다.
+  Runtime은 이 기준표를 fallback 계산에 사용하지 않는다.
 - 도끼, 석궁, 샷건, 유탄 계열은 미래 후보이며 현재 기본 장비/파편 설계 후보로 취급하지 않는다.
 - 무기 아키타입은 기본 공격 타입, 사거리, 공격 범위, 공중 공격 가능 여부, 기본 `targeting_profile`을 제공한다.
 - 초기 타겟팅 프로필은 `DefaultForward`, `AirFirst`, `LowDefenseFirst`, `LowMagicResistFirst`로 시작한다.
+
+### 미래 무기 개념 — 유탄 계열
+
+- 유탄/중화기 계열은 현재 `WeaponArchetype` schema, live RON, wire 계약에 존재하지 않는다.
+- 현재 parser는 제거된 `GrenadeLauncher` 값을 거부한다. 호환 alias나 reserved current variant로
+  해석하지 않는다.
+- 향후 이 계열을 구현하려면 range, targeting, delivery, 광역 판정과 Unity presentation 정책을
+  함께 승인한 뒤 새 current schema와 콘텐츠를 추가한다.
 
 초기 무기/타겟팅 매핑:
 
@@ -70,7 +84,7 @@
 
 | 환상체 | 설계 메모 |
 | --- | --- |
-| WhiteNight / 백야 | 런 단위 보스 체인. |
+| WhiteNight / 백야 | 미래 설계 후보. 12표식/사도/제3세력/보스 파편 세부는 미정이며 현재 구현 계약이 아니다. |
 | The Silent Orchestra / 고요한 오케스트라 | 4개 특수 노드의 심포니 엘리트와 파편으로 지휘자 보스의 악장/피날레를 방해한다. |
 | Apocalypse Bird / 종말새 | 전조 노드와 집합 보스 구조를 사용하는 최종 보스. |
 
@@ -110,25 +124,33 @@
 | Rudolta of the Sleigh / 썰매의 루돌타 | 돌진/선물/계절성 hazard. |
 | Scarecrow Searching for Wisdom / 지혜를 구하는 허수아비 | 지혜 갈취, 정신/자원 흡수. |
 
-도구:
+### 도구형 콘텐츠 색인과 데이터 정책
 
-| 도구형 환상체 | 우리 게임 역할 |
-| --- | --- |
-| Giant Tree Sap / 거목수액 | 체력 회복. 부작용으로 폭발 위험. |
-| Portrait of Another World / 이계의 초상 | 캔버스에 새겨진 유닛이 입는 피해를 다른 유닛에게 전가한다. |
-| Luminous Bracelet / 발광 팔찌 | 장착 중 지속 체력 회복. 체력이 감소한 상태에서 반납하면 즉시 사망. |
-| Flesh Idol / 살점 우상 | 기도 시간에 따라 체력/정신력 회복. 너무 짧거나 너무 길면 직원 사망. |
-| Crumbling Armor / 부서져 가는 갑옷 | 사용할수록 강해지지만 남용하면 디버프. 우리 게임에서는 n회 퇴각 시 사망으로 번역한다. |
-| Bloodbath / 피의 욕조 | 직원을 인신공양해 나머지 한 직원의 상태를 회복한다. |
-| Old Faith and Promise / 오래전의 믿음과 약속 | 무기 랜덤 강화. 실패 시 소멸. |
-| Express Train to Hell / 지옥행 급행열차 | 티켓 4개를 구하면 다음 전투 노드에 랜덤 방향 기차가 출현한다. |
-| Opened Can of WellCheers / 뚜껑 따인 웰치어스 | 랜덤 버프. 랜덤으로 사망. |
+아래 `Tool ID`는 도구 전용 schema를 만들 때 사용할 권장 slug이며 현재 구현을 증명하지 않는다. 전용 live RON이 생기면 실제 사용 가능 여부, ID, schema/field shape는 해당 RON과 runtime loader/validation이 최종 근거이고, 이 표는 그 데이터를 설명하는 파생 색인으로 유지한다.
+
+| Tool ID | 도구형 환상체 | Runtime Role | Failure Cost |
+| --- | --- | --- | --- |
+| `giant_tree_sap` | Giant Tree Sap / 거목수액 | 체력 회복 도구 | 부작용 폭발 |
+| `portrait_of_another_world` | Portrait of Another World / 이계의 초상 | 특정 유닛 피해 전가 | 전가 대상 피해 집중 |
+| `luminous_bracelet` | Luminous Bracelet / 발광 팔찌 | 장착 중 지속 체력 회복 | 체력이 감소한 상태에서 반납하면 즉시 사망 |
+| `flesh_idol` | Flesh Idol / 살점 우상 | 기도 시간 기반 체력/정신력 회복 | 너무 짧거나 너무 긴 기도 시 직원 사망 |
+| `crumbling_armor` | Crumbling Armor / 부서져 가는 갑옷 | 사용할수록 강해지는 위험 장비 | 남용 시 디버프, n회 퇴각 시 사망 |
+| `bloodbath` | Bloodbath / 피의 욕조 | 직원을 희생해 다른 직원 상태 회복 | 선택한 직원 사망 |
+| `old_faith_and_promise` | Old Faith and Promise / 오래전의 믿음과 약속 | 무기 랜덤 강화 | 강화 실패 시 대상 소멸 |
+| `express_train_to_hell` | Express Train to Hell / 지옥행 급행열차 | 티켓 4개 후 다음 전투 노드에 랜덤 방향 기차 hazard 출현 | 경로 예측 실패 시 대형 피해 |
+| `opened_can_of_wellcheers` | Opened Can of WellCheers / 뚜껑 따인 웰치어스 | 랜덤 버프 도구 | 랜덤 사망 |
+
+Data policy:
+
+- 도구형은 `abnormalities/base.ron`의 전투 유닛 후보로 넣지 않는다.
+- 도구형은 일반 `skill_fragments/base.ron` 파편 색인에 넣지 않는다.
+- 도구형이 장착품처럼 작동하더라도 E.G.O placeholder 세트와 같은 의미로 보지 않는다.
+- 도구 전용 schema가 생기기 전까지 이 섹션은 콘텐츠 정책과 권장 authoring 방향만 정의하며 구현 완료나 field shape를 주장하지 않는다.
 
 파편 호환성 기준:
 
 - 최종 보스급과 일반 보스급은 전용 아키타입 또는 좁은 아키타입 그룹 파편을 우선 고려한다.
 - 엘리트는 테마가 선명하면 아키타입 그룹 전용, 보조 효과가 자연스러우면 범용 파편으로 둔다.
-- 도구형은 전투 스킬 목록에 억지로 넣지 않고 이벤트, 정비, 리스크 선택지, 장비/강화 보상으로 다룬다.
 - 같은 환상체라도 기본 파편은 아키타입 그룹 전용, 개화 파편은 더 좁은 특정 아키타입 전용으로 좁힐 수 있다.
 
 ## 현재 스킬 시스템 구현 가능성

@@ -37,6 +37,16 @@ The goal is complete only when all required checks below pass.
   - equipment restore, dismantle, enhance
   - combat replay finish
 - The active state snapshot is based on `GameCore::get_run_snapshot_json()`.
+- The local active-run store uses strict envelope version 3 around Core payload version 2. The opaque Core
+  checkpoint owns its power-model/Floor-anchor generation; the server envelope owns only monotonic load count and
+  run peak. Rolling backup publication raises those two high-water values without rewriting the backup payload's
+  anchor generation.
+- The server snapshot wrapper preserves Core's typed `encounter_compendium` root field without a
+  second field list or metadata mapper. A local-install singleton persistence runtime restores and publishes
+  the monotonic discovered/defeated sets independently of transport player UUID and active-run/checkpoint
+  state, and projects recovery/dirty/fatal status to Unity. `AttachSession` merges every readable shared profile
+  into Core before building the reconnect snapshot; a fatal profile instead keeps the title Retry/Reset recovery
+  snapshot available and does not substitute an empty durable profile.
 - The server no longer calls removed core APIs such as:
   - `get_progression`
   - `get_current_phase_events`
@@ -58,7 +68,8 @@ The goal is complete only when all required checks below pass.
 - Do not change game rules to make `game_server` easier to compile.
 - Do not delete matchmaking or PvP code unless explicitly requested later.
 - Do not make Unity UI changes in this goal.
-- Do not add a persistence/database layer for single-player runs in this goal.
+- Do not add account/cloud/database synchronization. Local active-run and encounter-compendium files are the
+  approved host persistence boundaries.
 - Do not preserve phase-era protocol names if they obscure the current node-map model.
 
 ## Primary Files
@@ -129,7 +140,7 @@ Update `behavior_result_to_command_result` to cover every current `BehaviorResul
 
 Required result coverage:
 
-- `StartNewGame { candidates, required_count }`
+- `RunStartFlowStarted { game_mode, visual_novel }`
 - `StarterEmployeesSelected`
 - `MapState`
 - `NodePreview`
@@ -152,7 +163,7 @@ Required result coverage:
 - `MoveUnit`
 - `MoveBenchUnit`
 - `ShopState`
-- `RerollShop`
+- `RefreshShop`
 - `SellItem`
 - `PurchaseItem`
 - `RewardGranted`
@@ -163,7 +174,12 @@ Required result coverage:
 
 Rules:
 
-- Do not silently drop `research_deliveries`.
+- Preserve `research_deliveries` only on authoritative planning-return completions:
+  `NodeCompleted` and `FloorAdvanced`. Entry/state results do not carry this field.
+- Preserve the same field inside recursive completion payloads such as
+  `CombatRewardsGranted`, `EmployeeRecruited`, and `EmergencySuppliesGranted`.
+- Send the successful command result before the trailing root snapshot so Unity can present the
+  exact one-shot delivery fact without inferring it from inventory differences.
 - Compress timelines for WebSocket payloads when returning `CombatResolved`.
 - Preserve recursive completion payload for `CombatRewardsGranted`.
 - Prefer serializing complete DTOs from core rather than rebuilding them manually in the server.
@@ -176,7 +192,7 @@ The snapshot returned after auth and after each command should come from core an
 
 - `game_state`
 - `game_state_context`
-- `allowed_actions`
+- typed `action_capabilities`
 - `run_progression`
 - `map_progression`
 - `map`
@@ -201,7 +217,6 @@ The server loader must populate:
 - corroded wave presets
 - starter employee candidates
 - equipment data
-- artifact data
 - shop data
 - reward data
 - random event data
@@ -246,7 +261,7 @@ If server tests are sparse, add focused adapter tests for:
 - request JSON deserialization into current `PlayerBehaviorRequest`
 - conversion from `PlayerBehaviorRequest` to `PlayerBehavior`
 - result mapping for at least:
-  - `StartNewGame`
+  - `RunStartFlowStarted`
   - `NodePreview`
   - `NodeEntered`
   - `SupportState`
