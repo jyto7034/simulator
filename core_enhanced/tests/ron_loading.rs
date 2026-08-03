@@ -2,7 +2,9 @@ mod common;
 
 use std::collections::BTreeSet;
 
-use game_core::game::ability::{DeliveryDef, SkillAreaAnchorSource};
+use game_core::game::ability::{
+    DeliveryDef, SkillAreaAnchorSource, SkillCastTargetingDef, SkillTarget, UnitTargetRule,
+};
 use game_core::game::battle::buffs::{BuffId, BuffKind};
 use game_core::game::combat_preview::{
     required_briefing_warning_tags_for_spawn_waves, BattlefieldArchetype, CombatNodeType,
@@ -11,14 +13,15 @@ use game_core::game::combat_preview::{
 use game_core::game::data::{
     abnormality_data::AbnormalityDatabase,
     consumable_data::{ConsumableEffect, ConsumableTier},
+    equipment_data::{EquipmentType, WeaponArchetype},
+    event_data::{EventSceneNext, EventSuccessAction},
     pve_data::{PveEncounterClass, PveWaveEnemyData, PveWaveSource},
     reward_data::RewardGrantKind,
     skill_fragment_data::{SkillFragmentEffectDef, SkillFragmentOrigin},
 };
-use game_core::game::map::{
-    MapGenerationConfig, MapGenerationPolicyData, MapNodeCategory, MapNodeDefinitionDatabase,
-    MapNodeId,
-};
+use game_core::game::employee::EventAptitude;
+use game_core::game::enums::RewardMode;
+use game_core::game::map::{MapNodeCategory, MapNodeId, MapNodePayload};
 use game_core::game::reward::{ExperienceTargetPolicy, RewardEffect};
 use uuid::Uuid;
 
@@ -71,6 +74,45 @@ fn live_abnormality_ron_only_contains_catalog_roster() {
 }
 
 #[test]
+fn live_weapon_block_capacity_is_explicit_and_matches_approved_guideline() {
+    let game_data = common::load_game_data_from_ron();
+    let mut represented_archetypes = BTreeSet::new();
+
+    for item in &game_data.equipment_data.items {
+        if item.equipment_type != EquipmentType::Weapon {
+            continue;
+        }
+        let profile = item
+            .weapon_profile
+            .as_ref()
+            .expect("validated live weapon must have a profile");
+        let expected = match profile.weapon_archetype {
+            WeaponArchetype::Shield => 3,
+            WeaponArchetype::Sword | WeaponArchetype::Spear => 1,
+            WeaponArchetype::Bow | WeaponArchetype::Gun | WeaponArchetype::Staff => 0,
+        };
+        assert_eq!(
+            profile.block_capacity, expected,
+            "live weapon '{}' must explicitly use its approved authoring guideline",
+            item.id
+        );
+        represented_archetypes.insert(format!("{:?}", profile.weapon_archetype));
+    }
+
+    assert_eq!(
+        represented_archetypes,
+        BTreeSet::from([
+            "Bow".to_string(),
+            "Gun".to_string(),
+            "Shield".to_string(),
+            "Spear".to_string(),
+            "Staff".to_string(),
+            "Sword".to_string(),
+        ])
+    );
+}
+
+#[test]
 fn load_game_data_from_ron_reads_step_based_skill_schema() {
     let game_data = common::load_game_data_from_ron();
 
@@ -96,14 +138,18 @@ fn load_game_data_from_ron_reads_step_based_skill_schema() {
         .skill_data
         .get_by_id("queen_of_hatred_magical_beam")
         .expect("Queen skill should exist in RON data");
-    assert!(queen.steps[0].defense_tile_range.is_some());
+    assert!(matches!(
+        &queen.steps[0].delivery,
+        DeliveryDef::TileArea { footprint, .. } if !footprint.rows.is_empty()
+    ));
     assert!(matches!(
         queen.steps[0].delivery,
         DeliveryDef::TileArea {
             area: game_core::game::ability::SkillTileAreaDeliveryDef {
                 anchor: SkillAreaAnchorSource::CastTarget,
                 ..
-            }
+            },
+            ..
         }
     ));
 
@@ -111,14 +157,18 @@ fn load_game_data_from_ron_reads_step_based_skill_schema() {
         .skill_data
         .get_by_id("melting_love_slime_infection")
         .expect("Melting Love skill should exist in RON data");
-    assert!(melting_love.steps[1].defense_tile_range.is_some());
+    assert!(matches!(
+        &melting_love.steps[1].delivery,
+        DeliveryDef::TileArea { footprint, .. } if !footprint.rows.is_empty()
+    ));
     assert!(matches!(
         melting_love.steps[1].delivery,
         DeliveryDef::TileArea {
             area: game_core::game::ability::SkillTileAreaDeliveryDef {
                 anchor: SkillAreaAnchorSource::ImpactContext,
                 ..
-            }
+            },
+            ..
         }
     ));
 
@@ -126,7 +176,10 @@ fn load_game_data_from_ron_reads_step_based_skill_schema() {
         .skill_data
         .get_by_id("white_night_pale_benediction")
         .expect("WhiteNight skill should exist in RON data");
-    assert!(white_night.steps[0].defense_tile_range.is_some());
+    assert!(matches!(
+        &white_night.steps[0].delivery,
+        DeliveryDef::TileArea { footprint, .. } if footprint.include_anchor_tile
+    ));
     assert!(matches!(
         white_night.steps[0].delivery,
         DeliveryDef::TileArea {
@@ -134,10 +187,15 @@ fn load_game_data_from_ron_reads_step_based_skill_schema() {
                 anchor: SkillAreaAnchorSource::CastTarget,
                 include_caster: true,
                 ..
-            }
+            },
+            ..
         }
     ));
-    assert!(white_night.steps[2].defense_tile_range.is_some());
+    assert!(matches!(
+        &white_night.steps[2].delivery,
+        DeliveryDef::TileArea { footprint, .. }
+            if footprint.include_anchor_tile && footprint.is_rotation_invariant()
+    ));
     assert!(matches!(
         white_night.steps[2].delivery,
         DeliveryDef::TileArea {
@@ -145,7 +203,8 @@ fn load_game_data_from_ron_reads_step_based_skill_schema() {
                 anchor: SkillAreaAnchorSource::CastTarget,
                 include_caster: false,
                 ..
-            }
+            },
+            ..
         }
     ));
 
@@ -171,16 +230,133 @@ fn load_game_data_from_ron_reads_step_based_skill_schema() {
         .skill_data
         .get_by_id("mountain_mass_consumption")
         .expect("Mountain skill should exist in RON data");
-    assert!(mountain_skill.steps[0].defense_tile_range.is_some());
+    assert!(matches!(
+        &mountain_skill.steps[0].delivery,
+        DeliveryDef::TileArea { footprint, .. } if !footprint.rows.is_empty()
+    ));
     assert!(matches!(
         mountain_skill.steps[0].delivery,
         DeliveryDef::TileArea {
             area: game_core::game::ability::SkillTileAreaDeliveryDef {
                 anchor: SkillAreaAnchorSource::CastTarget,
                 ..
-            }
+            },
+            ..
         }
     ));
+}
+
+#[test]
+fn live_skills_pin_explicit_cast_selection_independent_from_weapon_profiles() {
+    let game_data = common::load_game_data_from_ron();
+    let actual = game_data
+        .skill_data
+        .skills
+        .iter()
+        .map(|skill| {
+            let SkillCastTargetingDef::Explicit { target, .. } = &skill.cast_targeting;
+            let selection = match target {
+                SkillTarget::SelfUnit => "self",
+                SkillTarget::EnemySingle {
+                    rule: UnitTargetRule::Nearest,
+                } => "nearest",
+                SkillTarget::EnemySingle {
+                    rule: UnitTargetRule::CurrentTarget,
+                } => "current_target",
+                SkillTarget::EnemySingle {
+                    rule: UnitTargetRule::LowestHealthEnemy,
+                } => "lowest_health_enemy",
+                SkillTarget::CastTarget => "cast_target",
+            };
+            (skill.id.to_string(), selection.to_string())
+        })
+        .collect::<BTreeSet<_>>();
+    let expected = BTreeSet::from([
+        (
+            "unknown_distortion_strike".to_string(),
+            "nearest".to_string(),
+        ),
+        (
+            "queen_of_hatred_magical_beam".to_string(),
+            "nearest".to_string(),
+        ),
+        (
+            "little_red_hunt_the_prey".to_string(),
+            "current_target".to_string(),
+        ),
+        (
+            "mountain_mass_consumption".to_string(),
+            "nearest".to_string(),
+        ),
+        (
+            "melting_love_slime_infection".to_string(),
+            "lowest_health_enemy".to_string(),
+        ),
+        (
+            "nothing_there_goodbye".to_string(),
+            "current_target".to_string(),
+        ),
+        (
+            "white_night_pale_benediction".to_string(),
+            "self".to_string(),
+        ),
+        (
+            "freischutz_magic_bullet".to_string(),
+            "lowest_health_enemy".to_string(),
+        ),
+        (
+            "funeral_butterfly_eulogy_volley".to_string(),
+            "current_target".to_string(),
+        ),
+        ("laetitia_surprise_gift".to_string(), "nearest".to_string()),
+        (
+            "snow_queen_crystal_prison".to_string(),
+            "current_target".to_string(),
+        ),
+        ("rudolta_sleigh_charge".to_string(), "nearest".to_string()),
+        ("silent_orchestra_finale".to_string(), "nearest".to_string()),
+        (
+            "censored_mind_break".to_string(),
+            "current_target".to_string(),
+        ),
+        ("yin_black_pulse".to_string(), "nearest".to_string()),
+        ("yang_white_resonance".to_string(), "self".to_string()),
+        (
+            "burrowing_heaven_gaze_punishment".to_string(),
+            "current_target".to_string(),
+        ),
+        (
+            "parasite_tree_root_blessing".to_string(),
+            "self".to_string(),
+        ),
+        ("porcubbus_spore_bloom".to_string(), "nearest".to_string()),
+        (
+            "scarecrow_wisdom_reap".to_string(),
+            "lowest_health_enemy".to_string(),
+        ),
+        (
+            "woodsman_heart_rip".to_string(),
+            "current_target".to_string(),
+        ),
+        (
+            "paradise_lost_judgement".to_string(),
+            "current_target".to_string(),
+        ),
+        (
+            "resonance_pendant_opening_focus".to_string(),
+            "self".to_string(),
+        ),
+        (
+            "fragment_freischutz_black_round".to_string(),
+            "lowest_health_enemy".to_string(),
+        ),
+        (
+            "fragment_funeral_butterfly_eulogy".to_string(),
+            "lowest_health_enemy".to_string(),
+        ),
+    ]);
+
+    assert_eq!(actual, expected);
 }
 
 #[test]
@@ -284,18 +460,83 @@ fn load_game_data_from_ron_reads_skill_fragment_schema() {
 }
 
 #[test]
-fn load_game_data_from_ron_reads_starter_employee_candidates() {
+fn load_game_data_from_ron_reads_unified_employee_definitions() {
     let game_data = common::load_game_data_from_ron();
 
-    let candidates = &game_data.starter_employee_data.candidates;
-    assert_eq!(candidates.len(), 6);
+    let definitions = &game_data.employee_definition_data.definitions;
+    assert_eq!(definitions.len(), 12);
     assert!(game_data
-        .starter_employee_data
+        .employee_definition_data
         .get_by_id("field_medic")
         .is_some());
-    assert!(candidates
+    assert_eq!(
+        game_data
+            .employee_definition_data
+            .starter_definitions()
+            .len(),
+        6
+    );
+    assert!(definitions
         .iter()
-        .all(|candidate| !candidate.background.trim().is_empty()));
+        .all(|definition| !definition.profile.background.trim().is_empty()));
+
+    let expected_aptitudes = [
+        ("field_medic", EventAptitude::Medical),
+        ("hq_field_medic", EventAptitude::Medical),
+        ("breach_guard", EventAptitude::Security),
+        ("hq_security_guard", EventAptitude::Security),
+        ("records_clerk", EventAptitude::Analysis),
+        ("hq_records_observer", EventAptitude::Analysis),
+        ("scout_runner", EventAptitude::Reconnaissance),
+        ("hq_recovery_runner", EventAptitude::Reconnaissance),
+        ("containment_trainee", EventAptitude::Containment),
+        ("hq_containment_aide", EventAptitude::Containment),
+        ("maintenance_tech", EventAptitude::Maintenance),
+        ("hq_maintenance_aide", EventAptitude::Maintenance),
+    ];
+    for (definition_id, expected) in expected_aptitudes {
+        assert_eq!(
+            game_data
+                .employee_definition_data
+                .get_by_id(definition_id)
+                .expect("approved employee definition should exist")
+                .profile
+                .event_aptitude,
+            expected,
+            "unexpected EventAptitude for {definition_id}"
+        );
+    }
+}
+
+#[test]
+fn live_archive_scanner_authors_event_modifier_key_and_owner_path() {
+    let game_data = common::load_game_data_from_ron();
+    let scanner = game_data
+        .equipment_data
+        .get_by_id("archive_scanner")
+        .expect("archive_scanner should exist");
+
+    assert_eq!(scanner.event_check_modifiers.len(), 1);
+    assert_eq!(
+        scanner.event_check_modifiers[0].aptitude,
+        EventAptitude::Analysis
+    );
+    assert_eq!(scanner.event_check_modifiers[0].amount, 2);
+    assert_eq!(scanner.event_choice_keys.len(), 1);
+    assert_eq!(
+        scanner.event_choice_keys[0].as_str(),
+        "sealed_archive_access"
+    );
+
+    let maintenance = game_data
+        .employee_definition_data
+        .get_by_id("maintenance_tech")
+        .expect("maintenance_tech should exist");
+    assert!(maintenance
+        .initial_loadout
+        .equipment_ids
+        .iter()
+        .any(|equipment_id| equipment_id == "archive_scanner"));
 }
 
 #[test]
@@ -328,19 +569,70 @@ fn live_experience_rewards_declare_target_policy() {
 }
 
 #[test]
-fn load_game_data_from_ron_reads_separate_recruitment_candidates() {
+fn live_pve_rewards_use_fixed_current_grant_set() {
+    let game_data = common::load_game_data_from_ron();
+    let mut observed_effects = BTreeSet::new();
+
+    for encounter in &game_data.pve_data.encounters {
+        assert_eq!(
+            encounter.reward_mode,
+            RewardMode::ClaimAll,
+            "live combat rewards must be automatically granted"
+        );
+        assert!(
+            !encounter.reward_uuids.is_empty(),
+            "live encounter '{}' must author fixed rewards",
+            encounter.id
+        );
+        for reward_uuid in &encounter.reward_uuids {
+            let reward = game_data
+                .reward_data
+                .get_by_uuid(reward_uuid)
+                .expect("validated live encounter reward reference");
+            for effect in &reward.effects {
+                let kind = match effect {
+                    RewardEffect::GrantEnkephalin { .. } => "enkephalin",
+                    RewardEffect::GrantEquipmentMaterial { .. } => "equipment_material",
+                    RewardEffect::GrantSkillFragment { .. } => "skill_fragment",
+                    RewardEffect::GrantSkillFragmentResearch { .. } => "research_progress",
+                    other => panic!(
+                        "live PVE reward '{}' uses unsupported current effect: {:?}",
+                        reward.id, other
+                    ),
+                };
+                observed_effects.insert(kind);
+            }
+        }
+    }
+
+    assert_eq!(
+        observed_effects,
+        BTreeSet::from([
+            "enkephalin",
+            "equipment_material",
+            "research_progress",
+            "skill_fragment",
+        ])
+    );
+}
+
+#[test]
+fn load_game_data_from_ron_filters_recruitment_definitions() {
     let game_data = common::load_game_data_from_ron();
 
-    let candidates = &game_data.recruitment_employee_data.candidates;
-    assert!(!candidates.is_empty());
+    let definitions = game_data.employee_definition_data.recruitment_definitions();
+    assert!(!definitions.is_empty());
     assert!(game_data
-        .recruitment_employee_data
+        .employee_definition_data
         .get_by_id("hq_field_medic")
         .is_some());
-    assert!(game_data
-        .starter_employee_data
-        .get_by_id("hq_field_medic")
-        .is_none());
+    assert!(
+        !game_data
+            .employee_definition_data
+            .get_by_id("hq_field_medic")
+            .unwrap()
+            .starter_eligible
+    );
 }
 
 #[test]
@@ -545,20 +837,6 @@ fn live_resource_skill_references_resolve() {
             );
         }
     }
-
-    for artifact in &game_data.artifact_data.items {
-        for binding in &artifact.ability_activations {
-            assert!(
-                game_data
-                    .skill_data
-                    .get_by_id(&binding.ability_id)
-                    .is_some(),
-                "artifact `{}` references missing skill `{}`",
-                artifact.id,
-                binding.ability_id
-            );
-        }
-    }
 }
 
 #[test]
@@ -678,46 +956,34 @@ fn live_pve_references_resolve() {
 #[test]
 fn live_map_content_pools_are_safe_and_resolve() {
     let game_data = common::load_game_data_from_ron();
-    let map_nodes = MapNodeDefinitionDatabase::builtin();
-    let generation_policy = MapGenerationPolicyData::builtin();
-    let boss_depth = MapGenerationConfig::default().depth_count;
+    let map_nodes = game_data.map_node_definitions();
+    let facility_templates = game_data.facility_templates();
+    let assignment_profiles = game_data.node_assignment_profiles();
 
-    assert!(generation_policy.validate_contract().is_ok());
-    for entry in &generation_policy.early_depth_category_weights {
-        assert!(
-            !map_nodes
-                .weighted_candidates(1, Some(entry.category), false)
-                .is_empty(),
-            "map generation policy early category {:?} must resolve at depth 1",
-            entry.category
-        );
-    }
-    for entry in &generation_policy.pre_boss_category_weights {
-        assert!(
-            !map_nodes
-                .weighted_candidates(boss_depth - 1, Some(entry.category), false)
-                .is_empty(),
-            "map generation policy pre-boss category {:?} must resolve before boss",
-            entry.category
-        );
-    }
-    for category in &generation_policy.normal_safe_categories {
-        assert!(
-            !map_nodes
-                .weighted_candidates(2, Some(*category), false)
-                .is_empty(),
-            "map generation policy normal safe category {:?} must resolve",
-            category
-        );
-    }
-    for category in &generation_policy.pre_boss_safe_categories {
-        assert!(
-            !map_nodes
-                .weighted_candidates(boss_depth - 1, Some(*category), false)
-                .is_empty(),
-            "map generation policy pre-boss safe category {:?} must resolve",
-            category
-        );
+    assert!(facility_templates.validate_contract().is_ok());
+    assert!(assignment_profiles
+        .validate_contract(facility_templates)
+        .is_ok());
+    for template in &facility_templates.templates {
+        for slot in &template.slots {
+            for category in &slot.allowed_categories {
+                // Start nodes are structural facility anchors synthesized by the
+                // generator; they intentionally have no content-pool definition.
+                if *category == game_core::game::map::MapNodeCategory::Start {
+                    continue;
+                }
+                assert!(
+                    map_nodes
+                        .nodes
+                        .iter()
+                        .any(|definition| definition.category == *category),
+                    "facility template `{}` slot `{}` category {:?} must resolve to a node definition",
+                    template.id.as_str(),
+                    slot.id.as_str(),
+                    category
+                );
+            }
+        }
     }
 
     for definition in &map_nodes.nodes {
@@ -753,8 +1019,12 @@ fn live_map_content_pools_are_safe_and_resolve() {
                     "headquarters contact node must expose at least one recruitment candidate"
                 );
                 assert!(
-                    game_data.recruitment_employee_data.candidates.len() >= *candidate_count,
-                    "recruitment_candidates.ron must cover headquarters candidate_count"
+                    game_data
+                        .employee_definition_data
+                        .recruitment_definitions()
+                        .len()
+                        >= *candidate_count,
+                    "employee definitions must cover headquarters candidate_count"
                 );
             }
             game_core::game::map::MapNodePayload::Reward {
@@ -781,6 +1051,110 @@ fn live_map_content_pools_are_safe_and_resolve() {
             _ => {}
         }
     }
+}
+
+#[test]
+fn live_sealed_archive_event_and_reachable_node_pin_the_vertical_slice_contract() {
+    let game_data = common::load_game_data_from_ron();
+    let event = game_data
+        .event_data
+        .get_by_id("sealed_archive_recovery_01")
+        .expect("sealed archive checked Event must be published");
+    assert_eq!(event.entry_scene_id.as_str(), "archive_check");
+
+    let checked_scenes = event
+        .scenes
+        .iter()
+        .filter_map(|scene| match &scene.next {
+            EventSceneNext::EmployeeCheckChoices { choices } => Some((scene, choices)),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(checked_scenes.len(), 1);
+    let (check_scene, choices) = checked_scenes[0];
+    assert_eq!(check_scene.id.as_str(), "archive_check");
+    assert_eq!(choices.len(), 2);
+
+    let decode = choices
+        .iter()
+        .find(|choice| choice.id.as_str() == "decode_archive_seal")
+        .expect("decode choice");
+    assert_eq!(decode.check.aptitude, EventAptitude::Analysis);
+    assert_eq!(decode.check.dc, 16);
+    assert_eq!(
+        decode
+            .check
+            .required_choice_key
+            .as_ref()
+            .map(|key| key.as_str()),
+        Some("sealed_archive_access")
+    );
+    assert!(matches!(
+        decode.success_action.as_ref(),
+        Some(EventSuccessAction::Grant { effects })
+            if effects == &[RewardEffect::GrantEnkephalin { amount: 80 }]
+    ));
+    assert_eq!(decode.success_scene_id.as_str(), "archive_decoded");
+    assert_eq!(decode.failure_scene_id.as_str(), "archive_seal_rejected");
+
+    let stabilize = choices
+        .iter()
+        .find(|choice| choice.id.as_str() == "stabilize_archive_power")
+        .expect("stabilize choice");
+    assert_eq!(stabilize.check.aptitude, EventAptitude::Maintenance);
+    assert_eq!(stabilize.check.dc, 12);
+    assert!(stabilize.check.required_choice_key.is_none());
+    assert!(matches!(
+        stabilize.success_action.as_ref(),
+        Some(EventSuccessAction::Grant { effects })
+            if effects == &[RewardEffect::GrantEnkephalin { amount: 30 }]
+    ));
+    assert_eq!(
+        stabilize.success_scene_id.as_str(),
+        "archive_power_stabilized"
+    );
+    assert_eq!(stabilize.failure_scene_id.as_str(), "archive_power_lost");
+
+    let archive_node = game_data
+        .map_node_definitions()
+        .nodes
+        .iter()
+        .find(|definition| definition.kind_id.as_str() == "event_sealed_archive")
+        .expect("checked Event must have an explicit generated-map definition");
+    assert_eq!(archive_node.category, MapNodeCategory::Event);
+    assert!(archive_node.weight > 0);
+    assert!(matches!(
+        &archive_node.payload,
+        MapNodePayload::Event { event_id: Some(event_id) }
+            if event_id.as_str() == "sealed_archive_recovery_01"
+    ));
+
+    let scanner = game_data
+        .equipment_data
+        .get_by_id("archive_scanner")
+        .expect("archive scanner provider must be published");
+    assert!(scanner
+        .event_check_modifiers
+        .iter()
+        .any(|modifier| { modifier.aptitude == EventAptitude::Analysis && modifier.amount == 2 }));
+    assert!(scanner
+        .event_choice_keys
+        .iter()
+        .any(|key| key.as_str() == "sealed_archive_access"));
+
+    let technician = game_data
+        .employee_definition_data
+        .get_by_id("maintenance_tech")
+        .expect("maintenance technician must be published");
+    assert_eq!(
+        technician.profile.event_aptitude,
+        EventAptitude::Maintenance
+    );
+    assert!(technician
+        .initial_loadout
+        .equipment_ids
+        .iter()
+        .any(|id| id == "archive_scanner"));
 }
 
 #[test]
@@ -1122,7 +1496,6 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
 #[test]
 fn live_combat_previews_include_required_ad_ap_threat_warning_tags() {
     let game_data = common::load_game_data_from_ron();
-    game_data.validate_generated_combat_preview_contracts();
     let seeds = [0, 1, 17, 41, 99];
 
     for encounter in &game_data.pve_data.encounters {

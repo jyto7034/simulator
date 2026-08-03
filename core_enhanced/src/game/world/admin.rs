@@ -11,7 +11,7 @@ use serde::Serialize;
 use serde_json::{json, Value};
 
 use super::GameCore;
-use crate::game::{behavior::GameError, enums::RewardMode, map::SupportNodeMode};
+use crate::game::{behavior::GameError, enums::RewardMode};
 
 const ADMIN_NODE_NS: u64 = 0x4144_4d49_4e4e_4f44; // "ADMINNOD"
 
@@ -42,19 +42,14 @@ impl GameCore {
                 "AdminDumpRoster",
                 json!({ "roster": self.get_employee_roster_snapshot_json()? }),
             ),
-            AdminCommand::AdminDumpAllowedActions => self.admin_output(
-                "AdminDumpAllowedActions",
-                json!({ "allowed_actions": self.get_allowed_actions() }),
+            AdminCommand::AdminDumpActionCapabilities => self.admin_output(
+                "AdminDumpActionCapabilities",
+                json!({ "action_capabilities": self.get_action_capabilities() }),
             ),
             AdminCommand::AdminDumpGrantCatalog => self.admin_dump_grant_catalog()?,
-            AdminCommand::AdminEnterSupport {
-                support_type,
-                support_mode,
-            } => self.admin_enter_support(
-                support_type,
-                support_mode.unwrap_or(SupportNodeMode::Known),
-            )?,
+            AdminCommand::AdminEnterSavePoint => self.admin_enter_save_point()?,
             AdminCommand::AdminEnterMaintenance => self.admin_enter_maintenance()?,
+            AdminCommand::AdminEnterEvent { event_id } => self.admin_enter_event(event_id)?,
             AdminCommand::AdminEnterShop {
                 shop_id,
                 shop_pool_id,
@@ -82,9 +77,6 @@ impl GameCore {
                 definition_id,
                 count,
             } => self.admin_grant_consumable(&definition_id, count)?,
-            AdminCommand::AdminGrantArtifact { definition_id } => {
-                self.admin_grant_artifact(&definition_id)?
-            }
             AdminCommand::AdminGrantSkillFragment { fragment_id, count } => {
                 self.admin_grant_skill_fragment(&fragment_id, count)?
             }
@@ -95,19 +87,14 @@ impl GameCore {
             AdminCommand::AdminGrantFragmentDust { amount } => {
                 self.admin_grant_fragment_dust(amount)?
             }
-            AdminCommand::AdminSetEmployeeHp {
+            AdminCommand::AdminSetEmployeeCondition {
                 employee_uuid,
-                current_hp,
-                max_hp,
-            } => self.admin_set_employee_hp(employee_uuid, current_hp, max_hp)?,
-            AdminCommand::AdminSetEmployeeTrauma {
-                employee_uuid,
+                physical_damage,
                 trauma,
-            } => self.admin_set_employee_trauma(employee_uuid, trauma)?,
+            } => self.admin_set_employee_condition(employee_uuid, physical_damage, trauma)?,
             AdminCommand::AdminSetEnkephalin { amount } => self.admin_set_enkephalin(amount),
         };
 
-        self.sync_roster_order_with_owned_units()?;
         Ok(output)
     }
 

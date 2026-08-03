@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use std::collections::VecDeque;
 use tracing::warn;
 
 use crate::game::{
@@ -11,9 +10,10 @@ use crate::game::{
     },
     determinism,
     map::{
-        GameMode, MapEdgeDirection, MapEdgeDto, MapNode, MapNodeCategory, MapNodeId, MapNodeKindId,
-        MapNodeOmenOverlayDto, MapNodePayload, MapNodeState, MapNodeVisibility, MapProgression,
-        MapSlotId, RunMap, RunProgression,
+        FacilityCapstoneEntryInput, FacilityCapstoneRequest, FacilityMapGenerator,
+        FacilityTerminalResolution, GameMode, MapNodeCategory, MapNodeId, MapNodeOmenOverlayDto,
+        MapNodePayload, MapNodeState, MapNodeVisibility, MapProgression, MapSlotId, MapTemplateId,
+        RunMap, RunProgression,
     },
     skill_fragment::SkillFragmentInventory,
 };
@@ -218,43 +218,41 @@ pub fn force_boss_node_if_ready(
     if active.completed_steps.len() < chain.required_steps as usize {
         return;
     }
-    let current_node_id = progression
-        .current_node_id
-        .unwrap_or_else(|| panic!("boss omen chain completed without current map node"));
-    let current = map
-        .node(current_node_id)
-        .unwrap_or_else(|| panic!("boss omen completed source node is missing from map"))
-        .clone();
-
-    let boss_node_id = unique_forced_boss_node_id(map, run_progression, current_node_id);
-    let (depth, lane) = unique_forced_boss_slot(map, current.depth.saturating_add(1), current.lane);
-    let boss_node = MapNode {
-        id: boss_node_id,
-        depth,
-        lane,
-        slot_id: MapSlotId::for_grid_position(depth, lane),
-        kind_id: MapNodeKindId::new("boss_omen_final_boss"),
-        category: MapNodeCategory::Boss,
-        state: MapNodeState::Available,
-        visibility: MapNodeVisibility::Revealed,
-        payload: MapNodePayload::Encounter {
-            encounter_id: Some(chain.boss_encounter_id.clone()),
+    let floor_difficulty_authority = map
+        .nodes
+        .iter()
+        .find_map(|node| node.combat_difficulty.clone())
+        .expect("manifested floor must carry combat difficulty authority");
+    let mut generated = FacilityMapGenerator::generate_capstone(
+        run_progression.run_seed,
+        run_progression.floor_index(),
+        &FacilityCapstoneRequest {
+            template_id: MapTemplateId::new("boss_omen_capstone"),
+            entries: vec![FacilityCapstoneEntryInput {
+                slot_id: MapSlotId::new("boss_chamber"),
+                payload: MapNodePayload::Encounter {
+                    encounter_id: Some(chain.boss_encounter_id.clone()),
+                },
+            }],
         },
-        omen: None,
+        &game_data.map_catalogs,
+    )
+    .unwrap_or_else(|error| panic!("validated Boss Omen capstone must generate: {error}"));
+    let [boss_node_id] = generated.entry_node_ids.as_slice() else {
+        panic!("Boss Omen capstone must expose exactly one Entry node");
     };
-    for node in &mut map.nodes {
-        if node.state == MapNodeState::Available {
-            node.state = MapNodeState::Unavailable;
-        }
-    }
-    map.nodes.push(boss_node);
-    map.edges.push(MapEdgeDto {
-        from_node_id: current_node_id,
-        to_node_id: boss_node_id,
-        direction: MapEdgeDirection::ForwardOnly,
-    });
-    map.terminal_node_id = boss_node_id;
-    progression.available_node_ids = vec![boss_node_id];
+    let boss_node_id = *boss_node_id;
+    assign_role_difficulty(
+        generated
+            .map
+            .node_mut(boss_node_id)
+            .expect("Boss Omen capstone entry must exist"),
+        crate::game::data::run_policy_data::CombatNodeDifficultyRole::BossOmen,
+        &floor_difficulty_authority,
+        game_data,
+    );
+    *map = generated.map;
+    *progression = MapProgression::from_map(map);
     state.forced_boss = Some(ForcedBossOmenNodeState {
         node_id: boss_node_id,
         chain_id: chain.id.clone(),
@@ -263,46 +261,53 @@ pub fn force_boss_node_if_ready(
     });
 }
 
-fn unique_forced_boss_node_id(
-    map: &RunMap,
-    run_progression: &RunProgression,
-    source_node_id: MapNodeId,
-) -> MapNodeId {
-    for index in 0..u64::MAX {
-        let uuid = determinism::uuid_v4_from_seed(
-            determinism::seed_with_uuid(
-                run_progression.current_floor_seed(),
-                0x424F_4D45_4E46,
-                source_node_id.0,
-            ),
-            0x424F_4D45_4E42,
-            index,
-        );
-        let node_id = MapNodeId::new(uuid);
-        if map.node(node_id).is_none() {
-            return node_id;
-        }
+pub fn complete_forced_boss_with_exit_gate(
+    map: &mut RunMap,
+    progression: &mut MapProgression,
+    template: &crate::game::map::FacilityTemplate,
+    state: &mut BossOmenRunState,
+) -> Result<bool, crate::game::map::MapProgressionError> {
+    let Some(forced_boss_id) = state.forced_boss_node_id() else {
+        return Ok(false);
+    };
+    if progression.current_node_id != Some(forced_boss_id) {
+        return Ok(false);
     }
-    unreachable!("deterministic boss omen node id space exhausted")
-}
+    let forced_boss = map
+        .node(forced_boss_id)
+        .ok_or(crate::game::map::MapProgressionError::MissingNode)?
+        .category;
+    if forced_boss != MapNodeCategory::Boss {
+        return Ok(false);
+    }
 
-fn unique_forced_boss_slot(map: &RunMap, start_depth: u8, preferred_lane: u8) -> (u8, u8) {
-    for depth_offset in 0..u8::MAX {
-        let depth = start_depth.saturating_add(depth_offset);
-        for lane_offset in 0..u8::MAX {
-            let lanes = [
-                preferred_lane.saturating_add(lane_offset),
-                preferred_lane.saturating_sub(lane_offset),
-            ];
-            for lane in lanes {
-                let slot_id = MapSlotId::for_grid_position(depth, lane);
-                if map.nodes.iter().all(|node| node.slot_id != slot_id) {
-                    return (depth, lane);
-                }
-            }
-        }
+    let reached_terminal = progression.complete_current_node(map, template)?;
+    if reached_terminal.is_some() {
+        return Ok(false);
     }
-    panic!("unable to allocate unique boss omen map slot")
+
+    let gate_node_ids = map
+        .terminals
+        .iter()
+        .filter(|terminal| terminal.resolution == FacilityTerminalResolution::BossOmenExitGate)
+        .map(|terminal| terminal.node_id)
+        .collect::<Vec<_>>();
+    if gate_node_ids.is_empty() {
+        return Ok(false);
+    }
+    for gate_node_id in &gate_node_ids {
+        let gate = map
+            .node_mut(*gate_node_id)
+            .ok_or(crate::game::map::MapProgressionError::MissingNode)?;
+        gate.state = MapNodeState::Available;
+        gate.visibility = MapNodeVisibility::Revealed;
+    }
+    progression.available_node_ids = gate_node_ids;
+    progression
+        .available_node_ids
+        .sort_by_key(|node_id| node_id.0.as_u128());
+    state.clear_after_forced_boss_victory(forced_boss_id);
+    Ok(true)
 }
 
 fn has_awakened_skill_fragment(skill_fragments: &SkillFragmentInventory) -> bool {
@@ -356,7 +361,14 @@ fn apply_active_chain_step(
             active.chain_id.as_str()
         );
     };
-    place_step(map, run_progression, chain, active.next_step_index, state);
+    place_step(
+        map,
+        run_progression,
+        chain,
+        active.next_step_index,
+        game_data,
+        state,
+    );
 }
 
 fn apply_provisional_chain_step(
@@ -377,7 +389,14 @@ fn apply_provisional_chain_step(
             provisional.chain_id.as_str()
         );
     };
-    place_step(map, run_progression, chain, provisional.step_index, state);
+    place_step(
+        map,
+        run_progression,
+        chain,
+        provisional.step_index,
+        game_data,
+        state,
+    );
 }
 
 fn place_step(
@@ -385,6 +404,7 @@ fn place_step(
     run_progression: &RunProgression,
     chain: &BossOmenChain,
     step_index: usize,
+    game_data: &GameDataBase,
     state: &mut BossOmenRunState,
 ) {
     let Some(step) = chain.steps.get(step_index) else {
@@ -419,6 +439,16 @@ fn place_step(
             node.payload = MapNodePayload::Encounter {
                 encounter_id: step.encounter_id.clone(),
             };
+            let authority = node
+                .combat_difficulty
+                .clone()
+                .expect("Boss Omen combat source must start from a manifested combat node");
+            assign_role_difficulty(
+                node,
+                crate::game::data::run_policy_data::CombatNodeDifficultyRole::BossOmen,
+                &authority,
+                game_data,
+            );
         }
     }
     node.omen = Some(MapNodeOmenOverlayDto {
@@ -443,6 +473,37 @@ fn place_step(
     });
 }
 
+fn assign_role_difficulty(
+    node: &mut crate::game::map::MapNode,
+    role: crate::game::data::run_policy_data::CombatNodeDifficultyRole,
+    authority: &crate::game::map::MapNodeCombatDifficulty,
+    game_data: &GameDataBase,
+) {
+    let profile = game_data
+        .run_policy
+        .combat_difficulty_profile(&authority.difficulty_profile_id)
+        .expect("manifested combat difficulty profile must remain live");
+    let tuning = profile
+        .role_tuning
+        .iter()
+        .find(|entry| entry.role == role)
+        .expect("validated difficulty profile must define Boss Omen tuning");
+    let target_power = u64::try_from(
+        u128::from(authority.floor_power_anchor)
+            .saturating_mul(u128::from(tuning.tuning.target_power_percent))
+            .div_ceil(100),
+    )
+    .unwrap_or(u64::MAX);
+    node.combat_difficulty = Some(crate::game::map::MapNodeCombatDifficulty {
+        power_model_version: authority.power_model_version,
+        difficulty_profile_id: authority.difficulty_profile_id.clone(),
+        class: crate::game::map::MapNodeCombatDifficultyClass::Role(role),
+        monolith_stage: None,
+        floor_power_anchor: authority.floor_power_anchor,
+        target_power,
+    });
+}
+
 fn select_overlay_node(
     map: &RunMap,
     run_progression: &RunProgression,
@@ -463,99 +524,11 @@ fn select_overlay_node(
         })
         .collect::<Vec<_>>();
     candidates.sort_by_key(|node| {
-        (
-            map_distance_to_terminal(map, node.id),
-            node.depth,
-            node.lane,
-            determinism::seed_with_uuid(
-                run_progression.current_floor_seed(),
-                0x424F_4D45_4E32,
-                node.id.0,
-            ),
+        determinism::seed_with_uuid(
+            run_progression.current_floor_seed(),
+            0x424F_4D45_4E32,
+            node.id.0,
         )
     });
     candidates.first().map(|node| node.id)
-}
-
-fn map_distance_to_terminal(map: &RunMap, node_id: MapNodeId) -> u32 {
-    let mut frontier = VecDeque::from([(node_id, 0_u32)]);
-    let mut visited = Vec::new();
-    while let Some((current, distance)) = frontier.pop_front() {
-        if current == map.terminal_node_id {
-            return distance;
-        }
-        if visited.contains(&current) {
-            continue;
-        }
-        visited.push(current);
-        for neighbor in map.bidirectional_neighbors(current) {
-            frontier.push_back((neighbor, distance.saturating_add(1)));
-        }
-    }
-    u32::MAX
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::game::map::{MapEdgeDirection, MapTemplateId, DEFAULT_MAP_TEMPLATE_ID};
-    use uuid::Uuid;
-
-    fn test_node(raw_id: u128, depth: u8, lane: u8) -> MapNode {
-        MapNode {
-            id: MapNodeId::new(Uuid::from_u128(raw_id)),
-            depth,
-            lane,
-            slot_id: MapSlotId::for_grid_position(depth, lane),
-            kind_id: MapNodeKindId::new(format!("node_{raw_id}")),
-            category: MapNodeCategory::Combat,
-            state: MapNodeState::Available,
-            visibility: MapNodeVisibility::Revealed,
-            payload: MapNodePayload::None,
-            omen: None,
-        }
-    }
-
-    fn test_edge(from_node_id: MapNodeId, to_node_id: MapNodeId) -> MapEdgeDto {
-        MapEdgeDto {
-            from_node_id,
-            to_node_id,
-            direction: MapEdgeDirection::Bidirectional,
-        }
-    }
-
-    #[test]
-    fn map_distance_to_terminal_uses_shortest_bfs_path() {
-        let start = MapNodeId::new(Uuid::from_u128(1));
-        let long_a = MapNodeId::new(Uuid::from_u128(2));
-        let long_b = MapNodeId::new(Uuid::from_u128(3));
-        let terminal = MapNodeId::new(Uuid::from_u128(4));
-        let short = MapNodeId::new(Uuid::from_u128(99));
-        let unreachable = MapNodeId::new(Uuid::from_u128(100));
-
-        let map = RunMap {
-            map_template_id: MapTemplateId::new(DEFAULT_MAP_TEMPLATE_ID),
-            nodes: vec![
-                test_node(1, 0, 0),
-                test_node(2, 1, 0),
-                test_node(3, 2, 0),
-                test_node(4, 3, 0),
-                test_node(99, 1, 1),
-                test_node(100, 9, 9),
-            ],
-            edges: vec![
-                test_edge(start, long_a),
-                test_edge(long_a, long_b),
-                test_edge(long_b, terminal),
-                test_edge(start, short),
-                test_edge(short, terminal),
-            ],
-            start_node_ids: vec![start],
-            terminal_node_id: terminal,
-        };
-
-        assert_eq!(map_distance_to_terminal(&map, start), 2);
-        assert_eq!(map_distance_to_terminal(&map, short), 1);
-        assert_eq!(map_distance_to_terminal(&map, unreachable), u32::MAX);
-    }
 }

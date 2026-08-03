@@ -264,7 +264,7 @@ mod tests {
     }
 
     #[test]
-    fn manual_wave_counts_are_not_scaled_by_floor_budget_multiplier() {
+    fn manual_wave_counts_are_not_scaled_by_generated_wave_budget_multiplier() {
         let game_data = test_game_data();
         let wave = PveWaveData {
             id: "manual".to_string(),

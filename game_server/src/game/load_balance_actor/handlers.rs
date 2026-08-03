@@ -41,12 +41,27 @@ impl Handler<GetOrCreatePlayerActor> for LoadBalanceActor {
         }
 
         info!("Creating PlayerGameActor for player {}", msg.player_id);
-        let actor = PlayerGameActor::new(
-            msg.player_id,
-            game_core::game::world::GameCore::new(msg.game_data, msg.run_seed),
-            ctx.address(),
+        let encounter_compendium_profile = self
+            .encounter_compendium_persistence
+            .as_ref()
+            .and_then(|persistence| persistence.lock().ok()?.profile().ok())
+            .unwrap_or_default();
+        let game_core = game_core::game::world::GameCore::new_with_encounter_compendium_profile(
+            msg.game_data,
+            msg.run_seed,
+            encounter_compendium_profile,
         )
-        .start();
+        .expect(
+            "stored encounter compendium profile was validated against this server's live catalogs",
+        );
+        let mut actor = PlayerGameActor::new(msg.player_id, game_core, ctx.address());
+        if let Some(store) = self.active_run_store.clone() {
+            actor = actor.with_active_run_store(store);
+        }
+        if let Some(persistence) = self.encounter_compendium_persistence.clone() {
+            actor = actor.with_encounter_compendium_persistence(persistence);
+        }
+        let actor = actor.start();
         self.players.insert(msg.player_id, actor.clone());
         actor
     }
@@ -79,7 +94,9 @@ impl Handler<GetPlayerCount> for LoadBalanceActor {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::game::player_game_actor::messages::GetEncounterCompendiumProfile;
     use game_core::game::data::{GameDataBase, GameDataBuilder};
+    use game_core::game::encounter_compendium::EncounterCompendiumProfileState;
     use std::sync::Arc;
     use uuid::Uuid;
 
@@ -119,5 +136,56 @@ mod tests {
                 .expect("player count query should succeed"),
             1
         );
+    }
+
+    #[actix_web::test]
+    async fn different_transport_players_share_local_install_encounter_compendium_profile() {
+        let directory = tempfile::tempdir().unwrap();
+        let active_store = crate::persistence::active_run_store::ActiveRunStore::open(
+            directory.path().join("active"),
+        )
+        .unwrap();
+        let profile_store =
+            crate::persistence::encounter_compendium_store::EncounterCompendiumStore::open(
+                directory.path().join("profile"),
+            )
+            .unwrap();
+        let mut persistence = crate::persistence::encounter_compendium_store::EncounterCompendiumPersistence::bootstrap(profile_store);
+        let second_player_id = Uuid::new_v4();
+        let game_data =
+            GameDataBase::load_live_embedded().expect("embedded live gameplay data should load");
+        let abnormality_id = game_data
+            .abnormality_data
+            .items
+            .first()
+            .expect("live abnormality catalog")
+            .id
+            .clone();
+        let profile = EncounterCompendiumProfileState {
+            discovered_abnormality_ids: std::collections::BTreeSet::from([abnormality_id]),
+            defeated_abnormality_ids: std::collections::BTreeSet::new(),
+            discovered_corrosion_profile_ids: std::collections::BTreeSet::new(),
+            defeated_corrosion_profile_ids: std::collections::BTreeSet::new(),
+        };
+        assert!(matches!(
+            persistence.merge_and_persist(profile.clone()),
+            crate::persistence::encounter_compendium_store::EncounterCompendiumPersistOutcome::Saved
+        ));
+        let load_balance = LoadBalanceActor::with_persistence(active_store, persistence).start();
+
+        let actor = load_balance
+            .send(GetOrCreatePlayerActor {
+                player_id: second_player_id,
+                game_data,
+                run_seed: 99,
+            })
+            .await
+            .expect("actor recreation should succeed");
+        let restored = actor
+            .send(GetEncounterCompendiumProfile)
+            .await
+            .expect("profile query should succeed");
+
+        assert_eq!(restored, profile);
     }
 }

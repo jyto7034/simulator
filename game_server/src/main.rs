@@ -5,7 +5,12 @@ use game_core::game::data::GameDataBase;
 use game_server::{
     env::Settings,
     game::{load_balance_actor::LoadBalanceActor, player_game_actor::session::PlayerGameSession},
-    init_retry_config, AppState, LoggerManager,
+    init_retry_config,
+    persistence::{
+        active_run_store::ActiveRunStore,
+        encounter_compendium_store::{EncounterCompendiumPersistence, EncounterCompendiumStore},
+    },
+    AppState, LoggerManager,
 };
 use std::{sync::Arc, time::Duration};
 use tracing::{error, info};
@@ -42,11 +47,28 @@ async fn main() -> std::io::Result<()> {
     init_retry_config(&settings.retry).await;
     info!("Retry config initialized");
 
-    let game_data = load_game_data_from_ron();
+    let game_data = load_game_data_from_ron()?;
     info!("Game data loaded for meta-game sessions");
 
     // 10. LoadBalanceActor 시작
-    let load_balance_addr = LoadBalanceActor::new().start();
+    let active_run_directory = settings
+        .persistence
+        .active_run_directory()
+        .map_err(std::io::Error::other)?;
+    let encounter_compendium_directory = settings
+        .persistence
+        .encounter_compendium_directory()
+        .map_err(std::io::Error::other)?;
+    let active_run_store = ActiveRunStore::open(&active_run_directory)
+        .map_err(|error| std::io::Error::other(error.to_string()))?;
+    let encounter_compendium_store =
+        EncounterCompendiumStore::open(&encounter_compendium_directory)
+            .map_err(|error| std::io::Error::other(error.to_string()))?;
+    let encounter_compendium_persistence =
+        EncounterCompendiumPersistence::bootstrap(encounter_compendium_store);
+    let load_balance_addr =
+        LoadBalanceActor::with_persistence(active_run_store, encounter_compendium_persistence)
+            .start();
     info!("LoadBalanceActor started");
 
     let current_run_id = Uuid::new_v4();
@@ -100,6 +122,11 @@ async fn main() -> std::io::Result<()> {
     Ok(())
 }
 
-fn load_game_data_from_ron() -> Arc<GameDataBase> {
-    GameDataBase::load_live_embedded()
+fn load_game_data_from_ron() -> std::io::Result<Arc<GameDataBase>> {
+    GameDataBase::load_live_embedded().map_err(|error| {
+        std::io::Error::new(
+            std::io::ErrorKind::InvalidData,
+            format!("invalid embedded gameplay RON: {error}"),
+        )
+    })
 }

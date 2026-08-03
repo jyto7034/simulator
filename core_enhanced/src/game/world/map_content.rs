@@ -1,42 +1,22 @@
-use tracing::info;
-
 use super::GameCore;
 use crate::game::behavior::{BehaviorResult, GameError};
 use crate::game::data::reward_data::RewardGrantKind;
+use crate::game::data::visual_novel_data::{
+    VisualNovelId, VisualNovelPresentationMode, VisualNovelSceneId,
+};
 use crate::game::determinism;
-use crate::game::enums::{RewardMode, ShopEventOption};
-use crate::game::map::{MapNodeCategory, MapNodeId, MapNodePayload, SupportNodeMode};
+use crate::game::enums::RewardMode;
+use crate::game::map::{MapNodeCategory, MapNodeId, MapNodePayload};
 use crate::game::resources::{
     ActiveNodeContent, GameState, HeadquartersContactSessionState, MaintenanceSessionState,
-    RewardSessionState, ShopSessionState, SupportSessionState,
+    RewardSessionState, SavePointSessionState, ShopSessionState,
 };
 use crate::game::reward::RewardOption;
+use crate::game::visual_novel::{
+    VisualNovelSession, VisualNovelSessionPresentationMode, VisualNovelSource,
+};
 
 impl GameCore {
-    pub(super) fn deliver_research_if_safe_node(
-        &mut self,
-        category: MapNodeCategory,
-    ) -> Result<Vec<crate::game::skill_fragment::SkillFragmentResearchDelivery>, GameError> {
-        if !self.state.research_delivery_policy.can_deliver_on(category) {
-            return Ok(vec![]);
-        }
-
-        let deliveries = self
-            .state
-            .skill_fragments
-            .deliver_pending_research_with_policy(
-                &self.game_data.skill_fragment_data,
-                &self.state.skill_fragment_policy,
-            )?;
-        if !deliveries.is_empty() {
-            info!(
-                "Delivered pending skill fragment research on {:?}: {:?}",
-                category, deliveries
-            );
-        }
-        Ok(deliveries)
-    }
-
     pub(super) fn node_seed(&self, node_id: MapNodeId, namespace: u64) -> u64 {
         let act_seed = self
             .state
@@ -60,6 +40,40 @@ impl GameCore {
             return Ok(None);
         };
 
+        if let Some(session) = self
+            .state
+            .run
+            .as_ref()
+            .and_then(|run| run.shop_sessions.get(&node_id))
+        {
+            return Ok(Some(session.clone()));
+        }
+
+        // The wandering merchant is an Endless-only system actor. Keep the
+        // ordinary default shop pool usable by Standard while replacing a
+        // pooled Shop node with the policy-owned merchant on authored
+        // Endless Floor 4+.
+        let monolith_policy = &self.run_policy().monolith;
+        let use_wandering_merchant = shop_id.is_none()
+            && self.state.run.as_ref().is_some_and(|run| {
+                run.run_progression.game_mode == crate::game::map::GameMode::Endless
+                    && run.run_progression.floor_index().saturating_add(1)
+                        >= monolith_policy.wandering_merchant_min_floor
+            });
+        if use_wandering_merchant {
+            let shop = self
+                .game_data
+                .shop_data
+                .get_by_id(&monolith_policy.wandering_merchant_shop_id)
+                .ok_or_else(|| {
+                    GameError::InvalidStaticData(format!(
+                        "monolith policy references missing wandering merchant shop '{}'",
+                        monolith_policy.wandering_merchant_shop_id
+                    ))
+                })?;
+            return self.build_shop_session(node_id, shop).map(Some);
+        }
+
         if let Some(shop_id) = shop_id {
             let shop = self.game_data.shop_data.get_by_id(shop_id).ok_or_else(|| {
                 GameError::InvalidStaticData(format!(
@@ -67,7 +81,7 @@ impl GameCore {
                     shop_id
                 ))
             })?;
-            return Ok(Some(ShopSessionState::from(shop)));
+            return self.build_shop_session(node_id, shop).map(Some);
         }
 
         let candidates = if let Some(pool_id) = shop_pool_id {
@@ -106,26 +120,66 @@ impl GameCore {
         let index = rng.gen_range(0..candidates.len());
         let shop = candidates[index];
 
-        Ok(Some(ShopSessionState::from(shop)))
+        self.build_shop_session(node_id, shop).map(Some)
     }
 
-    pub(super) fn recruitment_candidates_for_node(
-        &self,
+    pub(super) fn begin_recruitment_session(
+        &mut self,
         node_id: MapNodeId,
         candidate_count: usize,
-    ) -> Vec<crate::game::employee::StarterEmployeeCandidate> {
-        let mut candidates = self.game_data.recruitment_employee_data.candidates.clone();
-        if candidates.is_empty() {
-            return candidates;
-        }
+    ) -> Result<Vec<crate::game::employee::EmployeeDefinition>, GameError> {
+        let mut recruitment = self.run_state()?.recruitment.clone();
+        let definition_ids = recruitment
+            .begin_session(node_id, candidate_count)?
+            .employee_definition_ids
+            .clone();
+        let candidates = definition_ids
+            .iter()
+            .map(|definition_id| {
+                self.game_data
+                    .employee_definition_data
+                    .get_by_id(definition_id)
+                    .cloned()
+                    .ok_or_else(|| {
+                        GameError::InvalidStaticData(format!(
+                            "recruitment queue references missing employee definition '{}'",
+                            definition_id
+                        ))
+                    })
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        recruitment.validate_exact_ownership(
+            &self.game_data.employee_definition_data.definitions,
+            self.roster()?,
+        )?;
+        self.run_state_mut()?.recruitment = recruitment;
+        Ok(candidates)
+    }
 
-        use rand::{seq::SliceRandom, SeedableRng};
-        let seed = self.node_seed(node_id, 0x4851_5F52_4543_5255);
-        let mut rng = rand::rngs::StdRng::seed_from_u64(seed);
-        candidates.shuffle(&mut rng);
-        candidates.truncate(candidate_count.min(candidates.len()));
-        candidates.sort_by(|left, right| left.id.cmp(&right.id));
-        candidates
+    pub(super) fn active_recruitment_candidates(
+        &self,
+    ) -> Result<Vec<crate::game::employee::EmployeeDefinition>, GameError> {
+        let session = self
+            .run_state()?
+            .recruitment
+            .active_session()
+            .ok_or(GameError::InvalidAction)?;
+        session
+            .employee_definition_ids
+            .iter()
+            .map(|definition_id| {
+                self.game_data
+                    .employee_definition_data
+                    .get_by_id(definition_id)
+                    .cloned()
+                    .ok_or_else(|| {
+                        GameError::InvalidStaticData(format!(
+                            "recruitment session references missing employee definition '{}'",
+                            definition_id
+                        ))
+                    })
+            })
+            .collect()
     }
 
     pub(super) fn resolve_map_reward(
@@ -200,7 +254,6 @@ impl GameCore {
         node_id: MapNodeId,
         category: MapNodeCategory,
         payload: &MapNodePayload,
-        research_deliveries: Vec<crate::game::skill_fragment::SkillFragmentResearchDelivery>,
     ) -> Result<Option<BehaviorResult>, GameError> {
         match category {
             MapNodeCategory::Shop => {
@@ -208,27 +261,21 @@ impl GameCore {
                     return Ok(None);
                 };
                 let shop_uuid = shop.uuid;
-                let shop_result = ShopEventOption {
-                    id: shop.id.clone(),
-                    name: shop.name.clone(),
-                    uuid: shop.uuid,
-                    shop_type: shop.shop_type,
-                    can_reroll: shop.can_reroll,
-                    visible_items: shop.visible_items.clone(),
-                };
+                let shop_result = Self::shop_event_option(&shop);
+                self.run_state_mut()?
+                    .shop_sessions
+                    .insert(node_id, shop.clone());
                 self.state.active_node_content = Some(ActiveNodeContent::Shop(shop));
                 self.transition_to(GameState::InShop { shop_uuid })?;
-                Ok(Some(BehaviorResult::ShopState {
-                    shop: shop_result,
-                    research_deliveries,
-                }))
+                self.start_monolith_exchange_if_available()?;
+                Ok(Some(BehaviorResult::ShopState { shop: shop_result }))
             }
             MapNodeCategory::Reward => {
                 let Some(reward) = self.resolve_map_reward(node_id, payload)? else {
                     return Ok(None);
                 };
                 let reward_uuid = reward.stage_uuid;
-                let result = self.reward_state_result_with_deliveries(&reward, research_deliveries);
+                let result = self.reward_state_result(&reward);
                 self.state.active_node_content = Some(ActiveNodeContent::Reward(reward));
                 self.transition_to(GameState::InReward { reward_uuid })?;
                 Ok(Some(result))
@@ -243,41 +290,15 @@ impl GameCore {
                         node_id
                     ))
                 })?;
-                Ok(Some(self.enter_event_node(
-                    node_id,
-                    event_id,
-                    research_deliveries,
-                )?))
+                Ok(Some(self.enter_event_node(node_id, event_id)?))
             }
-            MapNodeCategory::Support => {
-                let MapNodePayload::Support {
-                    support_type,
-                    support_mode,
-                    choices,
-                } = payload
-                else {
+            MapNodeCategory::SavePoint => {
+                let MapNodePayload::SavePoint = payload else {
                     return Ok(None);
                 };
-                let support_type = *support_type;
-                let support_mode = *support_mode;
-                let choices = if support_mode == SupportNodeMode::FullChoice {
-                    Self::default_support_choices()
-                } else {
-                    choices.clone()
-                };
-
-                let support_session = if matches!(
-                    support_mode,
-                    SupportNodeMode::LimitedChoice | SupportNodeMode::FullChoice
-                ) {
-                    SupportSessionState::choice(node_id, support_mode, choices.clone())
-                } else {
-                    SupportSessionState::known(node_id, support_type)
-                };
-                let result = self
-                    .support_state_result_with_deliveries(&support_session, research_deliveries);
-                self.state.active_node_content = Some(ActiveNodeContent::Support(support_session));
-                self.refresh_allowed_actions();
+                let save_point = SavePointSessionState::new(node_id);
+                let result = self.save_point_state_result(&save_point)?;
+                self.state.active_node_content = Some(ActiveNodeContent::SavePoint(save_point));
 
                 Ok(Some(result))
             }
@@ -286,10 +307,8 @@ impl GameCore {
                     return Ok(None);
                 };
                 let session = MaintenanceSessionState::new(node_id);
-                let result =
-                    self.maintenance_state_result_with_deliveries(&session, research_deliveries);
+                let result = self.maintenance_state_result(&session);
                 self.state.active_node_content = Some(ActiveNodeContent::Maintenance(session));
-                self.refresh_allowed_actions();
                 Ok(Some(result))
             }
             MapNodeCategory::HeadquartersContact => {
@@ -300,24 +319,73 @@ impl GameCore {
                 else {
                     return Ok(None);
                 };
-                let session = HeadquartersContactSessionState::new(
-                    node_id,
-                    self.recruitment_candidates_for_node(node_id, *candidate_count),
-                    shop_pool_id.clone(),
-                );
+                let recruitment_candidates =
+                    self.begin_recruitment_session(node_id, *candidate_count)?;
+                let session = HeadquartersContactSessionState::new(node_id, shop_pool_id.clone());
                 let result = BehaviorResult::HeadquartersContactState {
                     node_id,
                     options: session.options.clone(),
-                    recruitment_candidates: session.recruitment_candidates.clone(),
+                    recruitment_candidates,
                     shop_pool_id: session.shop_pool_id.clone(),
-                    research_deliveries,
                 };
                 self.state.active_node_content =
                     Some(ActiveNodeContent::HeadquartersContact(session));
-                self.refresh_allowed_actions();
                 Ok(Some(result))
             }
             _ => Ok(None),
         }
+    }
+
+    fn start_monolith_exchange_if_available(&mut self) -> Result<(), GameError> {
+        let threshold = self.run_policy().monolith.residual_exchange_threshold;
+        let should_start = self.state.run.as_ref().is_some_and(|run| {
+            run.monolith.exchange_state == crate::game::monolith::MonolithExchangeState::Available
+                && run.monolith.residuals.len() >= threshold
+        });
+        if !should_start {
+            return Ok(());
+        }
+        let visual_novel_id = self.run_policy().monolith.exchange_visual_novel_id.clone();
+        let definition = self
+            .game_data
+            .visual_novel_data
+            .get_by_id(&visual_novel_id)
+            .ok_or_else(|| {
+                GameError::InvalidStaticData(format!(
+                    "monolith exchange references missing visual novel '{visual_novel_id}'"
+                ))
+            })?;
+        let presentation_mode = match definition.default_presentation_mode {
+            VisualNovelPresentationMode::Cinematic => VisualNovelSessionPresentationMode::Cinematic,
+            VisualNovelPresentationMode::Radio => VisualNovelSessionPresentationMode::Radio,
+            VisualNovelPresentationMode::Compact => VisualNovelSessionPresentationMode::Compact,
+            VisualNovelPresentationMode::NonBlocking => {
+                VisualNovelSessionPresentationMode::NonBlocking
+            }
+        };
+        let current_scene_id = VisualNovelSceneId::new(definition.entry_scene_id.as_str());
+        self.run_state_mut()?
+            .monolith
+            .start_exchange(threshold)
+            .map_err(|_| GameError::InvalidAction)?;
+        let session = VisualNovelSession {
+            session_id: self
+                .state
+                .uuid_manager
+                .next_visual_novel_session()
+                .to_string(),
+            source: VisualNovelSource::Map,
+            vn_id: VisualNovelId::new(visual_novel_id),
+            current_scene_id,
+            committed_choice_id: None,
+            blocking: true,
+            presentation_mode,
+        };
+        if self.state.visual_novel.active.is_none() {
+            self.state.visual_novel.active = Some(session);
+        } else {
+            self.state.visual_novel.queue.insert(0, session);
+        }
+        Ok(())
     }
 }

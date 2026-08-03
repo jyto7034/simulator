@@ -1,10 +1,11 @@
 use actix::{Message, Recipient};
 use game_core::game::{
     behavior::{
-        LiveBattleEventDeltaDto, LiveBattleSetupBattlefieldDto, LiveBattleSetupCatalogRefsDto,
+        ActionCapabilityDto, BattleStateAuthorityDto, LiveBattleEventDeltaDto,
+        LiveBattleSetupBattlefieldDto, LiveBattleSetupCatalogRefsDto,
         LiveBattleSetupInitialUnitDto, LiveBattleSetupSnapshotDto, LiveBattleSetupStaticObjectDto,
         LiveBattleSetupTacticalPointDto, LiveBattleStateCheckpointDto, LiveBattleUpdateDto,
-        PlayerBehavior,
+        PlayerBehavior, VisualNovelSnapshotDto,
     },
     combat_preview::{
         BattlefieldRoute, CombatMissionVariant, CombatNodeType, DeploymentZone, SpawnZone,
@@ -16,6 +17,7 @@ use serde_json::Value;
 use uuid::Uuid;
 
 use super::state::PlayerGameActorError;
+use game_core::game::encounter_compendium::EncounterCompendiumProfileState;
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
@@ -28,6 +30,8 @@ pub enum PlayerGameClientMessage {
     Command {
         request_id: String,
         behavior: PlayerBehavior,
+        #[serde(default)]
+        battle_authority: Option<BattleStateAuthorityDto>,
         #[serde(default)]
         battle_response: Option<BattleSideMessageKind>,
     },
@@ -52,12 +56,14 @@ pub enum BattleSideMessageKind {
 #[derive(Debug, Clone)]
 pub struct PlayerBehaviorCommand {
     pub behavior: PlayerBehavior,
+    pub battle_authority: Option<BattleStateAuthorityDto>,
     pub battle_side_message: BattleSideMessageKind,
 }
 
 impl PlayerBehaviorCommand {
     pub fn from_transport(
         behavior: PlayerBehavior,
+        battle_authority: Option<BattleStateAuthorityDto>,
         battle_response: Option<BattleSideMessageKind>,
     ) -> Result<Self, PlayerGameActorError> {
         let battle_side_message = battle_response.unwrap_or(BattleSideMessageKind::BattleUpdate);
@@ -72,6 +78,7 @@ impl PlayerBehaviorCommand {
 
         Ok(Self {
             behavior,
+            battle_authority,
             battle_side_message,
         })
     }
@@ -111,9 +118,12 @@ pub enum PlayerGameServerMessage {
     },
     BattleUpdate {
         battle_uuid: Uuid,
+        battle_state_revision: u64,
+        action_capabilities: Vec<ActionCapabilityDto>,
         server_battle_time_ms: u64,
         events_delta: LiveBattleEventDeltaDto,
         checkpoint: LiveBattleStateCheckpointDto,
+        visual_novel: Option<VisualNovelSnapshotDto>,
     },
     BattleSetupSnapshot {
         setup_version: u32,
@@ -143,9 +153,12 @@ impl PlayerGameServerMessage {
     pub fn battle_update(update: game_core::game::behavior::LiveBattleUpdateDto) -> Self {
         Self::BattleUpdate {
             battle_uuid: update.battle_uuid,
+            battle_state_revision: update.battle_state_revision,
+            action_capabilities: update.action_capabilities,
             server_battle_time_ms: update.server_battle_time_ms,
             events_delta: update.events_delta,
             checkpoint: update.checkpoint,
+            visual_novel: update.visual_novel,
         }
     }
 
@@ -190,8 +203,14 @@ pub struct CommandExecutionResult {
     pub state_snapshot: Option<Value>,
 }
 
+#[derive(Debug, Clone)]
+pub struct AttachSessionResult {
+    pub state_snapshot: Value,
+    pub side_messages: Vec<PlayerGameServerMessage>,
+}
+
 #[derive(Message)]
-#[rtype(result = "Result<Value, PlayerGameActorError>")]
+#[rtype(result = "Result<AttachSessionResult, PlayerGameActorError>")]
 pub struct AttachSession {
     pub session_id: Uuid,
     pub socket: Recipient<PlayerGameServerMessage>,
@@ -210,6 +229,7 @@ pub struct ExecutePlayerBehavior {
     pub session_id: Uuid,
     pub request_id: String,
     pub behavior: PlayerBehavior,
+    pub battle_authority: Option<BattleStateAuthorityDto>,
     pub battle_side_message: BattleSideMessageKind,
 }
 
@@ -237,6 +257,10 @@ pub struct EnsureLiveBattleTick;
 #[rtype(result = "()")]
 pub struct QuitPlayerActor;
 
+#[derive(Message)]
+#[rtype(result = "EncounterCompendiumProfileState")]
+pub struct GetEncounterCompendiumProfile;
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -246,7 +270,6 @@ mod tests {
             BattlePlaybackSpeed, BattlePlaybackState, LiveBattleEventDeltaDto,
             LiveBattleStateCheckpointDto, PlayerBehavior,
         },
-        map::SupportNodeType,
         resources::Position,
     };
 
@@ -255,6 +278,11 @@ mod tests {
         let battle_uuid = Uuid::from_u128(0xB4771E);
         let message = PlayerGameServerMessage::BattleUpdate {
             battle_uuid,
+            battle_state_revision: 7,
+            action_capabilities: vec![ActionCapabilityDto::enabled(
+                game_core::game::behavior::ActionKind::PauseBattle,
+                game_core::game::behavior::ActionScope::Gameplay,
+            )],
             server_battle_time_ms: 5_200,
             events_delta: LiveBattleEventDeltaDto {
                 after_seq: 120,
@@ -265,19 +293,27 @@ mod tests {
                 at_seq: 128,
                 battle_time_ms: 5_200,
                 playback: BattlePlaybackState::default(),
+                playback_eligibility:
+                    game_core::game::behavior::LiveBattlePlaybackEligibilityDto::for_state(
+                        BattlePlaybackState::default(),
+                    ),
                 units: Vec::new(),
                 deployment: None,
             },
+            visual_novel: None,
         };
 
         let json = serde_json::to_value(message).expect("battle update should serialize");
 
         assert_eq!(json["type"], "battle_update");
         assert_eq!(json["battle_uuid"], battle_uuid.to_string());
+        assert_eq!(json["battle_state_revision"], 7);
+        assert_eq!(json["action_capabilities"][0]["action"], "PauseBattle");
         assert_eq!(json["server_battle_time_ms"], 5_200);
         assert_eq!(json["events_delta"]["after_seq"], 120);
         assert_eq!(json["events_delta"]["to_seq"], 128);
         assert_eq!(json["checkpoint"]["at_seq"], 128);
+        assert!(json["visual_novel"].is_null());
         assert!(json.get("message_type").is_none());
     }
 
@@ -336,6 +372,11 @@ mod tests {
         let update = LiveBattleUpdateDto {
             message_type: game_core::game::behavior::LiveBattleUpdateMessageType::BattleUpdate,
             battle_uuid,
+            battle_state_revision: 9,
+            action_capabilities: vec![ActionCapabilityDto::enabled(
+                game_core::game::behavior::ActionKind::RequestBattleState,
+                game_core::game::behavior::ActionScope::Query,
+            )],
             server_battle_time_ms: 6_200,
             events_delta: LiveBattleEventDeltaDto {
                 after_seq: 120,
@@ -346,9 +387,14 @@ mod tests {
                 at_seq: 150,
                 battle_time_ms: 6_200,
                 playback: BattlePlaybackState::default(),
+                playback_eligibility:
+                    game_core::game::behavior::LiveBattlePlaybackEligibilityDto::for_state(
+                        BattlePlaybackState::default(),
+                    ),
                 units: Vec::new(),
                 deployment: None,
             },
+            visual_novel: None,
         };
         let message = PlayerGameServerMessage::battle_resync(update);
 
@@ -358,6 +404,7 @@ mod tests {
         assert_eq!(json["battle_uuid"], battle_uuid.to_string());
         assert!(json.get("setup").is_none());
         assert_eq!(json["update"]["type"], "battle_update");
+        assert_eq!(json["update"]["battle_state_revision"], 9);
         assert_eq!(json["update"]["events_delta"]["after_seq"], 120);
         assert_eq!(json["update"]["events_delta"]["to_seq"], 150);
         assert_eq!(json["update"]["checkpoint"]["at_seq"], 150);
@@ -366,25 +413,38 @@ mod tests {
     #[test]
     fn deserializes_snake_case_node_flow_requests() {
         let request: PlayerBehavior = serde_json::from_str(
-            r#"{"type":"select_starter_employees","candidate_ids":["a","b","c"]}"#,
+            r#"{"type":"select_starter_employees","employee_definition_ids":["a","b","c"]}"#,
         )
         .expect("select starter request should deserialize");
         match request {
-            PlayerBehavior::SelectStarterEmployees { candidate_ids } => {
-                assert_eq!(candidate_ids, ["a", "b", "c"]);
+            PlayerBehavior::SelectStarterEmployees {
+                employee_definition_ids,
+            } => {
+                assert_eq!(employee_definition_ids, ["a", "b", "c"]);
             }
             other => panic!("unexpected behavior: {other:?}"),
         }
 
-        let request: PlayerBehavior =
-            serde_json::from_str(r#"{"type":"choose_support","support_type":"Rest"}"#)
-                .expect("support request should deserialize");
+        let node_id = Uuid::from_u128(0x5100);
+        let request: PlayerBehavior = serde_json::from_str(&format!(
+            r#"{{"type":"convert_map_node_with_monolith","node_id":"{node_id}","abnormality_id":"o-01-15_nameless_fetus"}}"#
+        ))
+        .expect("monolith conversion request should deserialize");
         match request {
-            PlayerBehavior::ChooseSupport { support_type } => {
-                assert_eq!(support_type, SupportNodeType::Rest);
+            PlayerBehavior::ConvertMapNodeWithMonolith {
+                node_id: actual_node_id,
+                abnormality_id,
+            } => {
+                assert_eq!(actual_node_id.0, node_id);
+                assert_eq!(abnormality_id, "o-01-15_nameless_fetus");
             }
             other => panic!("unexpected behavior: {other:?}"),
         }
+
+        serde_json::from_str::<PlayerBehavior>(
+            r#"{"type":"choose_support","support_type":"Rest"}"#,
+        )
+        .expect_err("removed support-choice command must not deserialize");
 
         let request: PlayerBehavior = serde_json::from_str(
             r#"{"type":"upgrade_skill_fragment","target_fragment_id":"fragment_a"}"#,
@@ -417,11 +477,24 @@ mod tests {
         assert!(matches!(request, PlayerBehavior::CompleteCombatResult));
 
         let request: PlayerBehavior =
-            serde_json::from_str(r#"{"type":"recruit_employee","candidate_id":"candidate_a"}"#)
-                .expect("recruit employee request should deserialize");
+            serde_json::from_str(r#"{"type":"retry_encounter_compendium"}"#)
+                .expect("compendium retry request should deserialize");
+        assert!(matches!(request, PlayerBehavior::RetryEncounterCompendium));
+
+        let request: PlayerBehavior =
+            serde_json::from_str(r#"{"type":"reset_encounter_compendium"}"#)
+                .expect("compendium reset request should deserialize");
+        assert!(matches!(request, PlayerBehavior::ResetEncounterCompendium));
+
+        let request: PlayerBehavior = serde_json::from_str(
+            r#"{"type":"recruit_employee","employee_definition_id":"candidate_a"}"#,
+        )
+        .expect("recruit employee request should deserialize");
         match request {
-            PlayerBehavior::RecruitEmployee { candidate_id } => {
-                assert_eq!(candidate_id, "candidate_a");
+            PlayerBehavior::RecruitEmployee {
+                employee_definition_id,
+            } => {
+                assert_eq!(employee_definition_id, "candidate_a");
             }
             other => panic!("unexpected behavior: {other:?}"),
         }
@@ -436,19 +509,6 @@ mod tests {
         assert!(matches!(request, PlayerBehavior::OpenHeadquartersShop));
 
         let employee_uuid = Uuid::new_v4();
-        let request: PlayerBehavior = serde_json::from_str(&format!(
-            r#"{{"type":"move_roster_unit","target_unit_uuid":"{employee_uuid}","dest_slot":2}}"#
-        ))
-        .expect("roster order move request should deserialize");
-        assert!(matches!(
-            request,
-            PlayerBehavior::MoveRosterUnit {
-                target_unit_uuid,
-                dest_slot: 2,
-                swap_with_unit_uuid: None,
-            } if target_unit_uuid == employee_uuid
-        ));
-
         let item_uuid = Uuid::new_v4();
         let request: PlayerBehavior = serde_json::from_str(&format!(
             r#"{{"type":"use_consumable_item","item_uuid":"{item_uuid}","target_employee_uuid":"{employee_uuid}"}}"#
@@ -522,6 +582,31 @@ mod tests {
             }
             other => panic!("unexpected message: {other:?}"),
         }
+
+        let employee_uuid = Uuid::from_u128(0x00C0_11D1_710A);
+        let request: PlayerGameClientMessage = serde_json::from_str(&format!(
+            r#"{{"type":"admin_command","request_id":"admin-condition","admin":{{"type":"admin_set_employee_condition","employee_uuid":"{employee_uuid}","physical_damage":5,"trauma":100}}}}"#
+        ))
+        .expect("condition admin command should deserialize");
+        assert!(matches!(
+            request,
+            PlayerGameClientMessage::AdminCommand {
+                admin: AdminCommand::AdminSetEmployeeCondition {
+                    employee_uuid: parsed_uuid,
+                    physical_damage: 5,
+                    trauma: 100,
+                },
+                ..
+            } if parsed_uuid == employee_uuid
+        ));
+
+        for legacy_type in ["admin_set_employee_hp", "admin_set_employee_trauma"] {
+            let error = serde_json::from_str::<PlayerGameClientMessage>(&format!(
+                r#"{{"type":"admin_command","request_id":"legacy","admin":{{"type":"{legacy_type}","employee_uuid":"{employee_uuid}","current_hp":1,"trauma":1}}}}"#
+            ))
+            .expect_err("legacy employee condition admin command must reject");
+            assert!(error.to_string().contains("unknown variant"));
+        }
     }
 
     #[test]
@@ -586,14 +671,16 @@ mod tests {
         let PlayerGameClientMessage::Command {
             request_id,
             behavior,
+            battle_authority,
             battle_response,
         } = request
         else {
             panic!("expected command message");
         };
         assert_eq!(request_id, "battle-001");
-        let command = PlayerBehaviorCommand::from_transport(behavior, battle_response)
-            .expect("catch-up resync should map to battle state request");
+        let command =
+            PlayerBehaviorCommand::from_transport(behavior, battle_authority, battle_response)
+                .expect("catch-up resync should map to battle state request");
         assert!(matches!(
             command.behavior,
             PlayerBehavior::RequestBattleState {
@@ -608,7 +695,7 @@ mod tests {
         let request: PlayerBehavior =
             serde_json::from_str(r#"{"type":"recover_battle_setup_loss"}"#)
                 .expect("setup-loss recovery behavior should deserialize");
-        let command = PlayerBehaviorCommand::from_transport(request, None)
+        let command = PlayerBehaviorCommand::from_transport(request, None, None)
             .expect("setup-loss recovery should map to default update envelope");
         assert!(matches!(
             command.behavior,
@@ -617,6 +704,31 @@ mod tests {
         assert_eq!(
             command.battle_side_message,
             BattleSideMessageKind::BattleUpdate
+        );
+
+        let battle_uuid = Uuid::from_u128(0xB4771E);
+        let request: PlayerGameClientMessage = serde_json::from_str(&format!(
+            r#"{{"type":"command","request_id":"battle-authority-001","battle_authority":{{"battle_uuid":"{battle_uuid}","battle_state_revision":7}},"behavior":{{"type":"pause_battle"}}}}"#
+        ))
+        .expect("battle mutation authority should deserialize at command-envelope level");
+        let PlayerGameClientMessage::Command {
+            behavior,
+            battle_authority,
+            battle_response,
+            ..
+        } = request
+        else {
+            panic!("expected command message");
+        };
+        let command =
+            PlayerBehaviorCommand::from_transport(behavior, battle_authority, battle_response)
+                .expect("battle authority should survive transport mapping");
+        assert_eq!(
+            command.battle_authority,
+            Some(BattleStateAuthorityDto {
+                battle_uuid,
+                battle_state_revision: 7,
+            })
         );
 
         let request: PlayerBehavior = serde_json::from_str(&format!(

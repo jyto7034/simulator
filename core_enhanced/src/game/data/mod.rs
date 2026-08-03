@@ -11,12 +11,11 @@ use crate::game::{
     battle::buffs::BuffDatabase,
     data::{
         abnormality_data::{AbnormalityDatabase, AbnormalityMetadata},
-        artifact_data::{ArtifactDatabase, ArtifactMetadata},
         boss_omen_data::BossOmenChainDatabase,
         consumable_data::{ConsumableDatabase, ConsumableMetadata},
         corroded_employee_data::CorrodedEmployeeProfileDatabase,
         corroded_wave_data::CorrodedWavePresetDatabase,
-        employee_data::{RecruitmentEmployeeCandidateDatabase, StarterEmployeeCandidateDatabase},
+        employee_data::EmployeeDefinitionDatabase,
         equipment_data::{EquipmentDatabase, EquipmentMetadata},
         event_data::EventDatabase,
         pve_data::PveEncounterDatabase,
@@ -25,14 +24,13 @@ use crate::game::{
         shop_data::ShopDatabase,
         skill_data::SkillDatabase,
         skill_fragment_data::SkillFragmentDatabase,
+        visual_novel_data::VisualNovelDatabase,
+        visual_novel_trigger_data::VisualNovelTriggerDatabase,
     },
 };
 
 // 환상체 (기물) 정보
 pub mod abnormality_data;
-
-// 아티팩트 정보
-pub mod artifact_data;
 
 // 끝없는 탐사 보스 전조 체인 데이터
 pub mod boss_omen_data;
@@ -52,8 +50,17 @@ pub mod corroded_wave_data;
 // 시작 직원 후보 데이터
 pub mod employee_data;
 
-// 비주얼 노벨식 Event node 데이터
+// Event node 데이터
 pub mod event_data;
+
+// 비주얼 노벨 데이터
+pub mod visual_novel_data;
+
+// 비주얼 노벨 트리거 데이터
+pub mod visual_novel_trigger_data;
+
+// Production live-RON schema version and source-aware diagnostics.
+pub mod live_ron;
 
 // PvE 전투 데이터
 pub mod pve_data;
@@ -81,6 +88,35 @@ pub(crate) fn once_lock_with<T>(value: T) -> OnceLock<T> {
         unreachable!("OnceLock should be empty during initialization");
     }
     once_lock
+}
+
+pub(crate) fn deserialize_required_option<'de, D, T>(deserializer: D) -> Result<Option<T>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+    T: serde::Deserialize<'de>,
+{
+    <Option<T> as serde::Deserialize>::deserialize(deserializer)
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct DataValidationError {
+    pub object_id: Option<String>,
+    pub field_path: Option<String>,
+    pub cause: String,
+}
+
+impl DataValidationError {
+    pub(crate) fn at(
+        object_id: impl Into<String>,
+        field_path: impl Into<String>,
+        cause: impl Into<String>,
+    ) -> Self {
+        Self {
+            object_id: Some(object_id.into()),
+            field_path: Some(field_path.into()),
+            cause: cause.into(),
+        }
+    }
 }
 
 fn build_unique_index<K, T>(
@@ -122,13 +158,14 @@ pub(crate) fn build_string_index<T>(
 }
 
 pub struct GameDataBase {
-    /// 환상체, 장비, 아티팩트 Raw 데이터를 저장하는 마스터 테이블
+    /// Versioned map/battlefield catalogs parsed with the same live source set.
+    pub(crate) map_catalogs: live_ron::GameplayMapCatalogs,
+
+    /// 환상체와 장비/소모품 Raw 데이터를 저장하는 마스터 테이블
     pub abnormality_data: Arc<AbnormalityDatabase>,
     pub corroded_employee_data: Arc<CorrodedEmployeeProfileDatabase>,
     pub corroded_wave_data: Arc<CorrodedWavePresetDatabase>,
-    pub starter_employee_data: Arc<StarterEmployeeCandidateDatabase>,
-    pub recruitment_employee_data: Arc<RecruitmentEmployeeCandidateDatabase>,
-    pub artifact_data: Arc<ArtifactDatabase>,
+    pub employee_definition_data: Arc<EmployeeDefinitionDatabase>,
     pub consumable_data: Arc<ConsumableDatabase>,
     pub equipment_data: Arc<EquipmentDatabase>,
 
@@ -136,8 +173,14 @@ pub struct GameDataBase {
     pub shop_data: Arc<ShopDatabase>,
     pub reward_data: Arc<RewardDatabase>,
 
-    /// 비주얼 노벨식 Event node 데이터
+    /// Event node 데이터
     pub event_data: Arc<EventDatabase>,
+
+    /// 비주얼 노벨 데이터
+    pub visual_novel_data: Arc<VisualNovelDatabase>,
+
+    /// 비주얼 노벨 트리거 데이터
+    pub visual_novel_trigger_data: Arc<VisualNovelTriggerDatabase>,
 
     /// PvE 전투(Suppress) 데이터
     pub pve_data: Arc<PveEncounterDatabase>,
@@ -162,17 +205,18 @@ pub struct GameDataBase {
 }
 
 pub struct GameDataBaseParts {
+    pub(crate) map_catalogs: live_ron::GameplayMapCatalogs,
     pub abnormality_data: Arc<AbnormalityDatabase>,
     pub corroded_employee_data: Arc<CorrodedEmployeeProfileDatabase>,
     pub corroded_wave_data: Arc<CorrodedWavePresetDatabase>,
-    pub starter_employee_data: Arc<StarterEmployeeCandidateDatabase>,
-    pub recruitment_employee_data: Arc<RecruitmentEmployeeCandidateDatabase>,
-    pub artifact_data: Arc<ArtifactDatabase>,
+    pub employee_definition_data: Arc<EmployeeDefinitionDatabase>,
     pub consumable_data: Arc<ConsumableDatabase>,
     pub equipment_data: Arc<EquipmentDatabase>,
     pub shop_data: Arc<ShopDatabase>,
     pub reward_data: Arc<RewardDatabase>,
     pub event_data: Arc<EventDatabase>,
+    pub visual_novel_data: Arc<VisualNovelDatabase>,
+    pub visual_novel_trigger_data: Arc<VisualNovelTriggerDatabase>,
     pub pve_data: Arc<PveEncounterDatabase>,
     pub boss_omen_data: Arc<BossOmenChainDatabase>,
     pub run_policy: Arc<RunPolicyData>,
@@ -182,17 +226,18 @@ pub struct GameDataBaseParts {
 }
 
 pub struct GameDataBuilder {
+    map_catalogs: live_ron::GameplayMapCatalogs,
     abnormality_data: Arc<AbnormalityDatabase>,
     corroded_employee_data: Arc<CorrodedEmployeeProfileDatabase>,
     corroded_wave_data: Arc<CorrodedWavePresetDatabase>,
-    starter_employee_data: Arc<StarterEmployeeCandidateDatabase>,
-    recruitment_employee_data: Arc<RecruitmentEmployeeCandidateDatabase>,
-    artifact_data: Arc<ArtifactDatabase>,
+    employee_definition_data: Arc<EmployeeDefinitionDatabase>,
     consumable_data: Arc<ConsumableDatabase>,
     equipment_data: Arc<EquipmentDatabase>,
     shop_data: Arc<ShopDatabase>,
     reward_data: Arc<RewardDatabase>,
     event_data: Arc<EventDatabase>,
+    visual_novel_data: Arc<VisualNovelDatabase>,
+    visual_novel_trigger_data: Arc<VisualNovelTriggerDatabase>,
     pve_data: Arc<PveEncounterDatabase>,
     boss_omen_data: Arc<BossOmenChainDatabase>,
     run_policy: Arc<RunPolicyData>,
@@ -203,18 +248,23 @@ pub struct GameDataBuilder {
 
 impl GameDataBuilder {
     pub fn empty() -> Self {
+        Self::empty_with_map_catalogs(live_ron::embedded_map_catalogs_for_fixtures())
+    }
+
+    fn empty_with_map_catalogs(map_catalogs: live_ron::GameplayMapCatalogs) -> Self {
         Self {
+            map_catalogs,
             abnormality_data: Arc::new(AbnormalityDatabase::new(vec![])),
             corroded_employee_data: Arc::new(CorrodedEmployeeProfileDatabase::new(vec![])),
             corroded_wave_data: Arc::new(CorrodedWavePresetDatabase::new(vec![])),
-            starter_employee_data: Arc::new(StarterEmployeeCandidateDatabase::new(vec![])),
-            recruitment_employee_data: Arc::new(RecruitmentEmployeeCandidateDatabase::new(vec![])),
-            artifact_data: Arc::new(ArtifactDatabase::new(vec![])),
+            employee_definition_data: Arc::new(EmployeeDefinitionDatabase::new(vec![])),
             consumable_data: Arc::new(ConsumableDatabase::new(vec![])),
             equipment_data: Arc::new(EquipmentDatabase::new(vec![])),
             shop_data: Arc::new(ShopDatabase::new(vec![])),
             reward_data: Arc::new(RewardDatabase::new(vec![])),
             event_data: Arc::new(EventDatabase::new(vec![])),
+            visual_novel_data: Arc::new(VisualNovelDatabase::new(vec![])),
+            visual_novel_trigger_data: Arc::new(VisualNovelTriggerDatabase::new(vec![])),
             pve_data: Arc::new(PveEncounterDatabase::new(vec![])),
             boss_omen_data: Arc::new(BossOmenChainDatabase::new(vec![])),
             run_policy: Arc::new(RunPolicyData::builtin()),
@@ -270,45 +320,13 @@ impl GameDataBuilder {
         self
     }
 
-    pub fn with_starter_employee_candidates(
-        mut self,
-        data: StarterEmployeeCandidateDatabase,
-    ) -> Self {
-        self.starter_employee_data = Arc::new(data);
+    pub fn with_employee_definitions(mut self, data: EmployeeDefinitionDatabase) -> Self {
+        self.employee_definition_data = Arc::new(data);
         self
     }
 
-    pub fn with_starter_employee_data(
-        mut self,
-        data: Arc<StarterEmployeeCandidateDatabase>,
-    ) -> Self {
-        self.starter_employee_data = data;
-        self
-    }
-
-    pub fn with_recruitment_employee_candidates(
-        mut self,
-        data: RecruitmentEmployeeCandidateDatabase,
-    ) -> Self {
-        self.recruitment_employee_data = Arc::new(data);
-        self
-    }
-
-    pub fn with_recruitment_employee_data(
-        mut self,
-        data: Arc<RecruitmentEmployeeCandidateDatabase>,
-    ) -> Self {
-        self.recruitment_employee_data = data;
-        self
-    }
-
-    pub fn with_artifacts(mut self, items: Vec<ArtifactMetadata>) -> Self {
-        self.artifact_data = Arc::new(ArtifactDatabase::new(items));
-        self
-    }
-
-    pub fn with_artifact_data(mut self, data: Arc<ArtifactDatabase>) -> Self {
-        self.artifact_data = data;
+    pub fn with_employee_definition_data(mut self, data: Arc<EmployeeDefinitionDatabase>) -> Self {
+        self.employee_definition_data = data;
         self
     }
 
@@ -359,6 +377,26 @@ impl GameDataBuilder {
 
     pub fn with_event_data(mut self, data: Arc<EventDatabase>) -> Self {
         self.event_data = data;
+        self
+    }
+
+    pub fn with_visual_novels(mut self, data: VisualNovelDatabase) -> Self {
+        self.visual_novel_data = Arc::new(data);
+        self
+    }
+
+    pub fn with_visual_novel_data(mut self, data: Arc<VisualNovelDatabase>) -> Self {
+        self.visual_novel_data = data;
+        self
+    }
+
+    pub fn with_visual_novel_triggers(mut self, data: VisualNovelTriggerDatabase) -> Self {
+        self.visual_novel_trigger_data = Arc::new(data);
+        self
+    }
+
+    pub fn with_visual_novel_trigger_data(mut self, data: Arc<VisualNovelTriggerDatabase>) -> Self {
+        self.visual_novel_trigger_data = data;
         self
     }
 
@@ -424,17 +462,18 @@ impl GameDataBuilder {
 
     pub fn build(self) -> GameDataBase {
         GameDataBase::new(GameDataBaseParts {
+            map_catalogs: self.map_catalogs,
             abnormality_data: self.abnormality_data,
             corroded_employee_data: self.corroded_employee_data,
             corroded_wave_data: self.corroded_wave_data,
-            starter_employee_data: self.starter_employee_data,
-            recruitment_employee_data: self.recruitment_employee_data,
-            artifact_data: self.artifact_data,
+            employee_definition_data: self.employee_definition_data,
             consumable_data: self.consumable_data,
             equipment_data: self.equipment_data,
             shop_data: self.shop_data,
             reward_data: self.reward_data,
             event_data: self.event_data,
+            visual_novel_data: self.visual_novel_data,
+            visual_novel_trigger_data: self.visual_novel_trigger_data,
             pve_data: self.pve_data,
             boss_omen_data: self.boss_omen_data,
             run_policy: self.run_policy,
@@ -458,14 +497,12 @@ impl Default for GameDataBuilder {
 #[derive(Debug, Clone)]
 pub enum Item {
     Equipment(Arc<EquipmentMetadata>),
-    Artifact(Arc<ArtifactMetadata>),
     Consumable(Arc<ConsumableMetadata>),
 }
 
 #[derive(Debug, Clone, Copy)]
 pub enum ItemRef<'a> {
     Equipment(&'a EquipmentMetadata),
-    Artifact(&'a ArtifactMetadata),
     Consumable(&'a ConsumableMetadata),
 }
 
@@ -473,7 +510,6 @@ impl<'a> ItemRef<'a> {
     pub fn price(&self) -> u32 {
         match self {
             ItemRef::Equipment(meta) => meta.price,
-            ItemRef::Artifact(meta) => meta.price,
             ItemRef::Consumable(meta) => meta.price,
         }
     }
@@ -481,7 +517,6 @@ impl<'a> ItemRef<'a> {
     pub fn uuid(&self) -> Uuid {
         match self {
             ItemRef::Equipment(meta) => meta.uuid,
-            ItemRef::Artifact(meta) => meta.uuid,
             ItemRef::Consumable(meta) => meta.uuid,
         }
     }
@@ -489,7 +524,6 @@ impl<'a> ItemRef<'a> {
     pub fn id(&self) -> &str {
         match self {
             ItemRef::Equipment(meta) => &meta.id,
-            ItemRef::Artifact(meta) => &meta.id,
             ItemRef::Consumable(meta) => &meta.id,
         }
     }
@@ -497,17 +531,12 @@ impl<'a> ItemRef<'a> {
     pub fn name(&self) -> &str {
         match self {
             ItemRef::Equipment(meta) => &meta.name,
-            ItemRef::Artifact(meta) => &meta.name,
             ItemRef::Consumable(meta) => &meta.name,
         }
     }
 
     pub fn is_equipment(&self) -> bool {
         matches!(self, ItemRef::Equipment(_))
-    }
-
-    pub fn is_artifact(&self) -> bool {
-        matches!(self, ItemRef::Artifact(_))
     }
 
     pub fn is_consumable(&self) -> bool {
@@ -523,7 +552,6 @@ impl<'a> From<ItemRef<'a>> for Item {
     fn from(value: ItemRef<'a>) -> Self {
         match value {
             ItemRef::Equipment(meta) => Item::Equipment(Arc::new(meta.clone())),
-            ItemRef::Artifact(meta) => Item::Artifact(Arc::new(meta.clone())),
             ItemRef::Consumable(meta) => Item::Consumable(Arc::new(meta.clone())),
         }
     }
@@ -538,7 +566,6 @@ impl Item {
     pub fn price(&self) -> u32 {
         match self {
             Item::Equipment(meta) => meta.price,
-            Item::Artifact(meta) => meta.price,
             Item::Consumable(meta) => meta.price,
         }
     }
@@ -547,7 +574,6 @@ impl Item {
     pub fn uuid(&self) -> Uuid {
         match self {
             Item::Equipment(meta) => meta.uuid,
-            Item::Artifact(meta) => meta.uuid,
             Item::Consumable(meta) => meta.uuid,
         }
     }
@@ -556,7 +582,6 @@ impl Item {
     pub fn id(&self) -> &str {
         match self {
             Item::Equipment(meta) => &meta.id,
-            Item::Artifact(meta) => &meta.id,
             Item::Consumable(meta) => &meta.id,
         }
     }
@@ -565,7 +590,6 @@ impl Item {
     pub fn name(&self) -> &str {
         match self {
             Item::Equipment(meta) => &meta.name,
-            Item::Artifact(meta) => &meta.name,
             Item::Consumable(meta) => &meta.name,
         }
     }
@@ -577,11 +601,6 @@ impl Item {
     /// Equipment 타입인지 확인
     pub fn is_equipment(&self) -> bool {
         matches!(self, Item::Equipment(_))
-    }
-
-    /// Artifact 타입인지 확인
-    pub fn is_artifact(&self) -> bool {
-        matches!(self, Item::Artifact(_))
     }
 
     pub fn is_consumable(&self) -> bool {
@@ -596,14 +615,6 @@ impl Item {
     pub fn as_equipment(&self) -> Option<Arc<EquipmentMetadata>> {
         match self {
             Item::Equipment(meta) => Some(meta.clone()),
-            _ => None,
-        }
-    }
-
-    /// Artifact로 변환 (참조)
-    pub fn as_artifact(&self) -> Option<Arc<ArtifactMetadata>> {
-        match self {
-            Item::Artifact(meta) => Some(meta.clone()),
             _ => None,
         }
     }
@@ -623,7 +634,6 @@ impl Item {
     pub fn clone_arc(&self) -> Self {
         match self {
             Item::Equipment(meta) => Item::Equipment(Arc::clone(meta)),
-            Item::Artifact(meta) => Item::Artifact(Arc::clone(meta)),
             Item::Consumable(meta) => Item::Consumable(Arc::clone(meta)),
         }
     }
@@ -632,7 +642,6 @@ impl Item {
 /// Uuid -> Item 매핑을 제공하는 전역 레지스트리
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum ItemIndex {
-    Artifact(usize),
     Consumable(usize),
     Equipment(usize),
 }
@@ -640,7 +649,6 @@ enum ItemIndex {
 impl ItemIndex {
     fn kind(self) -> &'static str {
         match self {
-            ItemIndex::Artifact(_) => "artifact",
             ItemIndex::Consumable(_) => "consumable",
             ItemIndex::Equipment(_) => "equipment",
         }
@@ -648,9 +656,7 @@ impl ItemIndex {
 
     fn index(self) -> usize {
         match self {
-            ItemIndex::Artifact(index)
-            | ItemIndex::Consumable(index)
-            | ItemIndex::Equipment(index) => index,
+            ItemIndex::Consumable(index) | ItemIndex::Equipment(index) => index,
         }
     }
 }
@@ -661,16 +667,8 @@ pub struct ItemRegistry {
 }
 
 impl ItemRegistry {
-    pub fn new(
-        artifact_db: &ArtifactDatabase,
-        consumable_db: &ConsumableDatabase,
-        equipment_db: &EquipmentDatabase,
-    ) -> Self {
+    pub fn new(consumable_db: &ConsumableDatabase, equipment_db: &EquipmentDatabase) -> Self {
         let mut by_uuid = HashMap::new();
-
-        for (index, meta) in artifact_db.items.iter().enumerate() {
-            insert_item_index(&mut by_uuid, meta.uuid, ItemIndex::Artifact(index));
-        }
 
         for (index, meta) in consumable_db.items.iter().enumerate() {
             insert_item_index(&mut by_uuid, meta.uuid, ItemIndex::Consumable(index));
@@ -706,106 +704,125 @@ impl GameDataBase {
     /// This is the single official live-data loader. It intentionally uses
     /// `include_str!`; RON edits require recompilation and this is not a hot
     /// reload or filesystem data-pack path.
-    pub fn load_live_embedded() -> Arc<Self> {
-        let shops_db: ShopDatabase = ron::de::from_str(include_str!(
-            "../../../../game_resources/data/events/shops/base.ron"
-        ))
-        .expect("Failed to deserialize events/shops/base.ron");
-        let rewards_db: RewardDatabase = ron::de::from_str(include_str!(
-            "../../../../game_resources/data/events/rewards/base.ron"
-        ))
-        .expect("Failed to deserialize events/rewards/base.ron");
-        let event_db: EventDatabase = ron::de::from_str(include_str!(
-            "../../../../game_resources/data/events/story/base.ron"
-        ))
-        .expect("Failed to deserialize events/story/base.ron");
-        let boss_omen_db: BossOmenChainDatabase = ron::de::from_str(include_str!(
-            "../../../../game_resources/data/boss_omen/chains.ron"
-        ))
-        .expect("Failed to deserialize boss_omen/chains.ron");
-        let abnormalities_db: AbnormalityDatabase = ron::de::from_str(include_str!(
-            "../../../../game_resources/data/abnormalities/base.ron"
-        ))
-        .expect("Failed to deserialize abnormalities/base.ron");
-        let corroded_employee_db: CorrodedEmployeeProfileDatabase = ron::de::from_str(
-            include_str!("../../../../game_resources/data/enemies/corroded_employees.ron"),
-        )
-        .expect("Failed to deserialize enemies/corroded_employees.ron");
-        let corroded_wave_db: CorrodedWavePresetDatabase = ron::de::from_str(include_str!(
-            "../../../../game_resources/data/enemies/corroded_wave_presets.ron"
-        ))
-        .expect("Failed to deserialize enemies/corroded_wave_presets.ron");
-        let starter_employee_db: StarterEmployeeCandidateDatabase = ron::de::from_str(
-            include_str!("../../../../game_resources/data/employees/starter_candidates.ron"),
-        )
-        .expect("Failed to deserialize employees/starter_candidates.ron");
-        let recruitment_employee_db: RecruitmentEmployeeCandidateDatabase = ron::de::from_str(
-            include_str!("../../../../game_resources/data/employees/recruitment_candidates.ron"),
-        )
-        .expect("Failed to deserialize employees/recruitment_candidates.ron");
-        let equipments_db: EquipmentDatabase = ron::de::from_str(include_str!(
-            "../../../../game_resources/data/equipments/base.ron"
-        ))
-        .expect("Failed to deserialize equipments/base.ron");
-        let artifacts_db: ArtifactDatabase = ron::de::from_str(include_str!(
-            "../../../../game_resources/data/artifacts/base.ron"
-        ))
-        .expect("Failed to deserialize artifacts/base.ron");
-        let consumables_db: ConsumableDatabase = ron::de::from_str(include_str!(
-            "../../../../game_resources/data/consumables/base.ron"
-        ))
-        .expect("Failed to deserialize consumables/base.ron");
-        let buffs_db = load_embedded_live_buff_data();
-        let skill_db: SkillDatabase = ron::de::from_str(include_str!(
-            "../../../../game_resources/data/skills/base.ron"
-        ))
-        .expect("Failed to deserialize skills/base.ron");
-        let skill_fragment_db: SkillFragmentDatabase = ron::de::from_str(include_str!(
-            "../../../../game_resources/data/skill_fragments/base.ron"
-        ))
-        .expect("Failed to deserialize skill_fragments/base.ron");
-        let pve_db: PveEncounterDatabase = ron::de::from_str(include_str!(
-            "../../../../game_resources/data/pve/encounters.ron"
-        ))
-        .expect("Failed to deserialize pve/encounters.ron");
-        let run_policy = RunPolicyData::builtin();
+    pub fn load_live_embedded() -> Result<Arc<Self>, live_ron::LiveRonError> {
+        let parsed =
+            live_ron::parse_gameplay_ron_sources(live_ron::GameplayRonSourceSet::embedded())?;
+        parsed.validate_domain_catalogs()?;
 
-        let game_data = GameDataBuilder::empty()
-            .with_abnormality_data(Arc::new(abnormalities_db))
-            .with_corroded_employee_data(Arc::new(corroded_employee_db))
-            .with_corroded_wave_data(Arc::new(corroded_wave_db))
-            .with_starter_employee_data(Arc::new(starter_employee_db))
-            .with_recruitment_employee_data(Arc::new(recruitment_employee_db))
-            .with_artifact_data(Arc::new(artifacts_db))
-            .with_consumable_data(Arc::new(consumables_db))
-            .with_equipment_data(Arc::new(equipments_db))
-            .with_shop_data(Arc::new(shops_db))
-            .with_reward_data(Arc::new(rewards_db))
-            .with_event_data(Arc::new(event_db))
-            .with_pve_data(Arc::new(pve_db))
-            .with_boss_omen_data(Arc::new(boss_omen_db))
-            .with_run_policy_data(Arc::new(run_policy))
-            .with_buff_data(Arc::new(buffs_db))
-            .with_skill_data(Arc::new(skill_db))
-            .with_skill_fragment_data(Arc::new(skill_fragment_db))
-            .build_arc();
-        game_data.validate_generated_combat_preview_contracts();
+        let live_ron::ParsedGameplayRon {
+            shops: shops_db,
+            rewards: rewards_db,
+            events: event_db,
+            visual_novels: visual_novel_db,
+            visual_novel_triggers: visual_novel_trigger_db,
+            boss_omen_chains: boss_omen_db,
+            abnormalities: abnormalities_db,
+            corroded_employees: corroded_employee_db,
+            corroded_wave_presets: corroded_wave_db,
+            employee_definitions: employee_definition_db,
+            equipment: equipments_db,
+            consumables: consumables_db,
+            buffs: buffs_db,
+            skills: skill_db,
+            skill_fragments: skill_fragment_db,
+            pve_encounters: pve_db,
+            run_policy,
+            map_catalogs,
+        } = parsed;
+
+        let game_data = Arc::new(Self::from_validated_parts(GameDataBaseParts {
+            map_catalogs,
+            abnormality_data: Arc::new(abnormalities_db),
+            corroded_employee_data: Arc::new(corroded_employee_db),
+            corroded_wave_data: Arc::new(corroded_wave_db),
+            employee_definition_data: Arc::new(employee_definition_db),
+            consumable_data: Arc::new(consumables_db),
+            equipment_data: Arc::new(equipments_db),
+            shop_data: Arc::new(shops_db),
+            reward_data: Arc::new(rewards_db),
+            event_data: Arc::new(event_db),
+            visual_novel_data: Arc::new(visual_novel_db),
+            visual_novel_trigger_data: Arc::new(visual_novel_trigger_db),
+            pve_data: Arc::new(pve_db),
+            boss_omen_data: Arc::new(boss_omen_db),
+            run_policy: Arc::new(run_policy),
+            skill_data: Arc::new(skill_db),
+            buff_data: Arc::new(buffs_db),
+            skill_fragment_data: Arc::new(skill_fragment_db),
+        }));
         game_data
+            .try_validate_generated_combat_preview_contracts()
+            .map_err(|error| {
+                live_ron::LiveRonError::validation(
+                    "data/pve/encounters.ron",
+                    "generated_combat_preview",
+                    error.object_id,
+                    error.field_path,
+                    error.cause,
+                )
+            })?;
+        Ok(game_data)
     }
 
-    pub fn new(parts: GameDataBaseParts) -> Self {
+    fn from_validated_parts(parts: GameDataBaseParts) -> Self {
         let GameDataBaseParts {
+            map_catalogs,
             abnormality_data,
             corroded_employee_data,
             corroded_wave_data,
-            starter_employee_data,
-            recruitment_employee_data,
-            artifact_data,
+            employee_definition_data,
             consumable_data,
             equipment_data,
             shop_data,
             reward_data,
             event_data,
+            visual_novel_data,
+            visual_novel_trigger_data,
+            pve_data,
+            boss_omen_data,
+            run_policy,
+            skill_data,
+            buff_data,
+            skill_fragment_data,
+        } = parts;
+        let item_registry = ItemRegistry::new(&consumable_data, &equipment_data);
+        Self {
+            map_catalogs,
+            abnormality_data,
+            corroded_employee_data,
+            corroded_wave_data,
+            employee_definition_data,
+            consumable_data,
+            equipment_data,
+            shop_data,
+            reward_data,
+            event_data,
+            visual_novel_data,
+            visual_novel_trigger_data,
+            pve_data,
+            boss_omen_data,
+            run_policy,
+            skill_data,
+            buff_data,
+            skill_fragment_data,
+            item_registry,
+        }
+    }
+
+    pub fn new(parts: GameDataBaseParts) -> Self {
+        let GameDataBaseParts {
+            map_catalogs,
+            abnormality_data,
+            corroded_employee_data,
+            corroded_wave_data,
+            employee_definition_data,
+            consumable_data,
+            equipment_data,
+            shop_data,
+            reward_data,
+            event_data,
+            visual_novel_data,
+            visual_novel_trigger_data,
             pve_data,
             boss_omen_data,
             run_policy,
@@ -817,14 +834,14 @@ impl GameDataBase {
         abnormality_data.validate_indexes();
         corroded_employee_data.validate_indexes();
         corroded_wave_data.validate_indexes();
-        starter_employee_data.validate_indexes();
-        recruitment_employee_data.validate_indexes();
-        artifact_data.validate_indexes();
+        employee_definition_data.validate_indexes();
         consumable_data.validate_indexes();
         equipment_data.validate_indexes();
         shop_data.validate_indexes();
         reward_data.validate_indexes();
         event_data.validate_indexes();
+        visual_novel_data.validate_indexes();
+        visual_novel_trigger_data.validate_indexes();
         pve_data.validate_indexes();
         boss_omen_data.validate_indexes();
         run_policy
@@ -837,11 +854,12 @@ impl GameDataBase {
             &abnormality_data,
             &corroded_employee_data,
             &corroded_wave_data,
-            &artifact_data,
             &consumable_data,
             &equipment_data,
             &reward_data,
             &event_data,
+            &visual_novel_data,
+            &visual_novel_trigger_data,
             &pve_data,
             &boss_omen_data,
             &skill_data,
@@ -849,26 +867,29 @@ impl GameDataBase {
             &skill_fragment_data,
         );
 
-        let item_registry = ItemRegistry::new(&artifact_data, &consumable_data, &equipment_data);
-        validation::validate_shop_item_references(&shop_data, &item_registry);
+        validation::validate_shop_item_references(&shop_data, &consumable_data, &equipment_data)
+            .expect("invalid Shop item reference");
+        let item_registry = ItemRegistry::new(&consumable_data, &equipment_data);
         validation::validate_starter_employee_loadout_references(
-            &starter_employee_data,
+            &employee_definition_data,
             &equipment_data,
             &skill_fragment_data,
-        );
+        )
+        .expect("invalid starter employee loadout reference");
 
         Self {
+            map_catalogs,
             abnormality_data,
             corroded_employee_data,
             corroded_wave_data,
-            starter_employee_data,
-            recruitment_employee_data,
-            artifact_data,
+            employee_definition_data,
             consumable_data,
             equipment_data,
             shop_data,
             reward_data,
             event_data,
+            visual_novel_data,
+            visual_novel_trigger_data,
             pve_data,
             boss_omen_data,
             run_policy,
@@ -882,9 +903,6 @@ impl GameDataBase {
     /// UUID로 아이템 메타데이터 조회
     pub fn item(&self, uuid: &Uuid) -> Option<ItemRef<'_>> {
         match self.item_registry.get_index(uuid)? {
-            ItemIndex::Artifact(index) => {
-                self.artifact_data.items.get(index).map(ItemRef::Artifact)
-            }
             ItemIndex::Consumable(index) => self
                 .consumable_data
                 .items
@@ -896,8 +914,39 @@ impl GameDataBase {
         }
     }
 
-    pub fn validate_generated_combat_preview_contracts(&self) {
-        validation::validate_generated_combat_preview_contracts(self);
+    pub fn shop_merchandise_item(
+        &self,
+        merchandise: &shop_data::ShopMerchandise,
+    ) -> Option<ItemRef<'_>> {
+        match merchandise {
+            shop_data::ShopMerchandise::Equipment { equipment_id } => self
+                .equipment_data
+                .get_by_id(equipment_id)
+                .map(ItemRef::Equipment),
+            shop_data::ShopMerchandise::Consumable { consumable_id } => self
+                .consumable_data
+                .get_by_id(consumable_id)
+                .map(ItemRef::Consumable),
+            shop_data::ShopMerchandise::Monolith { .. } => None,
+        }
+    }
+
+    pub fn map_node_definitions(&self) -> &crate::game::map::MapNodeDefinitionDatabase {
+        &self.map_catalogs.map_node_definitions
+    }
+
+    pub fn facility_templates(&self) -> &crate::game::map::FacilityTemplateDatabase {
+        &self.map_catalogs.facility_templates
+    }
+
+    pub fn node_assignment_profiles(&self) -> &crate::game::map::NodeAssignmentProfileDatabase {
+        &self.map_catalogs.node_assignment_profiles
+    }
+
+    pub(crate) fn try_validate_generated_combat_preview_contracts(
+        &self,
+    ) -> Result<(), DataValidationError> {
+        validation::validate_generated_combat_preview_contracts(self)
     }
 }
 
@@ -918,9 +967,11 @@ mod tests {
     use crate::game::battle::buffs::{BuffDatabase, BuffId};
     use crate::game::data::{
         abnormality_data::AbnormalityMetadata,
-        artifact_data::ArtifactMetadata,
         equipment_data::{EquipmentMetadata, EquipmentType},
-        shop_data::{ShopDatabase, ShopMetadata},
+        shop_data::{
+            ShopContext, ShopDatabase, ShopMerchandise, ShopMerchandiseEntry, ShopMetadata,
+            ShopSellPolicy,
+        },
         skill_data::SkillDatabase,
         skill_fragment_data::{
             SkillFragmentAcquisitionSource, SkillFragmentDatabase, SkillFragmentEffectDef,
@@ -972,9 +1023,6 @@ mod tests {
             steps: vec![SkillStepDef {
                 id: "step".to_string(),
                 delay_ms: 0,
-                range_policy: Default::default(),
-                defense_tile_range: None,
-                air_capable: false,
                 target: SkillTarget::SelfUnit,
                 targeting: Default::default(),
                 when: Default::default(),
@@ -1050,7 +1098,6 @@ mod tests {
     #[test]
     fn item_registry_returns_inventory_items_by_uuid_and_excludes_abnormalities() {
         let abno_uuid = Uuid::from_u128(1);
-        let art_uuid = Uuid::from_u128(2);
         let equip_uuid = Uuid::from_u128(3);
 
         let abno = AbnormalityMetadata {
@@ -1074,17 +1121,6 @@ mod tests {
             target_traits: Vec::new(),
         };
 
-        let artifact = ArtifactMetadata {
-            id: "art".to_string(),
-            uuid: art_uuid,
-            name: "Art".to_string(),
-            description: "desc".to_string(),
-            rarity: RiskLevel::ZAYIN,
-            price: 20,
-            triggered_effects: HashMap::new(),
-            ability_activations: vec![],
-        };
-
         let equipment = EquipmentMetadata {
             id: "equip".to_string(),
             uuid: equip_uuid,
@@ -1098,19 +1134,16 @@ mod tests {
             triggered_effects: HashMap::new(),
             ability_activations: vec![],
             weapon_profile: Some(Default::default()),
+            event_check_modifiers: vec![],
+            event_choice_keys: vec![],
         };
 
         let game_data = GameDataBuilder::empty()
             .with_abnormalities(vec![abno])
-            .with_artifacts(vec![artifact])
             .with_equipment(vec![equipment])
             .build();
 
         assert!(game_data.item(&abno_uuid).is_none());
-        assert!(matches!(
-            game_data.item(&art_uuid),
-            Some(ItemRef::Artifact(_))
-        ));
         assert!(matches!(
             game_data.item(&equip_uuid),
             Some(ItemRef::Equipment(_))
@@ -1210,57 +1243,86 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "duplicate item uuid")]
-    fn game_data_base_panics_on_duplicate_item_uuid_across_inventory_item_categories() {
-        let shared_uuid = Uuid::from_u128(1);
-
-        let artifact = ArtifactMetadata {
-            id: "art".to_string(),
-            uuid: shared_uuid,
-            name: "Art".to_string(),
-            description: "desc".to_string(),
-            rarity: RiskLevel::ZAYIN,
-            price: 20,
-            triggered_effects: Default::default(),
-            ability_activations: vec![],
+    #[should_panic(expected = "references missing typed merchandise")]
+    fn game_data_base_panics_on_shop_referencing_missing_typed_merchandise() {
+        let shop = ShopMetadata {
+            id: "shop".to_string(),
+            name: "Shop".to_string(),
+            uuid: Uuid::from_u128(100),
+            context: crate::game::data::shop_data::ShopContext::UnknownExploration,
+            offer_count: 1,
+            default_buy_percent: 100,
+            preset_refs: vec![],
+            local_entries: vec![crate::game::data::shop_data::ShopMerchandiseEntry {
+                merchandise: crate::game::data::shop_data::ShopMerchandise::Equipment {
+                    equipment_id: "missing".to_string(),
+                },
+                quantity: 1,
+                weight: 1,
+                repeatable: false,
+                buy_percent: None,
+                tags: vec![],
+            }],
+            refresh_policy: None,
+            sell_policy: None,
         };
 
+        let _ = GameDataBuilder::empty()
+            .with_shops(ShopDatabase::new(vec![shop]))
+            .build();
+    }
+
+    #[test]
+    #[should_panic(expected = "maximum live sell quote")]
+    fn game_data_base_rejects_same_and_cross_shop_non_loss_arbitrage() {
         let equipment = EquipmentMetadata {
-            id: "equip".to_string(),
-            uuid: shared_uuid,
-            name: "Equip".to_string(),
-            equipment_type: EquipmentType::Weapon,
+            id: "trade_item".to_string(),
+            uuid: Uuid::from_u128(0x700),
+            name: "Trade Item".to_string(),
+            equipment_type: EquipmentType::Armor,
             rarity: RiskLevel::ZAYIN,
-            price: 30,
+            price: 100,
             allow_duplicate_equip: true,
             bound: false,
             cannot_unequip_reason: "equipment_bound".to_string(),
             triggered_effects: HashMap::new(),
             ability_activations: vec![],
-            weapon_profile: Some(Default::default()),
+            weapon_profile: None,
+            event_check_modifiers: vec![],
+            event_choice_keys: vec![],
+        };
+        let entry = ShopMerchandiseEntry {
+            merchandise: ShopMerchandise::Equipment {
+                equipment_id: equipment.id.clone(),
+            },
+            quantity: 1,
+            weight: 1,
+            repeatable: false,
+            buy_percent: None,
+            tags: vec!["trade".to_string()],
+        };
+        let shop = |id: &str, uuid: u128, sell_percent: Option<u32>| ShopMetadata {
+            id: id.to_string(),
+            name: id.to_string(),
+            uuid: Uuid::from_u128(uuid),
+            context: ShopContext::UnknownExploration,
+            offer_count: 1,
+            default_buy_percent: 100,
+            preset_refs: vec![],
+            local_entries: vec![entry.clone()],
+            refresh_policy: None,
+            sell_policy: sell_percent.map(|price_percent| ShopSellPolicy {
+                price_percent,
+                accepted_tags: None,
+            }),
         };
 
         let _ = GameDataBuilder::empty()
-            .with_artifacts(vec![artifact])
             .with_equipment(vec![equipment])
-            .build();
-    }
-
-    #[test]
-    #[should_panic(expected = "references missing item uuid")]
-    fn game_data_base_panics_on_shop_referencing_missing_item_uuid() {
-        let shop = ShopMetadata {
-            id: "shop".to_string(),
-            name: "Shop".to_string(),
-            uuid: Uuid::from_u128(100),
-            shop_type: crate::game::data::shop_data::ShopType::Shop,
-            can_reroll: false,
-            visible_items: vec![Uuid::from_u128(999)],
-            hidden_items: vec![],
-        };
-
-        let _ = GameDataBuilder::empty()
-            .with_shops(ShopDatabase::new(vec![shop]))
+            .with_shops(ShopDatabase::new(vec![
+                shop("seller", 0x701, None),
+                shop("buyer", 0x702, Some(100)),
+            ]))
             .build();
     }
 
@@ -1280,6 +1342,8 @@ mod tests {
             triggered_effects: HashMap::new(),
             ability_activations: vec![],
             weapon_profile: Some(Default::default()),
+            event_check_modifiers: vec![],
+            event_choice_keys: vec![],
         };
         let item = Item::Equipment(Arc::new(equipment));
 

@@ -1,0 +1,142 @@
+(
+    profiles: [
+        (
+            id: "standard_floor_1",
+            difficulty_profile_id: "default_facility",
+            category_constraints: [
+                (category: Combat, exact: Some(2)),
+                (category: Event, exact: Some(1)),
+                (category: Reward, exact: Some(1)),
+                (category: SavePoint, exact: Some(0)),
+                (category: Maintenance, exact: Some(0)),
+            ],
+            remaining_category_weights: [(category: Combat, weight: 1)],
+            tagged_slot_assignments: [
+                (slot_tag: "terminal_guard", category: Combat, kind_id: Some("combat_elite")),
+            ],
+        ),
+        (
+            id: "standard_floor_2",
+            difficulty_profile_id: "default_facility",
+            category_constraints: [
+                (category: Combat, exact: Some(2)),
+                (category: SavePoint, exact: Some(1)),
+                (category: Maintenance, exact: Some(1)),
+                (category: HeadquartersContact, exact: Some(1)),
+                (category: Shop, exact: Some(1)),
+                (category: Event, exact: Some(1)),
+            ],
+            remaining_category_weights: [(category: Combat, weight: 1)],
+            tagged_slot_assignments: [
+                (slot_tag: "terminal_guard", category: Combat, kind_id: Some("combat_elite")),
+            ],
+        ),
+        (
+            id: "standard_floor_3",
+            difficulty_profile_id: "default_facility",
+            category_constraints: [
+                (category: Combat, min: 3, max: Some(4)),
+                (category: Event, min: 1, max: Some(2)),
+                (category: Reward, min: 1, max: Some(2)),
+                (category: SavePoint, exact: Some(0)),
+            ],
+            remaining_category_weights: [
+                (category: Combat, weight: 45),
+                (category: Event, weight: 20),
+                (category: Reward, weight: 20),
+                (category: Maintenance, weight: 8),
+                (category: HeadquartersContact, weight: 4),
+                (category: Shop, weight: 3),
+            ],
+        ),
+        (
+            id: "endless_odd_early",
+            difficulty_profile_id: "default_facility",
+            category_constraints: [
+                (category: Combat, min: 2, max: Some(5)),
+                (category: Event, min: 1, max: Some(3)),
+                (category: SavePoint, exact: Some(0)),
+            ],
+            remaining_category_weights: [
+                (category: Combat, weight: 55),
+                (category: Event, weight: 20),
+                (category: Reward, weight: 15),
+                (category: Maintenance, weight: 6),
+                (category: HeadquartersContact, weight: 4),
+            ],
+        ),
+        (
+            id: "endless_even_early",
+            difficulty_profile_id: "default_facility",
+            category_constraints: [
+                (category: Combat, min: 2, max: Some(5)),
+                (category: Event, min: 1, max: Some(3)),
+                (category: SavePoint, exact: Some(1)),
+            ],
+            remaining_category_weights: [
+                (category: Combat, weight: 50),
+                (category: Event, weight: 18),
+                (category: Reward, weight: 15),
+                (category: Maintenance, weight: 8),
+                (category: HeadquartersContact, weight: 5),
+            ],
+        ),
+        (
+            id: "endless_odd_open",
+            difficulty_profile_id: "default_facility",
+            category_constraints: [
+                (category: Combat, min: 2, max: Some(6)),
+                (category: Event, min: 1, max: Some(3)),
+                (category: SavePoint, exact: Some(0)),
+            ],
+            remaining_category_weights: [
+                (category: Combat, weight: 45),
+                (category: Event, weight: 18),
+                (category: Reward, weight: 15),
+                (category: Maintenance, weight: 8),
+                (category: HeadquartersContact, weight: 6),
+                (category: Shop, weight: 8),
+            ],
+        ),
+        (
+            id: "endless_even_open",
+            difficulty_profile_id: "default_facility",
+            category_constraints: [
+                (category: Combat, min: 2, max: Some(6)),
+                (category: Event, min: 1, max: Some(3)),
+                (category: SavePoint, exact: Some(1)),
+            ],
+            remaining_category_weights: [
+                (category: Combat, weight: 42),
+                (category: Event, weight: 17),
+                (category: Reward, weight: 15),
+                (category: Maintenance, weight: 8),
+                (category: HeadquartersContact, weight: 6),
+                (category: Shop, weight: 12),
+            ],
+        ),
+    ],
+    standard_schedule: [
+        (floor: 1, pool_id: "standard_intro", profile_id: "standard_floor_1"),
+        (floor: 2, pool_id: "standard_branching", profile_id: "standard_floor_2"),
+        (floor: 3, pool_id: "standard_final", profile_id: "standard_floor_3"),
+    ],
+    endless_stages: [
+        (
+            min_floor: 1,
+            max_floor: Some(3),
+            cycle: [
+                (pool_id: "endless_initial", profile_id: "endless_odd_early"),
+                (pool_id: "endless_initial", profile_id: "endless_even_early"),
+            ],
+        ),
+        (
+            min_floor: 4,
+            max_floor: None,
+            cycle: [
+                (pool_id: "endless_advanced", profile_id: "endless_even_open"),
+                (pool_id: "endless_advanced", profile_id: "endless_odd_open"),
+            ],
+        ),
+    ],
+)

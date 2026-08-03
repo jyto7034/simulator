@@ -5,13 +5,17 @@ use crate::game::combat_setup::mission_policy::CombatMissionPolicy;
 use crate::game::data::{
     pve_data::{PveEncounter, PveEncounterClass, PveEncounterDatabase},
     run_policy_data::{
-        EmptyEncounterCandidateFallbackPolicy, EncounterRepeatWeightingPolicy, RunPolicyData,
+        EmptyEncounterCandidateFallbackPolicy, EncounterRepeatWeightingPolicy,
+        OrdinaryCombatDifficultyBand, RunPolicyData,
     },
 };
 use crate::game::determinism;
 use crate::game::map::{
-    GameMode, MapNode, MapNodeCategory, MapNodePayload, RunMap, RunProgression,
+    GameMode, MapNode, MapNodeCategory, MapNodeCombatDifficultyClass, MapNodeKindId,
+    MapNodePayload, RunMap, RunProgression,
 };
+use crate::game::monolith::MonolithRunState;
+use std::collections::HashSet;
 
 pub(super) fn assign_map_encounters(
     pve_data: &PveEncounterDatabase,
@@ -19,6 +23,7 @@ pub(super) fn assign_map_encounters(
     run_progression: &RunProgression,
     abnormality_research: &RunAbnormalityResearchState,
     abnormality_encounter_history: &RunAbnormalityEncounterHistory,
+    monolith: &MonolithRunState,
     run_policy: &RunPolicyData,
 ) {
     let mut encounters = pve_data.encounters.iter().collect::<Vec<_>>();
@@ -26,6 +31,8 @@ pub(super) fn assign_map_encounters(
     if encounters.is_empty() {
         return;
     }
+
+    let mut assigned_natural_elite_abnormalities = HashSet::new();
 
     for node in &mut map.nodes {
         if !matches!(
@@ -42,8 +49,34 @@ pub(super) fn assign_map_encounters(
             continue;
         }
 
+        let mut candidates = encounters.clone();
+        if run_progression.game_mode == GameMode::Endless
+            && node.category == MapNodeCategory::Combat
+            && node.kind_id.as_str().contains("elite")
+        {
+            candidates.retain(|encounter| {
+                encounter
+                    .primary_abnormality_id()
+                    .is_some_and(|abnormality_id| {
+                        !monolith
+                            .progress(abnormality_id)
+                            .is_some_and(|progress| progress.is_naturally_excluded())
+                            && !assigned_natural_elite_abnormalities.contains(abnormality_id)
+                    })
+            });
+            if candidates.is_empty() {
+                node.kind_id = MapNodeKindId::new("combat_normal");
+                convert_elite_difficulty_to_authored_ordinary(node, run_policy);
+                candidates = encounters
+                    .iter()
+                    .copied()
+                    .filter(|encounter| encounter.encounter_class == PveEncounterClass::Normal)
+                    .collect();
+            }
+        }
+
         let selected = select_encounter_for_map_node(
-            &encounters,
+            &candidates,
             node,
             run_progression,
             abnormality_research,
@@ -51,10 +84,49 @@ pub(super) fn assign_map_encounters(
             run_policy,
         );
 
+        if run_progression.game_mode == GameMode::Endless
+            && node.category == MapNodeCategory::Combat
+            && node.kind_id.as_str().contains("elite")
+        {
+            if let Some(abnormality_id) = selected.primary_abnormality_id() {
+                assigned_natural_elite_abnormalities.insert(abnormality_id.to_string());
+            }
+        }
+
         if let MapNodePayload::Encounter { encounter_id } = &mut node.payload {
             *encounter_id = Some(selected.id.clone());
         }
     }
+}
+
+fn convert_elite_difficulty_to_authored_ordinary(node: &mut MapNode, run_policy: &RunPolicyData) {
+    let Some(difficulty) = node.combat_difficulty.as_mut() else {
+        return;
+    };
+    let Some(profile) = run_policy.combat_difficulty_profile(&difficulty.difficulty_profile_id)
+    else {
+        return;
+    };
+    let Some(tuning) = profile
+        .ordinary_bands
+        .iter()
+        .find(|entry| entry.band == OrdinaryCombatDifficultyBand::Standard)
+    else {
+        return;
+    };
+    difficulty.class =
+        MapNodeCombatDifficultyClass::Ordinary(OrdinaryCombatDifficultyBand::Standard);
+    difficulty.target_power = percent_of_anchor_ceil(
+        difficulty.floor_power_anchor,
+        tuning.tuning.target_power_percent,
+    );
+}
+
+fn percent_of_anchor_ceil(anchor: u64, percent: u32) -> u64 {
+    let value = u128::from(anchor)
+        .saturating_mul(u128::from(percent))
+        .div_ceil(100);
+    u64::try_from(value).unwrap_or(u64::MAX)
 }
 
 fn select_encounter_for_map_node<'a>(
@@ -133,14 +205,11 @@ struct WeightedEncounterCandidate<'a> {
 }
 
 fn encounter_selection_seed(run_progression: &RunProgression, node: &MapNode) -> u64 {
-    run_progression.current_floor_seed()
-        ^ (u64::from(node.depth) << 32)
-        ^ u64::from(node.lane)
-        ^ determinism::seed_with_uuid(
-            run_progression.current_floor_seed(),
-            0x4D41_505F_454E_4354,
-            node.id.0,
-        )
+    determinism::seed_with_uuid(
+        run_progression.current_floor_seed(),
+        0x4D41_505F_454E_4354,
+        node.id.0,
+    )
 }
 
 fn should_apply_repeat_weighting(
@@ -333,15 +402,14 @@ mod tests {
     fn elite_node() -> MapNode {
         MapNode {
             id: MapNodeId::new(Uuid::from_u128(0xE117E)),
-            depth: 2,
-            lane: 1,
-            slot_id: MapSlotId::for_grid_position(2, 1),
+            slot_id: MapSlotId::new("elite_checkpoint"),
             kind_id: MapNodeKindId::new("combat_elite"),
             category: MapNodeCategory::Combat,
             state: MapNodeState::Available,
             visibility: MapNodeVisibility::Revealed,
             payload: MapNodePayload::Encounter { encounter_id: None },
             omen: None,
+            combat_difficulty: None,
         }
     }
 
@@ -499,6 +567,58 @@ mod tests {
         );
 
         assert_eq!(selected.id, "standard_recent_elite");
+    }
+
+    #[test]
+    fn endless_resolved_elite_pool_falls_back_to_authored_ordinary_combat() {
+        let elite = elite_encounter("resolved_elite", "resolved_abno");
+        let normal = normal_encounter("ordinary_fallback");
+        let pve_data = PveEncounterDatabase::new(vec![elite, normal]);
+        let run_policy = RunPolicyData::builtin();
+        let profile = &run_policy.combat_difficulty.profiles[0];
+        let mut node = elite_node();
+        node.combat_difficulty = Some(crate::game::map::MapNodeCombatDifficulty {
+            power_model_version: run_policy.combat_difficulty.power_model_version,
+            difficulty_profile_id: profile.id.clone(),
+            class: MapNodeCombatDifficultyClass::Role(
+                crate::game::data::run_policy_data::CombatNodeDifficultyRole::Elite,
+            ),
+            monolith_stage: None,
+            floor_power_anchor: 100,
+            target_power: 150,
+        });
+        let mut map = RunMap {
+            map_template_id: crate::game::map::MapTemplateId::new("test"),
+            facility_template_version: crate::game::map::FACILITY_TEMPLATE_VERSION,
+            nodes: vec![node],
+            start_node_ids: vec![],
+            terminals: vec![],
+        };
+        let mut monolith = MonolithRunState::default();
+        monolith.record_natural_failure("resolved_abno").unwrap();
+
+        assign_map_encounters(
+            &pve_data,
+            &mut map,
+            &endless_progression_at_floor(3),
+            &RunAbnormalityResearchState::default(),
+            &RunAbnormalityEncounterHistory::default(),
+            &monolith,
+            &run_policy,
+        );
+
+        let node = &map.nodes[0];
+        assert_eq!(node.kind_id.as_str(), "combat_normal");
+        assert!(matches!(
+            &node.payload,
+            MapNodePayload::Encounter {
+                encounter_id: Some(encounter_id)
+            } if encounter_id == "ordinary_fallback"
+        ));
+        assert_eq!(
+            node.combat_difficulty.as_ref().unwrap().class,
+            MapNodeCombatDifficultyClass::Ordinary(OrdinaryCombatDifficultyBand::Standard)
+        );
     }
 
     #[test]

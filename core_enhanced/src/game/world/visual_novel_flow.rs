@@ -1,0 +1,242 @@
+use super::GameCore;
+use crate::game::{
+    behavior::{BehaviorResult, GameError, LiveBattleUpdateDto},
+    data::visual_novel_data::{
+        VisualNovelChoiceId, VisualNovelChoiceNext, VisualNovelSceneId, VisualNovelSceneNext,
+    },
+    resources::GameState,
+    visual_novel::{VisualNovelSession, VisualNovelSource},
+};
+
+#[derive(Debug, Clone)]
+pub(super) enum VisualNovelProgressionOutcome {
+    SceneChanged,
+    Completed {
+        completed_session: VisualNovelSession,
+    },
+}
+
+impl GameCore {
+    pub(super) fn handle_advance_visual_novel(
+        &mut self,
+        session_id: String,
+        current_scene_id: VisualNovelSceneId,
+    ) -> Result<BehaviorResult, GameError> {
+        let next = self.active_visual_novel_scene_next(&session_id, &current_scene_id)?;
+        if matches!(next, VisualNovelSceneNext::Choices { .. }) {
+            return Err(GameError::InvalidAction);
+        }
+
+        let outcome = match next {
+            VisualNovelSceneNext::Scene { scene_id } => {
+                self.state
+                    .visual_novel
+                    .active
+                    .as_mut()
+                    .ok_or(GameError::InvalidAction)?
+                    .current_scene_id = scene_id;
+                VisualNovelProgressionOutcome::SceneChanged
+            }
+            VisualNovelSceneNext::End => self.finish_active_visual_novel_session()?,
+            VisualNovelSceneNext::Choices { .. } => unreachable!("choices rejected above"),
+        };
+        self.apply_visual_novel_progression_outcome(&outcome)?;
+
+        Ok(BehaviorResult::VisualNovelState {
+            visual_novel: self.visual_novel_snapshot_dto()?,
+        })
+    }
+
+    pub(super) fn handle_select_visual_novel_choice(
+        &mut self,
+        session_id: String,
+        current_scene_id: VisualNovelSceneId,
+        choice_id: VisualNovelChoiceId,
+    ) -> Result<BehaviorResult, GameError> {
+        let next =
+            self.active_visual_novel_choice_next(&session_id, &current_scene_id, &choice_id)?;
+
+        let monolith_exchange = self
+            .state
+            .visual_novel
+            .active
+            .as_ref()
+            .is_some_and(|session| {
+                session.session_id == session_id
+                    && session.vn_id.as_str() == self.run_policy().monolith.exchange_visual_novel_id
+            });
+        let next_monolith = if monolith_exchange {
+            let mut state = self.run_state()?.monolith.clone();
+            match choice_id.as_str() {
+                "accept" => {
+                    state
+                        .accept_exchange(self.run_policy().monolith.residual_exchange_threshold)
+                        .map_err(|_| GameError::InvalidAction)?;
+                }
+                "decline" => {
+                    state
+                        .decline_exchange()
+                        .map_err(|_| GameError::InvalidAction)?;
+                }
+                _ => return Err(GameError::InvalidAction),
+            }
+            Some(state)
+        } else {
+            None
+        };
+
+        let outcome = match next {
+            VisualNovelChoiceNext::Scene { scene_id } => {
+                let active = self
+                    .state
+                    .visual_novel
+                    .active
+                    .as_mut()
+                    .ok_or(GameError::InvalidAction)?;
+                active.current_scene_id = scene_id;
+                active.committed_choice_id = None;
+                VisualNovelProgressionOutcome::SceneChanged
+            }
+            VisualNovelChoiceNext::End => self.finish_active_visual_novel_session()?,
+        };
+        if let Some(monolith) = next_monolith {
+            self.run_state_mut()?.monolith = monolith;
+        }
+        self.apply_visual_novel_progression_outcome(&outcome)?;
+
+        Ok(BehaviorResult::VisualNovelState {
+            visual_novel: self.visual_novel_snapshot_dto()?,
+        })
+    }
+
+    pub(super) fn active_visual_novel_scene_next(
+        &self,
+        session_id: &str,
+        current_scene_id: &VisualNovelSceneId,
+    ) -> Result<VisualNovelSceneNext, GameError> {
+        let session = self
+            .state
+            .visual_novel
+            .active
+            .as_ref()
+            .ok_or(GameError::InvalidAction)?;
+        if session.session_id != session_id || session.current_scene_id != *current_scene_id {
+            return Err(GameError::InvalidAction);
+        }
+        let visual_novel = self
+            .game_data
+            .visual_novel_data
+            .get_by_id(session.vn_id.as_str())
+            .ok_or(GameError::MissingResource("VisualNovel"))?;
+        let scene = visual_novel
+            .scene_by_id(current_scene_id.as_str())
+            .ok_or(GameError::MissingResource("VisualNovelScene"))?;
+        Ok(scene.next.clone())
+    }
+
+    fn active_visual_novel_choice_next(
+        &self,
+        session_id: &str,
+        current_scene_id: &VisualNovelSceneId,
+        choice_id: &VisualNovelChoiceId,
+    ) -> Result<VisualNovelChoiceNext, GameError> {
+        let next = self.active_visual_novel_scene_next(session_id, current_scene_id)?;
+        let VisualNovelSceneNext::Choices { choices } = next else {
+            return Err(GameError::InvalidAction);
+        };
+        choices
+            .into_iter()
+            .find(|choice| choice.id == *choice_id)
+            .map(|choice| choice.next)
+            .ok_or(GameError::InvalidAction)
+    }
+
+    fn finish_active_visual_novel_session(
+        &mut self,
+    ) -> Result<VisualNovelProgressionOutcome, GameError> {
+        let visual_novel = &mut self.state.visual_novel;
+        let completed_session = visual_novel.active.take().ok_or(GameError::InvalidAction)?;
+        visual_novel.active = if visual_novel.queue.is_empty() {
+            None
+        } else {
+            Some(visual_novel.queue.remove(0))
+        };
+        Ok(VisualNovelProgressionOutcome::Completed { completed_session })
+    }
+
+    fn apply_visual_novel_progression_outcome(
+        &mut self,
+        outcome: &VisualNovelProgressionOutcome,
+    ) -> Result<(), GameError> {
+        match outcome {
+            VisualNovelProgressionOutcome::SceneChanged => Ok(()),
+            VisualNovelProgressionOutcome::Completed { completed_session } => {
+                if matches!(completed_session.source, VisualNovelSource::HqBriefing) {
+                    let game_mode = match self.state.game_state {
+                        GameState::PreRunBriefing { game_mode } => game_mode,
+                        _ => return Ok(()),
+                    };
+                    self.prepare_starter_employee_candidates()?;
+                    self.transition_to(GameState::SelectingStarterEmployees)?;
+                    tracing::info!(
+                        "HQ briefing VN completed; starter employee selection opened for {:?} mode",
+                        game_mode
+                    );
+                }
+                Ok(())
+            }
+        }
+    }
+
+    pub(super) fn current_battle_update_result_for_visual_novel_transport(
+        &mut self,
+        after_seq: u64,
+    ) -> Result<BehaviorResult, GameError> {
+        let roster = self.roster()?.clone();
+        let active = self
+            .state
+            .active_battle
+            .as_mut()
+            .ok_or(GameError::InvalidAction)?;
+        active.commit_battle_projection()?;
+        let battle_update = active.battle_update_dto_after(after_seq, &roster)?;
+        Ok(BehaviorResult::BattleState {
+            battle_uuid: active.battle_uuid,
+            node_type: active.node_type,
+            mission_variant: active.mission_variant,
+            encounter_id: active.encounter_id.clone(),
+            combat_preview: active.combat_preview.clone(),
+            battle_update,
+            finished: active.execution.is_finished(),
+        })
+    }
+
+    pub(super) fn attach_visual_novel_to_battle_result(
+        &self,
+        result: &mut BehaviorResult,
+    ) -> Result<(), GameError> {
+        let visual_novel = self.visual_novel_snapshot_dto()?;
+        match result {
+            BehaviorResult::BattleAdvanced { battle_update, .. }
+            | BehaviorResult::BattleState { battle_update, .. }
+            | BehaviorResult::BattlePlaybackChanged { battle_update, .. }
+            | BehaviorResult::BattleUnitDeployed { battle_update, .. }
+            | BehaviorResult::BattleUnitWithdrawn { battle_update, .. }
+            | BehaviorResult::BattleSkillActivated { battle_update, .. } => {
+                let action_capabilities =
+                    self.project_battle_action_capabilities(visual_novel.as_ref())?;
+                attach_visual_novel_to_update(battle_update, visual_novel);
+                battle_update.action_capabilities = action_capabilities;
+            }
+            _ => {}
+        }
+        Ok(())
+    }
+}
+
+fn attach_visual_novel_to_update(
+    battle_update: &mut LiveBattleUpdateDto,
+    visual_novel: Option<crate::game::behavior::VisualNovelSnapshotDto>,
+) {
+    battle_update.visual_novel = visual_novel;
+}

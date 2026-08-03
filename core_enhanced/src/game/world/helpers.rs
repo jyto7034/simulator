@@ -3,8 +3,9 @@ use std::collections::HashSet;
 use tracing::{debug, info};
 use uuid::Uuid;
 
+use super::state::ActiveBattleSession;
 use super::GameCore;
-use crate::game::behavior::{ActionKind, BehaviorResult, GameError};
+use crate::game::behavior::{BehaviorResult, GameError};
 use crate::game::combat_setup::player_spawns::{
     effective_combat_profile_for_employee, effective_combat_profile_for_employee_with_item_slot,
 };
@@ -13,11 +14,10 @@ use crate::game::data::skill_fragment_data::{
 };
 use crate::game::employee::{Employee, EmployeeRoster};
 use crate::game::enums::RewardMode;
-use crate::game::managers::action_scheduler::{ActionScheduler, AllowedActionContext};
 use crate::game::map::MapNodeId;
 use crate::game::resources::item_slot::{EquippedRef, ItemSlot};
 use crate::game::resources::{
-    EquippedItemDto, GameState, Inventory, InventoryItemDto, RewardSessionState, RosterOrder,
+    EquippedItemDto, GameState, Inventory, InventoryItemDto, RewardSessionState,
 };
 use crate::game::reward::{RewardEffect, RewardOption};
 
@@ -30,33 +30,17 @@ impl GameCore {
         Ok(&mut self.state.inventory)
     }
 
-    pub(super) fn roster_order(&self) -> Result<&RosterOrder, GameError> {
-        Ok(&self.state.roster_order)
-    }
-
-    pub(super) fn roster_order_mut(&mut self) -> Result<&mut RosterOrder, GameError> {
-        Ok(&mut self.state.roster_order)
-    }
-
     pub(super) fn roster(&self) -> Result<&EmployeeRoster, GameError> {
-        Ok(&self.state.roster)
+        Ok(self
+            .state
+            .active_battle
+            .as_ref()
+            .map(ActiveBattleSession::employee_roster)
+            .unwrap_or(&self.state.roster))
     }
 
     pub(super) fn roster_mut(&mut self) -> Result<&mut EmployeeRoster, GameError> {
         Ok(&mut self.state.roster)
-    }
-
-    pub(super) fn available_player_unit_ids(&self) -> Result<Vec<Uuid>, GameError> {
-        let roster = self.roster()?;
-        Ok(roster.available_employee_ids())
-    }
-
-    pub(super) fn sync_roster_order_with_owned_units(&mut self) -> Result<(), GameError> {
-        let owned_units = self.available_player_unit_ids()?;
-
-        let roster_order = self.roster_order_mut()?;
-        roster_order.sync_owned_units(&owned_units);
-        Ok(())
     }
 
     pub(super) fn build_reward_session(
@@ -75,16 +59,11 @@ impl GameCore {
         }
     }
 
-    pub(super) fn reward_state_result_with_deliveries(
-        &self,
-        reward: &RewardSessionState,
-        research_deliveries: Vec<crate::game::skill_fragment::SkillFragmentResearchDelivery>,
-    ) -> BehaviorResult {
+    pub(super) fn reward_state_result(&self, reward: &RewardSessionState) -> BehaviorResult {
         BehaviorResult::RewardState {
             mode: reward.mode,
             rewards: reward.rewards.clone(),
             selected_reward_uuid: reward.selected_reward_uuid,
-            research_deliveries,
         }
     }
 
@@ -95,29 +74,6 @@ impl GameCore {
             .and_then(|selected| selected.as_reward().ok())
             .map(|reward| reward.can_skip)
             .unwrap_or(false)
-    }
-
-    pub(super) fn refresh_allowed_actions(&mut self) {
-        let state = self.state.game_state.clone();
-        let allowed = self.allowed_actions_for_state_context(&state);
-        self.state.action_validator.set_allowed_actions(allowed);
-    }
-
-    pub(super) fn allowed_actions_for_state_context(&self, state: &GameState) -> Vec<ActionKind> {
-        let mut actions = ActionScheduler::get_allowed_actions_for_context(
-            state,
-            AllowedActionContext {
-                reward_can_skip: self.current_reward_can_skip(),
-                in_maintenance_node: self.is_in_maintenance_node(),
-                run_checkpoint_can_load: self.state.run_checkpoint.can_load(),
-            },
-        );
-        if matches!(state, GameState::CombatResult { .. })
-            && !self.can_complete_combat_result_locally()
-        {
-            actions.retain(|action| *action != ActionKind::CompleteCombatResult);
-        }
-        actions
     }
 
     pub(super) fn merge_inventory_diff(
@@ -165,8 +121,7 @@ impl GameCore {
     }
 
     pub(super) fn validate_select_map_node(&self, node_id: MapNodeId) -> Result<(), GameError> {
-        let run = self.run_state()?;
-        if run.map_progression.is_node_selectable(&run.map, node_id) {
+        if self.selectable_map_node_ids().contains(&node_id) {
             Ok(())
         } else {
             Err(GameError::InvalidAction)
@@ -178,6 +133,9 @@ impl GameCore {
         item_uuid: Uuid,
         target_unit: Uuid,
     ) -> Result<(), GameError> {
+        if !self.is_loadout_action_context() {
+            return Err(GameError::InvalidAction);
+        }
         let inventory = self.inventory()?;
 
         let owned_equipment = inventory
@@ -188,16 +146,59 @@ impl GameCore {
         if owned_equipment.meta.bound {
             return Err(GameError::InvalidAction);
         }
-        if owned_equipment.equipped_to.is_some() {
+
+        let roster = self.roster()?;
+        let target = roster.get(&target_unit).ok_or(GameError::UnitNotFound)?;
+        if !target
+            .eligibility(crate::game::employee::EmployeeActivity::Loadout)
+            .eligible
+        {
             return Err(GameError::InvalidAction);
         }
 
-        let roster = self.roster()?;
-        let employee = roster.get(&target_unit).ok_or(GameError::UnitNotFound)?;
-        if employee.is_available_for_combat() {
-            return Ok(());
+        let source_unit = owned_equipment.equipped_to;
+        if source_unit == Some(target_unit) {
+            return Err(GameError::InvalidAction);
         }
-        Err(GameError::InvalidAction)
+        if let Some(source_unit) = source_unit {
+            let source = roster.get(&source_unit).ok_or(GameError::UnitNotFound)?;
+            if !source
+                .eligibility(crate::game::employee::EmployeeActivity::Loadout)
+                .eligible
+                || !source.loadout.item_slot.contains_instance(item_uuid)
+            {
+                return Err(GameError::InvalidAction);
+            }
+        }
+
+        let incoming_ref = EquippedRef {
+            instance_uuid: item_uuid,
+            base_uuid: owned_equipment.meta.uuid,
+            equipment_type: owned_equipment.meta.equipment_type,
+        };
+        let replaced = target
+            .loadout
+            .item_slot
+            .iter()
+            .find(|equipped| equipped.equipment_type == owned_equipment.meta.equipment_type)
+            .copied();
+        let mut projected_target = target.loadout.item_slot.clone();
+        if let Some(replaced) = replaced {
+            let replaced_item = inventory
+                .equipments
+                .get_item(&replaced.instance_uuid)
+                .ok_or(GameError::InventoryItemNotFound)?;
+            if replaced_item.equipped_to != Some(target_unit) || replaced_item.meta.bound {
+                return Err(GameError::InvalidAction);
+            }
+            projected_target
+                .remove_by_instance(replaced.instance_uuid)
+                .ok_or(GameError::InvalidAction)?;
+        }
+        projected_target
+            .equip(incoming_ref, owned_equipment.meta.allow_duplicate_equip)
+            .map_err(|_| GameError::InvalidAction)?;
+        self.validate_active_skill_fragment_for_projected_item_slot(target_unit, &projected_target)
     }
 
     pub(super) fn validate_unequip_item_payload(
@@ -205,6 +206,9 @@ impl GameCore {
         item_uuid: Uuid,
         target_unit: Uuid,
     ) -> Result<(), GameError> {
+        if !self.is_loadout_action_context() {
+            return Err(GameError::InvalidAction);
+        }
         let inventory = self.inventory()?;
         let owned_equipment = inventory
             .equipments
@@ -219,7 +223,10 @@ impl GameCore {
 
         let roster = self.roster()?;
         let employee = roster.get(&target_unit).ok_or(GameError::UnitNotFound)?;
-        if !employee.is_available_for_combat() {
+        if !employee
+            .eligibility(crate::game::employee::EmployeeActivity::Loadout)
+            .eligible
+        {
             return Err(GameError::InvalidAction);
         }
         if employee
@@ -279,8 +286,11 @@ impl GameCore {
         item_uuid: Uuid,
         target_employee_uuid: Uuid,
     ) -> Result<(), GameError> {
+        if !self.is_consumable_use_context() {
+            return Err(GameError::InvalidAction);
+        }
         let inventory = self.inventory()?;
-        inventory
+        let consumable = inventory
             .consumables
             .get_item(&item_uuid)
             .ok_or(GameError::InventoryItemNotFound)?;
@@ -288,7 +298,15 @@ impl GameCore {
             .roster()?
             .get(&target_employee_uuid)
             .ok_or(GameError::UnitNotFound)?;
-        if employee.can_receive_consumable_modifier() {
+        let activity = if matches!(
+            consumable.meta.effect,
+            crate::game::data::consumable_data::ConsumableEffect::ReducePhysicalDamage { .. }
+        ) {
+            crate::game::employee::EmployeeActivity::PhysicalTreatment
+        } else {
+            crate::game::employee::EmployeeActivity::Consumable
+        };
+        if employee.eligibility(activity).eligible {
             Ok(())
         } else {
             Err(GameError::InvalidAction)
@@ -300,11 +318,17 @@ impl GameCore {
         employee_uuid: Uuid,
         fragment_id: &SkillFragmentId,
     ) -> Result<(), GameError> {
+        if !self.is_loadout_action_context() {
+            return Err(GameError::InvalidAction);
+        }
         let employee = self
             .roster()?
             .get(&employee_uuid)
             .ok_or(GameError::UnitNotFound)?;
-        if !employee.is_available_for_combat() {
+        if !employee
+            .eligibility(crate::game::employee::EmployeeActivity::Loadout)
+            .eligible
+        {
             return Err(GameError::InvalidAction);
         }
         if !self.state.skill_fragments.contains(fragment_id) {
@@ -404,11 +428,17 @@ impl GameCore {
         employee_uuid: Uuid,
         fragment_id: &SkillFragmentId,
     ) -> Result<(), GameError> {
+        if !self.is_loadout_action_context() {
+            return Err(GameError::InvalidAction);
+        }
         let employee = self
             .roster()?
             .get(&employee_uuid)
             .ok_or(GameError::UnitNotFound)?;
-        if !employee.is_available_for_combat() {
+        if !employee
+            .eligibility(crate::game::employee::EmployeeActivity::Loadout)
+            .eligible
+        {
             return Err(GameError::InvalidAction);
         }
         if !employee
@@ -420,6 +450,21 @@ impl GameCore {
             return Err(GameError::InvalidAction);
         }
         Ok(())
+    }
+
+    pub(super) fn is_loadout_action_context(&self) -> bool {
+        (matches!(
+            self.state.game_state,
+            GameState::ViewingMap | GameState::NodeConfirm { .. }
+        ) && !self.has_combat_recovery_restriction())
+            || self.is_in_maintenance_node()
+    }
+
+    pub(super) fn is_consumable_use_context(&self) -> bool {
+        matches!(
+            self.state.game_state,
+            GameState::ViewingMap | GameState::NodeConfirm { .. }
+        )
     }
 
     pub(super) fn validate_upgrade_skill_fragment_payload(
@@ -554,20 +599,6 @@ impl GameCore {
         Ok(())
     }
 
-    pub(super) fn validate_owned_unit_exists(
-        &self,
-        target_unit_uuid: Uuid,
-    ) -> Result<(), GameError> {
-        let roster = self.roster()?;
-        let employee = roster
-            .get(&target_unit_uuid)
-            .ok_or(GameError::UnitNotFound)?;
-        if employee.is_available_for_combat() {
-            return Ok(());
-        }
-        Err(GameError::InvalidAction)
-    }
-
     /// 게임 상태 전환
     ///
     /// # Arguments
@@ -575,14 +606,12 @@ impl GameCore {
     ///
     /// # Effects
     /// 1. GameCoreState의 GameState 업데이트
-    /// 2. GameState와 현재 세션 내용을 함께 읽어 allowed_actions 자동 업데이트
+    /// 2. Derived projections are recomputed on demand from the new state.
     pub(super) fn transition_to(&mut self, new_state: GameState) -> Result<(), GameError> {
         let old_state = self.state.game_state.clone();
         info!("Game state transition: {:?} -> {:?}", old_state, new_state);
 
-        let allowed = self.allowed_actions_for_state_context(&new_state);
-
-        self.state.transition_to(new_state, allowed);
+        self.state.transition_to(new_state);
 
         Ok(())
     }
@@ -597,25 +626,25 @@ impl GameCore {
 
     pub(super) fn validate_starter_employee_selection(
         &self,
-        candidate_ids: &[String],
+        employee_definition_ids: &[String],
     ) -> Result<(), GameError> {
         let starter_employee_count = self.run_policy().setup.starter_employee_count;
-        if candidate_ids.len() != starter_employee_count {
+        if employee_definition_ids.len() != starter_employee_count {
             return Err(GameError::InvalidAction);
         }
         let mut seen = HashSet::new();
-        if !candidate_ids.iter().all(|id| seen.insert(id)) {
+        if !employee_definition_ids.iter().all(|id| seen.insert(id)) {
             return Err(GameError::InvalidAction);
         }
         let candidates = self
             .state
             .starter_candidates
             .iter()
-            .map(|candidate| candidate.id.as_str())
+            .map(|definition| definition.employee_definition_id.as_str())
             .collect::<HashSet<_>>();
-        if candidate_ids
+        if employee_definition_ids
             .iter()
-            .any(|candidate_id| !candidates.contains(candidate_id.as_str()))
+            .any(|definition_id| !candidates.contains(definition_id.as_str()))
         {
             return Err(GameError::InvalidAction);
         }
@@ -624,27 +653,26 @@ impl GameCore {
 
     pub(super) fn initialize_selected_starter_employees(
         &mut self,
-        candidate_ids: &[String],
+        employee_definition_ids: &[String],
     ) -> Result<Vec<Uuid>, GameError> {
-        self.validate_starter_employee_selection(candidate_ids)?;
+        self.validate_starter_employee_selection(employee_definition_ids)?;
         let starter_employee_count = self.run_policy().setup.starter_employee_count;
         let mut candidate_plans = Vec::with_capacity(starter_employee_count);
         let mut grant_effects = Vec::new();
         let mut equipment_assignments = Vec::new();
         let mut employee_uuids = Vec::with_capacity(starter_employee_count);
-        for candidate_id in candidate_ids {
+        for employee_definition_id in employee_definition_ids {
             let candidate = self
                 .state
                 .starter_candidates
                 .iter()
-                .find(|candidate| candidate.id == *candidate_id)
+                .find(|definition| definition.employee_definition_id == *employee_definition_id)
                 .ok_or(GameError::InvalidAction)?
                 .clone();
             let employee_uuid = self.state.uuid_manager.next_employee();
             employee_uuids.push(employee_uuid);
-            let mut projected_employee =
-                Employee::from_starter_candidate(employee_uuid, &candidate);
-            for equipment_id in &candidate.starter_loadout.equipment_ids {
+            let mut projected_employee = Employee::from_definition(employee_uuid, &candidate);
+            for equipment_id in &candidate.initial_loadout.equipment_ids {
                 let equipment = self
                     .game_data
                     .equipment_data
@@ -652,7 +680,7 @@ impl GameCore {
                     .ok_or_else(|| {
                         GameError::InvalidStaticData(format!(
                             "starter employee candidate '{}' references missing equipment '{}'",
-                            candidate.id, equipment_id
+                            candidate.employee_definition_id, equipment_id
                         ))
                     })?;
                 let placeholder_uuid = Uuid::from_u128(
@@ -674,7 +702,7 @@ impl GameCore {
                     .map_err(|_| {
                         GameError::InvalidStaticData(format!(
                             "starter employee candidate '{}' has invalid equipment loadout",
-                            candidate.id
+                            candidate.employee_definition_id
                         ))
                     })?;
                 grant_effects.push(RewardEffect::GrantEquipment {
@@ -701,7 +729,7 @@ impl GameCore {
 
         let mut employees = Vec::with_capacity(starter_employee_count);
         for (employee_uuid, candidate) in candidate_plans {
-            employees.push(Employee::from_starter_candidate(employee_uuid, &candidate));
+            employees.push(Employee::from_definition(employee_uuid, &candidate));
         }
 
         let roster = self.roster_mut()?;

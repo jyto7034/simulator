@@ -69,6 +69,13 @@ pub struct BattleUnitDraft {
     pub growth_stacks: GrowthStack,
     pub equipped_items: Vec<Uuid>,
     pub equipped_item_enhancements: Vec<BattleEquipmentEnhancement>,
+    pub employee_start_condition: Option<EmployeeBattleStartCondition>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct EmployeeBattleStartCondition {
+    pub trauma: u32,
+    pub battle_hp_bonus_percent: u32,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -284,10 +291,11 @@ impl BattleUnitSource {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UnitCombatProfile {
     pub stats: UnitStats,
     pub basic_attack: BasicAttackDef,
+    pub basic_attack_speed_percent: u32,
     pub weapon_profile: Option<WeaponCombatProfile>,
     pub movement: MovementDef,
     pub resonance: ResonanceDef,
@@ -329,6 +337,17 @@ pub fn effective_basic_attack_tile_range(basic_attack: &BasicAttackDef) -> TileR
 
 impl UnitCombatProfile {
     pub fn employee_default() -> Self {
+        Self::for_employee(100, 10, 0, 0, 100)
+    }
+
+    pub fn for_employee(
+        max_health: u32,
+        attack: u32,
+        defense: i32,
+        magic_resist: i32,
+        basic_attack_speed_percent: u32,
+    ) -> Self {
+        assert!(basic_attack_speed_percent > 0);
         let basic_attack = BasicAttackDef {
             range_units: 1.0,
             defense_tile_range: Some(default_basic_attack_tile_range_for_role(
@@ -340,20 +359,31 @@ impl UnitCombatProfile {
             ..BasicAttackDef::default()
         };
         let movement = MovementDef::default();
-        let mut stats = UnitStats::with_values(100, 100, 10, 0, basic_attack.interval_ms);
-        stats.magic_resist = 0;
+        let interval_ms =
+            scale_attack_interval_ms(basic_attack.interval_ms, basic_attack_speed_percent);
+        let mut basic_attack = basic_attack;
+        basic_attack.interval_ms = interval_ms;
+        let mut stats = UnitStats::with_values(
+            max_health,
+            max_health,
+            attack,
+            defense,
+            basic_attack.interval_ms,
+        );
+        stats.magic_resist = magic_resist;
         stats.move_speed_units_per_ms = movement.speed_units_per_ms;
 
         Self {
             stats,
             basic_attack,
+            basic_attack_speed_percent,
             weapon_profile: None,
             movement,
             resonance: ResonanceDef::default(),
             skill_id: None,
             skill_activation_mode: SkillActivationMode::Auto,
             deployment_affinity: DeploymentAffinity::GroundOnly,
-            block_capacity: 1,
+            block_capacity: 0,
             block_radius_units: 0.75,
             blockable: true,
             mobility_kind: MobilityKind::Ground,
@@ -373,13 +403,24 @@ impl UnitCombatProfile {
         self.basic_attack.targeting_profile = weapon_profile.targeting_profile;
         self.basic_attack.air_capable = weapon_profile.air_capable;
         self.basic_attack.range_role = weapon_profile.range_role;
-        self.basic_attack.interval_ms = weapon_profile.interval_ms;
+        let interval_ms =
+            scale_attack_interval_ms(weapon_profile.interval_ms, self.basic_attack_speed_percent);
+        self.basic_attack.interval_ms = interval_ms;
         self.basic_attack.windup_ms = weapon_profile.windup_ms;
         self.basic_attack.ranged_reposition_ms = weapon_profile.ranged_reposition_ms;
         self.basic_attack.delivery = weapon_profile.delivery.clone();
-        self.stats.attack_interval_ms = weapon_profile.interval_ms;
+        self.stats.attack_interval_ms = interval_ms;
+        self.block_capacity = weapon_profile.block_capacity;
         self.weapon_profile = Some(weapon_profile.clone());
     }
+}
+
+pub fn scale_attack_interval_ms(base_interval_ms: u64, speed_percent: u32) -> u64 {
+    assert!(base_interval_ms > 0);
+    assert!(speed_percent > 0);
+    let numerator = u128::from(base_interval_ms) * 100;
+    u64::try_from(numerator.div_ceil(u128::from(speed_percent)))
+        .expect("scaled attack interval must fit u64")
 }
 
 impl BattleUnitDraft {
@@ -415,6 +456,7 @@ impl BattleUnitDraft {
         Ok(UnitCombatProfile {
             stats,
             basic_attack: meta.basic_attack.clone(),
+            basic_attack_speed_percent: 100,
             weapon_profile: None,
             movement: meta.movement.clone(),
             resonance: meta.resonance.clone(),
@@ -476,12 +518,8 @@ impl BattleUnitDraft {
         Ok(profile)
     }
 
-    pub fn effective_stats(
-        &self,
-        game_data: &GameDataBase,
-        artifacts: &[Uuid],
-    ) -> Result<UnitStats, GameError> {
-        crate::game::battle::stat_pipeline::effective_stats_for_draft(self, game_data, artifacts)
+    pub fn effective_stats(&self, game_data: &GameDataBase) -> Result<UnitStats, GameError> {
+        crate::game::battle::stat_pipeline::effective_stats_for_draft(self, game_data)
     }
 }
 
@@ -501,7 +539,6 @@ mod tests {
     use super::*;
     use crate::game::data::{
         abnormality_data::AbnormalityMetadata,
-        artifact_data::ArtifactMetadata,
         equipment_data::{
             EquipmentEnhancementRecipeMetadata, EquipmentMaterialCost, EquipmentMaterialMetadata,
             EquipmentMaterialType, EquipmentMetadata, EquipmentType,
@@ -517,13 +554,31 @@ mod tests {
     use std::collections::HashMap;
 
     #[test]
-    fn employee_default_profile_has_ground_blocking_contract() {
+    fn employee_default_profile_is_ground_blockable_but_unarmed_capacity_is_zero() {
         let profile = UnitCombatProfile::employee_default();
 
         assert_eq!(profile.deployment_affinity, DeploymentAffinity::GroundOnly);
-        assert_eq!(profile.block_capacity, 1);
+        assert_eq!(profile.block_capacity, 0);
         assert!((profile.block_radius_units - 0.75).abs() <= f32::EPSILON);
         assert!(profile.blockable);
+    }
+
+    #[test]
+    fn employee_attack_speed_scales_default_and_weapon_intervals_with_ceiling() {
+        let mut profile = UnitCombatProfile::for_employee(120, 15, 3, 7, 125);
+        assert_eq!(profile.stats.max_health, 120);
+        assert_eq!(profile.stats.attack, 15);
+        assert_eq!(profile.stats.defense, 3);
+        assert_eq!(profile.stats.magic_resist, 7);
+        assert_eq!(profile.basic_attack.interval_ms, 1200);
+        assert_eq!(profile.stats.attack_interval_ms, 1200);
+
+        let mut weapon = WeaponCombatProfile::default();
+        weapon.interval_ms = 1001;
+        profile.apply_weapon_profile(&weapon);
+
+        assert_eq!(profile.basic_attack.interval_ms, 801);
+        assert_eq!(profile.stats.attack_interval_ms, 801);
     }
 
     #[test]
@@ -599,10 +654,9 @@ mod tests {
     }
 
     #[test]
-    fn effective_stats_applies_growth_and_permanent_item_and_artifact_effects() {
+    fn effective_stats_applies_growth_and_permanent_item_effects() {
         let abno_uuid = Uuid::from_u128(1);
         let item_uuid = Uuid::from_u128(2);
-        let artifact_uuid = Uuid::from_u128(3);
 
         let abno = AbnormalityMetadata {
             id: "abno".to_string(),
@@ -647,31 +701,12 @@ mod tests {
             triggered_effects: item_triggers,
             ability_activations: vec![],
             weapon_profile: Some(Default::default()),
-        };
-
-        let mut artifact_triggers: HashMap<TriggerType, Vec<TriggeredEffect>> = HashMap::new();
-        artifact_triggers.insert(
-            TriggerType::Permanent,
-            vec![TriggeredEffect::legacy(Effect::Modifier(StatModifier {
-                stat: StatId::Defense,
-                kind: StatModifierKind::Flat,
-                value: 3,
-            }))],
-        );
-        let artifact = ArtifactMetadata {
-            id: "artifact".to_string(),
-            uuid: artifact_uuid,
-            name: "Artifact".to_string(),
-            description: "".to_string(),
-            rarity: RiskLevel::ZAYIN,
-            price: 0,
-            triggered_effects: artifact_triggers,
-            ability_activations: vec![],
+            event_check_modifiers: vec![],
+            event_choice_keys: vec![],
         };
 
         let game_data = GameDataBuilder::empty()
             .with_abnormalities(vec![abno])
-            .with_artifacts(vec![artifact])
             .with_equipment(vec![item])
             .build();
 
@@ -689,13 +724,14 @@ mod tests {
             growth_stacks: growth,
             equipped_items: vec![item_uuid],
             equipped_item_enhancements: vec![],
+            employee_start_condition: None,
         };
 
-        let stats = unit.effective_stats(&game_data, &[artifact_uuid]).unwrap();
+        let stats = unit.effective_stats(&game_data).unwrap();
         assert_eq!(stats.max_health, 100);
         assert_eq!(stats.current_health, 100);
         assert_eq!(stats.attack, 10 + 2 + 7);
-        assert_eq!(stats.defense, 5 + 3);
+        assert_eq!(stats.defense, 5);
         assert!(stats.attack_interval_ms > 0);
     }
 
@@ -737,6 +773,8 @@ mod tests {
             triggered_effects: HashMap::new(),
             ability_activations: vec![],
             weapon_profile: Some(Default::default()),
+            event_check_modifiers: vec![],
+            event_choice_keys: vec![],
         };
         let game_data = GameDataBuilder::empty()
             .with_abnormalities(vec![abno])
@@ -752,7 +790,6 @@ mod tests {
                         rarity: RiskLevel::ZAYIN,
                         equipment_type: Some(EquipmentType::Weapon),
                     }],
-                    vec![],
                     vec![],
                     vec![EquipmentEnhancementRecipeMetadata {
                         equipment_id: "enhanced_item".to_string(),
@@ -785,9 +822,10 @@ mod tests {
                 base_uuid: item_uuid,
                 enhancement_level: 2,
             }],
+            employee_start_condition: None,
         };
 
-        let stats = unit.effective_stats(&game_data, &[]).unwrap();
+        let stats = unit.effective_stats(&game_data).unwrap();
         assert_eq!(stats.attack, 14);
     }
 
@@ -806,9 +844,10 @@ mod tests {
             growth_stacks: GrowthStack::new(),
             equipped_items: vec![],
             equipped_item_enhancements: vec![],
+            employee_start_condition: None,
         };
 
-        let err = unit.effective_stats(&game_data, &[]).unwrap_err();
+        let err = unit.effective_stats(&game_data).unwrap_err();
         assert!(matches!(
             err,
             GameError::MissingResource("AbnormalityMetadata")
@@ -816,40 +855,9 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "basic_attack interval_ms must be greater than zero")]
-    fn game_data_validation_rejects_attack_interval_zero() {
-        let abno_uuid = Uuid::from_u128(1);
-        let mut abno = AbnormalityMetadata {
-            id: "abno".to_string(),
-            uuid: abno_uuid,
-            name: "Abno".to_string(),
-            risk_level: RiskLevel::ZAYIN,
-            price: 0,
-            max_health: 100,
-            attack: 10,
-            defense: 5,
-            magic_resist: 0,
-            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
-            response_complete_skill_fragment_id: None,
-            omen_chain_id: None,
-            movement: Default::default(),
-            basic_attack: Default::default(),
-            resonance: Default::default(),
-            skill_id: None,
-            mobility_kind: Default::default(),
-            target_traits: Vec::new(),
-        };
-        abno.basic_attack.interval_ms = 0;
-
-        let _game_data = GameDataBuilder::empty()
-            .with_abnormalities(vec![abno])
-            .build();
-    }
-
-    #[test]
     fn effective_stats_rejects_invalid_permanent_targeting() {
         let abno_uuid = Uuid::from_u128(1);
-        let artifact_uuid = Uuid::from_u128(2);
+        let item_uuid = Uuid::from_u128(2);
 
         let abno = AbnormalityMetadata {
             id: "abno".to_string(),
@@ -872,8 +880,8 @@ mod tests {
             target_traits: Vec::new(),
         };
 
-        let mut artifact_triggers: HashMap<TriggerType, Vec<TriggeredEffect>> = HashMap::new();
-        artifact_triggers.insert(
+        let mut item_triggers: HashMap<TriggerType, Vec<TriggeredEffect>> = HashMap::new();
+        item_triggers.insert(
             TriggerType::Permanent,
             vec![TriggeredEffect::targeted(
                 TriggerEffectTarget::CounterpartUnit,
@@ -884,20 +892,26 @@ mod tests {
                 }),
             )],
         );
-        let artifact = ArtifactMetadata {
-            id: "artifact".to_string(),
-            uuid: artifact_uuid,
-            name: "Artifact".to_string(),
-            description: "".to_string(),
+        let item = EquipmentMetadata {
+            id: "item".to_string(),
+            uuid: item_uuid,
+            name: "Item".to_string(),
+            equipment_type: EquipmentType::Weapon,
             rarity: RiskLevel::ZAYIN,
             price: 0,
-            triggered_effects: artifact_triggers,
+            allow_duplicate_equip: true,
+            bound: false,
+            cannot_unequip_reason: "equipment_bound".to_string(),
+            triggered_effects: item_triggers,
             ability_activations: vec![],
+            weapon_profile: Some(Default::default()),
+            event_check_modifiers: vec![],
+            event_choice_keys: vec![],
         };
 
         let game_data = GameDataBuilder::empty()
             .with_abnormalities(vec![abno])
-            .with_artifacts(vec![artifact])
+            .with_equipment(vec![item])
             .build();
 
         let unit = BattleUnitDraft {
@@ -909,12 +923,13 @@ mod tests {
             level: Tier::I,
             stat_scale: Default::default(),
             growth_stacks: GrowthStack::new(),
-            equipped_items: vec![],
+            equipped_items: vec![item_uuid],
             equipped_item_enhancements: vec![],
+            employee_start_condition: None,
         };
 
         assert!(matches!(
-            unit.effective_stats(&game_data, &[artifact_uuid]),
+            unit.effective_stats(&game_data),
             Err(GameError::InvalidStaticData(_))
         ));
     }

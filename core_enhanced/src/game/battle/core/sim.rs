@@ -6,8 +6,8 @@ use crate::{
     game::{
         ability::{
             DeliveryDef, SkillActivationMode, SkillDef, SkillEffectDef, SkillId,
-            SkillStepCondition, SkillStepDef, SkillStepRepeat, SkillTarget, SkillUnitReference,
-            StepTargetingMode,
+            SkillStepCondition, SkillStepDef, SkillStepRepeat, SkillTarget, SkillTargetReach,
+            SkillUnitReference, StepTargetingMode,
         },
         battle::{
             cooldown::CooldownSource,
@@ -21,7 +21,10 @@ use crate::{
             scenario::{ScenarioAction, ScenarioTrigger, WinCondition},
             types::{BattleResult, BattleUnitDraft, BattleWinner, ParticipantBattleResult},
         },
-        behavior::{GameError, LiveBattleSkillReadinessDto},
+        behavior::{
+            ActionDisabledReasonCode, BattlePayloadEligibilityDto, GameError,
+            LiveBattleSkillReadinessDto,
+        },
         determinism,
         enums::Side,
         stats::UnitStats,
@@ -90,21 +93,15 @@ pub enum BattleStepOutcome {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BattleDeployCurrentHpPolicy {
     FixedCurrentHp(u32),
-    PercentOfMax(u32),
 }
 
 impl BattleDeployCurrentHpPolicy {
     pub const WITHDRAW_REDEPLOY_RECOVERY_PERCENT: u32 = 30;
-    pub const DEATH_REDEPLOY_PERCENT: u32 = 60;
 
     pub fn withdraw_redeploy(current_hp: u32, max_hp: u32) -> Self {
         let recovered_hp = current_hp
             .saturating_add(max_hp.saturating_mul(Self::WITHDRAW_REDEPLOY_RECOVERY_PERCENT) / 100);
         BattleDeployCurrentHpPolicy::FixedCurrentHp(recovered_hp.min(max_hp))
-    }
-
-    pub fn death_redeploy() -> Self {
-        BattleDeployCurrentHpPolicy::PercentOfMax(Self::DEATH_REDEPLOY_PERCENT)
     }
 
     pub fn current_hp_for_max(self, max_hp: u32) -> u32 {
@@ -113,9 +110,6 @@ impl BattleDeployCurrentHpPolicy {
         }
         let current_hp = match self {
             BattleDeployCurrentHpPolicy::FixedCurrentHp(current_hp) => current_hp,
-            BattleDeployCurrentHpPolicy::PercentOfMax(percent) => {
-                max_hp.saturating_mul(percent) / 100
-            }
         };
         current_hp.max(1).min(max_hp)
     }
@@ -224,10 +218,7 @@ impl BattleCore {
     fn proc_cooldown_source_tag(source: CooldownSource) -> u64 {
         match source {
             CooldownSource::Unit { unit_instance_id } => Self::proc_unit_tag(unit_instance_id),
-            CooldownSource::Item { item_instance_id }
-            | CooldownSource::Artifact {
-                artifact_instance_id: item_instance_id,
-            } => Self::proc_uuid_tag(item_instance_id),
+            CooldownSource::Item { item_instance_id } => Self::proc_uuid_tag(item_instance_id),
         }
     }
 
@@ -368,7 +359,9 @@ impl BattleCore {
             None => None,
         };
 
-        let ability_seq = self.with_recording_context(cause, |core| {
+        let cast_seq = self.skill_cast_seq;
+        self.skill_cast_seq = self.skill_cast_seq.wrapping_add(1);
+        let ability_event_seq = self.with_recording_context(cause, |core| {
             core.record_event_log(
                 time_ms,
                 BattleLogEvent::AbilityCast {
@@ -380,9 +373,10 @@ impl BattleCore {
         });
 
         self.active_skill_casts.insert(
-            ability_seq,
+            cast_seq,
             super::types::ActiveSkillCast {
                 caster_instance_id,
+                ability_event_seq,
                 skill_id: skill.id.clone(),
                 caster_owner,
                 anchor_position: caster_pos,
@@ -398,17 +392,19 @@ impl BattleCore {
             },
         );
 
-        self.with_recording_cause(ability_seq, |core| {
+        self.with_recording_cause(ability_event_seq, |core| {
             for (step_index, step) in skill.steps.iter().enumerate() {
                 core.event_queue.push(BattleEvent::SkillStep {
                     time_ms: time_ms.saturating_add(step.delay_ms as u64),
-                    cast_seq: ability_seq,
+                    cast_seq,
                     step_index,
                     caster_instance_id,
                     skill_id: skill.id.clone(),
                     step_id: step.id.clone(),
                     cast_target,
-                    cause: BattleEventCause::Parent { seq: ability_seq },
+                    cause: BattleEventCause::Parent {
+                        seq: ability_event_seq,
+                    },
                 });
             }
         });
@@ -422,8 +418,7 @@ impl BattleCore {
         _caster_pos: Position,
         target: SkillCastTarget,
     ) -> bool {
-        let Some((target_def, range_policy, defense_tile_range, air_capable)) =
-            skill.cast_target_definition()
+        let Some((target_def, reach, target_range, air_capable)) = skill.cast_target_definition()
         else {
             return false;
         };
@@ -439,11 +434,11 @@ impl BattleCore {
                 if !self.single_target_can_target_unit(unit_instance_id, air_capable) {
                     return false;
                 }
-                self.is_target_in_tile_range_policy(
+                self.is_target_in_skill_reach(
                     caster_instance_id,
                     unit_instance_id,
-                    range_policy,
-                    defense_tile_range,
+                    reach,
+                    target_range,
                 )
             }
             (SkillTarget::CastTarget, SkillCastTarget::Tile { position }) => {
@@ -547,78 +542,45 @@ impl BattleCore {
         let resonance_max = unit.resonance_max.max(1);
         let mut target_required = false;
         let mut target_available = false;
-        let mut target_block_reason = None;
-
-        let reason = if unit.owner != Side::Player {
-            Some("not_player_unit")
-        } else if !unit.is_active() || !unit.is_combatant() {
-            Some("unit_unavailable")
-        } else if skill_id.is_none() {
-            Some("no_skill")
-        } else if activation_mode != SkillActivationMode::Manual {
-            Some("activation_mode_not_manual")
-        } else if self
-            .active_hard_cc_release_time_ms(unit_id, time_ms)
-            .is_some()
+        if let Some(skill) = skill_id
+            .as_ref()
+            .and_then(|id| self.game_data.skill_data.get_by_id(id.as_str()))
         {
-            Some("hard_cc")
-        } else if self.has_buff_kind(unit_id, crate::game::battle::buffs::BuffKind::Silence) {
-            Some("silenced")
-        } else if time_ms < unit.next_action_time {
-            Some("action_locked")
-        } else if unit.resonance_current < resonance_max {
-            Some("resonance_not_full")
-        } else if let Some(skill_id) = &skill_id {
-            let Some(skill) = self.game_data.skill_data.get_by_id(skill_id.as_str()) else {
-                return Some(LiveBattleSkillReadinessDto {
-                    skill_id: Some(skill_id.clone()),
-                    activation_mode,
-                    resonance_current: unit.resonance_current.min(resonance_max),
-                    resonance_max,
-                    manual_activation_allowed: false,
-                    target_required: false,
-                    target_available: false,
-                    can_activate_reason: Some("invalid_static_data".to_string()),
-                    target_block_reason: None,
-                });
-            };
-            let Some(caster_pos) = self.live_unit_projected_tile(unit_id) else {
-                return Some(LiveBattleSkillReadinessDto {
-                    skill_id: Some(skill_id.clone()),
-                    activation_mode,
-                    resonance_current: unit.resonance_current.min(resonance_max),
-                    resonance_max,
-                    manual_activation_allowed: false,
-                    target_required: false,
-                    target_available: false,
-                    can_activate_reason: Some("unit_unavailable".to_string()),
-                    target_block_reason: None,
-                });
-            };
-
             match skill.cast_target_definition() {
                 Some((SkillTarget::SelfUnit, _, _, _)) => {
-                    target_required = false;
                     target_available = true;
                 }
                 Some(_) => {
                     target_required = true;
                     target_available = self
-                        .resolve_skill_cast_target(skill, unit_id, unit.owner, caster_pos)
+                        .live_unit_projected_tile(unit_id)
+                        .and_then(|caster_pos| {
+                            self.resolve_skill_cast_target(skill, unit_id, unit.owner, caster_pos)
+                        })
                         .is_some();
-                    if !target_available {
-                        target_block_reason = Some("no_valid_target".to_string());
-                    }
                 }
-                None => {
-                    target_required = false;
-                    target_available = false;
-                    target_block_reason = Some("invalid_static_data".to_string());
+                None => {}
+            }
+        }
+
+        let eligibility = match skill_id.as_ref() {
+            Some(skill_id) => {
+                match self.validate_manual_skill_activation(time_ms, unit_id, skill_id, None) {
+                    Ok(()) => BattlePayloadEligibilityDto::enabled(),
+                    Err(GameError::ActionUnavailable { reason, .. }) => {
+                        BattlePayloadEligibilityDto::disabled(reason)
+                    }
+                    Err(GameError::InvalidStaticData(_)) => BattlePayloadEligibilityDto::disabled(
+                        ActionDisabledReasonCode::SkillUnavailable,
+                    ),
+                    Err(_) => BattlePayloadEligibilityDto::disabled(
+                        ActionDisabledReasonCode::UnitUnavailable,
+                    ),
                 }
             }
-            None
-        } else {
-            Some("no_skill")
+            None => {
+                BattlePayloadEligibilityDto::disabled(ActionDisabledReasonCode::SkillUnavailable)
+            }
         };
 
         Some(LiveBattleSkillReadinessDto {
@@ -626,11 +588,10 @@ impl BattleCore {
             activation_mode,
             resonance_current: unit.resonance_current.min(resonance_max),
             resonance_max,
-            manual_activation_allowed: reason.is_none(),
+            manual_activation_allowed: eligibility.enabled,
             target_required,
             target_available,
-            can_activate_reason: reason.map(str::to_string),
-            target_block_reason,
+            eligibility,
         })
     }
 
@@ -641,46 +602,51 @@ impl BattleCore {
         requested_skill_id: &SkillId,
         explicit_target: Option<SkillCastTarget>,
     ) -> Result<(SkillDef, Option<SkillCastTarget>), GameError> {
+        let unavailable = |reason| GameError::ActionUnavailable {
+            action: crate::game::behavior::ActionKind::ActivateSkill,
+            reason,
+        };
         let Some(caster) = self.units.get(&caster_instance_id) else {
             return Err(GameError::UnitNotFound);
         };
-        if caster.owner != Side::Player
-            || caster.skill_activation_mode != SkillActivationMode::Manual
-            || !caster.is_combatant()
-            || !caster.is_active()
-        {
-            return Err(GameError::InvalidAction);
+        if caster.owner != Side::Player || !caster.is_combatant() || !caster.is_active() {
+            return Err(unavailable(ActionDisabledReasonCode::UnitUnavailable));
+        }
+        if caster.skill_activation_mode != SkillActivationMode::Manual {
+            return Err(unavailable(
+                ActionDisabledReasonCode::ActivationModeNotManual,
+            ));
         }
         if self
             .active_hard_cc_release_time_ms(caster_instance_id, time_ms)
             .is_some()
         {
-            return Err(GameError::InvalidAction);
+            return Err(unavailable(ActionDisabledReasonCode::HardCrowdControl));
         }
         if self.has_buff_kind(
             caster_instance_id,
             crate::game::battle::buffs::BuffKind::Silence,
         ) {
-            return Err(GameError::InvalidAction);
+            return Err(unavailable(ActionDisabledReasonCode::Silenced));
         }
         if time_ms < caster.next_action_time {
-            return Err(GameError::InvalidAction);
+            return Err(unavailable(ActionDisabledReasonCode::ActionLocked));
         }
 
         let Some(unit_skill_id) = caster.skill_id.clone() else {
-            return Err(GameError::InvalidAction);
+            return Err(unavailable(ActionDisabledReasonCode::SkillUnavailable));
         };
         if &unit_skill_id != requested_skill_id {
-            return Err(GameError::InvalidAction);
+            return Err(unavailable(ActionDisabledReasonCode::SkillUnavailable));
         }
         let max = caster.resonance_max.max(1);
         if caster.resonance_current < max {
-            return Err(GameError::InsufficientResources);
+            return Err(unavailable(ActionDisabledReasonCode::ResonanceNotFull));
         }
         let caster_owner = caster.owner;
         let caster_pos = self
             .live_unit_projected_tile(caster_instance_id)
-            .ok_or(GameError::InvalidAction)?;
+            .ok_or_else(|| unavailable(ActionDisabledReasonCode::UnitUnavailable))?;
 
         let skill = self
             .game_data
@@ -706,7 +672,7 @@ impl BattleCore {
             {
                 Some(target)
             }
-            Some(_) => return Err(GameError::InvalidAction),
+            Some(_) => return Err(unavailable(ActionDisabledReasonCode::NoValidTarget)),
             None => {
                 self.resolve_skill_cast_target(&skill, caster_instance_id, caster_owner, caster_pos)
             }
@@ -717,7 +683,7 @@ impl BattleCore {
                 Some((SkillTarget::CastTarget, _, _, _))
             )
         {
-            return Err(GameError::InvalidAction);
+            return Err(unavailable(ActionDisabledReasonCode::NoValidTarget));
         }
 
         Ok((skill, cast_target))
@@ -730,15 +696,14 @@ impl BattleCore {
         caster_owner: Side,
         caster_pos: Position,
     ) -> Option<SkillCastTarget> {
-        let (target, range_policy, defense_tile_range, air_capable) =
-            skill.cast_target_definition()?;
+        let (target, reach, target_range, air_capable) = skill.cast_target_definition()?;
         let usefulness_step = self.skill_cast_target_usefulness_step(skill, target);
         self.resolve_skill_target_definition(
             caster_instance_id,
             caster_owner,
             caster_pos,
-            range_policy,
-            defense_tile_range,
+            reach,
+            target_range,
             target,
             air_capable,
             usefulness_step,
@@ -750,8 +715,8 @@ impl BattleCore {
         caster_instance_id: UnitInstanceId,
         caster_owner: Side,
         caster_pos: Position,
-        range_policy: crate::game::battle::tile_range::TileRangePolicy,
-        defense_tile_range: Option<&crate::game::battle::tile_range::TileRangePattern>,
+        reach: SkillTargetReach,
+        target_range: Option<&crate::game::battle::tile_range::TileRangePattern>,
         target: &SkillTarget,
         air_capable: bool,
         usefulness_step: Option<&SkillStepDef>,
@@ -765,8 +730,15 @@ impl BattleCore {
                     caster_instance_id,
                     caster_owner,
                     caster_pos,
-                    range_policy,
-                    defense_tile_range,
+                    match reach {
+                        SkillTargetReach::Pattern => {
+                            crate::game::battle::tile_range::TileRangePolicy::Pattern
+                        }
+                        SkillTargetReach::Global => {
+                            crate::game::battle::tile_range::TileRangePolicy::WholeFieldValidTiles
+                        }
+                    },
+                    target_range,
                     *rule,
                     air_capable,
                     usefulness_step,
@@ -782,6 +754,7 @@ impl BattleCore {
         &self,
         cast_seq: u64,
         caster_instance_id: UnitInstanceId,
+        skill: &SkillDef,
         step: &SkillStepDef,
         cast_target: Option<SkillCastTarget>,
     ) -> Option<SkillCastTarget> {
@@ -791,6 +764,8 @@ impl BattleCore {
             .active_skill_casts
             .get(&cast_seq)
             .and_then(|cast_state| cast_state.cast_target_anchor_position);
+        let (_, cast_reach, cast_target_range, cast_air_capable) =
+            skill.cast_target_definition()?;
 
         match step.targeting {
             StepTargetingMode::ReuseCastTarget => match &step.target {
@@ -798,17 +773,16 @@ impl BattleCore {
                     unit_instance_id: caster_instance_id,
                 }),
                 SkillTarget::EnemySingle { .. } => match cast_target {
+                    Some(target @ SkillCastTarget::Unit { .. })
+                        if matches!(step.delivery, DeliveryDef::TileArea { .. }) =>
+                    {
+                        Some(target)
+                    }
                     Some(SkillCastTarget::Unit { unit_instance_id })
                         if self.is_alive_enemy(unit_instance_id, caster_owner)
                             && self.single_target_can_target_unit(
                                 unit_instance_id,
-                                step.air_capable,
-                            )
-                            && self.is_target_in_tile_range_policy(
-                                caster_instance_id,
-                                unit_instance_id,
-                                step.range_policy,
-                                step.defense_tile_range.as_ref(),
+                                cast_air_capable,
                             ) =>
                     {
                         Some(SkillCastTarget::Unit { unit_instance_id })
@@ -830,13 +804,34 @@ impl BattleCore {
                 caster_instance_id,
                 caster_owner,
                 caster_pos,
-                step.range_policy,
-                step.defense_tile_range.as_ref(),
+                cast_reach,
+                cast_target_range,
                 &step.target,
-                step.air_capable,
+                cast_air_capable,
                 Some(step),
             ),
         }
+    }
+
+    fn is_target_in_skill_reach(
+        &self,
+        caster_instance_id: UnitInstanceId,
+        target_instance_id: UnitInstanceId,
+        reach: SkillTargetReach,
+        target_range: Option<&crate::game::battle::tile_range::TileRangePattern>,
+    ) -> bool {
+        let policy = match reach {
+            SkillTargetReach::Pattern => crate::game::battle::tile_range::TileRangePolicy::Pattern,
+            SkillTargetReach::Global => {
+                crate::game::battle::tile_range::TileRangePolicy::WholeFieldValidTiles
+            }
+        };
+        self.is_target_in_tile_range_policy(
+            caster_instance_id,
+            target_instance_id,
+            policy,
+            target_range,
+        )
     }
 
     pub(in crate::game::battle::core) fn resolve_cast_origin_context(
@@ -1368,7 +1363,6 @@ impl BattleCore {
 
     pub(in crate::game::battle::core) fn reset_runtime_state_for_battle(&mut self) {
         self.units.clear();
-        self.artifacts.clear();
         self.items.clear();
         self.graveyard.clear();
         self.buffs.clear();
@@ -1383,6 +1377,7 @@ impl BattleCore {
         self.battlefield.clear();
         self.event_log = BattleEventLog::new();
         self.event_log_seq = 1;
+        self.skill_cast_seq = 0;
         self.projectile_seq = 0;
         self.area_seq = 0;
         self.damage_source_seq = 0;
@@ -1510,7 +1505,6 @@ impl BattleCore {
 
         self.reset_runtime_state_for_battle();
 
-        self.build_runtime_artifacts_from_scenario()?;
         for obstacle in self.scenario.battlefield.obstacles.clone() {
             self.battlefield.add_static_obstacle(obstacle)?;
         }
@@ -1525,23 +1519,6 @@ impl BattleCore {
                     height: core.battlefield.height(),
                 },
             );
-
-            let mut artifact_records: Vec<(Uuid, Side, Uuid)> = core
-                .artifacts
-                .values()
-                .map(|a| (a.instance_id, a.owner, a.base_uuid))
-                .collect();
-            artifact_records.sort_by(|a, b| a.0.as_bytes().cmp(b.0.as_bytes()));
-            for (artifact_instance_id, owner, base_uuid) in artifact_records {
-                core.record_event_log(
-                    0,
-                    BattleLogEvent::ArtifactSpawned {
-                        artifact_instance_id,
-                        owner,
-                        base_uuid,
-                    },
-                );
-            }
         });
 
         self.enqueue_scenario_events();
@@ -1939,6 +1916,7 @@ impl BattleCore {
         let step_target = self.resolve_skill_step_context(
             execution.cast_seq,
             execution.caster_instance_id,
+            execution.skill,
             execution.step,
             execution.cast_target,
         );
@@ -2018,6 +1996,7 @@ impl BattleCore {
                     let iteration_target = core.resolve_skill_step_context(
                         execution.cast_seq,
                         execution.caster_instance_id,
+                        execution.skill,
                         execution.step,
                         execution.cast_target,
                     );
@@ -2084,17 +2063,7 @@ impl BattleCore {
                     );
                 }
             }
-            DeliveryDef::TileArea { area } => {
-                let Some(tile_range) = execution.step.defense_tile_range.as_ref() else {
-                    core.finalize_skill_step(
-                        execution.cast_seq,
-                        execution.step_index,
-                        SkillStepResult::default(),
-                        execution.time_ms,
-                    );
-                    return;
-                };
-
+            DeliveryDef::TileArea { footprint, area } => {
                 if area.duration_ms == 0 {
                     let mut aggregated_result = SkillStepResult::default();
 
@@ -2102,6 +2071,7 @@ impl BattleCore {
                         let iteration_target = core.resolve_skill_step_context(
                             execution.cast_seq,
                             execution.caster_instance_id,
+                            execution.skill,
                             execution.step,
                             execution.cast_target,
                         );
@@ -2117,7 +2087,7 @@ impl BattleCore {
                             execution.step_index,
                             execution.caster_instance_id,
                             iteration_target,
-                            tile_range,
+                            footprint,
                             area,
                         )
                         else {
@@ -2207,6 +2177,7 @@ impl BattleCore {
                     let iteration_target = core.resolve_skill_step_context(
                         execution.cast_seq,
                         execution.caster_instance_id,
+                        execution.skill,
                         execution.step,
                         execution.cast_target,
                     );
@@ -2219,7 +2190,7 @@ impl BattleCore {
                         execution.step.id.clone(),
                         execution.step,
                         iteration_target,
-                        tile_range.clone(),
+                        footprint.clone(),
                         area.clone(),
                     ) {
                         spawned_areas = spawned_areas.saturating_add(1);

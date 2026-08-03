@@ -3,42 +3,54 @@ use uuid::Uuid;
 
 use super::GameCore;
 use crate::game::behavior::{
-    ActiveConsumableModifierSnapshotDto, DisplayArtifactItemSnapshotDto,
+    ActiveConsumableModifierSnapshotDto, CombatRecoveryRestrictionSnapshotDto,
     DisplayConsumableItemSnapshotDto, DisplayEquipmentItemSnapshotDto, DisplayItemSnapshotDto,
-    EmployeeCombatProfileSnapshotDto, EmployeeEquippedItemSnapshotDto, EmployeeHealthSnapshotDto,
-    EmployeeInjurySnapshotDto, EmployeeRosterSnapshotDto, EmployeeSkillFragmentBriefSnapshotDto,
-    EmployeeSkillFragmentCompatibilitySnapshotDto, EmployeeSkillFragmentsSnapshotDto,
-    EmployeeSnapshotDto, EmployeeTrustMemorySnapshotDto, EmployeeTrustReactionSnapshotDto,
-    EmployeeTrustSnapshotDto, GameError, GameStateContextDto,
+    DisplayMonolithItemSnapshotDto, EmployeeCombatProfileSnapshotDto, EmployeeConditionSnapshotDto,
+    EmployeeEligibilitySnapshotDto, EmployeeEquippedItemSnapshotDto,
+    EmployeePsychologyMemorySnapshotDto, EmployeePsychologyRecentEventSnapshotDto,
+    EmployeePsychologySnapshotDto, EmployeeRosterSnapshotDto,
+    EmployeeSkillFragmentBriefSnapshotDto, EmployeeSkillFragmentCompatibilitySnapshotDto,
+    EmployeeSkillFragmentsSnapshotDto, EmployeeSnapshotDto,
+    EncounterCompendiumAbnormalitySnapshotDto, EncounterCompendiumCorrosionSnapshotDto,
+    EncounterCompendiumSnapshotDto, GameError, GameStateContextDto,
     InventoryEquipmentMaterialSnapshotDto, InventoryEquipmentSnapshotDto,
     InventorySkillFragmentProgressSnapshotDto, InventorySkillFragmentSnapshotDto,
-    InventorySnapshotDto, MapNavigationSnapshotDto, PendingResearchDeliverySnapshotDto,
-    RewardOptionSnapshotDto, RosterOrderSlotSnapshotDto, RosterOrderSnapshotDto,
-    RunAbnormalityResearchEntrySnapshotDto, RunAbnormalityResearchSnapshotDto,
-    RunProgressionSnapshotDto, RunResourcesSnapshotDto, RunSnapshotDto, SelectedEventSnapshotDto,
-    SkillCatalogCastTargetDto, SkillCatalogDeliveryKind, SkillCatalogDto, SkillCatalogSkillDto,
-    SkillCatalogStepDto, SkillCatalogTileAreaDto, SkillFragmentProgressSnapshotDto,
-    SnapshotErrorDto,
+    InventorySnapshotDto, MapNavigationSnapshotDto, MonolithProgressSnapshotDto,
+    MonolithResidualSnapshotDto, MonolithRunSnapshotDto, PendingResearchDeliverySnapshotDto,
+    RewardOptionSnapshotDto, RunAbnormalityResearchEntrySnapshotDto,
+    RunAbnormalityResearchSnapshotDto, RunProgressionSnapshotDto, RunResourcesSnapshotDto,
+    RunSnapshotDto, SelectedEventSnapshotDto, SkillCatalogCastTargetDto, SkillCatalogDeliveryKind,
+    SkillCatalogDto, SkillCatalogSkillDto, SkillCatalogStepDto, SkillCatalogTileAreaDto,
+    SkillFragmentProgressSnapshotDto, SnapshotErrorDto, VisualNovelChoicePreviewDto,
+    VisualNovelChoiceSnapshotDto, VisualNovelPresentationModeDto, VisualNovelSnapshotDto,
+    VisualNovelSourceDto, VisualNovelSpeakerDto, VisualNovelSpeakerPositionDto,
 };
 use crate::game::combat_setup::player_spawns::effective_combat_profile_for_employee;
+use crate::game::data::visual_novel_data::{
+    VisualNovelBackground, VisualNovelChoicePreview, VisualNovelDefinition,
+    VisualNovelSceneDefinition, VisualNovelSceneNext, VisualNovelSpeakerPosition,
+};
 use crate::game::data::ItemRef;
 use crate::game::resources::{ActiveNodeContent, GameState};
 use crate::game::reward::RewardOption;
+use crate::game::visual_novel::{VisualNovelSessionPresentationMode, VisualNovelSource};
 
 fn snapshot_game_error_code(error: &GameError) -> &'static str {
     match error {
         GameError::EventNotFound => "event_not_found",
         GameError::EventTypeMismatch => "event_type_mismatch",
         GameError::InvalidAction => "invalid_action",
+        GameError::ActionUnavailable { reason, .. } => reason.as_str(),
         GameError::InvalidBattleResyncSeq { .. } => "invalid_battle_resync_seq",
+        GameError::BattleStateRevisionOverflow => "battle_state_revision_overflow",
+        GameError::MissingBattleStateAuthority { .. } => "missing_battle_state_authority",
+        GameError::StaleBattleStateAuthority { .. } => "stale_battle_state_authority",
         GameError::NotInShopState => "not_in_shop_state",
         GameError::NotInRewardState => "not_in_reward_state",
-        GameError::ShopRerollNotAllowed => "shop_reroll_not_allowed",
         GameError::ShopItemNotFound => "shop_item_not_found",
         GameError::InventoryFull => "inventory_full",
         GameError::InventoryItemNotFound => "inventory_item_not_found",
         GameError::InventoryItemNotRemovable => "inventory_item_not_removable",
-        GameError::AlreadyOwnedArtifact => "already_owned_artifact",
         GameError::InsufficientResources => "insufficient_resources",
         GameError::MissingResource(_) => "missing_resource",
         GameError::InvalidUnitStats(_) => "invalid_unit_stats",
@@ -58,17 +70,30 @@ fn snapshot_game_error_message(error: &GameError) -> String {
         GameError::EventNotFound => "event not found".to_string(),
         GameError::EventTypeMismatch => "event type mismatch".to_string(),
         GameError::InvalidAction => "invalid action".to_string(),
+        GameError::ActionUnavailable { action, reason } => {
+            format!("action unavailable: {action:?} ({reason:?})")
+        }
         GameError::InvalidBattleResyncSeq { requested, latest } => {
             format!("invalid battle resync seq: requested {requested}, latest {latest}")
         }
+        GameError::BattleStateRevisionOverflow => "battle state revision overflow".to_string(),
+        GameError::MissingBattleStateAuthority { current } => format!(
+            "missing battle state authority: current {}@{}",
+            current.battle_uuid, current.battle_state_revision
+        ),
+        GameError::StaleBattleStateAuthority { expected, current } => format!(
+            "stale battle state authority: expected {}@{}, current {}@{}",
+            expected.battle_uuid,
+            expected.battle_state_revision,
+            current.battle_uuid,
+            current.battle_state_revision
+        ),
         GameError::NotInShopState => "not in shop state".to_string(),
         GameError::NotInRewardState => "not in reward state".to_string(),
-        GameError::ShopRerollNotAllowed => "shop reroll not allowed".to_string(),
         GameError::ShopItemNotFound => "shop item not found".to_string(),
         GameError::InventoryFull => "inventory full".to_string(),
         GameError::InventoryItemNotFound => "inventory item not found".to_string(),
         GameError::InventoryItemNotRemovable => "inventory item not removable".to_string(),
-        GameError::AlreadyOwnedArtifact => "already owned artifact".to_string(),
         GameError::InsufficientResources => "insufficient resources".to_string(),
         GameError::MissingResource(resource) => format!("missing resource: {resource}"),
         GameError::InvalidUnitStats(reason) => format!("invalid unit stats: {reason}"),
@@ -93,6 +118,79 @@ fn effective_profile_error_dto(error: &GameError) -> SnapshotErrorDto {
     SnapshotErrorDto {
         code: snapshot_game_error_code(error).to_string(),
         message: snapshot_game_error_message(error),
+    }
+}
+
+fn visual_novel_scene<'a>(
+    visual_novel: &'a VisualNovelDefinition,
+    scene_id: &str,
+) -> Result<&'a VisualNovelSceneDefinition, GameError> {
+    visual_novel.scene_by_id(scene_id).ok_or_else(|| {
+        GameError::InvalidStaticData(format!(
+            "visual novel '{}' missing scene '{}'",
+            visual_novel.id.as_str(),
+            scene_id
+        ))
+    })
+}
+
+fn visual_novel_background_id(background: &VisualNovelBackground) -> Option<String> {
+    match background {
+        VisualNovelBackground::CurrentScreenDimmed => None,
+        VisualNovelBackground::Resource { background_id } => Some(background_id.clone()),
+    }
+}
+
+fn visual_novel_choice_preview_dto(
+    preview: &VisualNovelChoicePreview,
+) -> VisualNovelChoicePreviewDto {
+    VisualNovelChoicePreviewDto {
+        risk: preview.risk.clone(),
+        starts_combat: preview.starts_combat,
+        reward_hint_id: preview.reward_hint_id.clone(),
+        penalty_hint_id: preview.penalty_hint_id.clone(),
+    }
+}
+
+fn visual_novel_source_dto(source: &VisualNovelSource) -> VisualNovelSourceDto {
+    match source {
+        VisualNovelSource::EventNode { node_id } => {
+            VisualNovelSourceDto::EventNode { node_id: *node_id }
+        }
+        VisualNovelSource::HqBriefing => VisualNovelSourceDto::HqBriefing,
+        VisualNovelSource::Map => VisualNovelSourceDto::Map,
+        VisualNovelSource::Loadout => VisualNovelSourceDto::Loadout,
+        VisualNovelSource::Battle { battle_uuid } => VisualNovelSourceDto::Battle {
+            battle_uuid: *battle_uuid,
+        },
+        VisualNovelSource::Tutorial => VisualNovelSourceDto::Tutorial,
+        VisualNovelSource::Radio => VisualNovelSourceDto::Radio,
+        VisualNovelSource::Cutscene => VisualNovelSourceDto::Cutscene,
+    }
+}
+
+fn visual_novel_speaker_position_dto(
+    position: VisualNovelSpeakerPosition,
+) -> VisualNovelSpeakerPositionDto {
+    match position {
+        VisualNovelSpeakerPosition::FarLeft => VisualNovelSpeakerPositionDto::FarLeft,
+        VisualNovelSpeakerPosition::Left => VisualNovelSpeakerPositionDto::Left,
+        VisualNovelSpeakerPosition::Center => VisualNovelSpeakerPositionDto::Center,
+        VisualNovelSpeakerPosition::Right => VisualNovelSpeakerPositionDto::Right,
+        VisualNovelSpeakerPosition::FarRight => VisualNovelSpeakerPositionDto::FarRight,
+    }
+}
+
+fn visual_novel_session_presentation_mode_dto(
+    mode: VisualNovelSessionPresentationMode,
+) -> VisualNovelPresentationModeDto {
+    match mode {
+        VisualNovelSessionPresentationMode::Cinematic => VisualNovelPresentationModeDto::Cinematic,
+        VisualNovelSessionPresentationMode::Radio => VisualNovelPresentationModeDto::Radio,
+        VisualNovelSessionPresentationMode::Compact => VisualNovelPresentationModeDto::Compact,
+        VisualNovelSessionPresentationMode::NonBlocking => {
+            VisualNovelPresentationModeDto::NonBlocking
+        }
     }
 }
 
@@ -121,24 +219,6 @@ fn wire_equipment_material_type_label(
     }
 }
 
-fn wire_employee_life_state_label(
-    life_state: crate::game::employee::EmployeeLifeState,
-) -> &'static str {
-    match life_state {
-        crate::game::employee::EmployeeLifeState::Alive => "Alive",
-        crate::game::employee::EmployeeLifeState::Dead => "Dead",
-    }
-}
-
-fn wire_employee_availability_label(
-    availability: crate::game::employee::EmployeeAvailability,
-) -> &'static str {
-    match availability {
-        crate::game::employee::EmployeeAvailability::Available => "Available",
-        crate::game::employee::EmployeeAvailability::Unavailable => "Unavailable",
-    }
-}
-
 fn wire_tier_label(tier: crate::game::enums::Tier) -> &'static str {
     match tier {
         crate::game::enums::Tier::I => "I",
@@ -147,97 +227,25 @@ fn wire_tier_label(tier: crate::game::enums::Tier) -> &'static str {
     }
 }
 
-fn wire_trust_band_label(band: crate::game::employee_trust::TrustBand) -> &'static str {
+fn wire_trust_band_label(band: crate::game::employee_psychology::TrustBand) -> &'static str {
     match band {
-        crate::game::employee_trust::TrustBand::Distrust => "Distrust",
-        crate::game::employee_trust::TrustBand::Uneasy => "Uneasy",
-        crate::game::employee_trust::TrustBand::Neutral => "Neutral",
-        crate::game::employee_trust::TrustBand::Trusting => "Trusting",
-        crate::game::employee_trust::TrustBand::Devoted => "Devoted",
+        crate::game::employee_psychology::TrustBand::Distrust => "Distrust",
+        crate::game::employee_psychology::TrustBand::Uneasy => "Uneasy",
+        crate::game::employee_psychology::TrustBand::Neutral => "Neutral",
+        crate::game::employee_psychology::TrustBand::Trusting => "Trusting",
+        crate::game::employee_psychology::TrustBand::Devoted => "Devoted",
     }
 }
 
-fn wire_employee_trait_label(
-    trait_kind: crate::game::employee_trust::EmployeeTrait,
+fn wire_psychology_event_kind_label(
+    kind: crate::game::employee_psychology::PsychologyEventKind,
 ) -> &'static str {
-    match trait_kind {
-        crate::game::employee_trust::EmployeeTrait::Brave => "Brave",
-        crate::game::employee_trust::EmployeeTrait::Cautious => "Cautious",
-        crate::game::employee_trust::EmployeeTrait::Obedient => "Obedient",
-        crate::game::employee_trust::EmployeeTrait::Defiant => "Defiant",
-        crate::game::employee_trust::EmployeeTrait::Comradely => "Comradely",
-        crate::game::employee_trust::EmployeeTrait::SurvivalInstinct => "SurvivalInstinct",
-    }
-}
-
-fn wire_trust_memory_kind_label(
-    kind: crate::game::employee_trust::TrustMemoryKind,
-) -> &'static str {
-    match kind {
-        crate::game::employee_trust::TrustMemoryKind::TreatedAfterIncapacitation => {
-            "TreatedAfterIncapacitation"
-        }
-        crate::game::employee_trust::TrustMemoryKind::RestedBeforeDanger => "RestedBeforeDanger",
-        crate::game::employee_trust::TrustMemoryKind::PromiseKept => "PromiseKept",
-        crate::game::employee_trust::TrustMemoryKind::ConsistentInvestment => {
-            "ConsistentInvestment"
-        }
-        crate::game::employee_trust::TrustMemoryKind::DeployedWhileInjured => {
-            "DeployedWhileInjured"
-        }
-        crate::game::employee_trust::TrustMemoryKind::IncapacitatedNeglected => {
-            "IncapacitatedNeglected"
-        }
-        crate::game::employee_trust::TrustMemoryKind::ForcedEarlyAwakening => {
-            "ForcedEarlyAwakening"
-        }
-        crate::game::employee_trust::TrustMemoryKind::ForcedRiskFragmentUse => {
-            "ForcedRiskFragmentUse"
-        }
-        crate::game::employee_trust::TrustMemoryKind::AllyDeathThenDanger => "AllyDeathThenDanger",
-        crate::game::employee_trust::TrustMemoryKind::RestedAtSupportRest => "RestedAtSupportRest",
-        crate::game::employee_trust::TrustMemoryKind::NeglectedAtSupportRest => {
-            "NeglectedAtSupportRest"
-        }
-        crate::game::employee_trust::TrustMemoryKind::AllyDeathWitnessed => "AllyDeathWitnessed",
-    }
-}
-
-fn wire_trust_event_kind_label(kind: crate::game::employee_trust::TrustEventKind) -> &'static str {
-    match kind {
-        crate::game::employee_trust::TrustEventKind::TreatedAfterIncapacitation => {
-            "TreatedAfterIncapacitation"
-        }
-        crate::game::employee_trust::TrustEventKind::RestedBeforeDanger => "RestedBeforeDanger",
-        crate::game::employee_trust::TrustEventKind::PromiseKept => "PromiseKept",
-        crate::game::employee_trust::TrustEventKind::ConsistentInvestment => "ConsistentInvestment",
-        crate::game::employee_trust::TrustEventKind::DeployedWhileInjured => "DeployedWhileInjured",
-        crate::game::employee_trust::TrustEventKind::IncapacitatedNeglected => {
-            "IncapacitatedNeglected"
-        }
-        crate::game::employee_trust::TrustEventKind::ForcedEarlyAwakening => "ForcedEarlyAwakening",
-        crate::game::employee_trust::TrustEventKind::ForcedRiskFragmentUse => {
-            "ForcedRiskFragmentUse"
-        }
-        crate::game::employee_trust::TrustEventKind::AllyDeathThenDanger => "AllyDeathThenDanger",
-        crate::game::employee_trust::TrustEventKind::RestedAtSupportRest => "RestedAtSupportRest",
-        crate::game::employee_trust::TrustEventKind::NeglectedAtSupportRest => {
-            "NeglectedAtSupportRest"
-        }
-        crate::game::employee_trust::TrustEventKind::AllyDied => "AllyDied",
-        crate::game::employee_trust::TrustEventKind::BeforeDangerNode => "BeforeDangerNode",
-        crate::game::employee_trust::TrustEventKind::BeforeFinalNode => "BeforeFinalNode",
-        crate::game::employee_trust::TrustEventKind::IncurredTrauma => "IncurredTrauma",
-    }
+    match kind {}
 }
 
 impl GameCore {
     pub fn get_run_snapshot_dto(&self) -> Result<RunSnapshotDto, GameError> {
-        let map = self
-            .state
-            .run
-            .as_ref()
-            .map(|run| run.map_progression.view(&run.map));
+        let map = self.current_map_view().ok();
         let run_progression = self.state.run.as_ref().map(|state| {
             let run = &state.run_progression;
             RunProgressionSnapshotDto {
@@ -286,26 +294,166 @@ impl GameCore {
                 .current_node_id
                 .map(|current_node_id| MapNavigationSnapshotDto {
                     current_node_id,
-                    selectable_node_ids: progression.selectable_node_ids(&state.map),
+                    selectable_node_ids: self.selectable_map_node_ids(),
                 })
         });
+        let monolith = self.state.run.as_ref().map(|run| {
+            let mut entries = run
+                .monolith
+                .progress_by_abnormality
+                .iter()
+                .filter_map(|(abnormality_id, progress)| {
+                    let metadata = self.game_data.abnormality_data.get_by_id(abnormality_id)?;
+                    Some(MonolithProgressSnapshotDto {
+                        abnormality_id: abnormality_id.clone(),
+                        display_name: metadata.name.clone(),
+                        risk_level: metadata.risk_level,
+                        natural_outcome: match progress.natural_outcome {
+                            crate::game::monolith::NaturalEliteOutcome::Unresolved => "unresolved",
+                            crate::game::monolith::NaturalEliteOutcome::Victory => "victory",
+                            crate::game::monolith::NaturalEliteOutcome::Failed => "failed",
+                        }
+                        .to_string(),
+                        victories: progress.victories,
+                        purchased: progress.purchased,
+                        uses_remaining: progress.uses_remaining,
+                        active_node_id: progress.active_node_id,
+                        unique_fragment_granted: progress.unique_fragment_granted,
+                        residual_created: progress.residual_created,
+                    })
+                })
+                .collect::<Vec<_>>();
+            entries.sort_by(|left, right| left.abnormality_id.cmp(&right.abnormality_id));
+            let mut residuals = run
+                .monolith
+                .residuals
+                .iter()
+                .map(|residual| MonolithResidualSnapshotDto {
+                    sequence: residual.sequence,
+                    source_abnormality_id: residual.source_abnormality_id.clone(),
+                })
+                .collect::<Vec<_>>();
+            residuals.sort_by_key(|residual| residual.sequence);
+            let natural_ids = self
+                .game_data
+                .pve_data
+                .encounters
+                .iter()
+                .filter(|encounter| {
+                    encounter.encounter_class
+                        == crate::game::data::pve_data::PveEncounterClass::Elite
+                })
+                .filter_map(|encounter| encounter.primary_abnormality_id())
+                .collect::<std::collections::HashSet<_>>();
+            let elite_pool_exhausted = !natural_ids.is_empty()
+                && natural_ids.iter().all(|abnormality_id| {
+                    run.monolith
+                        .progress(abnormality_id)
+                        .is_some_and(|progress| progress.is_naturally_excluded())
+                });
+            MonolithRunSnapshotDto {
+                entries,
+                residuals,
+                residual_exchange_threshold: self.run_policy().monolith.residual_exchange_threshold,
+                exchange_state: format!("{:?}", run.monolith.exchange_state).to_ascii_lowercase(),
+                exchange_shop_guarantee_issued: run.monolith.exchange_shop_guarantee_issued,
+                next_floor_shop_guarantee_pending: run.monolith.next_floor_shop_guarantee_pending,
+                corrupted_monolith_acquired: run.monolith.corrupted_monolith_acquired,
+                elite_pool_exhausted,
+            }
+        });
         let enkephalin = self.state.enkephalin.amount;
+        let encounter_compendium = self.get_encounter_compendium_snapshot_dto()?;
+        let combat_recovery_restriction = self.state.run.as_ref().and_then(|run| {
+            run.combat_recovery_restriction.as_ref().map(|restriction| {
+                CombatRecoveryRestrictionSnapshotDto {
+                    reason: crate::game::resources::RunFailureReason::NoDeployableEmployees,
+                    allowed_node_ids: restriction.allowed_node_ids.clone(),
+                }
+            })
+        });
         Ok(RunSnapshotDto {
             game_state: self.game_state_name().to_string(),
             game_state_context: self.game_state_context_dto(),
-            allowed_actions: self.get_allowed_actions(),
-            run_checkpoint: self.state.run_checkpoint.to_dto(),
+            action_capabilities: self.get_action_capabilities(),
+            run_checkpoint: self
+                .state
+                .run_checkpoint
+                .to_dto(self.checkpoint_payload_is_loadable()),
+            combat_recovery_restriction,
             run_progression,
             abnormality_research,
+            monolith,
+            encounter_compendium,
             map_navigation,
             map,
             current_node_session: self.state.node_session.clone(),
+            visual_novel: self.visual_novel_snapshot_dto()?,
             selected_event: self.get_selected_event_snapshot_dto()?,
             skill_catalog: self.get_skill_catalog_snapshot_dto(),
             roster: self.get_employee_roster_snapshot_dto()?,
-            roster_order: self.get_roster_order_snapshot_dto()?,
             inventory: self.get_inventory_snapshot_dto()?,
             resources: RunResourcesSnapshotDto { enkephalin },
+        })
+    }
+
+    fn get_encounter_compendium_snapshot_dto(
+        &self,
+    ) -> Result<EncounterCompendiumSnapshotDto, GameError> {
+        self.state
+            .encounter_compendium
+            .validate_persisted()
+            .map_err(GameError::InvalidStaticData)?;
+        let abnormalities = self
+            .game_data
+            .abnormality_data
+            .items
+            .iter()
+            .map(|metadata| {
+                let discovered = self
+                    .state
+                    .encounter_compendium
+                    .discovered_abnormality_ids
+                    .contains(&metadata.id);
+                EncounterCompendiumAbnormalitySnapshotDto {
+                    abnormality_id: metadata.id.clone(),
+                    discovered,
+                    defeated: self
+                        .state
+                        .encounter_compendium
+                        .defeated_abnormality_ids
+                        .contains(&metadata.id),
+                    name: discovered.then(|| metadata.name.clone()),
+                    risk_level: discovered.then_some(metadata.risk_level),
+                }
+            })
+            .collect();
+        let corrosion_profiles = self
+            .game_data
+            .corroded_employee_data
+            .profiles
+            .iter()
+            .map(|metadata| {
+                let discovered = self
+                    .state
+                    .encounter_compendium
+                    .discovered_corrosion_profile_ids
+                    .contains(&metadata.id);
+                EncounterCompendiumCorrosionSnapshotDto {
+                    profile_id: metadata.id.clone(),
+                    discovered,
+                    defeated: self
+                        .state
+                        .encounter_compendium
+                        .defeated_corrosion_profile_ids
+                        .contains(&metadata.id),
+                    name: discovered.then(|| metadata.name.clone()),
+                }
+            })
+            .collect();
+        Ok(EncounterCompendiumSnapshotDto {
+            abnormalities,
+            corrosion_profiles,
         })
     }
 
@@ -314,9 +462,62 @@ impl GameCore {
             .map_err(|error| GameError::InvalidStaticData(error.to_string()))
     }
 
+    pub(super) fn visual_novel_snapshot_dto(
+        &self,
+    ) -> Result<Option<VisualNovelSnapshotDto>, GameError> {
+        let Some(session) = self.state.visual_novel.active.as_ref() else {
+            return Ok(None);
+        };
+        let visual_novel = self
+            .game_data
+            .visual_novel_data
+            .get_by_id(session.vn_id.as_str())
+            .ok_or(GameError::MissingResource("VisualNovel"))?;
+        let scene = visual_novel_scene(visual_novel, session.current_scene_id.as_str())?;
+        let choices = match &scene.next {
+            VisualNovelSceneNext::Choices { choices } => choices
+                .iter()
+                .map(|choice| VisualNovelChoiceSnapshotDto {
+                    choice_id: choice.id.as_str().to_string(),
+                    label_id: choice.label_id.clone(),
+                    preview: visual_novel_choice_preview_dto(&choice.preview),
+                    selectable: session.committed_choice_id.is_none()
+                        || session.committed_choice_id.as_ref() == Some(&choice.id),
+                })
+                .collect(),
+            _ => vec![],
+        };
+        Ok(Some(VisualNovelSnapshotDto {
+            source: visual_novel_source_dto(&session.source),
+            session_id: session.session_id.clone(),
+            vn_id: session.vn_id.as_str().to_string(),
+            current_scene_id: session.current_scene_id.as_str().to_string(),
+            background_id: visual_novel_background_id(&scene.background),
+            script_id: scene.script_id.clone(),
+            speakers: scene
+                .speakers
+                .iter()
+                .map(|speaker| VisualNovelSpeakerDto {
+                    speaker_id: speaker.speaker_id.clone(),
+                    portrait_id: speaker.portrait_id.clone(),
+                    position: visual_novel_speaker_position_dto(speaker.position),
+                    active: speaker.active,
+                })
+                .collect(),
+            choices,
+            blocking: session.blocking,
+            presentation_mode: visual_novel_session_presentation_mode_dto(
+                session.presentation_mode,
+            ),
+        }))
+    }
+
     fn game_state_context_dto(&self) -> GameStateContextDto {
         match self.get_state() {
             GameState::NotStarted => GameStateContextDto::NotStarted,
+            GameState::PreRunBriefing { game_mode } => {
+                GameStateContextDto::PreRunBriefing { game_mode }
+            }
             GameState::SelectingStarterEmployees => {
                 GameStateContextDto::SelectingStarterEmployees {
                     required_count: self.run_policy().setup.starter_employee_count,
@@ -345,8 +546,14 @@ impl GameCore {
                     kind_id,
                     category,
                     combat_preview,
+                    trauma_recovery_preview: self
+                        .trauma_recovery_preview_for_category(category)
+                        .ok()
+                        .flatten(),
                     abnormality_attempt,
                     omen: run.and_then(|run| run.boss_omen.node_confirm_omen(node_id)),
+                    monolith_conversion: self.monolith_conversion_snapshot(),
+                    monolith_remanifestation: self.monolith_remanifestation_snapshot(),
                 }
             }
             GameState::InNode {
@@ -367,28 +574,37 @@ impl GameCore {
                 GameStateContextDto::CombatResult { battle_uuid }
             }
             GameState::InBattle { battle_uuid } => {
-                let active = self.state.active_battle.as_ref();
-                let abnormality_attempt = active.and_then(|battle| {
-                    self.state.run.as_ref().map(|run| {
-                        run.abnormality_attempt_dto(crate::game::map::MapNodeId(battle.battle_uuid))
-                    })
-                });
-                let can_retreat = active.is_some_and(|battle| !battle.execution.is_finished());
+                let active = self
+                    .state
+                    .active_battle
+                    .as_ref()
+                    .expect("GameState::InBattle requires an active battle session");
+                let abnormality_attempt = self
+                    .state
+                    .run
+                    .as_ref()
+                    .map(|run| run.abnormality_attempt_dto(active.node_id));
+                let can_retreat = !active.execution.is_finished();
                 GameStateContextDto::InBattle {
                     battle_uuid,
-                    node_type: active.map(|battle| battle.node_type),
-                    mission_variant: active.map(|battle| battle.mission_variant),
-                    encounter_id: active.map(|battle| battle.encounter_id.clone()),
-                    combat_preview: active.map(|battle| battle.combat_preview.clone()),
-                    last_pushed_event_log_seq: active
-                        .and_then(|battle| battle.last_pushed_event_log_seq),
-                    deployment: active
-                        .and_then(|battle| battle.live_deployment_dto(&self.state.roster)),
-                    playback: active.map(|battle| battle.playback_state()),
+                    node_type: Some(active.node_type),
+                    mission_variant: Some(active.mission_variant),
+                    encounter_id: Some(active.encounter_id.clone()),
+                    combat_preview: Some(active.combat_preview.clone()),
+                    battle_state_revision: active.battle_state_revision,
+                    deployment: active.live_deployment_dto(active.employee_roster()),
+                    playback: Some(active.playback_state()),
                     abnormality_attempt,
                     can_retreat,
                 }
             }
+            GameState::AwaitingRunFailureDecision {
+                reason,
+                contributing_reason,
+            } => GameStateContextDto::AwaitingRunFailureDecision {
+                reason,
+                contributing_reason,
+            },
             GameState::GameOver => GameStateContextDto::GameOver,
             GameState::RunComplete => GameStateContextDto::RunComplete,
             GameState::RunFailed { reason } => GameStateContextDto::RunFailed { reason },
@@ -403,13 +619,11 @@ impl GameCore {
             .iter()
             .map(|skill| {
                 let cast_target = skill.cast_target_definition().map(
-                    |(target, range_policy, defense_tile_range, air_capable)| {
-                        SkillCatalogCastTargetDto {
-                            target_policy: target.clone(),
-                            range_policy,
-                            defense_tile_range: defense_tile_range.cloned(),
-                            air_capable,
-                        }
+                    |(target, reach, target_range, air_capable)| SkillCatalogCastTargetDto {
+                        target_policy: target.clone(),
+                        reach,
+                        target_range: target_range.cloned(),
+                        air_capable,
                     },
                 );
                 SkillCatalogSkillDto {
@@ -424,8 +638,9 @@ impl GameCore {
                         .iter()
                         .map(|step| {
                             let tile_area = match &step.delivery {
-                                crate::game::ability::DeliveryDef::TileArea { area } => {
+                                crate::game::ability::DeliveryDef::TileArea { footprint, area } => {
                                     Some(SkillCatalogTileAreaDto {
+                                        footprint: footprint.clone(),
                                         anchor: area.anchor,
                                         tile_origin: area.tile_origin,
                                         tracking: area.tracking,
@@ -442,9 +657,6 @@ impl GameCore {
                                 step_id: step.id.clone(),
                                 delay_ms: step.delay_ms,
                                 target_policy: step.target.clone(),
-                                range_policy: step.range_policy,
-                                defense_tile_range: step.defense_tile_range.clone(),
-                                air_capable: step.air_capable,
                                 delivery: match &step.delivery {
                                     crate::game::ability::DeliveryDef::Instant => {
                                         SkillCatalogDeliveryKind::Instant
@@ -467,7 +679,7 @@ impl GameCore {
             .collect::<Vec<_>>();
         skills.sort_by(|left, right| left.skill_id.cmp(&right.skill_id));
         SkillCatalogDto {
-            version: 1,
+            version: 2,
             range_source_of_truth: "range_previews.final_cells".to_string(),
             skills,
         }
@@ -532,21 +744,12 @@ impl GameCore {
             .collect::<Vec<_>>();
         equipments.sort_by(|left, right| left.instance_uuid.cmp(&right.instance_uuid));
 
-        let mut artifacts = inventory
-            .artifacts
-            .iter()
-            .map(|artifact| {
-                crate::game::resources::ArtifactItemDto::from_metadata(artifact.as_ref())
-            })
-            .collect::<Vec<_>>();
-        artifacts.sort_by(|left, right| left.uuid.cmp(&right.uuid));
-
         let mut consumables = inventory
             .consumables
             .iter()
-            .map(crate::game::resources::ConsumableItemDto::from_owned_consumable)
+            .map(crate::game::resources::ConsumableItemDto::from_consumable_stack)
             .collect::<Vec<_>>();
-        consumables.sort_by(|left, right| left.uuid.cmp(&right.uuid));
+        consumables.sort_by(|left, right| left.definition_id.cmp(&right.definition_id));
 
         let mut equipment_materials = inventory
             .equipment_materials
@@ -572,9 +775,10 @@ impl GameCore {
         equipment_materials.sort_by(|left, right| left.material_id.cmp(&right.material_id));
 
         Ok(InventorySnapshotDto {
+            reserved_slot_count: inventory.reserved_slot_count(),
+            occupied_slot_count: inventory.occupied_slot_count(),
             equipments,
             equipment_materials,
-            artifacts,
             consumables,
             skill_fragments,
             skill_fragment_progress,
@@ -596,40 +800,13 @@ impl GameCore {
             .map_err(|error| GameError::InvalidStaticData(error.to_string()))
     }
 
-    pub fn get_roster_order_snapshot_dto(&self) -> Result<RosterOrderSnapshotDto, GameError> {
-        let roster_order = self.roster_order()?;
-
-        let slots = roster_order
-            .slots
-            .iter()
-            .enumerate()
-            .map(|(slot, unit_uuid)| RosterOrderSlotSnapshotDto {
-                slot,
-                unit_uuid: *unit_uuid,
-            })
-            .collect::<Vec<_>>();
-
-        Ok(RosterOrderSnapshotDto {
-            max_slots: roster_order.max_slots,
-            slots,
-        })
-    }
-
-    pub fn get_roster_order_snapshot_json(&self) -> Result<Value, GameError> {
-        serde_json::to_value(self.get_roster_order_snapshot_dto()?)
-            .map_err(|error| GameError::InvalidStaticData(error.to_string()))
-    }
-
     pub fn get_employee_roster_snapshot_dto(&self) -> Result<EmployeeRosterSnapshotDto, GameError> {
         let roster = self.roster()?;
         let inventory = self.inventory()?;
-        let roster_order = self.roster_order().ok();
 
         let mut employees = roster
             .iter()
             .map(|employee| -> Result<EmployeeSnapshotDto, GameError> {
-                let roster_slot =
-                    roster_order.and_then(|roster_order| roster_order.slot_of(employee.uuid));
                 let effective_profile_result = effective_combat_profile_for_employee(
                     roster,
                     inventory,
@@ -662,54 +839,58 @@ impl GameCore {
                     .collect::<Result<Vec<_>, GameError>>()?;
                 Ok(EmployeeSnapshotDto {
                     uuid: employee.uuid,
+                    employee_definition_id: employee.employee_definition_id.clone(),
                     name: employee.name.clone(),
+                    profile: employee.profile.clone(),
                     level: employee.level,
                     experience: employee.experience,
-                    life_state: wire_employee_life_state_label(employee.life_state).into(),
-                    availability: wire_employee_availability_label(employee.availability).into(),
-                    available_for_combat: employee.is_available_for_combat(),
-                    trauma: employee.trauma,
-                    health: EmployeeHealthSnapshotDto {
-                        current_hp: employee.health.current_hp,
-                        max_hp: employee.health.max_hp,
+                    condition: EmployeeConditionSnapshotDto {
+                        physical_damage: employee.condition.physical_damage,
+                        physical_state: employee.condition.physical_state(),
+                        trauma: employee.condition.trauma,
+                        mental_state: employee.condition.mental_state(),
                     },
-                    injuries: employee
-                        .injuries
-                        .iter()
-                        .map(|injury| EmployeeInjurySnapshotDto {
-                            id: injury.id.clone(),
-                            severity: injury.severity,
-                        })
-                        .collect::<Vec<_>>(),
-                    trust: EmployeeTrustSnapshotDto {
-                        score: employee.trust.score,
-                        band: wire_trust_band_label(employee.trust.band()).into(),
-                        traits: employee
-                            .trust
-                            .traits
-                            .iter()
-                            .map(|trait_kind| wire_employee_trait_label(*trait_kind).into())
-                            .collect::<Vec<_>>(),
+                    eligibility: EmployeeEligibilitySnapshotDto {
+                        combat: employee
+                            .eligibility(crate::game::employee::EmployeeActivity::Combat),
+                        event: employee.eligibility(crate::game::employee::EmployeeActivity::Event),
+                        high_risk: employee
+                            .eligibility(crate::game::employee::EmployeeActivity::HighRisk),
+                        consumable: employee
+                            .eligibility(crate::game::employee::EmployeeActivity::Consumable),
+                        loadout: employee
+                            .eligibility(crate::game::employee::EmployeeActivity::Loadout),
+                        physical_treatment: employee.eligibility(
+                            crate::game::employee::EmployeeActivity::PhysicalTreatment,
+                        ),
+                        trauma_recovery: employee
+                            .eligibility(crate::game::employee::EmployeeActivity::TraumaRecovery),
+                    },
+                    psychology: EmployeePsychologySnapshotDto {
+                        trust_score: employee.psychology.trust_score,
+                        trust_band: wire_trust_band_label(employee.psychology.trust_band()).into(),
                         memories: employee
-                            .trust
+                            .psychology
                             .memories
                             .iter()
-                            .map(|memory| EmployeeTrustMemorySnapshotDto {
-                                kind: wire_trust_memory_kind_label(memory.kind).into(),
+                            .map(|memory| EmployeePsychologyMemorySnapshotDto {
+                                kind: wire_psychology_event_kind_label(memory.kind).into(),
+                                subject: memory.subject,
+                                occurrence_count: memory.occurrence_count,
                                 intensity: memory.intensity,
+                                first_source: memory.first_source,
+                                last_source: memory.last_source,
                                 remaining_nodes: memory.remaining_nodes,
                             })
                             .collect::<Vec<_>>(),
-                        recent_reactions: employee
-                            .trust
-                            .recent_reactions
+                        recent_events: employee
+                            .psychology
+                            .recent_events
                             .iter()
-                            .map(|reaction| EmployeeTrustReactionSnapshotDto {
-                                event: wire_trust_event_kind_label(reaction.event).into(),
-                                trust_delta: reaction.trust_delta,
-                                cue_count: reaction.cue_count,
-                                combat_modifier_count: reaction.combat_modifier_count,
-                                trauma_modifier_count: reaction.trauma_modifier_count,
+                            .map(|event| EmployeePsychologyRecentEventSnapshotDto {
+                                event: wire_psychology_event_kind_label(event.kind).into(),
+                                source: event.source,
+                                trust_delta: event.trust_delta,
                             })
                             .collect::<Vec<_>>(),
                     },
@@ -798,7 +979,6 @@ impl GameCore {
                             }
                         })
                         .collect::<Vec<_>>(),
-                    roster_slot,
                 })
             })
             .collect::<Result<Vec<_>, GameError>>()?;
@@ -806,24 +986,13 @@ impl GameCore {
 
         Ok(EmployeeRosterSnapshotDto {
             employees,
-            available_employee_ids: roster.available_employee_ids(),
+            combat_eligible_employee_ids: roster.combat_eligible_employee_ids(),
         })
     }
 
     pub fn get_employee_roster_snapshot_json(&self) -> Result<Value, GameError> {
         serde_json::to_value(self.get_employee_roster_snapshot_dto()?)
             .map_err(|error| GameError::InvalidStaticData(error.to_string()))
-    }
-
-    fn display_items_snapshot_dto(
-        &self,
-        item_uuids: &[Uuid],
-    ) -> Result<Vec<DisplayItemSnapshotDto>, GameError> {
-        item_uuids
-            .iter()
-            .copied()
-            .map(|item_uuid| self.display_item_snapshot_dto(item_uuid))
-            .collect()
     }
 
     fn display_item_snapshot_dto(
@@ -852,21 +1021,6 @@ impl GameCore {
                     description: String::new(),
                 })
             }
-            ItemRef::Artifact(meta) => {
-                DisplayItemSnapshotDto::Artifact(DisplayArtifactItemSnapshotDto {
-                    uuid: item_uuid,
-                    kind: "artifact".to_string(),
-                    definition_id: meta.id.clone(),
-                    id: meta.id.clone(),
-                    name: meta.name.clone(),
-                    rarity: meta.rarity,
-                    price: meta.price,
-                    item_type: "artifact".to_string(),
-                    artifact_type: "artifact".to_string(),
-                    effect_id: meta.id.clone(),
-                    description: meta.description.clone(),
-                })
-            }
             ItemRef::Consumable(meta) => {
                 DisplayItemSnapshotDto::Consumable(DisplayConsumableItemSnapshotDto {
                     uuid: item_uuid,
@@ -889,6 +1043,46 @@ impl GameCore {
         Ok(value)
     }
 
+    fn display_shop_offer_item_snapshot_dto(
+        &self,
+        offer: &crate::game::resources::ShopOfferState,
+    ) -> Result<DisplayItemSnapshotDto, GameError> {
+        let crate::game::data::shop_data::ShopMerchandise::Monolith { abnormality_id } =
+            &offer.merchandise
+        else {
+            return self.display_item_snapshot_dto(offer.item_uuid);
+        };
+        let metadata = self
+            .game_data
+            .abnormality_data
+            .get_by_id(abnormality_id)
+            .ok_or_else(|| {
+                GameError::InvalidStaticData(format!(
+                    "Shop offer references missing monolith abnormality '{abnormality_id}'"
+                ))
+            })?;
+        let progress = self
+            .state
+            .run
+            .as_ref()
+            .and_then(|run| run.monolith.progress(abnormality_id))
+            .ok_or(GameError::InvalidAction)?;
+        Ok(DisplayItemSnapshotDto::Monolith(
+            DisplayMonolithItemSnapshotDto {
+                uuid: metadata.uuid,
+                abnormality_id: abnormality_id.clone(),
+                name: format!("{}의 모노리스", metadata.name),
+                risk_level: metadata.risk_level,
+                victories: progress.victories,
+                next_stage: progress.victories.saturating_add(1),
+                uses_granted: self.run_policy().monolith.initial_uses,
+                kind: "monolith".to_string(),
+                id: format!("monolith:{abnormality_id}"),
+                item_type: "monolith".to_string(),
+            },
+        ))
+    }
+
     pub fn get_selected_event_snapshot_dto(
         &self,
     ) -> Result<Option<SelectedEventSnapshotDto>, GameError> {
@@ -901,10 +1095,44 @@ impl GameCore {
                 id: shop.id.clone(),
                 name: shop.name.clone(),
                 uuid: shop.uuid,
-                shop_type: shop.shop_type,
-                can_reroll: shop.can_reroll,
-                visible_items: self.display_items_snapshot_dto(&shop.visible_items)?,
-                visible_item_uuids: shop.visible_items.clone(),
+                context: shop.context,
+                offers: shop
+                    .offers
+                    .iter()
+                    .map(|offer| {
+                        Ok(crate::game::behavior::ShopOfferSnapshotDto {
+                            offer_id: offer.offer_id,
+                            merchandise: offer.merchandise.clone(),
+                            quantity: offer.quantity,
+                            total_price: offer.total_price,
+                            item: self.display_shop_offer_item_snapshot_dto(offer)?,
+                            eligibility: self.shop_purchase_eligibility(offer),
+                        })
+                    })
+                    .collect::<Result<Vec<_>, GameError>>()?,
+                refresh: {
+                    let eligibility = self.shop_refresh_eligibility(shop);
+                    match shop.refresh_policy {
+                        Some(policy) => crate::game::behavior::ShopRefreshSnapshotDto {
+                            available: true,
+                            current_cost: Some(policy.base_cost),
+                            max_uses: policy.max_uses,
+                            uses_consumed: shop.refresh_uses,
+                            remaining_uses: policy.max_uses.saturating_sub(shop.refresh_uses),
+                            eligibility,
+                        },
+                        None => crate::game::behavior::ShopRefreshSnapshotDto {
+                            available: false,
+                            current_cost: None,
+                            max_uses: 0,
+                            uses_consumed: 0,
+                            remaining_uses: 0,
+                            eligibility,
+                        },
+                    }
+                },
+                selling_enabled: shop.sell_policy.is_some(),
+                sale_candidates: self.shop_sale_candidates(shop),
             },
             ActiveNodeContent::Reward(reward) => SelectedEventSnapshotDto::Reward {
                 stage_uuid: reward.stage_uuid,
@@ -921,12 +1149,13 @@ impl GameCore {
                 node_id: event.node_id,
                 event: self.event_scene_snapshot(event)?,
             },
-            ActiveNodeContent::Support(support) => SelectedEventSnapshotDto::Support {
-                node_id: support.node_id,
-                support_mode: support.support_mode,
-                support_type: support.support_type,
-                choices: support.choices.clone(),
-                selected_support_type: support.selected_support_type,
+            ActiveNodeContent::SavePoint(save_point) => SelectedEventSnapshotDto::SavePoint {
+                node_id: save_point.node_id,
+                recovery_preview: self
+                    .trauma_recovery_preview_for_category(
+                        crate::game::map::MapNodeCategory::SavePoint,
+                    )?
+                    .ok_or(GameError::InvalidAction)?,
             },
             ActiveNodeContent::Maintenance(maintenance) => SelectedEventSnapshotDto::Maintenance {
                 node_id: maintenance.node_id,
@@ -936,7 +1165,7 @@ impl GameCore {
                 SelectedEventSnapshotDto::HeadquartersContact {
                     node_id: headquarters.node_id,
                     options: headquarters.options.clone(),
-                    recruitment_candidates: headquarters.recruitment_candidates.clone(),
+                    recruitment_candidates: self.active_recruitment_candidates()?,
                     shop_pool_id: headquarters.shop_pool_id.clone(),
                 }
             }
@@ -1021,36 +1250,10 @@ mod tests {
             ),
             "Fragment"
         );
-        assert_eq!(
-            wire_employee_life_state_label(crate::game::employee::EmployeeLifeState::Alive),
-            "Alive"
-        );
-        assert_eq!(
-            wire_employee_availability_label(
-                crate::game::employee::EmployeeAvailability::Available
-            ),
-            "Available"
-        );
         assert_eq!(wire_tier_label(crate::game::enums::Tier::III), "III");
         assert_eq!(
-            wire_trust_band_label(crate::game::employee_trust::TrustBand::Devoted),
+            wire_trust_band_label(crate::game::employee_psychology::TrustBand::Devoted),
             "Devoted"
-        );
-        assert_eq!(
-            wire_employee_trait_label(crate::game::employee_trust::EmployeeTrait::SurvivalInstinct),
-            "SurvivalInstinct"
-        );
-        assert_eq!(
-            wire_trust_memory_kind_label(
-                crate::game::employee_trust::TrustMemoryKind::AllyDeathWitnessed
-            ),
-            "AllyDeathWitnessed"
-        );
-        assert_eq!(
-            wire_trust_event_kind_label(
-                crate::game::employee_trust::TrustEventKind::IncurredTrauma
-            ),
-            "IncurredTrauma"
         );
     }
 }

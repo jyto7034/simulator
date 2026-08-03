@@ -19,3 +19,7 @@ message_max_interval_ms = 100
 [session]
 heartbeat_interval_seconds = 30
 heartbeat_timeout = 120
+
+[persistence]
+active_run_directory = "persistent_data"
+encounter_compendium_directory = "persistent_data"

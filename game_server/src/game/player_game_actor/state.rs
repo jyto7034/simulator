@@ -48,11 +48,36 @@ impl From<GameError> for PlayerGameActorError {
                 "invalid_action",
                 "Action is not allowed in the current state".into(),
             ),
+            GameError::ActionUnavailable { action, reason } => (
+                reason.as_str(),
+                format!("Action {action:?} is unavailable: {reason:?}"),
+            ),
             GameError::InvalidBattleResyncSeq { requested, latest } => (
                 "invalid_battle_resync_seq",
                 format!(
                     "Battle resync since_seq {} is ahead of latest seq {}",
                     requested, latest
+                ),
+            ),
+            GameError::BattleStateRevisionOverflow => (
+                "battle_state_revision_overflow",
+                "Battle state revision can no longer advance".into(),
+            ),
+            GameError::MissingBattleStateAuthority { current } => (
+                "missing_battle_state_authority",
+                format!(
+                    "Battle mutation requires current authority {}@{}",
+                    current.battle_uuid, current.battle_state_revision
+                ),
+            ),
+            GameError::StaleBattleStateAuthority { expected, current } => (
+                "stale_battle_state_authority",
+                format!(
+                    "Stale battle authority {}@{}; current authority is {}@{}",
+                    expected.battle_uuid,
+                    expected.battle_state_revision,
+                    current.battle_uuid,
+                    current.battle_state_revision
                 ),
             ),
             GameError::NotInShopState => {
@@ -61,10 +86,6 @@ impl From<GameError> for PlayerGameActorError {
             GameError::NotInRewardState => (
                 "not_in_reward_state",
                 "Player is not in reward state".into(),
-            ),
-            GameError::ShopRerollNotAllowed => (
-                "shop_reroll_not_allowed",
-                "Current shop does not support reroll".into(),
             ),
             GameError::ShopItemNotFound => {
                 ("shop_item_not_found", "Shop item was not found".into())
@@ -105,10 +126,6 @@ impl From<GameError> for PlayerGameActorError {
                 ("unit_already_placed", "Unit is already deployed".into())
             }
             GameError::UnitNotFound => ("unit_not_found", "Unit was not found".into()),
-            GameError::AlreadyOwnedArtifact => (
-                "already_owned_artifact",
-                "Artifact is already owned and cannot be acquired again".into(),
-            ),
             GameError::InvalidStaticData(message) => (
                 "invalid_static_data",
                 format!("Invalid static data: {message}"),
@@ -228,6 +245,7 @@ pub fn behavior_result_to_command_result(
     match result.into_command_result_contract() {
         BehaviorCommandResultContract::BattleUpdate(battle_result) => {
             let accepted_at_battle_time_ms = battle_result.battle_update.server_battle_time_ms;
+            let battle_state_revision = battle_result.battle_update.battle_state_revision;
             let mut side_messages = Vec::new();
             if battle_side_message == BattleSideMessageKind::BattleUpdate {
                 if let Some(setup) = battle_result.battle_setup_snapshot {
@@ -251,6 +269,7 @@ pub fn behavior_result_to_command_result(
                     payload: json!({
                         "command_id": request_id,
                         "accepted_at_battle_time_ms": accepted_at_battle_time_ms,
+                        "battle_state_revision": battle_state_revision,
                     }),
                 },
                 side_messages,
@@ -338,7 +357,8 @@ mod tests {
     use crate::game::player_game_actor::messages::BattleSideMessageKind;
     use game_core::game::{
         behavior::{
-            BattlePlaybackState, DeploymentRangePreviewFacingDto, DeploymentRangePreviewFacingsDto,
+            ActionDisabledReasonCode, ActionKind, BattlePlaybackState,
+            DeploymentRangePreviewFacingDto, DeploymentRangePreviewFacingsDto,
             DeploymentRangePreviewResultDto, LiveBattleActiveSkillRangePreviewDto,
             LiveBattleBasicAttackRangePreviewDto, LiveBattleDeploymentDto, LiveBattleEventDeltaDto,
             LiveBattleRangePreviewReason, LiveBattleRangePreviewSource, LiveBattleRangePreviewsDto,
@@ -357,6 +377,17 @@ mod tests {
         assert!(error.message.contains("static obstacle"));
     }
 
+    #[test]
+    fn action_unavailable_preserves_typed_disabled_reason_code() {
+        let error = PlayerGameActorError::from(GameError::ActionUnavailable {
+            action: ActionKind::LoadRunCheckpoint,
+            reason: ActionDisabledReasonCode::CheckpointUnavailable,
+        });
+
+        assert_eq!(error.code, "checkpoint_unavailable");
+        assert!(error.message.contains("LoadRunCheckpoint"));
+    }
+
     fn dummy_battle_update(
         battle_uuid: Uuid,
         battle_time_ms: u64,
@@ -366,6 +397,8 @@ mod tests {
         LiveBattleUpdateDto {
             message_type: LiveBattleUpdateMessageType::BattleUpdate,
             battle_uuid,
+            battle_state_revision: 7,
+            action_capabilities: Vec::new(),
             server_battle_time_ms: battle_time_ms,
             events_delta: LiveBattleEventDeltaDto {
                 after_seq: to_seq,
@@ -376,9 +409,14 @@ mod tests {
                 at_seq: to_seq,
                 battle_time_ms,
                 playback: BattlePlaybackState::default(),
+                playback_eligibility:
+                    game_core::game::behavior::LiveBattlePlaybackEligibilityDto::for_state(
+                        BattlePlaybackState::default(),
+                    ),
                 units: Vec::new(),
                 deployment,
             },
+            visual_novel: None,
         }
     }
 
@@ -468,6 +506,8 @@ mod tests {
             result: DeploymentRangePreviewResultDto {
                 employee_uuid: Uuid::from_u128(7),
                 position: Position::new(2, 2),
+                deploy_eligibility: game_core::game::behavior::BattlePayloadEligibilityDto::enabled(
+                ),
                 facings: DeploymentRangePreviewFacingsDto {
                     up: DeploymentRangePreviewFacingDto {
                         range_previews: range_previews.clone(),
@@ -510,5 +550,131 @@ mod tests {
             !mapped.send_state_snapshot,
             "preview read request must not be followed by full state_snapshot"
         );
+    }
+
+    #[test]
+    fn planning_return_preserves_research_deliveries_before_trailing_snapshot() {
+        let result = BehaviorResult::NodeCompleted {
+            map: game_core::game::map::MapViewDto {
+                map_template_id: game_core::game::map::MapTemplateId::new("delivery_server"),
+                facility_template_version: game_core::game::map::FACILITY_TEMPLATE_VERSION,
+                nodes: vec![],
+            },
+            outcome: None,
+            research_deliveries: vec![
+                game_core::game::skill_fragment::SkillFragmentResearchDelivery {
+                    fragment_id: game_core::game::data::skill_fragment_data::SkillFragmentId::from(
+                        "starter_basic_attack_enhancement",
+                    ),
+                    count: 1,
+                    total_count: 2,
+                },
+            ],
+        };
+
+        let mapped = behavior_result_to_command_result(
+            "complete-node-1".to_string(),
+            result,
+            BattleSideMessageKind::BattleUpdate,
+        )
+        .expect("planning return should serialize");
+
+        match mapped.response {
+            PlayerGameServerMessage::CommandResult {
+                result_type,
+                payload,
+                ..
+            } => {
+                assert_eq!(result_type, "NodeCompleted");
+                assert_eq!(
+                    payload["research_deliveries"][0]["fragment_id"],
+                    "starter_basic_attack_enhancement"
+                );
+                assert_eq!(payload["research_deliveries"][0]["count"], 1);
+                assert_eq!(payload["research_deliveries"][0]["total_count"], 2);
+            }
+            other => panic!("expected command result, got {other:?}"),
+        }
+        assert!(mapped.side_messages.is_empty());
+        assert!(
+            mapped.send_state_snapshot,
+            "authoritative delivery acknowledgement must precede the latest root snapshot"
+        );
+    }
+
+    #[test]
+    fn event_state_mapping_preserves_choice_evaluation_and_requests_trailing_snapshot() {
+        let event = serde_json::from_value::<game_core::game::behavior::EventSceneSnapshotDto>(
+            serde_json::json!({
+                "event_id": "server_event",
+                "current_scene_id": "check",
+                "presentation": {
+                    "panels": [{"image_id": "image", "text_ids": ["text"]}]
+                },
+                "interaction": {
+                    "type": "employee_check_choices",
+                    "choices": [{
+                        "choice_id": "inspect",
+                        "label_id": "inspect_label",
+                        "aptitude": "Analysis",
+                        "dc": 16,
+                        "required_choice_key": "sealed_archive_access",
+                        "eligibility": {"enabled": true},
+                        "employee_candidates": [{
+                            "employee_uuid": "00000000-0000-0000-0000-000000000002",
+                            "name": "Employee",
+                            "eligibility": {"enabled": true},
+                            "employee_modifier": 0,
+                            "equipment_modifier": 2,
+                            "modifier_total": 2,
+                            "modifier_components": [{
+                                "type": "equipment",
+                                "equipment_instance_uuid": "00000000-0000-0000-0000-000000000003",
+                                "equipment_definition_id": "archive_scanner",
+                                "aptitude": "Analysis",
+                                "amount": 2
+                            }],
+                            "choice_key_evidence": {
+                                "key_id": "sealed_archive_access",
+                                "equipment_instance_uuid": "00000000-0000-0000-0000-000000000003",
+                                "equipment_definition_id": "archive_scanner"
+                            },
+                            "success_chance_percent": 35
+                        }]
+                    }]
+                }
+            }),
+        )
+        .expect("final Event DTO should deserialize");
+        let mapped = behavior_result_to_command_result(
+            "resolve-event-1".to_string(),
+            BehaviorResult::EventState {
+                node_id: game_core::game::map::MapNodeId::new(uuid::Uuid::from_u128(1)),
+                event,
+            },
+            BattleSideMessageKind::BattleUpdate,
+        )
+        .expect("EventState should map without repair");
+
+        let PlayerGameServerMessage::CommandResult {
+            result_type,
+            payload,
+            ..
+        } = mapped.response
+        else {
+            panic!("expected command result")
+        };
+        assert_eq!(result_type, "EventState");
+        assert_eq!(payload["event"]["interaction"]["choices"][0]["dc"], 16);
+        assert_eq!(
+            payload["event"]["interaction"]["choices"][0]["employee_candidates"][0]
+                ["success_chance_percent"],
+            35
+        );
+        assert!(payload["event"]["interaction"]
+            .get("required_roll")
+            .is_none());
+        assert!(mapped.side_messages.is_empty());
+        assert!(mapped.send_state_snapshot);
     }
 }

@@ -1,7 +1,11 @@
+use std::collections::HashSet;
+
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::game::data::shop_data::{ShopMetadata, ShopType};
+use crate::game::data::shop_data::{
+    ShopContext, ShopMerchandise, ShopRefreshPolicy, ShopSellPolicy,
+};
 use crate::game::{
     battle::{
         event_log::BattleEventLog,
@@ -10,71 +14,48 @@ use crate::game::{
     },
     behavior::GameError,
     combat_preview::{CombatMissionVariant, CombatNodeType},
-    data::event_data::{EventChoiceId, EventId, EventSceneId},
-    employee::StarterEmployeeCandidate,
-    enums::{RewardMode, ShopEventOption},
-    map::{HeadquartersContactOption, MapNodeId, SupportNodeMode, SupportNodeType},
+    data::event_data::{EventCheckOutcome, EventChoiceId, EventChoiceKeyId, EventId, EventSceneId},
+    employee::EventAptitude,
+    enums::RewardMode,
+    map::{HeadquartersContactOption, MapNodeId},
     reward::RewardOption,
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ShopOfferState {
+    pub offer_id: Uuid,
+    pub merchandise: ShopMerchandise,
+    pub item_uuid: Uuid,
+    pub quantity: u32,
+    pub total_price: u32,
+    pub repeatable: bool,
+    pub tags: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ShopSessionState {
     pub id: String,
     pub name: String,
     pub uuid: Uuid,
-    pub shop_type: ShopType,
-    pub can_reroll: bool,
-    pub visible_items: Vec<Uuid>,
-    pub hidden_items: Vec<Uuid>,
+    pub context: ShopContext,
+    pub node_id: MapNodeId,
+    pub offer_count: usize,
+    pub refresh_policy: Option<ShopRefreshPolicy>,
+    pub sell_policy: Option<ShopSellPolicy>,
+    pub refresh_uses: u32,
+    pub page_index: u32,
+    pub offers: Vec<ShopOfferState>,
+    pub purchased_merchandise: HashSet<ShopMerchandise>,
 }
 
 impl ShopSessionState {
-    pub fn remove_visible_item(&mut self, uuid: Uuid) -> Result<(), GameError> {
+    pub fn remove_offer(&mut self, offer_id: Uuid) -> Result<ShopOfferState, GameError> {
         let pos = self
-            .visible_items
+            .offers
             .iter()
-            .position(|item| *item == uuid)
+            .position(|offer| offer.offer_id == offer_id)
             .ok_or(GameError::ShopItemNotFound)?;
-        self.visible_items.remove(pos);
-        Ok(())
-    }
-
-    pub fn reroll_items(&mut self) {
-        std::mem::swap(&mut self.hidden_items, &mut self.visible_items);
-    }
-}
-
-impl From<&ShopMetadata> for ShopSessionState {
-    fn from(value: &ShopMetadata) -> Self {
-        Self {
-            id: value.id.clone(),
-            name: value.name.clone(),
-            uuid: value.uuid,
-            shop_type: value.shop_type,
-            can_reroll: value.can_reroll,
-            visible_items: value.visible_items.clone(),
-            hidden_items: value.hidden_items.clone(),
-        }
-    }
-}
-
-impl From<ShopMetadata> for ShopSessionState {
-    fn from(value: ShopMetadata) -> Self {
-        Self::from(&value)
-    }
-}
-
-impl From<&ShopEventOption> for ShopSessionState {
-    fn from(value: &ShopEventOption) -> Self {
-        Self {
-            id: value.id.clone(),
-            name: value.name.clone(),
-            uuid: value.uuid,
-            shop_type: value.shop_type,
-            can_reroll: value.can_reroll,
-            visible_items: value.visible_items.clone(),
-            hidden_items: Vec::new(),
-        }
+        Ok(self.offers.remove(pos))
     }
 }
 
@@ -95,60 +76,13 @@ impl RewardSessionState {
 }
 
 #[derive(Debug, Clone)]
-pub struct SupportSessionState {
+pub struct SavePointSessionState {
     pub node_id: MapNodeId,
-    pub support_mode: SupportNodeMode,
-    pub support_type: Option<SupportNodeType>,
-    pub choices: Vec<SupportNodeType>,
-    pub selected_support_type: Option<SupportNodeType>,
 }
 
-impl SupportSessionState {
-    pub fn known(node_id: MapNodeId, support_type: SupportNodeType) -> Self {
-        Self {
-            node_id,
-            support_mode: SupportNodeMode::Known,
-            support_type: Some(support_type),
-            choices: Vec::new(),
-            selected_support_type: None,
-        }
-    }
-
-    pub fn choice(
-        node_id: MapNodeId,
-        support_mode: SupportNodeMode,
-        choices: Vec<SupportNodeType>,
-    ) -> Self {
-        Self {
-            node_id,
-            support_mode,
-            support_type: None,
-            choices,
-            selected_support_type: None,
-        }
-    }
-
-    pub fn select(&mut self, support_type: SupportNodeType) -> Result<(), GameError> {
-        if !matches!(
-            self.support_mode,
-            SupportNodeMode::LimitedChoice | SupportNodeMode::FullChoice
-        ) {
-            return Err(GameError::InvalidAction);
-        }
-        if !self.choices.contains(&support_type) {
-            return Err(GameError::InvalidAction);
-        }
-        self.selected_support_type = Some(support_type);
-        Ok(())
-    }
-
-    pub fn resolved_support_type(&self) -> Result<SupportNodeType, GameError> {
-        match self.support_mode {
-            SupportNodeMode::Known => self.support_type.ok_or(GameError::InvalidAction),
-            SupportNodeMode::LimitedChoice | SupportNodeMode::FullChoice => {
-                self.selected_support_type.ok_or(GameError::InvalidAction)
-            }
-        }
+impl SavePointSessionState {
+    pub const fn new(node_id: MapNodeId) -> Self {
+        Self { node_id }
     }
 }
 
@@ -167,16 +101,11 @@ impl MaintenanceSessionState {
 pub struct HeadquartersContactSessionState {
     pub node_id: MapNodeId,
     pub options: Vec<HeadquartersContactOption>,
-    pub recruitment_candidates: Vec<StarterEmployeeCandidate>,
     pub shop_pool_id: Option<String>,
 }
 
 impl HeadquartersContactSessionState {
-    pub fn new(
-        node_id: MapNodeId,
-        recruitment_candidates: Vec<StarterEmployeeCandidate>,
-        shop_pool_id: Option<String>,
-    ) -> Self {
+    pub fn new(node_id: MapNodeId, shop_pool_id: Option<String>) -> Self {
         Self {
             node_id,
             options: vec![
@@ -184,15 +113,8 @@ impl HeadquartersContactSessionState {
                 HeadquartersContactOption::RequestEmergencySupplies,
                 HeadquartersContactOption::OpenHeadquartersShop,
             ],
-            recruitment_candidates,
             shop_pool_id,
         }
-    }
-
-    pub fn get_candidate(&self, candidate_id: &str) -> Option<&StarterEmployeeCandidate> {
-        self.recruitment_candidates
-            .iter()
-            .find(|candidate| candidate.id == candidate_id)
     }
 }
 
@@ -204,11 +126,60 @@ pub struct EventStartedCombatState {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventEquipmentModifierEvidence {
+    pub equipment_instance_uuid: Uuid,
+    pub equipment_definition_id: String,
+    pub aptitude: EventAptitude,
+    pub amount: u8,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventChoiceKeyEvidence {
+    pub key_id: EventChoiceKeyId,
+    pub equipment_instance_uuid: Uuid,
+    pub equipment_definition_id: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
+pub enum EventCheckModifierComponent {
+    EmployeeAptitude {
+        aptitude: EventAptitude,
+        amount: u8,
+    },
+    Equipment {
+        equipment_instance_uuid: Uuid,
+        equipment_definition_id: String,
+        aptitude: EventAptitude,
+        amount: u8,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct EventCommittedCheckState {
+    pub source_scene_id: EventSceneId,
+    pub choice_id: EventChoiceId,
+    pub employee_uuid: Uuid,
+    pub raw_roll: u8,
+    pub aptitude: EventAptitude,
+    pub dc: u8,
+    pub modifier_components: Vec<EventCheckModifierComponent>,
+    pub modifier_total: u8,
+    pub total_roll: u8,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub choice_key_evidence: Option<EventChoiceKeyEvidence>,
+    pub outcome: EventCheckOutcome,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct EventSessionState {
     pub node_id: MapNodeId,
     pub event_id: EventId,
     pub current_scene_id: EventSceneId,
-    pub committed_choice_id: Option<EventChoiceId>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub committed_check: Option<EventCommittedCheckState>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub started_combat: Option<EventStartedCombatState>,
 }
@@ -219,7 +190,7 @@ impl EventSessionState {
             node_id,
             event_id,
             current_scene_id,
-            committed_choice_id: None,
+            committed_check: None,
             started_combat: None,
         }
     }
@@ -239,6 +210,7 @@ pub struct CombatBattleState {
     pub reward_mode: RewardMode,
     pub rewards: Vec<RewardOption>,
     pub participant_results: Vec<ParticipantBattleResult>,
+    pub employee_conditions: crate::game::employee::EmployeeRoster,
 }
 
 #[derive(Debug, Clone)]
@@ -246,7 +218,7 @@ pub enum ActiveNodeContent {
     Shop(ShopSessionState),
     Reward(RewardSessionState),
     Event(EventSessionState),
-    Support(SupportSessionState),
+    SavePoint(SavePointSessionState),
     Maintenance(MaintenanceSessionState),
     HeadquartersContact(HeadquartersContactSessionState),
     CombatBattle(CombatBattleState),
@@ -295,16 +267,16 @@ impl ActiveNodeContent {
         }
     }
 
-    pub fn as_support(&self) -> Result<&SupportSessionState, GameError> {
+    pub fn as_save_point(&self) -> Result<&SavePointSessionState, GameError> {
         match self {
-            ActiveNodeContent::Support(support) => Ok(support),
+            ActiveNodeContent::SavePoint(save_point) => Ok(save_point),
             _ => Err(GameError::EventTypeMismatch),
         }
     }
 
-    pub fn as_support_mut(&mut self) -> Result<&mut SupportSessionState, GameError> {
+    pub fn as_save_point_mut(&mut self) -> Result<&mut SavePointSessionState, GameError> {
         match self {
-            ActiveNodeContent::Support(support) => Ok(support),
+            ActiveNodeContent::SavePoint(save_point) => Ok(save_point),
             _ => Err(GameError::EventTypeMismatch),
         }
     }

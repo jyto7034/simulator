@@ -1,10 +1,7 @@
 use serde::Deserialize;
 use uuid::Uuid;
 
-use crate::game::{
-    enums::RewardMode,
-    map::{SupportNodeMode, SupportNodeType},
-};
+use crate::game::enums::RewardMode;
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
@@ -13,14 +10,13 @@ pub enum AdminCommand {
     AdminDumpSelectedEvent,
     AdminDumpInventory,
     AdminDumpRoster,
-    AdminDumpAllowedActions,
+    AdminDumpActionCapabilities,
     AdminDumpGrantCatalog,
-    AdminEnterSupport {
-        support_type: SupportNodeType,
-        #[serde(default)]
-        support_mode: Option<SupportNodeMode>,
-    },
+    AdminEnterSavePoint,
     AdminEnterMaintenance,
+    AdminEnterEvent {
+        event_id: String,
+    },
     AdminEnterShop {
         #[serde(default)]
         shop_id: Option<String>,
@@ -51,9 +47,6 @@ pub enum AdminCommand {
         #[serde(default = "default_admin_count")]
         count: u32,
     },
-    AdminGrantArtifact {
-        definition_id: String,
-    },
     AdminGrantSkillFragment {
         fragment_id: String,
         #[serde(default = "default_admin_count")]
@@ -66,14 +59,9 @@ pub enum AdminCommand {
     AdminGrantFragmentDust {
         amount: u32,
     },
-    AdminSetEmployeeHp {
+    AdminSetEmployeeCondition {
         employee_uuid: Uuid,
-        current_hp: u32,
-        #[serde(default)]
-        max_hp: Option<u32>,
-    },
-    AdminSetEmployeeTrauma {
-        employee_uuid: Uuid,
+        physical_damage: u8,
         trauma: u32,
     },
     AdminSetEnkephalin {

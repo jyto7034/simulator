@@ -1,10 +1,15 @@
 use actix::{Actor, Addr, Context, Recipient, SpawnHandle};
 use game_core::game::{resources::GameState, world::GameCore};
-use std::time::Duration;
+use std::{
+    sync::{Arc, Mutex},
+    time::Duration,
+};
 use tracing::info;
 use uuid::Uuid;
 
 use crate::game::load_balance_actor::{messages::Deregister, LoadBalanceActor};
+use crate::persistence::active_run_store::ActiveRunStore;
+use crate::persistence::encounter_compendium_store::EncounterCompendiumPersistence;
 
 pub mod handlers;
 pub mod messages;
@@ -13,6 +18,12 @@ pub mod state;
 
 use messages::ForceDisconnect;
 use messages::PlayerGameServerMessage;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct BattleEventDeliveryCursor {
+    pub(crate) battle_uuid: Uuid,
+    pub(crate) last_sent_seq: u64,
+}
 
 pub struct PlayerGameActor {
     pub(crate) player_id: Uuid,
@@ -23,8 +34,11 @@ pub struct PlayerGameActor {
     pub(crate) session_control: Option<Recipient<ForceDisconnect>>,
     pub(crate) disconnect_timer: Option<SpawnHandle>,
     pub(crate) live_battle_tick: Option<SpawnHandle>,
+    pub(crate) battle_event_cursor: Option<BattleEventDeliveryCursor>,
     pub(crate) disconnect_ttl: Duration,
     pub(crate) live_battle_tick_interval: Duration,
+    pub(crate) active_run_store: Option<Arc<Mutex<ActiveRunStore>>>,
+    pub(crate) encounter_compendium_persistence: Option<Arc<Mutex<EncounterCompendiumPersistence>>>,
 }
 
 impl PlayerGameActor {
@@ -42,9 +56,25 @@ impl PlayerGameActor {
             session_control: None,
             disconnect_timer: None,
             live_battle_tick: None,
+            battle_event_cursor: None,
             disconnect_ttl: Duration::from_secs(300),
             live_battle_tick_interval: Duration::from_millis(100),
+            active_run_store: None,
+            encounter_compendium_persistence: None,
         }
+    }
+
+    pub fn with_active_run_store(mut self, store: Arc<Mutex<ActiveRunStore>>) -> Self {
+        self.active_run_store = Some(store);
+        self
+    }
+
+    pub fn with_encounter_compendium_persistence(
+        mut self,
+        persistence: Arc<Mutex<EncounterCompendiumPersistence>>,
+    ) -> Self {
+        self.encounter_compendium_persistence = Some(persistence);
+        self
     }
 
     pub fn with_disconnect_ttl(mut self, disconnect_ttl: Duration) -> Self {
@@ -70,6 +100,11 @@ impl Actor for PlayerGameActor {
     }
 
     fn stopped(&mut self, _ctx: &mut Self::Context) {
+        if let Some(persistence) = self.encounter_compendium_persistence.as_ref() {
+            if let Ok(mut persistence) = persistence.lock() {
+                persistence.merge_and_persist(self.game_core.encounter_compendium_profile());
+            }
+        }
         self.load_balance_addr.do_send(Deregister {
             player_id: self.player_id,
         });

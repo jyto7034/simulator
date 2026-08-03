@@ -1,8 +1,9 @@
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::game::data::equipment_data::EquipmentType;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SlotLayoutKind {
     /// Weapon/Armor/Accessory 1개씩
     ByType,
@@ -10,7 +11,7 @@ pub enum SlotLayoutKind {
     Any3,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct EquippedRef {
     /// 소유 인스턴스 UUID (복사본마다 다름)
     pub instance_uuid: Uuid,
@@ -27,12 +28,12 @@ pub enum ItemSlotError {
     CannotRepresentInLayout,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ItemSlot {
     layout: SlotLayout,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 enum SlotLayout {
     ByType {
         weapon: Option<EquippedRef>,

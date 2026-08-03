@@ -3,16 +3,19 @@ use serde_json::{json, Value};
 use uuid::Uuid;
 
 use crate::{
-    game::employee::ActiveConsumableModifier,
+    game::employee::{
+        ActiveConsumableModifier, EmployeeCondition, EmployeeEligibility, MentalConditionState,
+        PhysicalDamageState,
+    },
     game::resources::{
-        ArtifactItemDto, ConsumableItemDto, EquipItemResultDto, EquipmentItemDto, InventoryDiffDto,
-        Position, RunFailureReason, UnequipItemResultDto,
+        ConsumableItemDto, EquipItemResultDto, EquipmentItemDto, InventoryDiffDto, Position,
+        RunFailureReason, UnequipItemResultDto,
     },
     game::{
         ability::{
             FocusPermissions, SkillActivationMode, SkillAreaAnchorSource, SkillAreaTickPolicy,
             SkillAreaTracking, SkillHitTargetFilter, SkillId, SkillKind, SkillPresentationDef,
-            SkillTarget, SkillTileAreaOrigin,
+            SkillTarget, SkillTargetReach, SkillTileAreaOrigin,
         },
         battle::{
             buffs::BuffId,
@@ -29,7 +32,7 @@ use crate::{
             },
             ids::UnitInstanceId,
             result_stats::BattleResultStatsDto,
-            tile_range::{FacingDirection, TileRangePattern, TileRangePolicy},
+            tile_range::{FacingDirection, TileRangePattern},
             types::{
                 BattleUnitRole, BattleUnitSourceIdentity, BattleUnitThreatClass, BattleWinner,
                 DeploymentAffinity, MobilityKind,
@@ -46,17 +49,18 @@ use crate::{
             },
             equipment_data::{EquipmentType, WeaponCombatProfile},
             reward_data::RewardGrantKind,
-            shop_data::ShopType,
+            run_policy_data::TraumaRecovery,
+            shop_data::{ShopContext, ShopMerchandise},
             skill_fragment_data::{
                 SkillFragmentCompatibilityFailureCode, SkillFragmentCompatibilityRequirements,
                 SkillFragmentId,
             },
         },
-        employee::StarterEmployeeCandidate,
+        employee::{EmployeeDefinition, EmployeeProfile},
         enums::{RewardMode, RiskLevel, ShopEventOption, Side},
         map::{
             GameMode, HeadquartersContactOption, MapNodeCategory, MapNodeId, MapNodeKindId,
-            MapNodePayload, MapViewDto, NodeSession, SupportNodeMode, SupportNodeType,
+            MapNodePayload, MapViewDto, NodeSession,
         },
         reward::{
             RewardEffect, RewardOption, SkillFragmentGrantDiffDto, SkillFragmentResearchDiffDto,
@@ -75,7 +79,6 @@ pub struct NodeOutcomeSummary {
     pub combat: Option<CombatOutcomeSummary>,
     pub employee_changes: Vec<NodeOutcomeEmployeeChange>,
     pub inventory_diff: InventoryDiffDto,
-    pub research_deliveries: Vec<SkillFragmentResearchDelivery>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -99,20 +102,14 @@ pub struct NodeOutcomeEmployeeChange {
     pub employee_uuid: Uuid,
     pub survived: bool,
     pub became_incapacitated: bool,
-    pub run_hp_before: u32,
-    pub run_hp_after: u32,
+    pub physical_damage_before: u8,
+    pub physical_damage_after: u8,
     pub trauma_before: u32,
     pub trauma_after: u32,
     pub experience_before: u32,
     pub experience_after: u32,
     pub was_alive: bool,
     pub is_alive: bool,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RosterSlotDto {
-    pub slot: usize,
-    pub unit_uuid: Option<Uuid>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -237,10 +234,14 @@ impl Default for BattlePlaybackState {
     }
 }
 
-/// 상태 게이트에서 사용하는 payload-less 액션 capability
+/// Stable command-family identity. This is not an authorization token.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum ActionKind {
     StartNewGame,
+    ContinueRun,
+    ResetActiveRun,
+    RetryEncounterCompendium,
+    ResetEncounterCompendium,
     SelectStarterEmployees,
     UnEquipItem,
     EquipItem,
@@ -252,26 +253,29 @@ pub enum ActionKind {
     DismantleSkillFragment,
     DismantleEquipment,
     EnhanceEquipment,
-    MoveRosterUnit,
     RequestMapData,
     SelectMapNode,
+    ConvertMapNodeWithMonolith,
     ConfirmEnterNode,
     CancelSelectedNode,
     CompleteNode,
-    ChooseSupport,
     LoadRunCheckpoint,
+    ConfirmRunFailure,
+    AbandonRun,
     RecruitEmployee,
     RequestEmergencySupplies,
     OpenHeadquartersShop,
     SelectReward,
     PurchaseItem,
     SellItem,
-    RerollShop,
+    RefreshShop,
     ExitShop,
     ClaimReward,
     ExitReward,
     AdvanceEventScene,
-    SelectEventChoice,
+    ResolveEventChoiceCheck,
+    AdvanceVisualNovel,
+    SelectVisualNovelChoice,
     CompleteCombatResult,
     RequestBattleState,
     RecoverBattleSetupLoss,
@@ -283,6 +287,207 @@ pub enum ActionKind {
     PauseBattle,
     ResumeBattle,
     SetBattleSpeed,
+}
+
+impl ActionKind {
+    pub const fn scope(self) -> ActionScope {
+        match self {
+            Self::RequestMapData
+            | Self::RequestBattleState
+            | Self::RequestDeploymentRangePreview => ActionScope::Query,
+            Self::ContinueRun
+            | Self::ResetActiveRun
+            | Self::RetryEncounterCompendium
+            | Self::ResetEncounterCompendium
+            | Self::LoadRunCheckpoint
+            | Self::RecoverBattleSetupLoss => ActionScope::Recovery,
+            _ => ActionScope::Gameplay,
+        }
+    }
+
+    pub const fn requires_battle_authority(self) -> bool {
+        matches!(
+            self,
+            Self::DeployUnit
+                | Self::WithdrawUnit
+                | Self::ActivateSkill
+                | Self::RetreatBattle
+                | Self::PauseBattle
+                | Self::ResumeBattle
+                | Self::SetBattleSpeed
+                | Self::AdvanceVisualNovel
+                | Self::SelectVisualNovelChoice
+        )
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ActionScope {
+    Gameplay,
+    Query,
+    Recovery,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ActionDisabledReasonCode {
+    ContextIrrelevant,
+    NoEligiblePayload,
+    MissingEventChoiceKey,
+    CheckpointUnavailable,
+    ProgressionUnavailable,
+    ContentUnavailable,
+    CompletionUnavailable,
+    AlreadyActive,
+    InsufficientResources,
+    RedeployCooldown,
+    UnitUnavailable,
+    EmployeeDead,
+    CriticalPhysicalDamage,
+    Breakdown,
+    NoTrauma,
+    SkillUnavailable,
+    ActivationModeNotManual,
+    HardCrowdControl,
+    Silenced,
+    ActionLocked,
+    ResonanceNotFull,
+    NoValidTarget,
+    OfferUnavailable,
+    RefreshUnavailable,
+    RefreshUsesExhausted,
+    PoolExhausted,
+    SellingUnavailable,
+    InvalidQuantity,
+    InvalidQuote,
+    ItemBound,
+    ItemEquipped,
+    TagNotAccepted,
+}
+
+impl ActionDisabledReasonCode {
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::ContextIrrelevant => "context_irrelevant",
+            Self::NoEligiblePayload => "no_eligible_payload",
+            Self::MissingEventChoiceKey => "missing_event_choice_key",
+            Self::CheckpointUnavailable => "checkpoint_unavailable",
+            Self::ProgressionUnavailable => "progression_unavailable",
+            Self::ContentUnavailable => "content_unavailable",
+            Self::CompletionUnavailable => "completion_unavailable",
+            Self::AlreadyActive => "already_active",
+            Self::InsufficientResources => "insufficient_resources",
+            Self::RedeployCooldown => "redeploy_cooldown",
+            Self::UnitUnavailable => "unit_unavailable",
+            Self::EmployeeDead => "employee_dead",
+            Self::CriticalPhysicalDamage => "critical_physical_damage",
+            Self::Breakdown => "breakdown",
+            Self::NoTrauma => "no_trauma",
+            Self::SkillUnavailable => "skill_unavailable",
+            Self::ActivationModeNotManual => "activation_mode_not_manual",
+            Self::HardCrowdControl => "hard_crowd_control",
+            Self::Silenced => "silenced",
+            Self::ActionLocked => "action_locked",
+            Self::ResonanceNotFull => "resonance_not_full",
+            Self::NoValidTarget => "no_valid_target",
+            Self::OfferUnavailable => "offer_unavailable",
+            Self::RefreshUnavailable => "refresh_unavailable",
+            Self::RefreshUsesExhausted => "refresh_uses_exhausted",
+            Self::PoolExhausted => "pool_exhausted",
+            Self::SellingUnavailable => "selling_unavailable",
+            Self::InvalidQuantity => "invalid_quantity",
+            Self::InvalidQuote => "invalid_quote",
+            Self::ItemBound => "item_bound",
+            Self::ItemEquipped => "item_equipped",
+            Self::TagNotAccepted => "tag_not_accepted",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BattlePayloadEligibilityDto {
+    pub enabled: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub disabled_reason_code: Option<ActionDisabledReasonCode>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PayloadEligibilityDto {
+    pub enabled: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub disabled_reason_code: Option<ActionDisabledReasonCode>,
+}
+
+impl PayloadEligibilityDto {
+    pub const fn enabled() -> Self {
+        Self {
+            enabled: true,
+            disabled_reason_code: None,
+        }
+    }
+
+    pub const fn disabled(reason: ActionDisabledReasonCode) -> Self {
+        Self {
+            enabled: false,
+            disabled_reason_code: Some(reason),
+        }
+    }
+}
+
+impl BattlePayloadEligibilityDto {
+    pub const fn enabled() -> Self {
+        Self {
+            enabled: true,
+            disabled_reason_code: None,
+        }
+    }
+
+    pub const fn disabled(reason: ActionDisabledReasonCode) -> Self {
+        Self {
+            enabled: false,
+            disabled_reason_code: Some(reason),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ActionCapabilityDto {
+    pub action: ActionKind,
+    pub scope: ActionScope,
+    pub enabled: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub disabled_reason_code: Option<ActionDisabledReasonCode>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BattleStateAuthorityDto {
+    pub battle_uuid: Uuid,
+    pub battle_state_revision: u64,
+}
+
+impl ActionCapabilityDto {
+    pub const fn enabled(action: ActionKind, scope: ActionScope) -> Self {
+        Self {
+            action,
+            scope,
+            enabled: true,
+            disabled_reason_code: None,
+        }
+    }
+
+    pub const fn disabled(
+        action: ActionKind,
+        scope: ActionScope,
+        reason: ActionDisabledReasonCode,
+    ) -> Self {
+        Self {
+            action,
+            scope,
+            enabled: false,
+            disabled_reason_code: Some(reason),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -318,37 +523,255 @@ pub struct RunAbnormalityResearchEntrySnapshotDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EncounterCompendiumSnapshotDto {
+    pub abnormalities: Vec<EncounterCompendiumAbnormalitySnapshotDto>,
+    pub corrosion_profiles: Vec<EncounterCompendiumCorrosionSnapshotDto>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EncounterCompendiumAbnormalitySnapshotDto {
+    pub abnormality_id: String,
+    pub discovered: bool,
+    pub defeated: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub risk_level: Option<RiskLevel>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EncounterCompendiumCorrosionSnapshotDto {
+    pub profile_id: String,
+    pub discovered: bool,
+    pub defeated: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MapNavigationSnapshotDto {
     pub current_node_id: MapNodeId,
     pub selectable_node_ids: Vec<MapNodeId>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EventSceneSnapshotDto {
-    pub event_id: crate::game::data::event_data::EventId,
-    pub current_scene_id: crate::game::data::event_data::EventSceneId,
-    pub background_id: String,
-    pub script_id: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub speaker_id: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub portrait_id: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub committed_choice_id: Option<crate::game::data::event_data::EventChoiceId>,
-    pub choices: Vec<EventChoiceSnapshotDto>,
+pub struct MonolithConversionOptionDto {
+    pub abnormality_id: String,
+    pub abnormality_uuid: Uuid,
+    pub display_name: String,
+    pub risk_level: RiskLevel,
+    pub enabled: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub disabled_reason: Option<String>,
+    pub next_stage: u8,
+    pub uses_before: u8,
+    pub uses_after: u8,
+    pub max_attempts: u8,
+    pub reward_tier: MonolithRewardTierDto,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EventChoiceSnapshotDto {
+pub struct MonolithConversionSnapshotDto {
+    pub action_label: String,
+    pub node_id: MapNodeId,
+    pub options: Vec<MonolithConversionOptionDto>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MonolithRemanifestationSnapshotDto {
+    pub abnormality_id: String,
+    pub abnormality_uuid: Uuid,
+    pub display_name: String,
+    pub risk_level: RiskLevel,
+    pub stage: u8,
+    pub max_attempts: u8,
+    pub reward_tier: MonolithRewardTierDto,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MonolithRewardTierDto {
+    Enhanced,
+    FinalEnhanced,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventSceneSnapshotDto {
+    pub event_id: crate::game::data::event_data::EventId,
+    pub current_scene_id: crate::game::data::event_data::EventSceneId,
+    pub presentation: crate::game::data::event_data::EventScenePresentation,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub committed_check: Option<EventCommittedCheckDto>,
+    pub interaction: EventInteractionDto,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
+pub enum EventInteractionDto {
+    Advance,
+    EmployeeCheckChoices {
+        choices: Vec<EventChoiceEvaluationDto>,
+    },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventChoiceEvaluationDto {
     pub choice_id: crate::game::data::event_data::EventChoiceId,
     pub label_id: String,
-    pub preview: crate::game::data::event_data::EventChoicePreview,
+    pub aptitude: crate::game::employee::EventAptitude,
+    pub dc: u8,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub required_choice_key: Option<crate::game::data::event_data::EventChoiceKeyId>,
+    pub eligibility: PayloadEligibilityDto,
+    pub employee_candidates: Vec<EventEmployeeEvaluationDto>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventEmployeeEvaluationDto {
+    pub employee_uuid: Uuid,
+    pub name: String,
+    pub eligibility: PayloadEligibilityDto,
+    pub employee_modifier: u8,
+    pub equipment_modifier: u8,
+    pub modifier_total: u8,
+    pub modifier_components: Vec<crate::game::resources::EventCheckModifierComponent>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub choice_key_evidence: Option<crate::game::resources::EventChoiceKeyEvidence>,
+    pub success_chance_percent: u8,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventCommittedCheckDto {
+    pub source_scene_id: crate::game::data::event_data::EventSceneId,
+    pub choice_id: crate::game::data::event_data::EventChoiceId,
+    pub employee_uuid: Uuid,
+    pub aptitude: crate::game::employee::EventAptitude,
+    pub dc: u8,
+    pub raw_roll: u8,
+    pub modifier_components: Vec<crate::game::resources::EventCheckModifierComponent>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub choice_key_evidence: Option<crate::game::resources::EventChoiceKeyEvidence>,
+    pub modifier_total: u8,
+    pub total_roll: u8,
+    pub outcome: crate::game::data::event_data::EventCheckOutcome,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum VisualNovelSourceDto {
+    EventNode { node_id: MapNodeId },
+    HqBriefing,
+    Map,
+    Loadout,
+    Battle { battle_uuid: Uuid },
+    Tutorial,
+    Radio,
+    Cutscene,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct VisualNovelSpeakerDto {
+    pub speaker_id: String,
+    #[serde(default)]
+    pub portrait_id: Option<String>,
+    pub position: VisualNovelSpeakerPositionDto,
+    pub active: bool,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum VisualNovelSpeakerPositionDto {
+    FarLeft,
+    Left,
+    Center,
+    Right,
+    FarRight,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+pub struct VisualNovelChoicePreviewDto {
+    #[serde(default)]
+    pub risk: Option<String>,
+    #[serde(default)]
+    pub starts_combat: bool,
+    #[serde(default)]
+    pub reward_hint_id: Option<String>,
+    #[serde(default)]
+    pub penalty_hint_id: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct VisualNovelChoiceSnapshotDto {
+    pub choice_id: String,
+    pub label_id: String,
+    #[serde(default)]
+    pub preview: VisualNovelChoicePreviewDto,
     pub selectable: bool,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum VisualNovelPresentationModeDto {
+    Cinematic,
+    Radio,
+    Compact,
+    NonBlocking,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct VisualNovelSnapshotDto {
+    pub source: VisualNovelSourceDto,
+    pub session_id: String,
+    pub vn_id: String,
+    pub current_scene_id: String,
+    #[serde(default)]
+    pub background_id: Option<String>,
+    pub script_id: String,
+    pub speakers: Vec<VisualNovelSpeakerDto>,
+    pub choices: Vec<VisualNovelChoiceSnapshotDto>,
+    pub blocking: bool,
+    pub presentation_mode: VisualNovelPresentationModeDto,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RunResourcesSnapshotDto {
     pub enkephalin: u32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MonolithProgressSnapshotDto {
+    pub abnormality_id: String,
+    pub display_name: String,
+    pub risk_level: RiskLevel,
+    pub natural_outcome: String,
+    pub victories: u8,
+    pub purchased: bool,
+    pub uses_remaining: u8,
+    pub active_node_id: Option<MapNodeId>,
+    pub unique_fragment_granted: bool,
+    pub residual_created: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MonolithResidualSnapshotDto {
+    pub sequence: u64,
+    pub source_abnormality_id: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MonolithRunSnapshotDto {
+    pub entries: Vec<MonolithProgressSnapshotDto>,
+    pub residuals: Vec<MonolithResidualSnapshotDto>,
+    pub residual_exchange_threshold: usize,
+    pub exchange_state: String,
+    pub exchange_shop_guarantee_issued: bool,
+    pub next_floor_shop_guarantee_pending: bool,
+    pub corrupted_monolith_acquired: bool,
+    pub elite_pool_exhausted: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -411,9 +834,10 @@ pub struct PendingResearchDeliverySnapshotDto {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InventorySnapshotDto {
+    pub reserved_slot_count: usize,
+    pub occupied_slot_count: usize,
     pub equipments: Vec<InventoryEquipmentSnapshotDto>,
     pub equipment_materials: Vec<InventoryEquipmentMaterialSnapshotDto>,
-    pub artifacts: Vec<ArtifactItemDto>,
     pub consumables: Vec<ConsumableItemDto>,
     pub skill_fragments: Vec<InventorySkillFragmentSnapshotDto>,
     pub skill_fragment_progress: Vec<InventorySkillFragmentProgressSnapshotDto>,
@@ -422,52 +846,48 @@ pub struct InventorySnapshotDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RosterOrderSlotSnapshotDto {
-    pub slot: usize,
-    pub unit_uuid: Option<Uuid>,
+pub struct EmployeeConditionSnapshotDto {
+    pub physical_damage: u8,
+    pub physical_state: PhysicalDamageState,
+    pub trauma: u32,
+    pub mental_state: MentalConditionState,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RosterOrderSnapshotDto {
-    pub max_slots: usize,
-    pub slots: Vec<RosterOrderSlotSnapshotDto>,
+pub struct EmployeeEligibilitySnapshotDto {
+    pub combat: EmployeeEligibility,
+    pub event: EmployeeEligibility,
+    pub high_risk: EmployeeEligibility,
+    pub consumable: EmployeeEligibility,
+    pub loadout: EmployeeEligibility,
+    pub physical_treatment: EmployeeEligibility,
+    pub trauma_recovery: EmployeeEligibility,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EmployeeHealthSnapshotDto {
-    pub current_hp: u32,
-    pub max_hp: u32,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EmployeeInjurySnapshotDto {
-    pub id: String,
-    pub severity: u8,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EmployeeTrustMemorySnapshotDto {
+pub struct EmployeePsychologyMemorySnapshotDto {
     pub kind: String,
+    pub subject: crate::game::employee_psychology::PsychologySubject,
+    pub occurrence_count: u32,
     pub intensity: u8,
-    pub remaining_nodes: Option<u8>,
+    pub first_source: crate::game::employee_psychology::PsychologyEventSource,
+    pub last_source: crate::game::employee_psychology::PsychologyEventSource,
+    pub remaining_nodes: Option<u32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EmployeeTrustReactionSnapshotDto {
+pub struct EmployeePsychologyRecentEventSnapshotDto {
     pub event: String,
+    pub source: crate::game::employee_psychology::PsychologyEventSource,
     pub trust_delta: i16,
-    pub cue_count: usize,
-    pub combat_modifier_count: usize,
-    pub trauma_modifier_count: usize,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EmployeeTrustSnapshotDto {
-    pub score: i16,
-    pub band: String,
-    pub traits: Vec<String>,
-    pub memories: Vec<EmployeeTrustMemorySnapshotDto>,
-    pub recent_reactions: Vec<EmployeeTrustReactionSnapshotDto>,
+pub struct EmployeePsychologySnapshotDto {
+    pub trust_score: i16,
+    pub trust_band: String,
+    pub memories: Vec<EmployeePsychologyMemorySnapshotDto>,
+    pub recent_events: Vec<EmployeePsychologyRecentEventSnapshotDto>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -536,27 +956,24 @@ pub struct EmployeeEquippedItemSnapshotDto {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EmployeeSnapshotDto {
     pub uuid: Uuid,
+    pub employee_definition_id: String,
     pub name: String,
+    pub profile: EmployeeProfile,
     pub level: u32,
     pub experience: u32,
-    pub life_state: String,
-    pub availability: String,
-    pub available_for_combat: bool,
-    pub trauma: u32,
-    pub health: EmployeeHealthSnapshotDto,
-    pub injuries: Vec<EmployeeInjurySnapshotDto>,
-    pub trust: EmployeeTrustSnapshotDto,
+    pub condition: EmployeeConditionSnapshotDto,
+    pub eligibility: EmployeeEligibilitySnapshotDto,
+    pub psychology: EmployeePsychologySnapshotDto,
     pub combat_profile: EmployeeCombatProfileSnapshotDto,
     pub skill_fragments: EmployeeSkillFragmentsSnapshotDto,
     pub active_consumable_modifier: Option<ActiveConsumableModifierSnapshotDto>,
     pub equipped_items: Vec<EmployeeEquippedItemSnapshotDto>,
-    pub roster_slot: Option<usize>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EmployeeRosterSnapshotDto {
     pub employees: Vec<EmployeeSnapshotDto>,
-    pub available_employee_ids: Vec<Uuid>,
+    pub combat_eligible_employee_ids: Vec<Uuid>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -571,22 +988,6 @@ pub struct DisplayEquipmentItemSnapshotDto {
     #[serde(rename = "type")]
     pub item_type: String,
     pub equipment_type: String,
-    pub description: String,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DisplayArtifactItemSnapshotDto {
-    pub uuid: Uuid,
-    pub kind: String,
-    pub definition_id: String,
-    pub id: String,
-    pub name: String,
-    pub rarity: RiskLevel,
-    pub price: u32,
-    #[serde(rename = "type")]
-    pub item_type: String,
-    pub artifact_type: String,
-    pub effect_id: String,
     pub description: String,
 }
 
@@ -609,11 +1010,26 @@ pub struct DisplayConsumableItemSnapshotDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DisplayMonolithItemSnapshotDto {
+    pub uuid: Uuid,
+    pub abnormality_id: String,
+    pub name: String,
+    pub risk_level: RiskLevel,
+    pub victories: u8,
+    pub next_stage: u8,
+    pub uses_granted: u8,
+    pub kind: String,
+    pub id: String,
+    #[serde(rename = "type")]
+    pub item_type: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum DisplayItemSnapshotDto {
     Equipment(DisplayEquipmentItemSnapshotDto),
-    Artifact(DisplayArtifactItemSnapshotDto),
     Consumable(DisplayConsumableItemSnapshotDto),
+    Monolith(DisplayMonolithItemSnapshotDto),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -630,6 +1046,26 @@ pub struct RewardOptionSnapshotDto {
     pub effects: Vec<RewardEffect>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct TraumaRecoveryEmployeePreviewDto {
+    pub employee_uuid: Uuid,
+    pub employee_name: String,
+    pub eligibility: EmployeeEligibility,
+    pub physical_damage: u8,
+    pub trauma_before: u32,
+    pub trauma_after: u32,
+    pub mental_state_before: MentalConditionState,
+    pub mental_state_after: MentalConditionState,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct TraumaRecoveryPreviewDto {
+    pub recovery: TraumaRecovery,
+    pub employees: Vec<TraumaRecoveryEmployeePreviewDto>,
+    pub physical_damage_unchanged: bool,
+    pub replaces_run_checkpoint: bool,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum SelectedEventSnapshotDto {
@@ -637,10 +1073,11 @@ pub enum SelectedEventSnapshotDto {
         id: String,
         name: String,
         uuid: Uuid,
-        shop_type: ShopType,
-        can_reroll: bool,
-        visible_items: Vec<DisplayItemSnapshotDto>,
-        visible_item_uuids: Vec<Uuid>,
+        context: ShopContext,
+        offers: Vec<ShopOfferSnapshotDto>,
+        refresh: ShopRefreshSnapshotDto,
+        selling_enabled: bool,
+        sale_candidates: Vec<ShopSaleCandidateSnapshotDto>,
     },
     Reward {
         stage_uuid: Uuid,
@@ -649,12 +1086,9 @@ pub enum SelectedEventSnapshotDto {
         selected_reward_uuid: Option<Uuid>,
         can_skip: bool,
     },
-    Support {
+    SavePoint {
         node_id: MapNodeId,
-        support_mode: SupportNodeMode,
-        support_type: Option<SupportNodeType>,
-        choices: Vec<SupportNodeType>,
-        selected_support_type: Option<SupportNodeType>,
+        recovery_preview: TraumaRecoveryPreviewDto,
     },
     Maintenance {
         node_id: MapNodeId,
@@ -663,7 +1097,7 @@ pub enum SelectedEventSnapshotDto {
     HeadquartersContact {
         node_id: MapNodeId,
         options: Vec<HeadquartersContactOption>,
-        recruitment_candidates: Vec<StarterEmployeeCandidate>,
+        recruitment_candidates: Vec<EmployeeDefinition>,
         shop_pool_id: Option<String>,
     },
     Event {
@@ -686,6 +1120,58 @@ pub enum SelectedEventSnapshotDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ShopPayloadEligibilityDto {
+    pub enabled: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub disabled_reason_code: Option<ActionDisabledReasonCode>,
+}
+
+impl ShopPayloadEligibilityDto {
+    pub const fn enabled() -> Self {
+        Self {
+            enabled: true,
+            disabled_reason_code: None,
+        }
+    }
+
+    pub const fn disabled(reason: ActionDisabledReasonCode) -> Self {
+        Self {
+            enabled: false,
+            disabled_reason_code: Some(reason),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ShopOfferSnapshotDto {
+    pub offer_id: Uuid,
+    pub merchandise: ShopMerchandise,
+    pub quantity: u32,
+    pub total_price: u32,
+    pub item: DisplayItemSnapshotDto,
+    pub eligibility: ShopPayloadEligibilityDto,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ShopRefreshSnapshotDto {
+    pub available: bool,
+    pub current_cost: Option<u32>,
+    pub max_uses: u32,
+    pub uses_consumed: u32,
+    pub remaining_uses: u32,
+    pub eligibility: ShopPayloadEligibilityDto,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ShopSaleCandidateSnapshotDto {
+    pub item_uuid: Uuid,
+    pub merchandise: ShopMerchandise,
+    pub available_quantity: u32,
+    pub unit_quote: u32,
+    pub eligibility: ShopPayloadEligibilityDto,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CombatResultEventLogAttachmentDto {
     pub winner: BattleWinner,
     pub event_log: BattleEventLog,
@@ -695,9 +1181,12 @@ pub struct CombatResultEventLogAttachmentDto {
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum GameStateContextDto {
     NotStarted,
+    PreRunBriefing {
+        game_mode: GameMode,
+    },
     SelectingStarterEmployees {
         required_count: usize,
-        candidates: Vec<StarterEmployeeCandidate>,
+        candidates: Vec<EmployeeDefinition>,
     },
     ViewingMap,
     NodeConfirm {
@@ -705,9 +1194,15 @@ pub enum GameStateContextDto {
         kind_id: MapNodeKindId,
         category: MapNodeCategory,
         combat_preview: Option<CombatPreview>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        trauma_recovery_preview: Option<TraumaRecoveryPreviewDto>,
         abnormality_attempt: Option<AbnormalityAttemptDto>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         omen: Option<crate::game::boss_omen::NodeConfirmOmenDto>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        monolith_conversion: Option<MonolithConversionSnapshotDto>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        monolith_remanifestation: Option<MonolithRemanifestationSnapshotDto>,
     },
     InNode {
         node_id: MapNodeId,
@@ -732,7 +1227,7 @@ pub enum GameStateContextDto {
         mission_variant: Option<CombatMissionVariant>,
         encounter_id: Option<String>,
         combat_preview: Option<CombatPreview>,
-        last_pushed_event_log_seq: Option<u64>,
+        battle_state_revision: u64,
         deployment: Option<LiveBattleDeploymentDto>,
         playback: Option<BattlePlaybackState>,
         abnormality_attempt: Option<AbnormalityAttemptDto>,
@@ -743,23 +1238,31 @@ pub enum GameStateContextDto {
     RunFailed {
         reason: RunFailureReason,
     },
+    AwaitingRunFailureDecision {
+        reason: RunFailureReason,
+        contributing_reason: Option<RunFailureReason>,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RunSnapshotDto<SelectedEvent = SelectedEventSnapshotDto> {
     pub game_state: String,
     pub game_state_context: GameStateContextDto,
-    pub allowed_actions: Vec<ActionKind>,
+    pub action_capabilities: Vec<ActionCapabilityDto>,
     pub run_checkpoint: RunCheckpointSnapshotDto,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub combat_recovery_restriction: Option<CombatRecoveryRestrictionSnapshotDto>,
     pub run_progression: Option<RunProgressionSnapshotDto>,
     pub abnormality_research: Option<RunAbnormalityResearchSnapshotDto>,
+    pub monolith: Option<MonolithRunSnapshotDto>,
+    pub encounter_compendium: EncounterCompendiumSnapshotDto,
     pub map_navigation: Option<MapNavigationSnapshotDto>,
     pub map: Option<MapViewDto>,
     pub current_node_session: Option<NodeSession>,
+    pub visual_novel: Option<VisualNovelSnapshotDto>,
     pub selected_event: Option<SelectedEvent>,
     pub skill_catalog: SkillCatalogDto,
     pub roster: EmployeeRosterSnapshotDto,
-    pub roster_order: RosterOrderSnapshotDto,
     pub inventory: InventorySnapshotDto,
     pub resources: RunResourcesSnapshotDto,
 }
@@ -772,17 +1275,20 @@ impl<SelectedEvent> RunSnapshotDto<SelectedEvent> {
         let RunSnapshotDto {
             game_state,
             game_state_context,
-            allowed_actions,
+            action_capabilities,
             run_checkpoint,
+            combat_recovery_restriction,
             run_progression,
             abnormality_research,
+            monolith,
+            encounter_compendium,
             map_navigation,
             map,
             current_node_session,
+            visual_novel,
             selected_event,
             skill_catalog,
             roster,
-            roster_order,
             inventory,
             resources,
         } = self;
@@ -790,17 +1296,20 @@ impl<SelectedEvent> RunSnapshotDto<SelectedEvent> {
         RunSnapshotDto {
             game_state,
             game_state_context,
-            allowed_actions,
+            action_capabilities,
             run_checkpoint,
+            combat_recovery_restriction,
             run_progression,
             abnormality_research,
+            monolith,
+            encounter_compendium,
             map_navigation,
             map,
             current_node_session,
+            visual_novel,
             selected_event: f(selected_event),
             skill_catalog,
             roster,
-            roster_order,
             inventory,
             resources,
         }
@@ -808,17 +1317,34 @@ impl<SelectedEvent> RunSnapshotDto<SelectedEvent> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CombatRecoveryRestrictionSnapshotDto {
+    pub reason: RunFailureReason,
+    pub allowed_node_ids: Vec<MapNodeId>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RunCheckpointSnapshotDto {
     pub exists: bool,
+    pub loadable: bool,
     pub loads_used: u8,
     pub max_loads: u8,
     pub remaining_loads: u8,
-    pub can_load: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub location: Option<RunCheckpointLocationDto>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct RunCheckpointLocationDto {
+    pub floor_index: u32,
+    pub node_id: MapNodeId,
+    pub slot_id: crate::game::map::MapSlotId,
+    pub kind_id: MapNodeKindId,
+    pub room_display_name: String,
 }
 
 /// GameServer에서 GameCore로 전달되는 플레이어 행동
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "type", rename_all = "snake_case")]
+#[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum PlayerBehavior {
     // ============================================================
     // 게임 관련 행동
@@ -826,10 +1352,19 @@ pub enum PlayerBehavior {
     /// 새 게임 시작
     StartNewGame {
         game_mode: GameMode,
+        replace_active_run: bool,
     },
+    /// Host의 local-install active-run을 마지막 완료 SavePoint에서 이어감
+    ContinueRun,
+    /// 손상된 local-install active-run 원본을 명시적으로 초기화
+    ResetActiveRun,
+    /// Local-install encounter compendium bootstrap/save를 명시적으로 재시도
+    RetryEncounterCompendium,
+    /// 손상된 local-install encounter compendium 원본과 메모리 set을 명시적으로 초기화
+    ResetEncounterCompendium,
     /// 시작 후보 직원 중 이번 런에 투입할 3명을 선택
     SelectStarterEmployees {
-        candidate_ids: Vec<String>,
+        employee_definition_ids: Vec<String>,
     },
     // 아이템 장착 해제
     UnEquipItem {
@@ -876,17 +1411,16 @@ pub enum PlayerBehavior {
     EnhanceEquipment {
         item_uuid: Uuid,
     },
-    /// 런 중 직원 명단 표시 순서 이동
-    MoveRosterUnit {
-        target_unit_uuid: Uuid,
-        dest_slot: usize,
-        swap_with_unit_uuid: Option<Uuid>,
-    },
     /// 현재 런 맵 상태 요청
     RequestMapData,
     /// 사용 가능한 맵 노드 선택
     SelectMapNode {
         node_id: MapNodeId,
+    },
+    /// NodeConfirm의 일반 전투 노드를 선택한 모노리스 재현 노드로 원자적으로 치환
+    ConvertMapNodeWithMonolith {
+        node_id: MapNodeId,
+        abnormality_id: String,
     },
     /// 선택한 맵 노드에 실제로 진입
     ConfirmEnterNode,
@@ -894,15 +1428,15 @@ pub enum PlayerBehavior {
     CancelSelectedNode,
     /// 현재 노드 처리 완료
     CompleteNode,
-    /// 선택형 지원 노드에서 지원 효과 선택
-    ChooseSupport {
-        support_type: SupportNodeType,
-    },
     /// Safezone에서 마지막 SavePoint 체크포인트를 불러옴
     LoadRunCheckpoint,
+    /// 실패 사전 선택에서 체크포인트를 사용하지 않고 RunFailed를 확정
+    ConfirmRunFailure,
+    /// 현재 run을 자발적으로 포기
+    AbandonRun,
     /// 본사 연락 노드에서 후보 직원 1명을 채용하고 노드를 완료
     RecruitEmployee {
-        candidate_id: String,
+        employee_definition_id: String,
     },
     /// 본사 연락 노드에서 긴급 보급을 요청하고 노드를 완료
     RequestEmergencySupplies,
@@ -917,14 +1451,15 @@ pub enum PlayerBehavior {
     // ============================================================
     /// 아이템 구매
     PurchaseItem {
-        item_uuid: Uuid,
+        offer_id: Uuid,
     },
     /// 아이템 판매
     SellItem {
         item_uuid: Uuid,
+        quantity: u32,
     },
-    /// 상점 리롤 (새로운 아이템으로 교체)
-    RerollShop,
+    /// 상점 새로고침 (현재 페이지 전체 교체)
+    RefreshShop,
     /// 상점 나가기
     ExitShop,
     // ============================================================
@@ -940,11 +1475,24 @@ pub enum PlayerBehavior {
         event_id: crate::game::data::event_data::EventId,
         current_scene_id: crate::game::data::event_data::EventSceneId,
     },
-    /// Event scene 선택지를 확정
-    SelectEventChoice {
+    /// Event employee check 선택지와 수행자를 확정하고 d20을 한 번 판정
+    ResolveEventChoiceCheck {
         node_id: MapNodeId,
         event_id: crate::game::data::event_data::EventId,
+        current_scene_id: crate::game::data::event_data::EventSceneId,
         choice_id: crate::game::data::event_data::EventChoiceId,
+        employee_uuid: Uuid,
+    },
+    /// 선택지가 없는 Visual Novel scene을 다음 scene으로 진행하거나 종료
+    AdvanceVisualNovel {
+        session_id: String,
+        current_scene_id: crate::game::data::visual_novel_data::VisualNovelSceneId,
+    },
+    /// Visual Novel scene 선택지를 확정
+    SelectVisualNovelChoice {
+        session_id: String,
+        current_scene_id: crate::game::data::visual_novel_data::VisualNovelSceneId,
+        choice_id: crate::game::data::visual_novel_data::VisualNovelChoiceId,
     },
     /// 전투 결과 확인 완료
     CompleteCombatResult,
@@ -953,7 +1501,7 @@ pub enum PlayerBehavior {
         #[serde(default)]
         since_seq: Option<u64>,
     },
-    /// Unity scene/setup loss recovery. Discards the active live battle and returns to node confirm.
+    /// Unity scene/setup loss recovery. Reprojects immutable setup and current revisioned state.
     RecoverBattleSetupLoss,
     /// 실시간 DefenseRoute 전투에서 아직 배치되지 않은 직원의 방향별 범위 preview 요청
     RequestDeploymentRangePreview {
@@ -993,6 +1541,10 @@ impl PlayerBehavior {
     pub fn kind(&self) -> ActionKind {
         match self {
             PlayerBehavior::StartNewGame { .. } => ActionKind::StartNewGame,
+            PlayerBehavior::ContinueRun => ActionKind::ContinueRun,
+            PlayerBehavior::ResetActiveRun => ActionKind::ResetActiveRun,
+            PlayerBehavior::RetryEncounterCompendium => ActionKind::RetryEncounterCompendium,
+            PlayerBehavior::ResetEncounterCompendium => ActionKind::ResetEncounterCompendium,
             PlayerBehavior::SelectStarterEmployees { .. } => ActionKind::SelectStarterEmployees,
             PlayerBehavior::UnEquipItem { .. } => ActionKind::UnEquipItem,
             PlayerBehavior::EquipItem { .. } => ActionKind::EquipItem,
@@ -1004,26 +1556,31 @@ impl PlayerBehavior {
             PlayerBehavior::DismantleSkillFragment { .. } => ActionKind::DismantleSkillFragment,
             PlayerBehavior::DismantleEquipment { .. } => ActionKind::DismantleEquipment,
             PlayerBehavior::EnhanceEquipment { .. } => ActionKind::EnhanceEquipment,
-            PlayerBehavior::MoveRosterUnit { .. } => ActionKind::MoveRosterUnit,
             PlayerBehavior::RequestMapData => ActionKind::RequestMapData,
             PlayerBehavior::SelectMapNode { .. } => ActionKind::SelectMapNode,
+            PlayerBehavior::ConvertMapNodeWithMonolith { .. } => {
+                ActionKind::ConvertMapNodeWithMonolith
+            }
             PlayerBehavior::ConfirmEnterNode => ActionKind::ConfirmEnterNode,
             PlayerBehavior::CancelSelectedNode => ActionKind::CancelSelectedNode,
             PlayerBehavior::CompleteNode => ActionKind::CompleteNode,
-            PlayerBehavior::ChooseSupport { .. } => ActionKind::ChooseSupport,
             PlayerBehavior::LoadRunCheckpoint => ActionKind::LoadRunCheckpoint,
+            PlayerBehavior::ConfirmRunFailure => ActionKind::ConfirmRunFailure,
+            PlayerBehavior::AbandonRun => ActionKind::AbandonRun,
             PlayerBehavior::RecruitEmployee { .. } => ActionKind::RecruitEmployee,
             PlayerBehavior::RequestEmergencySupplies => ActionKind::RequestEmergencySupplies,
             PlayerBehavior::OpenHeadquartersShop => ActionKind::OpenHeadquartersShop,
             PlayerBehavior::SelectReward { .. } => ActionKind::SelectReward,
             PlayerBehavior::PurchaseItem { .. } => ActionKind::PurchaseItem,
             PlayerBehavior::SellItem { .. } => ActionKind::SellItem,
-            PlayerBehavior::RerollShop => ActionKind::RerollShop,
+            PlayerBehavior::RefreshShop => ActionKind::RefreshShop,
             PlayerBehavior::ExitShop => ActionKind::ExitShop,
             PlayerBehavior::ClaimReward => ActionKind::ClaimReward,
             PlayerBehavior::ExitReward => ActionKind::ExitReward,
             PlayerBehavior::AdvanceEventScene { .. } => ActionKind::AdvanceEventScene,
-            PlayerBehavior::SelectEventChoice { .. } => ActionKind::SelectEventChoice,
+            PlayerBehavior::ResolveEventChoiceCheck { .. } => ActionKind::ResolveEventChoiceCheck,
+            PlayerBehavior::AdvanceVisualNovel { .. } => ActionKind::AdvanceVisualNovel,
+            PlayerBehavior::SelectVisualNovelChoice { .. } => ActionKind::SelectVisualNovelChoice,
             PlayerBehavior::CompleteCombatResult => ActionKind::CompleteCombatResult,
             PlayerBehavior::RequestBattleState { .. } => ActionKind::RequestBattleState,
             PlayerBehavior::RecoverBattleSetupLoss => ActionKind::RecoverBattleSetupLoss,
@@ -1063,6 +1620,7 @@ pub struct LiveBattleUnitDeployCostDto {
     pub employee_uuid: Uuid,
     pub base_deploy_cost: u32,
     pub effective_deploy_cost: u32,
+    pub eligibility: BattlePayloadEligibilityDto,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -1071,8 +1629,8 @@ pub struct LiveBattleDeployedUnitDto {
     pub unit_instance_id: UnitInstanceId,
     pub position: Position,
     pub facing: FacingDirection,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub skill_readiness: Option<LiveBattleSkillReadinessDto>,
+    pub withdraw_eligibility: BattlePayloadEligibilityDto,
+    pub skill_readiness: LiveBattleSkillReadinessDto,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -1093,10 +1651,54 @@ pub struct LiveBattleSkillReadinessDto {
     pub target_required: bool,
     #[serde(default)]
     pub target_available: bool,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub can_activate_reason: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub target_block_reason: Option<String>,
+    pub eligibility: BattlePayloadEligibilityDto,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct LiveBattlePlaybackEligibilityDto {
+    pub pause: BattlePayloadEligibilityDto,
+    pub resume: BattlePayloadEligibilityDto,
+    pub speeds: Vec<LiveBattleSpeedEligibilityDto>,
+}
+
+impl LiveBattlePlaybackEligibilityDto {
+    pub fn for_state(playback: BattlePlaybackState) -> Self {
+        let active = ActionDisabledReasonCode::AlreadyActive;
+        Self {
+            pause: if playback.paused {
+                BattlePayloadEligibilityDto::disabled(active)
+            } else {
+                BattlePayloadEligibilityDto::enabled()
+            },
+            resume: if playback.paused {
+                BattlePayloadEligibilityDto::enabled()
+            } else {
+                BattlePayloadEligibilityDto::disabled(active)
+            },
+            speeds: [
+                BattlePlaybackSpeed::X0_5,
+                BattlePlaybackSpeed::X1,
+                BattlePlaybackSpeed::X2,
+                BattlePlaybackSpeed::X3,
+            ]
+            .into_iter()
+            .map(|speed| LiveBattleSpeedEligibilityDto {
+                speed,
+                eligibility: if speed == playback.speed {
+                    BattlePayloadEligibilityDto::disabled(active)
+                } else {
+                    BattlePayloadEligibilityDto::enabled()
+                },
+            })
+            .collect(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub struct LiveBattleSpeedEligibilityDto {
+    pub speed: BattlePlaybackSpeed,
+    pub eligibility: BattlePayloadEligibilityDto,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -1104,9 +1706,12 @@ pub struct LiveBattleUpdateDto {
     #[serde(rename = "type")]
     pub message_type: LiveBattleUpdateMessageType,
     pub battle_uuid: Uuid,
+    pub battle_state_revision: u64,
+    pub action_capabilities: Vec<ActionCapabilityDto>,
     pub server_battle_time_ms: u64,
     pub events_delta: LiveBattleEventDeltaDto,
     pub checkpoint: LiveBattleStateCheckpointDto,
+    pub visual_novel: Option<VisualNovelSnapshotDto>,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
@@ -1229,11 +1834,6 @@ pub enum LiveBattlePresentationEventKindDto {
     BattleStart {
         width: u8,
         height: u8,
-    },
-    ArtifactSpawned {
-        artifact_instance_id: Uuid,
-        owner: Side,
-        base_uuid: Uuid,
     },
     ItemSpawned {
         item_instance_id: Uuid,
@@ -1492,15 +2092,6 @@ impl From<BattleLogEvent> for LiveBattlePresentationEventKindDto {
     fn from(value: BattleLogEvent) -> Self {
         match value {
             BattleLogEvent::BattleStart { width, height } => Self::BattleStart { width, height },
-            BattleLogEvent::ArtifactSpawned {
-                artifact_instance_id,
-                owner,
-                base_uuid,
-            } => Self::ArtifactSpawned {
-                artifact_instance_id,
-                owner,
-                base_uuid,
-            },
             BattleLogEvent::ItemSpawned {
                 item_instance_id,
                 owner,
@@ -1927,6 +2518,7 @@ pub struct LiveBattleStateCheckpointDto {
     pub at_seq: u64,
     pub battle_time_ms: u64,
     pub playback: BattlePlaybackState,
+    pub playback_eligibility: LiveBattlePlaybackEligibilityDto,
     pub units: Vec<LiveBattleUnitCheckpointDto>,
     pub deployment: Option<LiveBattleDeploymentDto>,
 }
@@ -1937,7 +2529,8 @@ pub struct LiveBattleUnitCheckpointDto {
     pub owner: Side,
     pub role: BattleUnitRole,
     pub hud: LiveBattleUnitHudDto,
-    pub range_previews: LiveBattleRangePreviewsDto,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub range_previews: Option<LiveBattleRangePreviewsDto>,
     pub mobility_kind: MobilityKind,
     pub unit_source: BattleUnitSourceIdentity,
     pub position: Position,
@@ -2019,6 +2612,7 @@ pub struct LiveBattleRangePreviewsDto {
 pub struct DeploymentRangePreviewResultDto {
     pub employee_uuid: Uuid,
     pub position: Position,
+    pub deploy_eligibility: BattlePayloadEligibilityDto,
     pub facings: DeploymentRangePreviewFacingsDto,
 }
 
@@ -2056,8 +2650,8 @@ pub struct SkillCatalogSkillDto {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SkillCatalogCastTargetDto {
     pub target_policy: SkillTarget,
-    pub range_policy: TileRangePolicy,
-    pub defense_tile_range: Option<TileRangePattern>,
+    pub reach: SkillTargetReach,
+    pub target_range: Option<TileRangePattern>,
     pub air_capable: bool,
 }
 
@@ -2066,9 +2660,6 @@ pub struct SkillCatalogStepDto {
     pub step_id: String,
     pub delay_ms: u32,
     pub target_policy: SkillTarget,
-    pub range_policy: TileRangePolicy,
-    pub defense_tile_range: Option<TileRangePattern>,
-    pub air_capable: bool,
     pub delivery: SkillCatalogDeliveryKind,
     pub tile_area: Option<SkillCatalogTileAreaDto>,
     pub effects_count: usize,
@@ -2085,6 +2676,7 @@ pub enum SkillCatalogDeliveryKind {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct SkillCatalogTileAreaDto {
+    pub footprint: TileRangePattern,
     pub anchor: SkillAreaAnchorSource,
     pub tile_origin: SkillTileAreaOrigin,
     pub tracking: SkillAreaTracking,
@@ -2105,15 +2697,14 @@ pub struct SkillCatalogTileAreaDto {
 /// 등. 클라이언트는 해당 값들을 반영만 하게끔 해야함.
 #[derive(Debug, Serialize, Deserialize)]
 pub enum BehaviorResult {
-    /// 새 게임 시작
-    StartNewGame {
+    /// 새 런 시작 흐름 진입
+    RunStartFlowStarted {
         game_mode: GameMode,
-        candidates: Vec<StarterEmployeeCandidate>,
-        required_count: usize,
+        visual_novel: Option<VisualNovelSnapshotDto>,
     },
     /// 시작 직원 선택 완료
     StarterEmployeesSelected {
-        selected_candidate_ids: Vec<String>,
+        selected_employee_definition_ids: Vec<String>,
         employee_uuids: Vec<Uuid>,
         map: MapViewDto,
     },
@@ -2128,7 +2719,6 @@ pub enum BehaviorResult {
         category: MapNodeCategory,
         payload: MapNodePayload,
         session: NodeSession,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
     /// 맵 노드 진입 전 확인/준비 상태
     NodePreview {
@@ -2139,40 +2729,37 @@ pub enum BehaviorResult {
         session: NodeSession,
         map: MapViewDto,
         combat_preview: Option<CombatPreview>,
+        trauma_recovery_preview: Option<TraumaRecoveryPreviewDto>,
     },
     /// 맵 노드 완료
     NodeCompleted {
         map: MapViewDto,
         outcome: Option<NodeOutcomeSummary>,
-    },
-    /// 지원 노드 상태
-    SupportState {
-        node_id: MapNodeId,
-        support_mode: SupportNodeMode,
-        support_type: Option<SupportNodeType>,
-        choices: Vec<SupportNodeType>,
-        selected_support_type: Option<SupportNodeType>,
         research_deliveries: Vec<SkillFragmentResearchDelivery>,
+    },
+    /// SavePoint 노드 상태
+    SavePointState {
+        node_id: MapNodeId,
+        recovery_preview: TraumaRecoveryPreviewDto,
     },
     /// 정비 노드 상태
     MaintenanceState {
         node_id: MapNodeId,
         maintenance_options: MaintenanceOptionsDto,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
     /// 본사 연락 노드 상태
     HeadquartersContactState {
         node_id: MapNodeId,
         options: Vec<HeadquartersContactOption>,
-        recruitment_candidates: Vec<StarterEmployeeCandidate>,
+        recruitment_candidates: Vec<EmployeeDefinition>,
         shop_pool_id: Option<String>,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
     /// Gate 노드 완료로 다음 Floor에 진입
     FloorAdvanced {
         game_mode: GameMode,
         floor_index: u32,
         map: MapViewDto,
+        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
     /// 보스 노드 완료로 런 클리어
     RunComplete {
@@ -2183,6 +2770,14 @@ pub enum BehaviorResult {
         reason: RunFailureReason,
         outcome: Option<NodeOutcomeSummary>,
     },
+    /// checkpoint load 또는 명시적 실패 확정을 기다림
+    RunFailureDecisionRequired {
+        reason: RunFailureReason,
+        contributing_reason: Option<RunFailureReason>,
+        outcome: Option<NodeOutcomeSummary>,
+    },
+    /// 사용자가 현재 run을 자발적으로 종료함
+    RunAbandoned,
 
     // 아이템 장착 해제
     UnEquipItem {
@@ -2196,7 +2791,8 @@ pub enum BehaviorResult {
         item_uuid: Uuid,
         target_employee_uuid: Uuid,
         replaced_modifier: Option<ActiveConsumableModifier>,
-        applied_modifier: ActiveConsumableModifier,
+        active_modifier: Option<ActiveConsumableModifier>,
+        condition: EmployeeCondition,
         inventory_diff: InventoryDiffDto,
     },
     SkillFragmentLoadoutUpdated {
@@ -2232,19 +2828,14 @@ pub enum BehaviorResult {
         enhancement_level: u8,
         inventory_diff: InventoryDiffDto,
     },
-    /// 런 중 직원 명단 표시 순서 이동
-    MoveRosterUnit {
-        roster_slots: Vec<RosterSlotDto>,
-    },
-
     /// 상점 상태 업데이트 (예: 리롤 이후)
     ShopState {
         shop: ShopEventOption,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
 
-    RerollShop {
-        new_items: Vec<Uuid>,
+    RefreshShop {
+        enkephalin: u32,
+        shop: ShopEventOption,
     },
 
     /// 아이템 판매 → 판매 확인
@@ -2261,7 +2852,7 @@ pub enum BehaviorResult {
 
     /// 본사 연락 노드에서 직원 채용 완료
     EmployeeRecruited {
-        candidate_id: String,
+        employee_definition_id: String,
         employee_uuid: Uuid,
         completion: Box<BehaviorResult>,
     },
@@ -2277,7 +2868,11 @@ pub enum BehaviorResult {
     EventState {
         node_id: MapNodeId,
         event: EventSceneSnapshotDto,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
+    },
+
+    /// Global Visual Novel overlay 상태
+    VisualNovelState {
+        visual_novel: Option<VisualNovelSnapshotDto>,
     },
 
     /// 보상 수령 결과 (자원 및 인벤토리 변경)
@@ -2376,7 +2971,6 @@ pub enum BehaviorResult {
         mode: RewardMode,
         rewards: Vec<RewardOption>,
         selected_reward_uuid: Option<Uuid>,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
 
     Ok,
@@ -2406,18 +3000,18 @@ pub enum CommandResultPayloadContract {
     Shop(ShopCommandResult),
     Reward(RewardCommandResult),
     Battle(BattleCommandResult),
+    VisualNovel(VisualNovelCommandResult),
     General(GeneralCommandResult),
 }
 
 #[derive(Debug, Clone)]
 pub enum RunCommandResult {
-    StartNewGame {
+    RunStartFlowStarted {
         game_mode: GameMode,
-        candidates: Vec<StarterEmployeeCandidate>,
-        required_count: usize,
+        visual_novel: Option<VisualNovelSnapshotDto>,
     },
     StarterEmployeesSelected {
-        selected_candidate_ids: Vec<String>,
+        selected_employee_definition_ids: Vec<String>,
         employee_uuids: Vec<Uuid>,
         map: MapViewDto,
     },
@@ -2425,6 +3019,7 @@ pub enum RunCommandResult {
         game_mode: GameMode,
         floor_index: u32,
         map: MapViewDto,
+        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
     RunComplete {
         map: MapViewDto,
@@ -2433,12 +3028,17 @@ pub enum RunCommandResult {
         reason: RunFailureReason,
         outcome: Option<NodeOutcomeSummary>,
     },
+    RunFailureDecisionRequired {
+        reason: RunFailureReason,
+        contributing_reason: Option<RunFailureReason>,
+        outcome: Option<NodeOutcomeSummary>,
+    },
+    RunAbandoned,
 }
 
 #[derive(Debug, Clone)]
 pub enum MapCommandResult {
     MapState { map: MapViewDto },
-    MoveRosterUnit { roster_slots: Vec<RosterSlotDto> },
 }
 
 #[derive(Debug, Clone)]
@@ -2451,6 +3051,7 @@ pub enum NodeCommandResult {
         session: NodeSession,
         map: MapViewDto,
         combat_preview: Option<CombatPreview>,
+        trauma_recovery_preview: Option<TraumaRecoveryPreviewDto>,
     },
     NodeEntered {
         node_id: MapNodeId,
@@ -2458,43 +3059,36 @@ pub enum NodeCommandResult {
         category: MapNodeCategory,
         payload: MapNodePayload,
         session: NodeSession,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
     NodeCompleted {
         map: MapViewDto,
         outcome: Option<NodeOutcomeSummary>,
+        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
     EventState {
         node_id: MapNodeId,
         event: EventSceneSnapshotDto,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
 }
 
 #[derive(Debug, Clone)]
 pub enum FacilityCommandResult {
-    SupportState {
+    SavePointState {
         node_id: MapNodeId,
-        support_mode: SupportNodeMode,
-        support_type: Option<SupportNodeType>,
-        choices: Vec<SupportNodeType>,
-        selected_support_type: Option<SupportNodeType>,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
+        recovery_preview: TraumaRecoveryPreviewDto,
     },
     MaintenanceState {
         node_id: MapNodeId,
         maintenance_options: MaintenanceOptionsDto,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
     HeadquartersContactState {
         node_id: MapNodeId,
         options: Vec<HeadquartersContactOption>,
-        recruitment_candidates: Vec<StarterEmployeeCandidate>,
+        recruitment_candidates: Vec<EmployeeDefinition>,
         shop_pool_id: Option<String>,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
     EmployeeRecruited {
-        candidate_id: String,
+        employee_definition_id: String,
         employee_uuid: Uuid,
         completion: Box<CommandResultPayloadContract>,
     },
@@ -2517,7 +3111,8 @@ pub enum InventoryCommandResult {
         item_uuid: Uuid,
         target_employee_uuid: Uuid,
         replaced_modifier: Option<ActiveConsumableModifier>,
-        applied_modifier: ActiveConsumableModifier,
+        active_modifier: Option<ActiveConsumableModifier>,
+        condition: EmployeeCondition,
         inventory_diff: InventoryDiffDto,
     },
     SkillFragmentLoadoutUpdated {
@@ -2558,7 +3153,7 @@ pub enum InventoryCommandResult {
 #[derive(Debug, Clone)]
 pub enum RosterCommandResult {
     EmployeeRecruited {
-        candidate_id: String,
+        employee_definition_id: String,
         employee_uuid: Uuid,
         completion: Box<CommandResultPayloadContract>,
     },
@@ -2568,10 +3163,10 @@ pub enum RosterCommandResult {
 pub enum ShopCommandResult {
     ShopState {
         shop: ShopEventOption,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
-    RerollShop {
-        new_items: Vec<Uuid>,
+    RefreshShop {
+        enkephalin: u32,
+        shop: ShopEventOption,
     },
     SellItem {
         enkephalin: u32,
@@ -2589,7 +3184,6 @@ pub enum RewardCommandResult {
         mode: RewardMode,
         rewards: Vec<RewardOption>,
         selected_reward_uuid: Option<Uuid>,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
     RewardGranted {
         enkephalin: u32,
@@ -2617,6 +3211,13 @@ pub enum BattleCommandResult {
 }
 
 #[derive(Debug, Clone)]
+pub enum VisualNovelCommandResult {
+    VisualNovelState {
+        visual_novel: Option<VisualNovelSnapshotDto>,
+    },
+}
+
+#[derive(Debug, Clone)]
 pub enum GeneralCommandResult {
     Ok,
 }
@@ -2624,24 +3225,22 @@ pub enum GeneralCommandResult {
 impl BehaviorResult {
     pub fn into_command_result_contract(self) -> BehaviorCommandResultContract {
         match self {
-            BehaviorResult::StartNewGame {
+            BehaviorResult::RunStartFlowStarted {
                 game_mode,
-                candidates,
-                required_count,
+                visual_novel,
             } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Run(
-                RunCommandResult::StartNewGame {
+                RunCommandResult::RunStartFlowStarted {
                     game_mode,
-                    candidates,
-                    required_count,
+                    visual_novel,
                 },
             )),
             BehaviorResult::StarterEmployeesSelected {
-                selected_candidate_ids,
+                selected_employee_definition_ids,
                 employee_uuids,
                 map,
             } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Run(
                 RunCommandResult::StarterEmployeesSelected {
-                    selected_candidate_ids,
+                    selected_employee_definition_ids,
                     employee_uuids,
                     map,
                 },
@@ -2655,7 +3254,6 @@ impl BehaviorResult {
                 category,
                 payload,
                 session,
-                research_deliveries,
             } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Node(
                 NodeCommandResult::NodeEntered {
                     node_id,
@@ -2663,7 +3261,6 @@ impl BehaviorResult {
                     category,
                     payload,
                     session,
-                    research_deliveries,
                 },
             )),
             BehaviorResult::NodePreview {
@@ -2674,6 +3271,7 @@ impl BehaviorResult {
                 session,
                 map,
                 combat_preview,
+                trauma_recovery_preview,
             } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Node(
                 NodeCommandResult::NodePreview {
                     node_id,
@@ -2683,50 +3281,48 @@ impl BehaviorResult {
                     session,
                     map,
                     combat_preview,
+                    trauma_recovery_preview,
                 },
             )),
-            BehaviorResult::NodeCompleted { map, outcome } => {
-                BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Node(
-                    NodeCommandResult::NodeCompleted { map, outcome },
-                ))
-            }
-            BehaviorResult::EventState {
-                node_id,
-                event,
+            BehaviorResult::NodeCompleted {
+                map,
+                outcome,
                 research_deliveries,
             } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Node(
-                NodeCommandResult::EventState {
-                    node_id,
-                    event,
+                NodeCommandResult::NodeCompleted {
+                    map,
+                    outcome,
                     research_deliveries,
                 },
             )),
-            BehaviorResult::SupportState {
+            BehaviorResult::EventState { node_id, event } => {
+                BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Node(
+                    NodeCommandResult::EventState { node_id, event },
+                ))
+            }
+            BehaviorResult::VisualNovelState { visual_novel } => {
+                BehaviorCommandResultContract::CommandPayload(
+                    CommandResultPayloadContract::VisualNovel(
+                        VisualNovelCommandResult::VisualNovelState { visual_novel },
+                    ),
+                )
+            }
+            BehaviorResult::SavePointState {
                 node_id,
-                support_mode,
-                support_type,
-                choices,
-                selected_support_type,
-                research_deliveries,
+                recovery_preview,
             } => BehaviorCommandResultContract::CommandPayload(
-                CommandResultPayloadContract::Facility(FacilityCommandResult::SupportState {
+                CommandResultPayloadContract::Facility(FacilityCommandResult::SavePointState {
                     node_id,
-                    support_mode,
-                    support_type,
-                    choices,
-                    selected_support_type,
-                    research_deliveries,
+                    recovery_preview,
                 }),
             ),
             BehaviorResult::MaintenanceState {
                 node_id,
                 maintenance_options,
-                research_deliveries,
             } => BehaviorCommandResultContract::CommandPayload(
                 CommandResultPayloadContract::Facility(FacilityCommandResult::MaintenanceState {
                     node_id,
                     maintenance_options,
-                    research_deliveries,
                 }),
             ),
             BehaviorResult::HeadquartersContactState {
@@ -2734,7 +3330,6 @@ impl BehaviorResult {
                 options,
                 recruitment_candidates,
                 shop_pool_id,
-                research_deliveries,
             } => BehaviorCommandResultContract::CommandPayload(
                 CommandResultPayloadContract::Facility(
                     FacilityCommandResult::HeadquartersContactState {
@@ -2742,7 +3337,6 @@ impl BehaviorResult {
                         options,
                         recruitment_candidates,
                         shop_pool_id,
-                        research_deliveries,
                     },
                 ),
             ),
@@ -2750,11 +3344,13 @@ impl BehaviorResult {
                 game_mode,
                 floor_index,
                 map,
+                research_deliveries,
             } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Run(
                 RunCommandResult::FloorAdvanced {
                     game_mode,
                     floor_index,
                     map,
+                    research_deliveries,
                 },
             )),
             BehaviorResult::RunComplete { map } => BehaviorCommandResultContract::CommandPayload(
@@ -2765,6 +3361,20 @@ impl BehaviorResult {
                     RunCommandResult::RunFailed { reason, outcome },
                 ))
             }
+            BehaviorResult::RunFailureDecisionRequired {
+                reason,
+                contributing_reason,
+                outcome,
+            } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Run(
+                RunCommandResult::RunFailureDecisionRequired {
+                    reason,
+                    contributing_reason,
+                    outcome,
+                },
+            )),
+            BehaviorResult::RunAbandoned => BehaviorCommandResultContract::CommandPayload(
+                CommandResultPayloadContract::Run(RunCommandResult::RunAbandoned),
+            ),
             BehaviorResult::UnEquipItem { result } => {
                 BehaviorCommandResultContract::CommandPayload(
                     CommandResultPayloadContract::Inventory(InventoryCommandResult::UnEquipItem {
@@ -2781,7 +3391,8 @@ impl BehaviorResult {
                 item_uuid,
                 target_employee_uuid,
                 replaced_modifier,
-                applied_modifier,
+                active_modifier,
+                condition,
                 inventory_diff,
             } => BehaviorCommandResultContract::CommandPayload(
                 CommandResultPayloadContract::Inventory(
@@ -2789,7 +3400,8 @@ impl BehaviorResult {
                         item_uuid,
                         target_employee_uuid,
                         replaced_modifier,
-                        applied_modifier,
+                        active_modifier,
+                        condition,
                         inventory_diff,
                     },
                 ),
@@ -2878,23 +3490,12 @@ impl BehaviorResult {
                     },
                 ),
             ),
-            BehaviorResult::MoveRosterUnit { roster_slots } => {
-                BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Map(
-                    MapCommandResult::MoveRosterUnit { roster_slots },
-                ))
-            }
-            BehaviorResult::ShopState {
-                shop,
-                research_deliveries,
-            } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Shop(
-                ShopCommandResult::ShopState {
-                    shop,
-                    research_deliveries,
-                },
-            )),
-            BehaviorResult::RerollShop { new_items } => {
+            BehaviorResult::ShopState { shop } => BehaviorCommandResultContract::CommandPayload(
+                CommandResultPayloadContract::Shop(ShopCommandResult::ShopState { shop }),
+            ),
+            BehaviorResult::RefreshShop { enkephalin, shop } => {
                 BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Shop(
-                    ShopCommandResult::RerollShop { new_items },
+                    ShopCommandResult::RefreshShop { enkephalin, shop },
                 ))
             }
             BehaviorResult::SellItem {
@@ -2916,12 +3517,12 @@ impl BehaviorResult {
                 },
             )),
             BehaviorResult::EmployeeRecruited {
-                candidate_id,
+                employee_definition_id,
                 employee_uuid,
                 completion,
             } => BehaviorCommandResultContract::CommandPayload(
                 CommandResultPayloadContract::Facility(FacilityCommandResult::EmployeeRecruited {
-                    candidate_id,
+                    employee_definition_id,
                     employee_uuid,
                     completion: Box::new(completion.into_command_payload_contract()),
                 }),
@@ -3002,13 +3603,11 @@ impl BehaviorResult {
                 mode,
                 rewards,
                 selected_reward_uuid,
-                research_deliveries,
             } => BehaviorCommandResultContract::CommandPayload(
                 CommandResultPayloadContract::Reward(RewardCommandResult::RewardState {
                     mode,
                     rewards,
                     selected_reward_uuid,
-                    research_deliveries,
                 }),
             ),
             BehaviorResult::Ok => BehaviorCommandResultContract::CommandPayload(
@@ -3031,8 +3630,8 @@ impl BehaviorResult {
     // 타입 체크 헬퍼 (데이터가 없는 variant용)
     // ============================================================
 
-    pub fn is_start_new_game(&self) -> bool {
-        matches!(self, BehaviorResult::StartNewGame { .. })
+    pub fn is_run_start_flow_started(&self) -> bool {
+        matches!(self, BehaviorResult::RunStartFlowStarted { .. })
     }
 
     pub fn is_sell_item(&self) -> bool {
@@ -3066,10 +3665,10 @@ impl BehaviorResult {
         }
     }
 
-    /// RerollShop → 새로운 아이템 UUID 리스트 참조 반환
-    pub fn as_reroll_shop(&self) -> Option<&Vec<Uuid>> {
+    /// RefreshShop → 갱신된 Shop projection 참조 반환
+    pub fn as_refresh_shop(&self) -> Option<(u32, &ShopEventOption)> {
         match self {
-            BehaviorResult::RerollShop { new_items } => Some(new_items),
+            BehaviorResult::RefreshShop { enkephalin, shop } => Some((*enkephalin, shop)),
             _ => None,
         }
     }
@@ -3123,6 +3722,7 @@ impl CommandResultPayloadContract {
             CommandResultPayloadContract::Shop(result) => result.result_type(),
             CommandResultPayloadContract::Reward(result) => result.result_type(),
             CommandResultPayloadContract::Battle(result) => result.result_type(),
+            CommandResultPayloadContract::VisualNovel(result) => result.result_type(),
             CommandResultPayloadContract::General(result) => result.result_type(),
         }
     }
@@ -3138,6 +3738,7 @@ impl CommandResultPayloadContract {
             CommandResultPayloadContract::Shop(result) => result.payload_value(),
             CommandResultPayloadContract::Reward(result) => result.payload_value(),
             CommandResultPayloadContract::Battle(result) => result.payload_value(),
+            CommandResultPayloadContract::VisualNovel(result) => result.payload_value(),
             CommandResultPayloadContract::General(result) => result.payload_value(),
         }
     }
@@ -3153,31 +3754,31 @@ fn nested_payload_value(completion: &CommandResultPayloadContract) -> serde_json
 impl RunCommandResult {
     fn result_type(&self) -> &'static str {
         match self {
-            RunCommandResult::StartNewGame { .. } => "StartNewGame",
+            RunCommandResult::RunStartFlowStarted { .. } => "RunStartFlowStarted",
             RunCommandResult::StarterEmployeesSelected { .. } => "StarterEmployeesSelected",
             RunCommandResult::FloorAdvanced { .. } => "FloorAdvanced",
             RunCommandResult::RunComplete { .. } => "RunComplete",
             RunCommandResult::RunFailed { .. } => "RunFailed",
+            RunCommandResult::RunFailureDecisionRequired { .. } => "RunFailureDecisionRequired",
+            RunCommandResult::RunAbandoned => "RunAbandoned",
         }
     }
 
     fn payload_value(&self) -> serde_json::Result<Value> {
         match self {
-            RunCommandResult::StartNewGame {
+            RunCommandResult::RunStartFlowStarted {
                 game_mode,
-                candidates,
-                required_count,
+                visual_novel,
             } => Ok(json!({
                 "game_mode": game_mode,
-                "candidates": candidates,
-                "required_count": required_count,
+                "visual_novel": visual_novel,
             })),
             RunCommandResult::StarterEmployeesSelected {
-                selected_candidate_ids,
+                selected_employee_definition_ids,
                 employee_uuids,
                 map,
             } => Ok(json!({
-                "selected_candidate_ids": selected_candidate_ids,
+                "selected_employee_definition_ids": selected_employee_definition_ids,
                 "employee_uuids": employee_uuids,
                 "map": map,
             })),
@@ -3185,16 +3786,28 @@ impl RunCommandResult {
                 game_mode,
                 floor_index,
                 map,
+                research_deliveries,
             } => Ok(json!({
                 "game_mode": game_mode,
                 "floor_index": floor_index,
                 "map": map,
+                "research_deliveries": research_deliveries,
             })),
             RunCommandResult::RunComplete { map } => serde_json::to_value(map),
             RunCommandResult::RunFailed { reason, outcome } => Ok(json!({
                 "reason": reason,
                 "outcome": outcome,
             })),
+            RunCommandResult::RunFailureDecisionRequired {
+                reason,
+                contributing_reason,
+                outcome,
+            } => Ok(json!({
+                "reason": reason,
+                "contributing_reason": contributing_reason,
+                "outcome": outcome,
+            })),
+            RunCommandResult::RunAbandoned => Ok(json!({})),
         }
     }
 }
@@ -3203,16 +3816,12 @@ impl MapCommandResult {
     fn result_type(&self) -> &'static str {
         match self {
             MapCommandResult::MapState { .. } => "MapState",
-            MapCommandResult::MoveRosterUnit { .. } => "MoveRosterUnit",
         }
     }
 
     fn payload_value(&self) -> serde_json::Result<Value> {
         match self {
             MapCommandResult::MapState { map } => Ok(json!({ "map": map })),
-            MapCommandResult::MoveRosterUnit { roster_slots } => Ok(json!({
-                "roster_slots": roster_slots,
-            })),
         }
     }
 }
@@ -3237,6 +3846,7 @@ impl NodeCommandResult {
                 session,
                 map,
                 combat_preview,
+                trauma_recovery_preview,
             } => Ok(json!({
                 "node_id": node_id,
                 "kind_id": kind_id,
@@ -3245,6 +3855,7 @@ impl NodeCommandResult {
                 "session": session,
                 "map": map,
                 "combat_preview": combat_preview,
+                "trauma_recovery_preview": trauma_recovery_preview,
             })),
             NodeCommandResult::NodeEntered {
                 node_id,
@@ -3252,27 +3863,25 @@ impl NodeCommandResult {
                 category,
                 payload,
                 session,
-                research_deliveries,
             } => Ok(json!({
                 "node_id": node_id,
                 "kind_id": kind_id,
                 "category": category,
                 "payload": payload,
                 "session": session,
-                "research_deliveries": research_deliveries,
             })),
-            NodeCommandResult::NodeCompleted { map, outcome } => Ok(json!({
-                "map": map,
-                "outcome": outcome,
-            })),
-            NodeCommandResult::EventState {
-                node_id,
-                event,
+            NodeCommandResult::NodeCompleted {
+                map,
+                outcome,
                 research_deliveries,
             } => Ok(json!({
+                "map": map,
+                "outcome": outcome,
+                "research_deliveries": research_deliveries,
+            })),
+            NodeCommandResult::EventState { node_id, event } => Ok(json!({
                 "node_id": node_id,
                 "event": event,
-                "research_deliveries": research_deliveries,
             })),
         }
     }
@@ -3281,7 +3890,7 @@ impl NodeCommandResult {
 impl FacilityCommandResult {
     fn result_type(&self) -> &'static str {
         match self {
-            FacilityCommandResult::SupportState { .. } => "SupportState",
+            FacilityCommandResult::SavePointState { .. } => "SavePointState",
             FacilityCommandResult::MaintenanceState { .. } => "MaintenanceState",
             FacilityCommandResult::HeadquartersContactState { .. } => "HeadquartersContactState",
             FacilityCommandResult::EmployeeRecruited { .. } => "EmployeeRecruited",
@@ -3291,49 +3900,37 @@ impl FacilityCommandResult {
 
     fn payload_value(&self) -> serde_json::Result<Value> {
         match self {
-            FacilityCommandResult::SupportState {
+            FacilityCommandResult::SavePointState {
                 node_id,
-                support_mode,
-                support_type,
-                choices,
-                selected_support_type,
-                research_deliveries,
+                recovery_preview,
             } => Ok(json!({
                 "node_id": node_id,
-                "support_mode": support_mode,
-                "support_type": support_type,
-                "choices": choices,
-                "selected_support_type": selected_support_type,
-                "research_deliveries": research_deliveries,
+                "recovery_preview": recovery_preview,
             })),
             FacilityCommandResult::MaintenanceState {
                 node_id,
                 maintenance_options,
-                research_deliveries,
             } => Ok(json!({
                 "node_id": node_id,
                 "maintenance_options": maintenance_options,
-                "research_deliveries": research_deliveries,
             })),
             FacilityCommandResult::HeadquartersContactState {
                 node_id,
                 options,
                 recruitment_candidates,
                 shop_pool_id,
-                research_deliveries,
             } => Ok(json!({
                 "node_id": node_id,
                 "options": options,
                 "recruitment_candidates": recruitment_candidates,
                 "shop_pool_id": shop_pool_id,
-                "research_deliveries": research_deliveries,
             })),
             FacilityCommandResult::EmployeeRecruited {
-                candidate_id,
+                employee_definition_id,
                 employee_uuid,
                 completion,
             } => Ok(json!({
-                "candidate_id": candidate_id,
+                "employee_definition_id": employee_definition_id,
                 "employee_uuid": employee_uuid,
                 "completion": nested_payload_value(completion)?,
             })),
@@ -3375,13 +3972,15 @@ impl InventoryCommandResult {
                 item_uuid,
                 target_employee_uuid,
                 replaced_modifier,
-                applied_modifier,
+                active_modifier,
+                condition,
                 inventory_diff,
             } => Ok(json!({
                 "item_uuid": item_uuid,
                 "target_employee_uuid": target_employee_uuid,
                 "replaced_modifier": replaced_modifier,
-                "applied_modifier": applied_modifier,
+                "active_modifier": active_modifier,
+                "condition": condition,
                 "inventory_diff": inventory_diff,
             })),
             InventoryCommandResult::SkillFragmentLoadoutUpdated {
@@ -3453,11 +4052,11 @@ impl RosterCommandResult {
     fn payload_value(&self) -> serde_json::Result<Value> {
         match self {
             RosterCommandResult::EmployeeRecruited {
-                candidate_id,
+                employee_definition_id,
                 employee_uuid,
                 completion,
             } => Ok(json!({
-                "candidate_id": candidate_id,
+                "employee_definition_id": employee_definition_id,
                 "employee_uuid": employee_uuid,
                 "completion": nested_payload_value(completion)?,
             })),
@@ -3469,7 +4068,7 @@ impl ShopCommandResult {
     fn result_type(&self) -> &'static str {
         match self {
             ShopCommandResult::ShopState { .. } => "ShopState",
-            ShopCommandResult::RerollShop { .. } => "RerollShop",
+            ShopCommandResult::RefreshShop { .. } => "RefreshShop",
             ShopCommandResult::SellItem { .. } => "SellItem",
             ShopCommandResult::PurchaseItem { .. } => "PurchaseItem",
         }
@@ -3477,15 +4076,12 @@ impl ShopCommandResult {
 
     fn payload_value(&self) -> serde_json::Result<Value> {
         match self {
-            ShopCommandResult::ShopState {
-                shop,
-                research_deliveries,
-            } => Ok(json!({
+            ShopCommandResult::ShopState { shop } => Ok(json!({
                 "shop": shop,
-                "research_deliveries": research_deliveries,
             })),
-            ShopCommandResult::RerollShop { new_items } => Ok(json!({
-                "new_items": new_items,
+            ShopCommandResult::RefreshShop { enkephalin, shop } => Ok(json!({
+                "enkephalin": enkephalin,
+                "shop": shop,
             })),
             ShopCommandResult::SellItem {
                 enkephalin,
@@ -3517,12 +4113,10 @@ impl RewardCommandResult {
                 mode,
                 rewards,
                 selected_reward_uuid,
-                research_deliveries,
             } => Ok(json!({
                 "mode": mode,
                 "rewards": rewards,
                 "selected_reward_uuid": selected_reward_uuid,
-                "research_deliveries": research_deliveries,
             })),
             RewardCommandResult::RewardGranted {
                 enkephalin,
@@ -3572,6 +4166,22 @@ impl BattleCommandResult {
     }
 }
 
+impl VisualNovelCommandResult {
+    fn result_type(&self) -> &'static str {
+        match self {
+            VisualNovelCommandResult::VisualNovelState { .. } => "VisualNovelState",
+        }
+    }
+
+    fn payload_value(&self) -> serde_json::Result<Value> {
+        match self {
+            VisualNovelCommandResult::VisualNovelState { visual_novel } => Ok(json!({
+                "visual_novel": visual_novel,
+            })),
+        }
+    }
+}
+
 impl GeneralCommandResult {
     fn result_type(&self) -> &'static str {
         match self {
@@ -3595,16 +4205,28 @@ pub enum GameError {
 
     /// 현재 GameState/Context에서 허용되지 않은 행동 (치팅 시도 포함)
     InvalidAction,
+    /// A context capability or selected payload failed the shared typed preflight.
+    ActionUnavailable {
+        action: ActionKind,
+        reason: ActionDisabledReasonCode,
+    },
     /// 클라이언트가 현재 전투에 존재하지 않는 미래 presentation seq로 resync를 요청했을 때
     InvalidBattleResyncSeq { requested: u64, latest: u64 },
+    /// 전투 상태 revision을 더 이상 증가시킬 수 없을 때
+    BattleStateRevisionOverflow,
+    /// 활성 전투 mutation 명령이 필수 UUID/revision authority를 보내지 않았을 때
+    MissingBattleStateAuthority { current: BattleStateAuthorityDto },
+    /// 전투 mutation 명령이 현재 Core authority와 다른 battle UUID/revision을 제시했을 때
+    StaleBattleStateAuthority {
+        expected: BattleStateAuthorityDto,
+        current: BattleStateAuthorityDto,
+    },
 
     /// 상점 상태가 아니거나, 활성 노드 콘텐츠에 Shop 정보가 없을 때
     NotInShopState,
     /// 보상 상태가 아니거나, 활성 노드 콘텐츠에 Reward 정보가 없을 때
     NotInRewardState,
-    /// 상점이 리롤을 지원하지 않을 때
-    ShopRerollNotAllowed,
-    /// 상점의 visible_items / uuid_lookup_table에서 아이템을 찾지 못했을 때
+    /// 현재 Shop session에서 offer identity를 찾지 못했을 때
     ShopItemNotFound,
 
     /// 인벤토리가 가득 차서 아이템을 추가할 수 없을 때 (예: 아티팩트 슬롯)
@@ -3614,7 +4236,6 @@ pub enum GameError {
     /// 인벤토리에 존재하지만 해당 경로로 제거할 수 없는 아이템일 때
     InventoryItemNotRemovable,
     /// 유일해야 하는 아티팩트를 이미 보유 중일 때
-    AlreadyOwnedArtifact,
 
     /// 구매/행동에 필요한 자원이 부족할 때
     InsufficientResources,
@@ -3651,17 +4272,154 @@ pub enum GameError {
 mod tests {
     use super::*;
     use crate::game::battle::event_log::{BattleEventCause, BattleEventRootCause, BattleLogEvent};
-    use crate::game::data::shop_data::ShopType;
+    use crate::game::data::shop_data::ShopContext;
     use crate::game::resources::InventoryDiffDto;
 
     #[test]
-    fn behavior_result_helpers_match_variants() {
-        assert!(BehaviorResult::StartNewGame {
-            game_mode: GameMode::Standard,
-            candidates: Vec::new(),
-            required_count: 3,
+    fn monolith_reward_wire_contract_is_qualitative_only() {
+        let dto = MonolithConversionOptionDto {
+            abnormality_id: "abno".to_string(),
+            abnormality_uuid: Uuid::nil(),
+            display_name: "Abnormality".to_string(),
+            risk_level: RiskLevel::ZAYIN,
+            enabled: true,
+            disabled_reason: None,
+            next_stage: 3,
+            uses_before: 2,
+            uses_after: 1,
+            max_attempts: 3,
+            reward_tier: MonolithRewardTierDto::FinalEnhanced,
+        };
+
+        let value = serde_json::to_value(dto).unwrap();
+
+        assert_eq!(value["reward_tier"], "final_enhanced");
+        assert!(value.get("reward_multiplier_percent").is_none());
+    }
+
+    #[test]
+    fn resolve_event_choice_check_uses_one_exact_scene_qualified_wire_command() {
+        let node_id = MapNodeId::new(Uuid::from_u128(0xE001));
+        let employee_uuid = Uuid::from_u128(0xE002);
+        let behavior = PlayerBehavior::ResolveEventChoiceCheck {
+            node_id,
+            event_id: crate::game::data::event_data::EventId::new("event_a"),
+            current_scene_id: crate::game::data::event_data::EventSceneId::new("check"),
+            choice_id: crate::game::data::event_data::EventChoiceId::new("choice_a"),
+            employee_uuid,
+        };
+        let value = serde_json::to_value(&behavior).expect("event command serializes");
+        assert_eq!(
+            value,
+            serde_json::json!({
+                "type": "resolve_event_choice_check",
+                "node_id": node_id.0.to_string(),
+                "event_id": "event_a",
+                "current_scene_id": "check",
+                "choice_id": "choice_a",
+                "employee_uuid": employee_uuid.to_string(),
+            })
+        );
+        assert!(serde_json::from_value::<PlayerBehavior>(value).is_ok());
+        for removed in [
+            serde_json::json!({
+                "type": "select_event_choice",
+                "node_id": node_id.0.to_string(),
+                "event_id": "event_a",
+                "choice_id": "choice_a",
+            }),
+            serde_json::json!({
+                "type": "resolve_event_choice_check",
+                "node_id": node_id.0.to_string(),
+                "event_id": "event_a",
+                "choice_id": "choice_a",
+                "employee_uuid": employee_uuid.to_string(),
+            }),
+            serde_json::json!({
+                "type": "resolve_event_choice_check",
+                "node_id": node_id.0.to_string(),
+                "event_id": "event_a",
+                "current_scene_id": "check",
+                "choice_id": "choice_a",
+                "employee_uuid": employee_uuid.to_string(),
+                "modifier_total": 5,
+            }),
+        ] {
+            assert!(serde_json::from_value::<PlayerBehavior>(removed).is_err());
         }
-        .is_start_new_game());
+    }
+
+    #[test]
+    fn action_capability_serialization_is_typed_and_omits_enabled_reason() {
+        let enabled = ActionCapabilityDto::enabled(ActionKind::RequestMapData, ActionScope::Query);
+        assert_eq!(
+            serde_json::to_value(enabled).unwrap(),
+            serde_json::json!({
+                "action": "RequestMapData",
+                "scope": "query",
+                "enabled": true
+            })
+        );
+
+        let disabled = ActionCapabilityDto::disabled(
+            ActionKind::LoadRunCheckpoint,
+            ActionScope::Recovery,
+            ActionDisabledReasonCode::CheckpointUnavailable,
+        );
+        assert_eq!(
+            serde_json::to_value(disabled).unwrap(),
+            serde_json::json!({
+                "action": "LoadRunCheckpoint",
+                "scope": "recovery",
+                "enabled": false,
+                "disabled_reason_code": "checkpoint_unavailable"
+            })
+        );
+    }
+
+    #[test]
+    fn shop_commands_require_offer_identity_quantity_and_refresh_vocabulary() {
+        let offer_id = Uuid::from_u128(0x5100);
+        let item_uuid = Uuid::from_u128(0x5200);
+        assert_eq!(
+            serde_json::to_value(PlayerBehavior::PurchaseItem { offer_id }).unwrap(),
+            serde_json::json!({
+                "type": "purchase_item",
+                "offer_id": offer_id,
+            })
+        );
+        assert_eq!(
+            serde_json::to_value(PlayerBehavior::SellItem {
+                item_uuid,
+                quantity: 3,
+            })
+            .unwrap(),
+            serde_json::json!({
+                "type": "sell_item",
+                "item_uuid": item_uuid,
+                "quantity": 3,
+            })
+        );
+        assert_eq!(
+            serde_json::to_value(PlayerBehavior::RefreshShop).unwrap(),
+            serde_json::json!({ "type": "refresh_shop" })
+        );
+        for removed in [
+            serde_json::json!({ "type": "reroll_shop" }),
+            serde_json::json!({ "type": "purchase_item", "item_uuid": item_uuid }),
+            serde_json::json!({ "type": "sell_item", "item_uuid": item_uuid }),
+        ] {
+            assert!(serde_json::from_value::<PlayerBehavior>(removed).is_err());
+        }
+    }
+
+    #[test]
+    fn behavior_result_helpers_match_variants() {
+        assert!(BehaviorResult::RunStartFlowStarted {
+            game_mode: GameMode::Standard,
+            visual_novel: None,
+        }
+        .is_run_start_flow_started());
         assert!(BehaviorResult::Ok.is_ok());
 
         let sell = BehaviorResult::SellItem {
@@ -3685,15 +4443,83 @@ mod tests {
             id: "shop".to_string(),
             name: "Shop".to_string(),
             uuid: Uuid::nil(),
-            shop_type: ShopType::Shop,
-            can_reroll: true,
-            visible_items: vec![Uuid::nil()],
+            context: ShopContext::UnknownExploration,
+            offers: vec![],
+            refresh: None,
+            selling_enabled: false,
         };
-        let shop_state = BehaviorResult::ShopState {
-            shop: shop.clone(),
-            research_deliveries: vec![],
-        };
+        let shop_state = BehaviorResult::ShopState { shop: shop.clone() };
         assert_eq!(shop_state.as_shop_state(), Some(&shop));
+    }
+
+    #[test]
+    fn research_delivery_is_present_only_on_authoritative_planning_return_payloads() {
+        let map = MapViewDto {
+            map_template_id: crate::game::map::MapTemplateId::new("delivery_contract"),
+            facility_template_version: crate::game::map::FACILITY_TEMPLATE_VERSION,
+            nodes: vec![],
+        };
+        let delivery = SkillFragmentResearchDelivery {
+            fragment_id: SkillFragmentId::from("fragment_delivery_contract"),
+            count: 1,
+            total_count: 2,
+        };
+        let BehaviorCommandResultContract::CommandPayload(completed) =
+            (BehaviorResult::NodeCompleted {
+                map: map.clone(),
+                outcome: None,
+                research_deliveries: vec![delivery.clone()],
+            })
+            .into_command_result_contract()
+        else {
+            panic!("node completion must be a command payload");
+        };
+        assert_eq!(completed.result_type(), "NodeCompleted");
+        let completed_json = completed.payload_value().unwrap();
+        assert_eq!(
+            completed_json["research_deliveries"][0]["fragment_id"],
+            delivery.fragment_id.as_str()
+        );
+        assert_eq!(completed_json["research_deliveries"][0]["count"], 1);
+
+        let BehaviorCommandResultContract::CommandPayload(floor_advanced) =
+            (BehaviorResult::FloorAdvanced {
+                game_mode: GameMode::Standard,
+                floor_index: 1,
+                map,
+                research_deliveries: vec![delivery],
+            })
+            .into_command_result_contract()
+        else {
+            panic!("floor advance must be a command payload");
+        };
+        assert_eq!(floor_advanced.result_type(), "FloorAdvanced");
+        assert!(floor_advanced.payload_value().unwrap()["research_deliveries"].is_array());
+
+        let BehaviorCommandResultContract::CommandPayload(save_point) =
+            (BehaviorResult::SavePointState {
+                node_id: MapNodeId::new(Uuid::from_u128(0xD311)),
+                recovery_preview: TraumaRecoveryPreviewDto {
+                    recovery: TraumaRecovery::CurrentPercent { percent: 15 },
+                    employees: vec![],
+                    physical_damage_unchanged: true,
+                    replaces_run_checkpoint: true,
+                },
+            })
+            .into_command_result_contract()
+        else {
+            panic!("SavePoint state must be a command payload");
+        };
+        assert!(save_point
+            .payload_value()
+            .unwrap()
+            .get("research_deliveries")
+            .is_none());
+        assert_eq!(
+            save_point.payload_value().unwrap()["recovery_preview"]["recovery"]["CurrentPercent"]
+                ["percent"],
+            15
+        );
     }
 
     #[test]

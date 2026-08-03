@@ -3,6 +3,7 @@ use std::collections::HashSet;
 use uuid::Uuid;
 
 use crate::game::data::boss_omen_data::{BossOmenRevealLevel, BossOmenSourceKind};
+use crate::game::map::facility::FacilityTerminalResolution;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct MapNodeId(pub Uuid);
@@ -31,7 +32,7 @@ impl MapNodeKindId {
 pub enum MapNodeCategory {
     Start,
     Combat,
-    Support,
+    SavePoint,
     Maintenance,
     HeadquartersContact,
     Event,
@@ -52,33 +53,11 @@ fn default_headquarters_candidate_count() -> usize {
     3
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum SupportNodeType {
-    SavePoint,
-    Rest,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum SupportNodeMode {
-    Known,
-    LimitedChoice,
-    FullChoice,
-}
-
-fn default_support_node_mode() -> SupportNodeMode {
-    SupportNodeMode::Known
-}
-
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub enum MapNodePayload {
     None,
-    Support {
-        support_type: SupportNodeType,
-        #[serde(default = "default_support_node_mode")]
-        support_mode: SupportNodeMode,
-        #[serde(default)]
-        choices: Vec<SupportNodeType>,
-    },
+    SavePoint,
     Maintenance,
     HeadquartersContact {
         shop_pool_id: Option<String>,
@@ -127,7 +106,7 @@ pub enum MapEdgeDirection {
     ForwardOnly,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, PartialOrd, Ord)]
 #[serde(transparent)]
 pub struct MapTemplateId(pub String);
 
@@ -141,7 +120,7 @@ impl MapTemplateId {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct MapSlotId(pub String);
 
@@ -150,26 +129,14 @@ impl MapSlotId {
         Self(value.into())
     }
 
-    pub fn for_grid_position(depth: u8, lane: u8) -> Self {
-        Self(format!("depth_{depth:02}_lane_{lane:02}"))
-    }
-
     pub fn as_str(&self) -> &str {
         &self.0
     }
 }
 
-pub const DEFAULT_MAP_TEMPLATE_ID: &str = "act_01_floor_a";
-
-fn default_map_template_id() -> MapTemplateId {
-    MapTemplateId::new(DEFAULT_MAP_TEMPLATE_ID)
-}
-
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MapNode {
     pub id: MapNodeId,
-    pub depth: u8,
-    pub lane: u8,
     pub slot_id: MapSlotId,
     pub kind_id: MapNodeKindId,
     pub category: MapNodeCategory,
@@ -179,6 +146,61 @@ pub struct MapNode {
     pub payload: MapNodePayload,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub omen: Option<MapNodeOmenOverlayDto>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub combat_difficulty: Option<MapNodeCombatDifficulty>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MapNodeCombatDifficulty {
+    pub power_model_version: u32,
+    pub difficulty_profile_id: String,
+    pub class: MapNodeCombatDifficultyClass,
+    #[serde(deserialize_with = "deserialize_required_option")]
+    pub monolith_stage: Option<MonolithRemanifestationStage>,
+    pub floor_power_anchor: u64,
+    pub target_power: u64,
+}
+
+fn deserialize_required_option<'de, D, T>(deserializer: D) -> Result<Option<T>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+    T: Deserialize<'de>,
+{
+    Option::<T>::deserialize(deserializer)
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum MonolithRemanifestationStage {
+    Stage2,
+    Stage3,
+}
+
+impl MonolithRemanifestationStage {
+    pub const fn as_u8(self) -> u8 {
+        match self {
+            Self::Stage2 => 2,
+            Self::Stage3 => 3,
+        }
+    }
+}
+
+impl TryFrom<u8> for MonolithRemanifestationStage {
+    type Error = ();
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        match value {
+            2 => Ok(Self::Stage2),
+            3 => Ok(Self::Stage3),
+            _ => Err(()),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum MapNodeCombatDifficultyClass {
+    Ordinary(crate::game::data::run_policy_data::OrdinaryCombatDifficultyBand),
+    Role(crate::game::data::run_policy_data::CombatNodeDifficultyRole),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -187,19 +209,12 @@ pub struct MapNodeDefinition {
     pub kind_id: MapNodeKindId,
     pub category: MapNodeCategory,
     pub weight: u32,
-    pub min_depth: u8,
-    pub max_depth: Option<u8>,
     #[serde(default)]
     pub payload: MapNodePayload,
 }
 
-impl MapNodeDefinition {
-    pub fn is_available_at_depth(&self, depth: u8) -> bool {
-        depth >= self.min_depth && self.max_depth.is_none_or(|max_depth| depth <= max_depth)
-    }
-}
-
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MapNodeDefinitionDatabase {
     pub nodes: Vec<MapNodeDefinition>,
 }
@@ -207,23 +222,6 @@ pub struct MapNodeDefinitionDatabase {
 impl MapNodeDefinitionDatabase {
     pub fn from_ron_str(input: &str) -> Result<Self, String> {
         ron::de::from_str(input).map_err(|err| err.to_string())
-    }
-
-    /// Load the embedded map node definition catalog.
-    ///
-    /// This is a map-generation domain builtin, not an alternate
-    /// `GameDataBase` live bundle loader. The map generator owns it because
-    /// node definition authoring is used before a specific encounter/game-data
-    /// domain is resolved.
-    pub fn builtin() -> Self {
-        let database = Self::from_ron_str(include_str!(
-            "../../../../game_resources/data/map/node_definitions.ron"
-        ))
-        .expect("built-in map node definitions must be valid RON");
-        database
-            .validate_contract()
-            .expect("built-in map node definitions must satisfy map generation contract");
-        database
     }
 
     pub fn validate_contract(&self) -> Result<(), String> {
@@ -304,27 +302,6 @@ impl MapNodeDefinitionDatabase {
         Ok(())
     }
 
-    pub fn weighted_candidates(
-        &self,
-        depth: u8,
-        category: Option<MapNodeCategory>,
-        include_boss: bool,
-    ) -> Vec<&MapNodeDefinition> {
-        self.nodes
-            .iter()
-            .filter(|definition| definition.is_available_at_depth(depth))
-            .filter(|definition| {
-                include_boss
-                    || !matches!(
-                        definition.category,
-                        MapNodeCategory::Boss | MapNodeCategory::Gate
-                    )
-            })
-            .filter(|definition| category.is_none_or(|category| definition.category == category))
-            .filter(|definition| definition.weight > 0)
-            .collect()
-    }
-
     pub fn boss_candidates(&self) -> Vec<&MapNodeDefinition> {
         self.nodes
             .iter()
@@ -342,13 +319,18 @@ impl MapNodeDefinitionDatabase {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RunMap {
-    #[serde(default = "default_map_template_id")]
     pub map_template_id: MapTemplateId,
+    pub facility_template_version: u32,
     pub nodes: Vec<MapNode>,
-    #[serde(default)]
-    pub edges: Vec<MapEdgeDto>,
     pub start_node_ids: Vec<MapNodeId>,
-    pub terminal_node_id: MapNodeId,
+    pub terminals: Vec<MapTerminalNode>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MapTerminalNode {
+    pub node_id: MapNodeId,
+    pub resolution: FacilityTerminalResolution,
 }
 
 impl RunMap {
@@ -360,30 +342,117 @@ impl RunMap {
         self.nodes.iter_mut().find(|node| node.id == node_id)
     }
 
-    pub fn bidirectional_neighbors(&self, node_id: MapNodeId) -> Vec<MapNodeId> {
-        let mut neighbors = Vec::new();
-        for edge in &self.edges {
-            if edge.from_node_id == node_id {
-                neighbors.push(edge.to_node_id);
-            }
-            if edge.direction == MapEdgeDirection::Bidirectional && edge.to_node_id == node_id {
-                neighbors.push(edge.from_node_id);
-            }
-        }
+    pub fn terminal_resolution(&self, node_id: MapNodeId) -> Option<FacilityTerminalResolution> {
+        self.terminals
+            .iter()
+            .find(|terminal| terminal.node_id == node_id)
+            .map(|terminal| terminal.resolution)
+    }
+
+    pub fn terminal_node_ids(&self) -> Vec<MapNodeId> {
+        let mut ids = self
+            .terminals
+            .iter()
+            .map(|terminal| terminal.node_id)
+            .collect::<Vec<_>>();
+        ids.sort_by_key(|id| id.0.as_u128());
+        ids.dedup();
+        ids
+    }
+
+    pub fn neighbor_node_ids(
+        &self,
+        template: &crate::game::map::FacilityTemplate,
+        node_id: MapNodeId,
+    ) -> Vec<MapNodeId> {
+        let Some(node) = self.node(node_id) else {
+            return Vec::new();
+        };
+        let neighbor_slots = template.neighbor_slot_ids(&node.slot_id);
+        let mut neighbors = self
+            .nodes
+            .iter()
+            .filter(|candidate| neighbor_slots.contains(&candidate.slot_id))
+            .map(|candidate| candidate.id)
+            .collect::<Vec<_>>();
         neighbors.sort_by_key(|id| id.0.as_u128());
         neighbors.dedup();
         neighbors
     }
 
-    pub fn edge_dtos(&self) -> Vec<MapEdgeDto> {
-        let mut edges = self.edges.clone();
-        edges.sort_by_key(|edge| (edge.from_node_id.0.as_u128(), edge.to_node_id.0.as_u128()));
-        edges
+    pub fn manifest_satisfied_rules(
+        &mut self,
+        template: &crate::game::map::FacilityTemplate,
+    ) -> Result<Vec<String>, String> {
+        if self.map_template_id != template.id || self.facility_template_version != template.version
+        {
+            return Err(format!(
+                "run map template '{}@{}' does not match manifestation template '{}@{}'",
+                self.map_template_id.as_str(),
+                self.facility_template_version,
+                template.id.as_str(),
+                template.version
+            ));
+        }
+
+        let mut manifested_rule_ids = Vec::new();
+        for rule in &template.manifestation_rules {
+            let prerequisites_satisfied = rule
+                .prerequisite_slot_ids
+                .iter()
+                .map(|slot_id| {
+                    self.nodes
+                        .iter()
+                        .find(|node| node.slot_id == *slot_id)
+                        .ok_or_else(|| {
+                            format!(
+                                "manifestation rule '{}' references missing prerequisite slot '{}'",
+                                rule.id,
+                                slot_id.as_str()
+                            )
+                        })
+                })
+                .collect::<Result<Vec<_>, String>>()?
+                .iter()
+                .all(|node| node.state == MapNodeState::Completed);
+            if !prerequisites_satisfied {
+                continue;
+            }
+            let target = self
+                .nodes
+                .iter_mut()
+                .find(|node| node.slot_id == rule.manifest_slot_id)
+                .ok_or_else(|| {
+                    format!(
+                        "manifestation rule '{}' references missing target slot '{}'",
+                        rule.id,
+                        rule.manifest_slot_id.as_str()
+                    )
+                })?;
+            if target.visibility != MapNodeVisibility::Concealed {
+                continue;
+            }
+            target.visibility = MapNodeVisibility::Revealed;
+            target.state = MapNodeState::Unavailable;
+            manifested_rule_ids.push(rule.id.clone());
+        }
+        manifested_rule_ids.sort();
+        Ok(manifested_rule_ids)
     }
 
-    pub fn validate_facility_template_contract(&self) -> Result<(), String> {
-        if self.map_template_id.as_str().is_empty() {
-            return Err("map_template_id must not be empty".to_string());
+    pub fn validate_facility_template_contract(
+        &self,
+        template: &crate::game::map::FacilityTemplate,
+    ) -> Result<(), String> {
+        if self.map_template_id != template.id || self.facility_template_version != template.version
+        {
+            return Err(format!(
+                "run map template '{}@{}' does not match facility template '{}@{}'",
+                self.map_template_id.as_str(),
+                self.facility_template_version,
+                template.id.as_str(),
+                template.version
+            ));
         }
 
         let mut node_ids = HashSet::new();
@@ -398,39 +467,94 @@ impl RunMap {
             if !slot_ids.insert(node.slot_id.as_str()) {
                 return Err(format!("duplicate map slot_id '{}'", node.slot_id.as_str()));
             }
-            let expected_slot_id = MapSlotId::for_grid_position(node.depth, node.lane);
-            if node.slot_id != expected_slot_id {
+            let slot = template
+                .slots
+                .iter()
+                .find(|slot| slot.id == node.slot_id)
+                .ok_or_else(|| {
+                    format!(
+                        "map node {:?} references slot '{}' outside facility template '{}'",
+                        node.id,
+                        node.slot_id.as_str(),
+                        template.id.as_str()
+                    )
+                })?;
+            if !slot.allowed_categories.contains(&node.category) {
                 return Err(format!(
-                    "map node {:?} uses slot_id '{}' but depth/lane require '{}'",
+                    "map node {:?} category {:?} is not allowed by slot '{}'",
                     node.id,
-                    node.slot_id.as_str(),
-                    expected_slot_id.as_str()
+                    node.category,
+                    node.slot_id.as_str()
+                ));
+            }
+        }
+        for slot in &template.slots {
+            if !slot_ids.contains(slot.id.as_str()) {
+                return Err(format!(
+                    "run map is missing facility template slot '{}'",
+                    slot.id.as_str()
                 ));
             }
         }
 
-        for node in &self.nodes {
-            if node.state == MapNodeState::Locked
-                && self.edges.iter().any(|edge| edge.from_node_id == node.id)
-            {
-                return Err(format!("locked map node {:?} must be a leaf room", node.id));
-            }
+        let mut expected_start_ids = template
+            .navigation_start_slot_ids()
+            .iter()
+            .map(|slot_id| {
+                self.nodes
+                    .iter()
+                    .find(|node| node.slot_id == *slot_id)
+                    .map(|node| node.id)
+                    .ok_or_else(|| {
+                        format!("navigation start slot '{}' has no node", slot_id.as_str())
+                    })
+            })
+            .collect::<Result<Vec<_>, String>>()?;
+        expected_start_ids.sort_by_key(|id| id.0.as_u128());
+        let mut actual_start_ids = self.start_node_ids.clone();
+        actual_start_ids.sort_by_key(|id| id.0.as_u128());
+        if actual_start_ids != expected_start_ids {
+            return Err("run map start_node_ids do not match facility template starts".to_string());
         }
 
-        let mut edge_keys = HashSet::new();
-        for edge in &self.edges {
-            if !edge_keys.insert((edge.from_node_id.0.as_u128(), edge.to_node_id.0.as_u128())) {
+        let expected_terminals = template
+            .slots
+            .iter()
+            .filter_map(|slot| match slot.role {
+                crate::game::map::FacilitySlotRole::Terminal(resolution) => {
+                    Some((slot, resolution))
+                }
+                _ => None,
+            })
+            .map(|(slot, resolution)| {
+                self.nodes
+                    .iter()
+                    .find(|node| node.slot_id == slot.id)
+                    .map(|node| (node.id, resolution))
+                    .ok_or_else(|| format!("terminal slot '{}' has no node", slot.id.as_str()))
+            })
+            .collect::<Result<HashSet<_>, String>>()?;
+        let mut terminal_ids = HashSet::new();
+        let mut actual_terminals = HashSet::new();
+        for terminal in &self.terminals {
+            if !terminal_ids.insert(terminal.node_id) {
                 return Err(format!(
-                    "duplicate map edge {:?} -> {:?}",
-                    edge.from_node_id, edge.to_node_id
+                    "duplicate map terminal node {:?}",
+                    terminal.node_id
                 ));
             }
-            if !node_ids.contains(&edge.from_node_id) || !node_ids.contains(&edge.to_node_id) {
-                return Err(format!(
-                    "map edge {:?} -> {:?} references missing endpoint",
-                    edge.from_node_id, edge.to_node_id
-                ));
-            }
+            self.node(terminal.node_id).ok_or_else(|| {
+                format!(
+                    "map terminal references missing node {:?}",
+                    terminal.node_id
+                )
+            })?;
+            actual_terminals.insert((terminal.node_id, terminal.resolution));
+        }
+        if actual_terminals != expected_terminals {
+            return Err(
+                "run map typed terminals do not match facility template terminals".to_string(),
+            );
         }
 
         Ok(())
@@ -440,8 +564,6 @@ impl RunMap {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MapNodeDto {
     pub id: MapNodeId,
-    pub depth: u8,
-    pub lane: u8,
     pub slot_id: MapSlotId,
     pub kind_id: MapNodeKindId,
     pub category: MapNodeCategory,
@@ -450,14 +572,45 @@ pub struct MapNodeDto {
     pub payload: MapNodePayload,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub omen: Option<MapNodeOmenOverlayDto>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub difficulty_band: Option<MapNodeDifficultyBandDto>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub relative_threat: Option<RelativeThreatBandDto>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub readiness_warnings: Vec<CombatReadinessWarningDto>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum MapNodeDifficultyBandDto {
+    Easy,
+    Standard,
+    Hard,
+    Elite,
+    NormalBoss,
+    FinalBoss,
+    BossOmen,
+    MonolithRemanifestation,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum RelativeThreatBandDto {
+    Low,
+    Equal,
+    High,
+    VeryHigh,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum CombatReadinessWarningDto {
+    NoDeployableEmployees,
+    TraumaBreakdown,
+    CriticalPhysicalDamage,
 }
 
 impl From<&MapNode> for MapNodeDto {
     fn from(value: &MapNode) -> Self {
         Self {
             id: value.id,
-            depth: value.depth,
-            lane: value.lane,
             slot_id: value.slot_id.clone(),
             kind_id: value.kind_id.clone(),
             category: value.category,
@@ -465,6 +618,40 @@ impl From<&MapNode> for MapNodeDto {
             visibility: value.visibility,
             payload: value.payload.clone(),
             omen: value.omen.clone(),
+            difficulty_band: value.combat_difficulty.as_ref().map(|difficulty| {
+                match difficulty.class {
+                    MapNodeCombatDifficultyClass::Ordinary(band) => match band {
+                        crate::game::data::run_policy_data::OrdinaryCombatDifficultyBand::Easy => {
+                            MapNodeDifficultyBandDto::Easy
+                        }
+                        crate::game::data::run_policy_data::OrdinaryCombatDifficultyBand::Standard => {
+                            MapNodeDifficultyBandDto::Standard
+                        }
+                        crate::game::data::run_policy_data::OrdinaryCombatDifficultyBand::Hard => {
+                            MapNodeDifficultyBandDto::Hard
+                        }
+                    },
+                    MapNodeCombatDifficultyClass::Role(role) => match role {
+                        crate::game::data::run_policy_data::CombatNodeDifficultyRole::Elite => {
+                            MapNodeDifficultyBandDto::Elite
+                        }
+                        crate::game::data::run_policy_data::CombatNodeDifficultyRole::NormalBoss => {
+                            MapNodeDifficultyBandDto::NormalBoss
+                        }
+                        crate::game::data::run_policy_data::CombatNodeDifficultyRole::FinalBoss => {
+                            MapNodeDifficultyBandDto::FinalBoss
+                        }
+                        crate::game::data::run_policy_data::CombatNodeDifficultyRole::BossOmen => {
+                            MapNodeDifficultyBandDto::BossOmen
+                        }
+                        crate::game::data::run_policy_data::CombatNodeDifficultyRole::MonolithRemanifestation => {
+                            MapNodeDifficultyBandDto::MonolithRemanifestation
+                        }
+                    },
+                }
+            }),
+            relative_threat: None,
+            readiness_warnings: Vec::new(),
         }
     }
 }
@@ -477,15 +664,42 @@ pub struct MapNodeOmenOverlayDto {
     pub reveal_level: BossOmenRevealLevel,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub struct MapEdgeDto {
-    pub from_node_id: MapNodeId,
-    pub to_node_id: MapNodeId,
-    pub direction: MapEdgeDirection,
-}
-
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MapViewDto {
     pub map_template_id: MapTemplateId,
+    pub facility_template_version: u32,
     pub nodes: Vec<MapNodeDto>,
+}
+
+#[cfg(test)]
+mod combat_difficulty_schema_tests {
+    use super::*;
+
+    #[test]
+    fn monolith_stage_field_is_required_even_when_none() {
+        let legacy = "(power_model_version:2,difficulty_profile_id:\"default_facility\",class:Ordinary(Standard),floor_power_anchor:100,target_power:100)";
+        let error = ron::de::from_str::<MapNodeCombatDifficulty>(legacy)
+            .expect_err("legacy difficulty without typed monolith stage must reject");
+
+        assert!(error.to_string().contains("monolith_stage"));
+    }
+
+    #[test]
+    fn typed_monolith_stage_round_trips_exactly() {
+        let difficulty = MapNodeCombatDifficulty {
+            power_model_version: 2,
+            difficulty_profile_id: "default_facility".to_string(),
+            class: MapNodeCombatDifficultyClass::Role(
+                crate::game::data::run_policy_data::CombatNodeDifficultyRole::MonolithRemanifestation,
+            ),
+            monolith_stage: Some(MonolithRemanifestationStage::Stage3),
+            floor_power_anchor: 100,
+            target_power: 275,
+        };
+
+        let encoded = serde_json::to_vec(&difficulty).unwrap();
+        let decoded: MapNodeCombatDifficulty = serde_json::from_slice(&encoded).unwrap();
+
+        assert_eq!(decoded, difficulty);
+    }
 }

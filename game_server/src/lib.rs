@@ -21,6 +21,7 @@ pub mod env;
 
 // Module groups
 pub mod game;
+pub mod persistence;
 pub mod shared; // Shared infrastructure modules
 
 pub struct LoggerManager {

@@ -8,7 +8,6 @@ use crate::game::{
         SkillFragmentDatabase, SkillFragmentEffectDef, SkillFragmentId, SkillFragmentMetadata,
         SkillFragmentRarity,
     },
-    map::MapNodeCategory,
 };
 use serde::{Deserialize, Serialize};
 
@@ -16,7 +15,7 @@ pub fn starter_basic_attack_fragment_id() -> SkillFragmentId {
     SkillFragmentId::from("starter_basic_attack_enhancement")
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct SkillFragmentInventory {
     stacks: BTreeMap<SkillFragmentId, SkillFragmentStack>,
     progress: BTreeMap<SkillFragmentId, SkillFragmentProgress>,
@@ -253,18 +252,20 @@ impl SkillFragmentInventory {
             }
         }
 
+        let mut staged = self.clone();
         let mut deliveries = Vec::new();
         for (fragment_id, count) in pending {
             for _ in 0..count {
-                self.add_id_with_policy(&fragment_id, policy)?;
+                staged.add_id_with_policy(&fragment_id, policy)?;
             }
-            self.pending_research_deliveries.remove(&fragment_id);
+            staged.pending_research_deliveries.remove(&fragment_id);
             deliveries.push(SkillFragmentResearchDelivery {
                 fragment_id: fragment_id.clone(),
                 count,
-                total_count: self.count(&fragment_id),
+                total_count: staged.count(&fragment_id),
             });
         }
+        *self = staged;
         Ok(deliveries)
     }
 
@@ -429,11 +430,6 @@ pub struct SkillFragmentResearchPolicy {
     pub completion_threshold: u32,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ResearchDeliveryPolicy {
-    pub deliver_on_node_categories: Vec<MapNodeCategory>,
-}
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SkillFragmentPolicy {
     pub equip: SkillFragmentEquipPolicy,
@@ -463,25 +459,6 @@ impl SkillFragmentPolicy {
                 completion_threshold: 100,
             },
         }
-    }
-}
-
-impl Default for ResearchDeliveryPolicy {
-    fn default() -> Self {
-        Self {
-            deliver_on_node_categories: vec![
-                MapNodeCategory::Support,
-                MapNodeCategory::HeadquartersContact,
-                MapNodeCategory::Shop,
-                MapNodeCategory::Reward,
-            ],
-        }
-    }
-}
-
-impl ResearchDeliveryPolicy {
-    pub fn can_deliver_on(&self, category: MapNodeCategory) -> bool {
-        self.deliver_on_node_categories.contains(&category)
     }
 }
 
@@ -688,7 +665,7 @@ impl Default for SkillFragmentPolicy {
     }
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct SkillFragmentLoadout {
     baseline_ids: Vec<SkillFragmentId>,
     active_fragment_id: Option<SkillFragmentId>,
@@ -784,6 +761,10 @@ impl SkillFragmentLoadout {
 
         self.active_fragment_id = None;
         Ok(())
+    }
+
+    pub fn unequip_shared_fragment(&mut self) -> Option<SkillFragmentId> {
+        self.active_fragment_id.take()
     }
 
     pub fn apply_to_profile(
@@ -1139,16 +1120,46 @@ mod tests {
     }
 
     #[test]
-    fn research_delivery_policy_excludes_combat_and_boss_by_default() {
-        let policy = ResearchDeliveryPolicy::default();
+    fn pending_research_delivery_failure_is_atomic() {
+        let fragment = SkillFragmentMetadata {
+            id: SkillFragmentId::from("fragment_atomic_delivery"),
+            uuid: uuid::Uuid::from_u128(16),
+            name: "Atomic Delivery".to_string(),
+            description: "test".to_string(),
+            rarity: crate::game::data::skill_fragment_data::SkillFragmentRarity::Rare,
+            equip_limit:
+                crate::game::data::skill_fragment_data::SkillFragmentEquipLimit::OwnedCopies,
+            origin: None,
+            sources: vec![
+                crate::game::data::skill_fragment_data::SkillFragmentAcquisitionSource::RareReward,
+            ],
+            dependencies: vec![],
+            compatibility: Default::default(),
+            effect: SkillFragmentEffectDef::ActiveSkill {
+                imitation_skill_id: crate::game::ability::SkillId::from("atomic_delivery_skill"),
+                upgrade_skill_ids: Default::default(),
+                awakened_skill_id: None,
+            },
+        };
+        let database = SkillFragmentDatabase::with_builtin_starter(vec![fragment.clone()]);
+        let mut inventory = SkillFragmentInventory::new();
+        inventory.add(&fragment).unwrap();
+        inventory
+            .add_research_progress(&fragment.id, 100)
+            .expect("research completion should queue delivery");
+        let mut policy = SkillFragmentPolicy::default_run_policy();
+        policy.stacking = SkillFragmentStackingPolicy::RejectAdditionalCopies;
 
-        assert!(policy.can_deliver_on(MapNodeCategory::Support));
-        assert!(policy.can_deliver_on(MapNodeCategory::HeadquartersContact));
-        assert!(policy.can_deliver_on(MapNodeCategory::Shop));
-        assert!(policy.can_deliver_on(MapNodeCategory::Reward));
-        assert!(!policy.can_deliver_on(MapNodeCategory::Start));
-        assert!(!policy.can_deliver_on(MapNodeCategory::Combat));
-        assert!(!policy.can_deliver_on(MapNodeCategory::Boss));
+        let error = inventory
+            .deliver_pending_research_with_policy(&database, &policy)
+            .unwrap_err();
+
+        assert!(matches!(error, GameError::InvalidAction));
+        assert_eq!(inventory.count(&fragment.id), 1);
+        assert_eq!(
+            inventory.pending_research_deliveries().collect::<Vec<_>>(),
+            vec![(&fragment.id, 1)]
+        );
     }
 
     #[test]
