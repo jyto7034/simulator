@@ -1,21 +1,23 @@
+use crate::game::behavior::ActionDisabledReasonCode;
 use crate::game::data::{
     equipment_data::{EquipmentMaterialCost, EquipmentMaterialType},
     skill_fragment_data::{
         SkillFragmentCompatibilityFailureCode, SkillFragmentCompatibilityRequirements,
     },
 };
+use crate::game::resources::InventoryItemDto;
 
 use super::*;
 
 #[test]
-fn use_consumable_item_is_safezone_action_and_exposes_active_modifier_snapshot() {
+fn use_consumable_item_decrements_definition_stack_and_exposes_active_modifier_snapshot() {
     let consumable = consumable_meta(
         0xC001,
         "stabilizing_ampoule",
         ConsumableTier::Common,
         ConsumableEffect::TraumaMitigation { percent: 25 },
     );
-    let owned_uuid = Uuid::from_u128(0xC0FFEE);
+    let owned_uuid = consumable.uuid;
     let game_data = game_data_with_consumables(vec![consumable.clone()]);
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
@@ -23,32 +25,24 @@ fn use_consumable_item_is_safezone_action_and_exposes_active_modifier_snapshot()
     let employee_uuid = core
         .roster()
         .unwrap()
-        .available_employee_ids()
+        .combat_eligible_employee_ids()
         .first()
         .copied()
         .expect("starter employee");
     core.inventory_mut()
         .unwrap()
-        .consumables
-        .add_item(OwnedConsumable::new(owned_uuid, Arc::new(consumable)))
+        .add_consumable(Arc::new(consumable), 2)
         .unwrap();
 
     let node_id = force_first_available_node(
         &mut core,
-        MapNodeCategory::Support,
-        "support_rest",
-        MapNodePayload::Support {
-            support_type: SupportNodeType::Rest,
-            support_mode: SupportNodeMode::Known,
-            choices: vec![],
-        },
+        MapNodeCategory::SavePoint,
+        "save_point",
+        MapNodePayload::SavePoint,
     );
     core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
         .unwrap();
     assert!(matches!(core.get_state(), GameState::NodeConfirm { .. }));
-    assert!(core
-        .get_allowed_actions()
-        .contains(&ActionKind::UseConsumableItem));
 
     let result = core
         .execute(
@@ -64,8 +58,9 @@ fn use_consumable_item_is_safezone_action_and_exposes_active_modifier_snapshot()
         item_uuid,
         target_employee_uuid,
         replaced_modifier,
-        applied_modifier,
+        active_modifier,
         inventory_diff,
+        ..
     } = result
     else {
         panic!("expected consumable use result");
@@ -73,20 +68,34 @@ fn use_consumable_item_is_safezone_action_and_exposes_active_modifier_snapshot()
     assert_eq!(item_uuid, owned_uuid);
     assert_eq!(target_employee_uuid, employee_uuid);
     assert!(replaced_modifier.is_none());
-    assert_eq!(applied_modifier.definition_id, "stabilizing_ampoule");
-    assert_eq!(inventory_diff.removed, vec![owned_uuid]);
-    assert!(core
-        .inventory()
-        .unwrap()
-        .consumables
-        .get_item(&owned_uuid)
-        .is_none());
+    assert_eq!(
+        active_modifier.unwrap().definition_id,
+        "stabilizing_ampoule"
+    );
+    assert!(inventory_diff.removed.is_empty());
+    let InventoryItemDto::Consumable(updated_stack) = &inventory_diff.updated[0] else {
+        panic!("expected updated consumable stack");
+    };
+    assert_eq!(updated_stack.definition_id, "stabilizing_ampoule");
+    assert_eq!(updated_stack.quantity, 1);
+    assert_eq!(
+        core.inventory()
+            .unwrap()
+            .consumables
+            .get_item(&owned_uuid)
+            .unwrap()
+            .quantity,
+        1
+    );
 
     let snapshot = core.get_run_snapshot_json().unwrap();
-    assert!(snapshot["inventory"]["consumables"]
-        .as_array()
-        .unwrap()
-        .is_empty());
+    assert_eq!(snapshot["inventory"]["reserved_slot_count"], 50);
+    assert_eq!(snapshot["inventory"]["occupied_slot_count"], 4);
+    assert_eq!(snapshot["inventory"]["consumables"][0]["quantity"], 1);
+    assert_eq!(
+        snapshot["inventory"]["consumables"][0]["uuid"],
+        json!(owned_uuid)
+    );
     let employees = snapshot["roster"]["employees"].as_array().unwrap();
     let employee = employees
         .iter()
@@ -110,7 +119,7 @@ fn use_consumable_item_allows_alive_but_combat_unavailable_target() {
         ConsumableTier::Common,
         ConsumableEffect::TraumaMitigation { percent: 15 },
     );
-    let owned_uuid = Uuid::from_u128(0xC020_0001);
+    let owned_uuid = consumable.uuid;
     let game_data = game_data_with_consumables(vec![consumable.clone()]);
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
@@ -118,29 +127,24 @@ fn use_consumable_item_allows_alive_but_combat_unavailable_target() {
     let employee_uuid = core
         .roster()
         .unwrap()
-        .available_employee_ids()
+        .combat_eligible_employee_ids()
         .first()
         .copied()
         .expect("starter employee");
     {
         let employee = core.roster_mut().unwrap().get_mut(&employee_uuid).unwrap();
-        employee.availability = EmployeeAvailability::Unavailable;
+        employee.condition.physical_damage = MAX_PHYSICAL_DAMAGE - 1;
     }
     core.inventory_mut()
         .unwrap()
-        .consumables
-        .add_item(OwnedConsumable::new(owned_uuid, Arc::new(consumable)))
+        .add_consumable(Arc::new(consumable), 1)
         .unwrap();
 
     let node_id = force_first_available_node(
         &mut core,
-        MapNodeCategory::Support,
-        "support_rest",
-        MapNodePayload::Support {
-            support_type: SupportNodeType::Rest,
-            support_mode: SupportNodeMode::Known,
-            choices: vec![],
-        },
+        MapNodeCategory::SavePoint,
+        "save_point",
+        MapNodePayload::SavePoint,
     );
     core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
         .unwrap();
@@ -171,6 +175,125 @@ fn use_consumable_item_allows_alive_but_combat_unavailable_target() {
 }
 
 #[test]
+fn physical_treatment_consumable_reduces_exact_integer_damage_without_creating_modifier() {
+    let consumable = consumable_meta(
+        0xC022,
+        "field_surgery_kit",
+        ConsumableTier::Common,
+        ConsumableEffect::ReducePhysicalDamage { amount: 2 },
+    );
+    let owned_uuid = consumable.uuid;
+    let game_data = game_data_with_consumables(vec![consumable.clone()]);
+    let mut core = GameCore::new(game_data, 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    core.roster_mut()
+        .unwrap()
+        .get_mut(&employee_uuid)
+        .unwrap()
+        .condition
+        .physical_damage = 5;
+    core.inventory_mut()
+        .unwrap()
+        .add_consumable(Arc::new(consumable), 1)
+        .unwrap();
+
+    let node_id = force_first_available_node(
+        &mut core,
+        MapNodeCategory::SavePoint,
+        "save_point",
+        MapNodePayload::SavePoint,
+    );
+    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+        .unwrap();
+
+    let result = core
+        .execute(
+            player_id,
+            PlayerBehavior::UseConsumableItem {
+                item_uuid: owned_uuid,
+                target_employee_uuid: employee_uuid,
+            },
+        )
+        .unwrap();
+    let BehaviorResult::ConsumableItemUsed {
+        active_modifier,
+        condition,
+        inventory_diff,
+        ..
+    } = result
+    else {
+        panic!("expected physical treatment result");
+    };
+
+    assert_eq!(condition.physical_damage, 3);
+    assert!(active_modifier.is_none());
+    assert_eq!(inventory_diff.removed, vec![owned_uuid]);
+    let employee = core.roster().unwrap().get(&employee_uuid).unwrap();
+    assert_eq!(employee.condition.physical_damage, 3);
+    assert!(employee.active_consumable_modifier.is_none());
+}
+
+#[test]
+fn physical_treatment_can_be_spent_on_an_undamaged_living_employee() {
+    let consumable = consumable_meta(
+        0xC023,
+        "surplus_field_surgery_kit",
+        ConsumableTier::Common,
+        ConsumableEffect::ReducePhysicalDamage { amount: 2 },
+    );
+    let owned_uuid = consumable.uuid;
+    let game_data = game_data_with_consumables(vec![consumable.clone()]);
+    let mut core = GameCore::new(game_data, 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    assert_eq!(
+        core.roster()
+            .unwrap()
+            .get(&employee_uuid)
+            .unwrap()
+            .condition
+            .physical_damage,
+        0
+    );
+    core.inventory_mut()
+        .unwrap()
+        .add_consumable(Arc::new(consumable), 1)
+        .unwrap();
+
+    let result = core
+        .execute(
+            player_id,
+            PlayerBehavior::UseConsumableItem {
+                item_uuid: owned_uuid,
+                target_employee_uuid: employee_uuid,
+            },
+        )
+        .unwrap();
+
+    let BehaviorResult::ConsumableItemUsed {
+        condition,
+        active_modifier,
+        inventory_diff,
+        ..
+    } = result
+    else {
+        panic!("expected physical treatment result");
+    };
+    assert_eq!(condition.physical_damage, 0);
+    assert!(active_modifier.is_none());
+    assert_eq!(inventory_diff.removed, vec![owned_uuid]);
+    assert!(core
+        .inventory()
+        .unwrap()
+        .consumables
+        .get_item(&owned_uuid)
+        .is_none());
+}
+
+#[test]
 fn use_consumable_item_rejects_dead_target() {
     let consumable = consumable_meta(
         0xC021,
@@ -178,7 +301,7 @@ fn use_consumable_item_rejects_dead_target() {
         ConsumableTier::Common,
         ConsumableEffect::TraumaMitigation { percent: 15 },
     );
-    let owned_uuid = Uuid::from_u128(0xC021_0001);
+    let owned_uuid = consumable.uuid;
     let game_data = game_data_with_consumables(vec![consumable.clone()]);
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
@@ -186,29 +309,24 @@ fn use_consumable_item_rejects_dead_target() {
     let employee_uuid = core
         .roster()
         .unwrap()
-        .available_employee_ids()
+        .combat_eligible_employee_ids()
         .first()
         .copied()
         .expect("starter employee");
     {
         let employee = core.roster_mut().unwrap().get_mut(&employee_uuid).unwrap();
-        employee.life_state = EmployeeLifeState::Dead;
+        employee.condition.physical_damage = MAX_PHYSICAL_DAMAGE;
     }
     core.inventory_mut()
         .unwrap()
-        .consumables
-        .add_item(OwnedConsumable::new(owned_uuid, Arc::new(consumable)))
+        .add_consumable(Arc::new(consumable), 1)
         .unwrap();
 
     let node_id = force_first_available_node(
         &mut core,
-        MapNodeCategory::Support,
-        "support_rest",
-        MapNodePayload::Support {
-            support_type: SupportNodeType::Rest,
-            support_mode: SupportNodeMode::Known,
-            choices: vec![],
-        },
+        MapNodeCategory::SavePoint,
+        "save_point",
+        MapNodePayload::SavePoint,
     );
     core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
         .unwrap();
@@ -244,8 +362,8 @@ fn use_consumable_item_replaces_existing_modifier_without_refund() {
         ConsumableTier::Uncommon,
         ConsumableEffect::BattleHpSetup { bonus_percent: 20 },
     );
-    let first_owned = Uuid::from_u128(0xC010_0001);
-    let second_owned = Uuid::from_u128(0xC011_0001);
+    let first_owned = first.uuid;
+    let second_owned = second.uuid;
     let game_data = game_data_with_consumables(vec![first.clone(), second.clone()]);
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
@@ -253,20 +371,14 @@ fn use_consumable_item_replaces_existing_modifier_without_refund() {
     let employee_uuid = core
         .roster()
         .unwrap()
-        .available_employee_ids()
+        .combat_eligible_employee_ids()
         .first()
         .copied()
         .expect("starter employee");
     {
         let inventory = core.inventory_mut().unwrap();
-        inventory
-            .consumables
-            .add_item(OwnedConsumable::new(first_owned, Arc::new(first)))
-            .unwrap();
-        inventory
-            .consumables
-            .add_item(OwnedConsumable::new(second_owned, Arc::new(second)))
-            .unwrap();
+        inventory.add_consumable(Arc::new(first), 1).unwrap();
+        inventory.add_consumable(Arc::new(second), 1).unwrap();
     }
 
     core.execute(
@@ -316,14 +428,14 @@ fn equip_item_targets_employee_loadout_after_roster_initialization() {
     let unit_meta = abnormality_meta(1);
     let weapon = equipment_meta(10, "employee_weapon", EquipmentType::Weapon);
     let weapon_owned_uuid = Uuid::from_u128(200);
-    let game_data = game_data_with_equipment(Arc::clone(&unit_meta), vec![weapon.clone()], vec![]);
+    let game_data = game_data_with_equipment(Arc::clone(&unit_meta), vec![weapon.clone()]);
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
     let employee_uuid = core
         .roster()
         .unwrap()
-        .available_employee_ids()
+        .combat_eligible_employee_ids()
         .first()
         .copied()
         .expect("starter employee");
@@ -374,6 +486,128 @@ fn equip_item_targets_employee_loadout_after_roster_initialization() {
         employee_snapshot["combat_profile"]["effective_weapon_profile"]["weapon_archetype"],
         "Sword"
     );
+    assert_eq!(
+        employee_snapshot["combat_profile"]["effective_weapon_profile"]["block_capacity"],
+        0
+    );
+}
+
+#[test]
+fn equipped_weapon_authors_block_capacity_for_every_current_archetype() {
+    let unit_meta = abnormality_meta(1);
+    let specifications = [
+        (WeaponArchetype::Bow, 0),
+        (WeaponArchetype::Gun, 0),
+        (WeaponArchetype::Staff, 0),
+        (WeaponArchetype::Sword, 1),
+        (WeaponArchetype::Spear, 1),
+        (WeaponArchetype::Shield, 3),
+    ];
+    let mut weapons = specifications
+        .iter()
+        .enumerate()
+        .map(|(index, (archetype, block_capacity))| {
+            let mut weapon = weapon_equipment(
+                0xB10C_1000 + index as u128,
+                &format!("block_capacity_{archetype:?}"),
+                *archetype,
+            );
+            weapon
+                .weapon_profile
+                .as_mut()
+                .expect("test weapon profile")
+                .block_capacity = *block_capacity;
+            weapon
+        })
+        .collect::<Vec<_>>();
+    let replacement_armor = equipment_meta(0xB10C_2000, "replacement_armor", EquipmentType::Armor);
+    let mut equipment = weapons.clone();
+    equipment.push(replacement_armor.clone());
+    let game_data = game_data_with_equipment(Arc::clone(&unit_meta), equipment);
+    let mut core = GameCore::new(game_data, 0xB10C);
+    let player_id = Uuid::from_u128(0xB10C);
+    start_new_game_with_default_starters(&mut core, player_id);
+
+    for employee_uuid in core.roster().unwrap().combat_eligible_employee_ids() {
+        let profile =
+            crate::game::combat_setup::player_spawns::effective_combat_profile_for_employee(
+                core.roster().unwrap(),
+                core.inventory().unwrap(),
+                &core.state.skill_fragments,
+                &core.game_data,
+                employee_uuid,
+            )
+            .unwrap();
+        assert_eq!(
+            profile.block_capacity, 0,
+            "unarmed employees keep zero block capacity regardless of employee profile and armor"
+        );
+    }
+
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    for (index, (weapon, (_, expected))) in weapons.drain(..).zip(specifications.iter()).enumerate()
+    {
+        grant_and_equip_weapon(
+            &mut core,
+            employee_uuid,
+            weapon,
+            Uuid::from_u128(0xB10C_3000 + index as u128),
+        );
+        let profile =
+            crate::game::combat_setup::player_spawns::effective_combat_profile_for_employee(
+                core.roster().unwrap(),
+                core.inventory().unwrap(),
+                &core.state.skill_fragments,
+                &core.game_data,
+                employee_uuid,
+            )
+            .unwrap();
+        assert_eq!(profile.block_capacity, *expected);
+        assert_eq!(
+            profile
+                .weapon_profile
+                .as_ref()
+                .expect("equipped weapon profile")
+                .block_capacity,
+            *expected
+        );
+    }
+
+    let armor_owned_uuid = Uuid::from_u128(0xB10C_4000);
+    core.inventory_mut()
+        .unwrap()
+        .equipments
+        .add_item(OwnedEquipment::new(
+            armor_owned_uuid,
+            Arc::new(replacement_armor),
+        ))
+        .unwrap();
+    core.handle_equip_item(armor_owned_uuid, employee_uuid)
+        .unwrap();
+    let profile = crate::game::combat_setup::player_spawns::effective_combat_profile_for_employee(
+        core.roster().unwrap(),
+        core.inventory().unwrap(),
+        &core.state.skill_fragments,
+        &core.game_data,
+        employee_uuid,
+    )
+    .unwrap();
+    assert_eq!(
+        profile.block_capacity, 3,
+        "armor replacement must not modify the equipped Shield's authored capacity"
+    );
+
+    let snapshot = core.get_employee_roster_snapshot_json().unwrap();
+    let employee = snapshot["employees"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|employee| employee["uuid"] == json!(employee_uuid))
+        .unwrap();
+    assert_eq!(
+        employee["combat_profile"]["effective_weapon_profile"]["block_capacity"],
+        3
+    );
 }
 
 #[test]
@@ -381,14 +615,14 @@ fn unequip_item_allows_unbound_equipment_in_safezone() {
     let unit_meta = abnormality_meta(1);
     let weapon = equipment_meta(10, "employee_weapon", EquipmentType::Weapon);
     let weapon_owned_uuid = Uuid::from_u128(200);
-    let game_data = game_data_with_equipment(Arc::clone(&unit_meta), vec![weapon.clone()], vec![]);
+    let game_data = game_data_with_equipment(Arc::clone(&unit_meta), vec![weapon.clone()]);
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
     let employee_uuid = core
         .roster()
         .unwrap()
-        .available_employee_ids()
+        .combat_eligible_employee_ids()
         .first()
         .copied()
         .expect("starter employee");
@@ -450,14 +684,14 @@ fn unequip_item_rejects_bound_equipment_and_snapshot_exposes_reason() {
     weapon.bound = true;
     weapon.cannot_unequip_reason = "story_bound".to_string();
     let weapon_owned_uuid = Uuid::from_u128(201);
-    let game_data = game_data_with_equipment(Arc::clone(&unit_meta), vec![weapon.clone()], vec![]);
+    let game_data = game_data_with_equipment(Arc::clone(&unit_meta), vec![weapon.clone()]);
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
     let employee_uuid = core
         .roster()
         .unwrap()
-        .available_employee_ids()
+        .combat_eligible_employee_ids()
         .first()
         .copied()
         .expect("starter employee");
@@ -556,7 +790,6 @@ fn bound_equipment_cannot_be_dismantled_or_enhanced_in_maintenance() {
         .with_equipment_data(Arc::new(EquipmentDatabase::with_all(
             equipment_with_starter_assets(vec![equipment.clone()]),
             vec![material.clone()],
-            vec![],
             vec![dismantle_recipe],
             vec![enhancement_recipe],
         )))
@@ -608,7 +841,13 @@ fn bound_equipment_cannot_be_dismantled_or_enhanced_in_maintenance() {
             },
         )
         .unwrap_err();
-    assert!(matches!(dismantle_err, GameError::InvalidAction));
+    assert!(matches!(
+        dismantle_err,
+        GameError::ActionUnavailable {
+            action: ActionKind::DismantleEquipment,
+            reason: ActionDisabledReasonCode::NoEligiblePayload,
+        }
+    ));
     let enhance_err = core
         .execute(
             player_id,
@@ -617,7 +856,13 @@ fn bound_equipment_cannot_be_dismantled_or_enhanced_in_maintenance() {
             },
         )
         .unwrap_err();
-    assert!(matches!(enhance_err, GameError::InvalidAction));
+    assert!(matches!(
+        enhance_err,
+        GameError::ActionUnavailable {
+            action: ActionKind::EnhanceEquipment,
+            reason: ActionDisabledReasonCode::NoEligiblePayload,
+        }
+    ));
     let owned = core
         .inventory()
         .unwrap()
@@ -635,18 +880,13 @@ fn bound_equipment_cannot_be_dismantled_or_enhanced_in_maintenance() {
 }
 
 #[test]
-fn equip_item_combines_equipped_component_before_slot_rejection() {
+fn equip_item_replaces_occupied_slot_without_consuming_either_item() {
     let unit_meta = abnormality_meta(1);
-    let component_a = equipment_meta(10, "weapon_component_a", EquipmentType::Weapon);
-    let component_b = equipment_meta(11, "weapon_component_b", EquipmentType::Weapon);
-    let completed = equipment_meta(12, "completed_weapon", EquipmentType::Weapon);
+    let original = equipment_meta(10, "original_weapon", EquipmentType::Weapon);
+    let replacement = equipment_meta(11, "replacement_weapon", EquipmentType::Weapon);
     let game_data = game_data_with_equipment(
         Arc::clone(&unit_meta),
-        vec![component_a.clone(), component_b.clone(), completed.clone()],
-        vec![EquipmentRecipeMetadata {
-            ingredients: vec![component_a.uuid, component_b.uuid],
-            result: completed.uuid,
-        }],
+        vec![original.clone(), replacement.clone()],
     );
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
@@ -654,86 +894,86 @@ fn equip_item_combines_equipped_component_before_slot_rejection() {
     let employee_uuid = core
         .roster()
         .unwrap()
-        .available_employee_ids()
+        .combat_eligible_employee_ids()
         .first()
         .copied()
         .expect("starter employee");
-    let component_a_owned_uuid = Uuid::from_u128(200);
-    let component_b_owned_uuid = Uuid::from_u128(201);
+    let original_owned_uuid = Uuid::from_u128(200);
+    let replacement_owned_uuid = Uuid::from_u128(201);
 
     {
         let inventory = core.inventory_mut().unwrap();
         inventory
             .equipments
-            .add_item(OwnedEquipment::new(
-                component_a_owned_uuid,
-                Arc::new(component_a),
-            ))
+            .add_item(OwnedEquipment::new(original_owned_uuid, Arc::new(original)))
             .unwrap();
         inventory
             .equipments
             .add_item(OwnedEquipment::new(
-                component_b_owned_uuid,
-                Arc::new(component_b),
+                replacement_owned_uuid,
+                Arc::new(replacement),
             ))
             .unwrap();
     }
 
-    core.handle_equip_item(component_a_owned_uuid, employee_uuid)
+    core.handle_equip_item(original_owned_uuid, employee_uuid)
         .unwrap();
     let result = core
-        .handle_equip_item(component_b_owned_uuid, employee_uuid)
+        .handle_equip_item(replacement_owned_uuid, employee_uuid)
         .unwrap();
 
     let BehaviorResult::EquipItem { result } = result else {
         panic!("expected equip item result");
     };
-    assert_eq!(result.requested_item_uuid, component_b_owned_uuid);
+    assert_eq!(result.requested_item_uuid, replacement_owned_uuid);
     assert_eq!(result.target_unit, employee_uuid);
-    assert_eq!(result.inventory_diff.removed.len(), 2);
-    assert!(result
-        .inventory_diff
-        .removed
-        .contains(&component_a_owned_uuid));
-    assert!(result
-        .inventory_diff
-        .removed
-        .contains(&component_b_owned_uuid));
-    assert_eq!(result.inventory_diff.added.len(), 1);
+    assert!(result.inventory_diff.removed.is_empty());
+    assert!(result.inventory_diff.added.is_empty());
+    assert_eq!(result.inventory_diff.updated.len(), 2);
+    let serialized = serde_json::to_value(&result).expect("equip result should serialize");
+    assert_eq!(
+        serialized["outcome"]["Equipped"]["item_uuid"],
+        replacement_owned_uuid.to_string()
+    );
+    assert!(!serialized.to_string().contains("Combined"));
     assert!(matches!(
         result.outcome,
-        EquipItemOutcomeDto::Combined {
-            result_base_uuid,
-            ..
-        } if result_base_uuid == completed.uuid
+        EquipItemOutcomeDto::Equipped { item_uuid } if item_uuid == replacement_owned_uuid
     ));
+    assert_eq!(result.equipped_items.len(), 2);
     assert!(result
         .equipped_items
         .iter()
-        .any(|item| item.base_uuid == completed.uuid));
+        .any(|item| { item.instance_uuid == replacement_owned_uuid }));
 
     let inventory = core.inventory().unwrap();
-    assert!(inventory
-        .equipments
-        .get_item(&component_a_owned_uuid)
-        .is_none());
-    assert!(inventory
-        .equipments
-        .get_item(&component_b_owned_uuid)
-        .is_none());
+    assert_eq!(
+        inventory
+            .equipments
+            .get_item(&original_owned_uuid)
+            .expect("original item remains owned")
+            .equipped_to,
+        None
+    );
+    assert_eq!(
+        inventory
+            .equipments
+            .get_item(&replacement_owned_uuid)
+            .expect("replacement item remains owned")
+            .equipped_to,
+        Some(employee_uuid)
+    );
 
     let roster = core.roster().unwrap();
     let employee = roster.get(&employee_uuid).unwrap();
     let equipped = employee.loadout.item_slot.iter().collect::<Vec<_>>();
     assert_eq!(equipped.len(), 2);
-    assert!(equipped.iter().any(|item| item.base_uuid == completed.uuid));
-
-    let completed_item = inventory
-        .equipments
+    assert!(equipped
         .iter()
-        .find(|item| item.meta.uuid == completed.uuid)
-        .expect("completed item should be created");
-    assert_eq!(completed_item.equipped_to, Some(employee_uuid));
+        .any(|item| item.instance_uuid == replacement_owned_uuid));
+    assert!(!equipped
+        .iter()
+        .any(|item| item.instance_uuid == original_owned_uuid));
 }
 
 #[test]
@@ -780,7 +1020,13 @@ fn dismantle_equipment_is_maintenance_only_and_grants_material_stacks() {
             },
         )
         .unwrap_err();
-    assert!(matches!(err, GameError::InvalidAction));
+    assert!(matches!(
+        err,
+        GameError::ActionUnavailable {
+            action: ActionKind::DismantleEquipment,
+            reason: ActionDisabledReasonCode::ContextIrrelevant,
+        }
+    ));
 
     let node_id = force_first_available_node(
         &mut core,
@@ -792,9 +1038,6 @@ fn dismantle_equipment_is_maintenance_only_and_grants_material_stacks() {
         .unwrap();
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
-    assert!(core
-        .get_allowed_actions()
-        .contains(&ActionKind::DismantleEquipment));
 
     let result = core
         .execute(
@@ -864,7 +1107,7 @@ fn dismantle_equipment_automatically_unequips_equipped_item() {
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
-    let employee_uuid = core.roster().unwrap().available_employee_ids()[0];
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
     let owned_uuid = Uuid::from_u128(451);
     core.inventory_mut()
         .unwrap()
@@ -984,7 +1227,13 @@ fn enhance_equipment_is_maintenance_only_and_updates_owned_instance() {
             },
         )
         .unwrap_err();
-    assert!(matches!(err, GameError::InvalidAction));
+    assert!(matches!(
+        err,
+        GameError::ActionUnavailable {
+            action: ActionKind::EnhanceEquipment,
+            reason: ActionDisabledReasonCode::ContextIrrelevant,
+        }
+    ));
 
     let node_id = force_first_available_node(
         &mut core,
@@ -1010,9 +1259,6 @@ fn enhance_equipment_is_maintenance_only_and_updates_owned_instance() {
         .find(|item| item.target_id == owned_uuid.to_string())
         .expect("equipment should be present in maintenance preview");
     assert!(maintenance_item.operations.enhance.can_execute);
-    assert!(core
-        .get_allowed_actions()
-        .contains(&ActionKind::EnhanceEquipment));
 
     let result = core
         .execute(
@@ -1058,7 +1304,7 @@ fn skill_fragment_actions_equip_and_unequip_employee_loadout() {
     let employee_uuid = core
         .roster()
         .unwrap()
-        .available_employee_ids()
+        .combat_eligible_employee_ids()
         .first()
         .copied()
         .expect("starter employee");
@@ -1127,6 +1373,79 @@ fn skill_fragment_actions_equip_and_unequip_employee_loadout() {
 }
 
 #[test]
+fn newly_dead_employee_keeps_roster_record_and_atomically_returns_equipment_and_shared_fragment() {
+    let fragment = active_skill_fragment("death_recovery_fragment", 0xF0D0, "death_recovery_skill");
+    let weapon = weapon_equipment(0xE0D0, "death_recovery_sword", WeaponArchetype::Sword);
+    let game_data =
+        game_data_with_equipment_and_skill_fragments(vec![weapon.clone()], vec![fragment.clone()]);
+    let mut core = GameCore::new(game_data, 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    let weapon_instance_uuid = Uuid::from_u128(0xE0D0_0001);
+    grant_and_equip_weapon(&mut core, employee_uuid, weapon, weapon_instance_uuid);
+    core.state.skill_fragments.add(&fragment).unwrap();
+    core.execute(
+        player_id,
+        PlayerBehavior::EquipSkillFragment {
+            employee_uuid,
+            fragment_id: fragment.id.clone(),
+        },
+    )
+    .unwrap();
+
+    let mut staged_roster = core.state.roster.clone();
+    {
+        let employee = staged_roster.get_mut(&employee_uuid).unwrap();
+        employee.condition.physical_damage = MAX_PHYSICAL_DAMAGE;
+        employee.psychology.trust_score = 8;
+    }
+    let mut staged_inventory = core.state.inventory.clone();
+
+    let diff = core
+        .recover_assets_for_new_deaths(&mut staged_roster, &mut staged_inventory)
+        .unwrap();
+
+    let dead = staged_roster.get(&employee_uuid).unwrap();
+    assert!(dead.condition.is_dead());
+    assert!(dead.loadout.item_slot.is_empty());
+    assert!(dead.skill_fragments.active_fragment_id().is_none());
+    assert_eq!(dead.psychology.trust_score, 8);
+    assert!(dead.psychology.memories.is_empty());
+    assert_eq!(staged_roster.len(), core.state.roster.len());
+    assert_eq!(
+        staged_inventory
+            .equipments
+            .get_item(&weapon_instance_uuid)
+            .unwrap()
+            .equipped_to,
+        None
+    );
+    assert!(diff.updated.iter().any(|item| matches!(
+        item,
+        InventoryItemDto::Equipment(equipment)
+            if equipment.uuid == weapon_instance_uuid
+    )));
+
+    // Recovery is staged: until the enclosing result transaction commits, live state is untouched.
+    let persistent = core.state.roster.get(&employee_uuid).unwrap();
+    assert!(persistent.is_alive());
+    assert_eq!(
+        persistent.skill_fragments.active_fragment_id(),
+        Some(&fragment.id)
+    );
+    assert_eq!(
+        core.state
+            .inventory
+            .equipments
+            .get_item(&weapon_instance_uuid)
+            .unwrap()
+            .equipped_to,
+        Some(employee_uuid)
+    );
+}
+
+#[test]
 fn skill_fragment_equip_rejects_unowned_fragment() {
     let fragment = active_skill_fragment("unowned_active_fragment", 0xF00E, "unowned_skill");
     let game_data = game_data_with_skill_fragments(vec![fragment.clone()]);
@@ -1136,7 +1455,7 @@ fn skill_fragment_equip_rejects_unowned_fragment() {
     let employee_uuid = core
         .roster()
         .unwrap()
-        .available_employee_ids()
+        .combat_eligible_employee_ids()
         .first()
         .copied()
         .expect("starter employee");
@@ -1163,7 +1482,7 @@ fn skill_fragment_equip_requires_one_owned_copy_per_employee() {
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
-    let employee_ids = core.roster().unwrap().available_employee_ids();
+    let employee_ids = core.roster().unwrap().combat_eligible_employee_ids();
     grant_and_equip_weapon(
         &mut core,
         employee_ids[0],
@@ -1223,7 +1542,7 @@ fn global_exclusive_skill_fragment_rejects_second_employee_even_with_extra_copy(
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
-    let employee_ids = core.roster().unwrap().available_employee_ids();
+    let employee_ids = core.roster().unwrap().combat_eligible_employee_ids();
     grant_and_equip_weapon(
         &mut core,
         employee_ids[0],
@@ -1273,7 +1592,7 @@ fn skill_fragment_equip_rejects_incompatible_weapon_profile() {
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
-    let employee_uuid = core.roster().unwrap().available_employee_ids()[0];
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
     grant_and_equip_weapon(
         &mut core,
         employee_uuid,
@@ -1324,6 +1643,84 @@ fn skill_fragment_equip_rejects_incompatible_weapon_profile() {
 }
 
 #[test]
+fn equip_item_moves_equipped_item_between_employees_in_one_result() {
+    let unit_meta = abnormality_meta(1);
+    let moving = equipment_meta(20, "moving_weapon", EquipmentType::Weapon);
+    let displaced = equipment_meta(21, "displaced_weapon", EquipmentType::Weapon);
+    let game_data = game_data_with_equipment(
+        Arc::clone(&unit_meta),
+        vec![moving.clone(), displaced.clone()],
+    );
+    let mut core = GameCore::new(game_data, 123);
+    start_new_game_with_default_starters(&mut core, Uuid::from_u128(1));
+    let employees = core.roster().unwrap().combat_eligible_employee_ids();
+    let source_employee = employees[0];
+    let target_employee = employees[1];
+    let moving_uuid = Uuid::from_u128(220);
+    let displaced_uuid = Uuid::from_u128(221);
+    {
+        let inventory = core.inventory_mut().unwrap();
+        inventory
+            .equipments
+            .add_item(OwnedEquipment::new(moving_uuid, Arc::new(moving)))
+            .unwrap();
+        inventory
+            .equipments
+            .add_item(OwnedEquipment::new(displaced_uuid, Arc::new(displaced)))
+            .unwrap();
+    }
+    core.handle_equip_item(moving_uuid, source_employee)
+        .unwrap();
+    core.handle_equip_item(displaced_uuid, target_employee)
+        .unwrap();
+
+    let result = core
+        .handle_equip_item(moving_uuid, target_employee)
+        .unwrap();
+
+    let BehaviorResult::EquipItem { result } = result else {
+        panic!("expected equip item result");
+    };
+    assert_eq!(result.inventory_diff.updated.len(), 2);
+    assert!(result.inventory_diff.added.is_empty());
+    assert!(result.inventory_diff.removed.is_empty());
+    assert_eq!(
+        core.inventory()
+            .unwrap()
+            .equipments
+            .get_item(&moving_uuid)
+            .unwrap()
+            .equipped_to,
+        Some(target_employee)
+    );
+    assert_eq!(
+        core.inventory()
+            .unwrap()
+            .equipments
+            .get_item(&displaced_uuid)
+            .unwrap()
+            .equipped_to,
+        None
+    );
+    assert!(!core
+        .roster()
+        .unwrap()
+        .get(&source_employee)
+        .unwrap()
+        .loadout
+        .item_slot
+        .contains_instance(moving_uuid));
+    assert!(core
+        .roster()
+        .unwrap()
+        .get(&target_employee)
+        .unwrap()
+        .loadout
+        .item_slot
+        .contains_instance(moving_uuid));
+}
+
+#[test]
 fn skill_fragment_equip_accepts_matching_weapon_profile() {
     let mut fragment = active_skill_fragment("matching_gun_fragment", 0xF014, "matching_gun_skill");
     fragment.compatibility = SkillFragmentCompatibilityRequirements {
@@ -1337,7 +1734,7 @@ fn skill_fragment_equip_accepts_matching_weapon_profile() {
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
-    let employee_uuid = core.roster().unwrap().available_employee_ids()[0];
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
     grant_and_equip_weapon(&mut core, employee_uuid, gun, Uuid::from_u128(0xE003_0001));
     core.state.skill_fragments.add(&fragment).unwrap();
 
@@ -1358,38 +1755,23 @@ fn skill_fragment_equip_accepts_matching_weapon_profile() {
 }
 
 #[test]
-fn equipment_combination_rejects_result_that_invalidates_active_fragment() {
-    let mut fragment =
-        active_skill_fragment("gun_combo_locked_fragment", 0xF015, "gun_combo_skill");
+fn equipment_replacement_rejects_weapon_that_invalidates_active_fragment_atomically() {
+    let mut fragment = active_skill_fragment("gun_locked_fragment", 0xF015, "gun_locked_skill");
     fragment.compatibility = SkillFragmentCompatibilityRequirements {
         allowed_weapon_archetypes: vec![WeaponArchetype::Gun],
         ..SkillFragmentCompatibilityRequirements::default()
     };
-    let gun_component = weapon_equipment(0xE008, "gun_component", WeaponArchetype::Gun);
-    let catalyst = weapon_equipment(0xE009, "weapon_catalyst", WeaponArchetype::Gun);
-    let sword_result = weapon_equipment(0xE00A, "sword_result", WeaponArchetype::Sword);
-    let game_data = game_data_with_equipment_recipes_and_skill_fragments(
-        vec![
-            gun_component.clone(),
-            catalyst.clone(),
-            sword_result.clone(),
-        ],
-        vec![EquipmentRecipeMetadata {
-            ingredients: vec![gun_component.uuid, catalyst.uuid],
-            result: sword_result.uuid,
-        }],
+    let gun = weapon_equipment(0xE008, "equipped_gun", WeaponArchetype::Gun);
+    let sword = weapon_equipment(0xE00A, "replacement_sword", WeaponArchetype::Sword);
+    let game_data = game_data_with_equipment_and_skill_fragments(
+        vec![gun.clone(), sword.clone()],
         vec![fragment.clone()],
     );
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
-    let employee_uuid = core.roster().unwrap().available_employee_ids()[0];
-    grant_and_equip_weapon(
-        &mut core,
-        employee_uuid,
-        gun_component,
-        Uuid::from_u128(0xE008_0001),
-    );
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    grant_and_equip_weapon(&mut core, employee_uuid, gun, Uuid::from_u128(0xE008_0001));
     core.state.skill_fragments.add(&fragment).unwrap();
     core.execute(
         player_id,
@@ -1399,15 +1781,15 @@ fn equipment_combination_rejects_result_that_invalidates_active_fragment() {
         },
     )
     .unwrap();
-    let catalyst_owned_uuid = Uuid::from_u128(0xE009_0001);
+    let sword_owned_uuid = Uuid::from_u128(0xE00A_0001);
     core.inventory_mut()
         .unwrap()
         .equipments
-        .add_item(OwnedEquipment::new(catalyst_owned_uuid, Arc::new(catalyst)))
+        .add_item(OwnedEquipment::new(sword_owned_uuid, Arc::new(sword)))
         .unwrap();
 
     let err = core
-        .handle_equip_item(catalyst_owned_uuid, employee_uuid)
+        .handle_equip_item(sword_owned_uuid, employee_uuid)
         .unwrap_err();
 
     assert!(matches!(
@@ -1420,6 +1802,24 @@ fn equipment_combination_rejects_result_that_invalidates_active_fragment() {
                 SkillFragmentCompatibilityFailureCode::WeaponArchetypeMismatch
             ]
     ));
+    assert_eq!(
+        core.inventory()
+            .unwrap()
+            .equipments
+            .get_item(&sword_owned_uuid)
+            .unwrap()
+            .equipped_to,
+        None
+    );
+    assert!(core
+        .roster()
+        .unwrap()
+        .get(&employee_uuid)
+        .unwrap()
+        .loadout
+        .item_slot
+        .iter()
+        .any(|equipped| equipped.instance_uuid == Uuid::from_u128(0xE008_0001)));
 }
 
 #[test]
@@ -1439,7 +1839,13 @@ fn skill_fragment_upgrade_consumes_fragment_dust_and_updates_progress() {
             },
         )
         .unwrap_err();
-    assert!(matches!(err, GameError::InvalidAction));
+    assert!(matches!(
+        err,
+        GameError::ActionUnavailable {
+            action: ActionKind::UpgradeSkillFragment,
+            reason: ActionDisabledReasonCode::ContextIrrelevant,
+        }
+    ));
 
     let node_id = force_first_available_node(
         &mut core,
@@ -1451,9 +1857,6 @@ fn skill_fragment_upgrade_consumes_fragment_dust_and_updates_progress() {
         .unwrap();
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
-    assert!(core
-        .get_allowed_actions()
-        .contains(&ActionKind::UpgradeSkillFragment));
     core.state.skill_fragments.add_fragment_dust(4).unwrap();
 
     let result = core
@@ -1501,7 +1904,13 @@ fn skill_fragment_dismantle_is_maintenance_only_and_grants_dust() {
             },
         )
         .unwrap_err();
-    assert!(matches!(err, GameError::InvalidAction));
+    assert!(matches!(
+        err,
+        GameError::ActionUnavailable {
+            action: ActionKind::DismantleSkillFragment,
+            reason: ActionDisabledReasonCode::ContextIrrelevant,
+        }
+    ));
 
     let node_id = force_first_available_node(
         &mut core,
@@ -1513,9 +1922,6 @@ fn skill_fragment_dismantle_is_maintenance_only_and_grants_dust() {
         .unwrap();
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
-    assert!(core
-        .get_allowed_actions()
-        .contains(&ActionKind::DismantleSkillFragment));
 
     let result = core
         .execute(
@@ -1552,7 +1958,7 @@ fn skill_fragment_dismantle_keeps_equipped_fragment_when_remaining_copy_allows_i
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
-    let employee_uuid = core.roster().unwrap().available_employee_ids()[0];
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
     grant_and_equip_weapon(
         &mut core,
         employee_uuid,
