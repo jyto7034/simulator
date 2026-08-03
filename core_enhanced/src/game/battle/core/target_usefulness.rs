@@ -143,14 +143,23 @@ impl BattleCore {
                         && self
                             .resolve_cast_origin_context(None, caster_instance_id, false)
                             .and_then(|(caster_owner, caster_pos)| {
+                                let (_, reach, target_range, air_capable) =
+                                    skill.cast_target_definition()?;
                                 self.choose_skill_target_by_rule(
                                     caster_instance_id,
                                     caster_owner,
                                     caster_pos,
-                                    step.range_policy,
-                                    step.defense_tile_range.as_ref(),
+                                    match reach {
+                                        crate::game::ability::SkillTargetReach::Pattern => {
+                                            crate::game::battle::tile_range::TileRangePolicy::Pattern
+                                        }
+                                        crate::game::ability::SkillTargetReach::Global => {
+                                            crate::game::battle::tile_range::TileRangePolicy::WholeFieldValidTiles
+                                        }
+                                    },
+                                    target_range,
                                     *rule,
-                                    step.air_capable,
+                                    air_capable,
                                     Some(step),
                                 )
                             })
@@ -160,10 +169,7 @@ impl BattleCore {
                     }
                 }
                 SkillTarget::SelfUnit | SkillTarget::CastTarget => {
-                    if let DeliveryDef::TileArea { area } = &step.delivery {
-                        let Some(tile_range) = step.defense_tile_range.as_ref() else {
-                            continue;
-                        };
+                    if let DeliveryDef::TileArea { footprint, area } = &step.delivery {
                         let Some((caster_owner, _, _, _, anchor_tile)) = self
                             .resolve_tile_area_geometry(
                                 time_ms,
@@ -176,14 +182,12 @@ impl BattleCore {
                         else {
                             continue;
                         };
-                        let Some(facing) = self
-                            .units
-                            .get(&caster_instance_id)
-                            .and_then(|unit| unit.facing_direction)
+                        let Some(facing) =
+                            self.tile_area_projection_facing(caster_instance_id, footprint)
                         else {
                             continue;
                         };
-                        let Ok(affected_tiles) = tile_range.affected_tiles(anchor_tile, facing)
+                        let Ok(affected_tiles) = footprint.affected_tiles(anchor_tile, facing)
                         else {
                             continue;
                         };
@@ -414,7 +418,7 @@ impl BattleCore {
         matches!(step.target, SkillTarget::EnemySingle { .. })
             || matches!(
                 &step.delivery,
-                DeliveryDef::TileArea { area }
+                DeliveryDef::TileArea { area, .. }
                     if !matches!(area.hit_targets, SkillHitTargetFilter::Allies)
             )
     }

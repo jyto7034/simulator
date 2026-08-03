@@ -2,7 +2,7 @@
 //!
 //! `BattleEventLog` is the append-only log of battle events produced by the
 //! current DefenseRoute live battle model. It is not an offline replay driver;
-//! it powers battle result records, debug exports, and behavior tests. Live
+//! it powers the current battle result, developer traces, and behavior tests. Live
 //! `battle_update.events_delta` payloads are converted to explicit wire DTOs at
 //! the transport boundary.
 
@@ -217,11 +217,6 @@ pub enum BattleLogEvent {
     BattleStart {
         width: u8,
         height: u8,
-    },
-    ArtifactSpawned {
-        artifact_instance_id: Uuid,
-        owner: Side,
-        base_uuid: Uuid,
     },
     ItemSpawned {
         item_instance_id: Uuid,

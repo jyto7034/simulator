@@ -1,7 +1,5 @@
 use std::collections::HashSet;
 
-use uuid::Uuid;
-
 use crate::game::{
     battle::types::{BattleUnitDraft, BattleWinner},
     behavior::GameError,
@@ -44,13 +42,6 @@ pub struct BattleFieldSpec {
     /// Non-empty enables non-rectangular battlefields authored from ASCII templates.
     pub valid_tiles: Vec<Position>,
     pub obstacles: Vec<Position>,
-}
-
-#[derive(Debug, Clone)]
-pub struct ScenarioArtifact {
-    pub side: Side,
-    pub base_uuid: Uuid,
-    pub instance_salt: u32,
 }
 
 #[derive(Debug, Clone)]
@@ -173,7 +164,6 @@ impl Default for TacticalPlan {
 #[derive(Debug, Clone)]
 pub struct BattleScenario {
     pub battlefield: BattleFieldSpec,
-    pub artifacts: Vec<ScenarioArtifact>,
     pub groups: Vec<ScenarioSpawnGroup>,
     pub events: Vec<ScenarioEvent>,
     pub win_condition: WinCondition,
@@ -189,7 +179,6 @@ impl BattleScenario {
                 valid_tiles: Vec::new(),
                 obstacles: Vec::new(),
             },
-            artifacts: Vec::new(),
             groups: Vec::new(),
             events: Vec::new(),
             win_condition: WinCondition::AllRequiredEnemyGroupsDefeated,
@@ -442,7 +431,6 @@ mod tests {
 
         assert_eq!(scenario.battlefield.width, 5);
         assert_eq!(scenario.battlefield.height, 6);
-        assert!(scenario.artifacts.is_empty());
         assert!(scenario.groups.is_empty());
         assert!(scenario.events.is_empty());
         assert!(matches!(

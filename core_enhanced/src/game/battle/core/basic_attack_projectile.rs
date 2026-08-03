@@ -56,14 +56,11 @@ impl BattleCore {
         );
         let impact_ms = launch.fired_at_ms.saturating_add(flight_ms);
 
-        let seed = self
-            .recording_cause()
-            .and_then(|cause| cause.parent_seq())
-            .unwrap_or_else(|| {
-                let mut bytes = [0u8; 8];
-                bytes.copy_from_slice(&launch.attacker_instance_id.as_bytes()[..8]);
-                launch.fired_at_ms ^ u64::from_be_bytes(bytes)
-            });
+        let seed = determinism::seed_with_uuid(
+            self.seed,
+            PROJECTILE_NS,
+            launch.source_snapshot.crit_roll_identity.source_instance_id,
+        );
         let projectile_seq = self.projectile_seq;
         self.projectile_seq = self.projectile_seq.wrapping_add(1);
         let projectile_id = determinism::uuid_v4_from_seed(seed, PROJECTILE_NS, projectile_seq);

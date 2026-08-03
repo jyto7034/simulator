@@ -161,14 +161,6 @@ impl ActionLocks {
     }
 }
 
-/// 전투 중 사용되는 아티팩트 런타임 표현
-#[derive(Debug, Clone)]
-pub(super) struct RuntimeArtifact {
-    pub(super) instance_id: Uuid,
-    pub(super) owner: Side,
-    pub(super) base_uuid: Uuid,
-}
-
 /// 전투 중 사용되는 장비 런타임 표현
 #[derive(Debug, Clone)]
 pub(super) struct RuntimeItem {
@@ -181,7 +173,6 @@ pub(super) struct RuntimeItem {
 /// 트리거 수집 시 소스 구분
 #[derive(Debug, Clone, Copy)]
 pub(super) enum TriggerSource {
-    Artifact { side: Side },
     Item { unit_instance_id: UnitInstanceId },
 }
 
@@ -300,6 +291,7 @@ pub struct ActiveSkillCastDebugState {
 pub(super) struct ActiveSkillCast {
     #[allow(dead_code)]
     pub(super) caster_instance_id: UnitInstanceId,
+    pub(super) ability_event_seq: u64,
     pub(super) skill_id: SkillId,
     pub(super) caster_owner: Side,
     pub(super) anchor_position: Position,

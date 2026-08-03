@@ -141,6 +141,7 @@ mod tests {
                 "consumable",
                 vec![RewardEffect::GrantConsumable {
                     consumable_id: "test".to_string(),
+                    quantity: 1,
                 }],
             )])
             .expect_err("disallowed grant kinds must not be valid combat rewards");

@@ -28,6 +28,21 @@ fn event_log_point(position: WorldVec2) -> EventLogVec2 {
 }
 
 impl BattleCore {
+    pub(in crate::game::battle::core) fn tile_area_projection_facing(
+        &self,
+        caster_instance_id: UnitInstanceId,
+        footprint: &TileRangePattern,
+    ) -> Option<FacingDirection> {
+        self.units
+            .get(&caster_instance_id)
+            .and_then(|unit| unit.facing_direction)
+            .or_else(|| {
+                footprint
+                    .is_rotation_invariant()
+                    .then_some(FacingDirection::Up)
+            })
+    }
+
     fn valid_tile_area_tiles(
         &self,
         tile_range: &TileRangePattern,
@@ -53,7 +68,8 @@ impl BattleCore {
         let delivery_seq = self.area_seq;
         self.area_seq = self.area_seq.wrapping_add(1);
         determinism::uuid_v4_from_seed(
-            cast_seq
+            self.seed
+                ^ cast_seq.rotate_left(17)
                 ^ time_ms
                 ^ u64::from_be_bytes(caster_instance_id.as_bytes()[..8].try_into().unwrap()),
             SKILL_AREA_DELIVERY_NS,
@@ -267,7 +283,7 @@ impl BattleCore {
                 step_target,
                 area,
             )?;
-        let facing = self.units.get(&caster_instance_id)?.facing_direction?;
+        let facing = self.tile_area_projection_facing(caster_instance_id, tile_range)?;
         let affected_tiles = self.valid_tile_area_tiles(tile_range, anchor_tile, facing)?;
         let targets = self.collect_tile_area_targets_at(
             time_ms,
@@ -380,7 +396,8 @@ impl BattleCore {
         let seq = self.area_seq;
         self.area_seq = self.area_seq.wrapping_add(1);
         determinism::uuid_v4_from_seed(
-            cast_seq
+            self.seed
+                ^ cast_seq.rotate_left(17)
                 ^ time_ms
                 ^ u64::from_be_bytes(caster_instance_id.as_bytes()[..8].try_into().unwrap()),
             SKILL_AREA_NS,
@@ -414,11 +431,7 @@ impl BattleCore {
         else {
             return false;
         };
-        let Some(facing) = self
-            .units
-            .get(&caster_instance_id)
-            .and_then(|unit| unit.facing_direction)
-        else {
+        let Some(facing) = self.tile_area_projection_facing(caster_instance_id, &tile_range) else {
             return false;
         };
         let Some(affected_tiles) = self.valid_tile_area_tiles(&tile_range, anchor_tile, facing)
@@ -549,10 +562,8 @@ impl BattleCore {
         else {
             return;
         };
-        let Some(facing) = self
-            .units
-            .get(&runtime.caster_instance_id)
-            .and_then(|unit| unit.facing_direction)
+        let Some(facing) =
+            self.tile_area_projection_facing(runtime.caster_instance_id, &runtime.tile_range)
         else {
             return;
         };

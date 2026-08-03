@@ -18,7 +18,6 @@ pub enum RewardGrantKind {
     Currency,
     Experience,
     Equipment,
-    Artifact,
     Consumable,
     SkillFragment,
     FragmentDust,
@@ -27,6 +26,7 @@ pub enum RewardGrantKind {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct RewardMetadata {
     pub id: String,
     pub uuid: Uuid,
@@ -52,7 +52,6 @@ impl RewardGrantKind {
                 RewardEffect::GrantEquipment { .. }
                 | RewardEffect::GrantEquipmentFromPool { .. }
                 | RewardEffect::GrantEquipmentMaterial { .. } => kinds.push(Self::Equipment),
-                RewardEffect::GrantArtifact { .. } => kinds.push(Self::Artifact),
                 RewardEffect::GrantConsumable { .. } => kinds.push(Self::Consumable),
                 RewardEffect::GrantSkillFragment { .. } => kinds.push(Self::SkillFragment),
                 RewardEffect::GrantFragmentDust { .. } => kinds.push(Self::FragmentDust),
@@ -72,11 +71,10 @@ fn normalized_grant_kinds(mut kinds: Vec<RewardGrantKind>) -> Vec<RewardGrantKin
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct RewardDatabase {
     pub rewards: Vec<RewardMetadata>,
-    #[serde(default)]
     pub pools: Vec<RewardPoolMetadata>,
-    #[serde(default)]
     pub equipment_pools: Vec<EquipmentRewardPoolMetadata>,
     #[serde(skip)]
     by_id: OnceLock<HashMap<String, usize>>,
@@ -85,6 +83,7 @@ pub struct RewardDatabase {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct RewardPoolMetadata {
     pub id: String,
     pub reward_ids: Vec<String>,
@@ -94,9 +93,7 @@ pub struct RewardPoolMetadata {
 #[serde(deny_unknown_fields)]
 pub struct EquipmentRewardPoolMetadata {
     pub id: String,
-    #[serde(default)]
     pub filter: EquipmentRewardPoolFilter,
-    #[serde(default)]
     pub entries: Vec<EquipmentRewardPoolEntry>,
 }
 
@@ -105,9 +102,7 @@ pub struct EquipmentRewardPoolMetadata {
 pub struct EquipmentRewardPoolFilter {
     pub rarity_min: Option<RiskLevel>,
     pub rarity_max: Option<RiskLevel>,
-    #[serde(default)]
     pub equipment_type_in: Vec<EquipmentType>,
-    #[serde(default)]
     pub exclude_bound: bool,
 }
 
@@ -207,27 +202,42 @@ impl RewardDatabase {
             .get_or_init(|| build_uuid_index(&self.rewards, "reward uuid", |item| item.uuid))
     }
 
-    pub(crate) fn validate_indexes(&self) {
-        let _ = self.by_id();
-        let _ = self.by_uuid();
-        for reward in &self.rewards {
-            assert!(
-                !reward.grant_kinds().is_empty(),
-                "reward '{}' must resolve at least one grant kind",
-                reward.id
-            );
-        }
-        for pool in &self.pools {
-            assert!(!pool.id.is_empty(), "reward pool id must not be empty");
-            for reward_id in &pool.reward_ids {
-                assert!(
-                    self.get_by_id(reward_id).is_some(),
-                    "reward pool '{}' references missing reward '{}'",
-                    pool.id,
-                    reward_id
-                );
+    pub(crate) fn validate_contract(&self) -> Result<(), crate::game::data::DataValidationError> {
+        for (reward_index, reward) in self.rewards.iter().enumerate() {
+            if reward.grant_kinds().is_empty() {
+                return Err(crate::game::data::DataValidationError::at(
+                    &reward.id,
+                    format!("rewards[{reward_index}].effects"),
+                    "Reward must resolve at least one grant kind",
+                ));
             }
         }
+        for (pool_index, pool) in self.pools.iter().enumerate() {
+            if pool.id.trim().is_empty() {
+                return Err(crate::game::data::DataValidationError::at(
+                    &pool.id,
+                    format!("pools[{pool_index}].id"),
+                    "Reward pool id must not be empty",
+                ));
+            }
+            for (reward_index, reward_id) in pool.reward_ids.iter().enumerate() {
+                if !self.rewards.iter().any(|reward| reward.id == *reward_id) {
+                    return Err(crate::game::data::DataValidationError::at(
+                        &pool.id,
+                        format!("pools[{pool_index}].reward_ids[{reward_index}]"),
+                        format!("references missing Reward '{reward_id}'"),
+                    ));
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn validate_indexes(&self) {
+        self.validate_contract()
+            .unwrap_or_else(|error| panic!("invalid Reward data: {error:?}"));
+        let _ = self.by_id();
+        let _ = self.by_uuid();
     }
 
     pub fn get_by_id(&self, id: &str) -> Option<&RewardMetadata> {

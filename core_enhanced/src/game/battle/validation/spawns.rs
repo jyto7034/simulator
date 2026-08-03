@@ -27,8 +27,6 @@ pub(super) struct ExtractedSpawns {
     pub(super) unit_base_by_instance: HashMap<UnitInstanceId, Uuid>,
     pub(super) item_spawn_index: HashMap<Uuid, usize>,
     pub(super) item_owner_by_instance: HashMap<Uuid, Side>,
-    pub(super) artifact_spawn_index: HashMap<Uuid, usize>,
-    pub(super) artifact_owner_by_instance: HashMap<Uuid, Side>,
 }
 
 pub(super) fn extract_spawns(
@@ -46,8 +44,6 @@ pub(super) fn extract_spawns(
         unit_base_by_instance: HashMap::new(),
         item_spawn_index: HashMap::new(),
         item_owner_by_instance: HashMap::new(),
-        artifact_spawn_index: HashMap::new(),
-        artifact_owner_by_instance: HashMap::new(),
     };
 
     for (index, entry) in event_log.entries.iter().enumerate() {
@@ -141,32 +137,6 @@ pub(super) fn extract_spawns(
                     });
                 }
             }
-            BattleLogEvent::ArtifactSpawned {
-                artifact_instance_id,
-                owner,
-                ..
-            } => {
-                extracted.counts.artifacts += 1;
-                extracted
-                    .artifact_spawn_index
-                    .entry(artifact_instance_id)
-                    .and_modify(|existing| *existing = (*existing).min(index))
-                    .or_insert(index);
-                if extracted
-                    .artifact_owner_by_instance
-                    .insert(artifact_instance_id, owner)
-                    .is_some()
-                {
-                    violations.push(EventLogViolation {
-                        kind: EventLogViolationKind::DuplicateArtifactSpawn,
-                        message: format!(
-                            "artifact {} spawned multiple times",
-                            artifact_instance_id
-                        ),
-                        entry_index: Some(index),
-                    });
-                }
-            }
             _ => {}
         }
     }
@@ -199,16 +169,6 @@ pub(super) fn validate_spawn_counts(
             message: format!(
                 "item spawn count mismatch: expected={}, got={}",
                 expected.items, actual.items
-            ),
-            entry_index: None,
-        });
-    }
-    if actual.artifacts != expected.artifacts {
-        violations.push(EventLogViolation {
-            kind: EventLogViolationKind::ArtifactSpawnCountMismatch,
-            message: format!(
-                "artifact spawn count mismatch: expected={}, got={}",
-                expected.artifacts, actual.artifacts
             ),
             entry_index: None,
         });
@@ -651,9 +611,7 @@ pub(super) fn validate_reference_spawn_order(
                     violations,
                 );
             }
-            BattleLogEvent::ArtifactSpawned { .. }
-            | BattleLogEvent::BattleStart { .. }
-            | BattleLogEvent::BattleEnd { .. } => {}
+            BattleLogEvent::BattleStart { .. } | BattleLogEvent::BattleEnd { .. } => {}
         }
     }
 }

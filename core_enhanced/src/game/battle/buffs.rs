@@ -29,6 +29,7 @@ impl BuffId {
 
 // Stun, Freeze 같은 하드 CC 는 한 가지 상태만 존재할 수 있음. (기존 CC 를 덮어씌움)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub enum BuffKind {
     PeriodicDamage {
         damage_per_tick: u32,
@@ -56,6 +57,7 @@ pub struct BuffDef {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct BuffDatabase {
     pub buffs: Vec<BuffMetadata>,
     #[serde(skip)]
@@ -63,6 +65,7 @@ pub struct BuffDatabase {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct BuffMetadata {
     pub name: String,
     pub kind: BuffKind,
@@ -82,37 +85,11 @@ impl BuffDatabase {
     }
 
     fn build_registry(&self) -> HashMap<BuffId, BuffDef> {
-        let mut names = HashSet::new();
+        self.validate_contract()
+            .unwrap_or_else(|error| panic!("invalid buff data: {error:?}"));
         self.buffs
             .iter()
             .map(|metadata| {
-                assert!(
-                    names.insert(metadata.name.clone()),
-                    "duplicate buff name '{}'",
-                    metadata.name
-                );
-                assert!(
-                    metadata.max_stacks > 0,
-                    "buff '{}' max_stacks must be greater than zero",
-                    metadata.name
-                );
-                if matches!(metadata.kind, BuffKind::PeriodicDamage { .. }) {
-                    assert!(
-                        metadata.tick_interval_ms > 0,
-                        "periodic damage buff '{}' requires tick_interval_ms",
-                        metadata.name
-                    );
-                }
-                if matches!(
-                    metadata.kind,
-                    BuffKind::Stun | BuffKind::Freeze | BuffKind::Silence
-                ) {
-                    assert_eq!(
-                        metadata.max_stacks, 1,
-                        "control buff '{}' must declare max_stacks == 1",
-                        metadata.name
-                    );
-                }
                 let id = BuffId::from_name(&metadata.name);
                 (
                     id,
@@ -127,6 +104,47 @@ impl BuffDatabase {
                 )
             })
             .collect()
+    }
+
+    pub(crate) fn validate_contract(&self) -> Result<(), crate::game::data::DataValidationError> {
+        let mut names = HashSet::new();
+        for (index, metadata) in self.buffs.iter().enumerate() {
+            if !names.insert(metadata.name.as_str()) {
+                return Err(crate::game::data::DataValidationError::at(
+                    &metadata.name,
+                    format!("buffs[{index}].name"),
+                    "duplicate buff name",
+                ));
+            }
+            if metadata.max_stacks == 0 {
+                return Err(crate::game::data::DataValidationError::at(
+                    &metadata.name,
+                    format!("buffs[{index}].max_stacks"),
+                    "max_stacks must be greater than zero",
+                ));
+            }
+            if matches!(metadata.kind, BuffKind::PeriodicDamage { .. })
+                && metadata.tick_interval_ms == 0
+            {
+                return Err(crate::game::data::DataValidationError::at(
+                    &metadata.name,
+                    format!("buffs[{index}].tick_interval_ms"),
+                    "periodic damage requires a positive tick interval",
+                ));
+            }
+            if matches!(
+                metadata.kind,
+                BuffKind::Stun | BuffKind::Freeze | BuffKind::Silence
+            ) && metadata.max_stacks != 1
+            {
+                return Err(crate::game::data::DataValidationError::at(
+                    &metadata.name,
+                    format!("buffs[{index}].max_stacks"),
+                    "control buff must declare max_stacks == 1",
+                ));
+            }
+        }
+        Ok(())
     }
 
     fn by_id(&self) -> &HashMap<BuffId, BuffDef> {
@@ -191,14 +209,22 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "control buff 'bad_stun' must declare max_stacks == 1")]
     fn control_status_metadata_rejects_stackable_hard_cc() {
-        BuffDatabase::new(vec![BuffMetadata {
-            name: "bad_stun".to_string(),
-            kind: BuffKind::Stun,
-            tick_interval_ms: 0,
-            max_stacks: 2,
-            reapply_policy: BuffReapplyPolicy::RefreshDuration,
-        }]);
+        let database = BuffDatabase {
+            buffs: vec![BuffMetadata {
+                name: "bad_stun".to_string(),
+                kind: BuffKind::Stun,
+                tick_interval_ms: 0,
+                max_stacks: 2,
+                reapply_policy: BuffReapplyPolicy::RefreshDuration,
+            }],
+            by_id: OnceLock::new(),
+        };
+        let error = database
+            .validate_contract()
+            .expect_err("stackable hard crowd control must reject");
+        assert_eq!(error.object_id.as_deref(), Some("bad_stun"));
+        assert_eq!(error.field_path.as_deref(), Some("buffs[0].max_stacks"));
+        assert!(error.cause.contains("max_stacks == 1"));
     }
 }

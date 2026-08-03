@@ -35,7 +35,6 @@ impl CombatMissionPolicy {
         RewardGrantKind::Currency,
         RewardGrantKind::Experience,
         RewardGrantKind::Equipment,
-        RewardGrantKind::Artifact,
         RewardGrantKind::SkillFragment,
         RewardGrantKind::ResearchProgress,
         RewardGrantKind::Narrative,

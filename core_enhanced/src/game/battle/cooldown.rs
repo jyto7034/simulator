@@ -8,7 +8,6 @@ use uuid::Uuid;
 pub enum CooldownSource {
     Unit { unit_instance_id: UnitInstanceId },
     Item { item_instance_id: Uuid },
-    Artifact { artifact_instance_id: Uuid },
 }
 
 #[derive(Debug, Clone)]

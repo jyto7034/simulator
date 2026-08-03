@@ -8,7 +8,6 @@ use super::BattleCore;
 
 impl BattleCore {
     const UNIT_INSTANCE_NS: u64 = 0x554E_4954_494E_5354; // "UNITINST"
-    const ARTIFACT_INSTANCE_NS: u64 = 0x4152_5449_4E53_5431; // "ARTINST1"
     const ITEM_INSTANCE_NS: u64 = 0x4954_454D_494E_5354; // "ITEMINST"
 
     fn side_tag(side: Side) -> u8 {
@@ -41,16 +40,6 @@ impl BattleCore {
             Self::UNIT_INSTANCE_NS,
             0,
         ))
-    }
-
-    pub(super) fn make_artifact_instance_id(base_uuid: Uuid, side: Side, salt: u32) -> Uuid {
-        let mut material = Vec::with_capacity(16 + 1 + 4 + 1);
-        material.extend_from_slice(base_uuid.as_bytes());
-        material.push(Self::side_tag(side));
-        material.extend_from_slice(&salt.to_be_bytes());
-        material.push(0xA1);
-        let seed = Self::stable_seed(&material);
-        determinism::uuid_v4_from_seed(seed, Self::ARTIFACT_INSTANCE_NS, 0)
     }
 
     pub(super) fn make_item_instance_id(

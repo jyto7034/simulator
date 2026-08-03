@@ -146,11 +146,16 @@ pub fn collect_battle_result_stats(
             if let Some(employee_uuid) = employee_uuid {
                 employees
                     .entry(employee_uuid)
+                    .and_modify(|employee| employee.stats.unit_instance_id = *unit_instance_id)
                     .or_insert_with(|| EmployeeAccumulator::new(employee_uuid, *unit_instance_id));
             }
         }
     }
 
+    let participant_results_by_unit = participant_results
+        .iter()
+        .map(|participant| (participant.unit_instance_id, participant))
+        .collect::<HashMap<_, _>>();
     for participant in participant_results
         .iter()
         .filter(|participant| participant.side == Side::Player)
@@ -163,11 +168,7 @@ pub fn collect_battle_result_stats(
         let employee = employees.entry(employee_uuid).or_insert_with(|| {
             EmployeeAccumulator::new(employee_uuid, participant.unit_instance_id)
         });
-        employee.stats.unit_instance_id = participant.unit_instance_id;
-        employee.stats.survived = participant.survived;
-        employee.stats.became_incapacitated = participant.became_incapacitated;
-        employee.stats.final_hp = participant.final_hp;
-        employee.stats.max_hp = participant.max_hp;
+        employee.stats.became_incapacitated |= participant.became_incapacitated;
     }
 
     for entry in &event_log.entries {
@@ -180,6 +181,7 @@ pub fn collect_battle_result_stats(
                 let employee = employees
                     .entry(*employee_uuid)
                     .or_insert_with(|| EmployeeAccumulator::new(*employee_uuid, *unit_instance_id));
+                employee.stats.unit_instance_id = *unit_instance_id;
                 employee.stats.deployed_count = employee.stats.deployed_count.saturating_add(1);
                 active_deployments.insert(*unit_instance_id, (*employee_uuid, entry.time_ms));
             }
@@ -310,6 +312,16 @@ pub fn collect_battle_result_stats(
             }
             _ => {}
         }
+    }
+
+    for employee in employees.values_mut() {
+        let Some(participant) = participant_results_by_unit.get(&employee.stats.unit_instance_id)
+        else {
+            continue;
+        };
+        employee.stats.survived = participant.survived;
+        employee.stats.final_hp = participant.final_hp;
+        employee.stats.max_hp = participant.max_hp;
     }
 
     let mut employees = employees
@@ -748,6 +760,94 @@ mod tests {
         assert!(employee_stats.survived);
         assert_eq!(stats.mvp.as_ref().unwrap().employee_uuid, employee);
         assert_eq!(stats.mvp.as_ref().unwrap().score, 160);
+    }
+
+    #[test]
+    fn collector_aggregates_redeploy_instances_into_one_chronological_employee_result() {
+        let employee = employee_uuid(1);
+        let first_unit = unit_id(10);
+        let second_unit = unit_id(11);
+        let mut event_log = BattleEventLog::new();
+        event_log.entries = vec![
+            spawn_employee(1, 0, first_unit, employee),
+            entry(
+                2,
+                0,
+                BattleLogEvent::UnitDeployed {
+                    employee_uuid: employee,
+                    unit_instance_id: first_unit,
+                    position: Position::new(1, 1),
+                    facing: FacingDirection::Right,
+                },
+            ),
+            entry(
+                3,
+                100,
+                BattleLogEvent::UnitDied {
+                    unit_instance_id: first_unit,
+                    owner: Side::Player,
+                    killer_instance_id: None,
+                    world_position: EventLogVec2::default(),
+                    position: Position::new(1, 1),
+                },
+            ),
+            spawn_employee(4, 200, second_unit, employee),
+            entry(
+                5,
+                200,
+                BattleLogEvent::UnitDeployed {
+                    employee_uuid: employee,
+                    unit_instance_id: second_unit,
+                    position: Position::new(1, 1),
+                    facing: FacingDirection::Right,
+                },
+            ),
+            entry(
+                6,
+                500,
+                BattleLogEvent::BattleEnd {
+                    winner: BattleWinner::Player,
+                },
+            ),
+        ];
+        let participant_results = vec![
+            ParticipantBattleResult {
+                unit_instance_id: second_unit,
+                owned_uuid: employee,
+                side: Side::Player,
+                survived: true,
+                final_hp: 37,
+                max_hp: 80,
+                became_incapacitated: false,
+            },
+            ParticipantBattleResult {
+                unit_instance_id: first_unit,
+                owned_uuid: employee,
+                side: Side::Player,
+                survived: false,
+                final_hp: 0,
+                max_hp: 100,
+                became_incapacitated: true,
+            },
+        ];
+
+        let stats = collect_battle_result_stats(
+            BattleWinner::Player,
+            &event_log,
+            &participant_results,
+            &policy(),
+        );
+
+        assert_eq!(stats.employees.len(), 1);
+        let employee_stats = &stats.employees[0];
+        assert_eq!(employee_stats.employee_uuid, employee);
+        assert_eq!(employee_stats.unit_instance_id, second_unit);
+        assert_eq!(employee_stats.deployed_count, 2);
+        assert_eq!(employee_stats.final_hp, 37);
+        assert_eq!(employee_stats.max_hp, 80);
+        assert!(employee_stats.survived);
+        assert!(employee_stats.became_incapacitated);
+        assert_eq!(stats.mvp.as_ref().unwrap().unit_instance_id, second_unit);
     }
 
     #[test]

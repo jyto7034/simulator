@@ -21,7 +21,7 @@ RewardDatabase(
             id: "experience_reward",
             uuid: "650e8400-e29b-41d4-a716-446655440102",
             name: "작업 경험",
-            description: "직원의 경험치를 획득합니다. 레벨이 오르면 능력치가 향상됩니다.",
+            description: "직원의 경험치를 획득합니다. 경험치는 대상 직원들에게 나뉘어 지급되며, 누적 기준에 따라 레벨과 전투 등급이 오릅니다.",
             icon: "icons/experience.png",
             effects: [
                 GrantExperience(amount: 200, target: AliveRoster),

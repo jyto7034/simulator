@@ -14,7 +14,6 @@ enum AdminGrantAmountMode {
     Count,
     Amount,
     Set,
-    Single,
 }
 
 #[derive(Debug, Clone, Copy, Serialize)]
@@ -41,15 +40,6 @@ struct AdminConsumableGrantCatalogEntryDto {
     tier: crate::game::data::consumable_data::ConsumableTier,
     rarity: crate::game::enums::RiskLevel,
     live_pool: bool,
-    grant_command: &'static str,
-    amount_mode: AdminGrantAmountMode,
-}
-
-#[derive(Debug, Clone, Serialize)]
-struct AdminArtifactGrantCatalogEntryDto {
-    id: String,
-    name: String,
-    rarity: crate::game::enums::RiskLevel,
     grant_command: &'static str,
     amount_mode: AdminGrantAmountMode,
 }
@@ -89,7 +79,6 @@ struct AdminGrantCatalogDto {
     schema_version: u32,
     equipment: Vec<AdminEquipmentGrantCatalogEntryDto>,
     consumables: Vec<AdminConsumableGrantCatalogEntryDto>,
-    artifacts: Vec<AdminArtifactGrantCatalogEntryDto>,
     skill_fragments: Vec<AdminSkillFragmentGrantCatalogEntryDto>,
     equipment_materials: Vec<AdminEquipmentMaterialGrantCatalogEntryDto>,
     resources: Vec<AdminResourceGrantCatalogEntryDto>,
@@ -146,21 +135,6 @@ impl GameCore {
             .collect::<Vec<_>>();
         consumables.sort_by(|left, right| left.name.cmp(&right.name).then(left.id.cmp(&right.id)));
 
-        let mut artifacts = self
-            .game_data
-            .artifact_data
-            .items
-            .iter()
-            .map(|item| AdminArtifactGrantCatalogEntryDto {
-                id: item.id.clone(),
-                name: item.name.clone(),
-                rarity: item.rarity,
-                grant_command: "admin_grant_artifact",
-                amount_mode: AdminGrantAmountMode::Single,
-            })
-            .collect::<Vec<_>>();
-        artifacts.sort_by(|left, right| left.name.cmp(&right.name).then(left.id.cmp(&right.id)));
-
         let mut skill_fragments = self
             .game_data
             .skill_fragment_data
@@ -203,7 +177,6 @@ impl GameCore {
             schema_version: 1,
             equipment,
             consumables,
-            artifacts,
             skill_fragments,
             equipment_materials,
             resources: vec![

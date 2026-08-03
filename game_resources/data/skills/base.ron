@@ -17,13 +17,14 @@ SkillDatabase(
             focus_time_ms: 350,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: Nearest),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "strike",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
                     delivery: Instant,
                     effects: [
@@ -39,16 +40,20 @@ SkillDatabase(
             focus_time_ms: 650,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: Nearest),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "beam_trace",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXX", "X@X", "XXX"]),
+                        area: (
                         anchor: CastTarget,
+                        tile_origin: Anchor,
                         hit_targets: Enemies,
                     )),
                     effects: [
@@ -63,11 +68,13 @@ SkillDatabase(
                 SkillStepDef(
                     id: "beam_overdrive",
                     delay_ms: 80,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
                     repeat: Times(count: 2),
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXX", "X@X", "XXX"]),
+                        area: (
                         anchor: CastTarget,
+                        tile_origin: Anchor,
                         hit_targets: Enemies,
                     )),
                     effects: [
@@ -88,13 +95,14 @@ SkillDatabase(
             focus_time_ms: 300,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: CurrentTarget),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "marked_shot",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Projectile(speed_units_per_ms: 7500),
                     effects: [
@@ -110,7 +118,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "hunt_finish",
                     delay_ms: 160,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     targeting: RetargetOnStep,
                     when: IfPreviousStepDealtDamage,
@@ -134,16 +141,20 @@ SkillDatabase(
             focus_time_ms: 500,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: Nearest),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "consume_burst",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXX", "X@X", "XXX"]),
+                        area: (
                         anchor: CastTarget,
+                        tile_origin: Anchor,
                         hit_targets: Enemies,
                     )),
                     effects: [
@@ -199,13 +210,14 @@ SkillDatabase(
             focus_time_ms: 420,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: LowestHealthEnemy),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "slime_orb",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Projectile(speed_units_per_ms: 5600),
                     effects: [
@@ -222,11 +234,13 @@ SkillDatabase(
                 SkillStepDef(
                     id: "slime_spread",
                     delay_ms: 220,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
                     when: IfPreviousStepDealtDamage,
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXX", "X@X", "XXX"]),
+                        area: (
                         anchor: ImpactContext,
+                        tile_origin: Anchor,
                         hit_targets: Enemies,
                     )),
                     effects: [
@@ -248,13 +262,14 @@ SkillDatabase(
             focus_time_ms: 500,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: CurrentTarget),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "tear_open",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Instant,
                     effects: [
@@ -290,7 +305,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "goodbye_finish",
                     delay_ms: 100,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     targeting: RetargetOnStep,
                     repeat: Times(count: 2),
@@ -313,16 +327,20 @@ SkillDatabase(
             focus_time_ms: 700,
             cast_targeting: Explicit(
                 target: SelfUnit,
-                defense_tile_range_preset: Some("front_3x2_include_anchor"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2_include_anchor"),
             ),
             steps: [
                 SkillStepDef(
                     id: "ally_salvation",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2_include_anchor"),
                     target: SelfUnit,
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXXXX", "XXXXX", "XX@XX", "XXXXX", "XXXXX"]),
+                        area: (
                         anchor: CastTarget,
+                        tile_origin: Anchor,
                         hit_targets: Allies,
                         include_caster: true,
                     )),
@@ -338,10 +356,12 @@ SkillDatabase(
                 SkillStepDef(
                     id: "ally_blessing",
                     delay_ms: 40,
-                    defense_tile_range_preset: Some("front_3x2_include_anchor"),
                     target: CastTarget,
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXXXX", "XXXXX", "XX@XX", "XXXXX", "XXXXX"]),
+                        area: (
                         anchor: CastTarget,
+                        tile_origin: Anchor,
                         hit_targets: Allies,
                         include_caster: true,
                     )),
@@ -363,10 +383,12 @@ SkillDatabase(
                 SkillStepDef(
                     id: "enemy_judgement",
                     delay_ms: 140,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXXXX", "XXXXX", "XX@XX", "XXXXX", "XXXXX"]),
+                        area: (
                         anchor: CastTarget,
+                        tile_origin: Anchor,
                         hit_targets: Enemies,
                     )),
                     effects: [
@@ -387,13 +409,14 @@ SkillDatabase(
             focus_time_ms: 360,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: LowestHealthEnemy),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "seventh_bullet",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Projectile(speed_units_per_ms: 7600),
                     effects: [
@@ -424,13 +447,14 @@ SkillDatabase(
             focus_time_ms: 380,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: CurrentTarget),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "mourning_shot",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Projectile(speed_units_per_ms: 6400),
                     effects: [
@@ -440,7 +464,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "black_funeral",
                     delay_ms: 120,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     targeting: RetargetOnStep,
                     when: IfPreviousStepDealtDamage,
@@ -459,13 +482,14 @@ SkillDatabase(
             focus_time_ms: 300,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: Nearest),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "gift_box",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
                     delivery: Projectile(speed_units_per_ms: 5200),
                     effects: [
@@ -476,11 +500,13 @@ SkillDatabase(
                 SkillStepDef(
                     id: "gift_pop",
                     delay_ms: 180,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
                     when: IfPreviousStepDealtDamage,
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXX", "X@X", "XXX"]),
+                        area: (
                         anchor: ImpactContext,
+                        tile_origin: Anchor,
                         hit_targets: Enemies,
                     )),
                     effects: [
@@ -496,13 +522,14 @@ SkillDatabase(
             focus_time_ms: 460,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: CurrentTarget),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "frost_brand",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Projectile(speed_units_per_ms: 5800),
                     effects: [
@@ -513,7 +540,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "ice_shatter",
                     delay_ms: 160,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     when: IfPreviousStepDealtDamage,
                     delivery: Instant,
@@ -530,16 +556,20 @@ SkillDatabase(
             focus_time_ms: 360,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: Nearest),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "bells_line",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXX", "X@X", "XXX"]),
+                        area: (
                         anchor: CastTarget,
+                        tile_origin: Anchor,
                         hit_targets: Enemies,
                     )),
                     effects: [
@@ -549,10 +579,12 @@ SkillDatabase(
                 SkillStepDef(
                     id: "holiday_crash",
                     delay_ms: 80,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXX", "X@X", "XXX"]),
+                        area: (
                         anchor: CastTarget,
+                        tile_origin: Anchor,
                         hit_targets: Enemies,
                     )),
                     effects: [
@@ -568,16 +600,20 @@ SkillDatabase(
             focus_time_ms: 900,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: Nearest),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "first_movement",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXX", "X@X", "XXX"]),
+                        area: (
                         anchor: CastTarget,
+                        tile_origin: Anchor,
                         hit_targets: Enemies,
                     )),
                     effects: [
@@ -587,10 +623,12 @@ SkillDatabase(
                 SkillStepDef(
                     id: "crescendo",
                     delay_ms: 120,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXX", "X@X", "XXX"]),
+                        area: (
                         anchor: CastTarget,
+                        tile_origin: Anchor,
                         hit_targets: Enemies,
                     )),
                     effects: [
@@ -601,10 +639,12 @@ SkillDatabase(
                 SkillStepDef(
                     id: "grand_finale",
                     delay_ms: 240,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXX", "X@X", "XXX"]),
+                        area: (
                         anchor: CastTarget,
+                        tile_origin: Anchor,
                         hit_targets: Enemies,
                     )),
                     effects: [
@@ -620,13 +660,14 @@ SkillDatabase(
             focus_time_ms: 520,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: CurrentTarget),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "redacted_presence",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Instant,
                     effects: [
@@ -659,16 +700,20 @@ SkillDatabase(
             focus_time_ms: 430,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: Nearest),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "dark_wave",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXX", "X@X", "XXX"]),
+                        area: (
                         anchor: CastTarget,
+                        tile_origin: Anchor,
                         hit_targets: Enemies,
                     )),
                     effects: [
@@ -694,15 +739,18 @@ SkillDatabase(
             focus_time_ms: 430,
             cast_targeting: Explicit(
                 target: SelfUnit,
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "white_wave",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: SelfUnit,
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXX", "X@X", "XXX"]),
+                        area: (
                         anchor: Caster,
                         hit_targets: Allies,
                         include_caster: true,
@@ -714,10 +762,12 @@ SkillDatabase(
                 SkillStepDef(
                     id: "white_judgement",
                     delay_ms: 100,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXX", "X@X", "XXX"]),
+                        area: (
                         anchor: CastTarget,
+                        tile_origin: Anchor,
                         hit_targets: Enemies,
                     )),
                     effects: [
@@ -733,13 +783,14 @@ SkillDatabase(
             focus_time_ms: 480,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: CurrentTarget),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "root_watch",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Projectile(speed_units_per_ms: 6200),
                     effects: [
@@ -750,11 +801,13 @@ SkillDatabase(
                 SkillStepDef(
                     id: "heaven_burrows",
                     delay_ms: 160,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
                     when: IfPreviousStepDealtDamage,
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXX", "X@X", "XXX"]),
+                        area: (
                         anchor: ImpactContextStart,
+                        tile_origin: Anchor,
                         hit_targets: Enemies,
                     )),
                     effects: [
@@ -770,15 +823,18 @@ SkillDatabase(
             focus_time_ms: 520,
             cast_targeting: Explicit(
                 target: SelfUnit,
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "false_blessing",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: SelfUnit,
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXX", "X@X", "XXX"]),
+                        area: (
                         anchor: Caster,
                         hit_targets: Allies,
                         include_caster: true,
@@ -797,10 +853,12 @@ SkillDatabase(
                 SkillStepDef(
                     id: "root_tax",
                     delay_ms: 120,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXX", "X@X", "XXX"]),
+                        area: (
                         anchor: CastTarget,
+                        tile_origin: Anchor,
                         hit_targets: Enemies,
                     )),
                     effects: [
@@ -816,16 +874,20 @@ SkillDatabase(
             focus_time_ms: 340,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: Nearest),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "laughing_spores",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: Nearest),
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXX", "X@X", "XXX"]),
+                        area: (
                         anchor: CastTarget,
+                        tile_origin: Anchor,
                         hit_targets: Enemies,
                     )),
                     effects: [
@@ -836,10 +898,12 @@ SkillDatabase(
                 SkillStepDef(
                     id: "toxic_laughter",
                     delay_ms: 100,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: CastTarget,
-                    delivery: TileArea(area: (
+                    delivery: TileArea(
+                        footprint: (include_anchor_tile: true, rows: ["XXX", "X@X", "XXX"]),
+                        area: (
                         anchor: CastTarget,
+                        tile_origin: Anchor,
                         hit_targets: Enemies,
                     )),
                     effects: [
@@ -855,13 +919,14 @@ SkillDatabase(
             focus_time_ms: 310,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: LowestHealthEnemy),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "brain_pick",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Instant,
                     effects: [
@@ -894,13 +959,14 @@ SkillDatabase(
             focus_time_ms: 390,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: CurrentTarget),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "axe_cleave",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Instant,
                     effects: [
@@ -933,13 +999,14 @@ SkillDatabase(
             focus_time_ms: 0,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: CurrentTarget),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "judgement_strike",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: CurrentTarget),
                     delivery: Instant,
                     effects: [
@@ -956,6 +1023,8 @@ SkillDatabase(
             focus_time_ms: 0,
             cast_targeting: Explicit(
                 target: SelfUnit,
+                reach: pattern,
+                air_capable: false,
             ),
             steps: [
                 SkillStepDef(
@@ -976,13 +1045,14 @@ SkillDatabase(
             focus_time_ms: 320,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: LowestHealthEnemy),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "fragment_black_round",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Projectile(speed_units_per_ms: 7000),
                     effects: [
@@ -1024,13 +1094,14 @@ SkillDatabase(
             focus_time_ms: 300,
             cast_targeting: Explicit(
                 target: EnemySingle(rule: LowestHealthEnemy),
-                defense_tile_range_preset: Some("front_3x2"),
+                reach: pattern,
+                air_capable: false,
+                target_range_preset: Some("front_3x2"),
             ),
             steps: [
                 SkillStepDef(
                     id: "fragment_pale_shot",
                     delay_ms: 0,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     delivery: Projectile(speed_units_per_ms: 6200),
                     effects: [
@@ -1046,7 +1117,6 @@ SkillDatabase(
                 SkillStepDef(
                     id: "fragment_quiet_lament",
                     delay_ms: 120,
-                    defense_tile_range_preset: Some("front_3x2"),
                     target: EnemySingle(rule: LowestHealthEnemy),
                     targeting: RetargetOnStep,
                     when: IfPreviousStepDealtDamage,

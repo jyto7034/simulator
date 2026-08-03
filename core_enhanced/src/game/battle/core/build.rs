@@ -1,7 +1,3 @@
-use std::collections::HashSet;
-
-use uuid::Uuid;
-
 use crate::game::{
     battle::{
         event_log::{
@@ -19,40 +15,10 @@ use crate::game::{
 
 use super::{
     movement::{types::UnitBody, ActionState},
-    BattleCore, RuntimeArtifact, RuntimeItem, RuntimeUnit, RuntimeUnitLifecycle,
+    BattleCore, RuntimeItem, RuntimeUnit, RuntimeUnitLifecycle,
 };
 
 impl BattleCore {
-    pub(super) fn build_runtime_artifacts_from_scenario(&mut self) -> Result<(), GameError> {
-        let mut seen_artifacts: HashSet<(crate::game::enums::Side, Uuid)> = HashSet::new();
-        for artifact in &self.scenario.artifacts {
-            if !seen_artifacts.insert((artifact.side, artifact.base_uuid)) {
-                return Err(GameError::InvalidAction);
-            }
-            let instance_id = Self::make_artifact_instance_id(
-                artifact.base_uuid,
-                artifact.side,
-                artifact.instance_salt,
-            );
-            if self
-                .artifacts
-                .insert(
-                    instance_id,
-                    RuntimeArtifact {
-                        instance_id,
-                        owner: artifact.side,
-                        base_uuid: artifact.base_uuid,
-                    },
-                )
-                .is_some()
-            {
-                return Err(GameError::InvalidAction);
-            }
-        }
-
-        Ok(())
-    }
-
     pub(super) fn spawn_scenario_group(
         &mut self,
         group_id: &crate::game::battle::scenario::ScenarioGroupId,
@@ -66,19 +32,11 @@ impl BattleCore {
             .cloned()
             .ok_or(GameError::InvalidAction)?;
 
-        let artifact_base_uuids: Vec<Uuid> = self
-            .scenario
-            .artifacts
-            .iter()
-            .filter(|artifact| artifact.side == group.side)
-            .map(|artifact| artifact.base_uuid)
-            .collect();
-
         let mut spawned_unit_ids = Vec::new();
         for spawn in &group.spawns {
             let unit = &spawn.draft;
             let combat_profile = unit.combat_profile(&self.game_data)?;
-            let stats = unit.effective_stats(&self.game_data, &artifact_base_uuids)?;
+            let stats = unit.effective_stats(&self.game_data)?;
 
             let base_uuid = unit.base_uuid();
             let source_identity = unit
@@ -377,13 +335,16 @@ impl BattleCore {
             .active_skill_casts
             .iter()
             .filter_map(|(cast_seq, cast)| {
-                (cast.caster_instance_id == withdrawn_unit_id)
-                    .then_some((*cast_seq, cast.skill_id.clone()))
+                (cast.caster_instance_id == withdrawn_unit_id).then_some((
+                    *cast_seq,
+                    cast.ability_event_seq,
+                    cast.skill_id.clone(),
+                ))
             })
             .collect::<Vec<_>>();
-        cancelled_casts.sort_by_key(|(cast_seq, _)| *cast_seq);
+        cancelled_casts.sort_by_key(|(cast_seq, _, _)| *cast_seq);
 
-        for (cast_seq, skill_id) in cancelled_casts {
+        for (cast_seq, ability_event_seq, skill_id) in cancelled_casts {
             if self.active_skill_casts.remove(&cast_seq).is_none() {
                 continue;
             }
@@ -396,7 +357,7 @@ impl BattleCore {
                 BattleLogEvent::SkillCastCancelled {
                     caster_instance_id: withdrawn_unit_id,
                     interrupted_skill_id: skill_id,
-                    interrupted_cast_seq: cast_seq,
+                    interrupted_cast_seq: ability_event_seq,
                     reason: SkillCastCancelReason::Withdrawn,
                 },
             );

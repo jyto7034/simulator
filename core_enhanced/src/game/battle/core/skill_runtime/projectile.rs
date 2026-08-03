@@ -532,19 +532,8 @@ impl BattleCore {
         impacts
     }
 
-    fn next_skill_delivery_id(
-        &mut self,
-        fired_at_ms: u64,
-        caster_instance_id: UnitInstanceId,
-    ) -> Uuid {
-        let seed = self
-            .recording_cause()
-            .and_then(|cause| cause.parent_seq())
-            .unwrap_or_else(|| {
-                let mut bytes = [0u8; 8];
-                bytes.copy_from_slice(&caster_instance_id.as_bytes()[..8]);
-                fired_at_ms ^ u64::from_be_bytes(bytes)
-            });
+    fn next_skill_delivery_id(&mut self, cast_seq: u64) -> Uuid {
+        let seed = determinism::seed_with_namespace(self.seed, cast_seq);
         let delivery_seq = self.projectile_seq;
         self.projectile_seq = self.projectile_seq.wrapping_add(1);
         determinism::uuid_v4_from_seed(seed, SKILL_DELIVERY_NS, delivery_seq)
@@ -634,8 +623,7 @@ impl BattleCore {
 
     fn spawn_homing_skill_projectile(&mut self, launch: SkillProjectileImpactLaunch) {
         launch.collision.validate_homing_runtime_contract();
-        let delivery_id =
-            self.next_skill_delivery_id(launch.fired_at_ms, launch.caster_instance_id);
+        let delivery_id = self.next_skill_delivery_id(launch.cast_seq);
         let max_travel_ms = launch.travel_time_ms.unwrap_or_else(|| {
             projectile_travel_ms(launch.start, launch.aim, launch.speed_units_per_ms)
         });
@@ -681,8 +669,7 @@ impl BattleCore {
 
     fn spawn_fixed_skill_projectile(&mut self, launch: SkillProjectileImpactLaunch) {
         launch.collision.validate_runtime_contract();
-        let delivery_id =
-            self.next_skill_delivery_id(launch.fired_at_ms, launch.caster_instance_id);
+        let delivery_id = self.next_skill_delivery_id(launch.cast_seq);
         let max_travel_ms =
             projectile_travel_ms(launch.start, launch.aim, launch.speed_units_per_ms);
         self.record_skill_projectile_launched(
@@ -753,8 +740,13 @@ impl BattleCore {
 
         let mut launched_count = 0usize;
         for _ in 0..repeat_count {
-            let iteration_target =
-                self.resolve_skill_step_context(cast_seq, caster_instance_id, step, cast_target);
+            let iteration_target = self.resolve_skill_step_context(
+                cast_seq,
+                caster_instance_id,
+                skill,
+                step,
+                cast_target,
+            );
             let Some((caster_owner, caster_pos)) =
                 self.resolve_cast_origin_context(Some(cast_seq), caster_instance_id, false)
             else {

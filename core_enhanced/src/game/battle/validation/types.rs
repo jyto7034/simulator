@@ -22,10 +22,8 @@ pub enum EventLogViolationKind {
     BuffAppliedByDeadCaster,
     UnitSpawnCountMismatch,
     ItemSpawnCountMismatch,
-    ArtifactSpawnCountMismatch,
     DuplicateUnitSpawn,
     DuplicateItemSpawn,
-    DuplicateArtifactSpawn,
     UnknownUnitReference,
     UnitReferencedBeforeSpawn,
     AttackTargetsSameUnit,
@@ -52,7 +50,6 @@ pub struct EventLogViolation {
 pub struct EventLogExpectedCounts {
     pub units: usize,
     pub items: usize,
-    pub artifacts: usize,
 }
 
 impl EventLogExpectedCounts {
@@ -64,12 +61,7 @@ impl EventLogExpectedCounts {
             .flat_map(|group| &group.spawns)
             .map(|spawn| spawn.draft.equipped_items.len())
             .sum();
-        let artifacts = scenario.artifacts.len();
-        Self {
-            units,
-            items,
-            artifacts,
-        }
+        Self { units, items }
     }
 }
 

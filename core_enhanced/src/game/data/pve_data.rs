@@ -34,23 +34,17 @@ pub enum PveEncounterClass {
 pub enum PveWaveEnemyData {
     Abnormality {
         abnormality_id: String,
-        #[serde(default = "default_tier")]
         tier: Tier,
-        #[serde(default = "default_count")]
         count: u32,
     },
     CorrodedEmployee {
         profile_id: String,
-        #[serde(default = "default_tier")]
         tier: Tier,
-        #[serde(default = "default_count")]
         count: u32,
     },
     FacilityEntity {
         profile_id: String,
-        #[serde(default = "default_tier")]
         tier: Tier,
-        #[serde(default = "default_count")]
         count: u32,
     },
 }
@@ -72,7 +66,6 @@ pub enum PveWaveSource {
 #[serde(deny_unknown_fields)]
 pub struct PveWaveData {
     pub id: String,
-    #[serde(default)]
     pub time_ms: u32,
     #[serde(default)]
     pub spawn_zone_ids: Vec<String>,
@@ -157,16 +150,8 @@ pub struct PveTacticalPlanData {
     pub objective: Option<PveBattleObjectiveData>,
 }
 
-fn default_tier() -> Tier {
-    Tier::I
-}
-
 fn default_reward_mode() -> RewardMode {
     RewardMode::ClaimAll
-}
-
-fn default_count() -> u32 {
-    1
 }
 
 fn default_required_for_victory() -> bool {
@@ -377,9 +362,18 @@ impl PveEncounterDatabase {
 
     pub(crate) fn validate_indexes(&self) {
         let _ = self.by_id();
-        for encounter in &self.encounters {
-            validate_encounter_authoring_contract(encounter);
+        self.validate_contract()
+            .expect("invalid pve encounter authoring contract");
+    }
+
+    pub(crate) fn validate_contract(&self) -> Result<(), crate::game::data::DataValidationError> {
+        for (encounter_index, encounter) in self.encounters.iter().enumerate() {
+            validate_encounter_authoring_contract(
+                encounter,
+                &format!("encounters[{encounter_index}]"),
+            )?;
         }
+        Ok(())
     }
 
     pub fn get_by_id(&self, id: &str) -> Option<&PveEncounter> {
@@ -396,84 +390,117 @@ impl PveEncounterDatabase {
     }
 }
 
-fn validate_encounter_authoring_contract(encounter: &PveEncounter) {
-    assert!(
-        !encounter.waves.is_empty(),
-        "pve encounter '{}' must define at least one wave",
-        encounter.id
-    );
+fn pve_error(
+    encounter: &PveEncounter,
+    field_path: impl Into<String>,
+    cause: impl Into<String>,
+) -> crate::game::data::DataValidationError {
+    crate::game::data::DataValidationError::at(&encounter.id, field_path, cause)
+}
+
+fn validate_encounter_authoring_contract(
+    encounter: &PveEncounter,
+    encounter_path: &str,
+) -> Result<(), crate::game::data::DataValidationError> {
+    if encounter.waves.is_empty() {
+        return Err(pve_error(
+            encounter,
+            format!("{encounter_path}.waves"),
+            "encounter must define at least one wave",
+        ));
+    }
 
     match encounter.encounter_class {
         PveEncounterClass::Normal => {
-            assert!(
-                encounter.primary_abnormality_id.is_none(),
-                "normal pve encounter '{}' must not define primary_abnormality_id",
-                encounter.id
-            );
-            assert!(
-                encounter.suppression_research.is_none(),
-                "normal pve encounter '{}' must not define suppression_research",
-                encounter.id
-            );
+            if encounter.primary_abnormality_id.is_some() {
+                return Err(pve_error(
+                    encounter,
+                    format!("{encounter_path}.primary_abnormality_id"),
+                    "normal encounter must not define primary_abnormality_id",
+                ));
+            }
+            if encounter.suppression_research.is_some() {
+                return Err(pve_error(
+                    encounter,
+                    format!("{encounter_path}.suppression_research"),
+                    "normal encounter must not define suppression_research",
+                ));
+            }
         }
         PveEncounterClass::Elite | PveEncounterClass::NormalBoss | PveEncounterClass::FinalBoss => {
-            assert!(
-                encounter
-                    .primary_abnormality_id
-                    .as_deref()
-                    .is_some_and(|id| !id.trim().is_empty()),
-                "{:?} pve encounter '{}' must define primary_abnormality_id",
-                encounter.encounter_class,
-                encounter.id
-            );
+            if !encounter
+                .primary_abnormality_id
+                .as_deref()
+                .is_some_and(|id| !id.trim().is_empty())
+            {
+                return Err(pve_error(
+                    encounter,
+                    format!("{encounter_path}.primary_abnormality_id"),
+                    format!(
+                        "{:?} encounter must define primary_abnormality_id",
+                        encounter.encounter_class
+                    ),
+                ));
+            }
         }
     }
 
     let mut bonus_objective_ids = HashSet::new();
-    for objective in encounter.bonus_objectives() {
-        assert!(
-            !objective.id.trim().is_empty(),
-            "bonus objective id in pve encounter '{}' must not be empty",
-            encounter.id
-        );
-        assert!(
-            bonus_objective_ids.insert(objective.id.as_str()),
-            "duplicate bonus objective id '{}' in pve encounter '{}'",
-            objective.id,
-            encounter.id
-        );
-        assert!(
-            objective.research_bonus > 0,
-            "bonus objective '{}' in pve encounter '{}' research_bonus must be greater than zero",
-            objective.id,
-            encounter.id
-        );
+    for (objective_index, objective) in encounter.bonus_objectives().iter().enumerate() {
+        let objective_path =
+            format!("{encounter_path}.suppression_research.bonus_objectives[{objective_index}]");
+        if objective.id.trim().is_empty() {
+            return Err(pve_error(
+                encounter,
+                format!("{objective_path}.id"),
+                "bonus objective id must not be empty",
+            ));
+        }
+        if !bonus_objective_ids.insert(objective.id.as_str()) {
+            return Err(pve_error(
+                encounter,
+                format!("{objective_path}.id"),
+                format!("duplicate bonus objective id '{}'", objective.id),
+            ));
+        }
+        if objective.research_bonus == 0 {
+            return Err(pve_error(
+                encounter,
+                format!("{objective_path}.research_bonus"),
+                "research_bonus must be greater than zero",
+            ));
+        }
         if let Some(presentation) = &objective.presentation {
-            assert!(
-                !presentation.trim().is_empty(),
-                "bonus objective '{}' in pve encounter '{}' presentation must not be empty",
-                objective.id,
-                encounter.id
-            );
+            if presentation.trim().is_empty() {
+                return Err(pve_error(
+                    encounter,
+                    format!("{objective_path}.presentation"),
+                    "presentation must not be empty",
+                ));
+            }
         }
         match objective.condition {
             PveBonusObjectiveConditionData::ClearWithin { time_ms } => {
-                assert!(
-                    time_ms > 0,
-                    "bonus objective '{}' in pve encounter '{}' ClearWithin.time_ms must be greater than zero",
-                    objective.id,
-                    encounter.id
-                );
+                if time_ms == 0 {
+                    return Err(pve_error(
+                        encounter,
+                        format!("{objective_path}.condition.ClearWithin.time_ms"),
+                        "time_ms must be greater than zero",
+                    ));
+                }
             }
             PveBonusObjectiveConditionData::DecisiveDamage {
                 minimum_damage_percent_of_max_hp,
             } => {
-                assert!(
-                    minimum_damage_percent_of_max_hp > 0,
-                    "bonus objective '{}' in pve encounter '{}' DecisiveDamage.minimum_damage_percent_of_max_hp must be greater than zero",
-                    objective.id,
-                    encounter.id
-                );
+                if minimum_damage_percent_of_max_hp == 0 {
+                    return Err(pve_error(
+                        encounter,
+                        format!(
+                            "{objective_path}.condition.DecisiveDamage.minimum_damage_percent_of_max_hp"
+                        ),
+                        "minimum_damage_percent_of_max_hp must be greater than zero",
+                    ));
+                }
             }
         }
     }
@@ -498,183 +525,196 @@ fn validate_encounter_authoring_contract(encounter: &PveEncounter) {
     }
 
     if encounter.encounter_class == PveEncounterClass::Normal {
-        assert!(
-            primary_target_count == 0 && non_primary_abnormalities.is_empty(),
-            "normal pve encounter '{}' must spawn only corroded employees",
-            encounter.id
-        );
+        if primary_target_count != 0 || !non_primary_abnormalities.is_empty() {
+            return Err(pve_error(
+                encounter,
+                format!("{encounter_path}.waves"),
+                "normal encounter must spawn only corroded employees",
+            ));
+        }
     }
 
     if encounter.requires_primary_abnormality() {
-        let primary = encounter
-            .primary_abnormality_id()
-            .expect("validated primary abnormality id must exist");
-        assert!(
-            primary_target_count > 0,
-            "{:?} pve encounter '{}' must spawn its primary abnormality target '{}'",
-            encounter.encounter_class,
-            encounter.id,
-            primary
-        );
-        assert!(
-            non_primary_abnormalities.is_empty(),
-            "{:?} pve encounter '{}' spawns non-primary abnormality targets {:?}; multi-primary target policy is out of scope",
-            encounter.encounter_class,
-            encounter.id,
-            non_primary_abnormalities
-        );
+        let primary = encounter.primary_abnormality_id().ok_or_else(|| {
+            pve_error(
+                encounter,
+                format!("{encounter_path}.primary_abnormality_id"),
+                "required primary abnormality id is missing",
+            )
+        })?;
+        if primary_target_count == 0 {
+            return Err(pve_error(
+                encounter,
+                format!("{encounter_path}.waves"),
+                format!(
+                    "{:?} encounter must spawn its primary abnormality target '{primary}'",
+                    encounter.encounter_class
+                ),
+            ));
+        }
+        if !non_primary_abnormalities.is_empty() {
+            return Err(pve_error(
+                encounter,
+                format!("{encounter_path}.waves"),
+                format!(
+                    "{:?} encounter spawns non-primary abnormality targets {:?}; multi-primary target policy is out of scope",
+                    encounter.encounter_class, non_primary_abnormalities
+                ),
+            ));
+        }
     }
 
     if encounter.has_bonus_objectives() {
-        let primary = encounter
-            .primary_abnormality_id()
-            .expect("bonus objective encounter must have a primary abnormality");
-        assert!(
-            primary_target_count > 0,
-            "pve encounter '{}' defines bonus objectives but does not spawn its primary abnormality target '{}'",
-            encounter.id,
-            primary
-        );
+        let primary = encounter.primary_abnormality_id().ok_or_else(|| {
+            pve_error(
+                encounter,
+                format!("{encounter_path}.primary_abnormality_id"),
+                "bonus objective encounter must have a primary abnormality",
+            )
+        })?;
+        if primary_target_count == 0 {
+            return Err(pve_error(
+                encounter,
+                format!("{encounter_path}.waves"),
+                format!(
+                    "encounter defines bonus objectives but does not spawn its primary abnormality target '{primary}'"
+                ),
+            ));
+        }
     }
 
     let mut wave_ids = HashSet::new();
-    for wave in &encounter.waves {
-        assert!(
-            !wave.id.trim().is_empty(),
-            "wave id in pve encounter '{}' must not be empty",
-            encounter.id
-        );
-        assert!(
-            wave_ids.insert(wave.id.as_str()),
-            "duplicate wave id '{}' in pve encounter '{}'",
-            wave.id,
-            encounter.id
-        );
-        match &wave.source {
-            PveWaveSource::Manual(enemies) => {
-                assert!(
-                    !enemies.is_empty(),
-                    "manual wave '{}' in pve encounter '{}' must contain at least one enemy entry",
-                    wave.id,
-                    encounter.id
-                );
-            }
-            PveWaveSource::GeneratedCorroded {
-                preset_id,
-                budget_override,
-                ..
-            } => {
-                assert!(
-                    !preset_id.trim().is_empty(),
-                    "generated corroded wave '{}' in pve encounter '{}' must reference a preset",
-                    wave.id,
-                    encounter.id
-                );
-                if let Some(budget_override) = budget_override {
-                    assert!(
-                        *budget_override > 0,
-                        "generated corroded wave '{}' in pve encounter '{}' budget_override must be greater than zero",
-                        wave.id,
-                        encounter.id
-                    );
-                }
-            }
+    for (wave_index, wave) in encounter.waves.iter().enumerate() {
+        let wave_path = format!("{encounter_path}.waves[{wave_index}]");
+        if !wave_ids.insert(wave.id.as_str()) {
+            return Err(pve_error(
+                encounter,
+                format!("{wave_path}.id"),
+                format!("duplicate wave id '{}'", wave.id),
+            ));
         }
-        let mut spawn_zone_ids = HashSet::new();
-        for spawn_zone_id in &wave.spawn_zone_ids {
-            assert!(
-                !spawn_zone_id.trim().is_empty(),
-                "wave '{}' in pve encounter '{}' has empty spawn zone id",
-                wave.id,
-                encounter.id
-            );
-            assert!(
-                spawn_zone_ids.insert(spawn_zone_id.as_str()),
-                "wave '{}' in pve encounter '{}' references duplicate spawn zone id '{}'",
-                wave.id,
-                encounter.id,
-                spawn_zone_id
-            );
-        }
-        if let Some(route_id) = &wave.route_id {
-            assert!(
-                !route_id.trim().is_empty(),
-                "wave '{}' in pve encounter '{}' has empty route id",
-                wave.id,
-                encounter.id
-            );
-        } else if encounter.node_type == Some(CombatNodeType::Defense) {
-            panic!(
-                "defense wave '{}' in pve encounter '{}' must define route_id",
-                wave.id, encounter.id
-            );
-        }
-        for enemy in wave.manual_enemies() {
-            match enemy {
-                PveWaveEnemyData::Abnormality { abnormality_id, .. } => assert!(
-                    !abnormality_id.trim().is_empty(),
-                    "wave '{}' in pve encounter '{}' has empty enemy abnormality id",
-                    wave.id,
-                    encounter.id
-                ),
-                PveWaveEnemyData::CorrodedEmployee { profile_id, .. } => assert!(
-                    !profile_id.trim().is_empty(),
-                    "wave '{}' in pve encounter '{}' has empty corroded employee profile id",
-                    wave.id,
-                    encounter.id
-                ),
-                PveWaveEnemyData::FacilityEntity { profile_id, .. } => assert!(
-                    !profile_id.trim().is_empty(),
-                    "wave '{}' in pve encounter '{}' has empty facility entity profile id",
-                    wave.id,
-                    encounter.id
-                ),
-            }
-            assert!(
-                enemy.count() > 0,
-                "wave '{}' in pve encounter '{}' enemy {:?} count must be greater than zero",
-                wave.id,
-                encounter.id,
-                enemy
-            );
-        }
+        validate_pve_wave_authoring_contract(
+            wave,
+            encounter.node_type == Some(CombatNodeType::Defense),
+        )
+        .map_err(|cause| pve_error(encounter, wave_path, cause))?;
     }
 
     let Some(tactical_plan) = &encounter.tactical_plan else {
-        return;
+        return Ok(());
     };
 
     let mut point_ids = HashSet::new();
-    for point in &tactical_plan.points {
-        assert!(
-            point_ids.insert(point.id.as_str()),
-            "duplicate tactical point '{}' in pve encounter '{}'",
-            point.id,
-            encounter.id
-        );
+    for (point_index, point) in tactical_plan.points.iter().enumerate() {
+        if !point_ids.insert(point.id.as_str()) {
+            return Err(pve_error(
+                encounter,
+                format!("{encounter_path}.tactical_plan.points[{point_index}].id"),
+                format!("duplicate tactical point '{}'", point.id),
+            ));
+        }
     }
 
     if let (Some(objective), Some(win_condition)) =
         (&tactical_plan.objective, &encounter.win_condition)
     {
-        validate_objective_win_condition_consistency(encounter, objective, win_condition);
+        validate_objective_win_condition_consistency(
+            encounter,
+            objective,
+            win_condition,
+            encounter_path,
+        )?;
     }
+    Ok(())
+}
+
+pub(super) fn validate_pve_wave_authoring_contract(
+    wave: &PveWaveData,
+    defense_route_required: bool,
+) -> Result<(), String> {
+    if wave.id.trim().is_empty() {
+        return Err("wave id must not be empty".to_string());
+    }
+    match &wave.source {
+        PveWaveSource::Manual(enemies) if enemies.is_empty() => {
+            return Err("manual source must contain at least one enemy entry".to_string());
+        }
+        PveWaveSource::GeneratedCorroded {
+            preset_id,
+            budget_override,
+            ..
+        } => {
+            if preset_id.trim().is_empty() {
+                return Err("generated corroded source must reference a preset".to_string());
+            }
+            if budget_override.is_some_and(|budget| budget == 0) {
+                return Err(
+                    "generated corroded budget_override must be greater than zero".to_string(),
+                );
+            }
+        }
+        PveWaveSource::Manual(_) => {}
+    }
+
+    let mut spawn_zone_ids = HashSet::new();
+    for spawn_zone_id in &wave.spawn_zone_ids {
+        if spawn_zone_id.trim().is_empty() {
+            return Err("spawn zone id must not be empty".to_string());
+        }
+        if !spawn_zone_ids.insert(spawn_zone_id.as_str()) {
+            return Err(format!("duplicate spawn zone id '{spawn_zone_id}'"));
+        }
+    }
+    if let Some(route_id) = &wave.route_id {
+        if route_id.trim().is_empty() {
+            return Err("route id must not be empty".to_string());
+        }
+    } else if defense_route_required {
+        return Err("defense wave must define route_id".to_string());
+    }
+
+    for enemy in wave.manual_enemies() {
+        let (kind, id) = match enemy {
+            PveWaveEnemyData::Abnormality { abnormality_id, .. } => {
+                ("enemy abnormality", abnormality_id)
+            }
+            PveWaveEnemyData::CorrodedEmployee { profile_id, .. } => {
+                ("corroded employee profile", profile_id)
+            }
+            PveWaveEnemyData::FacilityEntity { profile_id, .. } => {
+                ("facility entity profile", profile_id)
+            }
+        };
+        if id.trim().is_empty() {
+            return Err(format!("{kind} id must not be empty"));
+        }
+        if enemy.count() == 0 {
+            return Err(format!("{kind} '{id}' count must be greater than zero"));
+        }
+    }
+    Ok(())
 }
 
 fn validate_objective_win_condition_consistency(
     encounter: &PveEncounter,
     objective: &PveBattleObjectiveData,
     win_condition: &PveWinConditionData,
-) {
+    encounter_path: &str,
+) -> Result<(), crate::game::data::DataValidationError> {
     let Some(objective_contract) = ObjectiveWinContract::from_objective(objective) else {
-        return;
+        return Ok(());
     };
     let win_contract = ObjectiveWinContract::from_win_condition(win_condition);
-    assert_eq!(
-        objective_contract, win_contract,
-        "pve encounter '{}' tactical objective {:?} conflicts with win condition {:?}",
-        encounter.id, objective, win_condition
-    );
+    if objective_contract != win_contract {
+        return Err(pve_error(
+            encounter,
+            format!("{encounter_path}.tactical_plan.objective"),
+            format!(
+                "tactical objective {objective:?} conflicts with win condition {win_condition:?}"
+            ),
+        ));
+    }
+    Ok(())
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -820,7 +860,7 @@ mod tests {
                         id: "wave_1",
                         time_ms: 15000,
                         source: Manual([
-                            Abnormality(abnormality_id: "enemy_b"),
+                            Abnormality(abnormality_id: "enemy_b", tier: I, count: 1),
                         ]),
                     ),
                 ],
@@ -907,7 +947,6 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "must define at least one wave")]
     fn pve_encounter_validation_rejects_empty_wave_contract() {
         let encounter: PveEncounter = ron::de::from_str(
             r#"(
@@ -920,11 +959,15 @@ mod tests {
         )
         .expect("empty wave contract should deserialize before validation");
 
-        PveEncounterDatabase::new(vec![encounter]).validate_indexes();
+        let error = PveEncounterDatabase::new(vec![encounter])
+            .validate_contract()
+            .expect_err("empty wave contract must reject");
+        assert_eq!(error.object_id.as_deref(), Some("empty_waves"));
+        assert_eq!(error.field_path.as_deref(), Some("encounters[0].waves"));
+        assert!(error.cause.contains("at least one wave"));
     }
 
     #[test]
-    #[should_panic(expected = "conflicts with win condition")]
     fn pve_encounter_validation_rejects_conflicting_objective_and_win_condition() {
         let encounter: PveEncounter = ron::de::from_str(
             r#"(
@@ -939,8 +982,9 @@ mod tests {
                 waves: [
                     (
                         id: "wave_0",
+                        time_ms: 0,
                         source: Manual([
-                            Abnormality(abnormality_id: "enemy"),
+                            Abnormality(abnormality_id: "enemy", tier: I, count: 1),
                         ]),
                     ),
                 ],
@@ -948,7 +992,15 @@ mod tests {
         )
         .expect("conflicting authored contract should deserialize before validation");
 
-        PveEncounterDatabase::new(vec![encounter]).validate_indexes();
+        let error = PveEncounterDatabase::new(vec![encounter])
+            .validate_contract()
+            .expect_err("conflicting objective and win condition must reject");
+        assert_eq!(error.object_id.as_deref(), Some("conflicting_contract"));
+        assert_eq!(
+            error.field_path.as_deref(),
+            Some("encounters[0].tactical_plan.objective")
+        );
+        assert!(error.cause.contains("conflicts with win condition"));
     }
 
     #[test]
@@ -977,8 +1029,9 @@ mod tests {
                 waves: [
                     (
                         id: "wave_0",
+                        time_ms: 0,
                         source: Manual([
-                            Abnormality(abnormality_id: "enemy"),
+                            Abnormality(abnormality_id: "enemy", tier: I, count: 1),
                         ]),
                     ),
                 ],
@@ -991,7 +1044,6 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "duplicate bonus objective id")]
     fn pve_encounter_validation_rejects_duplicate_bonus_objective_ids() {
         let encounter: PveEncounter = ron::de::from_str(
             r#"(
@@ -1008,8 +1060,9 @@ mod tests {
                 waves: [
                     (
                         id: "wave_0",
+                        time_ms: 0,
                         source: Manual([
-                            Abnormality(abnormality_id: "enemy"),
+                            Abnormality(abnormality_id: "enemy", tier: I, count: 1),
                         ]),
                     ),
                 ],
@@ -1017,11 +1070,21 @@ mod tests {
         )
         .expect("duplicate bonus objective contract should deserialize before validation");
 
-        PveEncounterDatabase::new(vec![encounter]).validate_indexes();
+        let error = PveEncounterDatabase::new(vec![encounter])
+            .validate_contract()
+            .expect_err("duplicate bonus objective id must reject");
+        assert_eq!(
+            error.object_id.as_deref(),
+            Some("duplicate_bonus_objectives")
+        );
+        assert_eq!(
+            error.field_path.as_deref(),
+            Some("encounters[0].suppression_research.bonus_objectives[1].id")
+        );
+        assert!(error.cause.contains("duplicate bonus objective id"));
     }
 
     #[test]
-    #[should_panic(expected = "research_bonus must be greater than zero")]
     fn pve_encounter_validation_rejects_zero_bonus_research() {
         let encounter: PveEncounter = ron::de::from_str(
             r#"(
@@ -1037,8 +1100,9 @@ mod tests {
                 waves: [
                     (
                         id: "wave_0",
+                        time_ms: 0,
                         source: Manual([
-                            Abnormality(abnormality_id: "enemy"),
+                            Abnormality(abnormality_id: "enemy", tier: I, count: 1),
                         ]),
                     ),
                 ],
@@ -1046,11 +1110,18 @@ mod tests {
         )
         .expect("zero bonus objective contract should deserialize before validation");
 
-        PveEncounterDatabase::new(vec![encounter]).validate_indexes();
+        let error = PveEncounterDatabase::new(vec![encounter])
+            .validate_contract()
+            .expect_err("zero research bonus must reject");
+        assert_eq!(error.object_id.as_deref(), Some("zero_bonus_research"));
+        assert_eq!(
+            error.field_path.as_deref(),
+            Some("encounters[0].suppression_research.bonus_objectives[0].research_bonus")
+        );
+        assert!(error.cause.contains("greater than zero"));
     }
 
     #[test]
-    #[should_panic(expected = "must spawn its primary abnormality target")]
     fn pve_encounter_validation_rejects_bonus_objective_without_primary_target_spawn() {
         let encounter: PveEncounter = ron::de::from_str(
             r#"(
@@ -1066,8 +1137,9 @@ mod tests {
                 waves: [
                     (
                         id: "wave_0",
+                        time_ms: 0,
                         source: Manual([
-                            CorrodedEmployee(profile_id: "corroded_guard"),
+                            CorrodedEmployee(profile_id: "corroded_guard", tier: I, count: 1),
                         ]),
                     ),
                 ],
@@ -1075,6 +1147,16 @@ mod tests {
         )
         .expect("missing primary target contract should deserialize before validation");
 
-        PveEncounterDatabase::new(vec![encounter]).validate_indexes();
+        let error = PveEncounterDatabase::new(vec![encounter])
+            .validate_contract()
+            .expect_err("missing primary target spawn must reject");
+        assert_eq!(
+            error.object_id.as_deref(),
+            Some("missing_primary_bonus_target")
+        );
+        assert_eq!(error.field_path.as_deref(), Some("encounters[0].waves"));
+        assert!(error
+            .cause
+            .contains("must spawn its primary abnormality target"));
     }
 }

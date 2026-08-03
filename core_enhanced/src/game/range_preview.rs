@@ -22,7 +22,7 @@ fn default_basic_attack_tile_range() -> TileRangePattern {
     )
 }
 
-pub(crate) fn range_previews_for_runtime_unit(
+pub(crate) fn range_previews_for_player_runtime_unit(
     unit: &RuntimeUnit,
     game_data: &GameDataBase,
     battlefield: &BattlefieldLayout,
@@ -168,19 +168,23 @@ fn active_skill_preview(
             LiveBattleRangePreviewReason::MissingRangeData,
         );
     };
-    let Some((target, range_policy, defense_tile_range, _)) = skill.cast_target_definition() else {
+    let Some((target, reach, target_range, _)) = skill.cast_target_definition() else {
         return unavailable_active_skill(
             Some(skill.id.clone()),
             None,
             LiveBattleRangePreviewReason::MissingRangeData,
         );
     };
+    let range_policy = match reach {
+        crate::game::ability::SkillTargetReach::Pattern => TileRangePolicy::Pattern,
+        crate::game::ability::SkillTargetReach::Global => TileRangePolicy::WholeFieldValidTiles,
+    };
 
     match target {
         SkillTarget::SelfUnit => self_target_skill_preview(
             skill,
             range_policy,
-            defense_tile_range,
+            target_range,
             battlefield,
             position,
             facing,
@@ -193,7 +197,7 @@ fn active_skill_preview(
         SkillTarget::CastTarget => manual_tile_skill_preview(
             skill,
             range_policy,
-            defense_tile_range,
+            target_range,
             battlefield,
             position,
             facing,
@@ -477,8 +481,8 @@ mod tests {
             kind: Default::default(),
             cast_targeting: SkillCastTargetingDef::Explicit {
                 target: SkillTarget::CastTarget,
-                range_policy: Default::default(),
-                defense_tile_range: Some(tile_range.clone()),
+                reach: Default::default(),
+                target_range: Some(tile_range.clone()),
                 air_capable: false,
             },
             focus_time_ms: 0,
@@ -486,9 +490,6 @@ mod tests {
             steps: vec![SkillStepDef {
                 id: "hit".to_string(),
                 delay_ms: 0,
-                range_policy: Default::default(),
-                defense_tile_range: Some(tile_range),
-                air_capable: false,
                 target: SkillTarget::CastTarget,
                 targeting: Default::default(),
                 when: Default::default(),
@@ -570,9 +571,6 @@ mod tests {
             steps: vec![SkillStepDef {
                 id: "hit".to_string(),
                 delay_ms: 0,
-                range_policy: Default::default(),
-                defense_tile_range: Some(default_basic_attack_tile_range()),
-                air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: Default::default(),
                 },

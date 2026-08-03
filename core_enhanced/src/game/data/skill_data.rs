@@ -3,35 +3,22 @@ use std::{
     sync::OnceLock,
 };
 
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::{de::Error as _, Deserialize, Deserializer, Serialize};
 
 use crate::game::{
     ability::{
         DeliveryDef, FocusPermissions, ProjectileHitPolicy, SkillAreaAnchorSource,
         SkillCastTargetingDef, SkillDef, SkillEffectDef, SkillKind, SkillPresentationDef,
-        SkillStepCondition, SkillStepDef, SkillStepRepeat, SkillTarget, StepTargetingMode,
+        SkillStepCondition, SkillStepDef, SkillStepRepeat, SkillTarget, SkillTargetReach,
+        StepTargetingMode,
     },
     battle::buffs::BuffDatabase,
-    battle::tile_range::{TileRangePattern, TileRangePolicy},
-    data::{build_string_index, once_lock_with},
+    battle::tile_range::TileRangePattern,
+    data::build_string_index,
 };
 
-fn validate_registered_buff(
-    buff_data: &BuffDatabase,
-    skill_id: &str,
-    context: &str,
-    buff_id: &str,
-) {
-    assert!(
-        buff_data.contains_name(buff_id),
-        "skill '{}' references unknown buff '{}' in {}",
-        skill_id,
-        buff_id,
-        context
-    );
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
 pub struct SkillRangePresetDef {
     pub id: String,
     pub range: TileRangePattern,
@@ -49,14 +36,15 @@ pub struct SkillDatabase {
 
 impl SkillDatabase {
     pub fn new(skills: Vec<SkillDef>) -> Self {
-        validate_skill_contracts(&skills);
-        let by_id = once_lock_with(build_string_index(&skills, "skill id", |skill| &skill.id));
-
-        Self {
+        let database = Self {
             range_presets: vec![],
             skills,
-            by_id,
-        }
+            by_id: OnceLock::new(),
+        };
+        database
+            .validate_contract()
+            .expect("invalid Skill authoring contract");
+        database
     }
 
     fn by_id(&self) -> &HashMap<String, usize> {
@@ -65,12 +53,20 @@ impl SkillDatabase {
     }
 
     pub(crate) fn validate_indexes(&self) {
-        validate_skill_contracts(&self.skills);
+        self.validate_contract()
+            .expect("invalid Skill authoring contract");
         let _ = self.by_id();
     }
 
-    pub(crate) fn validate_buff_references(&self, buff_data: &BuffDatabase) {
-        validate_skill_buff_references(&self.skills, buff_data);
+    pub(crate) fn validate_contract(&self) -> Result<(), crate::game::data::DataValidationError> {
+        validate_skill_contracts(&self.skills)
+    }
+
+    pub(crate) fn validate_buff_references(
+        &self,
+        buff_data: &BuffDatabase,
+    ) -> Result<(), crate::game::data::DataValidationError> {
+        validate_skill_buff_references(&self.skills, buff_data)
     }
 
     pub fn get_by_id(&self, id: impl AsRef<str>) -> Option<&SkillDef> {
@@ -86,11 +82,12 @@ impl<'de> Deserialize<'de> for SkillDatabase {
         D: Deserializer<'de>,
     {
         let raw = RawSkillDatabase::deserialize(deserializer)?;
-        Ok(raw.into_database())
+        raw.try_into_database().map_err(D::Error::custom)
     }
 }
 
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 #[serde(rename = "SkillDatabase")]
 struct RawSkillDatabase {
     #[serde(default)]
@@ -103,16 +100,12 @@ struct RawSkillDatabase {
 #[serde(rename = "SkillDef")]
 struct RawSkillDef {
     id: crate::game::ability::SkillId,
-    #[serde(default = "raw_default_skill_name")]
     name: String,
-    #[serde(default)]
     kind: SkillKind,
     cast_targeting: RawSkillCastTargetingDef,
-    #[serde(default)]
     focus_time_ms: u32,
     #[serde(default)]
     focus_permissions: FocusPermissions,
-    #[serde(default)]
     steps: Vec<RawSkillStepDef>,
 }
 
@@ -121,13 +114,11 @@ struct RawSkillDef {
 enum RawSkillCastTargetingDef {
     Explicit {
         target: SkillTarget,
+        reach: SkillTargetReach,
         #[serde(default)]
-        range_policy: TileRangePolicy,
+        target_range: Option<TileRangePattern>,
         #[serde(default)]
-        defense_tile_range: Option<TileRangePattern>,
-        #[serde(default)]
-        defense_tile_range_preset: Option<String>,
-        #[serde(default)]
+        target_range_preset: Option<String>,
         air_capable: bool,
     },
 }
@@ -136,18 +127,8 @@ enum RawSkillCastTargetingDef {
 #[serde(deny_unknown_fields)]
 #[serde(rename = "SkillStepDef")]
 struct RawSkillStepDef {
-    #[serde(default = "raw_default_step_id")]
     id: String,
-    #[serde(default)]
     delay_ms: u32,
-    #[serde(default)]
-    range_policy: TileRangePolicy,
-    #[serde(default)]
-    defense_tile_range: Option<TileRangePattern>,
-    #[serde(default)]
-    defense_tile_range_preset: Option<String>,
-    #[serde(default)]
-    air_capable: bool,
     target: SkillTarget,
     #[serde(default)]
     targeting: StepTargetingMode,
@@ -155,124 +136,109 @@ struct RawSkillStepDef {
     when: SkillStepCondition,
     #[serde(default)]
     repeat: SkillStepRepeat,
-    #[serde(default)]
     delivery: DeliveryDef,
-    #[serde(default)]
     effects: Vec<SkillEffectDef>,
     #[serde(default)]
     presentation: SkillPresentationDef,
 }
 
-fn raw_default_skill_name() -> String {
-    "Unnamed Skill".to_string()
-}
-
-fn raw_default_step_id() -> String {
-    "step".to_string()
-}
-
 impl RawSkillDatabase {
-    fn into_database(self) -> SkillDatabase {
-        let preset_index =
-            build_string_index(&self.range_presets, "skill range preset id", |preset| {
-                &preset.id
-            });
+    fn try_into_database(self) -> Result<SkillDatabase, String> {
+        let mut preset_index = HashMap::new();
+        for (index, preset) in self.range_presets.iter().enumerate() {
+            if preset_index.insert(preset.id.clone(), index).is_some() {
+                return Err(format!("duplicate skill range preset id '{}'", preset.id));
+            }
+        }
         for preset in &self.range_presets {
-            preset.range.validate().unwrap_or_else(|error| {
-                panic!(
-                    "skill range preset '{}' has invalid defense_tile_range: {}",
-                    preset.id, error
+            preset.range.validate().map_err(|error| {
+                format!(
+                    "skill range preset '{}' has invalid defense_tile_range: {error}",
+                    preset.id
                 )
-            });
+            })?;
         }
 
         let skills = self
             .skills
             .into_iter()
-            .map(|skill| skill.into_skill_def(&self.range_presets, &preset_index))
-            .collect::<Vec<_>>();
-        validate_skill_contracts(&skills);
-        let by_id = once_lock_with(build_string_index(&skills, "skill id", |skill| &skill.id));
-        SkillDatabase {
+            .map(|skill| skill.try_into_skill_def(&self.range_presets, &preset_index))
+            .collect::<Result<Vec<_>, _>>()?;
+        let database = SkillDatabase {
             range_presets: self.range_presets,
             skills,
-            by_id,
-        }
+            by_id: OnceLock::new(),
+        };
+        database
+            .validate_contract()
+            .map_err(|error| format!("invalid Skill data: {error:?}"))?;
+        Ok(database)
     }
 }
 
 impl RawSkillDef {
-    fn into_skill_def(
+    fn try_into_skill_def(
         self,
         presets: &[SkillRangePresetDef],
         preset_index: &HashMap<String, usize>,
-    ) -> SkillDef {
-        SkillDef {
+    ) -> Result<SkillDef, String> {
+        Ok(SkillDef {
             id: self.id,
             name: self.name,
             kind: self.kind,
             cast_targeting: self
                 .cast_targeting
-                .into_cast_targeting(presets, preset_index),
+                .try_into_cast_targeting(presets, preset_index)?,
             focus_time_ms: self.focus_time_ms,
             focus_permissions: self.focus_permissions,
             steps: self
                 .steps
                 .into_iter()
-                .map(|step| step.into_step(presets, preset_index))
-                .collect(),
-        }
+                .map(|step| step.try_into_step(presets, preset_index))
+                .collect::<Result<Vec<_>, _>>()?,
+        })
     }
 }
 
 impl RawSkillCastTargetingDef {
-    fn into_cast_targeting(
+    fn try_into_cast_targeting(
         self,
         presets: &[SkillRangePresetDef],
         preset_index: &HashMap<String, usize>,
-    ) -> SkillCastTargetingDef {
-        match self {
+    ) -> Result<SkillCastTargetingDef, String> {
+        Ok(match self {
             RawSkillCastTargetingDef::Explicit {
                 target,
-                range_policy,
-                defense_tile_range,
-                defense_tile_range_preset,
+                reach,
+                target_range,
+                target_range_preset,
                 air_capable,
             } => SkillCastTargetingDef::Explicit {
                 target,
-                range_policy,
-                defense_tile_range: resolve_skill_range_source(
+                reach,
+                target_range: try_resolve_skill_range_source(
                     "explicit cast_targeting",
-                    defense_tile_range,
-                    defense_tile_range_preset,
+                    target_range,
+                    target_range_preset,
                     presets,
                     preset_index,
-                ),
+                )?,
                 air_capable,
             },
-        }
+        })
     }
 }
 
 impl RawSkillStepDef {
-    fn into_step(
+    fn try_into_step(
         self,
-        presets: &[SkillRangePresetDef],
-        preset_index: &HashMap<String, usize>,
-    ) -> SkillStepDef {
+        _presets: &[SkillRangePresetDef],
+        _preset_index: &HashMap<String, usize>,
+    ) -> Result<SkillStepDef, String> {
         let step_id = self.id;
-        SkillStepDef {
+        Ok(SkillStepDef {
             id: step_id.clone(),
             delay_ms: self.delay_ms,
-            range_policy: self.range_policy,
-            defense_tile_range: resolve_skill_range_source(
-                &format!("step '{step_id}'"),
-                self.defense_tile_range,
-                self.defense_tile_range_preset,
-                presets,
-                preset_index,
-            ),
-            air_capable: self.air_capable,
             target: self.target,
             targeting: self.targeting,
             when: self.when,
@@ -280,125 +246,143 @@ impl RawSkillStepDef {
             delivery: self.delivery,
             effects: self.effects,
             presentation: self.presentation,
-        }
+        })
     }
 }
 
-fn resolve_skill_range_source(
+fn try_resolve_skill_range_source(
     context: &str,
     inline_range: Option<TileRangePattern>,
     preset_id: Option<String>,
     presets: &[SkillRangePresetDef],
     preset_index: &HashMap<String, usize>,
-) -> Option<TileRangePattern> {
+) -> Result<Option<TileRangePattern>, String> {
     match (inline_range, preset_id) {
-        (Some(_), Some(preset_id)) => {
-            panic!("{context} defines both defense_tile_range and defense_tile_range_preset '{preset_id}'")
-        }
-        (Some(range), None) => Some(range),
+        (Some(_), Some(preset_id)) => Err(format!(
+            "{context} defines both target_range and target_range_preset '{preset_id}'"
+        )),
+        (Some(range), None) => Ok(Some(range)),
         (None, Some(preset_id)) => {
             let Some(index) = preset_index.get(&preset_id) else {
-                panic!("{context} references unknown defense_tile_range_preset '{preset_id}'");
+                return Err(format!(
+                    "{context} references unknown target_range_preset '{preset_id}'"
+                ));
             };
-            Some(presets[*index].range.clone())
+            Ok(Some(presets[*index].range.clone()))
         }
-        (None, None) => None,
+        (None, None) => Ok(None),
     }
 }
 
-fn validate_skill_buff_references(skills: &[SkillDef], buff_data: &BuffDatabase) {
-    for skill in skills {
-        for step in &skill.steps {
+fn validate_skill_buff_references(
+    skills: &[SkillDef],
+    buff_data: &BuffDatabase,
+) -> Result<(), crate::game::data::DataValidationError> {
+    for (skill_index, skill) in skills.iter().enumerate() {
+        let skill_id = skill.id.to_string();
+        for (step_index, step) in skill.steps.iter().enumerate() {
+            let step_path = format!("skills[{skill_index}].steps[{step_index}]");
+            let validate_buff = |field_path: String,
+                                 buff_id: &str|
+             -> Result<(), crate::game::data::DataValidationError> {
+                if buff_data.contains_name(buff_id) {
+                    Ok(())
+                } else {
+                    Err(crate::game::data::DataValidationError::at(
+                        &skill_id,
+                        field_path,
+                        format!("references unknown buff '{buff_id}'"),
+                    ))
+                }
+            };
             match &step.when {
                 crate::game::ability::SkillStepCondition::Always
                 | crate::game::ability::SkillStepCondition::IfPreviousStepDealtDamage => {}
                 crate::game::ability::SkillStepCondition::IfCasterHasBuff { buff_id, .. } => {
-                    validate_registered_buff(buff_data, &skill.id, "step condition", buff_id);
+                    validate_buff(format!("{step_path}.when.IfCasterHasBuff.buff_id"), buff_id)?;
                 }
             }
 
             if let crate::game::ability::SkillStepRepeat::ByBuffStacks { buff_id, .. } =
                 &step.repeat
             {
-                validate_registered_buff(buff_data, &skill.id, "step repeat", buff_id);
+                validate_buff(format!("{step_path}.repeat.ByBuffStacks.buff_id"), buff_id)?;
             }
 
-            for effect in &step.effects {
+            for (effect_index, effect) in step.effects.iter().enumerate() {
                 if let crate::game::ability::SkillEffectDef::ApplyBuff { buff_id, .. } = effect {
-                    validate_registered_buff(buff_data, &skill.id, "step effect", buff_id);
+                    validate_buff(
+                        format!("{step_path}.effects[{effect_index}].ApplyBuff.buff_id"),
+                        buff_id,
+                    )?;
                 }
             }
         }
     }
+    Ok(())
 }
 
-fn validate_skill_contracts(skills: &[SkillDef]) {
-    for skill in skills {
-        assert!(
-            !skill.steps.is_empty(),
-            "skill '{}' must define at least one step",
-            skill.id
-        );
+fn validate_skill_contracts(
+    skills: &[SkillDef],
+) -> Result<(), crate::game::data::DataValidationError> {
+    for (skill_index, skill) in skills.iter().enumerate() {
+        let skill_id = skill.id.to_string();
+        let skill_path = format!("skills[{skill_index}]");
+        let error = |path: String, cause: String| {
+            crate::game::data::DataValidationError::at(&skill_id, path, cause)
+        };
+        if skill.steps.is_empty() {
+            return Err(error(
+                format!("{skill_path}.steps"),
+                "must define at least one step".to_string(),
+            ));
+        }
         let crate::game::ability::SkillCastTargetingDef::Explicit {
-            range_policy,
+            reach,
             target,
-            defense_tile_range,
+            target_range,
             ..
         } = &skill.cast_targeting;
-        validate_skill_range_policy(
-            &format!("skill '{}' explicit cast_targeting", skill.id),
-            *range_policy,
-            defense_tile_range.as_ref(),
-        );
-        assert!(
-            !matches!(range_policy, TileRangePolicy::WholeFieldValidTiles)
-                || !matches!(target, SkillTarget::SelfUnit),
-            "skill '{}' explicit cast_targeting uses WholeFieldValidTiles without an explicit non-self targeting rule",
-            skill.id
-        );
+        validate_skill_target_reach(*reach, target_range.as_ref())
+            .map_err(|cause| error(format!("{skill_path}.cast_targeting"), cause))?;
+        if matches!(reach, SkillTargetReach::Global) && matches!(target, SkillTarget::SelfUnit) {
+            return Err(error(
+                format!("{skill_path}.cast_targeting.target"),
+                "global reach requires an explicit non-self target".to_string(),
+            ));
+        }
+        if matches!(target, SkillTarget::EnemySingle { .. })
+            && matches!(reach, SkillTargetReach::Pattern)
+            && target_range.is_none()
+        {
+            return Err(error(
+                format!("{skill_path}.cast_targeting.target_range"),
+                "pattern reach for EnemySingle requires target_range".to_string(),
+            ));
+        }
         let mut step_ids = HashSet::new();
 
         for (step_index, step) in skill.steps.iter().enumerate() {
-            if let Some(pattern) = &step.defense_tile_range {
-                pattern.validate().unwrap_or_else(|error| {
-                    panic!(
-                        "skill '{}' step '{}' has invalid defense_tile_range: {}",
-                        skill.id, step.id, error
-                    )
-                });
+            let step_path = format!("{skill_path}.steps[{step_index}]");
+            if !step_ids.insert(step.id.clone()) {
+                return Err(error(
+                    format!("{step_path}.id"),
+                    format!("duplicate step id '{}'", step.id),
+                ));
             }
-            validate_skill_range_policy(
-                &format!("skill '{}' step '{}'", skill.id, step.id),
-                step.range_policy,
-                step.defense_tile_range.as_ref(),
-            );
-            assert!(
-                !matches!(step.range_policy, TileRangePolicy::WholeFieldValidTiles)
-                    || !matches!(step.target, SkillTarget::SelfUnit),
-                "skill '{}' step '{}' uses WholeFieldValidTiles without an explicit non-self targeting rule",
-                skill.id,
-                step.id
-            );
-            assert!(
-                step_ids.insert(step.id.clone()),
-                "skill '{}' contains duplicate step id '{}'",
-                skill.id,
-                step.id
-            );
 
             let mut has_damage_effect = false;
             let mut has_modify_damage_effect = false;
-            for effect in &step.effects {
+            for (effect_index, effect) in step.effects.iter().enumerate() {
                 match effect {
                     SkillEffectDef::Damage { amount, .. } => {
                         has_damage_effect = true;
-                        assert!(
-                            *amount >= 0,
-                            "skill '{}' step '{}' has negative Damage amount {}",
-                            skill.id,
-                            step.id,
-                            amount
-                        );
+                        if *amount < 0 {
+                            return Err(error(
+                                format!("{step_path}.effects[{effect_index}].Damage.amount"),
+                                format!("Damage amount must not be negative: {amount}"),
+                            ));
+                        }
                     }
                     SkillEffectDef::ModifyDamage { .. } => {
                         has_modify_damage_effect = true;
@@ -412,12 +396,12 @@ fn validate_skill_contracts(skills: &[SkillDef]) {
                     | SkillEffectDef::ExtraAttack { .. } => {}
                 }
             }
-            assert!(
-                !has_modify_damage_effect || has_damage_effect,
-                "skill '{}' step '{}' has ModifyDamage but no Damage effect",
-                skill.id,
-                step.id
-            );
+            if has_modify_damage_effect && !has_damage_effect {
+                return Err(error(
+                    format!("{step_path}.effects"),
+                    "ModifyDamage requires a Damage effect in the same step".to_string(),
+                ));
+            }
 
             match &step.delivery {
                 DeliveryDef::Projectile {
@@ -430,56 +414,96 @@ fn validate_skill_contracts(skills: &[SkillDef]) {
                     collision,
                     ..
                 } => {
-                    collision.validate_runtime_contract();
+                    collision.try_validate_runtime_contract().map_err(|cause| {
+                        error(format!("{step_path}.delivery.Projectile.collision"), cause)
+                    })?;
                     match hit_policy {
                         ProjectileHitPolicy::TargetLocked => {
-                            assert!(
-                                !allow_targetless_cast,
-                                "skill '{}' step '{}' target-locked projectile must not allow targetless cast",
-                                skill.id,
-                                step.id
-                            );
-                            assert!(
-                                max_range_tiles.is_none()
-                                    && max_lifetime_ms.is_none()
-                                    && max_kills.is_none()
-                                    && max_pierces.is_none(),
-                                "skill '{}' step '{}' target-locked projectile must not define directional stop policy fields",
-                                skill.id,
-                                step.id
-                            );
-                            collision.validate_homing_runtime_contract();
+                            if *allow_targetless_cast {
+                                return Err(error(
+                                    format!(
+                                        "{step_path}.delivery.Projectile.allow_targetless_cast"
+                                    ),
+                                    "target-locked projectile must not allow targetless cast"
+                                        .to_string(),
+                                ));
+                            }
+                            if max_range_tiles.is_some()
+                                || max_lifetime_ms.is_some()
+                                || max_kills.is_some()
+                                || max_pierces.is_some()
+                            {
+                                return Err(error(
+                                    format!("{step_path}.delivery.Projectile"),
+                                    "target-locked projectile must not define directional stop policy fields".to_string(),
+                                ));
+                            }
+                            collision
+                                .try_validate_homing_runtime_contract()
+                                .map_err(|cause| {
+                                    error(
+                                        format!("{step_path}.delivery.Projectile.collision"),
+                                        cause,
+                                    )
+                                })?;
                         }
                         ProjectileHitPolicy::DirectionalCollision => {
-                            assert!(
-                                max_range_tiles.is_some()
-                                    || max_lifetime_ms.is_some(),
-                                "skill '{}' step '{}' DirectionalCollision projectile requires max_range_tiles or max_lifetime_ms to define its endpoint",
-                                skill.id,
-                                step.id
-                            );
-                            assert!(
-                                max_kills.is_some()
-                                    || max_pierces.is_some()
-                                    || collision.max_hits.is_some()
-                                    || max_range_tiles.is_some()
-                                    || max_lifetime_ms.is_some(),
-                                "skill '{}' step '{}' DirectionalCollision projectile requires at least one stop policy",
-                                skill.id,
-                                step.id
-                            );
+                            if max_range_tiles.is_none() && max_lifetime_ms.is_none() {
+                                return Err(error(
+                                    format!("{step_path}.delivery.Projectile"),
+                                    "DirectionalCollision requires max_range_tiles or max_lifetime_ms".to_string(),
+                                ));
+                            }
+                            if max_kills.is_none()
+                                && max_pierces.is_none()
+                                && collision.max_hits.is_none()
+                                && max_range_tiles.is_none()
+                                && max_lifetime_ms.is_none()
+                            {
+                                return Err(error(
+                                    format!("{step_path}.delivery.Projectile"),
+                                    "DirectionalCollision requires at least one stop policy"
+                                        .to_string(),
+                                ));
+                            }
                         }
                     }
                 }
-                DeliveryDef::TileArea { area } => {
-                    area.validate_runtime_contract();
-                    assert!(
-                        step.range_policy == TileRangePolicy::WholeFieldValidTiles
-                            || step.defense_tile_range.is_some(),
-                        "skill '{}' step '{}' uses TileArea but is missing defense_tile_range or WholeFieldValidTiles range_policy",
-                        skill.id,
-                        step.id
-                    );
+                DeliveryDef::TileArea { footprint, area } => {
+                    footprint.validate().map_err(|cause| {
+                        error(format!("{step_path}.delivery.TileArea.footprint"), cause)
+                    })?;
+                    area.try_validate_runtime_contract().map_err(|cause| {
+                        error(format!("{step_path}.delivery.TileArea.area"), cause)
+                    })?;
+                    let expected_origin = match area.anchor {
+                        SkillAreaAnchorSource::Caster => {
+                            crate::game::ability::SkillTileAreaOrigin::Caster
+                        }
+                        SkillAreaAnchorSource::CastTarget
+                        | SkillAreaAnchorSource::CastTargetStart
+                        | SkillAreaAnchorSource::ImpactContext
+                        | SkillAreaAnchorSource::ImpactContextStart => {
+                            crate::game::ability::SkillTileAreaOrigin::Anchor
+                        }
+                    };
+                    if area.tile_origin != expected_origin {
+                        return Err(error(
+                            format!("{step_path}.delivery.TileArea.area.tile_origin"),
+                            format!(
+                                "{:?} area requires {:?} tile_origin",
+                                area.anchor, expected_origin
+                            ),
+                        ));
+                    }
+                    if area.anchor != SkillAreaAnchorSource::Caster
+                        && !footprint.is_rotation_invariant()
+                    {
+                        return Err(error(
+                            format!("{step_path}.delivery.TileArea.footprint"),
+                            "target/impact-centered footprint must be rotation-invariant until an explicit orientation policy exists".to_string(),
+                        ));
+                    }
                     if matches!(
                         area.anchor,
                         SkillAreaAnchorSource::ImpactContext
@@ -492,41 +516,40 @@ fn validate_skill_contracts(skills: &[SkillDef]) {
                                     DeliveryDef::Projectile { .. } | DeliveryDef::TileArea { .. }
                                 )
                             });
-                        assert!(
-                            has_prior_spatial_delivery,
-                            "skill '{}' step '{}' uses {:?} anchor but no prior spatial delivery step can provide impact context",
-                            skill.id,
-                            step.id,
-                            area.anchor
-                        );
+                        if !has_prior_spatial_delivery {
+                            return Err(error(
+                                format!("{step_path}.delivery.TileArea.area.anchor"),
+                                format!("{:?} requires a prior spatial delivery step", area.anchor),
+                            ));
+                        }
                     }
                 }
                 DeliveryDef::Instant => {}
             }
         }
     }
+    Ok(())
 }
 
-fn validate_skill_range_policy(
-    context: &str,
-    range_policy: TileRangePolicy,
-    defense_tile_range: Option<&TileRangePattern>,
-) {
-    match range_policy {
-        TileRangePolicy::Pattern => {
-            if let Some(pattern) = defense_tile_range {
-                pattern.validate().unwrap_or_else(|error| {
-                    panic!("{context} has invalid defense_tile_range: {error}")
-                });
+fn validate_skill_target_reach(
+    reach: SkillTargetReach,
+    target_range: Option<&TileRangePattern>,
+) -> Result<(), String> {
+    match reach {
+        SkillTargetReach::Pattern => {
+            if let Some(pattern) = target_range {
+                pattern
+                    .validate()
+                    .map_err(|error| format!("invalid target_range: {error}"))?;
             }
         }
-        TileRangePolicy::WholeFieldValidTiles => {
-            assert!(
-                defense_tile_range.is_none(),
-                "{context} uses WholeFieldValidTiles and must not also define defense_tile_range"
-            );
+        SkillTargetReach::Global => {
+            if target_range.is_some() {
+                return Err("global reach must not also define target_range".to_string());
+            }
         }
     }
+    Ok(())
 }
 
 #[cfg(test)]
@@ -539,16 +562,24 @@ mod tests {
     };
     use crate::game::battle::buffs::BuffDatabase;
     use crate::game::battle::damage::{DamageModifiers, DamageType};
-    use crate::game::battle::tile_range::{TileRangePattern, TileRangePolicy};
+    use crate::game::battle::tile_range::TileRangePattern;
 
     fn explicit_cast_targeting(target: SkillTarget) -> SkillCastTargetingDef {
         SkillCastTargetingDef::explicit(target, Default::default(), None, false)
     }
 
     fn explicit_enemy_cast_targeting() -> SkillCastTargetingDef {
-        explicit_cast_targeting(SkillTarget::EnemySingle {
-            rule: UnitTargetRule::Nearest,
-        })
+        SkillCastTargetingDef::explicit(
+            SkillTarget::EnemySingle {
+                rule: UnitTargetRule::Nearest,
+            },
+            SkillTargetReach::Pattern,
+            Some(TileRangePattern {
+                include_anchor_tile: false,
+                rows: vec![".@X".to_string()],
+            }),
+            false,
+        )
     }
 
     fn explicit_self_cast_targeting() -> SkillCastTargetingDef {
@@ -559,9 +590,6 @@ mod tests {
         SkillStepDef {
             id: "shot".to_string(),
             delay_ms: 0,
-            range_policy: Default::default(),
-            defense_tile_range: None,
-            air_capable: false,
             target: SkillTarget::EnemySingle {
                 rule: UnitTargetRule::Nearest,
             },
@@ -587,19 +615,22 @@ mod tests {
         SkillStepDef {
             id: id.to_string(),
             delay_ms: 0,
-            range_policy: Default::default(),
-            defense_tile_range: Some(TileRangePattern {
-                include_anchor_tile: true,
-                rows: vec![".@.".to_string()],
-            }),
-            air_capable: false,
             target: SkillTarget::CastTarget,
             targeting: Default::default(),
             when: Default::default(),
             repeat: Default::default(),
             delivery: DeliveryDef::TileArea {
+                footprint: TileRangePattern {
+                    include_anchor_tile: true,
+                    rows: vec![".@.".to_string()],
+                },
                 area: SkillTileAreaDeliveryDef {
                     anchor,
+                    tile_origin: if anchor == SkillAreaAnchorSource::Caster {
+                        crate::game::ability::SkillTileAreaOrigin::Caster
+                    } else {
+                        crate::game::ability::SkillTileAreaOrigin::Anchor
+                    },
                     ..Default::default()
                 },
             },
@@ -649,24 +680,28 @@ mod tests {
     }
 
     #[test]
-    fn skill_database_rejects_whole_field_with_authored_tile_pattern() {
+    fn skill_database_rejects_global_reach_with_authored_target_pattern() {
         let result = std::panic::catch_unwind(|| {
             SkillDatabase::new(vec![SkillDef {
                 id: SkillId::from("ambiguous_whole_field"),
                 name: "ambiguous_whole_field".to_string(),
                 kind: SkillKind::Targeted,
-                cast_targeting: explicit_enemy_cast_targeting(),
+                cast_targeting: SkillCastTargetingDef::explicit(
+                    SkillTarget::EnemySingle {
+                        rule: UnitTargetRule::Nearest,
+                    },
+                    SkillTargetReach::Global,
+                    Some(TileRangePattern {
+                        include_anchor_tile: false,
+                        rows: vec![".@X".to_string()],
+                    }),
+                    false,
+                ),
                 focus_time_ms: 0,
                 focus_permissions: Default::default(),
                 steps: vec![SkillStepDef {
                     id: "hit".to_string(),
                     delay_ms: 0,
-                    range_policy: TileRangePolicy::WholeFieldValidTiles,
-                    defense_tile_range: Some(TileRangePattern {
-                        include_anchor_tile: false,
-                        rows: vec![".X.".to_string(), ".@.".to_string(), "...".to_string()],
-                    }),
-                    air_capable: false,
                     target: SkillTarget::EnemySingle {
                         rule: UnitTargetRule::Nearest,
                     },
@@ -682,7 +717,7 @@ mod tests {
 
         assert!(
             result.is_err(),
-            "WholeFieldValidTiles must not also define defense_tile_range"
+            "global reach must not also define target_range"
         );
     }
 
@@ -718,9 +753,6 @@ mod tests {
             steps: vec![SkillStepDef {
                 id: "step".to_string(),
                 delay_ms: 0,
-                range_policy: Default::default(),
-                defense_tile_range: None,
-                air_capable: false,
                 target: SkillTarget::SelfUnit,
                 targeting: Default::default(),
                 when: crate::game::ability::SkillStepCondition::IfCasterHasBuff {
@@ -741,11 +773,15 @@ mod tests {
             }],
         };
         let database = SkillDatabase::new(vec![skill]);
-        let result = std::panic::catch_unwind(|| {
-            database.validate_buff_references(&BuffDatabase::new(vec![]));
-        });
-
-        assert!(result.is_err(), "unknown buff references must be rejected");
+        let error = database
+            .validate_buff_references(&BuffDatabase::new(vec![]))
+            .expect_err("unknown buff references must be rejected");
+        assert_eq!(error.object_id.as_deref(), Some("unknown_buff"));
+        assert_eq!(
+            error.field_path.as_deref(),
+            Some("skills[0].steps[0].when.IfCasterHasBuff.buff_id")
+        );
+        assert!(error.cause.contains("does_not_exist"));
     }
 
     #[test]
@@ -761,9 +797,6 @@ mod tests {
                 steps: vec![SkillStepDef {
                     id: "hit".to_string(),
                     delay_ms: 0,
-                    range_policy: Default::default(),
-                    defense_tile_range: None,
-                    air_capable: false,
                     target: SkillTarget::EnemySingle {
                         rule: UnitTargetRule::Nearest,
                     },
@@ -796,9 +829,6 @@ mod tests {
                 steps: vec![SkillStepDef {
                     id: "modifier_only".to_string(),
                     delay_ms: 0,
-                    range_policy: Default::default(),
-                    defense_tile_range: None,
-                    air_capable: false,
                     target: SkillTarget::EnemySingle {
                         rule: UnitTargetRule::Nearest,
                     },
@@ -844,6 +874,40 @@ mod tests {
     }
 
     #[test]
+    fn skill_database_rejects_noncentered_or_oriented_target_area() {
+        for defect in ["caster_origin", "implicit_orientation"] {
+            let mut step = tile_area_step("area", SkillAreaAnchorSource::CastTarget);
+            let DeliveryDef::TileArea { footprint, area } = &mut step.delivery else {
+                unreachable!();
+            };
+            match defect {
+                "caster_origin" => {
+                    area.tile_origin = crate::game::ability::SkillTileAreaOrigin::Caster;
+                }
+                "implicit_orientation" => {
+                    *footprint = TileRangePattern {
+                        include_anchor_tile: false,
+                        rows: vec![".@X".to_string()],
+                    };
+                }
+                _ => unreachable!(),
+            }
+            let result = std::panic::catch_unwind(|| {
+                SkillDatabase::new(vec![SkillDef {
+                    id: SkillId::from(defect),
+                    name: defect.to_string(),
+                    kind: SkillKind::Targeted,
+                    cast_targeting: explicit_cast_targeting(SkillTarget::CastTarget),
+                    focus_time_ms: 0,
+                    focus_permissions: Default::default(),
+                    steps: vec![step],
+                }]);
+            });
+            assert!(result.is_err(), "target-area defect must reject: {defect}");
+        }
+    }
+
+    #[test]
     fn skill_database_resolves_range_preset_from_ron() {
         let database: SkillDatabase = ron::de::from_str(
             r#"
@@ -857,16 +921,22 @@ mod tests {
                 skills: [
                     SkillDef(
                         id: "preset_skill",
+                        name: "Preset Skill",
+                        kind: Targeted,
+                        focus_time_ms: 0,
                         cast_targeting: Explicit(
                             target: EnemySingle(rule: Nearest),
-                            defense_tile_range_preset: Some("front_1"),
+                            reach: pattern,
+                            target_range_preset: Some("front_1"),
+                            air_capable: false,
                         ),
                         steps: [
                             SkillStepDef(
                                 id: "hit",
-                                defense_tile_range_preset: Some("front_1"),
+                                delay_ms: 0,
                                 target: EnemySingle(rule: Nearest),
                                 delivery: Instant,
+                                effects: [],
                             ),
                         ],
                     ),
@@ -877,13 +947,14 @@ mod tests {
         .unwrap();
 
         let skill = database.get_by_id("preset_skill").unwrap();
-        let range = skill.steps[0].defense_tile_range.as_ref().unwrap();
+        let SkillCastTargetingDef::Explicit { target_range, .. } = &skill.cast_targeting;
+        let range = target_range.as_ref().unwrap();
         assert_eq!(range.rows, vec![".@X"]);
         assert_eq!(database.range_presets.len(), 1);
     }
 
     #[test]
-    fn skill_database_rejects_implicit_cast_targeting_and_range_units() {
+    fn skill_database_rejects_implicit_and_legacy_targeting_authority() {
         let missing_cast_targeting = ron::de::from_str::<SkillDatabase>(
             r#"
             SkillDatabase(
@@ -904,6 +975,126 @@ mod tests {
         );
         assert!(missing_cast_targeting.is_err());
 
+        let missing_selection_rule = ron::de::from_str::<SkillDatabase>(
+            r#"
+            SkillDatabase(
+                skills: [
+                    SkillDef(
+                        id: "missing_selection_rule",
+                        cast_targeting: Explicit(
+                            target: EnemySingle(),
+                            reach: pattern,
+                            target_range: Some((include_anchor_tile: false, rows: [".@X"])),
+                            air_capable: false,
+                        ),
+                        steps: [
+                            SkillStepDef(
+                                id: "hit",
+                                target: EnemySingle(rule: Nearest),
+                                delivery: Instant,
+                            ),
+                        ],
+                    ),
+                ],
+            )
+            "#,
+        );
+        assert!(missing_selection_rule.is_err());
+
+        let missing_reach = ron::de::from_str::<SkillDatabase>(
+            r#"
+            SkillDatabase(
+                skills: [
+                    SkillDef(
+                        id: "missing_reach",
+                        cast_targeting: Explicit(
+                            target: SelfUnit,
+                            air_capable: false,
+                        ),
+                        steps: [
+                            SkillStepDef(
+                                id: "hit",
+                                target: SelfUnit,
+                                delivery: Instant,
+                            ),
+                        ],
+                    ),
+                ],
+            )
+            "#,
+        );
+        assert!(missing_reach.is_err());
+
+        let missing_air_capable = ron::de::from_str::<SkillDatabase>(
+            r#"
+            SkillDatabase(
+                skills: [
+                    SkillDef(
+                        id: "missing_air_capable",
+                        cast_targeting: Explicit(
+                            target: SelfUnit,
+                            reach: pattern,
+                        ),
+                        steps: [
+                            SkillStepDef(
+                                id: "hit",
+                                target: SelfUnit,
+                                delivery: Instant,
+                            ),
+                        ],
+                    ),
+                ],
+            )
+            "#,
+        );
+        assert!(missing_air_capable.is_err());
+
+        let missing_pattern_target_range = ron::de::from_str::<SkillDatabase>(
+            r#"
+            SkillDatabase(
+                skills: [
+                    SkillDef(
+                        id: "missing_pattern_target_range",
+                        cast_targeting: Explicit(
+                            target: EnemySingle(rule: Nearest),
+                            reach: pattern,
+                            air_capable: false,
+                        ),
+                        steps: [
+                            SkillStepDef(
+                                id: "hit",
+                                target: EnemySingle(rule: Nearest),
+                                delivery: Instant,
+                            ),
+                        ],
+                    ),
+                ],
+            )
+            "#,
+        );
+        assert!(missing_pattern_target_range.is_err());
+
+        let legacy_weapon_authority = ron::de::from_str::<SkillDatabase>(
+            r#"
+            SkillDatabase(
+                skills: [
+                    SkillDef(
+                        id: "legacy_weapon_authority",
+                        cast_targeting: WeaponTargetingProfile,
+                        steps: [
+                            SkillStepDef(
+                                id: "hit",
+                                target: EnemySingle(rule: Nearest),
+                                delivery: Instant,
+                            ),
+                        ],
+                    ),
+                ],
+            )
+            "#,
+        );
+        assert!(legacy_weapon_authority.is_err());
+
         let legacy_range_units = ron::de::from_str::<SkillDatabase>(
             r#"
             SkillDatabase(
@@ -912,6 +1103,9 @@ mod tests {
                         id: "legacy_range_skill",
                         cast_targeting: Explicit(
                             target: EnemySingle(rule: Nearest),
+                            reach: pattern,
+                            target_range: Some((include_anchor_tile: false, rows: [".@X"])),
+                            air_capable: false,
                         ),
                         steps: [
                             SkillStepDef(
@@ -927,10 +1121,70 @@ mod tests {
             "#,
         );
         assert!(legacy_range_units.is_err());
+
+        for legacy_step_field in [
+            "range_policy: whole_field_valid_tiles,",
+            "defense_tile_range: Some((include_anchor_tile: false, rows: [\".@X\"])),",
+            "air_capable: true,",
+        ] {
+            let authored = format!(
+                r#"
+                SkillDatabase(
+                    skills: [
+                        SkillDef(
+                            id: "legacy_step_authority",
+                            cast_targeting: Explicit(
+                                target: SelfUnit,
+                                reach: pattern,
+                                air_capable: false,
+                            ),
+                            steps: [
+                                SkillStepDef(
+                                    id: "hit",
+                                    {legacy_step_field}
+                                    target: SelfUnit,
+                                    delivery: Instant,
+                                ),
+                            ],
+                        ),
+                    ],
+                )
+                "#
+            );
+            assert!(
+                ron::de::from_str::<SkillDatabase>(&authored).is_err(),
+                "legacy step authority must reject: {legacy_step_field}"
+            );
+        }
+
+        let missing_tile_area_footprint = ron::de::from_str::<SkillDatabase>(
+            r#"
+            SkillDatabase(
+                skills: [
+                    SkillDef(
+                        id: "missing_footprint",
+                        cast_targeting: Explicit(
+                            target: SelfUnit,
+                            reach: pattern,
+                            air_capable: false,
+                        ),
+                        steps: [
+                            SkillStepDef(
+                                id: "area",
+                                target: SelfUnit,
+                                delivery: TileArea(area: (anchor: Caster)),
+                            ),
+                        ],
+                    ),
+                ],
+            )
+            "#,
+        );
+        assert!(missing_tile_area_footprint.is_err());
     }
 
     #[test]
-    fn skill_database_rejects_inline_range_and_preset_conflict() {
+    fn skill_database_rejects_inline_target_range_and_preset_conflict() {
         let result = std::panic::catch_unwind(|| {
             let _: SkillDatabase = ron::de::from_str(
                 r#"
@@ -944,11 +1198,16 @@ mod tests {
                     skills: [
                         SkillDef(
                             id: "conflict_skill",
+                            cast_targeting: Explicit(
+                                target: EnemySingle(rule: Nearest),
+                                reach: pattern,
+                                target_range: Some((include_anchor_tile: false, rows: [".@X"])),
+                                target_range_preset: Some("front_1"),
+                                air_capable: false,
+                            ),
                             steps: [
                                 SkillStepDef(
                                     id: "hit",
-                                    defense_tile_range: Some((include_anchor_tile: false, rows: [".@X"])),
-                                    defense_tile_range_preset: Some("front_1"),
                                     target: EnemySingle(rule: Nearest),
                                     delivery: Instant,
                                 ),
@@ -963,7 +1222,7 @@ mod tests {
 
         assert!(
             result.is_err(),
-            "inline defense_tile_range and preset reference must be mutually exclusive"
+            "inline target_range and preset reference must be mutually exclusive"
         );
     }
 }

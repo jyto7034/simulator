@@ -424,13 +424,6 @@ impl BattleCore {
             SkillTarget::EnemySingle { .. } => {
                 if let Some(SkillCastTarget::Unit { unit_instance_id }) = step_target {
                     if self.is_alive_enemy(unit_instance_id, caster_owner)
-                        && self.single_target_can_target_unit(unit_instance_id, step.air_capable)
-                        && self.is_target_in_tile_range_policy(
-                            caster_instance_id,
-                            unit_instance_id,
-                            step.range_policy,
-                            step.defense_tile_range.as_ref(),
-                        )
                         && self.is_skill_step_useful_hostile_target(
                             caster_instance_id,
                             step,

@@ -1331,7 +1331,6 @@ mod tests {
                 ],
                 obstacles: vec![Position::new(1, 1)],
             },
-            artifacts: Vec::new(),
             groups: Vec::new(),
             events: Vec::new(),
             win_condition:

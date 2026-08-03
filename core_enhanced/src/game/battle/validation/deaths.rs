@@ -249,9 +249,7 @@ fn referenced_unit_ids(event: &BattleLogEvent) -> Vec<UnitInstanceId> {
         | BattleLogEvent::UnitWithdrawn {
             unit_instance_id, ..
         } => vec![*unit_instance_id],
-        BattleLogEvent::BattleStart { .. }
-        | BattleLogEvent::ArtifactSpawned { .. }
-        | BattleLogEvent::BattleEnd { .. } => Vec::new(),
+        BattleLogEvent::BattleStart { .. } | BattleLogEvent::BattleEnd { .. } => Vec::new(),
     }
 }
 
@@ -424,8 +422,6 @@ fn is_dead_unit_operated_on(
         BattleLogEvent::UnitDied {
             unit_instance_id, ..
         } => *unit_instance_id == dead_unit_id,
-        BattleLogEvent::BattleStart { .. }
-        | BattleLogEvent::ArtifactSpawned { .. }
-        | BattleLogEvent::BattleEnd { .. } => false,
+        BattleLogEvent::BattleStart { .. } | BattleLogEvent::BattleEnd { .. } => false,
     }
 }

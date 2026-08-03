@@ -292,7 +292,6 @@ impl GameCore {
             mode: reward.mode,
             rewards: reward.rewards.clone(),
             selected_reward_uuid: reward.selected_reward_uuid,
-            research_deliveries: vec![],
         })
     }
 

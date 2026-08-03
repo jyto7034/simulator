@@ -239,11 +239,8 @@ pub enum DamageSource {
 /// 모든 피해는 Physical, Magic, True 중 하나로 고정한다.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum DamageType {
-    #[serde(alias = "physical", alias = "ad", alias = "Ad")]
     Physical,
-    #[serde(alias = "magic", alias = "ap", alias = "Ap")]
     Magic,
-    #[serde(alias = "true")]
     True,
 }
 
