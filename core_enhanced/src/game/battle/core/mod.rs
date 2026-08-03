@@ -42,8 +42,8 @@ pub mod types;
 
 use self::types::{
     AbilityProcKey, AbilityProcState, ActiveBuff, ActiveProjectileRuntime, ActiveSkillCast,
-    ActiveSkillCastDebugState, AreaRuntime, BuffInstanceKey, ProjectileRecord, RuntimeArtifact,
-    RuntimeItem, RuntimeUnit, RuntimeUnitLifecycle, TriggerSource,
+    ActiveSkillCastDebugState, AreaRuntime, BuffInstanceKey, ProjectileRecord, RuntimeItem,
+    RuntimeUnit, RuntimeUnitLifecycle, TriggerSource,
 };
 
 pub struct BattleCore {
@@ -53,7 +53,6 @@ pub struct BattleCore {
     scenario_runtime: ScenarioRuntimeState,
 
     pub units: HashMap<UnitInstanceId, RuntimeUnit>,
-    artifacts: HashMap<Uuid, RuntimeArtifact>,
     items: HashMap<Uuid, RuntimeItem>,
     graveyard: HashMap<UnitInstanceId, UnitSnapshot>,
 
@@ -75,6 +74,7 @@ pub struct BattleCore {
 
     pub event_log: BattleEventLog,
     pub event_log_seq: u64,
+    pub skill_cast_seq: u64,
     pub projectile_seq: u64,
     pub area_seq: u64,
     pub damage_source_seq: u64,
@@ -125,7 +125,6 @@ impl BattleCore {
             scenario,
             scenario_runtime: ScenarioRuntimeState::default(),
             units: HashMap::new(),
-            artifacts: HashMap::new(),
             items: HashMap::new(),
             graveyard: HashMap::new(),
             buffs: HashMap::new(),
@@ -147,6 +146,7 @@ impl BattleCore {
             game_data,
             event_log: BattleEventLog::new(),
             event_log_seq: 1,
+            skill_cast_seq: 0,
             projectile_seq: 0,
             area_seq: 0,
             damage_source_seq: 0,
@@ -236,9 +236,13 @@ impl BattleCore {
     /// This is intended for integration harnesses and deterministic runtime
     /// debugging, so tests can assert whether async skill steps reached a
     /// terminal state without exposing mutable internal state.
-    pub fn debug_skill_cast_state(&self, cast_seq: u64) -> Option<ActiveSkillCastDebugState> {
+    pub fn debug_skill_cast_state(
+        &self,
+        ability_event_seq: u64,
+    ) -> Option<ActiveSkillCastDebugState> {
         self.active_skill_casts
-            .get(&cast_seq)
+            .values()
+            .find(|cast| cast.ability_event_seq == ability_event_seq)
             .map(ActiveSkillCastDebugState::from)
     }
 
@@ -529,7 +533,10 @@ mod tests {
     use crate::game::battle::buffs::BuffId;
     use crate::game::battle::core::movement::{types::WorldVec2, ActionState};
     use crate::game::battle::core::types::{PendingSkillCast, RuntimeUnit, RuntimeUnitLifecycle};
-    use crate::game::battle::damage::{BattleCommand, DamageSource, DamageType};
+    use crate::game::battle::damage::{
+        BattleCommand, CombatRollIdentity, CombatRollKind, DamageModifiers, DamageSource,
+        DamageSourceSnapshot, DamageType,
+    };
     use crate::game::battle::enums::BattleEvent;
     use crate::game::battle::event_log::{
         AttackKind, BattleEventCause, BattleEventRootCause, BattleLogEvent, BuffExpireReason,
@@ -581,6 +588,266 @@ mod tests {
     }
 
     #[test]
+    fn observation_log_insertion_does_not_change_basic_projectile_identity() {
+        let attacker_id = UnitInstanceId::from(Uuid::from_u128(0xD170_01));
+        let target_id = UnitInstanceId::from(Uuid::from_u128(0xD170_02));
+        let launch = super::basic_attack_projectile::ProjectileLaunch {
+            fired_at_ms: 10,
+            attacker_instance_id: attacker_id,
+            attacker_owner_at_launch: Side::Player,
+            air_capable_at_launch: false,
+            target_instance_id: target_id,
+            attacker_origin: WorldVec2::ZERO,
+            target_aim: WorldVec2::new(1.0, 0.0),
+            speed_units_per_ms: 1,
+            guidance: super::types::ProjectileGuidance::Fixed,
+            damage_type: DamageType::Physical,
+            source_snapshot: DamageSourceSnapshot {
+                source_id: attacker_id,
+                source_side: Side::Player,
+                source_attack: 10,
+                source: DamageSource::BasicAttack,
+                damage_type: DamageType::Physical,
+                base_damage: 10,
+                modifiers: DamageModifiers::default(),
+                crit_roll_percent: None,
+                crit_roll_identity: CombatRollIdentity::new(
+                    CombatRollKind::BasicAttackCrit,
+                    Some(attacker_id),
+                    Uuid::from_u128(0xD170_03),
+                ),
+                minimum_damage: 1,
+                committed_at_ms: 10,
+                on_attack_modifiers: DamageModifiers::default(),
+                on_attack_bonus_damage: vec![],
+            },
+        };
+        let mut control = new_core();
+        let mut with_observation = new_core();
+
+        let control_parent = control.record_event_log(
+            10,
+            BattleLogEvent::BattleStart {
+                width: 4,
+                height: 4,
+            },
+        );
+        with_observation.record_event_log(
+            1,
+            BattleLogEvent::BattleStart {
+                width: 4,
+                height: 4,
+            },
+        );
+        let observed_parent = with_observation.record_event_log(
+            10,
+            BattleLogEvent::BattleStart {
+                width: 4,
+                height: 4,
+            },
+        );
+        control.with_recording_cause(control_parent, |core| {
+            core.spawn_basic_attack_projectile(launch.clone());
+        });
+        with_observation.with_recording_cause(observed_parent, |core| {
+            core.spawn_basic_attack_projectile(launch);
+        });
+
+        let control_id = *control.projectiles.keys().next().unwrap();
+        let observed_id = *with_observation.projectiles.keys().next().unwrap();
+        assert_ne!(control.event_log_seq, with_observation.event_log_seq);
+        assert_eq!(
+            control_id, observed_id,
+            "observation-only log insertion must not alter delivery identity"
+        );
+    }
+
+    #[test]
+    fn observation_log_insertion_does_not_change_skill_cast_delivery_or_queue_order() {
+        let skill = single_step_skill(
+            "identity_projectile",
+            SkillTarget::EnemySingle {
+                rule: UnitTargetRule::Nearest,
+            },
+            3,
+            0,
+            DeliveryDef::Projectile {
+                speed_units_per_ms: 1_000_000,
+                hit_policy: crate::game::ability::ProjectileHitPolicy::TargetLocked,
+                allow_targetless_cast: false,
+                max_range_tiles: None,
+                max_lifetime_ms: None,
+                max_kills: None,
+                max_pierces: None,
+                collision: Default::default(),
+            },
+            vec![damage_effect()],
+        );
+        let caster_id = UnitInstanceId::from(Uuid::from_u128(0xD171_01));
+        let target_id = UnitInstanceId::from(Uuid::from_u128(0xD171_02));
+        let target = Some(SkillCastTarget::Unit {
+            unit_instance_id: target_id,
+        });
+        let mut control = core_with_skill_data(vec![], vec![skill.clone()]);
+        let mut with_observation = core_with_skill_data(vec![], vec![skill.clone()]);
+        for core in [&mut control, &mut with_observation] {
+            core.units
+                .insert(caster_id, runtime_unit(caster_id, Side::Player));
+            core.units
+                .insert(target_id, runtime_unit(target_id, Side::Opponent));
+            place_unit(core, caster_id, Position::new(1, 1));
+            place_unit(core, target_id, Position::new(2, 1));
+            sync_unit_to_battlefield_tile_center(core, caster_id);
+            sync_unit_to_battlefield_tile_center(core, target_id);
+        }
+        with_observation.record_event_log(
+            1,
+            BattleLogEvent::BattleStart {
+                width: 6,
+                height: 6,
+            },
+        );
+
+        control.invoke_ability(
+            10,
+            caster_id,
+            skill.id.as_str(),
+            target,
+            BattleEventCause::default(),
+            false,
+        );
+        with_observation.invoke_ability(
+            10,
+            caster_id,
+            skill.id.as_str(),
+            target,
+            BattleEventCause::default(),
+            false,
+        );
+
+        let skill_step = |core: &BattleCore| {
+            core.event_queue.iter().find_map(|event| match event {
+                BattleEvent::SkillStep {
+                    cast_seq, cause, ..
+                } => Some((*cast_seq, *cause)),
+                _ => None,
+            })
+        };
+        let (control_cast_seq, control_cause) = skill_step(&control).unwrap();
+        let (observed_cast_seq, observed_cause) = skill_step(&with_observation).unwrap();
+        assert_eq!(control_cast_seq, observed_cast_seq);
+        assert_ne!(control_cause.parent_seq(), observed_cause.parent_seq());
+
+        for (core, cast_seq) in [
+            (&mut control, control_cast_seq),
+            (&mut with_observation, observed_cast_seq),
+        ] {
+            assert_eq!(
+                core.dispatch_skill_projectile_delivery(
+                    10,
+                    cast_seq,
+                    0,
+                    caster_id,
+                    &skill,
+                    &skill.steps[0],
+                    target,
+                    &skill.steps[0].delivery,
+                    1,
+                ),
+                1
+            );
+        }
+
+        let control_delivery_id = *control.active_projectiles.keys().next().unwrap();
+        let observed_delivery_id = *with_observation.active_projectiles.keys().next().unwrap();
+        assert_eq!(control_delivery_id, observed_delivery_id);
+
+        let gameplay_queue = |core: &BattleCore| {
+            let mut queue = core.event_queue.clone();
+            let mut order = Vec::new();
+            while let Some(event) = queue.pop() {
+                match event {
+                    BattleEvent::SkillStep {
+                        time_ms,
+                        cast_seq,
+                        step_index,
+                        ..
+                    } => order.push(format!("step:{time_ms}:{cast_seq}:{step_index}")),
+                    BattleEvent::SkillProjectileAdvance {
+                        time_ms,
+                        delivery_id,
+                        ..
+                    } => order.push(format!("projectile:{time_ms}:{delivery_id}")),
+                    _ => {}
+                }
+            }
+            order
+        };
+        assert_eq!(gameplay_queue(&control), gameplay_queue(&with_observation));
+    }
+
+    #[test]
+    fn observation_log_insertion_does_not_change_skill_area_identity_or_outcome() {
+        let skill = enemy_tile_area_skill("identity_area", vec![damage_effect()]);
+        let caster_id = UnitInstanceId::from(Uuid::from_u128(0xD172_01));
+        let target_id = UnitInstanceId::from(Uuid::from_u128(0xD172_02));
+        let mut control = core_with_skill_data(vec![], vec![skill.clone()]);
+        let mut with_observation = core_with_skill_data(vec![], vec![skill.clone()]);
+        for core in [&mut control, &mut with_observation] {
+            core.units
+                .insert(caster_id, runtime_unit(caster_id, Side::Player));
+            core.units
+                .insert(target_id, runtime_unit(target_id, Side::Opponent));
+            place_unit(core, caster_id, Position::new(1, 1));
+            place_unit(core, target_id, Position::new(2, 1));
+            sync_unit_to_battlefield_tile_center(core, caster_id);
+            sync_unit_to_battlefield_tile_center(core, target_id);
+        }
+        with_observation.record_event_log(
+            1,
+            BattleLogEvent::BattleStart {
+                width: 6,
+                height: 6,
+            },
+        );
+
+        for core in [&mut control, &mut with_observation] {
+            core.invoke_ability(
+                10,
+                caster_id,
+                skill.id.as_str(),
+                None,
+                BattleEventCause::default(),
+                false,
+            );
+            let event = core.event_queue.pop().expect("queued skill step");
+            core.process_event(event, 10).expect("resolve area step");
+        }
+
+        let area_id = |core: &BattleCore| {
+            core.event_log.entries.iter().find_map(|entry| {
+                if let BattleLogEvent::SkillAreaDeclared { area_id, .. } = entry.event {
+                    Some(area_id)
+                } else {
+                    None
+                }
+            })
+        };
+        assert_eq!(area_id(&control), area_id(&with_observation));
+        assert_eq!(
+            control.units.get(&target_id).unwrap().stats.current_health,
+            with_observation
+                .units
+                .get(&target_id)
+                .unwrap()
+                .stats
+                .current_health
+        );
+        assert_eq!(control.skill_cast_seq, with_observation.skill_cast_seq);
+        assert_ne!(control.event_log_seq, with_observation.event_log_seq);
+    }
+
+    #[test]
     fn scenario_delayed_required_group_prevents_early_victory_and_spawns_later() {
         let player_group_id = crate::game::battle::scenario::ScenarioGroupId::new("player");
         let first_wave_id = crate::game::battle::scenario::ScenarioGroupId::new("wave_1");
@@ -601,7 +868,6 @@ mod tests {
                 valid_tiles: Vec::new(),
                 obstacles: Vec::new(),
             },
-            artifacts: Vec::new(),
             groups: vec![
                 crate::game::battle::scenario::ScenarioSpawnGroup {
                     id: player_group_id.clone(),
@@ -695,7 +961,6 @@ mod tests {
                 valid_tiles: Vec::new(),
                 obstacles: Vec::new(),
             },
-            artifacts: Vec::new(),
             groups: Vec::new(),
             events: vec![crate::game::battle::scenario::ScenarioEvent {
                 id: crate::game::battle::scenario::ScenarioEventId::new("force_end"),
@@ -758,7 +1023,6 @@ mod tests {
                 valid_tiles: Vec::new(),
                 obstacles: Vec::new(),
             },
-            artifacts: Vec::new(),
             groups: vec![
                 crate::game::battle::scenario::ScenarioSpawnGroup {
                     id: protected_group_id.clone(),
@@ -854,7 +1118,6 @@ mod tests {
                 valid_tiles: Vec::new(),
                 obstacles: Vec::new(),
             },
-            artifacts: Vec::new(),
             groups: vec![crate::game::battle::scenario::ScenarioSpawnGroup {
                 id: protected_group_id.clone(),
                 side: Side::Player,
@@ -925,7 +1188,6 @@ mod tests {
                 valid_tiles: Vec::new(),
                 obstacles: Vec::new(),
             },
-            artifacts: Vec::new(),
             groups: Vec::new(),
             events: Vec::new(),
             win_condition: crate::game::battle::scenario::WinCondition::SurviveUntil {
@@ -1194,6 +1456,7 @@ mod tests {
             cast_seq,
             ActiveSkillCast {
                 caster_instance_id: caster_id,
+                ability_event_seq: cast_seq,
                 skill_id: skill_id.clone(),
                 caster_owner: Side::Player,
                 anchor_position: Position::new(1, 1),
@@ -1241,7 +1504,6 @@ mod tests {
                 valid_tiles: Vec::new(),
                 obstacles: Vec::new(),
             },
-            artifacts: Vec::new(),
             groups: Vec::new(),
             events: vec![crate::game::battle::scenario::ScenarioEvent {
                 id: crate::game::battle::scenario::ScenarioEventId::new("late_force_end"),
@@ -1388,7 +1650,6 @@ mod tests {
                 valid_tiles: Vec::new(),
                 obstacles: Vec::new(),
             },
-            artifacts: Vec::new(),
             groups: Vec::new(),
             events: Vec::new(),
             win_condition: crate::game::battle::scenario::WinCondition::SurviveUntil {
@@ -1410,9 +1671,6 @@ mod tests {
             steps: vec![SkillStepDef {
                 id: "step".to_string(),
                 delay_ms: 0,
-                range_policy: Default::default(),
-                defense_tile_range: None,
-                air_capable: false,
                 target: SkillTarget::SelfUnit,
                 targeting: StepTargetingMode::ReuseCastTarget,
                 when: Default::default(),
@@ -1443,6 +1701,7 @@ mod tests {
             growth_stacks: Default::default(),
             equipped_items: vec![],
             equipped_item_enhancements: vec![],
+            employee_start_condition: None,
         };
 
         let deployed = core
@@ -1515,7 +1774,6 @@ mod tests {
                 valid_tiles: Vec::new(),
                 obstacles: Vec::new(),
             },
-            artifacts: Vec::new(),
             groups: vec![
                 crate::game::battle::scenario::ScenarioSpawnGroup {
                     id: player_group_id.clone(),
@@ -1670,6 +1928,7 @@ mod tests {
             growth_stacks: crate::game::growth::GrowthStack::new(),
             equipped_items: Vec::new(),
             equipped_item_enhancements: Vec::new(),
+            employee_start_condition: None,
         }
     }
 
@@ -1691,7 +1950,6 @@ mod tests {
                 valid_tiles: Vec::new(),
                 obstacles: Vec::new(),
             },
-            artifacts: Vec::new(),
             groups: vec![crate::game::battle::scenario::ScenarioSpawnGroup {
                 id: group_id.clone(),
                 side: Side::Player,
@@ -1731,7 +1989,6 @@ mod tests {
                 valid_tiles: Vec::new(),
                 obstacles: Vec::new(),
             },
-            artifacts: Vec::new(),
             groups: vec![crate::game::battle::scenario::ScenarioSpawnGroup {
                 id: group_id.clone(),
                 side: Side::Opponent,
@@ -1800,7 +2057,6 @@ mod tests {
                 valid_tiles: Vec::new(),
                 obstacles: Vec::new(),
             },
-            artifacts: Vec::new(),
             groups: vec![crate::game::battle::scenario::ScenarioSpawnGroup {
                 id: group_id.clone(),
                 side: Side::Player,
@@ -1862,7 +2118,17 @@ mod tests {
         range_policy: TileRangePolicy,
         defense_tile_range: Option<TileRangePattern>,
     ) -> SkillCastTargetingDef {
-        SkillCastTargetingDef::explicit(target, range_policy, defense_tile_range, false)
+        SkillCastTargetingDef::explicit(
+            target,
+            match range_policy {
+                TileRangePolicy::Pattern => crate::game::ability::SkillTargetReach::Pattern,
+                TileRangePolicy::WholeFieldValidTiles => {
+                    crate::game::ability::SkillTargetReach::Global
+                }
+            },
+            defense_tile_range,
+            false,
+        )
     }
 
     fn abnormality_with_basic_attack(
@@ -1944,9 +2210,6 @@ mod tests {
             steps: vec![SkillStepDef {
                 id: "step_01".to_string(),
                 delay_ms: 0,
-                range_policy: Default::default(),
-                defense_tile_range: Some(defense_tile_range),
-                air_capable: false,
                 target,
                 targeting: StepTargetingMode::ReuseCastTarget,
                 when: Default::default(),
@@ -1979,6 +2242,10 @@ mod tests {
             1,
             0,
             DeliveryDef::TileArea {
+                footprint: TileRangePattern {
+                    include_anchor_tile: false,
+                    rows: vec!["XXX".to_string(), "X@X".to_string(), "XXX".to_string()],
+                },
                 area: SkillTileAreaDeliveryDef {
                     anchor: SkillAreaAnchorSource::Caster,
                     tile_origin: SkillTileAreaOrigin::Caster,
@@ -2716,9 +2983,6 @@ mod tests {
             steps: vec![SkillStepDef {
                 id: "hit".to_string(),
                 delay_ms: 0,
-                range_policy: Default::default(),
-                defense_tile_range: Some(tile_range),
-                air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::Nearest,
                 },
@@ -2766,7 +3030,6 @@ mod tests {
             Default::default(),
             None,
         );
-        missing_pattern_skill.steps[0].defense_tile_range = None;
         assert_eq!(
             core.resolve_skill_cast_target(
                 &missing_pattern_skill,
@@ -2800,9 +3063,6 @@ mod tests {
             steps: vec![SkillStepDef {
                 id: "hit".to_string(),
                 delay_ms: 0,
-                range_policy: Default::default(),
-                defense_tile_range: Some(tile_range),
-                air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::Nearest,
                 },
@@ -2853,9 +3113,6 @@ mod tests {
             steps: vec![SkillStepDef {
                 id: "hit".to_string(),
                 delay_ms: 0,
-                range_policy: TileRangePolicy::WholeFieldValidTiles,
-                defense_tile_range: None,
-                air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::Nearest,
                 },
@@ -2885,6 +3142,132 @@ mod tests {
             Some(SkillCastTarget::Unit {
                 unit_instance_id: target_id
             })
+        );
+    }
+
+    #[test]
+    fn global_target_area_uses_captured_tile_after_target_disappearance_without_facing() {
+        let footprint = TileRangePattern {
+            include_anchor_tile: true,
+            rows: vec!["XXX".to_string(), "X@X".to_string(), "XXX".to_string()],
+        };
+        let skill = SkillDef {
+            id: SkillId::from("global_captured_area"),
+            name: "global_captured_area".to_string(),
+            kind: SkillKind::Targeted,
+            cast_targeting: SkillCastTargetingDef::explicit(
+                SkillTarget::EnemySingle {
+                    rule: UnitTargetRule::Nearest,
+                },
+                crate::game::ability::SkillTargetReach::Global,
+                None,
+                false,
+            ),
+            focus_time_ms: 0,
+            focus_permissions: Default::default(),
+            steps: vec![SkillStepDef {
+                id: "impact".to_string(),
+                delay_ms: 10,
+                target: SkillTarget::EnemySingle {
+                    rule: UnitTargetRule::Nearest,
+                },
+                targeting: StepTargetingMode::ReuseCastTarget,
+                when: Default::default(),
+                repeat: Default::default(),
+                delivery: DeliveryDef::TileArea {
+                    footprint,
+                    area: SkillTileAreaDeliveryDef {
+                        anchor: SkillAreaAnchorSource::CastTarget,
+                        tile_origin: SkillTileAreaOrigin::Anchor,
+                        hit_targets: crate::game::ability::SkillHitTargetFilter::Enemies,
+                        ..Default::default()
+                    },
+                },
+                effects: vec![damage_effect()],
+                presentation: Default::default(),
+            }],
+        };
+        let mut core = core_with_skill_data(vec![], vec![skill.clone()]);
+        let caster_id: UnitInstanceId = Uuid::from_u128(0xAA60).into();
+        let selected_id: UnitInstanceId = Uuid::from_u128(0xAA61).into();
+        let bystander_id: UnitInstanceId = Uuid::from_u128(0xAA62).into();
+        let mut caster = runtime_unit(caster_id, Side::Player);
+        caster.facing_direction = None;
+        core.units.insert(caster_id, caster);
+        core.units
+            .insert(selected_id, runtime_unit(selected_id, Side::Opponent));
+        core.units
+            .insert(bystander_id, runtime_unit(bystander_id, Side::Opponent));
+        place_unit(&mut core, caster_id, Position::new(0, 0));
+        place_unit(&mut core, selected_id, Position::new(4, 2));
+        place_unit(&mut core, bystander_id, Position::new(4, 3));
+        for unit_id in [caster_id, selected_id, bystander_id] {
+            sync_unit_to_battlefield_tile_center(&mut core, unit_id);
+        }
+        let bystander_health = core.units.get(&bystander_id).unwrap().stats.current_health;
+
+        core.invoke_ability(
+            0,
+            caster_id,
+            skill.id.as_str(),
+            Some(SkillCastTarget::Unit {
+                unit_instance_id: selected_id,
+            }),
+            BattleEventCause::default(),
+            false,
+        );
+        core.units.get_mut(&selected_id).unwrap().lifecycle = RuntimeUnitLifecycle::Withdrawn;
+        let event = core.event_queue.pop().expect("queued area step");
+        core.process_event(event, 10)
+            .expect("resolve captured area");
+
+        assert!(
+            core.units.get(&bystander_id).unwrap().stats.current_health < bystander_health,
+            "another eligible unit in the captured footprint must be hit"
+        );
+        let declared_tiles =
+            core.event_log.entries.iter().find_map(|entry| {
+                if let BattleLogEvent::SkillAreaDeclared {
+                    shape:
+                        crate::game::battle::event_log::BattleSkillAreaShape::TilePattern {
+                            affected_tiles,
+                        },
+                    ..
+                } = &entry.event
+                {
+                    Some(affected_tiles)
+                } else {
+                    None
+                }
+            });
+        assert!(declared_tiles.is_some_and(|tiles| {
+            tiles.contains(&Position::new(4, 2)) && tiles.contains(&Position::new(4, 3))
+        }));
+
+        let health_after_withdrawal = core.units.get(&bystander_id).unwrap().stats.current_health;
+        core.units.get_mut(&selected_id).unwrap().lifecycle = RuntimeUnitLifecycle::Active;
+        core.invoke_ability(
+            20,
+            caster_id,
+            skill.id.as_str(),
+            Some(SkillCastTarget::Unit {
+                unit_instance_id: selected_id,
+            }),
+            BattleEventCause::default(),
+            false,
+        );
+        let selected = core.units.get_mut(&selected_id).unwrap();
+        selected.lifecycle = RuntimeUnitLifecycle::Dead;
+        selected.stats.current_health = 0;
+        let event = core
+            .event_queue
+            .pop()
+            .expect("queued area step after death");
+        core.process_event(event, 30)
+            .expect("resolve captured area after death");
+        assert!(
+            core.units.get(&bystander_id).unwrap().stats.current_health < health_after_withdrawal,
+            "captured footprint must also survive selected-target death"
         );
     }
 
@@ -3305,6 +3688,67 @@ mod tests {
             Some(crate::game::battle::event_log::SkillCastTarget::Unit { unit_instance_id })
                 if unit_instance_id == weak_id
         ));
+    }
+
+    #[test]
+    fn skill_target_selection_is_independent_from_basic_attack_targeting_profile() {
+        let mut core = new_core();
+        let caster_id: UnitInstanceId = Uuid::from_u128(0x5401).into();
+        let healthy_low_defense_id: UnitInstanceId = Uuid::from_u128(0x5402).into();
+        let weak_high_defense_id: UnitInstanceId = Uuid::from_u128(0x5403).into();
+
+        core.units
+            .insert(caster_id, runtime_unit(caster_id, Side::Player));
+        let mut healthy_low_defense = runtime_unit(healthy_low_defense_id, Side::Opponent);
+        healthy_low_defense.stats.current_health = 20;
+        healthy_low_defense.stats.defense = -100;
+        let mut weak_high_defense = runtime_unit(weak_high_defense_id, Side::Opponent);
+        weak_high_defense.stats.current_health = 5;
+        weak_high_defense.stats.defense = 100;
+        core.units
+            .insert(healthy_low_defense_id, healthy_low_defense);
+        core.units.insert(weak_high_defense_id, weak_high_defense);
+
+        place_unit(&mut core, caster_id, Position::new(0, 0));
+        place_unit(&mut core, healthy_low_defense_id, Position::new(1, 0));
+        place_unit(&mut core, weak_high_defense_id, Position::new(1, 1));
+
+        let skill = single_step_skill(
+            "explicit_lowest_health",
+            SkillTarget::EnemySingle {
+                rule: UnitTargetRule::LowestHealthEnemy,
+            },
+            2,
+            0,
+            DeliveryDef::Instant,
+            vec![damage_effect()],
+        );
+        let resolve = |core: &BattleCore| {
+            core.resolve_skill_cast_target(&skill, caster_id, Side::Player, Position::new(0, 0))
+        };
+
+        core.units
+            .get_mut(&caster_id)
+            .unwrap()
+            .basic_attack
+            .targeting_profile =
+            crate::game::data::equipment_data::TargetingProfile::LowDefenseFirst;
+        let low_defense_weapon_result = resolve(&core);
+        core.units
+            .get_mut(&caster_id)
+            .unwrap()
+            .basic_attack
+            .targeting_profile =
+            crate::game::data::equipment_data::TargetingProfile::DefaultForward;
+        let default_weapon_result = resolve(&core);
+
+        for target in [low_defense_weapon_result, default_weapon_result] {
+            assert!(matches!(
+                target,
+                Some(crate::game::battle::event_log::SkillCastTarget::Unit { unit_instance_id })
+                    if unit_instance_id == weak_high_defense_id
+            ));
+        }
     }
 
     #[test]
@@ -4006,7 +4450,6 @@ mod tests {
                 valid_tiles: vec![Position::new(1, 1), Position::new(2, 1)],
                 obstacles: Vec::new(),
             },
-            artifacts: Vec::new(),
             groups: Vec::new(),
             events: Vec::new(),
             win_condition: crate::game::battle::scenario::WinCondition::SurviveUntil {
@@ -4145,6 +4588,7 @@ mod tests {
             cast_seq,
             ActiveSkillCast {
                 caster_instance_id: caster_id,
+                ability_event_seq: cast_seq,
                 skill_id: SkillId::from("impact_context_fixture"),
                 caster_owner: Side::Player,
                 anchor_position: Position::new(1, 1),
@@ -4164,7 +4608,7 @@ mod tests {
     }
 
     #[test]
-    fn targeted_execute_drops_locked_target_when_target_leaves_range() {
+    fn reused_target_execute_does_not_reapply_cast_acquisition_range() {
         let mut core = new_core();
         let caster_id: UnitInstanceId = Uuid::from_u128(65).into();
         let locked_target_id: UnitInstanceId = Uuid::from_u128(66).into();
@@ -4211,7 +4655,7 @@ mod tests {
             skill.first_step().unwrap(),
             start_target,
         );
-        assert_eq!(targets, Vec::<UnitInstanceId>::new());
+        assert_eq!(targets, vec![locked_target_id]);
     }
 
     #[test]
@@ -4298,16 +4742,8 @@ mod tests {
             None
         );
 
-        skill.cast_targeting = explicit_cast_targeting(
-            SkillTarget::EnemySingle {
-                rule: UnitTargetRule::Nearest,
-            },
-            Default::default(),
-            skill.steps[0].defense_tile_range.clone(),
-        );
         let SkillCastTargetingDef::Explicit { air_capable, .. } = &mut skill.cast_targeting;
         *air_capable = true;
-        skill.steps[0].air_capable = true;
 
         assert_eq!(
             core.resolve_skill_cast_target(&skill, caster_id, Side::Player, caster_pos),
@@ -4318,7 +4754,7 @@ mod tests {
     }
 
     #[test]
-    fn reused_enemy_single_skill_step_revalidates_air_capable() {
+    fn reused_enemy_single_skill_step_uses_cast_air_eligibility() {
         let mut core = new_core();
         let caster_id: UnitInstanceId = Uuid::from_u128(73).into();
         let airborne_target_id: UnitInstanceId = Uuid::from_u128(74).into();
@@ -4345,15 +4781,28 @@ mod tests {
         });
 
         assert!(core
-            .resolve_skill_step_targets(0, caster_id, skill.first_step().unwrap(), cast_target)
-            .is_empty());
+            .resolve_skill_step_context(
+                0,
+                caster_id,
+                &skill,
+                skill.first_step().unwrap(),
+                cast_target,
+            )
+            .is_none());
 
-        skill.steps[0].air_capable = true;
+        let SkillCastTargetingDef::Explicit { air_capable, .. } = &mut skill.cast_targeting;
+        *air_capable = true;
 
-        assert_eq!(
-            core.resolve_skill_step_targets(0, caster_id, skill.first_step().unwrap(), cast_target),
-            vec![airborne_target_id]
-        );
+        assert!(matches!(
+            core.resolve_skill_step_context(
+                0,
+                caster_id,
+                &skill,
+                skill.first_step().unwrap(),
+                cast_target,
+            ),
+            Some(SkillCastTarget::Unit { unit_instance_id }) if unit_instance_id == airborne_target_id
+        ));
     }
 
     #[test]

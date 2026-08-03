@@ -1,6 +1,6 @@
 use std::{collections::HashMap, sync::OnceLock};
 
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::{de::Error as _, Deserialize, Deserializer, Serialize};
 use uuid::Uuid;
 
 use crate::game::{
@@ -11,7 +11,7 @@ use crate::game::{
     },
     data::{
         abnormality_data::{AuthoredBasicAttackDef, BasicAttackDef, MovementDef, ResonanceDef},
-        build_string_index, build_uuid_index, once_lock_with,
+        build_string_index, build_uuid_index,
     },
     stats::UnitStats,
 };
@@ -76,6 +76,7 @@ impl CorrodedEmployeeProfileMetadata {
         crate::game::battle::types::UnitCombatProfile {
             stats,
             basic_attack: self.basic_attack.clone(),
+            basic_attack_speed_percent: 100,
             weapon_profile: None,
             movement: self.movement.clone(),
             resonance: self.resonance.clone(),
@@ -112,22 +113,11 @@ impl CorrodedEmployeeProfileDatabase {
         range_presets: Vec<CorrodedEmployeeBasicAttackRangePresetDef>,
         profiles: Vec<CorrodedEmployeeProfileMetadata>,
     ) -> Self {
-        let by_id = once_lock_with(build_string_index(
-            &profiles,
-            "corroded employee profile id",
-            |profile| &profile.id,
-        ));
-        let by_uuid = once_lock_with(build_uuid_index(
-            &profiles,
-            "corroded employee profile uuid",
-            |profile| profile.uuid,
-        ));
-
         Self {
             range_presets,
             profiles,
-            by_id,
-            by_uuid,
+            by_id: OnceLock::new(),
+            by_uuid: OnceLock::new(),
         }
     }
 
@@ -150,57 +140,90 @@ impl CorrodedEmployeeProfileDatabase {
     }
 
     pub(crate) fn validate_indexes(&self) {
-        let preset_index = build_string_index(
-            &self.range_presets,
-            "corroded employee basic attack range preset id",
-            |preset| &preset.id,
-        );
-        for preset in &self.range_presets {
-            preset.range.validate().unwrap_or_else(|error| {
-                panic!(
-                    "corroded employee basic attack range preset '{}' is invalid: {}",
-                    preset.id, error
-                )
-            });
-        }
+        self.validate_contract()
+            .expect("invalid corroded employee authoring contract");
         let _ = self.by_id();
         let _ = self.by_uuid();
-        for profile in &self.profiles {
-            assert!(
-                profile.max_health > 0,
-                "corroded employee profile '{}' max_health must be greater than zero",
-                profile.id
-            );
+    }
+
+    pub(crate) fn validate_contract(&self) -> Result<(), crate::game::data::DataValidationError> {
+        let mut preset_ids = std::collections::HashSet::new();
+        for (preset_index, preset) in self.range_presets.iter().enumerate() {
+            if preset.id.trim().is_empty() {
+                return Err(crate::game::data::DataValidationError::at(
+                    &preset.id,
+                    format!("range_presets[{preset_index}].id"),
+                    "range preset id must not be empty",
+                ));
+            }
+            if !preset_ids.insert(preset.id.as_str()) {
+                return Err(crate::game::data::DataValidationError::at(
+                    &preset.id,
+                    format!("range_presets[{preset_index}].id"),
+                    "duplicate range preset id",
+                ));
+            }
+            preset.range.validate().map_err(|error| {
+                crate::game::data::DataValidationError::at(
+                    &preset.id,
+                    format!("range_presets[{preset_index}].range"),
+                    format!("invalid range preset: {error}"),
+                )
+            })?;
+        }
+        for (profile_index, profile) in self.profiles.iter().enumerate() {
+            let profile_path = format!("profiles[{profile_index}]");
+            if profile.max_health == 0 {
+                return Err(crate::game::data::DataValidationError::at(
+                    &profile.id,
+                    format!("{profile_path}.max_health"),
+                    "max_health must be greater than zero",
+                ));
+            }
             profile
                 .basic_attack
-                .validate_runtime_contract(format!("corroded employee profile '{}'", profile.id));
+                .try_validate_runtime_contract()
+                .map_err(|cause| {
+                    crate::game::data::DataValidationError::at(
+                        &profile.id,
+                        format!("{profile_path}.basic_attack"),
+                        cause,
+                    )
+                })?;
             if profile.profile_role == CorrodedEmployeeProfileRole::Normal {
-                assert!(
-                    profile.basic_attack_range_preset.is_some(),
-                    "normal corroded employee profile '{}' must declare basic_attack_range_preset",
-                    profile.id
-                );
-                assert!(
-                    profile.basic_attack.range_policy != TileRangePolicy::WholeFieldValidTiles,
-                    "normal corroded employee profile '{}' must not use WholeFieldValidTiles",
-                    profile.id
-                );
+                if profile.basic_attack_range_preset.is_none() {
+                    return Err(crate::game::data::DataValidationError::at(
+                        &profile.id,
+                        format!("{profile_path}.basic_attack_range_preset"),
+                        "normal profile must declare basic_attack_range_preset",
+                    ));
+                }
+                if profile.basic_attack.range_policy == TileRangePolicy::WholeFieldValidTiles {
+                    return Err(crate::game::data::DataValidationError::at(
+                        &profile.id,
+                        format!("{profile_path}.basic_attack.range_policy"),
+                        "normal profile must not use WholeFieldValidTiles",
+                    ));
+                }
             }
             if let Some(preset_id) = &profile.basic_attack_range_preset {
-                assert!(
-                    preset_index.contains_key(preset_id),
-                    "corroded employee profile '{}' references unknown basic_attack_range_preset '{}'",
-                    profile.id,
-                    preset_id
-                );
-                assert!(
-                    profile.basic_attack.defense_tile_range.is_some(),
-                    "corroded employee profile '{}' preset '{}' was not resolved into basic_attack.defense_tile_range",
-                    profile.id,
-                    preset_id
-                );
+                if !preset_ids.contains(preset_id.as_str()) {
+                    return Err(crate::game::data::DataValidationError::at(
+                        &profile.id,
+                        format!("{profile_path}.basic_attack_range_preset"),
+                        format!("references unknown range preset '{preset_id}'"),
+                    ));
+                }
+                if profile.basic_attack.defense_tile_range.is_none() {
+                    return Err(crate::game::data::DataValidationError::at(
+                        &profile.id,
+                        format!("{profile_path}.basic_attack.defense_tile_range"),
+                        format!("preset '{preset_id}' was not resolved"),
+                    ));
+                }
             }
         }
+        Ok(())
     }
 
     pub fn get_by_id(&self, id: &str) -> Option<&CorrodedEmployeeProfileMetadata> {
@@ -222,7 +245,7 @@ impl<'de> Deserialize<'de> for CorrodedEmployeeProfileDatabase {
         D: Deserializer<'de>,
     {
         let raw = RawCorrodedEmployeeProfileDatabase::deserialize(deserializer)?;
-        Ok(raw.into_database())
+        raw.try_into_database().map_err(D::Error::custom)
     }
 }
 
@@ -241,76 +264,79 @@ struct RawCorrodedEmployeeProfileMetadata {
     id: String,
     uuid: Uuid,
     name: String,
-    #[serde(default)]
     profile_role: CorrodedEmployeeProfileRole,
     #[serde(default)]
     basic_attack_range_preset: Option<String>,
     max_health: u32,
     attack: u32,
     defense: i32,
-    #[serde(default = "default_magic_resist")]
     magic_resist: i32,
-    #[serde(default)]
     movement: MovementDef,
     basic_attack: AuthoredBasicAttackDef,
-    #[serde(default)]
     resonance: ResonanceDef,
     #[serde(default)]
     skill_id: Option<SkillId>,
 }
 
 impl RawCorrodedEmployeeProfileDatabase {
-    fn into_database(self) -> CorrodedEmployeeProfileDatabase {
-        let preset_index = build_string_index(
-            &self.range_presets,
-            "corroded employee basic attack range preset id",
-            |preset| &preset.id,
-        );
+    fn try_into_database(self) -> Result<CorrodedEmployeeProfileDatabase, String> {
+        let mut preset_index = HashMap::new();
+        for (index, preset) in self.range_presets.iter().enumerate() {
+            if preset_index.insert(preset.id.clone(), index).is_some() {
+                return Err(format!(
+                    "duplicate basic attack range preset id '{}'",
+                    preset.id
+                ));
+            }
+        }
         for preset in &self.range_presets {
-            preset.range.validate().unwrap_or_else(|error| {
-                panic!(
-                    "corroded employee basic attack range preset '{}' is invalid: {}",
-                    preset.id, error
+            preset.range.validate().map_err(|error| {
+                format!(
+                    "basic attack range preset '{}' is invalid: {error}",
+                    preset.id
                 )
-            });
+            })?;
         }
 
         let profiles = self
             .profiles
             .into_iter()
-            .map(|profile| profile.into_profile(&self.range_presets, &preset_index))
-            .collect();
-        CorrodedEmployeeProfileDatabase::with_range_presets(self.range_presets, profiles)
+            .map(|profile| profile.try_into_profile(&self.range_presets, &preset_index))
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(CorrodedEmployeeProfileDatabase::with_range_presets(
+            self.range_presets,
+            profiles,
+        ))
     }
 }
 
 impl RawCorrodedEmployeeProfileMetadata {
-    fn into_profile(
+    fn try_into_profile(
         self,
         presets: &[CorrodedEmployeeBasicAttackRangePresetDef],
         preset_index: &HashMap<String, usize>,
-    ) -> CorrodedEmployeeProfileMetadata {
+    ) -> Result<CorrodedEmployeeProfileMetadata, String> {
         let mut basic_attack: BasicAttackDef = self.basic_attack.into();
         if let Some(preset_id) = &self.basic_attack_range_preset {
             if basic_attack.defense_tile_range.is_some() {
-                panic!(
+                return Err(format!(
                     "corroded employee profile '{}' defines both basic_attack.defense_tile_range and basic_attack_range_preset '{}'",
                     self.id, preset_id
-                );
+                ));
             }
             let preset = preset_index
                 .get(preset_id)
                 .and_then(|&index| presets.get(index))
-                .unwrap_or_else(|| {
-                    panic!(
+                .ok_or_else(|| {
+                    format!(
                         "corroded employee profile '{}' references unknown basic_attack_range_preset '{}'",
                         self.id, preset_id
                     )
-                });
+                })?;
             basic_attack.defense_tile_range = Some(preset.range.clone());
         }
 
-        CorrodedEmployeeProfileMetadata {
+        Ok(CorrodedEmployeeProfileMetadata {
             id: self.id,
             uuid: self.uuid,
             name: self.name,
@@ -324,7 +350,7 @@ impl RawCorrodedEmployeeProfileMetadata {
             basic_attack,
             resonance: self.resonance,
             skill_id: self.skill_id,
-        }
+        })
     }
 }
 
@@ -388,6 +414,8 @@ mod tests {
                         max_health: 90,
                         attack: 11,
                         defense: 2,
+                        magic_resist: 0,
+                        movement: (speed_units_per_ms: 2500),
                         basic_attack: (
                             range_units: 1.0,
                             range_policy: pattern,
@@ -401,6 +429,7 @@ mod tests {
                             ranged_reposition_ms: 1000,
                             delivery: Instant,
                         ),
+                        resonance: (),
                     ),
                 ],
             )"#,

@@ -12,6 +12,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Melee,
                 weapon_archetype: Sword,
+                block_capacity: 1,
                 damage_type: Physical,
                 targeting_profile: DefaultForward,
                 air_capable: false,
@@ -56,6 +57,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
                 damage_type: Magic,
                 targeting_profile: LowMagicResistFirst,
                 air_capable: true,
@@ -253,6 +255,20 @@ EquipmentDatabase(
                 ],
             },
         ),
+        EquipmentMetadata(
+            id: "archive_scanner",
+            uuid: "650e8400-e29b-41d4-a716-446655440044",
+            name: "Archive Scanner",
+            equipment_type: Accessory,
+            rarity: HE,
+            price: 140,
+            allow_duplicate_equip: true,
+            event_check_modifiers: [(
+                aptitude: Analysis,
+                amount: 2,
+            )],
+            event_choice_keys: ["sealed_archive_access"],
+        ),
 
         // 추가 E.G.O 무기
         EquipmentMetadata(
@@ -266,6 +282,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Gun,
+                block_capacity: 0,
                 damage_type: Magic,
                 targeting_profile: LowDefenseFirst,
                 air_capable: true,
@@ -314,6 +331,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Melee,
                 weapon_archetype: Shield,
+                block_capacity: 3,
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: false,
@@ -364,6 +382,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Bow,
+                block_capacity: 0,
                 damage_type: Physical,
                 targeting_profile: AirFirst,
                 air_capable: true,
@@ -420,6 +439,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Melee,
                 weapon_archetype: Spear,
+                block_capacity: 1,
                 damage_type: Physical,
                 targeting_profile: DefaultForward,
                 air_capable: false,
@@ -466,6 +486,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Melee,
                 weapon_archetype: Sword,
+                block_capacity: 1,
                 damage_type: Physical,
                 targeting_profile: DefaultForward,
                 air_capable: false,
@@ -773,6 +794,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
@@ -815,6 +837,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
@@ -857,6 +880,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Melee,
                 weapon_archetype: Sword,
+                block_capacity: 1,
                 damage_type: Physical,
                 targeting_profile: DefaultForward,
                 air_capable: false,
@@ -899,6 +923,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
@@ -941,6 +966,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Melee,
                 weapon_archetype: Sword,
+                block_capacity: 1,
                 damage_type: Physical,
                 targeting_profile: DefaultForward,
                 air_capable: false,
@@ -983,6 +1009,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
@@ -1025,6 +1052,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
@@ -1067,6 +1095,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
@@ -1109,6 +1138,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
@@ -1151,6 +1181,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
@@ -1193,6 +1224,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Melee,
                 weapon_archetype: Sword,
+                block_capacity: 1,
                 damage_type: Physical,
                 targeting_profile: DefaultForward,
                 air_capable: false,
@@ -1235,6 +1267,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
@@ -1277,6 +1310,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
@@ -1319,6 +1353,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
@@ -1361,6 +1396,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Melee,
                 weapon_archetype: Sword,
+                block_capacity: 1,
                 damage_type: Physical,
                 targeting_profile: DefaultForward,
                 air_capable: false,
@@ -1405,6 +1441,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
@@ -1447,6 +1484,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Melee,
                 weapon_archetype: Sword,
+                block_capacity: 1,
                 damage_type: Physical,
                 targeting_profile: DefaultForward,
                 air_capable: false,
@@ -1489,6 +1527,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
@@ -1531,6 +1570,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Melee,
                 weapon_archetype: Sword,
+                block_capacity: 1,
                 damage_type: Physical,
                 targeting_profile: DefaultForward,
                 air_capable: false,
@@ -1573,6 +1613,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
@@ -1615,6 +1656,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
@@ -1657,6 +1699,7 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Melee,
                 weapon_archetype: Sword,
+                block_capacity: 1,
                 damage_type: Physical,
                 targeting_profile: DefaultForward,
                 air_capable: false,
@@ -1700,22 +1743,6 @@ EquipmentDatabase(
             equipment_type: None,
         ),
             ],
-    recipes: [
-                                EquipmentRecipeMetadata(
-            ingredients: [
-                "650e8400-e29b-41d4-a716-446655440031", // Standard Training E.G.O Armor
-                "650e8400-e29b-41d4-a716-446655440041", // Crimson Goggles
-            ],
-            result: "e0000000-0000-0000-0000-000000000205", // Thorned Lantern Guard
-        ),
-        EquipmentRecipeMetadata(
-            ingredients: [
-                "650e8400-e29b-41d4-a716-446655440042", // Resonance Pendant
-                "650e8400-e29b-41d4-a716-446655440043", // Time Dial
-            ],
-            result: "e0000000-0000-0000-0000-000000000305", // Silent Baton
-        ),
-    ],
     dismantle_recipes: [
         EquipmentDismantleRecipeMetadata(
             equipment_id: "standard_armor",

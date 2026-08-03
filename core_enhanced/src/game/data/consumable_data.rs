@@ -53,10 +53,11 @@ impl ConsumableDurationPolicy {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub enum ConsumableEffect {
     DeathPrevent,
+    ReducePhysicalDamage { amount: u8 },
     TraumaMitigation { percent: u32 },
-    RunHpLossMitigation { percent: u32 },
     BattleHpSetup { bonus_percent: u32 },
     DeployCostReduction { percent: u32 },
     DefenseMitigation { percent: u32 },
@@ -67,12 +68,9 @@ pub enum ConsumableEffect {
 impl ConsumableEffect {
     fn bounded_percent_fields(&self) -> Vec<(&'static str, &'static str, u32)> {
         match self {
-            Self::DeathPrevent => vec![],
+            Self::DeathPrevent | Self::ReducePhysicalDamage { .. } => vec![],
             Self::TraumaMitigation { percent } => {
                 vec![("TraumaMitigation", "percent", *percent)]
-            }
-            Self::RunHpLossMitigation { percent } => {
-                vec![("RunHpLossMitigation", "percent", *percent)]
             }
             Self::BattleHpSetup { bonus_percent } => {
                 vec![("BattleHpSetup", "bonus_percent", *bonus_percent)]
@@ -98,29 +96,25 @@ impl ConsumableEffect {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ConsumableMetadata {
     pub id: String,
     pub uuid: Uuid,
     pub name: String,
     pub description: String,
     pub tier: ConsumableTier,
-    #[serde(default = "default_consumable_rarity")]
     pub rarity: RiskLevel,
     pub price: u32,
     pub target_policy: ConsumableTargetPolicy,
     pub duration_policy: ConsumableDurationPolicy,
     pub effect: ConsumableEffect,
-    #[serde(default)]
     pub live_pool: bool,
-}
-
-fn default_consumable_rarity() -> RiskLevel {
-    RiskLevel::ZAYIN
 }
 
 pub type ConsumableItem = ConsumableMetadata;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ConsumableDatabase {
     pub items: Vec<ConsumableMetadata>,
     #[serde(skip)]
@@ -164,50 +158,75 @@ impl ConsumableDatabase {
             .and_then(|index| self.items.get(*index))
     }
 
-    pub fn validate_indexes(&self) {
-        let _ = self.by_id();
-        let _ = self.by_uuid();
-        for item in &self.items {
+    pub(crate) fn validate_contract(&self) -> Result<(), crate::game::data::DataValidationError> {
+        for (index, item) in self.items.iter().enumerate() {
             if matches!(item.effect, ConsumableEffect::OffenseBoost { .. })
                 && !item.tier.allows_offense_boost()
             {
-                panic!(
-                    "consumable '{}' uses OffenseBoost below Rare tier ({:?})",
-                    item.id, item.tier
-                );
+                return Err(crate::game::data::DataValidationError::at(
+                    &item.id,
+                    format!("items[{index}].effect"),
+                    format!("uses OffenseBoost below Rare tier ({:?})", item.tier),
+                ));
             }
             if item.tier == ConsumableTier::Forbidden && item.live_pool {
-                panic!(
-                    "forbidden consumable '{}' must not be included in live pool before side-effect policy is implemented",
-                    item.id
-                );
+                return Err(crate::game::data::DataValidationError::at(
+                    &item.id,
+                    format!("items[{index}].live_pool"),
+                    "Forbidden consumable must not be in the live pool before side-effect policy is implemented",
+                ));
+            }
+            if matches!(
+                item.effect,
+                ConsumableEffect::ReducePhysicalDamage { amount: 0 }
+            ) {
+                return Err(crate::game::data::DataValidationError::at(
+                    &item.id,
+                    format!("items[{index}].effect.ReducePhysicalDamage.amount"),
+                    "physical damage treatment amount must be greater than zero",
+                ));
             }
             for (effect_name, field_name, percent) in item.effect.bounded_percent_fields() {
                 if percent > 100 {
-                    panic!(
-                        "consumable '{}' uses {effect_name}.{field_name} above 100% ({percent})",
-                        item.id
-                    );
+                    return Err(crate::game::data::DataValidationError::at(
+                        &item.id,
+                        format!("items[{index}].effect.{effect_name}.{field_name}"),
+                        format!("percentage {percent} exceeds 100"),
+                    ));
                 }
             }
             if let ConsumableEffect::InitialSkillCharge { percent } = item.effect {
                 if percent > item.tier.max_initial_skill_charge_percent() {
-                    panic!(
-                        "consumable '{}' uses InitialSkillCharge {}% above {:?} tier cap {}%",
-                        item.id,
-                        percent,
-                        item.tier,
-                        item.tier.max_initial_skill_charge_percent()
-                    );
+                    return Err(crate::game::data::DataValidationError::at(
+                        &item.id,
+                        format!("items[{index}].effect.InitialSkillCharge.percent"),
+                        format!(
+                            "value {percent} exceeds {:?} tier cap {}",
+                            item.tier,
+                            item.tier.max_initial_skill_charge_percent()
+                        ),
+                    ));
                 }
             }
             if matches!(
                 item.duration_policy,
                 ConsumableDurationPolicy::CombatNodes(0)
             ) {
-                panic!("consumable '{}' uses CombatNodes(0)", item.id);
+                return Err(crate::game::data::DataValidationError::at(
+                    &item.id,
+                    format!("items[{index}].duration_policy"),
+                    "CombatNodes count must be greater than zero",
+                ));
             }
         }
+        Ok(())
+    }
+
+    pub fn validate_indexes(&self) {
+        self.validate_contract()
+            .unwrap_or_else(|error| panic!("invalid consumable data: {error:?}"));
+        let _ = self.by_id();
+        let _ = self.by_uuid();
     }
 }
 
@@ -237,41 +256,83 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "uses CombatNodes(0)")]
     fn validation_rejects_zero_combat_node_duration() {
-        ConsumableDatabase::new(vec![consumable(
+        let database = ConsumableDatabase::new(vec![consumable(
             "zero_duration",
             ConsumableTier::Common,
             ConsumableDurationPolicy::CombatNodes(0),
             ConsumableEffect::TraumaMitigation { percent: 10 },
-        )])
-        .validate_indexes();
+        )]);
+        let error = database
+            .validate_contract()
+            .expect_err("CombatNodes(0) must reject");
+        assert_eq!(error.object_id.as_deref(), Some("zero_duration"));
+        assert_eq!(
+            error.field_path.as_deref(),
+            Some("items[0].duration_policy")
+        );
     }
 
     #[test]
-    #[should_panic(expected = "uses OffenseBoost below Rare tier")]
+    fn legacy_run_hp_loss_mitigation_effect_is_rejected() {
+        let error = ron::de::from_str::<ConsumableEffect>("RunHpLossMitigation(percent: 25)")
+            .expect_err("removed Run HP effect must not deserialize");
+
+        assert!(error.to_string().contains("RunHpLossMitigation"));
+    }
+
+    #[test]
+    fn validation_rejects_zero_physical_treatment_amount() {
+        let database = ConsumableDatabase::new(vec![consumable(
+            "zero_treatment",
+            ConsumableTier::Common,
+            ConsumableDurationPolicy::NextCombatNode,
+            ConsumableEffect::ReducePhysicalDamage { amount: 0 },
+        )]);
+
+        let error = database
+            .validate_contract()
+            .expect_err("zero physical treatment must reject");
+        assert_eq!(
+            error.field_path.as_deref(),
+            Some("items[0].effect.ReducePhysicalDamage.amount")
+        );
+    }
+
+    #[test]
     fn validation_rejects_low_tier_offense_boost() {
-        ConsumableDatabase::new(vec![consumable(
+        let database = ConsumableDatabase::new(vec![consumable(
             "cheap_attack_boost",
             ConsumableTier::Common,
             ConsumableDurationPolicy::NextCombatNode,
             ConsumableEffect::OffenseBoost {
                 attack_bonus_percent: 10,
             },
-        )])
-        .validate_indexes();
+        )]);
+        let error = database
+            .validate_contract()
+            .expect_err("low-tier OffenseBoost must reject");
+        assert_eq!(error.object_id.as_deref(), Some("cheap_attack_boost"));
+        assert_eq!(error.field_path.as_deref(), Some("items[0].effect"));
     }
 
     #[test]
-    #[should_panic(expected = "InitialSkillCharge 100% above Common tier cap 20%")]
     fn validation_rejects_initial_skill_charge_above_tier_cap() {
-        ConsumableDatabase::new(vec![consumable(
+        let database = ConsumableDatabase::new(vec![consumable(
             "cheap_full_charge",
             ConsumableTier::Common,
             ConsumableDurationPolicy::NextCombatNode,
             ConsumableEffect::InitialSkillCharge { percent: 100 },
-        )])
-        .validate_indexes();
+        )]);
+        let error = database
+            .validate_contract()
+            .expect_err("tier-cap violation must reject");
+        assert_eq!(error.object_id.as_deref(), Some("cheap_full_charge"));
+        assert_eq!(
+            error.field_path.as_deref(),
+            Some("items[0].effect.InitialSkillCharge.percent")
+        );
+        assert!(error.cause.contains("Common tier cap 20"));
     }
 
     #[test]
@@ -281,11 +342,6 @@ mod tests {
                 "invalid_trauma",
                 ConsumableEffect::TraumaMitigation { percent: 101 },
                 "TraumaMitigation.percent above 100%",
-            ),
-            (
-                "invalid_run_hp",
-                ConsumableEffect::RunHpLossMitigation { percent: 101 },
-                "RunHpLossMitigation.percent above 100%",
             ),
             (
                 "invalid_battle_hp",
@@ -317,25 +373,25 @@ mod tests {
         ];
 
         for (id, effect, expected) in cases {
-            let result = std::panic::catch_unwind(|| {
-                ConsumableDatabase::new(vec![consumable(
-                    id,
-                    ConsumableTier::Critical,
-                    ConsumableDurationPolicy::NextCombatNode,
-                    effect,
-                )])
-                .validate_indexes();
-            });
-            let error = result.expect_err("expected percent validation panic");
-            let message = error
-                .downcast_ref::<String>()
-                .map(String::as_str)
-                .or_else(|| error.downcast_ref::<&str>().copied())
-                .unwrap_or("<non-string panic>");
+            let database = ConsumableDatabase::new(vec![consumable(
+                id,
+                ConsumableTier::Critical,
+                ConsumableDurationPolicy::NextCombatNode,
+                effect,
+            )]);
+            let error = database
+                .validate_contract()
+                .expect_err("percent above 100 must reject");
+            assert_eq!(error.object_id.as_deref(), Some(id));
             assert!(
-                message.contains(expected),
-                "panic '{message}' did not contain '{expected}'"
+                error
+                    .field_path
+                    .as_deref()
+                    .is_some_and(|path| path.contains(expected.split(" above").next().unwrap())),
+                "unexpected field path: {:?}",
+                error.field_path
             );
+            assert!(error.cause.contains("exceeds 100"));
         }
     }
 }

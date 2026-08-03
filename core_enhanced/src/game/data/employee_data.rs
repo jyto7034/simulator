@@ -3,119 +3,132 @@ use std::{collections::HashMap, sync::OnceLock};
 use serde::{Deserialize, Serialize};
 
 use crate::game::{
-    data::{build_string_index, once_lock_with},
-    employee::StarterEmployeeCandidate,
+    data::{build_string_index, once_lock_with, DataValidationError},
+    employee::EmployeeDefinition,
 };
 
-pub const STARTER_CANDIDATE_MIN_COUNT: usize = 5;
-pub const STARTER_CANDIDATE_MAX_COUNT: usize = 7;
-
-fn validate_candidate_fields(candidates: &[StarterEmployeeCandidate], context: &str) {
-    for candidate in candidates {
-        assert!(
-            !candidate.name.trim().is_empty(),
-            "{context} '{}' has an empty name",
-            candidate.id
-        );
-        assert!(
-            !candidate.role.trim().is_empty(),
-            "{context} '{}' has an empty role",
-            candidate.id
-        );
-        assert!(
-            !candidate.background.trim().is_empty(),
-            "{context} '{}' has an empty background",
-            candidate.id
-        );
-    }
-}
+pub const STARTER_DEFINITION_MIN_COUNT: usize = 5;
+pub const STARTER_DEFINITION_MAX_COUNT: usize = 7;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct StarterEmployeeCandidateDatabase {
-    pub candidates: Vec<StarterEmployeeCandidate>,
+#[serde(deny_unknown_fields)]
+pub struct EmployeeDefinitionDatabase {
+    pub definitions: Vec<EmployeeDefinition>,
     #[serde(skip)]
     by_id: OnceLock<HashMap<String, usize>>,
 }
 
-impl StarterEmployeeCandidateDatabase {
-    pub fn new(candidates: Vec<StarterEmployeeCandidate>) -> Self {
+impl EmployeeDefinitionDatabase {
+    pub fn new(definitions: Vec<EmployeeDefinition>) -> Self {
         let by_id = once_lock_with(build_string_index(
-            &candidates,
-            "starter employee candidate id",
-            |candidate| &candidate.id,
+            &definitions,
+            "employee definition id",
+            |definition| &definition.employee_definition_id,
         ));
-        Self { candidates, by_id }
+        Self { definitions, by_id }
     }
 
     fn by_id(&self) -> &HashMap<String, usize> {
         self.by_id.get_or_init(|| {
-            build_string_index(
-                &self.candidates,
-                "starter employee candidate id",
-                |candidate| &candidate.id,
-            )
+            build_string_index(&self.definitions, "employee definition id", |definition| {
+                &definition.employee_definition_id
+            })
         })
     }
 
-    pub(crate) fn validate_indexes(&self) {
-        let _ = self.by_id();
-        if self.candidates.is_empty() {
-            return;
+    pub(crate) fn validate_contract(&self) -> Result<(), DataValidationError> {
+        let mut seen_ids = std::collections::HashSet::new();
+        for (index, definition) in self.definitions.iter().enumerate() {
+            let definition_id = definition.employee_definition_id.as_str();
+            if definition_id.trim().is_empty() {
+                return Err(DataValidationError::at(
+                    "employee_definitions",
+                    format!("definitions[{index}].employee_definition_id"),
+                    "employee_definition_id must not be empty",
+                ));
+            }
+            if !seen_ids.insert(definition_id) {
+                return Err(DataValidationError::at(
+                    definition_id,
+                    format!("definitions[{index}].employee_definition_id"),
+                    format!("duplicate employee_definition_id '{definition_id}'"),
+                ));
+            }
+            for (field, value) in [
+                ("name", definition.name.as_str()),
+                ("profile.role", definition.profile.role.as_str()),
+                ("profile.background", definition.profile.background.as_str()),
+            ] {
+                if value.trim().is_empty() {
+                    return Err(DataValidationError::at(
+                        definition_id,
+                        format!("definitions[{index}].{field}"),
+                        format!("{field} must not be empty"),
+                    ));
+                }
+            }
+            if definition.profile.base_combat_stats.max_hp == 0 {
+                return Err(DataValidationError::at(
+                    definition_id,
+                    format!("definitions[{index}].profile.base_combat_stats.max_hp"),
+                    "max_hp must be > 0",
+                ));
+            }
+            if definition.profile.basic_attack_speed_percent == 0 {
+                return Err(DataValidationError::at(
+                    definition_id,
+                    format!("definitions[{index}].profile.basic_attack_speed_percent"),
+                    "basic_attack_speed_percent must be > 0",
+                ));
+            }
         }
-        assert!(
-            (STARTER_CANDIDATE_MIN_COUNT..=STARTER_CANDIDATE_MAX_COUNT)
-                .contains(&self.candidates.len()),
-            "starter employee candidate count must be between {} and {}, got {}",
-            STARTER_CANDIDATE_MIN_COUNT,
-            STARTER_CANDIDATE_MAX_COUNT,
-            self.candidates.len()
-        );
-        validate_candidate_fields(&self.candidates, "starter employee candidate");
-    }
 
-    pub fn get_by_id(&self, id: &str) -> Option<&StarterEmployeeCandidate> {
-        self.by_id()
-            .get(id)
-            .and_then(|&index| self.candidates.get(index))
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RecruitmentEmployeeCandidateDatabase {
-    pub candidates: Vec<StarterEmployeeCandidate>,
-    #[serde(skip)]
-    by_id: OnceLock<HashMap<String, usize>>,
-}
-
-impl RecruitmentEmployeeCandidateDatabase {
-    pub fn new(candidates: Vec<StarterEmployeeCandidate>) -> Self {
-        let by_id = once_lock_with(build_string_index(
-            &candidates,
-            "recruitment employee candidate id",
-            |candidate| &candidate.id,
-        ));
-        Self { candidates, by_id }
-    }
-
-    fn by_id(&self) -> &HashMap<String, usize> {
-        self.by_id.get_or_init(|| {
-            build_string_index(
-                &self.candidates,
-                "recruitment employee candidate id",
-                |candidate| &candidate.id,
-            )
-        })
+        let starter_count = self
+            .definitions
+            .iter()
+            .filter(|definition| definition.starter_eligible)
+            .count();
+        if !self.definitions.is_empty()
+            && !(STARTER_DEFINITION_MIN_COUNT..=STARTER_DEFINITION_MAX_COUNT)
+                .contains(&starter_count)
+        {
+            return Err(DataValidationError::at(
+                "employee_definitions",
+                "definitions.starter_eligible",
+                format!(
+                    "starter-eligible definition count must be between {STARTER_DEFINITION_MIN_COUNT} and {STARTER_DEFINITION_MAX_COUNT}, got {starter_count}"
+                ),
+            ));
+        }
+        Ok(())
     }
 
     pub(crate) fn validate_indexes(&self) {
+        self.validate_contract()
+            .unwrap_or_else(|error| panic!("invalid employee definition data: {error:?}"));
         let _ = self.by_id();
-        validate_candidate_fields(&self.candidates, "recruitment employee candidate");
     }
 
-    pub fn get_by_id(&self, id: &str) -> Option<&StarterEmployeeCandidate> {
+    pub fn get_by_id(&self, employee_definition_id: &str) -> Option<&EmployeeDefinition> {
         self.by_id()
-            .get(id)
-            .and_then(|&index| self.candidates.get(index))
+            .get(employee_definition_id)
+            .and_then(|&index| self.definitions.get(index))
+    }
+
+    pub fn starter_definitions(&self) -> Vec<EmployeeDefinition> {
+        self.definitions
+            .iter()
+            .filter(|definition| definition.starter_eligible)
+            .cloned()
+            .collect()
+    }
+
+    pub fn recruitment_definitions(&self) -> Vec<EmployeeDefinition> {
+        self.definitions
+            .iter()
+            .filter(|definition| !definition.starter_eligible)
+            .cloned()
+            .collect()
     }
 }
 
@@ -123,37 +136,92 @@ impl RecruitmentEmployeeCandidateDatabase {
 mod tests {
     use super::*;
 
-    #[test]
-    fn starter_employee_candidates_deserialize_from_ron() {
-        let db: StarterEmployeeCandidateDatabase = ron::de::from_str(
+    fn definition_ron(id: &str, starter_eligible: bool) -> String {
+        format!(
             r#"(
-                candidates: [
-                    (id: "a", name: "A", role: "R", background: "B", starter_loadout: (equipment_ids: ["standard_armor"], baseline_skill_fragment_ids: ["starter_basic_attack_enhancement"])),
-                    (id: "b", name: "B", role: "R", background: "B", starter_loadout: (equipment_ids: ["standard_armor"], baseline_skill_fragment_ids: ["starter_basic_attack_enhancement"])),
-                    (id: "c", name: "C", role: "R", background: "B", starter_loadout: (equipment_ids: ["standard_armor"], baseline_skill_fragment_ids: ["starter_basic_attack_enhancement"])),
-                    (id: "d", name: "D", role: "R", background: "B", starter_loadout: (equipment_ids: ["standard_armor"], baseline_skill_fragment_ids: ["starter_basic_attack_enhancement"])),
-                    (id: "e", name: "E", role: "R", background: "B", starter_loadout: (equipment_ids: ["standard_armor"], baseline_skill_fragment_ids: ["starter_basic_attack_enhancement"])),
-                ],
-            )"#,
+                employee_definition_id: "{id}",
+                name: "Employee {id}",
+                starter_eligible: {starter_eligible},
+                initial_loadout: (equipment_ids: [], baseline_skill_fragment_ids: []),
+                profile: (
+                    role: "Role",
+                    background: "Background",
+                    personality: (risk: Cautious, social: Obedient),
+                    combat_aptitude: Balanced,
+                    event_aptitude: Maintenance,
+                    base_combat_stats: (max_hp: 100, attack: 10, defense: 0, magic_resist: 0),
+                    basic_attack_speed_percent: 100,
+                ),
+            )"#
         )
-        .expect("starter candidates should deserialize");
-
-        db.validate_indexes();
-        assert_eq!(db.get_by_id("a").unwrap().name, "A");
     }
 
     #[test]
-    fn recruitment_employee_candidates_deserialize_from_separate_schema() {
-        let db: RecruitmentEmployeeCandidateDatabase = ron::de::from_str(
-            r#"(
-                candidates: [
-                    (id: "relay_guard", name: "Relay Guard", role: "R", background: "B"),
-                ],
-            )"#,
-        )
-        .expect("recruitment candidates should deserialize");
+    fn employee_definitions_deserialize_from_one_strict_catalog() {
+        let definitions = (0..5)
+            .map(|index| definition_ron(&format!("starter_{index}"), true))
+            .chain(std::iter::once(definition_ron("recruitment_0", false)))
+            .collect::<Vec<_>>()
+            .join(",");
+        let db: EmployeeDefinitionDatabase =
+            ron::de::from_str(&format!("(definitions: [{definitions}])"))
+                .expect("employee definitions should deserialize");
 
         db.validate_indexes();
-        assert_eq!(db.get_by_id("relay_guard").unwrap().name, "Relay Guard");
+        assert_eq!(db.starter_definitions().len(), 5);
+        assert_eq!(db.recruitment_definitions().len(), 1);
+        assert_eq!(
+            db.get_by_id("recruitment_0").unwrap().name,
+            "Employee recruitment_0"
+        );
+    }
+
+    #[test]
+    fn duplicate_definition_id_is_rejected() {
+        let definitions = (0..5)
+            .map(|index| definition_ron(&format!("starter_{index}"), true))
+            .chain(std::iter::once(definition_ron("starter_0", false)))
+            .collect::<Vec<_>>()
+            .join(",");
+        let db: EmployeeDefinitionDatabase =
+            ron::de::from_str(&format!("(definitions: [{definitions}])")).unwrap();
+
+        let error = db.validate_contract().unwrap_err();
+        assert!(format!("{error:?}").contains("duplicate employee_definition_id"));
+    }
+
+    #[test]
+    fn zero_attack_speed_is_rejected() {
+        let mut definitions = (0..5)
+            .map(|index| definition_ron(&format!("starter_{index}"), true))
+            .collect::<Vec<_>>()
+            .join(",");
+        definitions = definitions.replacen(
+            "basic_attack_speed_percent: 100",
+            "basic_attack_speed_percent: 0",
+            1,
+        );
+        let db: EmployeeDefinitionDatabase =
+            ron::de::from_str(&format!("(definitions: [{definitions}])")).unwrap();
+
+        let error = db.validate_contract().unwrap_err();
+        assert!(format!("{error:?}").contains("basic_attack_speed_percent must be > 0"));
+    }
+
+    #[test]
+    fn missing_required_profile_is_rejected_during_deserialization() {
+        let error = ron::de::from_str::<EmployeeDefinitionDatabase>(
+            r#"(
+                definitions: [(
+                    employee_definition_id: "missing_profile",
+                    name: "Missing Profile",
+                    starter_eligible: false,
+                    initial_loadout: (equipment_ids: [], baseline_skill_fragment_ids: []),
+                )],
+            )"#,
+        )
+        .unwrap_err();
+
+        assert!(error.to_string().contains("profile"));
     }
 }

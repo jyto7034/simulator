@@ -10,13 +10,14 @@ use crate::game::{
         skill_fragment_data::SkillFragmentId,
         GameDataBase, Item,
     },
-    employee::{EmployeeLifeState, EmployeeRoster},
+    employee::EmployeeRoster,
     managers::uuid_manager::UuidManager,
     resources::{Enkephalin, Inventory, InventoryDiffDto, InventoryItemDto},
     skill_fragment::{SkillFragmentInventory, SkillFragmentPolicy},
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
 pub enum RewardEffect {
     GrantEnkephalin {
         amount: u32,
@@ -35,11 +36,9 @@ pub enum RewardEffect {
         material_id: String,
         amount: u32,
     },
-    GrantArtifact {
-        artifact_id: String,
-    },
     GrantConsumable {
         consumable_id: String,
+        quantity: u32,
     },
     GrantSkillFragment {
         fragment_id: SkillFragmentId,
@@ -271,6 +270,7 @@ impl GrantExecutor {
                     inventory,
                     uuid_manager,
                     item,
+                    1,
                     &mut result.inventory_diff,
                 )?;
             }
@@ -315,6 +315,7 @@ impl GrantExecutor {
                     inventory,
                     uuid_manager,
                     item,
+                    1,
                     &mut result.inventory_diff,
                 )?;
             }
@@ -342,26 +343,10 @@ impl GrantExecutor {
                     metadata.id, amount, new_amount
                 );
             }
-            RewardEffect::GrantArtifact { artifact_id } => {
-                let item = Item::Artifact(std::sync::Arc::new(
-                    game_data
-                        .artifact_data
-                        .get_by_id(artifact_id)
-                        .ok_or_else(|| {
-                            GameError::InvalidStaticData(format!(
-                                "reward references missing artifact id '{artifact_id}'"
-                            ))
-                        })?
-                        .clone(),
-                ));
-                Self::grant_inventory_item(
-                    inventory,
-                    uuid_manager,
-                    item,
-                    &mut result.inventory_diff,
-                )?;
-            }
-            RewardEffect::GrantConsumable { consumable_id } => {
+            RewardEffect::GrantConsumable {
+                consumable_id,
+                quantity,
+            } => {
                 let item = Item::Consumable(std::sync::Arc::new(
                     game_data
                         .consumable_data
@@ -377,6 +362,7 @@ impl GrantExecutor {
                     inventory,
                     uuid_manager,
                     item,
+                    *quantity,
                     &mut result.inventory_diff,
                 )?;
             }
@@ -452,20 +438,38 @@ impl GrantExecutor {
         inventory: &mut Inventory,
         uuid_manager: &mut UuidManager,
         item: Item,
+        quantity: u32,
         inventory_diff: &mut InventoryDiffDto,
     ) -> Result<(), GameError> {
-        if !inventory.can_add_item(&item) {
-            return Err(GameError::InventoryFull);
-        }
-
         let owned_uuid = match &item {
-            Item::Consumable(_) => uuid_manager.next_owned_consumable(),
-            _ => uuid_manager.next_owned_equipment(),
+            Item::Equipment(_) => uuid_manager.next_owned_equipment(),
+            Item::Consumable(meta) => meta.uuid,
         };
-        inventory.add_item_owned(owned_uuid, item.clone_arc())?;
-        inventory_diff
-            .added
-            .push(InventoryItemDto::from_item_with_uuid(&item, owned_uuid)?);
+        let outcome = match &item {
+            Item::Consumable(meta) => {
+                inventory.add_consumable(std::sync::Arc::clone(meta), quantity)?
+            }
+            _ if quantity == 1 => inventory.add_item_owned(owned_uuid, item.clone_arc())?,
+            _ => return Err(GameError::InvalidAction),
+        };
+        let dto = match &item {
+            Item::Consumable(meta) => {
+                let stack = inventory
+                    .consumables
+                    .get_by_definition_id(&meta.id)
+                    .ok_or(GameError::InventoryItemNotFound)?;
+                InventoryItemDto::Consumable(
+                    crate::game::resources::ConsumableItemDto::from_consumable_stack(stack),
+                )
+            }
+            _ => InventoryItemDto::from_item_with_uuid(&item, owned_uuid)?,
+        };
+        match outcome {
+            crate::game::resources::InventoryAddOutcome::Added => inventory_diff.added.push(dto),
+            crate::game::resources::InventoryAddOutcome::Updated => {
+                inventory_diff.updated.push(dto)
+            }
+        }
 
         Ok(())
     }
@@ -488,7 +492,7 @@ impl GrantExecutor {
                 .ok_or(GameError::InvalidAction)?,
             ExperienceTargetPolicy::AliveRoster => roster
                 .iter()
-                .filter(|employee| employee.life_state == EmployeeLifeState::Alive)
+                .filter(|employee| employee.is_alive())
                 .map(|employee| employee.uuid)
                 .collect(),
             ExperienceTargetPolicy::SelectedEmployee => {
@@ -538,5 +542,44 @@ impl GrantExecutor {
         }
 
         Ok(diffs)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::RewardEffect;
+
+    #[test]
+    fn consumable_grant_requires_explicit_canonical_quantity() {
+        let missing =
+            ron::de::from_str::<RewardEffect>(r#"GrantConsumable(consumable_id: "field_tonic")"#)
+                .expect_err("missing quantity must reject");
+        assert!(missing.to_string().contains("quantity"));
+
+        let legacy = ron::de::from_str::<RewardEffect>(
+            r#"GrantConsumable(consumable_id: "field_tonic", quantity: 2, count: 2)"#,
+        )
+        .expect_err("legacy count must reject");
+        assert!(legacy.to_string().contains("count"));
+
+        let parsed = ron::de::from_str::<RewardEffect>(
+            r#"GrantConsumable(consumable_id: "field_tonic", quantity: 2)"#,
+        )
+        .expect("canonical quantity should parse");
+        assert!(matches!(
+            parsed,
+            RewardEffect::GrantConsumable {
+                consumable_id,
+                quantity: 2,
+            } if consumable_id == "field_tonic"
+        ));
+    }
+
+    #[test]
+    fn removed_artifact_reward_vocabulary_is_rejected() {
+        let error =
+            ron::de::from_str::<RewardEffect>(r#"GrantArtifact(artifact_id: "legacy_artifact")"#)
+                .expect_err("removed Artifact rewards must fail strict decoding");
+        assert!(error.to_string().contains("GrantArtifact"));
     }
 }

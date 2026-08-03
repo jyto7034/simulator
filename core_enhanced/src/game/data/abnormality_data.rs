@@ -74,6 +74,7 @@ fn default_basic_attack_damage_type() -> DamageType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct MovementDef {
     #[serde(default = "default_move_speed_units_per_ms")]
     pub speed_units_per_ms: u32,
@@ -191,52 +192,50 @@ impl BasicAttackDef {
         }
     }
 
-    pub(crate) fn validate_runtime_contract(&self, owner_label: impl std::fmt::Display) {
-        let owner_label = owner_label.to_string();
-        assert!(
-            self.interval_ms > 0,
-            "{} basic_attack interval_ms must be greater than zero",
-            owner_label
-        );
+    pub(crate) fn try_validate_runtime_contract(&self) -> Result<(), String> {
+        if self.interval_ms == 0 {
+            return Err("interval_ms must be greater than zero".to_string());
+        }
         match self.range_policy {
             TileRangePolicy::Pattern => {
                 if let Some(pattern) = &self.defense_tile_range {
-                    pattern.validate().unwrap_or_else(|error| {
-                        panic!(
-                            "{} basic_attack has invalid defense_tile_range: {}",
-                            owner_label, error
-                        )
-                    });
+                    pattern
+                        .validate()
+                        .map_err(|error| format!("has invalid defense_tile_range: {error}"))?;
                 }
             }
             TileRangePolicy::WholeFieldValidTiles => {
-                assert!(
-                    self.defense_tile_range.is_none(),
-                    "{} basic_attack uses WholeFieldValidTiles and must not also define defense_tile_range",
-                    owner_label
-                );
+                if self.defense_tile_range.is_some() {
+                    return Err(
+                        "uses WholeFieldValidTiles and must not also define defense_tile_range"
+                            .to_string(),
+                    );
+                }
             }
         }
-        assert!(
-            !matches!(&self.delivery, DeliveryDef::TileArea { .. }),
-            "{} basic_attack delivery must be Instant or Projectile; TileArea is skill-only",
-            owner_label
-        );
-        assert!(
-            !matches!(
-                &self.delivery,
-                DeliveryDef::Projectile {
-                    hit_policy: crate::game::ability::ProjectileHitPolicy::DirectionalCollision,
-                    ..
-                }
-            ),
-            "{} basic_attack delivery must not use DirectionalCollision; collision projectiles are skill-only",
-            owner_label
-        );
+        if matches!(&self.delivery, DeliveryDef::TileArea { .. }) {
+            return Err(
+                "delivery must be Instant or Projectile; TileArea is skill-only".to_string(),
+            );
+        }
+        if matches!(
+            &self.delivery,
+            DeliveryDef::Projectile {
+                hit_policy: crate::game::ability::ProjectileHitPolicy::DirectionalCollision,
+                ..
+            }
+        ) {
+            return Err(
+                "delivery must not use DirectionalCollision; collision projectiles are skill-only"
+                    .to_string(),
+            );
+        }
+        Ok(())
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ResonanceDef {
     #[serde(default = "default_resonance_start")]
     pub start: u32,
@@ -346,22 +345,18 @@ struct RawAbnormalityMetadata {
     max_health: u32,
     attack: u32,
     defense: i32,
-    #[serde(default = "default_magic_resist")]
     magic_resist: i32,
     #[serde(default)]
     target_traits: Vec<UnitTargetTrait>,
     #[serde(default)]
     mobility_kind: MobilityKind,
-    #[serde(default = "default_abnormality_threat_class")]
     threat_class: BattleUnitThreatClass,
     #[serde(default)]
     response_complete_skill_fragment_id: Option<SkillFragmentId>,
     #[serde(default)]
     omen_chain_id: Option<BossOmenChainId>,
-    #[serde(default)]
     movement: MovementDef,
     basic_attack: AuthoredBasicAttackDef,
-    #[serde(default)]
     resonance: ResonanceDef,
     #[serde(default)]
     skill_id: Option<SkillId>,
@@ -369,12 +364,15 @@ struct RawAbnormalityMetadata {
 
 impl RawAbnormalityDatabase {
     fn into_database(self) -> AbnormalityDatabase {
-        AbnormalityDatabase::new(
-            self.items
+        AbnormalityDatabase {
+            items: self
+                .items
                 .into_iter()
                 .map(RawAbnormalityMetadata::into_metadata)
                 .collect(),
-        )
+            by_id: OnceLock::new(),
+            by_uuid: OnceLock::new(),
+        }
     }
 }
 
@@ -432,17 +430,32 @@ impl AbnormalityDatabase {
     }
 
     pub(crate) fn validate_indexes(&self) {
+        self.validate_contract()
+            .expect("invalid abnormality authoring contract");
         let _ = self.by_id();
         let _ = self.by_uuid();
-        for item in &self.items {
-            assert!(
-                !item.target_traits.contains(&UnitTargetTrait::Airborne),
-                "abnormality '{}' must use mobility_kind: Airborne instead of target_traits: [Airborne]",
-                item.id
-            );
+    }
+
+    pub(crate) fn validate_contract(&self) -> Result<(), crate::game::data::DataValidationError> {
+        for (item_index, item) in self.items.iter().enumerate() {
+            if item.target_traits.contains(&UnitTargetTrait::Airborne) {
+                return Err(crate::game::data::DataValidationError::at(
+                    &item.id,
+                    format!("items[{item_index}].target_traits"),
+                    "must use mobility_kind: Airborne instead of target_traits: [Airborne]",
+                ));
+            }
             item.basic_attack
-                .validate_runtime_contract(format!("abnormality '{}'", item.id));
+                .try_validate_runtime_contract()
+                .map_err(|cause| {
+                    crate::game::data::DataValidationError::at(
+                        &item.id,
+                        format!("items[{item_index}].basic_attack"),
+                        cause,
+                    )
+                })?;
         }
+        Ok(())
     }
 
     pub fn get_by_id(&self, id: &str) -> Option<&AbnormalityMetadata> {
@@ -505,16 +518,22 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "basic_attack delivery must be Instant or Projectile")]
     fn basic_attack_contract_rejects_tile_area_delivery() {
         let basic_attack = BasicAttackDef {
             delivery: DeliveryDef::TileArea {
+                footprint: TileRangePattern {
+                    include_anchor_tile: true,
+                    rows: vec![".@.".to_string()],
+                },
                 area: Default::default(),
             },
             ..Default::default()
         };
 
-        basic_attack.validate_runtime_contract("test unit");
+        let error = basic_attack
+            .try_validate_runtime_contract()
+            .expect_err("TileArea basic attacks must reject");
+        assert!(error.contains("delivery must be Instant or Projectile"));
     }
 
     #[test]

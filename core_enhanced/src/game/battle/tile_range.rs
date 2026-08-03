@@ -52,6 +52,7 @@ impl FacingDirection {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct TileRangePattern {
     #[serde(default)]
     pub include_anchor_tile: bool,
@@ -137,6 +138,25 @@ impl TileRangePattern {
         affected.sort_by_key(|pos| (pos.y, pos.x));
         affected.dedup();
         Ok(affected)
+    }
+
+    /// Whether the authored footprint produces the same tiles for every facing.
+    /// Such a footprint can be projected for stationary/facingless casters.
+    pub fn is_rotation_invariant(&self) -> bool {
+        let anchor = Position::new(0, 0);
+        let Ok(up) = self.affected_tiles(anchor, FacingDirection::Up) else {
+            return false;
+        };
+        [
+            FacingDirection::Right,
+            FacingDirection::Down,
+            FacingDirection::Left,
+        ]
+        .into_iter()
+        .all(|facing| {
+            self.affected_tiles(anchor, facing)
+                .is_ok_and(|tiles| tiles == up)
+        })
     }
 
     pub fn contains_target_tile(

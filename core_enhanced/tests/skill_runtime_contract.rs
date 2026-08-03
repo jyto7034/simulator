@@ -49,6 +49,7 @@ fn unit_draft(owned_uuid: Uuid, base_uuid: Uuid) -> BattleUnitDraft {
         growth_stacks: GrowthStack::new(),
         equipped_items: vec![],
         equipped_item_enhancements: vec![],
+        employee_start_condition: None,
     }
 }
 
@@ -81,14 +82,8 @@ fn explicit_nearest_enemy_cast_targeting() -> SkillCastTargetingDef {
 
 fn skill_with_broad_defense_tile_range(mut skill: SkillDef) -> SkillDef {
     let fallback_range = broad_defense_tile_range();
-    let SkillCastTargetingDef::Explicit {
-        defense_tile_range, ..
-    } = &mut skill.cast_targeting;
-    *defense_tile_range = Some(fallback_range.clone());
-
-    for step in &mut skill.steps {
-        step.defense_tile_range = Some(fallback_range.clone());
-    }
+    let SkillCastTargetingDef::Explicit { target_range, .. } = &mut skill.cast_targeting;
+    *target_range = Some(fallback_range);
 
     skill
 }
@@ -136,7 +131,6 @@ fn battle_scenario(
             valid_tiles: Vec::new(),
             obstacles: Vec::new(),
         },
-        artifacts: Vec::new(),
         groups: vec![
             spawn_group(player_group_id, Side::Player, false, player_units),
             spawn_group(enemy_group_id, Side::Opponent, true, opponent_units),
@@ -394,9 +388,6 @@ fn mixed_target_skill_records_enemy_damage_then_self_buff() {
             SkillStepDef {
                 id: "enemy_burst".to_string(),
                 delay_ms: 0,
-                range_policy: Default::default(),
-                defense_tile_range: None,
-                air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::Nearest,
                 },
@@ -413,9 +404,6 @@ fn mixed_target_skill_records_enemy_damage_then_self_buff() {
             SkillStepDef {
                 id: "self_buff".to_string(),
                 delay_ms: 50,
-                range_policy: Default::default(),
-                defense_tile_range: None,
-                air_capable: false,
                 target: SkillTarget::SelfUnit,
                 targeting: StepTargetingMode::ReuseCastTarget,
                 when: Default::default(),
@@ -530,9 +518,6 @@ fn self_then_retargeted_enemy_skill_resolves_second_step_at_execution_time() {
             SkillStepDef {
                 id: "self_charge".to_string(),
                 delay_ms: 0,
-                range_policy: Default::default(),
-                defense_tile_range: None,
-                air_capable: false,
                 target: SkillTarget::SelfUnit,
                 targeting: StepTargetingMode::ReuseCastTarget,
                 when: Default::default(),
@@ -550,9 +535,6 @@ fn self_then_retargeted_enemy_skill_resolves_second_step_at_execution_time() {
             SkillStepDef {
                 id: "retargeted_strike".to_string(),
                 delay_ms: 10,
-                range_policy: Default::default(),
-                defense_tile_range: None,
-                air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::Nearest,
                 },
@@ -668,9 +650,6 @@ fn conditional_followup_waits_for_projectile_damage_resolution() {
             SkillStepDef {
                 id: "delayed_shot".to_string(),
                 delay_ms: 0,
-                range_policy: Default::default(),
-                defense_tile_range: None,
-                air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::Nearest,
                 },
@@ -696,9 +675,6 @@ fn conditional_followup_waits_for_projectile_damage_resolution() {
             SkillStepDef {
                 id: "heal_on_hit".to_string(),
                 delay_ms: 1,
-                range_policy: Default::default(),
-                defense_tile_range: None,
-                air_capable: false,
                 target: SkillTarget::SelfUnit,
                 targeting: StepTargetingMode::ReuseCastTarget,
                 when: SkillStepCondition::IfPreviousStepDealtDamage,
@@ -849,8 +825,8 @@ fn explicit_cast_targeting_separates_cast_context_from_step_execution_targets() 
             target: SkillTarget::EnemySingle {
                 rule: UnitTargetRule::Nearest,
             },
-            range_policy: Default::default(),
-            defense_tile_range: None,
+            reach: Default::default(),
+            target_range: None,
             air_capable: false,
         },
         focus_time_ms: 100,
@@ -859,9 +835,6 @@ fn explicit_cast_targeting_separates_cast_context_from_step_execution_targets() 
             SkillStepDef {
                 id: "self_charge".to_string(),
                 delay_ms: 0,
-                range_policy: Default::default(),
-                defense_tile_range: None,
-                air_capable: false,
                 target: SkillTarget::SelfUnit,
                 targeting: StepTargetingMode::ReuseCastTarget,
                 when: Default::default(),
@@ -879,9 +852,6 @@ fn explicit_cast_targeting_separates_cast_context_from_step_execution_targets() 
             SkillStepDef {
                 id: "locked_shot".to_string(),
                 delay_ms: 10,
-                range_policy: Default::default(),
-                defense_tile_range: None,
-                air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::CurrentTarget,
                 },
@@ -1018,9 +988,6 @@ fn ability_step_event_log_includes_presentation_metadata() {
         steps: vec![SkillStepDef {
             id: "judgement".to_string(),
             delay_ms: 0,
-            range_policy: Default::default(),
-            defense_tile_range: None,
-            air_capable: false,
             target: SkillTarget::EnemySingle {
                 rule: UnitTargetRule::Nearest,
             },
@@ -1196,9 +1163,6 @@ fn untargeted_projectile_miss_finalizes_step_and_cleans_up_damage_gated_followup
             SkillStepDef {
                 id: "missable_shot".to_string(),
                 delay_ms: 0,
-                range_policy: Default::default(),
-                defense_tile_range: None,
-                air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::Nearest,
                 },
@@ -1227,9 +1191,6 @@ fn untargeted_projectile_miss_finalizes_step_and_cleans_up_damage_gated_followup
             SkillStepDef {
                 id: "followup_buff".to_string(),
                 delay_ms: 1,
-                range_policy: Default::default(),
-                defense_tile_range: None,
-                air_capable: false,
                 target: SkillTarget::SelfUnit,
                 targeting: StepTargetingMode::ReuseCastTarget,
                 when: SkillStepCondition::IfPreviousStepDealtDamage,
@@ -1350,9 +1311,6 @@ fn untargeted_projectile_still_hits_later_unit_after_cast_target_dies() {
         steps: vec![SkillStepDef {
             id: "death_through_shot".to_string(),
             delay_ms: 0,
-            range_policy: Default::default(),
-            defense_tile_range: None,
-            air_capable: false,
             target: SkillTarget::EnemySingle {
                 rule: UnitTargetRule::LowestHealthEnemy,
             },
@@ -1601,9 +1559,6 @@ fn untargeted_piercing_projectile_respects_max_hits() {
         steps: vec![SkillStepDef {
             id: "piercing_shot".to_string(),
             delay_ms: 0,
-            range_policy: Default::default(),
-            defense_tile_range: None,
-            air_capable: false,
             target: SkillTarget::EnemySingle {
                 rule: UnitTargetRule::LowestHealthEnemy,
             },
@@ -1765,9 +1720,6 @@ fn targetless_directional_collision_projectile_fires_along_caster_facing() {
         steps: vec![SkillStepDef {
             id: "line_shot".to_string(),
             delay_ms: 0,
-            range_policy: Default::default(),
-            defense_tile_range: Some(front_only_range),
-            air_capable: false,
             target: SkillTarget::EnemySingle {
                 rule: UnitTargetRule::Nearest,
             },
@@ -1927,9 +1879,6 @@ fn directional_collision_projectile_respects_max_kills_stop_policy() {
         steps: vec![SkillStepDef {
             id: "kill_limited_line".to_string(),
             delay_ms: 0,
-            range_policy: Default::default(),
-            defense_tile_range: None,
-            air_capable: false,
             target: SkillTarget::EnemySingle {
                 rule: UnitTargetRule::Nearest,
             },
@@ -2068,9 +2017,6 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
             SkillStepDef {
                 id: "prime_stacks".to_string(),
                 delay_ms: 0,
-                range_policy: Default::default(),
-                defense_tile_range: None,
-                air_capable: false,
                 target: SkillTarget::SelfUnit,
                 targeting: StepTargetingMode::ReuseCastTarget,
                 when: SkillStepCondition::Always,
@@ -2091,9 +2037,6 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
             SkillStepDef {
                 id: "opening_strike".to_string(),
                 delay_ms: 1,
-                range_policy: Default::default(),
-                defense_tile_range: None,
-                air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::Nearest,
                 },
@@ -2110,9 +2053,6 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
             SkillStepDef {
                 id: "heal_on_hit".to_string(),
                 delay_ms: 2,
-                range_policy: Default::default(),
-                defense_tile_range: None,
-                air_capable: false,
                 target: SkillTarget::SelfUnit,
                 targeting: StepTargetingMode::ReuseCastTarget,
                 when: SkillStepCondition::IfPreviousStepDealtDamage,
@@ -2124,9 +2064,6 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
             SkillStepDef {
                 id: "stacked_barrage".to_string(),
                 delay_ms: 3,
-                range_policy: Default::default(),
-                defense_tile_range: None,
-                air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::Nearest,
                 },
@@ -2283,7 +2220,7 @@ fn ron_added_abnormalities_emit_expected_skill_event_categories_in_battle_smoke(
         .with_abnormalities(abnormalities)
         .with_corroded_employee_data(Arc::clone(&base_game_data.corroded_employee_data))
         .with_corroded_wave_data(Arc::clone(&base_game_data.corroded_wave_data))
-        .with_artifact_data(Arc::clone(&base_game_data.artifact_data))
+        .with_consumable_data(Arc::clone(&base_game_data.consumable_data))
         .with_equipment_data(Arc::clone(&base_game_data.equipment_data))
         .with_shop_data(Arc::clone(&base_game_data.shop_data))
         .with_reward_data(Arc::clone(&base_game_data.reward_data))

@@ -131,6 +131,7 @@ pub enum StatModifierKind {
 
 /// 하나의 스탯 변경을 표현
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct StatModifier {
     pub stat: StatId,
     pub kind: StatModifierKind,

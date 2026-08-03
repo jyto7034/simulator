@@ -32,7 +32,6 @@ use crate::game::{
         scenario::{ScenarioGroupId, ScenarioSpawnGroup, ScenarioUnitRef, ScenarioUnitSpawn},
         types::{BattleUnitDraft, BattleUnitSource, BattleUnitThreatClass},
     },
-    combat_setup::player_spawns::scenario_artifacts_from_inventory,
     enums::Side,
     growth::GrowthStack,
 };
@@ -179,7 +178,7 @@ impl CombatExecutor {
     #[cfg(test)]
     fn build_test_player_abnormality_scenario_start_from_positions(
         player_units: &[TestPlayerAbnormalityUnit],
-        inventory: &Inventory,
+        _inventory: &Inventory,
         deployment_positions: &HashMap<Uuid, Position>,
     ) -> Result<PlayerScenarioStart, GameError> {
         let fixtures = player_units
@@ -209,6 +208,7 @@ impl CombatExecutor {
                 growth_stacks: GrowthStack::new(),
                 equipped_items: vec![],
                 equipped_item_enhancements: vec![],
+                employee_start_condition: None,
             };
             spawns.push(ScenarioUnitSpawn {
                 unit_ref: ScenarioUnitRef::new(format!("{}_{}", group_id.0, index)),
@@ -227,7 +227,6 @@ impl CombatExecutor {
                 enemy_movement_plan: None,
                 spawns,
             },
-            artifacts: scenario_artifacts_from_inventory(inventory),
         })
     }
 
@@ -274,7 +273,6 @@ impl CombatExecutor {
 
         Ok(BattleScenario {
             battlefield: plan.into_battlefield_spec(),
-            artifacts: player_start.artifacts,
             groups,
             events,
             win_condition,
@@ -524,7 +522,7 @@ mod tests {
         let inventory = Inventory::new();
         let skill_fragments = SkillFragmentInventory::new();
         let mut roster = EmployeeRoster::new();
-        roster.add(Employee::new(employee_uuid, "Agent"));
+        roster.add(Employee::new(employee_uuid, "test_agent", "Agent"));
 
         let deployment_positions =
             HashMap::from([(employee_uuid, preview.deployment_zones[0].cells[0])]);
@@ -598,7 +596,7 @@ mod tests {
         let inventory = Inventory::new();
         let skill_fragments = SkillFragmentInventory::new();
         let mut roster = EmployeeRoster::new();
-        roster.add(Employee::new(employee_uuid, "Agent"));
+        roster.add(Employee::new(employee_uuid, "test_agent", "Agent"));
         let deployment_positions =
             HashMap::from([(employee_uuid, preview.deployment_zones[0].cells[0])]);
 
@@ -680,7 +678,7 @@ mod tests {
             12,
         );
         let mut roster = EmployeeRoster::new();
-        roster.add(Employee::new(employee_uuid, "Agent"));
+        roster.add(Employee::new(employee_uuid, "test_agent", "Agent"));
         let deployment_positions =
             HashMap::from([(employee_uuid, preview.deployment_zones[0].cells[0])]);
 
@@ -755,7 +753,7 @@ mod tests {
         );
         preview.node_type = CombatNodeType::Boss;
         let mut roster = EmployeeRoster::new();
-        roster.add(Employee::new(employee_uuid, "Agent"));
+        roster.add(Employee::new(employee_uuid, "test_agent", "Agent"));
         let deployment_positions =
             HashMap::from([(employee_uuid, preview.deployment_zones[0].cells[0])]);
 
@@ -905,7 +903,7 @@ mod tests {
         let inventory = Inventory::new();
         let skill_fragments = SkillFragmentInventory::new();
         let mut roster = EmployeeRoster::new();
-        roster.add(Employee::new(employee_uuid, "Agent"));
+        roster.add(Employee::new(employee_uuid, "test_agent", "Agent"));
         let deployment_positions = HashMap::from([(employee_uuid, Position::new(1, 1))]);
 
         let plan = BattleStartPlan::from_preview(&game_data, "wave_encounter", &preview)

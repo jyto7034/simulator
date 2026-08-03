@@ -59,6 +59,7 @@ pub fn defense_object_group_for_win_condition(
                 growth_stacks: GrowthStack::new(),
                 equipped_items: vec![],
                 equipped_item_enhancements: vec![],
+                employee_start_condition: None,
             },
             position,
             instance_salt: 0,
@@ -108,6 +109,7 @@ fn default_defense_object_profile() -> UnitCombatProfile {
     UnitCombatProfile {
         stats,
         basic_attack,
+        basic_attack_speed_percent: 100,
         weapon_profile: None,
         movement,
         resonance: ResonanceDef::default(),

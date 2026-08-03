@@ -7,15 +7,15 @@ use game_core::game::battle::core::BattleCore;
 use game_core::game::battle::event_log::{BattleEventLog, BattleEventLogEntry, BattleLogEvent};
 use game_core::game::battle::ids::UnitInstanceId;
 use game_core::game::battle::scenario::{
-    BattleFieldSpec, BattleScenario, ScenarioAction, ScenarioArtifact, ScenarioEvent,
-    ScenarioEventId, ScenarioGroupId, ScenarioSpawnGroup, ScenarioTrigger, ScenarioUnitRef,
-    ScenarioUnitSpawn, WinCondition,
+    BattleFieldSpec, BattleScenario, ScenarioAction, ScenarioEvent, ScenarioEventId,
+    ScenarioGroupId, ScenarioSpawnGroup, ScenarioTrigger, ScenarioUnitRef, ScenarioUnitSpawn,
+    WinCondition,
 };
 use game_core::game::battle::tile_range::TileRangePattern;
 use game_core::game::battle::types::{BattleUnitDraft, BattleUnitSource};
 use game_core::game::data::{
-    abnormality_data::AbnormalityMetadata, artifact_data::ArtifactDatabase,
-    equipment_data::EquipmentDatabase, GameDataBase, GameDataBuilder,
+    abnormality_data::AbnormalityMetadata, equipment_data::EquipmentDatabase, GameDataBase,
+    GameDataBuilder,
 };
 use game_core::game::enums::{RiskLevel, Side, Tier};
 use game_core::game::growth::GrowthStack;
@@ -61,6 +61,7 @@ fn unit_draft(owned_uuid: Uuid, base_uuid: Uuid, equipped_items: Vec<Uuid>) -> B
         growth_stacks: GrowthStack::new(),
         equipped_items,
         equipped_item_enhancements: vec![],
+        employee_start_condition: None,
     }
 }
 
@@ -99,7 +100,6 @@ fn scenario_with_loadout(
     base_uuid: Uuid,
     pos: Position,
     equipped_items: Vec<Uuid>,
-    artifacts: Vec<Uuid>,
 ) -> BattleScenario {
     let player_group_id = "player_initial";
     let enemy_group_id = "enemy_initial";
@@ -110,15 +110,6 @@ fn scenario_with_loadout(
             valid_tiles: Vec::new(),
             obstacles: Vec::new(),
         },
-        artifacts: artifacts
-            .into_iter()
-            .enumerate()
-            .map(|(index, base_uuid)| ScenarioArtifact {
-                side: Side::Player,
-                base_uuid,
-                instance_salt: index as u32,
-            })
-            .collect(),
         groups: vec![
             spawn_group(
                 player_group_id,
@@ -189,7 +180,6 @@ fn game_data_for_live_item_skill_tests(force_proc_item_ids: &[&str]) -> Arc<Game
 
     GameDataBuilder::live_defaults()
         .with_abnormalities(vec![attacker, target])
-        .with_artifact_data(Arc::new(ArtifactDatabase::new(vec![])))
         .with_equipment_data(Arc::new(EquipmentDatabase::new(equipments)))
         .with_skill_data(Arc::clone(&live.skill_data))
         .build_arc()
@@ -198,7 +188,6 @@ fn game_data_for_live_item_skill_tests(force_proc_item_ids: &[&str]) -> Arc<Game
 fn run_battle_with_loadout(
     game_data: Arc<GameDataBase>,
     equipped_items: Vec<Uuid>,
-    artifacts: Vec<Uuid>,
 ) -> BattleEventLog {
     let attacker_base_uuid = Uuid::from_u128(0xAB01);
     let scenario = scenario_with_loadout(
@@ -206,7 +195,6 @@ fn run_battle_with_loadout(
         attacker_base_uuid,
         Position::new(0, 0),
         equipped_items,
-        artifacts,
     );
 
     let mut battle = BattleCore::new_from_scenario(scenario, game_data, 20260416);
@@ -278,7 +266,7 @@ fn descendants_of(event_log: &BattleEventLog, root_seq: u64) -> Vec<&BattleEvent
 }
 
 #[test]
-fn live_item_and_artifact_ability_ids_resolve_to_skill_defs() {
+fn live_item_ability_ids_resolve_to_skill_defs() {
     let game_data = common::load_game_data_from_ron();
 
     for ability_id in ["paradise_lost_judgement", "resonance_pendant_opening_focus"] {
@@ -290,7 +278,7 @@ fn live_item_and_artifact_ability_ids_resolve_to_skill_defs() {
 }
 
 #[test]
-fn live_on_battle_start_item_and_artifact_skills_apply_expected_self_effects() {
+fn live_on_battle_start_item_skills_apply_expected_self_effects() {
     let game_data = game_data_for_live_item_skill_tests(&[]);
     let pendant_uuid = game_data
         .equipment_data
@@ -298,7 +286,7 @@ fn live_on_battle_start_item_and_artifact_skills_apply_expected_self_effects() {
         .expect("missing resonance pendant")
         .uuid;
 
-    let event_log = run_battle_with_loadout(game_data, vec![pendant_uuid], vec![]);
+    let event_log = run_battle_with_loadout(game_data, vec![pendant_uuid]);
     let attacker_id = find_unit_instance_id(&event_log, Uuid::from_u128(0xAB01), Side::Player);
 
     let focus_seq = find_first_cast_seq(&event_log, attacker_id, "resonance_pendant_opening_focus");
@@ -323,7 +311,7 @@ fn live_on_attack_proc_item_skills_apply_expected_debuffs_when_forced_to_proc() 
         .expect("missing paradise lost")
         .uuid;
 
-    let event_log = run_battle_with_loadout(game_data, vec![paradise_uuid], vec![]);
+    let event_log = run_battle_with_loadout(game_data, vec![paradise_uuid]);
     let attacker_id = find_unit_instance_id(&event_log, Uuid::from_u128(0xAB01), Side::Player);
     let target_id = find_unit_instance_id(&event_log, Uuid::from_u128(0xAB02), Side::Opponent);
 

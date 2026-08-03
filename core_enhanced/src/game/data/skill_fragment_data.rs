@@ -10,7 +10,6 @@ use uuid::Uuid;
 use crate::game::{
     ability::SkillId,
     battle::{damage::DamageType, types::UnitCombatProfile},
-    behavior::GameError,
     data::{
         build_string_index, build_uuid_index,
         equipment_data::{TargetingProfile, WeaponArchetype, WeaponRangeRole},
@@ -64,6 +63,7 @@ pub enum SkillFragmentEquipLimit {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub enum SkillFragmentAcquisitionSource {
     AbnormalityContainment { abnormality_id: String },
     RareReward,
@@ -71,6 +71,7 @@ pub enum SkillFragmentAcquisitionSource {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub enum SkillFragmentDependency {
     SourceAbnormality { abnormality_id: String },
     Concept { concept_id: String },
@@ -78,12 +79,14 @@ pub enum SkillFragmentDependency {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub enum SkillFragmentOrigin {
     Abnormality { abnormality_id: String },
     Concept { concept_id: String },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub enum SkillFragmentEffectDef {
     BasicAttackModifier {
         attack_bonus: u32,
@@ -99,6 +102,7 @@ pub enum SkillFragmentEffectDef {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct SkillFragmentCompatibilityRequirements {
     #[serde(default)]
     pub allowed_range_roles: Vec<WeaponRangeRole>,
@@ -130,44 +134,39 @@ impl SkillFragmentCompatibilityRequirements {
             && self.incompatible_capability_tags.is_empty()
     }
 
-    fn validate_static_contract(&self, fragment_id: &str) -> Result<(), GameError> {
+    fn validate_static_contract(&self) -> Result<(), CompatibilityValidationError> {
         if has_duplicate(&self.allowed_range_roles) {
-            return Err(GameError::InvalidStaticData(format!(
-                "skill fragment '{}' compatibility has duplicate allowed_range_roles",
-                fragment_id
-            )));
+            return Err(CompatibilityValidationError::new(
+                "allowed_range_roles",
+                "contains duplicate values",
+            ));
         }
         if has_duplicate(&self.allowed_weapon_archetypes) {
-            return Err(GameError::InvalidStaticData(format!(
-                "skill fragment '{}' compatibility has duplicate allowed_weapon_archetypes",
-                fragment_id
-            )));
+            return Err(CompatibilityValidationError::new(
+                "allowed_weapon_archetypes",
+                "contains duplicate values",
+            ));
         }
         if has_duplicate(&self.allowed_damage_types) {
-            return Err(GameError::InvalidStaticData(format!(
-                "skill fragment '{}' compatibility has duplicate allowed_damage_types",
-                fragment_id
-            )));
+            return Err(CompatibilityValidationError::new(
+                "allowed_damage_types",
+                "contains duplicate values",
+            ));
         }
         if has_duplicate(&self.allowed_targeting_profiles) {
-            return Err(GameError::InvalidStaticData(format!(
-                "skill fragment '{}' compatibility has duplicate allowed_targeting_profiles",
-                fragment_id
-            )));
+            return Err(CompatibilityValidationError::new(
+                "allowed_targeting_profiles",
+                "contains duplicate values",
+            ));
         }
         if matches!(self.block_capacity_min, Some(0)) {
-            return Err(GameError::InvalidStaticData(format!(
-                "skill fragment '{}' compatibility block_capacity_min must be > 0",
-                fragment_id
-            )));
+            return Err(CompatibilityValidationError::new(
+                "block_capacity_min",
+                "must be greater than zero",
+            ));
         }
+        validate_capability_tags("required_capability_tags", &self.required_capability_tags)?;
         validate_capability_tags(
-            fragment_id,
-            "required_capability_tags",
-            &self.required_capability_tags,
-        )?;
-        validate_capability_tags(
-            fragment_id,
             "incompatible_capability_tags",
             &self.incompatible_capability_tags,
         )?;
@@ -177,10 +176,10 @@ impl SkillFragmentCompatibilityRequirements {
                 .iter()
                 .any(|incompatible| incompatible == tag)
             {
-                return Err(GameError::InvalidStaticData(format!(
-                    "skill fragment '{}' compatibility tag '{}' cannot be both required and incompatible",
-                    fragment_id, tag
-                )));
+                return Err(CompatibilityValidationError::new(
+                    "incompatible_capability_tags",
+                    format!("tag '{tag}' cannot be both required and incompatible"),
+                ));
             }
         }
         Ok(())
@@ -287,22 +286,36 @@ fn has_duplicate<T: PartialEq>(values: &[T]) -> bool {
         .any(|(index, value)| values.iter().skip(index + 1).any(|other| other == value))
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct CompatibilityValidationError {
+    field_path: &'static str,
+    cause: String,
+}
+
+impl CompatibilityValidationError {
+    fn new(field_path: &'static str, cause: impl Into<String>) -> Self {
+        Self {
+            field_path,
+            cause: cause.into(),
+        }
+    }
+}
+
 fn validate_capability_tags(
-    fragment_id: &str,
-    field_name: &str,
+    field_name: &'static str,
     tags: &[String],
-) -> Result<(), GameError> {
+) -> Result<(), CompatibilityValidationError> {
     if tags.iter().any(|tag| tag.trim().is_empty()) {
-        return Err(GameError::InvalidStaticData(format!(
-            "skill fragment '{}' compatibility {} contains an empty tag",
-            fragment_id, field_name
-        )));
+        return Err(CompatibilityValidationError::new(
+            field_name,
+            "contains an empty tag",
+        ));
     }
     if has_duplicate(tags) {
-        return Err(GameError::InvalidStaticData(format!(
-            "skill fragment '{}' compatibility {} contains duplicate tags",
-            fragment_id, field_name
-        )));
+        return Err(CompatibilityValidationError::new(
+            field_name,
+            "contains duplicate tags",
+        ));
     }
     Ok(())
 }
@@ -367,6 +380,7 @@ pub enum SkillFragmentCompatibilityFailureCode {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct SkillFragmentMetadata {
     pub id: SkillFragmentId,
     pub uuid: Uuid,
@@ -433,6 +447,7 @@ impl SkillFragmentMetadata {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct SkillFragmentDatabase {
     pub fragments: Vec<SkillFragmentMetadata>,
     #[serde(skip)]
@@ -487,17 +502,27 @@ impl SkillFragmentDatabase {
     }
 
     pub(crate) fn validate_indexes(&self) {
+        self.validate_contract()
+            .expect("invalid skill fragment compatibility contract");
         let _ = self.by_id();
         let _ = self.by_uuid();
-        self.validate_compatibility_requirements()
-            .expect("skill fragment compatibility requirements must be valid");
     }
 
-    fn validate_compatibility_requirements(&self) -> Result<(), GameError> {
-        for fragment in &self.fragments {
+    pub(crate) fn validate_contract(&self) -> Result<(), crate::game::data::DataValidationError> {
+        for (fragment_index, fragment) in self.fragments.iter().enumerate() {
             fragment
                 .compatibility
-                .validate_static_contract(fragment.id.as_str())?;
+                .validate_static_contract()
+                .map_err(|error| {
+                    crate::game::data::DataValidationError::at(
+                        fragment.id.as_str(),
+                        format!(
+                            "fragments[{fragment_index}].compatibility.{}",
+                            error.field_path
+                        ),
+                        error.cause,
+                    )
+                })?;
         }
         Ok(())
     }
@@ -575,6 +600,7 @@ mod tests {
         profile.apply_weapon_profile(&WeaponCombatProfile {
             range_role: WeaponRangeRole::Ranged,
             weapon_archetype: WeaponArchetype::Gun,
+            block_capacity: 1,
             damage_type: DamageType::Magic,
             targeting_profile: TargetingProfile::AirFirst,
             air_capable: true,
@@ -636,15 +662,10 @@ mod tests {
             ..SkillFragmentCompatibilityRequirements::default()
         };
 
-        let err = requirements
-            .validate_static_contract("fragment_duplicate_axis")
-            .unwrap_err();
+        let err = requirements.validate_static_contract().unwrap_err();
 
-        assert!(matches!(
-            err,
-            GameError::InvalidStaticData(message)
-                if message.contains("duplicate allowed_range_roles")
-        ));
+        assert_eq!(err.field_path, "allowed_range_roles");
+        assert!(err.cause.contains("duplicate"));
     }
 
     #[test]
@@ -654,14 +675,10 @@ mod tests {
             ..SkillFragmentCompatibilityRequirements::default()
         };
 
-        let err = empty_tag
-            .validate_static_contract("fragment_empty_tag")
-            .unwrap_err();
+        let err = empty_tag.validate_static_contract().unwrap_err();
 
-        assert!(matches!(
-            err,
-            GameError::InvalidStaticData(message) if message.contains("empty tag")
-        ));
+        assert_eq!(err.field_path, "required_capability_tags");
+        assert!(err.cause.contains("empty tag"));
 
         let conflicting_tags = SkillFragmentCompatibilityRequirements {
             required_capability_tags: vec!["charge".to_string()],
@@ -669,15 +686,10 @@ mod tests {
             ..SkillFragmentCompatibilityRequirements::default()
         };
 
-        let err = conflicting_tags
-            .validate_static_contract("fragment_conflicting_tag")
-            .unwrap_err();
+        let err = conflicting_tags.validate_static_contract().unwrap_err();
 
-        assert!(matches!(
-            err,
-            GameError::InvalidStaticData(message)
-                if message.contains("both required and incompatible")
-        ));
+        assert_eq!(err.field_path, "incompatible_capability_tags");
+        assert!(err.cause.contains("both required and incompatible"));
     }
 
     #[test]
@@ -687,14 +699,9 @@ mod tests {
             ..SkillFragmentCompatibilityRequirements::default()
         };
 
-        let err = requirements
-            .validate_static_contract("fragment_zero_block")
-            .unwrap_err();
+        let err = requirements.validate_static_contract().unwrap_err();
 
-        assert!(matches!(
-            err,
-            GameError::InvalidStaticData(message)
-                if message.contains("block_capacity_min must be > 0")
-        ));
+        assert_eq!(err.field_path, "block_capacity_min");
+        assert!(err.cause.contains("greater than zero"));
     }
 }

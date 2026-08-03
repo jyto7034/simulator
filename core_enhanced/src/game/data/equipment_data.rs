@@ -1,4 +1,7 @@
-use std::{collections::HashMap, sync::OnceLock};
+use std::{
+    collections::{HashMap, HashSet},
+    sync::OnceLock,
+};
 
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -7,7 +10,9 @@ use crate::game::{
     ability::AbilityActivationBinding,
     battle::{damage::DamageType, tile_range::TileRangePattern},
     behavior::GameError,
-    data::{build_string_index, build_uuid_index, once_lock_with},
+    data::event_data::EventChoiceKeyId,
+    data::{build_string_index, build_uuid_index},
+    employee::EventAptitude,
     enums::RiskLevel,
     stats::{StatModifier, TriggeredEffects},
 };
@@ -42,7 +47,6 @@ pub enum WeaponArchetype {
     Shield,
     Bow,
     Gun,
-    GrenadeLauncher,
     Staff,
 }
 
@@ -56,9 +60,11 @@ pub enum TargetingProfile {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct WeaponCombatProfile {
     pub range_role: WeaponRangeRole,
     pub weapon_archetype: WeaponArchetype,
+    pub block_capacity: u32,
     pub damage_type: DamageType,
     pub targeting_profile: TargetingProfile,
     #[serde(default)]
@@ -80,6 +86,7 @@ impl Default for WeaponCombatProfile {
         Self {
             range_role: WeaponRangeRole::Melee,
             weapon_archetype: WeaponArchetype::Sword,
+            block_capacity: 0,
             damage_type: DamageType::Physical,
             targeting_profile: TargetingProfile::DefaultForward,
             air_capable: false,
@@ -123,7 +130,15 @@ pub enum EquipmentMaterialType {
 
 pub type EquipmentItem = EquipmentMetadata;
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventCheckModifierDefinition {
+    pub aptitude: EventAptitude,
+    pub amount: u8,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EquipmentMetadata {
     pub id: String,
     pub uuid: Uuid,
@@ -145,9 +160,14 @@ pub struct EquipmentMetadata {
     pub ability_activations: Vec<AbilityActivationBinding>,
     #[serde(default)]
     pub weapon_profile: Option<WeaponCombatProfile>,
+    #[serde(default)]
+    pub event_check_modifiers: Vec<EventCheckModifierDefinition>,
+    #[serde(default)]
+    pub event_choice_keys: Vec<EventChoiceKeyId>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EquipmentMaterialMetadata {
     pub id: String,
     pub uuid: Uuid,
@@ -160,24 +180,21 @@ pub struct EquipmentMaterialMetadata {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EquipmentRecipeMetadata {
-    pub ingredients: Vec<Uuid>,
-    pub result: Uuid,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EquipmentMaterialCost {
     pub material_id: String,
     pub amount: u32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EquipmentDismantleRecipeMetadata {
     pub equipment_id: String,
     pub yields: Vec<EquipmentMaterialCost>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EquipmentEnhancementRecipeMetadata {
     pub equipment_id: String,
     pub max_level: u8,
@@ -187,12 +204,11 @@ pub struct EquipmentEnhancementRecipeMetadata {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct EquipmentDatabase {
     pub items: Vec<EquipmentMetadata>,
     #[serde(default)]
     pub materials: Vec<EquipmentMaterialMetadata>,
-    #[serde(default)]
-    pub recipes: Vec<EquipmentRecipeMetadata>,
     #[serde(default)]
     pub dismantle_recipes: Vec<EquipmentDismantleRecipeMetadata>,
     #[serde(default)]
@@ -207,77 +223,44 @@ pub struct EquipmentDatabase {
     by_enhancement_equipment_id: OnceLock<HashMap<String, usize>>,
     #[serde(skip)]
     by_uuid: OnceLock<HashMap<Uuid, usize>>,
-    #[serde(skip)]
-    by_recipe: OnceLock<HashMap<RecipeKey, Uuid>>,
 }
 
 impl EquipmentDatabase {
     pub fn new(items: Vec<EquipmentMetadata>) -> Self {
-        Self::with_recipes(items, Vec::new())
+        Self::with_materials(items, Vec::new())
     }
 
-    pub fn with_recipes(
-        items: Vec<EquipmentMetadata>,
-        recipes: Vec<EquipmentRecipeMetadata>,
-    ) -> Self {
-        Self::with_materials_and_recipes(items, Vec::new(), recipes)
-    }
-
-    pub fn with_materials_and_recipes(
+    pub fn with_materials(
         items: Vec<EquipmentMetadata>,
         materials: Vec<EquipmentMaterialMetadata>,
-        recipes: Vec<EquipmentRecipeMetadata>,
     ) -> Self {
-        Self::with_materials_recipes_and_dismantles(items, materials, recipes, Vec::new())
+        Self::with_materials_and_dismantles(items, materials, Vec::new())
     }
 
-    pub fn with_materials_recipes_and_dismantles(
+    pub fn with_materials_and_dismantles(
         items: Vec<EquipmentMetadata>,
         materials: Vec<EquipmentMaterialMetadata>,
-        recipes: Vec<EquipmentRecipeMetadata>,
         dismantle_recipes: Vec<EquipmentDismantleRecipeMetadata>,
     ) -> Self {
-        Self::with_all(items, materials, recipes, dismantle_recipes, Vec::new())
+        Self::with_all(items, materials, dismantle_recipes, Vec::new())
     }
 
     pub fn with_all(
         items: Vec<EquipmentMetadata>,
         materials: Vec<EquipmentMaterialMetadata>,
-        recipes: Vec<EquipmentRecipeMetadata>,
         dismantle_recipes: Vec<EquipmentDismantleRecipeMetadata>,
         enhancement_recipes: Vec<EquipmentEnhancementRecipeMetadata>,
     ) -> Self {
-        let by_id = once_lock_with(build_string_index(&items, "equipment id", |item| &item.id));
-        let by_material_id = once_lock_with(build_string_index(
-            &materials,
-            "equipment material id",
-            |item| &item.id,
-        ));
-        let by_dismantle_equipment_id = once_lock_with(build_string_index(
-            &dismantle_recipes,
-            "equipment dismantle recipe equipment id",
-            |recipe| &recipe.equipment_id,
-        ));
-        let by_enhancement_equipment_id = once_lock_with(build_string_index(
-            &enhancement_recipes,
-            "equipment enhancement recipe equipment id",
-            |recipe| &recipe.equipment_id,
-        ));
-        let by_uuid = once_lock_with(build_uuid_index(&items, "equipment uuid", |item| item.uuid));
-        let by_recipe = once_lock_with(build_recipe_index(&recipes));
-
         Self {
             items,
             materials,
-            recipes,
             dismantle_recipes,
             enhancement_recipes,
-            by_id,
-            by_material_id,
-            by_dismantle_equipment_id,
-            by_enhancement_equipment_id,
-            by_uuid,
-            by_recipe,
+            by_id: OnceLock::new(),
+            by_material_id: OnceLock::new(),
+            by_dismantle_equipment_id: OnceLock::new(),
+            by_enhancement_equipment_id: OnceLock::new(),
+            by_uuid: OnceLock::new(),
         }
     }
 
@@ -317,45 +300,98 @@ impl EquipmentDatabase {
             .get_or_init(|| build_uuid_index(&self.items, "equipment uuid", |item| item.uuid))
     }
 
-    fn by_recipe(&self) -> &HashMap<RecipeKey, Uuid> {
-        self.by_recipe
-            .get_or_init(|| build_recipe_index(&self.recipes))
-    }
-
     pub(crate) fn validate_indexes(&self) {
+        self.validate_contract()
+            .expect("invalid equipment authoring contract");
         let _ = self.by_id();
         let _ = self.by_material_id();
         let _ = self.by_dismantle_equipment_id();
         let _ = self.by_enhancement_equipment_id();
         let _ = self.by_uuid();
-        let _ = self.by_recipe();
-        self.validate_weapon_profiles()
-            .expect("equipment weapon profiles must be valid");
-        self.validate_recipe_references()
-            .expect("equipment recipes must reference existing equipment");
-        self.validate_dismantle_recipe_references()
-            .expect("equipment dismantle recipes must reference existing data");
-        self.validate_enhancement_recipe_references()
-            .expect("equipment enhancement recipes must reference existing data");
     }
 
-    fn validate_weapon_profiles(&self) -> Result<(), GameError> {
-        for item in &self.items {
+    pub(crate) fn validate_contract(&self) -> Result<(), crate::game::data::DataValidationError> {
+        self.validate_weapon_profiles()?;
+        self.validate_event_check_metadata()?;
+        self.validate_dismantle_recipe_references()?;
+        self.validate_enhancement_recipe_references()
+    }
+
+    fn validate_event_check_metadata(&self) -> Result<(), crate::game::data::DataValidationError> {
+        for (item_index, item) in self.items.iter().enumerate() {
+            let mut seen_aptitudes = HashSet::new();
+            for (modifier_index, modifier) in item.event_check_modifiers.iter().enumerate() {
+                let path = format!("items[{item_index}].event_check_modifiers[{modifier_index}]");
+                if !matches!(modifier.amount, 1 | 2) {
+                    return Err(crate::game::data::DataValidationError::at(
+                        &item.id,
+                        format!("{path}.amount"),
+                        "event check modifier amount must be 1 or 2",
+                    ));
+                }
+                if !seen_aptitudes.insert(modifier.aptitude) {
+                    return Err(crate::game::data::DataValidationError::at(
+                        &item.id,
+                        format!("{path}.aptitude"),
+                        "duplicate event check modifier aptitude",
+                    ));
+                }
+            }
+
+            let mut seen_keys = HashSet::new();
+            for (key_index, key) in item.event_choice_keys.iter().enumerate() {
+                let path = format!("items[{item_index}].event_choice_keys[{key_index}]");
+                if !key.is_valid() {
+                    return Err(crate::game::data::DataValidationError::at(
+                        &item.id,
+                        path,
+                        "event choice key must be a non-empty lower_snake_case identifier",
+                    ));
+                }
+                if !seen_keys.insert(key.as_str()) {
+                    return Err(crate::game::data::DataValidationError::at(
+                        &item.id,
+                        path,
+                        "duplicate event choice key",
+                    ));
+                }
+            }
+        }
+        Ok(())
+    }
+
+    fn validate_weapon_profiles(&self) -> Result<(), crate::game::data::DataValidationError> {
+        for (item_index, item) in self.items.iter().enumerate() {
+            let profile_path = format!("items[{item_index}].weapon_profile");
             match (item.equipment_type, item.weapon_profile.as_ref()) {
                 (EquipmentType::Weapon, Some(profile)) => {
-                    profile.validate_runtime_contract(&item.id)?;
+                    profile
+                        .validate_runtime_contract(&item.id)
+                        .map_err(|error| {
+                            let cause = match error {
+                                GameError::InvalidStaticData(cause) => cause,
+                                other => format!("unexpected weapon validation error: {other:?}"),
+                            };
+                            crate::game::data::DataValidationError::at(
+                                &item.id,
+                                profile_path,
+                                cause,
+                            )
+                        })?;
                 }
                 (EquipmentType::Weapon, None) => {
-                    return Err(GameError::InvalidStaticData(format!(
-                        "weapon equipment '{}' is missing weapon_profile",
-                        item.id
-                    )));
+                    return Err(crate::game::data::DataValidationError::at(
+                        &item.id,
+                        profile_path,
+                        "weapon equipment is missing weapon_profile",
+                    ));
                 }
                 (_, Some(_)) => {
-                    return Err(GameError::InvalidStaticData(format!(
-                        "non-weapon equipment '{}' must not define weapon_profile",
-                        item.id
-                    )));
+                    return Err(crate::game::data::DataValidationError::at(
+                        &item.id,
+                        profile_path,
+                        "non-weapon equipment must not define weapon_profile",
+                    ));
                 }
                 (_, None) => {}
             }
@@ -399,69 +435,54 @@ impl EquipmentDatabase {
             .and_then(|&index| self.items.get(index))
     }
 
-    pub fn combination_result(&self, left: Uuid, right: Uuid) -> Option<&EquipmentMetadata> {
-        self.by_recipe()
-            .get(&RecipeKey::new(left, right))
-            .and_then(|result_uuid| self.get_by_uuid(result_uuid))
-    }
-
-    fn validate_recipe_references(&self) -> Result<(), GameError> {
-        for recipe in &self.recipes {
-            if recipe.ingredients.len() != 2 {
-                return Err(GameError::InvalidStaticData(format!(
-                    "equipment recipe for result {} must have exactly two ingredients",
-                    recipe.result
-                )));
+    fn validate_dismantle_recipe_references(
+        &self,
+    ) -> Result<(), crate::game::data::DataValidationError> {
+        let mut equipment_ids = HashSet::new();
+        for (recipe_index, recipe) in self.dismantle_recipes.iter().enumerate() {
+            let recipe_path = format!("dismantle_recipes[{recipe_index}]");
+            if !equipment_ids.insert(recipe.equipment_id.as_str()) {
+                return Err(crate::game::data::DataValidationError::at(
+                    &recipe.equipment_id,
+                    format!("{recipe_path}.equipment_id"),
+                    "duplicate dismantle recipe equipment_id",
+                ));
             }
-
-            for ingredient in &recipe.ingredients {
-                if self.get_by_uuid(ingredient).is_none() {
-                    return Err(GameError::InvalidStaticData(format!(
-                        "equipment recipe references missing ingredient uuid {}",
-                        ingredient
-                    )));
-                }
-            }
-
-            if self.get_by_uuid(&recipe.result).is_none() {
-                return Err(GameError::InvalidStaticData(format!(
-                    "equipment recipe references missing result uuid {}",
-                    recipe.result
-                )));
-            }
-        }
-
-        Ok(())
-    }
-
-    fn validate_dismantle_recipe_references(&self) -> Result<(), GameError> {
-        for recipe in &self.dismantle_recipes {
-            if self.get_by_id(&recipe.equipment_id).is_none() {
-                return Err(GameError::InvalidStaticData(format!(
-                    "equipment dismantle recipe references missing equipment '{}'",
-                    recipe.equipment_id
-                )));
+            if !self.items.iter().any(|item| item.id == recipe.equipment_id) {
+                return Err(crate::game::data::DataValidationError::at(
+                    &recipe.equipment_id,
+                    format!("{recipe_path}.equipment_id"),
+                    "references missing equipment",
+                ));
             }
 
             if recipe.yields.is_empty() {
-                return Err(GameError::InvalidStaticData(format!(
-                    "equipment dismantle recipe for '{}' must have at least one yield",
-                    recipe.equipment_id
-                )));
+                return Err(crate::game::data::DataValidationError::at(
+                    &recipe.equipment_id,
+                    format!("{recipe_path}.yields"),
+                    "must have at least one yield",
+                ));
             }
 
-            for material in &recipe.yields {
+            for (yield_index, material) in recipe.yields.iter().enumerate() {
+                let yield_path = format!("{recipe_path}.yields[{yield_index}]");
                 if material.amount == 0 {
-                    return Err(GameError::InvalidStaticData(format!(
-                        "equipment dismantle recipe for '{}' has zero yield for material '{}'",
-                        recipe.equipment_id, material.material_id
-                    )));
+                    return Err(crate::game::data::DataValidationError::at(
+                        &recipe.equipment_id,
+                        format!("{yield_path}.amount"),
+                        "yield amount must be greater than zero",
+                    ));
                 }
-                if self.get_material_by_id(&material.material_id).is_none() {
-                    return Err(GameError::InvalidStaticData(format!(
-                        "equipment dismantle recipe for '{}' references missing material '{}'",
-                        recipe.equipment_id, material.material_id
-                    )));
+                if !self
+                    .materials
+                    .iter()
+                    .any(|candidate| candidate.id == material.material_id)
+                {
+                    return Err(crate::game::data::DataValidationError::at(
+                        &recipe.equipment_id,
+                        format!("{yield_path}.material_id"),
+                        format!("references missing material '{}'", material.material_id),
+                    ));
                 }
             }
         }
@@ -469,38 +490,59 @@ impl EquipmentDatabase {
         Ok(())
     }
 
-    fn validate_enhancement_recipe_references(&self) -> Result<(), GameError> {
-        for recipe in &self.enhancement_recipes {
-            if self.get_by_id(&recipe.equipment_id).is_none() {
-                return Err(GameError::InvalidStaticData(format!(
-                    "equipment enhancement recipe references missing equipment '{}'",
-                    recipe.equipment_id
-                )));
+    fn validate_enhancement_recipe_references(
+        &self,
+    ) -> Result<(), crate::game::data::DataValidationError> {
+        let mut equipment_ids = HashSet::new();
+        for (recipe_index, recipe) in self.enhancement_recipes.iter().enumerate() {
+            let recipe_path = format!("enhancement_recipes[{recipe_index}]");
+            if !equipment_ids.insert(recipe.equipment_id.as_str()) {
+                return Err(crate::game::data::DataValidationError::at(
+                    &recipe.equipment_id,
+                    format!("{recipe_path}.equipment_id"),
+                    "duplicate enhancement recipe equipment_id",
+                ));
+            }
+            if !self.items.iter().any(|item| item.id == recipe.equipment_id) {
+                return Err(crate::game::data::DataValidationError::at(
+                    &recipe.equipment_id,
+                    format!("{recipe_path}.equipment_id"),
+                    "references missing equipment",
+                ));
             }
             if recipe.max_level == 0 {
-                return Err(GameError::InvalidStaticData(format!(
-                    "equipment enhancement recipe for '{}' must have max_level > 0",
-                    recipe.equipment_id
-                )));
+                return Err(crate::game::data::DataValidationError::at(
+                    &recipe.equipment_id,
+                    format!("{recipe_path}.max_level"),
+                    "max_level must be greater than zero",
+                ));
             }
             if recipe.costs_per_level.is_empty() {
-                return Err(GameError::InvalidStaticData(format!(
-                    "equipment enhancement recipe for '{}' must have at least one cost",
-                    recipe.equipment_id
-                )));
+                return Err(crate::game::data::DataValidationError::at(
+                    &recipe.equipment_id,
+                    format!("{recipe_path}.costs_per_level"),
+                    "must have at least one cost",
+                ));
             }
-            for cost in &recipe.costs_per_level {
+            for (cost_index, cost) in recipe.costs_per_level.iter().enumerate() {
+                let cost_path = format!("{recipe_path}.costs_per_level[{cost_index}]");
                 if cost.amount == 0 {
-                    return Err(GameError::InvalidStaticData(format!(
-                        "equipment enhancement recipe for '{}' has zero cost for material '{}'",
-                        recipe.equipment_id, cost.material_id
-                    )));
+                    return Err(crate::game::data::DataValidationError::at(
+                        &recipe.equipment_id,
+                        format!("{cost_path}.amount"),
+                        "cost amount must be greater than zero",
+                    ));
                 }
-                if self.get_material_by_id(&cost.material_id).is_none() {
-                    return Err(GameError::InvalidStaticData(format!(
-                        "equipment enhancement recipe for '{}' references missing material '{}'",
-                        recipe.equipment_id, cost.material_id
-                    )));
+                if !self
+                    .materials
+                    .iter()
+                    .any(|candidate| candidate.id == cost.material_id)
+                {
+                    return Err(crate::game::data::DataValidationError::at(
+                        &recipe.equipment_id,
+                        format!("{cost_path}.material_id"),
+                        format!("references missing material '{}'", cost.material_id),
+                    ));
                 }
             }
         }
@@ -542,95 +584,80 @@ impl WeaponCombatProfile {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-struct RecipeKey {
-    first: Uuid,
-    second: Uuid,
-}
-
-impl RecipeKey {
-    fn new(left: Uuid, right: Uuid) -> Self {
-        if left.as_u128() <= right.as_u128() {
-            Self {
-                first: left,
-                second: right,
-            }
-        } else {
-            Self {
-                first: right,
-                second: left,
-            }
-        }
-    }
-}
-
-fn build_recipe_index(recipes: &[EquipmentRecipeMetadata]) -> HashMap<RecipeKey, Uuid> {
-    let mut index = HashMap::with_capacity(recipes.len());
-
-    for recipe in recipes {
-        if recipe.ingredients.len() != 2 {
-            panic!(
-                "equipment recipe for result {} must have exactly two ingredients",
-                recipe.result
-            );
-        }
-        let key = RecipeKey::new(recipe.ingredients[0], recipe.ingredients[1]);
-        if let Some(previous_result) = index.insert(key, recipe.result) {
-            panic!(
-                "duplicate equipment recipe for ingredients {} + {}: {} and {}",
-                key.first, key.second, previous_result, recipe.result
-            );
-        }
-    }
-
-    index
-}
-
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::game::stats::TriggeredEffects;
+    use super::{EquipmentDatabase, WeaponArchetype};
+    use ron::de::from_str;
 
-    fn equipment(uuid: u128, id: &str, equipment_type: EquipmentType) -> EquipmentMetadata {
-        EquipmentMetadata {
-            id: id.to_string(),
-            uuid: Uuid::from_u128(uuid),
-            name: id.to_string(),
-            equipment_type,
-            rarity: RiskLevel::ZAYIN,
-            price: 0,
-            allow_duplicate_equip: true,
-            bound: false,
-            cannot_unequip_reason: "equipment_bound".to_string(),
-            triggered_effects: TriggeredEffects::default(),
-            ability_activations: vec![],
-            weapon_profile: (equipment_type == EquipmentType::Weapon)
-                .then(WeaponCombatProfile::default),
-        }
+    #[test]
+    fn removed_combination_recipes_field_is_rejected() {
+        let error = from_str::<EquipmentDatabase>("(items: [], recipes: [])")
+            .expect_err("removed equipment combination recipe schema must fail closed");
+
+        assert!(error.to_string().contains("recipes"));
     }
 
     #[test]
-    fn recipes_are_order_independent() {
-        let a = equipment(1, "a", EquipmentType::Weapon);
-        let b = equipment(2, "b", EquipmentType::Armor);
-        let result = equipment(3, "result", EquipmentType::Accessory);
-        let db = EquipmentDatabase::with_recipes(
-            vec![a, b, result],
-            vec![EquipmentRecipeMetadata {
-                ingredients: vec![Uuid::from_u128(1), Uuid::from_u128(2)],
-                result: Uuid::from_u128(3),
-            }],
+    fn removed_grenade_launcher_weapon_archetype_is_rejected() {
+        let error = from_str::<WeaponArchetype>("GrenadeLauncher")
+            .expect_err("removed grenade launcher schema must fail closed");
+
+        assert!(error.to_string().contains("GrenadeLauncher"));
+    }
+
+    fn event_metadata_database(metadata: &str) -> EquipmentDatabase {
+        from_str::<EquipmentDatabase>(&format!(
+            r#"EquipmentDatabase(items: [(
+                id: "event_tool",
+                uuid: "00000000-0000-0000-0000-000000000001",
+                name: "Event Tool",
+                equipment_type: Accessory,
+                rarity: ZAYIN,
+                price: 1,
+                {metadata}
+            )])"#
+        ))
+        .expect("event equipment fixture should deserialize")
+    }
+
+    #[test]
+    fn event_check_modifier_accepts_only_one_or_two() {
+        let database =
+            event_metadata_database("event_check_modifiers: [(aptitude: Analysis, amount: 3)],");
+
+        let error = database
+            .validate_contract()
+            .expect_err("out-of-policy modifier must fail closed");
+        assert!(error.cause.contains("amount must be 1 or 2"));
+    }
+
+    #[test]
+    fn duplicate_event_modifier_aptitude_is_rejected() {
+        let database = event_metadata_database(
+            "event_check_modifiers: [(aptitude: Analysis, amount: 1), (aptitude: Analysis, amount: 2)],",
         );
 
-        assert_eq!(
-            db.combination_result(Uuid::from_u128(1), Uuid::from_u128(2))
-                .map(|item| item.id.as_str()),
-            Some("result")
-        );
-        assert_eq!(
-            db.combination_result(Uuid::from_u128(2), Uuid::from_u128(1))
-                .map(|item| item.id.as_str()),
-            Some("result")
-        );
+        let error = database
+            .validate_contract()
+            .expect_err("duplicate aptitude must fail closed");
+        assert!(error
+            .cause
+            .contains("duplicate event check modifier aptitude"));
+    }
+
+    #[test]
+    fn duplicate_or_invalid_event_choice_keys_are_rejected() {
+        let duplicate =
+            event_metadata_database("event_choice_keys: [\"sealed_archive\", \"sealed_archive\"],");
+        let duplicate_error = duplicate
+            .validate_contract()
+            .expect_err("duplicate key must fail closed");
+        assert!(duplicate_error.cause.contains("duplicate event choice key"));
+
+        let invalid = event_metadata_database("event_choice_keys: [\"Sealed Archive\"],");
+        let invalid_error = invalid
+            .validate_contract()
+            .expect_err("invalid key must fail closed");
+        assert!(invalid_error.cause.contains("lower_snake_case"));
     }
 }

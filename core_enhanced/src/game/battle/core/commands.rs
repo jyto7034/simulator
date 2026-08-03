@@ -1926,75 +1926,14 @@ mod tests {
             triggered_effects: item_effects,
             ability_activations: item_activations,
             weapon_profile: Some(Default::default()),
+            event_check_modifiers: vec![],
+            event_choice_keys: vec![],
         };
 
         GameDataBuilder::live_defaults()
             .with_abnormalities(vec![attacker, target])
             .with_equipment(vec![item])
             .with_skills(SkillDatabase::new(skills))
-            .build_arc()
-    }
-
-    fn battle_test_game_data_with_artifact(
-        attacker_base_uuid: Uuid,
-        target_base_uuid: Uuid,
-        artifact_base_uuid: Uuid,
-        artifact_effects: HashMap<TriggerType, Vec<TriggeredEffect>>,
-    ) -> Arc<GameDataBase> {
-        let attacker = AbnormalityMetadata {
-            id: "attacker".to_string(),
-            uuid: attacker_base_uuid,
-            name: "Attacker".to_string(),
-            risk_level: crate::game::enums::RiskLevel::ZAYIN,
-            price: 0,
-            max_health: 100,
-            attack: 10,
-            defense: 0,
-            magic_resist: 0,
-            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
-            response_complete_skill_fragment_id: None,
-            omen_chain_id: None,
-            movement: Default::default(),
-            basic_attack: Default::default(),
-            resonance: Default::default(),
-            skill_id: None,
-            mobility_kind: Default::default(),
-            target_traits: Vec::new(),
-        };
-        let target = AbnormalityMetadata {
-            id: "target".to_string(),
-            uuid: target_base_uuid,
-            name: "Target".to_string(),
-            risk_level: crate::game::enums::RiskLevel::ZAYIN,
-            price: 0,
-            max_health: 100,
-            attack: 1,
-            defense: 0,
-            magic_resist: 0,
-            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
-            response_complete_skill_fragment_id: None,
-            omen_chain_id: None,
-            movement: Default::default(),
-            basic_attack: Default::default(),
-            resonance: Default::default(),
-            skill_id: None,
-            mobility_kind: Default::default(),
-            target_traits: Vec::new(),
-        };
-        let artifact = crate::game::data::artifact_data::ArtifactMetadata {
-            id: "artifact".to_string(),
-            uuid: artifact_base_uuid,
-            name: "Artifact".to_string(),
-            description: "".to_string(),
-            rarity: crate::game::enums::RiskLevel::ZAYIN,
-            price: 0,
-            triggered_effects: artifact_effects,
-            ability_activations: vec![],
-        };
-
-        GameDataBuilder::empty()
-            .with_abnormalities(vec![attacker, target])
-            .with_artifacts(vec![artifact])
             .build_arc()
     }
 
@@ -2007,7 +1946,7 @@ mod tests {
                 SkillTarget::EnemySingle {
                     rule: UnitTargetRule::CurrentTarget,
                 },
-                crate::game::battle::tile_range::TileRangePolicy::WholeFieldValidTiles,
+                crate::game::ability::SkillTargetReach::Global,
                 None,
                 false,
             ),
@@ -2016,10 +1955,6 @@ mod tests {
             steps: vec![SkillStepDef {
                 id: "hit".to_string(),
                 delay_ms: 0,
-                range_policy:
-                    crate::game::battle::tile_range::TileRangePolicy::WholeFieldValidTiles,
-                defense_tile_range: None,
-                air_capable: false,
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::CurrentTarget,
                 },
@@ -2856,83 +2791,6 @@ mod tests {
                 ..
             } if *target_instance_id == attacker_id && *buff_id == poison
         )));
-    }
-
-    #[test]
-    fn artifact_on_attack_all_allies_heals_entire_team() {
-        let attacker_base_uuid = Uuid::from_u128(0x51);
-        let target_base_uuid = Uuid::from_u128(0x52);
-        let artifact_base_uuid = Uuid::from_u128(0x53);
-        let attacker_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(51));
-        let ally_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(54));
-        let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(52));
-        let artifact_instance_id = Uuid::from_u128(53);
-
-        let mut artifact_effects = HashMap::new();
-        artifact_effects.insert(
-            TriggerType::OnAttack,
-            vec![TriggeredEffect::targeted(
-                TriggerEffectTarget::AllAllies,
-                crate::game::stats::Effect::Heal {
-                    flat: 7,
-                    percent: 0,
-                },
-            )],
-        );
-        let game_data = battle_test_game_data_with_artifact(
-            attacker_base_uuid,
-            target_base_uuid,
-            artifact_base_uuid,
-            artifact_effects,
-        );
-
-        let mut core = new_test_core(game_data, 1);
-
-        let mut attacker_stats = UnitStats::with_values(100, 60, 10, 0, 1000);
-        attacker_stats.move_speed_units_per_ms = 1;
-        let mut ally_stats = UnitStats::with_values(100, 40, 5, 0, 1000);
-        ally_stats.move_speed_units_per_ms = 1;
-        let mut target_stats = UnitStats::with_values(100, 100, 1, 0, 1000);
-        target_stats.move_speed_units_per_ms = 1;
-
-        core.units.insert(
-            attacker_id,
-            test_runtime_unit(
-                attacker_id,
-                Side::Player,
-                attacker_base_uuid,
-                attacker_stats,
-            ),
-        );
-        core.units.insert(
-            ally_id,
-            test_runtime_unit(ally_id, Side::Player, attacker_base_uuid, ally_stats),
-        );
-        core.units.insert(
-            target_id,
-            test_runtime_unit(target_id, Side::Opponent, target_base_uuid, target_stats),
-        );
-        core.artifacts.insert(
-            artifact_instance_id,
-            crate::game::battle::core::RuntimeArtifact {
-                instance_id: artifact_instance_id,
-                owner: Side::Player,
-                base_uuid: artifact_base_uuid,
-            },
-        );
-        place_test_unit(&mut core, attacker_id, Position::new(0, 0));
-        place_test_unit(&mut core, ally_id, Position::new(0, 1));
-        place_test_unit(&mut core, target_id, Position::new(1, 0));
-
-        assert!(core.resolve_basic_attack(attacker_id, target_id, 0));
-        drain_event_queue(&mut core);
-
-        assert_eq!(
-            core.units.get(&attacker_id).unwrap().stats.current_health,
-            67
-        );
-        assert_eq!(core.units.get(&ally_id).unwrap().stats.current_health, 47);
-        assert_eq!(core.units.get(&target_id).unwrap().stats.current_health, 90);
     }
 
     #[test]

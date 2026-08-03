@@ -186,6 +186,7 @@ fn enemy_drafts_for_wave(
                     growth_stacks: GrowthStack::new(),
                     equipped_items: vec![],
                     equipped_item_enhancements: vec![],
+                    employee_start_condition: None,
                 },
                 spawn_index as u32,
             ));

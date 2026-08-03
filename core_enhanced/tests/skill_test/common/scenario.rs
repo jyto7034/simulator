@@ -241,7 +241,7 @@ fn build_game_data_with_units(
         .with_abnormalities(abnormalities)
         .with_corroded_employee_data(Arc::clone(&base.corroded_employee_data))
         .with_corroded_wave_data(Arc::clone(&base.corroded_wave_data))
-        .with_artifact_data(Arc::clone(&base.artifact_data))
+        .with_consumable_data(Arc::clone(&base.consumable_data))
         .with_equipment_data(Arc::clone(&base.equipment_data))
         .with_shop_data(Arc::clone(&base.shop_data))
         .with_reward_data(Arc::clone(&base.reward_data))
@@ -281,6 +281,7 @@ fn build_spawn_group(
                     growth_stacks: GrowthStack::new(),
                     equipped_items: vec![],
                     equipped_item_enhancements: vec![],
+                    employee_start_condition: None,
                 },
                 position: unit.position,
                 instance_salt: index as u32,
@@ -327,7 +328,6 @@ fn build_battle_scenario(
             valid_tiles: Vec::new(),
             obstacles: Vec::new(),
         },
-        artifacts: Vec::new(),
         groups,
         events: vec![
             ScenarioEvent {

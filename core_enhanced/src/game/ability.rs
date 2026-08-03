@@ -2,10 +2,7 @@ use std::{borrow::Borrow, fmt, ops::Deref};
 
 use serde::{Deserialize, Serialize};
 
-use crate::game::{
-    battle::tile_range::{TileRangePattern, TileRangePolicy},
-    stats::TriggerType,
-};
+use crate::game::{battle::tile_range::TileRangePattern, stats::TriggerType};
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
@@ -109,17 +106,30 @@ pub enum UnitTargetRule {
     LowestHealthEnemy,
 }
 
+/// Unit-target acquisition reach for skills.
+///
+/// This is deliberately separate from basic-attack `TileRangePolicy` and from
+/// `DeliveryDef::TileArea.footprint`: global reach selects one valid unit; it
+/// never declares affected tiles.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum SkillTargetReach {
+    #[default]
+    Pattern,
+    Global,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub enum SkillTarget {
     SelfUnit,
     EnemySingle {
-        #[serde(default)]
         rule: UnitTargetRule,
     },
     /// Reuse the cast-level target/anchor for delayed spatial deliveries.
     ///
     /// This is intentionally not a range expression. Actual multi-hit area
-    /// filtering belongs to `SkillStepDef.defense_tile_range` plus the delivery
+    /// filtering belongs to `DeliveryDef::TileArea.footprint` plus the delivery
     /// hit filter. DefenseRoute official live skills use `DeliveryDef::TileArea`.
     CastTarget,
 }
@@ -151,6 +161,7 @@ fn default_false() -> bool {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(deny_unknown_fields)]
 pub enum DeliveryDef {
     #[default]
     Instant,
@@ -172,6 +183,7 @@ pub enum DeliveryDef {
         collision: SkillProjectileCollisionDef,
     },
     TileArea {
+        footprint: TileRangePattern,
         area: SkillTileAreaDeliveryDef,
     },
 }
@@ -251,36 +263,45 @@ impl Default for SkillProjectileCollisionDef {
 
 impl SkillProjectileCollisionDef {
     pub fn validate_runtime_contract(&self) {
-        assert_ne!(
-            self.max_hits,
-            Some(0),
-            "SkillProjectileCollisionDef.max_hits must be non-zero"
-        );
+        self.try_validate_runtime_contract()
+            .expect("invalid SkillProjectileCollisionDef");
+    }
+
+    pub fn try_validate_runtime_contract(&self) -> Result<(), String> {
+        if self.max_hits == Some(0) {
+            return Err("max_hits must be non-zero".to_string());
+        }
+        Ok(())
     }
 
     pub fn validate_homing_runtime_contract(&self) {
-        assert_eq!(
-            self.radius_units,
-            default_projectile_collision_radius_units(),
-            "targeted homing projectile does not support custom collision radius"
-        );
-        assert_eq!(
-            self.hit_targets,
-            SkillHitTargetFilter::Enemies,
-            "targeted homing projectile requires the default enemy hit filter"
-        );
-        assert!(
-            !self.piercing,
-            "targeted homing projectile does not support piercing"
-        );
-        assert!(
-            self.despawn_on_hit.is_none() || self.despawn_on_hit == Some(true),
-            "targeted homing projectile does not support despawn_on_hit overrides"
-        );
-        assert_eq!(
-            self.max_hits, None,
-            "targeted homing projectile does not support max_hits"
-        );
+        self.try_validate_homing_runtime_contract()
+            .expect("invalid targeted homing projectile collision contract");
+    }
+
+    pub fn try_validate_homing_runtime_contract(&self) -> Result<(), String> {
+        if self.radius_units != default_projectile_collision_radius_units() {
+            return Err(
+                "targeted homing projectile does not support custom collision radius".to_string(),
+            );
+        }
+        if self.hit_targets != SkillHitTargetFilter::Enemies {
+            return Err(
+                "targeted homing projectile requires the default enemy hit filter".to_string(),
+            );
+        }
+        if self.piercing {
+            return Err("targeted homing projectile does not support piercing".to_string());
+        }
+        if self.despawn_on_hit.is_some() && self.despawn_on_hit != Some(true) {
+            return Err(
+                "targeted homing projectile does not support despawn_on_hit overrides".to_string(),
+            );
+        }
+        if self.max_hits.is_some() {
+            return Err("targeted homing projectile does not support max_hits".to_string());
+        }
+        Ok(())
     }
 }
 
@@ -327,10 +348,9 @@ pub enum SkillTileAreaOrigin {
 
 /// Tile-membership delivery for DefenseRoute skills.
 ///
-/// In DefenseRoute, `SkillStepDef.defense_tile_range` is the single source of
-/// truth for presentation, cast range, target candidates, and actual hit tiles.
-/// This delivery defines where the tile pattern is projected, how targets inside
-/// that tile range are filtered, and whether the area persists across ticks.
+/// `DeliveryDef::TileArea.footprint` owns actual hit tiles independently from
+/// cast acquisition reach. This policy defines where that footprint is projected,
+/// how units inside it are filtered, and whether the area persists across ticks.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub struct SkillTileAreaDeliveryDef {
     #[serde(default)]
@@ -353,32 +373,38 @@ pub struct SkillTileAreaDeliveryDef {
 
 impl SkillTileAreaDeliveryDef {
     pub fn validate_runtime_contract(&self) {
-        assert_ne!(
-            self.tick_interval_ms,
-            Some(0),
-            "SkillTileAreaDeliveryDef.tick_interval_ms must be non-zero"
-        );
-        assert!(
-            self.duration_ms == 0 || self.tick_interval_ms.is_some(),
-            "persistent tile skill area requires tick_interval_ms"
-        );
+        self.try_validate_runtime_contract()
+            .expect("invalid SkillTileAreaDeliveryDef");
+    }
+
+    pub fn try_validate_runtime_contract(&self) -> Result<(), String> {
+        if self.tick_interval_ms == Some(0) {
+            return Err("tick_interval_ms must be non-zero".to_string());
+        }
+        if self.duration_ms > 0 && self.tick_interval_ms.is_none() {
+            return Err("persistent tile skill area requires tick_interval_ms".to_string());
+        }
         if self.duration_ms > 0 {
             match self.tracking {
                 SkillAreaTracking::GroundFixed => {}
-                SkillAreaTracking::FollowCaster => assert_eq!(
-                    self.anchor,
-                    SkillAreaAnchorSource::Caster,
-                    "FollowCaster persistent tile area requires Caster anchor"
-                ),
-                SkillAreaTracking::FollowTarget => assert!(
-                    matches!(
+                SkillAreaTracking::FollowCaster => {
+                    if self.anchor != SkillAreaAnchorSource::Caster {
+                        return Err(
+                            "FollowCaster persistent tile area requires Caster anchor".to_string()
+                        );
+                    }
+                }
+                SkillAreaTracking::FollowTarget => {
+                    if !matches!(
                         self.anchor,
                         SkillAreaAnchorSource::CastTarget | SkillAreaAnchorSource::CastTargetStart
-                    ),
-                    "FollowTarget persistent tile area requires CastTarget or CastTargetStart anchor"
-                ),
+                    ) {
+                        return Err("FollowTarget persistent tile area requires CastTarget or CastTargetStart anchor".to_string());
+                    }
+                }
             }
         }
+        Ok(())
     }
 }
 
@@ -491,11 +517,9 @@ pub enum SkillCastTargetingDef {
     /// Explicit cast-level targeting independent from individual step execution targets.
     Explicit {
         target: SkillTarget,
+        reach: SkillTargetReach,
         #[serde(default)]
-        range_policy: TileRangePolicy,
-        #[serde(default)]
-        defense_tile_range: Option<TileRangePattern>,
-        #[serde(default)]
+        target_range: Option<TileRangePattern>,
         air_capable: bool,
     },
 }
@@ -503,14 +527,14 @@ pub enum SkillCastTargetingDef {
 impl SkillCastTargetingDef {
     pub fn explicit(
         target: SkillTarget,
-        range_policy: TileRangePolicy,
-        defense_tile_range: Option<TileRangePattern>,
+        reach: SkillTargetReach,
+        target_range: Option<TileRangePattern>,
         air_capable: bool,
     ) -> Self {
         Self::Explicit {
             target,
-            range_policy,
-            defense_tile_range,
+            reach,
+            target_range,
             air_capable,
         }
     }
@@ -523,12 +547,6 @@ pub struct SkillStepDef {
     pub id: String,
     #[serde(default)]
     pub delay_ms: u32,
-    #[serde(default)]
-    pub range_policy: TileRangePolicy,
-    #[serde(default)]
-    pub defense_tile_range: Option<TileRangePattern>,
-    #[serde(default)]
-    pub air_capable: bool,
     pub target: SkillTarget,
     #[serde(default)]
     pub targeting: StepTargetingMode,
@@ -567,6 +585,7 @@ pub struct SkillDef {
 
 /// 스킬 효과(초안): 구현 단계에서 커맨드/시스템으로 매핑될 수 있는 데이터 표현
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub enum SkillEffectDef {
     Damage {
         amount: i32,
@@ -606,22 +625,17 @@ impl SkillDef {
         &self,
     ) -> Option<(
         &SkillTarget,
-        TileRangePolicy,
+        SkillTargetReach,
         Option<&TileRangePattern>,
         bool,
     )> {
         match &self.cast_targeting {
             SkillCastTargetingDef::Explicit {
                 target,
-                range_policy,
-                defense_tile_range,
+                reach,
+                target_range,
                 air_capable,
-            } => Some((
-                target,
-                *range_policy,
-                defense_tile_range.as_ref(),
-                *air_capable,
-            )),
+            } => Some((target, *reach, target_range.as_ref(), *air_capable)),
         }
     }
 }
@@ -647,6 +661,8 @@ mod tests {
                 focus_time_ms:200,
                 cast_targeting:Explicit(
                     target:EnemySingle(rule:Nearest),
+                    reach:pattern,
+                    air_capable:false,
                 ),
                 steps:[
                     (
@@ -670,8 +686,8 @@ mod tests {
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::Nearest,
                 },
-                range_policy: Default::default(),
-                defense_tile_range: None,
+                reach: Default::default(),
+                target_range: None,
                 air_capable: false,
             }
         );
@@ -689,14 +705,12 @@ mod tests {
     }
 
     #[test]
-    fn enemy_single_target_defaults_to_nearest_rule_when_field_missing() {
-        let target: SkillTarget = serde_json::from_str(r#"{"EnemySingle":{}}"#).unwrap();
-        assert_eq!(
-            target,
-            SkillTarget::EnemySingle {
-                rule: UnitTargetRule::Nearest
-            }
-        );
+    fn enemy_single_target_requires_explicit_rule_and_rejects_unknown_authority() {
+        assert!(serde_json::from_str::<SkillTarget>(r#"{"EnemySingle":{}}"#).is_err());
+        assert!(serde_json::from_str::<SkillTarget>(
+            r#"{"EnemySingle":{"rule":"Nearest","targeting_profile":"LowDefenseFirst"}}"#
+        )
+        .is_err());
     }
 
     #[test]
@@ -707,6 +721,8 @@ mod tests {
                 id:"s2",
                 cast_targeting:Explicit(
                     target:EnemySingle(rule:Nearest),
+                    reach:pattern,
+                    air_capable:false,
                 ),
                 steps:[
                     (
@@ -732,6 +748,8 @@ mod tests {
                 id:"s_damage_mod",
                 cast_targeting:Explicit(
                     target:EnemySingle(rule:Nearest),
+                    reach:pattern,
+                    air_capable:false,
                 ),
                 steps:[
                     (
@@ -764,6 +782,8 @@ mod tests {
                 id:"stabilize",
                 cast_targeting:Explicit(
                     target:SelfUnit,
+                    reach:pattern,
+                    air_capable:false,
                 ),
                 steps:[
                     (
@@ -791,6 +811,8 @@ mod tests {
                 id:"s3",
                 cast_targeting:Explicit(
                     target:SelfUnit,
+                    reach:pattern,
+                    air_capable:false,
                 ),
                 steps:[
                     (
@@ -832,6 +854,8 @@ mod tests {
                 id:"s4",
                 cast_targeting:Explicit(
                     target:EnemySingle(rule:LowestHealthEnemy),
+                    reach:pattern,
+                    air_capable:false,
                 ),
                 steps:[
                     (
@@ -851,8 +875,8 @@ mod tests {
                 target: SkillTarget::EnemySingle {
                     rule: UnitTargetRule::LowestHealthEnemy,
                 },
-                range_policy: Default::default(),
-                defense_tile_range: None,
+                reach: Default::default(),
+                target_range: None,
                 air_capable: false,
             }
         );
@@ -942,6 +966,7 @@ mod tests {
         let delivery: DeliveryDef = ron::de::from_str(
             r#"
             TileArea(
+                footprint:(include_anchor_tile:true, rows:[".@."]),
                 area:(
                     anchor:CastTarget,
                     tile_origin:Anchor,
@@ -955,6 +980,10 @@ mod tests {
         assert_eq!(
             delivery,
             DeliveryDef::TileArea {
+                footprint: TileRangePattern {
+                    include_anchor_tile: true,
+                    rows: vec![".@.".to_string()],
+                },
                 area: SkillTileAreaDeliveryDef {
                     anchor: SkillAreaAnchorSource::CastTarget,
                     tile_origin: SkillTileAreaOrigin::Anchor,
@@ -974,6 +1003,7 @@ mod tests {
         let delivery: DeliveryDef = ron::de::from_str(
             r#"
             TileArea(
+                footprint:(include_anchor_tile:true, rows:[".@."]),
                 area:(
                     anchor:CastTarget,
                     hit_targets:Enemies,
@@ -983,7 +1013,7 @@ mod tests {
         )
         .unwrap();
 
-        let DeliveryDef::TileArea { area } = delivery else {
+        let DeliveryDef::TileArea { area, .. } = delivery else {
             panic!("expected tile area");
         };
         assert_eq!(area.tile_origin, SkillTileAreaOrigin::Caster);
